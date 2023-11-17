@@ -1,0 +1,82 @@
+{
+    "AgencyScheme": [
+        {
+            "id": "AGENCIES",
+            "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=BIS:AGENCIES(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "AGENCIES"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": false,
+            "items": [
+                {
+                    "id": "DST",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=BIS:AGENCIES(1.0).DST",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Data Stewards"
+                        }
+                    ]
+                },
+                {
+                    "id": "CMP",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=BIS:AGENCIES(1.0).CMP",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Data Compilation Unit"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Unit responsible for compilation"
+                        }
+                    ],
+                    "contacts": [
+                        {
+                            "roles": [
+                                {
+                                    "locale": "en",
+                                    "value": "Data Owner"
+                                }
+                            ],
+                            "names": [
+                                {
+                                    "locale": "en",
+                                    "value": "Arthur Dent"
+                                }
+                            ],
+                            "email": [
+                                "Arthur.Dent@test.com"
+                            ]
+                        },
+                        {
+                            "roles": [
+                                {
+                                    "locale": "en",
+                                    "value": "Subject Matter Expert"
+                                }
+                            ],
+                            "names": [
+                                {
+                                    "locale": "en",
+                                    "value": "Ford Prefect"
+                                }
+                            ],
+                            "email": [
+                                "Ford.Prefect@test.com"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,1039 @@
+{
+    "AgencyScheme": [
+        {
+            "id": "AGENCIES",
+            "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=BIS:AGENCIES(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "AGENCIES"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "items": [
+                {
+                    "id": "CBS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=BIS:AGENCIES(1.0).CBS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "IBFS CBS unit"
+                        }
+                    ]
+                },
+                {
+                    "id": "MEDIT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=BIS:AGENCIES(1.0).MEDIT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "BIS MED IT Unit"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "AGENCIES",
+            "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "SDMX Agency Scheme"
+                }
+            ],
+            "agencyId": "SDMX",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "items": [
+                {
+                    "id": "SDMX",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).SDMX",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "SDMX"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "SDMX is an initiative to foster standards for the exchange of statistical information. It is sponsored by the Bank for International Settlements (BIS), the European Central Bank (ECB), the Statistical Office of the European Union (Eurostat), the International Monetary Fund (IMF), the Organization for Economic Co-Operation and Development (OECD), the United Nations (UN) and the World Bank."
+                        }
+                    ],
+                    "contacts": [
+                        {
+                            "departments": [
+                                {
+                                    "locale": "en",
+                                    "value": "SDMX Secretariat"
+                                }
+                            ],
+                            "roles": [
+                                {
+                                    "locale": "en",
+                                    "value": "Single entry point for external inquiries"
+                                }
+                            ],
+                            "names": [
+                                {
+                                    "locale": "en",
+                                    "value": "SDMX Secretariat"
+                                }
+                            ],
+                            "email": [
+                                "secretariat@sdmx.org"
+                            ],
+                            "uri": [
+                                "http://sdmx.org"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "BIS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).BIS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bank for International Settlements"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "DataProviderScheme": [
+        {
+            "id": "DATA_PROVIDERS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProviderScheme=BIS:DATA_PROVIDERS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "DATA_PROVIDERS"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "items": [
+                {
+                    "id": "FR2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).FR2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bank of France"
+                        }
+                    ]
+                },
+                {
+                    "id": "DE2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).DE2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Deutsche Bundesbank"
+                        }
+                    ]
+                },
+                {
+                    "id": "AT2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).AT2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Central Bank of the Republic of Austria"
+                        }
+                    ]
+                },
+                {
+                    "id": "AU2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).AU2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Reserve Bank of Australia"
+                        }
+                    ]
+                },
+                {
+                    "id": "BE2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).BE2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "National Bank of Belgium"
+                        }
+                    ]
+                },
+                {
+                    "id": "BR2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).BR2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Central Bank of Brazil"
+                        }
+                    ]
+                },
+                {
+                    "id": "CA2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).CA2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bank of Canada"
+                        }
+                    ]
+                },
+                {
+                    "id": "CH2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).CH2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Swiss National Bank"
+                        }
+                    ]
+                },
+                {
+                    "id": "CL2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).CL2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Central Bank of Chile"
+                        }
+                    ]
+                },
+                {
+                    "id": "DK2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).DK2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Danmarks Nationalbank"
+                        }
+                    ]
+                },
+                {
+                    "id": "ES2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).ES2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bank of Spain"
+                        }
+                    ]
+                },
+                {
+                    "id": "FI2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).FI2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bank of Finland"
+                        }
+                    ]
+                },
+                {
+                    "id": "GB2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).GB2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bank of England"
+                        }
+                    ]
+                },
+                {
+                    "id": "GR2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).GR2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bank of Greece"
+                        }
+                    ]
+                },
+                {
+                    "id": "HK2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).HK2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Hong Kong Monetary Authority"
+                        }
+                    ]
+                },
+                {
+                    "id": "IE2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).IE2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Central Bank of Ireland"
+                        }
+                    ]
+                },
+                {
+                    "id": "IN2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).IN2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Reserve Bank of India"
+                        }
+                    ]
+                },
+                {
+                    "id": "IT2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).IT2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bank of Italy"
+                        }
+                    ]
+                },
+                {
+                    "id": "JP2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).JP2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bank of Japan"
+                        }
+                    ]
+                },
+                {
+                    "id": "KR2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).KR2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bank of Korea"
+                        }
+                    ]
+                },
+                {
+                    "id": "LU2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).LU2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Central Bank of Luxembourg"
+                        }
+                    ]
+                },
+                {
+                    "id": "MX2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).MX2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bank of Mexico"
+                        }
+                    ]
+                },
+                {
+                    "id": "NL2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).NL2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Netherlands Bank"
+                        }
+                    ]
+                },
+                {
+                    "id": "NO2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).NO2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Central Bank of Norway"
+                        }
+                    ]
+                },
+                {
+                    "id": "PT2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).PT2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bank of Portugal"
+                        }
+                    ]
+                },
+                {
+                    "id": "SE2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).SE2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Sveriges Riksbank"
+                        }
+                    ]
+                },
+                {
+                    "id": "SG2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).SG2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Monetary Authority of Singapore"
+                        }
+                    ]
+                },
+                {
+                    "id": "US3",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).US3",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Board of Governors of the Federal Reserve System"
+                        }
+                    ]
+                },
+                {
+                    "id": "TW2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TW2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Central Bank of the Republic of China (Taiwan)"
+                        }
+                    ]
+                },
+                {
+                    "id": "TH2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TH2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bank of Thailand"
+                        }
+                    ]
+                },
+                {
+                    "id": "TR2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TR2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Central Bank of the Republic of Turkey"
+                        }
+                    ]
+                },
+                {
+                    "id": "5B0",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).5B0",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "BIS"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Bank for International Settlements"
+                        }
+                    ],
+                    "contacts": [
+                        {
+                            "roles": [
+                                {
+                                    "locale": "en",
+                                    "value": "Support"
+                                }
+                            ],
+                            "names": [
+                                {
+                                    "locale": "en",
+                                    "value": "sami_test"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "PA6",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).PA6",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Superintendencia de Bancos (Panama)"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "The Superintendence of Banks in Panama"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "Dataflow": [
+        {
+            "id": "CBS_OLD",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "links": [
+                {
+                    "rel": "metadata",
+                    "href": "https://mms-med-fmr-dev.apps.ocp-dev.opz.bisinfo.org/sdmx/v2/metadata/metadataset/BIS.MEDIT/DTI_CBS/1.0",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS.MEDIT:DTI_CBS(1.0)"
+                }
+            ],
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Consolidated Banking Statistics (OLD)"
+                }
+            ],
+            "descriptions": [
+                {
+                    "locale": "en",
+                    "value": "This dataflow is associated to the BIS_CBS DSD (OLD)."
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "dataStructureRef": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)"
+        },
+        {
+            "id": "CBS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "links": [
+                {
+                    "rel": "metadata",
+                    "href": "https://mms-med-fmr-dev.apps.ocp-dev.opz.bisinfo.org/sdmx/v2/metadata/metadataset/BIS.MEDIT/DTI_CBS/1.0",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS.MEDIT:DTI_CBS(1.0)"
+                }
+            ],
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Consolidated Banking Statistics"
+                }
+            ],
+            "descriptions": [
+                {
+                    "locale": "en",
+                    "value": "This dataflow is associated to the BIS_CBS DSD."
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "dataStructureRef": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)"
+        }
+    ],
+    "ProvisionAgreement": [
+        {
+            "id": "CBS_BIS_5B0",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_5B0(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "BIS for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).5B0"
+        },
+        {
+            "id": "CBS_BIS_AT2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_AT2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Central Bank of the Republic of Austria for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).AT2"
+        },
+        {
+            "id": "CBS_BIS_AU2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_AU2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Reserve Bank of Australia for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).AU2"
+        },
+        {
+            "id": "CBS_BIS_BE2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_BE2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "National Bank of Belgium for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).BE2"
+        },
+        {
+            "id": "CBS_BIS_BR2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_BR2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Central Bank of Brazil for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).BR2"
+        },
+        {
+            "id": "CBS_BIS_CA2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_CA2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Bank of Canada for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).CA2"
+        },
+        {
+            "id": "CBS_BIS_CH2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_CH2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Swiss National Bank for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).CH2"
+        },
+        {
+            "id": "CBS_BIS_CL2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_CL2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Central Bank of Chile for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).CL2"
+        },
+        {
+            "id": "CBS_BIS_DE2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_DE2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Deutsche Bundesbank for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).DE2"
+        },
+        {
+            "id": "CBS_BIS_DK2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_DK2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Danmarks Nationalbank for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).DK2"
+        },
+        {
+            "id": "CBS_BIS_ES2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_ES2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Bank of Spain for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).ES2"
+        },
+        {
+            "id": "CBS_BIS_FI2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_FI2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Bank of Finland for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).FI2"
+        },
+        {
+            "id": "CBS_BIS_FR2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_FR2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Bank of France for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).FR2"
+        },
+        {
+            "id": "CBS_BIS_GB2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_GB2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Bank of England for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).GB2"
+        },
+        {
+            "id": "CBS_BIS_GR2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_GR2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Bank of Greece for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).GR2"
+        },
+        {
+            "id": "CBS_BIS_HK2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_HK2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Hong Kong Monetary Authority for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).HK2"
+        },
+        {
+            "id": "CBS_BIS_IE2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_IE2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Central Bank of Ireland for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).IE2"
+        },
+        {
+            "id": "CBS_BIS_IN2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_IN2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Reserve Bank of India for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).IN2"
+        },
+        {
+            "id": "CBS_BIS_IT2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_IT2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Bank of Italy for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).IT2"
+        },
+        {
+            "id": "CBS_BIS_JP2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_JP2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Bank of Japan for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).JP2"
+        },
+        {
+            "id": "CBS_BIS_KR2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_KR2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Bank of Korea for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).KR2"
+        },
+        {
+            "id": "CBS_BIS_LU2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_LU2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Central Bank of Luxembourg for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).LU2"
+        },
+        {
+            "id": "CBS_BIS_MX2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_MX2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Bank of Mexico for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).MX2"
+        },
+        {
+            "id": "CBS_BIS_NL2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_NL2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Netherlands Bank for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).NL2"
+        },
+        {
+            "id": "CBS_BIS_NO2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_NO2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Central Bank of Norway for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).NO2"
+        },
+        {
+            "id": "CBS_BIS_PA6",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_PA6(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "National Bank of Panama for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).PA6"
+        },
+        {
+            "id": "CBS_BIS_PT2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_PT2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Bank of Portugal for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).PT2"
+        },
+        {
+            "id": "CBS_BIS_SE2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_SE2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Sveriges Riksbank for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).SE2"
+        },
+        {
+            "id": "CBS_BIS_SG2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_SG2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Monetary Authority of Singapore for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).SG2"
+        },
+        {
+            "id": "CBS_BIS_TH2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_TH2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Bank of Thailand for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TH2"
+        },
+        {
+            "id": "CBS_BIS_TR2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_TR2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Central Bank of the Republic of Turkey for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TR2"
+        },
+        {
+            "id": "CBS_BIS_TW2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_TW2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Central Bank of the Republic of China (Taiwan) for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TW2"
+        },
+        {
+            "id": "CBS_BIS_US3",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_US3(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Board of Governors of the Federal Reserve System for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).US3"
+        }
+    ]
+}

@@ -1,0 +1,5184 @@
+{
+    "meta": {
+        "id": "IREF909102",
+        "test": false,
+        "prepared": "2023-07-31T08:08:32Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "FusionRegistry"
+        },
+        "links": [
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS:CBS_CPC(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS.CBS:CBS_CONSTRAINTS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CL_AVAILABILITY(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CBS_BASIS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_COLLECTION(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CONF_STATUS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CURRENCY_3POS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DECIMALS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ISSUE_MAT(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_INSTR(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_POSITION(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_SECTOR(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OBS_STATUS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ORG_VISIBILITY(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_STOCK_FLOW(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_TIME_FORMAT(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_UNIT_MULT(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS:STANDALONE_CONCEPT_SCHEME(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS:BIS_CBS(1.0)"
+            }
+        ]
+    },
+    "AgencyScheme": [
+        {
+            "id": "AGENCIES",
+            "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "SDMX Agency Scheme"
+                }
+            ],
+            "agencyId": "SDMX",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "items": [
+                {
+                    "id": "BIS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).BIS",
+                    "annotations": [
+                        {
+                            "title": "xx000000",
+                            "type": "contact_uid"
+                        }
+                    ],
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bank for International Settlements"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Bank for International Settlements"
+                        }
+                    ],
+                    "contacts": [
+                        {
+                            "roles": [
+                                {
+                                    "locale": "en",
+                                    "value": "Support"
+                                }
+                            ],
+                            "names": [
+                                {
+                                    "locale": "en",
+                                    "value": "Support"
+                                }
+                            ],
+                            "email": [
+                                "statistics@bis.org"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "ValueList": [
+        {
+            "id": "CL_AVAILABILITY",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CL_AVAILABILITY(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Availability"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": false,
+            "items": [
+                {
+                    "id": "A",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "All users"
+                        }
+                    ]
+                },
+                {
+                    "id": "B",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "BIS only, not for publication"
+                        }
+                    ]
+                },
+                {
+                    "id": "C",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "BIS and G-10 central banks only, not for publication"
+                        }
+                    ]
+                },
+                {
+                    "id": "D",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "ESCB only, not for publication"
+                        }
+                    ]
+                },
+                {
+                    "id": "E",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "ECB only, not for publication"
+                        }
+                    ]
+                },
+                {
+                    "id": "G",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "BIS and ESCB only, not for publication"
+                        }
+                    ]
+                },
+                {
+                    "id": "H",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "BIS and ECB only, not for publication"
+                        }
+                    ]
+                },
+                {
+                    "id": "I",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "BIS, ECB and Central Banks only, not for publication"
+                        }
+                    ]
+                },
+                {
+                    "id": "J",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "(BIS) Low frequency free, high frequency restricted"
+                        }
+                    ]
+                },
+                {
+                    "id": "K",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Free, last value not to be published prior to embargo date"
+                        }
+                    ]
+                },
+                {
+                    "id": "L",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "(BIS) High frequency free, low frequency restricted"
+                        }
+                    ]
+                },
+                {
+                    "id": "N",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "(BIS) Low frequency free, high frequency ECB only"
+                        }
+                    ]
+                },
+                {
+                    "id": "O",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Commission/Eurostat only; not for publication"
+                        }
+                    ]
+                },
+                {
+                    "id": "P",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Commission/Eurostat and ECB only; not for publication"
+                        }
+                    ]
+                },
+                {
+                    "id": "Q",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Commission/Eurostat and ESCB only; not for publication"
+                        }
+                    ]
+                },
+                {
+                    "id": "T",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "BIS and IMF only; not for publication"
+                        }
+                    ]
+                },
+                {
+                    "id": "U",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "ECB and EMU members only; not for publication"
+                        }
+                    ]
+                },
+                {
+                    "id": "W",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Confidential - For BIS, ECB and G10 NCBs; only named persons"
+                        }
+                    ]
+                },
+                {
+                    "id": "Z",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Restricted - For BIS, ECB, reporting CBs; authorised individuals"
+                        }
+                    ]
+                },
+                {
+                    "id": "X",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "BIS only, free"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "Codelist": [
+        {
+            "id": "CL_BIS_IF_REF_AREA",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Reference Area Code for BIS-IFS"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "1C",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).1C",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "International organisations"
+                        }
+                    ]
+                },
+                {
+                    "id": "1N",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).1N",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Offshore centres"
+                        }
+                    ]
+                },
+                {
+                    "id": "1W",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).1W",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "British Overseas Territories"
+                        }
+                    ]
+                },
+                {
+                    "id": "1Z",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).1Z",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "West Indies UK"
+                        }
+                    ]
+                },
+                {
+                    "id": "2B",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).2B",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Residual developing Europe"
+                        }
+                    ]
+                },
+                {
+                    "id": "2C",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).2C",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Residual former Serbia and Montenegro"
+                        }
+                    ]
+                },
+                {
+                    "id": "2D",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).2D",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Residual former Netherlands Antilles"
+                        }
+                    ]
+                },
+                {
+                    "id": "2H",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).2H",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Residual developing Latin America and Caribbean"
+                        }
+                    ]
+                },
+                {
+                    "id": "2N",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).2N",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Residual offshore centres"
+                        }
+                    ]
+                },
+                {
+                    "id": "2O",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).2O",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Residual developing Asia and Pacific"
+                        }
+                    ]
+                },
+                {
+                    "id": "2R",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).2R",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Residual developed countries"
+                        }
+                    ]
+                },
+                {
+                    "id": "2S",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).2S",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Residual former Yugoslavia"
+                        }
+                    ]
+                },
+                {
+                    "id": "2T",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).2T",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Residual former Soviet Union"
+                        }
+                    ]
+                },
+                {
+                    "id": "2U",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).2U",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Residual former Czechoslovakia"
+                        }
+                    ]
+                },
+                {
+                    "id": "2W",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).2W",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Residual developing Africa and Middle East"
+                        }
+                    ]
+                },
+                {
+                    "id": "3C",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).3C",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Developing Europe"
+                        }
+                    ]
+                },
+                {
+                    "id": "3T",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).3T",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "BIS IBS - LEGACY LEAF LEVEL"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Legacy leaf aggregates"
+                        }
+                    ]
+                },
+                {
+                    "id": "4C",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).4C",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Inside-area foreign banks consolidated by their parent"
+                        }
+                    ]
+                },
+                {
+                    "id": "4D",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).4D",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Outside area foreign banks"
+                        }
+                    ]
+                },
+                {
+                    "id": "4E",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).4E",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Inside-area foreign banks not consolidated by their parent"
+                        }
+                    ]
+                },
+                {
+                    "id": "4M",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).4M",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "All banks (=4B +4C + 4D +4E)"
+                        }
+                    ]
+                },
+                {
+                    "id": "4T",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).4T",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Emerging market and developing economies"
+                        }
+                    ]
+                },
+                {
+                    "id": "4U",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).4U",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Developing Latin America and Caribbean"
+                        }
+                    ]
+                },
+                {
+                    "id": "4W",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).4W",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Developing Africa and Middle East"
+                        }
+                    ]
+                },
+                {
+                    "id": "4Y",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).4Y",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Developing Asia and Pacific"
+                        }
+                    ]
+                },
+                {
+                    "id": "5C",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).5C",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Euro area"
+                        }
+                    ]
+                },
+                {
+                    "id": "5J",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).5J",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "All countries (total)"
+                        }
+                    ]
+                },
+                {
+                    "id": "5K",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).5K",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "European developed countries"
+                        }
+                    ]
+                },
+                {
+                    "id": "5M",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).5M",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Unallocated location"
+                        }
+                    ]
+                },
+                {
+                    "id": "5R",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).5R",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Developed countries"
+                        }
+                    ]
+                },
+                {
+                    "id": "6T",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).6T",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "BIS IBS - LEGACY AGGREGATES"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Legacy aggregates"
+                        }
+                    ]
+                },
+                {
+                    "id": "AD",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).AD",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Andorra"
+                        }
+                    ]
+                },
+                {
+                    "id": "AE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).AE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "United Arab Emirates"
+                        }
+                    ]
+                },
+                {
+                    "id": "AF",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).AF",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Afghanistan"
+                        }
+                    ]
+                },
+                {
+                    "id": "AG",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).AG",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Antigua and Barbuda"
+                        }
+                    ]
+                },
+                {
+                    "id": "AI",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).AI",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Anguilla"
+                        }
+                    ]
+                },
+                {
+                    "id": "AL",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).AL",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Albania"
+                        }
+                    ]
+                },
+                {
+                    "id": "AM",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).AM",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Armenia"
+                        }
+                    ]
+                },
+                {
+                    "id": "AO",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).AO",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Angola"
+                        }
+                    ]
+                },
+                {
+                    "id": "AR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).AR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Argentina"
+                        }
+                    ]
+                },
+                {
+                    "id": "AT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).AT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Austria"
+                        }
+                    ]
+                },
+                {
+                    "id": "AU",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).AU",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Australia"
+                        }
+                    ]
+                },
+                {
+                    "id": "AW",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).AW",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Aruba"
+                        }
+                    ]
+                },
+                {
+                    "id": "AZ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).AZ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Azerbaijan"
+                        }
+                    ]
+                },
+                {
+                    "id": "BA",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BA",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bosnia and Herzegovina"
+                        }
+                    ]
+                },
+                {
+                    "id": "BB",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BB",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Barbados"
+                        }
+                    ]
+                },
+                {
+                    "id": "BD",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BD",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bangladesh"
+                        }
+                    ]
+                },
+                {
+                    "id": "BE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Belgium"
+                        }
+                    ]
+                },
+                {
+                    "id": "BF",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BF",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Burkina Faso"
+                        }
+                    ]
+                },
+                {
+                    "id": "BG",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BG",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bulgaria"
+                        }
+                    ]
+                },
+                {
+                    "id": "BH",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BH",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bahrain"
+                        }
+                    ]
+                },
+                {
+                    "id": "BI",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BI",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Burundi"
+                        }
+                    ]
+                },
+                {
+                    "id": "BJ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BJ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Benin"
+                        }
+                    ]
+                },
+                {
+                    "id": "BM",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BM",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bermuda"
+                        }
+                    ]
+                },
+                {
+                    "id": "BN",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BN",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Brunei"
+                        }
+                    ]
+                },
+                {
+                    "id": "BO",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BO",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bolivia"
+                        }
+                    ]
+                },
+                {
+                    "id": "BQ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BQ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bonaire, Sint Eustatius and Saba"
+                        }
+                    ]
+                },
+                {
+                    "id": "BR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Brazil"
+                        }
+                    ]
+                },
+                {
+                    "id": "BS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bahamas"
+                        }
+                    ]
+                },
+                {
+                    "id": "BT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bhutan"
+                        }
+                    ]
+                },
+                {
+                    "id": "BW",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BW",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Botswana"
+                        }
+                    ]
+                },
+                {
+                    "id": "BY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Belarus"
+                        }
+                    ]
+                },
+                {
+                    "id": "BZ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).BZ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Belize"
+                        }
+                    ]
+                },
+                {
+                    "id": "CA",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CA",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Canada"
+                        }
+                    ]
+                },
+                {
+                    "id": "CD",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CD",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Congo Democratic Republic"
+                        }
+                    ]
+                },
+                {
+                    "id": "CF",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CF",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Central African Republic"
+                        }
+                    ]
+                },
+                {
+                    "id": "CG",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CG",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Congo"
+                        }
+                    ]
+                },
+                {
+                    "id": "CH",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CH",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Switzerland"
+                        }
+                    ]
+                },
+                {
+                    "id": "CI",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CI",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Cote d'Ivoire"
+                        }
+                    ]
+                },
+                {
+                    "id": "CL",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CL",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Chile"
+                        }
+                    ]
+                },
+                {
+                    "id": "CM",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CM",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Cameroon"
+                        }
+                    ]
+                },
+                {
+                    "id": "CN",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CN",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "China"
+                        }
+                    ]
+                },
+                {
+                    "id": "CO",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CO",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Colombia"
+                        }
+                    ]
+                },
+                {
+                    "id": "CR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Costa Rica"
+                        }
+                    ]
+                },
+                {
+                    "id": "CU",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CU",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Cuba"
+                        }
+                    ]
+                },
+                {
+                    "id": "CV",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CV",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Cape Verde"
+                        }
+                    ]
+                },
+                {
+                    "id": "CW",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CW",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Curacao"
+                        }
+                    ]
+                },
+                {
+                    "id": "CY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Cyprus"
+                        }
+                    ]
+                },
+                {
+                    "id": "CZ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CZ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Czech Republic"
+                        }
+                    ]
+                },
+                {
+                    "id": "DE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).DE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Germany"
+                        }
+                    ]
+                },
+                {
+                    "id": "DJ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).DJ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Djibouti"
+                        }
+                    ]
+                },
+                {
+                    "id": "DK",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).DK",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Denmark"
+                        }
+                    ]
+                },
+                {
+                    "id": "DM",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).DM",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Dominica"
+                        }
+                    ]
+                },
+                {
+                    "id": "DO",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).DO",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Dominican Republic"
+                        }
+                    ]
+                },
+                {
+                    "id": "DZ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).DZ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Algeria"
+                        }
+                    ]
+                },
+                {
+                    "id": "EC",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).EC",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Ecuador"
+                        }
+                    ]
+                },
+                {
+                    "id": "EE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).EE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Estonia"
+                        }
+                    ]
+                },
+                {
+                    "id": "EG",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).EG",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Egypt"
+                        }
+                    ]
+                },
+                {
+                    "id": "ER",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).ER",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Eritrea"
+                        }
+                    ]
+                },
+                {
+                    "id": "ES",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).ES",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Spain"
+                        }
+                    ]
+                },
+                {
+                    "id": "ET",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).ET",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Ethiopia"
+                        }
+                    ]
+                },
+                {
+                    "id": "FI",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).FI",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Finland"
+                        }
+                    ]
+                },
+                {
+                    "id": "FJ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).FJ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Fiji"
+                        }
+                    ]
+                },
+                {
+                    "id": "FK",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).FK",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Falkland Islands"
+                        }
+                    ]
+                },
+                {
+                    "id": "FM",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).FM",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Micronesia"
+                        }
+                    ]
+                },
+                {
+                    "id": "FO",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).FO",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Faeroe Islands"
+                        }
+                    ]
+                },
+                {
+                    "id": "FR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).FR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "France"
+                        }
+                    ]
+                },
+                {
+                    "id": "GA",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).GA",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Gabon"
+                        }
+                    ]
+                },
+                {
+                    "id": "GB",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).GB",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "United Kingdom"
+                        }
+                    ]
+                },
+                {
+                    "id": "GD",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).GD",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Grenada"
+                        }
+                    ]
+                },
+                {
+                    "id": "GE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).GE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Georgia"
+                        }
+                    ]
+                },
+                {
+                    "id": "GG",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).GG",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Guernsey"
+                        }
+                    ]
+                },
+                {
+                    "id": "GH",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).GH",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Ghana"
+                        }
+                    ]
+                },
+                {
+                    "id": "GI",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).GI",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Gibraltar"
+                        }
+                    ]
+                },
+                {
+                    "id": "GL",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).GL",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Greenland"
+                        }
+                    ]
+                },
+                {
+                    "id": "GM",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).GM",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Gambia"
+                        }
+                    ]
+                },
+                {
+                    "id": "GN",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).GN",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Guinea"
+                        }
+                    ]
+                },
+                {
+                    "id": "GQ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).GQ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Equatorial Guinea"
+                        }
+                    ]
+                },
+                {
+                    "id": "GR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).GR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Greece"
+                        }
+                    ]
+                },
+                {
+                    "id": "GT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).GT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Guatemala"
+                        }
+                    ]
+                },
+                {
+                    "id": "GW",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).GW",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Guinea-Bissau"
+                        }
+                    ]
+                },
+                {
+                    "id": "GY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).GY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Guyana"
+                        }
+                    ]
+                },
+                {
+                    "id": "HK",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).HK",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Hong Kong SAR"
+                        }
+                    ]
+                },
+                {
+                    "id": "HN",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).HN",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Honduras"
+                        }
+                    ]
+                },
+                {
+                    "id": "HR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).HR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Croatia"
+                        }
+                    ]
+                },
+                {
+                    "id": "HT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).HT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Haiti"
+                        }
+                    ]
+                },
+                {
+                    "id": "HU",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).HU",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Hungary"
+                        }
+                    ]
+                },
+                {
+                    "id": "ID",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).ID",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Indonesia"
+                        }
+                    ]
+                },
+                {
+                    "id": "IE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).IE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Ireland"
+                        }
+                    ]
+                },
+                {
+                    "id": "IL",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).IL",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Israel"
+                        }
+                    ]
+                },
+                {
+                    "id": "IM",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).IM",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Isle of Man"
+                        }
+                    ]
+                },
+                {
+                    "id": "IN",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).IN",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "India"
+                        }
+                    ]
+                },
+                {
+                    "id": "IQ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).IQ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Iraq"
+                        }
+                    ]
+                },
+                {
+                    "id": "IR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).IR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Iran"
+                        }
+                    ]
+                },
+                {
+                    "id": "IS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).IS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Iceland"
+                        }
+                    ]
+                },
+                {
+                    "id": "IT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).IT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Italy"
+                        }
+                    ]
+                },
+                {
+                    "id": "JE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).JE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Jersey"
+                        }
+                    ]
+                },
+                {
+                    "id": "JM",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).JM",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Jamaica"
+                        }
+                    ]
+                },
+                {
+                    "id": "JO",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).JO",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Jordan"
+                        }
+                    ]
+                },
+                {
+                    "id": "JP",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).JP",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Japan"
+                        }
+                    ]
+                },
+                {
+                    "id": "KE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).KE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Kenya"
+                        }
+                    ]
+                },
+                {
+                    "id": "KG",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).KG",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Kyrgyz Republic"
+                        }
+                    ]
+                },
+                {
+                    "id": "KH",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).KH",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Cambodia"
+                        }
+                    ]
+                },
+                {
+                    "id": "KI",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).KI",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Kiribati"
+                        }
+                    ]
+                },
+                {
+                    "id": "KM",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).KM",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Comoros"
+                        }
+                    ]
+                },
+                {
+                    "id": "KN",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).KN",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "St.Kitts - Nevis"
+                        }
+                    ]
+                },
+                {
+                    "id": "KP",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).KP",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "North Korea"
+                        }
+                    ]
+                },
+                {
+                    "id": "KR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).KR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Korea"
+                        }
+                    ]
+                },
+                {
+                    "id": "KW",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).KW",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Kuwait"
+                        }
+                    ]
+                },
+                {
+                    "id": "KY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).KY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Cayman Islands"
+                        }
+                    ]
+                },
+                {
+                    "id": "KZ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).KZ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Kazakhstan"
+                        }
+                    ]
+                },
+                {
+                    "id": "LA",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).LA",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Laos"
+                        }
+                    ]
+                },
+                {
+                    "id": "LB",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).LB",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Lebanon"
+                        }
+                    ]
+                },
+                {
+                    "id": "LC",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).LC",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "St. Lucia"
+                        }
+                    ]
+                },
+                {
+                    "id": "LI",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).LI",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Liechtenstein"
+                        }
+                    ]
+                },
+                {
+                    "id": "LK",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).LK",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Sri Lanka"
+                        }
+                    ]
+                },
+                {
+                    "id": "LR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).LR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Liberia"
+                        }
+                    ]
+                },
+                {
+                    "id": "LS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).LS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Lesotho"
+                        }
+                    ]
+                },
+                {
+                    "id": "LT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).LT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Lithuania"
+                        }
+                    ]
+                },
+                {
+                    "id": "LU",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).LU",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Luxembourg"
+                        }
+                    ]
+                },
+                {
+                    "id": "LV",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).LV",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Latvia"
+                        }
+                    ]
+                },
+                {
+                    "id": "LY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).LY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Libya"
+                        }
+                    ]
+                },
+                {
+                    "id": "MA",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MA",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Morocco"
+                        }
+                    ]
+                },
+                {
+                    "id": "MD",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MD",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Moldova"
+                        }
+                    ]
+                },
+                {
+                    "id": "ME",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).ME",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Montenegro"
+                        }
+                    ]
+                },
+                {
+                    "id": "MG",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MG",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Madagascar"
+                        }
+                    ]
+                },
+                {
+                    "id": "MH",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MH",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Marshall Islands"
+                        }
+                    ]
+                },
+                {
+                    "id": "MK",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MK",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "North Macedonia"
+                        }
+                    ]
+                },
+                {
+                    "id": "ML",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).ML",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Mali"
+                        }
+                    ]
+                },
+                {
+                    "id": "MM",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MM",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Myanmar"
+                        }
+                    ]
+                },
+                {
+                    "id": "MN",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MN",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Mongolia"
+                        }
+                    ]
+                },
+                {
+                    "id": "MO",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MO",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Macao SAR"
+                        }
+                    ]
+                },
+                {
+                    "id": "MR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Mauritania"
+                        }
+                    ]
+                },
+                {
+                    "id": "MS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Montserrat"
+                        }
+                    ]
+                },
+                {
+                    "id": "MT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Malta"
+                        }
+                    ]
+                },
+                {
+                    "id": "MU",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MU",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Mauritius"
+                        }
+                    ]
+                },
+                {
+                    "id": "MV",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MV",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Maldives"
+                        }
+                    ]
+                },
+                {
+                    "id": "MW",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MW",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Malawi"
+                        }
+                    ]
+                },
+                {
+                    "id": "MX",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MX",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Mexico"
+                        }
+                    ]
+                },
+                {
+                    "id": "MY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Malaysia"
+                        }
+                    ]
+                },
+                {
+                    "id": "MZ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).MZ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Mozambique"
+                        }
+                    ]
+                },
+                {
+                    "id": "NA",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).NA",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Namibia"
+                        }
+                    ]
+                },
+                {
+                    "id": "NC",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).NC",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "New Caledonia"
+                        }
+                    ]
+                },
+                {
+                    "id": "NE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).NE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Niger"
+                        }
+                    ]
+                },
+                {
+                    "id": "NG",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).NG",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Nigeria"
+                        }
+                    ]
+                },
+                {
+                    "id": "NI",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).NI",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Nicaragua"
+                        }
+                    ]
+                },
+                {
+                    "id": "NL",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).NL",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Netherlands"
+                        }
+                    ]
+                },
+                {
+                    "id": "NO",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).NO",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Norway"
+                        }
+                    ]
+                },
+                {
+                    "id": "NP",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).NP",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Nepal"
+                        }
+                    ]
+                },
+                {
+                    "id": "NR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).NR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Nauru"
+                        }
+                    ]
+                },
+                {
+                    "id": "NZ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).NZ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "New Zealand"
+                        }
+                    ]
+                },
+                {
+                    "id": "OM",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).OM",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Oman"
+                        }
+                    ]
+                },
+                {
+                    "id": "PA",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).PA",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Panama"
+                        }
+                    ]
+                },
+                {
+                    "id": "PE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).PE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Peru"
+                        }
+                    ]
+                },
+                {
+                    "id": "PF",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).PF",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "French Polynesia"
+                        }
+                    ]
+                },
+                {
+                    "id": "PG",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).PG",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Papua New Guinea"
+                        }
+                    ]
+                },
+                {
+                    "id": "PH",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).PH",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Philippines"
+                        }
+                    ]
+                },
+                {
+                    "id": "PK",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).PK",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Pakistan"
+                        }
+                    ]
+                },
+                {
+                    "id": "PL",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).PL",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Poland"
+                        }
+                    ]
+                },
+                {
+                    "id": "PS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).PS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Palestinian Territory"
+                        }
+                    ]
+                },
+                {
+                    "id": "PT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).PT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Portugal"
+                        }
+                    ]
+                },
+                {
+                    "id": "PW",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).PW",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Palau"
+                        }
+                    ]
+                },
+                {
+                    "id": "PY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).PY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Paraguay"
+                        }
+                    ]
+                },
+                {
+                    "id": "QA",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).QA",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Qatar"
+                        }
+                    ]
+                },
+                {
+                    "id": "RO",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).RO",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Romania"
+                        }
+                    ]
+                },
+                {
+                    "id": "RS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).RS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Serbia"
+                        }
+                    ]
+                },
+                {
+                    "id": "RU",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).RU",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Russia"
+                        }
+                    ]
+                },
+                {
+                    "id": "RW",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).RW",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Rwanda"
+                        }
+                    ]
+                },
+                {
+                    "id": "SA",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SA",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Saudi Arabia"
+                        }
+                    ]
+                },
+                {
+                    "id": "SB",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SB",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Solomon Islands"
+                        }
+                    ]
+                },
+                {
+                    "id": "SC",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SC",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Seychelles"
+                        }
+                    ]
+                },
+                {
+                    "id": "SD",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SD",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Sudan"
+                        }
+                    ]
+                },
+                {
+                    "id": "SE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Sweden"
+                        }
+                    ]
+                },
+                {
+                    "id": "SG",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SG",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Singapore"
+                        }
+                    ]
+                },
+                {
+                    "id": "SI",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SI",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Slovenia"
+                        }
+                    ]
+                },
+                {
+                    "id": "SK",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SK",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Slovakia"
+                        }
+                    ]
+                },
+                {
+                    "id": "SL",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SL",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Sierra Leone"
+                        }
+                    ]
+                },
+                {
+                    "id": "SM",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SM",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "San Marino"
+                        }
+                    ]
+                },
+                {
+                    "id": "SN",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SN",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Senegal"
+                        }
+                    ]
+                },
+                {
+                    "id": "SO",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SO",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Somalia"
+                        }
+                    ]
+                },
+                {
+                    "id": "SR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Suriname"
+                        }
+                    ]
+                },
+                {
+                    "id": "SS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "South Sudan"
+                        }
+                    ]
+                },
+                {
+                    "id": "ST",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).ST",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Sao Tome and Principe"
+                        }
+                    ]
+                },
+                {
+                    "id": "SV",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SV",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "El Salvador"
+                        }
+                    ]
+                },
+                {
+                    "id": "SX",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SX",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Sint Maarten"
+                        }
+                    ]
+                },
+                {
+                    "id": "SY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Syria"
+                        }
+                    ]
+                },
+                {
+                    "id": "SZ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SZ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Eswatini"
+                        }
+                    ]
+                },
+                {
+                    "id": "TC",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TC",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Turks and Caicos Islands"
+                        }
+                    ]
+                },
+                {
+                    "id": "TD",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TD",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Chad"
+                        }
+                    ]
+                },
+                {
+                    "id": "TF",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TF",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "French Southern Territories"
+                        }
+                    ]
+                },
+                {
+                    "id": "TG",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TG",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Togo"
+                        }
+                    ]
+                },
+                {
+                    "id": "TH",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TH",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Thailand"
+                        }
+                    ]
+                },
+                {
+                    "id": "TJ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TJ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Tajikistan"
+                        }
+                    ]
+                },
+                {
+                    "id": "TL",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TL",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Timor Leste"
+                        }
+                    ]
+                },
+                {
+                    "id": "TM",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TM",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Turkmenistan"
+                        }
+                    ]
+                },
+                {
+                    "id": "TN",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TN",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Tunisia"
+                        }
+                    ]
+                },
+                {
+                    "id": "TO",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TO",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Tonga"
+                        }
+                    ]
+                },
+                {
+                    "id": "TR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Türkiye"
+                        }
+                    ]
+                },
+                {
+                    "id": "TT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Trinidad and Tobago"
+                        }
+                    ]
+                },
+                {
+                    "id": "TV",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TV",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Tuvalu"
+                        }
+                    ]
+                },
+                {
+                    "id": "TW",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TW",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Chinese Taipei"
+                        }
+                    ]
+                },
+                {
+                    "id": "TZ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TZ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Tanzania"
+                        }
+                    ]
+                },
+                {
+                    "id": "UA",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).UA",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Ukraine"
+                        }
+                    ]
+                },
+                {
+                    "id": "UG",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).UG",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Uganda"
+                        }
+                    ]
+                },
+                {
+                    "id": "US",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).US",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "United States"
+                        }
+                    ]
+                },
+                {
+                    "id": "UY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).UY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Uruguay"
+                        }
+                    ]
+                },
+                {
+                    "id": "UZ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).UZ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Uzbekistan"
+                        }
+                    ]
+                },
+                {
+                    "id": "VA",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).VA",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Vatican City State"
+                        }
+                    ]
+                },
+                {
+                    "id": "VC",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).VC",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "St. Vincent and the Grenadines"
+                        }
+                    ]
+                },
+                {
+                    "id": "VE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).VE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Venezuela"
+                        }
+                    ]
+                },
+                {
+                    "id": "VG",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).VG",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Virgin Islands (British)"
+                        }
+                    ]
+                },
+                {
+                    "id": "VN",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).VN",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Vietnam"
+                        }
+                    ]
+                },
+                {
+                    "id": "VU",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).VU",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Vanuatu"
+                        }
+                    ]
+                },
+                {
+                    "id": "WF",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).WF",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Wallis and Futuna"
+                        }
+                    ]
+                },
+                {
+                    "id": "WS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).WS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Samoa"
+                        }
+                    ]
+                },
+                {
+                    "id": "YE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).YE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Yemen"
+                        }
+                    ]
+                },
+                {
+                    "id": "ZA",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).ZA",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "South Africa"
+                        }
+                    ]
+                },
+                {
+                    "id": "ZM",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).ZM",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Zambia"
+                        }
+                    ]
+                },
+                {
+                    "id": "ZW",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).ZW",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Zimbabwe"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_CBS_BASIS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CBS_BASIS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "CBS basis"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "F",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CBS_BASIS(1.0).F",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Immediate counterparty basis"
+                        }
+                    ]
+                },
+                {
+                    "id": "O",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CBS_BASIS(1.0).O",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Outward risk transfers"
+                        }
+                    ]
+                },
+                {
+                    "id": "P",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CBS_BASIS(1.0).P",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Inward risk transfers"
+                        }
+                    ]
+                },
+                {
+                    "id": "Q",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CBS_BASIS(1.0).Q",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Net risk transfers (Inward-Outward)"
+                        }
+                    ]
+                },
+                {
+                    "id": "U",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CBS_BASIS(1.0).U",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Guarantor basis"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_COLLECTION",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_COLLECTION(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Collection"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "E",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_COLLECTION(1.0).E",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "End of period"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_CONF_STATUS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CONF_STATUS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Observation confidentiality code list"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "F",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CONF_STATUS(1.0).F",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Free"
+                        }
+                    ]
+                },
+                {
+                    "id": "N",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CONF_STATUS(1.0).N",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Not for publication, restricted for internal use only"
+                        }
+                    ]
+                },
+                {
+                    "id": "C",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CONF_STATUS(1.0).C",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Confidential statistical information"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_CURRENCY_3POS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CURRENCY_3POS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Currency"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "FC1",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CURRENCY_3POS(1.0).FC1",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Foreign currency"
+                        }
+                    ]
+                },
+                {
+                    "id": "LC1",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CURRENCY_3POS(1.0).LC1",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Local currency"
+                        }
+                    ]
+                },
+                {
+                    "id": "TO1",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CURRENCY_3POS(1.0).TO1",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "All currencies"
+                        }
+                    ]
+                },
+                {
+                    "id": "USD",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CURRENCY_3POS(1.0).USD",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "US dollar"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_DECIMALS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DECIMALS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Decimals codelist (BIS, ECB)"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "6",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_DECIMALS(1.0).6",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Six"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_FREQ",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Code list for Frequency (FREQ)"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "Q",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).Q",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Quarterly"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_ISSUE_MAT",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ISSUE_MAT(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Issue maturity code list"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "A",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ISSUE_MAT(1.0).A",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Total (all maturities)"
+                        }
+                    ]
+                },
+                {
+                    "id": "M",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ISSUE_MAT(1.0).M",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Over 1 year and up to and including 2 years"
+                        }
+                    ]
+                },
+                {
+                    "id": "N",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ISSUE_MAT(1.0).N",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Over 2 years"
+                        }
+                    ]
+                },
+                {
+                    "id": "U",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ISSUE_MAT(1.0).U",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Up to and including 1 year"
+                        }
+                    ]
+                },
+                {
+                    "id": "W",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ISSUE_MAT(1.0).W",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Over 1 year"
+                        }
+                    ]
+                },
+                {
+                    "id": "X",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ISSUE_MAT(1.0).X",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Unallocated by maturity"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_L_INSTR",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_INSTR(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Instrument"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "A",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_INSTR(1.0).A",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "All instruments"
+                        }
+                    ]
+                },
+                {
+                    "id": "D",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_INSTR(1.0).D",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Debt securities"
+                        }
+                    ]
+                },
+                {
+                    "id": "E",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_INSTR(1.0).E",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Risk-weighted assets"
+                        }
+                    ]
+                },
+                {
+                    "id": "G",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_INSTR(1.0).G",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Loans and deposits"
+                        }
+                    ]
+                },
+                {
+                    "id": "K",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_INSTR(1.0).K",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Other instruments excluding derivatives"
+                        }
+                    ]
+                },
+                {
+                    "id": "R",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_INSTR(1.0).R",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Tier 1 capital"
+                        }
+                    ]
+                },
+                {
+                    "id": "S",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_INSTR(1.0).S",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Tier 2 capital"
+                        }
+                    ]
+                },
+                {
+                    "id": "V",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_INSTR(1.0).V",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Derivatives"
+                        }
+                    ]
+                },
+                {
+                    "id": "N",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_INSTR(1.0).N",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Repo/Rev.Repo"
+                        }
+                    ]
+                },
+                {
+                    "id": "X",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_INSTR(1.0).X",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Equity instruments"
+                        }
+                    ]
+                },
+                {
+                    "id": "W",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_INSTR(1.0).W",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Allowances for credit losses"
+                        }
+                    ]
+                },
+                {
+                    "id": "O",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_INSTR(1.0).O",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Other instruments (excluding V, X and W) and unallocated"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_L_POSITION",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_POSITION(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Position type"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "B",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).B",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Local claims"
+                        }
+                    ]
+                },
+                {
+                    "id": "C",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).C",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Total claims"
+                        }
+                    ]
+                },
+                {
+                    "id": "D",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).D",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Cross-border claims"
+                        }
+                    ]
+                },
+                {
+                    "id": "F",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).F",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Total assets (financial and non-financial)"
+                        }
+                    ]
+                },
+                {
+                    "id": "I",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).I",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "International claims"
+                        }
+                    ]
+                },
+                {
+                    "id": "K",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).K",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Capital / equity"
+                        }
+                    ]
+                },
+                {
+                    "id": "L",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).L",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Total liabilities"
+                        }
+                    ]
+                },
+                {
+                    "id": "M",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).M",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Local liabilities"
+                        }
+                    ]
+                },
+                {
+                    "id": "W",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).W",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Guarantees extended"
+                        }
+                    ]
+                },
+                {
+                    "id": "X",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).X",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Credit commitments"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_L_SECTOR",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_SECTOR(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Counterparty Sector"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "A",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_SECTOR(1.0).A",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "All sectors"
+                        }
+                    ]
+                },
+                {
+                    "id": "B",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_SECTOR(1.0).B",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Banks, total"
+                        }
+                    ]
+                },
+                {
+                    "id": "C",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_SECTOR(1.0).C",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Non-financial corporations"
+                        }
+                    ]
+                },
+                {
+                    "id": "F",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_SECTOR(1.0).F",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Non-bank financial institutions"
+                        }
+                    ]
+                },
+                {
+                    "id": "H",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_SECTOR(1.0).H",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Households and NPISHs"
+                        }
+                    ]
+                },
+                {
+                    "id": "L",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_SECTOR(1.0).L",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Unallocated non-financial private sector"
+                        }
+                    ]
+                },
+                {
+                    "id": "O",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_SECTOR(1.0).O",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Official sector"
+                        }
+                    ]
+                },
+                {
+                    "id": "R",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_SECTOR(1.0).R",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Non-bank private sector"
+                        }
+                    ]
+                },
+                {
+                    "id": "S",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_SECTOR(1.0).S",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Non-financial private sector"
+                        }
+                    ]
+                },
+                {
+                    "id": "U",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_SECTOR(1.0).U",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Unallocated by sector"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_OBS_STATUS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OBS_STATUS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Observation status codelist (BIS, ECB, Eurostat-BoP)"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": false,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "A",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).A",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Normal value"
+                        }
+                    ]
+                },
+                {
+                    "id": "B",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).B",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Break"
+                        }
+                    ]
+                },
+                {
+                    "id": "E",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).E",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Estimated value"
+                        }
+                    ]
+                },
+                {
+                    "id": "F",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).F",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Forecast value"
+                        }
+                    ]
+                },
+                {
+                    "id": "H",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).H",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Missing value; holiday or weekend"
+                        }
+                    ]
+                },
+                {
+                    "id": "I",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).I",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Imputed value (CCSA definition)"
+                        }
+                    ]
+                },
+                {
+                    "id": "J",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).J",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Derogation"
+                        }
+                    ]
+                },
+                {
+                    "id": "L",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).L",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Missing value; data exist but were not collected"
+                        }
+                    ]
+                },
+                {
+                    "id": "M",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).M",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Missing value; data cannot exist"
+                        }
+                    ]
+                },
+                {
+                    "id": "P",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).P",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Provisional value"
+                        }
+                    ]
+                },
+                {
+                    "id": "Q",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).Q",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Missing value; suppressed"
+                        }
+                    ]
+                },
+                {
+                    "id": "S",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).S",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Strike"
+                        }
+                    ]
+                },
+                {
+                    "id": "N",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).N",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Non significant"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_ORG_VISIBILITY",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ORG_VISIBILITY(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Visibility"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": false,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "A",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ORG_VISIBILITY(1.0).A",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CBs, ESRB and IMF"
+                        }
+                    ]
+                },
+                {
+                    "id": "B",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ORG_VISIBILITY(1.0).B",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CBs and ESRB"
+                        }
+                    ]
+                },
+                {
+                    "id": "C",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ORG_VISIBILITY(1.0).C",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CBs and IMF"
+                        }
+                    ]
+                },
+                {
+                    "id": "D",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ORG_VISIBILITY(1.0).D",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CBs only"
+                        }
+                    ]
+                },
+                {
+                    "id": "E",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ORG_VISIBILITY(1.0).E",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Public"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_STOCK_FLOW",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_STOCK_FLOW(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Stock, flow"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "S",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_STOCK_FLOW(1.0).S",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Amounts outstanding / Stocks"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_TIME_FORMAT",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_TIME_FORMAT(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Possible formats for representation of dates, times or dateranges"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": false,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "102",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).102",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CCYYMMDD"
+                        }
+                    ]
+                },
+                {
+                    "id": "203",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).203",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CCYYMMDDhhmm"
+                        }
+                    ]
+                },
+                {
+                    "id": "602",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).602",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CCYY"
+                        }
+                    ]
+                },
+                {
+                    "id": "604",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).604",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CCYYS"
+                        }
+                    ]
+                },
+                {
+                    "id": "608",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).608",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CCYYQ"
+                        }
+                    ]
+                },
+                {
+                    "id": "610",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).610",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CCYYMM"
+                        }
+                    ]
+                },
+                {
+                    "id": "616",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).616",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CCYYWW"
+                        }
+                    ]
+                },
+                {
+                    "id": "702",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).702",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CCYYCCYY"
+                        }
+                    ]
+                },
+                {
+                    "id": "704",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).704",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CCYYSCCYYS"
+                        }
+                    ]
+                },
+                {
+                    "id": "708",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).708",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CCYYQCCYYQ"
+                        }
+                    ]
+                },
+                {
+                    "id": "710",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).710",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CCYYMMCCYYMM"
+                        }
+                    ]
+                },
+                {
+                    "id": "711",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).711",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CCYYMMDDCCYYMMDD"
+                        }
+                    ]
+                },
+                {
+                    "id": "716",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).716",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CCYYWWCCYYWW"
+                        }
+                    ]
+                },
+                {
+                    "id": "P1D",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).P1D",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Daily (or Business)"
+                        }
+                    ]
+                },
+                {
+                    "id": "P1M",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).P1M",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Monthly"
+                        }
+                    ]
+                },
+                {
+                    "id": "P1Y",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).P1Y",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Annual"
+                        }
+                    ]
+                },
+                {
+                    "id": "P3M",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).P3M",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Quarterly"
+                        }
+                    ]
+                },
+                {
+                    "id": "P6M",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).P6M",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Half-yearly, semester"
+                        }
+                    ]
+                },
+                {
+                    "id": "P7D",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_TIME_FORMAT(1.0).P7D",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Weekly"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_UNIT_MULT",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_UNIT_MULT(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Unit Multiplier"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "6",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_UNIT_MULT(1.0).6",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Millions"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "ConceptScheme": [
+        {
+            "id": "STANDALONE_CONCEPT_SCHEME",
+            "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS:STANDALONE_CONCEPT_SCHEME(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Default Scheme"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "TIME_FORMAT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_FORMAT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Time Format"
+                        }
+                    ]
+                },
+                {
+                    "id": "AVAILABILITY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).AVAILABILITY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Availability"
+                        }
+                    ]
+                },
+                {
+                    "id": "CBS_BANK_TYPE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BANK_TYPE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CBS bank type"
+                        }
+                    ]
+                },
+                {
+                    "id": "CBS_BASIS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BASIS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CBS reporting basis"
+                        }
+                    ]
+                },
+                {
+                    "id": "COLLECTION",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).COLLECTION",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Collection Indicator"
+                        }
+                    ]
+                },
+                {
+                    "id": "CURR_TYPE_BOOK",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CURR_TYPE_BOOK",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Currency type of booking location"
+                        }
+                    ]
+                },
+                {
+                    "id": "DECIMALS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DECIMALS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Decimals"
+                        }
+                    ],
+                    "representation": {
+                        "textFormat": {
+                            "textType": "BigInteger",
+                            "minLength": 1,
+                            "maxLength": 2
+                        },
+                        "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DECIMALS(1.0)"
+                    }
+                },
+                {
+                    "id": "FREQ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).FREQ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Frequency"
+                        }
+                    ]
+                },
+                {
+                    "id": "L_CP_COUNTRY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_COUNTRY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Counterparty country"
+                        }
+                    ]
+                },
+                {
+                    "id": "L_CP_SECTOR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_SECTOR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Counterparty sector"
+                        }
+                    ]
+                },
+                {
+                    "id": "L_INSTR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_INSTR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Type of instruments"
+                        }
+                    ]
+                },
+                {
+                    "id": "L_MEASURE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_MEASURE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Measure"
+                        }
+                    ]
+                },
+                {
+                    "id": "L_POSITION",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_POSITION",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Balance sheet position"
+                        }
+                    ]
+                },
+                {
+                    "id": "L_REP_CTY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_REP_CTY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Reporting country"
+                        }
+                    ]
+                },
+                {
+                    "id": "OBS_CONF",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_CONF",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Observation Confidentiality"
+                        }
+                    ]
+                },
+                {
+                    "id": "OBS_PRE_BREAK",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_PRE_BREAK",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Pre-Break Observation"
+                        }
+                    ]
+                },
+                {
+                    "id": "OBS_STATUS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_STATUS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Observation Status"
+                        }
+                    ]
+                },
+                {
+                    "id": "OBS_VALUE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_VALUE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Observation Value"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Description for a measure"
+                        }
+                    ]
+                },
+                {
+                    "id": "ORG_VISIBILITY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).ORG_VISIBILITY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Organisation visibility"
+                        }
+                    ]
+                },
+                {
+                    "id": "REM_MATURITY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).REM_MATURITY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Remaining maturity"
+                        }
+                    ]
+                },
+                {
+                    "id": "TIME_PERIOD",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_PERIOD",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Time period or range"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Description for a dimension"
+                        }
+                    ]
+                },
+                {
+                    "id": "TITLE_GRP",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TITLE_GRP",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Title"
+                        }
+                    ]
+                },
+                {
+                    "id": "UNIT_MEASURE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MEASURE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Unit of measure"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Description for an attribute"
+                        }
+                    ]
+                },
+                {
+                    "id": "UNIT_MULT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MULT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Unit Multiplier"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "DataStructure": [
+        {
+            "id": "BIS_CBS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)",
+            "links": [
+                {
+                    "rel": "metadata",
+                    "href": "https://mms-med-fmr-dev.apps.ocp-dev.opz.bisinfo.org/sdmx/v2/metadata/metadataset/BIS.MEDIT/STI_BIS_CBS/1.0",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS.MEDIT:STI_BIS_CBS(1.0)"
+                }
+            ],
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Consolidated Banking Statistics"
+                }
+            ],
+            "descriptions": [
+                {
+                    "locale": "en",
+                    "value": "This dataflow is associated to the BIS_CBS DSD. It implements the data requirement laid out in the July 2019 IBS Reporting Guidelines | PDF version: BIS_CBS_V2020.02.19"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "dimensionList": {
+                "dimensions": [
+                    {
+                        "id": "FREQ",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).FREQ",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).FREQ"
+                    },
+                    {
+                        "id": "L_MEASURE",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_MEASURE",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_STOCK_FLOW(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_MEASURE"
+                    },
+                    {
+                        "id": "L_REP_CTY",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_REP_CTY",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 2,
+                                "maxLength": 2
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_REP_CTY"
+                    },
+                    {
+                        "id": "CBS_BANK_TYPE",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).CBS_BANK_TYPE",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 2,
+                                "maxLength": 2
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BANK_TYPE"
+                    },
+                    {
+                        "id": "CBS_BASIS",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).CBS_BASIS",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CBS_BASIS(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BASIS"
+                    },
+                    {
+                        "id": "L_POSITION",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_POSITION",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_POSITION(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_POSITION"
+                    },
+                    {
+                        "id": "L_INSTR",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_INSTR",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_INSTR(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_INSTR"
+                    },
+                    {
+                        "id": "REM_MATURITY",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).REM_MATURITY",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ISSUE_MAT(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).REM_MATURITY"
+                    },
+                    {
+                        "id": "CURR_TYPE_BOOK",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).CURR_TYPE_BOOK",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 3,
+                                "maxLength": 3
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CURRENCY_3POS(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CURR_TYPE_BOOK"
+                    },
+                    {
+                        "id": "L_CP_SECTOR",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_CP_SECTOR",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_SECTOR(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_SECTOR"
+                    },
+                    {
+                        "id": "L_CP_COUNTRY",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_CP_COUNTRY",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 2,
+                                "maxLength": 2
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_COUNTRY"
+                    },
+                    {
+                        "id": "TIME_PERIOD",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=BIS:BIS_CBS(1.0).TIME_PERIOD",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "ObservationalTimePeriod"
+                            }
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_PERIOD",
+                        "isTimeDimension": true
+                    }
+                ]
+            },
+            "attributeList": {
+                "attributes": [
+                    {
+                        "id": "TIME_FORMAT",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).TIME_FORMAT",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 3,
+                                "maxLength": 3
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_TIME_FORMAT(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_FORMAT",
+                        "mandatory": true,
+                        "attachmentLevel": "DIMENSION_GROUP",
+                        "dimensionReferences": [
+                            "FREQ",
+                            "L_MEASURE",
+                            "L_REP_CTY",
+                            "CBS_BANK_TYPE",
+                            "CBS_BASIS",
+                            "L_POSITION",
+                            "L_INSTR",
+                            "REM_MATURITY",
+                            "CURR_TYPE_BOOK",
+                            "L_CP_SECTOR",
+                            "L_CP_COUNTRY"
+                        ]
+                    },
+                    {
+                        "id": "AVAILABILITY",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).AVAILABILITY",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CL_AVAILABILITY(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).AVAILABILITY",
+                        "mandatory": true,
+                        "attachmentLevel": "GROUP",
+                        "attachmentGroup": "Sibling"
+                    },
+                    {
+                        "id": "COLLECTION",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).COLLECTION",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_COLLECTION(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).COLLECTION",
+                        "mandatory": true,
+                        "attachmentLevel": "DIMENSION_GROUP",
+                        "dimensionReferences": [
+                            "FREQ",
+                            "L_MEASURE",
+                            "L_REP_CTY",
+                            "CBS_BANK_TYPE",
+                            "CBS_BASIS",
+                            "L_POSITION",
+                            "L_INSTR",
+                            "REM_MATURITY",
+                            "CURR_TYPE_BOOK",
+                            "L_CP_SECTOR",
+                            "L_CP_COUNTRY"
+                        ]
+                    },
+                    {
+                        "id": "DECIMALS",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).DECIMALS",
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DECIMALS",
+                        "mandatory": true,
+                        "attachmentLevel": "DATA_SET"
+                    },
+                    {
+                        "id": "ORG_VISIBILITY",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).ORG_VISIBILITY",
+                        "representation": {
+                            "minOccurs": 1,
+                            "maxOccurs": 10,
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ORG_VISIBILITY(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).ORG_VISIBILITY",
+                        "mandatory": false,
+                        "attachmentLevel": "DIMENSION_GROUP",
+                        "dimensionReferences": [
+                            "FREQ",
+                            "L_MEASURE",
+                            "L_REP_CTY",
+                            "CBS_BANK_TYPE",
+                            "CBS_BASIS",
+                            "L_POSITION",
+                            "L_INSTR",
+                            "REM_MATURITY",
+                            "CURR_TYPE_BOOK",
+                            "L_CP_SECTOR",
+                            "L_CP_COUNTRY"
+                        ]
+                    },
+                    {
+                        "id": "TITLE_GRP",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).TITLE_GRP",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 200
+                            }
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TITLE_GRP",
+                        "mandatory": false,
+                        "attachmentLevel": "GROUP",
+                        "attachmentGroup": "Sibling"
+                    },
+                    {
+                        "id": "UNIT_MEASURE",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).UNIT_MEASURE",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 3,
+                                "maxLength": 3
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CURRENCY_3POS(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MEASURE",
+                        "mandatory": true,
+                        "attachmentLevel": "DATA_SET"
+                    },
+                    {
+                        "id": "UNIT_MULT",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).UNIT_MULT",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 2
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_UNIT_MULT(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MULT",
+                        "mandatory": true,
+                        "attachmentLevel": "DATA_SET"
+                    }
+                ]
+            },
+            "measures": [],
+            "groups": [
+                {
+                    "id": "Sibling",
+                    "dimensionReferences": [
+                        "L_MEASURE",
+                        "L_REP_CTY",
+                        "CBS_BANK_TYPE",
+                        "CBS_BASIS",
+                        "L_POSITION",
+                        "L_INSTR",
+                        "REM_MATURITY",
+                        "CURR_TYPE_BOOK",
+                        "L_CP_SECTOR",
+                        "L_CP_COUNTRY"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DataConstraint": [
+        {
+            "id": "CBS_CONSTRAINTS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS.CBS:CBS_CONSTRAINTS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Constraints for the CBS dataflow"
+                }
+            ],
+            "descriptions": [
+                {
+                    "locale": "en",
+                    "value": "This dataflow is associated to the BIS_CBS DSD. It implements the data requirement laid out in the July 2019 IBS Reporting Guidelines | PDF version: BIS_CBS_V2020.06.01"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "startDate": 978307200000,
+            "definingDataPresent": false,
+            "type": "CubeRegionConstraint",
+            "attachments": [
+                "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)"
+            ],
+            "includeCube": {
+                "FREQ": {
+                    "removePrefix": false,
+                    "values": [
+                        "Q"
+                    ],
+                    "cascade": []
+                },
+                "L_REP_CTY": {
+                    "removePrefix": false,
+                    "values": [
+                        "AT",
+                        "AU",
+                        "BE",
+                        "BR",
+                        "CA",
+                        "CH",
+                        "CL",
+                        "DE",
+                        "DK",
+                        "ES",
+                        "FI",
+                        "FR",
+                        "GB",
+                        "GR",
+                        "HK",
+                        "IE",
+                        "IN",
+                        "IT",
+                        "JP",
+                        "KR",
+                        "LU",
+                        "MX",
+                        "NL",
+                        "NO",
+                        "PA",
+                        "PT",
+                        "SE",
+                        "SG",
+                        "TH",
+                        "TR",
+                        "TW",
+                        "US"
+                    ],
+                    "cascade": []
+                },
+                "CBS_BANK_TYPE": {
+                    "removePrefix": false,
+                    "values": [
+                        "4C",
+                        "4D",
+                        "4E",
+                        "4M",
+                        "AT",
+                        "AU",
+                        "BE",
+                        "BR",
+                        "CA",
+                        "CH",
+                        "CL",
+                        "DE",
+                        "DK",
+                        "ES",
+                        "FI",
+                        "FR",
+                        "GB",
+                        "GR",
+                        "HK",
+                        "IE",
+                        "IN",
+                        "IT",
+                        "JP",
+                        "KR",
+                        "LU",
+                        "MX",
+                        "NL",
+                        "NO",
+                        "PA",
+                        "PT",
+                        "SE",
+                        "SG",
+                        "TR",
+                        "TW",
+                        "US"
+                    ],
+                    "cascade": []
+                },
+                "CBS_BASIS": {
+                    "removePrefix": false,
+                    "values": [
+                        "F",
+                        "O",
+                        "P",
+                        "Q",
+                        "U"
+                    ],
+                    "cascade": []
+                },
+                "L_POSITION": {
+                    "removePrefix": false,
+                    "values": [
+                        "B",
+                        "C",
+                        "D",
+                        "F",
+                        "I",
+                        "K",
+                        "L",
+                        "M",
+                        "W",
+                        "X"
+                    ],
+                    "cascade": []
+                },
+                "L_INSTR": {
+                    "removePrefix": false,
+                    "values": [
+                        "A",
+                        "D",
+                        "E",
+                        "G",
+                        "K",
+                        "N",
+                        "O",
+                        "R",
+                        "S",
+                        "V",
+                        "W",
+                        "X"
+                    ],
+                    "cascade": []
+                },
+                "REM_MATURITY": {
+                    "removePrefix": false,
+                    "values": [
+                        "A",
+                        "M",
+                        "N",
+                        "U",
+                        "W",
+                        "X"
+                    ],
+                    "cascade": []
+                },
+                "CURR_TYPE_BOOK": {
+                    "removePrefix": false,
+                    "values": [
+                        "FC1",
+                        "LC1",
+                        "TO1"
+                    ],
+                    "cascade": []
+                },
+                "L_CP_SECTOR": {
+                    "removePrefix": false,
+                    "values": [
+                        "A",
+                        "B",
+                        "C",
+                        "F",
+                        "H",
+                        "L",
+                        "O",
+                        "R",
+                        "S",
+                        "U"
+                    ],
+                    "cascade": []
+                },
+                "L_CP_COUNTRY": {
+                    "removePrefix": false,
+                    "values": [
+                        "1C",
+                        "1N",
+                        "1W",
+                        "1Z",
+                        "2B",
+                        "2C",
+                        "2D",
+                        "2H",
+                        "2N",
+                        "2O",
+                        "2R",
+                        "2S",
+                        "2T",
+                        "2U",
+                        "2W",
+                        "3C",
+                        "3T",
+                        "4T",
+                        "4U",
+                        "4W",
+                        "4Y",
+                        "5C",
+                        "5J",
+                        "5K",
+                        "5M",
+                        "5R",
+                        "6T",
+                        "AD",
+                        "AE",
+                        "AF",
+                        "AG",
+                        "AI",
+                        "AL",
+                        "AM",
+                        "AN",
+                        "AO",
+                        "AR",
+                        "AT",
+                        "AU",
+                        "AW",
+                        "AZ",
+                        "BA",
+                        "BB",
+                        "BD",
+                        "BE",
+                        "BF",
+                        "BG",
+                        "BH",
+                        "BI",
+                        "BJ",
+                        "BM",
+                        "BN",
+                        "BO",
+                        "BQ",
+                        "BR",
+                        "BS",
+                        "BT",
+                        "BW",
+                        "BY",
+                        "BZ",
+                        "CA",
+                        "CD",
+                        "CF",
+                        "CG",
+                        "CH",
+                        "CI",
+                        "CL",
+                        "CM",
+                        "CN",
+                        "CO",
+                        "CR",
+                        "CS",
+                        "CU",
+                        "CV",
+                        "CW",
+                        "CY",
+                        "CZ",
+                        "DD",
+                        "DE",
+                        "DJ",
+                        "DK",
+                        "DM",
+                        "DO",
+                        "DZ",
+                        "EC",
+                        "EE",
+                        "EG",
+                        "ER",
+                        "ES",
+                        "ET",
+                        "FI",
+                        "FJ",
+                        "FK",
+                        "FM",
+                        "FO",
+                        "FR",
+                        "GA",
+                        "GB",
+                        "GD",
+                        "GE",
+                        "GG",
+                        "GH",
+                        "GI",
+                        "GL",
+                        "GM",
+                        "GN",
+                        "GQ",
+                        "GR",
+                        "GT",
+                        "GW",
+                        "GY",
+                        "HK",
+                        "HN",
+                        "HR",
+                        "HT",
+                        "HU",
+                        "ID",
+                        "IE",
+                        "IL",
+                        "IM",
+                        "IN",
+                        "IQ",
+                        "IR",
+                        "IS",
+                        "IT",
+                        "JE",
+                        "JM",
+                        "JO",
+                        "JP",
+                        "KE",
+                        "KG",
+                        "KH",
+                        "KI",
+                        "KM",
+                        "KN",
+                        "KP",
+                        "KR",
+                        "KW",
+                        "KY",
+                        "KZ",
+                        "LA",
+                        "LB",
+                        "LC",
+                        "LI",
+                        "LK",
+                        "LR",
+                        "LS",
+                        "LT",
+                        "LU",
+                        "LV",
+                        "LY",
+                        "MA",
+                        "MD",
+                        "ME",
+                        "MG",
+                        "MH",
+                        "MK",
+                        "ML",
+                        "MM",
+                        "MN",
+                        "MO",
+                        "MR",
+                        "MS",
+                        "MT",
+                        "MU",
+                        "MV",
+                        "MW",
+                        "MX",
+                        "MY",
+                        "MZ",
+                        "NA",
+                        "NC",
+                        "NE",
+                        "NG",
+                        "NI",
+                        "NL",
+                        "NO",
+                        "NP",
+                        "NR",
+                        "NZ",
+                        "OM",
+                        "PA",
+                        "PE",
+                        "PF",
+                        "PG",
+                        "PH",
+                        "PK",
+                        "PL",
+                        "PS",
+                        "PT",
+                        "PW",
+                        "PY",
+                        "QA",
+                        "RO",
+                        "RS",
+                        "RU",
+                        "RW",
+                        "SA",
+                        "SB",
+                        "SC",
+                        "SD",
+                        "SE",
+                        "SG",
+                        "SI",
+                        "SK",
+                        "SL",
+                        "SM",
+                        "SN",
+                        "SO",
+                        "SR",
+                        "SS",
+                        "ST",
+                        "SU",
+                        "SV",
+                        "SX",
+                        "SY",
+                        "SZ",
+                        "TC",
+                        "TD",
+                        "TF",
+                        "TG",
+                        "TH",
+                        "TJ",
+                        "TL",
+                        "TM",
+                        "TN",
+                        "TO",
+                        "TR",
+                        "TT",
+                        "TV",
+                        "TW",
+                        "TZ",
+                        "UA",
+                        "UG",
+                        "US",
+                        "UY",
+                        "UZ",
+                        "VA",
+                        "VC",
+                        "VE",
+                        "VG",
+                        "VN",
+                        "VU",
+                        "WF",
+                        "WS",
+                        "YE",
+                        "YU",
+                        "ZA",
+                        "ZM",
+                        "ZW"
+                    ],
+                    "cascade": []
+                },
+                "L_MEASURE": {
+                    "removePrefix": false,
+                    "values": [
+                        "S"
+                    ],
+                    "cascade": []
+                },
+                "UNIT_MEASURE": {
+                    "removePrefix": false,
+                    "values": [
+                        "USD"
+                    ],
+                    "cascade": []
+                },
+                "COLLECTION": {
+                    "removePrefix": false,
+                    "values": [
+                        "E"
+                    ],
+                    "cascade": []
+                },
+                "DECIMALS": {
+                    "removePrefix": false,
+                    "values": [
+                        "6"
+                    ],
+                    "cascade": []
+                },
+                "UNIT_MULT": {
+                    "removePrefix": false,
+                    "values": [
+                        "6"
+                    ],
+                    "cascade": []
+                },
+                "OBS_CONF": {
+                    "removePrefix": false,
+                    "values": [
+                        "C",
+                        "F",
+                        "N"
+                    ],
+                    "cascade": []
+                }
+            }
+        }
+    ]
+}

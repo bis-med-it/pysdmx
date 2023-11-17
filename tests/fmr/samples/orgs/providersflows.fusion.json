@@ -1,0 +1,72 @@
+{
+    "DataProviderScheme": [
+        {
+            "id": "DATA_PROVIDERS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProviderScheme=BIS:DATA_PROVIDERS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "DATA_PROVIDERS"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": false,
+            "items": [
+                {
+                    "id": "TEST",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TEST",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "TEST"
+                        }
+                    ]
+                },
+                {
+                    "id": "TEST2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TEST2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "TEST2"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "ProvisionAgreement": [
+        {
+            "id": "PA1",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS:PA1(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "PA1"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TEST"
+        },
+        {
+            "id": "PA2",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS:PA2(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "PA2"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF2(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TEST"
+        }
+    ]
+}

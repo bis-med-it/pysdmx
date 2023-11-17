@@ -1,0 +1,68 @@
+{
+    "meta": {
+        "id": "IREF802441",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2023-08-15T06:17:28Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0"
+        }
+    },
+    "data": {
+        "valuelists": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "valuelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=TEST:CTYPES(1.0)"
+                    }
+                ],
+                "id": "CTYPES",
+                "name": "Contract Types",
+                "names": {
+                    "en": "Contract Types"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "isPartial": false,
+                "valueItems": [
+                    {
+                        "name": "Agricultural",
+                        "names": {
+                            "en": "Agricultural"
+                        },
+                        "id": "A"
+                    },
+                    {
+                        "name": "Interest Rate",
+                        "names": {
+                            "en": "Interest Rate"
+                        },
+                        "id": "B"
+                    },
+                    {
+                        "name": "Currency",
+                        "names": {
+                            "en": "Currency"
+                        },
+                        "id": "C"
+                    },
+                    {
+                        "name": "Energy",
+                        "names": {
+                            "en": "Energy"
+                        },
+                        "id": "E"
+                    }
+                ]
+            }
+        ]
+    }
+}

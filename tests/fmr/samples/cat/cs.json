@@ -1,0 +1,466 @@
+{
+    "meta": {
+        "id": "IREF324476",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2023-08-14T11:57:49Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0"
+        }
+    },
+    "data": {
+        "agencySchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "agencyscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)"
+                    }
+                ],
+                "id": "AGENCIES",
+                "name": "SDMX Agency Scheme",
+                "names": {
+                    "en": "SDMX Agency Scheme"
+                },
+                "version": "1.0",
+                "agencyID": "SDMX",
+                "isExternalReference": false,
+                "isFinal": false,
+                "isPartial": true,
+                "agencies": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "agency",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).SDMX"
+                            }
+                        ],
+                        "id": "SDMX",
+                        "name": "SDMX",
+                        "names": {
+                            "en": "SDMX"
+                        },
+                        "description": "SDMX is an initiative to foster standards for the exchange of statistical information. It is sponsored by the Bank for International Settlements (BIS), the European Central Bank (ECB), the Statistical Office of the European Union (Eurostat), the International Monetary Fund (IMF), the Organization for Economic Co-Operation and Development (OECD), the United Nations (UN) and the World Bank.",
+                        "descriptions": {
+                            "en": "SDMX is an initiative to foster standards for the exchange of statistical information. It is sponsored by the Bank for International Settlements (BIS), the European Central Bank (ECB), the Statistical Office of the European Union (Eurostat), the International Monetary Fund (IMF), the Organization for Economic Co-Operation and Development (OECD), the United Nations (UN) and the World Bank."
+                        },
+                        "contacts": [
+                            {
+                                "name": "SDMX Secretariat",
+                                "names": {
+                                    "en": "SDMX Secretariat"
+                                },
+                                "department": "SDMX Secretariat",
+                                "departments": {
+                                    "en": "SDMX Secretariat"
+                                },
+                                "role": "Single entry point for external inquiries",
+                                "roles": {
+                                    "en": "Single entry point for external inquiries"
+                                },
+                                "uris": [
+                                    "http://sdmx.org"
+                                ],
+                                "emails": [
+                                    "secretariat@sdmx.org"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "agency",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).TEST"
+                            }
+                        ],
+                        "id": "TEST",
+                        "name": "Test Agency",
+                        "names": {
+                            "en": "Test Agency"
+                        },
+                        "description": "Agency used for testing purposes (training)",
+                        "descriptions": {
+                            "en": "Agency used for testing purposes (training)"
+                        }
+                    }
+                ]
+            }
+        ],
+        "categorisations": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "categorisation",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Categorisation=TEST:06E00965-AB55-F0C3-5CA3-9D454F3BE88F(1.0)"
+                    }
+                ],
+                "id": "06E00965-AB55-F0C3-5CA3-9D454F3BE88F",
+                "name": "Category 'TEST:TEST_CS(1.0).TWO.TWO_KID' linking to Dataflow 'TEST:TEST_FACETS_FLOW(1.0)'",
+                "names": {
+                    "en": "Category 'TEST:TEST_CS(1.0).TWO.TWO_KID' linking to Dataflow 'TEST:TEST_FACETS_FLOW(1.0)'"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "source": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).TWO.TWO_KID",
+                "target": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_FACETS_FLOW(1.0)"
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "categorisation",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Categorisation=TEST:1388C858-F481-9D96-8907-6E45DA7D7210(1.0)"
+                    }
+                ],
+                "id": "1388C858-F481-9D96-8907-6E45DA7D7210",
+                "name": "Category 'TEST:TEST_CS(1.0).ONE' linking to Dataflow 'TEST:TEST_ARRAYS_DF_1(1.0)'",
+                "names": {
+                    "en": "Category 'TEST:TEST_CS(1.0).ONE' linking to Dataflow 'TEST:TEST_ARRAYS_DF_1(1.0)'"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "source": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE",
+                "target": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF_1(1.0)"
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "categorisation",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Categorisation=TEST:6577AEDD-9692-546C-DEF7-804E60A22B95(1.0)"
+                    }
+                ],
+                "id": "6577AEDD-9692-546C-DEF7-804E60A22B95",
+                "name": "Category 'TEST:TEST_CS(1.0).TWO.TWO_KID' linking to Dataflow 'TEST:TEST_ARRAYS_DF_3(1.0)'",
+                "names": {
+                    "en": "Category 'TEST:TEST_CS(1.0).TWO.TWO_KID' linking to Dataflow 'TEST:TEST_ARRAYS_DF_3(1.0)'"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "source": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).TWO.TWO_KID",
+                "target": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF_3(1.0)"
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "categorisation",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Categorisation=TEST:66035C69-A69B-1F14-1027-8EB57D666DA8(1.0)"
+                    }
+                ],
+                "id": "66035C69-A69B-1F14-1027-8EB57D666DA8",
+                "name": "Category 'TEST:TEST_CS(1.0).ONE' linking to Dataflow 'TEST:TEST_ARRAYS_DF(1.0)'",
+                "names": {
+                    "en": "Category 'TEST:TEST_CS(1.0).ONE' linking to Dataflow 'TEST:TEST_ARRAYS_DF(1.0)'"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "source": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE",
+                "target": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF(1.0)"
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "categorisation",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Categorisation=TEST:F70E4C5A-75A3-C506-3630-9761E91892EF(1.0)"
+                    }
+                ],
+                "id": "F70E4C5A-75A3-C506-3630-9761E91892EF",
+                "name": "Category 'TEST:TEST_CS(1.0).ONE' linking to Dataflow 'TEST:TEST_ARRAYS_DF_2(1.0)'",
+                "names": {
+                    "en": "Category 'TEST:TEST_CS(1.0).ONE' linking to Dataflow 'TEST:TEST_ARRAYS_DF_2(1.0)'"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "source": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE",
+                "target": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF_2(1.0)"
+            }
+        ],
+        "categorySchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "categoryscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.CategoryScheme=TEST:TEST_CATSCH(1.0)"
+                    }
+                ],
+                "id": "TEST_CS",
+                "name": "Test Category Scheme",
+                "names": {
+                    "en": "Test Category Scheme"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "isPartial": false,
+                "categories": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "category",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE"
+                            }
+                        ],
+                        "id": "ONE",
+                        "name": "One",
+                        "names": {
+                            "en": "One"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "category",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CATSCH(1.0).TWO"
+                            }
+                        ],
+                        "id": "TWO",
+                        "name": "Two",
+                        "names": {
+                            "en": "Two"
+                        },
+                        "categories": [
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "category",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).TWO.TWO_KID"
+                                    }
+                                ],
+                                "id": "TWO_KID",
+                                "name": "Two Kid",
+                                "names": {
+                                    "en": "Two Kid"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "category",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).THREE"
+                            }
+                        ],
+                        "id": "THREE",
+                        "name": "Three",
+                        "names": {
+                            "en": "Three"
+                        },
+                        "description": "Testing nested categories",
+                        "descriptions": {
+                            "en": "Testing nested categories"
+                        },
+                        "categories": [
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "category",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).THREE.THREE_KID"
+                                    }
+                                ],
+                                "id": "THREE_KID",
+                                "name": "Three Kid",
+                                "names": {
+                                    "en": "Three Kid"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "category",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).FOUR"
+                            }
+                        ],
+                        "id": "FOUR",
+                        "name": "Four",
+                        "names": {
+                            "en": "Four"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "category",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).FIVE"
+                            }
+                        ],
+                        "id": "FIVE",
+                        "name": "Five",
+                        "names": {
+                            "en": "Five"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "category",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).SIX"
+                            }
+                        ],
+                        "id": "SIX",
+                        "name": "Six",
+                        "names": {
+                            "en": "Six"
+                        }
+                    }
+                ]
+            }
+        ],
+        "dataflows": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "dataflow",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF(1.0)"
+                    },
+                    {
+                        "rel": "metadata",
+                        "href": "https://mms-med-fmr-dev.apps.ocp-dev.opz.bisinfo.org/sdmx/v2/metadata/metadataset/BIS.MDD/MED_DATA_CATALOG_TEST_ARRAYS_DF/1.0",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS.MDD:MED_DATA_CATALOG_TEST_ARRAYS_DF(1.0)"
+                    }
+                ],
+                "id": "TEST_ARRAYS_DF",
+                "name": "Testing arrays",
+                "names": {
+                    "en": "Testing arrays"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_ARRAYS_DSD(1.0)"
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "dataflow",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF_1(1.0)"
+                    }
+                ],
+                "id": "TEST_ARRAYS_DF_1",
+                "name": "Testing arrays",
+                "names": {
+                    "en": "Testing arrays"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_ARRAYS_DSD_1(1.0)"
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "dataflow",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF_2(1.0)"
+                    }
+                ],
+                "id": "TEST_ARRAYS_DF_2",
+                "name": "Testing arrays",
+                "names": {
+                    "en": "Testing arrays"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_ARRAYS_DSD_2(1.0)"
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "dataflow",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF_3(1.0)"
+                    }
+                ],
+                "id": "TEST_ARRAYS_DF_3",
+                "name": "Testing arrays",
+                "names": {
+                    "en": "Testing arrays"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_ARRAYS_DSD_3(1.0)"
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "dataflow",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_FACETS_FLOW(1.0)"
+                    }
+                ],
+                "id": "TEST_FACETS_FLOW",
+                "name": "Flow to test SDMX facets",
+                "names": {
+                    "en": "Flow to test SDMX facets"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_FACETS_DSD(1.0)"
+            }
+        ]
+    }
+}

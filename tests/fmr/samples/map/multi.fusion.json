@@ -1,0 +1,90 @@
+{
+    "StructureMap": [
+        {
+            "id": "FXS_2_MDD",
+            "urn": "urn:sdmx:org.sdmx.infomodel.structuremapping.StructureMap=BIS:FXS_2_MDD(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Map exchanges to MDD"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:EXCH1_SRC(1.0)",
+            "target": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:EXCH1_MDD(1.0)",
+            "componentMaps": [
+                {
+                    "sources": [
+                        "EXCHANGE_CODE"
+                    ],
+                    "targets": [
+                        "EXCHANGE_CODE"
+                    ]
+                },
+                {
+                    "representationMapRef": "urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=BIS:CONSOLIDATE_ADDRESS_FIELDS(1.0)",
+                    "sources": [
+                        "ADDRESS1",
+                        "ADDRESS2",
+                        "ADDRESS3",
+                        "ADDRESS4"
+                    ],
+                    "targets": [
+                        "ADDRESS"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RepresentationMap": [
+        {
+            "id": "CONSOLIDATE_ADDRESS_FIELDS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=BIS:CONSOLIDATE_ADDRESS_FIELDS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Consolidates many address fields to one, comma separated"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "sources": [
+                "String",
+                "String",
+                "String",
+                "String"
+            ],
+            "targets": [
+                "String"
+            ],
+            "mappedRelationships": [
+                {
+                    "source": [
+                        {
+                            "value": "(.*)",
+                            "regEx": true
+                        },
+                        {
+                            "value": "(.*)",
+                            "regEx": true
+                        },
+                        {
+                            "value": "(.*)",
+                            "regEx": true
+                        },
+                        {
+                            "value": "(.*)",
+                            "regEx": true
+                        }
+                    ],
+                    "target": [
+                        "\\1, \\2, \\3, \\4"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,45 @@
+# Ignore IDE artifacts
+**/.vscode/
+**/.idea/
+
+# Ignore virtual environment
+py2-env/
+py3-env/
+
+# Ignore jupyter checkpoints
+*/.ipynb_checkpoints/
+
+# Ignore compiled python files
+*.pyc
+
+# Ignore python cache files
+**/.pytest_cache/
+**/__pycache__/
+
+# Ignore application runtime artifacts
+**/raw_data
+**/text_data
+**/logs
+
+# Ignore output for test
+**/test-results.xml
+.mutmut-cache
+
+# Ignore output for coverage
+**/.coverage
+coverage.xml
+coverage-report.xml
+
+# Ignore Sphinx doc build result
+**/_build
+
+# Ignore tox related folders/files
+.tox/**
+
+# Ignore build intermediate objects
+*.egg-info/*
+
+# Build & QA reports
+qa/
+dist/
+.env
