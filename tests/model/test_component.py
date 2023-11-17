@@ -105,4 +105,7 @@ def test_tostr(fid, req, role, typ):
 
     s = str(f1)
 
-    assert s == f"id={fid}, required=True, role=D, dtype=String"
+    assert s == (
+        f"id={fid}, required=True, role=Role.DIMENSION, "
+        "dtype=DataType.STRING"
+    )

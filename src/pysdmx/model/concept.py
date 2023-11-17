@@ -158,7 +158,7 @@ class Concept(Struct, frozen=True, omit_defaults=True):
         for k in self.__annotations__.keys():
             v = self.__getattribute__(k)
             if v:
-                out.append(f"{k}={v}")
+                out.append(f"{k}={str(v)}")
         return ", ".join(out)
 
 

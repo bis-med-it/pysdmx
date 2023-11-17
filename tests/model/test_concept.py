@@ -67,4 +67,4 @@ def test_tostr(fid, typ):
 
     s = str(f1)
 
-    assert s == f"id={fid}, dtype=String"
+    assert s == f"id={fid}, dtype=DataType.STRING"
