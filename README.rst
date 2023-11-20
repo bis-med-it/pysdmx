@@ -11,7 +11,7 @@ Key features:
   representing a **simplified subset of the SDMX information model**,
   enabling a domain-driven development of SDMX processes with Python. These
   classes are serializable.
-- **Metadata in action**: ``pysdmx`` supports retrieving metadata from a SDMX
+- **Metadata in action**: ``pysdmx`` supports retrieving metadata from an SDMX
   Registry or any service compliant with the SDMX-REST 2.0.0 API. Use these
   metadata to power statistical processes.
 - **Data discovery and retrieval**: This functionality is under development.
