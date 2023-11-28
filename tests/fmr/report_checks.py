@@ -59,3 +59,27 @@ async def check_attributes(mock, fmr: AsyncRegistryClient, query, body):
             assert len(attr.attributes) == 0
         else:
             pytest.fail(f"Unexpected attribute: {attr.id}")
+
+
+def check_same_id_attrs(mock, fmr: RegistryClient, query, body):
+    """Attributes with the same ID are treated as sequence."""
+    mock.get(query).mock(
+        return_value=httpx.Response(
+            200,
+            content=body,
+        )
+    )
+
+    report = fmr.get_report("BIS.MEDIT", "DTI_OCC_SRC", "1.0")
+
+    assert len(report) == 2
+    for attr in report:
+        if attr.id == "DF_MANAGED":
+            assert isinstance(attr.value, bool)
+        else:
+            assert len(attr.value) == 2
+            for val in attr.value:
+                assert val in ["CL1", "CL2"]
+    same_ids = report["DF_DYNCL"]
+    assert len(same_ids.value) == 2
+    assert val in ["CL1", "CL2"]

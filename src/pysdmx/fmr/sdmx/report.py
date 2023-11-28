@@ -4,6 +4,7 @@ from typing import Sequence
 
 from msgspec import Struct
 
+from pysdmx.fmr.reader import _merge_attributes
 from pysdmx.model import MetadataReport
 
 
@@ -20,4 +21,6 @@ class JsonMetadataMessage(Struct, frozen=True):
 
     def to_model(self) -> MetadataReport:
         """Returns the requested metadata report."""
-        return self.data.metadataSets[0]
+        r = self.data.metadataSets[0]
+        attrs = _merge_attributes(r.attributes)
+        return MetadataReport(r.id, r.name, r.metadataflow, r.targets, attrs)
