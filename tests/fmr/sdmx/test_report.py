@@ -35,6 +35,21 @@ def body():
         return f.read()
 
 
+@pytest.fixture()
+def query2(fmr):
+    res = "metadata/metadataset/"
+    provider = "BIS.MEDIT"
+    id = "DTI_OCC_SRC"
+    version = "1.0"
+    return f"{fmr.api_endpoint}{res}{provider}/{id}/{version}"
+
+
+@pytest.fixture()
+def body2():
+    with open("tests/fmr/samples/refmeta/report_attrs.json", "rb") as f:
+        return f.read()
+
+
 def test_returns_report(respx_mock, fmr, query, body):
     """get_hierarchy() should return a metadata report."""
     checks.check_report(respx_mock, fmr, query, body)
@@ -44,3 +59,8 @@ def test_returns_report(respx_mock, fmr, query, body):
 async def test_attributes(respx_mock, async_fmr, query, body):
     """Report contains the expected attributes."""
     await checks.check_attributes(respx_mock, async_fmr, query, body)
+
+
+def test_same_id_attrs(respx_mock, fmr, query2, body2):
+    """Attributes with the same ID are treated as sequence."""
+    checks.check_same_id_attrs(respx_mock, fmr, query2, body2)

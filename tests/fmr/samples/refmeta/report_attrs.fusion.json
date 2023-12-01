@@ -1,0 +1,52 @@
+{
+    "meta": {
+        "id": "IREF389470",
+        "test": false,
+        "prepared": "2023-09-18T12:09:04Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "FusionRegistry"
+        },
+        "format": "fusionjson"
+    },
+    "data": {
+        "metadatasets": [
+            {
+                "id": "DTI_OCC_SRC",
+                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS.MEDIT:DTI_OCC_SRC(1.0)",
+                "names": [
+                    {
+                        "locale": "en",
+                        "value": "Technical metadata for BIS.XTD:OCC_SRC"
+                    }
+                ],
+                "agencyId": "BIS.MEDIT",
+                "version": "1.0",
+                "isFinal": false,
+                "metadataflow": "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=BIS.MEDIT:DTI(1.0)",
+                "targets": [
+                    "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.XTD:OCC_SRC(1.0)"
+                ],
+                "attributes": [
+                    {
+                        "id": "DF_DYNCL",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0).DF_DYNCL",
+                        "value": "CL1"
+                    },
+                    {
+                        "id": "DF_DYNCL",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0).DF_DYNCL",
+                        "value": "CL2"
+                    },
+                    {
+                        "id": "DF_MANAGED",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0).DF_MANAGED",
+                        "value": true
+                    }
+                ]
+            }
+        ]
+    }
+}
