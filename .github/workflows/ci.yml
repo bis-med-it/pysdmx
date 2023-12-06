@@ -38,8 +38,3 @@ jobs:
       run: poetry run pytest --cov=pysdmx --cov-report=xml:qa/coverage.xml --cov-branch --junitxml=qa/tests-results-${{ matrix.python-version }}.xml 
     - name: Check coverage
       run: poetry run coverage report --fail-under=100
-    - name: Publish test results
-      uses: actions/upload-artifact@v3
-      with:
-        name: pytest-results-${{ matrix.python-version }}
-        path: qa/test-results-${{ matrix.python-version }}.xml
