@@ -1,3 +1,6 @@
+.. image:: https://img.shields.io/pypi/v/pysdmx.svg
+   :target: https://pypi.org/project/pysdmx/
+
 ``pysdmx`` in a nutshell
 ========================
 
@@ -22,4 +25,4 @@ Key features:
 installed using options such as pip, pipx, poetry, etc.
 
 For more details, check the `project documentation 
-<https://bis-med-it.github.io/pysdmx>`_.
+<https://py.sdmx.io>`_.
