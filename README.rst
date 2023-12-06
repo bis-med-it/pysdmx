@@ -1,5 +1,5 @@
-.. image:: https://github.com/bis-med-it/pysdmx/workflows/Build/badge.svg
-   :target: https://github.com/bis-med-it/pysdmx/actions?workflow=Build
+.. image:: https://img.shields.io/pypi/v/pysdmx.svg
+   :target: https://pypi.org/project/pysdmx/
 
 ``pysdmx`` in a nutshell
 ========================
