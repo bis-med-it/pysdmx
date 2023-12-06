@@ -1,3 +1,6 @@
+.. image:: https://github.com/bis-med-it/pysdmx/workflows/Build/badge.svg
+   :target: https://github.com/bis-med-it/pysdmx/actions?workflow=Build
+
 ``pysdmx`` in a nutshell
 ========================
 
