@@ -7,7 +7,7 @@ import pytest
 from pysdmx.fmr import AsyncRegistryClient, RegistryClient
 from pysdmx.model.map import (
     ComponentMapper,
-    FixedDatePatternMap,
+    DatePatternMap,
     ImplicitMapper,
     MappingDefinition,
     ValueSetter,
@@ -103,7 +103,7 @@ def __check_component(m: ComponentMapper):
             assert v.valid_to is None
 
 
-def __check_date(m: FixedDatePatternMap):
+def __check_date(m: DatePatternMap):
     assert m.source == "ACTIVITY_DATE"
     assert m.target == "TIME_PERIOD"
     assert m.frequency == "M"

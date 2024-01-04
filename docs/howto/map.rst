@@ -209,7 +209,7 @@ property:
     for m in rm.date_maps:
         print(m)
         # Output example:
-        # FixedDatePatternMap(source='ACTIVITY_DATE', target='TIME_PERIOD', pattern='MM/dd/yyyy', frequency='M')
+        # PatternMap(source='ACTIVITY_DATE', target='TIME_PERIOD', pattern='MM/dd/yyyy', frequency='M')
 
 Here, we need to parse the date using the supplied pattern, ``MM/dd/yyyy``,
 i.e., dates like ``12/25/2013``. Once this is done, we need to format them to

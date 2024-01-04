@@ -20,7 +20,7 @@ from pysdmx.model.dataflow import (
 )
 from pysdmx.model.map import (
     ComponentMapper,
-    FixedDatePatternMap,
+    DatePatternMap,
     ImplicitMapper,
     MappingDefinition,
     MultipleComponentMapper,
@@ -83,7 +83,7 @@ __all__ = [
     "DataflowInfo",
     "DataflowRef",
     "DataType",
-    "FixedDatePatternMap",
+    "DatePatternMap",
     "Facets",
     "HierarchicalCode",
     "Hierarchy",

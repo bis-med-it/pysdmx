@@ -8,7 +8,7 @@ from msgspec import Struct
 
 from pysdmx.model import (
     ComponentMapper,
-    FixedDatePatternMap,
+    DatePatternMap,
     ImplicitMapper,
     MappingDefinition,
     MultipleComponentMapper,
@@ -119,9 +119,9 @@ class FusionTimePatternMap(Struct, frozen=True):
     freqId: str
     pattern: str
 
-    def to_model(self) -> FixedDatePatternMap:
+    def to_model(self) -> DatePatternMap:
         """Returns the requested date mapper."""
-        return FixedDatePatternMap(
+        return DatePatternMap(
             self.source,
             self.target,
             self.pattern,

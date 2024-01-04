@@ -7,7 +7,7 @@ from typing import Any, Literal, Optional, Sequence, Union
 from msgspec import Struct
 
 
-class FixedDatePatternMap(Struct, frozen=True, omit_defaults=True):
+class DatePatternMap(Struct, frozen=True, omit_defaults=True):
     """A mapping based on a date pattern.
 
     Examples:
@@ -17,7 +17,7 @@ class FixedDatePatternMap(Struct, frozen=True, omit_defaults=True):
         periods for monthly data (e.g. `2023-09`). This can be expressed with
         the following mapping:
 
-            >>> FixedDatePatternMap("DATE", "TIME_PERIOD", "MMM yy", "M")
+            >>> DatePatternMap("DATE", "TIME_PERIOD", "MMM yy", "M")
 
 
     Attributes:
@@ -235,7 +235,7 @@ class MappingDefinition(Struct, frozen=True, omit_defaults=True):
     """
 
     component_maps: Sequence[ComponentMapper] = ()
-    date_maps: Sequence[FixedDatePatternMap] = ()
+    date_maps: Sequence[DatePatternMap] = ()
     fixed_value_maps: Sequence[ValueSetter] = ()
     implicit_maps: Sequence[ImplicitMapper] = ()
     multiple_component_maps: Sequence[MultipleComponentMapper] = ()

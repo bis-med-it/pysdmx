@@ -1,6 +1,6 @@
 import pytest
 
-from pysdmx.model import FixedDatePatternMap
+from pysdmx.model import DatePatternMap
 
 
 @pytest.fixture()
@@ -24,7 +24,7 @@ def freq():
 
 
 def test_full_instantiation(source, target, pattern, freq):
-    m = FixedDatePatternMap(source, target, pattern, freq)
+    m = DatePatternMap(source, target, pattern, freq)
 
     assert m.source == source
     assert m.target == target
@@ -33,20 +33,20 @@ def test_full_instantiation(source, target, pattern, freq):
 
 
 def test_immutable(source, target, pattern, freq):
-    m = FixedDatePatternMap(source, target, pattern, freq)
+    m = DatePatternMap(source, target, pattern, freq)
     with pytest.raises(AttributeError):
         m.frequency = "A"
 
 
 def test_equal(source, target, pattern, freq):
-    m1 = FixedDatePatternMap(source, target, pattern, freq)
-    m2 = FixedDatePatternMap(source, target, pattern, freq)
+    m1 = DatePatternMap(source, target, pattern, freq)
+    m2 = DatePatternMap(source, target, pattern, freq)
 
     assert m1 == m2
 
 
 def test_not_equal(source, target, pattern, freq):
-    m1 = FixedDatePatternMap(source, target, pattern, freq)
-    m2 = FixedDatePatternMap(source + "2", target, pattern, freq)
+    m1 = DatePatternMap(source, target, pattern, freq)
+    m2 = DatePatternMap(source + "2", target, pattern, freq)
 
     assert m1 != m2
