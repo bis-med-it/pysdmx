@@ -23,13 +23,47 @@ def freq():
     return "M"
 
 
-def test_full_instantiation(source, target, pattern, freq):
+@pytest.fixture()
+def pattern_type():
+    return "variable"
+
+
+@pytest.fixture()
+def map_id():
+    return "my_id"
+
+
+@pytest.fixture()
+def locale():
+    return "es"
+
+
+def test_default_instantiation(source, target, pattern, freq):
     m = DatePatternMap(source, target, pattern, freq)
 
     assert m.source == source
     assert m.target == target
     assert m.pattern == pattern
     assert m.frequency == freq
+    assert m.pattern_type == "fixed"
+    assert m.locale == "en"
+    assert m.id is None
+
+
+def test_full_instantiation(
+    source, target, pattern, freq, map_id, locale, pattern_type
+):
+    m = DatePatternMap(
+        source, target, pattern, freq, map_id, locale, pattern_type
+    )
+
+    assert m.source == source
+    assert m.target == target
+    assert m.pattern == pattern
+    assert m.frequency == freq
+    assert m.pattern_type == pattern_type
+    assert m.id == map_id
+    assert m.locale == locale
 
 
 def test_immutable(source, target, pattern, freq):
