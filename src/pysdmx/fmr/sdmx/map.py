@@ -8,7 +8,7 @@ from msgspec import Struct
 
 from pysdmx.model import (
     ComponentMapper,
-    DateMapper,
+    FixedDatePatternMap,
     ImplicitMapper,
     MappingDefinition,
     MultipleComponentMapper,
@@ -133,9 +133,9 @@ class JsonDatePatternMap(Struct, frozen=True):
     mappedComponents: Sequence[JsonMappedPair]
     targetFrequencyID: str
 
-    def to_model(self) -> DateMapper:
+    def to_model(self) -> FixedDatePatternMap:
         """Returns the requested date mapper."""
-        return DateMapper(
+        return FixedDatePatternMap(
             self.mappedComponents[0].source,
             self.mappedComponents[0].target,
             self.sourcePattern,
