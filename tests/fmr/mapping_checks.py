@@ -33,7 +33,7 @@ def check_mapping(mock, fmr: RegistryClient, query, body):
         + len(mapping.implicit_maps)
         + len(mapping.multiple_component_maps)
     )
-    assert count == 9
+    assert count == 10
 
 
 def check_multi_mapping(mock, fmr: RegistryClient, query, body):
@@ -72,7 +72,7 @@ async def check_mapping_rules(mock, fmr: AsyncRegistryClient, query, body):
     mapping = await fmr.get_mapping("BIS", "SRC_2_MDD", "1.0")
 
     assert len(mapping.component_maps) == 1
-    assert len(mapping.date_maps) == 1
+    assert len(mapping.date_maps) == 2
     assert len(mapping.fixed_value_maps) == 3
     assert len(mapping.implicit_maps) == 4
     assert len(mapping.multiple_component_maps) == 0
@@ -104,10 +104,21 @@ def __check_component(m: ComponentMapper):
 
 
 def __check_date(m: DatePatternMap):
-    assert m.source == "ACTIVITY_DATE"
-    assert m.target == "TIME_PERIOD"
-    assert m.frequency == "M"
-    assert m.pattern == "MM/dd/yyyy"
+    if m.id == "my_id":
+        assert m.source == "ACTIVITY_DATE"
+        assert m.target == "TIME_PERIOD"
+        assert m.frequency == "M"
+        assert m.pattern == "MM/dd/yyyy"
+        assert m.pattern_type == "fixed"
+        assert m.locale == "en"
+    else:
+        assert m.source == "VOLUME_MONTH"
+        assert m.target == "TIME_PERIOD"
+        assert m.frequency == "CONTRACT_CODE"
+        assert m.pattern == "ddMMyy"
+        assert m.pattern_type == "variable"
+        assert m.locale == "es"
+        assert m.id == "your_id"
 
 
 def __check_implicit(m: ImplicitMapper):

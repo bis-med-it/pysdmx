@@ -131,15 +131,27 @@ class JsonDatePatternMap(Struct, frozen=True):
 
     sourcePattern: str
     mappedComponents: Sequence[JsonMappedPair]
-    targetFrequencyID: str
+    locale: str
+    id: Optional[str] = None
+    targetFrequencyID: Optional[str] = None
+    frequencyDimension: Optional[str] = None
 
     def to_model(self) -> DatePatternMap:
         """Returns the requested date mapper."""
+        freq = (
+            self.targetFrequencyID
+            if self.targetFrequencyID
+            else self.frequencyDimension
+        )
+        typ = "fixed" if self.targetFrequencyID else "variable"
         return DatePatternMap(
             self.mappedComponents[0].source,
             self.mappedComponents[0].target,
             self.sourcePattern,
-            self.targetFrequencyID,
+            freq,
+            self.id,
+            self.locale,
+            typ,
         )
 
 

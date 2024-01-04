@@ -108,11 +108,20 @@
             ],
             "timePatternMaps": [
                 {
+                    "id": "my_id",
                     "source": "ACTIVITY_DATE",
                     "target": "TIME_PERIOD",
                     "freqId": "M",
                     "pattern": "MM/dd/yyyy",
                     "locale": "en"
+                },
+                {
+                    "id": "your_id",
+                    "source": "VOLUME_MONTH",
+                    "target": "TIME_PERIOD",
+                    "freqDim": "CONTRACT_CODE",
+                    "pattern": "ddMMyy",
+                    "locale": "es"
                 }
             ]
         }
