@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from re import Pattern
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -21,16 +21,32 @@ class FixedDatePatternMap(Struct, frozen=True, omit_defaults=True):
 
 
     Attributes:
-        source: The ID of the source component to be mapped.
+        source: The ID of the source component.
         target: The ID of the target component.
-        pattern: The date pattern to use when parsing the source value.
-        frequency: The desired frequency for the output value.
+        pattern: Describes the source date using conventions for describing
+            years, months, days, etc
+        frequency: The frequency to convert the input date into or a
+            reference to a dimension or an atttribute with the frequency code.
+            See `pattern_type` below for additional information.
+        id: The Map ID, as defined in the Registry.
+        locale: The locale on which the input will be parsed according to the
+            pattern.
+        pattern_type: The type of date pattern, i.e. fixed or variable. When
+            the type is `fixed`, `frequency` is a fixed value from the
+            frequency codelist (e.g. `A` for annual frequency). When the type
+            is `variable`, `frequency` references a dimension or attribute in
+            the target structure (e.g. `FREQ`). In this case, the input date
+            can be converted to a different format, depending on the
+            frequency of the converted data.
     """
 
     source: str
     target: str
     pattern: str
     frequency: str
+    id: Optional[str] = None
+    locale: str = "en"
+    pattern_type: Literal["fixed", "variable"] = "fixed"
 
 
 class ValueSetter(Struct, frozen=True, omit_defaults=True):
