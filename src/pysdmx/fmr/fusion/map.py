@@ -10,7 +10,7 @@ from pysdmx.model import (
     ComponentMap,
     DatePatternMap,
     ImplicitComponentMap,
-    MappingDefinition,
+    StructureMap,
     MultiComponentMap,
     MultiValueMap,
     ValueMap,
@@ -148,7 +148,7 @@ class FusionStructureMap(Struct, frozen=True):
     def to_model(
         self,
         rms: Sequence[FusionRepresentationMap],
-    ) -> MappingDefinition:
+    ) -> StructureMap:
         """Returns the requested mapping definition."""
         m1 = [tpm.to_model() for tpm in self.timePatternMaps]
         m2 = [cm.to_model(rms) for cm in self.componentMaps]
@@ -161,7 +161,7 @@ class FusionStructureMap(Struct, frozen=True):
         ]
         m3.extend(m7)
 
-        return MappingDefinition(
+        return StructureMap(
             component_maps=m6,
             date_maps=m1,
             fixed_value_maps=m3,
@@ -176,7 +176,7 @@ class FusionMappingMessage(Struct, frozen=True):
     StructureMap: Sequence[FusionStructureMap]
     RepresentationMap: Sequence[FusionRepresentationMap] = ()
 
-    def to_model(self) -> MappingDefinition:
+    def to_model(self) -> StructureMap:
         """Returns the requested mapping definition."""
         return self.StructureMap[0].to_model(self.RepresentationMap)
 
@@ -186,7 +186,7 @@ class FusionRepresentationMapMessage(Struct, frozen=True):
 
     RepresentationMap: Sequence[FusionRepresentationMap]
 
-    def to_model(self) -> MappingDefinition:
+    def to_model(self) -> StructureMap:
         """Returns the requested mapping definition."""
         out = self.RepresentationMap[0].to_model()
         return out  # type: ignore[return-value]

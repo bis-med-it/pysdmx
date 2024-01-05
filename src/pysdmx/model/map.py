@@ -218,7 +218,7 @@ class ComponentMap(Struct, frozen=True, omit_defaults=True):
     values: Sequence[ValueMap]
 
 
-class MappingDefinition(Struct, frozen=True, omit_defaults=True):
+class StructureMap(Struct, frozen=True, omit_defaults=True):
     """Maps a source structure to a target structure.
 
     The various mapping rules are classified by types.

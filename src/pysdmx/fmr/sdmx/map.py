@@ -10,7 +10,7 @@ from pysdmx.model import (
     ComponentMap,
     DatePatternMap,
     ImplicitComponentMap,
-    MappingDefinition,
+    StructureMap,
     MultiComponentMap,
     MultiValueMap,
     ValueMap,
@@ -168,7 +168,7 @@ class JsonStructureMap(Struct, frozen=True):
     def to_model(
         self,
         rms: Sequence[JsonRepresentationMap],
-    ) -> MappingDefinition:
+    ) -> StructureMap:
         """Returns the requested mapping definition."""
         m1 = [dpm.to_model() for dpm in self.datePatternMaps]
         m2 = [cm.to_model(rms) for cm in self.componentMaps]
@@ -177,7 +177,7 @@ class JsonStructureMap(Struct, frozen=True):
         m5 = [m for m in m2 if isinstance(m, MultiComponentMap)]
         m6 = [m for m in m2 if isinstance(m, ComponentMap)]
 
-        return MappingDefinition(
+        return StructureMap(
             component_maps=m6,
             date_maps=m1,
             fixed_value_maps=m3,
@@ -192,7 +192,7 @@ class JsonStructureMaps(Struct, frozen=True):
     structureMaps: Sequence[JsonStructureMap]
     representationMaps: Sequence[JsonRepresentationMap] = ()
 
-    def to_model(self) -> MappingDefinition:
+    def to_model(self) -> StructureMap:
         """Returns the requested mapping definition."""
         return self.structureMaps[0].to_model(self.representationMaps)
 
@@ -202,7 +202,7 @@ class JsonMappingMessage(Struct, frozen=True):
 
     data: JsonStructureMaps
 
-    def to_model(self) -> MappingDefinition:
+    def to_model(self) -> StructureMap:
         """Returns the requested mapping definition."""
         return self.data.to_model()
 

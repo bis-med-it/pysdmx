@@ -15,7 +15,7 @@ from pysdmx.model import (
     ConceptScheme,
     DataflowInfo,
     Hierarchy,
-    MappingDefinition,
+    StructureMap,
     MetadataReport,
     Organisation,
     Schema,
@@ -432,7 +432,7 @@ class RegistryClient(__BaseRegistryClient):
         agency: str,
         id: str,
         version: str = "+",
-    ) -> MappingDefinition:
+    ) -> StructureMap:
         """Get a mapping definition (aka structure map).
 
         Args:
@@ -741,7 +741,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         agency: str,
         id: str,
         version: str = "+",
-    ) -> MappingDefinition:
+    ) -> StructureMap:
         """Get a mapping definition (aka structure map).
 
         Args:

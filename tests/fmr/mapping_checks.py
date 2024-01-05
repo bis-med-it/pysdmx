@@ -9,7 +9,7 @@ from pysdmx.model.map import (
     ComponentMap,
     DatePatternMap,
     ImplicitComponentMap,
-    MappingDefinition,
+    StructureMap,
     FixedValueMap,
 )
 
@@ -25,7 +25,7 @@ def check_mapping(mock, fmr: RegistryClient, query, body):
 
     mapping = fmr.get_mapping("BIS", "SRC_2_MDD", "1.0")
 
-    assert isinstance(mapping, MappingDefinition)
+    assert isinstance(mapping, StructureMap)
     count = (
         len(mapping.component_maps)
         + len(mapping.date_maps)
@@ -47,7 +47,7 @@ def check_multi_mapping(mock, fmr: RegistryClient, query, body):
 
     mapping = fmr.get_mapping("BIS", "FXS_2_MDD", "1.0")
 
-    assert isinstance(mapping, MappingDefinition)
+    assert isinstance(mapping, StructureMap)
     count = (
         len(mapping.component_maps)
         + len(mapping.date_maps)

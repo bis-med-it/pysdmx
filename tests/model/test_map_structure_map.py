@@ -1,6 +1,6 @@
 import pytest
 
-from pysdmx.model import ImplicitComponentMap, MappingDefinition
+from pysdmx.model import ImplicitComponentMap, StructureMap
 
 
 @pytest.fixture()
@@ -11,7 +11,7 @@ def mappings():
 
 
 def test_full_initialization(mappings):
-    sm = MappingDefinition(implicit_maps=mappings)
+    sm = StructureMap(implicit_maps=mappings)
 
     assert len(sm.implicit_maps) == 2
     assert sm.implicit_maps == mappings
@@ -22,6 +22,6 @@ def test_full_initialization(mappings):
 
 
 def test_immutable(mappings):
-    sm = MappingDefinition(mappings)
+    sm = StructureMap(mappings)
     with pytest.raises(AttributeError):
         sm.fixed_value_maps = []
