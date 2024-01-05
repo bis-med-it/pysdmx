@@ -226,16 +226,16 @@ class StructureMap(Struct, frozen=True, omit_defaults=True):
     Attributes:
         component_maps: The list of mappings between one source component
             and one target component.
-        date_maps: The list of mappings based on date patterns
+        date_pattern_maps: The list of mappings based on date patterns
         fixed_value_maps: The list of mappings with a fixed value
-        implicit_maps: The list of mappings where the value in the source
-            is copied to the target.
-        multiple_component_maps: The list of mappings between one or more
+        implicit_component_maps: The list of mappings where the value in the
+            source is copied to the target.
+        multi_component_maps: The list of mappings between one or more
             source components and one or more target components.
     """
 
     component_maps: Sequence[ComponentMap] = ()
-    date_maps: Sequence[DatePatternMap] = ()
+    date_pattern_maps: Sequence[DatePatternMap] = ()
     fixed_value_maps: Sequence[FixedValueMap] = ()
-    implicit_maps: Sequence[ImplicitComponentMap] = ()
-    multiple_component_maps: Sequence[MultiComponentMap] = ()
+    implicit_component_maps: Sequence[ImplicitComponentMap] = ()
+    multi_component_maps: Sequence[MultiComponentMap] = ()

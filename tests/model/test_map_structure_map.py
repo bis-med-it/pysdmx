@@ -11,14 +11,14 @@ def mappings():
 
 
 def test_full_initialization(mappings):
-    sm = StructureMap(implicit_maps=mappings)
+    sm = StructureMap(implicit_component_maps=mappings)
 
-    assert len(sm.implicit_maps) == 2
-    assert sm.implicit_maps == mappings
+    assert len(sm.implicit_component_maps) == 2
+    assert sm.implicit_component_maps == mappings
     assert not sm.component_maps
-    assert not sm.date_maps
+    assert not sm.date_pattern_maps
     assert not sm.fixed_value_maps
-    assert not sm.multiple_component_maps
+    assert not sm.multi_component_maps
 
 
 def test_immutable(mappings):

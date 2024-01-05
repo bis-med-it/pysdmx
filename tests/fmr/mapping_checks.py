@@ -28,10 +28,10 @@ def check_mapping(mock, fmr: RegistryClient, query, body):
     assert isinstance(mapping, StructureMap)
     count = (
         len(mapping.component_maps)
-        + len(mapping.date_maps)
+        + len(mapping.date_pattern_maps)
         + len(mapping.fixed_value_maps)
-        + len(mapping.implicit_maps)
-        + len(mapping.multiple_component_maps)
+        + len(mapping.implicit_component_maps)
+        + len(mapping.multi_component_maps)
     )
     assert count == 10
 
@@ -50,14 +50,14 @@ def check_multi_mapping(mock, fmr: RegistryClient, query, body):
     assert isinstance(mapping, StructureMap)
     count = (
         len(mapping.component_maps)
-        + len(mapping.date_maps)
+        + len(mapping.date_pattern_maps)
         + len(mapping.fixed_value_maps)
-        + len(mapping.implicit_maps)
-        + len(mapping.multiple_component_maps)
+        + len(mapping.implicit_component_maps)
+        + len(mapping.multi_component_maps)
     )
     assert count == 2
-    assert len(mapping.multiple_component_maps) == 1
-    assert len(mapping.implicit_maps) == 1
+    assert len(mapping.multi_component_maps) == 1
+    assert len(mapping.implicit_component_maps) == 1
 
 
 async def check_mapping_rules(mock, fmr: AsyncRegistryClient, query, body):
@@ -72,18 +72,18 @@ async def check_mapping_rules(mock, fmr: AsyncRegistryClient, query, body):
     mapping = await fmr.get_mapping("BIS", "SRC_2_MDD", "1.0")
 
     assert len(mapping.component_maps) == 1
-    assert len(mapping.date_maps) == 2
+    assert len(mapping.date_pattern_maps) == 2
     assert len(mapping.fixed_value_maps) == 3
-    assert len(mapping.implicit_maps) == 4
-    assert len(mapping.multiple_component_maps) == 0
+    assert len(mapping.implicit_component_maps) == 4
+    assert len(mapping.multi_component_maps) == 0
 
     for m in mapping.component_maps:
         __check_component(m)
-    for m in mapping.date_maps:
+    for m in mapping.date_pattern_maps:
         __check_date(m)
     for m in mapping.fixed_value_maps:
         __check_fixed(m)
-    for m in mapping.implicit_maps:
+    for m in mapping.implicit_component_maps:
         __check_implicit(m)
 
 

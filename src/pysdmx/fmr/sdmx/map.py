@@ -179,10 +179,10 @@ class JsonStructureMap(Struct, frozen=True):
 
         return StructureMap(
             component_maps=m6,
-            date_maps=m1,
+            date_pattern_maps=m1,
             fixed_value_maps=m3,
-            implicit_maps=m4,
-            multiple_component_maps=m5,
+            implicit_component_maps=m4,
+            multi_component_maps=m5,
         )
 
 
