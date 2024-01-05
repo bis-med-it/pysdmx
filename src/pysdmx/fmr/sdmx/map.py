@@ -92,7 +92,11 @@ class JsonFixedValueMap(Struct, frozen=True):
         """Returns the requested fixed value map."""
         located_in = "source" if self.source else "target"
         target = self.target if self.target else self.source
-        return FixedValueMap(target, self.values[0], located_in)
+        return FixedValueMap(
+            target,  # type: ignore[arg-type]
+            self.values[0],
+            located_in,  # type: ignore[arg-type]
+        )
 
 
 class JsonComponentMap(Struct, frozen=True):
@@ -151,10 +155,10 @@ class JsonDatePatternMap(Struct, frozen=True):
             self.mappedComponents[0].source,
             self.mappedComponents[0].target,
             self.sourcePattern,
-            freq,
+            freq,  # type: ignore[arg-type]
             self.id,
             self.locale,
-            typ,
+            typ,  # type: ignore[arg-type]
         )
 
 
@@ -177,17 +181,16 @@ class JsonStructureMap(Struct, frozen=True):
         rms: Sequence[JsonRepresentationMap],
     ) -> StructureMap:
         """Returns the requested mapping definition."""
-        maps = []
-        maps.extend([dpm.to_model() for dpm in self.datePatternMaps])
-        maps.extend([cm.to_model(rms) for cm in self.componentMaps])
-        maps.extend([fvm.to_model() for fvm in self.fixedValueMaps])
+        m1 = tuple([dpm.to_model() for dpm in self.datePatternMaps])
+        m2 = tuple([cm.to_model(rms) for cm in self.componentMaps])
+        m3 = tuple([fvm.to_model() for fvm in self.fixedValueMaps])
         return StructureMap(
             self.id,
             self.name,
             self.agencyID,
             self.source,
             self.target,
-            maps,
+            m1 + m2 + m3,
             self.description,
             self.version,
         )

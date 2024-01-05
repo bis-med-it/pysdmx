@@ -263,14 +263,19 @@ class StructureMap(Struct, frozen=True, omit_defaults=True):
     @property
     def component_maps(self) -> Sequence[ComponentMap]:
         """Maps between one source and one target component."""
-        return list(filter(lambda i: isinstance(i, ComponentMap), self.maps))
+        return list(
+            filter(
+                lambda i: isinstance(i, ComponentMap),  # type: ignore[arg-type]
+                self.maps,
+            )
+        )
 
     @property
     def date_pattern_maps(self) -> Sequence[DatePatternMap]:
         """Maps based on date patterns."""
         return list(
             filter(
-                lambda i: isinstance(i, DatePatternMap),
+                lambda i: isinstance(i, DatePatternMap),  # type: ignore[arg-type]
                 self.maps,
             )
         )
@@ -278,20 +283,31 @@ class StructureMap(Struct, frozen=True, omit_defaults=True):
     @property
     def fixed_value_maps(self) -> Sequence[FixedValueMap]:
         """Maps with a fixed value."""
-        return list(filter(lambda i: isinstance(i, FixedValueMap), self.maps))
+        return list(
+            filter(
+                lambda i: isinstance(i, FixedValueMap),  # type: ignore[arg-type]
+                self.maps,
+            )
+        )
 
     @property
     def implicit_component_maps(self) -> Sequence[ImplicitComponentMap]:
         """Maps where the source value is copied to the target."""
         return list(
-            filter(lambda i: isinstance(i, ImplicitComponentMap), self.maps)
+            filter(
+                lambda i: isinstance(i, ImplicitComponentMap),  # type: ignore[arg-type]
+                self.maps,
+            )
         )
 
     @property
     def multi_component_maps(self) -> Sequence[MultiComponentMap]:
         """Maps between one or more source & one or more target components."""
         return list(
-            filter(lambda i: isinstance(i, MultiComponentMap), self.maps)
+            filter(
+                lambda i: isinstance(i, MultiComponentMap),  # type: ignore[arg-type]
+                self.maps,
+            )
         )
 
     def __iter__(
@@ -329,18 +345,8 @@ class StructureMap(Struct, frozen=True, omit_defaults=True):
         out = []
         for m in self.maps:
             if (
-                (isinstance(m, FixedValueMap) and m.target == id_)
-                or (
-                    isinstance(m, MultiValueMap)
-                    and len(m.source) > 1
-                    and id_ in m.source
-                )
-                or (
-                    not isinstance(m, FixedValueMap)
-                    and not isinstance(m, MultiValueMap)
-                    and m.source == id_
-                )
-            ):
+                hasattr(m, "source") and (m.source == id_ or id_ in m.source)
+            ) or (isinstance(m, FixedValueMap) and m.target == id_):
                 out.append(m)
         if len(out) == 0:
             return None

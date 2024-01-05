@@ -115,7 +115,7 @@ def test_get_map(id, name, agency, source, target, mappings):
 
     id = mappings[3].source
     resp1 = sm[id]
-    resp2 = sm[uuid.uuid4()]
+    resp2 = sm[str(uuid.uuid4())]
 
     assert len(resp1) == 1
     assert resp1[0] == mappings[3]

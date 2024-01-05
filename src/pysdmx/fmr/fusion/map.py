@@ -14,7 +14,7 @@ from pysdmx.model import (
     ImplicitComponentMap,
     MultiComponentMap,
     MultiValueMap,
-    StructureMap,
+    StructureMap as SM,
     ValueMap,
 )
 from pysdmx.util import find_by_urn
@@ -131,10 +131,10 @@ class FusionTimePatternMap(Struct, frozen=True):
             self.source,
             self.target,
             self.pattern,
-            freq,
+            freq,  # type: ignore[arg-type]
             self.id,
             self.locale,
-            typ,
+            typ,  # type: ignore[arg-type]
         )
 
 
@@ -156,23 +156,22 @@ class FusionStructureMap(Struct, frozen=True):
     def to_model(
         self,
         rms: Sequence[FusionRepresentationMap],
-    ) -> StructureMap:
+    ) -> SM:
         """Returns the requested mapping definition."""
-        maps = []
-        maps.extend([tpm.to_model() for tpm in self.timePatternMaps])
-        maps.extend([cm.to_model(rms) for cm in self.componentMaps])
-        maps.extend([FixedValueMap(k, v) for k, v in self.fixedOutput.items()])
-        maps.extend(
-            [FixedValueMap(k, v, "source") for k, v in self.fixedInput.items()]
+        m1 = tuple(tpm.to_model() for tpm in self.timePatternMaps)
+        m2 = tuple(cm.to_model(rms) for cm in self.componentMaps)
+        m3 = tuple(FixedValueMap(k, v) for k, v in self.fixedOutput.items())
+        m4 = tuple(
+            FixedValueMap(k, v, "source") for k, v in self.fixedInput.items()
         )
 
-        return StructureMap(
+        return SM(
             self.id,
             self.names[0].value,
             self.agencyId,
             self.source,
             self.target,
-            maps,
+            m1 + m2 + m3 + m4,
             self.descriptions[0].value if self.descriptions else None,
             self.version,
         )
@@ -184,7 +183,7 @@ class FusionMappingMessage(Struct, frozen=True):
     StructureMap: Sequence[FusionStructureMap]
     RepresentationMap: Sequence[FusionRepresentationMap] = ()
 
-    def to_model(self) -> StructureMap:
+    def to_model(self) -> SM:
         """Returns the requested mapping definition."""
         return self.StructureMap[0].to_model(self.RepresentationMap)
 
@@ -194,7 +193,7 @@ class FusionRepresentationMapMessage(Struct, frozen=True):
 
     RepresentationMap: Sequence[FusionRepresentationMap]
 
-    def to_model(self) -> StructureMap:
+    def to_model(self) -> SM:
         """Returns the requested mapping definition."""
         out = self.RepresentationMap[0].to_model()
         return out  # type: ignore[return-value]
