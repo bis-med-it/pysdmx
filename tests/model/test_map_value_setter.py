@@ -1,6 +1,6 @@
 import pytest
 
-from pysdmx.model import ValueSetter
+from pysdmx.model import FixedValueMap
 
 
 @pytest.fixture()
@@ -14,7 +14,7 @@ def value():
 
 
 def test_default_instantiation(target, value):
-    m = ValueSetter(target, value)
+    m = FixedValueMap(target, value)
 
     assert m.target == target
     assert m.value == value
@@ -22,7 +22,7 @@ def test_default_instantiation(target, value):
 
 
 def test_full_instantiation(target, value):
-    m = ValueSetter(target, value, False)
+    m = FixedValueMap(target, value, False)
 
     assert m.target == target
     assert m.value == value
@@ -30,20 +30,20 @@ def test_full_instantiation(target, value):
 
 
 def test_immutable(target, value):
-    m = ValueSetter(target, value)
+    m = FixedValueMap(target, value)
     with pytest.raises(AttributeError):
         m.is_fixed = False
 
 
 def test_equal(target, value):
-    m1 = ValueSetter(target, value)
-    m2 = ValueSetter(target, value)
+    m1 = FixedValueMap(target, value)
+    m2 = FixedValueMap(target, value)
 
     assert m1 == m2
 
 
 def test_not_equal(target, value):
-    m1 = ValueSetter(target, value)
-    m2 = ValueSetter(target, value, False)
+    m1 = FixedValueMap(target, value)
+    m2 = FixedValueMap(target, value, False)
 
     assert m1 != m2

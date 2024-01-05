@@ -26,7 +26,7 @@ from pysdmx.model.map import (
     MultipleComponentMapper,
     MultipleValueMap,
     ValueMap,
-    ValueSetter,
+    FixedValueMap,
 )
 from pysdmx.model.metadata import MetadataAttribute, MetadataReport
 from pysdmx.model.organisation import Contact, DataflowRef, Organisation
@@ -97,5 +97,5 @@ __all__ = [
     "Role",
     "Schema",
     "ValueMap",
-    "ValueSetter",
+    "FixedValueMap",
 ]

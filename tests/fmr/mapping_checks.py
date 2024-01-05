@@ -10,7 +10,7 @@ from pysdmx.model.map import (
     DatePatternMap,
     ImplicitMapper,
     MappingDefinition,
-    ValueSetter,
+    FixedValueMap,
 )
 
 
@@ -132,7 +132,7 @@ def __check_implicit(m: ImplicitMapper):
         pytest.fail(f"Unexpected implicit value: {m}")
 
 
-def __check_fixed(m: ValueSetter):
+def __check_fixed(m: FixedValueMap):
     if m.target == "OBS_STATUS":
         assert m.value == "A"
     elif m.target == "FREQ":

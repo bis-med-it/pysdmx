@@ -49,28 +49,28 @@ class DatePatternMap(Struct, frozen=True, omit_defaults=True):
     pattern_type: Literal["fixed", "variable"] = "fixed"
 
 
-class ValueSetter(Struct, frozen=True, omit_defaults=True):
-    """A mapping setting a fixed or default value in the target.
+class FixedValueMap(Struct, frozen=True, omit_defaults=True):
+    """Set a component to a fixed value.
 
     Examples:
         For example, let's assume that all observations in the target must be
         treated as free for publication. This can be expressed with the
         following mapping:
 
-            >>> ValueSetter("CONF_STATUS", "F")
+            >>> FixedValueMap("CONF_STATUS", "F")
 
     Attributes:
-        target:
-            The ID of the component for which we want to set the fixed value.
-        value: The fixed value to be set in the referenced component.
-        is_fixed:
-            Whether the value must be set regardless of whether a value is
-            already set for the component.
+        target: The ID of the component to which the fixed value is assigned.
+        value: The fixed value of the referenced component.
+        located_in: Whether the component with a fixed value is in the source
+            structure or the target structure. It usually is in the target
+            structure (the default), but it can also be in the source, in case
+            of bi-directional mapping.
     """
 
     target: str
     value: Any
-    is_fixed: bool = True
+    located_in: Literal["source", "target"] = "target"
 
 
 class ImplicitMapper(Struct, frozen=True, omit_defaults=True):
@@ -236,6 +236,6 @@ class MappingDefinition(Struct, frozen=True, omit_defaults=True):
 
     component_maps: Sequence[ComponentMapper] = ()
     date_maps: Sequence[DatePatternMap] = ()
-    fixed_value_maps: Sequence[ValueSetter] = ()
+    fixed_value_maps: Sequence[FixedValueMap] = ()
     implicit_maps: Sequence[ImplicitMapper] = ()
     multiple_component_maps: Sequence[MultipleComponentMapper] = ()

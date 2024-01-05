@@ -14,7 +14,7 @@ from pysdmx.model import (
     MultipleComponentMapper,
     MultipleValueMap,
     ValueMap,
-    ValueSetter,
+    FixedValueMap,
 )
 from pysdmx.util import find_by_urn
 
@@ -151,7 +151,7 @@ class FusionStructureMap(Struct, frozen=True):
         """Returns the requested mapping definition."""
         m1 = [tpm.to_model() for tpm in self.timePatternMaps]
         m2 = [cm.to_model(rms) for cm in self.componentMaps]
-        m3 = [ValueSetter(k, v) for k, v in self.fixedOutput.items()]
+        m3 = [FixedValueMap(k, v) for k, v in self.fixedOutput.items()]
         m4 = [m for m in m2 if isinstance(m, ImplicitMapper)]
         m5 = [m for m in m2 if isinstance(m, MultipleComponentMapper)]
         m6 = [m for m in m2 if isinstance(m, ComponentMapper)]

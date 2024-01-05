@@ -14,7 +14,7 @@ from pysdmx.model import (
     MultipleComponentMapper,
     MultipleValueMap,
     ValueMap,
-    ValueSetter,
+    FixedValueMap,
 )
 from pysdmx.util import find_by_urn
 
@@ -87,9 +87,9 @@ class JsonFixedValueMap(Struct, frozen=True):
     target: str
     values: Sequence[Any]
 
-    def to_model(self) -> ValueSetter:
+    def to_model(self) -> FixedValueMap:
         """Returns the requested fixed value map."""
-        return ValueSetter(self.target, self.values[0])
+        return FixedValueMap(self.target, self.values[0])
 
 
 class JsonComponentMap(Struct, frozen=True):

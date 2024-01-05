@@ -151,7 +151,7 @@ Another fairly simple case is setting fixed values. This is the case for
     for m in mapping.fixed_value_maps:
         print(m)
         # Output example:
-        # ValueSetter(target='FREQ', value='M')
+        # FixedValueMap(target='FREQ', value='M')
 
 Mapping Codes
 """""""""""""
