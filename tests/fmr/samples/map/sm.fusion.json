@@ -58,10 +58,12 @@
             "isFinal": false,
             "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.XTD:SRC(1.0)",
             "target": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.XTD:MDD(1.0)",
+            "fixedInput": {
+                "CONF_STATUS": "C"
+            },
             "fixedOutput": {
                 "OBS_STATUS": "A",
-                "FREQ": "M",
-                "CONF_STATUS": "C"
+                "FREQ": "M"
             },
             "componentMaps": [
                 {

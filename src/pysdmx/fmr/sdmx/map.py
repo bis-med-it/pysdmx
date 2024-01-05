@@ -84,12 +84,15 @@ class JsonRepresentationMap(
 class JsonFixedValueMap(Struct, frozen=True):
     """SDMX-JSON payload for a fixed value map."""
 
-    target: str
     values: Sequence[Any]
+    source: Optional[str] = None
+    target: Optional[str] = None
 
     def to_model(self) -> FixedValueMap:
         """Returns the requested fixed value map."""
-        return FixedValueMap(self.target, self.values[0])
+        located_in = "source" if self.source else "target"
+        target = self.target if self.target else self.source
+        return FixedValueMap(target, self.values[0], located_in)
 
 
 class JsonComponentMap(Struct, frozen=True):

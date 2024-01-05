@@ -140,6 +140,7 @@ class FusionTimePatternMap(Struct, frozen=True):
 class FusionStructureMap(Struct, frozen=True):
     """Fusion-JSON payload for a structure map."""
 
+    fixedInput: Dict[str, Any] = {}
     fixedOutput: Dict[str, Any] = {}
     timePatternMaps: Sequence[FusionTimePatternMap] = ()
     componentMaps: Sequence[FusionComponentMap] = ()
@@ -155,6 +156,10 @@ class FusionStructureMap(Struct, frozen=True):
         m4 = [m for m in m2 if isinstance(m, ImplicitMapper)]
         m5 = [m for m in m2 if isinstance(m, MultipleComponentMapper)]
         m6 = [m for m in m2 if isinstance(m, ComponentMapper)]
+        m7 = [
+            FixedValueMap(k, v, "source") for k, v in self.fixedInput.items()
+        ]
+        m3.extend(m7)
 
         return MappingDefinition(
             component_maps=m6,

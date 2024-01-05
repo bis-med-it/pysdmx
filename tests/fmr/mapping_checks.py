@@ -135,9 +135,12 @@ def __check_implicit(m: ImplicitMapper):
 def __check_fixed(m: FixedValueMap):
     if m.target == "OBS_STATUS":
         assert m.value == "A"
+        assert m.located_in == "target"
     elif m.target == "FREQ":
         assert m.value == "M"
+        assert m.located_in == "target"
     elif m.target == "CONF_STATUS":
         assert m.value == "C"
+        assert m.located_in == "source"
     else:
         pytest.fail(f"Unexpected fixed value: {m}")
