@@ -73,7 +73,7 @@ class FixedValueMap(Struct, frozen=True, omit_defaults=True):
     located_in: Literal["source", "target"] = "target"
 
 
-class ImplicitMapper(Struct, frozen=True, omit_defaults=True):
+class ImplicitComponentMap(Struct, frozen=True, omit_defaults=True):
     """A mapping where the value in the source is copied to the target.
 
     Examples:
@@ -82,7 +82,7 @@ class ImplicitMapper(Struct, frozen=True, omit_defaults=True):
         a target component (`CONF_STATUS`). This can be expressed with the
         following mapping:
 
-        >>> ImplicitMapper("OBS_CONF", "CONF_STATUS")
+        >>> ImplicitComponentMap("OBS_CONF", "CONF_STATUS")
 
     Attributes:
         source:
@@ -95,7 +95,7 @@ class ImplicitMapper(Struct, frozen=True, omit_defaults=True):
     target: str
 
 
-class MultipleValueMap(Struct, frozen=True, omit_defaults=True):
+class MultiValueMap(Struct, frozen=True, omit_defaults=True):
     """Provides the values for a mapping between one or more components.
 
     Examples:
@@ -105,8 +105,8 @@ class MultipleValueMap(Struct, frozen=True, omit_defaults=True):
         the target should be `EUR` but, if the country is `CH`, then it should
         be `CHF`. This can be expressed with the following value maps:
 
-        >>> MultipleValueMap(["DE", "LC"], ["EUR"])
-        >>> MultipleValueMap(["CH", "LC"], ["CHF"])
+        >>> MultiValueMap(["DE", "LC"], ["EUR"])
+        >>> MultiValueMap(["CH", "LC"], ["CHF"])
 
     Also, the mapping can depending on the time period.
 
@@ -118,9 +118,9 @@ class MultipleValueMap(Struct, frozen=True, omit_defaults=True):
         >>> from datetime import datetime
         >>> t1 = datetime(1998, 12, 31, 23, 59, 59)
         >>> t2 = datetime(1999, 1, 1)
-        >>> MultipleValueMap(["DE", "LC"], ["EUR"], valid_to: t1)
-        >>> MultipleValueMap(["DE", "LC"], ["EUR"], valid_from: t2)
-        >>> MultipleValueMap(["CH", "LC"], ["CHF"])
+        >>> MultiValueMap(["DE", "LC"], ["EUR"], valid_to: t1)
+        >>> MultiValueMap(["DE", "LC"], ["EUR"], valid_from: t2)
+        >>> MultiValueMap(["CH", "LC"], ["CHF"])
 
     Values in the source may represent regular expressions with capture
     groups.
@@ -166,7 +166,7 @@ class ValueMap(Struct, frozen=True, omit_defaults=True):
     valid_to: Optional[datetime] = None
 
 
-class MultipleComponentMapper(Struct, frozen=True, omit_defaults=True):
+class MultiComponentMap(Struct, frozen=True, omit_defaults=True):
     """Maps one or more source components to one or more target components.
 
     Examples:
@@ -176,11 +176,11 @@ class MultipleComponentMapper(Struct, frozen=True, omit_defaults=True):
         the target should be `EUR` but, if the country is `CH`, then it should
         be `CHF`. This can be expressed as follows:
 
-            >>> de = MultipleValueMap(["DE", "LC"], ["EUR"])
-            >>> ch = MultipleValueMap(["CH", "LC"], ["CHF"])
+            >>> de = MultiValueMap(["DE", "LC"], ["EUR"])
+            >>> ch = MultiValueMap(["CH", "LC"], ["CHF"])
             >>> src = ["COUNTRY", "CURRENCY"]
             >>> tgt = ["CURRENCY"]
-            >>> cm = MultipleComponentMapper(src, tgt, [de, ch])
+            >>> cm = MultiComponentMap(src, tgt, [de, ch])
 
     Attributes:
         source: The source component(s)
@@ -191,10 +191,10 @@ class MultipleComponentMapper(Struct, frozen=True, omit_defaults=True):
 
     source: Sequence[str]
     target: Sequence[str]
-    values: Sequence[MultipleValueMap]
+    values: Sequence[MultiValueMap]
 
 
-class ComponentMapper(Struct, frozen=True, omit_defaults=True):
+class ComponentMap(Struct, frozen=True, omit_defaults=True):
     """Maps a source component to a target component.
 
     Examples:
@@ -204,7 +204,7 @@ class ComponentMapper(Struct, frozen=True, omit_defaults=True):
 
         >>> ar = ValueMap("AR", "ARG")
         >>> uy = ValueMap("UY", "URY")
-        >>> cm = ComponentMapper("COUNTRY", "COUNTRY", [ar, uy])
+        >>> cm = ComponentMap("COUNTRY", "COUNTRY", [ar, uy])
 
     Attributes:
         source: The source component
@@ -234,8 +234,8 @@ class MappingDefinition(Struct, frozen=True, omit_defaults=True):
             source components and one or more target components.
     """
 
-    component_maps: Sequence[ComponentMapper] = ()
+    component_maps: Sequence[ComponentMap] = ()
     date_maps: Sequence[DatePatternMap] = ()
     fixed_value_maps: Sequence[FixedValueMap] = ()
-    implicit_maps: Sequence[ImplicitMapper] = ()
-    multiple_component_maps: Sequence[MultipleComponentMapper] = ()
+    implicit_maps: Sequence[ImplicitComponentMap] = ()
+    multiple_component_maps: Sequence[MultiComponentMap] = ()

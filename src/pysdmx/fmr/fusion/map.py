@@ -7,12 +7,12 @@ from typing import Any, Dict, Optional, Sequence, Union
 from msgspec import Struct
 
 from pysdmx.model import (
-    ComponentMapper,
+    ComponentMap,
     DatePatternMap,
-    ImplicitMapper,
+    ImplicitComponentMap,
     MappingDefinition,
-    MultipleComponentMapper,
-    MultipleValueMap,
+    MultiComponentMap,
+    MultiValueMap,
     ValueMap,
     FixedValueMap,
 )
@@ -46,10 +46,10 @@ class FusionRepresentationMapping(Struct, frozen=True):
             inp = inp[0:-1]
         return dt.fromisoformat(inp).replace(tzinfo=tz.utc)
 
-    def to_model(self, is_multi: bool) -> Union[MultipleValueMap, ValueMap]:
+    def to_model(self, is_multi: bool) -> Union[MultiValueMap, ValueMap]:
         """Returns the requested value maps."""
         if is_multi:
-            return MultipleValueMap(
+            return MultiValueMap(
                 [src.to_model() for src in self.source],
                 self.target,
                 self.__get_dt(self.validFrom) if self.validFrom else None,
@@ -79,7 +79,7 @@ class FusionRepresentationMap(
     def to_model(
         self,
         is_multi: bool = False,
-    ) -> Sequence[Union[MultipleValueMap, ValueMap]]:
+    ) -> Sequence[Union[MultiValueMap, ValueMap]]:
         """Returns the requested value maps."""
         return [rm.to_model(is_multi) for rm in self.mappedRelationships]
 
@@ -93,22 +93,22 @@ class FusionComponentMap(Struct, frozen=True):
 
     def to_model(
         self, rms: Sequence[FusionRepresentationMap]
-    ) -> Union[ComponentMapper, MultipleComponentMapper, ImplicitMapper]:
+    ) -> Union[ComponentMap, MultiComponentMap, ImplicitComponentMap]:
         """Returns the requested component map."""
         if self.representationMapRef:
             rm = find_by_urn(rms, self.representationMapRef)
             if len(self.sources) == 1 and len(self.targets) == 1:
-                return ComponentMapper(
+                return ComponentMap(
                     self.sources[0],
                     self.targets[0],
                     rm.to_model(),
                 )
             else:
-                return MultipleComponentMapper(
+                return MultiComponentMap(
                     self.sources, self.targets, rm.to_model(True)
                 )
         else:
-            return ImplicitMapper(self.sources[0], self.targets[0])
+            return ImplicitComponentMap(self.sources[0], self.targets[0])
 
 
 class FusionTimePatternMap(Struct, frozen=True):
@@ -153,9 +153,9 @@ class FusionStructureMap(Struct, frozen=True):
         m1 = [tpm.to_model() for tpm in self.timePatternMaps]
         m2 = [cm.to_model(rms) for cm in self.componentMaps]
         m3 = [FixedValueMap(k, v) for k, v in self.fixedOutput.items()]
-        m4 = [m for m in m2 if isinstance(m, ImplicitMapper)]
-        m5 = [m for m in m2 if isinstance(m, MultipleComponentMapper)]
-        m6 = [m for m in m2 if isinstance(m, ComponentMapper)]
+        m4 = [m for m in m2 if isinstance(m, ImplicitComponentMap)]
+        m5 = [m for m in m2 if isinstance(m, MultiComponentMap)]
+        m6 = [m for m in m2 if isinstance(m, ComponentMap)]
         m7 = [
             FixedValueMap(k, v, "source") for k, v in self.fixedInput.items()
         ]

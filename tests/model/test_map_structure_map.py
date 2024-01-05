@@ -1,12 +1,12 @@
 import pytest
 
-from pysdmx.model import ImplicitMapper, MappingDefinition
+from pysdmx.model import ImplicitComponentMap, MappingDefinition
 
 
 @pytest.fixture()
 def mappings():
-    m1 = ImplicitMapper("OBS_CONF", "CONF_STATUS")
-    m2 = ImplicitMapper("OBS_STATUS", "OBS_STATUS")
+    m1 = ImplicitComponentMap("OBS_CONF", "CONF_STATUS")
+    m2 = ImplicitComponentMap("OBS_STATUS", "OBS_STATUS")
     return [m1, m2]
 
 

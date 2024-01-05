@@ -132,7 +132,7 @@ this is the case for ``OPTION_TYPE``, ``TO``, and ``OI``.
     for m in mapping.implicit_maps:
         print(m)
         # Output example:
-        # ImplicitMapper(source='OPT_TYP', target='OPTION_TYPE')
+        # ImplicitComponentMap(source='OPT_TYP', target='OPTION_TYPE')
 
 As seen, the operation to be applied is fairly simple:
 
@@ -165,7 +165,7 @@ mappings can be retrieved via the ``component_maps`` property:
     for m in mapping.component_maps:
         print(m)
         # Output example:
-        # ComponentMapper(
+        # ComponentMap(
         #     source='CONTRACT',
         #     target='CONTRACT',
         #     values=[

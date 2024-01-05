@@ -1,6 +1,6 @@
 import pytest
 
-from pysdmx.model import ComponentMapper, ValueMap
+from pysdmx.model import ComponentMap, ValueMap
 
 
 @pytest.fixture()
@@ -21,7 +21,7 @@ def values():
 
 
 def test_full_instantiation(source, target, values):
-    m = ComponentMapper(source, target, values)
+    m = ComponentMap(source, target, values)
 
     assert m.source == source
     assert m.target == target
@@ -29,20 +29,20 @@ def test_full_instantiation(source, target, values):
 
 
 def test_immutable(source, target, values):
-    m = ComponentMapper(source, target, values)
+    m = ComponentMap(source, target, values)
     with pytest.raises(AttributeError):
         m.values = values
 
 
 def test_equal(source, target, values):
-    m1 = ComponentMapper(source, target, values)
-    m2 = ComponentMapper(source, target, values)
+    m1 = ComponentMap(source, target, values)
+    m2 = ComponentMap(source, target, values)
 
     assert m1 == m2
 
 
 def test_not_equal(source, target, values):
-    m1 = ComponentMapper(source, target, values)
-    m2 = ComponentMapper(source, source, [])
+    m1 = ComponentMap(source, target, values)
+    m2 = ComponentMap(source, source, [])
 
     assert m1 != m2

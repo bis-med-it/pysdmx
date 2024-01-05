@@ -7,12 +7,12 @@ from typing import Any, Optional, Sequence, Union
 from msgspec import Struct
 
 from pysdmx.model import (
-    ComponentMapper,
+    ComponentMap,
     DatePatternMap,
-    ImplicitMapper,
+    ImplicitComponentMap,
     MappingDefinition,
-    MultipleComponentMapper,
-    MultipleValueMap,
+    MultiComponentMap,
+    MultiValueMap,
     ValueMap,
     FixedValueMap,
 )
@@ -44,10 +44,10 @@ class JsonRepresentationMapping(Struct, frozen=True):
     def __get_dt(self, inp: str) -> dt:
         return dt.fromisoformat(inp).replace(tzinfo=tz.utc)
 
-    def to_model(self, is_multi: bool) -> Union[MultipleValueMap, ValueMap]:
+    def to_model(self, is_multi: bool) -> Union[MultiValueMap, ValueMap]:
         """Returns the requested value maps."""
         if is_multi:
-            return MultipleValueMap(
+            return MultiValueMap(
                 [src.to_model() for src in self.sourceValues],
                 self.targetValues,
                 self.__get_dt(self.validFrom) if self.validFrom else None,
@@ -76,7 +76,7 @@ class JsonRepresentationMap(
 
     def to_model(
         self, is_multi: bool = False
-    ) -> Sequence[Union[MultipleValueMap, ValueMap]]:
+    ) -> Sequence[Union[MultiValueMap, ValueMap]]:
         """Returns the requested value maps."""
         return [rm.to_model(is_multi) for rm in self.representationMappings]
 
@@ -104,22 +104,22 @@ class JsonComponentMap(Struct, frozen=True):
 
     def to_model(
         self, rms: Sequence[JsonRepresentationMap]
-    ) -> Union[ComponentMapper, MultipleComponentMapper, ImplicitMapper]:
+    ) -> Union[ComponentMap, MultiComponentMap, ImplicitComponentMap]:
         """Returns the requested map."""
         if self.representationMap:
             rm = find_by_urn(rms, self.representationMap)
             if len(self.source) == 1 and len(self.target) == 1:
-                return ComponentMapper(
+                return ComponentMap(
                     self.source[0],
                     self.target[0],
                     rm.to_model(),
                 )
             else:
-                return MultipleComponentMapper(
+                return MultiComponentMap(
                     self.source, self.target, rm.to_model(True)
                 )
         else:
-            return ImplicitMapper(self.source[0], self.target[0])
+            return ImplicitComponentMap(self.source[0], self.target[0])
 
 
 class JsonMappedPair(Struct, frozen=True):
@@ -173,9 +173,9 @@ class JsonStructureMap(Struct, frozen=True):
         m1 = [dpm.to_model() for dpm in self.datePatternMaps]
         m2 = [cm.to_model(rms) for cm in self.componentMaps]
         m3 = [fvm.to_model() for fvm in self.fixedValueMaps]
-        m4 = [m for m in m2 if isinstance(m, ImplicitMapper)]
-        m5 = [m for m in m2 if isinstance(m, MultipleComponentMapper)]
-        m6 = [m for m in m2 if isinstance(m, ComponentMapper)]
+        m4 = [m for m in m2 if isinstance(m, ImplicitComponentMap)]
+        m5 = [m for m in m2 if isinstance(m, MultiComponentMap)]
+        m6 = [m for m in m2 if isinstance(m, ComponentMap)]
 
         return MappingDefinition(
             component_maps=m6,

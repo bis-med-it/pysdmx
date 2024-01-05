@@ -6,9 +6,9 @@ import pytest
 
 from pysdmx.fmr import AsyncRegistryClient, RegistryClient
 from pysdmx.model.map import (
-    ComponentMapper,
+    ComponentMap,
     DatePatternMap,
-    ImplicitMapper,
+    ImplicitComponentMap,
     MappingDefinition,
     FixedValueMap,
 )
@@ -87,7 +87,7 @@ async def check_mapping_rules(mock, fmr: AsyncRegistryClient, query, body):
         __check_implicit(m)
 
 
-def __check_component(m: ComponentMapper):
+def __check_component(m: ComponentMap):
     assert m.source == "CONTRACT"
     assert m.target == "CONTRACT"
     assert len(m.values) == 2
@@ -121,7 +121,7 @@ def __check_date(m: DatePatternMap):
         assert m.id == "your_id"
 
 
-def __check_implicit(m: ImplicitMapper):
+def __check_implicit(m: ImplicitComponentMap):
     if m.source in ["OPTION_TYPE", "OI"]:
         assert m.target == m.source
     elif m.source == "VOL_MTD":
