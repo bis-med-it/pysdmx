@@ -26,14 +26,19 @@ def check_mapping(mock, fmr: RegistryClient, query, body):
     mapping = fmr.get_mapping("BIS", "SRC_2_MDD", "1.0")
 
     assert isinstance(mapping, StructureMap)
-    count = (
-        len(mapping.component_maps)
-        + len(mapping.date_pattern_maps)
-        + len(mapping.fixed_value_maps)
-        + len(mapping.implicit_component_maps)
-        + len(mapping.multi_component_maps)
-    )
-    assert count == 10
+    assert mapping.id == "SRC_2_MDD"
+    assert mapping.name == "Map SRC data to MDD"
+    assert mapping.agency == "BIS"
+    assert mapping.version == "1.0"
+    assert "BIS:SRC(1.0)" in mapping.source
+    assert "BIS:MDD(1.0)" in mapping.target
+    assert mapping.description is None
+    assert len(mapping.maps) == 10
+    assert len(mapping.component_maps) == 1
+    assert len(mapping.date_pattern_maps) == 2
+    assert len(mapping.fixed_value_maps) == 3
+    assert len(mapping.implicit_component_maps) == 4
+    assert len(mapping.multi_component_maps) == 0
 
 
 def check_multi_mapping(mock, fmr: RegistryClient, query, body):
