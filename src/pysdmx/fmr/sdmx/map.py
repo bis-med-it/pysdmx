@@ -161,6 +161,13 @@ class JsonDatePatternMap(Struct, frozen=True):
 class JsonStructureMap(Struct, frozen=True):
     """SDMX-JSON payload for a structure map."""
 
+    id: str
+    name: str
+    version: str
+    agencyID: str
+    source: str
+    target: str
+    description: Optional[str] = None
     datePatternMaps: Sequence[JsonDatePatternMap] = ()
     componentMaps: Sequence[JsonComponentMap] = ()
     fixedValueMaps: Sequence[JsonFixedValueMap] = ()
@@ -170,19 +177,19 @@ class JsonStructureMap(Struct, frozen=True):
         rms: Sequence[JsonRepresentationMap],
     ) -> StructureMap:
         """Returns the requested mapping definition."""
-        m1 = [dpm.to_model() for dpm in self.datePatternMaps]
-        m2 = [cm.to_model(rms) for cm in self.componentMaps]
-        m3 = [fvm.to_model() for fvm in self.fixedValueMaps]
-        m4 = [m for m in m2 if isinstance(m, ImplicitComponentMap)]
-        m5 = [m for m in m2 if isinstance(m, MultiComponentMap)]
-        m6 = [m for m in m2 if isinstance(m, ComponentMap)]
-
+        maps = []
+        maps.extend([dpm.to_model() for dpm in self.datePatternMaps])
+        maps.extend([cm.to_model(rms) for cm in self.componentMaps])
+        maps.extend([fvm.to_model() for fvm in self.fixedValueMaps])
         return StructureMap(
-            component_maps=m6,
-            date_pattern_maps=m1,
-            fixed_value_maps=m3,
-            implicit_component_maps=m4,
-            multi_component_maps=m5,
+            self.id,
+            self.name,
+            self.agencyID,
+            self.source,
+            self.target,
+            maps,
+            self.description,
+            self.version,
         )
 
 

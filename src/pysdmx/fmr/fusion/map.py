@@ -6,6 +6,7 @@ from typing import Any, Dict, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.fmr.fusion.core import FusionString
 from pysdmx.model import (
     ComponentMap,
     DatePatternMap,
@@ -140,6 +141,13 @@ class FusionTimePatternMap(Struct, frozen=True):
 class FusionStructureMap(Struct, frozen=True):
     """Fusion-JSON payload for a structure map."""
 
+    id: str
+    agencyId: str
+    version: str
+    source: str
+    target: str
+    names: Sequence[FusionString] = ()
+    descriptions: Sequence[FusionString] = ()
     fixedInput: Dict[str, Any] = {}
     fixedOutput: Dict[str, Any] = {}
     timePatternMaps: Sequence[FusionTimePatternMap] = ()
@@ -150,23 +158,23 @@ class FusionStructureMap(Struct, frozen=True):
         rms: Sequence[FusionRepresentationMap],
     ) -> StructureMap:
         """Returns the requested mapping definition."""
-        m1 = [tpm.to_model() for tpm in self.timePatternMaps]
-        m2 = [cm.to_model(rms) for cm in self.componentMaps]
-        m3 = [FixedValueMap(k, v) for k, v in self.fixedOutput.items()]
-        m4 = [m for m in m2 if isinstance(m, ImplicitComponentMap)]
-        m5 = [m for m in m2 if isinstance(m, MultiComponentMap)]
-        m6 = [m for m in m2 if isinstance(m, ComponentMap)]
-        m7 = [
-            FixedValueMap(k, v, "source") for k, v in self.fixedInput.items()
-        ]
-        m3.extend(m7)
+        maps = []
+        maps.extend([tpm.to_model() for tpm in self.timePatternMaps])
+        maps.extend([cm.to_model(rms) for cm in self.componentMaps])
+        maps.extend([FixedValueMap(k, v) for k, v in self.fixedOutput.items()])
+        maps.extend(
+            [FixedValueMap(k, v, "source") for k, v in self.fixedInput.items()]
+        )
 
         return StructureMap(
-            component_maps=m6,
-            date_pattern_maps=m1,
-            fixed_value_maps=m3,
-            implicit_component_maps=m4,
-            multi_component_maps=m5,
+            self.id,
+            self.names[0].value,
+            self.agencyId,
+            self.source,
+            self.target,
+            maps,
+            self.descriptions[0].value if self.descriptions else None,
+            self.version,
         )
 
 
