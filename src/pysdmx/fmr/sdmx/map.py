@@ -9,12 +9,12 @@ from msgspec import Struct
 from pysdmx.model import (
     ComponentMap,
     DatePatternMap,
+    FixedValueMap,
     ImplicitComponentMap,
-    StructureMap,
     MultiComponentMap,
     MultiValueMap,
+    StructureMap,
     ValueMap,
-    FixedValueMap,
 )
 from pysdmx.util import find_by_urn
 

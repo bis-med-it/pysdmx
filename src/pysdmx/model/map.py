@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from re import Pattern
-from typing import Any, Iterator, Literal, Optional, Sequence, Tuple, Union
+from typing import Any, Iterator, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -328,18 +328,18 @@ class StructureMap(Struct, frozen=True, omit_defaults=True):
         """Return the mapping rules for the supplied component."""
         out = []
         for m in self.maps:
-            if isinstance(m, FixedValueMap) and m.target == id_:
-                out.append(m)
-            elif (
-                isinstance(m, MultiValueMap)
-                and len(m.source) > 1
-                and id_ in m.source
-            ):
-                out.append(m)
-            elif (
-                not isinstance(m, FixedValueMap)
-                and not isinstance(m, MultiValueMap)
-                and m.source == id_
+            if (
+                (isinstance(m, FixedValueMap) and m.target == id_)
+                or (
+                    isinstance(m, MultiValueMap)
+                    and len(m.source) > 1
+                    and id_ in m.source
+                )
+                or (
+                    not isinstance(m, FixedValueMap)
+                    and not isinstance(m, MultiValueMap)
+                    and m.source == id_
+                )
             ):
                 out.append(m)
         if len(out) == 0:

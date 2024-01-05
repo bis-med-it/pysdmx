@@ -21,12 +21,12 @@ from pysdmx.model.dataflow import (
 from pysdmx.model.map import (
     ComponentMap,
     DatePatternMap,
+    FixedValueMap,
     ImplicitComponentMap,
-    StructureMap,
     MultiComponentMap,
     MultiValueMap,
+    StructureMap,
     ValueMap,
-    FixedValueMap,
 )
 from pysdmx.model.metadata import MetadataAttribute, MetadataReport
 from pysdmx.model.organisation import Contact, DataflowRef, Organisation

@@ -8,9 +8,9 @@ from pysdmx.fmr import AsyncRegistryClient, RegistryClient
 from pysdmx.model.map import (
     ComponentMap,
     DatePatternMap,
+    FixedValueMap,
     ImplicitComponentMap,
     StructureMap,
-    FixedValueMap,
 )
 
 

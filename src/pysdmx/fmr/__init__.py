@@ -15,10 +15,10 @@ from pysdmx.model import (
     ConceptScheme,
     DataflowInfo,
     Hierarchy,
-    StructureMap,
     MetadataReport,
     Organisation,
     Schema,
+    StructureMap,
     ValueMap,
 )
 
