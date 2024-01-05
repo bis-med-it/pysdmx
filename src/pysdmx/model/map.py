@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from re import Pattern
-from typing import Any, Literal, Optional, Sequence, Union
+from typing import Any, Iterator, Literal, Optional, Sequence, Tuple, Union
 
 from msgspec import Struct
 
@@ -223,19 +223,126 @@ class StructureMap(Struct, frozen=True, omit_defaults=True):
 
     The various mapping rules are classified by types.
 
+    A structure map is an iterable, i.e. it is possible to iterate over
+    the various mapping rules using a `for` loop.
+
+    It is also possible to retrieve the mapping rule applying to a component
+    by using the component id (e.g. `map["FREQ"]`).
+
     Attributes:
-        component_maps: The list of mappings between one source component
-            and one target component.
-        date_pattern_maps: The list of mappings based on date patterns
-        fixed_value_maps: The list of mappings with a fixed value
-        implicit_component_maps: The list of mappings where the value in the
-            source is copied to the target.
-        multi_component_maps: The list of mappings between one or more
-            source components and one or more target components.
+        id: The identifier for the codelist (e.g. CL_FREQ).
+        name: The codelist name (e.g. "Frequency codelist").
+        agency: The maintainer of the codelist (e.g. SDMX).
+        source: The source structure.
+        target: The target structure.
+        maps: The various mapping rules in the structure map.
+        description: Additional descriptive information about the codelist
+            (e.g. "This codelist provides a set of values indicating the
+            frequency of the data").
+        version: The codelist version (e.g. 2.0.42)
+
     """
 
-    component_maps: Sequence[ComponentMap] = ()
-    date_pattern_maps: Sequence[DatePatternMap] = ()
-    fixed_value_maps: Sequence[FixedValueMap] = ()
-    implicit_component_maps: Sequence[ImplicitComponentMap] = ()
-    multi_component_maps: Sequence[MultiComponentMap] = ()
+    id: str
+    name: str
+    agency: str
+    source: str
+    target: str
+    maps: Sequence[
+        Union[
+            ComponentMap,
+            DatePatternMap,
+            FixedValueMap,
+            ImplicitComponentMap,
+            MultiComponentMap,
+        ]
+    ]
+    description: Optional[str] = None
+    version: str = "1.0"
+
+    @property
+    def component_maps(self) -> Sequence[ComponentMap]:
+        """Maps between one source and one target component."""
+        return list(filter(lambda i: isinstance(i, ComponentMap), self.maps))
+
+    @property
+    def date_pattern_maps(self) -> Sequence[DatePatternMap]:
+        """Maps based on date patterns."""
+        return list(
+            filter(
+                lambda i: isinstance(i, DatePatternMap),
+                self.maps,
+            )
+        )
+
+    @property
+    def fixed_value_maps(self) -> Sequence[FixedValueMap]:
+        """Maps with a fixed value."""
+        return list(filter(lambda i: isinstance(i, FixedValueMap), self.maps))
+
+    @property
+    def implicit_component_maps(self) -> Sequence[ImplicitComponentMap]:
+        """Maps where the source value is copied to the target."""
+        return list(
+            filter(lambda i: isinstance(i, ImplicitComponentMap), self.maps)
+        )
+
+    @property
+    def multi_component_maps(self) -> Sequence[MultiComponentMap]:
+        """Maps between one or more source & one or more target components."""
+        return list(
+            filter(lambda i: isinstance(i, MultiComponentMap), self.maps)
+        )
+
+    def __iter__(
+        self,
+    ) -> Iterator[
+        Union[
+            ComponentMap,
+            DatePatternMap,
+            FixedValueMap,
+            ImplicitComponentMap,
+            MultiComponentMap,
+        ]
+    ]:
+        """Return an iterator over the different mapping rules."""
+        yield from self.maps
+
+    def __len__(self) -> int:
+        """Return the number of mapping rules in the structure map."""
+        return len(self.maps)
+
+    def __getitem__(
+        self, id_: str
+    ) -> Optional[
+        Sequence[
+            Union[
+                ComponentMap,
+                DatePatternMap,
+                FixedValueMap,
+                ImplicitComponentMap,
+                MultiComponentMap,
+            ]
+        ]
+    ]:
+        """Return the mapping rules for the supplied component."""
+        out = []
+        for m in self.maps:
+            if isinstance(m, FixedValueMap) and m.target == id_:
+                out.append(m)
+            elif (
+                isinstance(m, MultiValueMap)
+                and len(m.source) > 1
+                and id_ in m.source
+            ):
+                out.append(m)
+            elif (
+                not isinstance(m, FixedValueMap)
+                and not isinstance(m, MultiValueMap)
+                and m.source == id_
+            ):
+                out.append(m)
+        if len(out) == 0:
+            return None
+        else:
+            return out
