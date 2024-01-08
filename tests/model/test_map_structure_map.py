@@ -103,11 +103,14 @@ def test_iterable(id, name, agency, source, target, mappings):
     assert isinstance(sm, Iterable)
 
     for m in sm:
-        assert (
-            isinstance(m, ComponentMap)
-            or isinstance(m, DatePatternMap)
-            or isinstance(m, FixedValueMap)
-            or isinstance(m, ImplicitComponentMap)
+        assert isinstance(
+            m,
+            (
+                ComponentMap,
+                DatePatternMap,
+                FixedValueMap,
+                ImplicitComponentMap,
+            ),
         )
 
 

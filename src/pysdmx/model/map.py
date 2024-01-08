@@ -265,7 +265,10 @@ class StructureMap(Struct, frozen=True, omit_defaults=True):
         """Maps between one source and one target component."""
         return list(
             filter(
-                lambda i: isinstance(i, ComponentMap),  # type: ignore[arg-type]
+                lambda i: isinstance(  # type: ignore[arg-type]
+                    i,
+                    ComponentMap,
+                ),
                 self.maps,
             )
         )
@@ -275,7 +278,10 @@ class StructureMap(Struct, frozen=True, omit_defaults=True):
         """Maps based on date patterns."""
         return list(
             filter(
-                lambda i: isinstance(i, DatePatternMap),  # type: ignore[arg-type]
+                lambda i: isinstance(  # type: ignore[arg-type]
+                    i,
+                    DatePatternMap,
+                ),
                 self.maps,
             )
         )
@@ -285,7 +291,10 @@ class StructureMap(Struct, frozen=True, omit_defaults=True):
         """Maps with a fixed value."""
         return list(
             filter(
-                lambda i: isinstance(i, FixedValueMap),  # type: ignore[arg-type]
+                lambda i: isinstance(  # type: ignore[arg-type]
+                    i,
+                    FixedValueMap,
+                ),
                 self.maps,
             )
         )
@@ -295,7 +304,10 @@ class StructureMap(Struct, frozen=True, omit_defaults=True):
         """Maps where the source value is copied to the target."""
         return list(
             filter(
-                lambda i: isinstance(i, ImplicitComponentMap),  # type: ignore[arg-type]
+                lambda i: isinstance(  # type: ignore[arg-type]
+                    i,
+                    ImplicitComponentMap,
+                ),
                 self.maps,
             )
         )
@@ -305,7 +317,10 @@ class StructureMap(Struct, frozen=True, omit_defaults=True):
         """Maps between one or more source & one or more target components."""
         return list(
             filter(
-                lambda i: isinstance(i, MultiComponentMap),  # type: ignore[arg-type]
+                lambda i: isinstance(  # type: ignore[arg-type]
+                    i,
+                    MultiComponentMap,
+                ),
                 self.maps,
             )
         )
