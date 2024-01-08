@@ -2,12 +2,12 @@
 
 from datetime import datetime
 from re import Pattern
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Iterator, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
 
-class DateMapper(Struct, frozen=True, omit_defaults=True):
+class DatePatternMap(Struct, frozen=True, omit_defaults=True):
     """A mapping based on a date pattern.
 
     Examples:
@@ -17,47 +17,63 @@ class DateMapper(Struct, frozen=True, omit_defaults=True):
         periods for monthly data (e.g. `2023-09`). This can be expressed with
         the following mapping:
 
-            >>> DateMapper("DATE", "TIME_PERIOD", "MMM yy", "M")
+            >>> DatePatternMap("DATE", "TIME_PERIOD", "MMM yy", "M")
 
 
     Attributes:
-        source: The ID of the source component to be mapped.
+        source: The ID of the source component.
         target: The ID of the target component.
-        pattern: The date pattern to use when parsing the source value.
-        frequency: The desired frequency for the output value.
+        pattern: Describes the source date using conventions for describing
+            years, months, days, etc
+        frequency: The frequency to convert the input date into or a
+            reference to a dimension or an atttribute with the frequency code.
+            See `pattern_type` below for additional information.
+        id: The Map ID, as defined in the Registry.
+        locale: The locale on which the input will be parsed according to the
+            pattern.
+        pattern_type: The type of date pattern, i.e. fixed or variable. When
+            the type is `fixed`, `frequency` is a fixed value from the
+            frequency codelist (e.g. `A` for annual frequency). When the type
+            is `variable`, `frequency` references a dimension or attribute in
+            the target structure (e.g. `FREQ`). In this case, the input date
+            can be converted to a different format, depending on the
+            frequency of the converted data.
     """
 
     source: str
     target: str
     pattern: str
     frequency: str
+    id: Optional[str] = None
+    locale: str = "en"
+    pattern_type: Literal["fixed", "variable"] = "fixed"
 
 
-class ValueSetter(Struct, frozen=True, omit_defaults=True):
-    """A mapping setting a fixed or default value in the target.
+class FixedValueMap(Struct, frozen=True, omit_defaults=True):
+    """Set a component to a fixed value.
 
     Examples:
         For example, let's assume that all observations in the target must be
         treated as free for publication. This can be expressed with the
         following mapping:
 
-            >>> ValueSetter("CONF_STATUS", "F")
+            >>> FixedValueMap("CONF_STATUS", "F")
 
     Attributes:
-        target:
-            The ID of the component for which we want to set the fixed value.
-        value: The fixed value to be set in the referenced component.
-        is_fixed:
-            Whether the value must be set regardless of whether a value is
-            already set for the component.
+        target: The ID of the component to which the fixed value is assigned.
+        value: The fixed value of the referenced component.
+        located_in: Whether the component with a fixed value is in the source
+            structure or the target structure. It usually is in the target
+            structure (the default), but it can also be in the source, in case
+            of bi-directional mapping.
     """
 
     target: str
     value: Any
-    is_fixed: bool = True
+    located_in: Literal["source", "target"] = "target"
 
 
-class ImplicitMapper(Struct, frozen=True, omit_defaults=True):
+class ImplicitComponentMap(Struct, frozen=True, omit_defaults=True):
     """A mapping where the value in the source is copied to the target.
 
     Examples:
@@ -66,7 +82,7 @@ class ImplicitMapper(Struct, frozen=True, omit_defaults=True):
         a target component (`CONF_STATUS`). This can be expressed with the
         following mapping:
 
-        >>> ImplicitMapper("OBS_CONF", "CONF_STATUS")
+        >>> ImplicitComponentMap("OBS_CONF", "CONF_STATUS")
 
     Attributes:
         source:
@@ -79,7 +95,7 @@ class ImplicitMapper(Struct, frozen=True, omit_defaults=True):
     target: str
 
 
-class MultipleValueMap(Struct, frozen=True, omit_defaults=True):
+class MultiValueMap(Struct, frozen=True, omit_defaults=True):
     """Provides the values for a mapping between one or more components.
 
     Examples:
@@ -89,8 +105,8 @@ class MultipleValueMap(Struct, frozen=True, omit_defaults=True):
         the target should be `EUR` but, if the country is `CH`, then it should
         be `CHF`. This can be expressed with the following value maps:
 
-        >>> MultipleValueMap(["DE", "LC"], ["EUR"])
-        >>> MultipleValueMap(["CH", "LC"], ["CHF"])
+        >>> MultiValueMap(["DE", "LC"], ["EUR"])
+        >>> MultiValueMap(["CH", "LC"], ["CHF"])
 
     Also, the mapping can depending on the time period.
 
@@ -102,9 +118,9 @@ class MultipleValueMap(Struct, frozen=True, omit_defaults=True):
         >>> from datetime import datetime
         >>> t1 = datetime(1998, 12, 31, 23, 59, 59)
         >>> t2 = datetime(1999, 1, 1)
-        >>> MultipleValueMap(["DE", "LC"], ["EUR"], valid_to: t1)
-        >>> MultipleValueMap(["DE", "LC"], ["EUR"], valid_from: t2)
-        >>> MultipleValueMap(["CH", "LC"], ["CHF"])
+        >>> MultiValueMap(["DE", "LC"], ["EUR"], valid_to: t1)
+        >>> MultiValueMap(["DE", "LC"], ["EUR"], valid_from: t2)
+        >>> MultiValueMap(["CH", "LC"], ["CHF"])
 
     Values in the source may represent regular expressions with capture
     groups.
@@ -150,7 +166,7 @@ class ValueMap(Struct, frozen=True, omit_defaults=True):
     valid_to: Optional[datetime] = None
 
 
-class MultipleComponentMapper(Struct, frozen=True, omit_defaults=True):
+class MultiComponentMap(Struct, frozen=True, omit_defaults=True):
     """Maps one or more source components to one or more target components.
 
     Examples:
@@ -160,11 +176,11 @@ class MultipleComponentMapper(Struct, frozen=True, omit_defaults=True):
         the target should be `EUR` but, if the country is `CH`, then it should
         be `CHF`. This can be expressed as follows:
 
-            >>> de = MultipleValueMap(["DE", "LC"], ["EUR"])
-            >>> ch = MultipleValueMap(["CH", "LC"], ["CHF"])
+            >>> de = MultiValueMap(["DE", "LC"], ["EUR"])
+            >>> ch = MultiValueMap(["CH", "LC"], ["CHF"])
             >>> src = ["COUNTRY", "CURRENCY"]
             >>> tgt = ["CURRENCY"]
-            >>> cm = MultipleComponentMapper(src, tgt, [de, ch])
+            >>> cm = MultiComponentMap(src, tgt, [de, ch])
 
     Attributes:
         source: The source component(s)
@@ -175,10 +191,10 @@ class MultipleComponentMapper(Struct, frozen=True, omit_defaults=True):
 
     source: Sequence[str]
     target: Sequence[str]
-    values: Sequence[MultipleValueMap]
+    values: Sequence[MultiValueMap]
 
 
-class ComponentMapper(Struct, frozen=True, omit_defaults=True):
+class ComponentMap(Struct, frozen=True, omit_defaults=True):
     """Maps a source component to a target component.
 
     Examples:
@@ -188,7 +204,7 @@ class ComponentMapper(Struct, frozen=True, omit_defaults=True):
 
         >>> ar = ValueMap("AR", "ARG")
         >>> uy = ValueMap("UY", "URY")
-        >>> cm = ComponentMapper("COUNTRY", "COUNTRY", [ar, uy])
+        >>> cm = ComponentMap("COUNTRY", "COUNTRY", [ar, uy])
 
     Attributes:
         source: The source component
@@ -202,24 +218,152 @@ class ComponentMapper(Struct, frozen=True, omit_defaults=True):
     values: Sequence[ValueMap]
 
 
-class MappingDefinition(Struct, frozen=True, omit_defaults=True):
+class StructureMap(Struct, frozen=True, omit_defaults=True):
     """Maps a source structure to a target structure.
 
     The various mapping rules are classified by types.
 
+    A structure map is an iterable, i.e. it is possible to iterate over
+    the various mapping rules using a `for` loop.
+
+    It is also possible to retrieve the mapping rule applying to a component
+    by using the component id (e.g. `map["FREQ"]`).
+
     Attributes:
-        component_maps: The list of mappings between one source component
-            and one target component.
-        date_maps: The list of mappings based on date patterns
-        fixed_value_maps: The list of mappings with a fixed value
-        implicit_maps: The list of mappings where the value in the source
-            is copied to the target.
-        multiple_component_maps: The list of mappings between one or more
-            source components and one or more target components.
+        id: The identifier for the codelist (e.g. CL_FREQ).
+        name: The codelist name (e.g. "Frequency codelist").
+        agency: The maintainer of the codelist (e.g. SDMX).
+        source: The source structure.
+        target: The target structure.
+        maps: The various mapping rules in the structure map.
+        description: Additional descriptive information about the codelist
+            (e.g. "This codelist provides a set of values indicating the
+            frequency of the data").
+        version: The codelist version (e.g. 2.0.42)
+
     """
 
-    component_maps: Sequence[ComponentMapper] = ()
-    date_maps: Sequence[DateMapper] = ()
-    fixed_value_maps: Sequence[ValueSetter] = ()
-    implicit_maps: Sequence[ImplicitMapper] = ()
-    multiple_component_maps: Sequence[MultipleComponentMapper] = ()
+    id: str
+    name: str
+    agency: str
+    source: str
+    target: str
+    maps: Sequence[
+        Union[
+            ComponentMap,
+            DatePatternMap,
+            FixedValueMap,
+            ImplicitComponentMap,
+            MultiComponentMap,
+        ]
+    ]
+    description: Optional[str] = None
+    version: str = "1.0"
+
+    @property
+    def component_maps(self) -> Sequence[ComponentMap]:
+        """Maps between one source and one target component."""
+        return list(
+            filter(
+                lambda i: isinstance(  # type: ignore[arg-type]
+                    i,
+                    ComponentMap,
+                ),
+                self.maps,
+            )
+        )
+
+    @property
+    def date_pattern_maps(self) -> Sequence[DatePatternMap]:
+        """Maps based on date patterns."""
+        return list(
+            filter(
+                lambda i: isinstance(  # type: ignore[arg-type]
+                    i,
+                    DatePatternMap,
+                ),
+                self.maps,
+            )
+        )
+
+    @property
+    def fixed_value_maps(self) -> Sequence[FixedValueMap]:
+        """Maps with a fixed value."""
+        return list(
+            filter(
+                lambda i: isinstance(  # type: ignore[arg-type]
+                    i,
+                    FixedValueMap,
+                ),
+                self.maps,
+            )
+        )
+
+    @property
+    def implicit_component_maps(self) -> Sequence[ImplicitComponentMap]:
+        """Maps where the source value is copied to the target."""
+        return list(
+            filter(
+                lambda i: isinstance(  # type: ignore[arg-type]
+                    i,
+                    ImplicitComponentMap,
+                ),
+                self.maps,
+            )
+        )
+
+    @property
+    def multi_component_maps(self) -> Sequence[MultiComponentMap]:
+        """Maps between one or more source & one or more target components."""
+        return list(
+            filter(
+                lambda i: isinstance(  # type: ignore[arg-type]
+                    i,
+                    MultiComponentMap,
+                ),
+                self.maps,
+            )
+        )
+
+    def __iter__(
+        self,
+    ) -> Iterator[
+        Union[
+            ComponentMap,
+            DatePatternMap,
+            FixedValueMap,
+            ImplicitComponentMap,
+            MultiComponentMap,
+        ]
+    ]:
+        """Return an iterator over the different mapping rules."""
+        yield from self.maps
+
+    def __len__(self) -> int:
+        """Return the number of mapping rules in the structure map."""
+        return len(self.maps)
+
+    def __getitem__(
+        self, id_: str
+    ) -> Optional[
+        Sequence[
+            Union[
+                ComponentMap,
+                DatePatternMap,
+                FixedValueMap,
+                ImplicitComponentMap,
+                MultiComponentMap,
+            ]
+        ]
+    ]:
+        """Return the mapping rules for the supplied component."""
+        out = []
+        for m in self.maps:
+            if (
+                hasattr(m, "source") and (m.source == id_ or id_ in m.source)
+            ) or (isinstance(m, FixedValueMap) and m.target == id_):
+                out.append(m)
+        if len(out) == 0:
+            return None
+        else:
+            return out

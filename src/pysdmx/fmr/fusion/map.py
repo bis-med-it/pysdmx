@@ -6,15 +6,16 @@ from typing import Any, Dict, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.fmr.fusion.core import FusionString
 from pysdmx.model import (
-    ComponentMapper,
-    DateMapper,
-    ImplicitMapper,
-    MappingDefinition,
-    MultipleComponentMapper,
-    MultipleValueMap,
+    ComponentMap,
+    DatePatternMap,
+    FixedValueMap,
+    ImplicitComponentMap,
+    MultiComponentMap,
+    MultiValueMap,
+    StructureMap as SM,
     ValueMap,
-    ValueSetter,
 )
 from pysdmx.util import find_by_urn
 
@@ -46,10 +47,10 @@ class FusionRepresentationMapping(Struct, frozen=True):
             inp = inp[0:-1]
         return dt.fromisoformat(inp).replace(tzinfo=tz.utc)
 
-    def to_model(self, is_multi: bool) -> Union[MultipleValueMap, ValueMap]:
+    def to_model(self, is_multi: bool) -> Union[MultiValueMap, ValueMap]:
         """Returns the requested value maps."""
         if is_multi:
-            return MultipleValueMap(
+            return MultiValueMap(
                 [src.to_model() for src in self.source],
                 self.target,
                 self.__get_dt(self.validFrom) if self.validFrom else None,
@@ -79,7 +80,7 @@ class FusionRepresentationMap(
     def to_model(
         self,
         is_multi: bool = False,
-    ) -> Sequence[Union[MultipleValueMap, ValueMap]]:
+    ) -> Sequence[Union[MultiValueMap, ValueMap]]:
         """Returns the requested value maps."""
         return [rm.to_model(is_multi) for rm in self.mappedRelationships]
 
@@ -93,22 +94,22 @@ class FusionComponentMap(Struct, frozen=True):
 
     def to_model(
         self, rms: Sequence[FusionRepresentationMap]
-    ) -> Union[ComponentMapper, MultipleComponentMapper, ImplicitMapper]:
+    ) -> Union[ComponentMap, MultiComponentMap, ImplicitComponentMap]:
         """Returns the requested component map."""
         if self.representationMapRef:
             rm = find_by_urn(rms, self.representationMapRef)
             if len(self.sources) == 1 and len(self.targets) == 1:
-                return ComponentMapper(
+                return ComponentMap(
                     self.sources[0],
                     self.targets[0],
                     rm.to_model(),
                 )
             else:
-                return MultipleComponentMapper(
+                return MultiComponentMap(
                     self.sources, self.targets, rm.to_model(True)
                 )
         else:
-            return ImplicitMapper(self.sources[0], self.targets[0])
+            return ImplicitComponentMap(self.sources[0], self.targets[0])
 
 
 class FusionTimePatternMap(Struct, frozen=True):
@@ -116,22 +117,38 @@ class FusionTimePatternMap(Struct, frozen=True):
 
     source: str
     target: str
-    freqId: str
     pattern: str
+    locale: str
+    freqId: Optional[str] = None
+    freqDim: Optional[str] = None
+    id: Optional[str] = None
 
-    def to_model(self) -> DateMapper:
+    def to_model(self) -> DatePatternMap:
         """Returns the requested date mapper."""
-        return DateMapper(
+        freq = self.freqId if self.freqId else self.freqDim
+        typ = "fixed" if self.freqId else "variable"
+        return DatePatternMap(
             self.source,
             self.target,
             self.pattern,
-            self.freqId,
+            freq,  # type: ignore[arg-type]
+            self.id,
+            self.locale,
+            typ,  # type: ignore[arg-type]
         )
 
 
 class FusionStructureMap(Struct, frozen=True):
     """Fusion-JSON payload for a structure map."""
 
+    id: str
+    agencyId: str
+    version: str
+    source: str
+    target: str
+    names: Sequence[FusionString] = ()
+    descriptions: Sequence[FusionString] = ()
+    fixedInput: Dict[str, Any] = {}
     fixedOutput: Dict[str, Any] = {}
     timePatternMaps: Sequence[FusionTimePatternMap] = ()
     componentMaps: Sequence[FusionComponentMap] = ()
@@ -139,21 +156,24 @@ class FusionStructureMap(Struct, frozen=True):
     def to_model(
         self,
         rms: Sequence[FusionRepresentationMap],
-    ) -> MappingDefinition:
+    ) -> SM:
         """Returns the requested mapping definition."""
-        m1 = [tpm.to_model() for tpm in self.timePatternMaps]
-        m2 = [cm.to_model(rms) for cm in self.componentMaps]
-        m3 = [ValueSetter(k, v) for k, v in self.fixedOutput.items()]
-        m4 = [m for m in m2 if isinstance(m, ImplicitMapper)]
-        m5 = [m for m in m2 if isinstance(m, MultipleComponentMapper)]
-        m6 = [m for m in m2 if isinstance(m, ComponentMapper)]
+        m1 = tuple(tpm.to_model() for tpm in self.timePatternMaps)
+        m2 = tuple(cm.to_model(rms) for cm in self.componentMaps)
+        m3 = tuple(FixedValueMap(k, v) for k, v in self.fixedOutput.items())
+        m4 = tuple(
+            FixedValueMap(k, v, "source") for k, v in self.fixedInput.items()
+        )
 
-        return MappingDefinition(
-            component_maps=m6,
-            date_maps=m1,
-            fixed_value_maps=m3,
-            implicit_maps=m4,
-            multiple_component_maps=m5,
+        return SM(
+            self.id,
+            self.names[0].value,
+            self.agencyId,
+            self.source,
+            self.target,
+            m1 + m2 + m3 + m4,
+            self.descriptions[0].value if self.descriptions else None,
+            self.version,
         )
 
 
@@ -163,7 +183,7 @@ class FusionMappingMessage(Struct, frozen=True):
     StructureMap: Sequence[FusionStructureMap]
     RepresentationMap: Sequence[FusionRepresentationMap] = ()
 
-    def to_model(self) -> MappingDefinition:
+    def to_model(self) -> SM:
         """Returns the requested mapping definition."""
         return self.StructureMap[0].to_model(self.RepresentationMap)
 
@@ -173,7 +193,7 @@ class FusionRepresentationMapMessage(Struct, frozen=True):
 
     RepresentationMap: Sequence[FusionRepresentationMap]
 
-    def to_model(self) -> MappingDefinition:
+    def to_model(self) -> SM:
         """Returns the requested mapping definition."""
         out = self.RepresentationMap[0].to_model()
         return out  # type: ignore[return-value]

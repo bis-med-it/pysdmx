@@ -7,14 +7,14 @@ from typing import Any, Optional, Sequence, Union
 from msgspec import Struct
 
 from pysdmx.model import (
-    ComponentMapper,
-    DateMapper,
-    ImplicitMapper,
-    MappingDefinition,
-    MultipleComponentMapper,
-    MultipleValueMap,
+    ComponentMap,
+    DatePatternMap,
+    FixedValueMap,
+    ImplicitComponentMap,
+    MultiComponentMap,
+    MultiValueMap,
+    StructureMap,
     ValueMap,
-    ValueSetter,
 )
 from pysdmx.util import find_by_urn
 
@@ -44,10 +44,10 @@ class JsonRepresentationMapping(Struct, frozen=True):
     def __get_dt(self, inp: str) -> dt:
         return dt.fromisoformat(inp).replace(tzinfo=tz.utc)
 
-    def to_model(self, is_multi: bool) -> Union[MultipleValueMap, ValueMap]:
+    def to_model(self, is_multi: bool) -> Union[MultiValueMap, ValueMap]:
         """Returns the requested value maps."""
         if is_multi:
-            return MultipleValueMap(
+            return MultiValueMap(
                 [src.to_model() for src in self.sourceValues],
                 self.targetValues,
                 self.__get_dt(self.validFrom) if self.validFrom else None,
@@ -76,7 +76,7 @@ class JsonRepresentationMap(
 
     def to_model(
         self, is_multi: bool = False
-    ) -> Sequence[Union[MultipleValueMap, ValueMap]]:
+    ) -> Sequence[Union[MultiValueMap, ValueMap]]:
         """Returns the requested value maps."""
         return [rm.to_model(is_multi) for rm in self.representationMappings]
 
@@ -84,12 +84,19 @@ class JsonRepresentationMap(
 class JsonFixedValueMap(Struct, frozen=True):
     """SDMX-JSON payload for a fixed value map."""
 
-    target: str
     values: Sequence[Any]
+    source: Optional[str] = None
+    target: Optional[str] = None
 
-    def to_model(self) -> ValueSetter:
+    def to_model(self) -> FixedValueMap:
         """Returns the requested fixed value map."""
-        return ValueSetter(self.target, self.values[0])
+        located_in = "source" if self.source else "target"
+        target = self.target if self.target else self.source
+        return FixedValueMap(
+            target,  # type: ignore[arg-type]
+            self.values[0],
+            located_in,  # type: ignore[arg-type]
+        )
 
 
 class JsonComponentMap(Struct, frozen=True):
@@ -101,22 +108,22 @@ class JsonComponentMap(Struct, frozen=True):
 
     def to_model(
         self, rms: Sequence[JsonRepresentationMap]
-    ) -> Union[ComponentMapper, MultipleComponentMapper, ImplicitMapper]:
+    ) -> Union[ComponentMap, MultiComponentMap, ImplicitComponentMap]:
         """Returns the requested map."""
         if self.representationMap:
             rm = find_by_urn(rms, self.representationMap)
             if len(self.source) == 1 and len(self.target) == 1:
-                return ComponentMapper(
+                return ComponentMap(
                     self.source[0],
                     self.target[0],
                     rm.to_model(),
                 )
             else:
-                return MultipleComponentMapper(
+                return MultiComponentMap(
                     self.source, self.target, rm.to_model(True)
                 )
         else:
-            return ImplicitMapper(self.source[0], self.target[0])
+            return ImplicitComponentMap(self.source[0], self.target[0])
 
 
 class JsonMappedPair(Struct, frozen=True):
@@ -131,21 +138,40 @@ class JsonDatePatternMap(Struct, frozen=True):
 
     sourcePattern: str
     mappedComponents: Sequence[JsonMappedPair]
-    targetFrequencyID: str
+    locale: str
+    id: Optional[str] = None
+    targetFrequencyID: Optional[str] = None
+    frequencyDimension: Optional[str] = None
 
-    def to_model(self) -> DateMapper:
+    def to_model(self) -> DatePatternMap:
         """Returns the requested date mapper."""
-        return DateMapper(
+        freq = (
+            self.targetFrequencyID
+            if self.targetFrequencyID
+            else self.frequencyDimension
+        )
+        typ = "fixed" if self.targetFrequencyID else "variable"
+        return DatePatternMap(
             self.mappedComponents[0].source,
             self.mappedComponents[0].target,
             self.sourcePattern,
-            self.targetFrequencyID,
+            freq,  # type: ignore[arg-type]
+            self.id,
+            self.locale,
+            typ,  # type: ignore[arg-type]
         )
 
 
 class JsonStructureMap(Struct, frozen=True):
     """SDMX-JSON payload for a structure map."""
 
+    id: str
+    name: str
+    version: str
+    agencyID: str
+    source: str
+    target: str
+    description: Optional[str] = None
     datePatternMaps: Sequence[JsonDatePatternMap] = ()
     componentMaps: Sequence[JsonComponentMap] = ()
     fixedValueMaps: Sequence[JsonFixedValueMap] = ()
@@ -153,21 +179,20 @@ class JsonStructureMap(Struct, frozen=True):
     def to_model(
         self,
         rms: Sequence[JsonRepresentationMap],
-    ) -> MappingDefinition:
+    ) -> StructureMap:
         """Returns the requested mapping definition."""
-        m1 = [dpm.to_model() for dpm in self.datePatternMaps]
-        m2 = [cm.to_model(rms) for cm in self.componentMaps]
-        m3 = [fvm.to_model() for fvm in self.fixedValueMaps]
-        m4 = [m for m in m2 if isinstance(m, ImplicitMapper)]
-        m5 = [m for m in m2 if isinstance(m, MultipleComponentMapper)]
-        m6 = [m for m in m2 if isinstance(m, ComponentMapper)]
-
-        return MappingDefinition(
-            component_maps=m6,
-            date_maps=m1,
-            fixed_value_maps=m3,
-            implicit_maps=m4,
-            multiple_component_maps=m5,
+        m1 = tuple([dpm.to_model() for dpm in self.datePatternMaps])
+        m2 = tuple([cm.to_model(rms) for cm in self.componentMaps])
+        m3 = tuple([fvm.to_model() for fvm in self.fixedValueMaps])
+        return StructureMap(
+            self.id,
+            self.name,
+            self.agencyID,
+            self.source,
+            self.target,
+            m1 + m2 + m3,
+            self.description,
+            self.version,
         )
 
 
@@ -177,7 +202,7 @@ class JsonStructureMaps(Struct, frozen=True):
     structureMaps: Sequence[JsonStructureMap]
     representationMaps: Sequence[JsonRepresentationMap] = ()
 
-    def to_model(self) -> MappingDefinition:
+    def to_model(self) -> StructureMap:
         """Returns the requested mapping definition."""
         return self.structureMaps[0].to_model(self.representationMaps)
 
@@ -187,7 +212,7 @@ class JsonMappingMessage(Struct, frozen=True):
 
     data: JsonStructureMaps
 
-    def to_model(self) -> MappingDefinition:
+    def to_model(self) -> StructureMap:
         """Returns the requested mapping definition."""
         return self.data.to_model()
 

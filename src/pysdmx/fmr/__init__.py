@@ -15,10 +15,10 @@ from pysdmx.model import (
     ConceptScheme,
     DataflowInfo,
     Hierarchy,
-    MappingDefinition,
     MetadataReport,
     Organisation,
     Schema,
+    StructureMap,
     ValueMap,
 )
 
@@ -432,7 +432,7 @@ class RegistryClient(__BaseRegistryClient):
         agency: str,
         id: str,
         version: str = "+",
-    ) -> MappingDefinition:
+    ) -> StructureMap:
         """Get a mapping definition (aka structure map).
 
         Args:
@@ -450,7 +450,7 @@ class RegistryClient(__BaseRegistryClient):
     def get_code_map(
         self, agency: str, id: str, version: str = "+"
     ) -> Sequence[ValueMap]:
-        """Get a mapping definition.
+        """Get a code map (aka representation map).
 
         Args:
             agency: The agency maintaining the representation map.
@@ -741,7 +741,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         agency: str,
         id: str,
         version: str = "+",
-    ) -> MappingDefinition:
+    ) -> StructureMap:
         """Get a mapping definition (aka structure map).
 
         Args:
@@ -759,7 +759,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
     async def get_code_map(
         self, agency: str, id: str, version: str = "+"
     ) -> Sequence[ValueMap]:
-        """Get a representation map.
+        """Get a code map (aka representation map).
 
         Args:
             agency: The agency maintaining the representation map.

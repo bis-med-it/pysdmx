@@ -87,6 +87,7 @@
                 "target": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:MDD(1.0)",
                 "datePatternMaps": [
                     {
+                        "id": "my_id",
                         "sourcePattern": "MM/dd/yyyy",
                         "locale": "en",
                         "mappedComponents": [
@@ -96,6 +97,18 @@
                             }
                         ],
                         "targetFrequencyID": "M"
+                    },
+                    {
+                        "id": "your_id",
+                        "sourcePattern": "ddMMyy",
+                        "locale": "es",
+                        "mappedComponents": [
+                            {
+                                "source": "VOLUME_MONTH",
+                                "target": "TIME_PERIOD"
+                            }
+                        ],
+                        "frequencyDimension": "CONTRACT_CODE"
                     }
                 ],
                 "componentMaps": [
@@ -155,7 +168,7 @@
                         ]
                     },
                     {
-                        "target": "CONF_STATUS",
+                        "source": "CONF_STATUS",
                         "values": [
                             "C"
                         ]

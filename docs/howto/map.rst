@@ -132,7 +132,7 @@ this is the case for ``OPTION_TYPE``, ``TO``, and ``OI``.
     for m in mapping.implicit_maps:
         print(m)
         # Output example:
-        # ImplicitMapper(source='OPT_TYP', target='OPTION_TYPE')
+        # ImplicitComponentMap(source='OPT_TYP', target='OPTION_TYPE')
 
 As seen, the operation to be applied is fairly simple:
 
@@ -151,7 +151,7 @@ Another fairly simple case is setting fixed values. This is the case for
     for m in mapping.fixed_value_maps:
         print(m)
         # Output example:
-        # ValueSetter(target='FREQ', value='M')
+        # FixedValueMap(target='FREQ', value='M')
 
 Mapping Codes
 """""""""""""
@@ -165,7 +165,7 @@ mappings can be retrieved via the ``component_maps`` property:
     for m in mapping.component_maps:
         print(m)
         # Output example:
-        # ComponentMapper(
+        # ComponentMap(
         #     source='CONTRACT',
         #     target='CONTRACT',
         #     values=[
@@ -209,7 +209,7 @@ property:
     for m in rm.date_maps:
         print(m)
         # Output example:
-        # DateMapper(source='ACTIVITY_DATE', target='TIME_PERIOD', pattern='MM/dd/yyyy', frequency='M')
+        # PatternMap(source='ACTIVITY_DATE', target='TIME_PERIOD', pattern='MM/dd/yyyy', frequency='M')
 
 Here, we need to parse the date using the supplied pattern, ``MM/dd/yyyy``,
 i.e., dates like ``12/25/2013``. Once this is done, we need to format them to
