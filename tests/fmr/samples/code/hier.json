@@ -409,7 +409,7 @@
                                             }
                                         ],
                                         "id": "M0_Li",
-                                        "validFrom": "2020-01-01T00:00:00",
+                                        "validFrom": "1920-01-01T00:00:00",
                                         "validTo": "2020-12-31T23:59:59",
                                         "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Li"
                                     },

@@ -272,7 +272,7 @@
                                     "id": "M0_Li",
                                     "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Li",
                                     "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Li",
-                                    "validFrom": 1577836800000,
+                                    "validFrom": -1577923200000,
                                     "validTo": 1609459199000
                                 },
                                 {
