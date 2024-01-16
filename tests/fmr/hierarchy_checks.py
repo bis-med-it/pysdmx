@@ -84,7 +84,7 @@ def check_hcode_details(mock, fmr: RegistryClient, query, body):
                     for chld in c.codes:
                         if chld.id == "Li":
                             assert chld.rel_valid_from == datetime(
-                                2020, 1, 1, tzinfo=timezone.utc
+                                1920, 1, 1, tzinfo=timezone.utc
                             )
                             assert chld.rel_valid_to == datetime(
                                 2020, 12, 31, 23, 59, 59, tzinfo=timezone.utc

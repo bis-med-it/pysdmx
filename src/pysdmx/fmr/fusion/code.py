@@ -1,6 +1,6 @@
 """Collection of Fusion-JSON schemas for codes and codelists."""
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone as tz
 from typing import Optional, Sequence, Tuple
 
 from msgspec import Struct
@@ -107,17 +107,19 @@ class FusionHierarchicalCode(Struct, frozen=True):
         ]
         return [c for c in f[0].codes if c.id == r.item_id][0]
 
+    def __convert_epoch(self, epoch: int) -> datetime:
+        if epoch < 0:
+            return datetime(1970, 1, 1, tzinfo=tz.utc) + timedelta(
+                milliseconds=epoch
+            )
+        else:
+            return datetime.fromtimestamp(epoch / 1000, tz.utc)
+
     def to_model(self, codelists: Sequence[CL]) -> HierarchicalCode:
         """Converts a FusionHierarchicalCode to a hierachical code."""
         code = self.__find_code(codelists, self.code)
-        if self.validFrom:
-            rvf = datetime.fromtimestamp(self.validFrom / 1000, timezone.utc)
-        else:
-            rvf = None
-        if self.validTo:
-            rvt = datetime.fromtimestamp(self.validTo / 1000, timezone.utc)
-        else:
-            rvt = None
+        rvf = self.__convert_epoch(self.validFrom) if self.validFrom else None
+        rvt = self.__convert_epoch(self.validTo) if self.validTo else None
         codes = [c.to_model(codelists) for c in self.codes]
         return HierarchicalCode(
             code.id,
