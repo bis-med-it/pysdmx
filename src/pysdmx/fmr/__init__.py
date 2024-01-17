@@ -426,7 +426,7 @@ class RegistryClient(__BaseRegistryClient):
             The requested metadata report.
         """
         out = self.__fetch(super()._url("report", provider, id, version), True)
-        return super()._out(out, self.deser.report)
+        return super()._out(out, self.deser.report)[0]
 
     def get_reports(
         self,
@@ -761,7 +761,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         out = await self.__fetch(
             super()._url("report", provider, id, version), True
         )
-        return super()._out(out, self.deser.report)
+        return super()._out(out, self.deser.report)[0]
 
     async def get_reports(
         self,

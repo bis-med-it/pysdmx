@@ -23,9 +23,9 @@ class JsonMetadataMessage(Struct, frozen=True):
         attrs = _merge_attributes(r.attributes)
         return MetadataReport(r.id, r.name, r.metadataflow, r.targets, attrs)
 
-    def to_model(self, fetch_all: bool = False) -> MetadataReport:
+    def to_model(self, fetch_all: bool = False) -> Sequence[MetadataReport]:
         """Returns the requested metadata report(s)."""
         if fetch_all:
             return [self.__create_report(r) for r in self.data.metadataSets]
         else:
-            return self.__create_report(self.data.metadataSets[0])
+            return [self.__create_report(self.data.metadataSets[0])]
