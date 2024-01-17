@@ -79,6 +79,7 @@ url_templates = {
     ),
     "provider": "structure/dataproviderscheme/{0}?references={1}",
     "report": "metadata/metadataset/{0}/{1}/{2}",
+    "reports": "metadata/structure/{0}/{1}/{2}/{3}",
     "schema": "schema/{0}/{1}/{2}/{3}",
     "vl": "structure/valuelist/{0}/{1}/{2}",
 }
@@ -427,6 +428,32 @@ class RegistryClient(__BaseRegistryClient):
         out = self.__fetch(super()._url("report", provider, id, version), True)
         return super()._out(out, self.deser.report)
 
+    def get_reports(
+        self,
+        artefact_type: str,
+        agency: str,
+        id: str,
+        version: str = "+",
+    ) -> Sequence[MetadataReport]:
+        """Get the reference metadata reports for the supplied structure.
+
+        Args:
+            artefact_type: The type of the structure for which reports must
+                be returned.
+            agency: The agency maintaining the hierarchy for which reports
+                must be returned.
+            id: The ID of the structure for which reports must be returned.
+            version: The version of the structure for which reports must be
+                returned.
+
+        Returns:
+            The metadata reports about the supplied structure.
+        """
+        out = self.__fetch(
+            super()._url("reports", artefact_type, agency, id, version), True
+        )
+        return super()._out(out, self.deser.report, True)
+
     def get_mapping(
         self,
         agency: str,
@@ -735,6 +762,32 @@ class AsyncRegistryClient(__BaseRegistryClient):
             super()._url("report", provider, id, version), True
         )
         return super()._out(out, self.deser.report)
+
+    async def get_reports(
+        self,
+        artefact_type: str,
+        agency: str,
+        id: str,
+        version: str = "+",
+    ) -> Sequence[MetadataReport]:
+        """Get the reference metadata reports for the supplied structure.
+
+        Args:
+            artefact_type: The type of the structure for which reports must
+                be returned.
+            agency: The agency maintaining the hierarchy for which reports
+                must be returned.
+            id: The ID of the structure for which reports must be returned.
+            version: The version of the structure for which reports must be
+                returned.
+
+        Returns:
+            The metadata reports about the supplied structure.
+        """
+        out = await self.__fetch(
+            super()._url("reports", artefact_type, agency, id, version), True
+        )
+        return super()._out(out, self.deser.report, True)
 
     async def get_mapping(
         self,
