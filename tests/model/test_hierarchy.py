@@ -138,7 +138,7 @@ def test_codes_by_id_is_a_set(id, name, agency):
     assert m[0] == grandchild1
 
 
-def test_codes_by_id_dff_names(id, name, agency):
+def test_codes_by_id_diff_names(id, name, agency):
     grandchild1 = HierarchicalCode("child211", "Child 2.1.1")
     grandchild2 = HierarchicalCode("child212", "Child 2.1.2")
     grandchild3 = HierarchicalCode("child211", "Child 2.1.1 - Diff name")
