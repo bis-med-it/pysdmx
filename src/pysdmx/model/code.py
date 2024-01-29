@@ -211,14 +211,18 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
         return None
 
     def __by_id(
-        self, id: str, codes: Sequence[HierarchicalCode]
+        self,
+        id: str,
+        codes: Sequence[HierarchicalCode],
+        out: Optional[Sequence] = None,
     ) -> Sequence[HierarchicalCode]:
-        out = []
+        if out is None:
+            out = []
         for i in codes:
             if i.id == id and i not in out:
                 out.append(i)
             if i.codes:
-                out.extend(self.__by_id(id, i.codes))
+                self.__by_id(id, i.codes, out)
         return out
 
     def by_id(self, id: str) -> Sequence[HierarchicalCode]:
