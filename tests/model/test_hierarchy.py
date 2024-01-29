@@ -98,3 +98,64 @@ def test_get_code(id, name, agency):
     assert resp2 == codes[1]
     assert resp3 is None
     assert resp4 is None
+
+
+def test_codes_by_id_no_parent_needed(id, name, agency):
+    grandchild = HierarchicalCode("child211", "Child 2.1.1")
+    child1 = HierarchicalCode("child21", "Child 2.1", codes=[grandchild])
+    codes = [
+        HierarchicalCode("child1", "Child 1"),
+        HierarchicalCode("child2", "Child 2", codes=[child1]),
+    ]
+    cs = Hierarchy(id, name, agency, codes=codes)
+
+    m = cs.by_id("child211")
+
+    assert isinstance(m, Iterable)
+    assert len(m) == 1
+    m = list(m)
+    assert m[0] == grandchild
+
+
+def test_codes_by_id_is_a_set(id, name, agency):
+    grandchild1 = HierarchicalCode("child211", "Child 2.1.1")
+    grandchild2 = HierarchicalCode("child212", "Child 2.1.2")
+    child1 = HierarchicalCode(
+        "child21", "Child 2.1", codes=[grandchild1, grandchild2]
+    )
+    child2 = HierarchicalCode("child22", "Child 2.2", codes=[grandchild1])
+    codes = [
+        HierarchicalCode("child1", "Child 1"),
+        HierarchicalCode("child2", "Child 2", codes=[child1, child2]),
+    ]
+    cs = Hierarchy(id, name, agency, codes=codes)
+
+    m = cs.by_id("child211")
+
+    assert isinstance(m, Iterable)
+    assert len(m) == 1
+    m = list(m)
+    assert m[0] == grandchild1
+
+
+def test_codes_by_id_dff_names(id, name, agency):
+    grandchild1 = HierarchicalCode("child211", "Child 2.1.1")
+    grandchild2 = HierarchicalCode("child212", "Child 2.1.2")
+    grandchild3 = HierarchicalCode("child211", "Child 2.1.1 - Diff name")
+    child1 = HierarchicalCode(
+        "child21", "Child 2.1", codes=[grandchild1, grandchild2]
+    )
+    child2 = HierarchicalCode("child22", "Child 2.2", codes=[grandchild3])
+    codes = [
+        HierarchicalCode("child1", "Child 1"),
+        HierarchicalCode("child2", "Child 2", codes=[child1, child2]),
+    ]
+    cs = Hierarchy(id, name, agency, codes=codes)
+
+    m = cs.by_id("child211")
+
+    assert isinstance(m, Iterable)
+    assert len(m) == 2
+    m = list(m)
+    assert grandchild1 in m
+    assert grandchild3 in m
