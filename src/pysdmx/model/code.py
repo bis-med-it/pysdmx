@@ -17,7 +17,7 @@ representation of hierarchical relationships to hierarchies only.
 """
 
 from datetime import datetime
-from typing import FrozenSet, Iterator, Optional, Sequence
+from typing import Iterator, Optional, Sequence
 
 from msgspec import Struct
 
