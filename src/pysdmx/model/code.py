@@ -214,13 +214,13 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
         self,
         id: str,
         codes: Sequence[HierarchicalCode],
-        out: Optional[Sequence] = None,
+        out: Optional[Sequence[HierarchicalCode]] = None,
     ) -> Sequence[HierarchicalCode]:
         if out is None:
             out = []
         for i in codes:
             if i.id == id and i not in out:
-                out.append(i)
+                out.append(i)  # type: ignore[attr-defined]
             if i.codes:
                 self.__by_id(id, i.codes, out)
         return out
