@@ -17,7 +17,7 @@ representation of hierarchical relationships to hierarchies only.
 """
 
 from datetime import datetime
-from typing import Iterator, Optional, Sequence
+from typing import Iterator, Optional, Sequence, FrozenSet
 
 from msgspec import Struct
 
@@ -209,3 +209,37 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
             if out:
                 return out[0]
         return None
+
+    def __by_id(
+        self, id: str, codes: FrozenSet[HierarchicalCode]
+    ) -> FrozenSet[HierarchicalCode]:
+        out = []
+        for i in codes:
+            if i.id == id:
+                out.append(i)
+            if i.codes:
+                out.extend(self.__by_id(id, i.codes))
+        return frozenset(out)
+
+    def by_id(self, id: str) -> FrozenSet[HierarchicalCode]:
+        """Get a code without knowing its parent IDs.
+
+        Codes in a hierarchy can be retrieved using their full ID,
+        i.e. the code ID, as well as the IDs of their parents in the
+        hierarchy, separated by dots (e.g. 1.11.111).
+
+        This function can be used when you just know the code ID,
+        and not the ID of its parents.
+
+        Attributes:
+            id: The ID of the code to be returned.
+
+        Returns:
+            A set with the matching codes. If there is no matching
+            code, the set will be empty. If a code is attached to
+            multiple parents, it will be returned only once. As
+            hierarchies can reference codes from multiple codelists,
+            we could have different codes with the same ID in the
+            returned set.
+        """
+        return self.__by_id(id, self.codes)
