@@ -212,16 +212,16 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
 
     def __by_id(
         self, id: str, codes: Sequence[HierarchicalCode]
-    ) -> FrozenSet[HierarchicalCode]:
+    ) -> Sequence[HierarchicalCode]:
         out = []
         for i in codes:
-            if i.id == id:
+            if i.id == id and i not in out:
                 out.append(i)
             if i.codes:
                 out.extend(self.__by_id(id, i.codes))
-        return frozenset(out)
+        return out
 
-    def by_id(self, id: str) -> FrozenSet[HierarchicalCode]:
+    def by_id(self, id: str) -> Sequence[HierarchicalCode]:
         """Get a code without knowing its parent IDs.
 
         Codes in a hierarchy can be retrieved using their full ID,
