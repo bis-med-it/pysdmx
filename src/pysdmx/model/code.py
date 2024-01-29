@@ -17,7 +17,7 @@ representation of hierarchical relationships to hierarchies only.
 """
 
 from datetime import datetime
-from typing import FrozenSet, Iterator, Optional, Sequence
+from typing import Iterator, Optional, Sequence
 
 from msgspec import Struct
 
@@ -211,17 +211,21 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
         return None
 
     def __by_id(
-        self, id: str, codes: Sequence[HierarchicalCode]
-    ) -> FrozenSet[HierarchicalCode]:
-        out = []
+        self,
+        id: str,
+        codes: Sequence[HierarchicalCode],
+        out: Optional[Sequence[HierarchicalCode]] = None,
+    ) -> Sequence[HierarchicalCode]:
+        if out is None:
+            out = []
         for i in codes:
-            if i.id == id:
-                out.append(i)
+            if i.id == id and i not in out:
+                out.append(i)  # type: ignore[attr-defined]
             if i.codes:
-                out.extend(self.__by_id(id, i.codes))
-        return frozenset(out)
+                self.__by_id(id, i.codes, out)
+        return out
 
-    def by_id(self, id: str) -> FrozenSet[HierarchicalCode]:
+    def by_id(self, id: str) -> Sequence[HierarchicalCode]:
         """Get a code without knowing its parent IDs.
 
         Codes in a hierarchy can be retrieved using their full ID,
