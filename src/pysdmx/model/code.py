@@ -17,7 +17,7 @@ representation of hierarchical relationships to hierarchies only.
 """
 
 from datetime import datetime
-from typing import Iterator, Optional, Sequence, FrozenSet
+from typing import FrozenSet, Iterator, Optional, Sequence
 
 from msgspec import Struct
 
@@ -211,7 +211,7 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
         return None
 
     def __by_id(
-        self, id: str, codes: FrozenSet[HierarchicalCode]
+        self, id: str, codes: Sequence[HierarchicalCode]
     ) -> FrozenSet[HierarchicalCode]:
         out = []
         for i in codes:
@@ -231,7 +231,7 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
         This function can be used when you just know the code ID,
         and not the ID of its parents.
 
-        Attributes:
+        Args:
             id: The ID of the code to be returned.
 
         Returns:
