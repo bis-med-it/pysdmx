@@ -166,6 +166,44 @@ class ValueMap(Struct, frozen=True, omit_defaults=True):
     valid_to: Optional[datetime] = None
 
 
+class MultiRepresentationMap(Struct, frozen=True, omit_defaults=True):
+    """Maps one or more source codelists to one or more target codelists.
+
+    A representation map is iterable, i.e. it is possible to iterate over
+    the various mappings using a `for` loop.
+
+    Attributes:
+        id: The identifier for the representation map.
+        name: The representation map's name.
+        agency: The maintainer of the representation map.
+        source: The URN(s) of the source codelist(s).
+        target: The URN(s) of the target codelist(s).
+        maps: The various mappings in the representation map.
+        description: Additional descriptive information about the
+            representation map.
+        version: The version of the representation map.
+    """
+
+    id: str
+    name: str
+    agency: str
+    source: Sequence[str]
+    target: Sequence[str]
+    maps: Sequence[MultiValueMap]
+    description: Optional[str] = None
+    version: str = "1.0"
+
+    def __iter__(
+        self,
+    ) -> Iterator[MultiValueMap]:
+        """Return an iterator over the different maps."""
+        yield from self.maps
+
+    def __len__(self) -> int:
+        """Return the number of maps in the representation map."""
+        return len(self.maps)
+
+
 class MultiComponentMap(Struct, frozen=True, omit_defaults=True):
     """Maps one or more source components to one or more target components.
 
@@ -185,13 +223,13 @@ class MultiComponentMap(Struct, frozen=True, omit_defaults=True):
     Attributes:
         source: The source component(s)
         target: The target component(s)
-        values: The list of mapped values (one or more in the source and one
-            or more in the target)
+        values: The representation map, with the list of mapped values
+            (one or more in the source and one or more in the target)
     """
 
     source: Sequence[str]
     target: Sequence[str]
-    values: Sequence[MultiValueMap]
+    values: MultiRepresentationMap
 
 
 class RepresentationMap(Struct, frozen=True, omit_defaults=True):
