@@ -2,17 +2,20 @@
 
 from datetime import datetime as dt, timezone as tz
 import re
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Dict, Optional, Sequence, Union
 
 from msgspec import Struct
 
 from pysdmx.model import (
     ComponentMap,
+    DataType,
     DatePatternMap,
     FixedValueMap,
     ImplicitComponentMap,
     MultiComponentMap,
+    MultiRepresentationMap,
     MultiValueMap,
+    RepresentationMap,
     StructureMap,
     ValueMap,
 )
@@ -70,15 +73,52 @@ class JsonRepresentationMap(
     """SDMX-JSON payload for a representation map."""
 
     id: str
+    name: str
     agency: str
     version: str
+    source: Sequence[Dict[str, str]]
+    target: Sequence[Dict[str, str]]
     representationMappings: Sequence[JsonRepresentationMapping]
+    description: Optional[str] = None
+
+    def __parse_st(self, item: Dict[str, str]):
+        if "dataType" in item:
+            return DataType(item["dataType"])
+        elif "valuelist" in item:
+            return item["valuelist"]
+        else:
+            return item["codelist"]
 
     def to_model(
         self, is_multi: bool = False
-    ) -> Sequence[Union[MultiValueMap, ValueMap]]:
+    ) -> Union[MultiRepresentationMap, RepresentationMap]:
         """Returns the requested value maps."""
-        return [rm.to_model(is_multi) for rm in self.representationMappings]
+        mrs = [rm.to_model(is_multi) for rm in self.representationMappings]
+        s = [self.__parse_st(i) for i in self.source]
+        t = [self.__parse_st(j) for j in self.target]
+        if is_multi:
+            rm = MultiRepresentationMap(
+                self.id,
+                self.name,
+                self.agency,
+                s,
+                t,
+                mrs,
+                self.description,
+                self.version,
+            )
+        else:
+            rm = RepresentationMap(
+                self.id,
+                self.name,
+                self.agency,
+                s[0],
+                t[0],
+                mrs,
+                self.description,
+                self.version,
+            )
+        return rm
 
 
 class JsonFixedValueMap(Struct, frozen=True):

@@ -9,11 +9,14 @@ from msgspec import Struct
 from pysdmx.fmr.fusion.core import FusionString
 from pysdmx.model import (
     ComponentMap,
+    DataType,
     DatePatternMap,
     FixedValueMap,
     ImplicitComponentMap,
     MultiComponentMap,
+    MultiRepresentationMap,
     MultiValueMap,
+    RepresentationMap,
     StructureMap as SM,
     ValueMap,
 )
@@ -73,16 +76,44 @@ class FusionRepresentationMap(
     """Fusion-JSON payload for a representation map."""
 
     id: str
+    names: Sequence[FusionString]
     agency: str
     version: str
+    sources: Sequence[str]
+    targets: Sequence[str]
     mappedRelationships: Sequence[FusionRepresentationMapping]
+    descriptions: Sequence[FusionString] = ()
 
     def to_model(
-        self,
-        is_multi: bool = False,
-    ) -> Sequence[Union[MultiValueMap, ValueMap]]:
-        """Returns the requested value maps."""
-        return [rm.to_model(is_multi) for rm in self.mappedRelationships]
+        self, is_multi: bool = False
+    ) -> Union[MultiRepresentationMap, RepresentationMap]:
+        """Returns the requested representation map."""
+        mrs = [rm.to_model(is_multi) for rm in self.mappedRelationships]
+        s = [i if i.startswith("urn:") else DataType(i) for i in self.sources]
+        t = [j if j.startswith("urn:") else DataType(j) for j in self.targets]
+        if is_multi:
+            rm = MultiRepresentationMap(
+                self.id,
+                self.names[0].value,
+                self.agency,
+                s,
+                t,
+                mrs,
+                self.descriptions[0].value if self.descriptions else None,
+                self.version,
+            )
+        else:
+            rm = RepresentationMap(
+                self.id,
+                self.names[0].value,
+                self.agency,
+                s[0],
+                t[0],
+                mrs,
+                self.descriptions[0].value if self.descriptions else None,
+                self.version,
+            )
+        return rm
 
 
 class FusionComponentMap(Struct, frozen=True):

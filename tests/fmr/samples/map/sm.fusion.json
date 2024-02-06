@@ -67,7 +67,7 @@
             },
             "componentMaps": [
                 {
-                    "representationMapRef": "urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=BIS.XTD:CONTRACT(1.0)",
+                    "representationMapRef": "urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=BIS:CONTRACT(1.0)",
                     "sources": [
                         "CONTRACT"
                     ],
@@ -131,21 +131,21 @@
     "RepresentationMap": [
         {
             "id": "CONTRACT",
-            "urn": "urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=BIS.XTD:CONTRACT(1.0)",
+            "urn": "urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=BIS:CONTRACT(1.0)",
             "names": [
                 {
                     "locale": "en",
                     "value": "Internal map of contract"
                 }
             ],
-            "agencyId": "BIS.XTD",
+            "agencyId": "BIS",
             "version": "1.0",
             "isFinal": false,
             "sources": [
-                "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS.XTD:CONTRACTS(1.0)"
+                "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CONTRACTS(1.0)"
             ],
             "targets": [
-                "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS.XTD:CONTRACTS(1.0)"
+                "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CONTRACTS(1.0)"
             ],
             "mappedRelationships": [
                 {
