@@ -215,8 +215,8 @@ class RepresentationMap(Struct, frozen=True, omit_defaults=True):
     id: str
     name: str
     agency: str
-    source: str
-    target: str
+    source: Optional[str]
+    target: Optional[str]
     maps: Sequence[ValueMap]
     description: Optional[str] = None
     version: str = "1.0"
