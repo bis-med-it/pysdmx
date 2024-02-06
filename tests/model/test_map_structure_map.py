@@ -8,6 +8,7 @@ from pysdmx.model import (
     DatePatternMap,
     FixedValueMap,
     ImplicitComponentMap,
+    RepresentationMap,
     StructureMap,
     ValueMap,
 )
@@ -54,9 +55,27 @@ def mappings():
     m2 = ImplicitComponentMap("OBS_STATUS", "OBS_STATUS")
     m3 = FixedValueMap("FREQ", "M")
     m4 = DatePatternMap("ACTIVITY_DATE", "TIME_PERIOD", "%B %Y", "M")
-    m5 = ComponentMap("SRC1", "TGT1", [ValueMap("1", "A")])
-    m6 = ComponentMap("SRC2", "TGT2", [ValueMap("2", "B")])
-    m7 = ComponentMap("SRC3", "TGT3", [ValueMap("3", "C")])
+    m5 = ComponentMap(
+        "SRC1",
+        "TGT1",
+        RepresentationMap(
+            "M1", "M1", "BIS", "CL1", "CL2", [ValueMap("1", "A")]
+        ),
+    )
+    m6 = ComponentMap(
+        "SRC2",
+        "TGT2",
+        RepresentationMap(
+            "M1", "M1", "BIS", "CL1", "CL2", [ValueMap("2", "B")]
+        ),
+    )
+    m7 = ComponentMap(
+        "SRC3",
+        "TGT3",
+        RepresentationMap(
+            "M1", "M1", "BIS", "CL1", "CL2", [ValueMap("3", "C")]
+        ),
+    )
     return [m1, m2, m3, m4, m5, m6, m7]
 
 

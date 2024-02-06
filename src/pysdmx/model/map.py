@@ -194,6 +194,44 @@ class MultiComponentMap(Struct, frozen=True, omit_defaults=True):
     values: Sequence[MultiValueMap]
 
 
+class RepresentationMap(Struct, frozen=True, omit_defaults=True):
+    """Maps one source codelist to a target codelist.
+
+    A representation map is iterable, i.e. it is possible to iterate over
+    the various mappings using a `for` loop.
+
+    Attributes:
+        id: The identifier for the representation map.
+        name: The representation map's name.
+        agency: The maintainer of the representation map.
+        source: The URN of the source codelist.
+        target: The URN of the target codelist.
+        maps: The various mappings in the representation map.
+        description: Additional descriptive information about the
+            representation map.
+        version: The version of the representation map.
+    """
+
+    id: str
+    name: str
+    agency: str
+    source: str
+    target: str
+    maps: Sequence[ValueMap]
+    description: Optional[str] = None
+    version: str = "1.0"
+
+    def __iter__(
+        self,
+    ) -> Iterator[ValueMap]:
+        """Return an iterator over the different maps."""
+        yield from self.maps
+
+    def __len__(self) -> int:
+        """Return the number of maps in the representation map."""
+        return len(self.maps)
+
+
 class ComponentMap(Struct, frozen=True, omit_defaults=True):
     """Maps a source component to a target component.
 
@@ -209,13 +247,13 @@ class ComponentMap(Struct, frozen=True, omit_defaults=True):
     Attributes:
         source: The source component
         target: The target component
-        values: The list of mapped values (one in the source and
-            one in the target)
+        values: The representation map, with the list of mapped values
+            (one in the source and one in the target)
     """
 
     source: str
     target: str
-    values: Sequence[ValueMap]
+    values: RepresentationMap
 
 
 class StructureMap(Struct, frozen=True, omit_defaults=True):
@@ -230,17 +268,15 @@ class StructureMap(Struct, frozen=True, omit_defaults=True):
     by using the component id (e.g. `map["FREQ"]`).
 
     Attributes:
-        id: The identifier for the codelist (e.g. CL_FREQ).
-        name: The codelist name (e.g. "Frequency codelist").
-        agency: The maintainer of the codelist (e.g. SDMX).
+        id: The identifier for the structure map.
+        name: The name of the structure map.
+        agency: The maintainer of the structure map.
         source: The source structure.
         target: The target structure.
         maps: The various mapping rules in the structure map.
-        description: Additional descriptive information about the codelist
-            (e.g. "This codelist provides a set of values indicating the
-            frequency of the data").
-        version: The codelist version (e.g. 2.0.42)
-
+        description: Additional descriptive information about the structure
+            map.
+        version: The version of the structure map (e.g. 2.0.42).
     """
 
     id: str

@@ -25,6 +25,7 @@ from pysdmx.model.map import (
     ImplicitComponentMap,
     MultiComponentMap,
     MultiValueMap,
+    RepresentationMap,
     StructureMap,
     ValueMap,
 )
@@ -94,6 +95,7 @@ __all__ = [
     "MultiComponentMap",
     "MultiValueMap",
     "Organisation",
+    "RepresentationMap",
     "Role",
     "Schema",
     "ValueMap",
