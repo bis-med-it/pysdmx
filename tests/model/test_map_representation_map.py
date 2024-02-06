@@ -1,5 +1,4 @@
 from typing import Iterable, Sized
-import uuid
 
 import pytest
 

@@ -1,4 +1,5 @@
 from typing import Iterable, Sized
+
 import pytest
 
 from pysdmx.model import ComponentMap, RepresentationMap, ValueMap
