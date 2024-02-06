@@ -6,6 +6,8 @@ from typing import Any, Iterator, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.model.concept import DataType
+
 
 class DatePatternMap(Struct, frozen=True, omit_defaults=True):
     """A mapping based on a date pattern.
@@ -176,8 +178,10 @@ class MultiRepresentationMap(Struct, frozen=True, omit_defaults=True):
         id: The identifier for the representation map.
         name: The representation map's name.
         agency: The maintainer of the representation map.
-        source: The URN(s) of the source codelist(s).
-        target: The URN(s) of the target codelist(s).
+        source: The URN(s) of the source codelist(s) / valuelist(s),
+            or data type(s).
+        target: The URN(s) of the target codelist(s) / valuelist(s),
+            or data type(s).
         maps: The various mappings in the representation map.
         description: Additional descriptive information about the
             representation map.
@@ -187,8 +191,8 @@ class MultiRepresentationMap(Struct, frozen=True, omit_defaults=True):
     id: str
     name: str
     agency: str
-    source: Sequence[str]
-    target: Sequence[str]
+    source: Sequence[Union[str, DataType]]
+    target: Sequence[Union[str, DataType]]
     maps: Sequence[MultiValueMap]
     description: Optional[str] = None
     version: str = "1.0"
@@ -242,8 +246,8 @@ class RepresentationMap(Struct, frozen=True, omit_defaults=True):
         id: The identifier for the representation map.
         name: The representation map's name.
         agency: The maintainer of the representation map.
-        source: The URN of the source codelist.
-        target: The URN of the target codelist.
+        source: The URN of the source codelist / valuelist or a data type.
+        target: The URN of the target codelist / valuelist or a data type.
         maps: The various mappings in the representation map.
         description: Additional descriptive information about the
             representation map.
@@ -253,8 +257,8 @@ class RepresentationMap(Struct, frozen=True, omit_defaults=True):
     id: str
     name: str
     agency: str
-    source: Optional[str]
-    target: Optional[str]
+    source: Union[str, DataType, None]
+    target: Union[str, DataType, None]
     maps: Sequence[ValueMap]
     description: Optional[str] = None
     version: str = "1.0"
