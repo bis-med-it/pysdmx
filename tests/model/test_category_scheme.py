@@ -2,7 +2,8 @@ from typing import Iterable, Sized
 
 import pytest
 
-from pysdmx.model.category import Category, CategoryScheme, DataflowRef
+from pysdmx.model.category import Category, CategoryScheme
+from pysdmx.model.organisation import DataflowRef
 
 
 @pytest.fixture()

@@ -48,7 +48,13 @@ def test_equal(source, target, values):
 
 def test_not_equal(source, target, values):
     m1 = ComponentMap(source, target, values)
-    m2 = ComponentMap(source, source, [])
+    m2 = ComponentMap(
+        source,
+        source,
+        RepresentationMap(
+            "RM_ID2", "Map ISO2 to ISO3", "BIS", "SRC_CL1", "TGT_CL1", []
+        ),
+    )
 
     assert m1 != m2
 

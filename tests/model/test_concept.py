@@ -27,7 +27,7 @@ def test_defaults(fid):
 
 def test_full_initialization(fid):
     dtype = DataType.INTEGER
-    facets = Facets(min_value=0, max_value="100")
+    facets = Facets(min_value=0, max_value=100)
     name = "Signal quality"
     desc = "The quality of the GPS signal"
 

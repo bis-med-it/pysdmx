@@ -53,7 +53,13 @@ def test_equal(source, target, values):
 
 def test_not_equal(source, target, values):
     m1 = MultiComponentMap(source, target, values)
-    m2 = MultiComponentMap(source, source, [])
+    m2 = MultiComponentMap(
+        source,
+        source,
+        MultiRepresentationMap(
+            "RM_ID1", "Map ISO2 to ISO3", "BIS", "SRC_CL1", "TGT_CL1", []
+        ),
+    )
 
     assert m1 != m2
 
