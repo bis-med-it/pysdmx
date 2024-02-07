@@ -227,6 +227,6 @@ class FusionRepresentationMapMessage(Struct, frozen=True):
     def to_model(self) -> SM:
         """Returns the requested mapping definition."""
         m = self.RepresentationMap[0]
-        multi = True if len(m.sources) > 1 or len(m.targets) > 1 else False
+        multi = bool(len(m.sources) > 1 or len(m.targets) > 1)
         out = m.to_model(multi)
         return out  # type: ignore[return-value]

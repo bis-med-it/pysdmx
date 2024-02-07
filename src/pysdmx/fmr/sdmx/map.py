@@ -265,7 +265,7 @@ class JsonRepresentationMaps(Struct, frozen=True):
     def to_model(self) -> Sequence[ValueMap]:
         """Returns the requested mapping definition."""
         m = self.representationMaps[0]
-        multi = True if len(m.source) > 1 or len(m.target) > 1 else False
+        multi = bool(len(m.source) > 1 or len(m.target) > 1)
         out = m.to_model(multi)
         return out  # type: ignore[return-value]
 
