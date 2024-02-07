@@ -92,28 +92,27 @@ class FusionRepresentationMap(
         s = [i if i.startswith("urn:") else DataType(i) for i in self.sources]
         t = [j if j.startswith("urn:") else DataType(j) for j in self.targets]
         if is_multi:
-            rm = MultiRepresentationMap(
+            return MultiRepresentationMap(
                 self.id,
                 self.names[0].value,
                 self.agency,
                 s,
                 t,
-                mrs,
+                mrs,  # type: ignore[arg-type]
                 self.descriptions[0].value if self.descriptions else None,
                 self.version,
             )
         else:
-            rm = RepresentationMap(
+            return RepresentationMap(
                 self.id,
                 self.names[0].value,
                 self.agency,
                 s[0],
                 t[0],
-                mrs,
+                mrs,  # type: ignore[arg-type]
                 self.descriptions[0].value if self.descriptions else None,
                 self.version,
             )
-        return rm
 
 
 class FusionComponentMap(Struct, frozen=True):

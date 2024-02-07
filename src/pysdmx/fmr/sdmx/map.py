@@ -81,7 +81,7 @@ class JsonRepresentationMap(
     representationMappings: Sequence[JsonRepresentationMapping]
     description: Optional[str] = None
 
-    def __parse_st(self, item: Dict[str, str]):
+    def __parse_st(self, item: Dict[str, str]) -> Union[DataType, str]:
         if "dataType" in item:
             return DataType(item["dataType"])
         elif "valuelist" in item:
@@ -97,28 +97,27 @@ class JsonRepresentationMap(
         s = [self.__parse_st(i) for i in self.source]
         t = [self.__parse_st(j) for j in self.target]
         if is_multi:
-            rm = MultiRepresentationMap(
+            return MultiRepresentationMap(
                 self.id,
                 self.name,
                 self.agency,
                 s,
                 t,
-                mrs,
+                mrs,  # type: ignore[arg-type]
                 self.description,
                 self.version,
             )
         else:
-            rm = RepresentationMap(
+            return RepresentationMap(
                 self.id,
                 self.name,
                 self.agency,
                 s[0],
                 t[0],
-                mrs,
+                mrs,  # type: ignore[arg-type]
                 self.description,
                 self.version,
             )
-        return rm
 
 
 class JsonFixedValueMap(Struct, frozen=True):
