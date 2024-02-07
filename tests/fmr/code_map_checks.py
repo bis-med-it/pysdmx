@@ -4,7 +4,7 @@ import httpx
 import pytest
 
 from pysdmx.fmr import AsyncRegistryClient, RegistryClient
-from pysdmx.model.map import ValueMap
+from pysdmx.model.map import RepresentationMap, ValueMap
 
 
 def check_code_mapping_core(mock, fmr: RegistryClient, query, body):
@@ -18,7 +18,15 @@ def check_code_mapping_core(mock, fmr: RegistryClient, query, body):
 
     mapping = fmr.get_code_map("BIS", "ISO3166-A3_2_CTY", "1.0")
 
+    assert isinstance(mapping, RepresentationMap)
     assert len(mapping) == 3
+    assert mapping.id == "ISO3166-A3_2_CTY"
+    assert mapping.agency == "BIS"
+    assert mapping.version == "1.0"
+    assert mapping.name == "Representation Map from ISO 3166-A3 Codes to DD"
+    assert "Codelist=ISO:CL_3166-A3(1.0)" in mapping.source
+    assert "Codelist=BIS:CL_COUNTRY(1.0)" in mapping.target
+    assert mapping.description is None
     for v in mapping:
         assert isinstance(v, ValueMap)
 
