@@ -92,7 +92,7 @@ def check_multi_code_mapping_core(mock, fmr: RegistryClient, query, body):
     assert len(mapping.target) == 1
     for s in mapping.source:
         assert s == DataType.STRING
-    assert "Codelist=ISO:CL_3166-A3(1.0)" in mapping.target[0]
+    assert "ValueList=ISO:CL_3166-A3(1.0)" in mapping.target[0]
     for v in mapping:
         assert isinstance(v, MultiValueMap)
 

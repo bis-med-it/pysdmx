@@ -51,7 +51,7 @@
                 ],
                 "target": [
                     {
-                        "codelist": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ISO:CL_3166-A3(1.0)"
+                        "valuelist": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=ISO:CL_3166-A3(1.0)"
                     }
                 ],
                 "representationMappings": [
