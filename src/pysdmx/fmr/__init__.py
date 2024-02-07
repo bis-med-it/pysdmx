@@ -16,10 +16,11 @@ from pysdmx.model import (
     DataflowInfo,
     Hierarchy,
     MetadataReport,
+    MultiRepresentationMap,
     Organisation,
+    RepresentationMap,
     Schema,
     StructureMap,
-    ValueMap,
 )
 
 
@@ -476,7 +477,7 @@ class RegistryClient(__BaseRegistryClient):
 
     def get_code_map(
         self, agency: str, id: str, version: str = "+"
-    ) -> Sequence[ValueMap]:
+    ) -> Union[MultiRepresentationMap, RepresentationMap]:
         """Get a code map (aka representation map).
 
         Args:
@@ -811,7 +812,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
 
     async def get_code_map(
         self, agency: str, id: str, version: str = "+"
-    ) -> Sequence[ValueMap]:
+    ) -> Union[MultiRepresentationMap, RepresentationMap]:
         """Get a code map (aka representation map).
 
         Args:
