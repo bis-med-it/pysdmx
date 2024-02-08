@@ -5,7 +5,7 @@ from typing import Optional, Sequence, Union
 
 import msgspec
 
-from pysdmx.model import ArrayBoundaries, Code, Codelist, Facets
+from pysdmx.model import ArrayBoundaries, Codelist, Facets
 from pysdmx.util import find_by_urn
 
 
