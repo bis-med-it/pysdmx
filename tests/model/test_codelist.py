@@ -20,6 +20,11 @@ def agency():
     return "5B0"
 
 
+@pytest.fixture()
+def sdmx_type():
+    return "valuelist"
+
+
 def test_defaults(id, name, agency):
     cl = Codelist(id, name, agency)
 
@@ -30,14 +35,15 @@ def test_defaults(id, name, agency):
     assert cl.version == "1.0"
     assert cl.codes is not None
     assert len(cl.codes) == 0
+    assert cl.sdmx_type == "codelist"
 
 
-def test_full_initialization(id, name, agency):
+def test_full_initialization(id, name, agency, sdmx_type):
     desc = "description"
     version = "1.42.0"
     codes = [Code("child1", "Child 1"), Code("child2", "Child 2")]
 
-    cl = Codelist(id, name, agency, desc, version, codes)
+    cl = Codelist(id, name, agency, desc, version, codes, sdmx_type)
 
     assert cl.id == id
     assert cl.name == name
@@ -47,6 +53,7 @@ def test_full_initialization(id, name, agency):
     assert cl.codes == codes
     assert len(cl) == 2
     assert len(cl) == len(cl.codes)
+    assert cl.sdmx_type == sdmx_type
 
 
 def test_immutable(id, name, agency):

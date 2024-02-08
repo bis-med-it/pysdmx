@@ -17,7 +17,7 @@ representation of hierarchical relationships to hierarchies only.
 """
 
 from datetime import datetime
-from typing import Iterator, Optional, Sequence
+from typing import Iterator, Literal, Optional, Sequence
 
 from msgspec import Struct
 
@@ -81,6 +81,7 @@ class Codelist(Struct, frozen=True, omit_defaults=True):
     description: Optional[str] = None
     version: str = "1.0"
     codes: Sequence[Code] = ()
+    sdmx_type: Literal["codelist", "valuelist"] = "codelist"
 
     def __iter__(self) -> Iterator[Code]:
         """Return an iterator over the list of codes."""
