@@ -10,11 +10,11 @@ as part of the response.
 from collections import Counter, UserList
 from datetime import datetime
 from enum import Enum
-from typing import Any, Iterable, Optional, Sequence
+from typing import Any, Iterable, Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.model.code import Code
+from pysdmx.model.code import Code, Codelist, Hierarchy
 from pysdmx.model.concept import DataType, Facets
 from pysdmx.model.organisation import Organisation
 
@@ -107,7 +107,7 @@ class Component(Struct, frozen=True, omit_defaults=True):
     facets: Optional[Facets] = None
     name: Optional[str] = None
     description: Optional[str] = None
-    codes: Sequence[Code] = ()
+    codes: Union[Codelist, Hierarchy, None] = None
     attachment_level: Optional[str] = None
     enum_ref: Optional[str] = None
     array_def: Optional[ArrayBoundaries] = None
