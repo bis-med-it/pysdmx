@@ -9,11 +9,14 @@ from msgspec import Struct
 from pysdmx.fmr.fusion.core import FusionString
 from pysdmx.model import (
     ComponentMap,
+    DataType,
     DatePatternMap,
     FixedValueMap,
     ImplicitComponentMap,
     MultiComponentMap,
+    MultiRepresentationMap,
     MultiValueMap,
+    RepresentationMap,
     StructureMap as SM,
     ValueMap,
 )
@@ -73,16 +76,43 @@ class FusionRepresentationMap(
     """Fusion-JSON payload for a representation map."""
 
     id: str
+    names: Sequence[FusionString]
     agency: str
     version: str
+    sources: Sequence[str]
+    targets: Sequence[str]
     mappedRelationships: Sequence[FusionRepresentationMapping]
+    descriptions: Sequence[FusionString] = ()
 
     def to_model(
-        self,
-        is_multi: bool = False,
-    ) -> Sequence[Union[MultiValueMap, ValueMap]]:
-        """Returns the requested value maps."""
-        return [rm.to_model(is_multi) for rm in self.mappedRelationships]
+        self, is_multi: bool = False
+    ) -> Union[MultiRepresentationMap, RepresentationMap]:
+        """Returns the requested representation map."""
+        mrs = [rm.to_model(is_multi) for rm in self.mappedRelationships]
+        s = [i if i.startswith("urn:") else DataType(i) for i in self.sources]
+        t = [j if j.startswith("urn:") else DataType(j) for j in self.targets]
+        if is_multi:
+            return MultiRepresentationMap(
+                self.id,
+                self.names[0].value,
+                self.agency,
+                s,
+                t,
+                mrs,  # type: ignore[arg-type]
+                self.descriptions[0].value if self.descriptions else None,
+                self.version,
+            )
+        else:
+            return RepresentationMap(
+                self.id,
+                self.names[0].value,
+                self.agency,
+                s[0],
+                t[0],
+                mrs,  # type: ignore[arg-type]
+                self.descriptions[0].value if self.descriptions else None,
+                self.version,
+            )
 
 
 class FusionComponentMap(Struct, frozen=True):
@@ -195,5 +225,7 @@ class FusionRepresentationMapMessage(Struct, frozen=True):
 
     def to_model(self) -> SM:
         """Returns the requested mapping definition."""
-        out = self.RepresentationMap[0].to_model()
+        m = self.RepresentationMap[0]
+        multi = bool(len(m.sources) > 1 or len(m.targets) > 1)
+        out = m.to_model(multi)
         return out  # type: ignore[return-value]

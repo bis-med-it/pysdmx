@@ -5,12 +5,18 @@ import httpx
 import pytest
 
 from pysdmx.fmr import AsyncRegistryClient, RegistryClient
+from pysdmx.model.concept import DataType
 from pysdmx.model.map import (
     ComponentMap,
     DatePatternMap,
     FixedValueMap,
     ImplicitComponentMap,
+    MultiComponentMap,
+    MultiRepresentationMap,
+    MultiValueMap,
+    RepresentationMap,
     StructureMap,
+    ValueMap,
 )
 
 
@@ -63,6 +69,22 @@ def check_multi_mapping(mock, fmr: RegistryClient, query, body):
     assert count == 2
     assert len(mapping.multi_component_maps) == 1
     assert len(mapping.implicit_component_maps) == 1
+    mm = mapping.multi_component_maps[0]
+    assert isinstance(mm, MultiComponentMap)
+    assert isinstance(mm.values, MultiRepresentationMap)
+    assert mm.values.id == "CONSOLIDATE_ADDRESS_FIELDS"
+    assert mm.values.name is not None
+    assert mm.values.agency == "BIS"
+    assert len(mm.values.source) == 4
+    for ms in mm.values.source:
+        assert ms == DataType.STRING
+    assert len(mm.values.target) == 1
+    assert mm.values.target[0] == DataType.STRING
+    assert mm.values.description is None
+    assert mm.values.version == "1.0"
+    assert len(mm.values) == 1
+    for v in mm.values:
+        assert isinstance(v, MultiValueMap)
 
 
 async def check_mapping_rules(mock, fmr: AsyncRegistryClient, query, body):
@@ -95,8 +117,17 @@ async def check_mapping_rules(mock, fmr: AsyncRegistryClient, query, body):
 def __check_component(m: ComponentMap):
     assert m.source == "CONTRACT"
     assert m.target == "CONTRACT"
+    assert isinstance(m.values, RepresentationMap)
+    assert m.values.id == "CONTRACT"
+    assert m.values.name == "Internal map of contract"
+    assert m.values.agency == "BIS"
+    assert "ValueList=BIS:CONTRACTS(1.0)" in m.values.source
+    assert "ValueList=BIS:CONTRACTS(1.0)" in m.values.target
+    assert m.values.description is None
+    assert m.values.version == "1.0"
     assert len(m.values) == 2
     for v in m.values:
+        assert isinstance(v, ValueMap)
         if v.source == "PROD TYPE":
             assert v.target == "_T"
             assert v.valid_from == dt(2008, 1, 1, 0, 0, 0, 0, tz.utc)

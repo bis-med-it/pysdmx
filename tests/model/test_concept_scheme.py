@@ -35,7 +35,7 @@ def test_defaults(id, name, agency):
 def test_full_initialization(id, name, agency):
     desc = "description"
     version = "1.42.0"
-    concepts = [Concept("child1", "Child 1"), Concept("child2", "Child 2")]
+    concepts = [Concept("child1"), Concept("child2")]
 
     cs = ConceptScheme(id, name, agency, desc, version, concepts)
 
@@ -56,7 +56,7 @@ def test_immutable(id, name, agency):
 
 
 def test_iterable(id, name, agency):
-    concepts = [Concept("child1", "Child 1"), Concept("child2", "Child 2")]
+    concepts = [Concept("child1"), Concept("child2")]
     cs = ConceptScheme(id, name, agency, concepts=concepts)
 
     assert isinstance(cs, Iterable)
