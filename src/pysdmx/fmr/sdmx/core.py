@@ -86,9 +86,8 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
         """Returns the list of codes allowed for this component."""
         if self.enumeration:
             a = find_by_urn(codelists, self.enumeration)
-            if a:
-                codes = [c for c in a.codes if not valid or c.id in valid]
-                return msgspec.structs.replace(a, codes=codes)
+            codes = [c for c in a.codes if not valid or c.id in valid]
+            return msgspec.structs.replace(a, codes=codes)
         return None
 
     def to_array_def(self) -> Optional[ArrayBoundaries]:

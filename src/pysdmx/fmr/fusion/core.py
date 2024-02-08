@@ -87,12 +87,11 @@ class FusionRepresentation(msgspec.Struct, frozen=True):
         """Returns the list of codes allowed for this component."""
         if self.representation:
             a = find_by_urn(codelists, self.representation)
-            if a:
-                cl = a.to_model()
-                codes = [
-                    c.to_model() for c in a.items if not valid or c.id in valid
-                ]
-                return msgspec.structs.replace(cl, codes=codes)
+            cl = a.to_model()
+            codes = [
+                c.to_model() for c in a.items if not valid or c.id in valid
+            ]
+            return msgspec.structs.replace(cl, codes=codes)
         return None
 
     def to_array_def(self) -> Optional[ArrayBoundaries]:
