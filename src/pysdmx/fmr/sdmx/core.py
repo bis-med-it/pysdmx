@@ -3,13 +3,13 @@
 from datetime import datetime
 from typing import Optional, Sequence, Union
 
-from msgspec import Struct
+import msgspec
 
 from pysdmx.model import ArrayBoundaries, Code, Codelist, Facets
 from pysdmx.util import find_by_urn
 
 
-class JsonAnnotation(Struct, frozen=True):
+class JsonAnnotation(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for annotations."""
 
     title: str
@@ -17,7 +17,7 @@ class JsonAnnotation(Struct, frozen=True):
     text: Optional[str] = None
 
 
-class JsonTextFormat(Struct, frozen=True):
+class JsonTextFormat(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for TextFormat."""
 
     textType: str
@@ -34,7 +34,7 @@ class JsonTextFormat(Struct, frozen=True):
     isSequence: bool = False
 
 
-class JsonRepresentation(Struct, frozen=True):
+class JsonRepresentation(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for core representation."""
 
     enumerationFormat: Optional[JsonTextFormat] = None
@@ -82,13 +82,19 @@ class JsonRepresentation(Struct, frozen=True):
         self,
         codelists: Sequence[Codelist],
         valid: Sequence[str],
-    ) -> Sequence[Code]:
+    ) -> Optional[Codelist]:
         """Returns the list of codes allowed for this component."""
-        codes = []
         if self.enumeration:
-            a = find_by_urn(codelists, self.enumeration).codes
-            codes = [c for c in a if not valid or c.id in valid]
-        return codes
+            a = find_by_urn(codelists, self.enumeration)
+            if a:
+                codes = [c for c in a.codes if not valid or c.id in valid]
+                clt = (
+                    "codelist"
+                    if ".Codelist=" in self.enumeration
+                    else "valuelist"
+                )
+                return msgspec.structs.replace(a, codes=codes, sdmx_type=clt)
+        return None
 
     def to_array_def(self) -> Optional[ArrayBoundaries]:
         """Returns the array boundaries, if any."""
@@ -99,13 +105,13 @@ class JsonRepresentation(Struct, frozen=True):
             return None
 
 
-class JsonLink(Struct, frozen=True):
+class JsonLink(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for link objects."""
 
     urn: str
 
 
-class JsonHeader(Struct, frozen=True):
+class JsonHeader(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for message header."""
 
     links: Sequence[JsonLink] = ()

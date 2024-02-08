@@ -11,6 +11,7 @@ from pysdmx.fmr.fusion.core import FusionRepresentation, FusionString
 from pysdmx.model import (
     ArrayBoundaries,
     Code,
+    Codelist,
     Component,
     Components,
     DataType,
@@ -39,19 +40,12 @@ def _get_representation(
     cls: Sequence[FusionCodelist],
     cons: Dict[str, Sequence[str]],
     c: Optional[FusionConcept],
-) -> Tuple[
-    DataType,
-    Optional[Facets],
-    Sequence[Code],
-    Optional[str],
-    Optional[ArrayBoundaries],
-]:
+) -> Tuple[DataType, Optional[Facets], Codelist, Optional[ArrayBoundaries],]:
     valid = cons.get(id_, [])
-    codes: Sequence[Code] = []
     ab = None
     dt = DataType.STRING
     facets = None
-    codes = []
+    codes = None
     if repr_:
         r = repr_
     elif c and c.representation:

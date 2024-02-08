@@ -54,6 +54,7 @@ class FusionCodelist(Struct, frozen=True, rename={"agency": "agencyId"}):
     """Fusion-JSON payload for a codelist."""
 
     id: str
+    urn: str
     names: Sequence[FusionString]
     agency: str
     descriptions: Sequence[FusionString] = ()
@@ -62,6 +63,7 @@ class FusionCodelist(Struct, frozen=True, rename={"agency": "agencyId"}):
 
     def to_model(self) -> CL:
         """Converts a JsonCodelist to a standard codelist."""
+        t = "codelist" if "Codelist" in self.urn else "valuelist"
         return CL(
             self.id,
             self.names[0].value,
@@ -69,6 +71,7 @@ class FusionCodelist(Struct, frozen=True, rename={"agency": "agencyId"}):
             self.descriptions[0].value if self.descriptions else None,
             self.version,
             [i.to_model() for i in self.items],
+            t,
         )
 
 

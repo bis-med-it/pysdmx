@@ -59,6 +59,15 @@ async def check_coded_components(mock, fmr: AsyncRegistryClient, query, body):
     for comp in vc.components:
         if comp.id in exp:
             assert len(comp.codes) == exp.get(comp.id)
+            assert comp.codes.id is not None
+            assert comp.codes.agency == "BIS"
+            assert comp.codes.version == "1.0"
+            assert comp.codes.name is not None
+            assert (
+                comp.codes.sdmx_type == "valuelist"
+                if comp.id == "AVAILABILITY"
+                else "codelist"
+            )
             count += 1
         else:
             assert not comp.codes
@@ -98,7 +107,10 @@ def check_unconstrained_coded_components(
     vc = fmr.get_schema("datastructure", "BIS", "BIS_CBS", "1.0")
 
     for comp in vc.components:
-        assert len(comp.codes) == exp.get(comp.id, 0)
+        if comp.id in exp:
+            assert len(comp.codes) == exp[comp.id]
+        else:
+            assert comp.codes is None
 
 
 def check_core_local_repr(
@@ -128,7 +140,7 @@ def check_core_local_repr(
     assert freq.facets.max_length == 1
 
     assert isinstance(title, Component)
-    assert len(title.codes) == 0
+    assert not title.codes
     assert title.dtype == DataType.STRING
     assert title.facets is None
 

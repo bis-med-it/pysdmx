@@ -49,12 +49,11 @@ def _get_representation(
 ) -> Tuple[
     DataType,
     Optional[Facets],
-    Sequence[Code],
-    Optional[str],
+    Optional[Codelist],
     Optional[ArrayBoundaries],
 ]:
     valid = cons.get(id_, [])
-    codes: Sequence[Code] = []
+    codes = None
     dt = DataType.STRING
     facets = None
     ab = None
