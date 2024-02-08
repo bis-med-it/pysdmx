@@ -21,7 +21,7 @@ def test_defaults(fid):
     assert f.facets is None
     assert f.name is None
     assert f.description is None
-    assert len(f.codes) == 0
+    assert not f.codes
     assert f.enum_ref is None
 
 
@@ -38,7 +38,7 @@ def test_full_initialization(fid):
     assert f.facets == facets
     assert f.name == name
     assert f.description == desc
-    assert len(f.codes) == 0
+    assert not f.codes
     assert f.enum_ref is None
 
 
