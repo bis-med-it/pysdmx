@@ -88,12 +88,7 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
             a = find_by_urn(codelists, self.enumeration)
             if a:
                 codes = [c for c in a.codes if not valid or c.id in valid]
-                clt = (
-                    "codelist"
-                    if ".Codelist=" in self.enumeration
-                    else "valuelist"
-                )
-                return msgspec.structs.replace(a, codes=codes, sdmx_type=clt)
+                return msgspec.structs.replace(a, codes=codes)
         return None
 
     def to_array_def(self) -> Optional[ArrayBoundaries]:

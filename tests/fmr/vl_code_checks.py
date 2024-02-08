@@ -18,6 +18,7 @@ def check_vl_codelist(mock, fmr: RegistryClient, q1, q2, body):
     assert codelist.agency == "TEST"
     assert codelist.description is None
     assert codelist.version == "1.0"
+    assert codelist.sdmx_type == "valuelist"
     for code in codelist:
         assert isinstance(code, Code)
 

@@ -80,6 +80,7 @@ class JsonValuelist(Struct, frozen=True, rename={"agency": "agencyID"}):
             self.description,
             self.version,
             [i.to_model() for i in self.valueItems],
+            "valuelist",
         )
 
 
