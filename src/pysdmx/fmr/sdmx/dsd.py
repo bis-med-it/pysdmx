@@ -9,7 +9,6 @@ from pysdmx.fmr.sdmx.constraint import JsonContentConstraint
 from pysdmx.fmr.sdmx.core import JsonRepresentation
 from pysdmx.model import (
     ArrayBoundaries,
-    Code,
     Codelist,
     Component,
     Components,

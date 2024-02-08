@@ -10,7 +10,6 @@ from pysdmx.fmr.fusion.constraint import FusionContentConstraint
 from pysdmx.fmr.fusion.core import FusionRepresentation, FusionString
 from pysdmx.model import (
     ArrayBoundaries,
-    Code,
     Codelist,
     Component,
     Components,

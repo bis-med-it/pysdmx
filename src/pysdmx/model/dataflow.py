@@ -14,7 +14,7 @@ from typing import Any, Iterable, Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.model.code import Code, Codelist, Hierarchy
+from pysdmx.model.code import Codelist, Hierarchy
 from pysdmx.model.concept import DataType, Facets
 from pysdmx.model.organisation import Organisation
 
