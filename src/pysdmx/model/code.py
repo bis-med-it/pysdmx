@@ -167,6 +167,13 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
             respective composition").
         version: The hierarchy version (e.g. 2.0.42)
         codes: The list of codes in the hierarchy.
+        operator: The URN of the operator to be applied to the items of an
+            hierarchy. This is mainly used for data validation or data
+            compilation purposes. For example, Let's assume a hierarchy with
+            a top level code (A), with 2 child codes (B and C). And let's
+            assume that the operator property references a VTL operator
+            representing a sum. This can then be used for validation purposes,
+            to check that A = B + C.
     """
 
     id: str
@@ -175,6 +182,7 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
     description: Optional[str] = None
     version: str = "1.0"
     codes: Sequence[HierarchicalCode] = ()
+    operator: Optional[str] = None
 
     def __iter__(self) -> Iterator[HierarchicalCode]:
         """Return an iterator over the list of codes."""

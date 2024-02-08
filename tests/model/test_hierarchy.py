@@ -20,6 +20,14 @@ def agency():
     return "5B0"
 
 
+@pytest.fixture()
+def operator():
+    return (
+        "urn:sdmx:org.sdmx.infomodel.transformation."
+        "UserDefinedOperator=SDMX:OPS(1.0).SUM"
+    )
+
+
 def test_defaults(id, name, agency):
     cs = Hierarchy(id, name, agency)
 
@@ -30,9 +38,10 @@ def test_defaults(id, name, agency):
     assert cs.version == "1.0"
     assert cs.codes is not None
     assert len(cs.codes) == 0
+    assert cs.operator is None
 
 
-def test_full_initialization(id, name, agency):
+def test_full_initialization(id, name, agency, operator):
     desc = "description"
     version = "1.42.0"
     grandchild = HierarchicalCode("Child211", "Child 2.1.1")
@@ -52,6 +61,7 @@ def test_full_initialization(id, name, agency):
     assert cs.codes == codes
     assert len(cs) == 4
     assert len(cs.codes) == 2
+    assert cs.operator == operator
 
 
 def test_immutable(id, name, agency):
