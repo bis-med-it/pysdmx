@@ -39,7 +39,12 @@ def _get_representation(
     cls: Sequence[FusionCodelist],
     cons: Dict[str, Sequence[str]],
     c: Optional[FusionConcept],
-) -> Tuple[DataType, Optional[Facets], Codelist, Optional[ArrayBoundaries],]:
+) -> Tuple[
+    DataType,
+    Optional[Facets],
+    Optional[Codelist],
+    Optional[ArrayBoundaries],
+]:
     valid = cons.get(id_, [])
     ab = None
     dt = DataType.STRING

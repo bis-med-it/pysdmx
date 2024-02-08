@@ -71,7 +71,7 @@ class FusionCodelist(Struct, frozen=True, rename={"agency": "agencyId"}):
             self.descriptions[0].value if self.descriptions else None,
             self.version,
             [i.to_model() for i in self.items],
-            t,
+            t,  # type: ignore[arg-type]
         )
 
 

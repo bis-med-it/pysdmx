@@ -16,7 +16,7 @@ from typing import Iterator, Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.model.code import Code
+from pysdmx.model.code import Codelist
 
 
 class DataType(str, Enum):
@@ -149,7 +149,7 @@ class Concept(Struct, frozen=True, omit_defaults=True):
     facets: Optional[Facets] = None
     name: Optional[str] = None
     description: Optional[str] = None
-    codes: Sequence[Code] = ()
+    codes: Optional[Codelist] = None
     enum_ref: Optional[str] = None
 
     def __str__(self) -> str:
