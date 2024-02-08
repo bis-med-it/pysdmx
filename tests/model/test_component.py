@@ -45,10 +45,9 @@ def test_defaults(fid, req, role):
     assert f.description is None
     assert not f.codes
     assert f.attachment_level is None
-    assert f.enum_ref is None
 
 
-def test_full_initialization(fid, req, role, typ, cl_ref, array_def):
+def test_full_initialization(fid, req, role, typ, array_def):
     facets = Facets(min_value=0, max_value="100")
     name = "Signal quality"
     desc = "The quality of the GPS signal"
@@ -63,7 +62,6 @@ def test_full_initialization(fid, req, role, typ, cl_ref, array_def):
         name,
         desc,
         attachment_level=lvl,
-        enum_ref=cl_ref,
         array_def=array_def,
     )
 
@@ -76,7 +74,6 @@ def test_full_initialization(fid, req, role, typ, cl_ref, array_def):
     assert f.description == desc
     assert not f.codes
     assert f.attachment_level == lvl
-    assert f.enum_ref == cl_ref
     assert f.array_def == array_def
 
 

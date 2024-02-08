@@ -59,14 +59,9 @@ async def check_coded_components(mock, fmr: AsyncRegistryClient, query, body):
     for comp in vc.components:
         if comp.id in exp:
             assert len(comp.codes) == exp.get(comp.id)
-            assert comp.enum_ref is not None
-            assert comp.enum_ref.startswith(
-                "urn:sdmx:org.sdmx.infomodel.codelist."
-            )
             count += 1
         else:
-            assert len(comp.codes) == 0
-            assert comp.enum_ref is None
+            assert not comp.codes
     assert count == len(exp.keys())
 
 

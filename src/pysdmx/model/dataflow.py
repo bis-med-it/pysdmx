@@ -95,8 +95,6 @@ class Component(Struct, frozen=True, omit_defaults=True):
             D (for dataset-level attributes), O (for observation-level
             attributes) or a combination of dimension IDs, separated by
             commas, for series- and group-level attributes).
-        enum_ref: The URN of the enumeration (codelist or valuelist) from
-            which the codes are taken.
         array_def: Any additional constraints for array types.
     """
 
@@ -109,7 +107,6 @@ class Component(Struct, frozen=True, omit_defaults=True):
     description: Optional[str] = None
     codes: Union[Codelist, Hierarchy, None] = None
     attachment_level: Optional[str] = None
-    enum_ref: Optional[str] = None
     array_def: Optional[ArrayBoundaries] = None
 
     def __str__(self) -> str:
