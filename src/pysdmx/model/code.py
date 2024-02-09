@@ -256,3 +256,17 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
             returned set.
         """
         return self.__by_id(id, self.codes)
+
+
+class HierarchyAssociation(Struct, frozen=True, omit_defaults=True):
+    """Links a hierarchy to a component withing the context of a dataflow."""
+
+    id: str
+    name: str
+    agency: str
+    hierarchy: Hierarchy
+    component_ref: str
+    context_ref: str
+    description: Optional[str] = None
+    version: str = "1.0"
+    operator: Optional[str] = None
