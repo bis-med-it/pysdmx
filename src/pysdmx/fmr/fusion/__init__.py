@@ -3,6 +3,7 @@
 from pysdmx.fmr.fusion.category import FusionCategorySchemeMessage
 from pysdmx.fmr.fusion.code import (
     FusionCodelistMessage,
+    FusionHierarchyAssociationMessage,
     FusionHierarchyMessage,
 )
 from pysdmx.fmr.fusion.concept import FusionConcepSchemeMessage
@@ -24,6 +25,7 @@ deserializers = Deserializers(
     dataflow=FusionDataflowMessage,  # type: ignore[arg-type]
     providers=FusionProviderMessage,  # type: ignore[arg-type]
     schema=FusionSchemaMessage,  # type: ignore[arg-type]
+    hier_assoc=FusionHierarchyAssociationMessage,  # type: ignore[arg-type]
     hierarchy=FusionHierarchyMessage,  # type: ignore[arg-type]
     report=FusionMetadataMessage,  # type: ignore[arg-type]
     mapping=FusionMappingMessage,  # type: ignore[arg-type]

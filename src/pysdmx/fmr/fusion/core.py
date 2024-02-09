@@ -23,6 +23,12 @@ class FusionString(msgspec.Struct, frozen=True):
     value: str
 
 
+class FusionLink(msgspec.Struct, frozen=True):
+    """Fusion-JSON payload for link objects."""
+
+    urn: str
+
+
 class FusionTextFormat(msgspec.Struct, frozen=True):
     """Fusion-JSON payload for TextFormat."""
 
