@@ -162,7 +162,7 @@ class FusionHierarchy(Struct, frozen=True, rename={"agency": "agencyId"}):
 class FusionHierarchyAssociation(
     Struct, frozen=True, rename={"agency": "agencyId"}
 ):
-    """Fusion-JSON payload for a hierarchy."""
+    """Fusion-JSON payload for a hierarchy association."""
 
     id: str
     names: Sequence[FusionString]
