@@ -51,7 +51,7 @@ def test_full_initialization(id, name, agency, operator):
         HierarchicalCode("child2", "Child 2", codes=[child]),
     ]
 
-    cs = Hierarchy(id, name, agency, desc, version, codes)
+    cs = Hierarchy(id, name, agency, desc, version, codes, operator)
 
     assert cs.id == id
     assert cs.name == name
