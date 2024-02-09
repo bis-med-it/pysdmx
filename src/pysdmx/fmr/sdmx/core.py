@@ -103,6 +103,7 @@ class JsonLink(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for link objects."""
 
     urn: str
+    rel: Optional[str] = None
 
 
 class JsonHeader(msgspec.Struct, frozen=True):

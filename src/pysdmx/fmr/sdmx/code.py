@@ -5,9 +5,15 @@ from typing import Optional, Sequence, Tuple
 
 from msgspec import Struct
 
-from pysdmx.fmr.sdmx.core import JsonAnnotation
-from pysdmx.model import Code, Codelist, HierarchicalCode, Hierarchy
-from pysdmx.util import parse_item_urn
+from pysdmx.fmr.sdmx.core import JsonAnnotation, JsonLink
+from pysdmx.model import (
+    Code,
+    Codelist,
+    HierarchicalCode,
+    Hierarchy,
+    HierarchyAssociation,
+)
+from pysdmx.util import find_by_urn, parse_item_urn
 
 
 class JsonCode(Struct, frozen=True):
@@ -177,6 +183,48 @@ class JsonHierarchies(Struct, frozen=True):
         return self.hierarchies[0].to_model(cls)
 
 
+class JsonHierarchyAssociation(
+    Struct, frozen=True, rename={"agency": "agencyID"}
+):
+    """SDMX-JSON payload for a hierarchy association."""
+
+    id: str
+    name: str
+    agency: str
+    linkedHierarchy: str
+    linkedObject: str
+    contextObject: str
+    links: Sequence[JsonLink] = ()
+    description: Optional[str] = None
+    version: str = "1.0"
+
+    def to_model(
+        self,
+        hierarchies: Sequence[JsonHierarchy],
+        codelists: Sequence[JsonCodelist],
+    ) -> HierarchyAssociation:
+        """Converts a FusionHierarchyAssocation to a standard association."""
+        cls = [cl.to_model() for cl in codelists]
+        m = find_by_urn(hierarchies, self.linkedHierarchy).to_model(cls)
+        lnk = list(
+            filter(
+                lambda i: hasattr(i, "rel") and i.rel == "UserDefinedOperator",
+                self.links,
+            )
+        )
+        return HierarchyAssociation(
+            self.id,
+            self.name,
+            self.agency,
+            m,
+            self.linkedObject,
+            self.contextObject,
+            self.description,
+            self.version,
+            lnk[0].urn if lnk else None,
+        )
+
+
 class JsonHierarchyMessage(Struct, frozen=True):
     """SDMX-JSON payload for /hierarchy queries."""
 
@@ -184,4 +232,29 @@ class JsonHierarchyMessage(Struct, frozen=True):
 
     def to_model(self) -> Hierarchy:
         """Returns the requested hierarchy."""
+        return self.data.to_model()
+
+
+class JsonHierarchyAssociations(Struct, frozen=True):
+    """SDMX-JSON payload for hierarchy associations."""
+
+    codelists: Sequence[JsonCodelist] = ()
+    hierarchies: Sequence[JsonHierarchy] = ()
+    hierarchyassociations: Sequence[JsonHierarchyAssociation] = ()
+
+    def to_model(self) -> Hierarchy:
+        """Returns the requested hierarchy associations."""
+        return [
+            ha.to_model(self.hierarchies, self.codelists)
+            for ha in self.hierarchyassociations
+        ]
+
+
+class JsonHierarchyAssociationMessage(Struct, frozen=True):
+    """SDMX-JSON payload for hierarchy associations messages."""
+
+    data: JsonHierarchyAssociations
+
+    def to_model(self) -> Hierarchy:
+        """Returns the requested hierarchy associations."""
         return self.data.to_model()
