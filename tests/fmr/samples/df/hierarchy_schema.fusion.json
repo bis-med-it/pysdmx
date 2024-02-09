@@ -20,13 +20,13 @@
                 "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS:TEST(1.0)"
             },
             {
-                "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=BIS:AGENCIES(1.0)"
+                "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)"
             },
             {
                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
             },
             {
-                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:OPTION_TYPE(1.0)"
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OPTION_TYPE(1.0)"
             },
             {
                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS:CONCEPTS(1.0)"
@@ -241,7 +241,7 @@
             "names": [
                 {
                     "locale": "en",
-                    "value": "MDD Schema for OCC Post Trade Statistics"
+                    "value": "Test"
                 }
             ],
             "agencyId": "BIS",
