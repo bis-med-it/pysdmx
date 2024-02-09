@@ -3,11 +3,22 @@ from datetime import datetime
 import httpx
 
 from pysdmx.fmr import AsyncRegistryClient, RegistryClient
-from pysdmx.model import Component, Components, DataType, Role, Schema
+from pysdmx.model import (
+    Codelist,
+    Component,
+    Components,
+    DataType,
+    Hierarchy,
+    Role,
+    Schema,
+)
 
 
-def check_schema(mock, fmr: RegistryClient, query, body):
+def check_schema(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
     """get_schema() should return a schema."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
     vc = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0")
@@ -27,8 +38,13 @@ def check_schema(mock, fmr: RegistryClient, query, body):
         assert comp.name is not None
 
 
-async def check_coded_components(mock, fmr: AsyncRegistryClient, query, body):
+async def check_coded_components(
+    mock, fmr: AsyncRegistryClient, query, hca_query, body, hca_body
+):
     """Components have the expected number of codes."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
     exp = {
         "FREQ": 1,
@@ -75,9 +91,17 @@ async def check_coded_components(mock, fmr: AsyncRegistryClient, query, body):
 
 
 def check_unconstrained_coded_components(
-    mock, fmr: RegistryClient, no_const_query, no_const_body
+    mock,
+    fmr: RegistryClient,
+    no_const_query,
+    hca_query,
+    no_const_body,
+    hca_body,
 ):
     """Components have the expected number of codes."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
     mock.get(no_const_query).mock(
         return_value=httpx.Response(200, content=no_const_body)
     )
@@ -117,9 +141,14 @@ def check_core_local_repr(
     mock,
     fmr: RegistryClient,
     no_const_query,
+    hca_query,
     no_const_body,
+    hca_body,
 ):
     """Components have the expected representation (local or core)."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
     mock.get(no_const_query).mock(
         return_value=httpx.Response(200, content=no_const_body)
     )
@@ -145,8 +174,11 @@ def check_core_local_repr(
     assert title.facets is None
 
 
-def check_roles(mock, fmr: RegistryClient, query, body):
+def check_roles(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
     """Components have the expected role."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
     schema = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0").components
@@ -160,8 +192,11 @@ def check_roles(mock, fmr: RegistryClient, query, body):
     assert schema["DECIMALS"] in schema.attributes
 
 
-def check_types(mock, fmr: RegistryClient, query, body):
+def check_types(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
     """Components have the expected type."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
     schema = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0").components
@@ -175,8 +210,11 @@ def check_types(mock, fmr: RegistryClient, query, body):
             assert comp.dtype == DataType.STRING
 
 
-def check_facets(mock, fmr: RegistryClient, query, body):
+def check_facets(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
     """Components have the expected facets."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
     schema = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0").components
@@ -195,8 +233,13 @@ def check_facets(mock, fmr: RegistryClient, query, body):
             assert comp.facets.max_length <= 200
 
 
-def check_required(mock, fmr: RegistryClient, query, body):
+def check_required(
+    mock, fmr: RegistryClient, query, hca_query, body, hca_body
+):
     """Components have the expected required flag."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
     schema = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0").components
@@ -213,8 +256,13 @@ def check_required(mock, fmr: RegistryClient, query, body):
             assert comp.required is True
 
 
-def check_attachment_level(mock, fmr: RegistryClient, query, body):
+def check_attachment_level(
+    mock, fmr: RegistryClient, query, hca_query, body, hca_body
+):
     """Components have the expected attachment level."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
     schema = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0").components
@@ -231,8 +279,13 @@ def check_attachment_level(mock, fmr: RegistryClient, query, body):
             assert comp.attachment_level is None
 
 
-def check_description(mock, fmr: RegistryClient, query, body):
+def check_description(
+    mock, fmr: RegistryClient, query, hca_query, body, hca_body
+):
     """Components may have a description."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
     schema = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0").components
@@ -248,8 +301,13 @@ def check_description(mock, fmr: RegistryClient, query, body):
             assert comp.description is None
 
 
-def check_array_definition(mock, fmr: RegistryClient, query, body):
+def check_array_definition(
+    mock, fmr: RegistryClient, query, hca_query, body, hca_body
+):
     """Array components may have min & max number of items."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
     schema = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0").components
@@ -263,8 +321,13 @@ def check_array_definition(mock, fmr: RegistryClient, query, body):
             assert cmp.array_def is None
 
 
-def check_no_measure(mock, fmr: RegistryClient, query, body):
+def check_no_measure(
+    mock, fmr: RegistryClient, query, hca_query, body, hca_body
+):
     """get_schema() should return a schema, possibly with no measure."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
     vc = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0")
@@ -281,8 +344,13 @@ def check_no_measure(mock, fmr: RegistryClient, query, body):
     assert len(vc.components.measures) == 0
 
 
-def check_no_attrs(mock, fmr: RegistryClient, query, body):
+def check_no_attrs(
+    mock, fmr: RegistryClient, query, hca_query, body, hca_body
+):
     """get_schema() should return a schema, possibly with no attributes."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
     vc = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0")
@@ -297,3 +365,39 @@ def check_no_attrs(mock, fmr: RegistryClient, query, body):
     assert isinstance(vc.components, Components)
     assert len(vc.components) == 13
     assert len(vc.components.attributes) == 0
+
+
+def check_hierarchy(
+    mock, fmr: RegistryClient, query, query_hca, body, body_hca
+):
+    """Some components may reference a hierarchy."""
+    mock.get(query_hca).mock(
+        return_value=httpx.Response(200, content=body_hca)
+    )
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    vc = fmr.get_schema("dataflow", "BIS", "TEST_DF", "1.0")
+
+    assert isinstance(vc, Schema)
+    assert vc.agency == "BIS"
+    assert vc.id == "TEST_DF"
+    assert vc.version == "1.0"
+    assert vc.context == "dataflow"
+    assert len(vc.artefacts) == 8
+    assert isinstance(vc.generated, datetime)
+    assert isinstance(vc.components, Components)
+    assert len(vc.components) == 5
+    assert len(vc.components.attributes) == 0
+    for d in vc.components.dimensions:
+        if d.id in ["CONTRACT", "TIME_PERIOD"]:
+            assert d.codes is None
+        elif d.id == "OPTION_TYPE":
+            assert isinstance(d.codes, Hierarchy)
+            assert len(d.codes) == 3
+            assert d.codes.id == "H_OPTION_TYPE"
+            assert d.codes.operator == (
+                "urn:sdmx:org.sdmx.infomodel.transformation."
+                "UserDefinedOperator=SDMX:OPS(1.0).SUM"
+            )
+        else:
+            assert isinstance(d.codes, Codelist)
