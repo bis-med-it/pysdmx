@@ -170,7 +170,7 @@ class FusionHierarchyAssociation(
     hierarchyRef: str
     linkedStructureRef: str
     contextRef: str
-    links: Sequence[FusionLink]
+    links: Sequence[FusionLink] = ()
     descriptions: Sequence[FusionString] = ()
     version: str = "1.0"
 
