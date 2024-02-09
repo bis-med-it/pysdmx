@@ -46,7 +46,19 @@ def no_hca_query(fmr):
     version = "1.0"
     return (
         f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
-        "?references=parentsandsiblings&detail=referencepartial"
+        "?references=all&detail=referencepartial"
+    )
+
+
+@pytest.fixture()
+def no_hca_query_no_version(fmr):
+    res = "structure/dataflow/"
+    agency = "BIS.CBS"
+    id = "CBS"
+    version = "+"
+    return (
+        f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+        "?references=all&detail=referencepartial"
     )
 
 
@@ -111,6 +123,8 @@ def test_returns_dataflow_info(
     schema_body,
     dataflow_query,
     dataflow_body,
+    no_hca_query,
+    no_hca_body,
 ):
     """get_dataflow_details() should return information about a dataflow."""
     checks.check_dataflow_info(
@@ -120,6 +134,8 @@ def test_returns_dataflow_info(
         schema_body,
         dataflow_query,
         dataflow_body,
+        no_hca_query,
+        no_hca_body,
     )
 
 
@@ -130,6 +146,8 @@ def test_returns_dataflow_no_version(
     schema_body,
     dataflow_query_no_version,
     dataflow_body,
+    no_hca_query_no_version,
+    no_hca_body,
 ):
     """get_dataflow_details() return information about a dataflow (+)."""
     checks.check_dataflow_info_no_version(
@@ -139,6 +157,8 @@ def test_returns_dataflow_no_version(
         schema_body,
         dataflow_query_no_version,
         dataflow_body,
+        no_hca_query_no_version,
+        no_hca_body,
     )
 
 

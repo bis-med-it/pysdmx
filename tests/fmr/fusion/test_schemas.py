@@ -39,7 +39,7 @@ def no_hca_query(fmr):
     version = "1.0"
     return (
         f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
-        "?references=parentsandsiblings&detail=referencepartial"
+        "?references=all&detail=referencepartial"
     )
 
 
@@ -51,7 +51,7 @@ def hierarchy_hca_query(fmr):
     version = "1.0"
     return (
         f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
-        "?references=parentsandsiblings&detail=referencepartial"
+        "?references=all&detail=referencepartial"
     )
 
 

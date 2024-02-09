@@ -81,7 +81,7 @@ url_templates = {
     ),
     "ha": (
         "structure/dataflow/{0}/{1}/{2}"
-        "?references=parentsandsiblings&detail=referencepartial"
+        "?references=all&detail=referencepartial"
     ),
     "hierarchy": (
         "structure/hierarchy/{0}/{1}/{2}"
