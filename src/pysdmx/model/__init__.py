@@ -8,7 +8,13 @@ from re import Pattern
 from typing import Any
 
 from pysdmx.model.category import Category, CategoryScheme
-from pysdmx.model.code import Code, Codelist, HierarchicalCode, Hierarchy
+from pysdmx.model.code import (
+    Code,
+    Codelist,
+    HierarchicalCode,
+    Hierarchy,
+    HierarchyAssociation,
+)
 from pysdmx.model.concept import Concept, ConceptScheme, DataType, Facets
 from pysdmx.model.dataflow import (
     ArrayBoundaries,
@@ -89,6 +95,7 @@ __all__ = [
     "Facets",
     "HierarchicalCode",
     "Hierarchy",
+    "HierarchyAssociation",
     "ImplicitComponentMap",
     "StructureMap",
     "MetadataAttribute",

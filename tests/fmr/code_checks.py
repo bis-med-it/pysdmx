@@ -24,6 +24,7 @@ def check_codelist(mock, fmr: RegistryClient, query, body):
     assert codelist.agency == "SDMX"
     assert codelist.description == "The frequency of the data"
     assert codelist.version == "2.0"
+    assert codelist.sdmx_type == "codelist"
     for code in codelist:
         assert isinstance(code, Code)
 

@@ -1,6 +1,14 @@
 """Retrieve metadata from an FMR instance."""
 from enum import Enum
-from typing import Any, Literal, NoReturn, Optional, Sequence, Tuple, Union
+from typing import (
+    Any,
+    Literal,
+    NoReturn,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 import httpx
 from msgspec.json import decode
@@ -15,6 +23,7 @@ from pysdmx.model import (
     ConceptScheme,
     DataflowInfo,
     Hierarchy,
+    HierarchyAssociation,
     MetadataReport,
     MultiRepresentationMap,
     Organisation,
@@ -69,6 +78,10 @@ url_templates = {
     "dataflow": (
         "structure/dataflow/{0}/{1}/{2}"
         "?detail=referencepartial&references={3}"
+    ),
+    "ha": (
+        "structure/dataflow/{0}/{1}/{2}"
+        "?references=all&detail=referencepartial"
     ),
     "hierarchy": (
         "structure/hierarchy/{0}/{1}/{2}"
@@ -217,6 +230,12 @@ class RegistryClient(__BaseRegistryClient):
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 self._error(e)
 
+    def __get_hierarchies_for_flow(
+        self, agency: str, flow: str, version: str
+    ) -> Sequence[HierarchyAssociation]:
+        out = self.__fetch(super()._url("ha", agency, flow, version))
+        return super()._out(out, self.deser.hier_assoc)
+
     def get_agencies(self, agency: str) -> Sequence[Organisation]:
         """Get the list of **sub-agencies** for the supplied agency.
 
@@ -339,16 +358,14 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested schema.
         """
+        ha = (
+            self.__get_hierarchies_for_flow(agency, id, version)
+            if context != "datastructure"
+            else ()
+        )
         c = context.value if isinstance(context, Context) else context
         out = self.__fetch(super()._url("schema", c, agency, id, version))
-        return super()._out(
-            out,
-            self.deser.schema,
-            c,
-            agency,
-            id,
-            version,
-        )
+        return super()._out(out, self.deser.schema, c, agency, id, version, ha)
 
     def get_dataflow_details(
         self,
@@ -537,6 +554,12 @@ class AsyncRegistryClient(__BaseRegistryClient):
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 self._error(e)
 
+    async def __get_hierarchies_for_flow(
+        self, agency: str, flow: str, version: str
+    ) -> Sequence[HierarchyAssociation]:
+        out = await self.__fetch(super()._url("ha", agency, flow, version))
+        return super()._out(out, self.deser.hier_assoc)
+
     async def get_agencies(self, agency: str) -> Sequence[Organisation]:
         """Get the list of **sub-agencies** for the supplied agency.
 
@@ -657,16 +680,14 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested schema.
         """
+        ha = (
+            await self.__get_hierarchies_for_flow(agency, id, version)
+            if context != "datastructure"
+            else ()
+        )
         c = context.value if isinstance(context, Context) else context
         r = await self.__fetch(super()._url("schema", c, agency, id, version))
-        return super()._out(
-            r,
-            self.deser.schema,
-            c,
-            agency,
-            id,
-            version,
-        )
+        return super()._out(r, self.deser.schema, c, agency, id, version, ha)
 
     async def get_dataflow_details(
         self,

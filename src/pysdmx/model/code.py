@@ -17,7 +17,7 @@ representation of hierarchical relationships to hierarchies only.
 """
 
 from datetime import datetime
-from typing import Iterator, Optional, Sequence
+from typing import Iterator, Literal, Optional, Sequence
 
 from msgspec import Struct
 
@@ -81,6 +81,7 @@ class Codelist(Struct, frozen=True, omit_defaults=True):
     description: Optional[str] = None
     version: str = "1.0"
     codes: Sequence[Code] = ()
+    sdmx_type: Literal["codelist", "valuelist"] = "codelist"
 
     def __iter__(self) -> Iterator[Code]:
         """Return an iterator over the list of codes."""
@@ -166,6 +167,13 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
             respective composition").
         version: The hierarchy version (e.g. 2.0.42)
         codes: The list of codes in the hierarchy.
+        operator: The URN of the operator to be applied to the items of an
+            hierarchy. This is mainly used for data validation or data
+            compilation purposes. For example, Let's assume a hierarchy with
+            a top level code (A), with 2 child codes (B and C). And let's
+            assume that the operator property references a VTL operator
+            representing a sum. This can then be used for validation purposes,
+            to check that A = B + C.
     """
 
     id: str
@@ -174,6 +182,7 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
     description: Optional[str] = None
     version: str = "1.0"
     codes: Sequence[HierarchicalCode] = ()
+    operator: Optional[str] = None
 
     def __iter__(self) -> Iterator[HierarchicalCode]:
         """Return an iterator over the list of codes."""
@@ -247,3 +256,17 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
             returned set.
         """
         return self.__by_id(id, self.codes)
+
+
+class HierarchyAssociation(Struct, frozen=True, omit_defaults=True):
+    """Links a hierarchy to a component withing the context of a dataflow."""
+
+    id: str
+    name: str
+    agency: str
+    hierarchy: Hierarchy
+    component_ref: str
+    context_ref: str
+    description: Optional[str] = None
+    version: str = "1.0"
+    operator: Optional[str] = None

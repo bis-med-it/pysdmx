@@ -10,7 +10,7 @@ from pysdmx.fmr.fusion.constraint import FusionContentConstraint
 from pysdmx.fmr.fusion.core import FusionRepresentation, FusionString
 from pysdmx.model import (
     ArrayBoundaries,
-    Code,
+    Codelist,
     Component,
     Components,
     DataType,
@@ -42,17 +42,14 @@ def _get_representation(
 ) -> Tuple[
     DataType,
     Optional[Facets],
-    Sequence[Code],
-    Optional[str],
+    Optional[Codelist],
     Optional[ArrayBoundaries],
 ]:
     valid = cons.get(id_, [])
-    codes: Sequence[Code] = []
-    cl_ref = None
     ab = None
     dt = DataType.STRING
     facets = None
-    codes = []
+    codes = None
     if repr_:
         r = repr_
     elif c and c.representation:
@@ -64,9 +61,8 @@ def _get_representation(
             dt = DataType(r.textFormat.textType)
         facets = r.to_facets()
         codes = r.to_enumeration(cls, valid)
-        cl_ref = r.representation
         ab = r.to_array_def()
-    return (dt, facets, codes, cl_ref, ab)
+    return (dt, facets, codes, ab)
 
 
 class FusionGroup(Struct, frozen=True):
@@ -117,7 +113,7 @@ class FusionAttribute(Struct, frozen=True):
     ) -> Component:
         """Returns an attribute."""
         c = _find_concept(cs, self.concept)
-        dt, facets, codes, cl_ref, ab = _get_representation(
+        dt, facets, codes, ab = _get_representation(
             self.id, self.representation, cls, cons, c
         )
         lvl = self.__derive_level(groups)
@@ -135,7 +131,6 @@ class FusionAttribute(Struct, frozen=True):
             desc,
             codes=codes,
             attachment_level=lvl,
-            enum_ref=cl_ref,
             array_def=ab,
         )
 
@@ -171,7 +166,7 @@ class FusionDimension(Struct, frozen=True):
     ) -> Component:
         """Returns a dimension."""
         c = _find_concept(cs, self.concept)
-        dt, facets, codes, cl_ref, ab = _get_representation(
+        dt, facets, codes, ab = _get_representation(
             self.id, self.representation, cls, cons, c
         )
         if c.descriptions:
@@ -187,7 +182,6 @@ class FusionDimension(Struct, frozen=True):
             c.names[0].value,
             desc,
             codes=codes,
-            enum_ref=cl_ref,
             array_def=ab,
         )
 
@@ -223,7 +217,7 @@ class FusionMeasure(Struct, frozen=True):
     ) -> Component:
         """Returns a measure."""
         c = _find_concept(cs, self.concept)
-        dt, facets, codes, cl_ref, ab = _get_representation(
+        dt, facets, codes, ab = _get_representation(
             self.id, self.representation, cls, cons, c
         )
         if c.descriptions:
@@ -239,7 +233,6 @@ class FusionMeasure(Struct, frozen=True):
             c.names[0].value,
             desc,
             codes=codes,
-            enum_ref=cl_ref,
             array_def=ab,
         )
 

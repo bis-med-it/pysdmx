@@ -2,7 +2,11 @@
 
 from pysdmx.fmr.reader import Deserializers
 from pysdmx.fmr.sdmx.category import JsonCategorySchemeMessage
-from pysdmx.fmr.sdmx.code import JsonCodelistMessage, JsonHierarchyMessage
+from pysdmx.fmr.sdmx.code import (
+    JsonCodelistMessage,
+    JsonHierarchyAssociationMessage,
+    JsonHierarchyMessage,
+)
 from pysdmx.fmr.sdmx.concept import JsonConcepSchemeMessage
 from pysdmx.fmr.sdmx.dataflow import JsonDataflowMessage
 from pysdmx.fmr.sdmx.map import (
@@ -21,6 +25,7 @@ deserializers = Deserializers(
     dataflow=JsonDataflowMessage,  # type: ignore[arg-type]
     providers=JsonProviderMessage,  # type: ignore[arg-type]
     schema=JsonSchemaMessage,  # type: ignore[arg-type]
+    hier_assoc=JsonHierarchyAssociationMessage,  # type: ignore[arg-type]
     hierarchy=JsonHierarchyMessage,  # type: ignore[arg-type]
     report=JsonMetadataMessage,  # type: ignore[arg-type]
     mapping=JsonMappingMessage,  # type: ignore[arg-type]

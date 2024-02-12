@@ -11,19 +11,25 @@ def check_dataflow_info(
     schema_body,
     dataflow_query,
     dataflow_body,
+    hca_query,
+    hca_body,
 ):
     """get_schema() should return a schema."""
-    route1 = mock.get(schema_query).mock(
-        return_value=httpx.Response(200, content=schema_body)
+    route1 = mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
     )
     route2 = mock.get(dataflow_query).mock(
         return_value=httpx.Response(200, content=dataflow_body)
+    )
+    route3 = mock.get(schema_query).mock(
+        return_value=httpx.Response(200, content=schema_body)
     )
 
     dsi = fmr.get_dataflow_details("BIS.CBS", "CBS", "1.0")
 
     assert route1.called
     assert route2.called
+    assert route3.called
     __check_dsi(dsi)
 
 
@@ -34,12 +40,17 @@ def check_dataflow_info_no_version(
     schema_body,
     dataflow_query_no_version,
     dataflow_body,
+    hca_query,
+    hca_body,
 ):
     """get_schema() should return a schema."""
-    route1 = mock.get(schema_query).mock(
+    route1 = mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
+    route2 = mock.get(schema_query).mock(
         return_value=httpx.Response(200, content=schema_body)
     )
-    route2 = mock.get(dataflow_query_no_version).mock(
+    route3 = mock.get(dataflow_query_no_version).mock(
         return_value=httpx.Response(200, content=dataflow_body)
     )
 
@@ -47,6 +58,7 @@ def check_dataflow_info_no_version(
 
     assert route1.called
     assert route2.called
+    assert route3.called
     __check_dsi(dsi)
 
 
@@ -95,6 +107,8 @@ def check_dataflow_info_with_schema(
     schema_body,
     dataflow_query,
     dataflow_body,
+    hca_query,
+    hca_body,
 ):
     """get_schema() should return a schema."""
     route1 = mock.get(schema_query).mock(
@@ -103,6 +117,9 @@ def check_dataflow_info_with_schema(
     route2 = mock.get(dataflow_query).mock(
         return_value=httpx.Response(200, content=dataflow_body)
     )
+    route3 = mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
 
     dsi = fmr.get_dataflow_details(
         "BIS.CBS", "CBS", "1.0", DataflowDetails.SCHEMA
@@ -110,6 +127,7 @@ def check_dataflow_info_with_schema(
 
     assert route1.called
     assert route2.called
+    assert route3.called
     __check_dsi_and_schema(dsi)
 
 
@@ -120,19 +138,25 @@ async def check_async_dataflow_info(
     schema_body,
     dataflow_query,
     dataflow_body,
+    hca_query,
+    hca_body,
 ):
     """get_schema() should return a schema."""
-    route1 = mock.get(schema_query).mock(
-        return_value=httpx.Response(200, content=schema_body)
+    route1 = mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
     )
     route2 = mock.get(dataflow_query).mock(
         return_value=httpx.Response(200, content=dataflow_body)
+    )
+    route3 = mock.get(schema_query).mock(
+        return_value=httpx.Response(200, content=schema_body)
     )
 
     dsi = await fmr.get_dataflow_details("BIS.CBS", "CBS", "1.0")
 
     assert route1.called
     assert route2.called
+    assert route3.called
     __check_dsi(dsi)
 
 

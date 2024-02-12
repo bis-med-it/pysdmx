@@ -26,6 +26,7 @@ class Deserializers:
     dataflow: Deserializer
     providers: Deserializer
     schema: Deserializer
+    hier_assoc: Deserializer
     hierarchy: Deserializer
     report: Deserializer
     mapping: Deserializer

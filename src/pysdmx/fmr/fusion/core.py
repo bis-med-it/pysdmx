@@ -3,27 +3,33 @@
 from datetime import datetime
 from typing import Any, Optional, Sequence, Union
 
-from msgspec import Struct
+import msgspec
 
-from pysdmx.model import ArrayBoundaries, Code, Facets
+from pysdmx.model import ArrayBoundaries, Codelist, Facets
 from pysdmx.util import find_by_urn
 
 
-class FusionAnnotation(Struct, frozen=True):
+class FusionAnnotation(msgspec.Struct, frozen=True):
     """Fusion-JSON payload for annotations."""
 
     title: str
     type: str
 
 
-class FusionString(Struct, frozen=True):
+class FusionString(msgspec.Struct, frozen=True):
     """Fusion-JSON payload for an international string."""
 
     locale: str
     value: str
 
 
-class FusionTextFormat(Struct, frozen=True):
+class FusionLink(msgspec.Struct, frozen=True):
+    """Fusion-JSON payload for link objects."""
+
+    urn: str
+
+
+class FusionTextFormat(msgspec.Struct, frozen=True):
     """Fusion-JSON payload for TextFormat."""
 
     textType: str
@@ -40,7 +46,7 @@ class FusionTextFormat(Struct, frozen=True):
     isSequence: bool = False
 
 
-class FusionRepresentation(Struct, frozen=True):
+class FusionRepresentation(msgspec.Struct, frozen=True):
     """Fusion-JSON payload for core representation."""
 
     textFormat: Optional[FusionTextFormat] = None
@@ -83,13 +89,16 @@ class FusionRepresentation(Struct, frozen=True):
         self,
         codelists: Sequence[Any],
         valid: Sequence[str],
-    ) -> Sequence[Code]:
+    ) -> Optional[Codelist]:
         """Returns the list of codes allowed for this component."""
-        codes = []
         if self.representation:
-            a = find_by_urn(codelists, self.representation).items
-            codes = [c.to_model() for c in a if not valid or c.id in valid]
-        return codes
+            a = find_by_urn(codelists, self.representation)
+            cl = a.to_model()
+            codes = [
+                c.to_model() for c in a.items if not valid or c.id in valid
+            ]
+            return msgspec.structs.replace(cl, codes=codes)
+        return None
 
     def to_array_def(self) -> Optional[ArrayBoundaries]:
         """Returns the array boundaries, if any."""

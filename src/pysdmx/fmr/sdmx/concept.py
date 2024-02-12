@@ -37,7 +37,7 @@ class JsonConcept(Struct, frozen=True):
         else:
             dt = DataType.STRING
             facets = None
-            codes = []
+            codes = None
             cl_ref = None
         return Concept(
             self.id,

@@ -9,7 +9,6 @@ from pysdmx.fmr.sdmx.constraint import JsonContentConstraint
 from pysdmx.fmr.sdmx.core import JsonRepresentation
 from pysdmx.model import (
     ArrayBoundaries,
-    Code,
     Codelist,
     Component,
     Components,
@@ -49,29 +48,25 @@ def _get_representation(
 ) -> Tuple[
     DataType,
     Optional[Facets],
-    Sequence[Code],
-    Optional[str],
+    Optional[Codelist],
     Optional[ArrayBoundaries],
 ]:
     valid = cons.get(id_, [])
-    codes: Sequence[Code] = []
+    codes = None
     dt = DataType.STRING
     facets = None
-    cl_ref = None
     ab = None
     if local:
         dt = DataType(__get_type(local))
         facets = local.to_facets()
         codes = local.to_enumeration(cls, valid)
-        cl_ref = local.enumeration
         ab = local.to_array_def()
     elif core:
         dt = DataType(__get_type(core))
         facets = core.to_facets()
         codes = core.to_enumeration(cls, valid)
-        cl_ref = core.enumeration
         ab = core.to_array_def()
-    return (dt, facets, codes, cl_ref, ab)
+    return (dt, facets, codes, ab)
 
 
 class JsonGroup(Struct, frozen=True):
@@ -117,7 +112,7 @@ class JsonDimension(Struct, frozen=True):
     ) -> Component:
         """Returns a component."""
         c = _find_concept(cs, self.conceptIdentity)
-        dt, facets, codes, cl_ref, ab = _get_representation(
+        dt, facets, codes, ab = _get_representation(
             self.id, self.localRepresentation, c.coreRepresentation, cls, cons
         )
         return Component(
@@ -129,7 +124,6 @@ class JsonDimension(Struct, frozen=True):
             c.name,
             c.description,
             codes=codes,
-            enum_ref=cl_ref,
             array_def=ab,
         )
 
@@ -153,7 +147,7 @@ class JsonAttribute(Struct, frozen=True):
     ) -> Component:
         """Returns a component."""
         c = _find_concept(cs, self.conceptIdentity)
-        dt, facets, codes, cl_ref, ab = _get_representation(
+        dt, facets, codes, ab = _get_representation(
             self.id, self.localRepresentation, c.coreRepresentation, cls, cons
         )
         req = self.usage != "optional"
@@ -171,7 +165,6 @@ class JsonAttribute(Struct, frozen=True):
             c.description,
             codes=codes,
             attachment_level=lvl,
-            enum_ref=cl_ref,
             array_def=ab,
         )
 
@@ -192,7 +185,7 @@ class JsonMeasure(Struct, frozen=True):
     ) -> Component:
         """Returns a component."""
         c = _find_concept(cs, self.conceptIdentity)
-        dt, facets, codes, cl_ref, ab = _get_representation(
+        dt, facets, codes, ab = _get_representation(
             self.id, self.localRepresentation, c.coreRepresentation, cls, cons
         )
         req = self.usage != "optional"
@@ -205,7 +198,6 @@ class JsonMeasure(Struct, frozen=True):
             c.name,
             c.description,
             codes=codes,
-            enum_ref=cl_ref,
             array_def=ab,
         )
 

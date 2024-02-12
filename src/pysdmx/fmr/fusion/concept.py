@@ -28,7 +28,7 @@ class FusionConcept(Struct, frozen=True):
         c = (
             self.representation.to_enumeration(codelists, [])
             if self.representation
-            else []
+            else None
         )
         d = self.descriptions[0].value if self.descriptions else None
         cl_ref = (

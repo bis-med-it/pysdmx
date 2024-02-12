@@ -5,14 +5,15 @@ from typing import Optional, Sequence, Tuple
 
 from msgspec import Struct
 
-from pysdmx.fmr.fusion.core import FusionAnnotation, FusionString
+from pysdmx.fmr.fusion.core import FusionAnnotation, FusionLink, FusionString
 from pysdmx.model import (
     Code,
     Codelist as CL,
     HierarchicalCode,
     Hierarchy as HCL,
+    HierarchyAssociation as HA,
 )
-from pysdmx.util import parse_item_urn
+from pysdmx.util import find_by_urn, parse_item_urn
 
 
 class FusionCode(Struct, frozen=True):
@@ -54,6 +55,7 @@ class FusionCodelist(Struct, frozen=True, rename={"agency": "agencyId"}):
     """Fusion-JSON payload for a codelist."""
 
     id: str
+    urn: str
     names: Sequence[FusionString]
     agency: str
     descriptions: Sequence[FusionString] = ()
@@ -62,6 +64,7 @@ class FusionCodelist(Struct, frozen=True, rename={"agency": "agencyId"}):
 
     def to_model(self) -> CL:
         """Converts a JsonCodelist to a standard codelist."""
+        t = "codelist" if "Codelist" in self.urn else "valuelist"
         return CL(
             self.id,
             self.names[0].value,
@@ -69,6 +72,7 @@ class FusionCodelist(Struct, frozen=True, rename={"agency": "agencyId"}):
             self.descriptions[0].value if self.descriptions else None,
             self.version,
             [i.to_model() for i in self.items],
+            t,  # type: ignore[arg-type]
         )
 
 
@@ -155,6 +159,42 @@ class FusionHierarchy(Struct, frozen=True, rename={"agency": "agencyId"}):
         )
 
 
+class FusionHierarchyAssociation(
+    Struct, frozen=True, rename={"agency": "agencyId"}
+):
+    """Fusion-JSON payload for a hierarchy association."""
+
+    id: str
+    names: Sequence[FusionString]
+    agency: str
+    hierarchyRef: str
+    linkedStructureRef: str
+    contextRef: str
+    links: Sequence[FusionLink] = ()
+    descriptions: Sequence[FusionString] = ()
+    version: str = "1.0"
+
+    def to_model(
+        self,
+        hierarchies: Sequence[FusionHierarchy],
+        codelists: Sequence[FusionCodelist],
+    ) -> HA:
+        """Converts a FusionHierarchyAssocation to a standard association."""
+        cls = [cl.to_model() for cl in codelists]
+        m = find_by_urn(hierarchies, self.hierarchyRef).to_model(cls)
+        return HA(
+            self.id,
+            self.names[0].value,
+            self.agency,
+            m,
+            self.linkedStructureRef,
+            self.contextRef,
+            self.descriptions[0].value if self.descriptions else None,
+            self.version,
+            self.links[0].urn if self.links else None,
+        )
+
+
 class FusionHierarchyMessage(Struct, frozen=True):
     """Fusion-JSON payload for /hierarchy queries."""
 
@@ -165,3 +205,18 @@ class FusionHierarchyMessage(Struct, frozen=True):
         """Returns the requested hierarchy."""
         cls = [cl.to_model() for cl in self.Codelist]
         return self.Hierarchy[0].to_model(cls)
+
+
+class FusionHierarchyAssociationMessage(Struct, frozen=True):
+    """Fusion-JSON payload for hierarchy associations."""
+
+    Codelist: Sequence[FusionCodelist] = ()
+    Hierarchy: Sequence[FusionHierarchy] = ()
+    HierarchyAssociation: Sequence[FusionHierarchyAssociation] = ()
+
+    def to_model(self) -> Sequence[HA]:
+        """Returns the requested hierarchy associations."""
+        return [
+            ha.to_model(self.Hierarchy, self.Codelist)
+            for ha in self.HierarchyAssociation
+        ]

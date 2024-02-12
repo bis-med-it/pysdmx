@@ -4,7 +4,7 @@ import httpx
 import pytest
 
 from pysdmx.fmr import AsyncRegistryClient, RegistryClient
-from pysdmx.model import Code, Concept, ConceptScheme, DataType
+from pysdmx.model import Code, Codelist, Concept, ConceptScheme, DataType
 
 
 def check_cs(mock, fmr: RegistryClient, query, body):
@@ -58,6 +58,13 @@ def check_concept_details(mock, fmr: RegistryClient, query, body):
             assert concept.description is None
             assert concept.dtype == DataType.STRING
             assert len(concept.codes) == 3
+            assert isinstance(concept.codes, Codelist)
+            assert concept.codes.id == "MEDAL_NMM"
+            assert concept.codes.agency == "BIS.MEDIT"
+            assert concept.codes.version == "1.0"
+            assert concept.codes.sdmx_type == "codelist"
+            assert concept.codes.name == "MEDAL Mapping Modes"
+            assert concept.codes.description is not None
             for c in concept.codes:
                 isinstance(c, Code)
                 assert c.id in ["F", "I", "W"]
