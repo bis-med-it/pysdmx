@@ -169,3 +169,26 @@ def test_codes_by_id_diff_names(id, name, agency):
     m = list(m)
     assert grandchild1 in m
     assert grandchild3 in m
+
+
+def test_all_codes(id, name, agency):
+    grandchild1 = HierarchicalCode("grandchild1", "grandchild 1")
+    grandchild2 = HierarchicalCode("grandchild2", "grandchild 2")
+    grandchild3 = HierarchicalCode("grandchild3", "grandchild 3")
+    child1 = HierarchicalCode(
+        "child1", "child 1", codes=[grandchild1, grandchild2]
+    )
+    child2 = HierarchicalCode(
+        "child2", "child 2", codes=[grandchild1, grandchild2, grandchild3]
+    )
+    parent1 = HierarchicalCode("parent1", "parent 1")
+    parent2 = HierarchicalCode(
+        "parent2",
+        "parent 2",
+        codes=[child1, child2],
+    )
+
+    h = Hierarchy(id, name, agency, codes=[parent1, parent2])
+
+    m = h.all_codes()
+    assert len(m) == 7

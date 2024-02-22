@@ -257,6 +257,29 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
         """
         return self.__by_id(id, self.codes)
 
+    def __get_codes(self, codes: Sequence[HierarchicalCode]):
+        out = []
+        for code in codes:
+            out.append(code)
+            if code.codes:
+                out.extend(self.__get_codes(code.codes))
+        return out
+
+    def all_codes(self) -> Sequence[HierarchicalCode]:
+        """Get all the codes in the hierarchy as a flat list.
+
+        This is useful for validation purposes. The sequence behaves
+        as a set, i.e. even if a code is attached to multiple nodes,
+        it will be available only once in the returned sequence.
+        """
+        out = []
+        # We need to do this below because a hierarchical code is not
+        # (yet?) hashable.
+        for c in self.__get_codes(self.codes):
+            if c not in out:
+                out.append(c)
+        return out
+
 
 class HierarchyAssociation(Struct, frozen=True, omit_defaults=True):
     """Links a hierarchy to a component withing the context of a dataflow."""
