@@ -7,6 +7,8 @@ from msgspec import Struct
 
 from pysdmx.errors import NotFound
 
+NF = "Not found"
+
 
 class Reference(Struct, frozen=True):
     """The coordinates of an SDMX maintainable artefact.
@@ -58,9 +60,7 @@ def parse_urn(urn: str) -> Reference:
         )
     else:
         raise NotFound(
-            404,
-            "Not found",
-            f"{urn} does not match {maintainable_urn_pattern}",
+            404, NF, f"{urn} does not match {maintainable_urn_pattern}"
         )
 
 
@@ -76,9 +76,7 @@ def parse_item_urn(urn: str) -> ItemReference:
             item_id=m.group(5),
         )
     else:
-        raise NotFound(
-            404, "Not found", f"{urn} does not match {item_urn_pattern}."
-        )
+        raise NotFound(404, NF, f"{urn} does not match {item_urn_pattern}.")
 
 
 def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:
@@ -95,7 +93,7 @@ def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:
         urns = [f"{a.agency}:{a.id}({a.version})" for a in artefacts]
         raise NotFound(
             404,
-            "Not found",
+            NF,
             (
                 f"Could not find an artefact matching the following URN: "
                 f"{urn}. The artefacts received were: {urns}."
