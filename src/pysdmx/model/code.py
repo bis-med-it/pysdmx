@@ -257,7 +257,9 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
         """
         return self.__by_id(id, self.codes)
 
-    def __get_codes(self, codes: Sequence[HierarchicalCode]):
+    def __get_codes(
+        self, codes: Sequence[HierarchicalCode]
+    ) -> Sequence[HierarchicalCode]:
         out = []
         for code in codes:
             out.append(code)
@@ -271,6 +273,9 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
         This is useful for validation purposes. The sequence behaves
         as a set, i.e. even if a code is attached to multiple nodes,
         it will be available only once in the returned sequence.
+
+        Returns:
+            A flat list of the codes present in the hierarchy.
         """
         out = []
         # We need to do this below because a hierarchical code is not
