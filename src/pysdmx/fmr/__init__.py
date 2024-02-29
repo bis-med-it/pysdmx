@@ -358,12 +358,12 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested schema.
         """
+        c = context.value if isinstance(context, Context) else context
         ha = (
             self.__get_hierarchies_for_flow(agency, id, version)
-            if context != "datastructure"
+            if c == "dataflow"
             else ()
         )
-        c = context.value if isinstance(context, Context) else context
         out = self.__fetch(super()._url("schema", c, agency, id, version))
         return super()._out(out, self.deser.schema, c, agency, id, version, ha)
 
