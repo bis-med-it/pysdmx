@@ -83,6 +83,10 @@ url_templates = {
         "structure/dataflow/{0}/{1}/{2}"
         "?references=all&detail=referencepartial"
     ),
+    "ha_pa": (
+        "structure/provisionagreement/{0}/{1}/{2}"
+        "?references=all&detail=referencepartial"
+    ),
     "hierarchy": (
         "structure/hierarchy/{0}/{1}/{2}"
         "?detail=referencepartial&references=codelist"
@@ -361,7 +365,7 @@ class RegistryClient(__BaseRegistryClient):
         c = context.value if isinstance(context, Context) else context
         ha = (
             self.__get_hierarchies_for_flow(agency, id, version)
-            if c == "dataflow"
+            if context != "datastructure"
             else ()
         )
         out = self.__fetch(super()._url("schema", c, agency, id, version))

@@ -37,6 +37,28 @@ def check_schema(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
         assert comp.id is not None
         assert comp.name is not None
 
+def check_schema_from_pa(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
+    """get_schema() using PA should return a schema."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    vc = fmr.get_schema("provisionagreement", "BIS.CBS", "CBS", "1.0")
+
+    assert isinstance(vc, Schema)
+    assert vc.agency == "BIS.CBS"
+    assert vc.id == "CBS"
+    assert vc.version == "1.0"
+    assert vc.context == "provisionagreement"
+    assert len(vc.artefacts) == 24
+    assert isinstance(vc.generated, datetime)
+    assert isinstance(vc.components, Components)
+    assert len(vc.components) == 24
+    for comp in vc.components:
+        assert isinstance(comp, Component)
+        assert comp.id is not None
+        assert comp.name is not None
 
 async def check_coded_components(
     mock, fmr: AsyncRegistryClient, query, hca_query, body, hca_body

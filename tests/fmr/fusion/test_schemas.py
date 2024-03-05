@@ -30,6 +30,14 @@ def query(fmr):
     version = "1.0"
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
 
+@pytest.fixture()
+def query_pa(fmr):
+    res = "schema/provisionagreement/"
+    agency = "BIS.CBS"
+    id = "CBS_BIS_GR2"
+    version = "1.0"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+
 
 @pytest.fixture()
 def no_hca_query(fmr):
@@ -42,6 +50,16 @@ def no_hca_query(fmr):
         "?references=all&detail=referencepartial"
     )
 
+@pytest.fixture()
+def pa_hca_query(fmr):
+    res = "structure/provisionagreement/"
+    agency = "BIS.CBS"
+    id = "CBS_BIS_GR2"
+    version = "1.0"
+    return (
+        f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+        "?references=all&detail=referencepartial"
+    )
 
 @pytest.fixture()
 def hierarchy_hca_query(fmr):
@@ -127,6 +145,14 @@ def test_returns_validation_context(
     """get_validation_context() should return a schema."""
     checks.check_schema(
         respx_mock, fmr, query, no_hca_query, body, no_hca_body
+    )
+
+def test_returns_pa_validation_context(
+    respx_mock, fmr, query_pa, pa_hca_query, body, no_hca_body
+):
+    """get_validation_context() should return a schema."""
+    checks.check_schema(
+        respx_mock, fmr, query_pa, pa_hca_query, body, no_hca_body
     )
 
 
