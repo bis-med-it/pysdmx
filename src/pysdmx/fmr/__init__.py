@@ -704,6 +704,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
             ha = await self.__get_hierarchies_for_pra(agency, id, version)
         else:
             ha = ()
+
         c = context.value if isinstance(context, Context) else context
         r = await self.__fetch(super()._url("schema", c, agency, id, version))
         return super()._out(r, self.deser.schema, c, agency, id, version, ha)

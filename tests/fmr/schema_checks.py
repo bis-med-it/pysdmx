@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 
 import httpx
@@ -37,7 +38,10 @@ def check_schema(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
         assert comp.id is not None
         assert comp.name is not None
 
-def check_schema_from_pra(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
+
+def check_schema_from_pra(
+    mock, fmr: RegistryClient, query, hca_query, body, hca_body
+):
     """get_schema() using PA should return a schema."""
     mock.get(hca_query).mock(
         return_value=httpx.Response(200, content=hca_body)
@@ -59,6 +63,7 @@ def check_schema_from_pra(mock, fmr: RegistryClient, query, hca_query, body, hca
         assert isinstance(comp, Component)
         assert comp.id is not None
         assert comp.name is not None
+
 
 async def check_coded_components(
     mock, fmr: AsyncRegistryClient, query, hca_query, body, hca_body
@@ -112,6 +117,57 @@ async def check_coded_components(
     assert count == len(exp.keys())
 
 
+async def check_coded_pra_components(
+    mock, fmr: AsyncRegistryClient, query, hca_query, body, hca_body
+):
+    """Components have the expected number of codes."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+    exp = {
+        "FREQ": 1,
+        "L_MEASURE": 1,
+        "L_REP_CTY": 1,
+        "CBS_BANK_TYPE": 35,
+        "CBS_BASIS": 5,
+        "L_POSITION": 10,
+        "L_INSTR": 12,
+        "REM_MATURITY": 6,
+        "CURR_TYPE_BOOK": 3,
+        "L_CP_SECTOR": 10,
+        "L_CP_COUNTRY": 245,
+        "DECIMALS": 1,
+        "UNIT_MEASURE": 1,
+        "UNIT_MULT": 1,
+        "TIME_FORMAT": 19,
+        "COLLECTION": 1,
+        "ORG_VISIBILITY": 5,
+        "OBS_STATUS": 16,
+        "OBS_CONF": 3,
+        "AVAILABILITY": 20,
+    }
+
+    vc = await fmr.get_schema(
+        "provisionagreement", "BIS.CBS", "CBS_BIS_GR2", "1.0"
+    )
+
+    count = 0
+    for comp in vc.components:
+        print(comp.id)
+        if comp.id in exp:
+            assert len(comp.codes) == exp.get(comp.id)
+            assert comp.codes.id is not None
+            assert comp.codes.agency == "BIS"
+            assert comp.codes.version == "1.0"
+            assert comp.codes.name is not None
+            assert comp.codes.sdmx_type == "codelist"
+            count += 1
+        else:
+            assert not comp.codes
+    assert count == len(exp.keys())
+
+
 def check_unconstrained_coded_components(
     mock,
     fmr: RegistryClient,
@@ -127,6 +183,7 @@ def check_unconstrained_coded_components(
     mock.get(no_const_query).mock(
         return_value=httpx.Response(200, content=no_const_body)
     )
+
     exp = {
         "FREQ": 8,
         "L_MEASURE": 5,
@@ -149,7 +206,6 @@ def check_unconstrained_coded_components(
         "OBS_CONF": 5,
         "AVAILABILITY": 20,
     }
-
     vc = fmr.get_schema("datastructure", "BIS", "BIS_CBS", "1.0")
 
     for comp in vc.components:
@@ -157,6 +213,36 @@ def check_unconstrained_coded_components(
             assert len(comp.codes) == exp[comp.id]
         else:
             assert comp.codes is None
+
+
+async def check_core_local_repr_async(
+    mock,
+    fmr: AsyncRegistryClient,
+    no_const_query,
+    hca_query,
+    no_const_body,
+    hca_body,
+):
+    """Components have the expected representation (local or core)."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
+    mock.get(no_const_query).mock(
+        return_value=httpx.Response(200, content=no_const_body)
+    )
+
+    schema = await fmr.get_schema(
+        "datastructure",
+        "BIS",
+        "BIS_CBS",
+        "1.0",
+    )
+
+    freq = schema.components["FREQ"]
+
+    assert isinstance(freq, Component)
+    assert len(freq.codes) == 8
+    assert freq.dtype == DataType.STRING
 
 
 def check_core_local_repr(

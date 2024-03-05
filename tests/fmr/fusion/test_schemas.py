@@ -197,7 +197,12 @@ def test_returns_validation_context(
 
 
 def test_returns_pra_validation_context(
-    respx_mock, fmr, query_pra, no_hca_pra_query, body_from_pra, no_hca_pra_body
+    respx_mock,
+    fmr,
+    query_pra,
+    no_hca_pra_query,
+    body_from_pra,
+    no_hca_pra_body,
 ):
     """get_validation_context() should return a schema."""
     checks.check_schema_from_pra(
@@ -220,6 +225,39 @@ async def test_codes(
     )
 
 
+@pytest.mark.asyncio()
+async def test_codes_pra(
+    respx_mock,
+    async_fmr,
+    query_pra,
+    no_hca_pra_query,
+    body_from_pra,
+    no_hca_pra_body,
+):
+    """Components have the expected number of codes."""
+    await checks.check_coded_pra_components(
+        respx_mock,
+        async_fmr,
+        query_pra,
+        no_hca_pra_query,
+        body_from_pra,
+        no_hca_pra_body,
+    )
+
+@pytest.mark.asyncio()
+async def test_core_local_repr_async(
+    respx_mock, async_fmr, no_const_query, no_hca_query, no_const_body, no_hca_body
+):
+    """Components have the expected representation (local or core)."""
+    await checks.check_core_local_repr_async(
+        respx_mock,
+        async_fmr,
+        no_const_query,
+        no_hca_query,
+        no_const_body,
+        no_hca_body,
+    )
+
 def test_codes_no_const(
     respx_mock, fmr, no_const_query, no_hca_query, no_const_body, no_hca_body
 ):
@@ -232,7 +270,6 @@ def test_codes_no_const(
         no_const_body,
         no_hca_body,
     )
-
 
 def test_core_local_repr(
     respx_mock, fmr, no_const_query, no_hca_query, no_const_body, no_hca_body
