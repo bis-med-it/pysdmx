@@ -30,8 +30,9 @@ def query(fmr):
     version = "1.0"
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
 
+
 @pytest.fixture()
-def query_pa(fmr):
+def query_pra(fmr):
     res = "schema/provisionagreement/"
     agency = "BIS.CBS"
     id = "CBS_BIS_GR2"
@@ -50,8 +51,9 @@ def no_hca_query(fmr):
         "?references=all&detail=referencepartial"
     )
 
+
 @pytest.fixture()
-def pa_hca_query(fmr):
+def no_hca_pra_query(fmr):
     res = "structure/provisionagreement/"
     agency = "BIS.CBS"
     id = "CBS_BIS_GR2"
@@ -61,11 +63,24 @@ def pa_hca_query(fmr):
         "?references=all&detail=referencepartial"
     )
 
+
 @pytest.fixture()
 def hierarchy_hca_query(fmr):
     res = "structure/dataflow/"
     agency = "BIS"
     id = "TEST_DF"
+    version = "1.0"
+    return (
+        f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+        "?references=all&detail=referencepartial"
+    )
+
+
+@pytest.fixture()
+def hierarchy_hca_query_pra(fmr):
+    res = "structure/provisionagreement/"
+    agency = "BIS.CBS"
+    id = "CBS_BIS_TEST"
     version = "1.0"
     return (
         f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
@@ -83,6 +98,15 @@ def hierarchy_query(fmr):
 
 
 @pytest.fixture()
+def hierarchy_query_pra(fmr):
+    res = "schema/provisionagreement/"
+    agency = "BIS.CBS"
+    id = "CBS_BIS_TEST"
+    version = "1.0"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+
+
+@pytest.fixture()
 def no_const_query(fmr):
     res = "schema/datastructure/"
     agency = "BIS"
@@ -94,6 +118,12 @@ def no_const_query(fmr):
 @pytest.fixture()
 def body():
     with open("tests/fmr/samples/df/schema.fusion.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture()
+def body_from_pra():
+    with open("tests/fmr/samples/pra/schema.fusion.json", "rb") as f:
         return f.read()
 
 
@@ -134,8 +164,26 @@ def hier_assoc_body():
 
 
 @pytest.fixture()
+def hierarchy_pra_body():
+    with open("tests/fmr/samples/pra/hierarchy_schema.fusion.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture()
+def hier_assoc_pra_body():
+    with open("tests/fmr/samples/pra/hierarchy_hca.fusion.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture()
 def no_hca_body():
     with open("tests/fmr/samples/df/no_hca.fusion.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture()
+def no_hca_pra_body():
+    with open("tests/fmr/samples/pra/no_hca.fusion.json", "rb") as f:
         return f.read()
 
 
@@ -147,12 +195,18 @@ def test_returns_validation_context(
         respx_mock, fmr, query, no_hca_query, body, no_hca_body
     )
 
-def test_returns_pa_validation_context(
-    respx_mock, fmr, query_pa, pa_hca_query, body, no_hca_body
+
+def test_returns_pra_validation_context(
+    respx_mock, fmr, query_pra, no_hca_pra_query, body_from_pra, no_hca_pra_body
 ):
     """get_validation_context() should return a schema."""
-    checks.check_schema(
-        respx_mock, fmr, query_pa, pa_hca_query, body, no_hca_body
+    checks.check_schema_from_pra(
+        respx_mock,
+        fmr,
+        query_pra,
+        no_hca_pra_query,
+        body_from_pra,
+        no_hca_pra_body,
     )
 
 
@@ -304,4 +358,23 @@ def test_has_hierarchy(
         hierarchy_hca_query,
         hierarchy_body,
         hier_assoc_body,
+    )
+
+
+def test_has_hierarchy_pra(
+    respx_mock,
+    fmr,
+    hierarchy_query_pra,
+    hierarchy_hca_query_pra,
+    hierarchy_pra_body,
+    hier_assoc_pra_body,
+):
+    """Components may reference a hierarchy."""
+    checks.check_hierarchy_pra(
+        respx_mock,
+        fmr,
+        hierarchy_query_pra,
+        hierarchy_hca_query_pra,
+        hierarchy_pra_body,
+        hier_assoc_pra_body,
     )

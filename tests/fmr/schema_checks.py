@@ -37,21 +37,21 @@ def check_schema(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
         assert comp.id is not None
         assert comp.name is not None
 
-def check_schema_from_pa(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
+def check_schema_from_pra(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
     """get_schema() using PA should return a schema."""
     mock.get(hca_query).mock(
         return_value=httpx.Response(200, content=hca_body)
     )
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
-    vc = fmr.get_schema("provisionagreement", "BIS.CBS", "CBS", "1.0")
+    vc = fmr.get_schema("provisionagreement", "BIS.CBS", "CBS_BIS_GR2", "1.0")
 
     assert isinstance(vc, Schema)
     assert vc.agency == "BIS.CBS"
-    assert vc.id == "CBS"
+    assert vc.id == "CBS_BIS_GR2"
     assert vc.version == "1.0"
     assert vc.context == "provisionagreement"
-    assert len(vc.artefacts) == 24
+    assert len(vc.artefacts) == 27
     assert isinstance(vc.generated, datetime)
     assert isinstance(vc.components, Components)
     assert len(vc.components) == 24
@@ -417,6 +417,42 @@ def check_hierarchy(
             assert isinstance(d.codes, Hierarchy)
             assert len(d.codes) == 3
             assert d.codes.id == "H_OPTION_TYPE"
+            assert d.codes.operator == (
+                "urn:sdmx:org.sdmx.infomodel.transformation."
+                "UserDefinedOperator=SDMX:OPS(1.0).SUM"
+            )
+        else:
+            assert isinstance(d.codes, Codelist)
+
+
+def check_hierarchy_pra(
+    mock, fmr: RegistryClient, query, query_hca, body, body_hca
+):
+    """Some components may reference a hierarchy."""
+    mock.get(query_hca).mock(
+        return_value=httpx.Response(200, content=body_hca)
+    )
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    vc = fmr.get_schema("provisionagreement", "BIS.CBS", "CBS_BIS_TEST", "1.0")
+
+    assert isinstance(vc, Schema)
+    assert vc.agency == "BIS.CBS"
+    assert vc.id == "CBS_BIS_TEST"
+    assert vc.version == "1.0"
+    assert vc.context == "provisionagreement"
+    assert len(vc.artefacts) == 27
+    assert isinstance(vc.generated, datetime)
+    assert isinstance(vc.components, Components)
+    assert len(vc.components) == 24
+    assert len(vc.components.attributes) == 11
+    for d in vc.components.dimensions:
+        if d.id == "TIME_PERIOD":
+            assert d.codes is None
+        elif d.id == "L_CP_COUNTRY":
+            assert isinstance(d.codes, Hierarchy)
+            assert len(d.codes) == 251
+            assert d.codes.id == "CBS_CLIENT_HIERARCHIES@COUNTERPARTYCOUNTRY"
             assert d.codes.operator == (
                 "urn:sdmx:org.sdmx.infomodel.transformation."
                 "UserDefinedOperator=SDMX:OPS(1.0).SUM"
