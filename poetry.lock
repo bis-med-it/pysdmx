@@ -11,11 +11,6 @@ files = [
     {file = "alabaster-0.7.16.tar.gz", hash = "sha256:75a8b99c28a5dad50dd7f8ccdd447a121ddb3892da9e53d1ca5cca3106d58d65"},
 ]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "anyio"
 version = "4.3.0"
@@ -38,11 +33,6 @@ doc = ["Sphinx (>=7)", "packaging", "sphinx-autodoc-typehints (>=1.2.0)", "sphin
 test = ["anyio[trio]", "coverage[toml] (>=7)", "exceptiongroup (>=1.2.0)", "hypothesis (>=4.0)", "psutil (>=5.9)", "pytest (>=7.0)", "pytest-mock (>=3.6.1)", "trustme", "uvloop (>=0.17)"]
 trio = ["trio (>=0.23)"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "astor"
 version = "0.8.1"
@@ -53,11 +43,6 @@ files = [
     {file = "astor-0.8.1-py2.py3-none-any.whl", hash = "sha256:070a54e890cefb5b3739d19f30f5a5ec840ffc9c50ffa7d23cc9fc1a38ebbfc5"},
     {file = "astor-0.8.1.tar.gz", hash = "sha256:6a6effda93f4e1ce9f618779b2dd1d9d84f1e32812c23a29b3fff6fd7f63fa5e"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "attrs"
@@ -78,11 +63,6 @@ tests = ["attrs[tests-no-zope]", "zope-interface"]
 tests-mypy = ["mypy (>=1.6)", "pytest-mypy-plugins"]
 tests-no-zope = ["attrs[tests-mypy]", "cloudpickle", "hypothesis", "pympler", "pytest (>=4.3.0)", "pytest-xdist[psutil]"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "babel"
 version = "2.14.0"
@@ -97,20 +77,15 @@ files = [
 [package.extras]
 dev = ["freezegun (>=1.0,<2.0)", "pytest (>=6.0)", "pytest-cov"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "bandit"
-version = "1.7.7"
+version = "1.7.8"
 description = "Security oriented static analyser for python code."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "bandit-1.7.7-py3-none-any.whl", hash = "sha256:17e60786a7ea3c9ec84569fd5aee09936d116cb0cb43151023258340dbffb7ed"},
-    {file = "bandit-1.7.7.tar.gz", hash = "sha256:527906bec6088cb499aae31bc962864b4e77569e9d529ee51df3a93b4b8ab28a"},
+    {file = "bandit-1.7.8-py3-none-any.whl", hash = "sha256:509f7af645bc0cd8fd4587abc1a038fc795636671ee8204d502b933aee44f381"},
+    {file = "bandit-1.7.8.tar.gz", hash = "sha256:36de50f720856ab24a24dbaa5fee2c66050ed97c1477e0a1159deab1775eab6b"},
 ]
 
 [package.dependencies]
@@ -121,14 +96,10 @@ stevedore = ">=1.20.0"
 
 [package.extras]
 baseline = ["GitPython (>=3.1.30)"]
+sarif = ["jschema-to-python (>=1.2.3)", "sarif-om (>=1.0.4)"]
 test = ["beautifulsoup4 (>=4.8.0)", "coverage (>=4.5.4)", "fixtures (>=3.0.0)", "flake8 (>=4.0.0)", "pylint (==1.9.4)", "stestr (>=2.5.0)", "testscenarios (>=0.5.0)", "testtools (>=2.3.0)"]
 toml = ["tomli (>=1.1.0)"]
 yaml = ["PyYAML"]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "black"
@@ -176,11 +147,6 @@ d = ["aiohttp (>=3.7.4)", "aiohttp (>=3.7.4,!=3.9.0)"]
 jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "build"
 version = "1.1.1"
@@ -205,11 +171,6 @@ test = ["filelock (>=3)", "pytest (>=6.2.4)", "pytest-cov (>=2.12)", "pytest-moc
 typing = ["importlib-metadata (>=5.1)", "mypy (>=1.5.0,<1.6.0)", "tomli", "typing-extensions (>=3.7.4.3)"]
 virtualenv = ["virtualenv (>=20.0.35)"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "certifi"
 version = "2024.2.2"
@@ -220,11 +181,6 @@ files = [
     {file = "certifi-2024.2.2-py3-none-any.whl", hash = "sha256:dc383c07b76109f368f6106eee2b593b04a011ea4d55f652c6ca24a754d1cdd1"},
     {file = "certifi-2024.2.2.tar.gz", hash = "sha256:0569859f95fc761b18b45ef421b1290a0f65f147e92a1e5eb3e635f9a5e4e66f"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "charset-normalizer"
@@ -325,11 +281,6 @@ files = [
     {file = "charset_normalizer-3.3.2-py3-none-any.whl", hash = "sha256:3e4d1f6587322d2788836a99c69062fbb091331ec940e02d12d179c1d53e25fc"},
 ]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "click"
 version = "8.1.7"
@@ -344,11 +295,6 @@ files = [
 [package.dependencies]
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "colorama"
 version = "0.4.6"
@@ -359,11 +305,6 @@ files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "coverage"
@@ -432,11 +373,6 @@ tomli = {version = "*", optional = true, markers = "python_full_version <= \"3.1
 [package.extras]
 toml = ["tomli"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "darglint"
 version = "1.8.1"
@@ -448,11 +384,6 @@ files = [
     {file = "darglint-1.8.1.tar.gz", hash = "sha256:080d5106df149b199822e7ee7deb9c012b49891538f14a11be681044f0bb20da"},
 ]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "docutils"
 version = "0.18.1"
@@ -463,11 +394,6 @@ files = [
     {file = "docutils-0.18.1-py2.py3-none-any.whl", hash = "sha256:23010f129180089fbcd3bc08cfefccb3b890b0050e1ca00c867036e9d161b98c"},
     {file = "docutils-0.18.1.tar.gz", hash = "sha256:679987caf361a7539d76e584cbeddc311e3aee937877c87346f31debc63e9d06"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "exceptiongroup"
@@ -482,11 +408,6 @@ files = [
 
 [package.extras]
 test = ["pytest (>=6)"]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "flake8"
@@ -504,11 +425,6 @@ mccabe = ">=0.7.0,<0.8.0"
 pycodestyle = ">=2.11.0,<2.12.0"
 pyflakes = ">=3.1.0,<3.2.0"
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "flake8-bandit"
 version = "4.1.1"
@@ -523,11 +439,6 @@ files = [
 [package.dependencies]
 bandit = ">=1.7.3"
 flake8 = ">=5.0.0"
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "flake8-black"
@@ -548,11 +459,6 @@ tomli = {version = "*", markers = "python_version < \"3.11\""}
 [package.extras]
 develop = ["build", "twine"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "flake8-bugbear"
 version = "23.12.2"
@@ -571,11 +477,6 @@ flake8 = ">=6.0.0"
 [package.extras]
 dev = ["coverage", "hypothesis", "hypothesmith (>=0.2)", "pre-commit", "pytest", "tox"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "flake8-comprehensions"
 version = "3.14.0"
@@ -589,11 +490,6 @@ files = [
 
 [package.dependencies]
 flake8 = ">=3.0,<3.2.0 || >3.2.0"
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "flake8-docstrings"
@@ -610,11 +506,6 @@ files = [
 flake8 = ">=3"
 pydocstyle = ">=2.1"
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "flake8-import-order"
 version = "0.18.2"
@@ -630,11 +521,6 @@ files = [
 pycodestyle = "*"
 setuptools = "*"
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "flake8-plugin-utils"
 version = "1.3.3"
@@ -645,11 +531,6 @@ files = [
     {file = "flake8-plugin-utils-1.3.3.tar.gz", hash = "sha256:39f6f338d038b301c6fd344b06f2e81e382b68fa03c0560dff0d9b1791a11a2c"},
     {file = "flake8_plugin_utils-1.3.3-py3-none-any.whl", hash = "sha256:e4848c57d9d50f19100c2d75fa794b72df068666a9041b4b0409be923356a3ed"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "flake8-pytest-style"
@@ -664,11 +545,6 @@ files = [
 
 [package.dependencies]
 flake8-plugin-utils = ">=1.3.2,<2.0.0"
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "flake8-simplify"
@@ -685,11 +561,6 @@ files = [
 astor = ">=0.1"
 flake8 = ">=3.7"
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "h11"
 version = "0.14.0"
@@ -700,11 +571,6 @@ files = [
     {file = "h11-0.14.0-py3-none-any.whl", hash = "sha256:e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761"},
     {file = "h11-0.14.0.tar.gz", hash = "sha256:8f19fbbe99e72420ff35c00b27a34cb9937e902a8b810e2c88300c6f0a3b699d"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "httpcore"
@@ -726,11 +592,6 @@ asyncio = ["anyio (>=4.0,<5.0)"]
 http2 = ["h2 (>=3,<5)"]
 socks = ["socksio (==1.*)"]
 trio = ["trio (>=0.22.0,<0.25.0)"]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "httpx"
@@ -756,11 +617,6 @@ cli = ["click (==8.*)", "pygments (==2.*)", "rich (>=10,<14)"]
 http2 = ["h2 (>=3,<5)"]
 socks = ["socksio (==1.*)"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "idna"
 version = "3.6"
@@ -771,11 +627,6 @@ files = [
     {file = "idna-3.6-py3-none-any.whl", hash = "sha256:c05567e9c24a6b9faaa835c4821bad0590fbb9d5779e7caa6e1cc4978e7eb24f"},
     {file = "idna-3.6.tar.gz", hash = "sha256:9ecdbbd083b06798ae1e86adcbfe8ab1479cf864e4ee30fe4e46a003d12491ca"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "imagesize"
@@ -788,34 +639,24 @@ files = [
     {file = "imagesize-1.4.1.tar.gz", hash = "sha256:69150444affb9cb0d5cc5a92b3676f0b2fb7cd9ae39e947a5e11a36b4497cd4a"},
 ]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "importlib-metadata"
-version = "7.0.1"
+version = "7.0.2"
 description = "Read metadata from Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "importlib_metadata-7.0.1-py3-none-any.whl", hash = "sha256:4805911c3a4ec7c3966410053e9ec6a1fecd629117df5adee56dfc9432a1081e"},
-    {file = "importlib_metadata-7.0.1.tar.gz", hash = "sha256:f238736bb06590ae52ac1fab06a3a9ef1d8dce2b7a35b5ab329371d6c8f5d2cc"},
+    {file = "importlib_metadata-7.0.2-py3-none-any.whl", hash = "sha256:f4bc4c0c070c490abf4ce96d715f68e95923320370efb66143df00199bb6c100"},
+    {file = "importlib_metadata-7.0.2.tar.gz", hash = "sha256:198f568f3230878cb1b44fbd7975f87906c22336dba2e4a7f05278c281fbd792"},
 ]
 
 [package.dependencies]
 zipp = ">=0.5"
 
 [package.extras]
-docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (<7.2.5)", "sphinx (>=3.5)", "sphinx-lint"]
+docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
 perf = ["ipython"]
-testing = ["flufl.flake8", "importlib-resources (>=1.3)", "packaging", "pyfakefs", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy (>=0.9.1)", "pytest-perf (>=0.9.2)", "pytest-ruff"]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
+testing = ["flufl.flake8", "importlib-resources (>=1.3)", "packaging", "pyfakefs", "pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy", "pytest-perf (>=0.9.2)", "pytest-ruff (>=0.2.1)"]
 
 [[package]]
 name = "iniconfig"
@@ -827,11 +668,6 @@ files = [
     {file = "iniconfig-2.0.0-py3-none-any.whl", hash = "sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374"},
     {file = "iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "jinja2"
@@ -849,11 +685,6 @@ MarkupSafe = ">=2.0"
 
 [package.extras]
 i18n = ["Babel (>=2.7)"]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "markdown-it-py"
@@ -878,11 +709,6 @@ plugins = ["mdit-py-plugins"]
 profiling = ["gprof2dot"]
 rtd = ["jupyter_sphinx", "mdit-py-plugins", "myst-parser", "pyyaml", "sphinx", "sphinx-copybutton", "sphinx-design", "sphinx_book_theme"]
 testing = ["coverage", "pytest", "pytest-cov", "pytest-regressions"]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "markupsafe"
@@ -953,11 +779,6 @@ files = [
     {file = "MarkupSafe-2.1.5.tar.gz", hash = "sha256:d283d37a890ba4c1ae73ffadf8046435c76e7bc2247bbb63c00bd1a709c6544b"},
 ]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "mccabe"
 version = "0.7.0"
@@ -969,11 +790,6 @@ files = [
     {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
 ]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "mdurl"
 version = "0.1.2"
@@ -984,11 +800,6 @@ files = [
     {file = "mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8"},
     {file = "mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "msgspec"
@@ -1042,45 +853,40 @@ test = ["attrs", "msgpack", "mypy", "pyright", "pytest", "pyyaml", "tomli", "tom
 toml = ["tomli", "tomli-w"]
 yaml = ["pyyaml"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "mypy"
-version = "1.8.0"
+version = "1.9.0"
 description = "Optional static typing for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "mypy-1.8.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:485a8942f671120f76afffff70f259e1cd0f0cfe08f81c05d8816d958d4577d3"},
-    {file = "mypy-1.8.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:df9824ac11deaf007443e7ed2a4a26bebff98d2bc43c6da21b2b64185da011c4"},
-    {file = "mypy-1.8.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2afecd6354bbfb6e0160f4e4ad9ba6e4e003b767dd80d85516e71f2e955ab50d"},
-    {file = "mypy-1.8.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:8963b83d53ee733a6e4196954502b33567ad07dfd74851f32be18eb932fb1cb9"},
-    {file = "mypy-1.8.0-cp310-cp310-win_amd64.whl", hash = "sha256:e46f44b54ebddbeedbd3d5b289a893219065ef805d95094d16a0af6630f5d410"},
-    {file = "mypy-1.8.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:855fe27b80375e5c5878492f0729540db47b186509c98dae341254c8f45f42ae"},
-    {file = "mypy-1.8.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:4c886c6cce2d070bd7df4ec4a05a13ee20c0aa60cb587e8d1265b6c03cf91da3"},
-    {file = "mypy-1.8.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d19c413b3c07cbecf1f991e2221746b0d2a9410b59cb3f4fb9557f0365a1a817"},
-    {file = "mypy-1.8.0-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:9261ed810972061388918c83c3f5cd46079d875026ba97380f3e3978a72f503d"},
-    {file = "mypy-1.8.0-cp311-cp311-win_amd64.whl", hash = "sha256:51720c776d148bad2372ca21ca29256ed483aa9a4cdefefcef49006dff2a6835"},
-    {file = "mypy-1.8.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:52825b01f5c4c1c4eb0db253ec09c7aa17e1a7304d247c48b6f3599ef40db8bd"},
-    {file = "mypy-1.8.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:f5ac9a4eeb1ec0f1ccdc6f326bcdb464de5f80eb07fb38b5ddd7b0de6bc61e55"},
-    {file = "mypy-1.8.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:afe3fe972c645b4632c563d3f3eff1cdca2fa058f730df2b93a35e3b0c538218"},
-    {file = "mypy-1.8.0-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:42c6680d256ab35637ef88891c6bd02514ccb7e1122133ac96055ff458f93fc3"},
-    {file = "mypy-1.8.0-cp312-cp312-win_amd64.whl", hash = "sha256:720a5ca70e136b675af3af63db533c1c8c9181314d207568bbe79051f122669e"},
-    {file = "mypy-1.8.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:028cf9f2cae89e202d7b6593cd98db6759379f17a319b5faf4f9978d7084cdc6"},
-    {file = "mypy-1.8.0-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:4e6d97288757e1ddba10dd9549ac27982e3e74a49d8d0179fc14d4365c7add66"},
-    {file = "mypy-1.8.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7f1478736fcebb90f97e40aff11a5f253af890c845ee0c850fe80aa060a267c6"},
-    {file = "mypy-1.8.0-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:42419861b43e6962a649068a61f4a4839205a3ef525b858377a960b9e2de6e0d"},
-    {file = "mypy-1.8.0-cp38-cp38-win_amd64.whl", hash = "sha256:2b5b6c721bd4aabaadead3a5e6fa85c11c6c795e0c81a7215776ef8afc66de02"},
-    {file = "mypy-1.8.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:5c1538c38584029352878a0466f03a8ee7547d7bd9f641f57a0f3017a7c905b8"},
-    {file = "mypy-1.8.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:4ef4be7baf08a203170f29e89d79064463b7fc7a0908b9d0d5114e8009c3a259"},
-    {file = "mypy-1.8.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7178def594014aa6c35a8ff411cf37d682f428b3b5617ca79029d8ae72f5402b"},
-    {file = "mypy-1.8.0-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:ab3c84fa13c04aeeeabb2a7f67a25ef5d77ac9d6486ff33ded762ef353aa5592"},
-    {file = "mypy-1.8.0-cp39-cp39-win_amd64.whl", hash = "sha256:99b00bc72855812a60d253420d8a2eae839b0afa4938f09f4d2aa9bb4654263a"},
-    {file = "mypy-1.8.0-py3-none-any.whl", hash = "sha256:538fd81bb5e430cc1381a443971c0475582ff9f434c16cd46d2c66763ce85d9d"},
-    {file = "mypy-1.8.0.tar.gz", hash = "sha256:6ff8b244d7085a0b425b56d327b480c3b29cafbd2eff27316a004f9a7391ae07"},
+    {file = "mypy-1.9.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:f8a67616990062232ee4c3952f41c779afac41405806042a8126fe96e098419f"},
+    {file = "mypy-1.9.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:d357423fa57a489e8c47b7c85dfb96698caba13d66e086b412298a1a0ea3b0ed"},
+    {file = "mypy-1.9.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:49c87c15aed320de9b438ae7b00c1ac91cd393c1b854c2ce538e2a72d55df150"},
+    {file = "mypy-1.9.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:48533cdd345c3c2e5ef48ba3b0d3880b257b423e7995dada04248725c6f77374"},
+    {file = "mypy-1.9.0-cp310-cp310-win_amd64.whl", hash = "sha256:4d3dbd346cfec7cb98e6cbb6e0f3c23618af826316188d587d1c1bc34f0ede03"},
+    {file = "mypy-1.9.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:653265f9a2784db65bfca694d1edd23093ce49740b2244cde583aeb134c008f3"},
+    {file = "mypy-1.9.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:3a3c007ff3ee90f69cf0a15cbcdf0995749569b86b6d2f327af01fd1b8aee9dc"},
+    {file = "mypy-1.9.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2418488264eb41f69cc64a69a745fad4a8f86649af4b1041a4c64ee61fc61129"},
+    {file = "mypy-1.9.0-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:68edad3dc7d70f2f17ae4c6c1b9471a56138ca22722487eebacfd1eb5321d612"},
+    {file = "mypy-1.9.0-cp311-cp311-win_amd64.whl", hash = "sha256:85ca5fcc24f0b4aeedc1d02f93707bccc04733f21d41c88334c5482219b1ccb3"},
+    {file = "mypy-1.9.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:aceb1db093b04db5cd390821464504111b8ec3e351eb85afd1433490163d60cd"},
+    {file = "mypy-1.9.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:0235391f1c6f6ce487b23b9dbd1327b4ec33bb93934aa986efe8a9563d9349e6"},
+    {file = "mypy-1.9.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d4d5ddc13421ba3e2e082a6c2d74c2ddb3979c39b582dacd53dd5d9431237185"},
+    {file = "mypy-1.9.0-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:190da1ee69b427d7efa8aa0d5e5ccd67a4fb04038c380237a0d96829cb157913"},
+    {file = "mypy-1.9.0-cp312-cp312-win_amd64.whl", hash = "sha256:fe28657de3bfec596bbeef01cb219833ad9d38dd5393fc649f4b366840baefe6"},
+    {file = "mypy-1.9.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:e54396d70be04b34f31d2edf3362c1edd023246c82f1730bbf8768c28db5361b"},
+    {file = "mypy-1.9.0-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:5e6061f44f2313b94f920e91b204ec600982961e07a17e0f6cd83371cb23f5c2"},
+    {file = "mypy-1.9.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:81a10926e5473c5fc3da8abb04119a1f5811a236dc3a38d92015cb1e6ba4cb9e"},
+    {file = "mypy-1.9.0-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:b685154e22e4e9199fc95f298661deea28aaede5ae16ccc8cbb1045e716b3e04"},
+    {file = "mypy-1.9.0-cp38-cp38-win_amd64.whl", hash = "sha256:5d741d3fc7c4da608764073089e5f58ef6352bedc223ff58f2f038c2c4698a89"},
+    {file = "mypy-1.9.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:587ce887f75dd9700252a3abbc9c97bbe165a4a630597845c61279cf32dfbf02"},
+    {file = "mypy-1.9.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:f88566144752999351725ac623471661c9d1cd8caa0134ff98cceeea181789f4"},
+    {file = "mypy-1.9.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:61758fabd58ce4b0720ae1e2fea5cfd4431591d6d590b197775329264f86311d"},
+    {file = "mypy-1.9.0-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:e49499be624dead83927e70c756970a0bc8240e9f769389cdf5714b0784ca6bf"},
+    {file = "mypy-1.9.0-cp39-cp39-win_amd64.whl", hash = "sha256:571741dc4194b4f82d344b15e8837e8c5fcc462d66d076748142327626a1b6e9"},
+    {file = "mypy-1.9.0-py3-none-any.whl", hash = "sha256:a260627a570559181a9ea5de61ac6297aa5af202f06fd7ab093ce74e7181e43e"},
+    {file = "mypy-1.9.0.tar.gz", hash = "sha256:3cc5da0127e6a478cddd906068496a97a7618a21ce9b54bde5bf7e539c7af974"},
 ]
 
 [package.dependencies]
@@ -1094,11 +900,6 @@ install-types = ["pip"]
 mypyc = ["setuptools (>=50)"]
 reports = ["lxml"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "mypy-extensions"
 version = "1.0.0"
@@ -1110,26 +911,16 @@ files = [
     {file = "mypy_extensions-1.0.0.tar.gz", hash = "sha256:75dbf8955dc00442a438fc4d0666508a9a97b6bd41aa2f0ffe9d2f2725af0782"},
 ]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "packaging"
-version = "23.2"
+version = "24.0"
 description = "Core utilities for Python packages"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "packaging-23.2-py3-none-any.whl", hash = "sha256:8c491190033a9af7e1d931d0b5dacc2ef47509b34dd0de67ed209b5203fc88c7"},
-    {file = "packaging-23.2.tar.gz", hash = "sha256:048fb0e9405036518eaaf48a55953c750c11e1a1b68e0dd1a9d62ed0c092cfc5"},
+    {file = "packaging-24.0-py3-none-any.whl", hash = "sha256:2ddfb553fdf02fb784c234c7ba6ccc288296ceabec964ad2eae3777778130bc5"},
+    {file = "packaging-24.0.tar.gz", hash = "sha256:eb82c5e3e56209074766e6885bb04b8c38a0c015d0a30036ebe7ece34c9989e9"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "pathspec"
@@ -1142,11 +933,6 @@ files = [
     {file = "pathspec-0.12.1.tar.gz", hash = "sha256:a482d51503a1ab33b1c67a6c3813a26953dbdc71c31dacaef9a838c4e29f5712"},
 ]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "pbr"
 version = "6.0.0"
@@ -1157,11 +943,6 @@ files = [
     {file = "pbr-6.0.0-py2.py3-none-any.whl", hash = "sha256:4a7317d5e3b17a3dccb6a8cfe67dab65b20551404c52c8ed41279fa4f0cb4cda"},
     {file = "pbr-6.0.0.tar.gz", hash = "sha256:d1377122a5a00e2f940ee482999518efe16d745d423a670c27773dfbc3c9a7d9"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "platformdirs"
@@ -1178,11 +959,6 @@ files = [
 docs = ["furo (>=2023.9.10)", "proselint (>=0.13)", "sphinx (>=7.2.6)", "sphinx-autodoc-typehints (>=1.25.2)"]
 test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.4.3)", "pytest-cov (>=4.1)", "pytest-mock (>=3.12)"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "pluggy"
 version = "1.4.0"
@@ -1198,11 +974,6 @@ files = [
 dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "pycodestyle"
 version = "2.11.1"
@@ -1213,11 +984,6 @@ files = [
     {file = "pycodestyle-2.11.1-py2.py3-none-any.whl", hash = "sha256:44fe31000b2d866f2e41841b18528a505fbd7fef9017b04eff4e2648a0fadc67"},
     {file = "pycodestyle-2.11.1.tar.gz", hash = "sha256:41ba0e7afc9752dfb53ced5489e89f8186be00e599e712660695b7a75ff2663f"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "pydocstyle"
@@ -1236,11 +1002,6 @@ snowballstemmer = ">=2.2.0"
 [package.extras]
 toml = ["tomli (>=1.2.3)"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "pyflakes"
 version = "3.1.0"
@@ -1251,11 +1012,6 @@ files = [
     {file = "pyflakes-3.1.0-py2.py3-none-any.whl", hash = "sha256:4132f6d49cb4dae6819e5379898f2b8cce3c5f23994194c24b77d5da2e36f774"},
     {file = "pyflakes-3.1.0.tar.gz", hash = "sha256:a0aae034c444db0071aa077972ba4768d40c830d9539fd45bf4cd3f8f6992efc"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "pygments"
@@ -1272,11 +1028,6 @@ files = [
 plugins = ["importlib-metadata"]
 windows-terminal = ["colorama (>=0.4.6)"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "pyproject-hooks"
 version = "1.0.0"
@@ -1290,11 +1041,6 @@ files = [
 
 [package.dependencies]
 tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "pyroma"
@@ -1319,11 +1065,6 @@ trove-classifiers = ">=2022.6.26"
 [package.extras]
 test = ["setuptools (>=60)", "zest.releaser[recommended]"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "pytest"
 version = "7.4.4"
@@ -1346,11 +1087,6 @@ tomli = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
 [package.extras]
 testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "pytest-asyncio"
 version = "0.21.1"
@@ -1369,11 +1105,6 @@ pytest = ">=7.0.0"
 docs = ["sphinx (>=5.3)", "sphinx-rtd-theme (>=1.0)"]
 testing = ["coverage (>=6.2)", "flaky (>=3.5.0)", "hypothesis (>=5.7.1)", "mypy (>=0.931)", "pytest-trio (>=0.7.0)"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "pytest-cov"
 version = "4.1.0"
@@ -1391,11 +1122,6 @@ pytest = ">=4.6"
 
 [package.extras]
 testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtualenv"]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "pyyaml"
@@ -1457,11 +1183,6 @@ files = [
     {file = "PyYAML-6.0.1.tar.gz", hash = "sha256:bfdf460b1736c775f2ba9f6a92bca30bc2095067b8a9d77876d1fad6cc3b4a43"},
 ]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "requests"
 version = "2.31.0"
@@ -1483,11 +1204,6 @@ urllib3 = ">=1.21.1,<3"
 socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "respx"
 version = "0.20.2"
@@ -1501,11 +1217,6 @@ files = [
 
 [package.dependencies]
 httpx = ">=0.21.0"
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "rich"
@@ -1525,11 +1236,6 @@ pygments = ">=2.13.0,<3.0.0"
 [package.extras]
 jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "setuptools"
 version = "69.1.1"
@@ -1546,11 +1252,6 @@ docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "pygments
 testing = ["build[virtualenv]", "filelock (>=3.4.0)", "flake8-2020", "ini2toml[lite] (>=0.9)", "jaraco.develop (>=7.21)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "packaging (>=23.2)", "pip (>=19.1)", "pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-home (>=0.5)", "pytest-mypy (>=0.9.1)", "pytest-perf", "pytest-ruff (>=0.2.1)", "pytest-timeout", "pytest-xdist", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
 testing-integration = ["build[virtualenv] (>=1.0.3)", "filelock (>=3.4.0)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "packaging (>=23.2)", "pytest", "pytest-enabler", "pytest-xdist", "tomli", "virtualenv (>=13.0.0)", "wheel"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "sniffio"
 version = "1.3.1"
@@ -1562,11 +1263,6 @@ files = [
     {file = "sniffio-1.3.1.tar.gz", hash = "sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc"},
 ]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "snowballstemmer"
 version = "2.2.0"
@@ -1577,11 +1273,6 @@ files = [
     {file = "snowballstemmer-2.2.0-py2.py3-none-any.whl", hash = "sha256:c8e1716e83cc398ae16824e5572ae04e0d9fc2c6b985fb0f900f5f0c96ecba1a"},
     {file = "snowballstemmer-2.2.0.tar.gz", hash = "sha256:09b16deb8547d3412ad7b590689584cd0fe25ec8db3be37788be3810cbf19cb1"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "sphinx"
@@ -1618,11 +1309,6 @@ docs = ["sphinxcontrib-websupport"]
 lint = ["docutils-stubs", "flake8 (>=3.5.0)", "flake8-simplify", "isort", "mypy (>=0.990)", "ruff", "sphinx-lint", "types-requests"]
 test = ["cython (>=3.0)", "filelock", "html5lib", "pytest (>=4.6)", "setuptools (>=67.0)"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "sphinx-autodoc-typehints"
 version = "1.25.3"
@@ -1641,11 +1327,6 @@ sphinx = ">=7.1.2"
 docs = ["furo (>=2023.9.10)"]
 numpy = ["nptyping (>=2.5)"]
 testing = ["covdefaults (>=2.3)", "coverage (>=7.3.2)", "diff-cover (>=8.0.1)", "pytest (>=7.4.3)", "pytest-cov (>=4.1)", "sphobjinv (>=2.3.1)", "typing-extensions (>=4.8)"]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "sphinx-rtd-theme"
@@ -1666,11 +1347,6 @@ sphinxcontrib-jquery = ">=4,<5"
 [package.extras]
 dev = ["bump2version", "sphinxcontrib-httpdomain", "transifex-client", "wheel"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "sphinxcontrib-applehelp"
 version = "1.0.8"
@@ -1686,11 +1362,6 @@ files = [
 lint = ["docutils-stubs", "flake8", "mypy"]
 standalone = ["Sphinx (>=5)"]
 test = ["pytest"]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "sphinxcontrib-devhelp"
@@ -1708,11 +1379,6 @@ lint = ["docutils-stubs", "flake8", "mypy"]
 standalone = ["Sphinx (>=5)"]
 test = ["pytest"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "sphinxcontrib-htmlhelp"
 version = "2.0.5"
@@ -1729,11 +1395,6 @@ lint = ["docutils-stubs", "flake8", "mypy"]
 standalone = ["Sphinx (>=5)"]
 test = ["html5lib", "pytest"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "sphinxcontrib-jquery"
 version = "4.1"
@@ -1748,11 +1409,6 @@ files = [
 [package.dependencies]
 Sphinx = ">=1.8"
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "sphinxcontrib-jsmath"
 version = "1.0.1"
@@ -1766,11 +1422,6 @@ files = [
 
 [package.extras]
 test = ["flake8", "mypy", "pytest"]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "sphinxcontrib-qthelp"
@@ -1788,11 +1439,6 @@ lint = ["docutils-stubs", "flake8", "mypy"]
 standalone = ["Sphinx (>=5)"]
 test = ["pytest"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "sphinxcontrib-serializinghtml"
 version = "1.1.10"
@@ -1809,11 +1455,6 @@ lint = ["docutils-stubs", "flake8", "mypy"]
 standalone = ["Sphinx (>=5)"]
 test = ["pytest"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "stevedore"
 version = "5.2.0"
@@ -1828,11 +1469,6 @@ files = [
 [package.dependencies]
 pbr = ">=2.0.0,<2.1.0 || >2.1.0"
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "tomli"
 version = "2.0.1"
@@ -1843,11 +1479,6 @@ files = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "trove-classifiers"
@@ -1860,11 +1491,6 @@ files = [
     {file = "trove_classifiers-2024.3.3-py3-none-any.whl", hash = "sha256:3a84096861b385ec422c79995d1f6435dde47a9b63adaa3c886e53232ba7e6e0"},
 ]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "typing-extensions"
 version = "4.10.0"
@@ -1875,11 +1501,6 @@ files = [
     {file = "typing_extensions-4.10.0-py3-none-any.whl", hash = "sha256:69b1a937c3a517342112fb4c6df7e72fc39a38e7891a5730ed4985b5214b5475"},
     {file = "typing_extensions-4.10.0.tar.gz", hash = "sha256:b0abd7c89e8fb96f98db18d86106ff1d90ab692004eb746cf6eda2682f91b3cb"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
 
 [[package]]
 name = "urllib3"
@@ -1898,11 +1519,6 @@ h2 = ["h2 (>=4,<5)"]
 socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["zstandard (>=0.18.0)"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [[package]]
 name = "zipp"
 version = "3.17.0"
@@ -1918,15 +1534,10 @@ files = [
 docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (<7.2.5)", "sphinx (>=3.5)", "sphinx-lint"]
 testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy (>=0.9.1)", "pytest-ruff"]
 
-[package.source]
-type = "legacy"
-url = "https://nexus.bisinfo.org:8443/repository/medit-pypi-group/simple"
-reference = "nexus-medit"
-
 [extras]
 fmr = ["httpx"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "22fbab48fc1e5571d9a6bf4b48858b93af3b1af524911171be2126d8e39663ef"
+content-hash = "652a8b18dd938714d91d2fb06aebb2a185872299dd0cde0a8626669cd24c2d52"
