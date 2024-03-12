@@ -1,4 +1,5 @@
 """Retrieve metadata from an FMR instance."""
+
 from enum import Enum
 from typing import (
     Any,
@@ -223,9 +224,9 @@ class RegistryClient(__BaseRegistryClient):
             try:
                 if is_ref_meta and self.format == Format.SDMX_JSON:
                     h = self.headers.copy()
-                    h[
-                        "Accept"
-                    ] = "application/vnd.sdmx.metadata+json;version=2.0.0"
+                    h["Accept"] = (
+                        "application/vnd.sdmx.metadata+json;version=2.0.0"
+                    )
                 else:
                     h = self.headers
                 r = client.get(url, headers=h)
@@ -555,9 +556,9 @@ class AsyncRegistryClient(__BaseRegistryClient):
             try:
                 if is_ref_meta and self.format == Format.SDMX_JSON:
                     h = self.headers.copy()
-                    h[
-                        "Accept"
-                    ] = "application/vnd.sdmx.metadata+json;version=2.0.0"
+                    h["Accept"] = (
+                        "application/vnd.sdmx.metadata+json;version=2.0.0"
+                    )
                 else:
                     h = self.headers
                 r = await client.get(url, headers=h)

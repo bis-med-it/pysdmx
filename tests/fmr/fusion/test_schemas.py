@@ -244,9 +244,15 @@ async def test_codes_pra(
         no_hca_pra_body,
     )
 
+
 @pytest.mark.asyncio()
 async def test_core_local_repr_async(
-    respx_mock, async_fmr, no_const_query, no_hca_query, no_const_body, no_hca_body
+    respx_mock,
+    async_fmr,
+    no_const_query,
+    no_hca_query,
+    no_const_body,
+    no_hca_body,
 ):
     """Components have the expected representation (local or core)."""
     await checks.check_core_local_repr_async(
@@ -257,6 +263,7 @@ async def test_core_local_repr_async(
         no_const_body,
         no_hca_body,
     )
+
 
 def test_codes_no_const(
     respx_mock, fmr, no_const_query, no_hca_query, no_const_body, no_hca_body
@@ -270,6 +277,7 @@ def test_codes_no_const(
         no_const_body,
         no_hca_body,
     )
+
 
 def test_core_local_repr(
     respx_mock, fmr, no_const_query, no_hca_query, no_const_body, no_hca_body
