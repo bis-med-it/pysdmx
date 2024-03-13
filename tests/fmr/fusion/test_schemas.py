@@ -32,10 +32,31 @@ def query(fmr):
 
 
 @pytest.fixture()
+def query_pra(fmr):
+    res = "schema/provisionagreement/"
+    agency = "BIS.CBS"
+    id = "CBS_BIS_GR2"
+    version = "1.0"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+
+
+@pytest.fixture()
 def no_hca_query(fmr):
     res = "structure/dataflow/"
     agency = "BIS.CBS"
     id = "CBS"
+    version = "1.0"
+    return (
+        f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+        "?references=all&detail=referencepartial"
+    )
+
+
+@pytest.fixture()
+def no_hca_pra_query(fmr):
+    res = "structure/provisionagreement/"
+    agency = "BIS.CBS"
+    id = "CBS_BIS_GR2"
     version = "1.0"
     return (
         f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
@@ -56,10 +77,31 @@ def hierarchy_hca_query(fmr):
 
 
 @pytest.fixture()
+def hierarchy_hca_query_pra(fmr):
+    res = "structure/provisionagreement/"
+    agency = "BIS.CBS"
+    id = "CBS_BIS_TEST"
+    version = "1.0"
+    return (
+        f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+        "?references=all&detail=referencepartial"
+    )
+
+
+@pytest.fixture()
 def hierarchy_query(fmr):
     res = "schema/dataflow/"
     agency = "BIS"
     id = "TEST_DF"
+    version = "1.0"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+
+
+@pytest.fixture()
+def hierarchy_query_pra(fmr):
+    res = "schema/provisionagreement/"
+    agency = "BIS.CBS"
+    id = "CBS_BIS_TEST"
     version = "1.0"
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
 
@@ -76,6 +118,12 @@ def no_const_query(fmr):
 @pytest.fixture()
 def body():
     with open("tests/fmr/samples/df/schema.fusion.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture()
+def body_from_pra():
+    with open("tests/fmr/samples/pra/schema.fusion.json", "rb") as f:
         return f.read()
 
 
@@ -116,8 +164,26 @@ def hier_assoc_body():
 
 
 @pytest.fixture()
+def hierarchy_pra_body():
+    with open("tests/fmr/samples/pra/hierarchy_schema.fusion.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture()
+def hier_assoc_pra_body():
+    with open("tests/fmr/samples/pra/hierarchy_hca.fusion.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture()
 def no_hca_body():
     with open("tests/fmr/samples/df/no_hca.fusion.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture()
+def no_hca_pra_body():
+    with open("tests/fmr/samples/pra/no_hca.fusion.json", "rb") as f:
         return f.read()
 
 
@@ -130,6 +196,25 @@ def test_returns_validation_context(
     )
 
 
+def test_returns_pra_validation_context(
+    respx_mock,
+    fmr,
+    query_pra,
+    no_hca_pra_query,
+    body_from_pra,
+    no_hca_pra_body,
+):
+    """get_validation_context() should return a schema."""
+    checks.check_schema_from_pra(
+        respx_mock,
+        fmr,
+        query_pra,
+        no_hca_pra_query,
+        body_from_pra,
+        no_hca_pra_body,
+    )
+
+
 @pytest.mark.asyncio()
 async def test_codes(
     respx_mock, async_fmr, query, no_hca_query, body, no_hca_body
@@ -137,6 +222,46 @@ async def test_codes(
     """Components have the expected number of codes."""
     await checks.check_coded_components(
         respx_mock, async_fmr, query, no_hca_query, body, no_hca_body
+    )
+
+
+@pytest.mark.asyncio()
+async def test_codes_pra(
+    respx_mock,
+    async_fmr,
+    query_pra,
+    no_hca_pra_query,
+    body_from_pra,
+    no_hca_pra_body,
+):
+    """Components have the expected number of codes."""
+    await checks.check_coded_pra_components(
+        respx_mock,
+        async_fmr,
+        query_pra,
+        no_hca_pra_query,
+        body_from_pra,
+        no_hca_pra_body,
+    )
+
+
+@pytest.mark.asyncio()
+async def test_core_local_repr_async(
+    respx_mock,
+    async_fmr,
+    no_const_query,
+    no_hca_query,
+    no_const_body,
+    no_hca_body,
+):
+    """Components have the expected representation (local or core)."""
+    await checks.check_core_local_repr_async(
+        respx_mock,
+        async_fmr,
+        no_const_query,
+        no_hca_query,
+        no_const_body,
+        no_hca_body,
     )
 
 
@@ -278,4 +403,23 @@ def test_has_hierarchy(
         hierarchy_hca_query,
         hierarchy_body,
         hier_assoc_body,
+    )
+
+
+def test_has_hierarchy_pra(
+    respx_mock,
+    fmr,
+    hierarchy_query_pra,
+    hierarchy_hca_query_pra,
+    hierarchy_pra_body,
+    hier_assoc_pra_body,
+):
+    """Components may reference a hierarchy."""
+    checks.check_hierarchy_pra(
+        respx_mock,
+        fmr,
+        hierarchy_query_pra,
+        hierarchy_hca_query_pra,
+        hierarchy_pra_body,
+        hier_assoc_pra_body,
     )

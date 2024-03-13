@@ -1,4 +1,5 @@
 """Retrieve metadata from an FMR instance."""
+
 from enum import Enum
 from typing import (
     Any,
@@ -81,6 +82,10 @@ url_templates = {
     ),
     "ha": (
         "structure/dataflow/{0}/{1}/{2}"
+        "?references=all&detail=referencepartial"
+    ),
+    "ha_pra": (
+        "structure/provisionagreement/{0}/{1}/{2}"
         "?references=all&detail=referencepartial"
     ),
     "hierarchy": (
@@ -219,9 +224,9 @@ class RegistryClient(__BaseRegistryClient):
             try:
                 if is_ref_meta and self.format == Format.SDMX_JSON:
                     h = self.headers.copy()
-                    h[
-                        "Accept"
-                    ] = "application/vnd.sdmx.metadata+json;version=2.0.0"
+                    h["Accept"] = (
+                        "application/vnd.sdmx.metadata+json;version=2.0.0"
+                    )
                 else:
                     h = self.headers
                 r = client.get(url, headers=h)
@@ -234,6 +239,12 @@ class RegistryClient(__BaseRegistryClient):
         self, agency: str, flow: str, version: str
     ) -> Sequence[HierarchyAssociation]:
         out = self.__fetch(super()._url("ha", agency, flow, version))
+        return super()._out(out, self.deser.hier_assoc)
+
+    def __get_hierarchies_for_pra(
+        self, agency: str, pra: str, version: str
+    ) -> Sequence[HierarchyAssociation]:
+        out = self.__fetch(super()._url("ha_pra", agency, pra, version))
         return super()._out(out, self.deser.hier_assoc)
 
     def get_agencies(self, agency: str) -> Sequence[Organisation]:
@@ -359,11 +370,13 @@ class RegistryClient(__BaseRegistryClient):
             The requested schema.
         """
         c = context.value if isinstance(context, Context) else context
-        ha = (
-            self.__get_hierarchies_for_flow(agency, id, version)
-            if c == "dataflow"
-            else ()
-        )
+        if context == "dataflow":
+            ha = self.__get_hierarchies_for_flow(agency, id, version)
+        elif context == "provisionagreement":
+            ha = self.__get_hierarchies_for_pra(agency, id, version)
+        else:
+            ha = ()
+
         out = self.__fetch(super()._url("schema", c, agency, id, version))
         return super()._out(out, self.deser.schema, c, agency, id, version, ha)
 
@@ -543,9 +556,9 @@ class AsyncRegistryClient(__BaseRegistryClient):
             try:
                 if is_ref_meta and self.format == Format.SDMX_JSON:
                     h = self.headers.copy()
-                    h[
-                        "Accept"
-                    ] = "application/vnd.sdmx.metadata+json;version=2.0.0"
+                    h["Accept"] = (
+                        "application/vnd.sdmx.metadata+json;version=2.0.0"
+                    )
                 else:
                     h = self.headers
                 r = await client.get(url, headers=h)
@@ -558,6 +571,12 @@ class AsyncRegistryClient(__BaseRegistryClient):
         self, agency: str, flow: str, version: str
     ) -> Sequence[HierarchyAssociation]:
         out = await self.__fetch(super()._url("ha", agency, flow, version))
+        return super()._out(out, self.deser.hier_assoc)
+
+    async def __get_hierarchies_for_pra(
+        self, agency: str, pra: str, version: str
+    ) -> Sequence[HierarchyAssociation]:
+        out = await self.__fetch(super()._url("ha_pra", agency, pra, version))
         return super()._out(out, self.deser.hier_assoc)
 
     async def get_agencies(self, agency: str) -> Sequence[Organisation]:
@@ -680,11 +699,13 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested schema.
         """
-        ha = (
-            await self.__get_hierarchies_for_flow(agency, id, version)
-            if context != "datastructure"
-            else ()
-        )
+        if context == "dataflow":
+            ha = await self.__get_hierarchies_for_flow(agency, id, version)
+        elif context == "provisionagreement":
+            ha = await self.__get_hierarchies_for_pra(agency, id, version)
+        else:
+            ha = ()
+
         c = context.value if isinstance(context, Context) else context
         r = await self.__fetch(super()._url("schema", c, agency, id, version))
         return super()._out(r, self.deser.schema, c, agency, id, version, ha)

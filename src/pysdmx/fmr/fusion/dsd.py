@@ -1,4 +1,5 @@
 """Collection of Fusion-JSON schemas for SDMX-REST schema queries."""
+
 from typing import Dict, List, Optional, Sequence, Tuple
 
 from msgspec import Struct

@@ -1,4 +1,5 @@
 """Collection of SDMX-JSON schemas for SDMX-REST schema queries."""
+
 from typing import Sequence
 
 import msgspec

@@ -1,6 +1,16 @@
 Release notes
 =============
 
+1.0.0-beta-10
+------------
+
+Added
+^^^^^
+
+- Schema generation supports Hierarchical Associations 
+  referencing Provision Agreements
+
+
 1.0.0-beta-1
 ------------
 
