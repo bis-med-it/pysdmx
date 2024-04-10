@@ -21,6 +21,8 @@ from typing import Iterator, Literal, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx.model.__base import ItemScheme
+
 
 class Code(Struct, frozen=True, omit_defaults=True):
     """A code, such as a country code in the list of ISO 3166 codes.
@@ -49,7 +51,7 @@ class Code(Struct, frozen=True, omit_defaults=True):
         return out
 
 
-class Codelist(Struct, frozen=True, omit_defaults=True):
+class Codelist(ItemScheme):
     """An immutable collection of codes, such as the ISO 3166 country codes.
 
     A codelist is **maintained by its agency**, typically, an organisation
@@ -75,29 +77,8 @@ class Codelist(Struct, frozen=True, omit_defaults=True):
         codes: The list of codes in the codelist.
     """
 
-    id: str
-    name: str
-    agency: str
-    description: Optional[str] = None
-    version: str = "1.0"
-    codes: Sequence[Code] = ()
+    items: Sequence[Code] = ()
     sdmx_type: Literal["codelist", "valuelist"] = "codelist"
-
-    def __iter__(self) -> Iterator[Code]:
-        """Return an iterator over the list of codes."""
-        yield from self.codes
-
-    def __len__(self) -> int:
-        """Return the number of codes in the codelist."""
-        return len(self.codes)
-
-    def __getitem__(self, id_: str) -> Optional[Code]:
-        """Return the code identified by the supplied ID."""
-        out = list(filter(lambda code: code.id == id_, self.codes))
-        if len(out) == 0:
-            return None
-        else:
-            return out[0]
 
 
 class HierarchicalCode(Struct, frozen=True, omit_defaults=True):

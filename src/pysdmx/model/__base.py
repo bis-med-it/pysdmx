@@ -18,6 +18,7 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
         url: The URL of the annotation.
         type: The type of the annotation.
     """
+
     id: Optional[str] = None
     title: Optional[str] = None
     text: Optional[str] = None
@@ -67,6 +68,7 @@ class IdentifiableArtefact(AnnotableArtefact):
         uri: The URI of the artefact.
         urn: The URN of the artefact.
     """
+
     id: str
     uri: Optional[str] = None
     urn: Optional[str] = None
@@ -86,6 +88,7 @@ class NameableArtefact(IdentifiableArtefact):
         name: The name of the artefact.
         description: The description of the artefact.
     """
+
     name: Optional[str] = None
     description: Optional[str] = None
 
@@ -99,6 +102,7 @@ class VersionableArtefact(NameableArtefact):
         valid_from: The date from which the artefact is valid.
         valid_to: The date to which the artefact is valid.
     """
+
     version: str = "1.0"
     valid_from: Optional[datetime] = None
     valid_to: Optional[datetime] = None
@@ -116,6 +120,7 @@ class MaintainableArtefact(VersionableArtefact):
         structure_url: The URL of the structure.
         maintainer: The maintainer of the artefact.
     """
+
     is_final: bool = False
     is_external_reference: bool = False
     service_url: str = None
@@ -138,6 +143,7 @@ class Agency(MaintainableArtefact):
     Attributes:
         contacts: The contact of the agency.
     """
+
     contacts = Sequence["Contact"]
 
 
@@ -151,6 +157,7 @@ class Item(NameableArtefact):
         parent: The parent of the item.
         children: The children of the item.
     """
+
     scheme: "ItemScheme" = None
     parent: Optional["Item"] = None
     children: Sequence["Item"] = ()
@@ -165,9 +172,22 @@ class ItemScheme(MaintainableArtefact):
         items: The list of items in the scheme.
         is_partial: Whether the scheme is partial.
     """
+
     items: Sequence["Item"] = ()
     is_partial: bool = False
 
     def __iter__(self) -> Iterator[Item]:
         """Return an iterator over the list of items."""
         yield from self.items
+
+    def __len__(self) -> int:
+        """Return the number of codes in the codelist."""
+        return len(self.items)
+
+    def __getitem__(self, id_: str) -> Optional[Item]:
+        """Return the code identified by the supplied ID."""
+        out = list(filter(lambda item: item.id == id_, self.items))
+        if len(out) == 0:
+            return None
+        else:
+            return out[0]

@@ -16,6 +16,7 @@ from typing import Iterator, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.model.__base import Item, ItemScheme
 from pysdmx.model.code import Codelist
 
 
@@ -114,7 +115,7 @@ class Facets(Struct, frozen=True, omit_defaults=True):
         return ", ".join(out)
 
 
-class Concept(Struct, frozen=True, omit_defaults=True):
+class Concept(Item):
     """A concept (aka **variable**), such as frequency, reference area, etc.
 
     Concepts are used to **describe the relevant characteristics** of a
@@ -144,11 +145,8 @@ class Concept(Struct, frozen=True, omit_defaults=True):
             which the codes are taken.
     """
 
-    id: str
     dtype: DataType = DataType.STRING
     facets: Optional[Facets] = None
-    name: Optional[str] = None
-    description: Optional[str] = None
     codes: Optional[Codelist] = None
     enum_ref: Optional[str] = None
 
@@ -162,7 +160,7 @@ class Concept(Struct, frozen=True, omit_defaults=True):
         return ", ".join(out)
 
 
-class ConceptScheme(Struct, frozen=True, omit_defaults=True):
+class ConceptScheme(ItemScheme):
     """An immutable collection of concepts.
 
     A concept scheme is **maintained by its agency**, typically, an
@@ -181,28 +179,7 @@ class ConceptScheme(Struct, frozen=True, omit_defaults=True):
         description: Additional descriptive information about the scheme
             (e.g. "The set of concepts in the SDMX Glossary").
         version: The scheme version (e.g. 2.0)
-        concepts: The list of concepts in the scheme.
+        items: The list of concepts in the scheme.
     """
 
-    id: str
-    name: str
-    agency: str
-    description: Optional[str] = None
-    version: str = "1.0"
-    concepts: Sequence[Concept] = ()
-
-    def __iter__(self) -> Iterator[Concept]:
-        """Return an iterator over the list of concepts."""
-        yield from self.concepts
-
-    def __len__(self) -> int:
-        """Return the number of concepts in the concept scheme."""
-        return len(self.concepts)
-
-    def __getitem__(self, id_: str) -> Optional[Concept]:
-        """Return the concept identified by the given ID."""
-        out = list(filter(lambda concept: concept.id == id_, self.concepts))
-        if len(out) == 0:
-            return None
-        else:
-            return out[0]
+    items: Sequence[Concept] = ()
