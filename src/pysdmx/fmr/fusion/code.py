@@ -45,9 +45,9 @@ class FusionCode(Struct, frozen=True):
         return Code(
             id=self.id,
             name=self.names[0].value,
-            description=self.descriptions[0].value
-            if self.descriptions
-            else None,
+            description=(
+                self.descriptions[0].value if self.descriptions else None
+            ),
             valid_from=vf,
             valid_to=vt,
         )
@@ -71,9 +71,9 @@ class FusionCodelist(Struct, frozen=True, rename={"agency": "agencyId"}):
             id=self.id,
             name=self.names[0].value,
             maintainer=self.agency,
-            description=self.descriptions[0].value
-            if self.descriptions
-            else None,
+            description=(
+                self.descriptions[0].value if self.descriptions else None
+            ),
             version=self.version,
             items=[i.to_model() for i in self.items],
             sdmx_type=t,  # type: ignore[arg-type]
