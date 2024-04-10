@@ -22,35 +22,7 @@ from typing import Optional, Sequence
 
 from msgspec import Struct
 
-
-class Contact(Struct, frozen=True, omit_defaults=True):
-    """Contact details such as the name of a contact and his email address.
-
-    Attributes:
-        id: An identifier for a contact. If the contact represents a person,
-            this could be the person's username in the organisation.
-        name: The contact name, which could be the name of a person, the name
-            of a service ("e.g. Support"), etc.
-        department: The department in which the contact is located (e.g.
-            "Statistics").
-        role: The contact's role, which could be his job title, or a role such
-            as data owner, data steward, subject matter expert, etc.
-        telephones: A list of telephone numbers.
-        faxes: A list of fax numbers.
-        uris: A list of URLs relevant for the contact (e.g. a link to an online
-            form that can be used to send questions, a link to a support forum,
-            etc.).
-        emails: a list of email addresses.
-    """
-
-    id: Optional[str] = None
-    name: Optional[str] = None
-    department: Optional[str] = None
-    role: Optional[str] = None
-    telephones: Optional[Sequence[str]] = None
-    faxes: Optional[Sequence[str]] = None
-    uris: Optional[Sequence[str]] = None
-    emails: Optional[Sequence[str]] = None
+from pysdmx.model import Contact
 
 
 class DataflowRef(Struct, frozen=True, omit_defaults=True):

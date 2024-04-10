@@ -21,7 +21,7 @@ from typing import Iterator, Literal, Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.model.__base import Item, ItemScheme
+from pysdmx.model import Item, ItemScheme
 
 
 class Code(Item, frozen=True, omit_defaults=True):

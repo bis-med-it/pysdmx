@@ -1,6 +1,6 @@
 import pytest
 
-from pysdmx.model.organisation import Contact
+from pysdmx.model import Contact
 
 
 def test_defaults():

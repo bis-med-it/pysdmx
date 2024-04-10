@@ -16,7 +16,7 @@ from typing import Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.model.__base import Item, ItemScheme
+from pysdmx.model import Item, ItemScheme
 from pysdmx.model.code import Codelist
 
 
