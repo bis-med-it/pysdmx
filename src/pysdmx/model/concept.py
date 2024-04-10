@@ -115,7 +115,7 @@ class Facets(Struct, frozen=True, omit_defaults=True):
         return ", ".join(out)
 
 
-class Concept(Item):
+class Concept(Item, frozen=True, omit_defaults=True):
     """A concept (aka **variable**), such as frequency, reference area, etc.
 
     Concepts are used to **describe the relevant characteristics** of a

@@ -42,7 +42,13 @@ class JsonCode(Struct, frozen=True):
         """Converts a JsonCode to a standard code."""
         vp = [a for a in self.annotations if a.type == "FR_VALIDITY_PERIOD"]
         vf, vt = self.__get_val(vp[0]) if vp else (None, None)
-        return Code(self.id, self.name, self.description, vf, vt)
+        return Code(
+            id=self.id,
+            name=self.name,
+            description=self.description,
+            valid_from=vf,
+            valid_to=vt,
+        )
 
 
 class JsonCodelist(Struct, frozen=True, rename={"agency": "agencyID"}):
@@ -58,12 +64,12 @@ class JsonCodelist(Struct, frozen=True, rename={"agency": "agencyID"}):
     def to_model(self) -> Codelist:
         """Converts a JsonCodelist to a standard codelist."""
         return Codelist(
-            self.id,
-            self.name,
-            self.agency,
-            self.description,
-            self.version,
-            [i.to_model() for i in self.codes],
+            id=self.id,
+            name=self.name,
+            maintainer=self.agency,
+            description=self.description,
+            version=self.version,
+            items=[i.to_model() for i in self.codes],
         )
 
 
@@ -80,13 +86,13 @@ class JsonValuelist(Struct, frozen=True, rename={"agency": "agencyID"}):
     def to_model(self) -> Codelist:
         """Converts a JsonValuelist to a standard codelist."""
         return Codelist(
-            self.id,
-            self.name,
-            self.agency,
-            self.description,
-            self.version,
-            [i.to_model() for i in self.valueItems],
-            "valuelist",
+            id=self.id,
+            name=self.name,
+            maintainer=self.agency,
+            description=self.description,
+            version=self.version,
+            items=[i.to_model() for i in self.valueItems],
+            sdmx_type="valuelist",
         )
 
 
@@ -124,12 +130,12 @@ class JsonHierarchicalCode(Struct, frozen=True):
             c
             for c in codelists
             if (
-                c.agency == r.agency
+                c.maintainer == r.agency
                 and c.id == r.id
                 and c.version == r.version
             )
         ]
-        return [c for c in f[0].codes if c.id == r.item_id][0]
+        return [c for c in f[0].items if c.id == r.item_id][0]
 
     def to_model(self, codelists: Sequence[Codelist]) -> HierarchicalCode:
         """Converts a JsonHierarchicalCode to a hierachical code."""

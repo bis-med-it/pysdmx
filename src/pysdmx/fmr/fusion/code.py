@@ -43,11 +43,13 @@ class FusionCode(Struct, frozen=True):
         vp = [a for a in self.annotations if a.type == "FR_VALIDITY_PERIOD"]
         vf, vt = self.__get_val(vp[0]) if vp else (None, None)
         return Code(
-            self.id,
-            self.names[0].value,
-            self.descriptions[0].value if self.descriptions else None,
-            vf,
-            vt,
+            id=self.id,
+            name=self.names[0].value,
+            description=self.descriptions[0].value
+            if self.descriptions
+            else None,
+            valid_from=vf,
+            valid_to=vt,
         )
 
 
@@ -66,13 +68,15 @@ class FusionCodelist(Struct, frozen=True, rename={"agency": "agencyId"}):
         """Converts a JsonCodelist to a standard codelist."""
         t = "codelist" if "Codelist" in self.urn else "valuelist"
         return CL(
-            self.id,
-            self.names[0].value,
-            self.agency,
-            self.descriptions[0].value if self.descriptions else None,
-            self.version,
-            [i.to_model() for i in self.items],
-            t,  # type: ignore[arg-type]
+            id=self.id,
+            name=self.names[0].value,
+            maintainer=self.agency,
+            description=self.descriptions[0].value
+            if self.descriptions
+            else None,
+            version=self.version,
+            items=[i.to_model() for i in self.items],
+            sdmx_type=t,
         )
 
 
@@ -104,12 +108,12 @@ class FusionHierarchicalCode(Struct, frozen=True):
             c
             for c in codelists
             if (
-                c.agency == r.agency
+                c.maintainer == r.agency
                 and c.id == r.id
                 and c.version == r.version
             )
         ]
-        return [c for c in f[0].codes if c.id == r.item_id][0]
+        return [c for c in f[0].items if c.id == r.item_id][0]
 
     def __convert_epoch(self, epoch: int) -> datetime:
         if epoch < 0:

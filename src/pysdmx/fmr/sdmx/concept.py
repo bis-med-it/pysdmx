@@ -40,7 +40,7 @@ class JsonConcept(Struct, frozen=True):
             codes = None
             cl_ref = None
         return Concept(
-            self.id,
+            id=self.id,
             dtype=dt,
             facets=facets,
             name=self.name,
@@ -63,12 +63,12 @@ class JsonConceptScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
     def to_model(self, codelists: Sequence[JsonCodelist]) -> ConceptScheme:
         """Converts a JsonConceptScheme to a standard concept scheme."""
         return ConceptScheme(
-            self.id,
-            self.name,
-            self.agency,
-            self.description,
-            self.version,
-            [c.to_model(codelists) for c in self.concepts],
+            id=self.id,
+            name=self.name,
+            maintainer=self.agency,
+            description=self.description,
+            version=self.version,
+            items=[c.to_model(codelists) for c in self.concepts],
         )
 
 

@@ -53,10 +53,6 @@ class AnnotableArtefact(Struct, frozen=True, omit_defaults=True):
 
     annotations: Sequence[Annotation] = ()
 
-    def __iter__(self) -> Iterator[Annotation]:
-        """Return an iterator over the list of annotations."""
-        yield from self.annotations
-
     def __str__(self) -> str:
         """Returns a human-friendly description."""
         return (
@@ -67,7 +63,7 @@ class AnnotableArtefact(Struct, frozen=True, omit_defaults=True):
     __repr__ = __str__
 
 
-class IdentifiableArtefact(AnnotableArtefact):
+class IdentifiableArtefact(AnnotableArtefact, frozen=True, omit_defaults=True):
     """Identifiable Artefact class.
 
     Provides identity to all derived classes. It also provides annotations
@@ -140,9 +136,9 @@ class MaintainableArtefact(VersionableArtefact):
 
     is_final: bool = False
     is_external_reference: bool = False
-    service_url: str = None
-    structure_url: str = None
-    maintainer: str = None
+    service_url: Optional[str] = None
+    structure_url: Optional[str] = None
+    maintainer: Optional[str] = None
 
     def __str__(self) -> str:
         """Returns a human-friendly description."""
