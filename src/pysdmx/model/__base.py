@@ -75,7 +75,7 @@ class IdentifiableArtefact(AnnotableArtefact, frozen=True, omit_defaults=True):
         urn: The URN of the artefact.
     """
 
-    id: str
+    id: str = ""
     uri: Optional[str] = None
     urn: Optional[str] = None
 
@@ -90,7 +90,7 @@ class IdentifiableArtefact(AnnotableArtefact, frozen=True, omit_defaults=True):
     __repr__ = __str__
 
 
-class NameableArtefact(IdentifiableArtefact):
+class NameableArtefact(IdentifiableArtefact, frozen=True, omit_defaults=True):
     """Nameable Artefact class.
 
     Provides a name and a description to all derived classes.
@@ -104,7 +104,7 @@ class NameableArtefact(IdentifiableArtefact):
     description: Optional[str] = None
 
 
-class VersionableArtefact(NameableArtefact):
+class VersionableArtefact(NameableArtefact, frozen=True, omit_defaults=True):
     """Versionable Artefact class.
 
     Provides a version to all derived classes.
@@ -120,7 +120,9 @@ class VersionableArtefact(NameableArtefact):
     valid_to: Optional[datetime] = None
 
 
-class MaintainableArtefact(VersionableArtefact):
+class MaintainableArtefact(
+    VersionableArtefact, frozen=True, omit_defaults=True
+):
     """Maintainable Artefact class.
 
     An abstract class to group together primary structural metadata
@@ -150,7 +152,7 @@ class MaintainableArtefact(VersionableArtefact):
     __repr__ = __str__
 
 
-class Agency(MaintainableArtefact):
+class Agency(MaintainableArtefact, frozen=True, omit_defaults=True):
     """Agency class.
 
     Responsible agency for maintaining artefacts
@@ -165,7 +167,7 @@ class Agency(MaintainableArtefact):
     contacts = Sequence[Contact]
 
 
-class Item(NameableArtefact):
+class Item(NameableArtefact, frozen=True, omit_defaults=True):
     """Item class.
 
     The Item is an item of content in an Item Scheme. This may be a
@@ -177,12 +179,12 @@ class Item(NameableArtefact):
         children: The children of the item.
     """
 
-    scheme: "ItemScheme" = None
+    scheme: Optional["ItemScheme"] = None
     parent: Optional["Item"] = None
     children: Sequence["Item"] = ()
 
 
-class ItemScheme(MaintainableArtefact):
+class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
     """ItemScheme class.
 
     The descriptive information for an arrangement or division of objects

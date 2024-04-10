@@ -24,7 +24,7 @@ from msgspec import Struct
 from pysdmx.model.__base import Item, ItemScheme
 
 
-class Code(Item):
+class Code(Item, frozen=True, omit_defaults=True):
     """A code, such as a country code in the list of ISO 3166 codes.
 
     Codes may have business validity information.
@@ -48,7 +48,7 @@ class Code(Item):
         return out
 
 
-class Codelist(ItemScheme):
+class Codelist(ItemScheme, frozen=True, omit_defaults=True):
     """An immutable collection of codes, such as the ISO 3166 country codes.
 
     A codelist is **maintained by its agency**, typically, an organisation

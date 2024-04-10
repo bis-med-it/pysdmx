@@ -160,7 +160,7 @@ class Concept(Item, frozen=True, omit_defaults=True):
         return ", ".join(out)
 
 
-class ConceptScheme(ItemScheme):
+class ConceptScheme(ItemScheme, frozen=True, omit_defaults=True):
     """An immutable collection of concepts.
 
     A concept scheme is **maintained by its agency**, typically, an
