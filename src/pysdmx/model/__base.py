@@ -3,12 +3,16 @@ from typing import Iterator, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx.model import Contact
+
 
 class Annotation(Struct, frozen=True, omit_defaults=True):
-    """
-    The Annotation is used
-    to convey extra information to describe any SDMX construct. This information may be in the
-    form of a URL reference and/or a multilingual text (represented by the association to
+    """Annotation class.
+
+    It is used to convey extra information to describe any
+    SDMX construct.
+    This information may be in the form of a URL reference and/or
+    a multilingual text (represented by the association to
     InternationalString).
 
     Attributes:
@@ -38,8 +42,10 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
 
 
 class AnnotableArtefact(Struct, frozen=True, omit_defaults=True):
-    """
-    Superclass of all SDMX artefacts. Contains the list of annotations.
+    """Annotable Artefact class.
+
+    Superclass of all SDMX artefacts.
+    Contains the list of annotations.
 
     Attributes:
         annotations: The list of annotations attached to the artefact.
@@ -53,13 +59,17 @@ class AnnotableArtefact(Struct, frozen=True, omit_defaults=True):
 
     def __str__(self) -> str:
         """Returns a human-friendly description."""
-        return f"{self.__class__.__name__}({', '.join(repr(a) for a in self.annotations)})"
+        return (
+            f"{self.__class__.__name__}("
+            f"{', '.join(repr(a) for a in self.annotations)})"
+        )
 
     __repr__ = __str__
 
 
 class IdentifiableArtefact(AnnotableArtefact):
-    """
+    """Identifiable Artefact class.
+
     Provides identity to all derived classes. It also provides annotations
     to derive classes because it is a subclass of AnnotableArtefact.
 
@@ -75,13 +85,18 @@ class IdentifiableArtefact(AnnotableArtefact):
 
     def __str__(self) -> str:
         """Returns a human-friendly description."""
-        return f"{self.__class__.__name__}({self.id}, {', '.join(repr(a) for a in self.annotations)})"
+        return (
+            f"{self.__class__.__name__}"
+            f"({self.id}, "
+            f"{', '.join(repr(a) for a in self.annotations)})"
+        )
 
     __repr__ = __str__
 
 
 class NameableArtefact(IdentifiableArtefact):
-    """
+    """Nameable Artefact class.
+
     Provides a name and a description to all derived classes.
 
     Attributes:
@@ -94,7 +109,8 @@ class NameableArtefact(IdentifiableArtefact):
 
 
 class VersionableArtefact(NameableArtefact):
-    """
+    """Versionable Artefact class.
+
     Provides a version to all derived classes.
 
     Attributes:
@@ -109,7 +125,8 @@ class VersionableArtefact(NameableArtefact):
 
 
 class MaintainableArtefact(VersionableArtefact):
-    """
+    """Maintainable Artefact class.
+
     An abstract class to group together primary structural metadata
     artefacts that are maintained by an Agency.
 
@@ -129,26 +146,32 @@ class MaintainableArtefact(VersionableArtefact):
 
     def __str__(self) -> str:
         """Returns a human-friendly description."""
-        return f"{self.__class__.__name__}({self.id}, {self.name}, {self.version})"
+        return (
+            f"{self.__class__.__name__}"
+            f"({self.id}, {self.name}, {self.version})"
+        )
 
     __repr__ = __str__
 
 
 class Agency(MaintainableArtefact):
-    """
-    Responsible agency for maintaining artefacts such as statistical
-    classifications, glossaries, structural metadata such as Data and Metadata Structure
+    """Agency class.
+
+    Responsible agency for maintaining artefacts
+    such as statistical classifications, glossaries,
+    structural metadata such as Data and Metadata Structure
     Definitions, Concepts and Code lists.
 
     Attributes:
         contacts: The contact of the agency.
     """
 
-    contacts = Sequence["Contact"]
+    contacts = Sequence[Contact]
 
 
 class Item(NameableArtefact):
-    """
+    """Item class.
+
     The Item is an item of content in an Item Scheme. This may be a
     concept in a concept scheme, a code in a codelist, etc.
 
@@ -164,7 +187,8 @@ class Item(NameableArtefact):
 
 
 class ItemScheme(MaintainableArtefact):
-    """
+    """ItemScheme class.
+
     The descriptive information for an arrangement or division of objects
     into groups based on characteristics, which the objects have in common.
 

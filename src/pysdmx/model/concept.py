@@ -12,7 +12,7 @@ can be defined using ``DataType``, ``Facets`` or enumeration (i.e. list of
 
 from datetime import datetime
 from enum import Enum
-from typing import Iterator, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
 from msgspec import Struct
 

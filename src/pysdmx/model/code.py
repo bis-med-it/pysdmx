@@ -21,10 +21,10 @@ from typing import Iterator, Literal, Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.model.__base import ItemScheme
+from pysdmx.model.__base import Item, ItemScheme
 
 
-class Code(Struct, frozen=True, omit_defaults=True):
+class Code(Item):
     """A code, such as a country code in the list of ISO 3166 codes.
 
     Codes may have business validity information.
@@ -37,9 +37,6 @@ class Code(Struct, frozen=True, omit_defaults=True):
         valid_to: End of the code's validity period.
     """
 
-    id: str
-    name: Optional[str] = None
-    description: Optional[str] = None
     valid_from: Optional[datetime] = None
     valid_to: Optional[datetime] = None
 
