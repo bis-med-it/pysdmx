@@ -91,7 +91,7 @@ class JsonValuelist(Struct, frozen=True, rename={"agency": "agencyID"}):
             agency=self.agency,
             description=self.description,
             version=self.version,
-            items=[i.to_model() for i in self.valueItems],
+            codes=[i.to_model() for i in self.valueItems],
             sdmx_type="valuelist",
         )
 

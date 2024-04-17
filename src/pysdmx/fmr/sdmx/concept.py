@@ -68,7 +68,7 @@ class JsonConceptScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
             agency=self.agency,
             description=self.description,
             version=self.version,
-            items=[c.to_model(codelists) for c in self.concepts],
+            concepts=[c.to_model(codelists) for c in self.concepts],
         )
 
 
