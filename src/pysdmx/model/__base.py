@@ -131,14 +131,14 @@ class MaintainableArtefact(
         is_external_reference: Whether the artefact is an external reference.
         service_url: The URL of the service.
         structure_url: The URL of the structure.
-        maintainer: The maintainer of the artefact.
+        agency: The maintainer of the artefact.
     """
 
     is_final: bool = False
     is_external_reference: bool = False
     service_url: Optional[str] = None
     structure_url: Optional[str] = None
-    maintainer: Optional[str] = None
+    agency: Optional[str] = None
 
     def __str__(self) -> str:
         """Returns a human-friendly description."""

@@ -66,10 +66,10 @@ class JsonCodelist(Struct, frozen=True, rename={"agency": "agencyID"}):
         return Codelist(
             id=self.id,
             name=self.name,
-            maintainer=self.agency,
+            agency=self.agency,
             description=self.description,
             version=self.version,
-            items=[i.to_model() for i in self.codes],
+            codes=[i.to_model() for i in self.codes],
         )
 
 
@@ -88,7 +88,7 @@ class JsonValuelist(Struct, frozen=True, rename={"agency": "agencyID"}):
         return Codelist(
             id=self.id,
             name=self.name,
-            maintainer=self.agency,
+            agency=self.agency,
             description=self.description,
             version=self.version,
             items=[i.to_model() for i in self.valueItems],
@@ -130,12 +130,12 @@ class JsonHierarchicalCode(Struct, frozen=True):
             c
             for c in codelists
             if (
-                c.maintainer == r.agency
+                c.agency == r.agency
                 and c.id == r.id
                 and c.version == r.version
             )
         ]
-        return [c for c in f[0].items if c.id == r.item_id][0]
+        return [c for c in f[0].codes if c.id == r.item_id][0]
 
     def to_model(self, codelists: Sequence[Codelist]) -> HierarchicalCode:
         """Converts a JsonHierarchicalCode to a hierachical code."""

@@ -74,8 +74,24 @@ class Codelist(ItemScheme, frozen=True, omit_defaults=True):
         codes: The list of codes in the codelist.
     """
 
-    items: Sequence[Code] = ()
+    codes: Sequence[Code] = ()
     sdmx_type: Literal["codelist", "valuelist"] = "codelist"
+
+    def __iter__(self) -> Iterator[Code]:
+        """Return an iterator over the list of codes."""
+        yield from self.codes
+
+    def __len__(self) -> int:
+        """Return the number of codes in the codelist."""
+        return len(self.codes)
+
+    def __getitem__(self, id_: str) -> Optional[Code]:
+        """Return the code identified by the supplied ID."""
+        out = list(filter(lambda code: code.id == id_, self.codes))
+        if len(out) == 0:
+            return None
+        else:
+            return out[0]
 
 
 class HierarchicalCode(Struct, frozen=True, omit_defaults=True):

@@ -70,12 +70,12 @@ class FusionCodelist(Struct, frozen=True, rename={"agency": "agencyId"}):
         return CL(
             id=self.id,
             name=self.names[0].value,
-            maintainer=self.agency,
+            agency=self.agency,
             description=(
                 self.descriptions[0].value if self.descriptions else None
             ),
             version=self.version,
-            items=[i.to_model() for i in self.items],
+            codes=[i.to_model() for i in self.items],
             sdmx_type=t,  # type: ignore[arg-type]
         )
 
@@ -108,12 +108,12 @@ class FusionHierarchicalCode(Struct, frozen=True):
             c
             for c in codelists
             if (
-                c.maintainer == r.agency
+                c.agency == r.agency
                 and c.id == r.id
                 and c.version == r.version
             )
         ]
-        return [c for c in f[0].items if c.id == r.item_id][0]
+        return [c for c in f[0].codes if c.id == r.item_id][0]
 
     def __convert_epoch(self, epoch: int) -> datetime:
         if epoch < 0:

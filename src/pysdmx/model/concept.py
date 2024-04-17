@@ -12,7 +12,7 @@ can be defined using ``DataType``, ``Facets`` or enumeration (i.e. list of
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional, Sequence, Union
+from typing import Any, Dict, Iterator, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -150,10 +150,18 @@ class Concept(Item, frozen=True, omit_defaults=True):
     codes: Optional[Codelist] = None
     enum_ref: Optional[str] = None
 
+    @classmethod
+    def __all_annotations(cls) -> Dict[str, Any]:
+        test = {}
+        for c in cls.__mro__:
+            if "__annotations__" in c.__dict__:
+                test.update(c.__annotations__)
+        return dict(reversed(list(test.items())))
+
     def __str__(self) -> str:
         """Returns a human-friendly description."""
         out = []
-        for k in self.__annotations__.keys():
+        for k in self.__all_annotations().keys():
             v = self.__getattribute__(k)
             if v:
                 out.append(f"{k}={str(v)}")
@@ -179,7 +187,23 @@ class ConceptScheme(ItemScheme, frozen=True, omit_defaults=True):
         description: Additional descriptive information about the scheme
             (e.g. "The set of concepts in the SDMX Glossary").
         version: The scheme version (e.g. 2.0)
-        items: The list of concepts in the scheme.
+        concepts: The list of concepts in the scheme.
     """
 
-    items: Sequence[Concept] = ()
+    concepts: Sequence[Concept] = ()
+
+    def __iter__(self) -> Iterator[Concept]:
+        """Return an iterator over the list of concepts."""
+        yield from self.concepts
+
+    def __len__(self) -> int:
+        """Return the number of concepts in the concept scheme."""
+        return len(self.concepts)
+
+    def __getitem__(self, id_: str) -> Optional[Concept]:
+        """Return the concept identified by the given ID."""
+        out = list(filter(lambda concept: concept.id == id_, self.concepts))
+        if len(out) == 0:
+            return None
+        else:
+            return out[0]

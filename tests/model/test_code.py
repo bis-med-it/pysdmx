@@ -31,7 +31,7 @@ def vt():
 
 
 def test_default(id):
-    c = Code(id)
+    c = Code(id=id)
 
     assert c.id == id
     assert c.name is None
@@ -41,7 +41,7 @@ def test_default(id):
 
 
 def test_full_instantiation(id, name, desc, vf, vt):
-    c = Code(id, name, desc, vf, vt)
+    c = Code(id=id, name=name, description=desc, valid_from=vf, valid_to=vt)
 
     assert c.id == id
     assert c.name == name
@@ -57,21 +57,21 @@ def test_immutable(id, name):
 
 
 def test_equal(id, name, desc):
-    c1 = Code(id, name, desc)
-    c2 = Code(id, name, desc)
+    c1 = Code(id=id, name=name, description=desc)
+    c2 = Code(id=id, name=name, description=desc)
 
     assert c1 == c2
 
 
 def test_not_equal(id):
-    c1 = Code(id)
-    c2 = Code(id + id)
+    c1 = Code(id=id)
+    c2 = Code(id=id + id)
 
     assert c1 != c2
 
 
 def test_tostr_id(id):
-    c = Code(id)
+    c = Code(id=id)
 
     s = str(c)
 
@@ -79,7 +79,7 @@ def test_tostr_id(id):
 
 
 def test_tostr_name(id, name):
-    c = Code(id, name)
+    c = Code(id=id, name=name)
 
     s = str(c)
 

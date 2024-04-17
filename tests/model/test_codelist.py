@@ -26,7 +26,7 @@ def sdmx_type():
 
 
 def test_defaults(id, name, agency):
-    cl = Codelist(id, name, agency)
+    cl = Codelist(id=id, name=name, agency=agency)
 
     assert cl.id == id
     assert cl.name == name
@@ -41,9 +41,20 @@ def test_defaults(id, name, agency):
 def test_full_initialization(id, name, agency, sdmx_type):
     desc = "description"
     version = "1.42.0"
-    codes = [Code("child1", "Child 1"), Code("child2", "Child 2")]
+    codes = [
+        Code(id="child1", name="Child 1"),
+        Code(id="child2", name="Child 2"),
+    ]
 
-    cl = Codelist(id, name, agency, desc, version, codes, sdmx_type)
+    cl = Codelist(
+        id=id,
+        name=name,
+        agency=agency,
+        description=desc,
+        version=version,
+        codes=codes,
+        sdmx_type=sdmx_type,
+    )
 
     assert cl.id == id
     assert cl.name == name
@@ -63,8 +74,11 @@ def test_immutable(id, name, agency):
 
 
 def test_iterable(id, name, agency):
-    codes = [Code("child1", "Child 1"), Code("child2", "Child 2")]
-    cl = Codelist(id, name, agency, codes=codes)
+    codes = [
+        Code(id="child1", name="Child 1"),
+        Code(id="child2", name="Child 2"),
+    ]
+    cl = Codelist(id=id, name=name, agency=agency, codes=codes)
 
     assert isinstance(cl, Iterable)
     out = [c.id for c in cl]
@@ -79,10 +93,10 @@ def test_sized(id, name, agency):
 
 
 def test_get_code(id, name, agency):
-    c1 = Code("child1", "Child 1")
-    c2 = Code("child2", "Child 2")
+    c1 = Code(id="child1", name="Child 1")
+    c2 = Code(id="child2", name="Child 2")
     codes = [c1, c2]
-    cl = Codelist(id, name, agency, codes=codes)
+    cl = Codelist(id=id, name=name, agency=agency, codes=codes)
 
     resp1 = cl["child1"]
     resp2 = cl["child3"]

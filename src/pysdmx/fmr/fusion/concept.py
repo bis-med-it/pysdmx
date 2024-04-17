@@ -63,10 +63,10 @@ class FusionConceptScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
         return CS(
             id=self.id,
             name=self.names[0].value,
-            maintainer=self.agency,
+            agency=self.agency,
             description=d,
             version=self.version,
-            items=[c.to_model(codelists) for c in self.items],
+            concepts=[c.to_model(codelists) for c in self.items],
         )
 
 

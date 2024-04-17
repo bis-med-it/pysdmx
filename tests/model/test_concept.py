@@ -14,7 +14,7 @@ def typ():
 
 
 def test_defaults(fid):
-    f = Concept(fid)
+    f = Concept(id=fid)
 
     assert f.id == fid
     assert f.dtype == DataType.STRING
@@ -31,7 +31,9 @@ def test_full_initialization(fid):
     name = "Signal quality"
     desc = "The quality of the GPS signal"
 
-    f = Concept(fid, dtype, facets, name, desc)
+    f = Concept(
+        id=fid, dtype=dtype, facets=facets, name=name, description=desc
+    )
 
     assert f.id == fid
     assert f.dtype == dtype
@@ -63,7 +65,7 @@ def test_not_equal(fid, typ):
 
 
 def test_tostr(fid, typ):
-    f1 = Concept(fid, typ)
+    f1 = Concept(id=fid, dtype=typ)
 
     s = str(f1)
 
