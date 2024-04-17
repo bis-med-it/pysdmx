@@ -73,7 +73,7 @@ def test_tostr_id(id):
 
     s = str(a)
 
-    assert s == id
+    assert s == f"id={id}"
 
 
 def test_tostr_all(id, title, text, url, type):
@@ -81,4 +81,4 @@ def test_tostr_all(id, title, text, url, type):
 
     s = str(a)
 
-    assert s == f"{id} - {title} - {text} - {url} - {type}"
+    assert s == f"id={id}, title={title}, text={text}, url={url}, type={type}"

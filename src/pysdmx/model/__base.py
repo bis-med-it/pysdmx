@@ -29,18 +29,12 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
 
     def __str__(self) -> str:
         """Returns a human-friendly description."""
-        out = ""
-        if self.id:
-            out += self.id
-        if self.title:
-            out = f"{out} - {self.title}"
-        if self.text:
-            out = f"{out} - {self.text}"
-        if self.url:
-            out = f"{out} - {self.url}"
-        if self.type:
-            out = f"{out} - {self.type}"
-        return out
+        out = []
+        for k in self.__annotations__.keys():
+            v = self.__getattribute__(k)
+            if v:
+                out.append(f"{k}={str(v)}")
+        return ", ".join(out)
 
 
 class AnnotableArtefact(Struct, frozen=True, omit_defaults=True):
