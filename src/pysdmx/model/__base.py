@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Iterator, Optional, Sequence
+from typing import Optional, Sequence
 
 from msgspec import Struct
 
@@ -30,12 +30,16 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
     def __str__(self) -> str:
         """Returns a human-friendly description."""
         out = ""
+        if self.id:
+            out += self.id
         if self.title:
-            out += f"{out} - {self.title}"
+            out = f"{out} - {self.title}"
         if self.text:
-            out += f"{out} - {self.text}"
+            out = f"{out} - {self.text}"
         if self.url:
-            out += f"{out} - {self.url}"
+            out = f"{out} - {self.url}"
+        if self.type:
+            out = f"{out} - {self.type}"
         return out
 
 
@@ -50,15 +54,6 @@ class AnnotableArtefact(Struct, frozen=True, omit_defaults=True):
     """
 
     annotations: Sequence[Annotation] = ()
-
-    def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        return (
-            f"{self.__class__.__name__}("
-            f"{', '.join(repr(a) for a in self.annotations)})"
-        )
-
-    __repr__ = __str__
 
 
 class IdentifiableArtefact(AnnotableArtefact, frozen=True, omit_defaults=True):
@@ -76,16 +71,6 @@ class IdentifiableArtefact(AnnotableArtefact, frozen=True, omit_defaults=True):
     id: str = ""
     uri: Optional[str] = None
     urn: Optional[str] = None
-
-    def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        return (
-            f"{self.__class__.__name__}"
-            f"({self.id}, "
-            f"{', '.join(repr(a) for a in self.annotations)})"
-        )
-
-    __repr__ = __str__
 
 
 class NameableArtefact(IdentifiableArtefact, frozen=True, omit_defaults=True):
@@ -140,15 +125,6 @@ class MaintainableArtefact(
     structure_url: Optional[str] = None
     agency: Optional[str] = None
 
-    def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        return (
-            f"{self.__class__.__name__}"
-            f"({self.id}, {self.name}, {self.version})"
-        )
-
-    __repr__ = __str__
-
 
 class Agency(MaintainableArtefact, frozen=True, omit_defaults=True):
     """Agency class.
@@ -195,22 +171,6 @@ class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
 
     items: Sequence["Item"] = ()
     is_partial: bool = False
-
-    def __iter__(self) -> Iterator[Item]:
-        """Return an iterator over the list of items."""
-        yield from self.items
-
-    def __len__(self) -> int:
-        """Return the number of codes in the codelist."""
-        return len(self.items)
-
-    def __getitem__(self, id_: str) -> Optional[Item]:
-        """Return the code identified by the supplied ID."""
-        out = list(filter(lambda item: item.id == id_, self.items))
-        if len(out) == 0:
-            return None
-        else:
-            return out[0]
 
 
 class Contact(Struct, frozen=True, omit_defaults=True):
