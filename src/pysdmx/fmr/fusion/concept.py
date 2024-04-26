@@ -6,7 +6,7 @@ from msgspec import Struct
 
 from pysdmx.fmr.fusion.code import FusionCodelist
 from pysdmx.fmr.fusion.core import FusionRepresentation, FusionString
-from pysdmx.model.concept import Concept, ConceptScheme, DataType
+from pysdmx.model.concept import Concept, ConceptScheme as CS, DataType
 
 
 class FusionConcept(Struct, frozen=True):
@@ -57,10 +57,10 @@ class FusionConceptScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
     version: str = "1.0"
     items: Sequence[FusionConcept] = ()
 
-    def to_model(self, codelists: Sequence[FusionCodelist]) -> ConceptScheme:
+    def to_model(self, codelists: Sequence[FusionCodelist]) -> CS:
         """Converts a FusionConceptScheme to a standard concept scheme."""
         d = self.descriptions[0].value if self.descriptions else None
-        return ConceptScheme(
+        return CS(
             id=self.id,
             name=self.names[0].value,
             agency=self.agency,
@@ -79,6 +79,6 @@ class FusionConcepSchemeMessage(
     Codelist: Sequence[FusionCodelist]
     ConceptScheme: Sequence[FusionConceptScheme]
 
-    def to_model(self) -> ConceptScheme:
+    def to_model(self) -> CS:
         """Returns the requested concept scheme."""
         return self.ConceptScheme[0].to_model(self.Codelist)

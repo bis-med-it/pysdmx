@@ -70,6 +70,7 @@ class Codelist(ItemScheme, frozen=True, omit_defaults=True):
 
     @property
     def codes(self) -> Sequence[Code]:
+        """Extract the items in the Codelist."""
         return self.items  # type: ignore[return-value]
 
     def __iter__(self) -> Iterator[Code]:

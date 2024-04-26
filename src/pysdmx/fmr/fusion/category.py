@@ -7,7 +7,7 @@ from msgspec import Struct
 
 from pysdmx.fmr.fusion.core import FusionString
 from pysdmx.fmr.fusion.dataflow import FusionDataflowRef
-from pysdmx.model import Category, CategoryScheme, DataflowRef
+from pysdmx.model import Category, CategoryScheme as CS, DataflowRef
 from pysdmx.util import find_by_urn
 
 
@@ -47,10 +47,10 @@ class FusionCategoryScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
     version: str = "1.0"
     items: Sequence[FusionCategory] = ()
 
-    def to_model(self) -> CategoryScheme:
+    def to_model(self) -> CS:
         """Converts a JsonCodelist to a standard codelist."""
         description = self.descriptions[0].value if self.descriptions else None
-        return CategoryScheme(
+        return CS(
             id=self.id,
             name=self.names[0].value,
             agency=self.agency,
@@ -84,7 +84,7 @@ class FusionCategorySchemeMessage(Struct, frozen=True):
         if cni in cf:
             cat.dataflows = cf[cni]
 
-    def to_model(self) -> CategoryScheme:
+    def to_model(self) -> CS:
         """Returns the requested codelist."""
         cf = self.__group_flows()
         cs = self.CategoryScheme[0].to_model()

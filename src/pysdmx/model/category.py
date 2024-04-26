@@ -6,11 +6,11 @@ known as a subject matter domain scheme or a data category scheme.
 
 from typing import Iterator, List, Optional, Sequence, Set
 
-from pysdmx.model import ItemScheme, Item
+from pysdmx.model import Item, ItemScheme
 from pysdmx.model.organisation import DataflowRef
 
 
-class Category(Item, frozen=False):
+class Category(Item, frozen=False):  # type: ignore[misc]
     """A category, ie a way to **organize and group** things.
 
     Categories are used to organize and group other artefacts in SDMX.
@@ -68,6 +68,7 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
 
     @property
     def categories(self) -> Sequence[Category]:
+        """Extract the items in the Category Scheme."""
         return self.items  # type: ignore[return-value]
 
     @property

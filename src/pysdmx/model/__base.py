@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Sequence, Union, Dict, Any
+from typing import Any, Dict, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -137,7 +137,7 @@ class MaintainableArtefact(
     agency: Optional[Union[str, "Agency"]] = None
 
 
-class Item(NameableArtefact):
+class Item(NameableArtefact, frozen=True, omit_defaults=True):
     """Item class.
 
     The Item is an item of content in an Item Scheme. This may be a
