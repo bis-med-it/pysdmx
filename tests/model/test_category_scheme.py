@@ -22,7 +22,7 @@ def agency():
 
 
 def test_defaults(id, name, agency):
-    cs = CategoryScheme(id, name, agency)
+    cs = CategoryScheme(id=id, name=name, agency=agency)
 
     assert cs.id == id
     assert cs.name == name
@@ -36,14 +36,21 @@ def test_defaults(id, name, agency):
 def test_full_initialization(id, name, agency):
     desc = "description"
     version = "1.42.0"
-    grandchild = Category("Child211", "Child 2.1.1")
-    child = Category("Child21", "Child 2.1", categories=[grandchild])
+    grandchild = Category(id="Child211", name="Child 2.1.1")
+    child = Category(id="Child21", name="Child 2.1", categories=[grandchild])
     cats = [
-        Category("child1", "Child 1"),
-        Category("child2", "Child 2", categories=[child]),
+        Category(id="child1", name="Child 1"),
+        Category(id="child2", name="Child 2", categories=[child]),
     ]
 
-    cs = CategoryScheme(id, name, agency, desc, version, cats)
+    cs = CategoryScheme(
+        id=id,
+        name=name,
+        agency=agency,
+        description=desc,
+        version=version,
+        items=cats,
+    )
 
     assert cs.id == id
     assert cs.name == name
@@ -63,10 +70,10 @@ def test_immutable(id, name, agency):
 
 def test_iterable(id, name, agency):
     cats = [
-        Category("child1", "Child 1"),
-        Category("child2", "Child 2"),
+        Category(id="child1", name="Child 1"),
+        Category(id="child2", name="Child 2"),
     ]
-    cs = CategoryScheme(id, name, agency, categories=cats)
+    cs = CategoryScheme(id=id, name=name, agency=agency, items=cats)
 
     assert isinstance(cs, Iterable)
     out = [c.id for c in cs]
@@ -81,14 +88,14 @@ def test_sized(id, name, agency):
 
 
 def test_get_category(id, name, agency):
-    grandchild = Category("child211", "Child 2.1.1")
-    child = Category("child21", "Child 2.1", categories=[grandchild])
+    grandchild = Category(id="child211", name="Child 2.1.1")
+    child = Category(id="child21", name="Child 2.1", categories=[grandchild])
     cats = [
-        Category("child1", "Child 1"),
-        Category("child2", "Child 2", categories=[child]),
+        Category(id="child1", name="Child 1"),
+        Category(id="child2", name="Child 2", categories=[child]),
     ]
 
-    cs = CategoryScheme(id, name, agency, categories=cats)
+    cs = CategoryScheme(id=id, name=name, agency=agency, items=cats)
 
     resp1 = cs["child2.child21.child211"]
     resp2 = cs["child2"]
@@ -116,7 +123,7 @@ def test_dataflows(id, name, agency):
         Category("child2", "Child 2", categories=[child]),
     ]
 
-    cs = CategoryScheme(id, name, agency, categories=cats)
+    cs = CategoryScheme(id, name, agency, items=cats)
 
     flows = cs.dataflows
 

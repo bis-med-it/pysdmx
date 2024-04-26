@@ -12,7 +12,7 @@ can be defined using ``DataType``, ``Facets`` or enumeration (i.e. list of
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Iterator, Optional, Sequence, Union
+from typing import Iterator, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -150,23 +150,6 @@ class Concept(Item, frozen=True, omit_defaults=True):
     codes: Optional[Codelist] = None
     enum_ref: Optional[str] = None
 
-    @classmethod
-    def __all_annotations(cls) -> Dict[str, Any]:
-        test = {}
-        for c in cls.__mro__:
-            if "__annotations__" in c.__dict__:
-                test.update(c.__annotations__)
-        return dict(reversed(list(test.items())))
-
-    def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        out = []
-        for k in self.__all_annotations().keys():
-            v = self.__getattribute__(k)
-            if v:
-                out.append(f"{k}={str(v)}")
-        return ", ".join(out)
-
 
 class ConceptScheme(ItemScheme, frozen=True, omit_defaults=True):
     """An immutable collection of concepts.
@@ -187,10 +170,11 @@ class ConceptScheme(ItemScheme, frozen=True, omit_defaults=True):
         description: Additional descriptive information about the scheme
             (e.g. "The set of concepts in the SDMX Glossary").
         version: The scheme version (e.g. 2.0)
-        concepts: The list of concepts in the scheme.
     """
 
-    concepts: Sequence[Concept] = ()
+    @property
+    def concepts(self) -> Sequence[Concept]:
+        return self.items  # type: ignore[return-value]
 
     def __iter__(self) -> Iterator[Concept]:
         """Return an iterator over the list of concepts."""

@@ -30,12 +30,12 @@ class JsonCategoryScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
     def to_model(self) -> CategoryScheme:
         """Converts a JsonCodelist to a standard codelist."""
         return CategoryScheme(
-            self.id,
-            self.name,
-            self.agency,
-            self.description,
-            self.version,
-            self.categories,
+            id=self.id,
+            name=self.name,
+            agency=self.agency,
+            description=self.description,
+            version=self.version,
+            items=self.categories,
         )
 
 

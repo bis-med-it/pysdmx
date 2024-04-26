@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Union, Dict, Any
 
 from msgspec import Struct
 
@@ -48,6 +48,23 @@ class AnnotableArtefact(Struct, frozen=True, omit_defaults=True):
     """
 
     annotations: Sequence[Annotation] = ()
+
+    @classmethod
+    def __all_annotations(cls) -> Dict[str, Any]:
+        class_attributes = {}
+        for c in cls.__mro__:
+            if "__annotations__" in c.__dict__:
+                class_attributes.update(c.__annotations__)
+        return dict(reversed(list(class_attributes.items())))
+
+    def __str__(self) -> str:
+        """Returns a human-friendly description."""
+        out = []
+        for k in self.__all_annotations().keys():
+            v = self.__getattribute__(k)
+            if v:
+                out.append(f"{k}={str(v)}")
+        return ", ".join(out)
 
 
 class IdentifiableArtefact(AnnotableArtefact, frozen=True, omit_defaults=True):
@@ -117,39 +134,17 @@ class MaintainableArtefact(
     is_external_reference: bool = False
     service_url: Optional[str] = None
     structure_url: Optional[str] = None
-    agency: Optional[str] = None
+    agency: Optional[Union[str, "Agency"]] = None
 
 
-class Agency(MaintainableArtefact, frozen=True, omit_defaults=True):
-    """Agency class.
-
-    Responsible agency for maintaining artefacts
-    such as statistical classifications, glossaries,
-    structural metadata such as Data and Metadata Structure
-    Definitions, Concepts and Code lists.
-
-    Attributes:
-        contacts: The contact of the agency.
-    """
-
-    contacts = Sequence["Contact"]
-
-
-class Item(NameableArtefact, frozen=True, omit_defaults=True):
+class Item(NameableArtefact):
     """Item class.
 
     The Item is an item of content in an Item Scheme. This may be a
     concept in a concept scheme, a code in a codelist, etc.
 
-    Attributes:
-        scheme: The ItemScheme to which the item belongs.
-        parent: The parent of the item.
-        children: The children of the item.
+    Parent and child attributes (hierarchy) have been removed for simplicity.
     """
-
-    scheme: Optional["ItemScheme"] = None
-    parent: Optional["Item"] = None
-    children: Sequence["Item"] = ()
 
 
 class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
@@ -165,6 +160,26 @@ class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
 
     items: Sequence["Item"] = ()
     is_partial: bool = False
+
+
+class Organisation(Item, frozen=True, omit_defaults=True):
+    """Organisation class.
+
+    Attributes:
+        contacts: The contact of the agency.
+    """
+
+    contacts: Sequence["Contact"] = ()
+
+
+class Agency(Organisation, frozen=True, omit_defaults=True):
+    """Agency class.
+
+    Responsible agency for maintaining artefacts
+    such as statistical classifications, glossaries,
+    structural metadata such as Data and Metadata Structure
+    Definitions, Concepts and Code lists.
+    """
 
 
 class Contact(Struct, frozen=True, omit_defaults=True):

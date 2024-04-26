@@ -97,7 +97,7 @@ class FusionRepresentation(msgspec.Struct, frozen=True):
             codes = [
                 c.to_model() for c in a.items if not valid or c.id in valid
             ]
-            return msgspec.structs.replace(cl, codes=codes)
+            return msgspec.structs.replace(cl, items=codes)
         return None
 
     def to_array_def(self) -> Optional[ArrayBoundaries]:

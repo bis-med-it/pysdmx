@@ -40,13 +40,6 @@ class Code(Item, frozen=True, omit_defaults=True):
     valid_from: Optional[datetime] = None
     valid_to: Optional[datetime] = None
 
-    def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        out = self.id
-        if self.name:
-            out = f"{out} ({self.name})"
-        return out
-
 
 class Codelist(ItemScheme, frozen=True, omit_defaults=True):
     """An immutable collection of codes, such as the ISO 3166 country codes.
@@ -71,11 +64,13 @@ class Codelist(ItemScheme, frozen=True, omit_defaults=True):
             (e.g. "This codelist provides a set of values indicating the
             frequency of the data").
         version: The codelist version (e.g. 2.0.42)
-        codes: The list of codes in the codelist.
     """
 
-    codes: Sequence[Code] = ()
     sdmx_type: Literal["codelist", "valuelist"] = "codelist"
+
+    @property
+    def codes(self) -> Sequence[Code]:
+        return self.items  # type: ignore[return-value]
 
     def __iter__(self) -> Iterator[Code]:
         """Return an iterator over the list of codes."""

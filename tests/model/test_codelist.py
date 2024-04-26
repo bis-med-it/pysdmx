@@ -52,7 +52,7 @@ def test_full_initialization(id, name, agency, sdmx_type):
         agency=agency,
         description=desc,
         version=version,
-        codes=codes,
+        items=codes,
         sdmx_type=sdmx_type,
     )
 
@@ -68,7 +68,7 @@ def test_full_initialization(id, name, agency, sdmx_type):
 
 
 def test_immutable(id, name, agency):
-    cl = Codelist(id, name, agency)
+    cl = Codelist(id=id, name=name, agency=agency)
     with pytest.raises(AttributeError):
         cl.description = "Description"
 
@@ -78,7 +78,7 @@ def test_iterable(id, name, agency):
         Code(id="child1", name="Child 1"),
         Code(id="child2", name="Child 2"),
     ]
-    cl = Codelist(id=id, name=name, agency=agency, codes=codes)
+    cl = Codelist(id=id, name=name, agency=agency, items=codes)
 
     assert isinstance(cl, Iterable)
     out = [c.id for c in cl]
@@ -96,7 +96,7 @@ def test_get_code(id, name, agency):
     c1 = Code(id="child1", name="Child 1")
     c2 = Code(id="child2", name="Child 2")
     codes = [c1, c2]
-    cl = Codelist(id=id, name=name, agency=agency, codes=codes)
+    cl = Codelist(id=id, name=name, agency=agency, items=codes)
 
     resp1 = cl["child1"]
     resp2 = cl["child3"]

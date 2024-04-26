@@ -21,7 +21,7 @@ def desc():
 
 
 def test_default(id):
-    c = Category(id)
+    c = Category(id=id)
 
     assert c.id == id
     assert c.name is None
@@ -33,10 +33,12 @@ def test_default(id):
 
 
 def test_full_instantiation(id, name, desc):
-    cats = [Category("chld", "Child")]
+    cats = [Category(id="chld", name="Child")]
     flows = [DataflowRef("EXR", "BIS")]
 
-    c = Category(id, name, desc, cats, flows)
+    c = Category(
+        id=id, name=name, description=desc, categories=cats, dataflows=flows
+    )
 
     assert c.id == id
     assert c.name == name
@@ -66,8 +68,8 @@ def test_not_equal(id):
 
 
 def test_iterable(id, name):
-    cats = [Category("chld", "Child")]
-    cat = Category(id, name, categories=cats)
+    cats = [Category(id="chld", name="Child")]
+    cat = Category(id=id, name=name, categories=cats)
 
     assert isinstance(cat, Iterable)
     out = [c.id for c in cat]
@@ -76,16 +78,16 @@ def test_iterable(id, name):
 
 
 def test_tostr_id(id):
-    c = Category(id)
+    c = Category(id=id)
 
     s = str(c)
 
-    assert s == id
+    assert s == f"id={id}"
 
 
 def test_tostr_name(id, name):
-    c = Category(id, name)
+    c = Category(id=id, name=name)
 
     s = str(c)
 
-    assert s == f"{id} ({name})"
+    assert s == f"id={id}, name={name}"

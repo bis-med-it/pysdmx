@@ -7,7 +7,7 @@ from msgspec import Struct
 
 from pysdmx.fmr.fusion.core import FusionString
 from pysdmx.fmr.fusion.dataflow import FusionDataflowRef
-from pysdmx.model import Category, CategoryScheme as CS, DataflowRef
+from pysdmx.model import Category, CategoryScheme, DataflowRef
 from pysdmx.util import find_by_urn
 
 
@@ -28,11 +28,12 @@ class FusionCategory(Struct, frozen=True):
 
     def to_model(self) -> Category:
         """Converts a FusionCode to a standard code."""
+        description = self.descriptions[0].value if self.descriptions else None
         return Category(
-            self.id,
-            self.names[0].value,
-            self.descriptions[0].value if self.descriptions else None,
-            [c.to_model() for c in self.items],
+            id=self.id,
+            name=self.names[0].value,
+            description=description,
+            categories=[c.to_model() for c in self.items],
         )
 
 
@@ -46,15 +47,16 @@ class FusionCategoryScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
     version: str = "1.0"
     items: Sequence[FusionCategory] = ()
 
-    def to_model(self) -> CS:
+    def to_model(self) -> CategoryScheme:
         """Converts a JsonCodelist to a standard codelist."""
-        return CS(
-            self.id,
-            self.names[0].value,
-            self.agency,
-            self.descriptions[0].value if self.descriptions else None,
-            self.version,
-            [c.to_model() for c in self.items],
+        description = self.descriptions[0].value if self.descriptions else None
+        return CategoryScheme(
+            id=self.id,
+            name=self.names[0].value,
+            agency=self.agency,
+            description=description,
+            version=self.version,
+            items=[c.to_model() for c in self.items],
         )
 
 
@@ -82,7 +84,7 @@ class FusionCategorySchemeMessage(Struct, frozen=True):
         if cni in cf:
             cat.dataflows = cf[cni]
 
-    def to_model(self) -> CS:
+    def to_model(self) -> CategoryScheme:
         """Returns the requested codelist."""
         cf = self.__group_flows()
         cs = self.CategoryScheme[0].to_model()

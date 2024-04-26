@@ -43,7 +43,7 @@ def test_full_initialization(id, name, agency):
         agency=agency,
         description=desc,
         version=version,
-        concepts=concepts,
+        items=concepts,
     )
 
     assert cs.id == id
@@ -64,7 +64,7 @@ def test_immutable(id, name, agency):
 
 def test_iterable(id, name, agency):
     concepts = [Concept(id="child1"), Concept(id="child2")]
-    cs = ConceptScheme(id=id, name=name, agency=agency, concepts=concepts)
+    cs = ConceptScheme(id=id, name=name, agency=agency, items=concepts)
 
     assert isinstance(cs, Iterable)
     out = [c.id for c in cs]
@@ -82,7 +82,7 @@ def test_get_concept(id, name, agency):
     c1 = Concept(id="child1", name="Child 1")
     c2 = Concept(id="child2", name="Child 2")
     concepts = [c1, c2]
-    cs = ConceptScheme(id=id, name=name, agency=agency, concepts=concepts)
+    cs = ConceptScheme(id=id, name=name, agency=agency, items=concepts)
 
     resp1 = cs["child1"]
     resp2 = cs["child3"]

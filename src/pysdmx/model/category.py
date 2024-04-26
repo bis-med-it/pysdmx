@@ -6,12 +6,11 @@ known as a subject matter domain scheme or a data category scheme.
 
 from typing import Iterator, List, Optional, Sequence, Set
 
-from msgspec import Struct
-
+from pysdmx.model import ItemScheme, Item
 from pysdmx.model.organisation import DataflowRef
 
 
-class Category(Struct, omit_defaults=True):
+class Category(Item, frozen=False):
     """A category, ie a way to **organize and group** things.
 
     Categories are used to organize and group other artefacts in SDMX.
@@ -32,9 +31,6 @@ class Category(Struct, omit_defaults=True):
         dataflows: The list of dataflows attached to the category.
     """
 
-    id: str
-    name: Optional[str] = None
-    description: Optional[str] = None
     categories: Sequence["Category"] = ()
     dataflows: Sequence[DataflowRef] = ()
 
@@ -42,15 +38,8 @@ class Category(Struct, omit_defaults=True):
         """Return an iterator over the list of categories."""
         yield from self.categories
 
-    def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        out = self.id
-        if self.name:
-            out = f"{out} ({self.name})"
-        return out
 
-
-class CategoryScheme(Struct, frozen=True, omit_defaults=True):
+class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
     """An immutable collection of categories, likes a list of topics.
 
     A category scheme is **maintained by its agency**, typically, an
@@ -75,15 +64,11 @@ class CategoryScheme(Struct, frozen=True, omit_defaults=True):
             (e.g. "The SDMX Content Guidelines for Statistical
             Subject-Matter Domains").
         version: The scheme version (e.g. 1.0)
-        categories: The list of top level categories in the scheme.
     """
 
-    id: str
-    name: str
-    agency: str
-    description: Optional[str] = None
-    version: str = "1.0"
-    categories: Sequence[Category] = ()
+    @property
+    def categories(self) -> Sequence[Category]:
+        return self.items  # type: ignore[return-value]
 
     @property
     def dataflows(self) -> Sequence[DataflowRef]:
