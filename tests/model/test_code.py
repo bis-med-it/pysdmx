@@ -51,7 +51,7 @@ def test_full_instantiation(id, name, desc, vf, vt):
 
 
 def test_immutable(id, name):
-    c = Code(id)
+    c = Code(id=id)
     with pytest.raises(AttributeError):
         c.name = name
 

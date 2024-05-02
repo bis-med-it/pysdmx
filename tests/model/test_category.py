@@ -49,20 +49,20 @@ def test_full_instantiation(id, name, desc):
 
 def test_mutable(id, name):
     """Categories are mutable, so that we can add dataflows to them."""
-    c = Category(id)
+    c = Category(id=id)
     c.name = name
 
 
 def test_equal(id, name, desc):
-    c1 = Category(id, name, desc)
-    c2 = Category(id, name, desc)
+    c1 = Category(id=id, name=name, description=desc)
+    c2 = Category(id=id, name=name, description=desc)
 
     assert c1 == c2
 
 
 def test_not_equal(id):
-    c1 = Category(id)
-    c2 = Category(id + id)
+    c1 = Category(id=id)
+    c2 = Category(id=id + id)
 
     assert c1 != c2
 

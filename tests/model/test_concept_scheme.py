@@ -57,7 +57,7 @@ def test_full_initialization(id, name, agency):
 
 
 def test_immutable(id, name, agency):
-    cs = ConceptScheme(id, name, agency)
+    cs = ConceptScheme(id=id, name=name, agency=agency)
     with pytest.raises(AttributeError):
         cs.description = "Description"
 
@@ -73,7 +73,7 @@ def test_iterable(id, name, agency):
 
 
 def test_sized(id, name, agency):
-    cs = ConceptScheme(id, name, agency)
+    cs = ConceptScheme(id=id, name=name, agency=agency)
 
     assert isinstance(cs, Sized)
 

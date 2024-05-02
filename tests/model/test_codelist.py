@@ -87,7 +87,7 @@ def test_iterable(id, name, agency):
 
 
 def test_sized(id, name, agency):
-    cl = Codelist(id, name, agency)
+    cl = Codelist(id=id, name=name, agency=agency)
 
     assert isinstance(cl, Sized)
 

@@ -45,21 +45,21 @@ def test_full_initialization(fid):
 
 
 def test_immutable(fid, typ):
-    f = Concept(fid, typ)
+    f = Concept(id=fid, dtype=typ)
     with pytest.raises(AttributeError):
         f.name = fid
 
 
 def test_equal(fid, typ):
-    f1 = Concept(fid, typ)
-    f2 = Concept(fid, typ)
+    f1 = Concept(id=fid, dtype=typ)
+    f2 = Concept(id=fid, dtype=typ)
 
     assert f1 == f2
 
 
 def test_not_equal(fid, typ):
-    f1 = Concept(fid, typ)
-    f2 = Concept(fid, typ, name=fid)
+    f1 = Concept(id=fid, dtype=typ)
+    f2 = Concept(id=fid, dtype=typ, name=fid)
 
     assert f1 != f2
 

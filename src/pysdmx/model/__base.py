@@ -37,7 +37,7 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
         return ", ".join(out)
 
 
-class AnnotableArtefact(Struct, frozen=True, omit_defaults=True):
+class AnnotableArtefact(Struct, frozen=True, omit_defaults=True, kw_only=True):
     """Annotable Artefact class.
 
     Superclass of all SDMX artefacts.
@@ -79,7 +79,7 @@ class IdentifiableArtefact(AnnotableArtefact, frozen=True, omit_defaults=True):
         urn: The URN of the artefact.
     """
 
-    id: str = ""
+    id: str  # type: ignore[misc, unused-ignore]
     uri: Optional[str] = None
     urn: Optional[str] = None
 
