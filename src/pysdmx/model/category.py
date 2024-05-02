@@ -10,7 +10,7 @@ from pysdmx.model import Item, ItemScheme
 from pysdmx.model.organisation import DataflowRef
 
 
-class Category(Item, frozen=False):  # type: ignore[misc]
+class Category(Item, frozen=False, omit_defaults=True):  # type: ignore[misc]
     """A category, ie a way to **organize and group** things.
 
     Categories are used to organize and group other artefacts in SDMX.
@@ -68,7 +68,7 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
 
     @property
     def categories(self) -> Sequence[Category]:
-        """Extract the items in the Category Scheme."""
+        """The list of top level categories in the scheme."""
         return self.items  # type: ignore[return-value]
 
     @property

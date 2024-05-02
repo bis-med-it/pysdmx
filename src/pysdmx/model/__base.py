@@ -114,29 +114,6 @@ class VersionableArtefact(NameableArtefact, frozen=True, omit_defaults=True):
     valid_to: Optional[datetime] = None
 
 
-class MaintainableArtefact(
-    VersionableArtefact, frozen=True, omit_defaults=True
-):
-    """Maintainable Artefact class.
-
-    An abstract class to group together primary structural metadata
-    artefacts that are maintained by an Agency.
-
-    Attributes:
-        is_final: Whether the artefact is final.
-        is_external_reference: Whether the artefact is an external reference.
-        service_url: The URL of the service.
-        structure_url: The URL of the structure.
-        agency: The maintainer of the artefact.
-    """
-
-    is_final: bool = False
-    is_external_reference: bool = False
-    service_url: Optional[str] = None
-    structure_url: Optional[str] = None
-    agency: Optional[Union[str, "Agency"]] = None
-
-
 class Item(NameableArtefact, frozen=True, omit_defaults=True):
     """Item class.
 
@@ -144,41 +121,6 @@ class Item(NameableArtefact, frozen=True, omit_defaults=True):
     concept in a concept scheme, a code in a codelist, etc.
 
     Parent and child attributes (hierarchy) have been removed for simplicity.
-    """
-
-
-class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
-    """ItemScheme class.
-
-    The descriptive information for an arrangement or division of objects
-    into groups based on characteristics, which the objects have in common.
-
-    Attributes:
-        items: The list of items in the scheme.
-        is_partial: Whether the scheme is partial.
-    """
-
-    items: Sequence["Item"] = ()
-    is_partial: bool = False
-
-
-class Organisation(Item, frozen=True, omit_defaults=True):
-    """Organisation class.
-
-    Attributes:
-        contacts: The contact of the agency.
-    """
-
-    contacts: Sequence["Contact"] = ()
-
-
-class Agency(Organisation, frozen=True, omit_defaults=True):
-    """Agency class.
-
-    Responsible agency for maintaining artefacts
-    such as statistical classifications, glossaries,
-    structural metadata such as Data and Metadata Structure
-    Definitions, Concepts and Code lists.
     """
 
 
@@ -210,3 +152,61 @@ class Contact(Struct, frozen=True, omit_defaults=True):
     faxes: Optional[Sequence[str]] = None
     uris: Optional[Sequence[str]] = None
     emails: Optional[Sequence[str]] = None
+
+
+class Organisation(Item, frozen=True, omit_defaults=True):
+    """Organisation class.
+
+    Attributes:
+        contacts: The contact of the agency.
+    """
+
+    contacts: Sequence[Contact] = ()
+
+
+class Agency(Organisation, frozen=True, omit_defaults=True):
+    """Agency class.
+
+    Responsible agency for maintaining artefacts
+    such as statistical classifications, glossaries,
+    structural metadata such as Data and Metadata Structure
+    Definitions, Concepts and Code lists.
+    """
+
+
+class MaintainableArtefact(
+    VersionableArtefact, frozen=True, omit_defaults=True
+):
+    """Maintainable Artefact class.
+
+    An abstract class to group together primary structural metadata
+    artefacts that are maintained by an Agency.
+
+    Attributes:
+        is_final: Whether the artefact is final.
+        is_external_reference: Whether the artefact is an external reference.
+        service_url: The URL of the service.
+        structure_url: The URL of the structure.
+        agency: The maintainer of the artefact.
+    """
+
+    is_final: bool = False
+    is_external_reference: bool = False
+    service_url: Optional[str] = None
+    structure_url: Optional[str] = None
+    agency: Union[str, Agency] = ""
+
+
+class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
+    """ItemScheme class.
+
+    The descriptive information for an arrangement or division of objects
+    into groups based on characteristics, which the objects have in common.
+
+    Attributes:
+        items: The list of items in the scheme.
+        is_partial: Whether the scheme is partial.
+    """
+
+    items: Sequence[Item] = ()
+    is_partial: bool = False
