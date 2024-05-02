@@ -42,7 +42,13 @@ class JsonCode(Struct, frozen=True):
         """Converts a JsonCode to a standard code."""
         vp = [a for a in self.annotations if a.type == "FR_VALIDITY_PERIOD"]
         vf, vt = self.__get_val(vp[0]) if vp else (None, None)
-        return Code(self.id, self.name, self.description, vf, vt)
+        return Code(
+            id=self.id,
+            name=self.name,
+            description=self.description,
+            valid_from=vf,
+            valid_to=vt,
+        )
 
 
 class JsonCodelist(Struct, frozen=True, rename={"agency": "agencyID"}):
@@ -58,12 +64,12 @@ class JsonCodelist(Struct, frozen=True, rename={"agency": "agencyID"}):
     def to_model(self) -> Codelist:
         """Converts a JsonCodelist to a standard codelist."""
         return Codelist(
-            self.id,
-            self.name,
-            self.agency,
-            self.description,
-            self.version,
-            [i.to_model() for i in self.codes],
+            id=self.id,
+            name=self.name,
+            agency=self.agency,
+            description=self.description,
+            version=self.version,
+            items=[i.to_model() for i in self.codes],
         )
 
 
@@ -80,13 +86,13 @@ class JsonValuelist(Struct, frozen=True, rename={"agency": "agencyID"}):
     def to_model(self) -> Codelist:
         """Converts a JsonValuelist to a standard codelist."""
         return Codelist(
-            self.id,
-            self.name,
-            self.agency,
-            self.description,
-            self.version,
-            [i.to_model() for i in self.valueItems],
-            "valuelist",
+            id=self.id,
+            name=self.name,
+            agency=self.agency,
+            description=self.description,
+            version=self.version,
+            items=[i.to_model() for i in self.valueItems],
+            sdmx_type="valuelist",
         )
 
 

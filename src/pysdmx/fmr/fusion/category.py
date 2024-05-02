@@ -28,11 +28,12 @@ class FusionCategory(Struct, frozen=True):
 
     def to_model(self) -> Category:
         """Converts a FusionCode to a standard code."""
+        description = self.descriptions[0].value if self.descriptions else None
         return Category(
-            self.id,
-            self.names[0].value,
-            self.descriptions[0].value if self.descriptions else None,
-            [c.to_model() for c in self.items],
+            id=self.id,
+            name=self.names[0].value,
+            description=description,
+            categories=[c.to_model() for c in self.items],
         )
 
 
@@ -48,13 +49,14 @@ class FusionCategoryScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
 
     def to_model(self) -> CS:
         """Converts a JsonCodelist to a standard codelist."""
+        description = self.descriptions[0].value if self.descriptions else None
         return CS(
-            self.id,
-            self.names[0].value,
-            self.agency,
-            self.descriptions[0].value if self.descriptions else None,
-            self.version,
-            [c.to_model() for c in self.items],
+            id=self.id,
+            name=self.names[0].value,
+            agency=self.agency,
+            description=description,
+            version=self.version,
+            items=[c.to_model() for c in self.items],
         )
 
 

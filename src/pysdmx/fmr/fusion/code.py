@@ -43,11 +43,13 @@ class FusionCode(Struct, frozen=True):
         vp = [a for a in self.annotations if a.type == "FR_VALIDITY_PERIOD"]
         vf, vt = self.__get_val(vp[0]) if vp else (None, None)
         return Code(
-            self.id,
-            self.names[0].value,
-            self.descriptions[0].value if self.descriptions else None,
-            vf,
-            vt,
+            id=self.id,
+            name=self.names[0].value,
+            description=(
+                self.descriptions[0].value if self.descriptions else None
+            ),
+            valid_from=vf,
+            valid_to=vt,
         )
 
 
@@ -66,13 +68,15 @@ class FusionCodelist(Struct, frozen=True, rename={"agency": "agencyId"}):
         """Converts a JsonCodelist to a standard codelist."""
         t = "codelist" if "Codelist" in self.urn else "valuelist"
         return CL(
-            self.id,
-            self.names[0].value,
-            self.agency,
-            self.descriptions[0].value if self.descriptions else None,
-            self.version,
-            [i.to_model() for i in self.items],
-            t,  # type: ignore[arg-type]
+            id=self.id,
+            name=self.names[0].value,
+            agency=self.agency,
+            description=(
+                self.descriptions[0].value if self.descriptions else None
+            ),
+            version=self.version,
+            items=[i.to_model() for i in self.items],
+            sdmx_type=t,  # type: ignore[arg-type]
         )
 
 

@@ -21,8 +21,10 @@ from typing import Iterator, Literal, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx.model import Item, ItemScheme
 
-class Code(Struct, frozen=True, omit_defaults=True):
+
+class Code(Item, frozen=True, omit_defaults=True):
     """A code, such as a country code in the list of ISO 3166 codes.
 
     Codes may have business validity information.
@@ -35,21 +37,11 @@ class Code(Struct, frozen=True, omit_defaults=True):
         valid_to: End of the code's validity period.
     """
 
-    id: str
-    name: Optional[str] = None
-    description: Optional[str] = None
     valid_from: Optional[datetime] = None
     valid_to: Optional[datetime] = None
 
-    def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        out = self.id
-        if self.name:
-            out = f"{out} ({self.name})"
-        return out
 
-
-class Codelist(Struct, frozen=True, omit_defaults=True):
+class Codelist(ItemScheme, frozen=True, omit_defaults=True):
     """An immutable collection of codes, such as the ISO 3166 country codes.
 
     A codelist is **maintained by its agency**, typically, an organisation
@@ -72,16 +64,14 @@ class Codelist(Struct, frozen=True, omit_defaults=True):
             (e.g. "This codelist provides a set of values indicating the
             frequency of the data").
         version: The codelist version (e.g. 2.0.42)
-        codes: The list of codes in the codelist.
     """
 
-    id: str
-    name: str
-    agency: str
-    description: Optional[str] = None
-    version: str = "1.0"
-    codes: Sequence[Code] = ()
     sdmx_type: Literal["codelist", "valuelist"] = "codelist"
+
+    @property
+    def codes(self) -> Sequence[Code]:
+        """Extract the items in the Codelist."""
+        return self.items  # type: ignore[return-value]
 
     def __iter__(self) -> Iterator[Code]:
         """Return an iterator over the list of codes."""

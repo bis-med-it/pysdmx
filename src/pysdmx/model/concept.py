@@ -16,6 +16,7 @@ from typing import Iterator, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.model import Item, ItemScheme
 from pysdmx.model.code import Codelist
 
 
@@ -114,7 +115,7 @@ class Facets(Struct, frozen=True, omit_defaults=True):
         return ", ".join(out)
 
 
-class Concept(Struct, frozen=True, omit_defaults=True):
+class Concept(Item, frozen=True, omit_defaults=True):
     """A concept (aka **variable**), such as frequency, reference area, etc.
 
     Concepts are used to **describe the relevant characteristics** of a
@@ -144,25 +145,13 @@ class Concept(Struct, frozen=True, omit_defaults=True):
             which the codes are taken.
     """
 
-    id: str
     dtype: DataType = DataType.STRING
     facets: Optional[Facets] = None
-    name: Optional[str] = None
-    description: Optional[str] = None
     codes: Optional[Codelist] = None
     enum_ref: Optional[str] = None
 
-    def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        out = []
-        for k in self.__annotations__.keys():
-            v = self.__getattribute__(k)
-            if v:
-                out.append(f"{k}={str(v)}")
-        return ", ".join(out)
 
-
-class ConceptScheme(Struct, frozen=True, omit_defaults=True):
+class ConceptScheme(ItemScheme, frozen=True, omit_defaults=True):
     """An immutable collection of concepts.
 
     A concept scheme is **maintained by its agency**, typically, an
@@ -181,15 +170,12 @@ class ConceptScheme(Struct, frozen=True, omit_defaults=True):
         description: Additional descriptive information about the scheme
             (e.g. "The set of concepts in the SDMX Glossary").
         version: The scheme version (e.g. 2.0)
-        concepts: The list of concepts in the scheme.
     """
 
-    id: str
-    name: str
-    agency: str
-    description: Optional[str] = None
-    version: str = "1.0"
-    concepts: Sequence[Concept] = ()
+    @property
+    def concepts(self) -> Sequence[Concept]:
+        """Extract the items in the Concept Scheme."""
+        return self.items  # type: ignore[return-value]
 
     def __iter__(self) -> Iterator[Concept]:
         """Return an iterator over the list of concepts."""

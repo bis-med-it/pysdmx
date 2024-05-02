@@ -37,7 +37,7 @@ class FusionConcept(Struct, frozen=True):
             else None
         )
         return Concept(
-            self.id,
+            id=self.id,
             dtype=dt,
             facets=f,
             name=self.names[0].value,
@@ -61,12 +61,12 @@ class FusionConceptScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
         """Converts a FusionConceptScheme to a standard concept scheme."""
         d = self.descriptions[0].value if self.descriptions else None
         return CS(
-            self.id,
-            self.names[0].value,
-            self.agency,
-            d,
-            self.version,
-            [c.to_model(codelists) for c in self.items],
+            id=self.id,
+            name=self.names[0].value,
+            agency=self.agency,
+            description=d,
+            version=self.version,
+            items=[c.to_model(codelists) for c in self.items],
         )
 
 
