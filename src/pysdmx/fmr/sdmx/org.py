@@ -6,14 +6,14 @@ from typing import Dict, Sequence, Set
 from msgspec import Struct
 
 from pysdmx.fmr.sdmx.pa import JsonProvisionAgreement
-from pysdmx.model import DataflowRef, Organisation
+from pysdmx.model import Agency, DataflowRef, DataProvider
 from pysdmx.util import parse_urn
 
 
 class JsonDataProviderScheme(Struct, frozen=True):
     """SDMX-JSON payload for a data provider scheme."""
 
-    dataProviders: Sequence[Organisation]
+    dataProviders: Sequence[DataProvider]
 
     def __get_df_ref(self, ref: str) -> DataflowRef:
         a = parse_urn(ref)
@@ -21,7 +21,7 @@ class JsonDataProviderScheme(Struct, frozen=True):
 
     def to_model(
         self, pas: Sequence[JsonProvisionAgreement]
-    ) -> Sequence[Organisation]:
+    ) -> Sequence[DataProvider]:
         """Converts a JsonDataProviderScheme to a list of Organisations."""
         if pas:
             paprs: Dict[str, Set[DataflowRef]] = defaultdict(set)
@@ -30,7 +30,7 @@ class JsonDataProviderScheme(Struct, frozen=True):
                 pr = pa.dataProvider[pa.dataProvider.rindex(".") + 1 :]
                 paprs[pr].add(df)
             return [
-                Organisation(
+                DataProvider(
                     id=p.id,
                     name=p.name,
                     description=p.description,
@@ -49,7 +49,7 @@ class JsonDataProviderSchemes(Struct, frozen=True):
     dataProviderSchemes: Sequence[JsonDataProviderScheme]
     provisionAgreements: Sequence[JsonProvisionAgreement] = ()
 
-    def to_model(self) -> Sequence[Organisation]:
+    def to_model(self) -> Sequence[DataProvider]:
         """Converts a JsonDataProviderSchemes to a list of Organisations."""
         return self.dataProviderSchemes[0].to_model(self.provisionAgreements)
 
@@ -59,7 +59,7 @@ class JsonProviderMessage(Struct, frozen=True):
 
     data: JsonDataProviderSchemes
 
-    def to_model(self) -> Sequence[Organisation]:
+    def to_model(self) -> Sequence[DataProvider]:
         """Returns the requested list of providers."""
         return self.data.to_model()
 
@@ -68,7 +68,7 @@ class JsonAgencyScheme(Struct, frozen=True):
     """SDMX-JSON payload for an agency scheme."""
 
     agencyID: str
-    agencies: Sequence[Organisation]
+    agencies: Sequence[Agency]
 
 
 class JsonAgencySchemes(Struct, frozen=True):
@@ -82,13 +82,13 @@ class JsonAgencyMessage(Struct, frozen=True):
 
     data: JsonAgencySchemes
 
-    def __add_owner(self, owner: str, a: Organisation) -> Organisation:
+    def __add_owner(self, owner: str, a: Agency) -> Agency:
         oid = f"{owner}.{a.id}" if owner != "SDMX" else a.id
-        return Organisation(
+        return Agency(
             id=oid, name=a.name, description=a.description, contacts=a.contacts
         )
 
-    def to_model(self) -> Sequence[Organisation]:
+    def to_model(self) -> Sequence[Agency]:
         """Returns the requested list of agencies."""
         return [
             self.__add_owner(self.data.agencySchemes[0].agencyID, a)

@@ -6,7 +6,13 @@ from msgspec import Struct
 
 from pysdmx.fmr.fusion.core import FusionString
 from pysdmx.fmr.fusion.org import FusionProviderScheme
-from pysdmx.model import Components, DataflowInfo, DataflowRef, Organisation
+from pysdmx.model import (
+    Agency,
+    Components,
+    DataflowInfo,
+    DataflowRef,
+    DataProvider,
+)
 
 
 class FusionDataflowRef(Struct, frozen=True, rename={"agency": "agencyId"}):
@@ -64,7 +70,7 @@ class FusionDataflowMessage(Struct, frozen=True):
         self, components: Components, agency: str, id_: str, version: str
     ) -> DataflowInfo:
         """Returns the requested dataflow details."""
-        prvs: List[Organisation] = []
+        prvs: List[DataProvider] = []
         for dps in self.DataProviderScheme:
             prvs.extend(dps.to_model([]))
         df = list(
@@ -76,7 +82,7 @@ class FusionDataflowMessage(Struct, frozen=True):
         return DataflowInfo(
             df.id,
             components,
-            Organisation(df.agency),
+            Agency(df.agency),
             df.names[0].value,
             df.descriptions[0].value if df.descriptions else None,
             df.version,
