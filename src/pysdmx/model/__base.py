@@ -216,6 +216,15 @@ class MaintainableArtefact(
     structure_url: Optional[str] = None
     agency: Union[str, Agency] = ""
 
+    def __post_init__(self):
+        """Additional validation checks for maintainable artefacts."""
+        if not self.agency:
+            raise ClientError(
+                422,
+                "Missing agency",
+                "Maintainable artefacts must reference an agency.",
+            )
+
 
 class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
     """ItemScheme class.
