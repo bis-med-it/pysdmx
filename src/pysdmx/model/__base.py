@@ -3,6 +3,8 @@ from typing import Any, Dict, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.errors import ClientError
+
 
 class Annotation(Struct, frozen=True, omit_defaults=True):
     """Annotation class.
@@ -26,6 +28,23 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
     text: Optional[str] = None
     url: Optional[str] = None
     type: Optional[str] = None
+
+    def __post_init__(self):
+        if (
+            not self.id
+            and not self.title
+            and not self.text
+            and not self.url
+            and not self.type
+        ):
+            raise ClientError(
+                422,
+                "Empty annotation",
+                (
+                    "All fields of the annotation have been left empty."
+                    "Please set at least one."
+                ),
+            )
 
     def __str__(self) -> str:
         """Returns a human-friendly description."""
