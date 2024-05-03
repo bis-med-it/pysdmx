@@ -54,9 +54,13 @@ class FusionOrg(Struct, frozen=True):
         c = [c.to_model() for c in self.contacts]
         oid = f"{owner}.{self.id}" if owner and owner != "SDMX" else self.id
         if c:
-            return Organisation(oid, self.names[0].value, d, c)
+            return Organisation(
+                id=oid, name=self.names[0].value, description=d, contacts=c
+            )
         else:
-            return Organisation(oid, self.names[0].value, d)
+            return Organisation(
+                id=oid, name=self.names[0].value, description=d
+            )
 
 
 class FusionAgencyScheme(Struct, frozen=True):
@@ -109,7 +113,11 @@ class FusionProviderScheme(Struct, frozen=True):
             prvs = [o.to_model() for o in self.items]
             return [
                 Organisation(
-                    p.id, p.name, p.description, p.contacts, list(paprs[p.id])
+                    id=p.id,
+                    name=p.name,
+                    description=p.description,
+                    contacts=p.contacts,
+                    dataflows=list(paprs[p.id]),
                 )
                 for p in prvs
             ]

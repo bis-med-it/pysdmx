@@ -31,7 +31,11 @@ class JsonDataProviderScheme(Struct, frozen=True):
                 paprs[pr].add(df)
             return [
                 Organisation(
-                    p.id, p.name, p.description, p.contacts, list(paprs[p.id])
+                    id=p.id,
+                    name=p.name,
+                    description=p.description,
+                    contacts=p.contacts,
+                    dataflows=list(paprs[p.id]),
                 )
                 for p in self.dataProviders
             ]
@@ -80,7 +84,9 @@ class JsonAgencyMessage(Struct, frozen=True):
 
     def __add_owner(self, owner: str, a: Organisation) -> Organisation:
         oid = f"{owner}.{a.id}" if owner != "SDMX" else a.id
-        return Organisation(oid, a.name, a.description, a.contacts)
+        return Organisation(
+            id=oid, name=a.name, description=a.description, contacts=a.contacts
+        )
 
     def to_model(self) -> Sequence[Organisation]:
         """Returns the requested list of agencies."""
