@@ -10,8 +10,8 @@ from typing import Any
 from pysdmx.model.__base import (
     Agency,
     Contact,
-    DataflowRef,
     DataConsumer,
+    DataflowRef,
     DataProvider,
     Organisation,
 )

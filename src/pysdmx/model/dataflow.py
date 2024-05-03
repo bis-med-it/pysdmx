@@ -14,9 +14,9 @@ from typing import Any, Iterable, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.model.__base import Agency, DataProvider
 from pysdmx.model.code import Codelist, Hierarchy
 from pysdmx.model.concept import DataType, Facets
-from pysdmx.model import Agency, DataProvider
 
 
 class Role(str, Enum):

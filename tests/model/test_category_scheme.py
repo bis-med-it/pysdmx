@@ -2,8 +2,8 @@ from typing import Iterable, Sized
 
 import pytest
 
+from pysdmx.model.__base import DataflowRef
 from pysdmx.model.category import Category, CategoryScheme
-from pysdmx.model import DataflowRef
 
 
 @pytest.fixture()
