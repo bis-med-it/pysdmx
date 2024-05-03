@@ -172,10 +172,9 @@ class Organisation(Item, frozen=True, omit_defaults=True):
 
 
 class Agency(Organisation, frozen=True, omit_defaults=True):
-    """An organisation responsible for maintaining structural metadata.
+    """An organisation that maintains structural metadata.
 
-    Responsible agency for maintaining artefacts
-    such as statistical classifications, glossaries,
+    This includes statistical classifications, glossaries,
     structural metadata such as Data and Metadata Structure
     Definitions, Concepts and Code lists.
     """
