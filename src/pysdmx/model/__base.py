@@ -30,6 +30,7 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
     type: Optional[str] = None
 
     def __post_init__(self):
+        """Additional validation checks for Annotation."""
         if (
             not self.id
             and not self.title
