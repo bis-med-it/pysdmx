@@ -16,7 +16,7 @@ from msgspec import Struct
 
 from pysdmx.model.code import Codelist, Hierarchy
 from pysdmx.model.concept import DataType, Facets
-from pysdmx.model.organisation import Organisation
+from pysdmx.model import Agency, DataProvider
 
 
 class Role(str, Enum):
@@ -260,11 +260,11 @@ class DataflowInfo(Struct, frozen=True, omit_defaults=True):
 
     id: str
     components: Components
-    agency: Organisation
+    agency: Agency
     name: Optional[str] = None
     description: Optional[str] = None
     version: str = "1.0"
-    providers: Sequence[Organisation] = ()
+    providers: Sequence[DataProvider] = ()
     series_count: Optional[int] = None
     obs_count: Optional[int] = None
     start_period: Optional[str] = None
