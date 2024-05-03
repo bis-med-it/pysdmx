@@ -29,7 +29,7 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
     url: Optional[str] = None
     type: Optional[str] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Additional validation checks for Annotation."""
         if (
             not self.id
@@ -216,7 +216,7 @@ class MaintainableArtefact(
     structure_url: Optional[str] = None
     agency: Union[str, Agency] = ""
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Additional validation checks for maintainable artefacts."""
         if not self.agency:
             raise ClientError(
