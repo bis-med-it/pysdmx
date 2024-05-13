@@ -27,11 +27,13 @@ class FusionDataflowRef(Struct, frozen=True, rename={"agency": "agencyId"}):
     def to_model(self) -> DataflowRef:
         """Converts a FusionDataflowRef to a standard dataflow ref."""
         return DataflowRef(
-            self.id,
-            self.agency,
-            self.names[0].value if self.names else None,
-            self.descriptions[0].value if self.descriptions else None,
-            self.version,
+            id=self.id,
+            agency=self.agency,
+            name=self.names[0].value if self.names else None,
+            description=(
+                self.descriptions[0].value if self.descriptions else None
+            ),
+            version=self.version,
         )
 
 
@@ -80,12 +82,12 @@ class FusionDataflowMessage(Struct, frozen=True):
             )
         )[0]
         return DataflowInfo(
-            df.id,
-            components,
-            Agency(df.agency),
-            df.names[0].value,
-            df.descriptions[0].value if df.descriptions else None,
-            df.version,
-            prvs,
+            id=df.id,
+            components=components,
+            agency=Agency(df.agency),
+            name=df.names[0].value,
+            description=df.descriptions[0].value if df.descriptions else None,
+            version=df.version,
+            providers=prvs,
             dsd_ref=df.dataStructureRef,
         )

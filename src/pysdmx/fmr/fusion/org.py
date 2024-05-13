@@ -119,7 +119,7 @@ class FusionProviderScheme(Struct, frozen=True):
 
     def __get_df_ref(self, ref: str) -> DataflowRef:
         a = parse_urn(ref)
-        return DataflowRef(a.id, a.agency, version=a.version)
+        return DataflowRef(id=a.id, agency=a.agency, version=a.version)
 
     def to_model(
         self, pas: Sequence[FusionProvisionAgreement]
