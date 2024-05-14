@@ -6,8 +6,7 @@ known as a subject matter domain scheme or a data category scheme.
 
 from typing import Iterator, List, Optional, Sequence, Set
 
-from pysdmx.model import Item, ItemScheme
-from pysdmx.model.organisation import DataflowRef
+from pysdmx.model.__base import DataflowRef, Item, ItemScheme
 
 
 class Category(Item, frozen=False, omit_defaults=True):  # type: ignore[misc]

@@ -19,15 +19,16 @@ from pysdmx.fmr.fusion import deserializers as fusion_deserializers
 from pysdmx.fmr.reader import Deserializer
 from pysdmx.fmr.sdmx import deserializers as sdmx_deserializers
 from pysdmx.model import (
+    Agency,
     CategoryScheme,
     Codelist,
     ConceptScheme,
     DataflowInfo,
+    DataProvider,
     Hierarchy,
     HierarchyAssociation,
     MetadataReport,
     MultiRepresentationMap,
-    Organisation,
     RepresentationMap,
     Schema,
     StructureMap,
@@ -247,7 +248,7 @@ class RegistryClient(__BaseRegistryClient):
         out = self.__fetch(super()._url("ha_pra", agency, pra, version))
         return super()._out(out, self.deser.hier_assoc)
 
-    def get_agencies(self, agency: str) -> Sequence[Organisation]:
+    def get_agencies(self, agency: str) -> Sequence[Agency]:
         """Get the list of **sub-agencies** for the supplied agency.
 
         Args:
@@ -264,7 +265,7 @@ class RegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         with_flows: bool = False,
-    ) -> Sequence[Organisation]:
+    ) -> Sequence[DataProvider]:
         """Get the list of **data providers** for the supplied agency.
 
         Args:
@@ -579,7 +580,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         out = await self.__fetch(super()._url("ha_pra", agency, pra, version))
         return super()._out(out, self.deser.hier_assoc)
 
-    async def get_agencies(self, agency: str) -> Sequence[Organisation]:
+    async def get_agencies(self, agency: str) -> Sequence[Agency]:
         """Get the list of **sub-agencies** for the supplied agency.
 
         Args:
@@ -594,7 +595,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
 
     async def get_providers(
         self, agency: str, with_flows: bool = False
-    ) -> Sequence[Organisation]:
+    ) -> Sequence[DataProvider]:
         """Get the list of **data providers** for the supplied agency.
 
         Args:

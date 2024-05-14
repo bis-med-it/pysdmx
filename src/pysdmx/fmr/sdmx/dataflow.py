@@ -5,7 +5,13 @@ from typing import List, Optional, Sequence
 from msgspec import Struct
 
 from pysdmx.fmr.sdmx.org import JsonDataProviderScheme
-from pysdmx.model import Components, DataflowInfo, DataflowRef, Organisation
+from pysdmx.model import (
+    Agency,
+    Components,
+    DataflowInfo,
+    DataflowRef,
+    DataProvider,
+)
 
 
 class JsonDataflowRef(Struct, frozen=True, rename={"agency": "agencyID"}):
@@ -20,11 +26,11 @@ class JsonDataflowRef(Struct, frozen=True, rename={"agency": "agencyID"}):
     def to_model(self) -> DataflowRef:
         """Converts a JsonDataflowRef to a standard dataflow ref."""
         return DataflowRef(
-            self.id,
-            self.agency,
-            self.name,
-            self.description,
-            self.version,
+            id=self.id,
+            agency=self.agency,
+            name=self.name,
+            description=self.description,
+            version=self.version,
         )
 
 
@@ -59,7 +65,7 @@ class JsonDataflows(Struct, frozen=True):
         self, components: Components, agency: str, id_: str, version: str
     ) -> DataflowInfo:
         """Returns the requested dataflow details."""
-        prvs: List[Organisation] = []
+        prvs: List[DataProvider] = []
         for dps in self.dataProviderSchemes:
             prvs.extend(dps.dataProviders)
         df = list(
@@ -69,13 +75,13 @@ class JsonDataflows(Struct, frozen=True):
             )
         )[0]
         return DataflowInfo(
-            df.id,
-            components,
-            Organisation(df.agency),
-            df.name,
-            df.description,
-            df.version,
-            prvs,
+            id=df.id,
+            components=components,
+            agency=Agency(df.agency),
+            name=df.name,
+            description=df.description,
+            version=df.version,
+            providers=prvs,
             dsd_ref=df.structure,
         )
 

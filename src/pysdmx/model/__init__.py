@@ -7,7 +7,14 @@ subset** of the SDMX information model.
 from re import Pattern
 from typing import Any
 
-from pysdmx.model.__base import Contact, Item, ItemScheme
+from pysdmx.model.__base import (
+    Agency,
+    Contact,
+    DataConsumer,
+    DataflowRef,
+    DataProvider,
+    Organisation,
+)
 from pysdmx.model.category import Category, CategoryScheme
 from pysdmx.model.code import (
     Code,
@@ -38,7 +45,6 @@ from pysdmx.model.map import (
     ValueMap,
 )
 from pysdmx.model.metadata import MetadataAttribute, MetadataReport
-from pysdmx.model.organisation import DataflowRef, Organisation
 
 
 def encoders(obj: Any) -> Any:
@@ -78,6 +84,7 @@ def encoders(obj: Any) -> Any:
 
 
 __all__ = [
+    "Agency",
     "ArrayBoundaries",
     "Category",
     "CategoryScheme",
@@ -89,17 +96,17 @@ __all__ = [
     "Concept",
     "ConceptScheme",
     "Contact",
+    "DataConsumer",
     "DataflowInfo",
     "DataflowRef",
     "DataType",
     "DatePatternMap",
+    "DataProvider",
     "Facets",
     "HierarchicalCode",
     "Hierarchy",
     "HierarchyAssociation",
     "ImplicitComponentMap",
-    "Item",
-    "ItemScheme",
     "StructureMap",
     "MetadataAttribute",
     "MetadataReport",

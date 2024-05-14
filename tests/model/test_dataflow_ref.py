@@ -29,7 +29,7 @@ def version():
 
 
 def test_basic_instantiation(dsi, agency):
-    ds = DataflowRef(dsi, agency)
+    ds = DataflowRef(id=dsi, agency=agency)
 
     assert ds.id == dsi
     assert ds.name is None
@@ -39,7 +39,9 @@ def test_basic_instantiation(dsi, agency):
 
 
 def test_full_instantiation(dsi, name, desc, agency, version):
-    ds = DataflowRef(dsi, agency, name, desc, version)
+    ds = DataflowRef(
+        id=dsi, agency=agency, name=name, description=desc, version=version
+    )
 
     assert ds.id == dsi
     assert ds.name == name
@@ -49,36 +51,53 @@ def test_full_instantiation(dsi, name, desc, agency, version):
 
 
 def test_immutable(dsi, agency):
-    ds = DataflowRef(dsi, agency)
+    ds = DataflowRef(id=dsi, agency=agency)
     with pytest.raises(AttributeError):
         ds.name = "Not allowed"
 
 
 def test_equal(dsi, name, desc, agency, version):
-    ds1 = DataflowRef(dsi, agency, name, desc, version)
-    ds2 = DataflowRef(dsi, agency, name, desc, version)
+    ds1 = DataflowRef(
+        id=dsi, agency=agency, name=name, description=desc, version=version
+    )
+    ds2 = DataflowRef(
+        id=dsi, agency=agency, name=name, description=desc, version=version
+    )
 
     assert ds1 == ds2
 
 
 def test_not_equal(dsi, name, desc, agency, version):
-    ds1 = DataflowRef(dsi, agency, name, desc, version)
-    ds2 = DataflowRef(dsi, agency, name, desc, f"{version}.42")
+    ds1 = DataflowRef(
+        id=dsi, agency=agency, name=name, description=desc, version=version
+    )
+    ds2 = DataflowRef(
+        id=dsi,
+        agency=agency,
+        name=name,
+        description=desc,
+        version=f"{version}.42",
+    )
 
     assert ds1 != ds2
 
 
 def test_tostr_id(dsi, agency):
-    d = DataflowRef(dsi, agency)
+    d = DataflowRef(id=dsi, agency=agency)
 
     s = str(d)
 
-    assert s == dsi
+    assert s == f"id={dsi}, version={d.version}, agency={agency}"
 
 
 def test_tostr_name(dsi, name, desc, agency, version):
-    d = DataflowRef(dsi, agency, name, desc, version)
+    d = DataflowRef(
+        id=dsi, agency=agency, name=name, description=desc, version=version
+    )
 
     s = str(d)
 
-    assert s == f"{dsi} ({name})"
+    assert s == (
+        f"id={dsi}, description={desc}, name={name}, "
+        f"version={version}, agency={agency}"
+    )

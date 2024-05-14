@@ -34,7 +34,7 @@ def test_default(id):
 
 def test_full_instantiation(id, name, desc):
     cats = [Category(id="chld", name="Child")]
-    flows = [DataflowRef("EXR", "BIS")]
+    flows = [DataflowRef(id="EXR", agency="BIS")]
 
     c = Category(
         id=id, name=name, description=desc, categories=cats, dataflows=flows
