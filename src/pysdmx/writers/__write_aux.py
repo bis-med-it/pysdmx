@@ -1,5 +1,6 @@
 """Writer auxiliary functions."""
 
+from collections import OrderedDict
 from datetime import datetime
 from typing import Any, Dict
 
@@ -225,22 +226,24 @@ def __write_metadata_element(
 
     if key in package:
         outfile += f"{nl}{child2}<{ABBR_STR}:{MSG_CONTENT_PKG[key]}>"
-        # TODO: Add the __to_XML method to the Item and ItemScheme classes
-        # for item in package[key].values():
-        #     outfile += item.__to_XML(MSG_CONTENT_ITEM[key], prettyprint)
+        for item in package[key].values():
+            outfile += item._to_XML(f"{nl}{child2}")
         outfile += f"{nl}{child2}</{ABBR_STR}:{MSG_CONTENT_PKG[key]}>"
 
     return outfile
 
 
-MSG_CONTENT_PKG = {
-    ORGS: "OrganisationSchemes",
-    DATAFLOWS: "Dataflows",
-    CODELISTS: "Codelists",
-    CONCEPTS: "Concepts",
-    DSDS: "DataStructures",
-    CONSTRAINTS: "Constraints",
-}
+MSG_CONTENT_PKG = OrderedDict(
+    [
+        (ORGS, "OrganisationSchemes"),
+        (DATAFLOWS, "Dataflows"),
+        (CODELISTS, "Codelists"),
+        (CONCEPTS, "Concepts"),
+        (DSDS, "DataStructures"),
+        (CONSTRAINTS, "ContentConstraints"),
+    ]
+)
+
 
 MSG_CONTENT_ITEM = {
     ORGS: "AgencyScheme",
@@ -287,3 +290,49 @@ def get_end_message(type_: MessageType, prettyprint: bool) -> str:
     """
     nl = "\n" if prettyprint else ""
     return f"{nl}</{ABBR_MSG}:{MESSAGE_TYPE_MAPPING[type_]}>"
+
+
+def add_indent(indent: str) -> str:
+    """Adds another indent.
+
+    Args:
+        indent: The string to be indented
+
+    Returns:
+        A string with one more indentation
+    """
+    return indent + "\t"
+
+
+def get_outfile(obj_: Dict[str, Any], key: str = "", indent: str = "") -> str:
+    """Generates an outfile from the object.
+
+    Args:
+        obj_: The object to be used
+        key: The key to be used
+        indent: The indentation to be used
+
+    Returns:
+        A string with the outfile
+
+    """
+    element = obj_.get(key) or []
+
+    return "".join(element)
+
+
+def export_intern_data(data: Dict[str, Any], indent: str) -> str:
+    """Export internal data (Annotations, Name, Description) on the XML file.
+
+    Args:
+        data: Information to be exported
+        indent: Indentation used
+
+    Returns:
+        The XML string with the exported data
+    """
+    outfile = get_outfile(data, "Annotations", indent)
+    outfile += get_outfile(data, "Name", indent)
+    outfile += get_outfile(data, "Description", indent)
+
+    return outfile
