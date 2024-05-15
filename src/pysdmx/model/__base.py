@@ -1,16 +1,9 @@
-from collections import OrderedDict
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, Optional, Sequence, Union
 
 from msgspec import Struct
 
 from pysdmx.errors import ClientError
-from pysdmx.writers.__write_aux import (
-    ABBR_COM,
-    ABBR_STR,
-    add_indent,
-    export_intern_data,
-)
 
 
 class Annotation(Struct, frozen=True, omit_defaults=True):
@@ -64,16 +57,6 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
         return ", ".join(out)
 
 
-ANNOTATION_WRITER = OrderedDict(
-    {
-        "title": "AnnotationTitle",
-        "type": "AnnotationType",
-        "text": "AnnotationText",
-        "url": "AnnotationURL",
-    }
-)
-
-
 class AnnotableArtefact(Struct, frozen=True, omit_defaults=True, kw_only=True):
     """Annotable Artefact class.
 
@@ -103,42 +86,6 @@ class AnnotableArtefact(Struct, frozen=True, omit_defaults=True, kw_only=True):
                 out.append(f"{k}={str(v)}")
         return ", ".join(out)
 
-    def _to_XML(self, indent: str) -> Any:
-
-        if len(self.annotations) == 0:
-            return ""
-
-        child1 = indent
-        child2 = add_indent(child1)
-        child3 = add_indent(child2)
-
-        outfile = f"{child1}<{ABBR_COM}:Annotations>"
-        for annotation in self.annotations:
-            if annotation.id is None:
-                outfile += f"{child2}<{ABBR_COM}:Annotation>"
-            else:
-                outfile += (
-                    f"{child2}<{ABBR_COM}:Annotation " f"id={annotation.id!r}>"
-                )
-
-            for attr, label in ANNOTATION_WRITER.items():
-                if getattr(annotation, attr, None) is not None:
-                    value = getattr(annotation, attr)
-                    value = value.replace("&", "&amp;").rstrip()
-                    if attr == "text":
-                        head_tag = f'{ABBR_COM}:{label} xml:lang="en"'
-                    else:
-                        head_tag = f"{ABBR_COM}:{label}"
-                    outfile += (
-                        f"{child3}<{head_tag}>"
-                        f"{value}"
-                        f"</{ABBR_COM}:{label}>"
-                    )
-
-            outfile += f"{child2}</{ABBR_COM}:Annotation>"
-        outfile += f"{child1}</{ABBR_COM}:Annotations>"
-        return outfile
-
 
 class IdentifiableArtefact(AnnotableArtefact, frozen=True, omit_defaults=True):
     """Identifiable Artefact class.
@@ -156,24 +103,6 @@ class IdentifiableArtefact(AnnotableArtefact, frozen=True, omit_defaults=True):
     uri: Optional[str] = None
     urn: Optional[str] = None
 
-    def _to_XML(self, indent: str) -> Dict[str, Any]:
-        attributes = ""
-
-        attributes += f" id={self.id!r}"
-
-        if self.uri is not None:
-            attributes += f" uri={self.uri!r}"
-
-        if self.urn is not None:
-            attributes += f" urn={self.urn!r}"
-
-        outfile = {
-            "Annotations": super(IdentifiableArtefact, self)._to_XML(indent),
-            "Attributes": attributes,
-        }
-
-        return outfile
-
 
 class NameableArtefact(IdentifiableArtefact, frozen=True, omit_defaults=True):
     """Nameable Artefact class.
@@ -187,31 +116,6 @@ class NameableArtefact(IdentifiableArtefact, frozen=True, omit_defaults=True):
 
     name: Optional[str] = None
     description: Optional[str] = None
-
-    def _to_XML(self, indent: str) -> Dict[str, Any]:
-        outfile = super(NameableArtefact, self)._to_XML(indent)
-
-        if self.name is not None:
-            outfile["Name"] = [
-                (
-                    f"{indent}"
-                    f'<{ABBR_COM}:Name xml:lang="en">'
-                    f"{self.name}"
-                    f"</{ABBR_COM}:Name>"
-                )
-            ]
-
-        if self.description is not None:
-            outfile["Description"] = [
-                (
-                    f"{indent}"
-                    f'<{ABBR_COM}:Description xml:lang="en">'
-                    f"{self.description}"
-                    f"</{ABBR_COM}:Description>"
-                )
-            ]
-
-        return outfile
 
 
 class VersionableArtefact(NameableArtefact, frozen=True, omit_defaults=True):
@@ -229,21 +133,6 @@ class VersionableArtefact(NameableArtefact, frozen=True, omit_defaults=True):
     valid_from: Optional[datetime] = None
     valid_to: Optional[datetime] = None
 
-    def _to_XML(self, indent: str) -> Dict[str, List[str]]:
-        outfile = super(VersionableArtefact, self)._to_XML(add_indent(indent))
-
-        outfile["Attributes"] += f" version={self.version!r}"
-
-        if self.valid_from is not None:
-            valid_from_str = self.valid_from.strftime("%Y-%m-%dT%H:%M:%S")
-            outfile["Attributes"] += f" validFrom={valid_from_str!r}"
-
-        if self.valid_to is not None:
-            valid_to_str = self.valid_to.strftime("%Y-%m-%dT%H:%M:%S")
-            outfile["Attributes"] += f" validTo={valid_to_str!r}"
-
-        return outfile
-
 
 class Item(NameableArtefact, frozen=True, omit_defaults=True):
     """Item class.
@@ -253,25 +142,6 @@ class Item(NameableArtefact, frozen=True, omit_defaults=True):
 
     Parent and child attributes (hierarchy) have been removed for simplicity.
     """
-
-    def _to_XML(self, indent: str) -> str:  # type: ignore[override]
-        head = f"{ABBR_STR}:" + type(self).__name__
-
-        data = super(Item, self)._to_XML(add_indent(indent))
-        outfile = f'{indent}<{head}{data["Attributes"]}>'
-        outfile += export_intern_data(data, add_indent(indent))
-        outfile += f"{indent}</{head}>"
-        # if self.parent is not None:
-        #     indent_par = add_indent(indent)
-        #     indent_ref = add_indent(indent_par)
-        #     outfile += f"{indent_par}<{ABBR_STR}:Parent>"
-        #     if isinstance(self.parent, Item):
-        #         text = self.parent.id
-        #     else:
-        #         text = self.parent
-        #     outfile += f'{indent_ref}<Ref id="{text}"/>'
-        #     outfile += f"{indent_par}</{ABBR_STR}:Parent>"
-        return outfile
 
 
 class Contact(Struct, frozen=True, omit_defaults=True):
@@ -369,23 +239,6 @@ class MaintainableArtefact(
                 "Maintainable artefacts must reference an agency.",
             )
 
-    def _to_XML(self, indent: str) -> Dict[str, Any]:
-        outfile = super(MaintainableArtefact, self)._to_XML(indent)
-
-        outfile["Attributes"] += (
-            f" isExternalReference="
-            f"{str(self.is_external_reference).lower()!r}"
-        )
-
-        outfile["Attributes"] += f" isFinal={str(self.is_final).lower()!r}"
-
-        if isinstance(self.agency, str):
-            outfile["Attributes"] += f" agencyID={self.agency!r}"
-        else:
-            outfile["Attributes"] += f" agencyID={self.agency.id!r}"
-
-        return outfile
-
 
 class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
     """ItemScheme class.
@@ -400,32 +253,6 @@ class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
 
     items: Sequence[Item] = ()
     is_partial: bool = False
-
-    def _to_XML(self, indent: str) -> str:  # type: ignore[override]
-        """Convert the item scheme to an XML string."""
-        indent = add_indent(indent)
-
-        label = f"{ABBR_STR}:{type(self).__name__}"
-
-        data = super(ItemScheme, self)._to_XML(indent)
-
-        data["Attributes"] += f" isPartial={str(self.is_partial).lower()!r}"
-
-        outfile = ""
-
-        attributes = data.get("Attributes") or ""
-        attributes = attributes.replace("'", '"')
-
-        outfile += f"{indent}<{label}{attributes}>"
-
-        outfile += export_intern_data(data, indent)
-
-        for item in self.items:
-            outfile += item._to_XML(add_indent(indent))
-
-        outfile += f"{indent}</{label}>"
-
-        return outfile
 
 
 class DataflowRef(MaintainableArtefact, frozen=True, omit_defaults=True):

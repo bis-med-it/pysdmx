@@ -4,10 +4,10 @@ from pathlib import Path
 import pytest
 
 from pysdmx.errors import ClientError
+from pysdmx.io.xml.sdmx_two_one.writer import Header, writer
 from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme
 from pysdmx.model.__base import Annotation
 from pysdmx.model.message import MessageType
-from pysdmx.writers.write import Header, writer
 
 TEST_CS_URN = (
     "urn:sdmx:org.sdmx.infomodel.conceptscheme."
