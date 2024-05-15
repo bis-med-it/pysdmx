@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:mes='http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message' xmlns:str='http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure' xmlns:com='http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common' xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>true</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id='Unknown'/>
+		<mes:Receiver id='Not_Supplied'/>
+		<mes:Source>PySDMX</mes:Source>
+	</mes:Header>
+	<mes:Structures>
+		<str:Codelists>
+			<str:Codelist id="CL_FREQ" version="1.0" validFrom="2021-01-01T00:00:00" validTo="2021-12-31T00:00:00" isExternalReference="false" isFinal="false" agencyID="BIS" isPartial="false">
+				<com:Annotations>
+					<com:Annotation id='FREQ_ANOT'>
+						<com:AnnotationTitle>Frequency</com:AnnotationTitle>
+						<com:AnnotationType>text</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">Frequency</com:AnnotationText>
+					</com:Annotation>
+					<com:Annotation>
+						<com:AnnotationType>text</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">Frequency</com:AnnotationText>
+					</com:Annotation>
+					<com:Annotation id='FREQ_ANOT2'>
+						<com:AnnotationTitle>Frequency</com:AnnotationTitle>
+					</com:Annotation>
+				</com:Annotations>
+				<com:Name xml:lang="en">Frequency</com:Name>
+				<str:Code id='A'>
+					<com:Name xml:lang="en">Annual</com:Name>
+				</str:Code>
+				<str:Code id='M'>
+					<com:Name xml:lang="en">Monthly</com:Name>
+				</str:Code>
+				<str:Code id='Q'>
+					<com:Name xml:lang="en">Quarterly</com:Name>
+				</str:Code>
+				<str:Code id='W'>
+				</str:Code>
+			</str:Codelist>
+		</str:Codelists>
+	</mes:Structures>
+</mes:Structure>

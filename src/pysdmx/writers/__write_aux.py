@@ -51,39 +51,40 @@ def __namespaces_from_type(type_: MessageType) -> str:
     Returns:
         A string with the namespaces
     """
-    if type_ == MessageType.GenericDataSet:
-        return f"xmlns:{ABBR_GEN}={NAMESPACES[ABBR_GEN]!r} "
-    elif type_ == MessageType.StructureSpecificDataSet:
-        return f"xmlns:{ABBR_SPE}={NAMESPACES[ABBR_SPE]!r} "
-    elif type_ == MessageType.Metadata:
-        return f"xmlns:{ABBR_STR}={NAMESPACES[ABBR_STR]!r} "
-    else:
-        return ""
+    # if type_ == MessageType.GenericDataSet:
+    #     return f"xmlns:{ABBR_GEN}={NAMESPACES[ABBR_GEN]!r} "
+    # elif type_ == MessageType.StructureSpecificDataSet:
+    #     return f"xmlns:{ABBR_SPE}={NAMESPACES[ABBR_SPE]!r} "
+    # elif type_ == MessageType.Metadata:
+    #     return f"xmlns:{ABBR_STR}={NAMESPACES[ABBR_STR]!r} "
+    # else:
+    #     return ""
+    return f"xmlns:{ABBR_STR}={NAMESPACES[ABBR_STR]!r} "
 
 
-def __namespaces_from_content(content: Dict[str, Any]) -> str:
-    """Returns the namespaces for the XML file based on content.
-
-    Args:
-        content: Datasets or None
-
-    Returns:
-        A string with the namespaces
-
-    Raises:
-        Exception: If the dataset has no structure defined
-    """
-    outfile = ""
-    for i, key in enumerate(content):
-        if content[key].structure is None:
-            raise Exception(f"Dataset {key} has no structure defined")
-        ds_urn = URN_DS_BASE
-        ds_urn += (
-            f"{content[key].structure.unique_id}:"
-            f"ObsLevelDim:{content[key].dim_at_obs}"
-        )
-        outfile += f"xmlns:ns{i}={ds_urn!r}"
-    return outfile
+# def __namespaces_from_content(content: Dict[str, Any]) -> str:
+#     """Returns the namespaces for the XML file based on content.
+#
+#     Args:
+#         content: Datasets or None
+#
+#     Returns:
+#         A string with the namespaces
+#
+#     Raises:
+#         Exception: If the dataset has no structure defined
+#     """
+#     outfile = ""
+#     for i, key in enumerate(content):
+#         if content[key].structure is None:
+#             raise Exception(f"Dataset {key} has no structure defined")
+#         ds_urn = URN_DS_BASE
+#         ds_urn += (
+#             f"{content[key].structure.unique_id}:"
+#             f"ObsLevelDim:{content[key].dim_at_obs}"
+#         )
+#         outfile += f"xmlns:ns{i}={ds_urn!r}"
+#     return outfile
 
 
 def create_namespaces(
@@ -107,8 +108,6 @@ def create_namespaces(
     outfile += f'xmlns:xsi={NAMESPACES["xsi"]!r} '
     outfile += f"xmlns:{ABBR_MSG}={NAMESPACES[ABBR_MSG]!r} "
     outfile += __namespaces_from_type(type_)
-    if type_ == MessageType.StructureSpecificDataSet:
-        outfile += __namespaces_from_content(content)
     outfile += (
         f"xmlns:{ABBR_COM}={NAMESPACES[ABBR_COM]!r} "
         f'xsi:schemaLocation="{NAMESPACES[ABBR_MSG]} '
@@ -118,10 +117,12 @@ def create_namespaces(
     return outfile
 
 
+# We use this point on time to ensure it is fixed on tests
+PREPARED_DEFAULT = datetime.strptime("2021-01-01", "%Y-%m-%d")
 DEFAULT_HEADER = {
     "ID": "test",
     "Test": "true",
-    "Prepared": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+    "Prepared": PREPARED_DEFAULT.strftime("%Y-%m-%dT%H:%M:%S"),
     "Sender": "Unknown",
     "Receiver": "Not_Supplied",
     "DataSetAction": ActionType.Information.value,
@@ -165,10 +166,10 @@ def __generate_item_element(element: str, prettyprint: bool) -> str:
     )
 
 
-def __generate_structure_element(
-    content: Dict[str, Any], prettyprint: bool
-) -> str:
-    return ""
+# def __generate_structure_element(
+#     content: Dict[str, Any], prettyprint: bool
+# ) -> str:
+#     return ""
 
 
 def generate_new_header(
@@ -183,13 +184,7 @@ def generate_new_header(
 
     Returns:
         A string with the header
-
-    Raises:
-        NotImplementedError: If the MessageType is not Metadata
     """
-    if type_ != MessageType.Metadata:
-        raise NotImplementedError("Only Metadata messages are supported")
-
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
 
@@ -199,9 +194,9 @@ def generate_new_header(
     outfile += __generate_value_element("Prepared", prettyprint)
     outfile += __generate_item_element("Sender", prettyprint)
     outfile += __generate_item_element("Receiver", prettyprint)
-    if type_.value < MessageType.Metadata.value:
-        outfile += __generate_structure_element(datasets, prettyprint)
-        outfile += __generate_value_element("DataSetAction", prettyprint)
+    # if type_.value < MessageType.Metadata.value:
+    #     outfile += __generate_structure_element(datasets, prettyprint)
+    #     outfile += __generate_value_element("DataSetAction", prettyprint)
     outfile += __generate_value_element("Source", prettyprint)
     outfile += f"{nl}{child1}</{ABBR_MSG}:Header>"
     return outfile
