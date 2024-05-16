@@ -16,7 +16,7 @@ from msgspec import Struct
 
 from pysdmx.model.__base import Agency, DataProvider
 from pysdmx.model.code import Codelist, Hierarchy
-from pysdmx.model.concept import DataType, Facets
+from pysdmx.model.concept import Concept, DataType, Facets
 
 
 class Role(str, Enum):
@@ -101,6 +101,7 @@ class Component(Struct, frozen=True, omit_defaults=True):
     id: str
     required: bool
     role: Role
+    concept: Concept
     dtype: DataType = DataType.STRING
     facets: Optional[Facets] = None
     name: Optional[str] = None
@@ -115,7 +116,10 @@ class Component(Struct, frozen=True, omit_defaults=True):
         for k in self.__annotations__.keys():
             v = self.__getattribute__(k)
             if v:
-                out.append(f"{k}={str(v)}")
+                if k == "concept":
+                    out.append(f"{k}=({str(v)})")
+                else:
+                    out.append(f"{k}={str(v)}")
         return ", ".join(out)
 
 

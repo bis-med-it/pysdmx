@@ -3,7 +3,7 @@ from typing import List
 
 import pytest
 
-from pysdmx.model import Component, Components, encoders, Role
+from pysdmx.model import Concept, Component, Components, encoders, Role
 
 
 def test_pattern():
@@ -16,8 +16,8 @@ def test_pattern():
 
 
 def test_components():
-    c1 = Component("IND", True, Role.DIMENSION)
-    c2 = Component("VAL", True, Role.MEASURE)
+    c1 = Component("IND", True, Role.DIMENSION, Concept("IND"))
+    c2 = Component("VAL", True, Role.MEASURE, Concept("VAL"))
     comps = Components([c1, c2])
 
     out = encoders(comps)

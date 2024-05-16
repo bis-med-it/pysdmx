@@ -123,13 +123,14 @@ class FusionAttribute(Struct, frozen=True):
         else:
             desc = None
         return Component(
-            self.id,
-            self.mandatory,
-            Role.ATTRIBUTE,
-            dt,
-            facets,
-            c.names[0].value,
-            desc,
+            id=self.id,
+            required=self.mandatory,
+            role=Role.ATTRIBUTE,
+            concept=c.to_model(cls),
+            dtype=dt,
+            facets=facets,
+            name=c.names[0].value,
+            description=desc,
             codes=codes,
             attachment_level=lvl,
             array_def=ab,
@@ -175,13 +176,14 @@ class FusionDimension(Struct, frozen=True):
         else:
             desc = None
         return Component(
-            self.id,
-            True,
-            Role.DIMENSION,
-            dt,
-            facets,
-            c.names[0].value,
-            desc,
+            id=self.id,
+            required=True,
+            role=Role.DIMENSION,
+            concept=c.to_model(cls),
+            dtype=dt,
+            facets=facets,
+            name=c.names[0].value,
+            description=desc,
             codes=codes,
             array_def=ab,
         )
@@ -226,13 +228,14 @@ class FusionMeasure(Struct, frozen=True):
         else:
             desc = None
         return Component(
-            self.id,
-            self.mandatory,
-            Role.MEASURE,
-            dt,
-            facets,
-            c.names[0].value,
-            desc,
+            id=self.id,
+            required=self.mandatory,
+            role=Role.MEASURE,
+            concept=c.to_model(cls),
+            dtype=dt,
+            facets=facets,
+            name=c.names[0].value,
+            description=desc,
             codes=codes,
             array_def=ab,
         )

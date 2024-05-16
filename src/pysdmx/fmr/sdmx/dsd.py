@@ -116,13 +116,14 @@ class JsonDimension(Struct, frozen=True):
             self.id, self.localRepresentation, c.coreRepresentation, cls, cons
         )
         return Component(
-            self.id,
-            True,
-            Role.DIMENSION,
-            dt,
-            facets,
-            c.name,
-            c.description,
+            id=self.id,
+            required=True,
+            role=Role.DIMENSION,
+            concept=c.to_model(cls),
+            dtype=dt,
+            facets=facets,
+            name=c.name,
+            description=c.description,
             codes=codes,
             array_def=ab,
         )
@@ -156,13 +157,14 @@ class JsonAttribute(Struct, frozen=True):
             self.measureRelationship,
         )
         return Component(
-            self.id,
-            req,
-            Role.ATTRIBUTE,
-            dt,
-            facets,
-            c.name,
-            c.description,
+            id=self.id,
+            required=req,
+            role=Role.ATTRIBUTE,
+            concept=c.to_model(cls),
+            dtype=dt,
+            facets=facets,
+            name=c.name,
+            description=c.description,
             codes=codes,
             attachment_level=lvl,
             array_def=ab,
@@ -190,13 +192,14 @@ class JsonMeasure(Struct, frozen=True):
         )
         req = self.usage != "optional"
         return Component(
-            self.id,
-            req,
-            Role.MEASURE,
-            dt,
-            facets,
-            c.name,
-            c.description,
+            id=self.id,
+            required=req,
+            role=Role.MEASURE,
+            concept=c.to_model(cls),
+            dtype=dt,
+            facets=facets,
+            name=c.name,
+            description=c.description,
             codes=codes,
             array_def=ab,
         )
