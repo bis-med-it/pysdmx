@@ -42,30 +42,19 @@ def __get_type(repr_: JsonRepresentation) -> str:
 def _get_representation(
     id_: str,
     local: Optional[JsonRepresentation],
-    core: Optional[JsonRepresentation],
     cls: Sequence[Codelist],
     cons: Dict[str, Sequence[str]],
 ) -> Tuple[
-    DataType,
+    Optional[DataType],
     Optional[Facets],
     Optional[Codelist],
     Optional[ArrayBoundaries],
 ]:
     valid = cons.get(id_, [])
-    codes = None
-    dt = DataType.STRING
-    facets = None
-    ab = None
-    if local:
-        dt = DataType(__get_type(local))
-        facets = local.to_facets()
-        codes = local.to_enumeration(cls, valid)
-        ab = local.to_array_def()
-    elif core:
-        dt = DataType(__get_type(core))
-        facets = core.to_facets()
-        codes = core.to_enumeration(cls, valid)
-        ab = core.to_array_def()
+    codes = local.to_enumeration(cls, valid) if local else None
+    dt = DataType(__get_type(local)) if local else None
+    facets = local.to_facets() if local else None
+    ab = local.to_array_def() if local else None
     return (dt, facets, codes, ab)
 
 
@@ -113,17 +102,18 @@ class JsonDimension(Struct, frozen=True):
         """Returns a component."""
         c = _find_concept(cs, self.conceptIdentity)
         dt, facets, codes, ab = _get_representation(
-            self.id, self.localRepresentation, c.coreRepresentation, cls, cons
+            self.id, self.localRepresentation, cls, cons
         )
         return Component(
-            self.id,
-            True,
-            Role.DIMENSION,
-            dt,
-            facets,
-            c.name,
-            c.description,
-            codes=codes,
+            id=self.id,
+            required=True,
+            role=Role.DIMENSION,
+            concept=c.to_model(cls),
+            local_dtype=dt,
+            local_facets=facets,
+            name=c.name,
+            description=c.description,
+            local_codes=codes,
             array_def=ab,
         )
 
@@ -148,7 +138,7 @@ class JsonAttribute(Struct, frozen=True):
         """Returns a component."""
         c = _find_concept(cs, self.conceptIdentity)
         dt, facets, codes, ab = _get_representation(
-            self.id, self.localRepresentation, c.coreRepresentation, cls, cons
+            self.id, self.localRepresentation, cls, cons
         )
         req = self.usage != "optional"
         lvl = self.attributeRelationship.to_model(
@@ -156,14 +146,15 @@ class JsonAttribute(Struct, frozen=True):
             self.measureRelationship,
         )
         return Component(
-            self.id,
-            req,
-            Role.ATTRIBUTE,
-            dt,
-            facets,
-            c.name,
-            c.description,
-            codes=codes,
+            id=self.id,
+            required=req,
+            role=Role.ATTRIBUTE,
+            concept=c.to_model(cls),
+            local_dtype=dt,
+            local_facets=facets,
+            name=c.name,
+            description=c.description,
+            local_codes=codes,
             attachment_level=lvl,
             array_def=ab,
         )
@@ -186,18 +177,19 @@ class JsonMeasure(Struct, frozen=True):
         """Returns a component."""
         c = _find_concept(cs, self.conceptIdentity)
         dt, facets, codes, ab = _get_representation(
-            self.id, self.localRepresentation, c.coreRepresentation, cls, cons
+            self.id, self.localRepresentation, cls, cons
         )
         req = self.usage != "optional"
         return Component(
-            self.id,
-            req,
-            Role.MEASURE,
-            dt,
-            facets,
-            c.name,
-            c.description,
-            codes=codes,
+            id=self.id,
+            required=req,
+            role=Role.MEASURE,
+            concept=c.to_model(cls),
+            local_dtype=dt,
+            local_facets=facets,
+            name=c.name,
+            description=c.description,
+            local_codes=codes,
             array_def=ab,
         )
 

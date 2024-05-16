@@ -228,7 +228,7 @@
                         "textFormat": {
                             "textType": "String"
                         },
-                        "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:OPTION_TYPE(1.0)"
+                        "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OPTION_TYPE(1.0)"
                     }
                 }
             ]
