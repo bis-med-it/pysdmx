@@ -45,7 +45,7 @@ def _get_representation(
     cls: Sequence[Codelist],
     cons: Dict[str, Sequence[str]],
 ) -> Tuple[
-    DataType,
+    Optional[DataType],
     Optional[Facets],
     Optional[Codelist],
     Optional[ArrayBoundaries],
