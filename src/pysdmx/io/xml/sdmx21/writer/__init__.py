@@ -2,12 +2,12 @@
 
 from typing import Any, Dict, Optional
 
-from pysdmx.io.xml.sdmx_two_one.writer.__write_aux import (
+from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     __write_header,
     create_namespaces,
     get_end_message,
 )
-from pysdmx.io.xml.sdmx_two_one.writer.metadata_writer import (
+from pysdmx.io.xml.sdmx21.writer.structure import (
     generate_structures,
 )
 from pysdmx.model.message import Header, MessageType
@@ -35,7 +35,7 @@ def writer(
     Raises:
         NotImplementedError: If the MessageType is not Metadata
     """
-    if type_ != MessageType.Metadata:
+    if type_ != MessageType.Structure:
         raise NotImplementedError("Only Metadata messages are supported")
     outfile = create_namespaces(type_, content, prettyprint)
 

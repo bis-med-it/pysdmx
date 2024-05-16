@@ -8,7 +8,7 @@ from pysdmx.model.message import Header, MessageType
 MESSAGE_TYPE_MAPPING = {
     MessageType.GenericDataSet: "GenericData",
     MessageType.StructureSpecificDataSet: "StructureSpecificData",
-    MessageType.Metadata: "Structure",
+    MessageType.Structure: "Structure",
 }
 
 ABBR_MSG = "mes"
@@ -50,40 +50,7 @@ def __namespaces_from_type(type_: MessageType) -> str:
     Returns:
         A string with the namespaces
     """
-    # if type_ == MessageType.GenericDataSet:
-    #     return f"xmlns:{ABBR_GEN}={NAMESPACES[ABBR_GEN]!r} "
-    # elif type_ == MessageType.StructureSpecificDataSet:
-    #     return f"xmlns:{ABBR_SPE}={NAMESPACES[ABBR_SPE]!r} "
-    # elif type_ == MessageType.Metadata:
-    #     return f"xmlns:{ABBR_STR}={NAMESPACES[ABBR_STR]!r} "
-    # else:
-    #     return ""
     return f"xmlns:{ABBR_STR}={NAMESPACES[ABBR_STR]!r} "
-
-
-# def __namespaces_from_content(content: Dict[str, Any]) -> str:
-#     """Returns the namespaces for the XML file based on content.
-#
-#     Args:
-#         content: Datasets or None
-#
-#     Returns:
-#         A string with the namespaces
-#
-#     Raises:
-#         Exception: If the dataset has no structure defined
-#     """
-#     outfile = ""
-#     for i, key in enumerate(content):
-#         if content[key].structure is None:
-#             raise Exception(f"Dataset {key} has no structure defined")
-#         ds_urn = URN_DS_BASE
-#         ds_urn += (
-#             f"{content[key].structure.unique_id}:"
-#             f"ObsLevelDim:{content[key].dim_at_obs}"
-#         )
-#         outfile += f"xmlns:ns{i}={ds_urn!r}"
-#     return outfile
 
 
 def create_namespaces(
@@ -113,7 +80,7 @@ def create_namespaces(
         f'https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">'
     )
 
-    return outfile
+    return outfile.replace("'", '"')
 
 
 MSG_CONTENT_PKG = OrderedDict(
@@ -217,14 +184,14 @@ def __write_header(header: Header, prettyprint: bool) -> str:
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
     prepared = header.prepared.strftime("%Y-%m-%dT%H:%M:%S")
-
+    test = str(header.test).lower()
     return (
         f"{nl}{child1}<{ABBR_MSG}:Header>"
         f"{__value('ID', header.id, prettyprint)}"
-        f"{__value('Test', header.test, prettyprint)}"
+        f"{__value('Test', test, prettyprint)}"
         f"{__value('Prepared', prepared, prettyprint)}"
         f"{__item('Sender', header.sender, prettyprint)}"
         f"{__item('Receiver', header.receiver, prettyprint)}"
         f"{__value('Source', header.source, prettyprint)}"
         f"{nl}{child1}</{ABBR_MSG}:Header>"
-    )
+    ).replace("'", '"')

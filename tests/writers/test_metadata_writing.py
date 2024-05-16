@@ -3,8 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from pysdmx.errors import ClientError
-from pysdmx.io.xml.sdmx_two_one.writer import Header, writer
+from pysdmx.io.xml.sdmx21.writer import Header, writer
 from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme
 from pysdmx.model.__base import Annotation
 from pysdmx.model.message import MessageType
@@ -40,7 +39,6 @@ def empty_sample():
 def header():
     return Header(
         id="ID",
-        sender="Unknown",
         receiver="Not_Supplied",
         source="PySDMX",
         prepared=datetime.strptime("2021-01-01", "%Y-%m-%d"),
@@ -81,7 +79,7 @@ def test_codelist(codelist_sample, header):
 
     result = writer(
         {"Codelists": {"CL_FREQ": codelist}},
-        MessageType.Metadata,
+        MessageType.Structure,
         header=header,
     )
 
@@ -120,29 +118,15 @@ def test_concept(concept_sample, header):
 
     result = writer(
         {"Concepts": {"FREQ": concept}},
-        MessageType.Metadata,
+        MessageType.Structure,
         header=header,
     )
 
     assert result == concept_sample
 
 
-def test_header_exception():
-    with pytest.raises(
-        ClientError, match="The Test value must be either 'true' or 'false'"
-    ):
-        Header(
-            id="ID",
-            sender="Unknown",
-            receiver="Not_Supplied",
-            source="PySDMX",
-            prepared=datetime.strptime("2021-01-01", "%Y-%m-%d"),
-            test="WRONG TEST VALUE",
-        )
-
-
 def test_writer_empty(empty_sample):
-    result = writer({}, MessageType.Metadata, prettyprint=True)
+    result = writer({}, MessageType.Structure, prettyprint=True)
     assert result == empty_sample
 
 
@@ -156,7 +140,7 @@ def test_writing_not_supported():
 def test_write_to_file(empty_sample, tmpdir):
     file = tmpdir.join("output.txt")
     result = writer(
-        {}, MessageType.Metadata, path=file.strpath, prettyprint=True
+        {}, MessageType.Structure, path=file.strpath, prettyprint=True
     )  # or use str(file)
     assert file.read() == empty_sample
     assert result is None

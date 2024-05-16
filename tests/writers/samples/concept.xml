@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mes:Structure xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:mes='http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message' xmlns:str='http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure' xmlns:com='http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common' xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
 	<mes:Header>
 		<mes:ID>ID</mes:ID>
 		<mes:Test>true</mes:Test>
 		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
-		<mes:Sender id='Unknown'/>
-		<mes:Receiver id='Not_Supplied'/>
+		<mes:Sender id="ZZZ"/>
+		<mes:Receiver id="Not_Supplied"/>
 		<mes:Source>PySDMX</mes:Source>
 	</mes:Header>
 	<mes:Structures>
 		<str:Concepts>
 			<str:ConceptScheme id="FREQ" uri="urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS:CS_FREQ(1.0)" urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS:CS_FREQ(1.0)" version="1.0" isExternalReference="false" isFinal="false" agencyID="BIS" isPartial="false">
 				<com:Name xml:lang="en">Frequency</com:Name>
-				<str:Concept id='A'>
+				<str:Concept id="A">
 					<com:Name xml:lang="en">Annual</com:Name>
 					<com:Description xml:lang="en">Annual</com:Description>
 				</str:Concept>
-				<str:Concept id='M'>
+				<str:Concept id="M">
 					<com:Name xml:lang="en">Monthly</com:Name>
 					<com:Description xml:lang="en">Monthly</com:Description>
 				</str:Concept>
-				<str:Concept id='Q'>
+				<str:Concept id="Q">
 					<com:Name xml:lang="en">Quarterly</com:Name>
 					<com:Description xml:lang="en">Quarterly</com:Description>
 				</str:Concept>

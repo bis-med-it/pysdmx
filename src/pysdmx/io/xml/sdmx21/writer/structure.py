@@ -3,7 +3,7 @@
 from collections import OrderedDict
 from typing import Any, Dict
 
-from pysdmx.io.xml.sdmx_two_one.writer.__write_aux import (
+from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_COM,
     ABBR_MSG,
     ABBR_STR,
@@ -47,6 +47,7 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
             outfile += (
                 f"{child2}<{ABBR_COM}:Annotation " f"id={annotation.id!r}>"
             )
+        outfile = outfile.replace("'", '"')
 
         for attr, label in ANNOTATION_WRITER.items():
             if getattr(annotation, attr, None) is not None:
@@ -148,19 +149,10 @@ def __write_item(item: Item, indent: str) -> str:
     head = f"{ABBR_STR}:" + type(item).__name__
 
     data = __write_nameable(item, add_indent(indent))
-    outfile = f'{indent}<{head}{data["Attributes"]}>'
-    outfile += export_intern_data(data, add_indent(indent))
+    attributes = data["Attributes"].replace("'", '"')
+    outfile = f"{indent}<{head}{attributes}>"
+    outfile += __export_intern_data(data, add_indent(indent))
     outfile += f"{indent}</{head}>"
-    # if self.parent is not None:
-    #     indent_par = add_indent(indent)
-    #     indent_ref = add_indent(indent_par)
-    #     outfile += f"{indent_par}<{ABBR_STR}:Parent>"
-    #     if isinstance(self.parent, Item):
-    #         text = self.parent.id
-    #     else:
-    #         text = self.parent
-    #     outfile += f'{indent_ref}<Ref id="{text}"/>'
-    #     outfile += f"{indent_par}</{ABBR_STR}:Parent>"
     return outfile
 
 
@@ -179,7 +171,7 @@ def __write_item_scheme(item_scheme: ItemScheme, indent: str) -> str:
 
     outfile += f"{indent}<{label}{attributes}>"
 
-    outfile += export_intern_data(data, indent)
+    outfile += __export_intern_data(data, indent)
 
     for item in item_scheme.items:
         outfile += __write_item(item, add_indent(indent))
@@ -219,6 +211,39 @@ def __write_metadata_element(
     return outfile
 
 
+def __get_outfile(obj_: Dict[str, Any], key: str = "") -> str:
+    """Generates an outfile from the object.
+
+    Args:
+        obj_: The object to be used
+        key: The key to be used
+
+    Returns:
+        A string with the outfile
+
+    """
+    element = obj_.get(key) or []
+
+    return "".join(element)
+
+
+def __export_intern_data(data: Dict[str, Any], indent: str) -> str:
+    """Export internal data (Annotations, Name, Description) on the XML file.
+
+    Args:
+        data: Information to be exported
+        indent: Indentation used
+
+    Returns:
+        The XML string with the exported data
+    """
+    outfile = __get_outfile(data, "Annotations")
+    outfile += __get_outfile(data, "Name")
+    outfile += __get_outfile(data, "Description")
+
+    return outfile
+
+
 def generate_structures(content: Dict[str, Any], prettyprint: bool) -> str:
     """Writes the structures to the XML file.
 
@@ -240,37 +265,3 @@ def generate_structures(content: Dict[str, Any], prettyprint: bool) -> str:
     outfile += f"{nl}{child1}</{ABBR_MSG}:Structures>"
 
     return outfile
-
-
-def export_intern_data(data: Dict[str, Any], indent: str) -> str:
-    """Export internal data (Annotations, Name, Description) on the XML file.
-
-    Args:
-        data: Information to be exported
-        indent: Indentation used
-
-    Returns:
-        The XML string with the exported data
-    """
-    outfile = get_outfile(data, "Annotations", indent)
-    outfile += get_outfile(data, "Name", indent)
-    outfile += get_outfile(data, "Description", indent)
-
-    return outfile
-
-
-def get_outfile(obj_: Dict[str, Any], key: str = "", indent: str = "") -> str:
-    """Generates an outfile from the object.
-
-    Args:
-        obj_: The object to be used
-        key: The key to be used
-        indent: The indentation to be used
-
-    Returns:
-        A string with the outfile
-
-    """
-    element = obj_.get(key) or []
-
-    return "".join(element)
