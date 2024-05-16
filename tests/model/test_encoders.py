@@ -3,7 +3,7 @@ from typing import List
 
 import pytest
 
-from pysdmx.model import Concept, Component, Components, encoders, Role
+from pysdmx.model import Component, Components, Concept, encoders, Role
 
 
 def test_pattern():

@@ -120,6 +120,9 @@ class Component(Struct, frozen=True, omit_defaults=True):
         the data type of the referenced concept (if any).
         In case neither are set, the data type will default
         to string.
+
+        Returns:
+            The component data type (local, core or default).
         """
         if self.local_dtype:
             return self.local_dtype
@@ -135,6 +138,9 @@ class Component(Struct, frozen=True, omit_defaults=True):
         This will return the local facets (if any) or
         the facets of the referenced concept (if any), or
         None in case neither are set.
+
+        Returns:
+            The component facets (local or core).
         """
         if self.local_facets:
             return self.local_facets
@@ -150,6 +156,9 @@ class Component(Struct, frozen=True, omit_defaults=True):
         This will return the local codes (if any) or
         the codes of the referenced concept (if any), or
         None in case neither are set.
+
+        Returns:
+            The component codes (local or core).
         """
         if self.local_codes:
             return self.local_codes
