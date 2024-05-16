@@ -2,6 +2,7 @@
 
 from typing import Any, Dict, Optional
 
+from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     __write_header,
     create_namespaces,
@@ -10,7 +11,7 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
 from pysdmx.io.xml.sdmx21.writer.structure import (
     generate_structures,
 )
-from pysdmx.model.message import Header, MessageType
+from pysdmx.model.message import Header
 
 
 def writer(

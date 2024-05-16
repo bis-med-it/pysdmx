@@ -3,7 +3,8 @@
 from collections import OrderedDict
 from typing import Any, Dict, Optional
 
-from pysdmx.model.message import Header, MessageType
+from pysdmx.io.xml.enums import MessageType
+from pysdmx.model.message import Header
 
 MESSAGE_TYPE_MAPPING = {
     MessageType.GenericDataSet: "GenericData",

@@ -3,10 +3,10 @@ from pathlib import Path
 
 import pytest
 
+from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer import Header, writer
 from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme
 from pysdmx.model.__base import Annotation
-from pysdmx.model.message import MessageType
 
 TEST_CS_URN = (
     "urn:sdmx:org.sdmx.infomodel.conceptscheme."
