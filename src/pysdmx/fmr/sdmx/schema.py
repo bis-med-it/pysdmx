@@ -59,7 +59,7 @@ class JsonSchemaMessage(
             comp_id = parse_item_urn(ha.component_ref).item_id
             h = msgspec.structs.replace(ha.hierarchy, operator=ha.operator)
             comp_dict[comp_id] = msgspec.structs.replace(
-                components[comp_id], codes=h
+                components[comp_id], local_codes=h
             )
             urns.append(
                 "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy="

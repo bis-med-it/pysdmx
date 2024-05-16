@@ -36,33 +36,19 @@ def _find_concept(
 
 def _get_representation(
     id_: str,
-    repr_: Optional[FusionRepresentation],
+    r: Optional[FusionRepresentation],
     cls: Sequence[FusionCodelist],
     cons: Dict[str, Sequence[str]],
-    c: Optional[FusionConcept],
 ) -> Tuple[
     DataType,
     Optional[Facets],
     Optional[Codelist],
     Optional[ArrayBoundaries],
 ]:
-    valid = cons.get(id_, [])
-    ab = None
-    dt = DataType.STRING
-    facets = None
-    codes = None
-    if repr_:
-        r = repr_
-    elif c and c.representation:
-        r = c.representation
-    else:
-        r = None
-    if r:
-        if r.textFormat:
-            dt = DataType(r.textFormat.textType)
-        facets = r.to_facets()
-        codes = r.to_enumeration(cls, valid)
-        ab = r.to_array_def()
+    ab = r.to_array_def() if r else None
+    dt = DataType(r.textFormat.textType) if r and r.textFormat else None
+    facets = r.to_facets() if r else None
+    codes = r.to_enumeration(cls, cons.get(id_, [])) if r else None
     return (dt, facets, codes, ab)
 
 
@@ -115,7 +101,7 @@ class FusionAttribute(Struct, frozen=True):
         """Returns an attribute."""
         c = _find_concept(cs, self.concept)
         dt, facets, codes, ab = _get_representation(
-            self.id, self.representation, cls, cons, c
+            self.id, self.representation, cls, cons
         )
         lvl = self.__derive_level(groups)
         if c.descriptions:
@@ -127,11 +113,11 @@ class FusionAttribute(Struct, frozen=True):
             required=self.mandatory,
             role=Role.ATTRIBUTE,
             concept=c.to_model(cls),
-            dtype=dt,
-            facets=facets,
+            local_dtype=dt,
+            local_facets=facets,
             name=c.names[0].value,
             description=desc,
-            codes=codes,
+            local_codes=codes,
             attachment_level=lvl,
             array_def=ab,
         )
@@ -169,7 +155,7 @@ class FusionDimension(Struct, frozen=True):
         """Returns a dimension."""
         c = _find_concept(cs, self.concept)
         dt, facets, codes, ab = _get_representation(
-            self.id, self.representation, cls, cons, c
+            self.id, self.representation, cls, cons
         )
         if c.descriptions:
             desc = c.descriptions[0].value
@@ -180,11 +166,11 @@ class FusionDimension(Struct, frozen=True):
             required=True,
             role=Role.DIMENSION,
             concept=c.to_model(cls),
-            dtype=dt,
-            facets=facets,
+            local_dtype=dt,
+            local_facets=facets,
             name=c.names[0].value,
             description=desc,
-            codes=codes,
+            local_codes=codes,
             array_def=ab,
         )
 
@@ -221,7 +207,7 @@ class FusionMeasure(Struct, frozen=True):
         """Returns a measure."""
         c = _find_concept(cs, self.concept)
         dt, facets, codes, ab = _get_representation(
-            self.id, self.representation, cls, cons, c
+            self.id, self.representation, cls, cons
         )
         if c.descriptions:
             desc = c.descriptions[0].value
@@ -232,11 +218,11 @@ class FusionMeasure(Struct, frozen=True):
             required=self.mandatory,
             role=Role.MEASURE,
             concept=c.to_model(cls),
-            dtype=dt,
-            facets=facets,
+            local_dtype=dt,
+            local_facets=facets,
             name=c.names[0].value,
             description=desc,
-            codes=codes,
+            local_codes=codes,
             array_def=ab,
         )
 
