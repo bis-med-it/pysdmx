@@ -17,7 +17,7 @@ def test_defaults(fid):
     f = Concept(id=fid)
 
     assert f.id == fid
-    assert f.dtype == DataType.STRING
+    assert f.dtype is None
     assert f.facets is None
     assert f.name is None
     assert f.description is None

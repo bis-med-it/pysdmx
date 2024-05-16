@@ -145,7 +145,7 @@ class Concept(Item, frozen=True, omit_defaults=True):
             which the codes are taken.
     """
 
-    dtype: DataType = DataType.STRING
+    dtype: Optional[DataType] = None
     facets: Optional[Facets] = None
     codes: Optional[Codelist] = None
     enum_ref: Optional[str] = None
