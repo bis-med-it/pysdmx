@@ -1,7 +1,7 @@
 """Writer auxiliary functions."""
 
 from collections import OrderedDict
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from pysdmx.model.message import Header, MessageType
 
@@ -131,7 +131,7 @@ def add_indent(indent: str) -> str:
     return indent + "\t"
 
 
-def __value(element: str, value: str, prettyprint: bool) -> str:
+def __value(element: str, value: Optional[str], prettyprint: bool) -> str:
     """Generates a value element for the XML file.
 
     A Value element is an XML tag with a value.
@@ -144,6 +144,8 @@ def __value(element: str, value: str, prettyprint: bool) -> str:
     Returns:
         A string with the value element
     """
+    if not value:
+        return ""
     nl = "\n" if prettyprint else ""
     child2 = "\t\t" if prettyprint else ""
     return (
@@ -153,7 +155,7 @@ def __value(element: str, value: str, prettyprint: bool) -> str:
     )
 
 
-def __item(element: str, id_: str, prettyprint: bool) -> str:
+def __item(element: str, id_: Optional[str], prettyprint: bool) -> str:
     """Generates an item element for the XML file.
 
     An Item element is an XML tag with an id attribute.
@@ -166,6 +168,8 @@ def __item(element: str, id_: str, prettyprint: bool) -> str:
     Returns:
         A string with the item element
     """
+    if not id_:
+        return ""
     nl = "\n" if prettyprint else ""
     child2 = "\t\t" if prettyprint else ""
     return f"{nl}{child2}<{ABBR_MSG}:{element} id={id_!r}/>"

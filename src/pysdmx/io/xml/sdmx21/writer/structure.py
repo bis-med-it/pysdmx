@@ -31,7 +31,7 @@ ANNOTATION_WRITER = OrderedDict(
 
 
 def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
-
+    """Writes the annotations to the XML file."""
     if len(annotable.annotations) == 0:
         return ""
 
@@ -69,6 +69,7 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
 def __write_identifiable(
     identifiable: IdentifiableArtefact, indent: str
 ) -> Dict[str, Any]:
+    """Writes the IdentifiableArtefact to the XML file."""
     attributes = ""
 
     attributes += f" id={identifiable.id!r}"
@@ -90,6 +91,7 @@ def __write_identifiable(
 def __write_nameable(
     nameable: NameableArtefact, indent: str
 ) -> Dict[str, Any]:
+    """Writes the NameableArtefact to the XML file."""
     outfile = __write_identifiable(nameable, indent)
     attrs = ["Name", "Description"]
 
@@ -110,6 +112,7 @@ def __write_nameable(
 def __write_versionable(
     versionable: VersionableArtefact, indent: str
 ) -> Dict[str, Any]:
+    """Writes the VersionableArtefact to the XML file."""
     outfile = __write_nameable(versionable, add_indent(indent))
 
     outfile["Attributes"] += f" version={versionable.version!r}"
@@ -128,6 +131,7 @@ def __write_versionable(
 def __write_maintainable(
     maintainable: MaintainableArtefact, indent: str
 ) -> Dict[str, Any]:
+    """Writes the MaintainableArtefact to the XML file."""
     outfile = __write_versionable(maintainable, indent)
 
     outfile["Attributes"] += (
@@ -146,6 +150,7 @@ def __write_maintainable(
 
 
 def __write_item(item: Item, indent: str) -> str:
+    """Writes the item to the XML file."""
     head = f"{ABBR_STR}:" + type(item).__name__
 
     data = __write_nameable(item, add_indent(indent))
@@ -157,7 +162,7 @@ def __write_item(item: Item, indent: str) -> str:
 
 
 def __write_item_scheme(item_scheme: ItemScheme, indent: str) -> str:
-
+    """Writes the item scheme to the XML file."""
     label = f"{ABBR_STR}:{type(item_scheme).__name__}"
 
     data = __write_maintainable(item_scheme, indent)
