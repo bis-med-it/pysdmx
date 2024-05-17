@@ -7,6 +7,7 @@ can be written.
 from datetime import datetime
 from enum import Enum
 from typing import Optional
+import uuid
 
 from msgspec import Struct
 
@@ -26,9 +27,9 @@ class ActionType(Enum):
 class Header(Struct, frozen=True, kw_only=True):
     """Header for the SDMX messages."""
 
-    id: str = "test"
+    id: str = str(uuid.uuid4())
     test: bool = True
-    prepared: datetime = datetime.strptime("2021-01-01", "%Y-%m-%d")
+    prepared: datetime = datetime.now()
     sender: str = "ZZZ"
     receiver: Optional[str] = None
     source: Optional[str] = None

@@ -39,13 +39,22 @@ def empty_sample():
 def header():
     return Header(
         id="ID",
-        receiver="Not_Supplied",
-        source="PySDMX",
         prepared=datetime.strptime("2021-01-01", "%Y-%m-%d"),
     )
 
 
-def test_codelist(codelist_sample, header):
+@pytest.fixture()
+def complete_header():
+    return Header(
+        id="ID",
+        prepared=datetime.strptime("2021-01-01", "%Y-%m-%d"),
+        sender="ZZZ",
+        receiver="Not_Supplied",
+        source="PySDMX",
+    )
+
+
+def test_codelist(codelist_sample, complete_header):
     codelist = Codelist(
         annotations=[
             Annotation(
@@ -80,13 +89,13 @@ def test_codelist(codelist_sample, header):
     result = writer(
         {"Codelists": {"CL_FREQ": codelist}},
         MessageType.Structure,
-        header=header,
+        header=complete_header,
     )
 
     assert result == codelist_sample
 
 
-def test_concept(concept_sample, header):
+def test_concept(concept_sample, complete_header):
     concept = ConceptScheme(
         id="FREQ",
         name="Frequency",
@@ -119,14 +128,14 @@ def test_concept(concept_sample, header):
     result = writer(
         {"Concepts": {"FREQ": concept}},
         MessageType.Structure,
-        header=header,
+        header=complete_header,
     )
 
     assert result == concept_sample
 
 
-def test_writer_empty(empty_sample):
-    result = writer({}, MessageType.Structure, prettyprint=True)
+def test_writer_empty(empty_sample, header):
+    result = writer({}, MessageType.Structure, prettyprint=True, header=header)
     assert result == empty_sample
 
 
@@ -137,10 +146,23 @@ def test_writing_not_supported():
         writer({}, MessageType.Error, prettyprint=True)
 
 
-def test_write_to_file(empty_sample, tmpdir):
+def test_write_to_file(empty_sample, tmpdir, header):
     file = tmpdir.join("output.txt")
     result = writer(
-        {}, MessageType.Structure, path=file.strpath, prettyprint=True
+        {},
+        MessageType.Structure,
+        path=file.strpath,
+        prettyprint=True,
+        header=header,
     )  # or use str(file)
     assert file.read() == empty_sample
     assert result is None
+
+
+def test_writer_no_header():
+    result: str = writer({}, MessageType.Structure, prettyprint=False)
+    assert "<mes:Header>" in result
+    assert "<mes:ID>" in result
+    assert "<mes:Test>true</mes:Test>" in result
+    assert "<mes:Prepared>" in result
+    assert '<mes:Sender id="ZZZ"/>' in result
