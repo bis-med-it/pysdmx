@@ -298,7 +298,7 @@
                             "enumerationFormat": {
                                 "textType": "String"
                             },
-                            "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL)OPTION_TYPE(1.0)"
+                            "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OPTION_TYPE(1.0)"
                         }
                     }
                 ]
