@@ -25,6 +25,11 @@ class Reference(Struct, frozen=True):
     id: str
     version: str
 
+    @property
+    def full_id(self) -> str:
+        """Returns the full ID of the referenced artefact."""
+        return f"{self.agency}:{self.id}({self.version})"
+
 
 class ItemReference(Struct, frozen=True):
     """The coordinates of an SDMX non-nested item.

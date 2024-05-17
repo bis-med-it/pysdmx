@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from pysdmx.io.input_processor import process_string_to_read
+from pysdmx.io.xml.sdmx21.reader import read_xml
 
 
 @pytest.fixture()
@@ -70,8 +71,9 @@ def test_process_string_to_read_bom(valid_xml, valid_xml_bom):
 
 def test_process_string_to_read_invalid_xml(invalid_xml):
     message = "This element is not expected."
+    process_string_to_read(invalid_xml)
     with pytest.raises(ValueError, match=message):
-        process_string_to_read(invalid_xml)
+        read_xml(invalid_xml, validate=True)
 
 
 def test_process_string_to_read_invalid_type():
@@ -101,4 +103,5 @@ def test_process_string_to_read_invalid_allowed_error(invalid_allowed_error):
     # This is a valid XML file, but it contains an error that is allowed
     # QName value on xsi:type attribute does not resolve to a type definition
     infile, filetype = process_string_to_read(invalid_allowed_error)
-    assert filetype == "xml"
+    with pytest.raises(ValueError, match="Cannot parse this sdmx data"):
+        read_xml(infile, validate=True)

@@ -6,8 +6,6 @@ from os import PathLike
 from pathlib import Path
 from typing import Tuple, Union
 
-from pysdmx.io.xml.sdmx21.doc_validation import validate_doc
-
 
 def __remove_bom(input_string: str) -> str:
     return input_string.replace("\ufeff", "")
@@ -15,7 +13,6 @@ def __remove_bom(input_string: str) -> str:
 
 def __check_xml(infile: str) -> bool:
     if infile[:5] == "<?xml":
-        validate_doc(infile)
         return True
 
     return False
