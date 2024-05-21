@@ -11,6 +11,7 @@ import uuid
 
 from msgspec import Struct
 
+from pysdmx.errors import ClientError
 from pysdmx.model import Codelist, ConceptScheme
 from pysdmx.model.__base import ItemScheme
 
@@ -66,13 +67,20 @@ class Message(Struct, frozen=True):
         """Checks if the content is valid."""
         for content_key, content_value in self.content.items():
             if content_key not in MSG_CONTENT_PKG:
-                raise ValueError(f"Invalid content type: {content_key}")
+                raise ClientError(
+                    400,
+                    f"Invalid content type: {content_key}",
+                    "Check the docs for the proper structure on content.",
+                )
 
             for obj_ in content_value.values():
                 if not isinstance(obj_, MSG_CONTENT_PKG[content_key]):
-                    raise ValueError(
+                    raise ClientError(
+                        400,
                         f"Invalid content value type: {type(obj_).__name__} "
-                        f"for {content_key}"
+                        f"for {content_key}",
+                        "Check the docs for the proper "
+                        "structure on content.",
                     )
 
     def __get_elements(self, type_: str) -> Dict[str, Any]:
