@@ -6,7 +6,7 @@ from msgspec import Struct
 
 from pysdmx.fmr.sdmx.code import JsonCodelist
 from pysdmx.fmr.sdmx.core import JsonRepresentation
-from pysdmx.model import Concept, ConceptScheme, DataType
+from pysdmx.model import Codelist, Concept, ConceptScheme, DataType
 
 
 class JsonConcept(Struct, frozen=True):
@@ -17,7 +17,7 @@ class JsonConcept(Struct, frozen=True):
     name: Optional[str] = None
     description: Optional[str] = None
 
-    def to_model(self, codelists: Sequence[JsonCodelist]) -> Concept:
+    def to_model(self, codelists: Sequence[Codelist]) -> Concept:
         """Converts a JsonConcept to a standard concept."""
         repr_ = self.coreRepresentation
         if repr_:
@@ -30,9 +30,7 @@ class JsonConcept(Struct, frozen=True):
                     repr_.format.textType,  # type: ignore[union-attr]
                 )
             facets = repr_.to_facets()
-            codes = repr_.to_enumeration(
-                [cl.to_model() for cl in codelists], []
-            )
+            codes = repr_.to_enumeration(codelists, [])
             cl_ref = repr_.enumeration
         else:
             dt = DataType.STRING
@@ -62,13 +60,14 @@ class JsonConceptScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
 
     def to_model(self, codelists: Sequence[JsonCodelist]) -> ConceptScheme:
         """Converts a JsonConceptScheme to a standard concept scheme."""
+        cls = [c.to_model() for c in codelists]
         return ConceptScheme(
             id=self.id,
             name=self.name,
             agency=self.agency,
             description=self.description,
             version=self.version,
-            items=[c.to_model(codelists) for c in self.concepts],
+            items=[c.to_model(cls) for c in self.concepts],
         )
 
 

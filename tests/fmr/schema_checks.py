@@ -36,6 +36,12 @@ def check_schema(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
         assert isinstance(comp, Component)
         assert comp.id is not None
         assert comp.name is not None
+        assert comp.concept is not None
+        assert comp.concept.id is not None
+        assert comp.id == comp.concept.id
+        assert comp.required is not None
+        assert comp.role is not None
+        assert comp.dtype is not None
 
 
 def check_schema_from_pra(
