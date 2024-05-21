@@ -11,7 +11,7 @@ import uuid
 
 from msgspec import Struct
 
-from pysdmx.errors import ClientError
+from pysdmx.errors import ClientError, NotFound
 from pysdmx.model import Codelist, ConceptScheme
 from pysdmx.model.__base import ItemScheme
 
@@ -87,17 +87,29 @@ class Message(Struct, frozen=True):
         """Returns the elements from content."""
         if type_ in self.content:
             return self.content[type_]
-        raise ValueError(f"No {type_} found in content")
+        raise NotFound(
+            404,
+            f"No {type_} found in content",
+            f"Could not find any {type_} in content.",
+        )
 
     def __get_element_by_uid(self, type_: str, unique_id: str) -> Any:
         """Returns a specific element from content."""
         if type_ not in self.content:
-            raise ValueError(f"No {type_} found")
+            raise NotFound(
+                404,
+                f"No {type_} found.",
+                f"Could not find any {type_} in content.",
+            )
 
         if unique_id in self.content[type_]:
             return self.content[type_][unique_id]
 
-        raise ValueError(f"No {type_} with id {unique_id} found in content")
+        raise NotFound(
+            404,
+            f"No {type_} with id {unique_id} found in content",
+            "Could not find the requested element.",
+        )
 
     def get_organisation_schemes(self) -> Dict[str, ItemScheme]:
         """Returns the OrganisationScheme."""

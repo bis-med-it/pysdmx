@@ -1,6 +1,6 @@
 import pytest
 
-from pysdmx.errors import ClientError
+from pysdmx.errors import ClientError, NotFound
 from pysdmx.model import Codelist, ConceptScheme
 from pysdmx.model.__base import ItemScheme
 from pysdmx.model.message import Message
@@ -61,26 +61,38 @@ def test_get_concepts():
 
 def test_empty_get_elements():
     message = Message({})
-    with pytest.raises(ValueError, match="No OrganisationSchemes found"):
+    with pytest.raises(NotFound) as exc_info:
         message.get_organisation_schemes()
 
-    with pytest.raises(ValueError, match="No Codelists found"):
+    assert "No OrganisationSchemes found" in str(exc_info.value.title)
+
+    with pytest.raises(NotFound) as exc_info:
         message.get_codelists()
 
-    with pytest.raises(ValueError, match="No ConceptSchemes found"):
+    assert "No Codelists found" in str(exc_info.value.title)
+
+    with pytest.raises(NotFound) as exc_info:
         message.get_concept_schemes()
+
+    assert "No ConceptSchemes found" in str(exc_info.value.title)
 
 
 def test_empty_get_element_by_uid():
     message = Message({})
-    with pytest.raises(ValueError, match="No OrganisationSchemes found"):
+    with pytest.raises(NotFound) as exc_info:
         message.get_organisation_scheme_by_uid("org1:orgs1(1.0)")
 
-    with pytest.raises(ValueError, match="No Codelists found"):
+    assert "No OrganisationSchemes found" in str(exc_info.value.title)
+
+    with pytest.raises(NotFound) as exc_info:
         message.get_codelist_by_uid("cl1:cl1(1.0)")
 
-    with pytest.raises(ValueError, match="No ConceptSchemes found"):
+    assert "No Codelists found" in str(exc_info.value.title)
+
+    with pytest.raises(NotFound) as exc_info:
         message.get_concept_scheme_by_uid("cs1:cs1(1.0)")
+
+    assert "No ConceptSchemes found" in str(exc_info.value.title)
 
 
 def test_invalid_get_element_by_uid():
@@ -88,8 +100,9 @@ def test_invalid_get_element_by_uid():
 
     e_m = "No OrganisationSchemes with id"
 
-    with pytest.raises(ValueError, match=e_m):
+    with pytest.raises(NotFound) as exc_info:
         message.get_organisation_scheme_by_uid("org12:orgs1(1.0)")
+    assert e_m in str(exc_info.value.title)
 
 
 def test_invalid_initialization_content_key():
