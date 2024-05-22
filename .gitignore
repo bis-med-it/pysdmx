@@ -43,6 +43,3 @@ coverage-report.xml
 qa/
 dist/
 .env
-
-# Ignore poetry lock file
-poetry.lock

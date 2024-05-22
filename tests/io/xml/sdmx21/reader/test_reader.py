@@ -6,7 +6,7 @@ from pysdmx.errors import ClientError
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
-from pysdmx.model.submission import SubmissionResult
+from pysdmx.model.message import SubmissionResult
 
 
 # Test parsing SDMX Registry Interface Submission Response

@@ -1,7 +1,15 @@
 """Message module.
 
 This module contains the enumeration for the different types of messages that
-can be written.
+can be written. It also contains the Header and Message classes that are used
+to create the SDMX messages.
+
+Classes:
+    Header: Header for the SDMX messages.
+    ActionType: Enumeration for the different types of actions that can be
+        written.
+    Message: Class that holds the content of the SDMX message.
+    SubmissionResult: Class that represents the result of a submission.
 """
 
 from datetime import datetime, timezone
@@ -134,3 +142,20 @@ class Message(Struct, frozen=True):
     def get_concept_scheme_by_uid(self, unique_id: str) -> ConceptScheme:
         """Returns a specific Concept."""
         return self.__get_element_by_uid(CONCEPTS, unique_id)
+
+
+class SubmissionResult(Struct, frozen=True):
+    """A class to represent a Submission Result."""
+
+    action: str
+    full_id: str
+    status: str
+
+    def __str__(self) -> str:
+        """Return a string representation of the SubmissionResult."""
+        return (
+            f"<Submission Result - "
+            f"Action: {self.action} - "
+            f"Full ID: {self.full_id} - "
+            f"Status: {self.status}>"
+        )
