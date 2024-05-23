@@ -27,21 +27,21 @@ def test_submission_result(submission_path):
     assert filetype == "xml"
     result = read_xml(input_str, validate=True)
 
-    full_id_1 = "BIS:BIS_DER(1.0)"
-    full_id_2 = "BIS:WEBSTATS_DER_DATAFLOW(1.0)"
+    short_urn_1 = "DataStructure=BIS:BIS_DER(1.0)"
+    short_urn_2 = "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"
 
-    assert full_id_1 in result
-    submission_1 = result[full_id_1]
+    assert short_urn_1 in result
+    submission_1 = result[short_urn_1]
     assert isinstance(submission_1, SubmissionResult)
     assert submission_1.action == "Append"
-    assert submission_1.full_id == full_id_1
+    assert submission_1.short_urn == short_urn_1
     assert submission_1.status == "Success"
 
-    assert full_id_2 in result
-    submission_2 = result[full_id_2]
+    assert short_urn_2 in result
+    submission_2 = result[short_urn_2]
     assert isinstance(submission_2, SubmissionResult)
     assert submission_2.action == "Append"
-    assert submission_2.full_id == full_id_2
+    assert submission_2.short_urn == short_urn_2
     assert submission_2.status == "Success"
 
 

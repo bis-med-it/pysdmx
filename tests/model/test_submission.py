@@ -9,8 +9,8 @@ def action():
 
 
 @pytest.fixture()
-def full_id():
-    return "BIS:BIS_DER(1.0)"
+def short_urn():
+    return "Codelist=BIS:BIS_DER(1.0)"
 
 
 @pytest.fixture()
@@ -18,14 +18,14 @@ def status():
     return "Success"
 
 
-def test_full_instantiation(action, full_id, status):
-    submission_result = SubmissionResult(action, full_id, status)
+def test_full_instantiation(action, short_urn, status):
+    submission_result = SubmissionResult(action, short_urn, status)
 
     assert submission_result.action == action
-    assert submission_result.full_id == full_id
+    assert submission_result.short_urn == short_urn
     assert submission_result.status == status
     assert str(submission_result) == (
         f"<Submission Result - Action: {action} "
-        f"- Full ID: {full_id} "
+        f"- Short URN: {short_urn} "
         f"- Status: {status}>"
     )

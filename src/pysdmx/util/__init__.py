@@ -25,10 +25,9 @@ class Reference(Struct, frozen=True):
     id: str
     version: str
 
-    @property
-    def full_id(self) -> str:
-        """Returns the full ID of the referenced artefact."""
-        return f"{self.agency}:{self.id}({self.version})"
+    def __str__(self) -> str:
+        """Returns a string representation of the object."""
+        return f"{self.sdmx_type}={self.agency}:{self.id}({self.version})"
 
 
 class ItemReference(Struct, frozen=True):

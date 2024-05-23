@@ -148,7 +148,7 @@ class SubmissionResult(Struct, frozen=True):
     """A class to represent a Submission Result."""
 
     action: str
-    full_id: str
+    short_urn: str
     status: str
 
     def __str__(self) -> str:
@@ -156,6 +156,6 @@ class SubmissionResult(Struct, frozen=True):
         return (
             f"<Submission Result - "
             f"Action: {self.action} - "
-            f"Full ID: {self.full_id} - "
+            f"Short URN: {self.short_urn} - "
             f"Status: {self.status}>"
         )

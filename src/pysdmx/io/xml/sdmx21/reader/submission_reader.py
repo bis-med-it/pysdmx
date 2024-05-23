@@ -33,7 +33,7 @@ def handle_registry_interface(dict_info: Dict[str, Any]) -> Dict[str, Any]:
         structure = submission_result[SUBMITTED_STRUCTURE]
         action = structure[ACTION]
         urn = structure[MAINTAINABLE_OBJECT][URN]
-        full_id = parse_urn(urn).full_id
+        short_urn = str(parse_urn(urn))
         status = submission_result[STATUS_MSG][STATUS]
-        result[full_id] = SubmissionResult(action, full_id, status)
+        result[short_urn] = SubmissionResult(action, short_urn, status)
     return result
