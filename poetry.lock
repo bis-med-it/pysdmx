@@ -1403,13 +1403,13 @@ jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
 name = "sdmxschemas"
-version = "0.1.0"
+version = "0.2.0"
 description = "SDMX schemas for Python"
 optional = true
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "sdmxschemas-0.1.0-py3-none-any.whl", hash = "sha256:8da18de13f22504bbfa5c7241f1e6eabe5ee7139123c8a3218463f6dc4c990c0"},
-    {file = "sdmxschemas-0.1.0.tar.gz", hash = "sha256:66d06fd54a2f90e01840e8d16636262d6e0477e67a218f9d8c386f3f2f4d7880"},
+    {file = "sdmxschemas-0.2.0-py3-none-any.whl", hash = "sha256:7d597614e65689cddf21966fa6183ae2a8101c28fe50de79242668820293287b"},
+    {file = "sdmxschemas-0.2.0.tar.gz", hash = "sha256:6045e856d56d23e2abcf0c543f3687824b7ba3f65f8c1e8dc54ac17a40f94ec2"},
 ]
 
 [[package]]
@@ -1739,4 +1739,4 @@ xml = ["lxml", "sdmxschemas", "xmltodict"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "1d264d0c32cc818149fbae31f2442bc07a80d69644f9f1b33ff27cf596efa445"
+content-hash = "4ce124288c61e25bba7bf63ffcef20c1d361fb49467c45c242fe3c1af3a966e8"
