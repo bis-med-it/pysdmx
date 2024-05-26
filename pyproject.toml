@@ -25,10 +25,11 @@ httpx = {version = "0.*", optional = true}
 msgspec = "0.*"
 lxml = {version = "5.*", optional = true}
 xmltodict = {version = "0.*", optional = true}
+sdmxschemas = {version = "0.*", optional = true}
 
 [tool.poetry.extras]
 fmr = ["httpx"]
-xml = ["lxml", "xmltodict"]
+xml = ["lxml", "xmltodict", "sdmxschemas"]
 
 [tool.poetry.group.dev.dependencies]
 darglint = "^1.8.1"

@@ -1,13 +1,11 @@
 """Validates an SDMX-ML 2.1 XML file against the XSD schema."""
 
 from io import BytesIO
-from pathlib import Path
 
 from lxml import etree
 
 from pysdmx.io.xml.__allowed_lxml_errors import ALLOWED_ERRORS_CONTENT
-
-SCHEMA_PATH = Path(__file__).parent / "schemas" / "SDMXMessage.xsd"
+from sdmxschemas import SDMX_ML_21_MESSAGE_PATH as SCHEMA_PATH
 
 
 def validate_doc(infile: str) -> None:

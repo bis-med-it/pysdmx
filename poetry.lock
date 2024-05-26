@@ -1402,6 +1402,17 @@ pygments = ">=2.13.0,<3.0.0"
 jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
+name = "sdmxschemas"
+version = "0.1.0"
+description = "SDMX schemas for Python"
+optional = true
+python-versions = "<4.0,>=3.8"
+files = [
+    {file = "sdmxschemas-0.1.0-py3-none-any.whl", hash = "sha256:8da18de13f22504bbfa5c7241f1e6eabe5ee7139123c8a3218463f6dc4c990c0"},
+    {file = "sdmxschemas-0.1.0.tar.gz", hash = "sha256:66d06fd54a2f90e01840e8d16636262d6e0477e67a218f9d8c386f3f2f4d7880"},
+]
+
+[[package]]
 name = "setuptools"
 version = "70.0.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
@@ -1647,13 +1658,13 @@ files = [
 
 [[package]]
 name = "trove-classifiers"
-version = "2024.5.17"
+version = "2024.5.22"
 description = "Canonical source for classifiers on PyPI (pypi.org)."
 optional = false
 python-versions = "*"
 files = [
-    {file = "trove_classifiers-2024.5.17-py3-none-any.whl", hash = "sha256:2ebdddebd43e749ac6b6e9b9aa158ab489603dff147cba8714787729cdb9ea37"},
-    {file = "trove_classifiers-2024.5.17.tar.gz", hash = "sha256:d47a6f1c48803091c3fc81f535fecfeef65b558f2b9e4e83df7a79d17bce8bbf"},
+    {file = "trove_classifiers-2024.5.22-py3-none-any.whl", hash = "sha256:c43ade18704823e4afa3d9db7083294bc4708a5e02afbcefacd0e9d03a7a24ef"},
+    {file = "trove_classifiers-2024.5.22.tar.gz", hash = "sha256:8a6242bbb5c9ae88d34cf665e816b287d2212973c8777dfaef5ec18d72ac1d03"},
 ]
 
 [[package]]
@@ -1669,13 +1680,13 @@ files = [
 
 [[package]]
 name = "typing-extensions"
-version = "4.11.0"
+version = "4.12.0"
 description = "Backported and Experimental Type Hints for Python 3.8+"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "typing_extensions-4.11.0-py3-none-any.whl", hash = "sha256:c1f94d72897edaf4ce775bb7558d5b79d8126906a14ea5ed1635921406c0387a"},
-    {file = "typing_extensions-4.11.0.tar.gz", hash = "sha256:83f085bd5ca59c80295fc2a82ab5dac679cbe02b9f33f7d83af68e241bea51b0"},
+    {file = "typing_extensions-4.12.0-py3-none-any.whl", hash = "sha256:b349c66bea9016ac22978d800cfff206d5f9816951f12a7d0ec5578b0a819594"},
+    {file = "typing_extensions-4.12.0.tar.gz", hash = "sha256:8cbcdc8606ebcb0d95453ad7dc5065e6237b6aa230a31e81d0f440c30fed5fd8"},
 ]
 
 [[package]]
@@ -1723,9 +1734,9 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more
 
 [extras]
 fmr = ["httpx"]
-xml = ["lxml", "xmltodict"]
+xml = ["lxml", "sdmxschemas", "xmltodict"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "49500c1d26ff26a108fe372b99c192c8881b8014c7b89c110a6ff0fcac49d133"
+content-hash = "1d264d0c32cc818149fbae31f2442bc07a80d69644f9f1b33ff27cf596efa445"
