@@ -3,9 +3,9 @@
 from io import BytesIO
 
 from lxml import etree
+from sdmxschemas import SDMX_ML_21_MESSAGE_PATH as SCHEMA_PATH
 
 from pysdmx.io.xml.__allowed_lxml_errors import ALLOWED_ERRORS_CONTENT
-from sdmxschemas import SDMX_ML_21_MESSAGE_PATH as SCHEMA_PATH
 
 
 def validate_doc(infile: str) -> None:
