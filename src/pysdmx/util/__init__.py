@@ -25,6 +25,10 @@ class Reference(Struct, frozen=True):
     id: str
     version: str
 
+    def __str__(self) -> str:
+        """Returns a string representation of the object."""
+        return f"{self.sdmx_type}={self.agency}:{self.id}({self.version})"
+
 
 class ItemReference(Struct, frozen=True):
     """The coordinates of an SDMX non-nested item.

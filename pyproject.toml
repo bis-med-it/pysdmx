@@ -23,9 +23,13 @@ classifiers = [
 python = "^3.9"
 httpx = {version = "0.*", optional = true}
 msgspec = "0.*"
+lxml = {version = "5.*", optional = true}
+xmltodict = {version = "0.*", optional = true}
+sdmxschemas = {version = "0.2.0", optional = true}
 
 [tool.poetry.extras]
 fmr = ["httpx"]
+xml = ["lxml", "xmltodict", "sdmxschemas"]
 
 [tool.poetry.group.dev.dependencies]
 darglint = "^1.8.1"
@@ -44,6 +48,8 @@ pytest-asyncio = "^0.21.1"
 pytest-cov = "^4.0.0"
 respx = "^0.20.2"
 pyroma = "^4.2"
+lxml-stubs = "^0.5.1"
+types-xmltodict = "^0.13.0.3"
 
 
 [tool.poetry.group.docs.dependencies]
