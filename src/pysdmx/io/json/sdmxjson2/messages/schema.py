@@ -4,11 +4,11 @@ from typing import Sequence
 
 import msgspec
 
-from pysdmx.fmr.sdmx.code import JsonCodelist, JsonValuelist
-from pysdmx.fmr.sdmx.concept import JsonConceptScheme
-from pysdmx.fmr.sdmx.constraint import JsonContentConstraint
-from pysdmx.fmr.sdmx.core import JsonHeader
-from pysdmx.fmr.sdmx.dsd import JsonDataStructure
+from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist, JsonValuelist
+from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptScheme
+from pysdmx.io.json.sdmxjson2.messages.constraint import JsonContentConstraint
+from pysdmx.io.json.sdmxjson2.messages.core import JsonHeader
+from pysdmx.io.json.sdmxjson2.messages.dsd import JsonDataStructure
 from pysdmx.model import Components, HierarchyAssociation, Schema
 from pysdmx.util import parse_item_urn
 

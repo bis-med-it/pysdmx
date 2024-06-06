@@ -5,7 +5,7 @@ from typing import Optional, Sequence, Tuple
 
 from msgspec import Struct
 
-from pysdmx.fmr.sdmx.core import JsonAnnotation, JsonLink
+from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation, JsonLink
 from pysdmx.model import (
     Code,
     Codelist,

@@ -4,8 +4,8 @@ from typing import Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.fmr.sdmx.code import JsonCodelist
-from pysdmx.fmr.sdmx.core import JsonRepresentation
+from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist
+from pysdmx.io.json.sdmxjson2.messages.core import JsonRepresentation
 from pysdmx.model import Codelist, Concept, ConceptScheme, DataType
 
 

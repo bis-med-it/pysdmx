@@ -1,21 +1,26 @@
-"""Collection of SDMX-JSON schemas for the metadata queries."""
+"""Collection of readers for SDMX-JSON messages."""
 
 from pysdmx.fmr.reader import Deserializers
-from pysdmx.fmr.sdmx.category import JsonCategorySchemeMessage
-from pysdmx.fmr.sdmx.code import (
+from pysdmx.io.json.sdmxjson2.messages.category import (
+    JsonCategorySchemeMessage,
+)
+from pysdmx.io.json.sdmxjson2.messages.code import (
     JsonCodelistMessage,
     JsonHierarchyAssociationMessage,
     JsonHierarchyMessage,
 )
-from pysdmx.fmr.sdmx.concept import JsonConcepSchemeMessage
-from pysdmx.fmr.sdmx.dataflow import JsonDataflowMessage
-from pysdmx.fmr.sdmx.map import (
+from pysdmx.io.json.sdmxjson2.messages.concept import JsonConcepSchemeMessage
+from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflowMessage
+from pysdmx.io.json.sdmxjson2.messages.map import (
     JsonMappingMessage,
     JsonRepresentationMapMessage,
 )
-from pysdmx.fmr.sdmx.org import JsonAgencyMessage, JsonProviderMessage
-from pysdmx.fmr.sdmx.report import JsonMetadataMessage
-from pysdmx.fmr.sdmx.schema import JsonSchemaMessage
+from pysdmx.io.json.sdmxjson2.messages.org import (
+    JsonAgencyMessage,
+    JsonProviderMessage,
+)
+from pysdmx.io.json.sdmxjson2.messages.report import JsonMetadataMessage
+from pysdmx.io.json.sdmxjson2.messages.schema import JsonSchemaMessage
 
 deserializers = Deserializers(
     agencies=JsonAgencyMessage,  # type: ignore[arg-type]

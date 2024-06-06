@@ -5,7 +5,7 @@ from typing import Dict, Sequence, Set
 
 from msgspec import Struct
 
-from pysdmx.fmr.sdmx.pa import JsonProvisionAgreement
+from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
 from pysdmx.model import Agency, DataflowRef, DataProvider
 from pysdmx.util import parse_urn
 

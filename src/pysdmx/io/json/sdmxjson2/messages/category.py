@@ -5,7 +5,7 @@ from typing import Dict, Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.fmr.sdmx.dataflow import JsonDataflowRef
+from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflowRef
 from pysdmx.model import Category, CategoryScheme, DataflowRef
 from pysdmx.util import find_by_urn
 
