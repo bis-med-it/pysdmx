@@ -15,7 +15,7 @@ import httpx
 from msgspec.json import decode
 
 from pysdmx.errors import ClientError, NotFound, ServiceError, Unavailable
-from pysdmx.fmr.fusion import deserializers as fusion_deserializers
+from pysdmx.io.json.fusion.reader import deserializers as fusion_readers
 from pysdmx.fmr.reader import Deserializer
 from pysdmx.fmr.sdmx import deserializers as sdmx_deserializers
 from pysdmx.model import (
@@ -121,7 +121,7 @@ class __BaseRegistryClient:
         self.api_endpoint = api_endpoint
         self.format = fmt
         if fmt == Format.FUSION_JSON:
-            self.deser = fusion_deserializers
+            self.deser = fusion_readers
         else:
             self.deser = sdmx_deserializers
         self.ssl_context = (

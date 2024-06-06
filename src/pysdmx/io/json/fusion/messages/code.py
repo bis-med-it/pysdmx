@@ -5,7 +5,11 @@ from typing import Optional, Sequence, Tuple
 
 from msgspec import Struct
 
-from pysdmx.fmr.fusion.core import FusionAnnotation, FusionLink, FusionString
+from pysdmx.io.json.fusion.messages.core import (
+    FusionAnnotation,
+    FusionLink,
+    FusionString,
+)
 from pysdmx.model import (
     Code,
     Codelist as CL,

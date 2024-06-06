@@ -4,8 +4,8 @@ from typing import List, Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.fmr.fusion.core import FusionString
-from pysdmx.fmr.fusion.org import FusionProviderScheme
+from pysdmx.io.json.fusion.messages.core import FusionString
+from pysdmx.io.json.fusion.messages.org import FusionProviderScheme
 from pysdmx.model import (
     Agency,
     Components,

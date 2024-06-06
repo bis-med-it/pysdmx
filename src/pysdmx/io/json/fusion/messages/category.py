@@ -5,8 +5,8 @@ from typing import Dict, Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.fmr.fusion.core import FusionString
-from pysdmx.fmr.fusion.dataflow import FusionDataflowRef
+from pysdmx.io.json.fusion.messages.core import FusionString
+from pysdmx.io.json.fusion.messages.dataflow import FusionDataflowRef
 from pysdmx.model import Category, CategoryScheme as CS, DataflowRef
 from pysdmx.util import find_by_urn
 

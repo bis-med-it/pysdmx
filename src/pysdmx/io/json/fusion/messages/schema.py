@@ -4,11 +4,11 @@ from typing import List, Sequence
 
 import msgspec
 
-from pysdmx.fmr.fusion.code import FusionCodelist
-from pysdmx.fmr.fusion.concept import FusionConceptScheme
-from pysdmx.fmr.fusion.constraint import FusionContentConstraint
-from pysdmx.fmr.fusion.core import FusionLink
-from pysdmx.fmr.fusion.dsd import FusionDataStructure
+from pysdmx.io.json.fusion.messages.code import FusionCodelist
+from pysdmx.io.json.fusion.messages.concept import FusionConceptScheme
+from pysdmx.io.json.fusion.messages.constraint import FusionContentConstraint
+from pysdmx.io.json.fusion.messages.core import FusionLink
+from pysdmx.io.json.fusion.messages.dsd import FusionDataStructure
 from pysdmx.model import Components, HierarchyAssociation, Schema
 from pysdmx.util import parse_item_urn
 

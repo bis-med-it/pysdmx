@@ -5,10 +5,16 @@ from typing import Dict, List, Optional, Sequence, Tuple
 from msgspec import Struct
 
 from pysdmx.errors import ServiceError
-from pysdmx.fmr.fusion.code import FusionCodelist
-from pysdmx.fmr.fusion.concept import FusionConcept, FusionConceptScheme
-from pysdmx.fmr.fusion.constraint import FusionContentConstraint
-from pysdmx.fmr.fusion.core import FusionRepresentation, FusionString
+from pysdmx.io.json.fusion.messages.code import FusionCodelist
+from pysdmx.io.json.fusion.messages.concept import (
+    FusionConcept,
+    FusionConceptScheme,
+)
+from pysdmx.io.json.fusion.messages.constraint import FusionContentConstraint
+from pysdmx.io.json.fusion.messages.core import (
+    FusionRepresentation,
+    FusionString,
+)
 from pysdmx.model import (
     ArrayBoundaries,
     Codelist,

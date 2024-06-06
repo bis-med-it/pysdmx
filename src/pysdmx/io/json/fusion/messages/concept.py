@@ -4,8 +4,11 @@ from typing import Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.fmr.fusion.code import FusionCodelist
-from pysdmx.fmr.fusion.core import FusionRepresentation, FusionString
+from pysdmx.io.json.fusion.messages.code import FusionCodelist
+from pysdmx.io.json.fusion.messages.core import (
+    FusionRepresentation,
+    FusionString,
+)
 from pysdmx.model.concept import Concept, ConceptScheme as CS, DataType
 
 

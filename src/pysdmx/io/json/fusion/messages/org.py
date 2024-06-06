@@ -5,7 +5,7 @@ from typing import Dict, Optional, Sequence, Set
 
 from msgspec import Struct
 
-from pysdmx.fmr.fusion.core import FusionString
+from pysdmx.io.json.fusion.messages.core import FusionString
 from pysdmx.model import Agency, Contact, DataflowRef, DataProvider
 from pysdmx.util import parse_urn
 

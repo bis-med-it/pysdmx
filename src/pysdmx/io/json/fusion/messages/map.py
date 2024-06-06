@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.fmr.fusion.core import FusionString
+from pysdmx.io.json.fusion.messages.core import FusionString
 from pysdmx.model import (
     ComponentMap,
     DataType,

@@ -4,7 +4,7 @@ from typing import Sequence
 
 from msgspec import Struct
 
-from pysdmx.fmr.fusion.core import FusionString
+from pysdmx.io.json.fusion.messages.core import FusionString
 from pysdmx.fmr.reader import _merge_attributes
 from pysdmx.model import MetadataAttribute, MetadataReport
 
