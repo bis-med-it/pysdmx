@@ -1,5 +1,6 @@
 """Schemas for Fusion-JSON messages."""
 
+from pysdmx.fmr.reader import Deserializers
 from pysdmx.io.json.fusion.messages.category import FusionCategorySchemeMessage
 from pysdmx.io.json.fusion.messages.code import (
     FusionCodelistMessage,
@@ -18,7 +19,6 @@ from pysdmx.io.json.fusion.messages.org import (
 )
 from pysdmx.io.json.fusion.messages.report import FusionMetadataMessage
 from pysdmx.io.json.fusion.messages.schema import FusionSchemaMessage
-from pysdmx.fmr.reader import Deserializers
 
 __all__ = [
     "FusionCategorySchemeMessage",
