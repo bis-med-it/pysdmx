@@ -1,6 +1,6 @@
 import httpx
 
-from pysdmx.fmr import AsyncRegistryClient, DataflowDetails, RegistryClient
+from pysdmx.api.fmr import AsyncRegistryClient, DataflowDetails, RegistryClient
 from pysdmx.model import Component, Components, DataflowInfo, Organisation
 
 

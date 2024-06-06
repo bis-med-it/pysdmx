@@ -1,8 +1,8 @@
 import httpx
 import pytest
 
+from pysdmx.api.fmr import Format, RegistryClient
 from pysdmx.errors import ClientError, NotFound, ServiceError, Unavailable
-from pysdmx.fmr import Format, RegistryClient
 
 
 @pytest.fixture()

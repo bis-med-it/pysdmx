@@ -3,7 +3,7 @@ from datetime import datetime
 import httpx
 import pytest
 
-from pysdmx.fmr import AsyncRegistryClient, RegistryClient
+from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
 from pysdmx.model import Code, Codelist, Concept, ConceptScheme, DataType
 
 

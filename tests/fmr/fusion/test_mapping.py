@@ -1,7 +1,7 @@
 import pytest
 import tests.fmr.mapping_checks as checks
 
-from pysdmx.fmr import AsyncRegistryClient, Format, RegistryClient
+from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 
 
 @pytest.fixture()

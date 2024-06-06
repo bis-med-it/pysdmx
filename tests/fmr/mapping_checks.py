@@ -4,7 +4,7 @@ import re
 import httpx
 import pytest
 
-from pysdmx.fmr import AsyncRegistryClient, RegistryClient
+from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
 from pysdmx.model.concept import DataType
 from pysdmx.model.map import (
     ComponentMap,

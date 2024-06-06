@@ -3,7 +3,7 @@ from typing import Sequence
 
 import httpx
 
-from pysdmx.fmr import AsyncRegistryClient, RegistryClient
+from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
 from pysdmx.model import HierarchicalCode, Hierarchy
 
 

@@ -1,6 +1,6 @@
 """Collection of readers for SDMX-JSON messages."""
 
-from pysdmx.fmr.reader import Deserializers
+from pysdmx.api.fmr.reader import Deserializers
 from pysdmx.io.json.sdmxjson2 import messages as msg
 
 deserializers = Deserializers(

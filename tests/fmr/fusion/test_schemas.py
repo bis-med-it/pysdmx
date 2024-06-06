@@ -2,8 +2,8 @@ import httpx
 import pytest
 import tests.fmr.schema_checks as checks
 
+from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 from pysdmx.errors import ServiceError
-from pysdmx.fmr import AsyncRegistryClient, Format, RegistryClient
 
 
 @pytest.fixture()

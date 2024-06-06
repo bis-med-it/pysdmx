@@ -4,7 +4,7 @@ from typing import Sequence
 
 from msgspec import Struct
 
-from pysdmx.fmr.reader import _merge_attributes
+from pysdmx.api.fmr.reader import _merge_attributes
 from pysdmx.model import MetadataReport
 
 

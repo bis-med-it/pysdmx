@@ -2,7 +2,7 @@ from datetime import datetime
 
 import httpx
 
-from pysdmx.fmr import AsyncRegistryClient, RegistryClient
+from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
 from pysdmx.model import (
     Codelist,
     Component,
