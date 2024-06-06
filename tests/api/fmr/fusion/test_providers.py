@@ -1,5 +1,5 @@
 import pytest
-import tests.fmr.provider_checks as checks
+import tests.api.fmr.provider_checks as checks
 
 from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 
@@ -36,13 +36,15 @@ def flowquery(fmr: RegistryClient):
 
 @pytest.fixture()
 def body():
-    with open("tests/fmr/samples/orgs/providers.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/orgs/providers.fusion.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def flowbody():
-    with open("tests/fmr/samples/orgs/providersflows.fusion.json", "rb") as f:
+    with open(
+        "tests/api/fmr/samples/orgs/providersflows.fusion.json", "rb"
+    ) as f:
         return f.read()
 
 

@@ -1,6 +1,6 @@
 import httpx
 import pytest
-import tests.fmr.schema_checks as checks
+import tests.api.fmr.schema_checks as checks
 
 from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 from pysdmx.errors import ServiceError
@@ -117,73 +117,79 @@ def no_const_query(fmr):
 
 @pytest.fixture()
 def body():
-    with open("tests/fmr/samples/df/schema.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/schema.fusion.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def body_from_pra():
-    with open("tests/fmr/samples/pra/schema.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/pra/schema.fusion.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def no_const_body():
-    with open("tests/fmr/samples/df/no_const.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/no_const.fusion.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def no_measure_body():
-    with open("tests/fmr/samples/df/no_measure.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/no_measure.fusion.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def no_attr_body():
-    with open("tests/fmr/samples/df/no_attr.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/no_attr.fusion.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def error_body():
-    with open("tests/fmr/samples/df/errorlvl.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/errorlvl.fusion.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def hierarchy_body():
-    with open("tests/fmr/samples/df/hierarchy_schema.fusion.json", "rb") as f:
+    with open(
+        "tests/api/fmr/samples/df/hierarchy_schema.fusion.json", "rb"
+    ) as f:
         return f.read()
 
 
 @pytest.fixture()
 def hier_assoc_body():
-    with open("tests/fmr/samples/df/hierarchy_hca.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/hierarchy_hca.fusion.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def hierarchy_pra_body():
-    with open("tests/fmr/samples/pra/hierarchy_schema.fusion.json", "rb") as f:
+    with open(
+        "tests/api/fmr/samples/pra/hierarchy_schema.fusion.json", "rb"
+    ) as f:
         return f.read()
 
 
 @pytest.fixture()
 def hier_assoc_pra_body():
-    with open("tests/fmr/samples/pra/hierarchy_hca.fusion.json", "rb") as f:
+    with open(
+        "tests/api/fmr/samples/pra/hierarchy_hca.fusion.json", "rb"
+    ) as f:
         return f.read()
 
 
 @pytest.fixture()
 def no_hca_body():
-    with open("tests/fmr/samples/df/no_hca.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/no_hca.fusion.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def no_hca_pra_body():
-    with open("tests/fmr/samples/pra/no_hca.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/pra/no_hca.fusion.json", "rb") as f:
         return f.read()
 
 

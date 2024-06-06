@@ -1,5 +1,5 @@
 import pytest
-import tests.fmr.schema_checks as checks
+import tests.api.fmr.schema_checks as checks
 
 from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 
@@ -73,43 +73,43 @@ def no_const_query(fmr):
 
 @pytest.fixture()
 def body():
-    with open("tests/fmr/samples/df/schema.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/schema.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def no_const_body():
-    with open("tests/fmr/samples/df/no_const.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/no_const.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def no_measure_body():
-    with open("tests/fmr/samples/df/no_measure.schema.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/no_measure.schema.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def no_attr_body():
-    with open("tests/fmr/samples/df/no_attr.schema.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/no_attr.schema.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def hierarchy_body():
-    with open("tests/fmr/samples/df/hierarchy_schema.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/hierarchy_schema.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def hier_assoc_body():
-    with open("tests/fmr/samples/df/hierarchy_hca.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/hierarchy_hca.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def no_hca_body():
-    with open("tests/fmr/samples/df/no_hca.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/no_hca.json", "rb") as f:
         return f.read()
 
 

@@ -22,7 +22,7 @@ def query(fmr: RegistryClient) -> str:
 
 @pytest.fixture()
 def body():
-    with open("tests/fmr/samples/orgs/agencies.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/orgs/agencies.fusion.json", "rb") as f:
         return f.read()
 
 

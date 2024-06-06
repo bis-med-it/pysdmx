@@ -1,5 +1,5 @@
 import pytest
-import tests.fmr.concept_checks as checks
+import tests.api.fmr.concept_checks as checks
 
 from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 
@@ -30,7 +30,7 @@ def query(fmr):
 
 @pytest.fixture()
 def body():
-    with open("tests/fmr/samples/concept/cs.json", "rb") as f:
+    with open("tests/api/fmr/samples/concept/cs.json", "rb") as f:
         return f.read()
 
 

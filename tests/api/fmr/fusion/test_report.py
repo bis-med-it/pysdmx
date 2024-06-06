@@ -1,5 +1,5 @@
 import pytest
-import tests.fmr.report_checks as checks
+import tests.api.fmr.report_checks as checks
 
 from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 
@@ -31,7 +31,7 @@ def query(fmr):
 
 @pytest.fixture()
 def body():
-    with open("tests/fmr/samples/refmeta/report.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/refmeta/report.fusion.json", "rb") as f:
         return f.read()
 
 
@@ -46,7 +46,9 @@ def query2(fmr):
 
 @pytest.fixture()
 def body2():
-    with open("tests/fmr/samples/refmeta/report_attrs.fusion.json", "rb") as f:
+    with open(
+        "tests/api/fmr/samples/refmeta/report_attrs.fusion.json", "rb"
+    ) as f:
         return f.read()
 
 

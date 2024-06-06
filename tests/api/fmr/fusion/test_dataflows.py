@@ -1,5 +1,5 @@
 import pytest
-import tests.fmr.dataflow_checks as checks
+import tests.api.fmr.dataflow_checks as checks
 
 from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 
@@ -64,7 +64,7 @@ def no_hca_query_no_version(fmr):
 
 @pytest.fixture()
 def no_hca_body():
-    with open("tests/fmr/samples/df/no_hca.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/no_hca.fusion.json", "rb") as f:
         return f.read()
 
 
@@ -100,19 +100,19 @@ def core_dataflow_query(fmr):
 
 @pytest.fixture()
 def schema_body():
-    with open("tests/fmr/samples/df/schema.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/schema.fusion.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def dataflow_body():
-    with open("tests/fmr/samples/df/details.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/details.fusion.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture()
 def core_dataflow_body():
-    with open("tests/fmr/samples/df/details_core.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/df/details_core.fusion.json", "rb") as f:
         return f.read()
 
 

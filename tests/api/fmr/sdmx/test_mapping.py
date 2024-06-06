@@ -1,5 +1,5 @@
 import pytest
-import tests.fmr.mapping_checks as checks
+import tests.api.fmr.mapping_checks as checks
 
 from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 
@@ -32,7 +32,7 @@ def query1(fmr):
 
 @pytest.fixture()
 def body1():
-    with open("tests/fmr/samples/map/sm.json", "rb") as f:
+    with open("tests/api/fmr/samples/map/sm.json", "rb") as f:
         return f.read()
 
 
@@ -48,7 +48,7 @@ def query2(fmr):
 
 @pytest.fixture()
 def body2():
-    with open("tests/fmr/samples/map/multi.json", "rb") as f:
+    with open("tests/api/fmr/samples/map/multi.json", "rb") as f:
         return f.read()
 
 

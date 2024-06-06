@@ -1,5 +1,5 @@
 import pytest
-import tests.fmr.vl_code_checks as checks
+import tests.api.fmr.vl_code_checks as checks
 
 from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 
@@ -40,7 +40,7 @@ def q2(fmr):
 
 @pytest.fixture()
 def body():
-    with open("tests/fmr/samples/code/vl.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/code/vl.fusion.json", "rb") as f:
         return f.read()
 
 

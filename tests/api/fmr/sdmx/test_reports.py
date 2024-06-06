@@ -1,5 +1,5 @@
 import pytest
-import tests.fmr.mult_reports_checks as checks
+import tests.api.fmr.mult_reports_checks as checks
 
 from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 
@@ -32,7 +32,7 @@ def query(fmr):
 
 @pytest.fixture()
 def body():
-    with open("tests/fmr/samples/refmeta/mult_reports.json", "rb") as f:
+    with open("tests/api/fmr/samples/refmeta/mult_reports.json", "rb") as f:
         return f.read()
 
 
