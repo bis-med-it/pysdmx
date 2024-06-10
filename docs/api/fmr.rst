@@ -38,7 +38,7 @@ Examples:
     ``EDUCAT_CLASS_A`` dataflow maintained by the UNESCO Institute for
     Statistics (``UIS``). The following code demonstrates this:
 
-        >>> from pysdmx.fmr import RegistryClient
+        >>> from pysdmx.api.fmr import RegistryClient
         >>> gr = RegistryClient("https://registry.sdmx.org/sdmx/v2/")
         >>> schema = gr.get_schema("dataflow", "UIS", "EDUCAT_CLASS_A", "1.0")
 

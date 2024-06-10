@@ -55,7 +55,7 @@ the endpoint is the URL at which the FMR is available, followed by ``/sdmx/v2/``
 
 .. code-block:: python
 
-    from pysdmx.fmr import AsyncRegistryClient
+    from pysdmx.api.fmr import AsyncRegistryClient
     client = AsyncRegistryClient("[endpoint_comes_here]")
 
 Creating the Dataflow Folders
