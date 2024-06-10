@@ -73,7 +73,7 @@ class FusionConceptScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
         )
 
 
-class FusionConcepSchemeMessage(
+class FusionConceptSchemeMessage(
     Struct,
     frozen=True,
 ):

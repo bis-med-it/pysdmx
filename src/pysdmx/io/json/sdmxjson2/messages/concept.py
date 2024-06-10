@@ -81,7 +81,7 @@ class JsonConceptSchemes(
     conceptSchemes: Sequence[JsonConceptScheme]
 
 
-class JsonConcepSchemeMessage(
+class JsonConceptSchemeMessage(
     Struct,
     frozen=True,
 ):

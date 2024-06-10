@@ -6,7 +6,7 @@ from pysdmx.io.json.fusion.messages.code import (
     FusionHierarchyAssociationMessage,
     FusionHierarchyMessage,
 )
-from pysdmx.io.json.fusion.messages.concept import FusionConcepSchemeMessage
+from pysdmx.io.json.fusion.messages.concept import FusionConceptSchemeMessage
 from pysdmx.io.json.fusion.messages.dataflow import FusionDataflowMessage
 from pysdmx.io.json.fusion.messages.map import (
     FusionMappingMessage,
@@ -24,7 +24,7 @@ __all__ = [
     "FusionCodelistMessage",
     "FusionHierarchyAssociationMessage",
     "FusionHierarchyMessage",
-    "FusionConcepSchemeMessage",
+    "FusionConceptSchemeMessage",
     "FusionDataflowMessage",
     "FusionMappingMessage",
     "FusionRepresentationMapMessage",
