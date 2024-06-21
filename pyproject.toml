@@ -26,8 +26,11 @@ msgspec = "0.*"
 lxml = {version = "5.*", optional = true}
 xmltodict = {version = "0.*", optional = true}
 sdmxschemas = {version = "0.2.0", optional = true}
+python-dateutil = {version = "^2.9.0.post0", optional = true}
+parsy = {version = "^2.1", optional = true}
 
 [tool.poetry.extras]
+dc = ["parsy", "python-dateutil"]
 fmr = ["httpx"]
 xml = ["lxml", "xmltodict", "sdmxschemas"]
 
