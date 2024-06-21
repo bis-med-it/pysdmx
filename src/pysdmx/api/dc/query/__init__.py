@@ -1,6 +1,6 @@
 """Classes and parsers for data queries."""
 
-from parsy import ParseError
+from parsy import ParseError  # type: ignore[import-untyped]
 
 from pysdmx.api.dc.query._model import (
     BooleanFilter,
@@ -23,10 +23,10 @@ from pysdmx.errors import ClientError
 def parse_query(query: str) -> Filter:
     """Parse a query string into a sequence of filters."""
     try:
-        return py_parser.parse(query)  # type: ignore[no-any-return]
+        return py_parser.parse(query)
     except ParseError:
         try:
-            return sql_parser.parse(query)  # type: ignore[no-any-return]
+            return sql_parser.parse(query)
         except ParseError as pe:
             raise ClientError(
                 422,

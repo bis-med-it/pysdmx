@@ -1,9 +1,9 @@
 from datetime import timezone
 from typing import Sequence, Union
 
-import dateutil
-import dateutil.parser
-from parsy import digit, regex, string
+import dateutil  # type: ignore[import-untyped]
+import dateutil.parser  # type: ignore[import-untyped]
+from parsy import digit, regex, string  # type: ignore[import-untyped]
 
 from pysdmx.api.dc.query._model import (
     DateTimeFilter,

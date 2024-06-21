@@ -1,4 +1,10 @@
-from parsy import from_enum, match_item, regex, seq, string
+from parsy import (  # type: ignore[import-untyped]
+    from_enum,
+    match_item,
+    regex,
+    seq,
+    string,
+)
 
 from pysdmx.api.dc.query._model import Operator
 from pysdmx.api.dc.query._parsing_model import (

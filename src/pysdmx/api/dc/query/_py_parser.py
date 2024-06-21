@@ -1,6 +1,6 @@
 from enum import Enum
 
-from parsy import from_enum, regex, seq, string
+from parsy import from_enum, regex, seq, string  # type: ignore[import-untyped]
 
 from pysdmx.api.dc.query._model import Operator
 from pysdmx.api.dc.query._parsing_model import _Filter
