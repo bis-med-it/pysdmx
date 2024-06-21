@@ -2,7 +2,6 @@ from datetime import timedelta
 
 import pytest
 
-from pysdmx.errors import ClientError
 from pysdmx.api.dc.query import (
     DateTimeFilter,
     LogicalOperator,
@@ -12,6 +11,7 @@ from pysdmx.api.dc.query import (
     parse_query,
     TextFilter,
 )
+from pysdmx.errors import ClientError
 
 
 def test_sql_query():

@@ -14,12 +14,6 @@ from typing import (
     Union,
 )
 
-from pysdmx.model import (
-    DataflowInfo,
-    DataflowRef,
-    Organisation,
-    SeriesInfo,
-)
 from pysdmx.api.dc.query import (
     BooleanFilter,
     DateTimeFilter,
@@ -28,6 +22,12 @@ from pysdmx.api.dc.query import (
     NumberFilter,
     SortBy,
     TextFilter,
+)
+from pysdmx.model import (
+    DataflowInfo,
+    DataflowRef,
+    Organisation,
+    SeriesInfo,
 )
 
 
@@ -58,26 +58,16 @@ class Connector(Protocol):
             provider: A data provider. If set, any dataflow for which data are
                 being provided by the supplied provider will be returned.
 
-        Returns:
-            Iterable[DataflowRef]: A collection of dataflow references.
+        Returns: Iterable[DataflowRef]: A collection of dataflow references.
 
-            The references contain core information about the
-            dataflows provided by the Connector. Most importantly,
-            they contain the identifying information required to
-            retrieve more information about a specific dataflow
-            (see dataflow).
+                The references contain core information about the
+                dataflows provided by the Connector. Most importantly,
+                they contain the identifying information required to
+                retrieve more information about a specific dataflow
+                (see dataflow).
 
-            It is expected that this method, if implemented,
-            will return at least one DataflowRef object.
-
-        Raises:
-            Invalid: In case there is any issue with the supplied arguments.
-            Unavailable: In case the Connector cannot retrieve the
-                list of dataflow references.
-            NotSupported: In case the Connector does not support
-                this method.
-            Unauthorized: In case the caller is not authenticated
-                or not authorized to view the list of dataflows.
+                It is expected that this method, if implemented,
+                will return at least one DataflowRef object.
         """
 
     def providers(
@@ -90,17 +80,7 @@ class Connector(Protocol):
             filter_query: A search term. If set, any provider containing the
                 term in its id, name or description will be returned.
 
-        Returns:
-            Iterable[Organisation]: A collection of data providers.
-
-        Raises:
-            Invalid: In case there is any issue with the supplied arguments.
-            Unavailable: In case the Connector cannot retrieve the
-                list of providers.
-            NotSupported: In case the Connector does not support
-                this method.
-            Unauthorized: In case the caller is not authenticated
-                or not authorized to view the list of providers.
+        Returns: Iterable[Organisation]: A collection of data providers.
         """
 
     def dataflow(
@@ -119,8 +99,7 @@ class Connector(Protocol):
                 are not required, you may set metrics to False, to
                 prevent them from being computed.
 
-        Returns:
-            DataflowInfo: Information about the requested dataflow.
+        Returns: DataflowInfo: Information about the requested dataflow.
 
             The information includes:
 
@@ -128,17 +107,6 @@ class Connector(Protocol):
             - Some useful metrics such as the number of observations.
             - The expected structure of data (i.e. the data schema), including
               the expected columns, their types, etc.
-
-        Raises:
-            Invalid: In case there is any issue with the supplied dataflow ID.
-            NotFound: In case the dataflow identified by the supplied dataflow
-                ID is not available via the connector.
-            NotSupported: In case the Connector does not support
-                this method.
-            Unavailable: In case the Connector cannot retrieve the
-                dataflow information.
-            Unauthorized: In case the caller is not authenticated
-                or not authorized to view information about the dataflow.
         """
 
     def series(
@@ -175,26 +143,12 @@ class Connector(Protocol):
             updated_after: Retrieve the series updated after
                 the supplied timestamp.
 
-        Returns:
-            A generator, to iterate over the collection matching series
-
+        Returns: A generator, to iterate over the collection matching series
             The information includes:
 
             - Some basic metadata about the series (such as an ID or name).
             - Some useful metrics such as the number of observations, the last
               time it was updated, etc.
-
-        Raises:
-            Invalid: In case there is any issue with the supplied parameters.
-            NotFound: In case there are no series matching the supplied
-                parameters.
-            NotSupported: In case the Connector does not support
-                this method.
-            Unavailable: In case the Connector cannot retrieve the
-                list of series.
-            Unauthorized: In case the caller is not authenticated
-                or not authorized to view the list of series in the
-                dataflow.
         """
 
     def data(
@@ -249,20 +203,8 @@ class Connector(Protocol):
                 of dict objects will be returned, but there are other options
                 such as pandas data frames.
 
-        Returns:
-            A generator, to iterate over the matching data, if format is set
-            to dict (the default), or a pandas data frame.
-
-        Raises:
-            Invalid: In case there is any issue with the supplied parameters.
-            NotFound: In case there are no data matching the supplied
-                parameters.
-            NotSupported: In case the Connector does not support
-                this method.
-            Unavailable: In case the Connector cannot retrieve data.
-            Unauthorized: In case the caller is not authenticated
-                or not authorized to view the data in the
-                dataflow.
+        Returns: A generator, to iterate over the matching data, if format is
+            set to dict (the default), or a pandas data frame.
         """
 
 

@@ -2,7 +2,6 @@
 
 from parsy import ParseError
 
-from pysdmx.errors import ClientError
 from pysdmx.api.dc.query._model import (
     BooleanFilter,
     DateTimeFilter,
@@ -18,6 +17,7 @@ from pysdmx.api.dc.query._model import (
 )
 from pysdmx.api.dc.query._py_parser import py_parser
 from pysdmx.api.dc.query._sql_parser import sql_parser
+from pysdmx.errors import ClientError
 
 
 def parse_query(query: str) -> Filter:
