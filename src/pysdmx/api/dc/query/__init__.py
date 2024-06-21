@@ -34,9 +34,9 @@ def parse_query(query: str) -> Filter:
                 (
                     "The query could not be parsed. "
                     "It must be a SQL WHERE clause or "
-                    "a Python boolean expression."
+                    "a Python boolean expression. "
+                    f"The query was: {query}"
                 ),
-                csi={"query": query},
             ) from pe
 
 
