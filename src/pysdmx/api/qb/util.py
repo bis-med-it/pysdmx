@@ -60,7 +60,6 @@ def check_multiple_items(
     value: Union[str, Sequence[str]], version: ApiVersion
 ) -> None:
     """Whether multiple items are supported in the supplied API version."""
-
     if not isinstance(value, str) and version < ApiVersion.V1_3_0:
         raise ClientError(
             422,
