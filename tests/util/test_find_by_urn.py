@@ -1,7 +1,7 @@
 import pytest
 
 from pysdmx.errors import NotFound
-from pysdmx.fmr.sdmx.code import JsonCodelist
+from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist
 from pysdmx.util import find_by_urn
 
 

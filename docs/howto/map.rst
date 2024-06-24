@@ -43,7 +43,7 @@ endpoint will be the URL at which the FMR is available, followed by
 
 .. code-block:: python
 
-    from pysdmx.fmr import AsyncRegistryClient
+    from pysdmx.api.fmr import AsyncRegistryClient
     client = AsyncRegistryClient("[Your_endpoint_comes_here]")
 
 Retrieving Simple Code Mappings
