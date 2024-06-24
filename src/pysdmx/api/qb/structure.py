@@ -245,6 +245,7 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         else:
             for t in self.artefact_type:
                 self.__check_artefact_type(t, version)
+        self.__check_item(version)
         self.__check_detail(version)
         self.__check_references(version)
 
@@ -263,6 +264,14 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                 422,
                 "Validation Error",
                 f"{atyp} is not valid for SDMX-REST {version.value}.",
+            )
+
+    def __check_item(self, version: ApiVersion) -> None:
+        if self.item_id != REST_ALL and version < ApiVersion.V1_1_0:
+            raise ClientError(
+                422,
+                "Validation Error",
+                f"Item query not supported in {version.value}.",
             )
 
     def __check_detail(self, version: ApiVersion) -> None:
