@@ -25,8 +25,8 @@ def contact():
 
 @pytest.fixture()
 def dataflows():
-    df1 = DataflowRef("DF1", "TEST")
-    df2 = DataflowRef("DF2", "Also TEST")
+    df1 = DataflowRef(id="DF1", name="TEST", agency="T1")
+    df2 = DataflowRef(id="DF2", name="Also TEST", agency="T1")
     return [df1, df2]
 
 
@@ -43,7 +43,13 @@ def test_defaults(id):
 
 
 def test_full_instantiation(id, name, desc, contact, dataflows):
-    org = Organisation(id, name, desc, contact, dataflows)
+    org = Organisation(
+        id=id,
+        name=name,
+        description=desc,
+        contacts=contact,
+        dataflows=dataflows,
+    )
 
     assert org.id == id
     assert org.name == name
@@ -77,15 +83,15 @@ def test_tostr_id(id):
 
     s = str(o)
 
-    assert s == id
+    assert s == f"id={id}"
 
 
 def test_tostr_name(id, name):
-    o = Organisation(id, name)
+    o = Organisation(id=id, name=name)
 
     s = str(o)
 
-    assert s == f"{id} ({name})"
+    assert s == f"id={id}, name={name}"
 
 
 def test_equal_has_same_hash(id):

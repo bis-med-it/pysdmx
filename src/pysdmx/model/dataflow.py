@@ -14,9 +14,9 @@ from typing import Any, Iterable, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.model.__base import Agency, DataProvider
 from pysdmx.model.code import Codelist, Hierarchy
-from pysdmx.model.concept import DataType, Facets
-from pysdmx.model.organisation import Organisation
+from pysdmx.model.concept import Concept, DataType, Facets
 
 
 class Role(str, Enum):
@@ -85,11 +85,13 @@ class Component(Struct, frozen=True, omit_defaults=True):
         id: A unique identifier for the component (e.g. FREQ).
         required: Whether the component must have a value.
         role: The role played by the component.
-        dtype: The component's data type (string, number, etc.).
-        facets: Additional details such as the component's minimum length.
+        local_dtype: The component's local data type (string, number, etc.).
+        local_facets: Additional local details such as the component's minimum
+            length.
         name: The component's name.
         description: Additional descriptive information about the component.
-        codes: The expected values for the component (e.g. currency codes).
+        local_codes: The expected local values for the component (e.g. currency
+            codes).
         attachment_level: The attachement level (if role = A only).
             Attributes can be attached at different levels such as
             D (for dataset-level attributes), O (for observation-level
@@ -101,13 +103,69 @@ class Component(Struct, frozen=True, omit_defaults=True):
     id: str
     required: bool
     role: Role
-    dtype: DataType = DataType.STRING
-    facets: Optional[Facets] = None
+    concept: Concept
+    local_dtype: Optional[DataType] = None
+    local_facets: Optional[Facets] = None
     name: Optional[str] = None
     description: Optional[str] = None
-    codes: Union[Codelist, Hierarchy, None] = None
+    local_codes: Union[Codelist, Hierarchy, None] = None
     attachment_level: Optional[str] = None
     array_def: Optional[ArrayBoundaries] = None
+
+    @property
+    def dtype(self) -> DataType:
+        """Returns the component data type.
+
+        This will return the local data type (if any) or
+        the data type of the referenced concept (if any).
+        In case neither are set, the data type will default
+        to string.
+
+        Returns:
+            The component data type (local, core or default).
+        """
+        if self.local_dtype:
+            return self.local_dtype
+        elif self.concept.dtype:
+            return self.concept.dtype
+        else:
+            return DataType.STRING
+
+    @property
+    def facets(self) -> Optional[Facets]:
+        """Returns the component facets.
+
+        This will return the local facets (if any) or
+        the facets of the referenced concept (if any), or
+        None in case neither are set.
+
+        Returns:
+            The component facets (local or core).
+        """
+        if self.local_facets:
+            return self.local_facets
+        elif self.concept.facets:
+            return self.concept.facets
+        else:
+            return None
+
+    @property
+    def codes(self) -> Union[Codelist, Hierarchy, None]:
+        """Returns the component codes.
+
+        This will return the local codes (if any) or
+        the codes of the referenced concept (if any), or
+        None in case neither are set.
+
+        Returns:
+            The component codes (local or core).
+        """
+        if self.local_codes:
+            return self.local_codes
+        elif self.concept.codes:
+            return self.concept.codes
+        else:
+            return None
 
     def __str__(self) -> str:
         """Returns a human-friendly description."""
@@ -115,7 +173,10 @@ class Component(Struct, frozen=True, omit_defaults=True):
         for k in self.__annotations__.keys():
             v = self.__getattribute__(k)
             if v:
-                out.append(f"{k}={str(v)}")
+                if k == "concept":
+                    out.append(f"{k}=({str(v)})")
+                else:
+                    out.append(f"{k}={str(v)}")
         return ", ".join(out)
 
 
@@ -260,11 +321,11 @@ class DataflowInfo(Struct, frozen=True, omit_defaults=True):
 
     id: str
     components: Components
-    agency: Organisation
+    agency: Agency
     name: Optional[str] = None
     description: Optional[str] = None
     version: str = "1.0"
-    providers: Sequence[Organisation] = ()
+    providers: Sequence[DataProvider] = ()
     series_count: Optional[int] = None
     obs_count: Optional[int] = None
     start_period: Optional[str] = None

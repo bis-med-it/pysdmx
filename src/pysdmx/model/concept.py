@@ -16,7 +16,7 @@ from typing import Iterator, Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.model import Item, ItemScheme
+from pysdmx.model.__base import Item, ItemScheme
 from pysdmx.model.code import Codelist
 
 
@@ -145,7 +145,7 @@ class Concept(Item, frozen=True, omit_defaults=True):
             which the codes are taken.
     """
 
-    dtype: DataType = DataType.STRING
+    dtype: Optional[DataType] = None
     facets: Optional[Facets] = None
     codes: Optional[Codelist] = None
     enum_ref: Optional[str] = None

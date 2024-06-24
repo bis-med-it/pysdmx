@@ -3,6 +3,8 @@ from typing import Any, Dict, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.errors import ClientError
+
 
 class Annotation(Struct, frozen=True, omit_defaults=True):
     """Annotation class.
@@ -26,6 +28,24 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
     text: Optional[str] = None
     url: Optional[str] = None
     type: Optional[str] = None
+
+    def __post_init__(self) -> None:
+        """Additional validation checks for Annotation."""
+        if (
+            not self.id
+            and not self.title
+            and not self.text
+            and not self.url
+            and not self.type
+        ):
+            raise ClientError(
+                422,
+                "Empty annotation",
+                (
+                    "All fields of the annotation have been left empty."
+                    "Please set at least one."
+                ),
+            )
 
     def __str__(self) -> str:
         """Returns a human-friendly description."""
@@ -159,19 +179,33 @@ class Organisation(Item, frozen=True, omit_defaults=True):
 
     Attributes:
         contacts: The contact of the agency.
+        dataflows: The dataflows relevant for the organisation. For example,
+            the list of dataflows for which a data provider provides data.
     """
 
     contacts: Sequence[Contact] = ()
+    dataflows: Sequence["DataflowRef"] = ()
+
+    def __hash__(self) -> int:
+        """Returns the organisation's hash."""
+        return hash(self.id)
 
 
 class Agency(Organisation, frozen=True, omit_defaults=True):
-    """Agency class.
+    """An organisation that maintains structural metadata.
 
-    Responsible agency for maintaining artefacts
-    such as statistical classifications, glossaries,
+    This includes statistical classifications, glossaries,
     structural metadata such as Data and Metadata Structure
     Definitions, Concepts and Code lists.
     """
+
+
+class DataProvider(Organisation, frozen=True, omit_defaults=True):
+    """An organisation that provides data or metadata."""
+
+
+class DataConsumer(Organisation, frozen=True, omit_defaults=True):
+    """An organisation that collects data or metadata."""
 
 
 class MaintainableArtefact(
@@ -196,6 +230,15 @@ class MaintainableArtefact(
     structure_url: Optional[str] = None
     agency: Union[str, Agency] = ""
 
+    def __post_init__(self) -> None:
+        """Additional validation checks for maintainable artefacts."""
+        if not self.agency:
+            raise ClientError(
+                422,
+                "Missing agency",
+                "Maintainable artefacts must reference an agency.",
+            )
+
 
 class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
     """ItemScheme class.
@@ -210,3 +253,15 @@ class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
 
     items: Sequence[Item] = ()
     is_partial: bool = False
+
+
+class DataflowRef(MaintainableArtefact, frozen=True, omit_defaults=True):
+    """Provide core information about a dataflow.
+
+    Attributes:
+        id: The dataflow identifier (e.g. BIS_MACRO).
+        agency: The organisation (or unit) responsible for the dataflow.
+        name: The dataflow name (e.g. MACRO dataflow).
+        description: Additional descriptive information about the dataflow.
+        version: The version of the dataflow (e.g. 1.0).
+    """

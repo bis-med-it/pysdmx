@@ -1,5 +1,6 @@
 import pytest
 
+from pysdmx.errors import Error
 from pysdmx.model.__base import Annotation
 
 
@@ -60,14 +61,6 @@ def test_not_equal(id):
     assert a1 != a2
 
 
-def test_tostr_empty():
-    a = Annotation()
-
-    s = str(a)
-
-    assert s == ""
-
-
 def test_tostr_id(id):
     a = Annotation(id)
 
@@ -82,3 +75,8 @@ def test_tostr_all(id, title, text, url, type):
     s = str(a)
 
     assert s == f"id={id}, title={title}, text={text}, url={url}, type={type}"
+
+
+def test_empty_annotation_not_allowed():
+    with pytest.raises(Error, match="empty"):
+        Annotation()
