@@ -3,7 +3,7 @@ import itertools
 import numpy as np
 
 from pysdmx.io.xml.sdmx21.__parsing_config import STRTYPE, STRID, VALUE, ID, SERIES, SERIESKEY, ATTRIBUTES, OBS, \
-    OBS_DIM, OBSVALUE, OBSKEY, GROUP, STRSPE, GENERIC, DIM_OBS, exc_attributes
+    OBS_DIM, OBSVALUE, OBSKEY, GROUP, STRSPE, GENERIC, DIM_OBS, exc_attributes, STRREF
 import pandas as pd
 
 from pysdmx.util.handlers import add_list
@@ -11,7 +11,15 @@ from pysdmx.util.handlers import add_list
 chunksize = 50000
 
 
-def get_element_to_list(data, mode):
+class Dataset:
+    def __init__(self, attached_attributes, data, unique_id, structure_type):
+        self.attached_attributes = attached_attributes
+        self.data = data
+        self.unique_id = unique_id
+        self.structure_type = structure_type
+
+
+def __get_element_to_list(data, mode):
     obs = {}
     if VALUE in data[mode]:
         data[mode][VALUE] = add_list(data[mode][VALUE])
@@ -20,7 +28,7 @@ def get_element_to_list(data, mode):
     return obs
 
 
-def process_df(test_list: list, df: pd.DataFrame):
+def __process_df(test_list: list, df: pd.DataFrame):
     if len(test_list) > 0:
         if df is not None:
             df = pd.concat([df, pd.DataFrame(test_list)], ignore_index=True)
@@ -59,12 +67,12 @@ def reading_generic_series(dataset) -> pd.DataFrame:
             else:
                 obs[OBSVALUE.upper()] = None
             if ATTRIBUTES in data:
-                obs = {**obs, **get_element_to_list(data, mode=ATTRIBUTES)}
+                obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
             test_list.append({**keys, **obs})
         if len(test_list) > chunksize:
-            test_list, df = process_df(test_list, df)
+            test_list, df = __process_df(test_list, df)
 
-    test_list, df = process_df(test_list, df)
+    test_list, df = __process_df(test_list, df)
 
     return df
 
@@ -76,18 +84,18 @@ def reading_generic_all(dataset) -> pd.DataFrame:
     dataset[OBS] = add_list(dataset[OBS])
     for data in dataset[OBS]:
         obs = dict()
-        obs = {**obs, **get_element_to_list(data, mode=OBSKEY)}
+        obs = {**obs, **__get_element_to_list(data, mode=OBSKEY)}
         if ID in data[OBSVALUE]:
             obs[data[OBSVALUE][ID]] = data[OBSVALUE][VALUE.lower()]
         else:
             obs[OBSVALUE.upper()] = data[OBSVALUE][VALUE.lower()]
         if ATTRIBUTES in data:
-            obs = {**obs, **get_element_to_list(data, mode=ATTRIBUTES)}
+            obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
         test_list.append({**obs})
         if len(test_list) > chunksize:
-            test_list, df = process_df(test_list, df)
+            test_list, df = __process_df(test_list, df)
 
-    test_list, df = process_df(test_list, df)
+    test_list, df = __process_df(test_list, df)
 
     return df
 
@@ -104,9 +112,9 @@ def reading_str_series(dataset) -> pd.DataFrame:
         for j in data[OBS]:
             test_list.append({**keys, **j})
         if len(test_list) > chunksize:
-            test_list, df = process_df(test_list, df)
+            test_list, df = __process_df(test_list, df)
 
-    test_list, df = process_df(test_list, df)
+    test_list, df = __process_df(test_list, df)
 
     return df
 
@@ -119,8 +127,8 @@ def reading_group_data(dataset) -> pd.DataFrame:
     for data in dataset[GROUP]:
         test_list.append(dict(data.items()))
         if len(test_list) > chunksize:
-            test_list, df = process_df(test_list, df)
-    test_list, df = process_df(test_list, df)
+            test_list, df = __process_df(test_list, df)
+    test_list, df = __process_df(test_list, df)
 
     cols_to_delete = [x for x in df.columns if ':type' in x]
     for x in cols_to_delete:
@@ -131,11 +139,11 @@ def reading_group_data(dataset) -> pd.DataFrame:
     return df
 
 
-def get_at_att_str(dataset):
+def __get_at_att_str(dataset):
     return {k: dataset[k] for k in dataset if k not in exc_attributes}
 
 
-def get_at_att_gen(dataset):
+def __get_at_att_gen(dataset):
     attached_attributes = {}
     if VALUE in dataset[ATTRIBUTES]:
         dataset[ATTRIBUTES][VALUE] = add_list(dataset[ATTRIBUTES][VALUE])
@@ -144,10 +152,13 @@ def get_at_att_gen(dataset):
     return attached_attributes
 
 
-def create_dataset(dataset, metadata, global_mode):
+def create_dataset(dataset, str_info, global_mode):
+    if dataset[STRREF] not in str_info:
+        raise Exception(f'Cannot find the structure reference of this dataset:{dataset[STRREF]}')
+    value = str_info[dataset[STRREF]]
     if STRSPE == global_mode:
         # Dataset info
-        attached_attributes = get_at_att_str(dataset)
+        attached_attributes = __get_at_att_str(dataset)
 
         # Parsing data
         if SERIES in dataset:
@@ -168,7 +179,7 @@ def create_dataset(dataset, metadata, global_mode):
 
         # Dataset info
         if ATTRIBUTES in dataset:
-            attached_attributes = get_at_att_gen(dataset)
+            attached_attributes = __get_at_att_gen(dataset)
         else:
             attached_attributes = {}
 
@@ -177,7 +188,7 @@ def create_dataset(dataset, metadata, global_mode):
             # Generic Series
             df = reading_generic_series(dataset)
             renames = {'OBSVALUE': 'OBS_VALUE',
-                       'ObsDimension': metadata[DIM_OBS]}
+                       'ObsDimension': value[DIM_OBS]}
             df.rename(columns=renames, inplace=True)
         elif OBS in dataset:
             # Generic All Dimensions
@@ -190,7 +201,7 @@ def create_dataset(dataset, metadata, global_mode):
         raise Exception
     dataset = Dataset(attached_attributes=attached_attributes,
                       data=df,
-                      unique_id=metadata[STRID],
-                      structure_type=metadata[STRTYPE])
+                      unique_id=value['unique_id'],
+                      structure_type=value['structure_type'])
 
     return dataset
