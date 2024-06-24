@@ -17,9 +17,11 @@ from pysdmx.model.message import SubmissionResult
 def agency_scheme_path():
     return Path(__file__).parent / "samples" / "agencies.xml"
 
+
 @pytest.fixture()
 def codelist_path():
     return Path(__file__).parent / "samples" / "codelists.xml"
+
 
 @pytest.fixture()
 def item_scheme_path():
@@ -47,6 +49,7 @@ def test_agency_scheme_read(agency_scheme_path):
     agency_sdmx = agency_scheme["SDMX:AGENCIES(1.0)"].items[0]
     assert agency_sdmx.id == "SDMX"
     assert agency_sdmx.name == "SDMX"
+
 
 def test_code_list_read(codelist_path):
     input_str, filetype = process_string_to_read(codelist_path)
