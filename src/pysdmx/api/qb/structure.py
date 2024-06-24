@@ -3,7 +3,7 @@
 from enum import Enum
 from typing import Sequence, Union
 
-from msgspec import Struct
+import msgspec
 
 from pysdmx.api.qb.util import (
     ApiVersion,
@@ -117,7 +117,7 @@ ITEM_SCHEMES = {
     StructureType.HIERARCHICAL_CODELIST,
 }
 
-__INITIAL_RESOURCES = {
+_INITIAL_RESOURCES = {
     StructureType.DATA_STRUCTURE,
     StructureType.METADATA_STRUCTURE,
     StructureType.CATEGORY_SCHEME,
@@ -141,21 +141,21 @@ __INITIAL_RESOURCES = {
     StructureType.ALL,
 }
 
-__V1_3_RESOURCES = {
+_V1_3_RESOURCES = {
     StructureType.ACTUAL_CONSTRAINT,
     StructureType.ALLOWED_CONSTRAINT,
-}.union(__INITIAL_RESOURCES)
+}.union(_INITIAL_RESOURCES)
 
-__V1_5_RESOURCES = {
+_V1_5_RESOURCES = {
     StructureType.TRANSFORMATION_SCHEME,
     StructureType.RULESET_SCHEME,
     StructureType.USER_DEFINED_OPERATOR_SCHEME,
     StructureType.CUSTOM_TYPE_SCHEME,
     StructureType.NAME_PERSONALISATION_SCHEME,
     StructureType.NAME_ALIAS_SCHEME,
-}.union(__V1_3_RESOURCES)
+}.union(_V1_3_RESOURCES)
 
-__V2_0_DEPRECATED = {
+_V2_0_DEPRECATED = {
     StructureType.HIERARCHICAL_CODELIST,
     StructureType.ORGANISATION_SCHEME,
     StructureType.STRUCTURE_SET,
@@ -166,7 +166,7 @@ __V2_0_DEPRECATED = {
     StructureType.NAME_ALIAS_SCHEME,
 }
 
-__V2_0_ADDED = {
+_V2_0_ADDED = {
     StructureType.DATA_CONSTRAINT,
     StructureType.METADATA_CONSTRAINT,
     StructureType.HIERARCHY,
@@ -183,26 +183,26 @@ __V2_0_ADDED = {
     StructureType.METADATA_PROVISION_AGREEMENT,
 }
 
-__V2_0_RESOURCES = (__V1_5_RESOURCES.difference(__V2_0_DEPRECATED)).union(
-    __V2_0_ADDED
+_V2_0_RESOURCES = (_V1_5_RESOURCES.difference(_V2_0_DEPRECATED)).union(
+    _V2_0_ADDED
 )
 
-__API_RESOURCES = {
-    "V1.0.0": __INITIAL_RESOURCES,
-    "V1.0.1": __INITIAL_RESOURCES,
-    "V1.0.2": __INITIAL_RESOURCES,
-    "V1.1.0": __INITIAL_RESOURCES,
-    "V1.2.0": __INITIAL_RESOURCES,
-    "V1.3.0": __V1_3_RESOURCES,
-    "V1.4.0": __V1_3_RESOURCES,
-    "V1.5.0": __V1_5_RESOURCES,
-    "V2.0.0": __V2_0_RESOURCES,
-    "V2.1.0": __V2_0_RESOURCES,
-    "LATEST": __V2_0_RESOURCES,
+_API_RESOURCES = {
+    "V1.0.0": _INITIAL_RESOURCES,
+    "V1.0.1": _INITIAL_RESOURCES,
+    "V1.0.2": _INITIAL_RESOURCES,
+    "V1.1.0": _INITIAL_RESOURCES,
+    "V1.2.0": _INITIAL_RESOURCES,
+    "V1.3.0": _V1_3_RESOURCES,
+    "V1.4.0": _V1_3_RESOURCES,
+    "V1.5.0": _V1_5_RESOURCES,
+    "V2.0.0": _V2_0_RESOURCES,
+    "V2.1.0": _V2_0_RESOURCES,
+    "LATEST": _V2_0_RESOURCES,
 }
 
 
-class StructureQuery(Struct, frozen=True, omit_defaults=True):
+class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     """A query for structural metadata.
 
     Attributes:
@@ -226,109 +226,121 @@ class StructureQuery(Struct, frozen=True, omit_defaults=True):
     detail: StructureDetail = StructureDetail.FULL
     references: StructureReference = StructureReference.NONE
 
+    def validate(self) -> None:
+        """Validate the query."""
+        try:
+            decoder.decode(encoder.encode(self))
+        except Exception as err:
+            raise ClientError(422, "Invalid Structure Query", str(err))
 
-def __check_multiple_items(query: StructureQuery, version: ApiVersion) -> None:
-    check_multiple_items(query.agency_id, version)
-    check_multiple_items(query.resource_id, version)
-    check_multiple_items(query.version, version)
-    check_multiple_items(query.item_id, version)
-    check_multiple_items(query.agency_id, version)
+    def get_url(self, version: ApiVersion) -> str:
+        self.__validate_query(version)
+        return self.__create_full_query(version)
 
+    def __validate_query(self, version: ApiVersion) -> None:
+        self.validate()
+        self.__check_multiple_items(version)
+        if isinstance(self.artefact_type, StructureType):
+            self.__check_artefact_type(self.artefact_type, version)
+        else:
+            for t in self.artefact_type:
+                self.__check_artefact_type(t, version)
+        self.__check_detail(version)
+        self.__check_references(version)
 
-def __check_artefact_type(artefact_type: str, version: ApiVersion) -> None:
-    if "+" in artefact_type:
-        artefacts = artefact_type.split("+")
-    elif "," in artefact_type:
-        artefacts = artefact_type.split(",")
-    else:
-        artefacts = [artefact_type]
-    for a in artefacts:
-        if StructureType(a) not in __API_RESOURCES[version.value.label]:
+    def __check_multiple_items(self, version: ApiVersion) -> None:
+        check_multiple_items(self.agency_id, version)
+        check_multiple_items(self.resource_id, version)
+        check_multiple_items(self.version, version)
+        check_multiple_items(self.item_id, version)
+        check_multiple_items(self.agency_id, version)
+
+    def __check_artefact_type(
+        self, atyp: StructureType, version: ApiVersion
+    ) -> None:
+        if atyp not in _API_RESOURCES[version.value.label]:
             raise ClientError(
                 422,
                 "Validation Error",
-                f"{a} is not valid for SDMX-REST {version.value}.",
+                f"{atyp} is not valid for SDMX-REST {version.value}.",
             )
 
+    def __check_detail(self, version: ApiVersion) -> None:
+        if (
+            version < ApiVersion.V1_3_0
+            and self.detail.value
+            in [
+                "referencepartial",
+                "allcompletestubs",
+                "referencecompletestubs",
+            ]
+        ) or (version < ApiVersion.V2_0_0 and self.detail.value == "raw"):
+            raise ClientError(
+                422,
+                "Validation Error",
+                f"{self.detail} not allowed in SDMX-REST {version.value}.",
+            )
 
-def __check_detail(detail: StructureDetail, version: ApiVersion) -> None:
-    if (
-        version < ApiVersion.V1_3_0
-        and detail
-        in [
-            "referencepartial",
-            "allcompletestubs",
-            "referencecompletestubs",
-        ]
-    ) or (version < ApiVersion.V2_0_0 and detail == "raw"):
-        raise ClientError(
-            422,
-            "Validation Error",
-            f"{detail} not allowed in SDMX-REST {version.value}.",
+    def __check_references(self, version: ApiVersion) -> None:
+        pass
+
+    def __is_item_allowed(
+        self, typ: StructureType, version: ApiVersion
+    ) -> bool:
+        if typ in ITEM_SCHEMES and version > ApiVersion.V1_0_2:
+            return not (
+                version == ApiVersion.V1_1_0
+                and typ == StructureType.HIERARCHICAL_CODELIST
+            )
+        else:
+            return False
+
+    def __to_kw(self, val: str, ver: ApiVersion) -> str:
+        if val == "*" and ver < ApiVersion.V2_0_0:
+            val = "all"
+        elif val == "~" and ver < ApiVersion.V2_0_0:
+            val = "latest"
+        return val
+
+    def __to_kws(
+        self, vals: Union[str, Sequence[str]], ver: ApiVersion
+    ) -> str:
+        vals = [vals] if isinstance(vals, str) else vals
+        mapped = [self.__to_kw(v, ver) for v in vals]
+        sep = "+" if ver < ApiVersion.V2_0_0 else ","
+        return sep.join(mapped)
+
+    def __create_full_query(self, ver: ApiVersion) -> str:
+        u = "/"
+        u += "structure/" if ver > ApiVersion.V1_5_0 else ""
+        t = self.__to_kws(
+            (
+                [self.artefact_type.value]
+                if isinstance(self.artefact_type, StructureType)
+                else [q.value for q in self.artefact_type]
+            ),
+            ver,
         )
+        a = self.__to_kws(self.agency_id, ver)
+        r = self.__to_kws(self.resource_id, ver)
+        v = self.__to_kws(self.version, ver)
+        i = self.__to_kws(self.item_id, ver)
+        u += f"{t}/{a}/{r}/{v}"
+        if isinstance(self.artefact_type, StructureType):
+            ck = [self.__is_item_allowed(self.artefact_type, ver)]
+        else:
+            ck = [self.__is_item_allowed(q, ver) for q in self.artefact_type]
+        u += f"/{i}" if all(ck) else ""
+        u += f"?detail={self.detail.value}&references={self.references.value}"
+        return u
 
 
-def __check_references(
-    references: StructureReference, version: ApiVersion
-) -> None:
-    pass
-
-
-def __validate_query(query: StructureQuery, version: ApiVersion) -> None:
-    __check_multiple_items(query, version)
-    __check_artefact_type(query.artefact_type.value, version)
-    __check_detail(query.detail, version)
-    __check_references(query.references, version)
-
-
-def __is_item_allowed(
-    artefact_type: StructureType, version: ApiVersion
-) -> bool:
-    if artefact_type.value in ITEM_SCHEMES and version >= ApiVersion.V1_1_0:
-        return not (
-            version == ApiVersion.V1_1_0
-            and artefact_type == StructureType.HIERARCHICAL_CODELIST
-        )
-    else:
-        return False
-
-
-def __to_api_eywords(value: str, version: ApiVersion) -> str:
-    if value == "*" and version < ApiVersion.V2_0_0:
-        return "all"
-    elif value == "~" and version < ApiVersion.V2_0_0:
-        return "latest"
-    elif version < ApiVersion.V2_0_0 and "," in value:
-        return value.replace(",", "+")
-    else:
-        return value
-
-
-def __create_full_query(query: StructureQuery, version: ApiVersion) -> str:
-    url = "/"
-    url += "structure/" if version > ApiVersion.V1_5_0 else ""
-    res = __to_api_eywords(query.artefact_type.value, version)
-    agency = __to_api_eywords(query.agency_id, version)
-    id = __to_api_eywords(query.resource_id, version)
-    v = __to_api_eywords(query.version, version)
-    item = __to_api_eywords(query.item_id, version)
-    url += f"{res}/{agency}/{id}/{v}"
-    url += (
-        f"/{item}" if __is_item_allowed(query.artefact_type, version) else ""
-    )
-    url += f"?detail={query.detail.value}&references={query.references.value}"
-    return url
-
-
-def get_url(query: StructureQuery, version: ApiVersion) -> str:
-    """Gets the SDMX-REST URL for the supplied parameters."""
-    __validate_query(query, version)
-    return __create_full_query(query, version)
+decoder = msgspec.json.Decoder(StructureQuery)
+encoder = msgspec.json.Encoder()
 
 
 __all__ = [
     "ApiVersion",
-    "get_url",
     "StructureDetail",
     "StructureFormat",
     "StructureQuery",
