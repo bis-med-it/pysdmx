@@ -38,7 +38,7 @@ class ApiVersion(Enum):
         """Whether this version is less than the supplied one."""
         return self.value.number < other.value.number
 
-    def __lte__(self, other: "ApiVersion") -> bool:
+    def __le__(self, other: "ApiVersion") -> bool:
         """Whether this version is less or equal to the supplied one."""
         return self.value.number <= other.value.number
 
@@ -46,7 +46,7 @@ class ApiVersion(Enum):
         """Whether this version is greater than the supplied one."""
         return self.value.number > other.value.number
 
-    def __gte__(self, other: "ApiVersion") -> bool:
+    def __ge__(self, other: "ApiVersion") -> bool:
         """Whether this version is greater or equal to the supplied one."""
         return self.value.number >= other.value.number
 
