@@ -1,13 +1,22 @@
+"""Build SDMX-REST structure queries."""
+
 from enum import Enum
-from typing import FrozenSet
+from typing import Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.api.qb.util import (
+    ApiVersion,
+    check_multiple_items,
+    REST_ALL,
+    REST_LATEST,
+)
 from pysdmx.errors import ClientError
-from pysdmx.api.qb.util import ApiVersion, check_multiple_items
 
 
 class StructureDetail(Enum):
+    """The desired amount of information to be returned."""
+
     FULL = "full"
     ALL_STUBS = "allstubs"
     REFERENCE_STUBS = "referencestubs"
@@ -18,6 +27,7 @@ class StructureDetail(Enum):
 
 
 class StructureReference(Enum):
+    """Which additional artefacts to include in the response."""
 
     NONE = "none"
     PARENTS = "parents"
@@ -29,6 +39,8 @@ class StructureReference(Enum):
 
 
 class StructureType(Enum):
+    """The type of structural metadata to be returned."""
+
     DATA_STRUCTURE = "datastructure"
     METADATA_STRUCTURE = "metadatastructure"
     CATEGORY_SCHEME = "categoryscheme"
@@ -51,7 +63,6 @@ class StructureType(Enum):
     ATTACHMENT_CONSTRAINT = "attachmentconstraint"
     ACTUAL_CONSTRAINT = "actualconstraint"
     ALLOWED_CONSTRAINT = "allowedconstraint"
-    STRUCTURE = "structure"
     TRANSFORMATION_SCHEME = "transformationscheme"
     RULESET_SCHEME = "rulesetscheme"
     USER_DEFINED_OPERATOR_SCHEME = "userdefinedoperatorscheme"
@@ -72,16 +83,16 @@ class StructureType(Enum):
     REPORTING_TAXONOMY_MAP = "reportingtaxonomymap"
     METADATA_PROVIDER_SCHEME = "metadataproviderscheme"
     METADATA_PROVISION_AGREEMENT = "metadataprovisionagreement"
-    ALL = "*"
+    ALL = REST_ALL
 
 
 class StructureFormat(Enum):
+    """The response formats."""
+
     SDMX_ML_2_1_STRUCTURE = "application/vnd.sdmx.structure+xml;version=2.1"
     SDMX_ML_3_0_STRUCTURE = "application/vnd.sdmx.structure+xml;version=3.0.0"
     SDMX_JSON_1_0_0 = "application/vnd.sdmx.structure+json;version=1.0.0"
     SDMX_JSON_2_0_0 = "application/vnd.sdmx.structure+json;version=2.0.0"
-    SDMX_JSON = "application/vnd.sdmx.structure+json;version=2.0.0"
-    SDMX_EDI = "application/vnd.sdmx.structure+edi;version=1.0"
 
 
 ITEM_SCHEMES = {
@@ -127,7 +138,7 @@ __INITIAL_RESOURCES = {
     StructureType.CATEGORISATION,
     StructureType.CONTENT_CONSTRAINT,
     StructureType.ATTACHMENT_CONSTRAINT,
-    StructureType.STRUCTURE,
+    StructureType.ALL,
 }
 
 __V1_3_RESOURCES = {
@@ -192,11 +203,26 @@ __API_RESOURCES = {
 
 
 class StructureQuery(Struct, frozen=True, omit_defaults=True):
-    artefact_type: StructureType = StructureType.ALL
-    agency_id: str = "*"
-    resource_id: str = "*"
-    version: str = "~"
-    item_id: str = "*"
+    """A query for structural metadata.
+
+    Attributes:
+        artefact_type: The type(s) of structural metadata to be returned.
+        agency_id: The agency (or agencies) maintaining the artefact(s)
+            to be returned.
+        resource_id: The id(s) of the artefact(s) to be returned.
+        version: The version(s) of the artefact(s) to be returned.
+        item_id: The id(s) of the item(s) to be returned.
+        detail: The desired amount of information to be returned.
+        references: The additional artefact(s) to include in the response.
+    """
+
+    artefact_type: Union[StructureType, Sequence[StructureType]] = (
+        StructureType.ALL
+    )
+    agency_id: Union[str, Sequence[str]] = REST_ALL
+    resource_id: Union[str, Sequence[str]] = REST_ALL
+    version: Union[str, Sequence[str]] = REST_LATEST
+    item_id: Union[str, Sequence[str]] = REST_ALL
     detail: StructureDetail = StructureDetail.FULL
     references: StructureReference = StructureReference.NONE
 
@@ -259,13 +285,10 @@ def __is_item_allowed(
     artefact_type: StructureType, version: ApiVersion
 ) -> bool:
     if artefact_type.value in ITEM_SCHEMES and version >= ApiVersion.V1_1_0:
-        if (
+        return not (
             version == ApiVersion.V1_1_0
             and artefact_type == StructureType.HIERARCHICAL_CODELIST
-        ):
-            return False
-        else:
-            return True
+        )
     else:
         return False
 
@@ -298,10 +321,17 @@ def __create_full_query(query: StructureQuery, version: ApiVersion) -> str:
 
 
 def get_url(query: StructureQuery, version: ApiVersion) -> str:
+    """Gets the SDMX-REST URL for the supplied parameters."""
     __validate_query(query, version)
     return __create_full_query(query, version)
 
 
-query = StructureQuery(StructureType.DATAFLOW, "BIS", "CBS")
-print(get_url(query, ApiVersion.V1_5_0))
-print(get_url(query, ApiVersion.V2_0_0))
+__all__ = [
+    "ApiVersion",
+    "get_url",
+    "StructureDetail",
+    "StructureFormat",
+    "StructureQuery",
+    "StructureReference",
+    "StructureType",
+]
