@@ -2,6 +2,7 @@
 
 from enum import Enum
 import re
+from typing import Sequence, Union
 
 from msgspec import Struct
 
@@ -51,13 +52,21 @@ class ApiVersion(Enum):
 
 
 MULT_SEP = re.compile(r"\+")
+REST_ALL = "*"
+REST_LATEST = "~"
 
 
-def check_multiple_items(value: str, version: ApiVersion) -> None:
+def check_multiple_items(
+    value: Union[str, Sequence[str]], version: ApiVersion
+) -> None:
     """Whether multiple items are supported in the supplied API version."""
-    if version < ApiVersion.V1_3_0 and re.search(MULT_SEP, value):
+
+    if not isinstance(value, str) and version < ApiVersion.V1_3_0:
         raise ClientError(
             422,
             "Validation Error",
             f"Multiple items not allowed in SDMX-REST {version.value.label}.",
         )
+
+
+__all__ = ["ApiVersion"]
