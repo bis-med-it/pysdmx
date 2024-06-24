@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Copyright SDMX 2010  -   www.sdmx.org -->
+<message:Structure xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                   xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+                   xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message ../../schemas/SDMXMessage.xsd">
+    <message:Header>
+        <message:ID>SDMX_COG</message:ID>
+        <message:Test>false</message:Test>
+        <message:Prepared>2010-11-13T08:00:33+08:00</message:Prepared>
+        <message:Sender id="SDMX"/>
+    </message:Header>
+    <message:Structures>
+        <str:Codelists>
+            <str:Codelist id="CL_DECIMALS" agencyID="SDMX" version="1.0"
+                          urn="urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_DECIMALS(1.0)"
+            >
+                <com:Name>Code list for Decimals (DECIMALS)</com:Name>
+                <com:Description xml:lang="en">It provides a list of values showing the number of decimal digits used
+                    in the data.
+                </com:Description>
+                <str:Code id="0">
+                    <com:Name>Zero</com:Name>
+                </str:Code>
+                <str:Code id="1">
+                    <com:Name>One</com:Name>
+                </str:Code>
+                <str:Code id="2">
+                    <com:Name>Two</com:Name>
+                </str:Code>
+                <str:Code id="3">
+                    <com:Name>Three</com:Name>
+                </str:Code>
+                <str:Code id="4">
+                    <com:Name>Four</com:Name>
+                </str:Code>
+                <str:Code id="5">
+                    <com:Name>Five</com:Name>
+                </str:Code>
+                <str:Code id="6">
+                    <com:Name>Six</com:Name>
+                </str:Code>
+                <str:Code id="7">
+                    <com:Name>Seven</com:Name>
+                </str:Code>
+                <str:Code id="8">
+                    <com:Name>Eight</com:Name>
+                </str:Code>
+                <str:Code id="9">
+                    <com:Name>Nine</com:Name>
+                </str:Code>
+            </str:Codelist>
+            <str:Codelist id="CL_FREQ" agencyID="SDMX" version="1.0"
+                          urn="urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_FREQ(1.0)"
+                          structureURL="https://registry.sdmx.org/ws/public/sdmxapi/rest/codelist/SDMX/CL_FREQ/1.0"
+                          serviceURL="https://registry.sdmx.org/ws/public/sdmxapi/rest/codelist/SDMX/CL_FREQ/1.0"
+                          isExternalReference="false"
+                          isFinal="true">
+                <com:Name>Code list for Frequency (FREQ)</com:Name>
+                <com:Description xml:lang="en">It provides a list of values indicating the "frequency" of the data
+                    (e.g. monthly) and, thus, indirectly, also implying the type of "time reference" that could be used
+                    for identifying the data with respect time.
+                </com:Description>
+                <str:Code id="A">
+                    <com:Annotations>
+                        <com:Annotation>
+                            <com:AnnotationTitle>NOTE 1</com:AnnotationTitle>
+                            <com:AnnotationType>NOTE</com:AnnotationType>
+                            <com:AnnotationURL>
+                                https://example.com/sdmx
+                            </com:AnnotationURL>
+                            <com:AnnotationText xml:lang="en">It is typically used for annual data. This can also
+                                serve cases of multi-annual data (data that appear once every two, three or, possibly,
+                                five years). Descriptive information on the multiannual characteristics (e.g. frequency
+                                of the series in practice and other methodological information can be provided at the
+                                dataflow level, as long as these characteristics are applicable for the entire
+                                dataflow).
+                            </com:AnnotationText>
+                        </com:Annotation>
+                    </com:Annotations>
+                    <com:Name>Annual</com:Name>
+                </str:Code>
+                <str:Code id="B">
+                    <com:Annotations>
+                        <com:Annotation>
+                            <com:AnnotationText xml:lang="en">Similar to "daily", however there are no observations
+                                for Saturday and Sunday (so, neither "missing values" nor "numeric values" should be
+                                provided for Saturday and Sunday). This treatment ("business") is one way to deal with
+                                such cases, but it is not the only option. Such a time series could alternatively be
+                                considered daily ("D"), thus, with missing values in the weekend.
+                            </com:AnnotationText>
+                        </com:Annotation>
+                    </com:Annotations>
+                    <com:Name>Daily - business week</com:Name>
+                </str:Code>
+                <str:Code id="D">
+                    <com:Name>Daily</com:Name>
+                </str:Code>
+                <str:Code id="M">
+                    <com:Name>Monthly</com:Name>
+                </str:Code>
+                <str:Code id="N">
+                    <com:Annotations>
+                        <com:Annotation>
+                            <com:AnnotationType>NOTE</com:AnnotationType>
+                        </com:Annotation>
+                    </com:Annotations>
+                    <com:Name>Minutely</com:Name>
+                </str:Code>
+                <str:Code id="Q">
+                    <com:Name>Quarterly</com:Name>
+                </str:Code>
+                <str:Code id="S">
+                    <com:Name>Half Yearly, semester</com:Name>
+                </str:Code>
+                <str:Code id="W">
+                    <com:Name>Weekly</com:Name>
+                </str:Code>
+            </str:Codelist>
+            <str:Codelist id="CL_CONF_STATUS" agencyID="SDMX" version="1.0"
+                          urn="urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_CONF_STATUS(1.0)">
+                <com:Name>code list for Confidentiality Status (CONF_STATUS)</com:Name>
+                <com:Description xml:lang="en">this code list provides coded information about the sensitivity and
+                    confidentiality status of the data.
+                </com:Description>
+                <str:Code id="C">
+                    <com:Annotations>
+                        <com:Annotation>
+                            <com:AnnotationType>NOTE</com:AnnotationType>
+                            <com:AnnotationText xml:lang="en">Confidential statistical information (primary
+                                confidentiality) due to identifiable respondents. Measures also should be taken to
+                                prevent not only direct access, but also indirect deduction or calculation by other
+                                users and parties, probably by considering and treating additional observations as
+                                "confidential" (secondary confidentiality management).
+                            </com:AnnotationText>
+                        </com:Annotation>
+                    </com:Annotations>
+                    <com:Name>Confidential statistical information</com:Name>
+                </str:Code>
+                <str:Code id="D">
+                    <com:Annotations>
+                        <com:Annotation>
+                            <com:AnnotationType>NOTE</com:AnnotationType>
+                            <com:AnnotationText xml:lang="en">Used by the sender of the data to flag (beyond the
+                                confidential statistical information) one or more additional observations of the dataset
+                                so that the receiver knows that he/she should suppress these observations in subsequent
+                                stages of processing (especially, dissemination) in order to prevent third parties to
+                                indirectly deduct (e.g. through accounting identities or other formulas) the
+                                observations that are genuinely flagged with "C".
+                            </com:AnnotationText>
+                        </com:Annotation>
+                    </com:Annotations>
+                    <com:Name>Secondary confidentiality set by the sender, not for publication</com:Name>
+                </str:Code>
+                <str:Code id="F">
+                    <com:Annotations>
+                        <com:Annotation>
+                            <com:AnnotationType>NOTE</com:AnnotationType>
+                            <com:AnnotationText xml:lang="en">It is used for observations for observations for which
+                                there are no special sensitivity considerations and which can be freely shared. Please
+                                note: In some institutional environments the term "unclassified" is used in a sense that
+                                still denotes implied restrictions in the circulation of information. If this is the
+                                case, this organisation may probably consider that "free" (value F) is not the
+                                appropriate corresponding tag for this kind of "unclassified" category and it may be
+                                that "non-publishable / restricted" (value N) may be more appropriate. The focus of this
+                                code is not to describe and anticipate all potential permissible uses (e.g. permission
+                                to re-disseminate). Thus, the use of "F" does not allow safe assumptions with respect to
+                                the permission to "re-disseminate" (freely or at a price) the received or accessed
+                                information (e.g. on web or paper), especially on a massive and regular basis (legal and
+                                copyright constraints may apply). Usually, source organisations provide information and
+                                guidance on re-dissemination issues, either on their websites or on their paper
+                                publications.
+                            </com:AnnotationText>
+                        </com:Annotation>
+                    </com:Annotations>
+                    <com:Name>Free</com:Name>
+                </str:Code>
+                <str:Code id="N">
+                    <com:Annotations>
+                        <com:Annotation>
+                            <com:AnnotationType>NOTE</com:AnnotationType>
+                            <com:AnnotationText xml:lang="en">Used to denote observations that are restricted for
+                                internal use only within organisations.
+                            </com:AnnotationText>
+                        </com:Annotation>
+                    </com:Annotations>
+                    <com:Name>Not for publication, restricted for internal use only</com:Name>
+                </str:Code>
+                <str:Code id="S">
+                    <com:Annotations>
+                        <com:Annotation>
+                            <com:AnnotationType>NOTE</com:AnnotationType>
+                            <com:AnnotationText xml:lang="en">If senders do not manage the secondary confidentiality
+                                in their data and/or there are also other countries' data involved (with the intention
+                                to eventually compile a regional-wide aggregate that is going to be published), the
+                                value "S" is used by the receiver to flag additional suppressed observations (within
+                                sender's data and/or within the datasets of other senders) in subsequent stages of
+                                processing (especially, dissemination) in order to prevent third parties to indirectly
+                                deduct the observations that were genuinely flagged with "C" by the sender.
+                            </com:AnnotationText>
+                        </com:Annotation>
+                    </com:Annotations>
+                    <com:Name>Secondary confidentiality set and managed by the receiver, not for publication
+                    </com:Name>
+                </str:Code>
+            </str:Codelist>
+            <str:Codelist id="CL_OBS_STATUS" agencyID="SDMX" version="1.0"
+                          urn="urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_OBS_STATUS(1.0)">
+                <com:Name>Observation status</com:Name>
+                <com:Description xml:lang="en">This code list provides coded information about the "status" of an
+                    observation (with respect events such as the ones reflected in the codes composing the code list).
+                </com:Description>
+                <str:Code id="A">
+                    <com:Annotations>
+                        <com:Annotation>
+                            <com:AnnotationType>NOTE</com:AnnotationType>
+                            <com:AnnotationText xml:lang="en">Normal is the default value (if no value is provided)
+                                and is used when no special coded qualification is assumed. Usually, in this case, it
+                                can be assumed that the source agency assigns sufficient confidence to the provided
+                                observation and/or the value is not expected to be dramatically revised.
+                            </com:AnnotationText>
+                        </com:Annotation>
+                    </com:Annotations>
+                    <com:Name>Normal</com:Name>
+                </str:Code>
+                <str:Code id="B">
+                    <com:Annotations>
+                        <com:Annotation>
+                            <com:AnnotationType>NOTE</com:AnnotationType>
+                            <com:AnnotationText xml:lang="en">Break observations are characterised as such when
+                                different content exist or a different methodology has been applied to this observation
+                                as compared with the preceding one (the one given for the previous period).
+                            </com:AnnotationText>
+                        </com:Annotation>
+                    </com:Annotations>
+                    <com:Name>Break</com:Name>
+                </str:Code>
+                <str:Code id="E">
+                    <com:Annotations>
+                        <com:Annotation>
+                            <com:AnnotationType>NOTE</com:AnnotationType>
+                            <com:AnnotationText xml:lang="en">Observation obtained through an estimation methodology
+                                (e.g. to produce back-casts) or based on the use of a limited amount of data or ad hoc
+                                sampling and through additional calculations (e.g. to produce a value at an early stage
+                                of the production stage while not all data are available). It may also be used in case
+                                of experimental data (e.g. in the context of a pilot ahead of a full scale production
+                                process) or in case of data of (anticipated/assessed) low quality. If needed, additional
+                                (uncoded) information can be provided through (free text) "comments" at the observation
+                                level or at a higher level.
+                            </com:AnnotationText>
+                        </com:Annotation>
+                    </com:Annotations>
+                    <com:Name>Estimated value</com:Name>
+                </str:Code>
+                <str:Code id="F">
+                    <com:Name>Forecast value</com:Name>
+                </str:Code>
+                <str:Code id="I">
+                    <com:Annotations>
+                        <com:Annotation>
+                            <com:AnnotationType>NOTE</com:AnnotationType>
+                            <com:AnnotationText xml:lang="en">Observation imputed by international organisations to
+                                replace or fill gaps in national data series, in line with the recommendations of the
+                                Committee for the Coordination of Statistical Activities (CCSA).
+                            </com:AnnotationText>
+                        </com:Annotation>
+                    </com:Annotations>
+                    <com:Name>Imputed value (CCSA definition)</com:Name>
+                </str:Code>
+                <str:Code id="M">
+                    <com:Annotations>
+                        <com:Annotation>
+                            <com:AnnotationType>NOTE</com:AnnotationType>
+                            <com:AnnotationText xml:lang="en">Data can be missing due to various reasons: data do not
+                                exist, are insignificant (or not collected because they are below a certain threshold),
+                                are unreliable, are not relevant for the period, or other reason not elsewhere
+                                specified.
+                            </com:AnnotationText>
+                        </com:Annotation>
+                    </com:Annotations>
+                    <com:Name>Missing value</com:Name>
+                </str:Code>
+                <str:Code id="P">
+                    <com:Annotations>
+                        <com:Annotation>
+                            <com:AnnotationType>NOTE</com:AnnotationType>
+                            <com:AnnotationText xml:lang="en">An observation is characterised as "provisional" when
+                                the source agency - while it bases its calculations on its standard production
+                                methodology - considers that the data, almost certainly, are expected to be revised.
+                            </com:AnnotationText>
+                        </com:Annotation>
+                    </com:Annotations>
+                    <com:Name>Provisional value</com:Name>
+                </str:Code>
+                <str:Code id="S">
+                    <com:Annotations>
+                        <com:Annotation>
+                            <com:AnnotationType>NOTE</com:AnnotationType>
+                            <com:AnnotationText xml:lang="en">A known strike that occurred in the corresponding
+                                period that may have affected the observation or caused a missing value.
+                            </com:AnnotationText>
+                        </com:Annotation>
+                    </com:Annotations>
+                    <com:Name>Strike</com:Name>
+                </str:Code>
+            </str:Codelist>
+            <str:Codelist id="CL_UNIT_MULT" agencyID="SDMX" version="1.0"
+                          urn="urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_UNIT_MULT(1.0)">
+                <com:Name>code list for the Unit Multiplier (UNIT_MULT)</com:Name>
+                <str:Code id="0">
+                    <com:Name>Units</com:Name>
+                </str:Code>
+                <str:Code id="1">
+                    <com:Name>Tens</com:Name>
+                </str:Code>
+                <str:Code id="2">
+                    <com:Name>Hundreds</com:Name>
+                </str:Code>
+                <str:Code id="3">
+                    <com:Name>Thousands</com:Name>
+                </str:Code>
+                <str:Code id="4">
+                    <com:Name>Tens of thousands</com:Name>
+                </str:Code>
+                <str:Code id="6">
+                    <com:Name>Millions</com:Name>
+                </str:Code>
+                <str:Code id="9">
+                    <com:Name>Billions</com:Name>
+                </str:Code>
+                <str:Code id="12">
+                    <com:Name>Trillions</com:Name>
+                </str:Code>
+                <str:Code id="15">
+                    <com:Name>Quadrillions</com:Name>
+                </str:Code>
+            </str:Codelist>
+        </str:Codelists>
+    </message:Structures>
+</message:Structure>

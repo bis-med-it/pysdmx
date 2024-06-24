@@ -3,7 +3,7 @@
 from typing import Any, Dict, List
 
 # Common
-ID = "ID"
+ID = "id"
 AGENCY_ID = "agencyID"
 XMLNS = "xmlns"
 VERSION = "version"
@@ -19,9 +19,15 @@ REF = "Ref"
 NAME = "Name"
 DESC = "Description"
 STR_URL = "structureURL"
-STR_URL_LOW = "structureUrl"
+STR_URL_LOW = "structure_url"
 SER_URL = "serviceURL"
-SER_URL_LOW = "serviceUrl"
+SER_URL_LOW = "service_url"
+IS_EXTERNAL_REF = "isExternalReference"
+IS_EXTERNAL_REF_LOW = "is_external_reference"
+IS_FINAL = "isFinal"
+IS_FINAL_LOW = "is_final"
+IS_PARTIAL = "isPartial"
+IS_PARTIAL_LOW = "is_partial"
 # General
 ANNOTATIONS = "Annotations"
 
@@ -63,10 +69,10 @@ TEXT_TYPE_LOW = "text_type"
 CONTACT = "Contact"
 DEPARTMENT = "Department"
 ROLE = "Role"
-URIS = "URIs"
-EMAILS = "Emails"
-TELEPHONES = "Telephones"
-FAXES = "Faxes"
+URIS = "uris"
+EMAILS = "emails"
+TELEPHONES = "telephones"
+FAXES = "faxes"
 URI = "URI"
 EMAIL = "Email"
 X400 = "X400"
@@ -74,7 +80,7 @@ TELEPHONE = "Telephone"
 FAX = "Fax"
 
 # Extras
-AGENCY = "agency"
+AGENCY = "Agency"
 PAR_ID = "maintainableParentID"
 PAR_VER = "maintainableParentVersion"
 
@@ -90,21 +96,21 @@ CONCEPTS = "ConceptSchemes"
 CS = "ConceptScheme"
 CODE = "Code"
 
-FacetType = [
-    "min_length",
-    "max_length",
-    "min_value",
-    "max_value",
-    "start_value",
-    "end_value",
-    "interval",
-    "time_interval",
-    "decimals",
-    "pattern",
-    "start_time",
-    "end_time",
-    "is_sequence",
-]
+FacetType = {
+    "minLength": "min_length",
+    "maxLength": "max_length",
+    "minValue": "min_value",
+    "maxValue": "max_value",
+    "startValue": "start_value",
+    "endValue": "end_value",
+    "interval": "interval",
+    "timeInterval": "time_interval",
+    "decimals": "decimals",
+    "pattern": "pattern",
+    "startTime": "start_time",
+    "endTime": "end_time",
+    "isSequence": "is_sequence",
+}
 
 
 def unique_id(agencyID: str, id_: str, version: str) -> str:
