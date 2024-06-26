@@ -1,29 +1,34 @@
 """SDMX 2.1 reader package."""
 
+from pathlib import Path
 from typing import Any, Dict, Optional
 
-from pathlib import Path
 import xmltodict
 
 from pysdmx.errors import ClientError
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.__parsing_config import (
+    DATASET,
     ERROR,
     ERROR_CODE,
     ERROR_MESSAGE,
     ERROR_TEXT,
     GENERIC,
+    HEADER,
     REG_INTERFACE,
     STRSPE,
     STRUCTURE,
-    XML_OPTIONS, HEADER, STRID, REF, AGENCY_ID, ID, VERSION, URN, STR_USAGE, DIM_OBS, STRTYPE, DATASET,
+    XML_OPTIONS,
 )
 from pysdmx.io.xml.sdmx21.doc_validation import validate_doc
+from pysdmx.io.xml.sdmx21.reader.data_read import (
+    __extract_structure,
+    create_dataset,
+)
 from pysdmx.io.xml.sdmx21.reader.submission_reader import (
     handle_registry_interface,
 )
-from pysdmx.io.xml.sdmx21.reader.data_read import create_dataset
-from pysdmx.util.handlers import add_list, split_from_urn
+from pysdmx.util.handlers import add_list
 
 MODES = {
     MessageType.GenericDataSet.value: GENERIC,
@@ -35,10 +40,10 @@ MODES = {
 
 
 def read_xml(
-        infile: str,
-        validate: bool = True,
-        mode: Optional[MessageType] = None,
-        use_dataset_id: bool = False,
+    infile: str,
+    validate: bool = True,
+    mode: Optional[MessageType] = None,
+    use_dataset_id: bool = False,
 ) -> Dict[str, Any]:
     """Reads an SDMX-ML file and returns a dictionary with the parsed data.
 
@@ -74,7 +79,7 @@ def read_xml(
 
 
 def __generate_sdmx_objects_from_xml(
-        dict_info: Dict[str, Any], use_dataset_id: bool = False
+    dict_info: Dict[str, Any], use_dataset_id: bool = False
 ) -> Dict[str, Any]:
     """Generates SDMX objects from the XML dictionary (xmltodict).
 
@@ -106,10 +111,19 @@ def __generate_sdmx_objects_from_xml(
     raise ValueError("Cannot parse this sdmx data")
 
 
-def __parse_dataset(message_info, mode):
+def __parse_dataset(message_info: Dict[str, Any], mode):
+    """Parse dataset.
+
+    Args:
+        message_info: It will parse the datasets to extract.
+        mode: Represents the type of xml file it is.
+        It can be StructureSpecificData or GenericData.
+
+    Returns:
+        datasets: A parsed dataset.
+    """
     str_info = __extract_structure(message_info[HEADER][STRUCTURE])
-    dataset_info = message_info[DATASET]
-    dataset_info = add_list(dataset_info)
+    dataset_info = add_list(message_info[DATASET])
     datasets = {}
     for dataset in dataset_info:
         ds = create_dataset(dataset, str_info, mode)
@@ -117,44 +131,14 @@ def __parse_dataset(message_info, mode):
     return datasets
 
 
-def __get_ids_from_structure(element: dict):
-    if REF in element:
-        agency_id = element[REF][AGENCY_ID]
-        id_ = element[REF][ID]
-        version = element[REF][VERSION]
-        return agency_id, id_, version
-    elif URN in element:
-        return split_from_urn(element[URN])
-    raise Exception('Can not extract structure reference')
+if __name__ == "__main__":
+    basepath = Path(__file__).parent / "gen_ser.xml"
+    with open(basepath, "r") as f:
+        content = f.read()
+    result = read_xml(content)
+    dataset = result["BIS:BIS_DER(1.0)"]
 
-
-def __get_elements_from_structure(structure):
-    if STRUCTURE in structure:
-        structure_type = "datastructure"
-        tuple_ids = __get_ids_from_structure(structure[STRUCTURE])
-
-    elif STR_USAGE in structure:
-        structure_type = "dataflow"
-        tuple_ids = __get_ids_from_structure(structure[STR_USAGE])
-    else:
-        return None, None, None, None
-    return tuple_ids + (structure_type,)
-
-
-def __extract_structure(structure):
-    structure = add_list(structure)
-    str_info = {}
-    for str_item in structure:
-        (agency_id, id_,
-         version, structure_type) = __get_elements_from_structure(str_item)
-        if agency_id is not None:
-            str_id = f"{agency_id}:{id_}({version})"
-        else:
-            str_id = f"{id_}({version})"
-        str_info[str_item[STRID]] = {DIM_OBS: str_item[DIM_OBS],
-                                     'unique_id': str_id,
-                                     'structure_type': structure_type}
-
-    return str_info
-
-
+    print(dataset.unique_id)
+    print(dataset.structure_type)
+    print(dataset.attached_attributes)
+    print(dataset.data)
