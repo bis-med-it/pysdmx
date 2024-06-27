@@ -79,7 +79,7 @@ class StructureReference(Enum):
     METADATA_PROVIDER_SCHEME = "metadataproviderscheme"
     METADATA_PROVISION_AGREEMENT = "metadataprovisionagreement"
 
-    def is_artefact_type(self):
+    def is_artefact_type(self) -> bool:
         """Whether the references points to a type of artefacts."""
         core_refs = [
             "none",
@@ -389,14 +389,7 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     def __create_full_query(self, ver: ApiVersion) -> str:
         u = "/"
         u += "structure/" if ver > ApiVersion.V1_5_0 else ""
-        t = self.__to_kws(
-            (
-                [self.artefact_type.value]
-                if isinstance(self.artefact_type, StructureType)
-                else [q.value for q in self.artefact_type]
-            ),
-            ver,
-        )
+        t = self.__to_kws(self.artefact_type.value, ver)
         a = self.__to_kws(self.agency_id, ver)
         r = self.__to_kws(self.resource_id, ver)
         v = self.__to_kws(self.version, ver)
