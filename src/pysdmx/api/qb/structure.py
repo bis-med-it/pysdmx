@@ -36,6 +36,60 @@ class StructureReference(Enum):
     CHILDREN = "children"
     DESCENDANTS = "descendants"
     ALL = "all"
+    DATA_STRUCTURE = "datastructure"
+    METADATA_STRUCTURE = "metadatastructure"
+    CATEGORY_SCHEME = "categoryscheme"
+    CONCEPT_SCHEME = "conceptscheme"
+    CODELIST = "codelist"
+    HIERARCHICAL_CODELIST = "hierarchicalcodelist"
+    ORGANISATION_SCHEME = "organisationscheme"
+    AGENCY_SCHEME = "agencyscheme"
+    DATA_PROVIDER_SCHEME = "dataproviderscheme"
+    DATA_CONSUMER_SCHEME = "dataconsumerscheme"
+    ORGANISATION_UNIT_SCHEME = "organisationunitscheme"
+    DATAFLOW = "dataflow"
+    METADATAFLOW = "metadataflow"
+    REPORTING_TAXONOMY = "reportingtaxonomy"
+    PROVISION_AGREEMENT = "provisionagreement"
+    STRUCTURE_SET = "structureset"
+    PROCESS = "process"
+    CATEGORISATION = "categorisation"
+    CONTENT_CONSTRAINT = "contentconstraint"
+    ATTACHMENT_CONSTRAINT = "attachmentconstraint"
+    ACTUAL_CONSTRAINT = "actualconstraint"
+    ALLOWED_CONSTRAINT = "allowedconstraint"
+    TRANSFORMATION_SCHEME = "transformationscheme"
+    RULESET_SCHEME = "rulesetscheme"
+    USER_DEFINED_OPERATOR_SCHEME = "userdefinedoperatorscheme"
+    CUSTOM_TYPE_SCHEME = "customtypescheme"
+    NAME_PERSONALISATION_SCHEME = "namepersonalisationscheme"
+    NAME_ALIAS_SCHEME = "namealiasscheme"
+    DATA_CONSTRAINT = "dataconstraint"
+    METADATA_CONSTRAINT = "metadataconstraint"
+    HIERARCHY = "hierarchy"
+    HIERARCHY_ASSOCIATION = "hierarchyassociation"
+    VTL_MAPPING_SCHEME = "vtlmappingscheme"
+    VALUE_LIST = "valuelist"
+    STRUCTURE_MAP = "structuremap"
+    REPRESENTATION_MAP = "representationmap"
+    CONCEPT_SCHEME_MAP = "conceptschememap"
+    CATEGORY_SCHEME_MAP = "categoryschememap"
+    ORGANISATION_SCHEME_MAP = "organisationschememap"
+    REPORTING_TAXONOMY_MAP = "reportingtaxonomymap"
+    METADATA_PROVIDER_SCHEME = "metadataproviderscheme"
+    METADATA_PROVISION_AGREEMENT = "metadataprovisionagreement"
+
+    def is_artefact_type(self):
+        core_refs = [
+            "none",
+            "parents",
+            "parentsandsiblings",
+            "ancestors",
+            "children",
+            "descendants",
+            "all",
+        ]
+        return self.value not in core_refs
 
 
 class StructureType(Enum):
@@ -289,7 +343,17 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             )
 
     def __check_references(self, version: ApiVersion) -> None:
-        pass
+        if self.references.is_artefact_type():
+            self.__check_artefact_type(self.references, version)
+        elif (
+            self.references == StructureReference.ANCESTORS
+            and version < ApiVersion.V2_0_0
+        ):
+            raise ClientError(
+                422,
+                "Validation Error",
+                f"{self.references} not allowed in SDMX-REST {version.value}.",
+            )
 
     def __is_item_allowed(
         self, typ: StructureType, version: ApiVersion
