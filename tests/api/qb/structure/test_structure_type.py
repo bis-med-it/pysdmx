@@ -1,4 +1,4 @@
-from pysdmx.api.qb.structure import StructureType, ITEM_SCHEMES
+from pysdmx.api.qb.structure import ITEM_SCHEMES, StructureType
 
 
 def test_expected_types():

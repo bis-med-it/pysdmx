@@ -10,32 +10,32 @@ from pysdmx.api.qb.util import ApiVersion, REST_ALL, REST_LATEST
 from pysdmx.errors import ClientError
 
 
-@pytest.fixture
+@pytest.fixture()
 def typ():
     return StructureType.DATA_STRUCTURE
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "BIS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "CBS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def version():
     return "1.0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def detail():
     return StructureDetail.ALL_STUBS
 
 
-@pytest.fixture
+@pytest.fixture()
 def refs():
     return StructureReference.CHILDREN
 

@@ -29,5 +29,5 @@ def test_api_enum():
     for v in ApiVersion:
         assert v.value.label in expected
         if prev is not None:
-            v.value.number > prev.value.number
+            assert v.value.number > prev.value.number
         prev = v

@@ -12,52 +12,52 @@ from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import ClientError
 
 
-@pytest.fixture
+@pytest.fixture()
 def typ():
     return StructureType.CODELIST
 
 
-@pytest.fixture
+@pytest.fixture()
 def hcl():
     return StructureType.HIERARCHICAL_CODELIST
 
 
-@pytest.fixture
+@pytest.fixture()
 def hier():
     return StructureType.HIERARCHY
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "BIS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "CL_FREQ"
 
 
-@pytest.fixture
+@pytest.fixture()
 def version():
     return "1.0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def item():
     return "A"
 
 
-@pytest.fixture
+@pytest.fixture()
 def items():
     return ["A", "M"]
 
 
-@pytest.fixture
+@pytest.fixture()
 def detail():
     return StructureDetail.FULL
 
 
-@pytest.fixture
+@pytest.fixture()
 def refs():
     return StructureReference.NONE
 
@@ -75,8 +75,9 @@ def test_url_item_query_until_1_0_2(
     refs: StructureReference,
     api_version: ApiVersion,
 ):
+    q = StructureQuery(typ, agency, res, version, item, detail, refs)
+
     with pytest.raises(ClientError):
-        q = StructureQuery(typ, agency, res, version, item, detail, refs)
         q.get_url(api_version)
 
 
@@ -218,8 +219,9 @@ def test_url_multiple_items_until_1_2_0(
     refs: StructureReference,
     api_version: ApiVersion,
 ):
+    q = StructureQuery(typ, agency, res, version, items, detail, refs)
+
     with pytest.raises(ClientError):
-        q = StructureQuery(typ, agency, res, version, items, detail, refs)
         q.get_url(api_version)
 
 

@@ -26,27 +26,27 @@ refs_initial = [
 refs_2_0_0 = [StructureReference.ANCESTORS]
 
 
-@pytest.fixture
+@pytest.fixture()
 def typ():
     return StructureType.DATAFLOW
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "BIS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "CBS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def version():
     return "1.0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def detail():
     return StructureDetail.FULL
 
@@ -142,10 +142,11 @@ def test_url_2_0_0_refs_before_2_0_0(
     detail: StructureDetail,
     api_version: ApiVersion,
 ):
+    q = StructureQuery(
+        typ, agency, res, version, detail=detail, references=references
+    )
+
     with pytest.raises(ClientError):
-        q = StructureQuery(
-            typ, agency, res, version, detail=detail, references=references
-        )
         q.get_url(api_version)
 
 
@@ -264,15 +265,16 @@ def test_url_v1_3_0_type_before_1_3_0(
     reference: StructureType,
     api_version: ApiVersion,
 ):
+    q = StructureQuery(
+        typ,
+        agency,
+        res,
+        version,
+        detail=detail,
+        references=StructureReference(reference.value),
+    )
+
     with pytest.raises(ClientError):
-        q = StructureQuery(
-            typ,
-            agency,
-            res,
-            version,
-            detail=detail,
-            references=StructureReference(reference.value),
-        )
         q.get_url(api_version)
 
 
@@ -290,13 +292,14 @@ def test_url_v1_5_0_type_before_1_5_0(
     reference: StructureType,
     api_version: ApiVersion,
 ):
+    q = StructureQuery(
+        typ,
+        agency,
+        res,
+        version,
+        detail=detail,
+        references=StructureReference(reference.value),
+    )
+
     with pytest.raises(ClientError):
-        q = StructureQuery(
-            typ,
-            agency,
-            res,
-            version,
-            detail=detail,
-            references=StructureReference(reference.value),
-        )
         q.get_url(api_version)

@@ -80,6 +80,7 @@ class StructureReference(Enum):
     METADATA_PROVISION_AGREEMENT = "metadataprovisionagreement"
 
     def is_artefact_type(self):
+        """Whether the references points to a type of artefacts."""
         core_refs = [
             "none",
             "parents",
@@ -282,10 +283,13 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         """Validate the query."""
         try:
             decoder.decode(encoder.encode(self))
-        except Exception as err:
-            raise ClientError(422, "Invalid Structure Query", str(err))
+        except msgspec.DecodeError as err:
+            raise ClientError(
+                422, "Invalid Structure Query", str(err)
+            ) from err
 
     def get_url(self, version: ApiVersion) -> str:
+        """The URL for the query in the selected SDMX-REST API version."""
         self.__validate_query(version)
         return self.__create_full_query(version)
 

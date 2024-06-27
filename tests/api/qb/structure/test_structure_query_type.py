@@ -4,9 +4,9 @@ import pytest
 from tests.api.qb.structure.test_common import (
     types_1_3_0,
     types_1_5_0,
-    types_2_0_0_deprecated,
     types_2_0_0_added,
     types_2_0_0_all,
+    types_2_0_0_deprecated,
     types_initial,
 )
 
@@ -20,37 +20,37 @@ from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import ClientError
 
 
-@pytest.fixture
+@pytest.fixture()
 def typ():
     return StructureType.CATEGORISATION
 
 
-@pytest.fixture
+@pytest.fixture()
 def typs():
     return [StructureType.CATEGORISATION, StructureType.METADATAFLOW]
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "SDMX"
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "CORE"
 
 
-@pytest.fixture
+@pytest.fixture()
 def version():
     return "1.0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def detail():
     return StructureDetail.FULL
 
 
-@pytest.fixture
+@pytest.fixture()
 def refs():
     return StructureReference.NONE
 
@@ -59,8 +59,9 @@ def refs():
 def test_url_multiple_types_until_1_2_0(
     typs: List[StructureType], agency: str, res: str, api_version: ApiVersion
 ):
+    q = StructureQuery(typs, agency, res)
+
     with pytest.raises(ClientError):
-        q = StructureQuery(typs, agency, res)
         q.get_url(api_version)
 
 
@@ -272,10 +273,11 @@ def test_url_v1_3_0_type_before_1_3_0(
     refs: StructureReference,
     api_version: ApiVersion,
 ):
+    q = StructureQuery(
+        atype, agency, res, version, detail=detail, references=refs
+    )
+
     with pytest.raises(ClientError):
-        q = StructureQuery(
-            atype, agency, res, version, detail=detail, references=refs
-        )
         q.get_url(api_version)
 
 
@@ -293,10 +295,11 @@ def test_url_v1_5_0_type_before_1_5_0(
     refs: StructureReference,
     api_version: ApiVersion,
 ):
+    q = StructureQuery(
+        atype, agency, res, version, detail=detail, references=refs
+    )
+
     with pytest.raises(ClientError):
-        q = StructureQuery(
-            atype, agency, res, version, detail=detail, references=refs
-        )
         q.get_url(api_version)
 
 
@@ -314,10 +317,11 @@ def test_url_v2_0_0_deprecated(
     refs: StructureReference,
     api_version: ApiVersion,
 ):
+    q = StructureQuery(
+        atype, agency, res, version, detail=detail, references=refs
+    )
+
     with pytest.raises(ClientError):
-        q = StructureQuery(
-            atype, agency, res, version, detail=detail, references=refs
-        )
         q.get_url(api_version)
 
 
@@ -367,10 +371,11 @@ def test_url_v2_0_0_added_before_2_0_0(
     refs: StructureReference,
     api_version: ApiVersion,
 ):
+    q = StructureQuery(
+        atype, agency, res, version, detail=detail, references=refs
+    )
+
     with pytest.raises(ClientError):
-        q = StructureQuery(
-            atype, agency, res, version, detail=detail, references=refs
-        )
         q.get_url(api_version)
 
 

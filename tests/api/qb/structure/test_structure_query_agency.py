@@ -12,37 +12,37 @@ from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import ClientError
 
 
-@pytest.fixture
+@pytest.fixture()
 def typ():
     return StructureType.METADATA_STRUCTURE
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "SDMX"
 
 
-@pytest.fixture
+@pytest.fixture()
 def agencies():
     return ["BIS", "SDMX"]
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "REF_META"
 
 
-@pytest.fixture
+@pytest.fixture()
 def version():
     return "1.0.0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def detail():
     return StructureDetail.FULL
 
 
-@pytest.fixture
+@pytest.fixture()
 def refs():
     return StructureReference.NONE
 
@@ -53,8 +53,9 @@ def refs():
 def test_url_multiple_agencies_until_1_2_0(
     typ: StructureType, agencies: List[str], res: str, api_version: ApiVersion
 ):
+    q = StructureQuery(typ, agencies, res)
+
     with pytest.raises(ClientError):
-        q = StructureQuery(typ, agencies, res)
         q.get_url(api_version)
 
 

@@ -12,37 +12,37 @@ from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import ClientError
 
 
-@pytest.fixture
+@pytest.fixture()
 def typ():
     return StructureType.DATA_STRUCTURE
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "BIS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "CBS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def version():
     return "1.0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def versions():
     return ["1.0", "2.0"]
 
 
-@pytest.fixture
+@pytest.fixture()
 def detail():
     return StructureDetail.FULL
 
 
-@pytest.fixture
+@pytest.fixture()
 def refs():
     return StructureReference.NONE
 
@@ -57,8 +57,9 @@ def test_url_multiple_versions_until_1_2_0(
     versions: List[str],
     api_version: ApiVersion,
 ):
+    q = StructureQuery(typ, agency, res, versions)
+
     with pytest.raises(ClientError):
-        q = StructureQuery(typ, agency, res, versions)
         q.get_url(api_version)
 
 

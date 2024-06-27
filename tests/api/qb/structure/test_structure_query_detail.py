@@ -27,27 +27,27 @@ details_1_3_0 = [
 details_2_0_0 = [StructureDetail.RAW]
 
 
-@pytest.fixture
+@pytest.fixture()
 def typ():
     return StructureType.DATAFLOW
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "BIS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "CBS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def version():
     return "1.0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def refs():
     return StructureReference.NONE
 
@@ -200,10 +200,11 @@ def test_url_2_0_0_details_before_2_0_0(
     detail: StructureDetail,
     api_version: ApiVersion,
 ):
+    q = StructureQuery(
+        typ, agency, res, version, detail=detail, references=refs
+    )
+
     with pytest.raises(ClientError):
-        q = StructureQuery(
-            typ, agency, res, version, detail=detail, references=refs
-        )
         q.get_url(api_version)
 
 
@@ -220,8 +221,9 @@ def test_url_1_3_0_details_before_1_3_0(
     detail: StructureDetail,
     api_version: ApiVersion,
 ):
+    q = StructureQuery(
+        typ, agency, res, version, detail=detail, references=refs
+    )
+
     with pytest.raises(ClientError):
-        q = StructureQuery(
-            typ, agency, res, version, detail=detail, references=refs
-        )
         q.get_url(api_version)
