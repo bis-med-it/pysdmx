@@ -344,7 +344,8 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
 
     def __check_references(self, version: ApiVersion) -> None:
         if self.references.is_artefact_type():
-            self.__check_artefact_type(self.references, version)
+            rt = StructureType(self.references.value)
+            self.__check_artefact_type(rt, version)
         elif (
             self.references == StructureReference.ANCESTORS
             and version < ApiVersion.V2_0_0
