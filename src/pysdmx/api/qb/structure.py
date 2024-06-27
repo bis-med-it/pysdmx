@@ -216,9 +216,7 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         references: The additional artefact(s) to include in the response.
     """
 
-    artefact_type: Union[StructureType, Sequence[StructureType]] = (
-        StructureType.ALL
-    )
+    artefact_type: StructureType = StructureType.ALL
     agency_id: Union[str, Sequence[str]] = REST_ALL
     resource_id: Union[str, Sequence[str]] = REST_ALL
     version: Union[str, Sequence[str]] = REST_LATEST
