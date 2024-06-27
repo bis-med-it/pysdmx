@@ -296,11 +296,7 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     def __validate_query(self, version: ApiVersion) -> None:
         self.validate()
         self.__check_multiple_items(version)
-        if isinstance(self.artefact_type, StructureType):
-            self.__check_artefact_type(self.artefact_type, version)
-        else:
-            for t in self.artefact_type:
-                self.__check_artefact_type(t, version)
+        self.__check_artefact_type(self.artefact_type, version)
         self.__check_item(version)
         self.__check_detail(version)
         self.__check_references(version)
@@ -395,10 +391,7 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         v = self.__to_kws(self.version, ver)
         i = self.__to_kws(self.item_id, ver)
         u += f"{t}/{a}/{r}/{v}"
-        if isinstance(self.artefact_type, StructureType):
-            ck = [self.__is_item_allowed(self.artefact_type, ver)]
-        else:
-            ck = [self.__is_item_allowed(q, ver) for q in self.artefact_type]
+        ck = [self.__is_item_allowed(self.artefact_type, ver)]
         u += f"/{i}" if all(ck) else ""
         u += f"?detail={self.detail.value}&references={self.references.value}"
         return u
