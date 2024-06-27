@@ -18,6 +18,16 @@ def typ():
 
 
 @pytest.fixture
+def hcl():
+    return StructureType.HIERARCHICAL_CODELIST
+
+
+@pytest.fixture
+def hier():
+    return StructureType.HIERARCHY
+
+
+@pytest.fixture
 def agency():
     return "BIS"
 
@@ -257,6 +267,59 @@ def test_url_multiple_items_since_2_0_0(
     )
 
     q = StructureQuery(typ, agency, res, version, items, detail, refs)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v == ApiVersion.V1_1_0)
+)
+def test_url_hcl_before_1_2_0(
+    hcl: StructureType,
+    agency: str,
+    res: str,
+    version: str,
+    item: str,
+    detail: StructureDetail,
+    refs: StructureReference,
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/{hcl.value}/{agency}/{res}/{version}"
+        f"?detail={detail.value}&references={refs.value}"
+    )
+
+    q = StructureQuery(hcl, agency, res, version, item, detail, refs)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V1_2_0 and v < ApiVersion.V2_0_0
+    ),
+)
+def test_url_hcl_since_1_2_0(
+    hcl: StructureType,
+    agency: str,
+    res: str,
+    version: str,
+    item: str,
+    detail: StructureDetail,
+    refs: StructureReference,
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/{hcl.value}/{agency}/{res}/{version}/{item}"
+        f"?detail={detail.value}&references={refs.value}"
+    )
+
+    q = StructureQuery(hcl, agency, res, version, item, detail, refs)
     url = q.get_url(api_version)
 
     assert url == expected
