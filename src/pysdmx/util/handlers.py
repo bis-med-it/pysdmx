@@ -1,9 +1,12 @@
 """Handlers file provide functions to make the code more readable."""
 
+from typing import Any, Dict
+
+
 # import pandas as pd
 
 
-def first_element_dict(obj_: dict):
+def first_element_dict(obj_: Dict[int, Any]) -> None:
     """First element dict.
 
     Args:
@@ -21,7 +24,7 @@ def first_element_dict(obj_: dict):
         return None
 
 
-def split_unique_id(obj_: str):
+def split_unique_id(obj_: str) -> tuple[str, str, str]:
     """Split unique id.
 
     Args:
@@ -39,7 +42,7 @@ def split_unique_id(obj_: str):
     return agencyID, id, version
 
 
-def split_from_urn(obj_: str, split_id=True):
+def split_from_urn(obj_: str, split_id: bool = True) -> Any:
     """Split from urn.
 
     Args:
@@ -47,7 +50,7 @@ def split_from_urn(obj_: str, split_id=True):
         split_id: True splits the id.
 
     Returns:
-        full id may be returned.
+        full id.
     """
     full_id = obj_.split("=", 1)[1]
     if split_id:
@@ -55,7 +58,7 @@ def split_from_urn(obj_: str, split_id=True):
     return full_id
 
 
-def add_list(element: any):
+def add_list(element: Any) -> Any:
     """Adds data contained in the xml Dataset into a list if it is possible.
 
     Args:
@@ -69,18 +72,18 @@ def add_list(element: any):
     return element
 
 
-def unique_id(agencyID, id_, version):
+def unique_id(agency_id: str, id_: str, version: str) -> str:
     """Unique_id.
 
     Args:
-        agencyID: Name of the agency.
+        agency_id: Name of the agency.
         id_: The id.
         version: Version.
 
     Returns:
         A string with the info contained in the reference.
     """
-    return f"{agencyID}:{id_}({version})"
+    return f"{agency_id}:{id_}({version})"
 
 
 # def drop_na_all(df: pd.DataFrame):

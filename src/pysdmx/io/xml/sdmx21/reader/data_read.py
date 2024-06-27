@@ -1,7 +1,7 @@
 """Module that holds the necessary functions to read xml files."""
 
 import itertools
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -47,7 +47,13 @@ class Dataset:
 
     __slots__ = ("attached_attributes", "data", "unique_id", "structure_type")
 
-    def __init__(self, attached_attributes, data, unique_id, structure_type):
+    def __init__(
+        self,
+        attached_attributes: Any,
+        data: Any,
+        unique_id: Any,
+        structure_type: Any,
+    ):
         """Attributes."""
         self.attached_attributes = attached_attributes
         self.data = data
@@ -55,7 +61,7 @@ class Dataset:
         self.structure_type = structure_type
 
 
-def __get_element_to_list(data, mode):
+def __get_element_to_list(data: Dict[str, Any], mode: Any) -> Dict[str, Any]:
     obs = {}
     if VALUE in data[mode]:
         data[mode][VALUE] = add_list(data[mode][VALUE])
@@ -64,7 +70,9 @@ def __get_element_to_list(data, mode):
     return obs
 
 
-def __process_df(test_list: list, df: pd.DataFrame):
+def __process_df(
+    test_list: List[Dict[str, Any]], df: Optional[pd.DataFrame]
+) -> Any:
     if len(test_list) > 0:
         if df is not None:
             df = pd.concat([df, pd.DataFrame(test_list)], ignore_index=True)
@@ -76,7 +84,7 @@ def __process_df(test_list: list, df: pd.DataFrame):
     return test_list, df
 
 
-def __reading_generic_series(dataset) -> pd.DataFrame:
+def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
     # Generic Series
     test_list = []
     df = None
@@ -112,13 +120,13 @@ def __reading_generic_series(dataset) -> pd.DataFrame:
     return df
 
 
-def __reading_generic_all(dataset) -> pd.DataFrame:
+def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
     # Generic All Dimensions
     test_list = []
     df = None
     dataset[OBS] = add_list(dataset[OBS])
     for data in dataset[OBS]:
-        obs = {}
+        obs: Dict[str, Any] = {}
         obs = {**obs, **__get_element_to_list(data, mode=OBSKEY)}
         if ID in data[OBSVALUE]:
             obs[data[OBSVALUE][ID]] = data[OBSVALUE][VALUE.lower()]
@@ -135,7 +143,7 @@ def __reading_generic_all(dataset) -> pd.DataFrame:
     return df
 
 
-def __reading_str_series(dataset) -> pd.DataFrame:
+def __reading_str_series(dataset: Dict[str, Any]) -> pd.DataFrame:
     # Structure Specific Series
     test_list = []
     df = None
@@ -154,7 +162,7 @@ def __reading_str_series(dataset) -> pd.DataFrame:
     return df
 
 
-def __reading_group_data(dataset) -> pd.DataFrame:
+def __reading_group_data(dataset: Dict[str, Any]) -> pd.DataFrame:
     # Structure Specific Group Data
     test_list = []
     df = None
@@ -174,12 +182,12 @@ def __reading_group_data(dataset) -> pd.DataFrame:
     return df
 
 
-def __get_at_att_str(dataset):
+def __get_at_att_str(dataset: Dict[str, Any]) -> Dict[str, Any]:
     """Gets the elements of the dataset if it is Structure Specific Data."""
     return {k: dataset[k] for k in dataset if k not in exc_attributes}
 
 
-def __get_at_att_gen(dataset):
+def __get_at_att_gen(dataset: Dict[str, Any]) -> Dict[str, Any]:
     """Gets all the elements if it is Generic data."""
     attached_attributes = {}
     if VALUE in dataset[ATTRIBUTES]:
@@ -189,7 +197,7 @@ def __get_at_att_gen(dataset):
     return attached_attributes
 
 
-def __get_ids_from_structure(element: Dict[str, Any]):
+def __get_ids_from_structure(element: Dict[str, Any]) -> Any:
     """Gets the agency_id, id and version of the structure.
 
     Args:
@@ -213,7 +221,7 @@ def __get_ids_from_structure(element: Dict[str, Any]):
     raise Exception("Can not extract structure reference")
 
 
-def __get_elements_from_structure(structure):
+def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
     """Gets elements according to the xml type of file.
 
     Args:
@@ -238,7 +246,7 @@ def __get_elements_from_structure(structure):
     return tuple_ids + (structure_type,)
 
 
-def __extract_structure(structure):
+def __extract_structure(structure: Any) -> Any:
     """Extracts elements contained in the structure."""
     structure = add_list(structure)
     str_info = {}
@@ -259,8 +267,13 @@ def __extract_structure(structure):
     return str_info
 
 
-def create_dataset(dataset, str_info, global_mode):
-    """Takes the information contained in the xml files to fulfill the dataset and return a pandas dataframe.
+def create_dataset(
+    dataset: Any, str_info: Dict[str, Any], global_mode: Any
+) -> Dataset:
+    """Creates the dataset from the xml file.
+
+    Takes the information contained in the xml files
+    to fulfill the dataset and return a pandas dataframe.
 
     Args:
         dataset: The dataset created.

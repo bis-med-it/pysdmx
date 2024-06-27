@@ -111,16 +111,15 @@ def __generate_sdmx_objects_from_xml(
     raise ValueError("Cannot parse this sdmx data")
 
 
-def __parse_dataset(message_info: Dict[str, Any], mode):
+def __parse_dataset(message_info: Dict[str, Any], mode: str) -> Dict[str, Any]:
     """Parse dataset.
 
     Args:
-        message_info: It will parse the datasets to extract.
-        mode: Represents the type of xml file it is.
-        It can be StructureSpecificData or GenericData.
+        message_info: Dict.
+        mode: Str.
 
     Returns:
-        datasets: A parsed dataset.
+        A dictionary of datasets.
     """
     str_info = __extract_structure(message_info[HEADER][STRUCTURE])
     dataset_info = add_list(message_info[DATASET])
