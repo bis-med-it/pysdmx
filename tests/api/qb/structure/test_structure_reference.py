@@ -1,7 +1,10 @@
-from pysdmx.api.qb.structure import StructureReference
+from pysdmx.api.qb.structure import StructureReference, StructureType
 
 
 def test_expected_references():
+    artefacts_types = [
+        a.value for a in StructureType if a != StructureType.ALL
+    ]
     expected = [
         "none",
         "parents",
@@ -11,6 +14,7 @@ def test_expected_references():
         "descendants",
         "all",
     ]
+    expected.extend(artefacts_types)
 
     assert len(StructureReference) == len(expected)
     for ref in StructureReference:
