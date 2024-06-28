@@ -415,7 +415,7 @@ def test_url_v2_0_0_type(
 def test_url_omit_default_type_before_2_0_0(
     api_version: ApiVersion,
 ):
-    expected = f"/structure"
+    expected = "/structure"
 
     q = StructureQuery()
     url = q.get_url(api_version, True)
@@ -429,7 +429,7 @@ def test_url_omit_default_type_before_2_0_0(
 def test_url_omit_default_type_since_2_0_0(
     api_version: ApiVersion,
 ):
-    expected = f"/structure"
+    expected = "/structure"
 
     q = StructureQuery()
     url = q.get_url(api_version, True)
