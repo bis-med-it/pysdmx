@@ -370,6 +370,13 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         else:
             return False
 
+    def __to_type_kw(self, val: StructureType, ver: ApiVersion) -> str:
+        if val == StructureType.ALL and ver < ApiVersion.V2_0_0:
+            out = "structure"
+        else:
+            out = val.value
+        return out
+
     def __to_kw(self, val: str, ver: ApiVersion) -> str:
         if val == "*" and ver < ApiVersion.V2_0_0:
             val = "all"
@@ -387,8 +394,8 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
 
     def __create_full_query(self, ver: ApiVersion) -> str:
         u = "/"
-        u += "structure/" if ver > ApiVersion.V1_5_0 else ""
-        t = self.__to_kws(self.artefact_type.value, ver)
+        u += "structure/" if ver >= ApiVersion.V2_0_0 else ""
+        t = self.__to_type_kw(self.artefact_type, ver)
         a = self.__to_kws(self.agency_id, ver)
         r = self.__to_kws(self.resource_id, ver)
         v = self.__to_kws(self.version, ver)
@@ -400,9 +407,8 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         return u
 
     def __create_short_query(self, ver: ApiVersion) -> str:
-        u = "/"
-        u += "structure/" if ver > ApiVersion.V1_5_0 else ""
-        t = self.__to_kws(self.artefact_type.value, ver)
+        u = "/structure" if ver >= ApiVersion.V2_0_0 else ""
+        t = self.__to_type_kw(self.artefact_type, ver)
         a = self.__to_kws(self.agency_id, ver)
         r = self.__to_kws(self.resource_id, ver)
         v = self.__to_kws(self.version, ver)
@@ -413,9 +419,15 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         vu = f"/{v}{iu}" if iu or self.version != REST_LATEST else ""
         ru = f"/{r}{vu}" if vu or self.resource_id != REST_ALL else ""
         au = f"/{a}{ru}" if ru or self.agency_id != REST_ALL else ""
-        tu = (
-            f"{t}{au}" if au or self.artefact_type != StructureType.ALL else ""
-        )
+
+        if ver >= ApiVersion.V2_0_0:
+            tu = (
+                f"/{t}{au}"
+                if au or self.artefact_type != StructureType.ALL
+                else ""
+            )
+        else:
+            tu = f"/{t}{au}"
         u += f"{tu}"
         u += (
             "?"

@@ -78,7 +78,7 @@ def test_url_default_type_before_2_0_0(
     api_version: ApiVersion,
 ):
     expected = (
-        f"/all/{agency}/{res}/{version}"
+        f"/structure/{agency}/{res}/{version}"
         f"?detail={detail.value}&references={refs.value}"
     )
 
@@ -407,3 +407,31 @@ def test_url_v2_0_0_type(
     url = q.get_url(api_version)
 
     assert url in expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
+)
+def test_url_omit_default_type_before_2_0_0(
+    api_version: ApiVersion,
+):
+    expected = f"/structure"
+
+    q = StructureQuery()
+    url = q.get_url(api_version, True)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+)
+def test_url_omit_default_type_since_2_0_0(
+    api_version: ApiVersion,
+):
+    expected = f"/structure"
+
+    q = StructureQuery()
+    url = q.get_url(api_version, True)
+
+    assert url == expected
