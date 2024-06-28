@@ -1,27 +1,9 @@
 """Handlers file provide functions to make the code more readable."""
 
-from typing import Any, Dict
+from typing import Any
 
 
 # import pandas as pd
-
-
-def first_element_dict(obj_: Dict[int, Any]) -> None:
-    """First element dict.
-
-    Args:
-        obj_: An object
-
-    Returns:
-        dict: A dict with the first element.
-    """
-    if len(obj_) != 0:
-        values_view = obj_.values()
-        value_iterator = iter(values_view)
-        first_value = next(value_iterator)
-        return first_value
-    else:
-        return None
 
 
 def split_unique_id(obj_: str) -> tuple[str, str, str]:

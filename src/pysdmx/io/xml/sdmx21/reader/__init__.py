@@ -1,6 +1,5 @@
 """SDMX 2.1 reader package."""
 
-from pathlib import Path
 from typing import Any, Dict, Optional
 
 import xmltodict
@@ -128,16 +127,3 @@ def __parse_dataset(message_info: Dict[str, Any], mode: str) -> Dict[str, Any]:
         ds = create_dataset(dataset, str_info, mode)
         datasets[ds.unique_id] = ds
     return datasets
-
-
-if __name__ == "__main__":
-    basepath = Path(__file__).parent / "gen_ser.xml"
-    with open(basepath, "r") as f:
-        content = f.read()
-    result = read_xml(content)
-    dataset = result["BIS:BIS_DER(1.0)"]
-
-    print(dataset.unique_id)
-    print(dataset.structure_type)
-    print(dataset.attached_attributes)
-    print(dataset.data)
