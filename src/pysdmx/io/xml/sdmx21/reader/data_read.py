@@ -92,17 +92,15 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
     for series in dataset[SERIES]:
         keys = {}
         # Series Keys
-        if not isinstance(series[SERIESKEY][VALUE], list):
-            series[SERIESKEY][VALUE] = [series[SERIESKEY][VALUE]]
+        series[SERIESKEY][VALUE] = add_list(series[SERIESKEY][VALUE])
         for v in series[SERIESKEY][VALUE]:
             keys[v[ID]] = v[VALUE.lower()]
         if ATTRIBUTES in series:
-            if not isinstance(series[ATTRIBUTES][VALUE], list):
-                series[ATTRIBUTES][VALUE] = [series[ATTRIBUTES][VALUE]]
+            series[ATTRIBUTES][VALUE] = add_list(series[ATTRIBUTES][VALUE])
             for v in series[ATTRIBUTES][VALUE]:
                 keys[v[ID]] = v[VALUE.lower()]
-        if not isinstance(series[OBS], list):
-            series[OBS] = [series[OBS]]
+        series[OBS] = add_list(series[OBS])
+
         for data in series[OBS]:
             obs = {OBS_DIM: data[OBS_DIM][VALUE.lower()]}
             if OBSVALUE in data:
