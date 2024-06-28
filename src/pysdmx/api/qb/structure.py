@@ -407,9 +407,11 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         r = self.__to_kws(self.resource_id, ver)
         v = self.__to_kws(self.version, ver)
         i = self.__to_kws(self.item_id, ver)
-        u += f"{t}/{a}/{r}/{v}"
+
         ck = self.__is_item_allowed(self.artefact_type, ver)
-        u += f"/{i}" if ck and self.item_id != REST_ALL else ""
+        iu = f"/{i}" if ck and self.item_id != REST_ALL else ""
+        vu = f"/{v}" if iu or self.version != REST_LATEST else ""
+        u += f"{t}/{a}/{r}{vu}{iu}"
         u += (
             "?"
             if self.detail != StructureDetail.FULL
