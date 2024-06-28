@@ -330,7 +330,7 @@ def test_url_hcl_since_1_2_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
-def test_url_omit_default_references_before_2_0_0(
+def test_url_omit_default_item_before_2_0_0(
     typ: StructureType,
     agency: str,
     res: str,
@@ -351,7 +351,7 @@ def test_url_omit_default_references_before_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_omit_default_references_since_2_0_0(
+def test_url_omit_default_item_since_2_0_0(
     typ: StructureType,
     agency: str,
     res: str,
