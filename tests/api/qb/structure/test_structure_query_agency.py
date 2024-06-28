@@ -212,3 +212,33 @@ def test_url_single_agency_since_2_0_0(
     url = q.get_url(api_version)
 
     assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
+)
+def test_url_omit_default_agency_before_2_0_0(
+    typ: StructureType,
+    api_version: ApiVersion,
+):
+    expected = f"/{typ.value}"
+
+    q = StructureQuery(typ)
+    url = q.get_url(api_version, True)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+)
+def test_url_omit_default_agency_since_2_0_0(
+    typ: StructureType,
+    api_version: ApiVersion,
+):
+    expected = f"/structure/{typ.value}"
+
+    q = StructureQuery(typ)
+    url = q.get_url(api_version, True)
+
+    assert url == expected
