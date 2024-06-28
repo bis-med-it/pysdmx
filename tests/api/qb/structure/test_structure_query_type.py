@@ -435,3 +435,33 @@ def test_url_omit_default_type_since_2_0_0(
     url = q.get_url(api_version, True)
 
     assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
+)
+def test_url_add_defaults_if_required_before_2_0_0(
+    version: str,
+    api_version: ApiVersion,
+):
+    expected = f"/structure/all/all/{version}"
+
+    q = StructureQuery(version=version)
+    url = q.get_url(api_version, True)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+)
+def test_url_add_defaults_if_required_since_2_0_0(
+    version: str,
+    api_version: ApiVersion,
+):
+    expected = f"/structure/*/*/*/{version}"
+
+    q = StructureQuery(version=version)
+    url = q.get_url(api_version, True)
+
+    assert url == expected
