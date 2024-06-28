@@ -189,8 +189,6 @@ def test_url_omit_default_version_since_2_0_0(
     agency: str,
     res: str,
     version: str,
-    detail: StructureDetail,
-    refs: StructureReference,
     api_version: ApiVersion,
 ):
     version = "~"
