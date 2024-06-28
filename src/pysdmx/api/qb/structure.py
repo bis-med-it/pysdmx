@@ -288,10 +288,13 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                 422, "Invalid Structure Query", str(err)
             ) from err
 
-    def get_url(self, version: ApiVersion) -> str:
+    def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
         """The URL for the query in the selected SDMX-REST API version."""
         self.__validate_query(version)
-        return self.__create_full_query(version)
+        if omit_defaults:
+            return self.__create_short_query(version)
+        else:
+            return self.__create_full_query(version)
 
     def __validate_query(self, version: ApiVersion) -> None:
         self.validate()
@@ -394,6 +397,41 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         ck = [self.__is_item_allowed(self.artefact_type, ver)]
         u += f"/{i}" if all(ck) else ""
         u += f"?detail={self.detail.value}&references={self.references.value}"
+        return u
+
+    def __create_short_query(self, ver: ApiVersion) -> str:
+        u = "/"
+        u += "structure/" if ver > ApiVersion.V1_5_0 else ""
+        t = self.__to_kws(self.artefact_type.value, ver)
+        a = self.__to_kws(self.agency_id, ver)
+        r = self.__to_kws(self.resource_id, ver)
+        v = self.__to_kws(self.version, ver)
+        i = self.__to_kws(self.item_id, ver)
+        u += f"{t}/{a}/{r}/{v}"
+        ck = [self.__is_item_allowed(self.artefact_type, ver)]
+        u += f"/{i}" if all(ck) else ""
+        u += (
+            "?"
+            if self.detail != StructureDetail.FULL
+            or self.references != StructureReference.NONE
+            else ""
+        )
+        u += (
+            f"detail={self.detail.value}"
+            if self.detail != StructureDetail.FULL
+            else ""
+        )
+        u += (
+            "&"
+            if self.detail != StructureDetail.FULL
+            and self.references != StructureReference.NONE
+            else ""
+        )
+        u += (
+            f"references={self.references.value}"
+            if self.references != StructureReference.NONE
+            else ""
+        )
         return u
 
 

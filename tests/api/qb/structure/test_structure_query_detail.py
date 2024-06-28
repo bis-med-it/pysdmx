@@ -49,7 +49,7 @@ def version():
 
 @pytest.fixture()
 def refs():
-    return StructureReference.NONE
+    return StructureReference.ALL
 
 
 @pytest.mark.parametrize(
@@ -227,3 +227,50 @@ def test_url_1_3_0_details_before_1_3_0(
 
     with pytest.raises(ClientError):
         q.get_url(api_version)
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
+)
+def test_url_omit_default_details_before_2_0_0(
+    typ: StructureType,
+    agency: str,
+    res: str,
+    version: str,
+    refs: StructureReference,
+    api_version: ApiVersion,
+):
+    detail = StructureDetail.FULL
+    expected = f"/{typ.value}/{agency}/{res}/{version}?references={refs.value}"
+
+    q = StructureQuery(
+        typ, agency, res, version, detail=detail, references=refs
+    )
+    url = q.get_url(api_version, True)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+)
+def test_url_omit_default_details_since_2_0_0(
+    typ: StructureType,
+    agency: str,
+    res: str,
+    version: str,
+    refs: StructureReference,
+    api_version: ApiVersion,
+):
+    detail = StructureDetail.FULL
+    expected = (
+        f"/structure/{typ.value}/{agency}/{res}/{version}"
+        f"?references={refs.value}"
+    )
+
+    q = StructureQuery(
+        typ, agency, res, version, detail=detail, references=refs
+    )
+    url = q.get_url(api_version, True)
+
+    assert url == expected
