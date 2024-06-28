@@ -410,8 +410,13 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
 
         ck = self.__is_item_allowed(self.artefact_type, ver)
         iu = f"/{i}" if ck and self.item_id != REST_ALL else ""
-        vu = f"/{v}" if iu or self.version != REST_LATEST else ""
-        u += f"{t}/{a}/{r}{vu}{iu}"
+        vu = f"/{v}{iu}" if iu or self.version != REST_LATEST else ""
+        ru = f"/{r}{vu}" if vu or self.resource_id != REST_ALL else ""
+        au = f"/{a}{ru}" if ru or self.agency_id != REST_ALL else ""
+        tu = (
+            f"{t}{au}" if au or self.artefact_type != StructureType.ALL else ""
+        )
+        u += f"{tu}"
         u += (
             "?"
             if self.detail != StructureDetail.FULL
