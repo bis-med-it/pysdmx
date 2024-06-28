@@ -325,3 +325,45 @@ def test_url_hcl_since_1_2_0(
     url = q.get_url(api_version)
 
     assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
+)
+def test_url_omit_default_references_before_2_0_0(
+    typ: StructureType,
+    agency: str,
+    res: str,
+    version: str,
+    detail: StructureDetail,
+    refs: StructureReference,
+    api_version: ApiVersion,
+):
+    item = "*"
+    expected = f"/{typ.value}/{agency}/{res}/{version}"
+
+    q = StructureQuery(typ, agency, res, version, item, detail, refs)
+    url = q.get_url(api_version, True)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+)
+def test_url_omit_default_references_since_2_0_0(
+    typ: StructureType,
+    agency: str,
+    res: str,
+    version: str,
+    detail: StructureDetail,
+    refs: StructureReference,
+    api_version: ApiVersion,
+):
+    item = "*"
+    expected = f"/structure/{typ.value}/{agency}/{res}/{version}"
+
+    q = StructureQuery(typ, agency, res, version, item, detail, refs)
+    url = q.get_url(api_version, True)
+
+    assert url == expected
