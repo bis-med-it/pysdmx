@@ -1,4 +1,4 @@
-"""SDMX 2.1 reader package."""
+"""SDMX 2.1 XML reader package."""
 
 from typing import Any, Dict, Optional
 
@@ -17,6 +17,7 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     REG_INTERFACE,
     STRSPE,
     STRUCTURE,
+    STRUCTURES,
     XML_OPTIONS,
 )
 from pysdmx.io.xml.sdmx21.doc_validation import validate_doc
@@ -24,6 +25,7 @@ from pysdmx.io.xml.sdmx21.reader.data_read import (
     __extract_structure,
     create_dataset,
 )
+from pysdmx.io.xml.sdmx21.reader.metadata_read import StructureParser
 from pysdmx.io.xml.sdmx21.reader.submission_reader import (
     handle_registry_interface,
 )
@@ -102,9 +104,10 @@ def __generate_sdmx_objects_from_xml(
         return __parse_dataset(dict_info[STRSPE], mode=STRSPE)
     if GENERIC in dict_info:
         return __parse_dataset(dict_info[GENERIC], mode=GENERIC)
-    # Leaving this commented for metadata read (#39)
-    # if STRUCTURE in dict_info:
-    #     return create_structures(dict_info[STRUCTURE][STRUCTURES])
+    if STRUCTURE in dict_info:
+        return StructureParser().format_structures(
+            dict_info[STRUCTURE][STRUCTURES]
+        )
     if REG_INTERFACE in dict_info:
         return handle_registry_interface(dict_info)
     raise ValueError("Cannot parse this sdmx data")

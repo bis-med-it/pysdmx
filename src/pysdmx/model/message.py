@@ -50,7 +50,7 @@ class Header(Struct, frozen=True, kw_only=True):
 
 ORGS = "OrganisationSchemes"
 CLS = "Codelists"
-CONCEPTS = "ConceptSchemes"
+CONCEPTS = "Concepts"
 
 MSG_CONTENT_PKG = {
     ORGS: ItemScheme,

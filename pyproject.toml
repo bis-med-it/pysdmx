@@ -26,11 +26,15 @@ msgspec = "0.*"
 lxml = {version = "5.*", optional = true}
 xmltodict = {version = "0.*", optional = true}
 sdmxschemas = {version = "0.2.0", optional = true}
-pandas = "^2.2.2"
+python-dateutil = {version = "^2.9.0.post0", optional = true}
+parsy = {version = "^2.1", optional = true}
+pandas = {version = "^2.2.2", optional = true}
 
 [tool.poetry.extras]
+dc = ["parsy", "python-dateutil"]
 fmr = ["httpx"]
 xml = ["lxml", "xmltodict", "sdmxschemas"]
+data = ["pandas"]
 
 [tool.poetry.group.dev.dependencies]
 darglint = "^1.8.1"
@@ -51,6 +55,7 @@ respx = "^0.20.2"
 pyroma = "^4.2"
 lxml-stubs = "^0.5.1"
 types-xmltodict = "^0.13.0.3"
+types-python-dateutil = "^2.9.0.20240316"
 
 
 [tool.poetry.group.docs.dependencies]

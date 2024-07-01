@@ -6,10 +6,26 @@ from pysdmx.errors import ClientError
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
+from pysdmx.model import Contact
 from pysdmx.model.message import SubmissionResult
 
 
 # Test parsing SDMX Registry Interface Submission Response
+
+
+@pytest.fixture()
+def agency_scheme_path():
+    return Path(__file__).parent / "samples" / "agencies.xml"
+
+
+@pytest.fixture()
+def codelist_path():
+    return Path(__file__).parent / "samples" / "codelists.xml"
+
+
+@pytest.fixture()
+def item_scheme_path():
+    return Path(__file__).parent / "samples" / "item_scheme.xml"
 
 
 @pytest.fixture()
@@ -25,6 +41,78 @@ def samples_folder():
 @pytest.fixture()
 def error_304_path():
     return Path(__file__).parent / "samples" / "error_304.xml"
+
+
+def test_agency_scheme_read(agency_scheme_path):
+    input_str, filetype = process_string_to_read(agency_scheme_path)
+    assert filetype == "xml"
+    result = read_xml(input_str, validate=True)
+
+    assert "OrganisationSchemes" in result
+    agency_scheme = result["OrganisationSchemes"]
+    assert len(agency_scheme) == 1
+    agency_sdmx = agency_scheme["SDMX:AGENCIES(1.0)"].items[0]
+    assert agency_sdmx.id == "SDMX"
+    assert agency_sdmx.name == "SDMX"
+
+
+def test_code_list_read(codelist_path):
+    input_str, filetype = process_string_to_read(codelist_path)
+    assert filetype == "xml"
+    result = read_xml(input_str, validate=True)
+
+    assert "Codelists" in result
+    codelists = result["Codelists"]
+    assert len(codelists) == 5
+    codelist_sdmx = codelists["SDMX:CL_UNIT_MULT(1.0)"]
+    assert codelist_sdmx.id == "CL_UNIT_MULT"
+    assert (
+        codelist_sdmx.name == "code list for the Unit Multiplier (UNIT_MULT)"
+    )
+    assert codelist_sdmx.items[0].id == "0"
+    assert codelist_sdmx.items[0].name == "Units"
+
+
+def test_item_scheme_read(item_scheme_path):
+    input_str, filetype = process_string_to_read(item_scheme_path)
+    assert filetype == "xml"
+    result = read_xml(input_str, validate=True)
+
+    assert "OrganisationSchemes" in result
+    assert "Codelists" in result
+    assert "Concepts" in result
+
+    # Agency Scheme (OrganisationSchemes) assertions
+    agency_scheme = result["OrganisationSchemes"]
+    assert len(agency_scheme) == 1
+    agency_sdmx = agency_scheme["SDMX:AGENCIES(1.0)"].items[0]
+    assert agency_sdmx.id == "SDMX"
+    assert agency_sdmx.name == "SDMX"
+    agency_uis = agency_scheme["SDMX:AGENCIES(1.0)"].items[2]
+
+    assert agency_uis.id == "UIS"
+    assert isinstance(agency_uis.contacts[0], Contact)
+    assert agency_uis.contacts[0].emails == ["uis.datarequests@unesco.org"]
+
+    # Codelist
+    codelists = result["Codelists"]
+    assert len(codelists) == 5
+    codelist_sdmx = codelists["SDMX:CL_UNIT_MULT(1.0)"]
+    assert codelist_sdmx.id == "CL_UNIT_MULT"
+    assert (
+        codelist_sdmx.name == "code list for the Unit Multiplier (UNIT_MULT)"
+    )
+    assert codelist_sdmx.items[0].id == "0"
+    assert codelist_sdmx.items[0].name == "Units"
+
+    # Concept
+    concepts = result["Concepts"]
+    assert len(concepts) == 1
+    concept_scheme_sdmx = concepts["SDMX:CROSS_DOMAIN_CONCEPTS(1.0)"]
+    assert concept_scheme_sdmx.id == "CROSS_DOMAIN_CONCEPTS"
+    assert concept_scheme_sdmx.name == "SDMX Cross Domain Concept Scheme"
+    assert concept_scheme_sdmx.items[0].id == "COLL_METHOD"
+    assert concept_scheme_sdmx.items[2].codes[0].id == "C"
 
 
 def test_submission_result(submission_path):

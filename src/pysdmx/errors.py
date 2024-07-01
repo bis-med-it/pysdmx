@@ -71,3 +71,25 @@ class NotFound(Error):
     This type of errors is considered as **non-retriable** and so clients
     should **not** retry the query before investigating the issue first.
     """
+
+
+class NotSupported(Error):
+    """The requested operation is not supported.
+
+    This type of errors is considered as **non-retriable** and so clients
+    should **not** retry the query before investigating the issue first.
+    """
+
+
+class Unauthorized(Error):
+    """The request was **not authorized**.
+
+    This can be for a variety of reasons such as:
+
+    - The supplied credentials are invalid
+    - The user does not belong to the AD group granting permission to access
+      the requested resources
+
+    This type of errors is considered as **non-retriable** and so clients
+    should **not** retry the query before investigating the issue first.
+    """
