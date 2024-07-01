@@ -56,6 +56,7 @@ pyroma = "^4.2"
 lxml-stubs = "^0.5.1"
 types-xmltodict = "^0.13.0.3"
 types-python-dateutil = "^2.9.0.20240316"
+pandas-stubs = "^2.2.2.240603"
 
 
 [tool.poetry.group.docs.dependencies]

@@ -110,7 +110,7 @@ def __generate_sdmx_objects_from_xml(
         )
     if REG_INTERFACE in dict_info:
         return handle_registry_interface(dict_info)
-    raise ValueError("Cannot parse this sdmx data")
+    raise ValueError("Cannot parse input as SDMX.")
 
 
 def __parse_dataset(message_info: Dict[str, Any], mode: str) -> Dict[str, Any]:

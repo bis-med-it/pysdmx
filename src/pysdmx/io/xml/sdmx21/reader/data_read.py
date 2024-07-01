@@ -11,7 +11,6 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     ATTRIBUTES,
     DIM_OBS,
     exc_attributes,
-    GENERIC,
     GROUP,
     ID,
     OBS,
@@ -63,21 +62,19 @@ class Dataset:
 
 def __get_element_to_list(data: Dict[str, Any], mode: Any) -> Dict[str, Any]:
     obs = {}
-    if VALUE in data[mode]:
-        data[mode][VALUE] = add_list(data[mode][VALUE])
-        for k in data[mode][VALUE]:
-            obs[k[ID]] = k[VALUE.lower()]
+    data[mode][VALUE] = add_list(data[mode][VALUE])
+    for k in data[mode][VALUE]:
+        obs[k[ID]] = k[VALUE.lower()]
     return obs
 
 
 def __process_df(
     test_list: List[Dict[str, Any]], df: Optional[pd.DataFrame]
 ) -> Any:
-    if len(test_list) > 0:
-        if df is not None:
-            df = pd.concat([df, pd.DataFrame(test_list)], ignore_index=True)
-        else:
-            df = pd.DataFrame(test_list)
+    if df is not None:
+        df = pd.concat([df, pd.DataFrame(test_list)], ignore_index=True)
+    else:
+        df = pd.DataFrame(test_list)
 
     del test_list[:]
 
@@ -265,6 +262,59 @@ def __extract_structure(structure: Any) -> Any:
     return str_info
 
 
+def __parse_structure_specific_data(
+    dataset: Dict[str, Any], structure_info: Dict[str, Any]
+) -> Dataset:
+    attached_attributes = __get_at_att_str(dataset)
+
+    df = pd.DataFrame()
+
+    # Parsing data
+    if SERIES in dataset:
+        # Structure Specific Series
+        df = __reading_str_series(dataset)
+        if GROUP in dataset:
+            df_group = __reading_group_data(dataset)
+            common_columns = list(
+                set(df.columns).intersection(set(df_group.columns))
+            )
+            df = pd.merge(df, df_group, on=common_columns, how="left")
+    elif OBS in dataset:
+        dataset[OBS] = add_list(dataset[OBS])
+        # Structure Specific All dimensions
+        df = pd.DataFrame(dataset[OBS]).replace(np.nan, "")
+
+    return Dataset(
+        attached_attributes=attached_attributes,
+        data=df,
+        unique_id=structure_info["unique_id"],
+        structure_type=structure_info["structure_type"],
+    )
+
+
+def __parse_generic_data(
+    dataset: Dict[str, Any], structure_info: Dict[str, Any]
+) -> Dataset:
+    attached_attributes = __get_at_att_gen(dataset)
+
+    df = pd.DataFrame()
+
+    # Parsing data
+    if SERIES in dataset:
+        # Generic Series
+        df = __reading_generic_series(dataset)
+    elif OBS in dataset:
+        # Generic All Dimensions
+        df = __reading_generic_all(dataset)
+
+    return Dataset(
+        attached_attributes=attached_attributes,
+        data=df,
+        unique_id=structure_info["unique_id"],
+        structure_type=structure_info["structure_type"],
+    )
+
+
 def create_dataset(
     dataset: Any, str_info: Dict[str, Any], global_mode: Any
 ) -> Dataset:
@@ -291,55 +341,9 @@ def create_dataset(
             f"Cannot find the structure reference "
             f"of this dataset:{dataset[STRREF]}"
         )
-    value = str_info[dataset[STRREF]]
+    structure_info = str_info[dataset[STRREF]]
     if STRSPE == global_mode:
         # Dataset info
-        attached_attributes = __get_at_att_str(dataset)
-
-        # Parsing data
-        if SERIES in dataset:
-            # Structure Specific Series
-            df = __reading_str_series(dataset)
-            if GROUP in dataset:
-                df_group = __reading_group_data(dataset)
-                common_columns = list(
-                    set(df.columns).intersection(set(df_group.columns))
-                )
-                df = pd.merge(df, df_group, on=common_columns, how="left")
-        elif OBS in dataset:
-            dataset[OBS] = add_list(dataset[OBS])
-            # Structure Specific All dimensions
-            df = pd.DataFrame(dataset[OBS]).replace(np.nan, "")
-        else:
-            df = pd.DataFrame()
-    elif GENERIC == global_mode:
-
-        # Dataset info
-        if ATTRIBUTES in dataset:
-            attached_attributes = __get_at_att_gen(dataset)
-        else:
-            attached_attributes = {}
-
-        # Parsing data
-        if SERIES in dataset:
-            # Generic Series
-            df = __reading_generic_series(dataset)
-            renames = {"OBSVALUE": "OBS_VALUE", "ObsDimension": value[DIM_OBS]}
-            df.rename(columns=renames, inplace=True)
-        elif OBS in dataset:
-            # Generic All Dimensions
-            df = __reading_generic_all(dataset)
-            df.replace(np.nan, "", inplace=True)
-            df.rename(columns={"OBSVALUE": "OBS_VALUE"}, inplace=True)
-        else:
-            df = pd.DataFrame()
+        return __parse_structure_specific_data(dataset, structure_info)
     else:
-        raise Exception
-    dataset = Dataset(
-        attached_attributes=attached_attributes,
-        data=df,
-        unique_id=value["unique_id"],
-        structure_type=value["structure_type"],
-    )
-
-    return dataset
+        return __parse_generic_data(dataset, structure_info)
