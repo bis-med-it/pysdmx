@@ -206,3 +206,19 @@ def test_dataflow(samples_folder):
     assert "BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result
     assert "AVAILABILITY" in data_dataflow.columns
     assert "DER_CURR_LEG1" in data_dataflow.columns
+
+
+def test_structure_ref_urn(samples_folder):
+    data_path = samples_folder / "structure_ref_urn.xml"
+    input_str, filetype = process_string_to_read(data_path)
+    assert filetype == "xml"
+    result = read_xml(input_str, validate=True)
+    assert "BIS:BIS_DER(1.0)" in result
+
+
+def test_header_structure_provision_agrement(samples_folder):
+    data_path = samples_folder / "header_structure_provision_agrement.xml"
+    input_str, filetype = process_string_to_read(data_path)
+    assert filetype == "xml"
+    with pytest.raises(NotImplementedError, match="ProvisionAgrement"):
+        read_xml(input_str, validate=True)

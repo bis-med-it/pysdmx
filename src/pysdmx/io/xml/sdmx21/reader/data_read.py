@@ -69,8 +69,12 @@ def __get_element_to_list(data: Dict[str, Any], mode: Any) -> Dict[str, Any]:
 
 
 def __process_df(
-    test_list: List[Dict[str, Any]], df: Optional[pd.DataFrame]
+    test_list: List[Dict[str, Any]],
+    df: Optional[pd.DataFrame],
+    is_end: bool = False,
 ) -> Any:
+    if not is_end and len(test_list) <= chunksize:
+        return test_list, df
     if df is not None:
         df = pd.concat([df, pd.DataFrame(test_list)], ignore_index=True)
     else:
@@ -107,10 +111,9 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
             if ATTRIBUTES in data:
                 obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
             test_list.append({**keys, **obs})
-        if len(test_list) > chunksize:
-            test_list, df = __process_df(test_list, df)
+        test_list, df = __process_df(test_list, df)
 
-    test_list, df = __process_df(test_list, df)
+    test_list, df = __process_df(test_list, df, is_end=True)
 
     return df
 
@@ -130,10 +133,9 @@ def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
         if ATTRIBUTES in data:
             obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
         test_list.append({**obs})
-        if len(test_list) > chunksize:
-            test_list, df = __process_df(test_list, df)
+        test_list, df = __process_df(test_list, df)
 
-    test_list, df = __process_df(test_list, df)
+    test_list, df = __process_df(test_list, df, is_end=True)
 
     return df
 
@@ -149,10 +151,9 @@ def __reading_str_series(dataset: Dict[str, Any]) -> pd.DataFrame:
             data[OBS] = [data[OBS]]
         for j in data[OBS]:
             test_list.append({**keys, **j})
-        if len(test_list) > chunksize:
-            test_list, df = __process_df(test_list, df)
+        test_list, df = __process_df(test_list, df)
 
-    test_list, df = __process_df(test_list, df)
+    test_list, df = __process_df(test_list, df, is_end=True)
 
     return df
 
@@ -164,9 +165,8 @@ def __reading_group_data(dataset: Dict[str, Any]) -> pd.DataFrame:
     dataset[GROUP] = add_list(dataset[GROUP])
     for data in dataset[GROUP]:
         test_list.append(dict(data.items()))
-        if len(test_list) > chunksize:
-            test_list, df = __process_df(test_list, df)
-    test_list, df = __process_df(test_list, df)
+        test_list, df = __process_df(test_list, df)
+    test_list, df = __process_df(test_list, df, is_end=True)
 
     cols_to_delete = [x for x in df.columns if ":type" in x]
     for x in cols_to_delete:
@@ -198,9 +198,6 @@ def __get_ids_from_structure(element: Dict[str, Any]) -> Any:
     Args:
         element: The data hold in the structure.
 
-    Raises:
-        Exception: If structure reference cannot be extracted.
-
     Returns:
         If the element is REF, agency_id, id and version may be returned.
         If the element is URN, agency_id, id and version would be taken from
@@ -211,9 +208,8 @@ def __get_ids_from_structure(element: Dict[str, Any]) -> Any:
         id_ = element[REF][ID]
         version = element[REF][VERSION]
         return agency_id, id_, version
-    elif URN in element:
+    else:
         return split_from_urn(element[URN])
-    raise Exception("Can not extract structure reference")
 
 
 def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
@@ -228,6 +224,9 @@ def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
 
     Returns:
         The ids contained in the structure will be returned.
+
+    Raises:
+        NotImplementedError: For Provision Agreement, as it is not implemented.
     """
     if STRUCTURE in structure:
         structure_type = "datastructure"
@@ -237,7 +236,7 @@ def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
         structure_type = "dataflow"
         tuple_ids = __get_ids_from_structure(structure[STR_USAGE])
     else:
-        return None, None, None, None
+        raise NotImplementedError("ProvisionAgrement not implemented")
     return tuple_ids + (structure_type,)
 
 
