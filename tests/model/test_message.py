@@ -47,7 +47,7 @@ def test_get_concepts():
     cs1 = ConceptScheme(id="cs1", agency="cs1")
     message = Message(
         {
-            "ConceptSchemes": {
+            "Concepts": {
                 "cs1:cs1(1.0)": cs1,
             }
         }
@@ -74,7 +74,7 @@ def test_empty_get_elements():
     with pytest.raises(NotFound) as exc_info:
         message.get_concept_schemes()
 
-    assert "No ConceptSchemes found" in str(exc_info.value.title)
+    assert "No Concepts found" in str(exc_info.value.title)
 
 
 def test_empty_get_element_by_uid():
@@ -92,7 +92,7 @@ def test_empty_get_element_by_uid():
     with pytest.raises(NotFound) as exc_info:
         message.get_concept_scheme_by_uid("cs1:cs1(1.0)")
 
-    assert "No ConceptSchemes found" in str(exc_info.value.title)
+    assert "No Concepts found" in str(exc_info.value.title)
 
 
 def test_invalid_get_element_by_uid():
@@ -117,7 +117,7 @@ def test_invalid_initialization_content_key():
     [
         ("OrganisationSchemes", {"org1:orgs1(1.0)": "invalid"}),
         ("Codelists", {"cl1:cl1(1.0)": "invalid"}),
-        ("ConceptSchemes", {"cs1:cs1(1.0)": "invalid"}),
+        ("Concepts", {"cs1:cs1(1.0)": "invalid"}),
     ],
 )
 def test_invalid_initialization_content_value(key, value):

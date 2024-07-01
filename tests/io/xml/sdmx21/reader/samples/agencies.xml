@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Copyright SDMX 2010  -   www.sdmx.org -->
+<message:Structure xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                   xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+                   xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message ../../schemas/SDMXMessage.xsd">
+    <message:Header>
+        <message:ID>SDMX_COG</message:ID>
+        <message:Test>false</message:Test>
+        <message:Prepared>2010-11-13T08:00:33+08:00</message:Prepared>
+        <message:Sender id="SDMX"/>
+    </message:Header>
+    <message:Structures>
+        <str:OrganisationSchemes>
+            <str:AgencyScheme urn="urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)"
+                              isExternalReference="false" agencyID="SDMX" id="AGENCIES" isFinal="false" version="1.0">
+                <com:Name xml:lang="en">SDMX Agency Scheme</com:Name>
+                <str:Agency urn="urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX" id="SDMX">
+                    <com:Name xml:lang="en">SDMX</com:Name>
+                </str:Agency>
+            </str:AgencyScheme>
+        </str:OrganisationSchemes>
+    </message:Structures>
+</message:Structure>
