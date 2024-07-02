@@ -238,3 +238,5 @@ def test_load_big_file(samples_folder):
     assert filetype == "xml"
     result = read_xml(input_str, validate=True)
     assert "BIS:BIS_DER(1.0)" in result
+    dataset = result["BIS:BIS_DER(1.0)"]
+    assert len(dataset.data) == 50500

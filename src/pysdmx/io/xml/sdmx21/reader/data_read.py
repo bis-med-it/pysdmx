@@ -103,11 +103,10 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
         series[OBS] = add_list(series[OBS])
 
         for data in series[OBS]:
-            obs = {OBS_DIM: data[OBS_DIM][VALUE.lower()]}
+            obs = {OBS_DIM: data[OBS_DIM][VALUE.lower()],
+                   OBSVALUE.upper(): None}
             if OBSVALUE in data:
                 obs[OBSVALUE.upper()] = data[OBSVALUE][VALUE.lower()]
-            else:
-                obs[OBSVALUE.upper()] = None
             if ATTRIBUTES in data:
                 obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
             test_list.append({**keys, **obs})
@@ -147,8 +146,7 @@ def __reading_str_series(dataset: Dict[str, Any]) -> pd.DataFrame:
     dataset[SERIES] = add_list(dataset[SERIES])
     for data in dataset[SERIES]:
         keys = dict(itertools.islice(data.items(), len(data) - 1))
-        if not isinstance(data[OBS], list):
-            data[OBS] = [data[OBS]]
+        data[OBS] = add_list(data[OBS])
         for j in data[OBS]:
             test_list.append({**keys, **j})
         test_list, df = __process_df(test_list, df)
@@ -185,10 +183,9 @@ def __get_at_att_str(dataset: Dict[str, Any]) -> Dict[str, Any]:
 def __get_at_att_gen(dataset: Dict[str, Any]) -> Dict[str, Any]:
     """Gets all the elements if it is Generic data."""
     attached_attributes = {}
-    if VALUE in dataset[ATTRIBUTES]:
-        dataset[ATTRIBUTES][VALUE] = add_list(dataset[ATTRIBUTES][VALUE])
-        for k in dataset[ATTRIBUTES][VALUE]:
-            attached_attributes[k[ID]] = k[VALUE.lower()]
+    dataset[ATTRIBUTES][VALUE] = add_list(dataset[ATTRIBUTES][VALUE])
+    for k in dataset[ATTRIBUTES][VALUE]:
+        attached_attributes[k[ID]] = k[VALUE.lower()]
     return attached_attributes
 
 
@@ -265,8 +262,6 @@ def __parse_structure_specific_data(
 ) -> Dataset:
     attached_attributes = __get_at_att_str(dataset)
 
-    df = pd.DataFrame()
-
     # Parsing data
     if SERIES in dataset:
         # Structure Specific Series
@@ -277,7 +272,7 @@ def __parse_structure_specific_data(
                 set(df.columns).intersection(set(df_group.columns))
             )
             df = pd.merge(df, df_group, on=common_columns, how="left")
-    elif OBS in dataset:
+    else:
         dataset[OBS] = add_list(dataset[OBS])
         # Structure Specific All dimensions
         df = pd.DataFrame(dataset[OBS]).replace(np.nan, "")
@@ -295,13 +290,11 @@ def __parse_generic_data(
 ) -> Dataset:
     attached_attributes = __get_at_att_gen(dataset)
 
-    df = pd.DataFrame()
-
     # Parsing data
     if SERIES in dataset:
         # Generic Series
         df = __reading_generic_series(dataset)
-    elif OBS in dataset:
+    else:
         # Generic All Dimensions
         df = __reading_generic_all(dataset)
 
