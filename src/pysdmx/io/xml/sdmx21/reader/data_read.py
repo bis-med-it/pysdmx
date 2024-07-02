@@ -248,10 +248,9 @@ def __extract_structure(structure: Any) -> Any:
         (agency_id, id_, version, structure_type) = (
             __get_elements_from_structure(str_item)
         )
-        if agency_id is not None:
-            str_id = f"{agency_id}:{id_}({version})"
-        else:
-            str_id = f"{id_}({version})"
+
+        str_id = f"{agency_id}:{id_}({version})"
+
         str_info[str_item[STRID]] = {
             DIM_OBS: str_item[DIM_OBS],
             "unique_id": str_id,
