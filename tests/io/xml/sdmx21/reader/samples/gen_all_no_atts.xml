@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message:GenericData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                     xmlns:generic="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic"
+                     xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+                     xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+    <message:Header>
+        <message:ID>test</message:ID>
+        <message:Test>true</message:Test>
+        <message:Prepared>2021-03-08T17:05:06</message:Prepared>
+        <message:Sender id="Unknown"/>
+        <message:Receiver id="Not_supplied"/>
+        <message:Structure structureID="BIS_DER" dimensionAtObservation="AllDimensions">
+            <common:Structure>
+                <Ref agencyID="BIS" id="BIS_DER" version="1.0" class="DataStructure"/>
+            </common:Structure>
+        </message:Structure>
+    </message:Header>
+    <message:DataSet structureRef="BIS_DER" action="Replace">
+        <generic:Obs>
+            <generic:ObsKey>
+                <generic:Value id="FREQ" value="A"/>
+                <generic:Value id="DER_TYPE" value="U"/>
+                <generic:Value id="DER_INSTR" value="A"/>
+                <generic:Value id="DER_RISK" value="B"/>
+                <generic:Value id="DER_REP_CTY" value="5J"/>
+                <generic:Value id="DER_SECTOR_CPY" value="A"/>
+                <generic:Value id="DER_CPC" value="1E"/>
+                <generic:Value id="DER_SECTOR_UDL" value="A"/>
+                <generic:Value id="DER_CURR_LEG1" value="HKD"/>
+                <generic:Value id="DER_CURR_LEG2" value="TO1"/>
+                <generic:Value id="DER_ISSUE_MAT" value="A"/>
+                <generic:Value id="DER_RATING" value="A"/>
+                <generic:Value id="DER_EX_METHOD" value="3"/>
+                <generic:Value id="DER_BASIS" value="C"/>
+                <generic:Value id="TIME_PERIOD" value="2002"/>
+            </generic:ObsKey>
+            <generic:ObsValue value=""/>
+            <generic:Attributes>
+                <generic:Value id="AVAILABILITY" value="K"/>
+                <generic:Value id="COLLECTION" value="S"/>
+                <generic:Value id="OBS_STATUS" value="M"/>
+                <generic:Value id="OBS_CONF" value="F"/>
+            </generic:Attributes>
+        </generic:Obs>
+    </message:DataSet>
+</message:GenericData>
