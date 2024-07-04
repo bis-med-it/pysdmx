@@ -1,7 +1,7 @@
 from pysdmx.api.qb.schema import SchemaContext
 
 
-def test_expected_formats():
+def test_expected_contexts():
     expected = [
         "datastructure",
         "metadatastructure",
