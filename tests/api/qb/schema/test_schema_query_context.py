@@ -109,3 +109,13 @@ def test_url_2_0_0_context_since_2_0_0(
     url = q.get_url(api_version)
 
     assert url == expected
+
+
+def test_wrong_context(
+    agency: str,
+    res: str,
+):
+    sq = SchemaQuery(42, agency, res)
+
+    with pytest.raises(ClientError):
+        sq.get_url(ApiVersion.V1_0_0)

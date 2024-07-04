@@ -28,6 +28,11 @@ def version():
     return "1.0"
 
 
+@pytest.fixture()
+def obs_dim():
+    return "TIME_PERIOD"
+
+
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
@@ -101,6 +106,48 @@ def test_short_url_default_explicit(
     expected = f"/schema/{context.value}/{agency}/{res}/{version}"
 
     q = SchemaQuery(context, agency, res, version)
+    url = q.get_url(api_version, True)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
+)
+def test_short_url_true_explicit(
+    context: SchemaContext,
+    agency: str,
+    res: str,
+    version: str,
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/schema/{context.value}/{agency}/{res}/{version}?explicit=true"
+    )
+
+    q = SchemaQuery(context, agency, res, version, explicit=True)
+    url = q.get_url(api_version, True)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
+)
+def test_short_url_true_explicit_with_obs_dim(
+    context: SchemaContext,
+    agency: str,
+    res: str,
+    version: str,
+    obs_dim: str,
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/schema/{context.value}/{agency}/{res}/{version}"
+        f"?dimensionAtObservation={obs_dim}&explicit=true"
+    )
+
+    q = SchemaQuery(context, agency, res, version, obs_dim, True)
     url = q.get_url(api_version, True)
 
     assert url == expected
