@@ -96,7 +96,7 @@ class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             raise ClientError(
                 422,
                 "Validation Error",
-                f"Retrieving schemas for all versions is not allowed.",
+                "Retrieving schemas for all versions is not allowed.",
             )
 
     def __check_explicit(self, version: ApiVersion) -> None:
