@@ -93,7 +93,7 @@ class RefMetaByStructureQuery(
                 f"{atyp} is not valid for SDMX-REST {version.value}.",
             )
 
-    def __check_version(self, version: ApiVersion):
+    def __check_version(self, version: ApiVersion) -> None:
         if version < ApiVersion.V2_0_0:
             raise ClientError(
                 422,
