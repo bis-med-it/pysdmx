@@ -100,7 +100,7 @@ def test_url_single_provider(
 def test_url_omit_default_provider(
     api_version: ApiVersion,
 ):
-    expected = f"/metadata/metadataset"
+    expected = "/metadata/metadataset"
 
     q = RefMetaByMetadatasetQuery()
     url = q.get_url(api_version, True)
