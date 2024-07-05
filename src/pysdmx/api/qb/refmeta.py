@@ -4,6 +4,7 @@ from enum import Enum
 from typing import Sequence, Union
 
 import msgspec
+from msgspec.json import Decoder
 
 from pysdmx.api.qb.structure import _API_RESOURCES, StructureType
 from pysdmx.api.qb.util import (
@@ -30,8 +31,108 @@ class RefMetaFormat(Enum):
     SDMX_CSV_2_0_0 = "application/vnd.sdmx.metadata+csv;version=2.0.0"
 
 
-class RefMetaByStructureQuery(
+class _RefMetaCoreQuery(
     msgspec.Struct,
+    frozen=True,
+    omit_defaults=True,
+):
+    def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
+        """The URL for the query in the selected SDMX-REST API version."""
+        self._validate_query(version)
+        if omit_defaults:
+            return self._create_short_query()
+        else:
+            return self._create_full_query()
+
+    def validate(self) -> None:
+        """Validate the query."""
+        try:
+            self._get_decoder().decode(_encoder.encode(self))
+        except msgspec.DecodeError as err:
+            raise ClientError(
+                422, "Invalid Reference Metadata Query", str(err)
+            ) from err
+
+    def _get_decoder(self) -> msgspec.json.Decoder:
+        pass
+
+    def _validate_query(self, version: ApiVersion) -> None:
+        pass
+
+    def _check_version(self, version: ApiVersion) -> None:
+        if version < ApiVersion.V2_0_0:
+            raise ClientError(
+                422,
+                "Invalid Request",
+                (
+                    "Queries for reference metadata are not supported"
+                    f"in SDMX-REST {version.value}."
+                ),
+            )
+
+    def _join_mult(self, vals: Union[str, Sequence[str]]) -> str:
+        return vals if isinstance(vals, str) else ",".join(vals)
+
+    def _create_full_query(self) -> str:
+        pass
+
+    def _create_short_query(self) -> str:
+        pass
+
+
+class RefMetaByMetadatasetQuery(
+    _RefMetaCoreQuery,
+    frozen=True,
+    omit_defaults=True,
+):
+    """A query for reference metadata with metadataset identification details.
+
+    Attributes:
+        provider_id: The id(s) of the data provider.
+        metadataset_id: The id(s) of the metadataset(s) to be returned.
+        version: The version(s) of the metadataset(s) to be returned.
+        detail: The desired amount of information to be returned.
+    """
+
+    provider_id: Union[str, Sequence[str]] = REST_ALL
+    metadataset_id: Union[str, Sequence[str]] = REST_ALL
+    version: Union[str, Sequence[str]] = REST_LATEST
+    detail: RefMetaDetail = RefMetaDetail.FULL
+
+    def _validate_query(self, version: ApiVersion) -> None:
+        super().validate()
+        super()._check_version(version)
+        check_multiple_items(self.provider_id, version)
+        check_multiple_items(self.metadataset_id, version)
+        check_multiple_items(self.version, version)
+
+    def _get_decoder(self) -> Decoder:
+        return _by_mds_decoder
+
+    def _create_full_query(self) -> str:
+        p = super()._join_mult(self.provider_id)
+        i = super()._join_mult(self.metadataset_id)
+        v = super()._join_mult(self.version)
+        return f"/metadata/metadataset/{p}/{i}/{v}?detail={self.detail.value}"
+
+    def _create_short_query(self) -> str:
+        v = f"/{self.version}" if self.version != REST_LATEST else ""
+        i = (
+            f"/{self.metadataset_id}{v}"
+            if v or self.metadataset_id != REST_ALL
+            else ""
+        )
+        p = (
+            f"/{self.provider_id}{i}"
+            if i or self.provider_id != REST_ALL
+            else ""
+        )
+        d = f"?{self.detail}" if self.detail != RefMetaDetail.FULL else ""
+        return f"/metadata/metadataset{p}{d}"
+
+
+class RefMetaByStructureQuery(
+    _RefMetaCoreQuery,
     frozen=True,
     omit_defaults=True,
 ):
@@ -55,33 +156,16 @@ class RefMetaByStructureQuery(
     version: Union[str, Sequence[str]] = REST_LATEST
     detail: RefMetaDetail = RefMetaDetail.FULL
 
-    def validate(self) -> None:
-        """Validate the query."""
-        try:
-            decoder.decode(encoder.encode(self))
-        except msgspec.DecodeError as err:
-            raise ClientError(
-                422, "Invalid Reference Metadata Query", str(err)
-            ) from err
-
-    def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
-        """The URL for the query in the selected SDMX-REST API version."""
-        self.__validate_query(version)
-        if omit_defaults:
-            return self.__create_short_query()
-        else:
-            return self.__create_full_query()
-
-    def __validate_query(self, version: ApiVersion) -> None:
-        self.validate()
-        self.__check_version(version)
-        self.__check_multiple_items(version)
-        self.__check_artefact_type(self.artefact_type, version)
-
-    def __check_multiple_items(self, version: ApiVersion) -> None:
+    def _validate_query(self, version: ApiVersion) -> None:
+        super().validate()
+        super()._check_version(version)
         check_multiple_items(self.agency_id, version)
         check_multiple_items(self.resource_id, version)
         check_multiple_items(self.version, version)
+        self.__check_artefact_type(self.artefact_type, version)
+
+    def _get_decoder(self) -> Decoder:
+        return _by_struct_decoder
 
     def __check_artefact_type(
         self, atyp: StructureType, version: ApiVersion
@@ -93,30 +177,16 @@ class RefMetaByStructureQuery(
                 f"{atyp} is not valid for SDMX-REST {version.value}.",
             )
 
-    def __check_version(self, version: ApiVersion) -> None:
-        if version < ApiVersion.V2_0_0:
-            raise ClientError(
-                422,
-                "Invalid Request",
-                (
-                    "Queries for reference metadata are not supported"
-                    f"in SDMX-REST {version.value}."
-                ),
-            )
-
-    def __join_mult(self, vals: Union[str, Sequence[str]]) -> str:
-        return vals if isinstance(vals, str) else ",".join(vals)
-
-    def __create_full_query(self) -> str:
-        a = self.__join_mult(self.agency_id)
-        r = self.__join_mult(self.resource_id)
-        v = self.__join_mult(self.version)
+    def _create_full_query(self) -> str:
+        a = super()._join_mult(self.agency_id)
+        r = super()._join_mult(self.resource_id)
+        v = super()._join_mult(self.version)
         return (
             f"/metadata/structure/{self.artefact_type.value}/{a}/{r}/{v}"
             f"?detail={self.detail.value}"
         )
 
-    def __create_short_query(self) -> str:
+    def _create_short_query(self) -> str:
         v = f"/{self.version}" if self.version != REST_LATEST else ""
         r = (
             f"/{self.resource_id}{v}"
@@ -133,8 +203,9 @@ class RefMetaByStructureQuery(
         return f"/metadata/structure{t}{d}"
 
 
-decoder = msgspec.json.Decoder(RefMetaByStructureQuery)
-encoder = msgspec.json.Encoder()
+_by_mds_decoder = msgspec.json.Decoder(RefMetaByMetadatasetQuery)
+_by_struct_decoder = msgspec.json.Decoder(RefMetaByStructureQuery)
+_encoder = msgspec.json.Encoder()
 
 
 __all__ = [
