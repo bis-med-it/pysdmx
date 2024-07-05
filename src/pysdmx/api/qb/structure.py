@@ -309,7 +309,6 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         check_multiple_items(self.resource_id, version)
         check_multiple_items(self.version, version)
         check_multiple_items(self.item_id, version)
-        check_multiple_items(self.agency_id, version)
 
     def __check_artefact_type(
         self, atyp: StructureType, version: ApiVersion
