@@ -261,7 +261,7 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     """A query for structural metadata.
 
     Attributes:
-        artefact_type: The type(s) of structural metadata to be returned.
+        artefact_type: The type of structural metadata to be returned.
         agency_id: The agency (or agencies) maintaining the artefact(s)
             to be returned.
         resource_id: The id(s) of the artefact(s) to be returned.
