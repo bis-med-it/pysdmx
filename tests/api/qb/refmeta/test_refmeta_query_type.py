@@ -1,10 +1,5 @@
-from typing import List
-
 import pytest
-from tests.api.qb.structure.test_common import (
-    types_2_0_0_all,
-    types_2_0_0_deprecated,
-)
+from tests.api.qb.structure.test_common import types_2_0_0_deprecated
 
 from pysdmx.api.qb.refmeta import RefMetaByStructureQuery, RefMetaDetail
 from pysdmx.api.qb.structure import StructureType

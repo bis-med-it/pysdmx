@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 from tests.api.qb.structure.test_common import (
     types_1_3_0,

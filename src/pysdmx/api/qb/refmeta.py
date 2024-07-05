@@ -99,8 +99,8 @@ class RefMetaByStructureQuery(
                 422,
                 "Invalid Request",
                 (
-                    f"Queries for reference metadata are not supported"
-                    "in SDMX-REST {version.value}."
+                    "Queries for reference metadata are not supported"
+                    f"in SDMX-REST {version.value}."
                 ),
             )
 

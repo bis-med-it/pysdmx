@@ -5,7 +5,6 @@ import pytest
 from pysdmx.api.qb.refmeta import RefMetaByStructureQuery, RefMetaDetail
 from pysdmx.api.qb.structure import StructureType
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
 
 
 @pytest.fixture()
