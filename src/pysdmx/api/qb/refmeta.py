@@ -1,5 +1,6 @@
 """Build SDMX-REST structure queries."""
 
+from abc import abstractmethod
 from enum import Enum
 from typing import Sequence, Union
 
@@ -53,12 +54,6 @@ class _RefMetaCoreQuery(
                 422, "Invalid Reference Metadata Query", str(err)
             ) from err
 
-    def _get_decoder(self) -> msgspec.json.Decoder:
-        pass
-
-    def _validate_query(self, version: ApiVersion) -> None:
-        pass
-
     def _check_version(self, version: ApiVersion) -> None:
         if version < ApiVersion.V2_0_0:
             raise ClientError(
@@ -73,11 +68,21 @@ class _RefMetaCoreQuery(
     def _join_mult(self, vals: Union[str, Sequence[str]]) -> str:
         return vals if isinstance(vals, str) else ",".join(vals)
 
-    def _create_full_query(self) -> str:
-        pass
+    @abstractmethod
+    def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
+        """Returns the decoder to be used for validation."""
 
+    @abstractmethod
+    def _validate_query(self, version: ApiVersion) -> None:
+        """Any additional validation steps to be performed by subclasses."""
+
+    @abstractmethod
+    def _create_full_query(self) -> str:
+        """Creates a URL, with default values."""
+
+    @abstractmethod
     def _create_short_query(self) -> str:
-        pass
+        """Creates a URL, omitting default values when possible."""
 
 
 class RefMetaByMetadatasetQuery(
@@ -106,7 +111,7 @@ class RefMetaByMetadatasetQuery(
         check_multiple_items(self.metadataset_id, version)
         check_multiple_items(self.version, version)
 
-    def _get_decoder(self) -> Decoder:
+    def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
         return _by_mds_decoder
 
     def _create_full_query(self) -> str:
@@ -164,7 +169,7 @@ class RefMetaByStructureQuery(
         check_multiple_items(self.version, version)
         self.__check_artefact_type(self.artefact_type, version)
 
-    def _get_decoder(self) -> Decoder:
+    def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
         return _by_struct_decoder
 
     def __check_artefact_type(
