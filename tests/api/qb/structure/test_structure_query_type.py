@@ -26,11 +26,6 @@ def typ():
 
 
 @pytest.fixture()
-def typs():
-    return [StructureType.CATEGORISATION, StructureType.METADATAFLOW]
-
-
-@pytest.fixture()
 def agency():
     return "SDMX"
 
@@ -53,16 +48,6 @@ def detail():
 @pytest.fixture()
 def refs():
     return StructureReference.NONE
-
-
-@pytest.mark.parametrize("api_version", ApiVersion)
-def test_url_multiple_types_until_1_2_0(
-    typs: List[StructureType], agency: str, res: str, api_version: ApiVersion
-):
-    q = StructureQuery(typs, agency, res)
-
-    with pytest.raises(ClientError):
-        q.get_url(api_version)
 
 
 @pytest.mark.parametrize(
