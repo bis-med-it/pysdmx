@@ -51,6 +51,7 @@ def add_list(element: Any) -> Any:
         element = [element]
     return element
 
+
 # def drop_na_all(df: pd.DataFrame):
 #     """
 #

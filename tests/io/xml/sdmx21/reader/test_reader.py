@@ -67,7 +67,7 @@ def test_code_list_read(codelist_path):
     codelist_sdmx = codelists["SDMX:CL_UNIT_MULT(1.0)"]
     assert codelist_sdmx.id == "CL_UNIT_MULT"
     assert (
-            codelist_sdmx.name == "code list for the Unit Multiplier (UNIT_MULT)"
+        codelist_sdmx.name == "code list for the Unit Multiplier (UNIT_MULT)"
     )
     assert codelist_sdmx.items[0].id == "0"
     assert codelist_sdmx.items[0].name == "Units"
@@ -100,7 +100,8 @@ def test_item_scheme_read(item_scheme_path):
     codelist_sdmx = codelists["SDMX:CL_UNIT_MULT(1.0)"]
     assert codelist_sdmx.id == "CL_UNIT_MULT"
     assert (
-            codelist_sdmx.name == "code list for the Unit Multiplier (UNIT_MULT)"
+        codelist_sdmx.name == "code list for the "
+        "Unit Multiplier (UNIT_MULT)"
     )
     assert codelist_sdmx.items[0].id == "0"
     assert codelist_sdmx.items[0].name == "Units"
@@ -228,7 +229,10 @@ def test_stref_dif_strid(samples_folder):
     data_path = samples_folder / "str_dif_ref_and_ID.xml"
     input_str, filetype = process_string_to_read(data_path)
     assert filetype == "xml"
-    with pytest.raises(Exception, match="Cannot find the structure reference of this dataset:A"):
+    with pytest.raises(
+        Exception,
+        match="Cannot find the structure reference of this dataset:A",
+    ):
         read_xml(input_str, validate=True)
 
 

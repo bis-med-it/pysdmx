@@ -103,8 +103,10 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
         series[OBS] = add_list(series[OBS])
 
         for data in series[OBS]:
-            obs = {OBS_DIM: data[OBS_DIM][VALUE.lower()],
-                   OBSVALUE.upper(): data[OBSVALUE][VALUE.lower()]}
+            obs = {
+                OBS_DIM: data[OBS_DIM][VALUE.lower()],
+                OBSVALUE.upper(): data[OBSVALUE][VALUE.lower()],
+            }
             if ATTRIBUTES in data:
                 obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
             test_list.append({**keys, **obs})
@@ -122,8 +124,11 @@ def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
     dataset[OBS] = add_list(dataset[OBS])
     for data in dataset[OBS]:
         obs: Dict[str, Any] = {}
-        obs = {**obs, **__get_element_to_list(data, mode=OBSKEY),
-               OBSVALUE.upper(): data[OBSVALUE][VALUE.lower()]}
+        obs = {
+            **obs,
+            **__get_element_to_list(data, mode=OBSKEY),
+            OBSVALUE.upper(): data[OBSVALUE][VALUE.lower()],
+        }
         if ATTRIBUTES in data:
             obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
         test_list.append({**obs})
