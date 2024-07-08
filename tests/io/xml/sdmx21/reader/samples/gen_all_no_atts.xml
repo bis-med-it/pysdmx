@@ -36,12 +36,6 @@
                 <generic:Value id="TIME_PERIOD" value="2002"/>
             </generic:ObsKey>
             <generic:ObsValue value=""/>
-            <generic:Attributes>
-                <generic:Value id="AVAILABILITY" value="K"/>
-                <generic:Value id="COLLECTION" value="S"/>
-                <generic:Value id="OBS_STATUS" value="M"/>
-                <generic:Value id="OBS_CONF" value="F"/>
-            </generic:Attributes>
         </generic:Obs>
     </message:DataSet>
 </message:GenericData>

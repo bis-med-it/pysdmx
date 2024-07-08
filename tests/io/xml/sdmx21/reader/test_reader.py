@@ -244,13 +244,11 @@ def test_gen_all_no_atts(samples_folder):
     data_path = samples_folder / "gen_all_no_atts.xml"
     input_str, filetype = process_string_to_read(data_path)
     assert filetype == "xml"
-    with pytest.raises(KeyError, match="Attributes"):
-        read_xml(input_str, validate=True)
+    read_xml(input_str, validate=True)
 
 
 def test_gen_ser_no_atts(samples_folder):
     data_path = samples_folder / "gen_ser_no_atts.xml"
     input_str, filetype = process_string_to_read(data_path)
     assert filetype == "xml"
-    with pytest.raises(KeyError, match="Attributes"):
-        read_xml(input_str, validate=True)
+    read_xml(input_str, validate=True)

@@ -104,9 +104,7 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
 
         for data in series[OBS]:
             obs = {OBS_DIM: data[OBS_DIM][VALUE.lower()],
-                   OBSVALUE.upper(): None}
-            if OBSVALUE in data:
-                obs[OBSVALUE.upper()] = data[OBSVALUE][VALUE.lower()]
+                   OBSVALUE.upper(): data[OBSVALUE][VALUE.lower()]}
             if ATTRIBUTES in data:
                 obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
             test_list.append({**keys, **obs})
@@ -124,11 +122,8 @@ def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
     dataset[OBS] = add_list(dataset[OBS])
     for data in dataset[OBS]:
         obs: Dict[str, Any] = {}
-        obs = {**obs, **__get_element_to_list(data, mode=OBSKEY)}
-        if ID in data[OBSVALUE]:
-            obs[data[OBSVALUE][ID]] = data[OBSVALUE][VALUE.lower()]
-        else:
-            obs[OBSVALUE.upper()] = data[OBSVALUE][VALUE.lower()]
+        obs = {**obs, **__get_element_to_list(data, mode=OBSKEY),
+               OBSVALUE.upper(): data[OBSVALUE][VALUE.lower()]}
         if ATTRIBUTES in data:
             obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
         test_list.append({**obs})
@@ -182,7 +177,9 @@ def __get_at_att_str(dataset: Dict[str, Any]) -> Dict[str, Any]:
 
 def __get_at_att_gen(dataset: Dict[str, Any]) -> Dict[str, Any]:
     """Gets all the elements if it is Generic data."""
-    attached_attributes = {}
+    attached_attributes: Dict[str, Any] = {}
+    if ATTRIBUTES not in dataset:
+        return attached_attributes
     dataset[ATTRIBUTES][VALUE] = add_list(dataset[ATTRIBUTES][VALUE])
     for k in dataset[ATTRIBUTES][VALUE]:
         attached_attributes[k[ID]] = k[VALUE.lower()]
