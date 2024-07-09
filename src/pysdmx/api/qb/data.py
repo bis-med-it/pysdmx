@@ -105,14 +105,81 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         else:
             return self.__create_full_query(version)
 
+    def __validate_context(self, version: ApiVersion) -> None:
+        if version < ApiVersion.V2_0_0 and self.context in [
+            DataContext.DATA_STRUCTURE,
+            DataContext.PROVISION_AGREEMENT,
+        ]:
+            raise ClientError(
+                422,
+                "Validation Error",
+                f"{self.context} is not valid for SDMX-REST {version.value}.",
+            )
+
     def __validate_query(self, version: ApiVersion) -> None:
         self.validate()
+        self.__validate_context(version)
+
+    def __to_kw(self, val: str, ver: ApiVersion) -> str:
+        if val == "*" and ver < ApiVersion.V2_0_0:
+            val = "all"
+        elif val == "~" and ver < ApiVersion.V2_0_0:
+            val = "latest"
+        return val
+
+    def __get_v2_context_id(self) -> str:
+        o = f"/{self.context.value}"
+        o += f"/{self.agency_id}/{self.resource_id}/{self.version}"
+        return o
+
+    def __get_v1_context_id(self, ver: ApiVersion) -> str:
+        a = self.__to_kw(self.agency_id, ver)
+        r = self.__to_kw(self.resource_id, ver)
+        v = (
+            self.__to_kw(self.version, ver)
+            if self.version != REST_ALL
+            else "latest"
+        )
+        return f"/{a},{r},{v}"
+
+    def __get_v1_detail(self, ver: ApiVersion) -> str:
+        if self.attributes in ["dsd", "all"] and self.measures == "all":
+            return "full"
+        else:
+            raise ClientError(
+                422,
+                "Validation Error",
+                (
+                    f"{self.attributes} and {self.measures} is not a valid "
+                    "combination for the detail attribute in SDMX-REST "
+                    f"{ver.value}.",
+                ),
+            )
 
     def __create_full_query(self, ver: ApiVersion) -> str:
-        return "/data"
+        o = "/data"
+        if ver >= ApiVersion.V2_0_0:
+            c = self.__get_v2_context_id()
+        else:
+            c = self.__get_v1_context_id(ver)
+        o += f"{c}/{self.__to_kw(self.key, ver)}"
+        o += "?"
+        if ver >= ApiVersion.V2_0_0:
+            o += f"attributes={self.attributes}&measures={self.measures}"
+        else:
+            o += f"detail={self.__get_v1_detail(ver)}"
+        o += f"&includeHistory={str(self.include_history).lower()}"
+        return o
 
     def __create_short_query(self, ver: ApiVersion) -> str:
-        return "/data"
+        a = f"/{self.agency_id}" if self.agency_id != REST_ALL else ""
+        c = (
+            f"{self.context.value}{a}"
+            if a or self.context != DataContext.ALL
+            else ""
+        )
+        o = f"/data/{c}"
+        return o
 
 
 decoder = msgspec.json.Decoder(DataQuery)

@@ -6,6 +6,7 @@ def test_expected_contexts():
         "datastructure",
         "dataflow",
         "provisionagreement",
+        "*",
     ]
 
     assert len(DataContext) == len(expected)
