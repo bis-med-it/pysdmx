@@ -29,7 +29,8 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     VALUE,
     VERSION,
 )
-from pysdmx.util.handlers import add_list, split_from_urn
+from pysdmx.io.xml.utils import add_list
+from pysdmx.util import parse_urn
 
 chunksize = 50000
 
@@ -208,7 +209,8 @@ def __get_ids_from_structure(element: Dict[str, Any]) -> Any:
         version = element[REF][VERSION]
         return agency_id, id_, version
     else:
-        return split_from_urn(element[URN])
+        urn = parse_urn(element[URN])
+        return urn.agency, urn.id, urn.version
 
 
 def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:

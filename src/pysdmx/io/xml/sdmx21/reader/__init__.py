@@ -29,7 +29,7 @@ from pysdmx.io.xml.sdmx21.reader.metadata_read import StructureParser
 from pysdmx.io.xml.sdmx21.reader.submission_reader import (
     handle_registry_interface,
 )
-from pysdmx.util.handlers import add_list
+from pysdmx.io.xml.utils import add_list
 
 MODES = {
     MessageType.GenericDataSet.value: GENERIC,
