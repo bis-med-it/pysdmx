@@ -10,7 +10,6 @@ from msgspec.json import Decoder
 from pysdmx.api.qb.structure import _API_RESOURCES, StructureType
 from pysdmx.api.qb.util import (
     ApiVersion,
-    check_multiple_items,
     REST_ALL,
     REST_LATEST,
 )

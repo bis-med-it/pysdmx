@@ -49,8 +49,8 @@ def test_url_multiple_providers(
     api_version: ApiVersion,
 ):
     expected = (
-        f"/metadata/metadataflow/{agency}/{res}/{version}/{','.join(providers)}"
-        f"?detail={detail.value}"
+        f"/metadata/metadataflow/{agency}/{res}/{version}"
+        f"/{','.join(providers)}?detail={detail.value}"
     )
 
     q = RefMetaByMetadataflowQuery(agency, res, version, providers, detail)

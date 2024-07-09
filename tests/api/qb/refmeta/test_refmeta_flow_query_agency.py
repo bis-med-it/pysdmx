@@ -49,8 +49,8 @@ def test_url_multiple_agencies(
     api_version: ApiVersion,
 ):
     expected = (
-        f"/metadata/metadataflow/{','.join(agencies)}/{res}/{version}/{provider}"
-        f"?detail={detail.value}"
+        f"/metadata/metadataflow/{','.join(agencies)}/{res}/{version}"
+        f"/{provider}?detail={detail.value}"
     )
 
     q = RefMetaByMetadataflowQuery(agencies, res, version, provider, detail)
@@ -111,7 +111,7 @@ def test_url_single_agency(
 def test_url_omit_default_agency(
     api_version: ApiVersion,
 ):
-    expected = f"/metadata/metadataflow"
+    expected = "/metadata/metadataflow"
 
     q = RefMetaByMetadataflowQuery()
     url = q.get_url(api_version, True)
