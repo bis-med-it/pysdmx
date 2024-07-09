@@ -68,4 +68,19 @@ def check_multiple_items(
         )
 
 
+def check_multiple_data_context(
+    field: str, value: Union[str, Sequence[str]], version: ApiVersion
+) -> None:
+    """Whether multiple items are supported in the supplied API version."""
+    if not isinstance(value, str) and version < ApiVersion.V2_0_0:
+        raise ClientError(
+            422,
+            "Validation Error",
+            (
+                f"More than one {field} is not allowed in data context "
+                f"for SDMX-REST {version.value.label}."
+            ),
+        )
+
+
 __all__ = ["ApiVersion"]

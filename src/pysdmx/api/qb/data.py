@@ -2,11 +2,16 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Sequence, Union
 
 import msgspec
 
-from pysdmx.api.qb.util import ApiVersion, REST_ALL, REST_LATEST
+from pysdmx.api.qb.util import (
+    ApiVersion,
+    check_multiple_data_context,
+    REST_ALL,
+    REST_LATEST,
+)
 from pysdmx.errors import ClientError
 
 
@@ -77,7 +82,7 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     """
 
     context: DataContext = DataContext.ALL
-    agency_id: str = REST_ALL
+    agency_id: Union[str, Sequence[str]] = REST_ALL
     resource_id: str = REST_ALL
     version: str = REST_ALL
     key: str = REST_ALL
@@ -116,9 +121,13 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                 f"{self.context} is not valid for SDMX-REST {version.value}.",
             )
 
+    def __check_multiple_contexts(self, version: ApiVersion) -> None:
+        check_multiple_data_context("agency", self.agency_id, version)
+
     def __validate_query(self, version: ApiVersion) -> None:
         self.validate()
         self.__validate_context(version)
+        self.__check_multiple_contexts(version)
 
     def __to_kw(self, val: str, ver: ApiVersion) -> str:
         if val == "*" and ver < ApiVersion.V2_0_0:
@@ -127,9 +136,19 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             val = "latest"
         return val
 
-    def __get_v2_context_id(self) -> str:
+    def __to_kws(
+        self, vals: Union[str, Sequence[str]], ver: ApiVersion
+    ) -> str:
+        vals = [vals] if isinstance(vals, str) else vals
+        mapped = [self.__to_kw(v, ver) for v in vals]
+        return ",".join(mapped)
+
+    def __get_v2_context_id(self, ver: ApiVersion) -> str:
         o = f"/{self.context.value}"
-        o += f"/{self.agency_id}/{self.resource_id}/{self.version}"
+        a = self.__to_kws(self.agency_id, ver)
+        r = self.__to_kws(self.resource_id, ver)
+        v = self.__to_kws(self.version, ver)
+        o += f"/{a}/{r}/{v}"
         return o
 
     def __get_v1_context_id(self, ver: ApiVersion) -> str:
@@ -141,6 +160,34 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             else "latest"
         )
         return f"/{a},{r},{v}"
+
+    def __get_short_v2_context_id(self, ver: ApiVersion) -> str:
+        r = f"/{self.resource_id}" if self.resource_id != REST_ALL else ""
+        a = f"/{self.agency_id}{r}" if r or self.agency_id != REST_ALL else ""
+        c = (
+            f"/{self.context.value}{a}"
+            if a or self.context != DataContext.ALL
+            else ""
+        )
+        return f"/data{c}"
+
+    def __get_short_v1_context_id(self, ver: ApiVersion) -> str:
+        a = self.__to_kw(self.agency_id, ver)
+        v = (
+            f",{self.__to_kw(self.version, ver)}"
+            if self.version != REST_ALL
+            else ""
+        )
+        r = (
+            f"{self.__to_kw(self.resource_id, ver)}{v}"
+            if v or self.resource_id != REST_ALL
+            else ""
+        )
+        if self.agency_id != REST_ALL or self.version != REST_ALL:
+            a = f"/{self.__to_kw(self.agency_id, ver)},{r}"
+        else:
+            a = f"/{r}"
+        return f"{a}" if a else ""
 
     def __get_v1_detail(self, ver: ApiVersion) -> str:
         if self.attributes in ["dsd", "all"] and self.measures == "all":
@@ -159,7 +206,7 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     def __create_full_query(self, ver: ApiVersion) -> str:
         o = "/data"
         if ver >= ApiVersion.V2_0_0:
-            c = self.__get_v2_context_id()
+            c = self.__get_v2_context_id(ver)
         else:
             c = self.__get_v1_context_id(ver)
         o += f"{c}/{self.__to_kw(self.key, ver)}"
@@ -172,14 +219,11 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         return o
 
     def __create_short_query(self, ver: ApiVersion) -> str:
-        a = f"/{self.agency_id}" if self.agency_id != REST_ALL else ""
-        c = (
-            f"{self.context.value}{a}"
-            if a or self.context != DataContext.ALL
-            else ""
-        )
-        o = f"/data/{c}"
-        return o
+        if ver >= ApiVersion.V2_0_0:
+            c = self.__get_short_v2_context_id(ver)
+        else:
+            c = self.__get_short_v1_context_id(ver)
+        return c
 
 
 decoder = msgspec.json.Decoder(DataQuery)
