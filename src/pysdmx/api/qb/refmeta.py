@@ -107,9 +107,6 @@ class RefMetaByMetadatasetQuery(
     def _validate_query(self, version: ApiVersion) -> None:
         super().validate()
         super()._check_version(version)
-        check_multiple_items(self.provider_id, version)
-        check_multiple_items(self.metadataset_id, version)
-        check_multiple_items(self.version, version)
 
     def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
         return _by_mds_decoder
@@ -164,9 +161,6 @@ class RefMetaByStructureQuery(
     def _validate_query(self, version: ApiVersion) -> None:
         super().validate()
         super()._check_version(version)
-        check_multiple_items(self.agency_id, version)
-        check_multiple_items(self.resource_id, version)
-        check_multiple_items(self.version, version)
         self.__check_artefact_type(self.artefact_type, version)
 
     def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
@@ -208,8 +202,64 @@ class RefMetaByStructureQuery(
         return f"/metadata/structure{t}{d}"
 
 
+class RefMetaByMetadataflowQuery(
+    _RefMetaCoreQuery,
+    frozen=True,
+    omit_defaults=True,
+):
+    """A query for reference metadata reported for metadataflows.
+
+    Attributes:
+        agency_id: The agency (or agencies) maintaining the metadataflow(s)
+            of which reference metadata need to be returned.
+        resource_id: The id(s) of the metadataflow(s) of which reference
+            metadata need to be returned.
+        version: The version(s) of the metadataflows(s) of which reference
+            metadata need to be returned.
+        provider_id: The id(s) of the providers that provided the reference
+            metadata to be returned.
+        detail: The desired amount of information to be returned.
+    """
+
+    agency_id: Union[str, Sequence[str]] = REST_ALL
+    resource_id: Union[str, Sequence[str]] = REST_ALL
+    version: Union[str, Sequence[str]] = REST_LATEST
+    provider_id: Union[str, Sequence[str]] = REST_ALL
+    detail: RefMetaDetail = RefMetaDetail.FULL
+
+    def _validate_query(self, version: ApiVersion) -> None:
+        super().validate()
+        super()._check_version(version)
+
+    def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
+        return _by_flow_decoder
+
+    def _create_full_query(self) -> str:
+        a = super()._join_mult(self.agency_id)
+        r = super()._join_mult(self.resource_id)
+        v = super()._join_mult(self.version)
+        p = super()._join_mult(self.provider_id)
+        return (
+            f"/metadata/metadataflow/{a}/{r}/{v}/{p}"
+            f"?detail={self.detail.value}"
+        )
+
+    def _create_short_query(self) -> str:
+        p = f"/{self.provider_id}" if self.provider_id != REST_ALL else ""
+        v = f"/{self.version}{p}" if p or self.version != REST_LATEST else ""
+        r = (
+            f"/{self.resource_id}{v}"
+            if v or self.resource_id != REST_ALL
+            else ""
+        )
+        a = f"/{self.agency_id}{r}" if r or self.agency_id != REST_ALL else ""
+        d = f"?{self.detail}" if self.detail != RefMetaDetail.FULL else ""
+        return f"/metadata/metadataflow{a}{d}"
+
+
 _by_mds_decoder = msgspec.json.Decoder(RefMetaByMetadatasetQuery)
 _by_struct_decoder = msgspec.json.Decoder(RefMetaByStructureQuery)
+_by_flow_decoder = msgspec.json.Decoder(RefMetaByMetadataflowQuery)
 _encoder = msgspec.json.Encoder()
 
 
