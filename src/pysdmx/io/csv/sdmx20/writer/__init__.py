@@ -1,41 +1,15 @@
 """SDMX 2.0 CSV writer module."""
 from copy import copy
-from typing import Any
 
 import pandas as pd
 
-
-class Dataset:
-    """Class containing the necessary attributes to create the Dataset.
-
-    Args:
-            attached_attributes: Attached attributes from the xml file.
-            data: Dataframe.
-            structure_type: Generic or Specific.
-            unique_id: DimensionAtObservation.
-    """
-
-    __slots__ = ("attached_attributes", "data", "unique_id", "structure_type")
-
-    def __init__(
-            self,
-            attached_attributes: Any,
-            data: Any,
-            unique_id: Any,
-            structure_type: Any,
-    ):
-        """Attributes."""
-        self.attached_attributes = attached_attributes
-        self.data = data
-        self.unique_id = unique_id
-        self.structure_type = structure_type
+from pysdmx.model.dataset import Dataset
 
 
-def to_sdmx_csv(dataset: Dataset, version: int, output_path: str = None):
+def writer(dataset: Dataset, output_path: str = None):
     """
     Converts a dataset to an SDMX CSV format
 
-    :param version: The SDMX-CSV version (1.2)
     :param output_path: The path where the resulting
                         SDMX CSV file will be saved
 
@@ -63,14 +37,12 @@ def to_sdmx_csv(dataset: Dataset, version: int, output_path: str = None):
     for k, v in dataset.attached_attributes.items():
         df[k] = v
 
-    if version == 2:
+    # Insert two columns at the beginning of the data set
+    df.insert(0, 'STRUCTURE', dataset.structure_type)
+    df.insert(1, 'STRUCTURE_ID', dataset.unique_id)
+    if 'action' in dataset.attached_attributes:
         da_action = dataset.attached_attributes['action']
-        # Insert two columns at the beginning of the data set
-        df.insert(0, 'STRUCTURE', dataset.structure_type)
-        df.insert(1, 'STRUCTURE_ID', dataset.unique_id)
         df.insert(2, 'ACTION', da_action)
-    else:
-        raise Exception('Invalid SDMX-CSV version.')
 
     # Convert the dataset into a csv file
     if output_path is not None:
