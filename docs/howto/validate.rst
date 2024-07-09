@@ -83,7 +83,7 @@ will be the URL at which the FMR is available, followed by ``/sdmx/v2/``.
 
 .. code-block:: python
 
-    from pysdmx.fmr import AsyncRegistryClient
+    from pysdmx.api.fmr import AsyncRegistryClient
     gr = AsyncRegistryClient("https://registry.sdmx.org/sdmx/v2/")
 
 Retrieving the schema information

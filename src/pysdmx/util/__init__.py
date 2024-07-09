@@ -6,6 +6,7 @@ from typing import Any, Sequence
 from msgspec import Struct
 
 from pysdmx.errors import NotFound
+from pysdmx.model import Agency
 
 NF = "Not found"
 
@@ -24,6 +25,10 @@ class Reference(Struct, frozen=True):
     agency: str
     id: str
     version: str
+
+    def __str__(self) -> str:
+        """Returns a string representation of the object."""
+        return f"{self.sdmx_type}={self.agency}:{self.id}({self.version})"
 
 
 class ItemReference(Struct, frozen=True):
@@ -85,7 +90,18 @@ def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:
     f = [
         a
         for a in artefacts
-        if (a.agency == r.agency and a.id == r.id and a.version == r.version)
+        if (
+            (
+                a.agency == r.agency
+                or (
+                    a.agency.id == r.agency
+                    if isinstance(a.agency, Agency)
+                    else False
+                )
+            )
+            and a.id == r.id
+            and a.version == r.version
+        )
     ]
     if f:
         return f[0]

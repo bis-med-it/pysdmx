@@ -50,7 +50,7 @@ data structure maintained by Eurostats (``ESTAT``), as published on the
 
 .. code-block:: python
 
-    from pysdmx.fmr import AsyncRegistryClient
+    from pysdmx.api.fmr import AsyncRegistryClient
     client = AsyncRegistryClient("https://registry.sdmx.org/sdmx/v2/")
 
 Retrieving the Schema Information

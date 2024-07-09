@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<message:Error
+        xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+        xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+    <message:ErrorMessage code="304">
+        <com:Text>
+            Either no structures were submitted,
+            or the submitted structures contain no changes from the ones
+            currently stored in the system
+        </com:Text>
+    </message:ErrorMessage>
+</message:Error>
