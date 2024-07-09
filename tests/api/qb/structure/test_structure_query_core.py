@@ -73,7 +73,7 @@ def test_validate_nok():
         q.validate()
 
 
-def test_rest1_url_for_metadata_query(
+def test_rest_url_for_metadata_query(
     typ: StructureType,
     agency: str,
     res: str,
