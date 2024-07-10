@@ -1,4 +1,5 @@
 """SDMX 2.0 CSV writer module."""
+
 from copy import copy
 
 import pandas as pd
@@ -6,25 +7,15 @@ import pandas as pd
 from pysdmx.model.dataset import Dataset
 
 
-def writer(dataset: Dataset, output_path: str = None):
-    """
-    Converts a dataset to an SDMX CSV format
+def writer(dataset: Dataset, output_path: str = None) -> str:
+    """Converts a dataset to an SDMX CSV format.
 
-    :param output_path: The path where the resulting
-                        SDMX CSV file will be saved
+    Args:
+        dataset: dataset
+        output_path: output_path
 
-    :return: The SDMX CSV data as a string if no output path is provided
-
-    .. important::
-
-        The SDMX CSV version must be 1 or 2. Please refer to this link
-        for more info:
-        https://wiki.sdmxcloud.org/SDMX-CSV
-
-        Uses pandas.Dataframe.to_csv with specific parameters to ensure
-        the file is compatible with the SDMX-CSV standard (e.g. no index,
-        uses header, comma delimiter, custom column names
-        for the first two columns)
+    Returns:
+        SDMX CSV data as a string
     """
 
     # Link to pandas.to_csv documentation on sphinx:
@@ -38,11 +29,11 @@ def writer(dataset: Dataset, output_path: str = None):
         df[k] = v
 
     # Insert two columns at the beginning of the data set
-    df.insert(0, 'STRUCTURE', dataset.structure_type)
-    df.insert(1, 'STRUCTURE_ID', dataset.unique_id)
-    if 'action' in dataset.attached_attributes:
-        da_action = dataset.attached_attributes['action']
-        df.insert(2, 'ACTION', da_action)
+    df.insert(0, "STRUCTURE", dataset.structure_type)
+    df.insert(1, "STRUCTURE_ID", dataset.unique_id)
+    if "action" in dataset.attached_attributes:
+        da_action = dataset.attached_attributes["action"]
+        df.insert(2, "ACTION", da_action)
 
     # Convert the dataset into a csv file
     if output_path is not None:
@@ -51,4 +42,3 @@ def writer(dataset: Dataset, output_path: str = None):
 
     # Return the SDMX CSV data as a string
     return df.to_csv(index=False, header=True)
-
