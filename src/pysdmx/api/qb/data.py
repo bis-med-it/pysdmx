@@ -90,7 +90,9 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     updated_after: Optional[datetime] = None
     first_n_obs: Optional[Annotated[int, msgspec.Meta(gt=0)]] = None
     last_n_obs: Optional[Annotated[int, msgspec.Meta(gt=0)]] = None
-    obs_dimension: Optional[str] = None
+    obs_dimension: Optional[
+        Annotated[str, msgspec.Meta(pattern="^[A-Za-z][A-Za-z\d_-]*$")]
+    ] = None
     attributes: str = "dsd"
     measures: str = "all"
     include_history: bool = False
@@ -205,6 +207,10 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             if qs:
                 qs += "&"
             qs += f"lastNObservations={self.last_n_obs}"
+        if self.obs_dimension:
+            if qs:
+                qs += "&"
+            qs += f"dimensionAtObservation={self.obs_dimension}"
         if qs:
             out = f"?{qs}"
         else:
@@ -219,6 +225,10 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             if qs:
                 qs += "&"
             qs += f"lastNObservations={self.last_n_obs}"
+        if self.obs_dimension:
+            if qs:
+                qs += "&"
+            qs += f"dimensionAtObservation={self.obs_dimension}"
         if qs:
             out = f"?{qs}"
         else:
@@ -277,6 +287,10 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             if qs:
                 qs += "&"
             qs += f"lastNObservations={self.last_n_obs}"
+        if self.obs_dimension:
+            if qs:
+                qs += "&"
+            qs += f"dimensionAtObservation={self.obs_dimension}"
         if ver >= ApiVersion.V2_0_0:
             if qs:
                 qs += "&"
