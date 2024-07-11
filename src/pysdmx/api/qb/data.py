@@ -13,6 +13,7 @@ from pysdmx.api.qb.util import (
     REST_LATEST,
 )
 from pysdmx.errors import ClientError
+from pysdmx.model.types import NC_NAME_ID_TYPE
 
 
 class DataContext(Enum):
@@ -94,7 +95,10 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         Annotated[str, msgspec.Meta(pattern="^[A-Za-z][A-Za-z\d_-]*$")]
     ] = None
     attributes: str = "dsd"
-    measures: str = "all"
+    measures: Union[
+        NC_NAME_ID_TYPE,
+        Sequence[NC_NAME_ID_TYPE],
+    ] = "all"
     include_history: bool = False
 
     def validate(self) -> None:
@@ -217,6 +221,10 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             if qs:
                 qs += "&"
             qs += f"dimensionAtObservation={self.obs_dimension}"
+        if self.measures != "all":
+            if qs:
+                qs += "&"
+            qs += f"measures={self.__to_kws(self.measures, ver)}"
         if self.include_history:
             if qs:
                 qs += "&"
@@ -245,6 +253,10 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             if qs:
                 qs += "&"
             qs += f"dimensionAtObservation={self.obs_dimension}"
+        if self.measures != "all":
+            if qs:
+                qs += "&"
+            qs += f"measures={self.measures}"
         if self.include_history:
             if qs:
                 qs += "&"
@@ -320,7 +332,10 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         if ver >= ApiVersion.V2_0_0:
             if qs:
                 qs += "&"
-            qs += f"attributes={self.attributes}&measures={self.measures}"
+            qs += (
+                f"attributes={self.attributes}"
+                f"&measures={self.__to_kws(self.measures, ver)}"
+            )
         else:
             if qs:
                 qs += "&"
