@@ -201,7 +201,13 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
 
     def __get_short_v2_qs(self, ver: ApiVersion) -> str:
         qs = ""
+        if self.updated_after:
+            qs += (
+                f"updatedAfter={self.updated_after.isoformat('T', 'seconds')}"
+            )
         if self.first_n_obs:
+            if qs:
+                qs += "&"
             qs += f"firstNObservations={self.first_n_obs}"
         if self.last_n_obs:
             if qs:
@@ -219,7 +225,13 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
 
     def __get_short_v1_qs(self, ver: ApiVersion) -> str:
         qs = ""
+        if self.updated_after:
+            qs += (
+                f"updatedAfter={self.updated_after.isoformat('T', 'seconds')}"
+            )
         if self.first_n_obs:
+            if qs:
+                qs += "&"
             qs += f"firstNObservations={self.first_n_obs}"
         if self.last_n_obs:
             if qs:
@@ -281,7 +293,13 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         o += f"{c}/{self.__to_kws(self.key, ver)}"
         o += "?"
         qs = ""
+        if self.updated_after:
+            qs += (
+                f"updatedAfter={self.updated_after.isoformat('T', 'seconds')}"
+            )
         if self.first_n_obs:
+            if qs:
+                qs += "&"
             qs += f"firstNObservations={self.first_n_obs}"
         if self.last_n_obs:
             if qs:
