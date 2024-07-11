@@ -2,7 +2,6 @@ import pytest
 
 from pysdmx.api.qb.data import DataQuery
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
 
 
 @pytest.fixture()

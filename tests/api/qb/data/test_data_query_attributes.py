@@ -13,18 +13,27 @@ def res():
 
 
 @pytest.fixture()
-def mult_meas():
-    return ["OI", "TO"]
+def mult_attrs():
+    return ["CONF_STATUS", "OBS_STATUS"]
 
 
-measures = ["all", "none", "OBS_VALUE"]
+attributes = [
+    "dsd",
+    "msd",
+    "dataset",
+    "series",
+    "obs",
+    "all",
+    "none",
+    "OBS_STATUS",
+]
 
 
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
 def test_invalid_value(res: str, api_version: ApiVersion):
-    q = DataQuery(resource_id=res, measures="TIME_PERIOD,OBS_VALUE")
+    q = DataQuery(resource_id=res, attributes="CONF_STATUS,OBS_STATUS")
 
     with pytest.raises(ClientError):
         q.get_url(api_version)
@@ -33,16 +42,16 @@ def test_invalid_value(res: str, api_version: ApiVersion):
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-@pytest.mark.parametrize("measure", measures)
-def test_url_measure(
-    measure: str,
+@pytest.mark.parametrize("attr", attributes)
+def test_url_attr(
+    attr: str,
     api_version: ApiVersion,
 ):
     expected = (
-        f"/data/*/*/*/*/*?attributes=dsd&measures={measure}"
+        f"/data/*/*/*/*/*?attributes={attr}&measures=all"
         "&includeHistory=false"
     )
-    q = DataQuery(measures=measure)
+    q = DataQuery(attributes=attr)
     url = q.get_url(api_version)
 
     assert url == expected
@@ -51,15 +60,15 @@ def test_url_measure(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_multi_measures(
-    mult_meas: List[str],
+def test_url_multi_attributes(
+    mult_attrs: List[str],
     api_version: ApiVersion,
 ):
     expected = (
-        f"/data/*/*/*/*/*?attributes=dsd&measures={','.join(mult_meas)}"
+        f"/data/*/*/*/*/*?attributes={','.join(mult_attrs)}&measures=all"
         "&includeHistory=false"
     )
-    q = DataQuery(measures=mult_meas)
+    q = DataQuery(attributes=mult_attrs)
     url = q.get_url(api_version)
 
     assert url == expected
@@ -68,14 +77,14 @@ def test_url_multi_measures(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-@pytest.mark.parametrize("measure", (m for m in measures if m != "all"))
-def test_url_measure_short(
-    measure: str,
+@pytest.mark.parametrize("attr", (m for m in attributes if m != "dsd"))
+def test_url_attr_short(
+    attr: str,
     api_version: ApiVersion,
 ):
-    expected = f"/data?measures={measure}"
+    expected = f"/data?attributes={attr}"
 
-    q = DataQuery(measures=measure)
+    q = DataQuery(attributes=attr)
     url = q.get_url(api_version, True)
 
     assert url == expected
@@ -84,12 +93,12 @@ def test_url_measure_short(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_multi_measures_short(
-    mult_meas: List[str],
+def test_url_multi_attributes_short(
+    mult_attrs: List[str],
     api_version: ApiVersion,
 ):
-    expected = f"/data?measures={','.join(mult_meas)}"
-    q = DataQuery(measures=mult_meas)
+    expected = f"/data?attributes={','.join(mult_attrs)}"
+    q = DataQuery(attributes=mult_attrs)
     url = q.get_url(api_version, True)
 
     assert url == expected

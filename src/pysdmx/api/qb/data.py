@@ -10,7 +10,6 @@ from pysdmx.api.qb.util import (
     ApiVersion,
     check_multiple_data_context,
     REST_ALL,
-    REST_LATEST,
 )
 from pysdmx.errors import ClientError
 from pysdmx.model.types import NC_NAME_ID_TYPE
@@ -91,10 +90,11 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     updated_after: Optional[datetime] = None
     first_n_obs: Optional[Annotated[int, msgspec.Meta(gt=0)]] = None
     last_n_obs: Optional[Annotated[int, msgspec.Meta(gt=0)]] = None
-    obs_dimension: Optional[
-        Annotated[str, msgspec.Meta(pattern="^[A-Za-z][A-Za-z\d_-]*$")]
-    ] = None
-    attributes: str = "dsd"
+    obs_dimension: Optional[NC_NAME_ID_TYPE] = None
+    attributes: Union[
+        NC_NAME_ID_TYPE,
+        Sequence[NC_NAME_ID_TYPE],
+    ] = "dsd"
     measures: Union[
         NC_NAME_ID_TYPE,
         Sequence[NC_NAME_ID_TYPE],
@@ -138,7 +138,7 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             raise ClientError(
                 422,
                 "Validation Error",
-                f"A dataflow ID must be provided in SDMX-REST {version.value}.",
+                f"A dataflow must be provided in SDMX-REST {version.value}.",
             )
 
     def __validate_query(self, version: ApiVersion) -> None:
@@ -221,6 +221,10 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             if qs:
                 qs += "&"
             qs += f"dimensionAtObservation={self.obs_dimension}"
+        if self.attributes != "dsd":
+            if qs:
+                qs += "&"
+            qs += f"attributes={self.__to_kws(self.attributes, ver)}"
         if self.measures != "all":
             if qs:
                 qs += "&"
@@ -253,10 +257,6 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             if qs:
                 qs += "&"
             qs += f"dimensionAtObservation={self.obs_dimension}"
-        if self.measures != "all":
-            if qs:
-                qs += "&"
-            qs += f"measures={self.measures}"
         if self.include_history:
             if qs:
                 qs += "&"
@@ -333,7 +333,7 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             if qs:
                 qs += "&"
             qs += (
-                f"attributes={self.attributes}"
+                f"attributes={self.__to_kws(self.attributes, ver)}"
                 f"&measures={self.__to_kws(self.measures, ver)}"
             )
         else:
