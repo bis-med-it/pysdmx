@@ -57,6 +57,20 @@ def test_url_multiple_agencies_since_2_0_0(
 
 
 @pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+)
+def test_url_multiple_agencies_since_2_0_0_short(
+    agencies: List[str], api_version: ApiVersion
+):
+    expected = f"/data/*/{','.join(agencies)}"
+
+    q = DataQuery(agency_id=agencies)
+    url = q.get_url(api_version, True)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
     "api_version",
     (v for v in ApiVersion if v < ApiVersion.V2_0_0),
 )

@@ -166,13 +166,21 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
 
     def __get_short_v2_path(self, ver: ApiVersion) -> str:
         k = f"/{self.__to_kws(self.key, ver)}" if self.key != REST_ALL else ""
-        v = f"/{self.version}{k}" if k or self.version != REST_ALL else ""
+        v = (
+            f"/{self.__to_kws(self.version, ver)}{k}"
+            if k or self.version != REST_ALL
+            else ""
+        )
         r = (
-            f"/{self.resource_id}{v}"
+            f"/{self.__to_kws(self.resource_id, ver)}{v}"
             if v or self.resource_id != REST_ALL
             else ""
         )
-        a = f"/{self.agency_id}{r}" if r or self.agency_id != REST_ALL else ""
+        a = (
+            f"/{self.__to_kws(self.agency_id, ver)}{r}"
+            if r or self.agency_id != REST_ALL
+            else ""
+        )
         c = (
             f"/{self.context.value}{a}"
             if a or self.context != DataContext.ALL

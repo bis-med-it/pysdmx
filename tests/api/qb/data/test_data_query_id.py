@@ -68,6 +68,22 @@ def test_url_multiple_resources_since_2_0_0(
 
 
 @pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+)
+def test_url_multiple_resources_since_2_0_0_short(
+    context: DataContext,
+    mult_res: List[str],
+    api_version: ApiVersion,
+):
+    expected = f"/data/{context.value}/*/{','.join(mult_res)}"
+
+    q = DataQuery(context, resource_id=mult_res)
+    url = q.get_url(api_version, True)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
     "api_version",
     (v for v in ApiVersion if v < ApiVersion.V2_0_0),
 )
