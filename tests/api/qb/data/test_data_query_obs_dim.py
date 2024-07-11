@@ -28,7 +28,7 @@ def test_invalid_value(res: str, api_version: ApiVersion):
 )
 def test_url_obs_dim_before_2_0_0(
     res: str,
-    obs_dim: int,
+    obs_dim: str,
     api_version: ApiVersion,
 ):
     expected = (
@@ -46,7 +46,7 @@ def test_url_obs_dim_before_2_0_0(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
 def test_url_obs_dim_since_2_0_0(
-    obs_dim: int,
+    obs_dim: str,
     api_version: ApiVersion,
 ):
     expected = (
@@ -65,7 +65,7 @@ def test_url_obs_dim_since_2_0_0(
 )
 def test_url_obs_dim_before_2_0_0_short(
     res: str,
-    obs_dim: int,
+    obs_dim: str,
     api_version: ApiVersion,
 ):
     expected = f"/data/{res}?dimensionAtObservation={obs_dim}"
@@ -80,7 +80,7 @@ def test_url_obs_dim_before_2_0_0_short(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
 def test_url_obs_dim_since_2_0_0_short(
-    obs_dim: int,
+    obs_dim: str,
     api_version: ApiVersion,
 ):
     expected = f"/data?dimensionAtObservation={obs_dim}"
