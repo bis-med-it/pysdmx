@@ -89,7 +89,7 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     components: Dict[str, Any] = None
     updated_after: Optional[datetime] = None
     first_n_obs: Optional[Annotated[int, msgspec.Meta(gt=0)]] = None
-    last_n_obs: Optional[int] = None
+    last_n_obs: Optional[Annotated[int, msgspec.Meta(gt=0)]] = None
     obs_dimension: Optional[str] = None
     attributes: str = "dsd"
     measures: str = "all"
@@ -200,18 +200,30 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     def __get_short_v2_qs(self, ver: ApiVersion) -> str:
         qs = ""
         if self.first_n_obs:
-            qs = f"firstNObservations={self.first_n_obs}"
+            qs += f"firstNObservations={self.first_n_obs}"
+        if self.last_n_obs:
+            if qs:
+                qs += "&"
+            qs += f"lastNObservations={self.last_n_obs}"
         if qs:
-            qs = f"?{qs}"
-        return qs
+            out = f"?{qs}"
+        else:
+            out = ""
+        return out
 
     def __get_short_v1_qs(self, ver: ApiVersion) -> str:
         qs = ""
         if self.first_n_obs:
-            qs = f"firstNObservations={self.first_n_obs}"
+            qs += f"firstNObservations={self.first_n_obs}"
+        if self.last_n_obs:
+            if qs:
+                qs += "&"
+            qs += f"lastNObservations={self.last_n_obs}"
         if qs:
-            qs = f"?{qs}"
-        return qs
+            out = f"?{qs}"
+        else:
+            out = ""
+        return out
 
     def __get_short_v1_path(self, ver: ApiVersion) -> str:
         v = (
@@ -261,6 +273,10 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         qs = ""
         if self.first_n_obs:
             qs += f"firstNObservations={self.first_n_obs}"
+        if self.last_n_obs:
+            if qs:
+                qs += "&"
+            qs += f"lastNObservations={self.last_n_obs}"
         if ver >= ApiVersion.V2_0_0:
             if qs:
                 qs += "&"
