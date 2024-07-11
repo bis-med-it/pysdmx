@@ -127,10 +127,19 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         check_multiple_data_context("version", self.version, version)
         check_multiple_data_context("key", self.key, version)
 
+    def __check_resource_id(self, version: ApiVersion) -> None:
+        if version < ApiVersion.V2_0_0 and self.resource_id == REST_ALL:
+            raise ClientError(
+                422,
+                "Validation Error",
+                f"A dataflow ID must be provided in SDMX-REST {version.value}.",
+            )
+
     def __validate_query(self, version: ApiVersion) -> None:
         self.validate()
         self.__validate_context(version)
         self.__check_multiple_contexts(version)
+        self.__check_resource_id(version)
 
     def __to_kw(self, val: str, ver: ApiVersion) -> str:
         if val == "*" and ver < ApiVersion.V2_0_0:

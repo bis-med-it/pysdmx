@@ -10,6 +10,11 @@ def agency():
     return "BIS"
 
 
+@pytest.fixture()
+def res():
+    return "CBS"
+
+
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
@@ -19,11 +24,12 @@ def agency():
 )
 def test_url_df_context_before_2_0_0(
     context: DataContext,
+    res: str,
     api_version: ApiVersion,
 ):
-    expected = f"/data/all,all,latest/all?detail=full&includeHistory=false"
+    expected = f"/data/all,{res},latest/all?detail=full&includeHistory=false"
 
-    q = DataQuery(context)
+    q = DataQuery(context, resource_id=res)
     url = q.get_url(api_version)
 
     assert url == expected

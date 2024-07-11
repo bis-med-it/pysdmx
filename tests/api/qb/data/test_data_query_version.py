@@ -170,11 +170,11 @@ def test_url_single_version_since_2_0_0(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
 def test_url_add_default_version_if_required_before_2_0_0(
-    context: DataContext, key: str, api_version: ApiVersion
+    context: DataContext, res: str, key: str, api_version: ApiVersion
 ):
-    expected = f"/all,all,latest/{key}"
+    expected = f"/all,{res},latest/{key}"
 
-    q = DataQuery(context, key=key)
+    q = DataQuery(context, resource_id=res key=key)
     url = q.get_url(api_version, True)
 
     assert url == expected

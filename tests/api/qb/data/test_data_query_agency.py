@@ -75,11 +75,11 @@ def test_url_multiple_agencies_since_2_0_0_short(
     (v for v in ApiVersion if v < ApiVersion.V2_0_0),
 )
 def test_url_default_agency_before_2_0_0(
-    context: DataContext, api_version: ApiVersion
+    context: DataContext, res: str, api_version: ApiVersion
 ):
-    expected = f"/data/all,all,latest/all?detail=full&includeHistory=false"
+    expected = f"/data/all,{res},latest/all?detail=full&includeHistory=false"
 
-    q = DataQuery(context)
+    q = DataQuery(context, resource_id=res)
     url = q.get_url(api_version)
 
     assert url == expected
@@ -107,13 +107,13 @@ def test_url_default_agency_since_2_0_0(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
 def test_url_single_agency_before_2_0_0(
-    context: DataContext, agency: str, api_version: ApiVersion
+    context: DataContext, agency: str, res: str, api_version: ApiVersion
 ):
     expected = (
-        f"/data/{agency},all,latest/all?detail=full&includeHistory=false"
+        f"/data/{agency},{res},latest/all?detail=full&includeHistory=false"
     )
 
-    q = DataQuery(context, agency)
+    q = DataQuery(context, agency, res)
     url = q.get_url(api_version)
 
     assert url == expected

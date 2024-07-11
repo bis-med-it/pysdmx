@@ -90,14 +90,10 @@ def test_url_multiple_resources_since_2_0_0_short(
 def test_url_default_resource_before_2_0_0(
     context: DataContext, agency: str, api_version: ApiVersion
 ):
-    expected = (
-        f"/data/{agency},all,latest/all?detail=full&includeHistory=false"
-    )
-
     q = DataQuery(context, agency)
-    url = q.get_url(api_version)
 
-    assert url == expected
+    with pytest.raises(ClientError):
+        q.get_url(api_version)
 
 
 @pytest.mark.parametrize(
@@ -155,11 +151,11 @@ def test_url_single_resource_since_2_0_0(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
 def test_url_add_default_resource_if_required_before_2_0_0(
-    context: DataContext, version: str, api_version: ApiVersion
+    context: DataContext, res: str, version: str, api_version: ApiVersion
 ):
-    expected = f"/all,all,{version}"
+    expected = f"/all,{res},{version}"
 
-    q = DataQuery(context, version=version)
+    q = DataQuery(context, resource_id=res, version=version)
     url = q.get_url(api_version, True)
 
     assert url == expected
