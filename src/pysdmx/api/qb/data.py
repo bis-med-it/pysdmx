@@ -217,6 +217,10 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             if qs:
                 qs += "&"
             qs += f"dimensionAtObservation={self.obs_dimension}"
+        if self.include_history:
+            if qs:
+                qs += "&"
+            qs += f"includeHistory={str(self.include_history).lower()}"
         if qs:
             out = f"?{qs}"
         else:
@@ -241,6 +245,10 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             if qs:
                 qs += "&"
             qs += f"dimensionAtObservation={self.obs_dimension}"
+        if self.include_history:
+            if qs:
+                qs += "&"
+            qs += f"includeHistory={str(self.include_history).lower()}"
         if qs:
             out = f"?{qs}"
         else:
