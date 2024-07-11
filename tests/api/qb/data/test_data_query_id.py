@@ -153,7 +153,7 @@ def test_url_single_resource_since_2_0_0(
 def test_url_add_default_resource_if_required_before_2_0_0(
     context: DataContext, res: str, version: str, api_version: ApiVersion
 ):
-    expected = f"/all,{res},{version}"
+    expected = f"/data/all,{res},{version}"
 
     q = DataQuery(context, resource_id=res, version=version)
     url = q.get_url(api_version, True)

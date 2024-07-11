@@ -142,7 +142,7 @@ def test_url_single_agency_since_2_0_0(
 def test_url_add_default_agency_if_required_before_2_0_0(
     context: DataContext, res: str, api_version: ApiVersion
 ):
-    expected = f"/{res}"
+    expected = f"/data/{res}"
 
     q = DataQuery(context, resource_id=res)
     url = q.get_url(api_version, True)
