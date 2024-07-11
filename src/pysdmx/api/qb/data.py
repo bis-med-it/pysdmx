@@ -83,8 +83,8 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
 
     context: DataContext = DataContext.ALL
     agency_id: Union[str, Sequence[str]] = REST_ALL
-    resource_id: str = REST_ALL
-    version: str = REST_ALL
+    resource_id: Union[str, Sequence[str]] = REST_ALL
+    version: Union[str, Sequence[str]] = REST_ALL
     key: str = REST_ALL
     components: Dict[str, Any] = None
     updated_after: Optional[datetime] = None
@@ -123,6 +123,8 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
 
     def __check_multiple_contexts(self, version: ApiVersion) -> None:
         check_multiple_data_context("agency", self.agency_id, version)
+        check_multiple_data_context("resource", self.resource_id, version)
+        check_multiple_data_context("version", self.version, version)
 
     def __validate_query(self, version: ApiVersion) -> None:
         self.validate()
@@ -161,8 +163,14 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         )
         return f"/{a},{r},{v}"
 
-    def __get_short_v2_context_id(self, ver: ApiVersion) -> str:
-        r = f"/{self.resource_id}" if self.resource_id != REST_ALL else ""
+    def __get_short_v2_path(self, ver: ApiVersion) -> str:
+        k = f"/{self.key}" if self.key != REST_ALL else ""
+        v = f"/{self.version}{k}" if k or self.version != REST_ALL else ""
+        r = (
+            f"/{self.resource_id}{v}"
+            if v or self.resource_id != REST_ALL
+            else ""
+        )
         a = f"/{self.agency_id}{r}" if r or self.agency_id != REST_ALL else ""
         c = (
             f"/{self.context.value}{a}"
@@ -171,8 +179,7 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         )
         return f"/data{c}"
 
-    def __get_short_v1_context_id(self, ver: ApiVersion) -> str:
-        a = self.__to_kw(self.agency_id, ver)
+    def __get_short_v1_path(self, ver: ApiVersion) -> str:
         v = (
             f",{self.__to_kw(self.version, ver)}"
             if self.version != REST_ALL
@@ -184,10 +191,16 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             else ""
         )
         if self.agency_id != REST_ALL or self.version != REST_ALL:
-            a = f"/{self.__to_kw(self.agency_id, ver)},{r}"
+            a = f"{self.__to_kw(self.agency_id, ver)},{r}"
         else:
-            a = f"/{r}"
-        return f"{a}" if a else ""
+            a = f"{r}"
+        k = f"/{self.key}" if self.key != REST_ALL else ""
+        if a:
+            return f"/{a}{k}"
+        elif k and not a:
+            return f"/all,all,latest{k}"
+        else:
+            return ""
 
     def __get_v1_detail(self, ver: ApiVersion) -> str:
         if self.attributes in ["dsd", "all"] and self.measures == "all":
@@ -220,9 +233,9 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
 
     def __create_short_query(self, ver: ApiVersion) -> str:
         if ver >= ApiVersion.V2_0_0:
-            c = self.__get_short_v2_context_id(ver)
+            c = self.__get_short_v2_path(ver)
         else:
-            c = self.__get_short_v1_context_id(ver)
+            c = self.__get_short_v1_path(ver)
         return c
 
 
