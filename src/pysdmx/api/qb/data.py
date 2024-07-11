@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Optional, Sequence, Union
+from typing import Annotated, Any, Dict, Optional, Sequence, Union
 
 import msgspec
 
@@ -88,7 +88,7 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     key: Union[str, Sequence[str]] = REST_ALL
     components: Dict[str, Any] = None
     updated_after: Optional[datetime] = None
-    first_n_obs: Optional[int] = None
+    first_n_obs: Optional[Annotated[int, msgspec.Meta(gt=0)]] = None
     last_n_obs: Optional[int] = None
     obs_dimension: Optional[str] = None
     attributes: str = "dsd"
@@ -197,6 +197,22 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         )
         return f"/data{c}"
 
+    def __get_short_v2_qs(self, ver: ApiVersion) -> str:
+        qs = ""
+        if self.first_n_obs:
+            qs = f"firstNObservations={self.first_n_obs}"
+        if qs:
+            qs = f"?{qs}"
+        return qs
+
+    def __get_short_v1_qs(self, ver: ApiVersion) -> str:
+        qs = ""
+        if self.first_n_obs:
+            qs = f"firstNObservations={self.first_n_obs}"
+        if qs:
+            qs = f"?{qs}"
+        return qs
+
     def __get_short_v1_path(self, ver: ApiVersion) -> str:
         v = (
             f",{self.__to_kw(self.version, ver)}"
@@ -214,9 +230,9 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             a = f"{r}"
         k = f"/{self.key}" if self.key != REST_ALL else ""
         if a:
-            return f"/{a}{k}"
+            return f"/data/{a}{k}"
         elif k and not a:
-            return f"/all,all,latest{k}"
+            return f"/data/all,all,latest{k}"
         else:
             return ""
 
@@ -242,19 +258,30 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             c = self.__get_v1_context_id(ver)
         o += f"{c}/{self.__to_kws(self.key, ver)}"
         o += "?"
+        qs = ""
+        if self.first_n_obs:
+            qs += f"firstNObservations={self.first_n_obs}"
         if ver >= ApiVersion.V2_0_0:
-            o += f"attributes={self.attributes}&measures={self.measures}"
+            if qs:
+                qs += "&"
+            qs += f"attributes={self.attributes}&measures={self.measures}"
         else:
-            o += f"detail={self.__get_v1_detail(ver)}"
-        o += f"&includeHistory={str(self.include_history).lower()}"
+            if qs:
+                qs += "&"
+            qs += f"detail={self.__get_v1_detail(ver)}"
+        o += f"{qs}&includeHistory={str(self.include_history).lower()}"
         return o
 
     def __create_short_query(self, ver: ApiVersion) -> str:
         if ver >= ApiVersion.V2_0_0:
-            c = self.__get_short_v2_path(ver)
+            p = self.__get_short_v2_path(ver)
+            q = self.__get_short_v2_qs(ver)
+            o = f"{p}{q}"
         else:
-            c = self.__get_short_v1_path(ver)
-        return c
+            p = self.__get_short_v1_path(ver)
+            q = self.__get_short_v1_qs(ver)
+            o = f"{p}{q}"
+        return o
 
 
 decoder = msgspec.json.Decoder(DataQuery)
