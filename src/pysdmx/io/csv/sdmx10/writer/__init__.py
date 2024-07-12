@@ -8,7 +8,9 @@ import pandas as pd
 from pysdmx.model.dataset import Dataset
 
 
-def writer(dataset: Dataset, output_path: Optional[str] = None) -> Optional[str]:
+def writer(
+    dataset: Dataset, output_path: Optional[str] = None
+) -> Optional[str]:
     """Converts a dataset to an SDMX CSV format.
 
     Args:
