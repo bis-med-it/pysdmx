@@ -3,8 +3,8 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from pysdmx.io.csv.sdmx10.reader import read
-from pysdmx.io.csv.sdmx10.writer import writer
+from pysdmx.io.csv.sdmx20.reader import read
+from pysdmx.io.csv.sdmx20.writer import writer
 from pysdmx.model.dataset import Dataset
 
 

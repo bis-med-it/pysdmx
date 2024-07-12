@@ -1,13 +1,14 @@
 """SDMX 1.0 CSV writer module."""
 
 from copy import copy
+from typing import Optional
 
 import pandas as pd
 
 from pysdmx.model.dataset import Dataset
 
 
-def writer(dataset: Dataset, output_path: str = None) -> str:
+def writer(dataset: Dataset, output_path: Optional[str] = None) -> Optional[str]:
     """Converts a dataset to an SDMX CSV format.
 
     Args:
@@ -17,7 +18,6 @@ def writer(dataset: Dataset, output_path: str = None) -> str:
     Returns:
         SDMX CSV data as a string
     """
-
     # Link to pandas.to_csv documentation on sphinx:
     # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html
 
@@ -28,10 +28,5 @@ def writer(dataset: Dataset, output_path: str = None) -> str:
     for k, v in dataset.attached_attributes.items():
         df[k] = v
 
-    # Convert the dataset into a csv file
-    if output_path is not None:
-        # Save the CSV file to the specified output path
-        df.to_csv(output_path, index=False, header=True)
-
     # Return the SDMX CSV data as a string
-    return df.to_csv(index=False, header=True)
+    return df.to_csv(output_path, index=False, header=True)
