@@ -25,7 +25,8 @@ def writer(
 
     # Create a copy of the dataset
     df: pd.DataFrame = copy(dataset.data)
-    df["DATAFLOW"] = dataset.unique_id
+    df.insert(0, "DATAFLOW", dataset.unique_id)
+
     # Add additional attributes to the dataset
     for k, v in dataset.attached_attributes.items():
         df[k] = v
