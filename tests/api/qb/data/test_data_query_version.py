@@ -146,6 +146,26 @@ def test_url_single_version_before_2_0_0(
 
 
 @pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
+)
+def test_url_translate_latest_before_2_0_0(
+    context: DataContext,
+    agency: str,
+    res: str,
+    version: str,
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/data/{agency},{res},latest/all?detail=full&includeHistory=false"
+    )
+
+    q = DataQuery(context, agency, res, "~")
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
 def test_url_single_version_since_2_0_0(

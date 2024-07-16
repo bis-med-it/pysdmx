@@ -3,6 +3,7 @@ import pytest
 from pysdmx.api.dc.query import (
     LogicalOperator,
     MultiFilter,
+    NotFilter,
     NumberFilter,
     Operator,
     TextFilter,
@@ -17,6 +18,17 @@ from pysdmx.errors import ClientError
 )
 def test_components_v1(api_version: ApiVersion):
     flt = TextFilter("FREQ", Operator.EQUALS, "M")
+    q = DataQuery(resource_id="CBS", components=flt)
+
+    with pytest.raises(ClientError):
+        q.get_url(api_version)
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+)
+def test_unsupported_operator(api_version: ApiVersion):
+    flt = TextFilter("FREQ", Operator.NOT_IN, ["A", "M"])
     q = DataQuery(components=flt)
 
     with pytest.raises(ClientError):
@@ -186,6 +198,30 @@ def test_one_text_comp_ew(api_version: ApiVersion):
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
+def test_one_text_comp_wrong_like(api_version: ApiVersion):
+    flt = TextFilter("FREQ", Operator.LIKE, "M")
+
+    q = DataQuery(components=flt)
+
+    with pytest.raises(ClientError):
+        q.get_url(api_version)
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+)
+def test_one_text_comp_wrong_like_type(api_version: ApiVersion):
+    flt = NumberFilter("VALUE", Operator.LIKE, 42)
+
+    q = DataQuery(components=flt)
+
+    with pytest.raises(ClientError):
+        q.get_url(api_version)
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+)
 def test_one_text_comp_in(api_version: ApiVersion):
     flt = TextFilter("FREQ", Operator.IN, ["A", "M"])
     expected = (
@@ -257,6 +293,21 @@ def test_mult_or_filters(api_version: ApiVersion):
     flt1 = TextFilter("COUNTRY", Operator.IN, value=["AR", "UY"])
     flt2 = TextFilter("PERIOD", Operator.GREATER_THAN_OR_EQUAL, "2024")
     mflt = MultiFilter([flt1, flt2], LogicalOperator.OR)
+
+    q = DataQuery(components=mflt)
+
+    with pytest.raises(ClientError):
+        q.get_url(api_version)
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+)
+def test_mult_filters_wrong_type(api_version: ApiVersion):
+    flt1 = TextFilter("COUNTRY", Operator.EQUALS, value="AR")
+    flt2 = NotFilter(flt1)
+    flt3 = TextFilter("PERIOD", Operator.GREATER_THAN_OR_EQUAL, "2024")
+    mflt = MultiFilter([flt2, flt3])
 
     q = DataQuery(components=mflt)
 
