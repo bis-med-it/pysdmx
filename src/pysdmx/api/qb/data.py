@@ -226,38 +226,32 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     def __get_short_v2_qs(self, ver: ApiVersion) -> str:
         qs = ""
         if self.updated_after:
-            qs += (
-                f"updatedAfter={self.updated_after.isoformat('T', 'seconds')}"
+            qs = self.__append_qs_param(
+                qs,
+                self.updated_after,
+                "updatedAfter",
+                self.updated_after.isoformat("T", "seconds"),
             )
-        if self.first_n_obs:
-            if qs:
-                qs += "&"
-            qs += f"firstNObservations={self.first_n_obs}"
-        if self.last_n_obs:
-            if qs:
-                qs += "&"
-            qs += f"lastNObservations={self.last_n_obs}"
-        if self.obs_dimension:
-            if qs:
-                qs += "&"
-            qs += f"dimensionAtObservation={self.obs_dimension}"
+        qs = self.__append_qs_param(qs, self.first_n_obs, "firstNObservations")
+        qs = self.__append_qs_param(qs, self.last_n_obs, "lastNObservations")
+        qs = self.__append_qs_param(
+            qs, self.obs_dimension, "dimensionAtObservation"
+        )
         if self.attributes != "dsd":
-            if qs:
-                qs += "&"
-            qs += f"attributes={self.__to_kws(self.attributes, ver)}"
+            qs = self.__append_qs_param(
+                qs, self.__to_kws(self.attributes, ver), "attributes"
+            )
         if self.measures != "all":
-            if qs:
-                qs += "&"
-            qs += f"measures={self.__to_kws(self.measures, ver)}"
-        if self.include_history:
-            if qs:
-                qs += "&"
-            qs += f"includeHistory={str(self.include_history).lower()}"
-        if qs:
-            out = f"?{qs}"
-        else:
-            out = ""
-        return out
+            qs = self.__append_qs_param(
+                qs, self.__to_kws(self.measures, ver), "measures"
+            )
+        qs = self.__append_qs_param(
+            qs,
+            self.include_history,
+            "includeHistory",
+            str(self.include_history).lower(),
+        )
+        return f"?{qs}" if qs else qs
 
     def __append_qs_param(
         self, qs: str, value: Any, field: str, disp_value: Any = None
