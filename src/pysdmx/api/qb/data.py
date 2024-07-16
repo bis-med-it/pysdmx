@@ -1,11 +1,19 @@
 """Build SDMX-REST data queries."""
 
+from collections import defaultdict
 from datetime import datetime
 from enum import Enum
-from typing import Annotated, Any, Dict, Optional, Sequence, Union
+from typing import Annotated, Any, List, Optional, Sequence, Union
 
 import msgspec
 
+from pysdmx.api.dc.query import (
+    LogicalOperator,
+    MultiFilter,
+    NumberFilter,
+    Operator,
+    TextFilter,
+)
 from pysdmx.api.qb.util import (
     ApiVersion,
     check_multiple_data_context,
@@ -86,7 +94,7 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     resource_id: Union[str, Sequence[str]] = REST_ALL
     version: Union[str, Sequence[str]] = REST_ALL
     key: Union[str, Sequence[str]] = REST_ALL
-    components: Dict[str, Any] = None
+    components: Union[MultiFilter, NumberFilter, TextFilter] = None
     updated_after: Optional[datetime] = None
     first_n_obs: Optional[Annotated[int, msgspec.Meta(gt=0)]] = None
     last_n_obs: Optional[Annotated[int, msgspec.Meta(gt=0)]] = None
@@ -141,11 +149,23 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                 f"A dataflow must be provided in SDMX-REST {version.value}.",
             )
 
+    def __check_component(self, version: ApiVersion) -> None:
+        if version < ApiVersion.V2_0_0 and self.components:
+            raise ClientError(
+                422,
+                "Validation Error",
+                (
+                    "Components filter is not supported in "
+                    f"SDMX-REST {version.value}."
+                ),
+            )
+
     def __validate_query(self, version: ApiVersion) -> None:
         self.validate()
         self.__validate_context(version)
         self.__check_multiple_contexts(version)
         self.__check_resource_id(version)
+        self.__check_component(version)
 
     def __to_kw(self, val: str, ver: ApiVersion) -> str:
         if val == "*" and ver < ApiVersion.V2_0_0:
@@ -317,6 +337,27 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                 ),
             )
 
+    def __create_component_filters(self) -> str:
+        if isinstance(self.components, MultiFilter):
+            if self.components.operator == LogicalOperator.OR:
+                raise ClientError(
+                    422,
+                    "Validation Error",
+                    "OR operator is not supported for MultiFilter.",
+                )
+            flts_by_comp = defaultdict(list)
+            for f in self.components.filters:
+                flts_by_comp[f.field].append(f)
+            flts = []
+            for k, v in flts_by_comp.items():
+                if isinstance(v, List):
+                    flts.append(_create_component_mult_filter(k, v))
+                else:
+                    flts.append(_create_component_filter(f))
+            return "&".join(flts)
+        else:
+            return _create_component_filter(self.components)
+
     def __create_full_query(self, ver: ApiVersion) -> str:
         o = "/data"
         if ver >= ApiVersion.V2_0_0:
@@ -326,7 +367,11 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         o += f"{c}/{self.__to_kws(self.key, ver)}"
         o += "?"
         qs = ""
+        if self.components:
+            qs += self.__create_component_filters()
         if self.updated_after:
+            if qs:
+                qs += "&"
             qs += (
                 f"updatedAfter={self.updated_after.isoformat('T', 'seconds')}"
             )
@@ -366,6 +411,88 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             q = self.__get_short_v1_qs(ver)
             o = f"{p}{q}"
         return o
+
+
+def __map_operator(op: Operator, value: Any) -> str:
+    out = ""
+    if op == Operator.NOT_EQUALS:
+        out = "ne"
+    elif op == Operator.LESS_THAN:
+        out = "lt"
+    elif op == Operator.LESS_THAN_OR_EQUAL:
+        out = "le"
+    elif op == Operator.GREATER_THAN:
+        out = "gt"
+    elif op == Operator.GREATER_THAN_OR_EQUAL:
+        out = "ge"
+    elif op == Operator.LIKE:
+        if isinstance(value, str):
+            if value.startswith("%") and value.endswith("%"):
+                out = "co"
+            elif value.startswith("%"):
+                out = "ew"
+            elif value.endswith("%"):
+                out = "sw"
+            else:
+                raise ClientError(
+                    422,
+                    "Validation Error",
+                    (
+                        f"The supplied value ({value}) is not correct "
+                        "for the LIKE operator."
+                    ),
+                )
+        else:
+            raise ClientError(
+                422,
+                "Validation Error",
+                (
+                    f"The supplied value ({value}) for the LIKE operator "
+                    "should be a string."
+                ),
+            )
+    elif op == Operator.NOT_LIKE:
+        out = "nc"
+    return out
+
+
+def _create_component_filter(flt: Union[NumberFilter, TextFilter]) -> str:
+    if flt.operator in [Operator.LIKE, Operator.NOT_LIKE]:
+        op = __map_operator(flt.operator, flt.value)
+        val = str(flt.value).replace("%", "")
+        return f"c[{flt.field}]={op}:{val}"
+    elif flt.operator == Operator.IN:
+        return f"c[{flt.field}]={','.join(flt.value)}"
+    elif flt.operator == Operator.BETWEEN:
+        return f"c[{flt.field}]=ge:{flt.value[0]}+le:{flt.value[1]}"
+    elif flt.operator in [
+        Operator.EQUALS,
+        Operator.NOT_EQUALS,
+        Operator.LIKE,
+        Operator.NOT_LIKE,
+        Operator.LESS_THAN,
+        Operator.LESS_THAN_OR_EQUAL,
+        Operator.GREATER_THAN,
+        Operator.GREATER_THAN_OR_EQUAL,
+    ]:
+        op = __map_operator(flt.operator, flt.value)
+        if op:
+            op += ":"
+        return f"c[{flt.field}]={op}{flt.value}"
+    else:
+        raise ClientError(
+            422,
+            "Validation Error",
+            (f"The operator ({flt.operator}) is not supported."),
+        )
+
+
+def _create_component_mult_filter(
+    comp: str, flts: Sequence[Union[NumberFilter, TextFilter]]
+) -> str:
+    cstr = [_create_component_filter(f) for f in flts]
+    fstr = [s.replace(f"c[{comp}]=", "") for s in cstr]
+    return f"c[{comp}]={'+'.join(fstr)}"
 
 
 decoder = msgspec.json.Decoder(DataQuery)
