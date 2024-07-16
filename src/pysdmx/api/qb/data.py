@@ -413,6 +413,35 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         return o
 
 
+def __map_like_operator(value: Any) -> str:
+    if isinstance(value, str):
+        if value.startswith("%") and value.endswith("%"):
+            out = "co"
+        elif value.startswith("%"):
+            out = "ew"
+        elif value.endswith("%"):
+            out = "sw"
+        else:
+            raise ClientError(
+                422,
+                "Validation Error",
+                (
+                    f"The supplied value ({value}) is not correct "
+                    "for the LIKE operator."
+                ),
+            )
+        return out
+    else:
+        raise ClientError(
+            422,
+            "Validation Error",
+            (
+                f"The supplied value ({value}) for the LIKE operator "
+                "should be a string."
+            ),
+        )
+
+
 def __map_operator(op: Operator, value: Any) -> str:
     out = ""
     if op == Operator.NOT_EQUALS:
@@ -426,31 +455,7 @@ def __map_operator(op: Operator, value: Any) -> str:
     elif op == Operator.GREATER_THAN_OR_EQUAL:
         out = "ge"
     elif op == Operator.LIKE:
-        if isinstance(value, str):
-            if value.startswith("%") and value.endswith("%"):
-                out = "co"
-            elif value.startswith("%"):
-                out = "ew"
-            elif value.endswith("%"):
-                out = "sw"
-            else:
-                raise ClientError(
-                    422,
-                    "Validation Error",
-                    (
-                        f"The supplied value ({value}) is not correct "
-                        "for the LIKE operator."
-                    ),
-                )
-        else:
-            raise ClientError(
-                422,
-                "Validation Error",
-                (
-                    f"The supplied value ({value}) for the LIKE operator "
-                    "should be a string."
-                ),
-            )
+        out = __map_like_operator(value)
     elif op == Operator.NOT_LIKE:
         out = "nc"
     return out
