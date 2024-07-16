@@ -3,7 +3,7 @@
 from collections import defaultdict
 from datetime import datetime
 from enum import Enum
-from typing import Annotated, Any, List, Optional, Sequence, Union
+from typing import Annotated, Any, Optional, Sequence, Union
 
 import msgspec
 
@@ -293,23 +293,15 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             if self.version != REST_ALL
             else ""
         )
-        if v or self.resource_id != REST_ALL:
-            kr = self.__to_kw(self.resource_id, ver)  # type: ignore[arg-type]
-            r = f"{kr}{v}"
-        else:
-            r = ""
+        kr = self.__to_kw(self.resource_id, ver)  # type: ignore[arg-type]
+        r = f"{kr}{v}"
         if self.agency_id != REST_ALL or self.version != REST_ALL:
             ka = self.__to_kw(self.agency_id, ver)  # type: ignore[arg-type]
             a = f"{ka},{r}"
         else:
             a = f"{r}"
         k = f"/{self.key}" if self.key != REST_ALL else ""
-        if a:
-            return f"/data/{a}{k}"
-        elif k and not a:
-            return f"/data/all,all,latest{k}"
-        else:
-            return ""
+        return f"/data/{a}{k}"
 
     def __get_v1_detail(self, ver: ApiVersion) -> str:
         if self.measures in ["OBS_VALUE", "all"] and self.attributes == "dsd":
@@ -353,10 +345,10 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                     )
             flts = []
             for k, v in flts_by_comp.items():
-                if isinstance(v, List):
+                if len(v) > 1:
                     flts.append(_create_component_mult_filter(k, v))
                 else:
-                    flts.append(_create_component_filter(f))
+                    flts.append(_create_component_filter(v[0]))
             return "&".join(flts)
         else:
             return _create_component_filter(
