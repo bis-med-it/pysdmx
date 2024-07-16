@@ -125,17 +125,3 @@ def unique_id(agencyID: str, id_: str, version: str) -> str:
         A string with the unique ID
     """
     return f"{agencyID}:{id_}({version})"
-
-
-def add_list(element: Any) -> List[Any]:
-    """Make sure an element is a list and convert it if it is not.
-
-    Args:
-        element: The element to be converted
-
-    Returns:
-        A list with the element
-    """
-    if not isinstance(element, list):
-        element = [element]
-    return element

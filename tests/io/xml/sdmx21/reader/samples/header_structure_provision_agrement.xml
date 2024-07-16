@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message:StructureSpecificData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                               xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                               xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/structurespecific"
+                               xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_DER(1.0):ObsLevelDim:AllDimensions"
+                               xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+                               xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+    <message:Header>
+        <message:ID>test</message:ID>
+        <message:Test>true</message:Test>
+        <message:Prepared>2021-03-08T17:05:06</message:Prepared>
+        <message:Sender id="Unknown"/>
+        <message:Receiver id="Not_supplied"/>
+        <message:Structure structureID="BIS_DER"
+                           namespace="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_DER(1.0)"
+                           dimensionAtObservation="AllDimensions">
+            <common:ProvisionAgrement>
+                <URN>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_DER(1.0)</URN>
+            </common:ProvisionAgrement>
+        </message:Structure>
+    </message:Header>
+    <message:DataSet DECIMALS="3" UNIT_MULT="6" UNIT_MEASURE="USD" ss:structureRef="BIS_DER" xsi:type="ns1:DataSetType"
+                     ss:dataScope="DataStructure" action="Replace">
+        <Obs FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+             DER_SECTOR_UDL="A" DER_CURR_LEG1="HKD" DER_CURR_LEG2="TO1" DER_ISSUE_MAT="A" DER_RATING="A"
+             DER_EX_METHOD="3" DER_BASIS="C" TIME_PERIOD="2002" AVAILABILITY="K" COLLECTION="S" OBS_STATUS="M"
+             OBS_CONF="F"/>
+    </message:DataSet>
+</message:StructureSpecificData>

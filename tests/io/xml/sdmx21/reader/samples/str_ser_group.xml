@@ -1,0 +1,2489 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:StructureSpecificData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                           xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/structurespecific"
+                           xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_DER(1.0):ObsLevelDim:TIME_PERIOD"
+                           xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+                           xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+    <mes:Header>
+        <mes:ID>test</mes:ID>
+        <mes:Test>true</mes:Test>
+        <mes:Prepared>2000-01-01T00:00:01</mes:Prepared>
+        <mes:Sender id="Unknown"/>
+        <mes:Receiver id="Not_supplied"/>
+        <mes:Structure structureID="BIS_DER"
+                       namespace="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_DER(1.0)"
+                       dimensionAtObservation="TIME_PERIOD">
+            <com:Structure>
+                <Ref agencyID="BIS" id="BIS_DER" version="1.0"
+                     class="DataStructure"/>
+            </com:Structure>
+        </mes:Structure>
+        <mes:Source xml:lang="en">SDMXthon</mes:Source>
+    </mes:Header>
+    <mes:DataSet ss:structureRef="BIS_DER" xsi:type="ns1:DataSetType"
+                 ss:dataScope="DataStructure" action="Replace">
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="HKD"
+               DER_CURR_LEG2="TO1" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="HKD"
+               DER_CURR_LEG2="USD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="HUF"
+               DER_CURR_LEG2="EUR" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="HUF"
+               DER_CURR_LEG2="TO1" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="INR"
+               DER_CURR_LEG2="TO1" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="INR"
+               DER_CURR_LEG2="USD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY"
+               DER_CURR_LEG2="AUD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY"
+               DER_CURR_LEG2="BRL" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY"
+               DER_CURR_LEG2="CAD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY"
+               DER_CURR_LEG2="EUR" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY"
+               DER_CURR_LEG2="NZD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY"
+               DER_CURR_LEG2="TO1" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY"
+               DER_CURR_LEG2="TRY" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY"
+               DER_CURR_LEG2="USD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY"
+               DER_CURR_LEG2="ZAR" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="KRW"
+               DER_CURR_LEG2="TO1" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="KRW"
+               DER_CURR_LEG2="USD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="MXN"
+               DER_CURR_LEG2="TO1" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="MXN"
+               DER_CURR_LEG2="USD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="NOK"
+               DER_CURR_LEG2="EUR" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="NOK"
+               DER_CURR_LEG2="TO1" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="NOK"
+               DER_CURR_LEG2="USD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="NZD"
+               DER_CURR_LEG2="JPY" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="NZD"
+               DER_CURR_LEG2="TO1" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="NZD"
+               DER_CURR_LEG2="USD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="PLN"
+               DER_CURR_LEG2="EUR" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="PLN"
+               DER_CURR_LEG2="TO1" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="PLN"
+               DER_CURR_LEG2="USD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="RUB"
+               DER_CURR_LEG2="TO1" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="RUB"
+               DER_CURR_LEG2="USD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="SEK"
+               DER_CURR_LEG2="EUR" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="SEK"
+               DER_CURR_LEG2="TO1" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="SEK"
+               DER_CURR_LEG2="USD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="SGD"
+               DER_CURR_LEG2="TO1" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="SGD"
+               DER_CURR_LEG2="USD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="TO1"
+               DER_CURR_LEG2="AUD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="TO1"
+               DER_CURR_LEG2="BRL" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="TO1"
+               DER_CURR_LEG2="CAD" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="TO1"
+               DER_CURR_LEG2="CHF" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="TO1"
+               DER_CURR_LEG2="CNY" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="TO1"
+               DER_CURR_LEG2="DKK" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Group xsi:type="ns1:SiblingType" AVAILABILITY="K" DER_TYPE="U"
+               DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A"
+               DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="TO1"
+               DER_CURR_LEG2="EUR" DER_ISSUE_MAT="A" DER_RATING="A"
+               DER_EX_METHOD="3" DER_BASIS="C"/>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="HKD" DER_CURR_LEG2="TO1"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="14206.490766" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="29929.036014" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="31040.395041" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="29910.713935" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="31706.700174" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="90268.313643" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="HKD" DER_CURR_LEG2="USD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="6672.275" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="9478.676467" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="9534.868416" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="11926.7" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="9981.289468" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="19363.194441" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="26232.591484" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="26390.234888" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="27150.86821" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="82829.972011" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="HUF" DER_CURR_LEG2="EUR"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="2001" OBS_VALUE="102.75" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="192.499994" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="275.868416" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="482.202187" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="4995.115249" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="1842.045003" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="5439.491081" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="HUF" DER_CURR_LEG2="TO1"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1998" OBS_VALUE="513.023804" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="164.240306" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="840.724612" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="2998.558304" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="5385.483702" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="9943.641856" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="5605.229675" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="13133.659499" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="INR" DER_CURR_LEG2="TO1"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1998" OBS_VALUE="1213.62" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="2681.680556" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="5523.099284" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="17806.057085" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="23290.083034" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="30690.028535" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="33475.265319" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="62813.73487" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="INR" DER_CURR_LEG2="USD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1998" OBS_VALUE="1158.215" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="2519.235289" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="5157.10315" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="15819.65" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="22531.691302" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="29467.295629" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="32568.807962" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="60530.208694" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY" DER_CURR_LEG2="AUD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="345.780319" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="244.185788" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="472.442754" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="461.28823" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="2183.086678" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="3683.789588" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="10285.06596" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="20670.247504" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="12160.254534" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="18229.086467" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY" DER_CURR_LEG2="BRL"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="2001" OBS_VALUE="88.95" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="90.77438" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="27.857016" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="62.525" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="880.555016" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="355.131301" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="950.296766" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY" DER_CURR_LEG2="CAD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="230.619043" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="128.336839" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="283.785705" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="270.6" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="506.976178" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="1165.5" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="1232.97618" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="2678.431291" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="2867.452383" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="3418.148668" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY" DER_CURR_LEG2="EUR"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="2001" OBS_VALUE="17562.968806" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="26534.098643" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="31371.189954" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="47292.425445" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="66014.889184" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="31711.835413" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="52271.457221" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY" DER_CURR_LEG2="NZD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="14.4464" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="38.499994" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="21.35" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="41.388886" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="19.830853" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="56.802212" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="1649.916036" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="2333.558413" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="2496.013056" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="3399.711794" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY" DER_CURR_LEG2="TO1"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="87762.524407" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="152741.069082" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="160101.903239" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="125825.602656" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="167814.976512" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="200950.878694" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="270468.496502" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="538447.044457" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="384275.26451" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="477718.350312" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY" DER_CURR_LEG2="TRY"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="2004" OBS_VALUE="0.238095" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="2.099491" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="19.762647" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="246.125832" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="1818.737905" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="3114.061132" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY" DER_CURR_LEG2="USD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="76161.579677" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="133210.874749" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="139758.730092" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="104736.370672" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="131239.577492" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="144883.27099" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="191023.785076" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="422628.028657" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="301747.648858" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="360639.654074" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="JPY" DER_CURR_LEG2="ZAR"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="35.95" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="20.967642" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="151.894733" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="28.388885" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="6.342463" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="22.919164" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="9.710522" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="2036.917257" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="1858.689101" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="2839.755761" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="KRW" DER_CURR_LEG2="TO1"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1998" OBS_VALUE="2260.040903" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="7459.779252" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="15211.410133" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="24590.835956" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="35981.002098" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="38751.392501" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="42906.438491" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="68210.703813" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="KRW" DER_CURR_LEG2="USD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1998" OBS_VALUE="2192.713632" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="6992.9" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="13589.7" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="20451.833325" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="34968.217824" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="37019.362313" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="38825.120593" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="63841.877034" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="MXN" DER_CURR_LEG2="TO1"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1998" OBS_VALUE="4978.385" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="4380.978509" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="7645.369371" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="17064.106484" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="15679.96889" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="54703.67862" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="32302.143287" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="51425.655276" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="MXN" DER_CURR_LEG2="USD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1998" OBS_VALUE="4975.535" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="2852.578941" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="3417.850505" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="3910.421048" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="3315.575" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="51891.546005" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="29753.44294" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="47111.165399" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="NOK" DER_CURR_LEG2="EUR"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="2001" OBS_VALUE="395.888882" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="767.130388" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="1633.694438" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="1418.8421" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="8821.353601" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="9093.099801" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="17533.448421" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="NOK" DER_CURR_LEG2="TO1"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="1389.834207" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="1354.11764" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="1526.278941" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="5773.830519" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="7076.316591" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="19022.682026" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="14867.015671" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="28882.921544" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="26041.587291" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="57087.81428" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="NOK" DER_CURR_LEG2="USD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="1020.578942" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="739.882345" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="1053.094728" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="1493.944438" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="857.008357" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="2477.333327" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="2062.078939" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="16020.208067" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="13935.025367" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="33595.902034" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="NZD" DER_CURR_LEG2="JPY"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="14.4464" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="38.499994" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="21.35" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="41.388886" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="19.830853" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="56.802212" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="1649.916036" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="2333.558413" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="2496.013056" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="3399.711794" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="NZD" DER_CURR_LEG2="TO1"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="914.092525" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="1506.977727" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="1274.825" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="1911.647734" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="8564.265916" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="22861.596692" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="20074.283909" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="39660.724386" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="32000.324745" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="58707.699242" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="NZD" DER_CURR_LEG2="USD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="811.457175" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="1256.149992" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="1081.175" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="627.333328" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="1033.349959" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="1486.592232" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="1366.711742" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="29348.087392" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="22057.257626" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="45011.535676" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="PLN" DER_CURR_LEG2="EUR"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="2001" OBS_VALUE="109.65" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="407.857136" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="989.55" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="1173.261899" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="6535.787741" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="5299.267102" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="6692.634329" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="PLN" DER_CURR_LEG2="TO1"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1998" OBS_VALUE="504.190476" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="1326.524844" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="1864.917724" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="10509.19425" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="9366.381226" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="16201.868984" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="12704.507176" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="17519.484617" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="PLN" DER_CURR_LEG2="USD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1998" OBS_VALUE="324.357142" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="803.825" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="792.499994" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="854.375" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="744.857136" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="8982.843939" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="6519.473999" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="9478.464734" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="RUB" DER_CURR_LEG2="TO1"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1998" OBS_VALUE="4293.486356" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="2998.836837" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="7426.432953" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="17592.636529" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="20439.253785" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="40699.061473" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="35786.083858" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="39463.231265" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="RUB" DER_CURR_LEG2="USD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1998" OBS_VALUE="4257.581811" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="2972.238092" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="7237.09243" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="16376.534146" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="15332.917565" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="37807.652197" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="32700.851718" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="33659.62322" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="SEK" DER_CURR_LEG2="EUR"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="2001" OBS_VALUE="1768.947362" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="1868.275" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="10346.731248" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="9559.094164" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="11260.176439" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="14194.443142" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="17332.494016" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="SEK" DER_CURR_LEG2="TO1"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="5843.371044" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="3773.499993" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="3184.925" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="12221.9011" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="15449.472647" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="33068.977952" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="23861.232362" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="35317.090002" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="35765.688343" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="57806.898599" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="SEK" DER_CURR_LEG2="USD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="2800.755261" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="1589.805549" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="1841.975" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="2696.631574" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="3036.85" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="18481.682573" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="11134.488063" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="19217.132449" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="16442.307982" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="33771.632674" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="SGD" DER_CURR_LEG2="TO1"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="1854.1" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="4540.315783" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="15819.775" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="8782.324368" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="6995.18181" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="15542.920284" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="19912.362644" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="28815.799005" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="36315.662459" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="52352.945424" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="SGD" DER_CURR_LEG2="USD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="1704.475" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="4295.263151" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="15514.325" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="7632.35" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="4681.402136" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="9235.025" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="10186.09523" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="25442.870214" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="29405.804022" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="47760.171461" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="TO1" DER_CURR_LEG2="AUD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="6296.536438" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="17470.523301" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="26828.119252" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="24596.393996" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="47452.821599" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="88622.948918" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="101330.1492" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="186052.622578" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="113260.867199" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="196265.057222" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="TO1" DER_CURR_LEG2="BRL"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1998" OBS_VALUE="1709.0" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="5357.479237" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="4227.165155" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="8022.699628" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="12184.921191" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="21564.42315" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="24132.922449" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="37447.975429" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="TO1" DER_CURR_LEG2="CAD"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="8155.470829" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="20049.761864" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="24944.441938" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="23870.776198" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="35184.187613" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="55830.157308" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="72097.795691" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="98285.792334" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="93595.298182" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="152427.364638" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="TO1" DER_CURR_LEG2="CHF"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="25307.840988" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="33691.6961" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="47658.139216" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="29590.869864" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="38316.40102" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="80670.712547" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="77410.944195" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="106920.847427" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="75158.31011" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="135778.739739" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="TO1" DER_CURR_LEG2="CNY"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="2001" OBS_VALUE="30.338886" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="347.020722" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="10492.594857" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="18212.316414" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="60399.958151" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="98477.286129" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="151384.442434" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="TO1" DER_CURR_LEG2="DKK"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="1992" OBS_VALUE="2542.755254" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="2680.323522" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="1722.831571" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="5522.757116" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="5321.233104" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="13612.403325" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="8946.175608" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="15916.273552" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="14354.175656" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="14648.949851" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+        </Series>
+        <Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B"
+                DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E"
+                DER_SECTOR_UDL="A" DER_CURR_LEG1="TO1" DER_CURR_LEG2="EUR"
+                DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C"
+                COLLECTION="S">
+            <Obs TIME_PERIOD="2001" OBS_VALUE="181492.415307" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="249839.856189" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="443666.734085" OBS_STATUS="A"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="nan" OBS_STATUS="M"
+                 OBS_CONF="F"/>
+        </Series>
+    </mes:DataSet>
+</mes:StructureSpecificData>

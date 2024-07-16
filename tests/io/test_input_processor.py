@@ -39,6 +39,13 @@ def invalid_xml():
 
 
 @pytest.fixture()
+def invalid_message_xml():
+    path = Path(__file__).parent / "samples" / "invalid_message.xml"
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+@pytest.fixture()
 def invalid_allowed_error():
     path = Path(__file__).parent / "samples" / "invalid_allowed_error.xml"
     with open(path, "r", encoding="utf-8") as f:
@@ -99,9 +106,7 @@ def test_process_string_to_read_invalid_json():
         process_string_to_read('{"key": "value"')
 
 
-def test_process_string_to_read_invalid_allowed_error(invalid_allowed_error):
-    # This is a valid XML file, but it contains an error that is allowed
-    # QName value on xsi:type attribute does not resolve to a type definition
-    infile, filetype = process_string_to_read(invalid_allowed_error)
-    with pytest.raises(ValueError, match="Cannot parse this sdmx data"):
-        read_xml(infile, validate=True)
+def test_process_string_to_read_invalid_allowed_error(invalid_message_xml):
+    message = "Cannot parse input as SDMX."
+    with pytest.raises(ValueError, match=message):
+        read_xml(invalid_message_xml, validate=False)
