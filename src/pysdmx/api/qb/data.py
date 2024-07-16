@@ -94,7 +94,7 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     resource_id: Union[str, Sequence[str]] = REST_ALL
     version: Union[str, Sequence[str]] = REST_ALL
     key: Union[str, Sequence[str]] = REST_ALL
-    components: Union[MultiFilter, NumberFilter, TextFilter] = None
+    components: Union[MultiFilter, None, NumberFilter, TextFilter] = None
     updated_after: Optional[datetime] = None
     first_n_obs: Optional[Annotated[int, msgspec.Meta(gt=0)]] = None
     last_n_obs: Optional[Annotated[int, msgspec.Meta(gt=0)]] = None
@@ -190,10 +190,10 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         return o
 
     def __get_v1_context_id(self, ver: ApiVersion) -> str:
-        a = self.__to_kw(self.agency_id, ver)
-        r = self.__to_kw(self.resource_id, ver)
+        a = self.__to_kw(self.agency_id, ver)  # type: ignore[arg-type]
+        r = self.__to_kw(self.resource_id, ver)  # type: ignore[arg-type]
         v = (
-            self.__to_kw(self.version, ver)
+            self.__to_kw(self.version, ver)  # type: ignore[arg-type]
             if self.version != REST_ALL
             else "latest"
         )
@@ -289,17 +289,18 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
 
     def __get_short_v1_path(self, ver: ApiVersion) -> str:
         v = (
-            f",{self.__to_kw(self.version, ver)}"
+            f",{self.__to_kw(self.version, ver)}"  # type: ignore[arg-type]
             if self.version != REST_ALL
             else ""
         )
-        r = (
-            f"{self.__to_kw(self.resource_id, ver)}{v}"
-            if v or self.resource_id != REST_ALL
-            else ""
-        )
+        if v or self.resource_id != REST_ALL:
+            kr = self.__to_kw(self.resource_id, ver)  # type: ignore[arg-type]
+            r = f"{kr}{v}"
+        else:
+            r = ""
         if self.agency_id != REST_ALL or self.version != REST_ALL:
-            a = f"{self.__to_kw(self.agency_id, ver)},{r}"
+            ka = self.__to_kw(self.agency_id, ver)  # type: ignore[arg-type]
+            a = f"{ka},{r}"
         else:
             a = f"{r}"
         k = f"/{self.key}" if self.key != REST_ALL else ""
@@ -328,7 +329,7 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                 (
                     f"{self.attributes} and {self.measures} is not a valid "
                     "combination for the detail attribute in SDMX-REST "
-                    f"{ver.value}.",
+                    f"{ver.value}."
                 ),
             )
 
@@ -342,7 +343,14 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                 )
             flts_by_comp = defaultdict(list)
             for f in self.components.filters:
-                flts_by_comp[f.field].append(f)
+                if isinstance(f, (NumberFilter, TextFilter)):
+                    flts_by_comp[f.field].append(f)
+                else:
+                    raise ClientError(
+                        422,
+                        "Validation Error",
+                        f"Unsupported filter type: {f}.",
+                    )
             flts = []
             for k, v in flts_by_comp.items():
                 if isinstance(v, List):
@@ -351,7 +359,9 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                     flts.append(_create_component_filter(f))
             return "&".join(flts)
         else:
-            return _create_component_filter(self.components)
+            return _create_component_filter(
+                self.components,  # type: ignore[arg-type]
+            )
 
     def __create_full_query(self, ver: ApiVersion) -> str:
         o = "/data"
@@ -458,14 +468,16 @@ def __map_operator(op: Operator, value: Any) -> str:
 
 
 def _create_component_filter(flt: Union[NumberFilter, TextFilter]) -> str:
+    fld = flt.field
+    val = flt.value
     if flt.operator in [Operator.LIKE, Operator.NOT_LIKE]:
-        op = __map_operator(flt.operator, flt.value)
-        val = str(flt.value).replace("%", "")
-        return f"c[{flt.field}]={op}:{val}"
+        op = __map_operator(flt.operator, val)
+        val = str(val).replace("%", "")
+        return f"c[{fld}]={op}:{val}"
     elif flt.operator == Operator.IN:
-        return f"c[{flt.field}]={','.join(flt.value)}"
+        return f"c[{fld}]={','.join(val)}"  # type: ignore[arg-type]
     elif flt.operator == Operator.BETWEEN:
-        return f"c[{flt.field}]=ge:{flt.value[0]}+le:{flt.value[1]}"
+        return f"c[{fld}]=ge:{val[0]}+le:{val[1]}"  # type: ignore[index]
     elif flt.operator in [
         Operator.EQUALS,
         Operator.NOT_EQUALS,
@@ -476,10 +488,10 @@ def _create_component_filter(flt: Union[NumberFilter, TextFilter]) -> str:
         Operator.GREATER_THAN,
         Operator.GREATER_THAN_OR_EQUAL,
     ]:
-        op = __map_operator(flt.operator, flt.value)
+        op = __map_operator(flt.operator, val)
         if op:
             op += ":"
-        return f"c[{flt.field}]={op}{flt.value}"
+        return f"c[{fld}]={op}{val}"
     else:
         raise ClientError(
             422,
