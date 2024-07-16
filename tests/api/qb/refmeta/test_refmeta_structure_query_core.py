@@ -1,11 +1,7 @@
 import pytest
 
-from pysdmx.api.qb.structure import (
-    StructureDetail,
-    StructureQuery,
-    StructureReference,
-    StructureType,
-)
+from pysdmx.api.qb.refmeta import RefMetaByStructureQuery, RefMetaDetail
+from pysdmx.api.qb.structure import StructureType
 from pysdmx.api.qb.util import ApiVersion, REST_ALL, REST_LATEST
 from pysdmx.errors import ClientError
 
@@ -32,28 +28,21 @@ def version():
 
 @pytest.fixture()
 def detail():
-    return StructureDetail.ALL_STUBS
-
-
-@pytest.fixture()
-def refs():
-    return StructureReference.CHILDREN
+    return RefMetaDetail.ALL_STUBS
 
 
 def test_expected_defaults():
-    q = StructureQuery()
+    q = RefMetaByStructureQuery()
 
     assert q.artefact_type.value == REST_ALL
     assert q.agency_id == REST_ALL
     assert q.resource_id == REST_ALL
     assert q.version == REST_LATEST
-    assert q.item_id == REST_ALL
-    assert q.detail == StructureDetail.FULL
-    assert q.references == StructureReference.NONE
+    assert q.detail == RefMetaDetail.FULL
 
 
 def test_validate_ok():
-    q = StructureQuery()
+    q = RefMetaByStructureQuery()
 
     q.validate()
 
@@ -61,34 +50,29 @@ def test_validate_ok():
     assert q.agency_id == REST_ALL
     assert q.resource_id == REST_ALL
     assert q.version == REST_LATEST
-    assert q.item_id == REST_ALL
-    assert q.detail == StructureDetail.FULL
-    assert q.references == StructureReference.NONE
+    assert q.detail == RefMetaDetail.FULL
 
 
 def test_validate_nok():
-    q = StructureQuery(artefact_type=42)
+    q = RefMetaByStructureQuery(artefact_type=42)
 
     with pytest.raises(ClientError):
         q.validate()
 
 
-def test_rest_url_for_structure_query(
+def test_rest_url_for_metadata_query(
     typ: StructureType,
     agency: str,
     res: str,
     version: str,
-    detail: StructureDetail,
-    refs: StructureReference,
+    detail: RefMetaDetail,
 ):
     expected = (
-        f"/{typ.value}/{agency}/{res}/{version}"
-        f"?detail={detail.value}&references={refs.value}"
+        f"/metadata/structure/{typ.value}/{agency}/{res}/{version}"
+        f"?detail={detail.value}"
     )
 
-    q = StructureQuery(
-        typ, agency, res, version, detail=detail, references=refs
-    )
-    url = q.get_url(ApiVersion.V1_5_0)
+    q = RefMetaByStructureQuery(typ, agency, res, version, detail)
+    url = q.get_url(ApiVersion.V2_0_0)
 
     assert url == expected

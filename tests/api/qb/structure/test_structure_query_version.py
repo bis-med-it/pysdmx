@@ -188,13 +188,11 @@ def test_url_omit_default_version_since_2_0_0(
     typ: StructureType,
     agency: str,
     res: str,
-    version: str,
     api_version: ApiVersion,
 ):
-    version = "~"
     expected = f"/structure/{typ.value}/{agency}/{res}"
 
-    q = StructureQuery(typ, agency, res, version)
+    q = StructureQuery(typ, agency, res)
     url = q.get_url(api_version, True)
 
     assert url == expected
