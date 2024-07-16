@@ -42,22 +42,6 @@ def test_one_text_comp_eq(api_version: ApiVersion):
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_one_text_comp_eq(api_version: ApiVersion):
-    flt = TextFilter("FREQ", Operator.EQUALS, "M")
-    expected = (
-        "/data/*/*/*/*/*?c[FREQ]=M"
-        "&attributes=dsd&measures=all&includeHistory=false"
-    )
-
-    q = DataQuery(components=flt)
-    url = q.get_url(api_version)
-
-    assert url == expected
-
-
-@pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
-)
 def test_one_text_comp_ne(api_version: ApiVersion):
     flt = TextFilter("FREQ", Operator.NOT_EQUALS, "M")
     expected = (

@@ -1,10 +1,7 @@
-from typing import List
-
 import pytest
 
 from pysdmx.api.qb.data import DataQuery
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
 
 
 @pytest.fixture()
@@ -44,7 +41,10 @@ def test_dataonly(res: str, measure: str, api_version: ApiVersion):
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
 def test_serieskeysonly(res: str, api_version: ApiVersion):
-    expected = f"/data/all,{res},latest/all?detail=serieskeysonly&includeHistory=false"
+    expected = (
+        f"/data/all,{res},latest/all?"
+        "detail=serieskeysonly&includeHistory=false"
+    )
 
     q = DataQuery(resource_id=res, attributes="series", measures="none")
     url = q.get_url(api_version)
