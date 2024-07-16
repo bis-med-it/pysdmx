@@ -257,6 +257,11 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             if qs:
                 qs += "&"
             qs += f"dimensionAtObservation={self.obs_dimension}"
+        detail = self.__get_v1_detail(ver)
+        if detail != "full":
+            if qs:
+                qs += "&"
+            qs += f"detail={detail}"
         if self.include_history:
             if qs:
                 qs += "&"
@@ -291,8 +296,16 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             return ""
 
     def __get_v1_detail(self, ver: ApiVersion) -> str:
-        if self.attributes in ["dsd", "all"] and self.measures == "all":
+        if self.measures in ["OBS_VALUE", "all"] and self.attributes == "dsd":
             return "full"
+        elif (
+            self.measures in ["OBS_VALUE", "all"] and self.attributes == "none"
+        ):
+            return "dataonly"
+        if self.measures == "none" and self.attributes == "series":
+            return "serieskeysonly"
+        if self.measures == "none" and self.attributes == "dsd":
+            return "nodata"
         else:
             raise ClientError(
                 422,
