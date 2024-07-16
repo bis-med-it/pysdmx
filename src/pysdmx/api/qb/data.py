@@ -259,38 +259,39 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             out = ""
         return out
 
+    def __append_qs_param(
+        self, qs: str, value: Any, field: str, disp_value: Any = None
+    ) -> str:
+        if value:
+            if qs:
+                qs += "&"
+            qs += f"{field}={disp_value if disp_value else value}"
+        return qs
+
     def __get_short_v1_qs(self, ver: ApiVersion) -> str:
         qs = ""
         if self.updated_after:
-            qs += (
-                f"updatedAfter={self.updated_after.isoformat('T', 'seconds')}"
+            qs = self.__append_qs_param(
+                qs,
+                self.updated_after,
+                "updatedAfter",
+                self.updated_after.isoformat("T", "seconds"),
             )
-        if self.first_n_obs:
-            if qs:
-                qs += "&"
-            qs += f"firstNObservations={self.first_n_obs}"
-        if self.last_n_obs:
-            if qs:
-                qs += "&"
-            qs += f"lastNObservations={self.last_n_obs}"
-        if self.obs_dimension:
-            if qs:
-                qs += "&"
-            qs += f"dimensionAtObservation={self.obs_dimension}"
+        qs = self.__append_qs_param(qs, self.first_n_obs, "firstNObservations")
+        qs = self.__append_qs_param(qs, self.last_n_obs, "lastNObservations")
+        qs = self.__append_qs_param(
+            qs, self.obs_dimension, "dimensionAtObservation"
+        )
         detail = self.__get_v1_detail(ver)
         if detail != "full":
-            if qs:
-                qs += "&"
-            qs += f"detail={detail}"
-        if self.include_history:
-            if qs:
-                qs += "&"
-            qs += f"includeHistory={str(self.include_history).lower()}"
-        if qs:
-            out = f"?{qs}"
-        else:
-            out = ""
-        return out
+            qs = self.__append_qs_param(qs, detail, "detail")
+        qs = self.__append_qs_param(
+            qs,
+            self.include_history,
+            "includeHistory",
+            str(self.include_history).lower(),
+        )
+        return f"?{qs}" if qs else qs
 
     def __get_short_v1_path(self, ver: ApiVersion) -> str:
         v = (
