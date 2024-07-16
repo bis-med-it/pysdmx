@@ -360,41 +360,42 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         else:
             c = self.__get_v1_context_id(ver)
         o += f"{c}/{self.__to_kws(self.key, ver)}"
-        o += "?"
         qs = ""
         if self.components:
             qs += self.__create_component_filters()
         if self.updated_after:
-            if qs:
-                qs += "&"
-            qs += (
-                f"updatedAfter={self.updated_after.isoformat('T', 'seconds')}"
+            qs = self.__append_qs_param(
+                qs,
+                self.updated_after,
+                "updatedAfter",
+                self.updated_after.isoformat("T", "seconds"),
             )
-        if self.first_n_obs:
-            if qs:
-                qs += "&"
-            qs += f"firstNObservations={self.first_n_obs}"
-        if self.last_n_obs:
-            if qs:
-                qs += "&"
-            qs += f"lastNObservations={self.last_n_obs}"
-        if self.obs_dimension:
-            if qs:
-                qs += "&"
-            qs += f"dimensionAtObservation={self.obs_dimension}"
+        qs = self.__append_qs_param(qs, self.first_n_obs, "firstNObservations")
+        qs = self.__append_qs_param(qs, self.last_n_obs, "lastNObservations")
+        qs = self.__append_qs_param(
+            qs, self.obs_dimension, "dimensionAtObservation"
+        )
         if ver >= ApiVersion.V2_0_0:
-            if qs:
-                qs += "&"
-            qs += (
-                f"attributes={self.__to_kws(self.attributes, ver)}"
-                f"&measures={self.__to_kws(self.measures, ver)}"
+            qs = self.__append_qs_param(
+                qs,
+                self.attributes,
+                "attributes",
+                self.__to_kws(self.attributes, ver),
+            )
+            qs = self.__append_qs_param(
+                qs,
+                self.measures,
+                "measures",
+                self.__to_kws(self.measures, ver),
             )
         else:
-            if qs:
-                qs += "&"
-            qs += f"detail={self.__get_v1_detail(ver)}"
-        o += f"{qs}&includeHistory={str(self.include_history).lower()}"
-        return o
+            qs = self.__append_qs_param(
+                qs, self.__get_v1_detail(ver), "detail"
+            )
+        qs = self.__append_qs_param(
+            qs, str(self.include_history).lower(), "includeHistory"
+        )
+        return f"{o}?{qs}"
 
     def __create_short_query(self, ver: ApiVersion) -> str:
         if ver >= ApiVersion.V2_0_0:
