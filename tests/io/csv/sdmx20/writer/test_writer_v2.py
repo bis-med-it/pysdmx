@@ -6,6 +6,7 @@ import pytest
 
 from pysdmx.io.csv.sdmx20.writer import writer
 from pysdmx.model.dataset import Dataset
+from pysdmx.model.message import ActionType
 
 
 @pytest.fixture()
@@ -70,7 +71,7 @@ def test_writer_attached_attrs(data_path, data_path_reference_attch_atts):
 
 def test_writer_with_action(data_path, data_path_reference_action):
     dataset = Dataset(
-        attached_attributes={"DECIMALS": 3, "ACTION": "TEST"},
+        attached_attributes={"DECIMALS": 3, "action": ActionType.Information},
         data=pd.read_json(data_path, orient="records"),
         unique_id="MD:DS1(2.0)",
         structure_type="structure",
