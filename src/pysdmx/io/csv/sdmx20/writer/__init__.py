@@ -6,6 +6,7 @@ from typing import Optional
 import pandas as pd
 
 from pysdmx.model.dataset import Dataset
+from pysdmx.model.message import SDMX_CSV_ACTION_MAPPER
 
 
 def writer(
@@ -28,14 +29,17 @@ def writer(
 
     # Add additional attributes to the dataset
     for k, v in dataset.attached_attributes.items():
-        df[k] = v
+        if k != "action":
+            df[k] = v
 
     # Insert two columns at the beginning of the data set
     df.insert(0, "STRUCTURE", dataset.structure_type)
     df.insert(1, "STRUCTURE_ID", dataset.unique_id)
     if "action" in dataset.attached_attributes:
-        da_action = dataset.attached_attributes["action"]
-        df.insert(2, "ACTION", da_action)
+        action_value = SDMX_CSV_ACTION_MAPPER[
+            dataset.attached_attributes["action"]
+        ]
+        df.insert(2, "ACTION", action_value)
 
     # Convert the dataset into a csv file
     return df.to_csv(output_path, index=False, header=True)

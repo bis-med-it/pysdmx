@@ -36,6 +36,14 @@ class ActionType(Enum):
     Information = "information"
 
 
+SDMX_CSV_ACTION_MAPPER = {
+    ActionType.Append: "A",
+    ActionType.Replace: "R",
+    ActionType.Information: "I",
+    ActionType.Delete: "D",
+}
+
+
 class Header(Struct, frozen=True, kw_only=True):
     """Header for the SDMX messages."""
 
