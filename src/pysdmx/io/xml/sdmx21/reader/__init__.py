@@ -7,11 +7,13 @@ import xmltodict
 from pysdmx.errors import ClientError
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.__parsing_config import (
+    DATASET,
     ERROR,
     ERROR_CODE,
     ERROR_MESSAGE,
     ERROR_TEXT,
     GENERIC,
+    HEADER,
     REG_INTERFACE,
     STRSPE,
     STRUCTURE,
@@ -19,10 +21,15 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     XML_OPTIONS,
 )
 from pysdmx.io.xml.sdmx21.doc_validation import validate_doc
+from pysdmx.io.xml.sdmx21.reader.data_read import (
+    __extract_structure,
+    create_dataset,
+)
 from pysdmx.io.xml.sdmx21.reader.metadata_read import StructureParser
 from pysdmx.io.xml.sdmx21.reader.submission_reader import (
     handle_registry_interface,
 )
+from pysdmx.io.xml.utils import add_list
 
 MODES = {
     MessageType.GenericDataSet.value: GENERIC,
@@ -93,10 +100,33 @@ def __generate_sdmx_objects_from_xml(
         code = dict_info[ERROR][ERROR_MESSAGE][ERROR_CODE]
         text = dict_info[ERROR][ERROR_MESSAGE][ERROR_TEXT]
         raise ClientError(int(code), text)
+    if STRSPE in dict_info:
+        return __parse_dataset(dict_info[STRSPE], mode=STRSPE)
+    if GENERIC in dict_info:
+        return __parse_dataset(dict_info[GENERIC], mode=GENERIC)
     if STRUCTURE in dict_info:
         return StructureParser().format_structures(
             dict_info[STRUCTURE][STRUCTURES]
         )
     if REG_INTERFACE in dict_info:
         return handle_registry_interface(dict_info)
-    raise ValueError("Cannot parse this sdmx data")
+    raise ValueError("Cannot parse input as SDMX.")
+
+
+def __parse_dataset(message_info: Dict[str, Any], mode: str) -> Dict[str, Any]:
+    """Parse dataset.
+
+    Args:
+        message_info: Dict.
+        mode: Str.
+
+    Returns:
+        A dictionary of datasets.
+    """
+    str_info = __extract_structure(message_info[HEADER][STRUCTURE])
+    dataset_info = add_list(message_info[DATASET])
+    datasets = {}
+    for dataset in dataset_info:
+        ds = create_dataset(dataset, str_info, mode)
+        datasets[ds.unique_id] = ds
+    return datasets
