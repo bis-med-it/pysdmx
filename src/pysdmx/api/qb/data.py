@@ -1,5 +1,6 @@
 """Build SDMX-REST data queries."""
 
+from abc import abstractmethod
 from collections import defaultdict
 from datetime import datetime
 from enum import Enum
@@ -52,7 +53,222 @@ class DataFormat(Enum):
     SDMX_ML_3_0 = "application/vnd.sdmx.data+xml;version=3.0.0"
 
 
-class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
+class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
+
+    def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
+        """The URL for the query in the selected SDMX-REST API version."""
+        self._validate_query(version)
+        if omit_defaults:
+            return self._create_short_query(version)
+        else:
+            return self._create_full_query(version)
+
+    def validate(self) -> None:
+        """Validate the query."""
+        try:
+            decoder.decode(encoder.encode(self))
+        except msgspec.DecodeError as err:
+            raise ClientError(422, "Invalid Schema Query", str(err)) from err
+
+    def _validate_context(
+        self, context: DataContext, api_version: ApiVersion
+    ) -> None:
+        if api_version < ApiVersion.V2_0_0 and context in [
+            DataContext.DATA_STRUCTURE,
+            DataContext.PROVISION_AGREEMENT,
+        ]:
+            raise ClientError(
+                422,
+                "Validation Error",
+                f"{context} is not valid for SDMX-REST {api_version.value}.",
+            )
+
+    def _check_multiple_contexts(
+        self,
+        agency_id: Union[str, Sequence[str]],
+        resource_id: Union[str, Sequence[str]],
+        version: Union[str, Sequence[str]],
+        key: Union[str, Sequence[str]],
+        api_version: ApiVersion,
+    ) -> None:
+        check_multiple_data_context("agency", agency_id, api_version)
+        check_multiple_data_context("resource", resource_id, api_version)
+        check_multiple_data_context("version", version, api_version)
+        check_multiple_data_context("key", key, api_version)
+
+    def _check_resource_id(
+        self, resource_id: Union[str, Sequence[str]], api_version: ApiVersion
+    ) -> None:
+        if api_version < ApiVersion.V2_0_0 and resource_id == REST_ALL:
+            raise ClientError(
+                422,
+                "Validation Error",
+                f"A dataflow must be provided in SDMX-REST {api_version.value}.",
+            )
+
+    def _check_components(
+        self,
+        components: Union[MultiFilter, None, NumberFilter, TextFilter],
+        api_version: ApiVersion,
+    ) -> None:
+        if api_version < ApiVersion.V2_0_0 and components:
+            raise ClientError(
+                422,
+                "Validation Error",
+                (
+                    "Components filter is not supported in "
+                    f"SDMX-REST {api_version.value}."
+                ),
+            )
+
+    def _to_kw(self, val: str, ver: ApiVersion) -> str:
+        if val == "*" and ver < ApiVersion.V2_0_0:
+            val = "all"
+        elif val == "~" and ver < ApiVersion.V2_0_0:
+            val = "latest"
+        return val
+
+    def _to_kws(self, vals: Union[str, Sequence[str]], ver: ApiVersion) -> str:
+        vals = [vals] if isinstance(vals, str) else vals
+        mapped = [self._to_kw(v, ver) for v in vals]
+        return ",".join(mapped)
+
+    def _get_v2_context_id(
+        self,
+        context: DataContext,
+        agency_id: Union[str, Sequence[str]],
+        resource_id: Union[str, Sequence[str]],
+        version: Union[str, Sequence[str]],
+        api_version: ApiVersion,
+    ) -> str:
+        o = f"/{context.value}"
+        a = self._to_kws(agency_id, api_version)
+        r = self._to_kws(resource_id, api_version)
+        v = self._to_kws(version, api_version)
+        o += f"/{a}/{r}/{v}"
+        return o
+
+    def _get_v1_context_id(
+        self,
+        agency_id: str,
+        resource_id: str,
+        version: str,
+        api_version: ApiVersion,
+    ) -> str:
+        a = self._to_kw(agency_id, api_version)  # type: ignore[arg-type]
+        r = self._to_kw(resource_id, api_version)  # type: ignore[arg-type]
+        v = (
+            self._to_kw(version, api_version)  # type: ignore[arg-type]
+            if version != REST_ALL
+            else "latest"
+        )
+        return f"/{a},{r},{v}"
+
+    def _get_short_v2_path(
+        self,
+        context: DataContext,
+        agency_id: Union[str, Sequence[str]],
+        resource_id: Union[str, Sequence[str]],
+        version: Union[str, Sequence[str]],
+        key: Union[str, Sequence[str]],
+        api_version: ApiVersion,
+    ) -> str:
+        k = f"/{self._to_kws(key, api_version)}" if key != REST_ALL else ""
+        v = (
+            f"/{self._to_kws(version, api_version)}{k}"
+            if k or version != REST_ALL
+            else ""
+        )
+        r = (
+            f"/{self._to_kws(resource_id, api_version)}{v}"
+            if v or resource_id != REST_ALL
+            else ""
+        )
+        a = (
+            f"/{self._to_kws(agency_id, api_version)}{r}"
+            if r or agency_id != REST_ALL
+            else ""
+        )
+        c = f"/{context.value}{a}" if a or context != DataContext.ALL else ""
+        return f"/data{c}"
+
+    def _get_short_v1_path(
+        self,
+        agency_id: str,
+        resource_id: str,
+        version: str,
+        key: Union[str, Sequence[str]],
+        api_version: ApiVersion,
+    ) -> str:
+        v = (
+            f",{self._to_kw(version, api_version)}"  # type: ignore[arg-type]
+            if version != REST_ALL
+            else ""
+        )
+        kr = self._to_kw(resource_id, api_version)  # type: ignore[arg-type]
+        r = f"{kr}{v}"
+        if agency_id != REST_ALL or version != REST_ALL:
+            ka = self._to_kw(agency_id, api_version)  # type: ignore[arg-type]
+            a = f"{ka},{r}"
+        else:
+            a = f"{r}"
+        k = f"/{key}" if key != REST_ALL else ""
+        return f"/data/{a}{k}"
+
+    def _append_qs_param(
+        self, qs: str, value: Any, field: str, disp_value: Any = None
+    ) -> str:
+        if value:
+            if qs:
+                qs += "&"
+            qs += f"{field}={disp_value if disp_value else value}"
+        return qs
+
+    def _create_component_filters(
+        self, components: Union[MultiFilter, NumberFilter, TextFilter]
+    ) -> str:
+        if isinstance(components, MultiFilter):
+            if components.operator == LogicalOperator.OR:
+                raise ClientError(
+                    422,
+                    "Validation Error",
+                    "OR operator is not supported for MultiFilter.",
+                )
+            flts_by_comp = defaultdict(list)
+            for f in components.filters:
+                if isinstance(f, (NumberFilter, TextFilter)):
+                    flts_by_comp[f.field].append(f)
+                else:
+                    raise ClientError(
+                        422,
+                        "Validation Error",
+                        f"Unsupported filter type: {f}.",
+                    )
+            flts = []
+            for k, v in flts_by_comp.items():
+                if len(v) > 1:
+                    flts.append(_create_component_mult_filter(k, v))
+                else:
+                    flts.append(_create_component_filter(v[0]))
+            return "&".join(flts)
+        else:
+            return _create_component_filter(
+                components,  # type: ignore[arg-type]
+            )
+
+    @abstractmethod
+    def _validate_query(self, version: ApiVersion) -> None:
+        """Any additional validation steps to be performed by subclasses."""
+
+    @abstractmethod
+    def _create_full_query(self, ver: ApiVersion) -> str:
+        """Creates a URL, with default values."""
+
+    def _create_short_query(self, ver: ApiVersion) -> str:
+        """Creates a URL, omitting default values when possible."""
+
+
+class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
     """A data query.
 
     Data queries allow retrieving statistical data.
@@ -109,143 +325,44 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     ] = "all"
     include_history: bool = False
 
-    def validate(self) -> None:
-        """Validate the query."""
-        try:
-            decoder.decode(encoder.encode(self))
-        except msgspec.DecodeError as err:
-            raise ClientError(422, "Invalid Schema Query", str(err)) from err
-
-    def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
-        """The URL for the query in the selected SDMX-REST API version."""
-        self.__validate_query(version)
-        if omit_defaults:
-            return self.__create_short_query(version)
-        else:
-            return self.__create_full_query(version)
-
-    def __validate_context(self, version: ApiVersion) -> None:
-        if version < ApiVersion.V2_0_0 and self.context in [
-            DataContext.DATA_STRUCTURE,
-            DataContext.PROVISION_AGREEMENT,
-        ]:
-            raise ClientError(
-                422,
-                "Validation Error",
-                f"{self.context} is not valid for SDMX-REST {version.value}.",
-            )
-
-    def __check_multiple_contexts(self, version: ApiVersion) -> None:
-        check_multiple_data_context("agency", self.agency_id, version)
-        check_multiple_data_context("resource", self.resource_id, version)
-        check_multiple_data_context("version", self.version, version)
-        check_multiple_data_context("key", self.key, version)
-
-    def __check_resource_id(self, version: ApiVersion) -> None:
-        if version < ApiVersion.V2_0_0 and self.resource_id == REST_ALL:
-            raise ClientError(
-                422,
-                "Validation Error",
-                f"A dataflow must be provided in SDMX-REST {version.value}.",
-            )
-
-    def __check_component(self, version: ApiVersion) -> None:
-        if version < ApiVersion.V2_0_0 and self.components:
-            raise ClientError(
-                422,
-                "Validation Error",
-                (
-                    "Components filter is not supported in "
-                    f"SDMX-REST {version.value}."
-                ),
-            )
-
-    def __validate_query(self, version: ApiVersion) -> None:
+    def _validate_query(self, api_version: ApiVersion) -> None:
         self.validate()
-        self.__validate_context(version)
-        self.__check_multiple_contexts(version)
-        self.__check_resource_id(version)
-        self.__check_component(version)
-
-    def __to_kw(self, val: str, ver: ApiVersion) -> str:
-        if val == "*" and ver < ApiVersion.V2_0_0:
-            val = "all"
-        elif val == "~" and ver < ApiVersion.V2_0_0:
-            val = "latest"
-        return val
-
-    def __to_kws(
-        self, vals: Union[str, Sequence[str]], ver: ApiVersion
-    ) -> str:
-        vals = [vals] if isinstance(vals, str) else vals
-        mapped = [self.__to_kw(v, ver) for v in vals]
-        return ",".join(mapped)
-
-    def __get_v2_context_id(self, ver: ApiVersion) -> str:
-        o = f"/{self.context.value}"
-        a = self.__to_kws(self.agency_id, ver)
-        r = self.__to_kws(self.resource_id, ver)
-        v = self.__to_kws(self.version, ver)
-        o += f"/{a}/{r}/{v}"
-        return o
-
-    def __get_v1_context_id(self, ver: ApiVersion) -> str:
-        a = self.__to_kw(self.agency_id, ver)  # type: ignore[arg-type]
-        r = self.__to_kw(self.resource_id, ver)  # type: ignore[arg-type]
-        v = (
-            self.__to_kw(self.version, ver)  # type: ignore[arg-type]
-            if self.version != REST_ALL
-            else "latest"
+        super()._validate_context(self.context, api_version)
+        super()._check_multiple_contexts(
+            self.agency_id,
+            self.resource_id,
+            self.version,
+            self.key,
+            api_version,
         )
-        return f"/{a},{r},{v}"
+        super()._check_resource_id(self.resource_id, api_version)
+        super()._check_components(self.components, api_version)
 
-    def __get_short_v2_path(self, ver: ApiVersion) -> str:
-        k = f"/{self.__to_kws(self.key, ver)}" if self.key != REST_ALL else ""
-        v = (
-            f"/{self.__to_kws(self.version, ver)}{k}"
-            if k or self.version != REST_ALL
-            else ""
-        )
-        r = (
-            f"/{self.__to_kws(self.resource_id, ver)}{v}"
-            if v or self.resource_id != REST_ALL
-            else ""
-        )
-        a = (
-            f"/{self.__to_kws(self.agency_id, ver)}{r}"
-            if r or self.agency_id != REST_ALL
-            else ""
-        )
-        c = (
-            f"/{self.context.value}{a}"
-            if a or self.context != DataContext.ALL
-            else ""
-        )
-        return f"/data{c}"
-
-    def __get_short_v2_qs(self, ver: ApiVersion) -> str:
+    def __get_short_v2_qs(self, api_version: ApiVersion) -> str:
         qs = ""
         if self.updated_after:
-            qs = self.__append_qs_param(
+            qs = super()._append_qs_param(
                 qs,
                 self.updated_after,
                 "updatedAfter",
                 self.updated_after.isoformat("T", "seconds"),
             )
-        qs = self.__append_qs_param(qs, self.first_n_obs, "firstNObservations")
-        qs = self.__append_qs_param(qs, self.last_n_obs, "lastNObservations")
-        qs = self.__append_qs_param(
+        qs = super()._append_qs_param(
+            qs, self.first_n_obs, "firstNObservations"
+        )
+        qs = super()._append_qs_param(qs, self.last_n_obs, "lastNObservations")
+        qs = super()._append_qs_param(
             qs, self.obs_dimension, "dimensionAtObservation"
         )
         if self.attributes != "dsd":
-            qs = self.__append_qs_param(
-                qs, self.__to_kws(self.attributes, ver), "attributes"
+            qs = super()._append_qs_param(
+                qs, super()._to_kws(self.attributes, api_version), "attributes"
             )
         if self.measures != "all":
-            qs = self.__append_qs_param(
-                qs, self.__to_kws(self.measures, ver), "measures"
+            qs = super()._append_qs_param(
+                qs, super()._to_kws(self.measures, api_version), "measures"
             )
-        qs = self.__append_qs_param(
+        qs = super()._append_qs_param(
             qs,
             self.include_history,
             "includeHistory",
@@ -253,33 +370,26 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         )
         return f"?{qs}" if qs else qs
 
-    def __append_qs_param(
-        self, qs: str, value: Any, field: str, disp_value: Any = None
-    ) -> str:
-        if value:
-            if qs:
-                qs += "&"
-            qs += f"{field}={disp_value if disp_value else value}"
-        return qs
-
-    def __get_short_v1_qs(self, ver: ApiVersion) -> str:
+    def __get_short_v1_qs(self, api_version: ApiVersion) -> str:
         qs = ""
         if self.updated_after:
-            qs = self.__append_qs_param(
+            qs = super()._append_qs_param(
                 qs,
                 self.updated_after,
                 "updatedAfter",
                 self.updated_after.isoformat("T", "seconds"),
             )
-        qs = self.__append_qs_param(qs, self.first_n_obs, "firstNObservations")
-        qs = self.__append_qs_param(qs, self.last_n_obs, "lastNObservations")
-        qs = self.__append_qs_param(
+        qs = super()._append_qs_param(
+            qs, self.first_n_obs, "firstNObservations"
+        )
+        qs = super()._append_qs_param(qs, self.last_n_obs, "lastNObservations")
+        qs = super()._append_qs_param(
             qs, self.obs_dimension, "dimensionAtObservation"
         )
-        detail = self.__get_v1_detail(ver)
+        detail = self.__get_v1_detail(api_version)
         if detail != "full":
-            qs = self.__append_qs_param(qs, detail, "detail")
-        qs = self.__append_qs_param(
+            qs = super()._append_qs_param(qs, detail, "detail")
+        qs = super()._append_qs_param(
             qs,
             self.include_history,
             "includeHistory",
@@ -287,23 +397,7 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         )
         return f"?{qs}" if qs else qs
 
-    def __get_short_v1_path(self, ver: ApiVersion) -> str:
-        v = (
-            f",{self.__to_kw(self.version, ver)}"  # type: ignore[arg-type]
-            if self.version != REST_ALL
-            else ""
-        )
-        kr = self.__to_kw(self.resource_id, ver)  # type: ignore[arg-type]
-        r = f"{kr}{v}"
-        if self.agency_id != REST_ALL or self.version != REST_ALL:
-            ka = self.__to_kw(self.agency_id, ver)  # type: ignore[arg-type]
-            a = f"{ka},{r}"
-        else:
-            a = f"{r}"
-        k = f"/{self.key}" if self.key != REST_ALL else ""
-        return f"/data/{a}{k}"
-
-    def __get_v1_detail(self, ver: ApiVersion) -> str:
+    def __get_v1_detail(self, api_version: ApiVersion) -> str:
         if self.measures in ["OBS_VALUE", "all"] and self.attributes == "dsd":
             return "full"
         elif (
@@ -321,92 +415,85 @@ class DataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                 (
                     f"{self.attributes} and {self.measures} is not a valid "
                     "combination for the detail attribute in SDMX-REST "
-                    f"{ver.value}."
+                    f"{api_version.value}."
                 ),
             )
 
-    def __create_component_filters(self) -> str:
-        if isinstance(self.components, MultiFilter):
-            if self.components.operator == LogicalOperator.OR:
-                raise ClientError(
-                    422,
-                    "Validation Error",
-                    "OR operator is not supported for MultiFilter.",
-                )
-            flts_by_comp = defaultdict(list)
-            for f in self.components.filters:
-                if isinstance(f, (NumberFilter, TextFilter)):
-                    flts_by_comp[f.field].append(f)
-                else:
-                    raise ClientError(
-                        422,
-                        "Validation Error",
-                        f"Unsupported filter type: {f}.",
-                    )
-            flts = []
-            for k, v in flts_by_comp.items():
-                if len(v) > 1:
-                    flts.append(_create_component_mult_filter(k, v))
-                else:
-                    flts.append(_create_component_filter(v[0]))
-            return "&".join(flts)
-        else:
-            return _create_component_filter(
-                self.components,  # type: ignore[arg-type]
-            )
-
-    def __create_full_query(self, ver: ApiVersion) -> str:
+    def _create_full_query(self, api_version: ApiVersion) -> str:
         o = "/data"
-        if ver >= ApiVersion.V2_0_0:
-            c = self.__get_v2_context_id(ver)
+        if api_version >= ApiVersion.V2_0_0:
+            c = super()._get_v2_context_id(
+                self.context,
+                self.agency_id,
+                self.resource_id,
+                self.version,
+                api_version,
+            )
         else:
-            c = self.__get_v1_context_id(ver)
-        o += f"{c}/{self.__to_kws(self.key, ver)}"
+            c = super()._get_v1_context_id(
+                self.agency_id, self.resource_id, self.version, api_version
+            )
+        o += f"{c}/{super()._to_kws(self.key, api_version)}"
         qs = ""
         if self.components:
-            qs += self.__create_component_filters()
+            qs += self._create_component_filters(self.components)
         if self.updated_after:
-            qs = self.__append_qs_param(
+            qs = super()._append_qs_param(
                 qs,
                 self.updated_after,
                 "updatedAfter",
                 self.updated_after.isoformat("T", "seconds"),
             )
-        qs = self.__append_qs_param(qs, self.first_n_obs, "firstNObservations")
-        qs = self.__append_qs_param(qs, self.last_n_obs, "lastNObservations")
-        qs = self.__append_qs_param(
+        qs = super()._append_qs_param(
+            qs, self.first_n_obs, "firstNObservations"
+        )
+        qs = super()._append_qs_param(qs, self.last_n_obs, "lastNObservations")
+        qs = super()._append_qs_param(
             qs, self.obs_dimension, "dimensionAtObservation"
         )
-        if ver >= ApiVersion.V2_0_0:
-            qs = self.__append_qs_param(
+        if api_version >= ApiVersion.V2_0_0:
+            qs = super()._append_qs_param(
                 qs,
                 self.attributes,
                 "attributes",
-                self.__to_kws(self.attributes, ver),
+                super()._to_kws(self.attributes, api_version),
             )
-            qs = self.__append_qs_param(
+            qs = super()._append_qs_param(
                 qs,
                 self.measures,
                 "measures",
-                self.__to_kws(self.measures, ver),
+                super()._to_kws(self.measures, api_version),
             )
         else:
-            qs = self.__append_qs_param(
-                qs, self.__get_v1_detail(ver), "detail"
+            qs = super()._append_qs_param(
+                qs, self.__get_v1_detail(api_version), "detail"
             )
-        qs = self.__append_qs_param(
+        qs = super()._append_qs_param(
             qs, str(self.include_history).lower(), "includeHistory"
         )
         return f"{o}?{qs}"
 
-    def __create_short_query(self, ver: ApiVersion) -> str:
-        if ver >= ApiVersion.V2_0_0:
-            p = self.__get_short_v2_path(ver)
-            q = self.__get_short_v2_qs(ver)
+    def _create_short_query(self, api_version: ApiVersion) -> str:
+        if api_version >= ApiVersion.V2_0_0:
+            p = super()._get_short_v2_path(
+                self.context,
+                self.agency_id,
+                self.resource_id,
+                self.version,
+                self.key,
+                api_version,
+            )
+            q = self.__get_short_v2_qs(api_version)
             o = f"{p}{q}"
         else:
-            p = self.__get_short_v1_path(ver)
-            q = self.__get_short_v1_qs(ver)
+            p = super()._get_short_v1_path(
+                self.agency_id,
+                self.resource_id,
+                self.version,
+                self.key,
+                api_version,
+            )
+            q = self.__get_short_v1_qs(api_version)
             o = f"{p}{q}"
         return o
 
