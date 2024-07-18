@@ -1,6 +1,6 @@
 import pytest
 
-from pysdmx.api.qb.data import AvailabilityMode, AvailabilityQuery
+from pysdmx.api.qb.availability import AvailabilityMode, AvailabilityQuery
 from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import ClientError
 
