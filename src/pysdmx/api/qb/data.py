@@ -170,6 +170,7 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
 
     def _get_short_v2_path(
         self,
+        resource: str,
         context: DataContext,
         agency_id: Union[str, Sequence[str]],
         resource_id: Union[str, Sequence[str]],
@@ -194,10 +195,11 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             else ""
         )
         c = f"/{context.value}{a}" if a or context != DataContext.ALL else ""
-        return f"/data{c}"
+        return f"/{resource}{c}"
 
     def _get_short_v1_path(
         self,
+        resource: str,
         agency_id: str,
         resource_id: str,
         version: str,
@@ -217,7 +219,7 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         else:
             a = f"{r}"
         k = f"/{key}" if key != REST_ALL else ""
-        return f"/data/{a}{k}"
+        return f"/{resource}/{a}{k}"
 
     def _append_qs_param(
         self, qs: str, value: Any, field: str, disp_value: Any = None
@@ -483,6 +485,7 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
     def _create_short_query(self, api_version: ApiVersion) -> str:
         if api_version >= ApiVersion.V2_0_0:
             p = super()._get_short_v2_path(
+                "data",
                 self.context,
                 self.agency_id,
                 self.resource_id,
@@ -494,6 +497,7 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             o = f"{p}{q}"
         else:
             p = super()._get_short_v1_path(
+                "data",
                 self.agency_id,
                 self.resource_id,
                 self.version,

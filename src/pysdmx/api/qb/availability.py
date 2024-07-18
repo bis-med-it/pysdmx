@@ -220,6 +220,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
     def _create_short_query(self, api_version: ApiVersion) -> str:
         if api_version >= ApiVersion.V2_0_0:
             p = super()._get_short_v2_path(
+                "availability",
                 self.context,
                 self.agency_id,
                 self.resource_id,
@@ -227,18 +228,17 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 self.key,
                 api_version,
             )
-            p = p.replace("/data", "/availability")
             q = self.__get_short_v2_qs(api_version)
             o = f"{p}{q}"
         else:
             p = super()._get_short_v1_path(
+                "availableconstraint",
                 self.agency_id,
                 self.resource_id,
                 self.version,
                 self.key,
                 api_version,
             )
-            p = p.replace("/data", "/availableconstraint")
             q = self.__get_short_v1_qs(api_version)
             o = f"{p}{q}"
         return o
