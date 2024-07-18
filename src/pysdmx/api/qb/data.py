@@ -15,6 +15,7 @@ from pysdmx.api.dc.query import (
     Operator,
     TextFilter,
 )
+from pysdmx.api.qb.structure import StructureReference
 from pysdmx.api.qb.util import (
     ApiVersion,
     check_multiple_data_context,
@@ -51,6 +52,13 @@ class DataFormat(Enum):
         "application/vnd.sdmx.structurespecifictimeseriesdata+xml;version=2.1"
     )
     SDMX_ML_3_0 = "application/vnd.sdmx.data+xml;version=3.0.0"
+
+
+class AvailabilityMode(str, Enum):
+    """The mode of a data availability query."""
+
+    AVAILABLE = "available"
+    EXACT = "exact"
 
 
 class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
@@ -471,6 +479,134 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         qs = super()._append_qs_param(
             qs, str(self.include_history).lower(), "includeHistory"
         )
+        return f"{o}?{qs}"
+
+    def _create_short_query(self, api_version: ApiVersion) -> str:
+        if api_version >= ApiVersion.V2_0_0:
+            p = super()._get_short_v2_path(
+                self.context,
+                self.agency_id,
+                self.resource_id,
+                self.version,
+                self.key,
+                api_version,
+            )
+            q = self.__get_short_v2_qs(api_version)
+            o = f"{p}{q}"
+        else:
+            p = super()._get_short_v1_path(
+                self.agency_id,
+                self.resource_id,
+                self.version,
+                self.key,
+                api_version,
+            )
+            q = self.__get_short_v1_qs(api_version)
+            o = f"{p}{q}"
+        return o
+
+
+class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
+    """A data availability query.
+
+    Availability queries allow to see what data are available for a
+    specific context (data structure, dataflow or provision agreement).
+
+    Attributes:
+        context: The context for which data must be retrieved.
+        agency_id: The agency maintaining the context to be considered.
+        resource_id: The id of the context to be considered.
+        version: The version of the context to be considered.
+        key: The combination of dimension values identifying the slice
+            of the cube for which data should be returned. Wildcarding
+            is supported via the * operator.
+        component_id: The id of the dimension for which to obtain availability
+            information about. In the case where this information is
+            not provided, data availability will be provided for all
+            dimensions.
+        components: The component values to be used for data filtering.
+        updated_after: The last time the query was performed by the client.
+        references: This attribute instructs the web service to return (or not)
+            the artefacts referenced by the DataConstraint to be returned.
+        mode: Return a Cube Region containing values which will be returned
+            by executing the query (mode="exact") vs a Cube Region showing
+            what values remain valid selections that could be added to the
+            data query (mode="available").
+    """
+
+    context: DataContext = DataContext.ALL
+    agency_id: Union[str, Sequence[str]] = REST_ALL
+    resource_id: Union[str, Sequence[str]] = REST_ALL
+    version: Union[str, Sequence[str]] = REST_ALL
+    key: Union[str, Sequence[str]] = REST_ALL
+    component_id: str = REST_ALL
+    components: Union[MultiFilter, None, NumberFilter, TextFilter] = None
+    updated_after: Optional[datetime] = None
+    references: Union[StructureReference, Sequence[StructureReference]] = (
+        StructureReference.NONE
+    )
+    mode: AvailabilityMode = AvailabilityMode.EXACT
+
+    def _validate_query(self, api_version: ApiVersion) -> None:
+        self.validate()
+        super()._validate_context(self.context, api_version)
+        super()._check_multiple_contexts(
+            self.agency_id,
+            self.resource_id,
+            self.version,
+            self.key,
+            api_version,
+        )
+        super()._check_resource_id(self.resource_id, api_version)
+        super()._check_components(self.components, api_version)
+
+    def __get_short_v2_qs(self, api_version: ApiVersion) -> str:
+        qs = ""
+        if self.updated_after:
+            qs = super()._append_qs_param(
+                qs,
+                self.updated_after,
+                "updatedAfter",
+                self.updated_after.isoformat("T", "seconds"),
+            )
+        return f"?{qs}" if qs else qs
+
+    def __get_short_v1_qs(self, api_version: ApiVersion) -> str:
+        qs = ""
+        if self.updated_after:
+            qs = super()._append_qs_param(
+                qs,
+                self.updated_after,
+                "updatedAfter",
+                self.updated_after.isoformat("T", "seconds"),
+            )
+        return f"?{qs}" if qs else qs
+
+    def _create_full_query(self, api_version: ApiVersion) -> str:
+        o = "/data"
+        if api_version >= ApiVersion.V2_0_0:
+            c = super()._get_v2_context_id(
+                self.context,
+                self.agency_id,
+                self.resource_id,
+                self.version,
+                api_version,
+            )
+        else:
+            c = super()._get_v1_context_id(
+                self.agency_id, self.resource_id, self.version, api_version
+            )
+        o += f"{c}/{super()._to_kws(self.key, api_version)}"
+        qs = ""
+        if self.components:
+            qs += self._create_component_filters(self.components)
+        if self.updated_after:
+            qs = super()._append_qs_param(
+                qs,
+                self.updated_after,
+                "updatedAfter",
+                self.updated_after.isoformat("T", "seconds"),
+            )
         return f"{o}?{qs}"
 
     def _create_short_query(self, api_version: ApiVersion) -> str:
