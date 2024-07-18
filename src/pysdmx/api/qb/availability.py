@@ -184,14 +184,9 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 self.updated_after.isoformat("T", "seconds"),
             )
         if self.references != StructureReference.NONE:
-            refs = (
-                self.references.value
-                if isinstance(self.references, StructureReference)
-                else [r.value for r in self.references]
-            )
             qs = super()._append_qs_param(
                 qs,
-                super()._to_kws(refs, api_version),
+                self.references.value,  # type: ignore[union-attr]
                 "references",
             )
         if self.mode != AvailabilityMode.EXACT:
@@ -231,15 +226,13 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 "updatedAfter",
                 self.updated_after.isoformat("T", "seconds"),
             )
-        if self.references:
-            if isinstance(self.references, StructureReference):
-                r = self.references.value
-            else:
-                refs = [ref.value for ref in self.references]
-                r = ",".join(refs)
-            qs = super()._append_qs_param(qs, r, "references")
-        if self.mode:
-            qs = super()._append_qs_param(qs, self.mode.value, "mode")
+        if isinstance(self.references, StructureReference):
+            r = self.references.value
+        else:
+            refs = [ref.value for ref in self.references]
+            r = ",".join(refs)
+        qs = super()._append_qs_param(qs, r, "references")
+        qs = super()._append_qs_param(qs, self.mode.value, "mode")
         return f"{o}?{qs}"
 
     def _create_short_query(self, api_version: ApiVersion) -> str:
