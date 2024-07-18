@@ -65,8 +65,8 @@ def test_url_multiple_versions_since_2_0_0(
     api_version: ApiVersion,
 ):
     expected = (
-        f"/availability/{context.value}/{agency}/{res}/{','.join(versions)}/*/*"
-        f"?references=none&mode=exact"
+        f"/availability/{context.value}/{agency}/{res}/{','.join(versions)}"
+        f"/*/*?references=none&mode=exact"
     )
 
     q = AvailabilityQuery(context, agency, res, versions)
@@ -98,7 +98,10 @@ def test_url_multiple_versions_since_2_0_0_short(
 def test_url_default_version_before_2_0_0(
     context: DataContext, agency: str, res: str, api_version: ApiVersion
 ):
-    expected = f"/availableconstraint/{agency},{res},latest/all/all?references=none&mode=exact"
+    expected = (
+        f"/availableconstraint/{agency},{res},latest/all/all"
+        "?references=none&mode=exact"
+    )
 
     q = AvailabilityQuery(context, agency, res)
     url = q.get_url(api_version)
@@ -134,7 +137,10 @@ def test_url_single_version_before_2_0_0(
     version: str,
     api_version: ApiVersion,
 ):
-    expected = f"/availableconstraint/{agency},{res},{version}/all/all?references=none&mode=exact"
+    expected = (
+        f"/availableconstraint/{agency},{res},{version}/all/all"
+        "?references=none&mode=exact"
+    )
 
     q = AvailabilityQuery(context, agency, res, version)
     url = q.get_url(api_version)
@@ -152,7 +158,10 @@ def test_url_translate_latest_before_2_0_0(
     version: str,
     api_version: ApiVersion,
 ):
-    expected = f"/availableconstraint/{agency},{res},latest/all/all?references=none&mode=exact"
+    expected = (
+        f"/availableconstraint/{agency},{res},latest/all/all"
+        "?references=none&mode=exact"
+    )
 
     q = AvailabilityQuery(context, agency, res, "~")
     url = q.get_url(api_version)

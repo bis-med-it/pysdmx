@@ -43,7 +43,10 @@ def test_url_mode_before_2_0_0(
     mode: AvailabilityMode,
     api_version: ApiVersion,
 ):
-    expected = f"/availableconstraint/all,{res},latest/all/all?references=none&mode={mode.value}"
+    expected = (
+        f"/availableconstraint/all,{res},latest/all/all"
+        "?references=none&mode={mode.value}"
+    )
 
     q = AvailabilityQuery(resource_id=res, mode=mode)
     url = q.get_url(api_version)
@@ -127,7 +130,7 @@ def test_url_default_mode_before_2_0_0_short(
 )
 def test_url_default_mode_since_2_0_0_short(api_version: ApiVersion):
     mode = AvailabilityMode.EXACT
-    expected = f"/availability"
+    expected = "/availability"
 
     q = AvailabilityQuery(mode=mode)
     url = q.get_url(api_version, True)

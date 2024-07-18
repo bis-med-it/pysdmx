@@ -121,7 +121,10 @@ def test_url_default_resource_since_2_0_0(
 def test_url_single_resource_before_2_0_0(
     context: DataContext, agency: str, res: str, api_version: ApiVersion
 ):
-    expected = f"/availableconstraint/{agency},{res},latest/all/all?references=none&mode=exact"
+    expected = (
+        f"/availableconstraint/{agency},{res},latest/all/all?"
+        "references=none&mode=exact"
+    )
 
     q = AvailabilityQuery(context, agency, res)
     url = q.get_url(api_version)

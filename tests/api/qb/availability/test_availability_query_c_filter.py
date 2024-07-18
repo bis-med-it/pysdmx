@@ -269,7 +269,8 @@ def test_mult_filters(api_version: ApiVersion):
     flt3 = NumberFilter("VALUE", Operator.LESS_THAN, 42)
     mflt = MultiFilter([flt1, flt2, flt3])
     expected = (
-        "/availability/*/*/*/*/*/*?c[COUNTRY]=AR,UY&c[PERIOD]=ge:2024&c[VALUE]=lt:42"
+        "/availability/*/*/*/*/*/*?"
+        "c[COUNTRY]=AR,UY&c[PERIOD]=ge:2024&c[VALUE]=lt:42"
         "&references=none&mode=exact"
     )
 

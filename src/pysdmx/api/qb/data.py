@@ -107,7 +107,10 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             raise ClientError(
                 422,
                 "Validation Error",
-                f"A dataflow must be provided in SDMX-REST {api_version.value}.",
+                (
+                    f"A dataflow must be provided in SDMX-REST "
+                    f"{api_version.value}."
+                ),
             )
 
     def _check_components(

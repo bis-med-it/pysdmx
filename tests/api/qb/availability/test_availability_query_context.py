@@ -28,7 +28,10 @@ def test_url_df_context_before_2_0_0(
     res: str,
     api_version: ApiVersion,
 ):
-    expected = f"/availableconstraint/all,{res},latest/all/all?references=none&mode=exact"
+    expected = (
+        f"/availableconstraint/all,{res},latest/all/all"
+        "?references=none&mode=exact"
+    )
 
     q = AvailabilityQuery(context, resource_id=res)
     url = q.get_url(api_version)

@@ -182,8 +182,8 @@ def test_url_single_component_since_2_0_0(
     api_version: ApiVersion,
 ):
     expected = (
-        f"/availability/{context.value}/{agency}/{res}/{version}/{key}/{component}"
-        "?references=none&mode=exact"
+        f"/availability/{context.value}/{agency}/{res}/{version}/{key}/"
+        f"{component}?references=none&mode=exact"
     )
 
     q = AvailabilityQuery(context, agency, res, version, key, component)

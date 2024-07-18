@@ -87,7 +87,10 @@ def test_url_multiple_agencies_since_2_0_0_short(
 def test_url_default_agency_before_2_0_0(
     context: DataContext, res: str, api_version: ApiVersion
 ):
-    expected = f"/availableconstraint/all,{res},latest/all/all?references=none&mode=exact"
+    expected = (
+        f"/availableconstraint/all,{res},latest/all/all?"
+        "references=none&mode=exact"
+    )
 
     q = AvailabilityQuery(context, resource_id=res)
     url = q.get_url(api_version)
@@ -118,7 +121,10 @@ def test_url_default_agency_since_2_0_0(
 def test_url_single_agency_before_2_0_0(
     context: DataContext, agency: str, res: str, api_version: ApiVersion
 ):
-    expected = f"/availableconstraint/{agency},{res},latest/all/all?references=none&mode=exact"
+    expected = (
+        f"/availableconstraint/{agency},{res},latest/all/all"
+        "?references=none&mode=exact"
+    )
 
     q = AvailabilityQuery(context, agency, res)
     url = q.get_url(api_version)
@@ -132,7 +138,10 @@ def test_url_single_agency_before_2_0_0(
 def test_url_single_agency_since_2_0_0(
     context: DataContext, agency: str, api_version: ApiVersion
 ):
-    expected = f"/availability/{context.value}/{agency}/*/*/*/*?references=none&mode=exact"
+    expected = (
+        f"/availability/{context.value}/{agency}/*/*/*/*"
+        "?references=none&mode=exact"
+    )
 
     q = AvailabilityQuery(context, agency)
     url = q.get_url(api_version)

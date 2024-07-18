@@ -114,7 +114,10 @@ def test_url_single_ref_before_2_0_0(
     ref: StructureReference,
     api_version: ApiVersion,
 ):
-    expected = f"/availableconstraint/all,{res},latest/all/all?references={ref.value}&mode=exact"
+    expected = (
+        f"/availableconstraint/all,{res},latest/all/all"
+        "?references={ref.value}&mode=exact"
+    )
 
     q = AvailabilityQuery(resource_id=res, references=ref)
     url = q.get_url(api_version)
@@ -271,7 +274,7 @@ def test_url_default_ref_before_2_0_0_short(
 )
 def test_url_default_ref_since_2_0_0_short(api_version: ApiVersion):
     references = StructureReference.NONE
-    expected = f"/availability"
+    expected = "/availability"
 
     q = AvailabilityQuery(references=references)
     url = q.get_url(api_version, True)
