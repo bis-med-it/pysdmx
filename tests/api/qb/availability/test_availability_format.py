@@ -1,4 +1,4 @@
-from pysdmx.api.qb.data import AvailabilityFormat
+from pysdmx.api.qb.availability import AvailabilityFormat
 
 
 def test_expected_formats():

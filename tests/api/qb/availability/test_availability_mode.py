@@ -1,4 +1,4 @@
-from pysdmx.api.qb.data import AvailabilityMode
+from pysdmx.api.qb.availability import AvailabilityMode
 
 
 def test_expected_modes():
