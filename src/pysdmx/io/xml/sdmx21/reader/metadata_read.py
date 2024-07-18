@@ -6,7 +6,6 @@ from msgspec import Struct
 
 from pysdmx.io.xml.sdmx21.__parsing_config import CORE_REP, URN
 from pysdmx.io.xml.sdmx21.reader.__utils import (
-    add_list,
     AGENCIES,
     AGENCY,
     AGENCY_ID,
@@ -55,6 +54,7 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     URL,
     VERSION,
 )
+from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (
     Code,
     Codelist,

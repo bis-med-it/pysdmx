@@ -34,6 +34,11 @@ def submission_path():
 
 
 @pytest.fixture()
+def samples_folder():
+    return Path(__file__).parent / "samples"
+
+
+@pytest.fixture()
 def error_304_path():
     return Path(__file__).parent / "samples" / "error_304.xml"
 
@@ -95,7 +100,8 @@ def test_item_scheme_read(item_scheme_path):
     codelist_sdmx = codelists["SDMX:CL_UNIT_MULT(1.0)"]
     assert codelist_sdmx.id == "CL_UNIT_MULT"
     assert (
-        codelist_sdmx.name == "code list for the Unit Multiplier (UNIT_MULT)"
+        codelist_sdmx.name == "code list for the "
+        "Unit Multiplier (UNIT_MULT)"
     )
     assert codelist_sdmx.items[0].id == "0"
     assert codelist_sdmx.items[0].name == "Units"
@@ -154,3 +160,99 @@ def test_error_message_with_different_mode(error_304_path):
     assert filetype == "xml"
     with pytest.raises(ValueError, match="Unable to parse sdmx file as"):
         read_xml(input_str, validate=True, mode=MessageType.Submission)
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "gen_all.xml",
+        "gen_ser.xml",
+        "str_all.xml",
+        "str_ser.xml",
+        "str_ser_group.xml",
+    ],
+)
+def test_reading_validation(samples_folder, filename):
+    data_path = samples_folder / filename
+    input_str, filetype = process_string_to_read(data_path)
+    assert filetype == "xml"
+    result = read_xml(input_str, validate=True)
+    assert result is not None
+    data = result["BIS:BIS_DER(1.0)"].data
+    num_rows = len(data)
+    num_columns = data.shape[1]
+    assert num_rows > 0
+    assert num_columns > 0
+    expected_num_rows = 1000
+    expected_num_columns = 20
+    assert num_rows == expected_num_rows
+    assert num_columns == expected_num_columns
+
+
+# Test reading of dataflow SDMX file
+def test_dataflow(samples_folder):
+    data_path = samples_folder / "dataflow.xml"
+    input_str, filetype = process_string_to_read(data_path)
+    assert filetype == "xml"
+    result = read_xml(input_str, validate=True)
+    data_dataflow = result["BIS:WEBSTATS_DER_DATAFLOW(1.0)"].data
+    num_rows = len(data_dataflow)
+    num_columns = data_dataflow.shape[1]
+    assert num_rows > 0
+    assert num_columns > 0
+    expected_num_rows = 1000
+    expected_num_columns = 20
+    assert num_rows == expected_num_rows
+    assert num_columns == expected_num_columns
+    assert "BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result
+    assert "AVAILABILITY" in data_dataflow.columns
+    assert "DER_CURR_LEG1" in data_dataflow.columns
+
+
+def test_structure_ref_urn(samples_folder):
+    data_path = samples_folder / "structure_ref_urn.xml"
+    input_str, filetype = process_string_to_read(data_path)
+    assert filetype == "xml"
+    result = read_xml(input_str, validate=True)
+    assert "BIS:BIS_DER(1.0)" in result
+
+
+def test_header_structure_provision_agrement(samples_folder):
+    data_path = samples_folder / "header_structure_provision_agrement.xml"
+    input_str, filetype = process_string_to_read(data_path)
+    assert filetype == "xml"
+    with pytest.raises(NotImplementedError, match="ProvisionAgrement"):
+        read_xml(input_str, validate=True)
+
+
+def test_stref_dif_strid(samples_folder):
+    data_path = samples_folder / "str_dif_ref_and_ID.xml"
+    input_str, filetype = process_string_to_read(data_path)
+    assert filetype == "xml"
+    with pytest.raises(
+        Exception,
+        match="Cannot find the structure reference of this dataset:A",
+    ):
+        read_xml(input_str, validate=True)
+
+
+def test_load_big_file(samples_folder):
+    data_path = samples_folder / "bis_der_50500.xml"
+    input_str, filetype = process_string_to_read(data_path)
+    assert filetype == "xml"
+    result = read_xml(input_str, validate=True)
+    assert "BIS:BIS_DER(1.0)" in result
+
+
+def test_gen_all_no_atts(samples_folder):
+    data_path = samples_folder / "gen_all_no_atts.xml"
+    input_str, filetype = process_string_to_read(data_path)
+    assert filetype == "xml"
+    read_xml(input_str, validate=True)
+
+
+def test_gen_ser_no_atts(samples_folder):
+    data_path = samples_folder / "gen_ser_no_atts.xml"
+    input_str, filetype = process_string_to_read(data_path)
+    assert filetype == "xml"
+    read_xml(input_str, validate=True)
