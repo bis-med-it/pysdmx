@@ -15,6 +15,7 @@ from pysdmx.api.qb.data import _CoreDataQuery, DataContext
 from pysdmx.api.qb.structure import StructureReference
 from pysdmx.api.qb.util import (
     ApiVersion,
+    check_multiple_data_context,
     REST_ALL,
 )
 from pysdmx.errors import ClientError
@@ -129,6 +130,9 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         if isinstance(self.references, StructureReference):
             self.__validate_reference(self.references, api_version)
         else:
+            check_multiple_data_context(
+                "references", self.references, api_version
+            )
             for ref in self.references:
                 self.__validate_reference(ref, api_version)
 
@@ -145,9 +149,12 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 self.updated_after.isoformat("T", "seconds"),
             )
         if self.references != StructureReference.NONE:
-            qs = super()._append_qs_param(
-                qs, self.references.value, "references"
-            )
+            if isinstance(self.references, StructureReference):
+                r = self.references.value
+            else:
+                refs = [ref.value for ref in self.references]
+                r = ",".join(refs)
+            qs = super()._append_qs_param(qs, r, "references")
         if self.mode != AvailabilityMode.EXACT:
             qs = super()._append_qs_param(qs, self.mode.value, "mode")
         return f"?{qs}" if qs else qs
@@ -200,9 +207,12 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 self.updated_after.isoformat("T", "seconds"),
             )
         if self.references:
-            qs = super()._append_qs_param(
-                qs, self.references.value, "references"
-            )
+            if isinstance(self.references, StructureReference):
+                r = self.references.value
+            else:
+                refs = [ref.value for ref in self.references]
+                r = ",".join(refs)
+            qs = super()._append_qs_param(qs, r, "references")
         if self.mode:
             qs = super()._append_qs_param(qs, self.mode.value, "mode")
         return f"{o}?{qs}"
@@ -217,7 +227,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 self.key,
                 api_version,
             )
-            p = p.replace("/data/", "/availability/")
+            p = p.replace("/data", "/availability")
             q = self.__get_short_v2_qs(api_version)
             o = f"{p}{q}"
         else:
@@ -228,7 +238,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 self.key,
                 api_version,
             )
-            p = p.replace("/data/", "/availableconstraint/")
+            p = p.replace("/data", "/availableconstraint")
             q = self.__get_short_v1_qs(api_version)
             o = f"{p}{q}"
         return o
