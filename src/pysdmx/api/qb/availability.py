@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import Optional, Sequence, Union
 
 import msgspec
 
@@ -132,15 +132,14 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         if isinstance(self.references, StructureReference):
             self.__validate_reference(self.references, api_version)
         else:
-            check_multiple_data_context(
-                "references", self.references, api_version
-            )
+            refs = [r.value for r in self.references]
+            check_multiple_data_context("references", refs, api_version)
             for ref in self.references:
                 self.__validate_reference(ref, api_version)
 
     def __validate_component_id(self, api_version: ApiVersion) -> None:
         if (
-            isinstance(self.component_id, (List, Tuple))
+            isinstance(self.component_id, (list, tuple))
             and api_version < ApiVersion.V2_0_0
         ):
             raise ClientError(
@@ -185,8 +184,15 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 self.updated_after.isoformat("T", "seconds"),
             )
         if self.references != StructureReference.NONE:
+            refs = (
+                self.references.value
+                if isinstance(self.references, StructureReference)
+                else [r.value for r in self.references]
+            )
             qs = super()._append_qs_param(
-                qs, self.references.value, "references"
+                qs,
+                super()._to_kws(refs, api_version),
+                "references",
             )
         if self.mode != AvailabilityMode.EXACT:
             qs = super()._append_qs_param(qs, self.mode.value, "mode")
@@ -208,7 +214,10 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             )
         else:
             c = super()._get_v1_context_id(
-                self.agency_id, self.resource_id, self.version, api_version
+                self.agency_id,  # type: ignore[arg-type]
+                self.resource_id,  # type: ignore[arg-type]
+                self.version,  # type: ignore[arg-type]
+                api_version,
             )
         o += f"{c}/{super()._to_kws(self.key, api_version)}"
         o += f"/{super()._to_kws(self.component_id, api_version)}"
@@ -250,9 +259,9 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         else:
             p = super()._get_short_v1_path(
                 "availableconstraint",
-                self.agency_id,
-                self.resource_id,
-                self.version,
+                self.agency_id,  # type: ignore[arg-type]
+                self.resource_id,  # type: ignore[arg-type]
+                self.version,  # type: ignore[arg-type]
                 self.key,
                 api_version,
             )

@@ -162,10 +162,10 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         version: str,
         api_version: ApiVersion,
     ) -> str:
-        a = self._to_kw(agency_id, api_version)  # type: ignore[arg-type]
-        r = self._to_kw(resource_id, api_version)  # type: ignore[arg-type]
+        a = self._to_kw(agency_id, api_version)
+        r = self._to_kw(resource_id, api_version)
         v = (
-            self._to_kw(version, api_version)  # type: ignore[arg-type]
+            self._to_kw(version, api_version)
             if version != REST_ALL
             else "latest"
         )
@@ -222,14 +222,14 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         api_version: ApiVersion,
     ) -> str:
         v = (
-            f",{self._to_kw(version, api_version)}"  # type: ignore[arg-type]
+            f",{self._to_kw(version, api_version)}"
             if version != REST_ALL
             else ""
         )
-        kr = self._to_kw(resource_id, api_version)  # type: ignore[arg-type]
+        kr = self._to_kw(resource_id, api_version)
         r = f"{kr}{v}"
         if agency_id != REST_ALL or version != REST_ALL:
-            ka = self._to_kw(agency_id, api_version)  # type: ignore[arg-type]
+            ka = self._to_kw(agency_id, api_version)
             a = f"{ka},{r}"
         else:
             a = f"{r}"
@@ -273,9 +273,7 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                     flts.append(_create_component_filter(v[0]))
             return "&".join(flts)
         else:
-            return _create_component_filter(
-                components,  # type: ignore[arg-type]
-            )
+            return _create_component_filter(components)
 
     @abstractmethod
     def _validate_query(self, version: ApiVersion) -> None:
@@ -285,6 +283,7 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     def _create_full_query(self, ver: ApiVersion) -> str:
         """Creates a URL, with default values."""
 
+    @abstractmethod
     def _create_short_query(self, ver: ApiVersion) -> str:
         """Creates a URL, omitting default values when possible."""
 
@@ -455,7 +454,10 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             )
         else:
             c = super()._get_v1_context_id(
-                self.agency_id, self.resource_id, self.version, api_version
+                self.agency_id,  # type: ignore[arg-type]
+                self.resource_id,  # type: ignore[arg-type]
+                self.version,  # type: ignore[arg-type]
+                api_version,
             )
         o += f"{c}/{super()._to_kws(self.key, api_version)}"
         qs = ""
@@ -513,9 +515,9 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         else:
             p = super()._get_short_v1_path(
                 "data",
-                self.agency_id,
-                self.resource_id,
-                self.version,
+                self.agency_id,  # type: ignore[arg-type]
+                self.resource_id,  # type: ignore[arg-type]
+                self.version,  # type: ignore[arg-type]
                 self.key,
                 api_version,
             )
