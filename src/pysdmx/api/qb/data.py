@@ -83,9 +83,13 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     def validate(self) -> None:
         """Validate the query."""
         try:
-            decoder.decode(encoder.encode(self))
+            self._get_decoder().decode(_encoder.encode(self))
         except msgspec.DecodeError as err:
             raise ClientError(422, "Invalid Schema Query", str(err)) from err
+
+    @abstractmethod
+    def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
+        """Returns the decoder to be used for validation."""
 
     def _validate_context(
         self, context: DataContext, api_version: ApiVersion
@@ -355,6 +359,9 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         super()._check_resource_id(self.resource_id, api_version)
         super()._check_components(self.components, api_version)
 
+    def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
+        return _data_decoder
+
     def __get_short_v2_qs(self, api_version: ApiVersion) -> str:
         qs = ""
         if self.updated_after:
@@ -569,6 +576,9 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         super()._check_resource_id(self.resource_id, api_version)
         super()._check_components(self.components, api_version)
 
+    def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
+        return _availability_decoder
+
     def __get_short_v2_qs(self, api_version: ApiVersion) -> str:
         qs = ""
         if self.updated_after:
@@ -578,6 +588,12 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 "updatedAfter",
                 self.updated_after.isoformat("T", "seconds"),
             )
+        if self.references != StructureReference.NONE:
+            qs = super()._append_qs_param(
+                qs, self.references.value, "references"
+            )
+        if self.mode != AvailabilityMode.EXACT:
+            qs = super()._append_qs_param(qs, self.mode.value, "mode")
         return f"?{qs}" if qs else qs
 
     def __get_short_v1_qs(self, api_version: ApiVersion) -> str:
@@ -589,10 +605,20 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 "updatedAfter",
                 self.updated_after.isoformat("T", "seconds"),
             )
+        if self.references != StructureReference.NONE:
+            qs = super()._append_qs_param(
+                qs, self.references.value, "references"
+            )
+        if self.mode != AvailabilityMode.EXACT:
+            qs = super()._append_qs_param(qs, self.mode.value, "mode")
         return f"?{qs}" if qs else qs
 
     def _create_full_query(self, api_version: ApiVersion) -> str:
-        o = "/data"
+        o = (
+            "/availability"
+            if api_version >= ApiVersion.V2_0_0
+            else "/availableconstraint"
+        )
         if api_version >= ApiVersion.V2_0_0:
             c = super()._get_v2_context_id(
                 self.context,
@@ -606,6 +632,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 self.agency_id, self.resource_id, self.version, api_version
             )
         o += f"{c}/{super()._to_kws(self.key, api_version)}"
+        o += f"/{super()._to_kws(self.component_id, api_version)}"
         qs = ""
         if self.components:
             qs += self._create_component_filters(self.components)
@@ -616,6 +643,12 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 "updatedAfter",
                 self.updated_after.isoformat("T", "seconds"),
             )
+        if self.references:
+            qs = super()._append_qs_param(
+                qs, self.references.value, "references"
+            )
+        if self.mode:
+            qs = super()._append_qs_param(qs, self.mode.value, "mode")
         return f"{o}?{qs}"
 
     def _create_short_query(self, api_version: ApiVersion) -> str:
@@ -628,6 +661,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 self.key,
                 api_version,
             )
+            p = p.replace("/data/", "/availability/")
             q = self.__get_short_v2_qs(api_version)
             o = f"{p}{q}"
         else:
@@ -638,6 +672,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 self.key,
                 api_version,
             )
+            p = p.replace("/data/", "/availableconstraint/")
             q = self.__get_short_v1_qs(api_version)
             o = f"{p}{q}"
         return o
@@ -732,5 +767,6 @@ def _create_component_mult_filter(
     return f"c[{comp}]={'+'.join(fstr)}"
 
 
-decoder = msgspec.json.Decoder(DataQuery)
-encoder = msgspec.json.Encoder()
+_data_decoder = msgspec.json.Decoder(DataQuery)
+_availability_decoder = msgspec.json.Decoder(AvailabilityQuery)
+_encoder = msgspec.json.Encoder()
