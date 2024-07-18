@@ -35,7 +35,7 @@ class DataContext(Enum):
 
 
 class DataFormat(Enum):
-    """The response formats."""
+    """The response formats for data queries."""
 
     SDMX_JSON_1_0_0 = "application/vnd.sdmx.data+json;version=1.0.0"
     SDMX_JSON_2_0_0 = "application/vnd.sdmx.data+json;version=2.0.0"
@@ -59,6 +59,15 @@ class AvailabilityMode(str, Enum):
 
     AVAILABLE = "available"
     EXACT = "exact"
+
+
+class AvailabilityFormat(Enum):
+    """The response formats for availabillity queries."""
+
+    SDMX_ML_2_1_STRUCTURE = "application/vnd.sdmx.structure+xml;version=2.1"
+    SDMX_ML_3_0_STRUCTURE = "application/vnd.sdmx.structure+xml;version=3.0.0"
+    SDMX_JSON_1_0_0 = "application/vnd.sdmx.structure+json;version=1.0.0"
+    SDMX_JSON_2_0_0 = "application/vnd.sdmx.structure+json;version=2.0.0"
 
 
 class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
