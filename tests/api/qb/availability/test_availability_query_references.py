@@ -116,7 +116,7 @@ def test_url_single_ref_before_2_0_0(
 ):
     expected = (
         f"/availableconstraint/all,{res},latest/all/all"
-        "?references={ref.value}&mode=exact"
+        f"?references={ref.value}&mode=exact"
     )
 
     q = AvailabilityQuery(resource_id=res, references=ref)

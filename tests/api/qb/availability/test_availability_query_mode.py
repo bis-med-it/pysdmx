@@ -45,7 +45,7 @@ def test_url_mode_before_2_0_0(
 ):
     expected = (
         f"/availableconstraint/all,{res},latest/all/all"
-        "?references=none&mode={mode.value}"
+        f"?references=none&mode={mode.value}"
     )
 
     q = AvailabilityQuery(resource_id=res, mode=mode)
