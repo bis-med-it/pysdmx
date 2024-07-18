@@ -93,7 +93,7 @@ def test_url_mode_before_2_0_0_short(
 def test_url_mode_since_2_0_0_short(
     mode: AvailabilityMode, api_version: ApiVersion
 ):
-    expected = f"/data?mode={mode.value}"
+    expected = f"/availability?mode={mode.value}"
 
     q = AvailabilityQuery(mode=mode)
     url = q.get_url(api_version, True)
@@ -127,7 +127,7 @@ def test_url_default_mode_before_2_0_0_short(
 )
 def test_url_default_mode_since_2_0_0_short(api_version: ApiVersion):
     mode = AvailabilityMode.EXACT
-    expected = f"/data"
+    expected = f"/availability"
 
     q = AvailabilityQuery(mode=mode)
     url = q.get_url(api_version, True)
