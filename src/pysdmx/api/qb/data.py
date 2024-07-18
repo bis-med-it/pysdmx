@@ -177,8 +177,20 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         version: Union[str, Sequence[str]],
         key: Union[str, Sequence[str]],
         api_version: ApiVersion,
+        component_id: Union[
+            NC_NAME_ID_TYPE, Sequence[NC_NAME_ID_TYPE], None
+        ] = None,
     ) -> str:
-        k = f"/{self._to_kws(key, api_version)}" if key != REST_ALL else ""
+        d = (
+            f"/{self._to_kws(component_id, api_version)}"
+            if component_id and component_id != REST_ALL
+            else ""
+        )
+        k = (
+            f"/{self._to_kws(key, api_version)}{d}"
+            if d or key != REST_ALL
+            else ""
+        )
         v = (
             f"/{self._to_kws(version, api_version)}{k}"
             if k or version != REST_ALL

@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional, Sequence, Union
+from typing import List, Optional, Sequence, Tuple, Union
 
 import msgspec
 
@@ -19,6 +19,7 @@ from pysdmx.api.qb.util import (
     REST_ALL,
 )
 from pysdmx.errors import ClientError
+from pysdmx.model.types import NC_NAME_ID_TYPE
 
 
 class AvailabilityMode(str, Enum):
@@ -92,7 +93,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
     resource_id: Union[str, Sequence[str]] = REST_ALL
     version: Union[str, Sequence[str]] = REST_ALL
     key: Union[str, Sequence[str]] = REST_ALL
-    component_id: str = REST_ALL
+    component_id: Union[NC_NAME_ID_TYPE, Sequence[NC_NAME_ID_TYPE]] = REST_ALL
     components: Union[MultiFilter, None, NumberFilter, TextFilter] = None
     updated_after: Optional[datetime] = None
     references: Union[StructureReference, Sequence[StructureReference]] = (
@@ -113,6 +114,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         super()._check_resource_id(self.resource_id, api_version)
         super()._check_components(self.components, api_version)
         self.__validate_references(api_version)
+        self.__validate_component_id(api_version)
 
     def __validate_reference(
         self, ref: StructureReference, api_version: ApiVersion
@@ -135,6 +137,20 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             )
             for ref in self.references:
                 self.__validate_reference(ref, api_version)
+
+    def __validate_component_id(self, api_version: ApiVersion) -> None:
+        if (
+            isinstance(self.component_id, (List, Tuple))
+            and api_version < ApiVersion.V2_0_0
+        ):
+            raise ClientError(
+                422,
+                "Validation Error",
+                (
+                    f"Only one component ID is allowed in SDMX-REST "
+                    f"{api_version.value}."
+                ),
+            )
 
     def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
         return _availability_decoder
@@ -227,6 +243,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 self.version,
                 self.key,
                 api_version,
+                self.component_id,
             )
             q = self.__get_short_v2_qs(api_version)
             o = f"{p}{q}"
