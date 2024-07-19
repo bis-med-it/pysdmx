@@ -37,9 +37,7 @@ def test_reading_data_v1(data_path):
 def test_reading_data_v1_exception(data_path_exception):
     with open(data_path_exception, "r") as f:
         infile = f.read()
-    with pytest.raises(
-        ClientError, match="Invalid SDMX-CSV 1.0"
-    ):
+    with pytest.raises(ClientError, match="Invalid SDMX-CSV 1.0"):
         read(infile)
 
 
