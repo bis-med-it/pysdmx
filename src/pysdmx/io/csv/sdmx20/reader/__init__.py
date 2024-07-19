@@ -5,14 +5,17 @@ from typing import Dict
 
 import pandas as pd
 
+from pysdmx.errors import ClientError
 from pysdmx.model.dataset import Dataset
 
 
 def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> Dataset:
     # Extract Structure type and structure id
+    attached_attributes = {}
 
     if "ACTION" in data.columns:
         # Drop 'ACTION' column from DataFrame
+        attached_attributes["action"] = data["ACTION"].iloc[0]
         data = data.drop(["ACTION"], axis=1)
     # For SDMX-CSV version 2, use 'STRUCTURE_ID'
     # column as the structure id and 'STRUCTURE' as the structure type
@@ -26,7 +29,7 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> Dataset:
         unique_id=structure_id,
         structure_type=structure_type,
         data=df_csv,
-        attached_attributes={},
+        attached_attributes=attached_attributes,
     )
 
 
@@ -40,7 +43,7 @@ def read(infile: str) -> Dict[str, Dataset]:
         payload: dict.
 
     Raises:
-        Exception: If it is an invalid CSV file.
+        ClientError: If it is an invalid CSV file.
     """
     # Get Dataframe from CSV file
     df_csv = pd.read_csv(StringIO(infile))
@@ -53,7 +56,12 @@ def read(infile: str) -> Dict[str, Dataset]:
         or "STRUCTURE_ID" not in df_csv.columns
     ):
         # Raise an exception if the CSV file is not in SDMX-CSV format
-        raise Exception("Invalid CSV file, only SDMX-CSV is allowed")
+        raise ClientError(
+            400,
+            "Only SDMX-CSV 2.0 is allowed",
+            "Invalid SDMX-CSV 2.0 file. "
+            "Check the docs for the proper structure on content.",
+        )
 
     # Convert all columns to strings
     df_csv = df_csv.astype("str")

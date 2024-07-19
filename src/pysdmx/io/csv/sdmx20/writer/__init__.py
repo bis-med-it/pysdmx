@@ -5,8 +5,8 @@ from typing import Optional
 
 import pandas as pd
 
+from pysdmx.io.csv.sdmx20 import SDMX_CSV_ACTION_MAPPER
 from pysdmx.model.dataset import Dataset
-from pysdmx.model.message import SDMX_CSV_ACTION_MAPPER
 
 
 def writer(

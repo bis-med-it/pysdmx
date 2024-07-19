@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from pysdmx.errors import ClientError
 from pysdmx.io.csv.sdmx20.reader import read
 
 
@@ -44,9 +45,7 @@ def test_reading_data_v2(data_path):
 def test_reading_v2_exception(data_path_exception):
     with open(data_path_exception, "r") as f:
         infile = f.read()
-    with pytest.raises(
-        Exception, match="Invalid CSV file, only SDMX-CSV is allowed"
-    ):
+    with pytest.raises(ClientError, match="Invalid SDMX-CSV 2.0"):
         read(infile)
 
 
