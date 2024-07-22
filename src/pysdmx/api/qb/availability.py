@@ -154,7 +154,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
     def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
         return _availability_decoder
 
-    def __get_short_v2_qs(self, api_version: ApiVersion) -> str:
+    def __get_short_v2_qs(self) -> str:
         qs = ""
         if self.updated_after:
             qs = super()._append_qs_param(
@@ -174,7 +174,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             qs = super()._append_qs_param(qs, self.mode.value, "mode")
         return f"?{qs}" if qs else qs
 
-    def __get_short_v1_qs(self, api_version: ApiVersion) -> str:
+    def __get_short_v1_qs(self) -> str:
         qs = ""
         if self.updated_after:
             qs = super()._append_qs_param(
@@ -247,7 +247,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 api_version,
                 self.component_id,
             )
-            q = self.__get_short_v2_qs(api_version)
+            q = self.__get_short_v2_qs()
             o = f"{p}{q}"
         else:
             p = super()._get_short_v1_path(
@@ -258,7 +258,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 self.key,
                 api_version,
             )
-            q = self.__get_short_v1_qs(api_version)
+            q = self.__get_short_v1_qs()
             o = f"{p}{q}"
         return o
 
