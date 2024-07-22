@@ -15,6 +15,17 @@ import httpx
 from msgspec.json import decode
 
 from pysdmx.api.fmr.reader import Deserializer
+from pysdmx.api.qb import (
+    ApiVersion,
+    RefMetaByMetadatasetQuery,
+    RefMetaByStructureQuery,
+    SchemaContext,
+    SchemaQuery,
+    StructureDetail,
+    StructureQuery,
+    StructureReference,
+    StructureType,
+)
 from pysdmx.errors import ClientError, NotFound, ServiceError, Unavailable
 from pysdmx.io.json.fusion.reader import deserializers as fusion_readers
 from pysdmx.io.json.sdmxjson2.reader import deserializers as sdmx_readers
@@ -32,17 +43,6 @@ from pysdmx.model import (
     RepresentationMap,
     Schema,
     StructureMap,
-)
-from pysdmx.api.qb import (
-    ApiVersion,
-    RefMetaByMetadatasetQuery,
-    RefMetaByStructureQuery,
-    SchemaContext,
-    SchemaQuery,
-    StructureDetail,
-    StructureQuery,
-    StructureReference,
-    StructureType,
 )
 
 
