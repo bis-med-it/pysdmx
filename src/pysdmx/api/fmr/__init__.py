@@ -147,6 +147,134 @@ class __BaseRegistryClient:
             dr = StructureReference.PARENTSANDSIBLINGS
         return (sq, dr)
 
+    def _hierarchies_for_flow_url(
+        self, agency: str, flow: str, version: str
+    ) -> str:
+        d = StructureDetail.REFERENCE_PARTIAL
+        r = StructureReference.ALL
+        q = StructureQuery(
+            StructureType.DATAFLOW,
+            agency,
+            flow,
+            version,
+            detail=d,
+            references=r,
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _hierarchies_for_pra_url(
+        self, agency: str, pra: str, version: str
+    ) -> str:
+        d = StructureDetail.REFERENCE_PARTIAL
+        r = StructureReference.ALL
+        q = StructureQuery(
+            StructureType.PROVISION_AGREEMENT,
+            agency,
+            pra,
+            version,
+            detail=d,
+            references=r,
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _code_map_url(self, agency: str, id: str, version: str) -> str:
+        q = StructureQuery(
+            StructureType.REPRESENTATION_MAP, agency, id, version
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _mapping_url(self, agency: str, id: str, version: str) -> str:
+        r = StructureReference.CHILDREN
+        d = StructureDetail.REFERENCE_PARTIAL
+        q = StructureQuery(
+            StructureType.STRUCTURE_MAP,
+            agency,
+            id,
+            version,
+            detail=d,
+            references=r,
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _reports_url(
+        self, artefact_type: str, agency: str, id: str, version: str
+    ) -> str:
+        q = RefMetaByStructureQuery(
+            StructureType(artefact_type), agency, id, version
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _report_url(self, provider: str, id: str, version: str) -> str:
+        q = RefMetaByMetadatasetQuery(provider, id, version)
+        return q.get_url(API_VERSION, True)
+
+    def _hierarchy_url(self, agency: str, id: str, version: str) -> str:
+        q = StructureQuery(
+            StructureType.HIERARCHY,
+            agency,
+            id,
+            version,
+            detail=StructureDetail.REFERENCE_PARTIAL,
+            references=StructureReference.CODELIST,
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _agencies_url(self, agency: str) -> str:
+        q = StructureQuery(StructureType.AGENCY_SCHEME, agency)
+        return q.get_url(API_VERSION, True)
+
+    def _providers_url(self, agency: str, with_flows: bool) -> str:
+        r = (
+            StructureReference.PROVISION_AGREEMENT
+            if with_flows
+            else StructureReference.NONE
+        )
+        q = StructureQuery(
+            StructureType.DATA_PROVIDER_SCHEME, agency, references=r
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _categories_url(self, agency: str, id: str, version: str) -> str:
+        q = StructureQuery(StructureType.CATEGORY_SCHEME, agency, id, version)
+        return q.get_url(API_VERSION, True)
+
+    def _codes_cl_url(self, agency: str, id: str, version: str) -> str:
+        q = StructureQuery(StructureType.CODELIST, agency, id, version)
+        return q.get_url(API_VERSION, True)
+
+    def _codes_vl_url(self, agency: str, id: str, version: str) -> str:
+        q = StructureQuery(StructureType.VALUE_LIST, agency, id, version)
+        return q.get_url(API_VERSION, True)
+
+    def _concepts_url(self, agency: str, id: str, version: str) -> str:
+        q = StructureQuery(
+            StructureType.CONCEPT_SCHEME,
+            agency,
+            id,
+            version,
+            references=StructureReference.CODELIST,
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _schema_url(
+        self, context: SchemaContext, agency: str, id: str, version: str
+    ) -> str:
+        q = SchemaQuery(context, agency, id, version)
+        return q.get_url(API_VERSION, True)
+
+    def _dataflow_details_url(
+        self, agency: str, id: str, version: str, ref: StructureReference
+    ) -> str:
+        q = StructureQuery(
+            StructureType.DATAFLOW,
+            agency,
+            id,
+            version,
+            detail=StructureDetail.REFERENCE_PARTIAL,
+            references=ref,
+        )
+        return q.get_url(API_VERSION, True)
+
 
 class RegistryClient(__BaseRegistryClient):
     """A client to be used to retrieve metadata from the FMR.
@@ -191,34 +319,14 @@ class RegistryClient(__BaseRegistryClient):
     def __get_hierarchies_for_flow(
         self, agency: str, flow: str, version: str
     ) -> Sequence[HierarchyAssociation]:
-        d = StructureDetail.REFERENCE_PARTIAL
-        r = StructureReference.ALL
-        q = StructureQuery(
-            StructureType.DATAFLOW,
-            agency,
-            flow,
-            version,
-            detail=d,
-            references=r,
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._hierarchies_for_flow_url(agency, flow, version)
         out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.hier_assoc)
 
     def __get_hierarchies_for_pra(
         self, agency: str, pra: str, version: str
     ) -> Sequence[HierarchyAssociation]:
-        d = StructureDetail.REFERENCE_PARTIAL
-        r = StructureReference.ALL
-        q = StructureQuery(
-            StructureType.PROVISION_AGREEMENT,
-            agency,
-            pra,
-            version,
-            detail=d,
-            references=r,
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._hierarchies_for_pra_url(agency, pra, version)
         out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.hier_assoc)
 
@@ -232,8 +340,7 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested list of agencies.
         """
-        q = StructureQuery(StructureType.AGENCY_SCHEME, agency)
-        url = q.get_url(API_VERSION, True)
+        url = super()._agencies_url(agency)
         out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.agencies)
 
@@ -253,15 +360,7 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested list of data providers.
         """
-        r = (
-            StructureReference.PROVISION_AGREEMENT
-            if with_flows
-            else StructureReference.NONE
-        )
-        q = StructureQuery(
-            StructureType.DATA_PROVIDER_SCHEME, agency, references=r
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._providers_url(agency, with_flows)
         out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.providers)
 
@@ -283,8 +382,7 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested category scheme.
         """
-        q = StructureQuery(StructureType.CATEGORY_SCHEME, agency, id, version)
-        url = q.get_url(API_VERSION, True)
+        url = super()._categories_url(agency, id, version)
         out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.categories)
 
@@ -307,13 +405,11 @@ class RegistryClient(__BaseRegistryClient):
             The requested codelist.
         """
         try:
-            q = StructureQuery(StructureType.CODELIST, agency, id, version)
-            url = q.get_url(API_VERSION, True)
+            url = super()._codes_cl_url(agency, id, version)
             out = self.__fetch(f"{self.api_endpoint}{url}")
             return super()._out(out, self.deser.codes)
         except NotFound:
-            q = StructureQuery(StructureType.VALUE_LIST, agency, id, version)
-            url = q.get_url(API_VERSION, True)
+            url = super()._codes_vl_url(agency, id, version)
             out = self.__fetch(f"{self.api_endpoint}{url}")
             return super()._out(out, self.deser.codes)
 
@@ -335,14 +431,7 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested concept scheme.
         """
-        q = StructureQuery(
-            StructureType.CONCEPT_SCHEME,
-            agency,
-            id,
-            version,
-            references=StructureReference.CODELIST,
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._concepts_url(agency, id, version)
         out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.concepts)
 
@@ -380,14 +469,7 @@ class RegistryClient(__BaseRegistryClient):
             ha = self.__get_hierarchies_for_pra(agency, id, version)
         else:
             ha = ()
-
-        q = SchemaQuery(
-            c,
-            agency,
-            id,
-            version,
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._schema_url(c, agency, id, version)
         out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(
             out, self.deser.schema, c.value, agency, id, version, ha
@@ -427,15 +509,7 @@ class RegistryClient(__BaseRegistryClient):
             cmps = self.get_schema("dataflow", agency, id, version).components
         else:
             cmps = None
-        q = StructureQuery(
-            StructureType.DATAFLOW,
-            agency,
-            id,
-            version,
-            detail=StructureDetail.REFERENCE_PARTIAL,
-            references=dr,
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._dataflow_details_url(agency, id, version, dr)
         out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(
             out, self.deser.dataflow, cmps, agency, id, version
@@ -458,15 +532,7 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested hierarchical list of codes.
         """
-        q = StructureQuery(
-            StructureType.HIERARCHY,
-            agency,
-            id,
-            version,
-            detail=StructureDetail.REFERENCE_PARTIAL,
-            references=StructureReference.CODELIST,
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._hierarchy_url(agency, id, version)
         out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.hierarchy)
 
@@ -487,8 +553,7 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested metadata report.
         """
-        q = RefMetaByMetadatasetQuery(provider, id, version)
-        url = q.get_url(API_VERSION, True)
+        url = super()._report_url(provider, id, version)
         out = self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.report)[0]
 
@@ -513,10 +578,7 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The metadata reports about the supplied structure.
         """
-        q = RefMetaByStructureQuery(
-            StructureType(artefact_type), agency, id, version
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._reports_url(artefact_type, agency, id, version)
         out = self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.report, True)
 
@@ -537,17 +599,7 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested mapping definition (aka Structure Map).
         """
-        r = StructureReference.CHILDREN
-        d = StructureDetail.REFERENCE_PARTIAL
-        q = StructureQuery(
-            StructureType.STRUCTURE_MAP,
-            agency,
-            id,
-            version,
-            detail=d,
-            references=r,
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._mapping_url(agency, id, version)
         out = self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.mapping)
 
@@ -566,10 +618,7 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested mappings in the representation map.
         """
-        q = StructureQuery(
-            StructureType.REPRESENTATION_MAP, agency, id, version
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._code_map_url(agency, id, version)
         out = self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.code_map)
 
@@ -620,34 +669,14 @@ class AsyncRegistryClient(__BaseRegistryClient):
     async def __get_hierarchies_for_flow(
         self, agency: str, flow: str, version: str
     ) -> Sequence[HierarchyAssociation]:
-        d = StructureDetail.REFERENCE_PARTIAL
-        r = StructureReference.ALL
-        q = StructureQuery(
-            StructureType.DATAFLOW,
-            agency,
-            flow,
-            version,
-            detail=d,
-            references=r,
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._hierarchies_for_flow_url(agency, flow, version)
         out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.hier_assoc)
 
     async def __get_hierarchies_for_pra(
         self, agency: str, pra: str, version: str
     ) -> Sequence[HierarchyAssociation]:
-        d = StructureDetail.REFERENCE_PARTIAL
-        r = StructureReference.ALL
-        q = StructureQuery(
-            StructureType.PROVISION_AGREEMENT,
-            agency,
-            pra,
-            version,
-            detail=d,
-            references=r,
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._hierarchies_for_pra_url(agency, pra, version)
         out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.hier_assoc)
 
@@ -661,8 +690,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested list of agencies.
         """
-        q = StructureQuery(StructureType.AGENCY_SCHEME, agency)
-        url = q.get_url(API_VERSION, True)
+        url = super()._agencies_url(agency)
         out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.agencies)
 
@@ -680,16 +708,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested list of data providers.
         """
-
-        r = (
-            StructureReference.PROVISION_AGREEMENT
-            if with_flows
-            else StructureReference.NONE
-        )
-        q = StructureQuery(
-            StructureType.DATA_PROVIDER_SCHEME, agency, references=r
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._providers_url(agency, with_flows)
         out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.providers)
 
@@ -711,8 +730,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested category scheme.
         """
-        q = StructureQuery(StructureType.CATEGORY_SCHEME, agency, id, version)
-        url = q.get_url(API_VERSION, True)
+        url = super()._categories_url(agency, id, version)
         out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.categories)
 
@@ -735,13 +753,11 @@ class AsyncRegistryClient(__BaseRegistryClient):
             The requested codelist.
         """
         try:
-            q = StructureQuery(StructureType.CODELIST, agency, id, version)
-            url = q.get_url(API_VERSION, True)
+            url = super()._codes_cl_url(agency, id, version)
             out = await self.__fetch(f"{self.api_endpoint}{url}")
             return super()._out(out, self.deser.codes)
         except NotFound:
-            q = StructureQuery(StructureType.VALUE_LIST, agency, id, version)
-            url = q.get_url(API_VERSION, True)
+            url = super()._codes_vl_url(agency, id, version)
             out = await self.__fetch(f"{self.api_endpoint}{url}")
             return super()._out(out, self.deser.codes)
 
@@ -763,14 +779,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested concept scheme.
         """
-        q = StructureQuery(
-            StructureType.CONCEPT_SCHEME,
-            agency,
-            id,
-            version,
-            references=StructureReference.CODELIST,
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._concepts_url(agency, id, version)
         out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.concepts)
 
@@ -808,13 +817,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
             ha = await self.__get_hierarchies_for_pra(agency, id, version)
         else:
             ha = ()
-        q = SchemaQuery(
-            c,
-            agency,
-            id,
-            version,
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._schema_url(c, agency, id, version)
         r = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(
             r, self.deser.schema, c.value, agency, id, version, ha
@@ -860,15 +863,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
             cmps = schema.components
         else:
             cmps = None
-        q = StructureQuery(
-            StructureType.DATAFLOW,
-            agency,
-            id,
-            version,
-            detail=StructureDetail.REFERENCE_PARTIAL,
-            references=dr,
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._dataflow_details_url(agency, id, version, dr)
         out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(
             out, self.deser.dataflow, cmps, agency, id, version
@@ -891,15 +886,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested hierarchical list of codes.
         """
-        q = StructureQuery(
-            StructureType.HIERARCHY,
-            agency,
-            id,
-            version,
-            detail=StructureDetail.REFERENCE_PARTIAL,
-            references=StructureReference.CODELIST,
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._hierarchy_url(agency, id, version)
         out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.hierarchy)
 
@@ -920,8 +907,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested metadata report.
         """
-        q = RefMetaByMetadatasetQuery(provider, id, version)
-        url = q.get_url(API_VERSION, True)
+        url = super()._report_url(provider, id, version)
         out = await self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.report)[0]
 
@@ -946,10 +932,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The metadata reports about the supplied structure.
         """
-        q = RefMetaByStructureQuery(
-            StructureType(artefact_type), agency, id, version
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._reports_url(artefact_type, agency, id, version)
         out = await self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.report, True)
 
@@ -970,17 +953,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested mapping definition (aka Structure Map).
         """
-        r = StructureReference.CHILDREN
-        d = StructureDetail.REFERENCE_PARTIAL
-        q = StructureQuery(
-            StructureType.STRUCTURE_MAP,
-            agency,
-            id,
-            version,
-            detail=d,
-            references=r,
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._mapping_url(agency, id, version)
         out = await self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.mapping)
 
@@ -999,9 +972,6 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested mappings in the representation map.
         """
-        q = StructureQuery(
-            StructureType.REPRESENTATION_MAP, agency, id, version
-        )
-        url = q.get_url(API_VERSION, True)
+        url = super()._code_map_url(agency, id, version)
         out = await self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.code_map)
