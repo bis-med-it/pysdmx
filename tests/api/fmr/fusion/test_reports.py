@@ -22,7 +22,7 @@ def async_fmr() -> AsyncRegistryClient:
 
 @pytest.fixture()
 def query(fmr):
-    res = "metadata/structure/"
+    res = "/metadata/structure/"
     typ = "dataflow"
     agency = "BIS.MACRO"
     id = "BIS_MACRO"

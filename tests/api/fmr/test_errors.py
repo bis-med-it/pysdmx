@@ -15,7 +15,7 @@ def fmr() -> RegistryClient:
 
 @pytest.fixture()
 def query(fmr: RegistryClient) -> str:
-    res = "structure/agencyscheme/"
+    res = "/structure/agencyscheme/"
     agency = "BIS"
     return f"{fmr.api_endpoint}{res}{agency}"
 
@@ -89,6 +89,6 @@ def test_service_unavailable(respx_mock, fmr, query):
 def test_missing_params(fmr):
     with pytest.raises(ClientError) as e:
         fmr.get_agencies(42)
-    assert e.value.status == 400
+    assert e.value.status == 422
     assert e.value.title is not None
     assert e.value.description is not None

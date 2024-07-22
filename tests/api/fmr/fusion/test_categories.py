@@ -15,14 +15,14 @@ def fmr():
 @pytest.fixture()
 def async_fmr() -> AsyncRegistryClient:
     return AsyncRegistryClient(
-        "https://registry.sdmx.org/sdmx/v2/",
+        "https://registry.sdmx.org/sdmx/v2",
         Format.FUSION_JSON,
     )
 
 
 @pytest.fixture()
 def query(fmr):
-    res = "structure/categoryscheme/"
+    res = "/structure/categoryscheme/"
     agency = "TEST"
     id = "TEST_CS"
     return f"{fmr.api_endpoint}{res}{agency}/{id}/+"

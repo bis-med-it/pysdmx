@@ -22,7 +22,7 @@ def async_fmr() -> AsyncRegistryClient:
 
 @pytest.fixture()
 def query1(fmr):
-    res = "structure/structuremap/"
+    res = "/structure/structuremap/"
     provider = "BIS"
     id = "SRC_2_MDD"
     version = "1.0"
@@ -38,7 +38,7 @@ def body1():
 
 @pytest.fixture()
 def query2(fmr):
-    res = "structure/structuremap/"
+    res = "/structure/structuremap/"
     provider = "BIS"
     id = "FXS_2_MDD"
     version = "1.0"

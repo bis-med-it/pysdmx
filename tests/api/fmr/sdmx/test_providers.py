@@ -22,14 +22,14 @@ def async_fmr():
 
 @pytest.fixture()
 def query(fmr: RegistryClient):
-    res = "structure/dataproviderscheme/"
+    res = "/structure/dataproviderscheme/"
     agency = "BIS"
-    return f"{fmr.api_endpoint}{res}{agency}?references=none"
+    return f"{fmr.api_endpoint}{res}{agency}"
 
 
 @pytest.fixture()
 def flowquery(fmr: RegistryClient):
-    res = "structure/dataproviderscheme/"
+    res = "/structure/dataproviderscheme/"
     agency = "BIS"
     return f"{fmr.api_endpoint}{res}{agency}?references=provisionagreement"
 

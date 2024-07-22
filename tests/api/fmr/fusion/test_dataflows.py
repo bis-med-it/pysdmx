@@ -22,7 +22,7 @@ def async_fmr():
 
 @pytest.fixture()
 def schema_query(fmr):
-    res = "schema/dataflow/"
+    res = "/schema/dataflow/"
     agency = "BIS.CBS"
     id = "CBS"
     version = "1.0"
@@ -31,7 +31,7 @@ def schema_query(fmr):
 
 @pytest.fixture()
 def schema_query_no_version(fmr):
-    res = "schema/dataflow/"
+    res = "/schema/dataflow/"
     agency = "BIS.CBS"
     id = "CBS"
     version = "+"
@@ -40,7 +40,7 @@ def schema_query_no_version(fmr):
 
 @pytest.fixture()
 def no_hca_query(fmr):
-    res = "structure/dataflow/"
+    res = "/structure/dataflow/"
     agency = "BIS.CBS"
     id = "CBS"
     version = "1.0"
@@ -52,7 +52,7 @@ def no_hca_query(fmr):
 
 @pytest.fixture()
 def no_hca_query_no_version(fmr):
-    res = "structure/dataflow/"
+    res = "/structure/dataflow/"
     agency = "BIS.CBS"
     id = "CBS"
     version = "+"
@@ -70,7 +70,7 @@ def no_hca_body():
 
 @pytest.fixture()
 def dataflow_query(fmr):
-    res = "structure/dataflow/"
+    res = "/structure/dataflow/"
     agency = "BIS.CBS"
     id = "CBS"
     version = "1.0"
@@ -80,7 +80,7 @@ def dataflow_query(fmr):
 
 @pytest.fixture()
 def dataflow_query_no_version(fmr):
-    res = "structure/dataflow/"
+    res = "/structure/dataflow/"
     agency = "BIS.CBS"
     id = "CBS"
     version = "+"
@@ -90,11 +90,11 @@ def dataflow_query_no_version(fmr):
 
 @pytest.fixture()
 def core_dataflow_query(fmr):
-    res = "structure/dataflow/"
+    res = "/structure/dataflow/"
     agency = "BIS.CBS"
     id = "CBS"
     version = "1.0"
-    qst = "detail=referencepartial&references=none"
+    qst = "detail=referencepartial"
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}?{qst}"
 
 
