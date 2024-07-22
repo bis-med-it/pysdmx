@@ -138,7 +138,9 @@ class __BaseRegistryClient:
             )
             raise Unavailable(503, "Connection error", msg) from e
 
-    def _df_details(self, details: DataflowDetails) -> Tuple[bool, str]:
+    def _df_details(
+        self, details: DataflowDetails
+    ) -> Tuple[bool, StructureReference]:
         sq = False
         dr = StructureReference.NONE
         if details in self.__schema_q:
