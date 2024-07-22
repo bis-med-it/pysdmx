@@ -33,6 +33,7 @@ from pysdmx.model import (
     Schema,
     StructureMap,
 )
+from pysdmx.api.qb import SchemaContext
 
 
 class Format(Enum):
@@ -55,17 +56,6 @@ class DataflowDetails(Enum):
     """Core information about a dataflow and the list of providers."""
     SCHEMA = "schema"
     """Core information about a dataflow and its schema (data structure.)"""
-
-
-class Context(Enum):
-    """The context from which the schema is derived."""
-
-    DATAFLOW = "dataflow"
-    """DSD, dataflow and the constraints related to either."""
-    DATA_STRUCTURE = "datastructure"
-    """DSD and its related constraints."""
-    PROVISION_AGREEMENT = "provisionagreement"
-    """DSD, dataflow, provision agreement and their related constraints."""
 
 
 url_templates = {
@@ -351,7 +341,8 @@ class RegistryClient(__BaseRegistryClient):
     def get_schema(
         self,
         context: Union[
-            Context, Literal["dataflow", "datastructure", "provisionagreement"]
+            SchemaContext,
+            Literal["dataflow", "datastructure", "provisionagreement"],
         ],
         agency: str,
         id: str,
@@ -370,7 +361,7 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested schema.
         """
-        c = context.value if isinstance(context, Context) else context
+        c = context.value if isinstance(context, SchemaContext) else context
         if context == "dataflow":
             ha = self.__get_hierarchies_for_flow(agency, id, version)
         elif context == "provisionagreement":
@@ -681,7 +672,8 @@ class AsyncRegistryClient(__BaseRegistryClient):
     async def get_schema(
         self,
         context: Union[
-            Context, Literal["dataflow", "datastructure", "provisionagreement"]
+            SchemaContext,
+            Literal["dataflow", "datastructure", "provisionagreement"],
         ],
         agency: str,
         id: str,
@@ -707,7 +699,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         else:
             ha = ()
 
-        c = context.value if isinstance(context, Context) else context
+        c = context.value if isinstance(context, SchemaContext) else context
         r = await self.__fetch(super()._url("schema", c, agency, id, version))
         return super()._out(r, self.deser.schema, c, agency, id, version, ha)
 
