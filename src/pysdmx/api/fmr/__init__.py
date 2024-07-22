@@ -69,41 +69,6 @@ class DataflowDetails(Enum):
 
 
 API_VERSION = ApiVersion.V2_0_0
-url_templates = {
-    "agency": "structure/agencyscheme/{0}",
-    "category": (
-        "structure/categoryscheme/{0}/{1}/{2}"
-        "?detail=referencepartial&references=parentsandsiblings"
-    ),
-    "code": "structure/codelist/{0}/{1}/{2}",
-    "code_map": "structure/representationmap/{0}/{1}/{2}",
-    "concept": "structure/conceptscheme/{0}/{1}/{2}?references=codelist",
-    "dataflow": (
-        "structure/dataflow/{0}/{1}/{2}"
-        "?detail=referencepartial&references={3}"
-    ),
-    "ha": (
-        "structure/dataflow/{0}/{1}/{2}"
-        "?references=all&detail=referencepartial"
-    ),
-    "ha_pra": (
-        "structure/provisionagreement/{0}/{1}/{2}"
-        "?references=all&detail=referencepartial"
-    ),
-    "hierarchy": (
-        "structure/hierarchy/{0}/{1}/{2}"
-        "?detail=referencepartial&references=codelist"
-    ),
-    "mapping": (
-        "structure/structuremap/{0}/{1}/{2}"
-        "?detail=referencepartial&references=children"
-    ),
-    "provider": "structure/dataproviderscheme/{0}?references={1}",
-    "report": "metadata/metadataset/{0}/{1}/{2}",
-    "reports": "metadata/structure/{0}/{1}/{2}/{3}",
-    "schema": "schema/{0}/{1}/{2}/{3}",
-    "vl": "structure/valuelist/{0}/{1}/{2}",
-}
 
 
 class __BaseRegistryClient:
@@ -139,20 +104,6 @@ class __BaseRegistryClient:
 
     def _out(self, response: bytes, typ: Deserializer, *params: Any) -> Any:
         return decode(response, type=typ).to_model(*params)
-
-    def _url(self, typ: str, *params: str) -> str:
-        self._check(*params)
-        return f"{self.api_endpoint}{url_templates[typ].format(*params)}"
-
-    def _check(self, *params: str) -> None:
-        for p in params:
-            if not isinstance(p, str):
-                msg = (
-                    "All parameters must be set and must be strings."
-                    "Please check the documentation for the function "
-                    "you called and try again."
-                )
-                raise ClientError(400, "Validation issue", msg)
 
     def _error(
         self,
