@@ -22,7 +22,7 @@ def async_fmr() -> AsyncRegistryClient:
 
 @pytest.fixture()
 def query(fmr):
-    res = "metadata/metadataset/"
+    res = "/metadata/metadataset/"
     provider = "BIS.MEDIT"
     id = "DTI_BIS_MACRO"
     version = "1.0"
@@ -37,7 +37,7 @@ def body():
 
 @pytest.fixture()
 def query2(fmr):
-    res = "metadata/metadataset/"
+    res = "/metadata/metadataset/"
     provider = "BIS.MEDIT"
     id = "DTI_OCC_SRC"
     version = "1.0"

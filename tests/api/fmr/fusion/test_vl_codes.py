@@ -22,7 +22,7 @@ def async_fmr():
 
 @pytest.fixture()
 def q1(fmr):
-    res = "structure/codelist/"
+    res = "/structure/codelist/"
     agency = "TEST"
     id = "CTYPES"
     version = "1.0"
@@ -31,7 +31,7 @@ def q1(fmr):
 
 @pytest.fixture()
 def q2(fmr):
-    res = "structure/valuelist/"
+    res = "/structure/valuelist/"
     agency = "TEST"
     id = "CTYPES"
     version = "1.0"

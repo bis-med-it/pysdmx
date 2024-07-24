@@ -22,7 +22,7 @@ def async_fmr():
 
 @pytest.fixture()
 def query(fmr):
-    res = "structure/conceptscheme/"
+    res = "/structure/conceptscheme/"
     agency = "BIS.MEDIT"
     id = "MEDIT_CS"
     return f"{fmr.api_endpoint}{res}{agency}/{id}/+?references=codelist"

@@ -22,7 +22,7 @@ def async_fmr() -> AsyncRegistryClient:
 
 @pytest.fixture()
 def query(fmr):
-    res = "structure/hierarchy/"
+    res = "/structure/hierarchy/"
     agency = "TEST"
     id = "HCL_ELEMENT"
     qst = "detail=referencepartial&references=codelist"

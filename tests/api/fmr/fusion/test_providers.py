@@ -7,7 +7,7 @@ from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 @pytest.fixture()
 def fmr():
     return RegistryClient(
-        "https://registry.sdmx.org/sdmx/v2/",
+        "https://registry.sdmx.org/sdmx/v2",
         Format.FUSION_JSON,
     )
 
@@ -22,14 +22,14 @@ def async_fmr():
 
 @pytest.fixture()
 def query(fmr: RegistryClient):
-    res = "structure/dataproviderscheme/"
+    res = "/structure/dataproviderscheme/"
     agency = "BIS"
-    return f"{fmr.api_endpoint}{res}{agency}?references=none"
+    return f"{fmr.api_endpoint}{res}{agency}"
 
 
 @pytest.fixture()
 def flowquery(fmr: RegistryClient):
-    res = "structure/dataproviderscheme/"
+    res = "/structure/dataproviderscheme/"
     agency = "BIS"
     return f"{fmr.api_endpoint}{res}{agency}?references=provisionagreement"
 
