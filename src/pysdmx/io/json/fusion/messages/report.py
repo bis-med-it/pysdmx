@@ -4,9 +4,12 @@ from typing import Sequence
 
 from msgspec import Struct
 
-from pysdmx.api.fmr.reader import _merge_attributes
 from pysdmx.io.json.fusion.messages.core import FusionString
-from pysdmx.model import MetadataAttribute, MetadataReport
+from pysdmx.model.metadata import (
+    merge_attributes,
+    MetadataAttribute,
+    MetadataReport,
+)
 
 
 class FusionMetadataReport(Struct, frozen=True):
@@ -31,7 +34,7 @@ class FusionMetadataMessage(Struct, frozen=True):
     data: FusionMetadataSets
 
     def __create_report(self, r: FusionMetadataReport) -> MetadataReport:
-        attrs = _merge_attributes(r.attributes)
+        attrs = merge_attributes(r.attributes)
         return MetadataReport(
             r.id, r.names[0].value, r.metadataflow, r.targets, attrs
         )

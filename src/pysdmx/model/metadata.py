@@ -8,7 +8,8 @@ be used to drive process steps such as validation or mapping, for
 example by providing configuration details in a metadata report.
 """
 
-from typing import Any, Iterator, Optional, Sequence
+from collections import defaultdict
+from typing import Any, Dict, Iterator, List, Optional, Sequence
 
 from msgspec import Struct
 
@@ -95,3 +96,42 @@ class MetadataReport(Struct, frozen=True, omit_defaults=True):
             if out:
                 return out[0]
         return None
+
+
+def merge_attributes(
+    attrs: Sequence[MetadataAttribute],
+) -> Sequence[MetadataAttribute]:
+    """Groups together the values of attributes with the same ID.
+
+    The function assumes that an attribute will either have a
+    value or will act as a container for other attributes. In
+    case the attribute contains other attributes AND has a value,
+    this function will NOT work as expected.
+
+    Args:
+        attrs: The list of attributes to be merged
+
+    Returns:
+        The list of (possibly merged) attributes
+    """
+    by_id: Dict[str, List[Any]] = defaultdict(list)
+    sub_id = []
+
+    for attr in attrs:
+        if attr.attributes:
+            sub_id.append(
+                MetadataAttribute(
+                    attr.id,
+                    attr.value,
+                    merge_attributes(attr.attributes),
+                )
+            )
+        else:
+            by_id[attr.id].append(attr.value)
+
+    out = []
+    out.extend(sub_id)
+    for k, v in by_id.items():
+        val = v if len(v) > 1 else v[0]
+        out.append(MetadataAttribute(k, val))
+    return out
