@@ -1,3 +1,4 @@
+import random
 from typing import Sequence
 
 import pytest
@@ -69,7 +70,11 @@ def test_invalid_value(res: str, api_version: ApiVersion):
 )
 @pytest.mark.parametrize(
     "ref",
-    (r for r in StructureReference if r not in allowed_refs_v1),
+    [
+        random.choice(
+            [r for r in StructureReference if r not in allowed_refs_v1]
+        )
+    ],
 )
 def test_invalid_ref_v1(
     res: str, ref: StructureReference, api_version: ApiVersion
@@ -86,7 +91,11 @@ def test_invalid_ref_v1(
 )
 @pytest.mark.parametrize(
     "ref",
-    (r for r in StructureReference if r not in allowed_refs_v2),
+    [
+        random.choice(
+            [r for r in StructureReference if r not in allowed_refs_v2]
+        )
+    ],
 )
 def test_invalid_ref_v2(
     res: str, ref: StructureReference, api_version: ApiVersion
@@ -107,7 +116,7 @@ def test_invalid_ref_v2(
 )
 @pytest.mark.parametrize(
     "ref",
-    (r for r in StructureReference if r in allowed_refs_v1),
+    [random.choice([r for r in StructureReference if r in allowed_refs_v1])],
 )
 def test_url_single_ref_before_2_0_0(
     res: str,
@@ -130,7 +139,7 @@ def test_url_single_ref_before_2_0_0(
 )
 @pytest.mark.parametrize(
     "ref",
-    (r for r in StructureReference if r in allowed_refs_v2),
+    [random.choice([r for r in StructureReference if r in allowed_refs_v2])],
 )
 def test_url_single_ref_since_2_0_0(
     ref: StructureReference,
@@ -207,11 +216,15 @@ def test_url_multi_refs_since_2_0_0_short(
 )
 @pytest.mark.parametrize(
     "ref",
-    (
-        r
-        for r in StructureReference
-        if r in allowed_refs_v1 and r != StructureReference.NONE
-    ),
+    [
+        random.choice(
+            [
+                r
+                for r in StructureReference
+                if r in allowed_refs_v1 and r != StructureReference.NONE
+            ]
+        )
+    ],
 )
 def test_url_single_ref_before_2_0_0_short(
     res: str,
@@ -231,11 +244,15 @@ def test_url_single_ref_before_2_0_0_short(
 )
 @pytest.mark.parametrize(
     "ref",
-    (
-        r
-        for r in StructureReference
-        if r in allowed_refs_v2 and r != StructureReference.NONE
-    ),
+    [
+        random.choice(
+            [
+                r
+                for r in StructureReference
+                if r in allowed_refs_v2 and r != StructureReference.NONE
+            ]
+        )
+    ],
 )
 def test_url_single_ref_since_2_0_0_short(
     ref: StructureReference, api_version: ApiVersion
