@@ -1,0 +1,4 @@
+STRUCTURE,STRUCTURE_ID,ACTION,Id_1,Id_2,Me_1
+datastructure,TEST:TEST_MD(1.0),D,,,
+datastructure,TEST:TEST_MD(1.0),R,A,A,6
+datastructure,TEST:TEST_MD(1.0),R,A,B,1

@@ -19,13 +19,13 @@ ACTION_SDMX_CSV_MAPPER_READING = {
 
 def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
     # Extract Structure type and structure id
-    action = None
+    action = ActionType.Information
     if "ACTION" in data.columns:
         unique_values = list(data["ACTION"].unique())
         if len(unique_values) > 1 and "D" in unique_values:
             unique_values.remove("D")
             data = data[data["ACTION"] != "D"]
-        else:
+        if len(unique_values) == 1:  # If there is only one value, use it
             action_value = unique_values[0]
             if action_value not in ACTION_SDMX_CSV_MAPPER_READING:
                 raise ClientError(
@@ -35,6 +35,14 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
                     "Check the docs for the proper values on ACTION column.",
                 )
             action = ACTION_SDMX_CSV_MAPPER_READING[action_value]
+        else:
+            raise ClientError(
+                400,
+                "Invalid value on ACTION column",
+                "Invalid SDMX-CSV 2.0 file. "
+                "Cannot have more than one value on ACTION column, "
+                "or 2 if D is present",
+            )
     # For SDMX-CSV version 2, use 'STRUCTURE_ID'
     # column as the structure id and 'STRUCTURE' as the structure type
     structure_id = data["STRUCTURE_ID"].iloc[0]
