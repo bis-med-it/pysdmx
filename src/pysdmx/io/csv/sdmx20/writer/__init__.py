@@ -32,6 +32,10 @@ def writer(
         df[k] = v
 
     structure_ref, unique_id = dataset.short_urn.split("=", maxsplit=1)
+    if structure_ref in ["DataStructure", "DataFlow"]:
+        structure_ref = structure_ref.lower()
+    else:
+        structure_ref = "dataprovision"
 
     # Insert two columns at the beginning of the data set
     df.insert(0, "STRUCTURE", structure_ref)

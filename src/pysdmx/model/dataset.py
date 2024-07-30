@@ -47,10 +47,8 @@ class PandasDataset(Struct, frozen=False, kw_only=True):
         """
         if isinstance(self.structure, str):
             structure_type, unique_id = self.structure.split("=", maxsplit=1)
-            structure = structure_type.lower().rsplit(".", maxsplit=1)
-            if len(structure) > 1:
-                return f"{structure[1]}={unique_id}"
-            return f"{structure[0]}={unique_id}"
+            structure = structure_type.rsplit(".", maxsplit=1)[1]
+            return f"{structure}={unique_id}"
         else:
             s = self.structure
             return f"{s.context}={s.agency}:{s.id}({s.version})"

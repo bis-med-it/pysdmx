@@ -27,10 +27,11 @@ def data_path_reference_atch_atts():
 
 
 def test_to_sdmx_csv_writing(data_path, data_path_reference):
+    urn = "urn:sdmx:org.sdmx.infomodel.datastructure." f"DataFlow=MD:DS1(1.0)"
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),
-        structure="dataflow=MD:DS1(1.0)",
+        structure=urn,
     )
     dataset.data = dataset.data.astype("str")
     result_sdmx_csv = writer(dataset)
@@ -44,10 +45,11 @@ def test_to_sdmx_csv_writing(data_path, data_path_reference):
 
 
 def test_writer_attached_attrs(data_path, data_path_reference_atch_atts):
+    urn = "urn:sdmx:org.sdmx.infomodel.datastructure." f"DataFlow=MD:DS1(1.0)"
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),
-        structure="dataflow=MD:DS1(1.0)",
+        structure=urn,
     )
     dataset.data = dataset.data.astype("str")
     result_sdmx_csv = writer(dataset)

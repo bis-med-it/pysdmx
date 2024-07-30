@@ -10,15 +10,14 @@ from pysdmx.model.dataset import PandasDataset
 
 
 def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
-    # Extract Structure type and structure id
-
     # For SDMX-CSV version 1, use 'DATAFLOW' column as the structure id
     structure_id = data["DATAFLOW"].iloc[0]
-    # Structure type will be "dataflow" in both versions
-    structure_type = "dataflow"
     # Drop 'DATAFLOW' column from DataFrame
     df_csv = data.drop(["DATAFLOW"], axis=1)
-    urn = f"{structure_type}={structure_id}"
+    urn = (
+        f"urn:sdmx:org.sdmx.infomodel.datastructure."
+        f"DataFlow={structure_id}"
+    )
 
     # Extract dataset attributes from sdmx-csv (all values are the same)
     attributes = {

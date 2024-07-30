@@ -205,11 +205,11 @@ def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
         NotImplementedError: For Provision Agreement, as it is not implemented.
     """
     if STRUCTURE in structure:
-        structure_type = "datastructure"
+        structure_type = "DataStructure"
         tuple_ids = __get_ids_from_structure(structure[STRUCTURE])
 
     elif STR_USAGE in structure:
-        structure_type = "dataflow"
+        structure_type = "DataFlow"
         tuple_ids = __get_ids_from_structure(structure[STR_USAGE])
     else:
         raise NotImplementedError("ProvisionAgrement not implemented")
@@ -256,7 +256,10 @@ def __parse_structure_specific_data(
         # Structure Specific All dimensions
         df = pd.DataFrame(dataset[OBS]).replace(np.nan, "")
 
-    urn = f"{structure_info['structure_type']}={structure_info['unique_id']}"
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        f"{structure_info['structure_type']}={structure_info['unique_id']}"
+    )
 
     return PandasDataset(
         structure=urn, attributes=attached_attributes, data=df
@@ -276,7 +279,10 @@ def __parse_generic_data(
         # Generic All Dimensions
         df = __reading_generic_all(dataset)
 
-    urn = f"{structure_info['structure_type']}={structure_info['unique_id']}"
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        f"{structure_info['structure_type']}={structure_info['unique_id']}"
+    )
 
     return PandasDataset(
         structure=urn, attributes=attached_attributes, data=df

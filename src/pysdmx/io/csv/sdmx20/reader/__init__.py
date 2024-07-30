@@ -7,16 +7,34 @@ import pandas as pd
 
 from pysdmx.errors import ClientError
 from pysdmx.model.dataset import PandasDataset
+from pysdmx.model.message import ActionType
+
+ACTION_SDMX_CSV_MAPPER_READING = {
+    "A": ActionType.Append,
+    "D": ActionType.Delete,
+    "R": ActionType.Replace,
+    "I": ActionType.Information,
+}
 
 
 def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
     # Extract Structure type and structure id
-    attached_attributes = {}
-
+    action = None
     if "ACTION" in data.columns:
-        # Drop 'ACTION' column from DataFrame
-        attached_attributes["action"] = data["ACTION"].iloc[0]
-        data = data.drop(["ACTION"], axis=1)
+        unique_values = list(data["ACTION"].unique())
+        if len(unique_values) > 1 and "D" in unique_values:
+            unique_values.remove("D")
+            data = data[data["ACTION"] != "D"]
+        else:
+            action_value = unique_values[0]
+            if action_value not in ACTION_SDMX_CSV_MAPPER_READING:
+                raise ClientError(
+                    400,
+                    "Invalid value on ACTION column",
+                    "Invalid SDMX-CSV 2.0 file. "
+                    "Check the docs for the proper values on ACTION column.",
+                )
+            action = ACTION_SDMX_CSV_MAPPER_READING[action_value]
     # For SDMX-CSV version 2, use 'STRUCTURE_ID'
     # column as the structure id and 'STRUCTURE' as the structure type
     structure_id = data["STRUCTURE_ID"].iloc[0]
@@ -24,7 +42,28 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
     # Drop 'STRUCTURE' and 'STRUCTURE_ID' columns from DataFrame
     df_csv = data.drop(["STRUCTURE", "STRUCTURE_ID"], axis=1)
 
-    urn = f"{structure_type}={structure_id}"
+    if structure_type == "DataStructure".lower():
+        urn = (
+            "urn:sdmx:org.sdmx.infomodel.datastructure."
+            f"DataStructure={structure_id}"
+        )
+    elif structure_type == "DataFlow".lower():
+        urn = (
+            "urn:sdmx:org.sdmx.infomodel.datastructure."
+            f"DataFlow={structure_id}"
+        )
+    elif structure_type == "dataprovision":
+        urn = (
+            f"urn:sdmx:org.sdmx.infomodel.registry."
+            f"ProvisionAgreement={structure_id}"
+        )
+    else:
+        raise ClientError(
+            400,
+            "Invalid value on STRUCTURE column",
+            "Invalid SDMX-CSV 2.0 file. "
+            "Check the docs for the proper values on STRUCTURE column.",
+        )
     # Extract dataset attributes from sdmx-csv (all values are the same)
     attributes = {
         col: df_csv[col].iloc[0]
@@ -39,6 +78,7 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
         structure=urn,
         data=df_csv,
         attributes=attributes,
+        action=action,
     )
 
 
@@ -91,8 +131,10 @@ def read(infile: str) -> Dict[str, PandasDataset]:
             # Delete the original columns
             del df_csv[x]
 
+    # Grouping columns to separate datasets
+    grouping_columns = ["STRUCTURE", "STRUCTURE_ID"]
     # Separate SDMX-CSV in different datasets per Structure ID
-    list_df = [data for _, data in df_csv.groupby(id_column)]
+    list_df = [data for _, data in df_csv.groupby(grouping_columns)]
 
     # Create a payload dictionary to store datasets with the
     # different unique_ids as keys

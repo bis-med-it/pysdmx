@@ -28,8 +28,8 @@ def test_reading_data_v1(data_path):
     with open(data_path, "r") as f:
         infile = f.read()
     dataset_dict = read(infile)
-    assert "dataflow=BIS:BIS_DER(1.0)" in dataset_dict
-    df = dataset_dict["dataflow=BIS:BIS_DER(1.0)"].data
+    assert "DataFlow=BIS:BIS_DER(1.0)" in dataset_dict
+    df = dataset_dict["DataFlow=BIS:BIS_DER(1.0)"].data
     assert len(df) == 1000
     assert "DATAFLOW" not in df.columns
 
@@ -45,7 +45,7 @@ def test_reading_no_freq_v1(data_path_no_freq):
     with open(data_path_no_freq, "r") as f:
         infile = f.read()
     dataset_dict = read(infile)
-    assert "dataflow=WB:GCI(1.0):GlobalCompetitivenessIndex" in dataset_dict
-    df = dataset_dict["dataflow=WB:GCI(1.0):GlobalCompetitivenessIndex"].data
+    assert "DataFlow=WB:GCI(1.0):GlobalCompetitivenessIndex" in dataset_dict
+    df = dataset_dict["DataFlow=WB:GCI(1.0):GlobalCompetitivenessIndex"].data
     assert len(df) == 7
     assert "DATAFLOW" not in df.columns
