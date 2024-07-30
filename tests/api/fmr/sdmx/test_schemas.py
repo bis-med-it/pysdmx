@@ -22,7 +22,7 @@ def async_fmr():
 
 @pytest.fixture()
 def query(fmr):
-    res = "schema/dataflow/"
+    res = "/schema/dataflow/"
     agency = "BIS.CBS"
     id = "CBS"
     version = "1.0"
@@ -31,7 +31,7 @@ def query(fmr):
 
 @pytest.fixture()
 def no_hca_query(fmr):
-    res = "structure/dataflow/"
+    res = "/structure/dataflow/"
     agency = "BIS.CBS"
     id = "CBS"
     version = "1.0"
@@ -43,7 +43,7 @@ def no_hca_query(fmr):
 
 @pytest.fixture()
 def hierarchy_hca_query(fmr):
-    res = "structure/dataflow/"
+    res = "/structure/dataflow/"
     agency = "BIS"
     id = "TEST_DF"
     version = "1.0"
@@ -55,7 +55,7 @@ def hierarchy_hca_query(fmr):
 
 @pytest.fixture()
 def hierarchy_query(fmr):
-    res = "schema/dataflow/"
+    res = "/schema/dataflow/"
     agency = "BIS"
     id = "TEST_DF"
     version = "1.0"
@@ -64,7 +64,7 @@ def hierarchy_query(fmr):
 
 @pytest.fixture()
 def no_const_query(fmr):
-    res = "schema/datastructure/"
+    res = "/schema/datastructure/"
     agency = "BIS"
     id = "BIS_CBS"
     version = "1.0"

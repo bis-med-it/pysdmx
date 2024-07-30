@@ -22,7 +22,7 @@ def async_fmr():
 
 @pytest.fixture()
 def query(fmr):
-    res = "structure/codelist/"
+    res = "/structure/codelist/"
     agency = "SDMX"
     id = "CL_FREQ"
     version = "2.0"

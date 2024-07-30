@@ -24,7 +24,7 @@ def async_fmr():
 
 @pytest.fixture()
 def query(fmr):
-    res = "schema/dataflow/"
+    res = "/schema/dataflow/"
     agency = "BIS.CBS"
     id = "CBS"
     version = "1.0"
@@ -33,7 +33,7 @@ def query(fmr):
 
 @pytest.fixture()
 def query_pra(fmr):
-    res = "schema/provisionagreement/"
+    res = "/schema/provisionagreement/"
     agency = "BIS.CBS"
     id = "CBS_BIS_GR2"
     version = "1.0"
@@ -42,7 +42,7 @@ def query_pra(fmr):
 
 @pytest.fixture()
 def no_hca_query(fmr):
-    res = "structure/dataflow/"
+    res = "/structure/dataflow/"
     agency = "BIS.CBS"
     id = "CBS"
     version = "1.0"
@@ -54,7 +54,7 @@ def no_hca_query(fmr):
 
 @pytest.fixture()
 def no_hca_pra_query(fmr):
-    res = "structure/provisionagreement/"
+    res = "/structure/provisionagreement/"
     agency = "BIS.CBS"
     id = "CBS_BIS_GR2"
     version = "1.0"
@@ -66,7 +66,7 @@ def no_hca_pra_query(fmr):
 
 @pytest.fixture()
 def hierarchy_hca_query(fmr):
-    res = "structure/dataflow/"
+    res = "/structure/dataflow/"
     agency = "BIS"
     id = "TEST_DF"
     version = "1.0"
@@ -78,7 +78,7 @@ def hierarchy_hca_query(fmr):
 
 @pytest.fixture()
 def hierarchy_hca_query_pra(fmr):
-    res = "structure/provisionagreement/"
+    res = "/structure/provisionagreement/"
     agency = "BIS.CBS"
     id = "CBS_BIS_TEST"
     version = "1.0"
@@ -90,7 +90,7 @@ def hierarchy_hca_query_pra(fmr):
 
 @pytest.fixture()
 def hierarchy_query(fmr):
-    res = "schema/dataflow/"
+    res = "/schema/dataflow/"
     agency = "BIS"
     id = "TEST_DF"
     version = "1.0"
@@ -99,7 +99,7 @@ def hierarchy_query(fmr):
 
 @pytest.fixture()
 def hierarchy_query_pra(fmr):
-    res = "schema/provisionagreement/"
+    res = "/schema/provisionagreement/"
     agency = "BIS.CBS"
     id = "CBS_BIS_TEST"
     version = "1.0"
@@ -108,7 +108,7 @@ def hierarchy_query_pra(fmr):
 
 @pytest.fixture()
 def no_const_query(fmr):
-    res = "schema/datastructure/"
+    res = "/schema/datastructure/"
     agency = "BIS"
     id = "BIS_CBS"
     version = "1.0"

@@ -1,5 +1,11 @@
 """Build SDMX-REST queries."""
 
+from pysdmx.api.qb.availability import (
+    AvailabilityFormat,
+    AvailabilityMode,
+    AvailabilityQuery,
+)
+from pysdmx.api.qb.data import DataContext, DataFormat, DataQuery
 from pysdmx.api.qb.refmeta import (
     RefMetaByMetadataflowQuery,
     RefMetaByMetadatasetQuery,
@@ -19,6 +25,12 @@ from pysdmx.api.qb.util import ApiVersion
 
 __all__ = [
     "ApiVersion",
+    "AvailabilityFormat",
+    "AvailabilityMode",
+    "AvailabilityQuery",
+    "DataContext",
+    "DataFormat",
+    "DataQuery",
     "RefMetaByMetadataflowQuery",
     "RefMetaByMetadatasetQuery",
     "RefMetaByStructureQuery",

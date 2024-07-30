@@ -45,7 +45,7 @@ class LogicalOperator(Enum):
     OR = "OR"
 
 
-class TextFilter(Struct, frozen=True):
+class TextFilter(Struct, frozen=True, tag=True):
     """A filter on a text field (char, varchar, etc.)."""
 
     field: str
@@ -53,7 +53,7 @@ class TextFilter(Struct, frozen=True):
     value: Union[Sequence[str], str]
 
 
-class NumberFilter(Struct, frozen=True):
+class NumberFilter(Struct, frozen=True, tag=True):
     """A filter on a number field (int, long, float, double, etc)."""
 
     field: str
@@ -61,7 +61,7 @@ class NumberFilter(Struct, frozen=True):
     value: Union[Sequence[Union[int, float]], int, float]
 
 
-class DateTimeFilter(Struct, frozen=True):
+class DateTimeFilter(Struct, frozen=True, tag=True):
     """A filter on a date or datetime field."""
 
     field: str
@@ -69,7 +69,7 @@ class DateTimeFilter(Struct, frozen=True):
     value: Union[Sequence[datetime], datetime]
 
 
-class BooleanFilter(Struct, frozen=True):
+class BooleanFilter(Struct, frozen=True, tag=True):
     """A filter on a boolean field."""
 
     field: str
@@ -77,7 +77,7 @@ class BooleanFilter(Struct, frozen=True):
     value: Optional[bool]
 
 
-class NullFilter(Struct, frozen=True):
+class NullFilter(Struct, frozen=True, tag=True):
     """A filter on null values."""
 
     field: str
@@ -98,7 +98,7 @@ Filter = Union[
 ]
 
 
-class MultiFilter(Struct, frozen=True):
+class MultiFilter(Struct, frozen=True, tag=True):
     """A combination of data filters.
 
     This is useful to combine several conditions, for example
@@ -115,7 +115,7 @@ class MultiFilter(Struct, frozen=True):
     operator: LogicalOperator = LogicalOperator.AND
 
 
-class NotFilter(Struct, frozen=True):
+class NotFilter(Struct, frozen=True, tag=True):
     """A filter matching anything but the supplied filter."""
 
     filter: Filter

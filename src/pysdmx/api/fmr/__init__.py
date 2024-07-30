@@ -15,6 +15,17 @@ import httpx
 from msgspec.json import decode
 
 from pysdmx.api.fmr.reader import Deserializer
+from pysdmx.api.qb import (
+    ApiVersion,
+    RefMetaByMetadatasetQuery,
+    RefMetaByStructureQuery,
+    SchemaContext,
+    SchemaQuery,
+    StructureDetail,
+    StructureQuery,
+    StructureReference,
+    StructureType,
+)
 from pysdmx.errors import ClientError, NotFound, ServiceError, Unavailable
 from pysdmx.io.json.fusion.reader import deserializers as fusion_readers
 from pysdmx.io.json.sdmxjson2.reader import deserializers as sdmx_readers
@@ -57,52 +68,7 @@ class DataflowDetails(Enum):
     """Core information about a dataflow and its schema (data structure.)"""
 
 
-class Context(Enum):
-    """The context from which the schema is derived."""
-
-    DATAFLOW = "dataflow"
-    """DSD, dataflow and the constraints related to either."""
-    DATA_STRUCTURE = "datastructure"
-    """DSD and its related constraints."""
-    PROVISION_AGREEMENT = "provisionagreement"
-    """DSD, dataflow, provision agreement and their related constraints."""
-
-
-url_templates = {
-    "agency": "structure/agencyscheme/{0}",
-    "category": (
-        "structure/categoryscheme/{0}/{1}/{2}"
-        "?detail=referencepartial&references=parentsandsiblings"
-    ),
-    "code": "structure/codelist/{0}/{1}/{2}",
-    "code_map": "structure/representationmap/{0}/{1}/{2}",
-    "concept": "structure/conceptscheme/{0}/{1}/{2}?references=codelist",
-    "dataflow": (
-        "structure/dataflow/{0}/{1}/{2}"
-        "?detail=referencepartial&references={3}"
-    ),
-    "ha": (
-        "structure/dataflow/{0}/{1}/{2}"
-        "?references=all&detail=referencepartial"
-    ),
-    "ha_pra": (
-        "structure/provisionagreement/{0}/{1}/{2}"
-        "?references=all&detail=referencepartial"
-    ),
-    "hierarchy": (
-        "structure/hierarchy/{0}/{1}/{2}"
-        "?detail=referencepartial&references=codelist"
-    ),
-    "mapping": (
-        "structure/structuremap/{0}/{1}/{2}"
-        "?detail=referencepartial&references=children"
-    ),
-    "provider": "structure/dataproviderscheme/{0}?references={1}",
-    "report": "metadata/metadataset/{0}/{1}/{2}",
-    "reports": "metadata/structure/{0}/{1}/{2}/{3}",
-    "schema": "schema/{0}/{1}/{2}/{3}",
-    "vl": "structure/valuelist/{0}/{1}/{2}",
-}
+API_VERSION = ApiVersion.V2_0_0
 
 
 class __BaseRegistryClient:
@@ -116,8 +82,8 @@ class __BaseRegistryClient:
         pem: Optional[str] = None,
     ):
         """Instantiate a new client against the target endpoint."""
-        if not api_endpoint.endswith("/"):
-            api_endpoint = f"{api_endpoint}/"
+        if api_endpoint.endswith("/"):
+            api_endpoint = api_endpoint[0:-1]
         self.api_endpoint = api_endpoint
         self.format = fmt
         if fmt == Format.FUSION_JSON:
@@ -138,20 +104,6 @@ class __BaseRegistryClient:
 
     def _out(self, response: bytes, typ: Deserializer, *params: Any) -> Any:
         return decode(response, type=typ).to_model(*params)
-
-    def _url(self, typ: str, *params: str) -> str:
-        self._check(*params)
-        return f"{self.api_endpoint}{url_templates[typ].format(*params)}"
-
-    def _check(self, *params: str) -> None:
-        for p in params:
-            if not isinstance(p, str):
-                msg = (
-                    "All parameters must be set and must be strings."
-                    "Please check the documentation for the function "
-                    "you called and try again."
-                )
-                raise ClientError(400, "Validation issue", msg)
 
     def _error(
         self,
@@ -186,14 +138,144 @@ class __BaseRegistryClient:
             )
             raise Unavailable(503, "Connection error", msg) from e
 
-    def _df_details(self, details: DataflowDetails) -> Tuple[bool, str]:
+    def _df_details(
+        self, details: DataflowDetails
+    ) -> Tuple[bool, StructureReference]:
         sq = False
-        dr = "none"
+        dr = StructureReference.NONE
         if details in self.__schema_q:
             sq = True
         if details in self.__prov_q:
-            dr = "parentsandsiblings"
+            dr = StructureReference.PARENTSANDSIBLINGS
         return (sq, dr)
+
+    def _hierarchies_for_flow_url(
+        self, agency: str, flow: str, version: str
+    ) -> str:
+        d = StructureDetail.REFERENCE_PARTIAL
+        r = StructureReference.ALL
+        q = StructureQuery(
+            StructureType.DATAFLOW,
+            agency,
+            flow,
+            version,
+            detail=d,
+            references=r,
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _hierarchies_for_pra_url(
+        self, agency: str, pra: str, version: str
+    ) -> str:
+        d = StructureDetail.REFERENCE_PARTIAL
+        r = StructureReference.ALL
+        q = StructureQuery(
+            StructureType.PROVISION_AGREEMENT,
+            agency,
+            pra,
+            version,
+            detail=d,
+            references=r,
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _code_map_url(self, agency: str, id: str, version: str) -> str:
+        q = StructureQuery(
+            StructureType.REPRESENTATION_MAP, agency, id, version
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _mapping_url(self, agency: str, id: str, version: str) -> str:
+        r = StructureReference.CHILDREN
+        d = StructureDetail.REFERENCE_PARTIAL
+        q = StructureQuery(
+            StructureType.STRUCTURE_MAP,
+            agency,
+            id,
+            version,
+            detail=d,
+            references=r,
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _reports_url(
+        self, artefact_type: str, agency: str, id: str, version: str
+    ) -> str:
+        q = RefMetaByStructureQuery(
+            StructureType(artefact_type), agency, id, version
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _report_url(self, provider: str, id: str, version: str) -> str:
+        q = RefMetaByMetadatasetQuery(provider, id, version)
+        return q.get_url(API_VERSION, True)
+
+    def _hierarchy_url(self, agency: str, id: str, version: str) -> str:
+        q = StructureQuery(
+            StructureType.HIERARCHY,
+            agency,
+            id,
+            version,
+            detail=StructureDetail.REFERENCE_PARTIAL,
+            references=StructureReference.CODELIST,
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _agencies_url(self, agency: str) -> str:
+        q = StructureQuery(StructureType.AGENCY_SCHEME, agency)
+        return q.get_url(API_VERSION, True)
+
+    def _providers_url(self, agency: str, with_flows: bool) -> str:
+        r = (
+            StructureReference.PROVISION_AGREEMENT
+            if with_flows
+            else StructureReference.NONE
+        )
+        q = StructureQuery(
+            StructureType.DATA_PROVIDER_SCHEME, agency, references=r
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _categories_url(self, agency: str, id: str, version: str) -> str:
+        q = StructureQuery(StructureType.CATEGORY_SCHEME, agency, id, version)
+        return q.get_url(API_VERSION, True)
+
+    def _codes_cl_url(self, agency: str, id: str, version: str) -> str:
+        q = StructureQuery(StructureType.CODELIST, agency, id, version)
+        return q.get_url(API_VERSION, True)
+
+    def _codes_vl_url(self, agency: str, id: str, version: str) -> str:
+        q = StructureQuery(StructureType.VALUE_LIST, agency, id, version)
+        return q.get_url(API_VERSION, True)
+
+    def _concepts_url(self, agency: str, id: str, version: str) -> str:
+        q = StructureQuery(
+            StructureType.CONCEPT_SCHEME,
+            agency,
+            id,
+            version,
+            references=StructureReference.CODELIST,
+        )
+        return q.get_url(API_VERSION, True)
+
+    def _schema_url(
+        self, context: SchemaContext, agency: str, id: str, version: str
+    ) -> str:
+        q = SchemaQuery(context, agency, id, version)
+        return q.get_url(API_VERSION, True)
+
+    def _dataflow_details_url(
+        self, agency: str, id: str, version: str, ref: StructureReference
+    ) -> str:
+        q = StructureQuery(
+            StructureType.DATAFLOW,
+            agency,
+            id,
+            version,
+            detail=StructureDetail.REFERENCE_PARTIAL,
+            references=ref,
+        )
+        return q.get_url(API_VERSION, True)
 
 
 class RegistryClient(__BaseRegistryClient):
@@ -239,13 +321,15 @@ class RegistryClient(__BaseRegistryClient):
     def __get_hierarchies_for_flow(
         self, agency: str, flow: str, version: str
     ) -> Sequence[HierarchyAssociation]:
-        out = self.__fetch(super()._url("ha", agency, flow, version))
+        url = super()._hierarchies_for_flow_url(agency, flow, version)
+        out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.hier_assoc)
 
     def __get_hierarchies_for_pra(
         self, agency: str, pra: str, version: str
     ) -> Sequence[HierarchyAssociation]:
-        out = self.__fetch(super()._url("ha_pra", agency, pra, version))
+        url = super()._hierarchies_for_pra_url(agency, pra, version)
+        out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.hier_assoc)
 
     def get_agencies(self, agency: str) -> Sequence[Agency]:
@@ -258,7 +342,8 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested list of agencies.
         """
-        out = self.__fetch(super()._url("agency", agency))
+        url = super()._agencies_url(agency)
+        out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.agencies)
 
     def get_providers(
@@ -277,8 +362,8 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested list of data providers.
         """
-        ref = "provisionagreement" if with_flows else "none"
-        out = self.__fetch(super()._url("provider", agency, ref))
+        url = super()._providers_url(agency, with_flows)
+        out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.providers)
 
     def get_categories(
@@ -299,7 +384,8 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested category scheme.
         """
-        out = self.__fetch(super()._url("category", agency, id, version))
+        url = super()._categories_url(agency, id, version)
+        out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.categories)
 
     def get_codes(
@@ -321,10 +407,12 @@ class RegistryClient(__BaseRegistryClient):
             The requested codelist.
         """
         try:
-            out = self.__fetch(super()._url("code", agency, id, version))
+            url = super()._codes_cl_url(agency, id, version)
+            out = self.__fetch(f"{self.api_endpoint}{url}")
             return super()._out(out, self.deser.codes)
         except NotFound:
-            out = self.__fetch(super()._url("vl", agency, id, version))
+            url = super()._codes_vl_url(agency, id, version)
+            out = self.__fetch(f"{self.api_endpoint}{url}")
             return super()._out(out, self.deser.codes)
 
     def get_concepts(
@@ -345,13 +433,15 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested concept scheme.
         """
-        out = self.__fetch(super()._url("concept", agency, id, version))
+        url = super()._concepts_url(agency, id, version)
+        out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.concepts)
 
     def get_schema(
         self,
         context: Union[
-            Context, Literal["dataflow", "datastructure", "provisionagreement"]
+            SchemaContext,
+            Literal["dataflow", "datastructure", "provisionagreement"],
         ],
         agency: str,
         id: str,
@@ -370,16 +460,22 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested schema.
         """
-        c = context.value if isinstance(context, Context) else context
-        if context == "dataflow":
+        c = (
+            context
+            if isinstance(context, SchemaContext)
+            else SchemaContext(context)
+        )
+        if c == SchemaContext.DATAFLOW:
             ha = self.__get_hierarchies_for_flow(agency, id, version)
-        elif context == "provisionagreement":
+        elif c == SchemaContext.PROVISION_AGREEMENT:
             ha = self.__get_hierarchies_for_pra(agency, id, version)
         else:
             ha = ()
-
-        out = self.__fetch(super()._url("schema", c, agency, id, version))
-        return super()._out(out, self.deser.schema, c, agency, id, version, ha)
+        url = super()._schema_url(c, agency, id, version)
+        out = self.__fetch(f"{self.api_endpoint}{url}")
+        return super()._out(
+            out, self.deser.schema, c.value, agency, id, version, ha
+        )
 
     def get_dataflow_details(
         self,
@@ -415,7 +511,8 @@ class RegistryClient(__BaseRegistryClient):
             cmps = self.get_schema("dataflow", agency, id, version).components
         else:
             cmps = None
-        out = self.__fetch(super()._url("dataflow", agency, id, version, dr))
+        url = super()._dataflow_details_url(agency, id, version, dr)
+        out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(
             out, self.deser.dataflow, cmps, agency, id, version
         )
@@ -437,7 +534,8 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested hierarchical list of codes.
         """
-        out = self.__fetch(super()._url("hierarchy", agency, id, version))
+        url = super()._hierarchy_url(agency, id, version)
+        out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.hierarchy)
 
     def get_report(
@@ -457,7 +555,8 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested metadata report.
         """
-        out = self.__fetch(super()._url("report", provider, id, version), True)
+        url = super()._report_url(provider, id, version)
+        out = self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.report)[0]
 
     def get_reports(
@@ -481,9 +580,8 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The metadata reports about the supplied structure.
         """
-        out = self.__fetch(
-            super()._url("reports", artefact_type, agency, id, version), True
-        )
+        url = super()._reports_url(artefact_type, agency, id, version)
+        out = self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.report, True)
 
     def get_mapping(
@@ -503,7 +601,8 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested mapping definition (aka Structure Map).
         """
-        out = self.__fetch(super()._url("mapping", agency, id, version))
+        url = super()._mapping_url(agency, id, version)
+        out = self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.mapping)
 
     def get_code_map(
@@ -521,7 +620,8 @@ class RegistryClient(__BaseRegistryClient):
         Returns:
             The requested mappings in the representation map.
         """
-        out = self.__fetch(super()._url("code_map", agency, id, version))
+        url = super()._code_map_url(agency, id, version)
+        out = self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.code_map)
 
 
@@ -571,13 +671,15 @@ class AsyncRegistryClient(__BaseRegistryClient):
     async def __get_hierarchies_for_flow(
         self, agency: str, flow: str, version: str
     ) -> Sequence[HierarchyAssociation]:
-        out = await self.__fetch(super()._url("ha", agency, flow, version))
+        url = super()._hierarchies_for_flow_url(agency, flow, version)
+        out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.hier_assoc)
 
     async def __get_hierarchies_for_pra(
         self, agency: str, pra: str, version: str
     ) -> Sequence[HierarchyAssociation]:
-        out = await self.__fetch(super()._url("ha_pra", agency, pra, version))
+        url = super()._hierarchies_for_pra_url(agency, pra, version)
+        out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.hier_assoc)
 
     async def get_agencies(self, agency: str) -> Sequence[Agency]:
@@ -590,7 +692,8 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested list of agencies.
         """
-        out = await self.__fetch(super()._url("agency", agency))
+        url = super()._agencies_url(agency)
+        out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.agencies)
 
     async def get_providers(
@@ -607,8 +710,8 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested list of data providers.
         """
-        ref = "provisionagreement" if with_flows else "none"
-        out = await self.__fetch(super()._url("provider", agency, ref))
+        url = super()._providers_url(agency, with_flows)
+        out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.providers)
 
     async def get_categories(
@@ -629,7 +732,8 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested category scheme.
         """
-        out = await self.__fetch(super()._url("category", agency, id, version))
+        url = super()._categories_url(agency, id, version)
+        out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.categories)
 
     async def get_codes(
@@ -651,10 +755,12 @@ class AsyncRegistryClient(__BaseRegistryClient):
             The requested codelist.
         """
         try:
-            out = await self.__fetch(super()._url("code", agency, id, version))
+            url = super()._codes_cl_url(agency, id, version)
+            out = await self.__fetch(f"{self.api_endpoint}{url}")
             return super()._out(out, self.deser.codes)
         except NotFound:
-            out = await self.__fetch(super()._url("vl", agency, id, version))
+            url = super()._codes_vl_url(agency, id, version)
+            out = await self.__fetch(f"{self.api_endpoint}{url}")
             return super()._out(out, self.deser.codes)
 
     async def get_concepts(
@@ -675,13 +781,15 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested concept scheme.
         """
-        out = await self.__fetch(super()._url("concept", agency, id, version))
+        url = super()._concepts_url(agency, id, version)
+        out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.concepts)
 
     async def get_schema(
         self,
         context: Union[
-            Context, Literal["dataflow", "datastructure", "provisionagreement"]
+            SchemaContext,
+            Literal["dataflow", "datastructure", "provisionagreement"],
         ],
         agency: str,
         id: str,
@@ -700,16 +808,22 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested schema.
         """
-        if context == "dataflow":
+        c = (
+            context
+            if isinstance(context, SchemaContext)
+            else SchemaContext(context)
+        )
+        if c == SchemaContext.DATAFLOW:
             ha = await self.__get_hierarchies_for_flow(agency, id, version)
-        elif context == "provisionagreement":
+        elif c == SchemaContext.PROVISION_AGREEMENT:
             ha = await self.__get_hierarchies_for_pra(agency, id, version)
         else:
             ha = ()
-
-        c = context.value if isinstance(context, Context) else context
-        r = await self.__fetch(super()._url("schema", c, agency, id, version))
-        return super()._out(r, self.deser.schema, c, agency, id, version, ha)
+        url = super()._schema_url(c, agency, id, version)
+        r = await self.__fetch(f"{self.api_endpoint}{url}")
+        return super()._out(
+            r, self.deser.schema, c.value, agency, id, version, ha
+        )
 
     async def get_dataflow_details(
         self,
@@ -751,9 +865,8 @@ class AsyncRegistryClient(__BaseRegistryClient):
             cmps = schema.components
         else:
             cmps = None
-        out = await self.__fetch(
-            super()._url("dataflow", agency, id, version, dr)
-        )
+        url = super()._dataflow_details_url(agency, id, version, dr)
+        out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(
             out, self.deser.dataflow, cmps, agency, id, version
         )
@@ -775,14 +888,8 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested hierarchical list of codes.
         """
-        out = await self.__fetch(
-            super()._url(
-                "hierarchy",
-                agency,
-                id,
-                version,
-            )
-        )
+        url = super()._hierarchy_url(agency, id, version)
+        out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.hierarchy)
 
     async def get_report(
@@ -802,9 +909,8 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested metadata report.
         """
-        out = await self.__fetch(
-            super()._url("report", provider, id, version), True
-        )
+        url = super()._report_url(provider, id, version)
+        out = await self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.report)[0]
 
     async def get_reports(
@@ -828,9 +934,8 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The metadata reports about the supplied structure.
         """
-        out = await self.__fetch(
-            super()._url("reports", artefact_type, agency, id, version), True
-        )
+        url = super()._reports_url(artefact_type, agency, id, version)
+        out = await self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.report, True)
 
     async def get_mapping(
@@ -850,7 +955,8 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested mapping definition (aka Structure Map).
         """
-        out = await self.__fetch(super()._url("mapping", agency, id, version))
+        url = super()._mapping_url(agency, id, version)
+        out = await self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.mapping)
 
     async def get_code_map(
@@ -868,5 +974,6 @@ class AsyncRegistryClient(__BaseRegistryClient):
         Returns:
             The requested mappings in the representation map.
         """
-        out = await self.__fetch(super()._url("code_map", agency, id, version))
+        url = super()._code_map_url(agency, id, version)
+        out = await self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.code_map)
