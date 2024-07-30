@@ -5,11 +5,11 @@ from typing import Optional
 
 import pandas as pd
 
-from pysdmx.model.dataset import Dataset
+from pysdmx.model.dataset import PandasDataset
 
 
 def writer(
-    dataset: Dataset, output_path: Optional[str] = None
+    dataset: PandasDataset, output_path: Optional[str] = None
 ) -> Optional[str]:
     """Converts a dataset to an SDMX CSV format.
 
@@ -25,10 +25,10 @@ def writer(
 
     # Create a copy of the dataset
     df: pd.DataFrame = copy(dataset.data)
-    df.insert(0, "DATAFLOW", dataset.unique_id)
+    df.insert(0, "DATAFLOW", dataset.short_urn.split("=")[1])
 
     # Add additional attributes to the dataset
-    for k, v in dataset.attached_attributes.items():
+    for k, v in dataset.attributes.items():
         df[k] = v
 
     # Return the SDMX CSV data as a string

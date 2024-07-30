@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 
 from pysdmx.io.csv.sdmx20.writer import writer
-from pysdmx.model.dataset import Dataset
+from pysdmx.model.dataset import PandasDataset
 from pysdmx.model.message import ActionType
 
 
@@ -34,11 +34,10 @@ def data_path_reference_action():
 
 
 def test_to_sdmx_csv_writing(data_path, data_path_reference):
-    dataset = Dataset(
-        attached_attributes={},
+    dataset = PandasDataset(
+        attributes={},
         data=pd.read_json(data_path, orient="records"),
-        unique_id="MD:DS1(2.0)",
-        structure_type="structure",
+        structure="datastructure=MD:DS1(2.0)",
     )
     dataset.data = dataset.data.astype("str")
     result_sdmx = writer(dataset)
@@ -52,11 +51,10 @@ def test_to_sdmx_csv_writing(data_path, data_path_reference):
 
 
 def test_writer_attached_attrs(data_path, data_path_reference_attch_atts):
-    dataset = Dataset(
-        attached_attributes={"DECIMALS": 3},
+    dataset = PandasDataset(
+        attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),
-        unique_id="MD:DS1(2.0)",
-        structure_type="structure",
+        structure="datastructure=MD:DS1(2.0)",
     )
     dataset.data = dataset.data.astype(str)
     result_sdmx = writer(dataset)
@@ -70,11 +68,11 @@ def test_writer_attached_attrs(data_path, data_path_reference_attch_atts):
 
 
 def test_writer_with_action(data_path, data_path_reference_action):
-    dataset = Dataset(
-        attached_attributes={"DECIMALS": 3, "action": ActionType.Information},
+    dataset = PandasDataset(
+        attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),
-        unique_id="MD:DS1(2.0)",
-        structure_type="structure",
+        structure="datastructure=MD:DS1(2.0)",
+        action=ActionType.Replace,
     )
     dataset.data = dataset.data.astype(str)
     result_sdmx = writer(dataset)

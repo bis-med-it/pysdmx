@@ -178,7 +178,7 @@ def test_reading_validation(samples_folder, filename):
     assert filetype == "xml"
     result = read_xml(input_str, validate=True)
     assert result is not None
-    data = result["BIS:BIS_DER(1.0)"].data
+    data = result["datastructure=BIS:BIS_DER(1.0)"].data
     num_rows = len(data)
     num_columns = data.shape[1]
     assert num_rows > 0
@@ -195,7 +195,8 @@ def test_dataflow(samples_folder):
     input_str, filetype = process_string_to_read(data_path)
     assert filetype == "xml"
     result = read_xml(input_str, validate=True)
-    data_dataflow = result["BIS:WEBSTATS_DER_DATAFLOW(1.0)"].data
+    assert "dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result
+    data_dataflow = result["dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"].data
     num_rows = len(data_dataflow)
     num_columns = data_dataflow.shape[1]
     assert num_rows > 0
@@ -204,7 +205,6 @@ def test_dataflow(samples_folder):
     expected_num_columns = 20
     assert num_rows == expected_num_rows
     assert num_columns == expected_num_columns
-    assert "BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result
     assert "AVAILABILITY" in data_dataflow.columns
     assert "DER_CURR_LEG1" in data_dataflow.columns
 
@@ -214,7 +214,7 @@ def test_structure_ref_urn(samples_folder):
     input_str, filetype = process_string_to_read(data_path)
     assert filetype == "xml"
     result = read_xml(input_str, validate=True)
-    assert "BIS:BIS_DER(1.0)" in result
+    assert "datastructure=BIS:BIS_DER(1.0)" in result
 
 
 def test_header_structure_provision_agrement(samples_folder):
@@ -241,7 +241,7 @@ def test_load_big_file(samples_folder):
     input_str, filetype = process_string_to_read(data_path)
     assert filetype == "xml"
     result = read_xml(input_str, validate=True)
-    assert "BIS:BIS_DER(1.0)" in result
+    assert "datastructure=BIS:BIS_DER(1.0)" in result
 
 
 def test_gen_all_no_atts(samples_folder):

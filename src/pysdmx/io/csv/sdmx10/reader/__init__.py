@@ -6,10 +6,10 @@ from typing import Dict
 import pandas as pd
 
 from pysdmx.errors import ClientError
-from pysdmx.model.dataset import Dataset
+from pysdmx.model.dataset import PandasDataset
 
 
-def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> Dataset:
+def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
     # Extract Structure type and structure id
 
     # For SDMX-CSV version 1, use 'DATAFLOW' column as the structure id
@@ -18,17 +18,26 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> Dataset:
     structure_type = "dataflow"
     # Drop 'DATAFLOW' column from DataFrame
     df_csv = data.drop(["DATAFLOW"], axis=1)
+    urn = f"{structure_type}={structure_id}"
+
+    # Extract dataset attributes from sdmx-csv (all values are the same)
+    attributes = {
+        col: df_csv[col].iloc[0]
+        for col in df_csv.columns
+        if df_csv[col].nunique() == 1
+    }
+    for col in attributes:
+        df_csv = df_csv.drop(col, axis=1)
 
     # Return a Dataset object with the extracted information
-    return Dataset(
-        unique_id=structure_id,
-        structure_type=structure_type,
+    return PandasDataset(
+        structure=urn,
         data=df_csv,
-        attached_attributes={},
+        attributes=attributes,
     )
 
 
-def read(infile: str) -> Dict[str, Dataset]:
+def read(infile: str) -> Dict[str, PandasDataset]:
     """Reads csv file and returns a payload dictionary.
 
     Args:
@@ -87,7 +96,7 @@ def read(infile: str) -> Dict[str, Dataset]:
         dataset = __generate_dataset_from_sdmx_csv(data=df)
 
         # Add the dataset to the payload dictionary
-        payload[dataset.unique_id] = dataset
+        payload[dataset.short_urn] = dataset
 
     # Return the payload generated
     return payload

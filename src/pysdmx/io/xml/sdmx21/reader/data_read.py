@@ -30,35 +30,10 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     VERSION,
 )
 from pysdmx.io.xml.utils import add_list
+from pysdmx.model.dataset import PandasDataset
 from pysdmx.util import parse_urn
 
 chunksize = 50000
-
-
-class Dataset:
-    """Class containing the necessary attributes to create the Dataset.
-
-    Args:
-            attached_attributes: Attached attributes from the xml file.
-            data: Dataframe.
-            structure_type: Generic or Specific.
-            unique_id: DimensionAtObservation.
-    """
-
-    __slots__ = ("attached_attributes", "data", "unique_id", "structure_type")
-
-    def __init__(
-        self,
-        attached_attributes: Any,
-        data: Any,
-        unique_id: Any,
-        structure_type: Any,
-    ):
-        """Attributes."""
-        self.attached_attributes = attached_attributes
-        self.data = data
-        self.unique_id = unique_id
-        self.structure_type = structure_type
 
 
 def __get_element_to_list(data: Dict[str, Any], mode: Any) -> Dict[str, Any]:
@@ -263,7 +238,7 @@ def __extract_structure(structure: Any) -> Any:
 
 def __parse_structure_specific_data(
     dataset: Dict[str, Any], structure_info: Dict[str, Any]
-) -> Dataset:
+) -> PandasDataset:
     attached_attributes = __get_at_att_str(dataset)
 
     # Parsing data
@@ -281,17 +256,16 @@ def __parse_structure_specific_data(
         # Structure Specific All dimensions
         df = pd.DataFrame(dataset[OBS]).replace(np.nan, "")
 
-    return Dataset(
-        attached_attributes=attached_attributes,
-        data=df,
-        unique_id=structure_info["unique_id"],
-        structure_type=structure_info["structure_type"],
+    urn = f"{structure_info['structure_type']}={structure_info['unique_id']}"
+
+    return PandasDataset(
+        structure=urn, attributes=attached_attributes, data=df
     )
 
 
 def __parse_generic_data(
     dataset: Dict[str, Any], structure_info: Dict[str, Any]
-) -> Dataset:
+) -> PandasDataset:
     attached_attributes = __get_at_att_gen(dataset)
 
     # Parsing data
@@ -302,17 +276,16 @@ def __parse_generic_data(
         # Generic All Dimensions
         df = __reading_generic_all(dataset)
 
-    return Dataset(
-        attached_attributes=attached_attributes,
-        data=df,
-        unique_id=structure_info["unique_id"],
-        structure_type=structure_info["structure_type"],
+    urn = f"{structure_info['structure_type']}={structure_info['unique_id']}"
+
+    return PandasDataset(
+        structure=urn, attributes=attached_attributes, data=df
     )
 
 
 def create_dataset(
     dataset: Any, str_info: Dict[str, Any], global_mode: Any
-) -> Dataset:
+) -> PandasDataset:
     """Creates the dataset from the xml file.
 
     Takes the information contained in the xml files
@@ -338,7 +311,6 @@ def create_dataset(
         )
     structure_info = str_info[dataset[STRREF]]
     if STRSPE == global_mode:
-        # Dataset info
         return __parse_structure_specific_data(dataset, structure_info)
     else:
         return __parse_generic_data(dataset, structure_info)

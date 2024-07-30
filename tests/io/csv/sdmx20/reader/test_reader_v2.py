@@ -34,8 +34,8 @@ def test_reading_data_v2(data_path):
     with open(data_path, "r") as f:
         infile = f.read()
     dataset_dict = read(infile)
-    assert "BIS:BIS_DER(1.0)" in dataset_dict
-    df = dataset_dict["BIS:BIS_DER(1.0)"].data
+    assert "dataflow=BIS:BIS_DER(1.0)" in dataset_dict
+    df = dataset_dict["dataflow=BIS:BIS_DER(1.0)"].data
     assert len(df) == 1000
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
@@ -53,8 +53,8 @@ def test_reading_no_freq_v2(data_path_no_freq):
     with open(data_path_no_freq, "r") as f:
         infile = f.read()
     dataset_dict = read(infile)
-    assert "WB:GCI(1.0):GlobalCompetitivenessIndex" in dataset_dict
-    df = dataset_dict["WB:GCI(1.0):GlobalCompetitivenessIndex"].data
+    assert "dataflow=WB:GCI(1.0):GlobalCompetitivenessIndex" in dataset_dict
+    df = dataset_dict["dataflow=WB:GCI(1.0):GlobalCompetitivenessIndex"].data
     assert len(df) == 7
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
@@ -65,8 +65,8 @@ def test_reading_col_action(data_path_action):
     with open(data_path_action, "r") as f:
         infile = f.read()
     dataset_dict = read(infile)
-    assert "BIS:BIS_DER(1.0)" in dataset_dict
-    df = dataset_dict["BIS:BIS_DER(1.0)"].data
+    assert "dataflow=BIS:BIS_DER(1.0)" in dataset_dict
+    df = dataset_dict["dataflow=BIS:BIS_DER(1.0)"].data
     assert len(df) == 1000
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
