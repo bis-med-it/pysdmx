@@ -30,11 +30,11 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: poetry install --all-extras
-    - name: Run tests
-      run: poetry run pytest --cov=pysdmx --cov-report=xml:qa/coverage.xml --cov-branch --junitxml=qa/tests-results-${{ matrix.python-version }}.xml
-    - name: Check coverage
-      run: poetry run coverage report --fail-under=100
     - name: Run lint checks
       run: poetry run flake8 src tests
     - name: Run type checks
       run: poetry run mypy
+    - name: Run tests
+      run: poetry run pytest --cov=pysdmx --cov-report=xml:qa/coverage.xml --cov-branch --junitxml=qa/tests-results-${{ matrix.python-version }}.xml 
+    - name: Check coverage
+      run: poetry run coverage report --fail-under=100
