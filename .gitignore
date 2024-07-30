@@ -40,6 +40,6 @@ coverage-report.xml
 *.egg-info/*
 
 # Build & QA reports
-qa/
+qa/*.xml
 dist/
 .env
