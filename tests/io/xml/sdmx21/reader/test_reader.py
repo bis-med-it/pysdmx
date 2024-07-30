@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+import pysdmx
 from pysdmx.errors import ClientError
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.enums import MessageType
@@ -236,14 +237,6 @@ def test_stref_dif_strid(samples_folder):
         read_xml(input_str, validate=True)
 
 
-def test_load_big_file(samples_folder):
-    data_path = samples_folder / "bis_der_50500.xml"
-    input_str, filetype = process_string_to_read(data_path)
-    assert filetype == "xml"
-    result = read_xml(input_str, validate=True)
-    assert "DataStructure=BIS:BIS_DER(1.0)" in result
-
-
 def test_gen_all_no_atts(samples_folder):
     data_path = samples_folder / "gen_all_no_atts.xml"
     input_str, filetype = process_string_to_read(data_path)
@@ -256,3 +249,31 @@ def test_gen_ser_no_atts(samples_folder):
     input_str, filetype = process_string_to_read(data_path)
     assert filetype == "xml"
     read_xml(input_str, validate=True)
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "gen_all.xml",
+        "gen_ser.xml",
+        "str_all.xml",
+        "str_ser.xml",
+        "str_ser_group.xml",
+    ],
+)
+def test_chunks(samples_folder, filename):
+    pysdmx.io.xml.sdmx21.reader.data_read.READING_CHUNKSIZE = 100
+    data_path = samples_folder / filename
+    input_str, filetype = process_string_to_read(data_path)
+    assert filetype == "xml"
+    result = read_xml(input_str, validate=True)
+    assert result is not None
+    data = result["DataStructure=BIS:BIS_DER(1.0)"].data
+    num_rows = len(data)
+    num_columns = data.shape[1]
+    assert num_rows > 0
+    assert num_columns > 0
+    expected_num_rows = 1000
+    expected_num_columns = 20
+    assert num_rows == expected_num_rows
+    assert num_columns == expected_num_columns

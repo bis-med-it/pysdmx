@@ -43,19 +43,18 @@ def data_path_structures_exc():
     )
     return base_path
 
+
 @pytest.fixture()
 def data_path_two_actions():
-    base_path = (
-        Path(__file__).parent / "samples" / "data_v2_two_actions.csv"
-    )
+    base_path = Path(__file__).parent / "samples" / "data_v2_two_actions.csv"
     return base_path
+
 
 @pytest.fixture()
 def data_path_three_actions():
-    base_path = (
-        Path(__file__).parent / "samples" / "data_v2_three_actions.csv"
-    )
+    base_path = Path(__file__).parent / "samples" / "data_v2_three_actions.csv"
     return base_path
+
 
 @pytest.fixture()
 def data_path_invalid_action():
@@ -122,6 +121,7 @@ def test_reading_more_structures_exception(data_path_structures_exc):
     with pytest.raises(ClientError, match="proper values on STRUCTURE column"):
         read(infile)
 
+
 def test_reading_two_actions(data_path_two_actions):
     with open(data_path_two_actions, "r") as f:
         infile = f.read()
@@ -129,11 +129,15 @@ def test_reading_two_actions(data_path_two_actions):
     assert "DataStructure=TEST:TEST_MD(1.0)" in dataset_dict
     assert len(dataset_dict["DataStructure=TEST:TEST_MD(1.0)"].data) == 2
 
+
 def test_reading_three_actions(data_path_three_actions):
     with open(data_path_three_actions, "r") as f:
         infile = f.read()
-    with pytest.raises(ClientError, match="Cannot have more than one value on ACTION column"):
+    with pytest.raises(
+        ClientError, match="Cannot have more than one value on ACTION column"
+    ):
         read(infile)
+
 
 def test_reading_invalid_action(data_path_invalid_action):
     with open(data_path_invalid_action, "r") as f:

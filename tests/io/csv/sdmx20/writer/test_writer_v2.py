@@ -35,8 +35,8 @@ def data_path_reference_action():
 
 def test_to_sdmx_csv_writing(data_path, data_path_reference):
     urn = (
-        f"urn:sdmx:org.sdmx.infomodel.registry."
-        f"ProvisionAgreement=MD:PA1(1.0)"
+        "urn:sdmx:org.sdmx.infomodel.registry."
+        "ProvisionAgreement=MD:PA1(1.0)"
     )
     dataset = PandasDataset(
         attributes={},

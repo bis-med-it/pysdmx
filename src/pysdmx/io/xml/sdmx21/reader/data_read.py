@@ -33,7 +33,7 @@ from pysdmx.io.xml.utils import add_list
 from pysdmx.model.dataset import PandasDataset
 from pysdmx.util import parse_urn
 
-chunksize = 50000
+READING_CHUNKSIZE = 50000
 
 
 def __get_element_to_list(data: Dict[str, Any], mode: Any) -> Dict[str, Any]:
@@ -49,7 +49,7 @@ def __process_df(
     df: Optional[pd.DataFrame],
     is_end: bool = False,
 ) -> Any:
-    if not is_end and len(test_list) <= chunksize:
+    if not is_end and len(test_list) <= READING_CHUNKSIZE:
         return test_list, df
     if df is not None:
         df = pd.concat([df, pd.DataFrame(test_list)], ignore_index=True)
