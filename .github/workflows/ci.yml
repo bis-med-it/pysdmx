@@ -34,5 +34,7 @@ jobs:
       run: poetry run flake8 src tests
     - name: Run type checks
       run: poetry run mypy
-    - name: Run tests & check coverage
-      run: poetry run pytest --cov=pysdmx --cov-branch --cov-fail-under=100 tests
+    - name: Run tests
+      run: poetry run coverage run --branch -m pytest tests
+    - name: Check coverage
+      run: poetry run coverage report --fail-under=100
