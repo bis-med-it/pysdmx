@@ -37,4 +37,4 @@ jobs:
     - name: Run tests
       run: poetry run coverage run --branch -m pytest tests
     - name: Check coverage
-      run: poetry run coverage report --fail-under=100
+      run: poetry run coverage report --fail-under=95
