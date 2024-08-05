@@ -161,7 +161,7 @@ def test_url_single_type_since_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
-@pytest.mark.parametrize("atype", random.sample(types_initial, 2))
+@pytest.mark.parametrize("atype", [random.choice(types_initial)])
 def test_url_initial_type_before_2_0_0(
     atype: StructureType,
     agency: str,

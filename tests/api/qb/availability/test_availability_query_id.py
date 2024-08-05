@@ -36,7 +36,7 @@ def version():
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
-def test_url_multiple_resources_before_2_0_0(
+def test_availability_url_multiple_resources_before_2_0_0(
     context: DataContext,
     agency: str,
     mult_res: List[str],
@@ -51,7 +51,7 @@ def test_url_multiple_resources_before_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_multiple_resources_since_2_0_0(
+def test_availability_url_multiple_resources_since_2_0_0(
     context: DataContext,
     agency: str,
     mult_res: List[str],
@@ -71,7 +71,7 @@ def test_url_multiple_resources_since_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_multiple_resources_since_2_0_0_short(
+def test_availability_url_multiple_resources_since_2_0_0_short(
     context: DataContext,
     mult_res: List[str],
     api_version: ApiVersion,
@@ -88,7 +88,7 @@ def test_url_multiple_resources_since_2_0_0_short(
     "api_version",
     (v for v in ApiVersion if v < ApiVersion.V2_0_0),
 )
-def test_url_default_resource_before_2_0_0(
+def test_availability_url_default_resource_before_2_0_0(
     context: DataContext, agency: str, api_version: ApiVersion
 ):
     q = AvailabilityQuery(context, agency)
@@ -101,7 +101,7 @@ def test_url_default_resource_before_2_0_0(
     "api_version",
     (v for v in ApiVersion if v >= ApiVersion.V2_0_0),
 )
-def test_url_default_resource_since_2_0_0(
+def test_availability_url_default_resource_since_2_0_0(
     context: DataContext, agency, api_version: ApiVersion
 ):
     expected = (
@@ -118,7 +118,7 @@ def test_url_default_resource_since_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
-def test_url_single_resource_before_2_0_0(
+def test_availability_url_single_resource_before_2_0_0(
     context: DataContext, agency: str, res: str, api_version: ApiVersion
 ):
     expected = (
@@ -135,7 +135,7 @@ def test_url_single_resource_before_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_single_resource_since_2_0_0(
+def test_availability_url_single_resource_since_2_0_0(
     context: DataContext, agency: str, res: str, api_version: ApiVersion
 ):
     expected = (
@@ -152,7 +152,7 @@ def test_url_single_resource_since_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
-def test_url_add_default_resource_if_required_before_2_0_0(
+def test_availability_url_add_default_resource_if_required_before_2_0_0(
     context: DataContext, res: str, version: str, api_version: ApiVersion
 ):
     expected = f"/availableconstraint/all,{res},{version}"
@@ -166,7 +166,7 @@ def test_url_add_default_resource_if_required_before_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_add_default_resource_if_required_since_2_0_0(
+def test_availability_url_add_default_resource_if_required_since_2_0_0(
     context: DataContext, version: str, api_version: ApiVersion
 ):
     expected = f"/availability/{context.value}/*/*/{version}"

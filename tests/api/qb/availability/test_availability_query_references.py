@@ -53,7 +53,7 @@ def multiple_references():
         if v >= ApiVersion.V1_3_0 and v < ApiVersion.V2_0_0
     ),
 )
-def test_invalid_value(res: str, api_version: ApiVersion):
+def test_availability_invalid_value(res: str, api_version: ApiVersion):
     q = AvailabilityQuery(resource_id=res, references=42)
 
     with pytest.raises(ClientError):
@@ -76,7 +76,7 @@ def test_invalid_value(res: str, api_version: ApiVersion):
         )
     ],
 )
-def test_invalid_ref_v1(
+def test_availability_invalid_ref_v1(
     res: str, ref: StructureReference, api_version: ApiVersion
 ):
     q = AvailabilityQuery(resource_id=res, references=ref)
@@ -97,7 +97,7 @@ def test_invalid_ref_v1(
         )
     ],
 )
-def test_invalid_ref_v2(
+def test_availability_invalid_ref_v2(
     res: str, ref: StructureReference, api_version: ApiVersion
 ):
     q = AvailabilityQuery(resource_id=res, references=ref)
@@ -118,7 +118,7 @@ def test_invalid_ref_v2(
     "ref",
     [random.choice([r for r in StructureReference if r in allowed_refs_v1])],
 )
-def test_url_single_ref_before_2_0_0(
+def test_availability_url_single_ref_before_2_0_0(
     res: str,
     ref: StructureReference,
     api_version: ApiVersion,
@@ -141,7 +141,7 @@ def test_url_single_ref_before_2_0_0(
     "ref",
     [random.choice([r for r in StructureReference if r in allowed_refs_v2])],
 )
-def test_url_single_ref_since_2_0_0(
+def test_availability_url_single_ref_since_2_0_0(
     ref: StructureReference,
     api_version: ApiVersion,
 ):
@@ -161,7 +161,7 @@ def test_url_single_ref_since_2_0_0(
         if v >= ApiVersion.V1_3_0 and v < ApiVersion.V2_0_0
     ),
 )
-def test_url_multi_refs_before_2_0_0(
+def test_availability_url_multi_refs_before_2_0_0(
     res: str,
     multiple_references: Sequence[StructureReference],
     api_version: ApiVersion,
@@ -175,7 +175,7 @@ def test_url_multi_refs_before_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_multi_refs_since_2_0_0(
+def test_availability_url_multi_refs_since_2_0_0(
     multiple_references: Sequence[StructureReference],
     api_version: ApiVersion,
 ):
@@ -193,7 +193,7 @@ def test_url_multi_refs_since_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_multi_refs_since_2_0_0_short(
+def test_availability_url_multi_refs_since_2_0_0_short(
     multiple_references: Sequence[StructureReference],
     api_version: ApiVersion,
 ):
@@ -226,7 +226,7 @@ def test_url_multi_refs_since_2_0_0_short(
         )
     ],
 )
-def test_url_single_ref_before_2_0_0_short(
+def test_availability_url_single_ref_before_2_0_0_short(
     res: str,
     ref: StructureReference,
     api_version: ApiVersion,
@@ -254,7 +254,7 @@ def test_url_single_ref_before_2_0_0_short(
         )
     ],
 )
-def test_url_single_ref_since_2_0_0_short(
+def test_availability_url_single_ref_since_2_0_0_short(
     ref: StructureReference, api_version: ApiVersion
 ):
     expected = f"/availability?references={ref.value}"
@@ -273,7 +273,7 @@ def test_url_single_ref_since_2_0_0_short(
         if v >= ApiVersion.V1_3_0 and v < ApiVersion.V2_0_0
     ),
 )
-def test_url_default_ref_before_2_0_0_short(
+def test_availability_url_default_ref_before_2_0_0_short(
     res: str,
     api_version: ApiVersion,
 ):
@@ -289,7 +289,9 @@ def test_url_default_ref_before_2_0_0_short(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_default_ref_since_2_0_0_short(api_version: ApiVersion):
+def test_availability_url_default_ref_since_2_0_0_short(
+    api_version: ApiVersion,
+):
     references = StructureReference.NONE
     expected = "/availability"
 

@@ -23,7 +23,7 @@ def res():
     "context",
     (c for c in DataContext if c in [DataContext.DATAFLOW, DataContext.ALL]),
 )
-def test_url_df_context_before_2_0_0(
+def test_availability_url_df_context_before_2_0_0(
     context: DataContext,
     res: str,
     api_version: ApiVersion,
@@ -50,7 +50,7 @@ def test_url_df_context_before_2_0_0(
         if c in [DataContext.DATA_STRUCTURE, DataContext.PROVISION_AGREEMENT]
     ),
 )
-def test_url_non_df_context_before_2_0_0(
+def test_availability_url_non_df_context_before_2_0_0(
     context: DataContext,
     api_version: ApiVersion,
 ):
@@ -64,7 +64,7 @@ def test_url_non_df_context_before_2_0_0(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
 @pytest.mark.parametrize("context", DataContext)
-def test_url_context_since_2_0_0(
+def test_availability_url_context_since_2_0_0(
     context: DataContext,
     api_version: ApiVersion,
 ):
@@ -78,7 +78,7 @@ def test_url_context_since_2_0_0(
     assert url == expected
 
 
-def test_wrong_context():
+def test_availability_wrong_context():
     q = AvailabilityQuery(42)
 
     with pytest.raises(ClientError):
@@ -88,7 +88,7 @@ def test_wrong_context():
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_add_defaults_if_required_since_2_0_0(
+def test_availability_url_add_defaults_if_required_since_2_0_0(
     agency: str,
     api_version: ApiVersion,
 ):
