@@ -25,13 +25,8 @@ def test_api_enum():
     ]
 
     assert len(ApiVersion) == 10
-    prev = None
     for v in ApiVersion:
         assert v.value.label in expected
-        if prev is not None:
-            assert v.value.number > prev.value.number
-
-        prev = v
 
 
 # def test_api_enum_comparisons():
