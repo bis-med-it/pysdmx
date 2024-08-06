@@ -35,35 +35,47 @@ class _ApiVersion:
         return self.number >= other.number
 
 
+_V1_0_0 = _ApiVersion("V1.0.0", 0)
+_V1_0_1 = _ApiVersion("V1.0.1", 1)
+_V1_0_2 = _ApiVersion("V1.0.2", 2)
+_V1_1_0 = _ApiVersion("V1.1.0", 3)
+_V1_2_0 = _ApiVersion("V1.2.0", 4)
+_V1_3_0 = _ApiVersion("V1.3.0", 5)
+_V1_4_0 = _ApiVersion("V1.4.0", 6)
+_V1_5_0 = _ApiVersion("V1.5.0", 7)
+_V2_0_0 = _ApiVersion("V2.0.0", 8)
+_V2_1_0 = _ApiVersion("V2.1.0", 9)
+
+
 class ApiVersion(Enum):
     """The version of the SDMX-REST API."""
 
-    V1_0_0 = _ApiVersion("V1.0.0", 0)
-    V1_0_1 = _ApiVersion("V1.0.1", 1)
-    V1_0_2 = _ApiVersion("V1.0.2", 2)
-    V1_1_0 = _ApiVersion("V1.1.0", 3)
-    V1_2_0 = _ApiVersion("V1.2.0", 4)
-    V1_3_0 = _ApiVersion("V1.3.0", 5)
-    V1_4_0 = _ApiVersion("V1.4.0", 6)
-    V1_5_0 = _ApiVersion("V1.5.0", 7)
-    V2_0_0 = _ApiVersion("V2.0.0", 8)
-    V2_1_0 = _ApiVersion("V2.1.0", 9)
+    V1_0_0 = _V1_0_0
+    V1_0_1 = _V1_0_1
+    V1_0_2 = _V1_0_2
+    V1_1_0 = _V1_1_0
+    V1_2_0 = _V1_2_0
+    V1_3_0 = _V1_3_0
+    V1_4_0 = _V1_4_0
+    V1_5_0 = _V1_5_0
+    V2_0_0 = _V2_0_0
+    V2_1_0 = _V2_1_0
 
     def __lt__(self, other: "ApiVersion") -> bool:
         """Whether this version is less than the supplied one."""
-        return self < other
+        return self.value < other.value
 
     def __le__(self, other: "ApiVersion") -> bool:
         """Whether this version is less or equal to the supplied one."""
-        return self <= other
+        return self.value <= other.value
 
     def __gt__(self, other: "ApiVersion") -> bool:
         """Whether this version is greater than the supplied one."""
-        return self > other
+        return self.value > other.value
 
     def __ge__(self, other: "ApiVersion") -> bool:
         """Whether this version is greater or equal to the supplied one."""
-        return self >= other
+        return self.value >= other.value
 
 
 MULT_SEP = re.compile(r"\+")
