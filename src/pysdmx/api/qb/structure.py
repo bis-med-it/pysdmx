@@ -313,7 +313,7 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     def __check_artefact_type(
         self, atyp: StructureType, version: ApiVersion
     ) -> None:
-        if atyp not in _API_RESOURCES[version.value.label]:
+        if atyp not in _API_RESOURCES[version.value]:
             raise ClientError(
                 422,
                 "Validation Error",
