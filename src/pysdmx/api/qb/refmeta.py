@@ -168,11 +168,11 @@ class RefMetaByStructureQuery(
     def __check_artefact_type(
         self, atyp: StructureType, version: ApiVersion
     ) -> None:
-        if atyp not in _API_RESOURCES[version.value]:
+        if atyp not in _API_RESOURCES[version.name.replace("_", ".")]:
             raise ClientError(
                 422,
                 "Validation Error",
-                f"{atyp} is not valid for SDMX-REST {version.value}.",
+                f"{atyp} is not valid for SDMX-REST {version.name}.",
             )
 
     def _create_full_query(self) -> str:

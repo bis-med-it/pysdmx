@@ -1,4 +1,5 @@
 import pytest
+
 from pysdmx.api.qb.util import ApiVersion
 
 
