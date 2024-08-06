@@ -1,6 +1,4 @@
-# import pytest
-
-# from pysdmx.api.qb.util import ApiVersion
+from pysdmx.api.qb.util import ApiVersion
 
 
 def test_api_enum():
@@ -18,6 +16,7 @@ def test_api_enum():
     ]
 
     assert len(expected) == 10
+    assert len(ApiVersion.__members__) == len(expected)
 
     # for idx, v in enumerate(expected):
     #     try:
