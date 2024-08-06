@@ -18,6 +18,22 @@ class _ApiVersion:
     def __hash__(self) -> int:
         return hash(self.label)
 
+    def __lt__(self, other: "_ApiVersion") -> bool:
+        """Whether this version is less than the supplied one."""
+        return self.number < other.number
+
+    def __le__(self, other: "_ApiVersion") -> bool:
+        """Whether this version is less or equal to the supplied one."""
+        return self.number <= other.number
+
+    def __gt__(self, other: "_ApiVersion") -> bool:
+        """Whether this version is greater than the supplied one."""
+        return self.number > other.number
+
+    def __ge__(self, other: "_ApiVersion") -> bool:
+        """Whether this version is greater or equal to the supplied one."""
+        return self.number >= other.number
+
 
 class ApiVersion(Enum):
     """The version of the SDMX-REST API."""
@@ -35,19 +51,19 @@ class ApiVersion(Enum):
 
     def __lt__(self, other: "ApiVersion") -> bool:
         """Whether this version is less than the supplied one."""
-        return self.value.number < other.value.number
+        return self < other
 
     def __le__(self, other: "ApiVersion") -> bool:
         """Whether this version is less or equal to the supplied one."""
-        return self.value.number <= other.value.number
+        return self <= other
 
     def __gt__(self, other: "ApiVersion") -> bool:
         """Whether this version is greater than the supplied one."""
-        return self.value.number > other.value.number
+        return self > other
 
     def __ge__(self, other: "ApiVersion") -> bool:
         """Whether this version is greater or equal to the supplied one."""
-        return self.value.number >= other.value.number
+        return self >= other
 
 
 MULT_SEP = re.compile(r"\+")
