@@ -44,6 +44,9 @@ jobs:
       run: poetry run python -X faulthandler -m pytest -p no:faulthandler tests/api/dc
     - name: Run api tests (fmr)
       run: poetry run python -X faulthandler -m pytest -p no:faulthandler tests/api/fmr
+    - name: Setup tmate session
+      if: failure()
+      uses: mxschmitt/action-tmate@v3
     # - name: Run api tests (qb)
     #   run: poetry run python -X faulthandler -m pytest -p no:faulthandler tests/api/qb
     # - name: Run tests
