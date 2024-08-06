@@ -1,0 +1,241 @@
+{
+    "meta": {
+        "id": "IREF135578",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2023-08-14T11:45:50Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0"
+        }
+    },
+    "data": {
+        "codelists": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_FREQ(2.0)"
+                    }
+                ],
+                "id": "CL_FREQ",
+                "name": "Frequency",
+                "names": {
+                    "en": "Frequency"
+                },
+                "description": "The frequency of the data",
+                "descriptions": {
+                    "en": "The frequency of the data"
+                },
+                "version": "2.0",
+                "agencyID": "SDMX",
+                "isExternalReference": false,
+                "isFinal": false,
+                "isPartial": false,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).A"
+                            }
+                        ],
+                        "id": "A",
+                        "annotations": [
+                            {
+                                "title": "/1987-06-01T00:00:00Z",
+                                "type": "FR_VALIDITY_PERIOD",
+                                "text": "N:Annual",
+                                "texts": {
+                                    "en": "N:Annual"
+                                }
+                            }
+                        ],
+                        "name": "Annual",
+                        "names": {
+                            "en": "Annual"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).S"
+                            }
+                        ],
+                        "id": "S",
+                        "annotations": [
+                            {
+                                "title": "1989-06-01T00:00:00Z/",
+                                "type": "FR_VALIDITY_PERIOD",
+                                "text": "N:Half-yearly, semester",
+                                "texts": {
+                                    "en": "N:Half-yearly, semester"
+                                }
+                            }
+                        ],
+                        "name": "Half-yearly, semester",
+                        "names": {
+                            "en": "Half-yearly, semester"
+                        },
+                        "description": "To be used for data collected or disseminated every semester.",
+                        "descriptions": {
+                            "en": "To be used for data collected or disseminated every semester."
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).Q"
+                            }
+                        ],
+                        "id": "Q",
+                        "annotations": [
+                            {
+                                "title": "1987-06-01T00:00:00Z/1989-06-01T00:00:00Z",
+                                "type": "FR_VALIDITY_PERIOD",
+                                "text": "N:Quarterly",
+                                "texts": {
+                                    "en": "N:Quarterly"
+                                }
+                            }
+                        ],
+                        "name": "Quarterly",
+                        "names": {
+                            "en": "Quarterly"
+                        },
+                        "description": "To be used for data collected or disseminated every quarter.",
+                        "descriptions": {
+                            "en": "To be used for data collected or disseminated every quarter."
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).M"
+                            }
+                        ],
+                        "id": "M",
+                        "name": "Monthly",
+                        "names": {
+                            "en": "Monthly"
+                        },
+                        "description": "To be used for data collected or disseminated every month.",
+                        "descriptions": {
+                            "en": "To be used for data collected or disseminated every month."
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).W"
+                            }
+                        ],
+                        "id": "W",
+                        "name": "Weekly",
+                        "names": {
+                            "en": "Weekly"
+                        },
+                        "description": "To be used for data collected or disseminated every week.",
+                        "descriptions": {
+                            "en": "To be used for data collected or disseminated every week."
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).D"
+                            }
+                        ],
+                        "id": "D",
+                        "name": "Daily",
+                        "names": {
+                            "en": "Daily"
+                        },
+                        "description": "To be used for data collected or disseminated every day.",
+                        "descriptions": {
+                            "en": "To be used for data collected or disseminated every day."
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).H"
+                            }
+                        ],
+                        "id": "H",
+                        "name": "Hourly",
+                        "names": {
+                            "en": "Hourly"
+                        },
+                        "description": "To be used for data collected or disseminated every hour.",
+                        "descriptions": {
+                            "en": "To be used for data collected or disseminated every hour."
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).B"
+                            }
+                        ],
+                        "id": "B",
+                        "name": "Daily – businessweek",
+                        "names": {
+                            "en": "Daily – businessweek"
+                        },
+                        "description": "Similar to \"daily\", however there are no observations for Saturdays and Sundays (so, neither \"missing values\" nor \"numeric values\" should be provided for Saturday and Sunday). This treatment  (\"business\") is one way to deal with such cases, but it is not the only option. Such a time series could alternatively be considered daily (\"D\"), thus, with missing values in the weekend.",
+                        "descriptions": {
+                            "en": "Similar to \"daily\", however there are no observations for Saturdays and Sundays (so, neither \"missing values\" nor \"numeric values\" should be provided for Saturday and Sunday). This treatment  (\"business\") is one way to deal with such cases, but it is not the only option. Such a time series could alternatively be considered daily (\"D\"), thus, with missing values in the weekend."
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).N"
+                            }
+                        ],
+                        "id": "N",
+                        "name": "Minutely",
+                        "names": {
+                            "en": "Minutely"
+                        },
+                        "description": "While N denotes \"minutely\", usually, there may be no observations every minute (for several series the frequency is usually \"irregular\" within a day/days). And though observations may be sparse (not collected or disseminated every minute), missing values do not need to be given for the minutes when no observations exist: in any case the time stamp determines when an observation is observed.",
+                        "descriptions": {
+                            "en": "While N denotes \"minutely\", usually, there may be no observations every minute (for several series the frequency is usually \"irregular\" within a day/days). And though observations may be sparse (not collected or disseminated every minute), missing values do not need to be given for the minutes when no observations exist: in any case the time stamp determines when an observation is observed."
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

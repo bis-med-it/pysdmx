@@ -1,0 +1,362 @@
+{
+    "Codelist": [
+        {
+            "id": "CL_ELEMENT_TYPE",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_ELEMENT_TYPE(1.0)",
+            "annotations": [
+                {
+                    "title": "item",
+                    "type": "FR_VALIDITY_TYPE"
+                }
+            ],
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Element types codelist"
+                }
+            ],
+            "agencyId": "TEST",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": false,
+            "validityType": "item",
+            "items": [
+                {
+                    "id": "M0",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M0",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Metal"
+                        }
+                    ]
+                },
+                {
+                    "id": "M1",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M1",
+                    "annotations": [
+                        {
+                            "title": "1970-01-02T00:00:00Z/",
+                            "type": "FR_VALIDITY_PERIOD",
+                            "text": [
+                                {
+                                    "locale": "en",
+                                    "value": "N:Alkali metal",
+                                    "isHtml": false
+                                }
+                            ]
+                        }
+                    ],
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Alkali metal"
+                        }
+                    ],
+                    "parentCode": "M0"
+                },
+                {
+                    "id": "M2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Alkaline earth metal"
+                        }
+                    ],
+                    "parentCode": "M0"
+                },
+                {
+                    "id": "M3",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M3",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Lan­thanide"
+                        }
+                    ],
+                    "parentCode": "M0"
+                },
+                {
+                    "id": "M4",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M4",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Actinide"
+                        }
+                    ],
+                    "parentCode": "M0"
+                },
+                {
+                    "id": "M5",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M5",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Transition metal"
+                        }
+                    ],
+                    "parentCode": "M0"
+                },
+                {
+                    "id": "M6",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M6",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Post-​transition metal"
+                        }
+                    ],
+                    "parentCode": "M0"
+                },
+                {
+                    "id": "D0",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).D0",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Metalloid"
+                        }
+                    ]
+                },
+                {
+                    "id": "N0",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).N0",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Nonmetal"
+                        }
+                    ]
+                },
+                {
+                    "id": "N1",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).N1",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Reactive nonmetal"
+                        }
+                    ],
+                    "parentCode": "N0"
+                },
+                {
+                    "id": "N2",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).N2",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Noble gas"
+                        }
+                    ],
+                    "parentCode": "N0"
+                },
+                {
+                    "id": "U0",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).U0",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Unknown chemical properties"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_PERIODIC_TABLE",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_PERIODIC_TABLE(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Periodic table"
+                }
+            ],
+            "agencyId": "TEST",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "item",
+            "items": [
+                {
+                    "id": "Li",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Li",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Lithium"
+                        }
+                    ]
+                },
+                {
+                    "id": "Na",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Na",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Sodium"
+                        }
+                    ]
+                },
+                {
+                    "id": "K",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).K",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Potassium"
+                        }
+                    ]
+                },
+                {
+                    "id": "Rb",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Rb",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Rubidium"
+                        }
+                    ]
+                },
+                {
+                    "id": "Cs",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Cs",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Caesium"
+                        }
+                    ]
+                },
+                {
+                    "id": "Fr",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Fr",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Francium"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "Hierarchy": [
+        {
+            "id": "HCL_ELEMENT",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=TEST:HCL_ELEMENT(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Main"
+                }
+            ],
+            "agencyId": "TEST",
+            "version": "1.0",
+            "isFinal": false,
+            "formalLevels": false,
+            "codes": [
+                {
+                    "id": "Ze33",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33",
+                    "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M0",
+                    "codes": [
+                        {
+                            "id": "M1",
+                            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1",
+                            "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M1",
+                            "validFrom": 94694400000,
+                            "codes": [
+                                {
+                                    "id": "M0_Li",
+                                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Li",
+                                    "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Li",
+                                    "validFrom": -1577923200000,
+                                    "validTo": 1609459199000
+                                },
+                                {
+                                    "id": "M0_Na",
+                                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Na",
+                                    "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Na"
+                                },
+                                {
+                                    "id": "M0_K",
+                                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_K",
+                                    "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).K"
+                                },
+                                {
+                                    "id": "M0_Rb",
+                                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Rb",
+                                    "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Rb"
+                                },
+                                {
+                                    "id": "M0_Cs",
+                                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Cs",
+                                    "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Cs"
+                                },
+                                {
+                                    "id": "M0_Fr",
+                                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Fr",
+                                    "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Fr"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "M2",
+                            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M2",
+                            "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M2"
+                        },
+                        {
+                            "id": "M3",
+                            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M3",
+                            "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M3"
+                        },
+                        {
+                            "id": "M4",
+                            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M4",
+                            "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M4"
+                        },
+                        {
+                            "id": "M5",
+                            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M5",
+                            "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M5"
+                        },
+                        {
+                            "id": "M6",
+                            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M6",
+                            "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M6"
+                        }
+                    ]
+                },
+                {
+                    "id": "OJ55",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).OJ55",
+                    "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).D0"
+                },
+                {
+                    "id": "Wtoa",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Wtoa",
+                    "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).N0",
+                    "codes": [
+                        {
+                            "id": "N1",
+                            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Wtoa.N1",
+                            "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).N1"
+                        },
+                        {
+                            "id": "N2",
+                            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Wtoa.N2",
+                            "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).N2"
+                        }
+                    ]
+                },
+                {
+                    "id": "hhH5",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).hhH5",
+                    "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).U0"
+                }
+            ]
+        }
+    ]
+}
