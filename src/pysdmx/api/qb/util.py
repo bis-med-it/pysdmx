@@ -1,41 +1,25 @@
 """Utility classes for pysdmx REST query builders."""
 
-from enum import Enum
+from enum import IntEnum
 import re
 from typing import Sequence, Union
 
 from pysdmx.errors import ClientError
 
 
-class ApiVersion(Enum):
+class ApiVersion(IntEnum):
     """The version of the SDMX-REST API."""
 
-    V1_0_0 = "V1.0.0"
-    V1_0_1 = "V1.0.1"
-    V1_0_2 = "V1.0.2"
-    V1_1_0 = "V1.1.0"
-    V1_2_0 = "V1.2.0"
-    V1_3_0 = "V1.3.0"
-    V1_4_0 = "V1.4.0"
-    V1_5_0 = "V1.5.0"
-    V2_0_0 = "V2.0.0"
-    V2_1_0 = "V2.1.0"
-
-    def __lt__(self, other: "ApiVersion") -> bool:
-        """Whether this version is less than the supplied one."""
-        return self.value < other.value
-
-    def __le__(self, other: "ApiVersion") -> bool:
-        """Whether this version is less or equal to the supplied one."""
-        return self.value <= other.value
-
-    def __gt__(self, other: "ApiVersion") -> bool:
-        """Whether this version is greater than the supplied one."""
-        return self.value > other.value
-
-    def __ge__(self, other: "ApiVersion") -> bool:
-        """Whether this version is greater or equal to the supplied one."""
-        return self.value >= other.value
+    V1_0_0 = 0
+    V1_0_1 = 1
+    V1_0_2 = 2
+    V1_1_0 = 3
+    V1_2_0 = 4
+    V1_3_0 = 5
+    V1_4_0 = 6
+    V1_5_0 = 7
+    V2_0_0 = 8
+    V2_1_0 = 9
 
 
 MULT_SEP = re.compile(r"\+")
