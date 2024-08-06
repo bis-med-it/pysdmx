@@ -7,7 +7,7 @@ from typing import Sequence, Union
 from pysdmx.errors import ClientError
 
 
-class ApiVersion(str, Enum):
+class ApiVersion(Enum):
     """The version of the SDMX-REST API."""
 
     V1_0_0 = "V1.0.0"
