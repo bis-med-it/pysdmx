@@ -15,8 +15,9 @@ def test_api_enum():
         "V2_1_0",
     ]
 
-    assert len(expected) == 10
     assert len(ApiVersion.__members__) == len(expected)
+    for name, _ in ApiVersion.__members__.items():
+        assert name in expected
 
     # for idx, v in enumerate(expected):
     #     try:
