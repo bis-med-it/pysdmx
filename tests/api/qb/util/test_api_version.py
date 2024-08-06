@@ -1,4 +1,4 @@
-from pysdmx.api.qb.util import _ApiVersion, ApiVersion
+from pysdmx.api.qb.util import _ApiVersion
 
 
 def test_api_version():
