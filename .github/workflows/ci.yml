@@ -40,8 +40,10 @@ jobs:
       run: poetry run python -X faulthandler -m pytest -p no:faulthandler tests/model
     - name: Run util tests
       run: poetry run python -X faulthandler -m pytest -p no:faulthandler tests/util
-    - name: Run api tests
-      run: poetry run python -X faulthandler -m pytest -p no:faulthandler tests/api
+    - name: Run api tests (dc)
+      run: poetry run python -X faulthandler -m pytest -p no:faulthandler tests/api/dc
+    - name: Run api tests (qb)
+      run: poetry run python -X faulthandler -m pytest -p no:faulthandler tests/api/qb
     # - name: Run tests
     #   run: poetry run python -X faulthandler -m pytest -p no:faulthandler --cov=pysdmx --cov-branch --junitxml=qa/tests-results-${{ matrix.python-version }}.xml
     # - name: Check coverage
