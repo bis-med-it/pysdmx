@@ -16,7 +16,7 @@ def test_api_enum():
     ]
 
     assert len(ApiVersion) == 10
-    for v in ApiVersion:
+    for v in list(ApiVersion):
         assert v.value in expected
 
 
