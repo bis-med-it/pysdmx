@@ -4,14 +4,13 @@ from enum import Enum
 import re
 from typing import Sequence, Union
 
-from msgspec import Struct
-
 from pysdmx.errors import ClientError
 
 
-class _ApiVersion(Struct, frozen=True):
-    label: str
-    number: int
+class _ApiVersion:
+    def __init__(self, label: str, number: int) -> None:
+        self.label = label
+        self.number = number
 
     def __str__(self) -> str:
         return self.label
