@@ -34,14 +34,14 @@ jobs:
       run: poetry run flake8 src tests
     - name: Run type checks
       run: poetry run mypy
-    - name: Run api tests
-      run: poetry run python -X faulthandler -m pytest -p no:faulthandler tests/api
     - name: Run io tests
       run: poetry run python -X faulthandler -m pytest -p no:faulthandler tests/io
     - name: Run model tests
       run: poetry run python -X faulthandler -m pytest -p no:faulthandler tests/model
     - name: Run util tests
       run: poetry run python -X faulthandler -m pytest -p no:faulthandler tests/util
+    - name: Run api tests
+      run: poetry run python -X faulthandler -m pytest -p no:faulthandler tests/api
     # - name: Run tests
     #   run: poetry run python -X faulthandler -m pytest -p no:faulthandler --cov=pysdmx --cov-branch --junitxml=qa/tests-results-${{ matrix.python-version }}.xml
     # - name: Check coverage
