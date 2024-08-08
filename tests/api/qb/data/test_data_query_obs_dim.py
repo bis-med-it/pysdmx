@@ -17,7 +17,7 @@ def obs_dim():
 
 @pytest.mark.parametrize("api_version", ApiVersion)
 def test_invalid_value(res: str, api_version: ApiVersion):
-    q = DataQuery(resource_id=res, obs_dimension="TIME_PERIOD,OBS_VALUE")
+    q = DataQuery(resource_id=res, obs_dimension=42)
 
     with pytest.raises(ClientError):
         q.get_url(api_version)
