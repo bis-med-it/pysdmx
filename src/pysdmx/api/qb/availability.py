@@ -19,7 +19,6 @@ from pysdmx.api.qb.util import (
     REST_ALL,
 )
 from pysdmx.errors import ClientError
-from pysdmx.model.types import NC_NAME_ID_TYPE
 
 
 class AvailabilityMode(str, Enum):
@@ -93,7 +92,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
     resource_id: Union[str, Sequence[str]] = REST_ALL
     version: Union[str, Sequence[str]] = REST_ALL
     key: Union[str, Sequence[str]] = REST_ALL
-    component_id: Union[NC_NAME_ID_TYPE, Sequence[NC_NAME_ID_TYPE]] = REST_ALL
+    component_id: Union[str, Sequence[str]] = REST_ALL
     components: Union[MultiFilter, None, NumberFilter, TextFilter] = None
     updated_after: Optional[datetime] = None
     references: Union[StructureReference, Sequence[StructureReference]] = (
