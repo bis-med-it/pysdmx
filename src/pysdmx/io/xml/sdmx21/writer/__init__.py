@@ -2,6 +2,7 @@
 
 from typing import Any, Dict, Optional
 
+from pysdmx.errors import NotImplemented
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     __write_header,

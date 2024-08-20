@@ -2,7 +2,7 @@ import httpx
 import pytest
 
 from pysdmx.api.fmr import Format, RegistryClient
-from pysdmx.errors import Invalid, NotFound, InternalError, Unavailable
+from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 
 
 @pytest.fixture()
