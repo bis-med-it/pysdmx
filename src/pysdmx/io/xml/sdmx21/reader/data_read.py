@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 import pandas as pd
 
-from pysdmx.errors import NotImplemented
+from pysdmx.errors import NotFound, NotImplemented
 from pysdmx.io.xml.sdmx21.__parsing_config import (
     AGENCY_ID,
     ATTRIBUTES,
@@ -314,9 +314,10 @@ def create_dataset(
         Exception: If the structure reference cannot be found.
     """
     if dataset[STRREF] not in str_info:
-        raise Exception(
+        raise NotFound(
+            "Unknown structure",
             f"Cannot find the structure reference "
-            f"of this dataset:{dataset[STRREF]}"
+            f"of this dataset:{dataset[STRREF]}",
         )
     structure_info = str_info[dataset[STRREF]]
     if STRSPE == global_mode:
