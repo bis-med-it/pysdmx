@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 import pysdmx
-from pysdmx.errors import Invalid
+from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
@@ -221,7 +221,7 @@ def test_header_structure_provision_agrement(samples_folder):
     data_path = samples_folder / "header_structure_provision_agrement.xml"
     input_str, filetype = process_string_to_read(data_path)
     assert filetype == "xml"
-    with pytest.raises(NotImplementedError, match="ProvisionAgrement"):
+    with pytest.raises(NotImplemented, match="ProvisionAgrement"):
         read_xml(input_str, validate=True)
 
 
