@@ -70,7 +70,10 @@ def read_xml(
     del infile
 
     if mode is not None and MODES[mode.value] not in dict_info:
-        raise Invalid(f"Unable to parse sdmx file as {MODES[mode.value]} file")
+        raise Invalid(
+            "Validation Error",
+            f"Unable to parse sdmx file as {MODES[mode.value]} file",
+        )
 
     result = __generate_sdmx_objects_from_xml(dict_info, use_dataset_id)
 
