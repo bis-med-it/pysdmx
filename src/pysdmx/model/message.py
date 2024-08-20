@@ -19,7 +19,7 @@ import uuid
 
 from msgspec import Struct
 
-from pysdmx.errors import ClientError, NotFound
+from pysdmx.errors import Invalid, NotFound
 from pysdmx.model import Codelist, ConceptScheme
 from pysdmx.model.__base import ItemScheme
 
@@ -75,16 +75,14 @@ class Message(Struct, frozen=True):
         """Checks if the content is valid."""
         for content_key, content_value in self.content.items():
             if content_key not in MSG_CONTENT_PKG:
-                raise ClientError(
-                    400,
+                raise Invalid(
                     f"Invalid content type: {content_key}",
                     "Check the docs for the proper structure on content.",
                 )
 
             for obj_ in content_value.values():
                 if not isinstance(obj_, MSG_CONTENT_PKG[content_key]):
-                    raise ClientError(
-                        400,
+                    raise Invalid(
                         f"Invalid content value type: {type(obj_).__name__} "
                         f"for {content_key}",
                         "Check the docs for the proper "
@@ -96,7 +94,6 @@ class Message(Struct, frozen=True):
         if type_ in self.content:
             return self.content[type_]
         raise NotFound(
-            404,
             f"No {type_} found in content",
             f"Could not find any {type_} in content.",
         )
@@ -105,7 +102,6 @@ class Message(Struct, frozen=True):
         """Returns a specific element from content."""
         if type_ not in self.content:
             raise NotFound(
-                404,
                 f"No {type_} found.",
                 f"Could not find any {type_} in content.",
             )
@@ -114,7 +110,6 @@ class Message(Struct, frozen=True):
             return self.content[type_][unique_id]
 
         raise NotFound(
-            404,
             f"No {type_} with id {unique_id} found in content",
             "Could not find the requested element.",
         )

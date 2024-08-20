@@ -18,7 +18,7 @@ from pysdmx.api.qb.util import (
     check_multiple_data_context,
     REST_ALL,
 )
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 from pysdmx.model.types import NC_NAME_ID_TYPE
 
 
@@ -122,8 +122,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         if (api_version >= ApiVersion.V2_0_0 and ref not in REFERENCES_V2) or (
             api_version < ApiVersion.V2_0_0 and ref not in REFERENCES_V1
         ):
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Validation Error",
                 f"{ref} is not allowed for SDMX-REST {api_version.value}.",
             )
@@ -142,8 +141,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             isinstance(self.component_id, (list, tuple))
             and api_version < ApiVersion.V2_0_0
         ):
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Validation Error",
                 (
                     f"Only one component ID is allowed in SDMX-REST "

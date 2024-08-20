@@ -6,7 +6,7 @@ from typing import Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 class _ApiVersion(Struct, frozen=True):
@@ -61,8 +61,7 @@ def check_multiple_items(
 ) -> None:
     """Whether multiple items are supported in the supplied API version."""
     if not isinstance(value, str) and version < ApiVersion.V1_3_0:
-        raise ClientError(
-            422,
+        raise Invalid(
             "Validation Error",
             f"Multiple items not allowed in SDMX-REST {version.value.label}.",
         )
@@ -73,8 +72,7 @@ def check_multiple_data_context(
 ) -> None:
     """Whether multiple items are supported in the supplied API version."""
     if not isinstance(value, str) and version < ApiVersion.V2_0_0:
-        raise ClientError(
-            422,
+        raise Invalid(
             "Validation Error",
             (
                 f"More than one {field} is not allowed in data context "

@@ -20,7 +20,7 @@ from pysdmx.api.qb.util import (
     check_multiple_data_context,
     REST_ALL,
 )
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 from pysdmx.model.types import NC_NAME_ID_TYPE
 
 
@@ -68,7 +68,7 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         try:
             self._get_decoder().decode(_encoder.encode(self))
         except msgspec.DecodeError as err:
-            raise ClientError(422, "Invalid Schema Query", str(err)) from err
+            raise Invalid("Invalid Schema Query", str(err)) from err
 
     @abstractmethod
     def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
@@ -81,8 +81,7 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             DataContext.DATA_STRUCTURE,
             DataContext.PROVISION_AGREEMENT,
         ]:
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Validation Error",
                 f"{context} is not valid for SDMX-REST {api_version.value}.",
             )
@@ -104,8 +103,7 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         self, resource_id: Union[str, Sequence[str]], api_version: ApiVersion
     ) -> None:
         if api_version < ApiVersion.V2_0_0 and resource_id == REST_ALL:
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Validation Error",
                 (
                     f"A dataflow must be provided in SDMX-REST "
@@ -119,8 +117,7 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         api_version: ApiVersion,
     ) -> None:
         if api_version < ApiVersion.V2_0_0 and components:
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Validation Error",
                 (
                     "Components filter is not supported in "
@@ -250,8 +247,7 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     ) -> str:
         if isinstance(components, MultiFilter):
             if components.operator == LogicalOperator.OR:
-                raise ClientError(
-                    422,
+                raise Invalid(
                     "Validation Error",
                     "OR operator is not supported for MultiFilter.",
                 )
@@ -260,8 +256,7 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                 if isinstance(f, (NumberFilter, TextFilter)):
                     flts_by_comp[f.field].append(f)
                 else:
-                    raise ClientError(
-                        422,
+                    raise Invalid(
                         "Validation Error",
                         f"Unsupported filter type: {f}.",
                     )
@@ -432,8 +427,7 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         if self.measures == "none" and self.attributes == "dsd":
             return "nodata"
         else:
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Validation Error",
                 (
                     f"{self.attributes} and {self.measures} is not a valid "
@@ -535,8 +529,7 @@ def __map_like_operator(value: Any) -> str:
         elif value.endswith("%"):
             out = "sw"
         else:
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Validation Error",
                 (
                     f"The supplied value ({value}) is not correct "
@@ -545,8 +538,7 @@ def __map_like_operator(value: Any) -> str:
             )
         return out
     else:
-        raise ClientError(
-            422,
+        raise Invalid(
             "Validation Error",
             (
                 f"The supplied value ({value}) for the LIKE operator "
@@ -600,8 +592,7 @@ def _create_component_filter(flt: Union[NumberFilter, TextFilter]) -> str:
             op += ":"
         return f"c[{fld}]={op}{val}"
     else:
-        raise ClientError(
-            422,
+        raise Invalid(
             "Validation Error",
             (f"The operator ({flt.operator}) is not supported."),
         )

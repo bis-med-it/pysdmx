@@ -6,6 +6,8 @@ from os import PathLike
 from pathlib import Path
 from typing import Tuple, Union
 
+from pysdmx.errors import Invalid
+
 
 def __remove_bom(input_string: str) -> str:
     return input_string.replace("\ufeff", "")
@@ -30,7 +32,7 @@ def process_string_to_read(
         tuple: Tuple containing the parsed input and the format of the input.
 
     Raises:
-        ValueError: If the input cannot be parsed as SDMX.
+        Invalid: If the input cannot be parsed as SDMX.
     """
     # Read file as string
     if isinstance(infile, (Path, PathLike)):
@@ -45,7 +47,9 @@ def process_string_to_read(
     elif isinstance(infile, str):
         out_str = infile
     else:
-        raise ValueError(f"Cannot parse input of type {type(infile)}.")
+        raise Invalid(
+            "Validation Error", f"Cannot parse input of type {type(infile)}."
+        )
 
     out_str = __remove_bom(out_str)
 
@@ -60,4 +64,6 @@ def process_string_to_read(
     if __check_xml(out_str):
         return out_str, "xml"
 
-    raise ValueError(f"Cannot parse input as SDMX. Found {infile}")
+    raise Invalid(
+        "Validation Error", f"Cannot parse input as SDMX. Found {infile}"
+    )

@@ -5,7 +5,7 @@ from typing import Dict
 
 import pandas as pd
 
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 from pysdmx.model.dataset import PandasDataset
 from pysdmx.model.message import ActionType
 
@@ -28,16 +28,14 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
         if len(unique_values) == 1:  # If there is only one value, use it
             action_value = unique_values[0]
             if action_value not in ACTION_SDMX_CSV_MAPPER_READING:
-                raise ClientError(
-                    400,
+                raise Invalid(
                     "Invalid value on ACTION column",
                     "Invalid SDMX-CSV 2.0 file. "
                     "Check the docs for the proper values on ACTION column.",
                 )
             action = ACTION_SDMX_CSV_MAPPER_READING[action_value]
         else:
-            raise ClientError(
-                400,
+            raise Invalid(
                 "Invalid value on ACTION column",
                 "Invalid SDMX-CSV 2.0 file. "
                 "Cannot have more than one value on ACTION column, "
@@ -66,8 +64,7 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
             f"ProvisionAgreement={structure_id}"
         )
     else:
-        raise ClientError(
-            400,
+        raise Invalid(
             "Invalid value on STRUCTURE column",
             "Invalid SDMX-CSV 2.0 file. "
             "Check the docs for the proper values on STRUCTURE column.",
@@ -100,7 +97,7 @@ def read(infile: str) -> Dict[str, PandasDataset]:
         payload: dict.
 
     Raises:
-        ClientError: If it is an invalid CSV file.
+        Invalid: If it is an invalid CSV file.
     """
     # Get Dataframe from CSV file
     df_csv = pd.read_csv(StringIO(infile))
@@ -113,8 +110,7 @@ def read(infile: str) -> Dict[str, PandasDataset]:
         or "STRUCTURE_ID" not in df_csv.columns
     ):
         # Raise an exception if the CSV file is not in SDMX-CSV format
-        raise ClientError(
-            400,
+        raise Invalid(
             "Only SDMX-CSV 2.0 is allowed",
             "Invalid SDMX-CSV 2.0 file. "
             "Check the docs for the proper structure on content.",

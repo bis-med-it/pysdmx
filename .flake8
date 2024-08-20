@@ -1,7 +1,7 @@
 [flake8]
 application-import-names = pysdmx
 docstring-convention = google
-extend-ignore = E203,D411,W503,S410,S320
+extend-ignore = E203,D411,F901,W503,S410,S320
 import-order-style = google
 max-complexity = 10
 max-line-length = 79
