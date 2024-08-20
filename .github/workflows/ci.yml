@@ -35,6 +35,6 @@ jobs:
     - name: Run type checks
       run: poetry run mypy
     - name: Run tests
-      run: poetry run python -X faulthandler -m pytest -p no:faulthandler --cov=pysdmx --cov-branch --junitxml=qa/tests-results-${{ matrix.python-version }}.xml
+      run: poetry run pytest --cov=pysdmx --cov-branch
     - name: Check coverage
-      run: poetry run coverage report --fail-under=95
+      run: poetry run coverage report --fail-under=100
