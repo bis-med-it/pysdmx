@@ -5,7 +5,7 @@ import pytest
 from pysdmx.api.qb.availability import AvailabilityQuery
 from pysdmx.api.qb.structure import StructureReference
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 allowed_refs_v1 = [
     StructureReference.ALL,
@@ -55,7 +55,7 @@ def multiple_references():
 def test_invalid_value(res: str, api_version: ApiVersion):
     q = AvailabilityQuery(resource_id=res, references=42)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -76,7 +76,7 @@ def test_invalid_ref_v1(
 ):
     q = AvailabilityQuery(resource_id=res, references=ref)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -93,7 +93,7 @@ def test_invalid_ref_v2(
 ):
     q = AvailabilityQuery(resource_id=res, references=ref)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -159,7 +159,7 @@ def test_url_multi_refs_before_2_0_0(
 ):
     q = AvailabilityQuery(resource_id=res, references=multiple_references)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 

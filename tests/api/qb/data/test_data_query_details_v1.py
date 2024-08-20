@@ -2,7 +2,7 @@ import pytest
 
 from pysdmx.api.qb.data import DataQuery
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 @pytest.fixture()
@@ -121,5 +121,5 @@ def test_nodata_short(res: str, api_version: ApiVersion):
 def test_unsupported_detail(res: str, api_version: ApiVersion):
     q = DataQuery(resource_id=res, attributes="dsd", measures="OI")
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)

@@ -4,7 +4,7 @@ import pytest
 
 from pysdmx.api.qb.data import DataContext, DataQuery
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 @pytest.fixture()
@@ -43,7 +43,7 @@ def test_url_multiple_resources_before_2_0_0(
 ):
     q = DataQuery(context, agency, mult_res)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -92,7 +92,7 @@ def test_url_default_resource_before_2_0_0(
 ):
     q = DataQuery(context, agency)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 

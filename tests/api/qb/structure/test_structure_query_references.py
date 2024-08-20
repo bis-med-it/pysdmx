@@ -12,7 +12,7 @@ from pysdmx.api.qb.structure import (
     StructureType,
 )
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 refs_initial = [
     StructureReference.ALL,
@@ -146,7 +146,7 @@ def test_url_2_0_0_refs_before_2_0_0(
         typ, agency, res, version, detail=detail, references=references
     )
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -274,7 +274,7 @@ def test_url_v1_3_0_type_before_1_3_0(
         references=StructureReference(reference.value),
     )
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -301,7 +301,7 @@ def test_url_v1_5_0_type_before_1_5_0(
         references=StructureReference(reference.value),
     )
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 

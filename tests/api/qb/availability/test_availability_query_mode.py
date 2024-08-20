@@ -2,7 +2,7 @@ import pytest
 
 from pysdmx.api.qb.availability import AvailabilityMode, AvailabilityQuery
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 @pytest.fixture()
@@ -26,7 +26,7 @@ def mode():
 def test_invalid_value(res: str, api_version: ApiVersion):
     q = AvailabilityQuery(resource_id=res, mode=42)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 

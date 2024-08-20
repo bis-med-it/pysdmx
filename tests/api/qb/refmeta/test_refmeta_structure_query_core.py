@@ -3,7 +3,7 @@ import pytest
 from pysdmx.api.qb.refmeta import RefMetaByStructureQuery, RefMetaDetail
 from pysdmx.api.qb.structure import StructureType
 from pysdmx.api.qb.util import ApiVersion, REST_ALL, REST_LATEST
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 @pytest.fixture()
@@ -56,7 +56,7 @@ def test_validate_ok():
 def test_validate_nok():
     q = RefMetaByStructureQuery(artefact_type=42)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.validate()
 
 

@@ -2,7 +2,7 @@ import httpx
 import pytest
 
 from pysdmx.api.fmr import Format, RegistryClient
-from pysdmx.errors import ClientError, NotFound, ServiceError, Unavailable
+from pysdmx.errors import Invalid, NotFound, InternalError, Unavailable
 
 
 @pytest.fixture()
@@ -36,7 +36,6 @@ def test_not_found(respx_mock, fmr, query, body):
 
     with pytest.raises(NotFound) as e:
         fmr.get_agencies("BIS")
-    assert e.value.status == 404
     assert e.value.title is not None
     assert e.value.description is not None
     assert query in e.value.description
@@ -50,9 +49,8 @@ def test_client_error(respx_mock, fmr, query, body):
         )
     )
 
-    with pytest.raises(ClientError) as e:
+    with pytest.raises(Invalid) as e:
         fmr.get_agencies("BIS")
-    assert e.value.status == 409
     assert e.value.title is not None
     assert e.value.description is not None
     assert query in e.value.description
@@ -66,9 +64,8 @@ def test_service_error(respx_mock, fmr, query, body):
         )
     )
 
-    with pytest.raises(ServiceError) as e:
+    with pytest.raises(InternalError) as e:
         fmr.get_agencies("BIS")
-    assert e.value.status == 501
     assert e.value.title is not None
     assert e.value.description is not None
     assert query in e.value.description
@@ -80,15 +77,13 @@ def test_service_unavailable(respx_mock, fmr, query):
 
     with pytest.raises(Unavailable) as e:
         fmr.get_agencies("BIS")
-    assert e.value.status == 503
     assert e.value.title is not None
     assert e.value.description is not None
     assert query in e.value.description
 
 
 def test_missing_params(fmr):
-    with pytest.raises(ClientError) as e:
+    with pytest.raises(Invalid) as e:
         fmr.get_agencies(42)
-    assert e.value.status == 422
     assert e.value.title is not None
     assert e.value.description is not None

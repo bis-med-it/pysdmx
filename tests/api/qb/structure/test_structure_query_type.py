@@ -15,7 +15,7 @@ from pysdmx.api.qb.structure import (
     StructureType,
 )
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 @pytest.fixture()
@@ -260,7 +260,7 @@ def test_url_v1_3_0_type_before_1_3_0(
         atype, agency, res, version, detail=detail, references=refs
     )
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -282,7 +282,7 @@ def test_url_v1_5_0_type_before_1_5_0(
         atype, agency, res, version, detail=detail, references=refs
     )
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -304,7 +304,7 @@ def test_url_v2_0_0_deprecated(
         atype, agency, res, version, detail=detail, references=refs
     )
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -358,7 +358,7 @@ def test_url_v2_0_0_added_before_2_0_0(
         atype, agency, res, version, detail=detail, references=refs
     )
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 

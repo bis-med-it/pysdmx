@@ -2,7 +2,7 @@ import pytest
 
 from pysdmx.api.qb.data import DataQuery
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 @pytest.fixture()
@@ -19,7 +19,7 @@ def history():
 def test_invalid_value(res: str, api_version: ApiVersion):
     q = DataQuery(resource_id=res, include_history=42)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 

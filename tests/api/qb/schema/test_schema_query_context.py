@@ -5,7 +5,7 @@ from pysdmx.api.qb.schema import (
     SchemaQuery,
 )
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 context_initial = [
     SchemaContext.DATA_STRUCTURE,
@@ -88,7 +88,7 @@ def test_url_2_0_0_context_before_2_0_0(
 ):
     q = SchemaQuery(context, agency, res, version)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -117,5 +117,5 @@ def test_wrong_context(
 ):
     sq = SchemaQuery(42, agency, res)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         sq.get_url(ApiVersion.V1_0_0)

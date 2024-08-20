@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 import pysdmx
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
@@ -143,23 +143,22 @@ def test_submission_result(submission_path):
 def test_error_304(error_304_path):
     input_str, filetype = process_string_to_read(error_304_path)
     assert filetype == "xml"
-    with pytest.raises(ClientError) as e:
+    with pytest.raises(Invalid) as e:
         read_xml(input_str, validate=False, mode=MessageType.Error)
-    assert e.value.status == 304
     reference_title = (
-        "Either no structures were submitted,\n"
+        "304: Either no structures were submitted,\n"
         "            or the submitted structures "
         "contain no changes from the ones\n"
         "            currently stored in the system"
     )
 
-    assert e.value.title == reference_title
+    assert e.value.description == reference_title
 
 
 def test_error_message_with_different_mode(error_304_path):
     input_str, filetype = process_string_to_read(error_304_path)
     assert filetype == "xml"
-    with pytest.raises(ValueError, match="Unable to parse sdmx file as"):
+    with pytest.raises(Invalid, match="Unable to parse sdmx file as"):
         read_xml(input_str, validate=True, mode=MessageType.Submission)
 
 

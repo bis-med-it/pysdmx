@@ -11,7 +11,7 @@ from pysdmx.api.dc.query import (
     parse_query,
     TextFilter,
 )
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 def test_sql_query():
@@ -127,8 +127,7 @@ def test_py_query():
 
 
 def test_parse_error():
-    with pytest.raises(ClientError) as e:
+    with pytest.raises(Invalid) as e:
         parse_query("blah")
     assert e.value.title == "Unparseable query"
-    assert e.value.status == 422
     assert "blah" in e.value.description
