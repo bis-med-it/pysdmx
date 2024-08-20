@@ -311,7 +311,7 @@ def create_dataset(
         A pandas dataframe with the created dataset will be returned.
 
     Raises:
-        Exception: If the structure reference cannot be found.
+        NotFound: If the structure reference cannot be found.
     """
     if dataset[STRREF] not in str_info:
         raise NotFound(
