@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 import pandas as pd
 
+from pysdmx.errors import NotImplemented
 from pysdmx.io.xml.sdmx21.__parsing_config import (
     AGENCY_ID,
     ATTRIBUTES,
@@ -202,7 +203,7 @@ def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
         The ids contained in the structure will be returned.
 
     Raises:
-        NotImplementedError: For Provision Agreement, as it is not implemented.
+        NotImplemented: For Provision Agreement, as it is not implemented.
     """
     if STRUCTURE in structure:
         structure_type = "DataStructure"
@@ -212,7 +213,9 @@ def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
         structure_type = "DataFlow"
         tuple_ids = __get_ids_from_structure(structure[STR_USAGE])
     else:
-        raise NotImplementedError("ProvisionAgrement not implemented")
+        raise NotImplemented(
+            "Unsupported", "ProvisionAgrement not implemented"
+        )
     return tuple_ids + (structure_type,)
 
 
