@@ -128,5 +128,5 @@ def __parse_dataset(message_info: Dict[str, Any], mode: str) -> Dict[str, Any]:
     datasets = {}
     for dataset in dataset_info:
         ds = create_dataset(dataset, str_info, mode)
-        datasets[ds.unique_id] = ds
+        datasets[ds.short_urn] = ds
     return datasets

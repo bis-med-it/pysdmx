@@ -45,13 +45,6 @@ def invalid_message_xml():
         return f.read()
 
 
-@pytest.fixture()
-def invalid_allowed_error():
-    path = Path(__file__).parent / "samples" / "invalid_allowed_error.xml"
-    with open(path, "r", encoding="utf-8") as f:
-        return f.read()
-
-
 def test_process_string_to_read(valid_xml, valid_xml_path):
     infile, filetype = process_string_to_read(valid_xml_path)
     assert infile == valid_xml
