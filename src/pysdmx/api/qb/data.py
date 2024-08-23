@@ -21,7 +21,6 @@ from pysdmx.api.qb.util import (
     REST_ALL,
 )
 from pysdmx.errors import ClientError
-from pysdmx.model.types import NC_NAME_ID_TYPE
 
 
 class DataContext(Enum):
@@ -180,9 +179,7 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         version: Union[str, Sequence[str]],
         key: Union[str, Sequence[str]],
         api_version: ApiVersion,
-        component_id: Union[
-            NC_NAME_ID_TYPE, Sequence[NC_NAME_ID_TYPE], None
-        ] = None,
+        component_id: Union[str, Sequence[str], None] = None,
     ) -> str:
         d = (
             f"/{self._to_kws(component_id, api_version)}"
@@ -334,14 +331,14 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
     updated_after: Optional[datetime] = None
     first_n_obs: Optional[Annotated[int, msgspec.Meta(gt=0)]] = None
     last_n_obs: Optional[Annotated[int, msgspec.Meta(gt=0)]] = None
-    obs_dimension: Optional[NC_NAME_ID_TYPE] = None
+    obs_dimension: Optional[str] = None
     attributes: Union[
-        NC_NAME_ID_TYPE,
-        Sequence[NC_NAME_ID_TYPE],
+        str,
+        Sequence[str],
     ] = "dsd"
     measures: Union[
-        NC_NAME_ID_TYPE,
-        Sequence[NC_NAME_ID_TYPE],
+        str,
+        Sequence[str],
     ] = "all"
     include_history: bool = False
 

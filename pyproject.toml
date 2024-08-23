@@ -48,7 +48,7 @@ flake8-import-order = "^0.18.2"
 flake8-pytest-style = "^1.7.2"
 flake8-simplify = "^0.20.0"
 mypy = "^1.1.1"
-pytest = "^7.2.2"
+pytest = "^8.3.2"
 pytest-asyncio = "^0.21.1"
 pytest-cov = "^4.0.0"
 respx = "^0.20.2"
@@ -57,7 +57,6 @@ lxml-stubs = "^0.5.1"
 types-xmltodict = "^0.13.0.3"
 types-python-dateutil = "^2.9.0.20240316"
 pandas-stubs = "^2.2.2.240603"
-
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "^7.2.6"

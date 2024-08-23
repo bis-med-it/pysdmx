@@ -24,7 +24,7 @@ measures = ["all", "none", "OBS_VALUE"]
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
 def test_invalid_value(res: str, api_version: ApiVersion):
-    q = DataQuery(resource_id=res, measures="TIME_PERIOD,OBS_VALUE")
+    q = DataQuery(resource_id=res, measures=42)
 
     with pytest.raises(ClientError):
         q.get_url(api_version)
