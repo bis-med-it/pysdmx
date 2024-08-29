@@ -82,7 +82,7 @@ def test_seconds():
     assert out == r"%S"
 
 
-def test_ddMMyy():
+def test_multi_patterns():
     out = convert_dpm("ddMMyy")
 
     assert out == r"%d%m%y"
