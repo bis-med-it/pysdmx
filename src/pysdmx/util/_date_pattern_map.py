@@ -1,4 +1,4 @@
-from parsy import alt, any_char, string
+from parsy import alt, any_char, string  # type: ignore[import-untyped]
 
 from pysdmx.errors import ClientError
 
