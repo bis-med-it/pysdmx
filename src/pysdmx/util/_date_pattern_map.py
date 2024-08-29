@@ -1,4 +1,6 @@
-from parsy import alt, any_char, string
+from parsy import alt, any_char, ParseError, string
+
+from pysdmx.errors import ClientError
 
 __YEAR4 = string("yyyy").map(lambda x: r"%G")
 __YEAR2 = string("yy").map(lambda x: r"%y")
@@ -36,4 +38,13 @@ __dpm_parser = __single_parser.at_least(1)
 
 
 def convert_dpm(sdmx_pattern: str) -> str:
-    return "".join(__dpm_parser.parse(sdmx_pattern))
+    unsupported = ["G", "n", "kk", "KK", "S"]
+    for i in unsupported:
+        if i in sdmx_pattern:
+            raise ClientError(
+                422, "Parsing failed", f"Pattern {i} is not supported."
+            )
+    try:
+        return "".join(__dpm_parser.parse(sdmx_pattern))
+    except ParseError as pe:
+        raise ClientError(422, "Parsing failed", str(pe))

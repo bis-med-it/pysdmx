@@ -1,3 +1,6 @@
+import pytest
+
+from pysdmx.errors import ClientError
 from pysdmx.util import convert_dpm
 
 
@@ -83,3 +86,28 @@ def test_ddMMyy():
     out = convert_dpm("ddMMyy")
 
     assert out == r"%d%m%y"
+
+
+def test_era():
+    with pytest.raises(ClientError):
+        convert_dpm("G")
+
+
+def test_periods():
+    with pytest.raises(ClientError):
+        convert_dpm("n")
+
+
+def test_h24_1():
+    with pytest.raises(ClientError):
+        convert_dpm("kk")
+
+
+def test_h12_0():
+    with pytest.raises(ClientError):
+        convert_dpm("KK")
+
+
+def test_ms():
+    with pytest.raises(ClientError):
+        convert_dpm("S")
