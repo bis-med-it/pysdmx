@@ -1,79 +1,85 @@
-from pysdmx.util._date_pattern_map import single_parser
+from pysdmx.util import convert_dpm
 
 
 def test_full_year():
-    out = single_parser.parse("yyyy")
+    out = convert_dpm("yyyy")
 
     assert out == r"%G"
 
 
 def test_short_year():
-    out = single_parser.parse("yy")
+    out = convert_dpm("yy")
 
     assert out == r"%y"
 
 
 def test_month_number():
-    out = single_parser.parse("MM")
+    out = convert_dpm("MM")
 
     assert out == r"%m"
 
 
 def test_month_short():
-    out = single_parser.parse("MMM")
+    out = convert_dpm("MMM")
 
     assert out == r"%b"
 
 
 def test_month_full():
-    out = single_parser.parse("MMMM")
+    out = convert_dpm("MMMM")
 
     assert out == r"%B"
 
 
 def test_day_in_year():
-    out = single_parser.parse("DD")
+    out = convert_dpm("DD")
 
     assert out == r"%j"
 
 
 def test_day_in_month():
-    out = single_parser.parse("dd")
+    out = convert_dpm("dd")
 
     assert out == r"%d"
 
 
 def test_day_in_week():
-    out = single_parser.parse("U")
+    out = convert_dpm("U")
 
     assert out == r"%u"
 
 
 def test_week_in_year():
-    out = single_parser.parse("ww")
+    out = convert_dpm("ww")
 
     assert out == r"%V"
 
 
 def test_hours_24():
-    out = single_parser.parse("HH")
+    out = convert_dpm("HH")
 
     assert out == r"%H"
 
 
 def test_hours_12():
-    out = single_parser.parse("hh")
+    out = convert_dpm("hh")
 
     assert out == r"%I"
 
 
 def test_minutes():
-    out = single_parser.parse("mm")
+    out = convert_dpm("mm")
 
     assert out == r"%M"
 
 
 def test_seconds():
-    out = single_parser.parse("ss")
+    out = convert_dpm("ss")
 
     assert out == r"%S"
+
+
+def test_ddMMyy():
+    out = convert_dpm("ddMMyy")
+
+    assert out == r"%d%m%y"

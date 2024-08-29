@@ -7,6 +7,7 @@ from msgspec import Struct
 
 from pysdmx.errors import NotFound
 from pysdmx.model import Agency
+from pysdmx.util._date_pattern_map import convert_dpm
 
 NF = "Not found"
 
@@ -115,3 +116,6 @@ def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:
                 f"{urn}. The artefacts received were: {urns}."
             ),
         )
+
+
+__all__ = ["convert_dpm", "find_by_urn", "parse_item_urn", "parse_urn"]
