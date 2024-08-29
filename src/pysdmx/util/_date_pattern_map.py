@@ -44,7 +44,4 @@ def convert_dpm(sdmx_pattern: str) -> str:
             raise ClientError(
                 422, "Parsing failed", f"Pattern {i} is not supported."
             )
-    try:
-        return "".join(__dpm_parser.parse(sdmx_pattern))
-    except ParseError as pe:
-        raise ClientError(422, "Parsing failed", str(pe))
+    return "".join(__dpm_parser.parse(sdmx_pattern))
