@@ -52,6 +52,22 @@ def test_day_in_week():
     assert out == r"%u"
 
 
+def test_day_name_short():
+    out1 = convert_dpm("E")
+    out2 = convert_dpm("EE")
+    out3 = convert_dpm("EEE")
+
+    assert out1 == r"%a"
+    assert out2 == r"%a"
+    assert out3 == r"%a"
+
+
+def test_day_name_full():
+    out = convert_dpm("EEEE")
+
+    assert out == r"%A"
+
+
 def test_week_in_year():
     out = convert_dpm("ww")
 

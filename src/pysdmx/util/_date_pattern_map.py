@@ -1,4 +1,4 @@
-from parsy import alt, any_char, string  # type: ignore[import-untyped]
+from parsy import alt, any_char, regex, string  # type: ignore[import-untyped]
 
 from pysdmx.errors import ClientError
 
@@ -11,6 +11,8 @@ __WEEK_Y = string("ww").map(lambda x: r"%V")
 __DAY_Y = string("DD").map(lambda x: r"%j")
 __DAY_M = string("dd").map(lambda x: r"%d")
 __DAY_NUM = string("U").map(lambda x: r"%u")
+__DAY_NM_F = string("EEEE").map(lambda x: r"%A")
+__DAY_NM_S = regex("^E{1,3}$").map(lambda x: r"%a")
 __HOUR_DAY = string("HH").map(lambda x: r"%H")
 __HOUR_AP = string("hh").map(lambda x: r"%I")
 __MIN = string("mm").map(lambda x: r"%M")
@@ -27,6 +29,8 @@ __single_parser = alt(
     __DAY_Y,
     __DAY_M,
     __DAY_NUM,
+    __DAY_NM_F,
+    __DAY_NM_S,
     __HOUR_DAY,
     __HOUR_AP,
     __MIN,
