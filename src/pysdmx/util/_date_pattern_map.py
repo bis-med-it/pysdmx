@@ -1,4 +1,4 @@
-from parsy import alt, any_char, ParseError, string
+from parsy import alt, any_char, string
 
 from pysdmx.errors import ClientError
 
@@ -38,6 +38,7 @@ __dpm_parser = __single_parser.at_least(1)
 
 
 def convert_dpm(sdmx_pattern: str) -> str:
+    """Convert an SDMX date pattern into Python format codes."""
     unsupported = ["G", "n", "kk", "KK", "S"]
     for i in unsupported:
         if i in sdmx_pattern:
