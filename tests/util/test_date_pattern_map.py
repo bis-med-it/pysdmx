@@ -4,7 +4,7 @@ from pysdmx.util._date_pattern_map import single_parser
 def test_full_year():
     out = single_parser.parse("yyyy")
 
-    assert out == "%Y"
+    assert out == r"%G"
 
 
 def test_short_year():
@@ -52,7 +52,7 @@ def test_day_in_week():
 def test_week_in_year():
     out = single_parser.parse("ww")
 
-    assert out == r"%U"
+    assert out == r"%V"
 
 
 def test_hours_24():
@@ -77,14 +77,3 @@ def test_seconds():
     out = single_parser.parse("ss")
 
     assert out == r"%S"
-
-
-# G Era designator Text AD
-# n Number of periods, used after a SDMX
-# kk Hour in day (1-24) Number 24
-# KK Hour in am/pm (0-11) Number 0
-# S Millisecond Number 978
-
-# W Week in month Number 2
-# F Day of week in month Number 2
-# E Day name in week Text Tuesday; Tue

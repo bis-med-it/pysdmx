@@ -1,11 +1,11 @@
 from parsy import alt, any_char, string
 
-YEAR4 = string("yyyy").map(lambda x: r"%Y")
+YEAR4 = string("yyyy").map(lambda x: r"%G")
 YEAR2 = string("yy").map(lambda x: r"%y")
 MONTH_F = string("MMMM").map(lambda x: r"%B")
 MONTH_S = string("MMM").map(lambda x: r"%b")
 MONTH_NUM = string("MM").map(lambda x: r"%m")
-WEEK_Y = string("ww").map(lambda x: r"%U")
+WEEK_Y = string("ww").map(lambda x: r"%V")
 DAY_Y = string("DD").map(lambda x: r"%j")
 DAY_M = string("dd").map(lambda x: r"%d")
 DAY_NUM = string("U").map(lambda x: r"%u")
