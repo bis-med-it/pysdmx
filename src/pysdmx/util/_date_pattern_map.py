@@ -1,4 +1,10 @@
-from parsy import alt, any_char, regex, string, ParseError  # type: ignore[import-untyped]
+from parsy import (  # type: ignore[import-untyped]
+    alt,
+    any_char,
+    ParseError,
+    regex,
+    string,
+)
 
 from pysdmx.errors import Invalid
 
