@@ -7,6 +7,7 @@ subset** of the SDMX information model.
 from re import Pattern
 from typing import Any
 
+from pysdmx.errors import NotImplemented
 from pysdmx.model.__base import (
     Agency,
     Contact,
@@ -70,7 +71,7 @@ def encoders(obj: Any) -> Any:
         The received object converted to supported Python types
 
     Raises:
-        NotImplementedError: In case the object type is not one of the types
+        NotImplemented: In case the object type is not one of the types
             needing conversion
     """
     if isinstance(obj, Pattern):
@@ -78,9 +79,9 @@ def encoders(obj: Any) -> Any:
     elif isinstance(obj, Components):
         return list(obj)
     else:
-        # Raise a NotImplementedError for other types
-        raise NotImplementedError(
-            f"Objects of type {type(obj)} are not supported"
+        # Raise a NotImplemented for other types
+        raise NotImplemented(
+            "Unsupported", f"Objects of type {type(obj)} are not supported"
         )
 
 

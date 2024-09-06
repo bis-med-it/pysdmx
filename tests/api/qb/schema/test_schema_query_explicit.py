@@ -5,7 +5,7 @@ from pysdmx.api.qb.schema import (
     SchemaQuery,
 )
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 @pytest.fixture()
@@ -165,5 +165,5 @@ def test_explicit_not_allowed(
 ):
     q = SchemaQuery(context, agency, res, version, explicit=True)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)

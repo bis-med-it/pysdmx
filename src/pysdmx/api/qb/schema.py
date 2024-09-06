@@ -7,7 +7,7 @@ import msgspec
 
 from pysdmx.api.qb.structure import _V2_0_ADDED, StructureType
 from pysdmx.api.qb.util import ApiVersion, REST_ALL, REST_LATEST
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 class SchemaContext(Enum):
@@ -67,7 +67,7 @@ class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         try:
             decoder.decode(encoder.encode(self))
         except msgspec.DecodeError as err:
-            raise ClientError(422, "Invalid Schema Query", str(err)) from err
+            raise Invalid("Invalid Schema Query", str(err)) from err
 
     def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
         """The URL for the query in the selected SDMX-REST API version."""
@@ -85,24 +85,21 @@ class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     def __check_context(self, version: ApiVersion) -> None:
         ct = StructureType(self.context.value)
         if version < ApiVersion.V2_0_0 and ct in _V2_0_ADDED:
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Validation Error",
                 f"{self.context} not allowed in {version.value}.",
             )
 
     def __check_version(self) -> None:
         if self.version == REST_ALL:
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Validation Error",
                 "Retrieving schemas for all versions is not allowed.",
             )
 
     def __check_explicit(self, version: ApiVersion) -> None:
         if self.explicit and version >= ApiVersion.V2_0_0:
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Validation Error",
                 f"Explicit parameter is not supported in {version.value}.",
             )

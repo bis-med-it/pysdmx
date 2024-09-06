@@ -7,7 +7,7 @@ from pysdmx.api.qb.structure import (
     StructureType,
 )
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 details_initial = [
@@ -204,7 +204,7 @@ def test_url_2_0_0_details_before_2_0_0(
         typ, agency, res, version, detail=detail, references=refs
     )
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -225,7 +225,7 @@ def test_url_1_3_0_details_before_1_3_0(
         typ, agency, res, version, detail=detail, references=refs
     )
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 

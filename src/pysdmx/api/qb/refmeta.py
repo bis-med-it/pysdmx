@@ -13,7 +13,7 @@ from pysdmx.api.qb.util import (
     REST_ALL,
     REST_LATEST,
 )
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 class RefMetaDetail(Enum):
@@ -49,14 +49,13 @@ class _RefMetaCoreQuery(
         try:
             self._get_decoder().decode(_encoder.encode(self))
         except msgspec.DecodeError as err:
-            raise ClientError(
-                422, "Invalid Reference Metadata Query", str(err)
+            raise Invalid(
+                "Invalid Reference Metadata Query", str(err)
             ) from err
 
     def _check_version(self, version: ApiVersion) -> None:
         if version < ApiVersion.V2_0_0:
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Invalid Request",
                 (
                     "Queries for reference metadata are not supported"
@@ -169,8 +168,7 @@ class RefMetaByStructureQuery(
         self, atyp: StructureType, version: ApiVersion
     ) -> None:
         if atyp not in _API_RESOURCES[version.name.replace("_", ".")]:
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Validation Error",
                 f"{atyp} is not valid for SDMX-REST {version.name}.",
             )

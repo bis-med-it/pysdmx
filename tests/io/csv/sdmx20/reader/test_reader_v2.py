@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 from pysdmx.io.csv.sdmx20.reader import read
 
 
@@ -79,7 +79,7 @@ def test_reading_data_v2(data_path):
 def test_reading_v2_exception(data_path_exception):
     with open(data_path_exception, "r") as f:
         infile = f.read()
-    with pytest.raises(ClientError, match="Invalid SDMX-CSV 2.0"):
+    with pytest.raises(Invalid, match="Invalid SDMX-CSV 2.0"):
         read(infile)
 
 
@@ -118,7 +118,7 @@ def test_reading_more_structures(data_path_structures):
 def test_reading_more_structures_exception(data_path_structures_exc):
     with open(data_path_structures_exc, "r") as f:
         infile = f.read()
-    with pytest.raises(ClientError, match="proper values on STRUCTURE column"):
+    with pytest.raises(Invalid, match="proper values on STRUCTURE column"):
         read(infile)
 
 
@@ -134,7 +134,7 @@ def test_reading_three_actions(data_path_three_actions):
     with open(data_path_three_actions, "r") as f:
         infile = f.read()
     with pytest.raises(
-        ClientError, match="Cannot have more than one value on ACTION column"
+        Invalid, match="Cannot have more than one value on ACTION column"
     ):
         read(infile)
 
@@ -142,5 +142,5 @@ def test_reading_three_actions(data_path_three_actions):
 def test_reading_invalid_action(data_path_invalid_action):
     with open(data_path_invalid_action, "r") as f:
         infile = f.read()
-    with pytest.raises(ClientError, match="proper values on ACTION column"):
+    with pytest.raises(Invalid, match="proper values on ACTION column"):
         read(infile)

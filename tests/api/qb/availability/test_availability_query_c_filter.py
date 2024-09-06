@@ -10,7 +10,7 @@ from pysdmx.api.dc.query import (
 )
 from pysdmx.api.qb.availability import AvailabilityQuery
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 @pytest.mark.parametrize(
@@ -20,7 +20,7 @@ def test_availability_components_v1(api_version: ApiVersion):
     flt = TextFilter("FREQ", Operator.EQUALS, "M")
     q = AvailabilityQuery(resource_id="CBS", components=flt)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -31,7 +31,7 @@ def test_availability_unsupported_operator(api_version: ApiVersion):
     flt = TextFilter("FREQ", Operator.NOT_IN, ["A", "M"])
     q = AvailabilityQuery(components=flt)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -197,7 +197,7 @@ def test_availability_one_text_comp_wrong_like(api_version: ApiVersion):
 
     q = AvailabilityQuery(components=flt)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -209,7 +209,7 @@ def test_availability_one_text_comp_wrong_like_type(api_version: ApiVersion):
 
     q = AvailabilityQuery(components=flt)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -290,7 +290,7 @@ def test_availability_mult_or_filters(api_version: ApiVersion):
 
     q = AvailabilityQuery(components=mflt)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -305,7 +305,7 @@ def test_availability_mult_filters_wrong_type(api_version: ApiVersion):
 
     q = AvailabilityQuery(components=mflt)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 

@@ -17,7 +17,7 @@ from pysdmx.api.dc.query._model import (
 )
 from pysdmx.api.dc.query._py_parser import py_parser
 from pysdmx.api.dc.query._sql_parser import sql_parser
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 def parse_query(query: str) -> Filter:
@@ -28,8 +28,7 @@ def parse_query(query: str) -> Filter:
         try:
             return sql_parser.parse(query)
         except ParseError as pe:
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Unparseable query",
                 (
                     "The query could not be parsed. "

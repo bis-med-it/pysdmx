@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 
 import xmltodict
 
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.__parsing_config import (
     DATASET,
@@ -59,7 +59,7 @@ def read_xml(
         dict: Dictionary with the parsed data.
 
     Raises:
-        ValueError: If the SDMX data cannot be parsed.
+        Invalid: If the SDMX data cannot be parsed.
     """
     if validate:
         validate_doc(infile)
@@ -70,8 +70,9 @@ def read_xml(
     del infile
 
     if mode is not None and MODES[mode.value] not in dict_info:
-        raise ValueError(
-            f"Unable to parse sdmx file as {MODES[mode.value]} file"
+        raise Invalid(
+            "Validation Error",
+            f"Unable to parse sdmx file as {MODES[mode.value]} file",
         )
 
     result = __generate_sdmx_objects_from_xml(dict_info, use_dataset_id)
@@ -93,13 +94,13 @@ def __generate_sdmx_objects_from_xml(
         dict: Dictionary with the parsed data.
 
     Raises:
-        ClientError: If a SOAP error message is found.
-        ValueError: If the SDMX data cannot be parsed.
+        Invalid: If a SOAP error message is found.
+        NotImplemented: If the SDMX data cannot be parsed.
     """
     if ERROR in dict_info:
         code = dict_info[ERROR][ERROR_MESSAGE][ERROR_CODE]
         text = dict_info[ERROR][ERROR_MESSAGE][ERROR_TEXT]
-        raise ClientError(int(code), text)
+        raise Invalid("Invalid", f"{code}: {text}")
     if STRSPE in dict_info:
         return __parse_dataset(dict_info[STRSPE], mode=STRSPE)
     if GENERIC in dict_info:
@@ -110,7 +111,7 @@ def __generate_sdmx_objects_from_xml(
         )
     if REG_INTERFACE in dict_info:
         return handle_registry_interface(dict_info)
-    raise ValueError("Cannot parse input as SDMX.")
+    raise NotImplemented("Unsupported", "Cannot parse input as SDMX.")
 
 
 def __parse_dataset(message_info: Dict[str, Any], mode: str) -> Dict[str, Any]:

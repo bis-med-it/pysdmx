@@ -3,7 +3,7 @@ import pytest
 import tests.api.fmr.schema_checks as checks
 
 from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
-from pysdmx.errors import ServiceError
+from pysdmx.errors import InternalError
 
 
 @pytest.fixture()
@@ -350,7 +350,7 @@ def test_error_level(
     )
 
     with pytest.raises(
-        ServiceError,
+        InternalError,
         match="Could not infer attribute attachment level",
     ):
         fmr.get_schema(

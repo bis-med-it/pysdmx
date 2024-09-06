@@ -4,7 +4,7 @@ from tests.api.qb.structure.test_common import types_2_0_0_deprecated
 from pysdmx.api.qb.refmeta import RefMetaByStructureQuery, RefMetaDetail
 from pysdmx.api.qb.structure import StructureType
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 @pytest.fixture()
@@ -71,7 +71,7 @@ def test_no_metadata_queries_before_2_0_0(
     api_version: ApiVersion,
 ):
     q = RefMetaByStructureQuery(typ, agency, res, version, detail)
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -112,7 +112,7 @@ def test_url_v2_0_0_deprecated(
 ):
     q = RefMetaByStructureQuery(atype, agency, res, version, detail)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 

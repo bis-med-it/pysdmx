@@ -4,7 +4,7 @@ from enum import IntEnum
 import re
 from typing import Sequence, Union
 
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 class ApiVersion(IntEnum):
@@ -32,8 +32,7 @@ def check_multiple_items(
 ) -> None:
     """Whether multiple items are supported in the supplied API version."""
     if not isinstance(value, str) and version < ApiVersion.V1_3_0:
-        raise ClientError(
-            422,
+        raise Invalid(
             "Validation Error",
             f"Multiple items not allowed in SDMX-REST {version.value}.",
         )
@@ -44,8 +43,7 @@ def check_multiple_data_context(
 ) -> None:
     """Whether multiple items are supported in the supplied API version."""
     if not isinstance(value, str) and version < ApiVersion.V2_0_0:
-        raise ClientError(
-            422,
+        raise Invalid(
             "Validation Error",
             (
                 f"More than one {field} is not allowed in data context "

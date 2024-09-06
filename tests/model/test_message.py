@@ -1,6 +1,6 @@
 import pytest
 
-from pysdmx.errors import ClientError, NotFound
+from pysdmx.errors import Invalid, NotFound
 from pysdmx.model import Codelist, ConceptScheme
 from pysdmx.model.__base import ItemScheme
 from pysdmx.model.message import Message
@@ -107,7 +107,7 @@ def test_invalid_get_element_by_uid():
 
 def test_invalid_initialization_content_key():
     exc_message = "Invalid content type: Invalid"
-    with pytest.raises(ClientError) as exc_info:
+    with pytest.raises(Invalid) as exc_info:
         Message({"Invalid": {}})
     assert exc_message in str(exc_info.value.title)
 
@@ -122,6 +122,6 @@ def test_invalid_initialization_content_key():
 )
 def test_invalid_initialization_content_value(key, value):
     exc_message = f"Invalid content value type: str for {key}"
-    with pytest.raises(ClientError) as exc_info:
+    with pytest.raises(Invalid) as exc_info:
         Message({key: value})
     assert exc_message in str(exc_info.value.title)

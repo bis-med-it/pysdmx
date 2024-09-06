@@ -65,9 +65,7 @@ def parse_urn(urn: str) -> Reference:
             version=m.group(4),
         )
     else:
-        raise NotFound(
-            404, NF, f"{urn} does not match {maintainable_urn_pattern}"
-        )
+        raise NotFound(NF, f"{urn} does not match {maintainable_urn_pattern}")
 
 
 def parse_item_urn(urn: str) -> ItemReference:
@@ -82,7 +80,7 @@ def parse_item_urn(urn: str) -> ItemReference:
             item_id=m.group(5),
         )
     else:
-        raise NotFound(404, NF, f"{urn} does not match {item_urn_pattern}.")
+        raise NotFound(NF, f"{urn} does not match {item_urn_pattern}.")
 
 
 def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:
@@ -109,7 +107,6 @@ def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:
     else:
         urns = [f"{a.agency}:{a.id}({a.version})" for a in artefacts]
         raise NotFound(
-            404,
             NF,
             (
                 f"Could not find an artefact matching the following URN: "
