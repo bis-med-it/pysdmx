@@ -127,3 +127,13 @@ def test_h12_0():
 def test_ms():
     with pytest.raises(Invalid):
         convert_dpm("S")
+
+
+def test_week_in_month():
+    with pytest.raises(Invalid):
+        convert_dpm("W")
+
+
+def test_empty():
+    with pytest.raises(Invalid):
+        convert_dpm("")
