@@ -7,6 +7,7 @@ from typing import Any, Iterator, Literal, Optional, Sequence, Union
 from msgspec import Struct
 
 from pysdmx.model.concept import DataType
+from pysdmx.util import convert_dpm
 
 
 class DatePatternMap(Struct, frozen=True, omit_defaults=True):
@@ -49,6 +50,11 @@ class DatePatternMap(Struct, frozen=True, omit_defaults=True):
     id: Optional[str] = None
     locale: str = "en"
     pattern_type: Literal["fixed", "variable"] = "fixed"
+
+    @property
+    def py_pattern(self) -> str:
+        """Translate SDMX pattern into Python format codes."""
+        return convert_dpm(self.pattern)
 
 
 class FixedValueMap(Struct, frozen=True, omit_defaults=True):

@@ -84,3 +84,21 @@ def test_not_equal(source, target, pattern, freq):
     m2 = DatePatternMap(source + "2", target, pattern, freq)
 
     assert m1 != m2
+
+
+def test_pypattern_ddMMyy(source, target, freq):
+    m = DatePatternMap(source, target, "ddMMyy", freq)
+
+    assert m.py_pattern == r"%d%m%y"
+
+
+def test_pypattern_MMddyyyy(source, target, freq):
+    m = DatePatternMap(source, target, "MM/dd/yyyy", freq)
+
+    assert m.py_pattern == r"%m/%d/%G"
+
+
+def test_pypattern_MMMyyyy(source, target, freq):
+    m = DatePatternMap(source, target, "MMM yyyy", freq)
+
+    assert m.py_pattern == r"%b %G"

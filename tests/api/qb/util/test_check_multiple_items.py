@@ -19,4 +19,4 @@ def test_check_multiple_items_since_1_3_0(api_version):
     try:
         check_multiple_items(["A", "B"], api_version)
     except Invalid:
-        pytest.raises("A ClientError was received but none was expected.")
+        pytest.raises("A Invalid error was received but none was expected.")
