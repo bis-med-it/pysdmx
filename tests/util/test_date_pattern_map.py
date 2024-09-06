@@ -1,6 +1,6 @@
 import pytest
 
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 from pysdmx.util import convert_dpm
 
 
@@ -105,25 +105,25 @@ def test_multi_patterns():
 
 
 def test_era():
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         convert_dpm("G")
 
 
 def test_periods():
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         convert_dpm("n")
 
 
 def test_h24_1():
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         convert_dpm("kk")
 
 
 def test_h12_0():
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         convert_dpm("KK")
 
 
 def test_ms():
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         convert_dpm("S")
