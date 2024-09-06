@@ -151,8 +151,8 @@ class Component(Struct, frozen=True, omit_defaults=True):
             return None
 
     @property
-    def codes(self) -> Union[Codelist, Hierarchy, None]:
-        """Returns the component codes.
+    def enumeration(self) -> Union[Codelist, Hierarchy, None]:
+        """Returns the list of valid codes for the component.
 
         This will return the local codes (if any) or
         the codes of the referenced concept (if any), or
