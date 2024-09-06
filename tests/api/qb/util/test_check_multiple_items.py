@@ -8,7 +8,7 @@ from pysdmx.errors import Invalid
     "api_version", [v for v in ApiVersion if v < ApiVersion.V1_3_0]
 )
 def test_check_multiple_items_before_1_3_0(api_version):
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         check_multiple_items(["A", "B"], api_version)
 
 
@@ -18,5 +18,5 @@ def test_check_multiple_items_before_1_3_0(api_version):
 def test_check_multiple_items_since_1_3_0(api_version):
     try:
         check_multiple_items(["A", "B"], api_version)
-    except ClientError:
+    except Invalid:
         pytest.raises("A ClientError was received but none was expected.")

@@ -20,7 +20,7 @@ from pysdmx.api.qb.util import (
     check_multiple_data_context,
     REST_ALL,
 )
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 class DataContext(Enum):

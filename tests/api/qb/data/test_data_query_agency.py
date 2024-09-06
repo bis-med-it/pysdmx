@@ -44,7 +44,7 @@ def test_url_multiple_agencies_before_2_0_0(
     q = DataQuery(context, agencies)
 
     with pytest.raises(Invalid):
-        q.get_url(api_version)
+        q.get_url(v1u)
 
 
 def test_url_multiple_agencies_since_2_0_0(

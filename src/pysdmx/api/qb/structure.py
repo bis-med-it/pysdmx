@@ -311,9 +311,8 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     def __check_artefact_type(
         self, atyp: StructureType, version: ApiVersion
     ) -> None:
-        if atyp not in _API_RESOURCES[version.value.label]:
-            raise ClientError(
-                422,
+        if atyp not in _API_RESOURCES[version.name.replace("_", ".")]:
+            raise Invalid(
                 "Validation Error",
                 f"{atyp} is not valid for SDMX-REST {version.name}.",
             )

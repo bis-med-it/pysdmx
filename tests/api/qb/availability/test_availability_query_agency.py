@@ -56,7 +56,7 @@ def test_availability_url_multiple_agencies_before_2_0_0(
     q = AvailabilityQuery(context, agencies)
 
     with pytest.raises(Invalid):
-        q.get_url(api_version)
+        q.get_url(v13u)
 
 
 def test_availability_url_multiple_agencies_since_2_0_0(
