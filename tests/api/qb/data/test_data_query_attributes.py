@@ -33,7 +33,7 @@ attributes = [
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
 def test_invalid_value(res: str, api_version: ApiVersion):
-    q = DataQuery(resource_id=res, attributes="CONF_STATUS,OBS_STATUS")
+    q = DataQuery(resource_id=res, attributes=42)
 
     with pytest.raises(Invalid):
         q.get_url(api_version)

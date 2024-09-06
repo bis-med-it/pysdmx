@@ -6,5 +6,5 @@ import-order-style = google
 max-complexity = 10
 max-line-length = 79
 select = B,B9,BLK,C,C4,D,DAR,E,F,I,PT,S,SIM,W
-per-file-ignores = tests/*:S101,D100,D103,D104,src/midra/api.py:DAR202,DAR402
+per-file-ignores = tests/*:S101,S311,D100,D103,D104,src/midra/api.py:DAR202,DAR402
 strictness=short

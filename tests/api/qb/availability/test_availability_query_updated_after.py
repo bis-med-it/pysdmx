@@ -23,7 +23,7 @@ def expected():
 
 
 @pytest.mark.parametrize("api_version", ApiVersion)
-def test_invalid_value(res: str, api_version: ApiVersion):
+def test_availability_invalid_value(res: str, api_version: ApiVersion):
     q = AvailabilityQuery(resource_id=res, updated_after="TIME_PERIOD")
 
     with pytest.raises(Invalid):
@@ -33,7 +33,7 @@ def test_invalid_value(res: str, api_version: ApiVersion):
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
-def test_url_updated_after_before_2_0_0(
+def test_availability_url_updated_after_before_2_0_0(
     res: str,
     updated_after: datetime,
     expected: str,
@@ -53,7 +53,7 @@ def test_url_updated_after_before_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_updated_after_since_2_0_0(
+def test_availability_url_updated_after_since_2_0_0(
     updated_after: datetime,
     expected: str,
     api_version: ApiVersion,
@@ -72,7 +72,7 @@ def test_url_updated_after_since_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
-def test_url_updated_after_before_2_0_0_short(
+def test_availability_url_updated_after_before_2_0_0_short(
     res: str,
     updated_after: datetime,
     expected: str,
@@ -89,7 +89,7 @@ def test_url_updated_after_before_2_0_0_short(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_updated_after_since_2_0_0_short(
+def test_availability_url_updated_after_since_2_0_0_short(
     updated_after: datetime,
     expected: str,
     api_version: ApiVersion,

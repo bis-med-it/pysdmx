@@ -312,9 +312,10 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         self, atyp: StructureType, version: ApiVersion
     ) -> None:
         if atyp not in _API_RESOURCES[version.value.label]:
-            raise Invalid(
+            raise ClientError(
+                422,
                 "Validation Error",
-                f"{atyp} is not valid for SDMX-REST {version.value}.",
+                f"{atyp} is not valid for SDMX-REST {version.name}.",
             )
 
     def __check_item(self, version: ApiVersion) -> None:

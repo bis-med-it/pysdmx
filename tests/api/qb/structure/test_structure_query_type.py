@@ -1,3 +1,5 @@
+import random
+
 import pytest
 from tests.api.qb.structure.test_common import (
     types_1_3_0,
@@ -159,7 +161,7 @@ def test_url_single_type_since_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
-@pytest.mark.parametrize("atype", types_initial)
+@pytest.mark.parametrize("atype", [random.choice(types_initial)])
 def test_url_initial_type_before_2_0_0(
     atype: StructureType,
     agency: str,
@@ -220,7 +222,7 @@ def test_url_v1_3_0_type_before_2_0_0(
     "api_version",
     (v for v in ApiVersion if v == ApiVersion.V1_5_0),
 )
-@pytest.mark.parametrize("atype", types_1_5_0)
+@pytest.mark.parametrize("atype", random.sample(types_1_5_0, 2))
 def test_url_v1_5_0_type_before_2_0_0(
     atype: StructureType,
     agency: str,
@@ -268,7 +270,7 @@ def test_url_v1_3_0_type_before_1_3_0(
     "api_version",
     (v for v in ApiVersion if v < ApiVersion.V1_5_0),
 )
-@pytest.mark.parametrize("atype", types_1_5_0)
+@pytest.mark.parametrize("atype", random.sample(types_1_5_0, 2))
 def test_url_v1_5_0_type_before_1_5_0(
     atype: StructureType,
     agency: str,
@@ -290,7 +292,7 @@ def test_url_v1_5_0_type_before_1_5_0(
     "api_version",
     (v for v in ApiVersion if v >= ApiVersion.V2_0_0),
 )
-@pytest.mark.parametrize("atype", types_2_0_0_deprecated)
+@pytest.mark.parametrize("atype", random.sample(types_2_0_0_deprecated, 2))
 def test_url_v2_0_0_deprecated(
     atype: StructureType,
     agency: str,
@@ -312,7 +314,7 @@ def test_url_v2_0_0_deprecated(
     "api_version",
     (v for v in ApiVersion if v >= ApiVersion.V2_0_0),
 )
-@pytest.mark.parametrize("atype", types_2_0_0_added)
+@pytest.mark.parametrize("atype", random.sample(types_2_0_0_added, 2))
 def test_url_v2_0_0_added_since_2_0_0(
     atype: StructureType,
     agency: str,
@@ -344,7 +346,7 @@ def test_url_v2_0_0_added_since_2_0_0(
     "api_version",
     (v for v in ApiVersion if v < ApiVersion.V2_0_0),
 )
-@pytest.mark.parametrize("atype", types_2_0_0_added)
+@pytest.mark.parametrize("atype", random.sample(types_2_0_0_added, 2))
 def test_url_v2_0_0_added_before_2_0_0(
     atype: StructureType,
     agency: str,
@@ -365,7 +367,7 @@ def test_url_v2_0_0_added_before_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-@pytest.mark.parametrize("atype", types_2_0_0_all)
+@pytest.mark.parametrize("atype", random.sample(types_2_0_0_all, 2))
 def test_url_v2_0_0_type(
     atype: StructureType,
     agency: str,

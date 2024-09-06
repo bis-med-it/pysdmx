@@ -41,7 +41,7 @@ def keys():
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
-def test_url_multiple_keys_before_2_0_0(
+def test_availability_url_multiple_keys_before_2_0_0(
     context: DataContext,
     agency: str,
     res: str,
@@ -58,7 +58,7 @@ def test_url_multiple_keys_before_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_multiple_keys_since_2_0_0(
+def test_availability_url_multiple_keys_since_2_0_0(
     context: DataContext,
     agency: str,
     res: str,
@@ -80,7 +80,7 @@ def test_url_multiple_keys_since_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_multiple_keys_since_2_0_0_short(
+def test_availability_url_multiple_keys_since_2_0_0_short(
     context: DataContext,
     keys: List[str],
     api_version: ApiVersion,
@@ -97,7 +97,7 @@ def test_url_multiple_keys_since_2_0_0_short(
     "api_version",
     (v for v in ApiVersion if v < ApiVersion.V2_0_0),
 )
-def test_url_default_key_before_2_0_0(
+def test_availability_url_default_key_before_2_0_0(
     context: DataContext,
     agency: str,
     res: str,
@@ -119,7 +119,7 @@ def test_url_default_key_before_2_0_0(
     "api_version",
     (v for v in ApiVersion if v >= ApiVersion.V2_0_0),
 )
-def test_url_default_key_since_2_0_0(
+def test_availability_url_default_key_since_2_0_0(
     context: DataContext, agency, res, version, api_version: ApiVersion
 ):
     expected = (
@@ -136,7 +136,7 @@ def test_url_default_key_since_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
-def test_url_single_key_before_2_0_0(
+def test_availability_url_single_key_before_2_0_0(
     context: DataContext,
     agency: str,
     res: str,
@@ -158,7 +158,7 @@ def test_url_single_key_before_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_single_key_since_2_0_0(
+def test_availability_url_single_key_since_2_0_0(
     context: DataContext,
     agency: str,
     res: str,

@@ -23,7 +23,7 @@ def mode():
         if v >= ApiVersion.V1_3_0 and v < ApiVersion.V2_0_0
     ),
 )
-def test_invalid_value(res: str, api_version: ApiVersion):
+def test_availability_invalid_value(res: str, api_version: ApiVersion):
     q = AvailabilityQuery(resource_id=res, mode=42)
 
     with pytest.raises(Invalid):
@@ -38,7 +38,7 @@ def test_invalid_value(res: str, api_version: ApiVersion):
         if v >= ApiVersion.V1_3_0 and v < ApiVersion.V2_0_0
     ),
 )
-def test_url_mode_before_2_0_0(
+def test_availability_url_mode_before_2_0_0(
     res: str,
     mode: AvailabilityMode,
     api_version: ApiVersion,
@@ -57,7 +57,7 @@ def test_url_mode_before_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_mode_since_2_0_0(
+def test_availability_url_mode_since_2_0_0(
     mode: AvailabilityMode,
     api_version: ApiVersion,
 ):
@@ -77,7 +77,7 @@ def test_url_mode_since_2_0_0(
         if v >= ApiVersion.V1_3_0 and v < ApiVersion.V2_0_0
     ),
 )
-def test_url_mode_before_2_0_0_short(
+def test_availability_url_mode_before_2_0_0_short(
     res: str,
     mode: AvailabilityMode,
     api_version: ApiVersion,
@@ -93,7 +93,7 @@ def test_url_mode_before_2_0_0_short(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_mode_since_2_0_0_short(
+def test_availability_url_mode_since_2_0_0_short(
     mode: AvailabilityMode, api_version: ApiVersion
 ):
     expected = f"/availability?mode={mode.value}"
@@ -112,7 +112,7 @@ def test_url_mode_since_2_0_0_short(
         if v >= ApiVersion.V1_3_0 and v < ApiVersion.V2_0_0
     ),
 )
-def test_url_default_mode_before_2_0_0_short(
+def test_availability_url_default_mode_before_2_0_0_short(
     res: str,
     api_version: ApiVersion,
 ):
@@ -128,7 +128,9 @@ def test_url_default_mode_before_2_0_0_short(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
-def test_url_default_mode_since_2_0_0_short(api_version: ApiVersion):
+def test_availability_url_default_mode_since_2_0_0_short(
+    api_version: ApiVersion,
+):
     mode = AvailabilityMode.EXACT
     expected = "/availability"
 

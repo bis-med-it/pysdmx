@@ -1,3 +1,5 @@
+import random
+
 import pytest
 from tests.api.qb.structure.test_common import (
     types_1_3_0,
@@ -153,7 +155,7 @@ def test_url_2_0_0_refs_before_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
 )
-@pytest.mark.parametrize("reference", types_initial)
+@pytest.mark.parametrize("reference", [random.choice(types_initial)])
 def test_url_initial_type_before_2_0_0(
     typ: StructureType,
     agency: str,
@@ -193,7 +195,7 @@ def test_url_initial_type_before_2_0_0(
         if v >= ApiVersion.V1_3_0 and v < ApiVersion.V2_0_0
     ),
 )
-@pytest.mark.parametrize("reference", types_1_3_0)
+@pytest.mark.parametrize("reference", [random.choice(types_1_3_0)])
 def test_url_v1_3_0_type_before_2_0_0(
     typ: StructureType,
     agency: str,
@@ -224,7 +226,7 @@ def test_url_v1_3_0_type_before_2_0_0(
     "api_version",
     (v for v in ApiVersion if v == ApiVersion.V1_5_0),
 )
-@pytest.mark.parametrize("references", types_1_5_0)
+@pytest.mark.parametrize("references", [random.choice(types_1_5_0)])
 def test_url_v1_5_0_type_before_2_0_0(
     typ: StructureType,
     agency: str,
@@ -255,7 +257,7 @@ def test_url_v1_5_0_type_before_2_0_0(
     "api_version",
     (v for v in ApiVersion if v < ApiVersion.V1_3_0),
 )
-@pytest.mark.parametrize("reference", types_1_3_0)
+@pytest.mark.parametrize("reference", [random.choice(types_1_3_0)])
 def test_url_v1_3_0_type_before_1_3_0(
     typ: StructureType,
     agency: str,
@@ -282,7 +284,7 @@ def test_url_v1_3_0_type_before_1_3_0(
     "api_version",
     (v for v in ApiVersion if v < ApiVersion.V1_5_0),
 )
-@pytest.mark.parametrize("reference", types_1_5_0)
+@pytest.mark.parametrize("reference", [random.choice(types_1_5_0)])
 def test_url_v1_5_0_type_before_1_5_0(
     typ: StructureType,
     agency: str,

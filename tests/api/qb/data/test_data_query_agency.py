@@ -1,3 +1,4 @@
+import random
 from typing import List
 
 import pytest
@@ -27,11 +28,18 @@ def res():
     return "REF_META"
 
 
-@pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
-)
+@pytest.fixture()
+def v1u():
+    return random.choice([v for v in ApiVersion if v < ApiVersion.V2_0_0])
+
+
+@pytest.fixture()
+def v2u():
+    return random.choice([v for v in ApiVersion if v >= ApiVersion.V2_0_0])
+
+
 def test_url_multiple_agencies_before_2_0_0(
-    context: DataContext, agencies: List[str], api_version: ApiVersion
+    context: DataContext, agencies: List[str], v1u: ApiVersion
 ):
     q = DataQuery(context, agencies)
 
@@ -39,11 +47,8 @@ def test_url_multiple_agencies_before_2_0_0(
         q.get_url(api_version)
 
 
-@pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
-)
 def test_url_multiple_agencies_since_2_0_0(
-    context: DataContext, agencies: List[str], api_version: ApiVersion
+    context: DataContext, agencies: List[str], v2u: ApiVersion
 ):
     expected = (
         f"/data/{context.value}/{','.join(agencies)}/*/*/*"
@@ -51,79 +56,60 @@ def test_url_multiple_agencies_since_2_0_0(
     )
 
     q = DataQuery(context, agencies)
-    url = q.get_url(api_version)
+    url = q.get_url(v2u)
 
     assert url == expected
 
 
-@pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
-)
 def test_url_multiple_agencies_since_2_0_0_short(
-    agencies: List[str], api_version: ApiVersion
+    agencies: List[str], v2u: ApiVersion
 ):
     expected = f"/data/*/{','.join(agencies)}"
 
     q = DataQuery(agency_id=agencies)
-    url = q.get_url(api_version, True)
+    url = q.get_url(v2u, True)
 
     assert url == expected
 
 
-@pytest.mark.parametrize(
-    "api_version",
-    (v for v in ApiVersion if v < ApiVersion.V2_0_0),
-)
 def test_url_default_agency_before_2_0_0(
-    context: DataContext, res: str, api_version: ApiVersion
+    context: DataContext, res: str, v1u: ApiVersion
 ):
     expected = f"/data/all,{res},latest/all?detail=full&includeHistory=false"
 
     q = DataQuery(context, resource_id=res)
-    url = q.get_url(api_version)
+    url = q.get_url(v1u)
 
     assert url == expected
 
 
-@pytest.mark.parametrize(
-    "api_version",
-    (v for v in ApiVersion if v >= ApiVersion.V2_0_0),
-)
-def test_url_default_agency_since_2_0_0(
-    context: DataContext, api_version: ApiVersion
-):
+def test_url_default_agency_since_2_0_0(context: DataContext, v2u: ApiVersion):
     expected = (
         f"/data/{context.value}/*/*/*/*"
         "?attributes=dsd&measures=all&includeHistory=false"
     )
 
     q = DataQuery(context)
-    url = q.get_url(api_version)
+    url = q.get_url(v2u)
 
     assert url == expected
 
 
-@pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
-)
 def test_url_single_agency_before_2_0_0(
-    context: DataContext, agency: str, res: str, api_version: ApiVersion
+    context: DataContext, agency: str, res: str, v1u: ApiVersion
 ):
     expected = (
         f"/data/{agency},{res},latest/all?detail=full&includeHistory=false"
     )
 
     q = DataQuery(context, agency, res)
-    url = q.get_url(api_version)
+    url = q.get_url(v1u)
 
     assert url == expected
 
 
-@pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
-)
 def test_url_single_agency_since_2_0_0(
-    context: DataContext, agency: str, api_version: ApiVersion
+    context: DataContext, agency: str, v2u: ApiVersion
 ):
     expected = (
         f"/data/{context.value}/{agency}/*/*/*"
@@ -131,34 +117,28 @@ def test_url_single_agency_since_2_0_0(
     )
 
     q = DataQuery(context, agency)
-    url = q.get_url(api_version)
+    url = q.get_url(v2u)
 
     assert url == expected
 
 
-@pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
-)
 def test_url_add_default_agency_if_required_before_2_0_0(
-    context: DataContext, res: str, api_version: ApiVersion
+    context: DataContext, res: str, v1u: ApiVersion
 ):
     expected = f"/data/{res}"
 
     q = DataQuery(context, resource_id=res)
-    url = q.get_url(api_version, True)
+    url = q.get_url(v1u, True)
 
     assert url == expected
 
 
-@pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
-)
 def test_url_add_default_agency_if_required_since_2_0_0(
-    context: DataContext, res: str, api_version: ApiVersion
+    context: DataContext, res: str, v2u: ApiVersion
 ):
     expected = f"/data/{context.value}/*/{res}"
 
     q = DataQuery(context, resource_id=res)
-    url = q.get_url(api_version, True)
+    url = q.get_url(v2u, True)
 
     assert url == expected

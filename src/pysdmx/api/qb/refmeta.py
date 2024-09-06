@@ -170,7 +170,7 @@ class RefMetaByStructureQuery(
         if atyp not in _API_RESOURCES[version.value.label]:
             raise Invalid(
                 "Validation Error",
-                f"{atyp} is not valid for SDMX-REST {version.value}.",
+                f"{atyp} is not valid for SDMX-REST {version.name}.",
             )
 
     def _create_full_query(self) -> str:
