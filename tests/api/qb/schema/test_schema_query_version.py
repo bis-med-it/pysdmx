@@ -5,7 +5,7 @@ from pysdmx.api.qb.schema import (
     SchemaQuery,
 )
 from pysdmx.api.qb.util import ApiVersion, REST_ALL
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 @pytest.fixture()
@@ -100,5 +100,5 @@ def test_all_not_allowed(
 ):
     q = SchemaQuery(context, agency, res, REST_ALL)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version, True)

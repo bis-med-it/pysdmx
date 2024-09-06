@@ -11,7 +11,7 @@ from pysdmx.api.qb.util import (
     REST_ALL,
     REST_LATEST,
 )
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 class StructureDetail(Enum):
@@ -284,9 +284,7 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         try:
             decoder.decode(encoder.encode(self))
         except msgspec.DecodeError as err:
-            raise ClientError(
-                422, "Invalid Structure Query", str(err)
-            ) from err
+            raise Invalid("Invalid Structure Query", str(err)) from err
 
     def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
         """The URL for the query in the selected SDMX-REST API version."""
@@ -314,16 +312,14 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         self, atyp: StructureType, version: ApiVersion
     ) -> None:
         if atyp not in _API_RESOURCES[version.name.replace("_", ".")]:
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Validation Error",
                 f"{atyp} is not valid for SDMX-REST {version.name}.",
             )
 
     def __check_item(self, version: ApiVersion) -> None:
         if self.item_id != REST_ALL and version < ApiVersion.V1_1_0:
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Validation Error",
                 f"Item query not supported in {version.value}.",
             )
@@ -338,8 +334,7 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                 "referencecompletestubs",
             ]
         ) or (version < ApiVersion.V2_0_0 and self.detail.value == "raw"):
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Validation Error",
                 f"{self.detail} not allowed in SDMX-REST {version.value}.",
             )
@@ -352,8 +347,7 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             self.references == StructureReference.ANCESTORS
             and version < ApiVersion.V2_0_0
         ):
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Validation Error",
                 f"{self.references} not allowed in SDMX-REST {version.value}.",
             )

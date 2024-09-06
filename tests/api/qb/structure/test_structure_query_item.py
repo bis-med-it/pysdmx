@@ -9,7 +9,7 @@ from pysdmx.api.qb.structure import (
     StructureType,
 )
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 @pytest.fixture()
@@ -77,7 +77,7 @@ def test_url_item_query_until_1_0_2(
 ):
     q = StructureQuery(typ, agency, res, version, item, detail, refs)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -221,7 +221,7 @@ def test_url_multiple_items_until_1_2_0(
 ):
     q = StructureQuery(typ, agency, res, version, items, detail, refs)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 

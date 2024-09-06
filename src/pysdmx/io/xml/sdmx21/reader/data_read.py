@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 import pandas as pd
 
+from pysdmx.errors import NotFound, NotImplemented
 from pysdmx.io.xml.sdmx21.__parsing_config import (
     AGENCY_ID,
     ATTRIBUTES,
@@ -202,7 +203,7 @@ def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
         The ids contained in the structure will be returned.
 
     Raises:
-        NotImplementedError: For Provision Agreement, as it is not implemented.
+        NotImplemented: For Provision Agreement, as it is not implemented.
     """
     if STRUCTURE in structure:
         structure_type = "DataStructure"
@@ -212,7 +213,9 @@ def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
         structure_type = "DataFlow"
         tuple_ids = __get_ids_from_structure(structure[STR_USAGE])
     else:
-        raise NotImplementedError("ProvisionAgrement not implemented")
+        raise NotImplemented(
+            "Unsupported", "ProvisionAgrement not implemented"
+        )
     return tuple_ids + (structure_type,)
 
 
@@ -308,12 +311,13 @@ def create_dataset(
         A pandas dataframe with the created dataset will be returned.
 
     Raises:
-        Exception: If the structure reference cannot be found.
+        NotFound: If the structure reference cannot be found.
     """
     if dataset[STRREF] not in str_info:
-        raise Exception(
+        raise NotFound(
+            "Unknown structure",
             f"Cannot find the structure reference "
-            f"of this dataset:{dataset[STRREF]}"
+            f"of this dataset:{dataset[STRREF]}",
         )
     structure_info = str_info[dataset[STRREF]]
     if STRSPE == global_mode:

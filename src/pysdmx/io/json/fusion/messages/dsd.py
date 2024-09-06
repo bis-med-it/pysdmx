@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Sequence, Tuple
 
 from msgspec import Struct
 
-from pysdmx.errors import ServiceError
+from pysdmx.errors import InternalError
 from pysdmx.io.json.fusion.messages.code import FusionCodelist
 from pysdmx.io.json.fusion.messages.concept import (
     FusionConcept,
@@ -88,8 +88,7 @@ class FusionAttribute(Struct, frozen=True):
         elif self.dimensionReferences:
             return ",".join(self.dimensionReferences)
         else:
-            raise ServiceError(
-                500,
+            raise InternalError(
                 "Invalid metadata",
                 (
                     "Could not infer attribute attachment level. "

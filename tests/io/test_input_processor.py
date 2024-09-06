@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pytest
 
+from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.sdmx21.reader import read_xml
 
@@ -72,13 +73,13 @@ def test_process_string_to_read_bom(valid_xml, valid_xml_bom):
 def test_process_string_to_read_invalid_xml(invalid_xml):
     message = "This element is not expected."
     process_string_to_read(invalid_xml)
-    with pytest.raises(ValueError, match=message):
+    with pytest.raises(Invalid, match=message):
         read_xml(invalid_xml, validate=True)
 
 
 def test_process_string_to_read_invalid_type():
     message = "Cannot parse input of type"
-    with pytest.raises(ValueError, match=message):
+    with pytest.raises(Invalid, match=message):
         process_string_to_read(123)
 
 
@@ -95,11 +96,11 @@ def test_process_string_to_read_valid_json():
 
 
 def test_process_string_to_read_invalid_json():
-    with pytest.raises(ValueError, match="Cannot parse input as SDMX."):
+    with pytest.raises(Invalid, match="Cannot parse input as SDMX."):
         process_string_to_read('{"key": "value"')
 
 
 def test_process_string_to_read_invalid_allowed_error(invalid_message_xml):
     message = "Cannot parse input as SDMX."
-    with pytest.raises(ValueError, match=message):
+    with pytest.raises(NotImplemented, match=message):
         read_xml(invalid_message_xml, validate=False)

@@ -26,7 +26,7 @@ from pysdmx.api.qb import (
     StructureReference,
     StructureType,
 )
-from pysdmx.errors import ClientError, NotFound, ServiceError, Unavailable
+from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 from pysdmx.io.json.fusion.reader import deserializers as fusion_readers
 from pysdmx.io.json.sdmxjson2.reader import deserializers as sdmx_readers
 from pysdmx.model import (
@@ -118,25 +118,25 @@ class __BaseRegistryClient:
                     "The requested artefact could not be found in the "
                     f"targeted registry. The query was `{q}`"
                 )
-                raise NotFound(s, "Not found", msg) from e
+                raise NotFound("Not found", msg) from e
             elif s < 500:
                 msg = (
                     f"The query returned a {s} error code. The query "
                     f"was `{q}`. The error message was: `{t}`."
                 )
-                raise ClientError(s, f"Client error {s}", msg) from e
+                raise Invalid(f"Client error {s}", msg) from e
             else:
                 msg = (
                     f"The service returned a {s} error code. The query "
                     f"was `{q}`. The error message was: `{t}`."
                 )
-                raise ServiceError(s, f"Service error {s}", msg) from e
+                raise InternalError(f"Service error {s}", msg) from e
         else:
             msg = (
                 f"There was an issue connecting to the targeted registry. "
                 f"The query was `{q}`. The error message was: `{e}`."
             )
-            raise Unavailable(503, "Connection error", msg) from e
+            raise Unavailable("Connection error", msg) from e
 
     def _df_details(
         self, details: DataflowDetails

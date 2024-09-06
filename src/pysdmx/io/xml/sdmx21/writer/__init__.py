@@ -2,6 +2,7 @@
 
 from typing import Any, Dict, Optional
 
+from pysdmx.errors import NotImplemented
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     __write_header,
@@ -34,10 +35,12 @@ def writer(
         The XML string if path is empty, None otherwise
 
     Raises:
-        NotImplementedError: If the MessageType is not Metadata
+        NotImplemented: If the MessageType is not Metadata
     """
     if type_ != MessageType.Structure:
-        raise NotImplementedError("Only Metadata messages are supported")
+        raise NotImplemented(
+            "Unsupported", "Only Metadata messages are supported"
+        )
     outfile = create_namespaces(type_, content, prettyprint)
 
     if header is None:

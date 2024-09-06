@@ -10,7 +10,7 @@ from pysdmx.api.dc.query import (
 )
 from pysdmx.api.qb.data import DataQuery
 from pysdmx.api.qb.util import ApiVersion
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 @pytest.mark.parametrize(
@@ -20,7 +20,7 @@ def test_components_v1(api_version: ApiVersion):
     flt = TextFilter("FREQ", Operator.EQUALS, "M")
     q = DataQuery(resource_id="CBS", components=flt)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -31,7 +31,7 @@ def test_unsupported_operator(api_version: ApiVersion):
     flt = TextFilter("FREQ", Operator.NOT_IN, ["A", "M"])
     q = DataQuery(components=flt)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -203,7 +203,7 @@ def test_one_text_comp_wrong_like(api_version: ApiVersion):
 
     q = DataQuery(components=flt)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -215,7 +215,7 @@ def test_one_text_comp_wrong_like_type(api_version: ApiVersion):
 
     q = DataQuery(components=flt)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -296,7 +296,7 @@ def test_mult_or_filters(api_version: ApiVersion):
 
     q = DataQuery(components=mflt)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 
@@ -311,7 +311,7 @@ def test_mult_filters_wrong_type(api_version: ApiVersion):
 
     q = DataQuery(components=mflt)
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.get_url(api_version)
 
 

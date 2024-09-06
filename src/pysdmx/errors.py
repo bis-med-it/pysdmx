@@ -1,26 +1,36 @@
 """Types of errors that can be returned by pysdmx."""
 
-from typing import Optional
+from typing import Any, Dict, Optional
 
 
-class Error(Exception):
+class PysdmxError(Exception):
     """Base ``pysdmx`` error class.
 
     This class is inherited by more specific error classes and so, ideally,
     you should not encounter it directly when calling library functions.
+
+    Attributes:
+        title: A short description of the problem.
+        description: A longer, human-friendly description of the problem,
+            ideally with tips on how the issue can be resolved.
+        csi: A dictionary containing additional details about the issue,
+            that can contribute to its understanding or resolution.
     """
 
     def __init__(
-        self, status: int, title: str, description: Optional[str] = None
+        self,
+        title: str,
+        description: Optional[str] = None,
+        csi: Optional[Dict[str, Any]] = None,
     ):
         """Instantiates a new error, with the supplied paramaters."""
-        self.status = status
         self.title = title
         self.description = description
+        self.csi = csi
         super().__init__(self.description)
 
 
-class RetriableError(Error):
+class RetriableError(PysdmxError):
     """A type of errors that may be resolved after retrying.
 
     This class is inherited by more specific error classes and so, ideally,
@@ -29,7 +39,7 @@ class RetriableError(Error):
 
 
 class Unavailable(RetriableError):
-    """The targeted service is not available.
+    """The targeted service or resource is not available.
 
     This can be for a variety of reasons such as:
 
@@ -44,36 +54,33 @@ class Unavailable(RetriableError):
     """
 
 
-class ClientError(Error):
-    """The request from the client is **invalid**.
+class Invalid(PysdmxError):
+    """The request is invalid.
+
+    This type of errors is considered as **non-retriable** and so clients
+    should **not** retry the query before investigating why the request
+    is invalid.
+    """
+
+
+class InternalError(PysdmxError):
+    """The request is valid but could not be fulfilled.
+
+    This type of errors is considered as **non-retriable** and so clients
+    should **not** retry the query before investigating (and possibly
+    reporting) the issue first.
+    """
+
+
+class NotFound(PysdmxError):
+    """The requested resource is **not available**.
 
     This type of errors is considered as **non-retriable** and so clients
     should **not** retry the query before investigating the issue first.
     """
 
 
-class ServiceError(Error):
-    """The targeted service reported an error.
-
-    This type of errors is considered as **non-retriable** and so clients
-    should **not** retry the query before investigating the issue first.
-    """
-
-
-class NotFound(Error):
-    """The requested resources are **not available**.
-
-    This can be for a variety of reasons such as:
-
-    - There is a typo in the parameters passed to the function
-    - The resources exist but in another service than the targeted one
-
-    This type of errors is considered as **non-retriable** and so clients
-    should **not** retry the query before investigating the issue first.
-    """
-
-
-class NotSupported(Error):
+class NotImplemented(PysdmxError):
     """The requested operation is not supported.
 
     This type of errors is considered as **non-retriable** and so clients
@@ -81,14 +88,15 @@ class NotSupported(Error):
     """
 
 
-class Unauthorized(Error):
+class Unauthorized(PysdmxError):
     """The request was **not authorized**.
 
     This can be for a variety of reasons such as:
 
-    - The supplied credentials are invalid
-    - The user does not belong to the AD group granting permission to access
-      the requested resources
+    - Authentication is required by no credentials were supplied.
+    - Credentials were supplied but were invalid.
+    - Credentials were supplied and valid but access is denied.
+
 
     This type of errors is considered as **non-retriable** and so clients
     should **not** retry the query before investigating the issue first.

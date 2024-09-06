@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 class Annotation(Struct, frozen=True, omit_defaults=True):
@@ -38,8 +38,7 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
             and not self.url
             and not self.type
         ):
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Empty annotation",
                 (
                     "All fields of the annotation have been left empty."
@@ -233,8 +232,7 @@ class MaintainableArtefact(
     def __post_init__(self) -> None:
         """Additional validation checks for maintainable artefacts."""
         if not self.agency:
-            raise ClientError(
-                422,
+            raise Invalid(
                 "Missing agency",
                 "Maintainable artefacts must reference an agency.",
             )

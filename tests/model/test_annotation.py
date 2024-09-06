@@ -1,6 +1,6 @@
 import pytest
 
-from pysdmx.errors import Error
+from pysdmx.errors import PysdmxError
 from pysdmx.model.__base import Annotation
 
 
@@ -78,5 +78,5 @@ def test_tostr_all(id, title, text, url, type):
 
 
 def test_empty_annotation_not_allowed():
-    with pytest.raises(Error, match="empty"):
+    with pytest.raises(PysdmxError, match="empty"):
         Annotation()

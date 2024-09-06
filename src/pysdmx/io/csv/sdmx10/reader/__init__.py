@@ -5,7 +5,7 @@ from typing import Dict
 
 import pandas as pd
 
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 from pysdmx.model.dataset import PandasDataset
 
 
@@ -46,7 +46,7 @@ def read(infile: str) -> Dict[str, PandasDataset]:
         payload: dict.
 
     Raises:
-        ClientError: If it is an invalid CSV file.
+        Invalid: If it is an invalid CSV file.
     """
     # Get Dataframe from CSV file
     df_csv = pd.read_csv(StringIO(infile))
@@ -56,8 +56,7 @@ def read(infile: str) -> Dict[str, PandasDataset]:
     # Determine SDMX-CSV version based on column names
     if "DATAFLOW" not in df_csv.columns:
         # Raise an exception if the CSV file is not in SDMX-CSV format
-        raise ClientError(
-            400,
+        raise Invalid(
             "Only SDMX-CSV 1.0 is allowed",
             "Invalid SDMX-CSV 1.0 file. "
             "Check the docs for the proper structure on content.",

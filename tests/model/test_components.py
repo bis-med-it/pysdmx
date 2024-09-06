@@ -1,5 +1,6 @@
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.model.concept import DataType
 from pysdmx.model.dataflow import Component, Components, Role
 
@@ -66,7 +67,7 @@ def test_append_works(components):
 
 def test_append_invalid(components):
     with pytest.raises(
-        ValueError,
+        Invalid,
         match="^Unexpected type. Expected Component but got: <class 'int'>$",
     ):
         components.append(202)
@@ -74,7 +75,7 @@ def test_append_invalid(components):
 
 def test_append_existing(components):
     with pytest.raises(
-        ValueError,
+        Invalid,
         match="^There is already a component with ID: FREQ$",
     ):
         components.append(components[0])
@@ -93,7 +94,7 @@ def test_insert_invalid(components):
     idx = len(components)
 
     with pytest.raises(
-        ValueError,
+        Invalid,
         match="^Unexpected type. Expected Component but got: <class 'int'>$",
     ):
         components.insert(idx, 202)
@@ -103,7 +104,7 @@ def test_insert_existing(components):
     idx = len(components)
 
     with pytest.raises(
-        ValueError,
+        Invalid,
         match="^There is already a component with ID: FREQ$",
     ):
         components.insert(idx, components[0])
@@ -122,7 +123,7 @@ def test_setitem_invalid(components):
     idx = len(components)
 
     with pytest.raises(
-        ValueError,
+        Invalid,
         match="^Unexpected type. Expected Component but got: <class 'int'>$",
     ):
         components[idx] = 202
@@ -132,7 +133,7 @@ def test_setitem_existing(components):
     idx = len(components)
 
     with pytest.raises(
-        ValueError,
+        Invalid,
         match="^There is already a component with ID: FREQ$",
     ):
         components[idx] = components[0]
@@ -152,7 +153,7 @@ def test_extend_invalid(components):
     nf = Component("ZZZ", False, Role.ATTRIBUTE, DataType.STRING)
 
     with pytest.raises(
-        ValueError,
+        Invalid,
         match="^Unexpected type. Expected Component but got: <class 'int'>$",
     ):
         components.extend([nf, 202])
@@ -162,7 +163,7 @@ def test_extend_existing(components):
     nf = Component("ZZZ", False, Role.ATTRIBUTE, DataType.STRING)
 
     with pytest.raises(
-        ValueError,
+        Invalid,
         match="^There are duplicates in the collection: \\['ZZZ'\\]$",
     ):
         components.extend([nf, nf])
@@ -170,7 +171,7 @@ def test_extend_existing(components):
 
 def test_extend_with_one_is_checked(components):
     with pytest.raises(
-        ValueError,
+        Invalid,
         match="^There is already a component with ID: FREQ$",
     ):
         components.extend([components[0]])

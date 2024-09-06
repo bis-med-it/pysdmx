@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pytest
 
+from pysdmx.errors import NotImplemented
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer import Header, writer
 from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme
@@ -141,7 +142,7 @@ def test_writer_empty(empty_sample, header):
 
 def test_writing_not_supported():
     with pytest.raises(
-        NotImplementedError, match="Only Metadata messages are supported"
+        NotImplemented, match="Only Metadata messages are supported"
     ):
         writer({}, MessageType.Error, prettyprint=True)
 

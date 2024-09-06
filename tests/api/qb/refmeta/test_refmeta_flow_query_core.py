@@ -2,7 +2,7 @@ import pytest
 
 from pysdmx.api.qb.refmeta import RefMetaByMetadataflowQuery, RefMetaDetail
 from pysdmx.api.qb.util import ApiVersion, REST_ALL, REST_LATEST
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 @pytest.fixture()
@@ -55,7 +55,7 @@ def test_validate_ok():
 def test_validate_nok():
     q = RefMetaByMetadataflowQuery(detail="wrong")
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.validate()
 
 

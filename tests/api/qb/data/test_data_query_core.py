@@ -2,7 +2,7 @@ import pytest
 
 from pysdmx.api.qb.data import DataContext, DataQuery
 from pysdmx.api.qb.util import ApiVersion, REST_ALL
-from pysdmx.errors import ClientError
+from pysdmx.errors import Invalid
 
 
 @pytest.fixture()
@@ -61,7 +61,7 @@ def test_validate_ok():
 def test_validate_nok():
     q = DataQuery("wrong_context")
 
-    with pytest.raises(ClientError):
+    with pytest.raises(Invalid):
         q.validate()
 
 

@@ -14,6 +14,7 @@ from typing import Any, Iterable, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.errors import Invalid
 from pysdmx.model.__base import Agency, DataProvider
 from pysdmx.model.code import Codelist, Hierarchy
 from pysdmx.model.concept import Concept, DataType, Facets
@@ -276,19 +277,22 @@ class Components(UserList[Component]):
             counter = Counter([f.id for f in coll])
             dup = [i[0] for i in counter.items() if i[1] > 1]
             if len(dup) > 0:
-                raise ValueError(
+                raise Invalid(
+                    "Validation Error",
                     f"There are duplicates in the collection: {dup}",
                 )
 
     def __validate_comp(self, fld: Component, is_init: bool = False) -> None:
         if not isinstance(fld, Component):
-            raise ValueError(
-                f"Unexpected type. Expected Component but got: {type(fld)}"
+            raise Invalid(
+                "Validation Error",
+                f"Unexpected type. Expected Component but got: {type(fld)}",
             )
         if not is_init:
             ids = [f.id for f in self.data]
             if fld.id in ids:
-                raise ValueError(
+                raise Invalid(
+                    "Validation Error",
                     f"There is already a component with ID: {fld.id}",
                 )
 
