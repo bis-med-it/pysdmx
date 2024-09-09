@@ -22,13 +22,11 @@ class JsonConcept(Struct, frozen=True):
         repr_ = self.coreRepresentation
         if repr_:
             if repr_.enumerationFormat:
-                dt = DataType(
-                    repr_.enumerationFormat.textType,
-                )
+                dt = DataType(repr_.enumerationFormat.textType)
+            elif repr_.format:
+                dt = DataType(repr_.format.textType)
             else:
-                dt = DataType(
-                    repr_.format.textType,  # type: ignore[union-attr]
-                )
+                dt = DataType.STRING
             facets = repr_.to_facets()
             codes = repr_.to_enumeration(codelists, [])
             cl_ref = repr_.enumeration
