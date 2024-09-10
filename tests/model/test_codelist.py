@@ -106,6 +106,6 @@ def test_get_code(id, name, agency):
     resp2 = cl[id3]
 
     assert resp1 == c1
-    assert (id1 in cl) is True
+    assert id1 in cl
     assert resp2 is None
-    assert (id3 in cl) is False
+    assert not id3 in cl
