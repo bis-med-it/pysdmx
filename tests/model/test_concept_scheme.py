@@ -88,4 +88,6 @@ def test_get_concept(id, name, agency):
     resp2 = cs["child3"]
 
     assert resp1 == c1
+    assert "child1" in cs
     assert resp2 is None
+    assert not "child3" in cs
