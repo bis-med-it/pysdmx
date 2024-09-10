@@ -105,9 +105,13 @@ def test_get_code(id, name, agency):
     resp4 = cs["child2.child24.child421"]
 
     assert resp1 == grandchild
+    assert "child2.child21.child211" in cs
     assert resp2 == codes[1]
+    assert "child2" in cs
     assert resp3 is None
+    assert not "child3" in cs
     assert resp4 is None
+    assert not "child2.child24.child421" in cs
 
 
 def test_codes_by_id_no_parent_needed(id, name, agency):

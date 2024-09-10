@@ -190,6 +190,10 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
         """Return the code identified by the supplied ID."""
         return self.__extract_code(self.codes, id_)
 
+    def __contains__(self, id_: str) -> bool:
+        """Whether a code with the supplied ID is present in the hierarchy."""
+        return bool(self.__getitem__(id_))
+
     def __get_count(self, codes: Sequence[HierarchicalCode]) -> int:
         """Return the number of codes at all levels."""
         count = len(codes)
