@@ -89,6 +89,10 @@ class Codelist(ItemScheme, frozen=True, omit_defaults=True):
         else:
             return out[0]
 
+    def __contains__(self, id_: str) -> bool:
+        """Whether a code with the supplied ID is present in the codelist."""
+        return bool(self.__getitem__(id_))
+
 
 class HierarchicalCode(Struct, frozen=True, omit_defaults=True):
     """A code, as used in a hierarchy.
