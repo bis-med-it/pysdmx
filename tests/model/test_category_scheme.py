@@ -107,9 +107,9 @@ def test_get_category(id, name, agency):
     assert resp2 == cats[1]
     assert "child2" in cs
     assert resp3 is None
-    assert not "child3" in cs
+    assert "child3" not in cs
     assert resp4 is None
-    assert not "child2.child24.child421" in cs
+    assert "child2.child24.child421" not in cs
 
 
 def test_dataflows(id, name, agency):
