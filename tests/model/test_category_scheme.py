@@ -103,9 +103,13 @@ def test_get_category(id, name, agency):
     resp4 = cs["child2.child24.child421"]
 
     assert resp1 == grandchild
+    assert "child2.child21.child211" in cs
     assert resp2 == cats[1]
+    assert "child2" in cs
     assert resp3 is None
+    assert not "child3" in cs
     assert resp4 is None
+    assert not "child2.child24.child421" in cs
 
 
 def test_dataflows(id, name, agency):
