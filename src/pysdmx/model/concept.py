@@ -192,3 +192,7 @@ class ConceptScheme(ItemScheme, frozen=True, omit_defaults=True):
             return None
         else:
             return out[0]
+
+    def __contains__(self, id_: str) -> bool:
+        """Whether a concept with the supplied ID is present in the scheme."""
+        return bool(self.__getitem__(id_))

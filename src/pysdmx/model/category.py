@@ -90,6 +90,10 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
         """Return the category identified by the given ID."""
         return self.__extract_cat(self.categories, id_)
 
+    def __contains__(self, id_: str) -> bool:
+        """Whether there is a category with the supplied ID in the scheme."""
+        return bool(self.__getitem__(id_))
+
     def __get_count(self, categories: Sequence[Category]) -> int:
         """Return the number of categories at all levels."""
         count = len(categories)

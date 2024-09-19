@@ -93,13 +93,19 @@ def test_sized(id, name, agency):
 
 
 def test_get_code(id, name, agency):
-    c1 = Code(id="child1", name="Child 1")
-    c2 = Code(id="child2", name="Child 2")
+    id1 = "child1"
+    id2 = "child2"
+    id3 = "child3"
+
+    c1 = Code(id=id1, name="Child 1")
+    c2 = Code(id=id2, name="Child 2")
     codes = [c1, c2]
     cl = Codelist(id=id, name=name, agency=agency, items=codes)
 
-    resp1 = cl["child1"]
-    resp2 = cl["child3"]
+    resp1 = cl[id1]
+    resp2 = cl[id3]
 
     assert resp1 == c1
+    assert id1 in cl
     assert resp2 is None
+    assert id3 not in cl
