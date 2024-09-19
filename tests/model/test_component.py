@@ -72,7 +72,7 @@ def test_defaults(fid, req, role, concept):
     assert f.facets is None
     assert f.name is None
     assert f.description is None
-    assert not f.codes
+    assert not f.enumeration
     assert f.attachment_level is None
 
 
@@ -105,7 +105,7 @@ def test_full_initialization(
     assert f.facets == facets
     assert f.name == name
     assert f.description == desc
-    assert f.codes == codes
+    assert f.enumeration == codes
     assert f.attachment_level == lvl
     assert f.array_def == array_def
 
@@ -215,7 +215,7 @@ def test_codes_property_local(codes):
 
     assert component.concept.codes is None
     assert component.local_codes == codes
-    assert component.codes == codes
+    assert component.enumeration == codes
 
 
 def test_codes_property_core(codes):
@@ -225,7 +225,7 @@ def test_codes_property_core(codes):
 
     assert component.concept.codes == codes
     assert component.local_codes is None
-    assert component.codes == codes
+    assert component.enumeration == codes
 
 
 def test_codes_property_none():
@@ -235,4 +235,4 @@ def test_codes_property_none():
 
     assert component.concept.codes is None
     assert component.local_codes is None
-    assert component.codes is None
+    assert component.enumeration is None

@@ -4866,11 +4866,6 @@
                         "id": "ORG_VISIBILITY",
                         "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).ORG_VISIBILITY",
                         "representation": {
-                            "textFormat": {
-                                "textType": "String",
-                                "minLength": 1,
-                                "maxLength": 1
-                            },
                             "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ORG_VISIBILITY(1.0)"
                         },
                         "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).ORG_VISIBILITY",

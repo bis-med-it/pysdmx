@@ -1,4 +1,10 @@
-from parsy import alt, any_char, regex, string  # type: ignore[import-untyped]
+from parsy import (  # type: ignore[import-untyped]
+    alt,
+    any_char,
+    ParseError,
+    regex,
+    string,
+)
 
 from pysdmx.errors import Invalid
 
@@ -43,8 +49,11 @@ __dpm_parser = __single_parser.at_least(1)
 
 def convert_dpm(sdmx_pattern: str) -> str:
     """Convert an SDMX date pattern into Python format codes."""
-    unsupported = ["G", "n", "kk", "KK", "S"]
+    unsupported = ["G", "n", "kk", "KK", "S", "W"]
     for i in unsupported:
         if i in sdmx_pattern:
             raise Invalid("Parsing failed", f"Pattern {i} is not supported.")
-    return "".join(__dpm_parser.parse(sdmx_pattern))
+    try:
+        return "".join(__dpm_parser.parse(sdmx_pattern))
+    except ParseError as pe:
+        raise Invalid("Invalid pattern", f"The error was: {str(pe)}") from pe

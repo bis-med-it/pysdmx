@@ -106,19 +106,19 @@ async def check_coded_components(
     count = 0
     for comp in vc.components:
         if comp.id in exp:
-            assert len(comp.codes) == exp.get(comp.id)
-            assert comp.codes.id is not None
-            assert comp.codes.agency == "BIS"
-            assert comp.codes.version == "1.0"
-            assert comp.codes.name is not None
+            assert len(comp.enumeration) == exp.get(comp.id)
+            assert comp.enumeration.id is not None
+            assert comp.enumeration.agency == "BIS"
+            assert comp.enumeration.version == "1.0"
+            assert comp.enumeration.name is not None
             assert (
-                comp.codes.sdmx_type == "valuelist"
+                comp.enumeration.sdmx_type == "valuelist"
                 if comp.id == "AVAILABILITY"
                 else "codelist"
             )
             count += 1
         else:
-            assert not comp.codes
+            assert not comp.enumeration
     assert count == len(exp.keys())
 
 
@@ -161,15 +161,15 @@ async def check_coded_pra_components(
     for comp in vc.components:
         print(comp.id)
         if comp.id in exp:
-            assert len(comp.codes) == exp.get(comp.id)
-            assert comp.codes.id is not None
-            assert comp.codes.agency == "BIS"
-            assert comp.codes.version == "1.0"
-            assert comp.codes.name is not None
-            assert comp.codes.sdmx_type == "codelist"
+            assert len(comp.enumeration) == exp.get(comp.id)
+            assert comp.enumeration.id is not None
+            assert comp.enumeration.agency == "BIS"
+            assert comp.enumeration.version == "1.0"
+            assert comp.enumeration.name is not None
+            assert comp.enumeration.sdmx_type == "codelist"
             count += 1
         else:
-            assert not comp.codes
+            assert not comp.enumeration
     assert count == len(exp.keys())
 
 
@@ -215,9 +215,9 @@ def check_unconstrained_coded_components(
 
     for comp in vc.components:
         if comp.id in exp:
-            assert len(comp.codes) == exp[comp.id]
+            assert len(comp.enumeration) == exp[comp.id]
         else:
-            assert comp.codes is None
+            assert comp.enumeration is None
 
 
 async def check_core_local_repr_async(
@@ -246,7 +246,7 @@ async def check_core_local_repr_async(
     freq = schema.components["FREQ"]
 
     assert isinstance(freq, Component)
-    assert len(freq.codes) == 8
+    assert len(freq.enumeration) == 8
     assert freq.dtype == DataType.STRING
 
 
@@ -276,13 +276,13 @@ def check_core_local_repr(
     title = schema["TITLE_GRP"]
 
     assert isinstance(freq, Component)
-    assert len(freq.codes) == 8
+    assert len(freq.enumeration) == 8
     assert freq.dtype == DataType.STRING
     assert freq.facets.min_length == 1
     assert freq.facets.max_length == 1
 
     assert isinstance(title, Component)
-    assert not title.codes
+    assert not title.enumeration
     assert title.dtype == DataType.STRING
     assert title.facets is None
 
@@ -503,17 +503,17 @@ def check_hierarchy(
     assert len(vc.components.attributes) == 0
     for d in vc.components.dimensions:
         if d.id in ["CONTRACT", "TIME_PERIOD"]:
-            assert d.codes is None
+            assert d.enumeration is None
         elif d.id == "OPTION_TYPE":
-            assert isinstance(d.codes, Hierarchy)
-            assert len(d.codes) == 3
-            assert d.codes.id == "H_OPTION_TYPE"
-            assert d.codes.operator == (
+            assert isinstance(d.enumeration, Hierarchy)
+            assert len(d.enumeration) == 3
+            assert d.enumeration.id == "H_OPTION_TYPE"
+            assert d.enumeration.operator == (
                 "urn:sdmx:org.sdmx.infomodel.transformation."
                 "UserDefinedOperator=SDMX:OPS(1.0).SUM"
             )
         else:
-            assert isinstance(d.codes, Codelist)
+            assert isinstance(d.enumeration, Codelist)
 
 
 def check_hierarchy_pra(
@@ -539,14 +539,17 @@ def check_hierarchy_pra(
     assert len(vc.components.attributes) == 11
     for d in vc.components.dimensions:
         if d.id == "TIME_PERIOD":
-            assert d.codes is None
+            assert d.enumeration is None
         elif d.id == "L_CP_COUNTRY":
-            assert isinstance(d.codes, Hierarchy)
-            assert len(d.codes) == 251
-            assert d.codes.id == "CBS_CLIENT_HIERARCHIES@COUNTERPARTYCOUNTRY"
-            assert d.codes.operator == (
+            assert isinstance(d.enumeration, Hierarchy)
+            assert len(d.enumeration) == 251
+            assert (
+                d.enumeration.id
+                == "CBS_CLIENT_HIERARCHIES@COUNTERPARTYCOUNTRY"
+            )
+            assert d.enumeration.operator == (
                 "urn:sdmx:org.sdmx.infomodel.transformation."
                 "UserDefinedOperator=SDMX:OPS(1.0).SUM"
             )
         else:
-            assert isinstance(d.codes, Codelist)
+            assert isinstance(d.enumeration, Codelist)
