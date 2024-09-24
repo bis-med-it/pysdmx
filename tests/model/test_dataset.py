@@ -11,7 +11,7 @@ from pysdmx.model import (
 )
 
 
-@pytest.fixture
+@pytest.fixture()
 def ds():
     freq = DimensionValue("FREQ", "M")
     cur1 = DimensionValue("CUR1", "XYZ")
