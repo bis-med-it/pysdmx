@@ -6,8 +6,10 @@ from typing import Any, Dict, Iterator, Optional, Sequence, Union
 from msgspec import Struct
 import pandas as pd
 
-from pysdmx.model import DataProvider, MetadataReport, Schema
+from pysdmx.model.__base import DataProvider
+from pysdmx.model.dataflow import Schema
 from pysdmx.model.message import ActionType
+from pysdmx.model.metadata import MetadataReport
 
 
 class _ComponentValue(Struct, frozen=True):
@@ -77,11 +79,11 @@ class _Package(Struct, frozen=True):
 
     key: str
     dimensions: Sequence[DimensionValue]
-    attributes: Optional[Sequence[DataAttributeValue]]
-    metadata: Optional[Sequence[MetadataReport]]
+    attributes: Optional[Sequence[DataAttributeValue]] = None
+    metadata: Optional[Sequence[MetadataReport]] = None
 
 
-class Observation(_Package, Struct, frozen=True):
+class Observation(_Package, Struct, frozen=True, kw_only=True):
     """An observation is a type of package that contains measure values.
 
     It inherits all the properties from Package (key, dimensions, attributes
@@ -91,7 +93,7 @@ class Observation(_Package, Struct, frozen=True):
     measures: Sequence[MeasureValue]
 
 
-class _ObsPackage(_Package, Struct, frozen=True):
+class _ObsPackage(_Package, Struct, frozen=True, kw_only=True):
     """An abstract class representing a package containing observations.
 
     This class is not meant to be used directly. Instead, it is meant
@@ -112,22 +114,22 @@ class _ObsPackage(_Package, Struct, frozen=True):
             last updated.
     """
 
-    observations: Iterator[Observation]
-    obs_count: Optional[int]
-    start_period: Optional[str]
-    end_period: Optional[str]
-    last_updated: Optional[datetime]
+    observations: Iterator[Observation] = ().__iter__()
+    obs_count: Optional[int] = None
+    start_period: Optional[str] = None
+    end_period: Optional[str] = None
+    last_updated: Optional[datetime] = None
 
 
-class Series(_ObsPackage, Struct, frozen=True):
+class Series(_ObsPackage, Struct, frozen=True, kw_only=True):
     """A package of related observations and additional metadata."""
 
 
-class Group(_Package, Struct, frozen=True):
+class Group(_Package, Struct, frozen=True, kw_only=True):
     """A package whose sole purpose is to contain metadata."""
 
 
-class Dataset(_ObsPackage, Struct, frozen=True):
+class Dataset(_ObsPackage, Struct, frozen=True, kw_only=True):
     """An organized collection of data.
 
     It inherits all the properties from the Observation Package and
@@ -144,7 +146,7 @@ class Dataset(_ObsPackage, Struct, frozen=True):
     """
 
     packages: Iterator[Union[Group, Series, Observation]]
-    provider: Optional[DataProvider]
+    provider: Optional[DataProvider] = None
     structure: Union[Schema, str]  # Schema or the SDMX URN of the structure
 
     @property
