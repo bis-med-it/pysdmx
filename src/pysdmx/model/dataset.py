@@ -1,13 +1,161 @@
 """Dataset module."""
 
-from datetime import date
-from typing import Any, Dict, Optional, Union
+from datetime import date, datetime
+from typing import Any, Dict, Generator, Optional, Sequence, Union
 
 from msgspec import Struct
 import pandas as pd
 
-from pysdmx.model import Schema
+from pysdmx.model import DataProvider, MetadataReport, Schema
 from pysdmx.model.message import ActionType
+
+
+class _ComponentValue(Struct, frozen=True):
+    """An abstract class representing an instance of a component.
+
+    This class is not meant to be used directly. Instead, it is meant
+    to be inherited by the Dimension, DataAttribute and Measure classes.
+
+    Attributes:
+        id: The component ID (e.g. FREQ)
+        value: The component value (e.g. M)
+    """
+
+    id: str
+    value: Any
+
+
+class DimensionValue(Struct, _ComponentValue, frozen=True):
+    """The value of the instance a Dimension.
+
+    For example, `FREQ=M`, where `FREQ` is the ID of the dimension
+    and `M` is its value.
+    """
+
+
+class DataAttributeValue(Struct, _ComponentValue, frozen=True):
+    """The value of the instance a Data Attribute.
+
+    For example, `CONF_STATUS=F`, where `CONF_STATUS` is the ID of the
+    data attribute and `F` is its value.
+    """
+
+
+class MeasureValue(Struct, _ComponentValue, frozen=True):
+    """The value of the instance a Measure.
+
+    For example, `OBS_VALUE=42`, where `OBS_VALUE` is the ID of the
+    measure and `42` is its value.
+    """
+
+
+class _Package(Struct, frozen=True):
+    """An abstract class representing a "package" with data and/or attributes.
+
+    A package is identified by a key and may have data attributes and/or
+    reference metadata attached to it.
+
+    This class is not meant to be used directly. Instead, it is meant
+    to be inherited by concrete packages, such as Observation, Series, Group
+    and Dataset.
+
+    Attributes:
+        key: A string acting as unique identified for the package. This
+            corresponds to the list of dimension values, in the order of
+            their definition in the Data Structure Definition, separated
+            by a dot. In case the dimension value contains a dot, it will
+            be escaped by a backslash. In case the dimension value contains
+            a backslash, that backslash will be escaped by another backslash.
+            In case the value for a dimension is missing (e.g. the package
+            represents a dataset, a group or a series), this will be
+            represented with a * in the key.
+        dimensions: The list of dimension values.
+        attributes: The list of data attribute values attached to the
+            package.
+        ref_meta: The list of metadata reports attached to the package.
+    """
+
+    key: str
+    dimensions: Sequence[DimensionValue]
+    attributes: Optional[Sequence[DataAttributeValue]]
+    metadata: Optional[Sequence[MetadataReport]]
+
+
+class Observation(Struct, _Package, frozen=True):
+    """An observation is a type of package that contains measure values.
+
+    It inherits all the properties from Package (key, dimensions, attributes
+    and ref_meta), to which it adds a measures property.
+    """
+
+    measures: Sequence[MeasureValue]
+
+
+class _ObsPackage(Struct, _Package, frozen=True):
+    """An abstract class representing a package containing observations.
+
+    This class is not meant to be used directly. Instead, it is meant
+    to be inherited by concrete packages that may contain observations,
+    i.e. Series and Dataset.
+
+    It inherits all the properties from Package (key, dimensions, attributes
+    and ref_meta), to which it adds a measures property.
+
+    Attributes:
+        observations: A Generator of observations. A Generator is used
+            to allow for scenarios where the entire set of observations
+            does not fit into memory.
+        obs_count: The number of observations contained in the package.
+        start_period: The oldest period in the list of observations.
+        end_period: The most recent period in the list of observations.
+        last_updated: When the observations contained in the package were
+            last updated.
+    """
+
+    observations: Generator[Observation]
+    obs_count: Optional[int]
+    start_period: Optional[str]
+    end_period: Optional[str]
+    last_updated: Optional[datetime]
+
+
+class Series(Struct, _ObsPackage, frozen=True):
+    """A package of related observations and additional metadata."""
+
+
+class Group(Struct, _Package, frozen=True):
+    """A package whose sole purpose is to contain metadata."""
+
+
+class Dataset(Struct, _ObsPackage, frozen=True):
+    """An organized collection of data.
+
+    It inherits all the properties from the Observation Package and
+    adds a few of its own.
+
+    Attributes:
+        packages: A Generator of packages. A Generator is used
+            to allow for scenarios where the entire set of packages
+            does not fit into memory.
+        provider: The provider of the data contained in the dataset.
+        structure: Either a schema describing the structure of the data
+            contained in the dataset, or a string representing the SDMX URN
+            of that structure.
+    """
+
+    packages: Generator[Union[Group, Series, Observation]]
+    provider: Optional[DataProvider]
+    structure: Union[Schema, str]  # Schema or the SDMX URN of the structure
+
+    @property
+    def groups(self) -> Generator[Group]:
+        """Get the packages of type `Group`."""
+        return (p for p in self.packages if isinstance(p, Group))
+
+    @property
+    def series(self) -> Generator[Series]:
+        """Get the packages of type `Series`."""
+        return (p for p in self.packages if isinstance(p, Series))
 
 
 class PandasDataset(Struct, frozen=False, kw_only=True):
