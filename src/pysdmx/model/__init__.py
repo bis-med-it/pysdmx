@@ -25,7 +25,6 @@ from pysdmx.model.code import (
     HierarchyAssociation,
 )
 from pysdmx.model.concept import Concept, ConceptScheme, DataType, Facets
-from pysdmx.model.data import SeriesInfo
 from pysdmx.model.dataflow import (
     ArrayBoundaries,
     Component,
@@ -34,6 +33,7 @@ from pysdmx.model.dataflow import (
     Role,
     Schema,
 )
+from pysdmx.model.dataset import SeriesInfo
 from pysdmx.model.map import (
     ComponentMap,
     DatePatternMap,
