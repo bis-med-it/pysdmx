@@ -1,7 +1,7 @@
 """Dataset module."""
 
 from datetime import date, datetime
-from typing import Any, Dict, Generator, Optional, Sequence, Union
+from typing import Any, Dict, Iterator, Optional, Sequence, Union
 
 from msgspec import Struct
 import pandas as pd
@@ -25,7 +25,7 @@ class _ComponentValue(Struct, frozen=True):
     value: Any
 
 
-class DimensionValue(Struct, _ComponentValue, frozen=True):
+class DimensionValue(_ComponentValue, Struct, frozen=True):
     """The value of the instance a Dimension.
 
     For example, `FREQ=M`, where `FREQ` is the ID of the dimension
@@ -33,7 +33,7 @@ class DimensionValue(Struct, _ComponentValue, frozen=True):
     """
 
 
-class DataAttributeValue(Struct, _ComponentValue, frozen=True):
+class DataAttributeValue(_ComponentValue, Struct, frozen=True):
     """The value of the instance a Data Attribute.
 
     For example, `CONF_STATUS=F`, where `CONF_STATUS` is the ID of the
@@ -41,7 +41,7 @@ class DataAttributeValue(Struct, _ComponentValue, frozen=True):
     """
 
 
-class MeasureValue(Struct, _ComponentValue, frozen=True):
+class MeasureValue(_ComponentValue, Struct, frozen=True):
     """The value of the instance a Measure.
 
     For example, `OBS_VALUE=42`, where `OBS_VALUE` is the ID of the
@@ -81,7 +81,7 @@ class _Package(Struct, frozen=True):
     metadata: Optional[Sequence[MetadataReport]]
 
 
-class Observation(Struct, _Package, frozen=True):
+class Observation(_Package, Struct, frozen=True):
     """An observation is a type of package that contains measure values.
 
     It inherits all the properties from Package (key, dimensions, attributes
@@ -91,7 +91,7 @@ class Observation(Struct, _Package, frozen=True):
     measures: Sequence[MeasureValue]
 
 
-class _ObsPackage(Struct, _Package, frozen=True):
+class _ObsPackage(_Package, Struct, frozen=True):
     """An abstract class representing a package containing observations.
 
     This class is not meant to be used directly. Instead, it is meant
@@ -102,7 +102,7 @@ class _ObsPackage(Struct, _Package, frozen=True):
     and ref_meta), to which it adds a measures property.
 
     Attributes:
-        observations: A Generator of observations. A Generator is used
+        observations: An iterator of observations. An iterator is used
             to allow for scenarios where the entire set of observations
             does not fit into memory.
         obs_count: The number of observations contained in the package.
@@ -112,29 +112,29 @@ class _ObsPackage(Struct, _Package, frozen=True):
             last updated.
     """
 
-    observations: Generator[Observation]
+    observations: Iterator[Observation]
     obs_count: Optional[int]
     start_period: Optional[str]
     end_period: Optional[str]
     last_updated: Optional[datetime]
 
 
-class Series(Struct, _ObsPackage, frozen=True):
+class Series(_ObsPackage, Struct, frozen=True):
     """A package of related observations and additional metadata."""
 
 
-class Group(Struct, _Package, frozen=True):
+class Group(_Package, Struct, frozen=True):
     """A package whose sole purpose is to contain metadata."""
 
 
-class Dataset(Struct, _ObsPackage, frozen=True):
+class Dataset(_ObsPackage, Struct, frozen=True):
     """An organized collection of data.
 
     It inherits all the properties from the Observation Package and
     adds a few of its own.
 
     Attributes:
-        packages: A Generator of packages. A Generator is used
+        packages: An iterator of packages. An iterator is used
             to allow for scenarios where the entire set of packages
             does not fit into memory.
         provider: The provider of the data contained in the dataset.
@@ -143,17 +143,17 @@ class Dataset(Struct, _ObsPackage, frozen=True):
             of that structure.
     """
 
-    packages: Generator[Union[Group, Series, Observation]]
+    packages: Iterator[Union[Group, Series, Observation]]
     provider: Optional[DataProvider]
     structure: Union[Schema, str]  # Schema or the SDMX URN of the structure
 
     @property
-    def groups(self) -> Generator[Group]:
+    def groups(self) -> Iterator[Group]:
         """Get the packages of type `Group`."""
         return (p for p in self.packages if isinstance(p, Group))
 
     @property
-    def series(self) -> Generator[Series]:
+    def series(self) -> Iterator[Series]:
         """Get the packages of type `Series`."""
         return (p for p in self.packages if isinstance(p, Series))
 
