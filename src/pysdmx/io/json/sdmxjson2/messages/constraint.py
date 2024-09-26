@@ -1,7 +1,7 @@
 """Collection of SDMX-JSON schemas for content constraints."""
 
 from datetime import datetime
-from typing import Dict, Optional, Sequence
+from typing import Dict, Literal, Optional, Sequence
 
 from msgspec import Struct
 
@@ -35,6 +35,17 @@ class JsonCubeRegion(Struct, frozen=True):
         return {kv.id: kv.to_model() for kv in self.keyValues}
 
 
+class JsonConstraintAttachment(Struct, frozen=True):
+    """SDMX-JSON payload for a constraint attachment."""
+
+    dataProvider: Optional[str]
+    simpleDataSources: Optional[Sequence[str]] = None
+    dataStructures: Optional[Sequence[str]] = None
+    dataflows: Optional[Sequence[str]] = None
+    provisionAgreements: Optional[Sequence[str]] = None
+    queryableDataSources: Optional[Sequence[str]] = None
+
+
 class JsonDataConstraint(Struct, frozen=True):
     """SDMX-JSON payload for a content constraint."""
 
@@ -48,4 +59,6 @@ class JsonDataConstraint(Struct, frozen=True):
     validTo: Optional[datetime] = None
     annotations: Sequence[JsonAnnotation] = None
     isPartial: bool = False
-    cubeRegions: Sequence[JsonCubeRegion]
+    role: Optional[Literal["Allowed", "Actual"]] = None
+    constraintAttachment: Optional[JsonConstraintAttachment] = None
+    cubeRegions: Optional[Sequence[JsonCubeRegion]] = None
