@@ -1,10 +1,12 @@
 """Collection of SDMX-JSON schemas for organisations."""
 
 from collections import defaultdict
-from typing import Dict, Sequence, Set
+from datetime import datetime
+from typing import Dict, Optional, Sequence, Set
 
 from msgspec import Struct
 
+from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
 from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
 from pysdmx.model import Agency, DataflowRef, DataProvider
 from pysdmx.util import parse_urn
@@ -13,6 +15,13 @@ from pysdmx.util import parse_urn
 class JsonDataProviderScheme(Struct, frozen=True):
     """SDMX-JSON payload for a data provider scheme."""
 
+    agencyID: str
+    description: Optional[str] = None
+    isExternalReference: bool = False
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    annotations: Sequence[JsonAnnotation] = None
+    isPartial: bool = False
     dataProviders: Sequence[DataProvider]
 
     def __get_df_ref(self, ref: str) -> DataflowRef:
@@ -68,6 +77,12 @@ class JsonAgencyScheme(Struct, frozen=True):
     """SDMX-JSON payload for an agency scheme."""
 
     agencyID: str
+    description: Optional[str] = None
+    isExternalReference: bool = False
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    annotations: Sequence[JsonAnnotation] = None
+    isPartial: bool = False
     agencies: Sequence[Agency]
 
 
