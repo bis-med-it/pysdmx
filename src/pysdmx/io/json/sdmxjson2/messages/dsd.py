@@ -75,10 +75,10 @@ class JsonGroup(Struct, frozen=True):
 class JsonAttributeRelationship(Struct, frozen=True):
     """SDMX-JSON payload for an attribute relationship."""
 
-    dataflow: Optional[Dict] = None
+    dataflow: Optional[Dict] = None  # type: ignore[type-arg]
     dimensions: Optional[Sequence[str]] = None
     group: Optional[str] = None
-    observation: Optional[Dict] = None
+    observation: Optional[Dict] = None  # type: ignore[type-arg]
 
     def to_model(
         self, groups: Sequence[JsonGroup], measures: Optional[Sequence[str]]
@@ -99,8 +99,8 @@ class JsonDimension(Struct, frozen=True):
     """SDMX-JSON payload for a component."""
 
     id: str
-    position: Optional[int] = None
     conceptIdentity: str
+    position: Optional[int] = None
     conceptRoles: Optional[Sequence[str]] = None
     localRepresentation: Optional[JsonRepresentation] = None
 
@@ -134,8 +134,8 @@ class JsonAttribute(Struct, frozen=True):
 
     id: str
     conceptIdentity: str
-    conceptRoles: Optional[Sequence[str]] = None
     attributeRelationship: JsonAttributeRelationship
+    conceptRoles: Optional[Sequence[str]] = None
     usage: str = "optional"
     measureRelationship: Optional[Sequence[str]] = None
     localRepresentation: Optional[JsonRepresentation] = None
@@ -273,7 +273,7 @@ class JsonComponents(Struct, frozen=True):
     ) -> Components:
         """Returns the schema for this DSD."""
         comps = []
-        if constraints:
+        if constraints and constraints[0].cubeRegions:
             cons = constraints[0].cubeRegions[0].to_map()
         else:
             cons = {}
@@ -304,5 +304,5 @@ class JsonDataStructure(Struct, frozen=True, rename={"agency": "agencyID"}):
     isExternalReference: bool = False
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
     metadata: Optional[str] = None

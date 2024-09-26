@@ -48,7 +48,7 @@ class JsonDataflow(Struct, frozen=True, rename={"agency": "agencyID"}):
     isExternalReference: bool = False
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
 
 
 class JsonDataflows(Struct, frozen=True):

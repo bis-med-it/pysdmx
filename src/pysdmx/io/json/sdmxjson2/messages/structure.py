@@ -35,12 +35,12 @@ class Header(Struct, frozen=True):
     """The message header."""
 
     id: str
-    test: bool = False
     prepared: datetime
+    sender: Organisation
+    test: bool = False
     content_languages: Sequence[str] = ()
     name: Optional[str] = None
     names: Optional[Dict[str, str]] = None
-    sender: Organisation
     receivers: Optional[Organisation] = None
 
 

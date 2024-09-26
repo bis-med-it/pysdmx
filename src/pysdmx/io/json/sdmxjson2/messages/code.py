@@ -20,10 +20,9 @@ class JsonCode(Struct, frozen=True):
     """SDMX-JSON payload for codes."""
 
     id: str
-    annotations: Sequence[JsonAnnotation] = ()
     name: Optional[str] = None
     description: Optional[str] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
     parent: Optional[str] = None
 
     def __handle_date(self, datestr: str) -> datetime:
@@ -32,8 +31,8 @@ class JsonCode(Struct, frozen=True):
     def __get_val(
         self, a: JsonAnnotation
     ) -> Tuple[Optional[datetime], Optional[datetime]]:
-        vals = a.title.split("/")
-        if a.title.startswith("/"):
+        vals = a.title.split("/")  # type: ignore[union-attr]
+        if a.title.startswith("/"):  # type: ignore[union-attr]
             return (None, self.__handle_date(vals[1]))
         else:
             valid_from = self.__handle_date(vals[0])
@@ -42,7 +41,12 @@ class JsonCode(Struct, frozen=True):
 
     def to_model(self) -> Code:
         """Converts a JsonCode to a standard code."""
-        vp = [a for a in self.annotations if a.type == "FR_VALIDITY_PERIOD"]
+        if self.annotations:
+            vp = [
+                a for a in self.annotations if a.type == "FR_VALIDITY_PERIOD"
+            ]
+        else:
+            vp = None
         vf, vt = self.__get_val(vp[0]) if vp else (None, None)
         return Code(
             id=self.id,
@@ -64,7 +68,7 @@ class JsonCodelist(Struct, frozen=True, rename={"agency": "agencyID"}):
     isExternalReference: bool = False
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
     isPartial: bool = False
     codes: Sequence[JsonCode] = ()
 
@@ -91,7 +95,7 @@ class JsonValuelist(Struct, frozen=True, rename={"agency": "agencyID"}):
     isExternalReference: bool = False
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
     isPartial: bool = False
     valueItems: Sequence[JsonCode] = ()
 
@@ -135,7 +139,7 @@ class JsonHierarchicalCode(Struct, frozen=True):
     code: str
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
     hierarchicalCodes: Sequence["JsonHierarchicalCode"] = ()
 
     def __find_code(self, codelists: Sequence[Codelist], urn: str) -> Code:
@@ -180,7 +184,7 @@ class JsonHierarchy(Struct, frozen=True, rename={"agency": "agencyID"}):
     isExternalReference: bool = False
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
     hierarchicalCodes: Sequence[JsonHierarchicalCode] = ()
 
     def to_model(self, codelists: Sequence[Codelist]) -> Hierarchy:
@@ -224,7 +228,7 @@ class JsonHierarchyAssociation(
     isExternalReference: bool = False
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
 
     def to_model(
         self,

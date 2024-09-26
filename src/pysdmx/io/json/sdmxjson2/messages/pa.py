@@ -14,11 +14,11 @@ class JsonProvisionAgreement(Struct, frozen=True):
     id: str
     name: str
     agency: str
+    structureUsage: str
+    dataProvider: str
     description: Optional[str] = None
     version: str = "1.0"
     isExternalReference: bool = False
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
-    annotations: Sequence[JsonAnnotation] = None
-    structureUsage: str
-    dataProvider: str
+    annotations: Optional[Sequence[JsonAnnotation]] = None

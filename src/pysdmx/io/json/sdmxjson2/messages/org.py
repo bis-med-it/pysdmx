@@ -16,13 +16,13 @@ class JsonDataProviderScheme(Struct, frozen=True):
     """SDMX-JSON payload for a data provider scheme."""
 
     agencyID: str
+    dataProviders: Sequence[DataProvider]
     description: Optional[str] = None
     isExternalReference: bool = False
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
     isPartial: bool = False
-    dataProviders: Sequence[DataProvider]
 
     def __get_df_ref(self, ref: str) -> DataflowRef:
         a = parse_urn(ref)
@@ -77,13 +77,13 @@ class JsonAgencyScheme(Struct, frozen=True):
     """SDMX-JSON payload for an agency scheme."""
 
     agencyID: str
+    agencies: Sequence[Agency]
     description: Optional[str] = None
     isExternalReference: bool = False
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
     isPartial: bool = False
-    agencies: Sequence[Agency]
 
 
 class JsonAgencySchemes(Struct, frozen=True):

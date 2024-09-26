@@ -84,7 +84,7 @@ class JsonRepresentationMap(
     isExternalReference: bool = False
     validFrom: Optional[dt] = None
     validTo: Optional[dt] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
 
     def __parse_st(self, item: Dict[str, str]) -> Union[DataType, str]:
         if "dataType" in item:
@@ -190,7 +190,7 @@ class JsonDatePatternMap(Struct, frozen=True):
     targetFrequencyID: Optional[str] = None
     frequencyDimension: Optional[str] = None
     mappedFrequencies: Optional[Sequence[str]] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
 
     def to_model(self) -> DatePatternMap:
         """Returns the requested date mapper."""
@@ -224,7 +224,7 @@ class JsonStructureMap(Struct, frozen=True):
     isExternalReference: bool = False
     validFrom: Optional[dt] = None
     validTo: Optional[dt] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
     datePatternMaps: Sequence[JsonDatePatternMap] = ()
     componentMaps: Sequence[JsonComponentMap] = ()
     fixedValueMaps: Sequence[JsonFixedValueMap] = ()

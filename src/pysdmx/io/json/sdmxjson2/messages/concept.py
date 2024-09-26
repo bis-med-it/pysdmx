@@ -28,7 +28,7 @@ class JsonConcept(Struct, frozen=True):
     coreRepresentation: Optional[JsonRepresentation] = None
     name: Optional[str] = None
     description: Optional[str] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
     parent: Optional[str] = None
     isoConceptReference: Optional[IsoConceptReference] = None
 
@@ -72,7 +72,7 @@ class JsonConceptScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
     isExternalReference: bool = False
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
     isPartial: bool = False
     concepts: Sequence[JsonConcept] = ()
 

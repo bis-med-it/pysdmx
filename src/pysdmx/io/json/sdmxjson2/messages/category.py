@@ -18,14 +18,14 @@ class JsonCategorisation(Struct, frozen=True):
     id: str
     name: str
     agency: str
+    source: str
+    target: str
     description: Optional[str] = None
     version: str = "1.0"
     isExternalReference: bool = False
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
-    annotations: Sequence[JsonAnnotation] = None
-    source: str
-    target: str
+    annotations: Optional[Sequence[JsonAnnotation]] = None
 
 
 class JsonCategoryScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
@@ -39,7 +39,7 @@ class JsonCategoryScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
     isExternalReference: bool = False
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
-    annotations: Sequence[JsonAnnotation] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
     categories: Sequence[Category] = ()
 
     def to_model(self) -> CategoryScheme:
