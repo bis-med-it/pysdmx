@@ -10,7 +10,7 @@ from pysdmx.io.json.sdmxjson2.messages.concept import (
     JsonConcept,
     JsonConceptScheme,
 )
-from pysdmx.io.json.sdmxjson2.messages.constraint import JsonContentConstraint
+from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
 from pysdmx.io.json.sdmxjson2.messages.core import JsonRepresentation
 from pysdmx.model import (
     ArrayBoundaries,
@@ -267,7 +267,7 @@ class JsonComponents(Struct, frozen=True):
         self,
         cs: Sequence[JsonConceptScheme],
         cls: Sequence[Codelist],
-        constraints: Sequence[JsonContentConstraint],
+        constraints: Sequence[JsonDataConstraint],
     ) -> Components:
         """Returns the schema for this DSD."""
         comps = []

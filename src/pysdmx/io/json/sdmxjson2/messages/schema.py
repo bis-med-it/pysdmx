@@ -6,7 +6,7 @@ import msgspec
 
 from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist, JsonValuelist
 from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptScheme
-from pysdmx.io.json.sdmxjson2.messages.constraint import JsonContentConstraint
+from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
 from pysdmx.io.json.sdmxjson2.messages.core import JsonHeader
 from pysdmx.io.json.sdmxjson2.messages.dsd import JsonDataStructure
 from pysdmx.model import Components, HierarchyAssociation, Schema
@@ -23,7 +23,7 @@ class JsonSchemas(
     dataStructures: Sequence[JsonDataStructure]
     valuelists: Sequence[JsonValuelist] = ()
     codelists: Sequence[JsonCodelist] = ()
-    contentConstraints: Sequence[JsonContentConstraint] = ()
+    contentConstraints: Sequence[JsonDataConstraint] = ()
 
     def to_model(self) -> Components:
         """Returns the requested schema."""
