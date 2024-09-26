@@ -15,6 +15,15 @@ from pysdmx.util import find_by_urn
 class JsonCategorisation(Struct, frozen=True):
     """SDMX-JSON payload for a categorisation."""
 
+    id: str
+    name: str
+    agency: str
+    description: Optional[str] = None
+    version: str = "1.0"
+    isExternalReference: bool = False
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    annotations: Sequence[JsonAnnotation] = None
     source: str
     target: str
 
