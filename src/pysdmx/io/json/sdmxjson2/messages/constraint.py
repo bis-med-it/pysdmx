@@ -46,7 +46,7 @@ class JsonConstraintAttachment(Struct, frozen=True):
     queryableDataSources: Optional[Sequence[str]] = None
 
 
-class JsonDataConstraint(Struct, frozen=True):
+class JsonDataConstraint(Struct, frozen=True, rename={"agency": "agencyID"}):
     """SDMX-JSON payload for a content constraint."""
 
     id: str

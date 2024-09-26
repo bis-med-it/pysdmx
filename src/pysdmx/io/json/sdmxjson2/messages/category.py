@@ -12,7 +12,7 @@ from pysdmx.model import Category, CategoryScheme, DataflowRef
 from pysdmx.util import find_by_urn
 
 
-class JsonCategorisation(Struct, frozen=True):
+class JsonCategorisation(Struct, frozen=True, rename={"agency": "agencyID"}):
     """SDMX-JSON payload for a categorisation."""
 
     id: str

@@ -8,7 +8,9 @@ from msgspec import Struct
 from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
 
 
-class JsonProvisionAgreement(Struct, frozen=True):
+class JsonProvisionAgreement(
+    Struct, frozen=True, rename={"agency": "agencyID"}
+):
     """SDMX-JSON payload for a provision agreement."""
 
     id: str
