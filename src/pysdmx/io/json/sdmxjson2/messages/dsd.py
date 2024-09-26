@@ -1,9 +1,11 @@
 """Collection of SDMX-JSON schemas for SDMX-REST schema queries."""
 
+from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple
 
 from msgspec import Struct
 
+from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
 from pysdmx.io.json.sdmxjson2.messages.concept import (
     JsonConcept,
     JsonConceptScheme,
@@ -71,8 +73,10 @@ class JsonGroup(Struct, frozen=True):
 class JsonAttributeRelationship(Struct, frozen=True):
     """SDMX-JSON payload for an attribute relationship."""
 
+    dataflow: Optional[Dict] = None
     dimensions: Optional[Sequence[str]] = None
     group: Optional[str] = None
+    observation: Optional[Dict] = None
 
     def to_model(
         self, groups: Sequence[JsonGroup], measures: Optional[Sequence[str]]
@@ -93,7 +97,9 @@ class JsonDimension(Struct, frozen=True):
     """SDMX-JSON payload for a component."""
 
     id: str
+    position: Optional[int] = None
     conceptIdentity: str
+    conceptRoles: Optional[Sequence[str]] = None
     localRepresentation: Optional[JsonRepresentation] = None
 
     def to_model(
@@ -126,6 +132,7 @@ class JsonAttribute(Struct, frozen=True):
 
     id: str
     conceptIdentity: str
+    conceptRoles: Optional[Sequence[str]] = None
     attributeRelationship: JsonAttributeRelationship
     usage: str = "optional"
     measureRelationship: Optional[Sequence[str]] = None
@@ -168,6 +175,7 @@ class JsonMeasure(Struct, frozen=True):
 
     id: str
     conceptIdentity: str
+    conceptRoles: Optional[Sequence[str]] = None
     usage: str = "optional"
     localRepresentation: Optional[JsonRepresentation] = None
 
@@ -291,3 +299,8 @@ class JsonDataStructure(Struct, frozen=True, rename={"agency": "agencyID"}):
     dataStructureComponents: JsonComponents
     description: Optional[str] = None
     version: str = "1.0"
+    isExternalReference: bool = False
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    annotations: Sequence[JsonAnnotation] = None
+    metadata: Optional[str] = None
