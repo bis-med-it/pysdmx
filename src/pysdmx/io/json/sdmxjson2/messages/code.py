@@ -131,9 +131,11 @@ class JsonCodelistMessage(Struct, frozen=True):
 class JsonHierarchicalCode(Struct, frozen=True):
     """Fusion-JSON payload for hierarchical codes."""
 
+    id: str
     code: str
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
+    annotations: Sequence[JsonAnnotation] = None
     hierarchicalCodes: Sequence["JsonHierarchicalCode"] = ()
 
     def __find_code(self, codelists: Sequence[Codelist], urn: str) -> Code:
@@ -175,6 +177,10 @@ class JsonHierarchy(Struct, frozen=True, rename={"agency": "agencyID"}):
     agency: str
     description: Optional[str] = None
     version: str = "1.0"
+    isExternalReference: bool = False
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    annotations: Sequence[JsonAnnotation] = None
     hierarchicalCodes: Sequence[JsonHierarchicalCode] = ()
 
     def to_model(self, codelists: Sequence[Codelist]) -> Hierarchy:
@@ -215,6 +221,10 @@ class JsonHierarchyAssociation(
     links: Sequence[JsonLink] = ()
     description: Optional[str] = None
     version: str = "1.0"
+    isExternalReference: bool = False
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    annotations: Sequence[JsonAnnotation] = None
 
     def to_model(
         self,
