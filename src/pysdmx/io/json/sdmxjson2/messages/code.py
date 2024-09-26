@@ -88,6 +88,11 @@ class JsonValuelist(Struct, frozen=True, rename={"agency": "agencyID"}):
     agency: str
     description: Optional[str] = None
     version: str = "1.0"
+    isExternalReference: bool = False
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    annotations: Sequence[JsonAnnotation] = None
+    isPartial: bool = False
     valueItems: Sequence[JsonCode] = ()
 
     def to_model(self) -> Codelist:
