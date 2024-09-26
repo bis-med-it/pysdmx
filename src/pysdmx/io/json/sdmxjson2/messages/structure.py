@@ -28,7 +28,7 @@ from pysdmx.io.json.sdmxjson2.messages.org import (
     JsonDataProviderScheme,
 )
 from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
-from pysdmx.model import Contact, Organisation
+from pysdmx.model import Organisation
 
 
 class Header(Struct, frozen=True):

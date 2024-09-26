@@ -5,13 +5,15 @@ from typing import Dict, List, Optional, Sequence, Tuple
 
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
 from pysdmx.io.json.sdmxjson2.messages.concept import (
     JsonConcept,
     JsonConceptScheme,
 )
 from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
-from pysdmx.io.json.sdmxjson2.messages.core import JsonRepresentation
+from pysdmx.io.json.sdmxjson2.messages.core import (
+    JsonAnnotation,
+    JsonRepresentation,
+)
 from pysdmx.model import (
     ArrayBoundaries,
     Codelist,
