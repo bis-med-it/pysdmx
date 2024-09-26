@@ -71,6 +71,7 @@ class JsonConceptScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
     annotations: Sequence[JsonAnnotation] = None
+    isPartial: bool = False
     concepts: Sequence[JsonConcept] = ()
 
     def to_model(self, codelists: Sequence[JsonCodelist]) -> ConceptScheme:

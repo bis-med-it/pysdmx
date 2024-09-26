@@ -23,6 +23,8 @@ class JsonCode(Struct, frozen=True):
     annotations: Sequence[JsonAnnotation] = ()
     name: Optional[str] = None
     description: Optional[str] = None
+    annotations: Sequence[JsonAnnotation] = None
+    parent: Optional[str] = None
 
     def __handle_date(self, datestr: str) -> datetime:
         return datetime.strptime(datestr, "%Y-%m-%dT%H:%M:%S%z")
@@ -59,6 +61,11 @@ class JsonCodelist(Struct, frozen=True, rename={"agency": "agencyID"}):
     agency: str
     description: Optional[str] = None
     version: str = "1.0"
+    isExternalReference: bool = False
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    annotations: Sequence[JsonAnnotation] = None
+    isPartial: bool = False
     codes: Sequence[JsonCode] = ()
 
     def to_model(self) -> Codelist:
