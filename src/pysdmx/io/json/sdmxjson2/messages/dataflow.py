@@ -1,9 +1,11 @@
 """Collection of SDMX-JSON schemas for dataflow queries."""
 
+from datetime import datetime
 from typing import List, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
 from pysdmx.io.json.sdmxjson2.messages.org import JsonDataProviderScheme
 from pysdmx.model import (
     Agency,
@@ -43,6 +45,10 @@ class JsonDataflow(Struct, frozen=True, rename={"agency": "agencyID"}):
     structure: str
     description: Optional[str] = None
     version: str = "1.0"
+    isExternalReference: bool = False
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
 
 
 class JsonDataflows(Struct, frozen=True):

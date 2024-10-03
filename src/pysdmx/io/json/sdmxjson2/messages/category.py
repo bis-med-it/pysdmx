@@ -1,20 +1,31 @@
 """Collection of SDMX-JSON schemas for categories and category schemes."""
 
 from collections import defaultdict
+from datetime import datetime
 from typing import Dict, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflowRef
 from pysdmx.model import Category, CategoryScheme, DataflowRef
 from pysdmx.util import find_by_urn
 
 
-class JsonCategorisation(Struct, frozen=True):
+class JsonCategorisation(Struct, frozen=True, rename={"agency": "agencyID"}):
     """SDMX-JSON payload for a categorisation."""
 
+    id: str
+    name: str
+    agency: str
     source: str
     target: str
+    description: Optional[str] = None
+    version: str = "1.0"
+    isExternalReference: bool = False
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
 
 
 class JsonCategoryScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
@@ -25,6 +36,10 @@ class JsonCategoryScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
     agency: str
     description: Optional[str] = None
     version: str = "1.0"
+    isExternalReference: bool = False
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
     categories: Sequence[Category] = ()
 
     def to_model(self) -> CategoryScheme:

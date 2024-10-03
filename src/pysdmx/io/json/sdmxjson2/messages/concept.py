@@ -1,12 +1,24 @@
 """Collection of SDMX-JSON schemas for concepts."""
 
+from datetime import datetime
 from typing import Optional, Sequence
 
 from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist
-from pysdmx.io.json.sdmxjson2.messages.core import JsonRepresentation
+from pysdmx.io.json.sdmxjson2.messages.core import (
+    JsonAnnotation,
+    JsonRepresentation,
+)
 from pysdmx.model import Codelist, Concept, ConceptScheme, DataType
+
+
+class IsoConceptReference(Struct, frozen=True):
+    """Payload for a reference to an ISO 11179 concept."""
+
+    conceptAgency: str
+    conceptSchemeID: str
+    conceptID: str
 
 
 class JsonConcept(Struct, frozen=True):
@@ -16,6 +28,9 @@ class JsonConcept(Struct, frozen=True):
     coreRepresentation: Optional[JsonRepresentation] = None
     name: Optional[str] = None
     description: Optional[str] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
+    parent: Optional[str] = None
+    isoConceptReference: Optional[IsoConceptReference] = None
 
     def to_model(self, codelists: Sequence[Codelist]) -> Concept:
         """Converts a JsonConcept to a standard concept."""
@@ -54,6 +69,11 @@ class JsonConceptScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
     agency: str
     description: Optional[str] = None
     version: str = "1.0"
+    isExternalReference: bool = False
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
+    isPartial: bool = False
     concepts: Sequence[JsonConcept] = ()
 
     def to_model(self, codelists: Sequence[JsonCodelist]) -> ConceptScheme:

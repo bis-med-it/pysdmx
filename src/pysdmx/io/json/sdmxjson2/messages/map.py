@@ -2,10 +2,11 @@
 
 from datetime import datetime as dt, timezone as tz
 import re
-from typing import Any, Dict, Optional, Sequence, Union
+from typing import Any, Dict, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
 from pysdmx.model import (
     ComponentMap,
     DataType,
@@ -80,6 +81,10 @@ class JsonRepresentationMap(
     target: Sequence[Dict[str, str]]
     representationMappings: Sequence[JsonRepresentationMapping]
     description: Optional[str] = None
+    isExternalReference: bool = False
+    validFrom: Optional[dt] = None
+    validTo: Optional[dt] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
 
     def __parse_st(self, item: Dict[str, str]) -> Union[DataType, str]:
         if "dataType" in item:
@@ -179,8 +184,13 @@ class JsonDatePatternMap(Struct, frozen=True):
     mappedComponents: Sequence[JsonMappedPair]
     locale: str
     id: Optional[str] = None
+    resolvePeriod: Optional[
+        Literal["startOfPeriod", "endOfPeriod", "midPeriod"]
+    ] = None
     targetFrequencyID: Optional[str] = None
     frequencyDimension: Optional[str] = None
+    mappedFrequencies: Optional[Sequence[str]] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
 
     def to_model(self) -> DatePatternMap:
         """Returns the requested date mapper."""
@@ -211,6 +221,10 @@ class JsonStructureMap(Struct, frozen=True):
     source: str
     target: str
     description: Optional[str] = None
+    isExternalReference: bool = False
+    validFrom: Optional[dt] = None
+    validTo: Optional[dt] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
     datePatternMaps: Sequence[JsonDatePatternMap] = ()
     componentMaps: Sequence[JsonComponentMap] = ()
     fixedValueMaps: Sequence[JsonFixedValueMap] = ()

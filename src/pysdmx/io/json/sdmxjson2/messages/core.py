@@ -12,8 +12,10 @@ from pysdmx.util import find_by_urn
 class JsonAnnotation(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for annotations."""
 
-    title: str
-    type: str
+    id: Optional[str] = None
+    title: Optional[str] = None
+    type: Optional[str] = None
+    value: Optional[str] = None
     text: Optional[str] = None
 
 
@@ -32,6 +34,10 @@ class JsonTextFormat(msgspec.Struct, frozen=True):
     startTime: Optional[datetime] = None
     endTime: Optional[datetime] = None
     isSequence: bool = False
+    isMultilingual: bool = False
+    sentinelValues: Optional[Sequence[str]] = None
+    timeInterval: Optional[str] = None
+    interval: Optional[int] = None
 
 
 class JsonRepresentation(msgspec.Struct, frozen=True):

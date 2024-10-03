@@ -1,8 +1,11 @@
 """Collection of SDMX-JSON schemas for content constraints."""
 
-from typing import Dict, Sequence
+from datetime import datetime
+from typing import Dict, Literal, Optional, Sequence
 
 from msgspec import Struct
+
+from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
 
 
 class JsonValue(Struct, frozen=True):
@@ -32,7 +35,30 @@ class JsonCubeRegion(Struct, frozen=True):
         return {kv.id: kv.to_model() for kv in self.keyValues}
 
 
-class JsonContentConstraint(Struct, frozen=True):
+class JsonConstraintAttachment(Struct, frozen=True):
+    """SDMX-JSON payload for a constraint attachment."""
+
+    dataProvider: Optional[str]
+    simpleDataSources: Optional[Sequence[str]] = None
+    dataStructures: Optional[Sequence[str]] = None
+    dataflows: Optional[Sequence[str]] = None
+    provisionAgreements: Optional[Sequence[str]] = None
+    queryableDataSources: Optional[Sequence[str]] = None
+
+
+class JsonDataConstraint(Struct, frozen=True, rename={"agency": "agencyID"}):
     """SDMX-JSON payload for a content constraint."""
 
-    cubeRegions: Sequence[JsonCubeRegion]
+    id: str
+    name: str
+    agency: str
+    description: Optional[str] = None
+    version: str = "1.0"
+    isExternalReference: bool = False
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
+    isPartial: bool = False
+    role: Optional[Literal["Allowed", "Actual"]] = None
+    constraintAttachment: Optional[JsonConstraintAttachment] = None
+    cubeRegions: Optional[Sequence[JsonCubeRegion]] = None
