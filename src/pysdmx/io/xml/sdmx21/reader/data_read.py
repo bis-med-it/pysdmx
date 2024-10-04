@@ -77,16 +77,22 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
             series[ATTRIBUTES][VALUE] = add_list(series[ATTRIBUTES][VALUE])
             for v in series[ATTRIBUTES][VALUE]:
                 keys[v[ID]] = v[VALUE.lower()]
-        series[OBS] = add_list(series[OBS])
+        if OBS in series:
+            series[OBS] = add_list(series[OBS])
 
-        for data in series[OBS]:
-            obs = {
-                OBS_DIM: data[OBS_DIM][VALUE.lower()],
-                OBSVALUE.upper(): data[OBSVALUE][VALUE.lower()],
-            }
-            if ATTRIBUTES in data:
-                obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
-            test_list.append({**keys, **obs})
+            for data in series[OBS]:
+                obs = {
+                    OBS_DIM: data[OBS_DIM][VALUE.lower()],
+                    OBSVALUE.upper(): data[OBSVALUE][VALUE.lower()],
+                }
+                if ATTRIBUTES in data:
+                    obs = {
+                        **obs,
+                        **__get_element_to_list(data, mode=ATTRIBUTES),
+                    }
+                test_list.append({**keys, **obs})
+        else:
+            test_list.append(keys)
         test_list, df = __process_df(test_list, df)
 
     test_list, df = __process_df(test_list, df, is_end=True)
@@ -122,10 +128,14 @@ def __reading_str_series(dataset: Dict[str, Any]) -> pd.DataFrame:
     df = None
     dataset[SERIES] = add_list(dataset[SERIES])
     for data in dataset[SERIES]:
-        keys = dict(itertools.islice(data.items(), len(data) - 1))
-        data[OBS] = add_list(data[OBS])
-        for j in data[OBS]:
-            test_list.append({**keys, **j})
+        keys = dict(itertools.islice(data.items(), len(data)))
+        if OBS in data:
+            del keys[OBS]
+            data[OBS] = add_list(data[OBS])
+            for j in data[OBS]:
+                test_list.append({**keys, **j})
+        else:
+            test_list.append(keys)
         test_list, df = __process_df(test_list, df)
 
     test_list, df = __process_df(test_list, df, is_end=True)

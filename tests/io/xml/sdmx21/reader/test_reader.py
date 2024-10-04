@@ -179,14 +179,7 @@ def test_reading_validation(samples_folder, filename):
     result = read_xml(input_str, validate=True)
     assert result is not None
     data = result["DataStructure=BIS:BIS_DER(1.0)"].data
-    num_rows = len(data)
-    num_columns = data.shape[1]
-    assert num_rows > 0
-    assert num_columns > 0
-    expected_num_rows = 1000
-    expected_num_columns = 20
-    assert num_rows == expected_num_rows
-    assert num_columns == expected_num_columns
+    assert data.shape == (1000, 20)
 
 
 # Test reading of dataflow SDMX file
@@ -248,6 +241,22 @@ def test_gen_ser_no_atts(samples_folder):
     input_str, filetype = process_string_to_read(data_path)
     assert filetype == "xml"
     read_xml(input_str, validate=True)
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "gen_ser_no_obs.xml",
+        "str_ser_no_obs.xml",
+    ],
+)
+def test_ser_no_obs(samples_folder, filename):
+    data_path = samples_folder / filename
+    input_str, filetype = process_string_to_read(data_path)
+    assert filetype == "xml"
+    result = read_xml(input_str, validate=True)
+    df = result["DataStructure=BIS:BIS_DER(1.0)"].data
+    assert df.shape == (1, 16)
 
 
 @pytest.mark.parametrize(
