@@ -224,7 +224,7 @@
                         },
                         "coreRepresentation": {
                             "enumerationFormat": {
-                                "textType": "String"
+                                "dataType": "String"
                             },
                             "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
                         }
@@ -246,7 +246,7 @@
                         "coreRepresentation": {
                             "format": {
                                 "isSequence": false,
-                                "textType": "ObservationalTimePeriod"
+                                "dataType": "ObservationalTimePeriod"
                             }
                         }
                     },
@@ -296,7 +296,7 @@
                         },
                         "coreRepresentation": {
                             "enumerationFormat": {
-                                "textType": "String"
+                                "dataType": "String"
                             },
                             "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OPTION_TYPE(1.0)"
                         }
@@ -348,7 +348,7 @@
                                 "id": "FREQ",
                                 "localRepresentation": {
                                     "enumerationFormat": {
-                                        "textType": "String"
+                                        "dataType": "String"
                                     },
                                     "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
                                 },
@@ -367,7 +367,7 @@
                                 "id": "CONTRACT",
                                 "localRepresentation": {
                                     "enumerationFormat": {
-                                        "textType": "String"
+                                        "dataType": "String"
                                     }
                                 },
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:CONCEPTS(1.0).CONTRACT"
@@ -385,7 +385,7 @@
                                 "id": "OPTION_TYPE",
                                 "localRepresentation": {
                                     "enumerationFormat": {
-                                        "textType": "String"
+                                        "dataType": "String"
                                     },
                                     "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OPTION_TYPE(1.0)"
                                 },
@@ -404,7 +404,7 @@
                             "id": "TIME_PERIOD",
                             "localRepresentation": {
                                 "format": {
-                                    "textType": "ObservationalTimePeriod"
+                                    "dataType": "ObservationalTimePeriod"
                                 }
                             },
                             "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:CONCEPTS(1.0).TIME_PERIOD"
@@ -435,7 +435,7 @@
                                 "localRepresentation": {
                                     "format": {
                                         "isSequence": false,
-                                        "textType": "BigInteger"
+                                        "dataType": "BigInteger"
                                     },
                                     "minOccurs": 1
                                 },

@@ -37,9 +37,9 @@ class JsonConcept(Struct, frozen=True):
         repr_ = self.coreRepresentation
         if repr_:
             if repr_.enumerationFormat:
-                dt = DataType(repr_.enumerationFormat.textType)
+                dt = DataType(repr_.enumerationFormat.dataType)
             elif repr_.format:
-                dt = DataType(repr_.format.textType)
+                dt = DataType(repr_.format.dataType)
             else:
                 dt = DataType.STRING
             facets = repr_.to_facets()

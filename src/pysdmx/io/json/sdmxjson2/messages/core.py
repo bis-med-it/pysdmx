@@ -22,7 +22,7 @@ class JsonAnnotation(msgspec.Struct, frozen=True):
 class JsonTextFormat(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for TextFormat."""
 
-    textType: str
+    dataType: str
     minLength: Optional[int] = None
     maxLength: Optional[int] = None
     minValue: Optional[Union[int, float]] = None
