@@ -85,7 +85,7 @@
                 "agencyID": "BIS",
                 "isExternalReference": false,
                 "isFinal": false,
-                "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0)",
+                "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TEST"
             },
             {
@@ -106,7 +106,7 @@
                 "agencyID": "BIS",
                 "isExternalReference": false,
                 "isFinal": false,
-                "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF2(1.0)",
+                "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF2(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TEST"
             }
         ]

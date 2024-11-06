@@ -16,7 +16,7 @@ class JsonProvisionAgreement(
     id: str
     name: str
     agency: str
-    structureUsage: str
+    dataflow: str
     dataProvider: str
     description: Optional[str] = None
     version: str = "1.0"

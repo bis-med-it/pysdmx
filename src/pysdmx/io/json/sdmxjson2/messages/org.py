@@ -35,7 +35,7 @@ class JsonDataProviderScheme(Struct, frozen=True):
         if pas:
             paprs: Dict[str, Set[DataflowRef]] = defaultdict(set)
             for pa in pas:
-                df = self.__get_df_ref(pa.structureUsage)
+                df = self.__get_df_ref(pa.dataflow)
                 pr = pa.dataProvider[pa.dataProvider.rindex(".") + 1 :]
                 paprs[pr].add(df)
             return [
