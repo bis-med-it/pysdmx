@@ -238,7 +238,8 @@ class JsonDimensions(Struct, frozen=True):
         """Returns the list of dimensions."""
         c = []
         c.extend([d.to_model(cs, cls, cons) for d in self.dimensions])
-        c.append(self.timeDimension.to_model(cs, cls, cons))
+        if self.timeDimension:
+            c.append(self.timeDimension.to_model(cs, cls, cons))
         return c
 
 
