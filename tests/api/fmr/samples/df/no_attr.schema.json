@@ -6646,27 +6646,25 @@
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_COUNTRY"
                             }
                         ],
-                        "timeDimensions": [
-                            {
-                                "position": 12,
-                                "type": "TimeDimension",
-                                "links": [
-                                    {
-                                        "rel": "self",
-                                        "type": "timedimension",
-                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
-                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=BIS:BIS_CBS(1.0).TIME_PERIOD"
-                                    }
-                                ],
-                                "id": "TIME_PERIOD",
-                                "localRepresentation": {
-                                    "format": {
-                                        "textType": "ObservationalTimePeriod"
-                                    }
-                                },
-                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_PERIOD"
-                            }
-                        ]
+                        "timeDimension": {
+                            "position": 12,
+                            "type": "TimeDimension",
+                            "links": [
+                                {
+                                    "rel": "self",
+                                    "type": "timedimension",
+                                    "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                    "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=BIS:BIS_CBS(1.0).TIME_PERIOD"
+                                }
+                            ],
+                            "id": "TIME_PERIOD",
+                            "localRepresentation": {
+                                "format": {
+                                    "textType": "ObservationalTimePeriod"
+                                }
+                            },
+                            "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_PERIOD"
+                        }
                     },
                     "measureList": {
                         "links": [

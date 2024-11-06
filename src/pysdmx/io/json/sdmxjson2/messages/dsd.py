@@ -227,7 +227,7 @@ class JsonDimensions(Struct, frozen=True):
     """SDMX-JSON payload for the list of dimensions."""
 
     dimensions: Sequence[JsonDimension]
-    timeDimensions: Sequence[JsonDimension] = ()
+    timeDimension: Optional[JsonDimension] = None
 
     def to_model(
         self,
@@ -238,7 +238,7 @@ class JsonDimensions(Struct, frozen=True):
         """Returns the list of dimensions."""
         c = []
         c.extend([d.to_model(cs, cls, cons) for d in self.dimensions])
-        c.extend([d.to_model(cs, cls, cons) for d in self.timeDimensions])
+        c.append(self.timeDimension.to_model(cs, cls, cons))
         return c
 
 
