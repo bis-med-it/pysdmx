@@ -15734,8 +15734,6 @@
                             }
                         ],
                         "timeDimension": {
-                            "position": 12,
-                            "type": "TimeDimension",
                             "links": [
                                 {
                                     "rel": "self",

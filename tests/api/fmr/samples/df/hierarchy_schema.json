@@ -337,7 +337,6 @@
                         "dimensions": [
                             {
                                 "position": 1,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -357,7 +356,6 @@
                             },
                             {
                                 "position": 2,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -376,7 +374,6 @@
                             },
                             {
                                 "position": 3,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -396,8 +393,6 @@
                             }
                         ],
                         "timeDimension": {
-                            "position": 4,
-                            "type": "TimeDimension",
                             "links": [
                                 {
                                     "rel": "self",

@@ -6631,7 +6631,6 @@
                         "dimensions": [
                             {
                                 "position": 1,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -6653,7 +6652,6 @@
                             },
                             {
                                 "position": 2,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -6675,7 +6673,6 @@
                             },
                             {
                                 "position": 3,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -6697,7 +6694,6 @@
                             },
                             {
                                 "position": 4,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -6719,7 +6715,6 @@
                             },
                             {
                                 "position": 5,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -6741,7 +6736,6 @@
                             },
                             {
                                 "position": 6,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -6763,7 +6757,6 @@
                             },
                             {
                                 "position": 7,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -6785,7 +6778,6 @@
                             },
                             {
                                 "position": 8,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -6807,7 +6799,6 @@
                             },
                             {
                                 "position": 9,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -6829,7 +6820,6 @@
                             },
                             {
                                 "position": 10,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -6851,7 +6841,6 @@
                             },
                             {
                                 "position": 11,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -6873,8 +6862,6 @@
                             }
                         ],
                         "timeDimension": {
-                            "position": 12,
-                            "type": "TimeDimension",
                             "links": [
                                 {
                                     "rel": "self",
