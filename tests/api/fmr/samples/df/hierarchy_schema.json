@@ -224,7 +224,7 @@
                         },
                         "coreRepresentation": {
                             "enumerationFormat": {
-                                "textType": "String"
+                                "dataType": "String"
                             },
                             "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
                         }
@@ -246,7 +246,7 @@
                         "coreRepresentation": {
                             "format": {
                                 "isSequence": false,
-                                "textType": "ObservationalTimePeriod"
+                                "dataType": "ObservationalTimePeriod"
                             }
                         }
                     },
@@ -296,7 +296,7 @@
                         },
                         "coreRepresentation": {
                             "enumerationFormat": {
-                                "textType": "String"
+                                "dataType": "String"
                             },
                             "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OPTION_TYPE(1.0)"
                         }
@@ -337,7 +337,6 @@
                         "dimensions": [
                             {
                                 "position": 1,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -349,7 +348,7 @@
                                 "id": "FREQ",
                                 "localRepresentation": {
                                     "enumerationFormat": {
-                                        "textType": "String"
+                                        "dataType": "String"
                                     },
                                     "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
                                 },
@@ -357,7 +356,6 @@
                             },
                             {
                                 "position": 2,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -369,14 +367,13 @@
                                 "id": "CONTRACT",
                                 "localRepresentation": {
                                     "enumerationFormat": {
-                                        "textType": "String"
+                                        "dataType": "String"
                                     }
                                 },
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:CONCEPTS(1.0).CONTRACT"
                             },
                             {
                                 "position": 3,
-                                "type": "Dimension",
                                 "links": [
                                     {
                                         "rel": "self",
@@ -388,34 +385,30 @@
                                 "id": "OPTION_TYPE",
                                 "localRepresentation": {
                                     "enumerationFormat": {
-                                        "textType": "String"
+                                        "dataType": "String"
                                     },
                                     "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OPTION_TYPE(1.0)"
                                 },
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:CONCEPTS(1.0).OPTION_TYPE"
                             }
                         ],
-                        "timeDimensions": [
-                            {
-                                "position": 4,
-                                "type": "TimeDimension",
-                                "links": [
-                                    {
-                                        "rel": "self",
-                                        "type": "timedimension",
-                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
-                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=BIS.TEST(1.0).TIME_PERIOD"
-                                    }
-                                ],
-                                "id": "TIME_PERIOD",
-                                "localRepresentation": {
-                                    "format": {
-                                        "textType": "ObservationalTimePeriod"
-                                    }
-                                },
-                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:CONCEPTS(1.0).TIME_PERIOD"
-                            }
-                        ]
+                        "timeDimension": {
+                            "links": [
+                                {
+                                    "rel": "self",
+                                    "type": "timedimension",
+                                    "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                    "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=BIS.TEST(1.0).TIME_PERIOD"
+                                }
+                            ],
+                            "id": "TIME_PERIOD",
+                            "localRepresentation": {
+                                "format": {
+                                    "dataType": "ObservationalTimePeriod"
+                                }
+                            },
+                            "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:CONCEPTS(1.0).TIME_PERIOD"
+                        }
                     },
                     "measureList": {
                         "links": [
@@ -442,7 +435,7 @@
                                 "localRepresentation": {
                                     "format": {
                                         "isSequence": false,
-                                        "textType": "BigInteger"
+                                        "dataType": "BigInteger"
                                     },
                                     "minOccurs": 1
                                 },

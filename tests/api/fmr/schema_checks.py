@@ -44,6 +44,25 @@ def check_schema(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
         assert comp.dtype is not None
 
 
+def check_no_td(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
+    """Not having a time dimension works fine."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    vc = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0")
+
+    assert isinstance(vc, Schema)
+    assert vc.agency == "BIS.CBS"
+    assert vc.id == "CBS"
+    assert vc.version == "1.0"
+    assert vc.context == "dataflow"
+    assert len(vc.components) == 23
+    for comp in vc.components:
+        assert comp.id != "TIME_PERIOD"
+
+
 def check_schema_from_pra(
     mock, fmr: RegistryClient, query, hca_query, body, hca_body
 ):

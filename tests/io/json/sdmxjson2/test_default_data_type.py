@@ -7,7 +7,7 @@ from pysdmx.model import DataType
 
 
 def test_dt_from_enum():
-    f = JsonTextFormat(textType="Short")
+    f = JsonTextFormat(dataType="Short")
     r = JsonRepresentation(enumerationFormat=f)
     c = JsonConcept(id="TEST", coreRepresentation=r)
 
@@ -17,7 +17,7 @@ def test_dt_from_enum():
 
 
 def test_dt_from_format():
-    f = JsonTextFormat(textType="Alpha")
+    f = JsonTextFormat(dataType="Alpha")
     r = JsonRepresentation(format=f)
     c = JsonConcept(id="TEST", coreRepresentation=r)
 

@@ -78,6 +78,12 @@ def body():
 
 
 @pytest.fixture()
+def no_td_body():
+    with open("tests/api/fmr/samples/df/no_td.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture()
 def no_const_body():
     with open("tests/api/fmr/samples/df/no_const.json", "rb") as f:
         return f.read()
@@ -241,4 +247,13 @@ def test_has_hierarchy(
         hierarchy_hca_query,
         hierarchy_body,
         hier_assoc_body,
+    )
+
+
+def test_no_time_dimension(
+    respx_mock, fmr, query, no_hca_query, no_td_body, no_hca_body
+):
+    """Not having a time dimension works fine."""
+    checks.check_no_td(
+        respx_mock, fmr, query, no_hca_query, no_td_body, no_hca_body
     )

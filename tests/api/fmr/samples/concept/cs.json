@@ -124,7 +124,7 @@
                             "enumerationFormat": {
                                 "maxLength": 1,
                                 "minLength": 1,
-                                "textType": "String"
+                                "dataType": "String"
                             },
                             "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS.MEDIT:MEDAL_NMM(1.0)"
                         }
@@ -150,7 +150,7 @@
                         "coreRepresentation": {
                             "format": {
                                 "maxLength": 250,
-                                "textType": "String"
+                                "dataType": "String"
                             }
                         }
                     },
@@ -174,7 +174,7 @@
                         },
                         "coreRepresentation": {
                             "format": {
-                                "textType": "Boolean"
+                                "dataType": "Boolean"
                             }
                         }
                     },
@@ -197,7 +197,7 @@
                                 "endTime": "2020-12-31T23:59:59",
                                 "isSequence": true,
                                 "startTime": "2000-01-01T00:00:00",
-                                "textType": "GregorianYearMonth"
+                                "dataType": "GregorianYearMonth"
                             }
                         }
                     },

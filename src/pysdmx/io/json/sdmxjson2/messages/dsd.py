@@ -38,9 +38,9 @@ def _find_concept(cs: Sequence[JsonConceptScheme], urn: str) -> JsonConcept:
 
 def __get_type(repr_: JsonRepresentation) -> str:
     if repr_.enumerationFormat:
-        t = repr_.enumerationFormat.textType
+        t = repr_.enumerationFormat.dataType
     elif repr_.format:
-        t = repr_.format.textType
+        t = repr_.format.dataType
     else:
         t = "String"
     return t
@@ -227,7 +227,7 @@ class JsonDimensions(Struct, frozen=True):
     """SDMX-JSON payload for the list of dimensions."""
 
     dimensions: Sequence[JsonDimension]
-    timeDimensions: Sequence[JsonDimension] = ()
+    timeDimension: Optional[JsonDimension] = None
 
     def to_model(
         self,
@@ -238,7 +238,8 @@ class JsonDimensions(Struct, frozen=True):
         """Returns the list of dimensions."""
         c = []
         c.extend([d.to_model(cs, cls, cons) for d in self.dimensions])
-        c.extend([d.to_model(cs, cls, cons) for d in self.timeDimensions])
+        if self.timeDimension:
+            c.append(self.timeDimension.to_model(cs, cls, cons))
         return c
 
 
