@@ -237,7 +237,14 @@ class __BaseRegistryClient:
         return q.get_url(API_VERSION, True)
 
     def _categories_url(self, agency: str, id: str, version: str) -> str:
-        q = StructureQuery(StructureType.CATEGORY_SCHEME, agency, id, version)
+        q = StructureQuery(
+            StructureType.CATEGORY_SCHEME,
+            agency,
+            id,
+            version,
+            detail=StructureDetail.REFERENCE_PARTIAL,
+            references=StructureReference.PARENTSANDSIBLINGS,
+        )
         return q.get_url(API_VERSION, True)
 
     def _codes_cl_url(self, agency: str, id: str, version: str) -> str:
@@ -272,8 +279,8 @@ class __BaseRegistryClient:
             agency,
             id,
             version,
-            detail=StructureDetail.REFERENCE_PARTIAL,
-            references=ref,
+            # detail=StructureDetail.REFERENCE_PARTIAL,
+            # references=ref,
         )
         return q.get_url(API_VERSION, True)
 
