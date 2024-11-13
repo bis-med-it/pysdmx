@@ -98,7 +98,7 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
 
     def to_array_def(self) -> Optional[ArrayBoundaries]:
         """Returns the array boundaries, if any."""
-        if self.minOccurs or self.maxOccurs:
+        if self.maxOccurs and self.maxOccurs > 1:
             m = self.minOccurs if self.minOccurs is not None else 0
             return ArrayBoundaries(m, self.maxOccurs)
         else:
