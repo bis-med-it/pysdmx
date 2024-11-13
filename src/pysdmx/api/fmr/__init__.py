@@ -279,8 +279,8 @@ class __BaseRegistryClient:
             agency,
             id,
             version,
-            # detail=StructureDetail.REFERENCE_PARTIAL,
-            # references=ref,
+            detail=StructureDetail.REFERENCE_PARTIAL,
+            references=ref,
         )
         return q.get_url(API_VERSION, True)
 
