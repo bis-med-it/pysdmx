@@ -158,12 +158,14 @@ class FusionHierarchy(Struct, frozen=True, rename={"agency": "agencyId"}):
     def to_model(self, codelists: Sequence[CL]) -> HCL:
         """Converts a FusionHierarchy to a standard hierarchy."""
         return HCL(
-            self.id,
-            self.names[0].value,
-            self.agency,
-            self.descriptions[0].value if self.descriptions else None,
-            self.version,
-            [i.to_model(codelists) for i in self.codes],
+            id=self.id,
+            name=self.names[0].value,
+            agency=self.agency,
+            description=(
+                self.descriptions[0].value if self.descriptions else None
+            ),
+            version=self.version,
+            codes=[i.to_model(codelists) for i in self.codes],
         )
 
 

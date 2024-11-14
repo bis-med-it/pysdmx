@@ -141,7 +141,7 @@ class HierarchicalCode(Struct, frozen=True, omit_defaults=True):
         return out
 
 
-class Hierarchy(Struct, frozen=True, omit_defaults=True):
+class Hierarchy(MaintainableArtefact, frozen=True, omit_defaults=True):
     """An immutable collection of codes, organized hierarchically.
 
     A hierarchy is **maintained by its agency**, typically, an organisation
@@ -170,11 +170,6 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
             to check that A = B + C.
     """
 
-    id: str
-    name: str
-    agency: str
-    description: Optional[str] = None
-    version: str = "1.0"
     codes: Sequence[HierarchicalCode] = ()
     operator: Optional[str] = None
 
