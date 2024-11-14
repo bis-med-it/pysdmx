@@ -21,7 +21,12 @@ def values():
     vm2 = ValueMap("UY", "URY")
     vms = [vm1, vm2]
     return RepresentationMap(
-        "RM_ID", "Map ISO2 to ISO3", "BIS", "SRC_CL", "TGT_CL", vms
+        id="RM_ID",
+        name="Map ISO2 to ISO3",
+        agency="BIS",
+        source="SRC_CL",
+        target="TGT_CL",
+        maps=vms,
     )
 
 
@@ -52,7 +57,12 @@ def test_not_equal(source, target, values):
         source,
         source,
         RepresentationMap(
-            "RM_ID2", "Map ISO2 to ISO3", "BIS", "SRC_CL1", "TGT_CL1", []
+            id="RM_ID2",
+            name="Map ISO2 to ISO3",
+            agency="BIS",
+            source="SRC_CL1",
+            target="TGT_CL1",
+            maps=[],
         ),
     )
 

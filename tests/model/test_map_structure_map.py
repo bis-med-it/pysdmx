@@ -59,21 +59,36 @@ def mappings():
         "SRC1",
         "TGT1",
         RepresentationMap(
-            "M1", "M1", "BIS", "CL1", "CL2", [ValueMap("1", "A")]
+            id="M1",
+            name="M1",
+            agency="BIS",
+            source="CL1",
+            target="CL2",
+            maps=[ValueMap("1", "A")],
         ),
     )
     m6 = ComponentMap(
         "SRC2",
         "TGT2",
         RepresentationMap(
-            "M1", "M1", "BIS", "CL1", "CL2", [ValueMap("2", "B")]
+            id="M1",
+            name="M1",
+            agency="BIS",
+            source="CL1",
+            target="CL2",
+            maps=[ValueMap("2", "B")],
         ),
     )
     m7 = ComponentMap(
         "SRC3",
         "TGT3",
         RepresentationMap(
-            "M1", "M1", "BIS", "CL1", "CL2", [ValueMap("3", "C")]
+            id="M1",
+            name="M1",
+            agency="BIS",
+            source="CL1",
+            target="CL2",
+            maps=[ValueMap("3", "C")],
         ),
     )
     return [m1, m2, m3, m4, m5, m6, m7]
