@@ -4,7 +4,6 @@ from datetime import date, datetime
 from typing import Any, Dict, Optional, Union
 
 from msgspec import Struct
-import pandas as pd
 
 from pysdmx.model import Schema
 from pysdmx.model.message import ActionType
@@ -42,22 +41,9 @@ class SeriesInfo(Struct, frozen=True):
         return ", ".join(out)
 
 
-class PandasDataset(Struct, frozen=False, kw_only=True):
-    """Class related to Dataset, using Pandas Dataframe.
+class Dataset(Struct, frozen=False, kw_only=True):
+    """Core Dataset class."""
 
-    It is based on SDMX Dataset and has Pandas Dataframe compatibility to
-    withhold data.
-
-    Args:
-        attributes: Attributes at dataset level-
-        data: Dataframe.
-        structure:
-        URN or Schema related to this Dataset
-        (DSD, Dataflow, ProvisionAgreement)
-        short_urn: Combination of Agency_id, Id and Version.
-    """
-
-    data: pd.DataFrame
     structure: Union[str, Schema]
     attributes: Dict[str, Any] = {}
     action: ActionType = ActionType.Information

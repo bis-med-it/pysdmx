@@ -8,9 +8,9 @@ from pysdmx.api.dc.query import (
     MultiFilter,
     NumberFilter,
     Operator,
-    parse_query,
     TextFilter,
 )
+from pysdmx.api.dc.query.util import parse_query
 from pysdmx.errors import Invalid
 
 
