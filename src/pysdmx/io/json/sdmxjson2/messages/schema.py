@@ -57,13 +57,16 @@ class JsonSchemaMessage(
         urns = [a.urn for a in self.meta.links]
         for ha in hierarchies:
             comp_id = parse_item_urn(ha.component_ref).item_id
-            h = msgspec.structs.replace(ha.hierarchy, operator=ha.operator)
+            h = msgspec.structs.replace(  # type: ignore[type-var]
+                ha.hierarchy,
+                operator=ha.operator,
+            )
             comp_dict[comp_id] = msgspec.structs.replace(
                 components[comp_id], local_codes=h
             )
             urns.append(
                 "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy="
-                f"{h.agency}:{h.id}({h.version})"
+                f"{h.agency}:{h.id}({h.version})"  # type: ignore[union-attr]
             )
         comps = Components(comp_dict.values())
         return Schema(context, agency, id_, comps, version, urns)

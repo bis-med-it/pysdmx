@@ -21,7 +21,7 @@ from typing import Iterator, Literal, Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.model.__base import Item, ItemScheme
+from pysdmx.model.__base import Item, ItemScheme, MaintainableArtefact
 
 
 class Code(Item, frozen=True, omit_defaults=True):
@@ -284,15 +284,12 @@ class Hierarchy(Struct, frozen=True, omit_defaults=True):
         return out
 
 
-class HierarchyAssociation(Struct, frozen=True, omit_defaults=True):
+class HierarchyAssociation(
+    MaintainableArtefact, frozen=True, omit_defaults=True
+):
     """Links a hierarchy to a component withing the context of a dataflow."""
 
-    id: str
-    name: str
-    agency: str
-    hierarchy: Hierarchy
-    component_ref: str
-    context_ref: str
-    description: Optional[str] = None
-    version: str = "1.0"
+    hierarchy: Optional[Hierarchy] = None
+    component_ref: str = ""
+    context_ref: str = ""
     operator: Optional[str] = None

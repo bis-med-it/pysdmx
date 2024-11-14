@@ -191,15 +191,17 @@ class FusionHierarchyAssociation(
         cls = [cl.to_model() for cl in codelists]
         m = find_by_urn(hierarchies, self.hierarchyRef).to_model(cls)
         return HA(
-            self.id,
-            self.names[0].value,
-            self.agency,
-            m,
-            self.linkedStructureRef,
-            self.contextRef,
-            self.descriptions[0].value if self.descriptions else None,
-            self.version,
-            self.links[0].urn if self.links else None,
+            id=self.id,
+            name=self.names[0].value,
+            agency=self.agency,
+            hierarchy=m,
+            component_ref=self.linkedStructureRef,
+            context_ref=self.contextRef,
+            description=(
+                self.descriptions[0].value if self.descriptions else None
+            ),
+            version=self.version,
+            operator=self.links[0].urn if self.links else None,
         )
 
 

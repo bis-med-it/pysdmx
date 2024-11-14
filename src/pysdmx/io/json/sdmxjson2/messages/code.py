@@ -245,15 +245,15 @@ class JsonHierarchyAssociation(
             )
         )
         return HierarchyAssociation(
-            self.id,
-            self.name,
-            self.agency,
-            m,
-            self.linkedObject,
-            self.contextObject,
-            self.description,
-            self.version,
-            lnk[0].urn if lnk else None,
+            id=self.id,
+            name=self.name,
+            agency=self.agency,
+            hierarchy=m,
+            component_ref=self.linkedObject,
+            context_ref=self.contextObject,
+            description=self.description,
+            version=self.version,
+            operator=lnk[0].urn if lnk else None,
         )
 
 
