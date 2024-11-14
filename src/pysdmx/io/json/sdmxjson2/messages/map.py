@@ -103,14 +103,14 @@ class JsonRepresentationMap(
         t = [self.__parse_st(j) for j in self.target]
         if is_multi:
             return MultiRepresentationMap(
-                self.id,
-                self.name,
-                self.agency,
-                s,
-                t,
-                mrs,  # type: ignore[arg-type]
-                self.description,
-                self.version,
+                id=self.id,
+                name=self.name,
+                agency=self.agency,
+                source=s,
+                target=t,
+                maps=mrs,  # type: ignore[arg-type]
+                description=self.description,
+                version=self.version,
             )
         else:
             return RepresentationMap(

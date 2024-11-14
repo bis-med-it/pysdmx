@@ -175,7 +175,9 @@ class ValueMap(Struct, frozen=True, omit_defaults=True):
     valid_to: Optional[datetime] = None
 
 
-class MultiRepresentationMap(Struct, frozen=True, omit_defaults=True):
+class MultiRepresentationMap(
+    MaintainableArtefact, frozen=True, omit_defaults=True
+):
     """Maps one or more source codelists to one or more target codelists.
 
     A representation map is iterable, i.e. it is possible to iterate over
@@ -195,14 +197,9 @@ class MultiRepresentationMap(Struct, frozen=True, omit_defaults=True):
         version: The version of the representation map.
     """
 
-    id: str
-    name: str
-    agency: str
-    source: Sequence[Union[str, DataType]]
-    target: Sequence[Union[str, DataType]]
-    maps: Sequence[MultiValueMap]
-    description: Optional[str] = None
-    version: str = "1.0"
+    source: Sequence[Union[str, DataType]] = []
+    target: Sequence[Union[str, DataType]] = []
+    maps: Sequence[MultiValueMap] = []
 
     def __iter__(
         self,
