@@ -200,14 +200,16 @@ class FusionStructureMap(Struct, frozen=True):
         )
 
         return SM(
-            self.id,
-            self.names[0].value,
-            self.agencyId,
-            self.source,
-            self.target,
-            m1 + m2 + m3 + m4,
-            self.descriptions[0].value if self.descriptions else None,
-            self.version,
+            id=self.id,
+            name=self.names[0].value,
+            agency=self.agencyId,
+            source=self.source,
+            target=self.target,
+            maps=m1 + m2 + m3 + m4,
+            description=(
+                self.descriptions[0].value if self.descriptions else None
+            ),
+            version=self.version,
         )
 
 

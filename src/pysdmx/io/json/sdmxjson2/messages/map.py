@@ -238,14 +238,14 @@ class JsonStructureMap(Struct, frozen=True):
         m2 = tuple([cm.to_model(rms) for cm in self.componentMaps])
         m3 = tuple([fvm.to_model() for fvm in self.fixedValueMaps])
         return StructureMap(
-            self.id,
-            self.name,
-            self.agencyID,
-            self.source,
-            self.target,
-            m1 + m2 + m3,
-            self.description,
-            self.version,
+            id=self.id,
+            name=self.name,
+            agency=self.agencyID,
+            source=self.source,
+            target=self.target,
+            maps=m1 + m2 + m3,
+            description=self.description,
+            version=self.version,
         )
 
 

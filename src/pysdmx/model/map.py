@@ -297,7 +297,7 @@ class ComponentMap(Struct, frozen=True, omit_defaults=True):
     values: RepresentationMap
 
 
-class StructureMap(Struct, frozen=True, omit_defaults=True):
+class StructureMap(MaintainableArtefact, frozen=True, omit_defaults=True):
     """Maps a source structure to a target structure.
 
     The various mapping rules are classified by types.
@@ -320,11 +320,8 @@ class StructureMap(Struct, frozen=True, omit_defaults=True):
         version: The version of the structure map (e.g. 2.0.42).
     """
 
-    id: str
-    name: str
-    agency: str
-    source: str
-    target: str
+    source: str = ""
+    target: str = ""
     maps: Sequence[
         Union[
             ComponentMap,
@@ -333,9 +330,7 @@ class StructureMap(Struct, frozen=True, omit_defaults=True):
             ImplicitComponentMap,
             MultiComponentMap,
         ]
-    ]
-    description: Optional[str] = None
-    version: str = "1.0"
+    ] = []
 
     @property
     def component_maps(self) -> Sequence[ComponentMap]:
