@@ -114,14 +114,14 @@ class JsonRepresentationMap(
             )
         else:
             return RepresentationMap(
-                self.id,
-                self.name,
-                self.agency,
-                s[0],
-                t[0],
-                mrs,  # type: ignore[arg-type]
-                self.description,
-                self.version,
+                id=self.id,
+                name=self.name,
+                agency=self.agency,
+                source=s[0],
+                target=t[0],
+                maps=mrs,  # type: ignore[arg-type]
+                description=self.description,
+                version=self.version,
             )
 
 

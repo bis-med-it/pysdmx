@@ -104,14 +104,16 @@ class FusionRepresentationMap(
             )
         else:
             return RepresentationMap(
-                self.id,
-                self.names[0].value,
-                self.agency,
-                s[0],
-                t[0],
-                mrs,  # type: ignore[arg-type]
-                self.descriptions[0].value if self.descriptions else None,
-                self.version,
+                id=self.id,
+                name=self.names[0].value,
+                agency=self.agency,
+                source=s[0],
+                target=t[0],
+                maps=mrs,  # type: ignore[arg-type]
+                description=(
+                    self.descriptions[0].value if self.descriptions else None
+                ),
+                version=self.version,
             )
 
 

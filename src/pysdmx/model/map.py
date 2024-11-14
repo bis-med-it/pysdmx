@@ -6,6 +6,7 @@ from typing import Any, Iterator, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.concept import DataType
 from pysdmx.util import convert_dpm
 
@@ -242,7 +243,7 @@ class MultiComponentMap(Struct, frozen=True, omit_defaults=True):
     values: MultiRepresentationMap
 
 
-class RepresentationMap(Struct, frozen=True, omit_defaults=True):
+class RepresentationMap(MaintainableArtefact, frozen=True, omit_defaults=True):
     """Maps one source codelist to a target codelist.
 
     A representation map is iterable, i.e. it is possible to iterate over
@@ -260,14 +261,9 @@ class RepresentationMap(Struct, frozen=True, omit_defaults=True):
         version: The version of the representation map.
     """
 
-    id: str
-    name: str
-    agency: str
-    source: Union[str, DataType, None]
-    target: Union[str, DataType, None]
-    maps: Sequence[ValueMap]
-    description: Optional[str] = None
-    version: str = "1.0"
+    source: Union[str, DataType, None] = None
+    target: Union[str, DataType, None] = None
+    maps: Sequence[ValueMap] = []
 
     def __iter__(
         self,
