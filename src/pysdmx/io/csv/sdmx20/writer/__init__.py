@@ -6,7 +6,7 @@ from typing import Optional
 import pandas as pd
 
 from pysdmx.io.csv.sdmx20 import SDMX_CSV_ACTION_MAPPER
-from pysdmx.model.dataset import PandasDataset
+from pysdmx.io.pd import PandasDataset
 
 
 def writer(

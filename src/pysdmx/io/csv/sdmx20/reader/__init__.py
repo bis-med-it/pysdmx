@@ -6,7 +6,7 @@ from typing import Dict
 import pandas as pd
 
 from pysdmx.errors import Invalid
-from pysdmx.model.dataset import PandasDataset
+from pysdmx.io.pd import PandasDataset
 from pysdmx.model.message import ActionType
 
 ACTION_SDMX_CSV_MAPPER_READING = {

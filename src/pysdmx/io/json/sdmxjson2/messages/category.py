@@ -70,8 +70,8 @@ class JsonCategorySchemeMessage(Struct, frozen=True):
     def __group_flows(self) -> defaultdict[str, list[DataflowRef]]:
         out: defaultdict[str, list[DataflowRef]] = defaultdict(list)
         for c in self.data.categorisations:
-            d = find_by_urn(self.data.dataflows, c.target)
-            src = c.source[c.source.find(")") + 2 :]
+            d = find_by_urn(self.data.dataflows, c.source)
+            src = c.target[c.target.find(")") + 2 :]
             out[src].append(d.to_model())
         return out
 

@@ -25,7 +25,9 @@ def query(fmr):
     res = "/structure/categoryscheme/"
     agency = "TEST"
     id = "TEST_CS"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/+"
+    d = "detail=referencepartial"
+    r = "references=parentsandsiblings"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/+?{d}&{r}"
 
 
 @pytest.fixture()
