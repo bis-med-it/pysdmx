@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from pysdmx.errors import NotFound, NotImplemented
+from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.sdmx21.__parsing_config import (
     AGENCY_ID,
     ATTRIBUTES,
@@ -31,7 +32,6 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     VERSION,
 )
 from pysdmx.io.xml.utils import add_list
-from pysdmx.model.dataset import PandasDataset
 from pysdmx.util import parse_urn
 
 READING_CHUNKSIZE = 50000
