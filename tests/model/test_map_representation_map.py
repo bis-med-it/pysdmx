@@ -48,7 +48,14 @@ def mappings():
 
 
 def test_default_initialization(id, name, agency, source, target, mappings):
-    sm = RepresentationMap(id, name, agency, source, target, mappings)
+    sm = RepresentationMap(
+        id=id,
+        name=name,
+        agency=agency,
+        source=source,
+        target=target,
+        maps=mappings,
+    )
 
     assert sm.id == id
     assert sm.name == name
@@ -64,7 +71,14 @@ def test_full_initialization(
     id, name, agency, source, target, mappings, version, desc
 ):
     sm = RepresentationMap(
-        id, name, agency, source, target, mappings, desc, version
+        id=id,
+        name=name,
+        agency=agency,
+        source=source,
+        target=target,
+        maps=mappings,
+        description=desc,
+        version=version,
     )
 
     assert sm.id == id
@@ -78,14 +92,28 @@ def test_full_initialization(
 
 
 def test_immutable(id, name, agency, source, target, mappings):
-    sm = RepresentationMap(id, name, agency, source, target, mappings)
+    sm = RepresentationMap(
+        id=id,
+        name=name,
+        agency=agency,
+        source=source,
+        target=target,
+        maps=mappings,
+    )
 
     with pytest.raises(AttributeError):
         sm.description = "blah"
 
 
 def test_iterable(id, name, agency, source, target, mappings):
-    sm = RepresentationMap(id, name, agency, source, target, mappings)
+    sm = RepresentationMap(
+        id=id,
+        name=name,
+        agency=agency,
+        source=source,
+        target=target,
+        maps=mappings,
+    )
 
     assert isinstance(sm, Iterable)
 
@@ -94,7 +122,14 @@ def test_iterable(id, name, agency, source, target, mappings):
 
 
 def test_sized(id, name, agency, source, target, mappings):
-    sm = RepresentationMap(id, name, agency, source, target, mappings)
+    sm = RepresentationMap(
+        id=id,
+        name=name,
+        agency=agency,
+        source=source,
+        target=target,
+        maps=mappings,
+    )
 
     assert isinstance(sm, Sized)
     assert len(sm) == len(mappings)

@@ -26,7 +26,12 @@ def values():
     vm3 = MultiValueMap(["DE", "LC1"], ["EUR"])
     vms = [vm1, vm2, vm3]
     return MultiRepresentationMap(
-        "RM_ID", "Map ISO2 to ISO3", "BIS", "SRC_CL", "TGT_CL", vms
+        id="RM_ID",
+        name="Map ISO2 to ISO3",
+        agency="BIS",
+        source="SRC_CL",
+        target="TGT_CL",
+        maps=vms,
     )
 
 
@@ -57,7 +62,12 @@ def test_not_equal(source, target, values):
         source,
         source,
         MultiRepresentationMap(
-            "RM_ID1", "Map ISO2 to ISO3", "BIS", "SRC_CL1", "TGT_CL1", []
+            id="RM_ID1",
+            name="Map ISO2 to ISO3",
+            agency="BIS",
+            source="SRC_CL1",
+            target="TGT_CL1",
+            maps=[],
         ),
     )
 

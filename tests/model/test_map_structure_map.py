@@ -59,28 +59,50 @@ def mappings():
         "SRC1",
         "TGT1",
         RepresentationMap(
-            "M1", "M1", "BIS", "CL1", "CL2", [ValueMap("1", "A")]
+            id="M1",
+            name="M1",
+            agency="BIS",
+            source="CL1",
+            target="CL2",
+            maps=[ValueMap("1", "A")],
         ),
     )
     m6 = ComponentMap(
         "SRC2",
         "TGT2",
         RepresentationMap(
-            "M1", "M1", "BIS", "CL1", "CL2", [ValueMap("2", "B")]
+            id="M1",
+            name="M1",
+            agency="BIS",
+            source="CL1",
+            target="CL2",
+            maps=[ValueMap("2", "B")],
         ),
     )
     m7 = ComponentMap(
         "SRC3",
         "TGT3",
         RepresentationMap(
-            "M1", "M1", "BIS", "CL1", "CL2", [ValueMap("3", "C")]
+            id="M1",
+            name="M1",
+            agency="BIS",
+            source="CL1",
+            target="CL2",
+            maps=[ValueMap("3", "C")],
         ),
     )
     return [m1, m2, m3, m4, m5, m6, m7]
 
 
 def test_default_initialization(id, name, agency, source, target, mappings):
-    sm = StructureMap(id, name, agency, source, target, mappings)
+    sm = StructureMap(
+        id=id,
+        name=name,
+        agency=agency,
+        source=source,
+        target=target,
+        maps=mappings,
+    )
 
     assert sm.id == id
     assert sm.name == name
@@ -96,7 +118,14 @@ def test_full_initialization(
     id, name, agency, source, target, mappings, version, desc
 ):
     sm = StructureMap(
-        id, name, agency, source, target, mappings, desc, version
+        id=id,
+        name=name,
+        agency=agency,
+        source=source,
+        target=target,
+        maps=mappings,
+        description=desc,
+        version=version,
     )
 
     assert sm.id == id
@@ -110,14 +139,28 @@ def test_full_initialization(
 
 
 def test_immutable(id, name, agency, source, target, mappings):
-    sm = StructureMap(id, name, agency, source, target, mappings)
+    sm = StructureMap(
+        id=id,
+        name=name,
+        agency=agency,
+        source=source,
+        target=target,
+        maps=mappings,
+    )
 
     with pytest.raises(AttributeError):
         sm.description = "blah"
 
 
 def test_iterable(id, name, agency, source, target, mappings):
-    sm = StructureMap(id, name, agency, source, target, mappings)
+    sm = StructureMap(
+        id=id,
+        name=name,
+        agency=agency,
+        source=source,
+        target=target,
+        maps=mappings,
+    )
 
     assert isinstance(sm, Iterable)
 
@@ -134,14 +177,28 @@ def test_iterable(id, name, agency, source, target, mappings):
 
 
 def test_sized(id, name, agency, source, target, mappings):
-    sm = StructureMap(id, name, agency, source, target, mappings)
+    sm = StructureMap(
+        id=id,
+        name=name,
+        agency=agency,
+        source=source,
+        target=target,
+        maps=mappings,
+    )
 
     assert isinstance(sm, Sized)
     assert len(sm) == len(mappings)
 
 
 def test_get_map(id, name, agency, source, target, mappings):
-    sm = StructureMap(id, name, agency, source, target, mappings)
+    sm = StructureMap(
+        id=id,
+        name=name,
+        agency=agency,
+        source=source,
+        target=target,
+        maps=mappings,
+    )
 
     id = mappings[3].source
     resp1 = sm[id]

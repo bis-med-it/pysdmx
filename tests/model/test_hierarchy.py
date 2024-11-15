@@ -29,7 +29,7 @@ def operator():
 
 
 def test_defaults(id, name, agency):
-    cs = Hierarchy(id, name, agency)
+    cs = Hierarchy(id=id, name=name, agency=agency)
 
     assert cs.id == id
     assert cs.name == name
@@ -51,7 +51,15 @@ def test_full_initialization(id, name, agency, operator):
         HierarchicalCode("child2", "Child 2", codes=[child]),
     ]
 
-    cs = Hierarchy(id, name, agency, desc, version, codes, operator)
+    cs = Hierarchy(
+        id=id,
+        name=name,
+        agency=agency,
+        description=desc,
+        version=version,
+        codes=codes,
+        operator=operator,
+    )
 
     assert cs.id == id
     assert cs.name == name
@@ -65,7 +73,7 @@ def test_full_initialization(id, name, agency, operator):
 
 
 def test_immutable(id, name, agency):
-    cs = Hierarchy(id, name, agency)
+    cs = Hierarchy(id=id, name=name, agency=agency)
     with pytest.raises(AttributeError):
         cs.description = "Description"
 
@@ -75,7 +83,7 @@ def test_iterable(id, name, agency):
         HierarchicalCode("child1", "Child 1"),
         HierarchicalCode("child2", "Child 2"),
     ]
-    cs = Hierarchy(id, name, agency, codes=codes)
+    cs = Hierarchy(id=id, name=name, agency=agency, codes=codes)
 
     assert isinstance(cs, Iterable)
     out = [c.id for c in cs]
@@ -84,7 +92,7 @@ def test_iterable(id, name, agency):
 
 
 def test_sized(id, name, agency):
-    cs = Hierarchy(id, name, agency)
+    cs = Hierarchy(id=id, name=name, agency=agency)
 
     assert isinstance(cs, Sized)
 
@@ -97,7 +105,7 @@ def test_get_code(id, name, agency):
         HierarchicalCode("child2", "Child 2", codes=[child]),
     ]
 
-    cs = Hierarchy(id, name, agency, codes=codes)
+    cs = Hierarchy(id=id, name=name, agency=agency, codes=codes)
 
     resp1 = cs["child2.child21.child211"]
     resp2 = cs["child2"]
@@ -121,7 +129,7 @@ def test_codes_by_id_no_parent_needed(id, name, agency):
         HierarchicalCode("child1", "Child 1"),
         HierarchicalCode("child2", "Child 2", codes=[child1]),
     ]
-    cs = Hierarchy(id, name, agency, codes=codes)
+    cs = Hierarchy(id=id, name=name, agency=agency, codes=codes)
 
     m = cs.by_id("child211")
 
@@ -142,7 +150,7 @@ def test_codes_by_id_is_a_set(id, name, agency):
         HierarchicalCode("child1", "Child 1"),
         HierarchicalCode("child2", "Child 2", codes=[child1, child2]),
     ]
-    cs = Hierarchy(id, name, agency, codes=codes)
+    cs = Hierarchy(id=id, name=name, agency=agency, codes=codes)
 
     m = cs.by_id("child211")
 
@@ -164,7 +172,7 @@ def test_codes_by_id_diff_names(id, name, agency):
         HierarchicalCode("child1", "Child 1"),
         HierarchicalCode("child2", "Child 2", codes=[child1, child2]),
     ]
-    cs = Hierarchy(id, name, agency, codes=codes)
+    cs = Hierarchy(id=id, name=name, agency=agency, codes=codes)
 
     m = cs.by_id("child211")
 
@@ -192,7 +200,7 @@ def test_all_codes(id, name, agency):
         codes=[child1, child2],
     )
 
-    h = Hierarchy(id, name, agency, codes=[parent1, parent2])
+    h = Hierarchy(id=id, name=name, agency=agency, codes=[parent1, parent2])
 
     m = h.all_codes()
     assert len(m) == 7
