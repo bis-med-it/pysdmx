@@ -8,7 +8,7 @@ as part of the response.
 """
 
 from collections import Counter, UserList
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Iterable, Optional, Sequence, Union
 
@@ -383,7 +383,7 @@ class Schema(Struct, frozen=True, omit_defaults=True):
     components: Components
     version: str = "1.0"
     artefacts: Sequence[str] = ()
-    generated: datetime = datetime.utcnow()
+    generated: datetime = datetime.now(timezone.utc)
 
     def __str__(self) -> str:
         """Returns a human-friendly description."""
