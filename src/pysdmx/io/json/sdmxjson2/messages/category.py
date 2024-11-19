@@ -28,6 +28,22 @@ class JsonCategorisation(Struct, frozen=True, rename={"agency": "agencyID"}):
     annotations: Optional[Sequence[JsonAnnotation]] = None
 
 
+class JsonCategory(Struct, frozen=True):
+    id: str  # type: ignore[misc, unused-ignore]
+    name: Optional[str] = None
+    description: Optional[str] = None
+    categories: Sequence["JsonCategory"] = ()
+
+    def to_model(self) -> Category:
+        """Converts a FusionCode to a standard code."""
+        return Category(
+            id=self.id,
+            name=self.name,
+            description=self.description,
+            categories=[c.to_model() for c in self.categories],
+        )
+
+
 class JsonCategoryScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
     """SDMX-JSON payload for a category scheme."""
 
@@ -40,7 +56,7 @@ class JsonCategoryScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
     annotations: Optional[Sequence[JsonAnnotation]] = None
-    categories: Sequence[Category] = ()
+    categories: Sequence[JsonCategory] = ()
 
     def to_model(self) -> CategoryScheme:
         """Converts a JsonCodelist to a standard codelist."""
@@ -50,7 +66,7 @@ class JsonCategoryScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
             agency=self.agency,
             description=self.description,
             version=self.version,
-            items=self.categories,
+            items=[c.to_model() for c in self.categories],
         )
 
 
