@@ -85,7 +85,7 @@ class Connector(Protocol):
 
     def dataflow(
         self,
-        dataflow: Union[str, DataflowRef, DataflowInfo],
+        dataflow: Union[str, DataflowRef, Dataflow],
         metrics: bool = False,
     ) -> DataflowInfo:
         """Get information about a dataflow.
