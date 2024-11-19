@@ -100,6 +100,7 @@ __all__ = [
     "ConceptScheme",
     "Contact",
     "DataConsumer",
+    "Dataflow",
     "DataflowInfo",
     "DataflowRef",
     "DataType",

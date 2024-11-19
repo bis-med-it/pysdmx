@@ -4,7 +4,7 @@ An example of a category scheme is one which categorises data, sometimes
 known as a subject matter domain scheme or a data category scheme.
 """
 
-from typing import Iterator, List, Optional, Sequence, Set, Union
+from typing import Iterator, Optional, Sequence, Union
 
 from pysdmx.model.__base import DataflowRef, Item, ItemScheme
 from pysdmx.model.dataflow import Dataflow
