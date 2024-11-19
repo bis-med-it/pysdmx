@@ -1,7 +1,7 @@
 """Collection of Fusion-JSON schemas for common artefacts."""
 
 from datetime import datetime
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Optional, Sequence
 
 import msgspec
 
@@ -37,8 +37,8 @@ class FusionTextFormat(msgspec.Struct, frozen=True):
     maxLength: Optional[int] = None
     minValue: Optional[str] = None
     maxValue: Optional[str] = None
-    startValue: Optional[Union[int, float]] = None
-    endValue: Optional[Union[int, float]] = None
+    startValue: Optional[str] = None
+    endValue: Optional[str] = None
     decimals: Optional[int] = None
     pattern: Optional[str] = None
     startTime: Optional[datetime] = None
