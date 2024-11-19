@@ -7,33 +7,7 @@ from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
 from pysdmx.io.json.sdmxjson2.messages.org import JsonDataProviderScheme
-from pysdmx.model import (
-    Agency,
-    Components,
-    DataflowInfo,
-    DataflowRef,
-    DataProvider,
-)
-
-
-class JsonDataflowRef(Struct, frozen=True, rename={"agency": "agencyID"}):
-    """SDMX-JSON payload for a dataflow."""
-
-    id: str
-    agency: str
-    name: Optional[str] = None
-    description: Optional[str] = None
-    version: str = "1.0"
-
-    def to_model(self) -> DataflowRef:
-        """Converts a JsonDataflowRef to a standard dataflow ref."""
-        return DataflowRef(
-            id=self.id,
-            agency=self.agency,
-            name=self.name,
-            description=self.description,
-            version=self.version,
-        )
+from pysdmx.model import Agency, Components, DataflowInfo, DataProvider
 
 
 class JsonDataflow(Struct, frozen=True, rename={"agency": "agencyID"}):

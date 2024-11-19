@@ -9,24 +9,25 @@ from pysdmx.io.json.fusion.messages.org import FusionProviderScheme
 from pysdmx.model import (
     Agency,
     Components,
+    Dataflow,
     DataflowInfo,
-    DataflowRef,
     DataProvider,
 )
 
 
-class FusionDataflowRef(Struct, frozen=True, rename={"agency": "agencyId"}):
+class FusionDataflow(Struct, frozen=True, rename={"agency": "agencyId"}):
     """Fusion-JSON payload for a dataflow."""
 
     id: str
     agency: str
     names: Sequence[FusionString]
+    dataStructureRef: str
     descriptions: Optional[Sequence[FusionString]] = None
     version: str = "1.0"
 
-    def to_model(self) -> DataflowRef:
-        """Converts a FusionDataflowRef to a standard dataflow ref."""
-        return DataflowRef(
+    def to_model(self) -> Dataflow:
+        """Converts a FusionDataflow to a standard dataflow."""
+        return Dataflow(
             id=self.id,
             agency=self.agency,
             name=self.names[0].value if self.names else None,
@@ -34,18 +35,8 @@ class FusionDataflowRef(Struct, frozen=True, rename={"agency": "agencyId"}):
                 self.descriptions[0].value if self.descriptions else None
             ),
             version=self.version,
+            structure=self.dataStructureRef,
         )
-
-
-class FusionDataflow(Struct, frozen=True, rename={"agency": "agencyId"}):
-    """Fusion-JSON payload for a dataflow."""
-
-    id: str
-    names: Sequence[FusionString]
-    agency: str
-    dataStructureRef: str
-    descriptions: Optional[Sequence[FusionString]] = None
-    version: str = "1.0"
 
 
 class FusionDataflowMessage(Struct, frozen=True):

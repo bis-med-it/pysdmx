@@ -7,8 +7,8 @@ from typing import Dict, Optional, Sequence
 from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
-from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflowRef
-from pysdmx.model import Category, CategoryScheme, DataflowRef
+from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
+from pysdmx.model import Category, CategoryScheme, Dataflow
 from pysdmx.util import find_by_urn
 
 
@@ -59,7 +59,7 @@ class JsonCategorySchemes(Struct, frozen=True):
 
     categorisations: Sequence[JsonCategorisation]
     categorySchemes: Sequence[JsonCategoryScheme]
-    dataflows: Sequence[JsonDataflowRef]
+    dataflows: Sequence[JsonDataflow]
 
 
 class JsonCategorySchemeMessage(Struct, frozen=True):
@@ -67,8 +67,8 @@ class JsonCategorySchemeMessage(Struct, frozen=True):
 
     data: JsonCategorySchemes
 
-    def __group_flows(self) -> defaultdict[str, list[DataflowRef]]:
-        out: defaultdict[str, list[DataflowRef]] = defaultdict(list)
+    def __group_flows(self) -> defaultdict[str, list[Dataflow]]:
+        out: defaultdict[str, list[Dataflow]] = defaultdict(list)
         for c in self.data.categorisations:
             d = find_by_urn(self.data.dataflows, c.source)
             src = c.target[c.target.find(")") + 2 :]
@@ -76,7 +76,7 @@ class JsonCategorySchemeMessage(Struct, frozen=True):
         return out
 
     def __add_flows(
-        self, cat: Category, cni: str, cf: Dict[str, list[DataflowRef]]
+        self, cat: Category, cni: str, cf: Dict[str, list[Dataflow]]
     ) -> None:
         if cat.categories:
             for c in cat.categories:
