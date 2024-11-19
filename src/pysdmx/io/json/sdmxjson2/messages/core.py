@@ -5,6 +5,7 @@ from typing import Optional, Sequence, Union
 
 import msgspec
 
+from pysdmx.errors import NotFound
 from pysdmx.model import ArrayBoundaries, Codelist, Facets
 from pysdmx.util import find_by_urn
 
@@ -91,9 +92,16 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
     ) -> Optional[Codelist]:
         """Returns the list of codes allowed for this component."""
         if self.enumeration:
-            a = find_by_urn(codelists, self.enumeration)
-            codes = [c for c in a.codes if not valid or c.id in valid]
-            return msgspec.structs.replace(a, items=codes)
+            try:
+                a = find_by_urn(codelists, self.enumeration)
+                codes = [c for c in a.codes if not valid or c.id in valid]
+                return msgspec.structs.replace(a, items=codes)
+            except:
+                # This is OK. In case of schema queries, if a component
+                # has both a local and a core representations, only the
+                # relevant one (i.e. the local one) will be included in
+                # the schema.
+                return None
         return None
 
     def to_array_def(self) -> Optional[ArrayBoundaries]:
