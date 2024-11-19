@@ -96,7 +96,7 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
                 a = find_by_urn(codelists, self.enumeration)
                 codes = [c for c in a.codes if not valid or c.id in valid]
                 return msgspec.structs.replace(a, items=codes)
-            except:
+            except NotFound:
                 # This is OK. In case of schema queries, if a component
                 # has both a local and a core representations, only the
                 # relevant one (i.e. the local one) will be included in
