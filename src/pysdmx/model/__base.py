@@ -253,13 +253,15 @@ class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
     is_partial: bool = False
 
 
-class DataflowRef(MaintainableArtefact, frozen=True, omit_defaults=True):
-    """Provide core information about a dataflow.
+class DataflowRef(Struct, frozen=True, omit_defaults=True):
+    """A unique reference to a dataflow.
 
     Attributes:
         id: The dataflow identifier (e.g. BIS_MACRO).
         agency: The organisation (or unit) responsible for the dataflow.
-        name: The dataflow name (e.g. MACRO dataflow).
-        description: Additional descriptive information about the dataflow.
         version: The version of the dataflow (e.g. 1.0).
     """
+
+    agency: str
+    id: str
+    version: str = "1.0"
