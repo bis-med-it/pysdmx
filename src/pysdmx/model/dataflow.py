@@ -15,7 +15,7 @@ from typing import Any, Iterable, Optional, Sequence, Union
 from msgspec import Struct
 
 from pysdmx.errors import Invalid
-from pysdmx.model.__base import Agency, DataProvider
+from pysdmx.model.__base import Agency, DataProvider, MaintainableArtefact
 from pysdmx.model.code import Codelist, Hierarchy
 from pysdmx.model.concept import Concept, DataType, Facets
 
@@ -393,3 +393,9 @@ class Schema(Struct, frozen=True, omit_defaults=True):
             if v:
                 out.append(f"{k}={v}")
         return ", ".join(out)
+
+
+class Dataflow(MaintainableArtefact, frozen=True, omit_defaults=True):
+    """A flow of data that providers will provide."""
+
+    structure: Optional[str] = None
