@@ -29,6 +29,7 @@ from pysdmx.model.dataflow import (
     ArrayBoundaries,
     Component,
     Components,
+    Dataflow,
     DataflowInfo,
     Role,
     Schema,
