@@ -1,7 +1,7 @@
 """Collection of Fusion-JSON schemas for common artefacts."""
 
 from datetime import datetime
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Optional, Sequence
 
 import msgspec
 
@@ -35,10 +35,10 @@ class FusionTextFormat(msgspec.Struct, frozen=True):
     textType: str
     minLength: Optional[int] = None
     maxLength: Optional[int] = None
-    minValue: Optional[Union[int, float]] = None
-    maxValue: Optional[Union[int, float]] = None
-    startValue: Optional[Union[int, float]] = None
-    endValue: Optional[Union[int, float]] = None
+    minValue: Optional[str] = None
+    maxValue: Optional[str] = None
+    startValue: Optional[str] = None
+    endValue: Optional[str] = None
     decimals: Optional[int] = None
     pattern: Optional[str] = None
     startTime: Optional[datetime] = None
@@ -73,10 +73,10 @@ class FusionRepresentation(msgspec.Struct, frozen=True):
                 min_length=self.textFormat.minLength,
                 max_length=self.textFormat.maxLength,
                 is_sequence=self.textFormat.isSequence,
-                min_value=self.textFormat.minValue,
-                max_value=self.textFormat.maxValue,
-                start_value=self.textFormat.startValue,
-                end_value=self.textFormat.endValue,
+                min_value=self.textFormat.minValue,  # type: ignore[arg-type]
+                max_value=self.textFormat.maxValue,  # type: ignore[arg-type]
+                start_value=self.textFormat.startValue,  # type: ignore
+                end_value=self.textFormat.endValue,  # type: ignore[arg-type]
                 decimals=self.textFormat.decimals,
                 pattern=self.textFormat.pattern,
                 start_time=self.textFormat.startTime,

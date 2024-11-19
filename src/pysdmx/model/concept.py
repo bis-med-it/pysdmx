@@ -82,13 +82,13 @@ class Facets(Struct, frozen=True, omit_defaults=True):
     """The minimum length for the value (e.g. ``1`` character)."""
     max_length: Optional[int] = None
     """The maximum length for the value (e.g. ``256`` characters)."""
-    min_value: Optional[float] = None
+    min_value: Optional[Union[int, float]] = None
     """Used by ranges to indicate what the lower bound of the range is."""
-    max_value: Optional[float] = None
+    max_value: Optional[Union[int, float]] = None
     """Used by ranges to indicate what the upper bound of the range is."""
-    start_value: Optional[float] = None
+    start_value: Optional[Union[int, float]] = None
     """Used in a numeric sequence to indicate its starting point."""
-    end_value: Optional[float] = None
+    end_value: Optional[Union[int, float]] = None
     """Used in a numeric sequence to indicate its ending point."""
     interval: Optional[Union[int, float]] = None
     """The permitted interval (increment) in a sequence."""
