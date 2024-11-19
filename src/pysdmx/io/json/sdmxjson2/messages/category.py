@@ -29,6 +29,8 @@ class JsonCategorisation(Struct, frozen=True, rename={"agency": "agencyID"}):
 
 
 class JsonCategory(Struct, frozen=True):
+    """SDMX-JSON payload for a category."""
+
     id: str  # type: ignore[misc, unused-ignore]
     name: Optional[str] = None
     description: Optional[str] = None
