@@ -10,7 +10,6 @@ from typing import (
     Optional,
     Protocol,
     runtime_checkable,
-    Sequence,
     Union,
 )
 
@@ -24,6 +23,7 @@ from pysdmx.api.dc.query import (
     TextFilter,
 )
 from pysdmx.model import (
+    Dataflow,
     DataflowInfo,
     DataflowRef,
     Organisation,
@@ -49,7 +49,7 @@ class Connector(Protocol):
         self,
         filter_query: Optional[str] = None,
         provider: Optional[str] = None,
-    ) -> Iterable[DataflowRef]:
+    ) -> Union[Iterable[Dataflow], Iterable[DataflowRef]]:
         """Get the dataflows provided by the Connector.
 
         Args:
@@ -84,7 +84,9 @@ class Connector(Protocol):
         """
 
     def dataflow(
-        self, dataflow: Union[str, DataflowRef], metrics: bool = False
+        self,
+        dataflow: Union[str, DataflowRef, DataflowInfo],
+        metrics: bool = False,
     ) -> DataflowInfo:
         """Get information about a dataflow.
 
@@ -111,7 +113,7 @@ class Connector(Protocol):
 
     def series(
         self,
-        dataflow: Union[str, DataflowRef, DataflowInfo],
+        dataflow: Union[str, DataflowRef, Dataflow, DataflowInfo],
         provider: Optional[Union[str, Organisation]] = None,
         filters: Optional[
             Union[
@@ -153,9 +155,9 @@ class Connector(Protocol):
 
     def data(
         self,
-        dataflow: Union[str, DataflowRef, DataflowInfo],
+        dataflow: Union[str, DataflowRef, Dataflow, DataflowInfo],
         provider: Optional[Union[str, Organisation]] = None,
-        series: Optional[Sequence[str]] = None,
+        series: Optional[Iterable[str]] = None,
         filters: Optional[
             Union[
                 BooleanFilter,
@@ -167,7 +169,7 @@ class Connector(Protocol):
                 TextFilter,
             ]
         ] = None,
-        columns: Optional[Sequence[str]] = None,
+        columns: Optional[Iterable[str]] = None,
         sort: Optional[List[SortBy]] = None,
         offset: int = 0,
         limit: Optional[int] = None,
