@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -25,8 +25,8 @@ def test_default_instantiation(source, target):
 
 
 def test_full_instantiation(source, target):
-    vf = datetime.utcnow() - timedelta(days=1)
-    vt = datetime.utcnow()
+    vf = datetime.now(timezone.utc) - timedelta(days=1)
+    vt = datetime.now(timezone.utc)
     m = MultiValueMap(source, target, vf, vt)
 
     assert m.source == source
@@ -38,7 +38,7 @@ def test_full_instantiation(source, target):
 def test_immutable(source, target):
     m = MultiValueMap(source, target)
     with pytest.raises(AttributeError):
-        m.valid_from = datetime.utcnow()
+        m.valid_from = datetime.now(timezone.utc)
 
 
 def test_equal(source, target):
@@ -50,6 +50,6 @@ def test_equal(source, target):
 
 def test_not_equal(source, target):
     m1 = MultiValueMap(source, target)
-    m2 = MultiValueMap(source, target, datetime.utcnow())
+    m2 = MultiValueMap(source, target, datetime.now(timezone.utc))
 
     assert m1 != m2
