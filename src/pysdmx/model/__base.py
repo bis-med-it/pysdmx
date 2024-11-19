@@ -268,9 +268,9 @@ class DataflowRef(Struct, frozen=True, omit_defaults=True):
 
     def __hash__(self) -> int:
         """Returns the dataflow reference's hash."""
-        return hash(self.agency, self.id, self.version)
+        return hash((self.agency, self.id, self.version))
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         """Whether the 2 objects are equal."""
         return (
             self.__class__ == other.__class__
@@ -279,6 +279,6 @@ class DataflowRef(Struct, frozen=True, omit_defaults=True):
             and self.version == other.version
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         """A string representating the dataflow's reference."""
         return f"Dataflow={self.agency}:{self.id}({self.version})"

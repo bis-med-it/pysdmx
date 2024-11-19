@@ -74,7 +74,7 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
     @property
     def dataflows(self) -> Union[Sequence[DataflowRef], Sequence[Dataflow]]:
         """Return the dataflows attached to any category in the scheme."""
-        flows = set()
+        flows = set()  # type: ignore[var-annotated]
         for cat in self.categories:
             flows.update(self.__extract_flows(cat))
         return list(flows)
@@ -121,7 +121,7 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
     def __extract_flows(
         self, c: Category
     ) -> Union[Sequence[DataflowRef], Sequence[Dataflow]]:
-        flows = []
+        flows = []  # type: ignore[var-annotated]
         if c.dataflows:
             flows.extend(c.dataflows)
         for sub in c.categories:
