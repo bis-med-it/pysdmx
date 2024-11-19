@@ -35,8 +35,8 @@ class FusionTextFormat(msgspec.Struct, frozen=True):
     textType: str
     minLength: Optional[int] = None
     maxLength: Optional[int] = None
-    minValue: Optional[Union[str]] = None
-    maxValue: Optional[Union[str]] = None
+    minValue: Optional[str] = None
+    maxValue: Optional[str] = None
     startValue: Optional[Union[int, float]] = None
     endValue: Optional[Union[int, float]] = None
     decimals: Optional[int] = None
