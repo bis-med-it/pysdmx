@@ -7,7 +7,13 @@ from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
 from pysdmx.io.json.sdmxjson2.messages.org import JsonDataProviderScheme
-from pysdmx.model import Agency, Components, DataflowInfo, DataProvider
+from pysdmx.model import (
+    Agency,
+    Components,
+    Dataflow,
+    DataflowInfo,
+    DataProvider,
+)
 
 
 class JsonDataflow(Struct, frozen=True, rename={"agency": "agencyID"}):
@@ -23,6 +29,17 @@ class JsonDataflow(Struct, frozen=True, rename={"agency": "agencyID"}):
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
     annotations: Optional[Sequence[JsonAnnotation]] = None
+
+    def to_model(self) -> Dataflow:
+        """Converts a FusionDataflow to a standard dataflow."""
+        return Dataflow(
+            id=self.id,
+            agency=self.agency,
+            name=self.name,
+            description=self.description,
+            version=self.version,
+            structure=self.structure,
+        )
 
 
 class JsonDataflows(Struct, frozen=True):
