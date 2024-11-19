@@ -158,12 +158,14 @@ class FusionHierarchy(Struct, frozen=True, rename={"agency": "agencyId"}):
     def to_model(self, codelists: Sequence[CL]) -> HCL:
         """Converts a FusionHierarchy to a standard hierarchy."""
         return HCL(
-            self.id,
-            self.names[0].value,
-            self.agency,
-            self.descriptions[0].value if self.descriptions else None,
-            self.version,
-            [i.to_model(codelists) for i in self.codes],
+            id=self.id,
+            name=self.names[0].value,
+            agency=self.agency,
+            description=(
+                self.descriptions[0].value if self.descriptions else None
+            ),
+            version=self.version,
+            codes=[i.to_model(codelists) for i in self.codes],
         )
 
 
@@ -191,15 +193,17 @@ class FusionHierarchyAssociation(
         cls = [cl.to_model() for cl in codelists]
         m = find_by_urn(hierarchies, self.hierarchyRef).to_model(cls)
         return HA(
-            self.id,
-            self.names[0].value,
-            self.agency,
-            m,
-            self.linkedStructureRef,
-            self.contextRef,
-            self.descriptions[0].value if self.descriptions else None,
-            self.version,
-            self.links[0].urn if self.links else None,
+            id=self.id,
+            name=self.names[0].value,
+            agency=self.agency,
+            hierarchy=m,
+            component_ref=self.linkedStructureRef,
+            context_ref=self.contextRef,
+            description=(
+                self.descriptions[0].value if self.descriptions else None
+            ),
+            version=self.version,
+            operator=self.links[0].urn if self.links else None,
         )
 
 

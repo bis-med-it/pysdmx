@@ -5,7 +5,7 @@ from typing import Any, Sequence
 
 from msgspec import Struct
 
-from pysdmx.errors import NotFound
+from pysdmx.errors import Invalid, NotFound
 from pysdmx.model import Agency
 from pysdmx.util._date_pattern_map import convert_dpm
 
@@ -65,7 +65,7 @@ def parse_urn(urn: str) -> Reference:
             version=m.group(4),
         )
     else:
-        raise NotFound(NF, f"{urn} does not match {maintainable_urn_pattern}")
+        raise Invalid(NF, f"{urn} does not match {maintainable_urn_pattern}")
 
 
 def parse_item_urn(urn: str) -> ItemReference:
@@ -80,7 +80,7 @@ def parse_item_urn(urn: str) -> ItemReference:
             item_id=m.group(5),
         )
     else:
-        raise NotFound(NF, f"{urn} does not match {item_urn_pattern}.")
+        raise Invalid(NF, f"{urn} does not match {item_urn_pattern}.")
 
 
 def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:

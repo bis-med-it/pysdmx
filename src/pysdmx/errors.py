@@ -27,7 +27,8 @@ class PysdmxError(Exception):
         self.title = title
         self.description = description
         self.csi = csi
-        super().__init__(self.description)
+        msg = f"{title}: {description}" if description else title
+        super().__init__(msg)
 
 
 class RetriableError(PysdmxError):

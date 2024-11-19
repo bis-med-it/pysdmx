@@ -5,7 +5,7 @@ from typing import Optional
 
 import pandas as pd
 
-from pysdmx.model.dataset import PandasDataset
+from pysdmx.io.pd import PandasDataset
 
 
 def writer(

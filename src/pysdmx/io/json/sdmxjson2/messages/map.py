@@ -103,25 +103,25 @@ class JsonRepresentationMap(
         t = [self.__parse_st(j) for j in self.target]
         if is_multi:
             return MultiRepresentationMap(
-                self.id,
-                self.name,
-                self.agency,
-                s,
-                t,
-                mrs,  # type: ignore[arg-type]
-                self.description,
-                self.version,
+                id=self.id,
+                name=self.name,
+                agency=self.agency,
+                source=s,
+                target=t,
+                maps=mrs,  # type: ignore[arg-type]
+                description=self.description,
+                version=self.version,
             )
         else:
             return RepresentationMap(
-                self.id,
-                self.name,
-                self.agency,
-                s[0],
-                t[0],
-                mrs,  # type: ignore[arg-type]
-                self.description,
-                self.version,
+                id=self.id,
+                name=self.name,
+                agency=self.agency,
+                source=s[0],
+                target=t[0],
+                maps=mrs,  # type: ignore[arg-type]
+                description=self.description,
+                version=self.version,
             )
 
 
@@ -238,14 +238,14 @@ class JsonStructureMap(Struct, frozen=True):
         m2 = tuple([cm.to_model(rms) for cm in self.componentMaps])
         m3 = tuple([fvm.to_model() for fvm in self.fixedValueMaps])
         return StructureMap(
-            self.id,
-            self.name,
-            self.agencyID,
-            self.source,
-            self.target,
-            m1 + m2 + m3,
-            self.description,
-            self.version,
+            id=self.id,
+            name=self.name,
+            agency=self.agencyID,
+            source=self.source,
+            target=self.target,
+            maps=m1 + m2 + m3,
+            description=self.description,
+            version=self.version,
         )
 
 

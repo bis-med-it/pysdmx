@@ -6,7 +6,7 @@ from typing import Dict
 import pandas as pd
 
 from pysdmx.errors import Invalid
-from pysdmx.model.dataset import PandasDataset
+from pysdmx.io.pd import PandasDataset
 
 
 def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:

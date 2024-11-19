@@ -1,11 +1,11 @@
 import pytest
 
-from pysdmx.errors import NotFound
+from pysdmx.errors import Invalid
 from pysdmx.util import ItemReference, parse_item_urn
 
 
 def test_no_match():
-    with pytest.raises(NotFound):
+    with pytest.raises(Invalid):
         parse_item_urn("test")
 
 

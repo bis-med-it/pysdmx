@@ -93,25 +93,29 @@ class FusionRepresentationMap(
         t = [j if j.startswith("urn:") else DataType(j) for j in self.targets]
         if is_multi:
             return MultiRepresentationMap(
-                self.id,
-                self.names[0].value,
-                self.agency,
-                s,
-                t,
-                mrs,  # type: ignore[arg-type]
-                self.descriptions[0].value if self.descriptions else None,
-                self.version,
+                id=self.id,
+                name=self.names[0].value,
+                agency=self.agency,
+                source=s,
+                target=t,
+                maps=mrs,  # type: ignore[arg-type]
+                description=(
+                    self.descriptions[0].value if self.descriptions else None
+                ),
+                version=self.version,
             )
         else:
             return RepresentationMap(
-                self.id,
-                self.names[0].value,
-                self.agency,
-                s[0],
-                t[0],
-                mrs,  # type: ignore[arg-type]
-                self.descriptions[0].value if self.descriptions else None,
-                self.version,
+                id=self.id,
+                name=self.names[0].value,
+                agency=self.agency,
+                source=s[0],
+                target=t[0],
+                maps=mrs,  # type: ignore[arg-type]
+                description=(
+                    self.descriptions[0].value if self.descriptions else None
+                ),
+                version=self.version,
             )
 
 
@@ -196,14 +200,16 @@ class FusionStructureMap(Struct, frozen=True):
         )
 
         return SM(
-            self.id,
-            self.names[0].value,
-            self.agencyId,
-            self.source,
-            self.target,
-            m1 + m2 + m3 + m4,
-            self.descriptions[0].value if self.descriptions else None,
-            self.version,
+            id=self.id,
+            name=self.names[0].value,
+            agency=self.agencyId,
+            source=self.source,
+            target=self.target,
+            maps=m1 + m2 + m3 + m4,
+            description=(
+                self.descriptions[0].value if self.descriptions else None
+            ),
+            version=self.version,
         )
 
 

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
 
@@ -32,7 +32,7 @@ def end():
 
 @pytest.fixture()
 def upd():
-    return datetime.utcnow()
+    return datetime.now(timezone.utc)
 
 
 @pytest.fixture()

@@ -190,12 +190,12 @@ class JsonHierarchy(Struct, frozen=True, rename={"agency": "agencyID"}):
     def to_model(self, codelists: Sequence[Codelist]) -> Hierarchy:
         """Converts a JsonHierarchy to a standard hierarchy."""
         return Hierarchy(
-            self.id,
-            self.name,
-            self.agency,
-            self.description,
-            self.version,
-            [i.to_model(codelists) for i in self.hierarchicalCodes],
+            id=self.id,
+            name=self.name,
+            agency=self.agency,
+            description=self.description,
+            version=self.version,
+            codes=[i.to_model(codelists) for i in self.hierarchicalCodes],
         )
 
 
@@ -245,15 +245,15 @@ class JsonHierarchyAssociation(
             )
         )
         return HierarchyAssociation(
-            self.id,
-            self.name,
-            self.agency,
-            m,
-            self.linkedObject,
-            self.contextObject,
-            self.description,
-            self.version,
-            lnk[0].urn if lnk else None,
+            id=self.id,
+            name=self.name,
+            agency=self.agency,
+            hierarchy=m,
+            component_ref=self.linkedObject,
+            context_ref=self.contextObject,
+            description=self.description,
+            version=self.version,
+            operator=lnk[0].urn if lnk else None,
         )
 
 

@@ -1,7 +1,7 @@
 import pandas as pd
 
+from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
-from pysdmx.model.dataset import PandasDataset
 
 
 def test_short_urn_using_full_urn():

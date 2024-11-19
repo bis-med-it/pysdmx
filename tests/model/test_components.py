@@ -68,7 +68,7 @@ def test_append_works(components):
 def test_append_invalid(components):
     with pytest.raises(
         Invalid,
-        match="^Unexpected type. Expected Component but got: <class 'int'>$",
+        match="Unexpected type. Expected Component but got: <class 'int'>$",
     ):
         components.append(202)
 
@@ -76,7 +76,7 @@ def test_append_invalid(components):
 def test_append_existing(components):
     with pytest.raises(
         Invalid,
-        match="^There is already a component with ID: FREQ$",
+        match="There is already a component with ID: FREQ$",
     ):
         components.append(components[0])
 
@@ -95,7 +95,7 @@ def test_insert_invalid(components):
 
     with pytest.raises(
         Invalid,
-        match="^Unexpected type. Expected Component but got: <class 'int'>$",
+        match="Unexpected type. Expected Component but got: <class 'int'>$",
     ):
         components.insert(idx, 202)
 
@@ -105,7 +105,7 @@ def test_insert_existing(components):
 
     with pytest.raises(
         Invalid,
-        match="^There is already a component with ID: FREQ$",
+        match="There is already a component with ID: FREQ$",
     ):
         components.insert(idx, components[0])
 
@@ -124,7 +124,7 @@ def test_setitem_invalid(components):
 
     with pytest.raises(
         Invalid,
-        match="^Unexpected type. Expected Component but got: <class 'int'>$",
+        match="Unexpected type. Expected Component but got: <class 'int'>$",
     ):
         components[idx] = 202
 
@@ -134,7 +134,7 @@ def test_setitem_existing(components):
 
     with pytest.raises(
         Invalid,
-        match="^There is already a component with ID: FREQ$",
+        match="There is already a component with ID: FREQ$",
     ):
         components[idx] = components[0]
 
@@ -154,7 +154,7 @@ def test_extend_invalid(components):
 
     with pytest.raises(
         Invalid,
-        match="^Unexpected type. Expected Component but got: <class 'int'>$",
+        match="Unexpected type. Expected Component but got: <class 'int'>$",
     ):
         components.extend([nf, 202])
 
@@ -164,7 +164,7 @@ def test_extend_existing(components):
 
     with pytest.raises(
         Invalid,
-        match="^There are duplicates in the collection: \\['ZZZ'\\]$",
+        match="There are duplicates in the collection: \\['ZZZ'\\]$",
     ):
         components.extend([nf, nf])
 
@@ -172,7 +172,7 @@ def test_extend_existing(components):
 def test_extend_with_one_is_checked(components):
     with pytest.raises(
         Invalid,
-        match="^There is already a component with ID: FREQ$",
+        match="There is already a component with ID: FREQ$",
     ):
         components.extend([components[0]])
 
