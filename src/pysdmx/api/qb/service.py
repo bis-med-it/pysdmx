@@ -33,8 +33,10 @@ class RestService:
         pem: Optional[str] = None,
     ):
         """Instantiate a connector to a SDMX-REST service."""
-        if api_endpoint.endswith("/"):
-            self.__api_endpoint = api_endpoint[0:-1]
+        self.__api_endpoint = (
+            api_endpoint[0:-1] if api_endpoint.endswith("/") else api_endpoint
+        )
+
         self.__api_version = api_version
         self.__data_format = data_format
         self.__structure_format = structure_format
