@@ -14,6 +14,7 @@ from pysdmx.api.qb.refmeta import (
     RefMetaFormat,
 )
 from pysdmx.api.qb.schema import SchemaContext, SchemaFormat, SchemaQuery
+from pysdmx.api.qb.service import RestService
 from pysdmx.api.qb.structure import (
     StructureDetail,
     StructureFormat,
@@ -36,6 +37,7 @@ __all__ = [
     "RefMetaByStructureQuery",
     "RefMetaDetail",
     "RefMetaFormat",
+    "RestService",
     "SchemaContext",
     "SchemaFormat",
     "SchemaQuery",
