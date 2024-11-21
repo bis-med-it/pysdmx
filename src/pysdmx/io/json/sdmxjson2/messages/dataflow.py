@@ -84,7 +84,6 @@ class JsonDataflows(Struct, frozen=True):
 
     def to_simple_model(self) -> Sequence[Dataflow]:
         """Returns the requested dataflows."""
-
         return [df.to_model() for df in self.dataflows]
 
 
