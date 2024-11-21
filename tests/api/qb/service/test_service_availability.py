@@ -3,10 +3,10 @@ import pytest
 
 from pysdmx.api.qb import (
     ApiVersion,
-    DataContext,
-    RestService,
     AvailabilityFormat,
     AvailabilityQuery,
+    DataContext,
+    RestService,
 )
 from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 
