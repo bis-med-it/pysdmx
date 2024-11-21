@@ -40,7 +40,7 @@ class FusionDataflow(Struct, frozen=True, rename={"agency": "agencyId"}):
 
 
 class FusionDataflowMessage(Struct, frozen=True):
-    """Fusion-JSON payload for /dataflow queries."""
+    """Fusion-JSON payload for /dataflow queries, with details."""
 
     Dataflow: Sequence[FusionDataflow]
     DataProviderScheme: Sequence[FusionProviderScheme] = ()
@@ -82,3 +82,13 @@ class FusionDataflowMessage(Struct, frozen=True):
             providers=prvs,
             dsd_ref=df.dataStructureRef,
         )
+
+
+class FusionDataflowsMessage(Struct, frozen=True):
+    """Fusion-JSON payload for /dataflow queries."""
+
+    Dataflow: Sequence[FusionDataflow]
+
+    def to_model(self) -> Sequence["Dataflow"]:
+        """Returns the requested dataflow details."""
+        return [df.to_model() for df in self.Dataflow]
