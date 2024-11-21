@@ -20,7 +20,8 @@ class Deserializers:
     categories: Deserializer
     codes: Deserializer
     concepts: Deserializer
-    dataflow: Deserializer
+    dataflow_info: Deserializer
+    dataflows: Deserializer
     providers: Deserializer
     schema: Deserializer
     hier_assoc: Deserializer

@@ -9,7 +9,7 @@ from pysdmx.io.json.fusion.messages.org import FusionProviderScheme
 from pysdmx.model import (
     Agency,
     Components,
-    Dataflow,
+    Dataflow as DF,
     DataflowInfo,
     DataProvider,
 )
@@ -25,9 +25,9 @@ class FusionDataflow(Struct, frozen=True, rename={"agency": "agencyId"}):
     descriptions: Optional[Sequence[FusionString]] = None
     version: str = "1.0"
 
-    def to_model(self) -> Dataflow:
+    def to_model(self) -> DF:
         """Converts a FusionDataflow to a standard dataflow."""
-        return Dataflow(
+        return DF(
             id=self.id,
             agency=self.agency,
             name=self.names[0].value if self.names else None,
@@ -40,7 +40,7 @@ class FusionDataflow(Struct, frozen=True, rename={"agency": "agencyId"}):
 
 
 class FusionDataflowMessage(Struct, frozen=True):
-    """Fusion-JSON payload for /dataflow queries."""
+    """Fusion-JSON payload for /dataflow queries, with details."""
 
     Dataflow: Sequence[FusionDataflow]
     DataProviderScheme: Sequence[FusionProviderScheme] = ()
@@ -82,3 +82,13 @@ class FusionDataflowMessage(Struct, frozen=True):
             providers=prvs,
             dsd_ref=df.dataStructureRef,
         )
+
+
+class FusionDataflowsMessage(Struct, frozen=True):
+    """Fusion-JSON payload for /dataflow queries."""
+
+    Dataflow: Sequence[FusionDataflow]
+
+    def to_model(self) -> Sequence[DF]:
+        """Returns the requested dataflow details."""
+        return [df.to_model() for df in self.Dataflow]

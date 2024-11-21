@@ -82,9 +82,13 @@ class JsonDataflows(Struct, frozen=True):
             dsd_ref=df.structure,
         )
 
+    def to_simple_model(self) -> Sequence[Dataflow]:
+        """Returns the requested dataflows."""
+        return [df.to_model() for df in self.dataflows]
+
 
 class JsonDataflowMessage(Struct, frozen=True):
-    """SDMX-JSON payload for /dataflow queries."""
+    """SDMX-JSON payload for /dataflow queries (with details)."""
 
     data: JsonDataflows
 
@@ -93,3 +97,13 @@ class JsonDataflowMessage(Struct, frozen=True):
     ) -> DataflowInfo:
         """Returns the requested dataflow details."""
         return self.data.to_model(components, agency, id_, version)
+
+
+class JsonDataflowsMessage(Struct, frozen=True):
+    """SDMX-JSON payload for /dataflow queries."""
+
+    data: JsonDataflows
+
+    def to_model(self) -> Sequence[Dataflow]:
+        """Returns the requested dataflows."""
+        return self.data.to_simple_model()

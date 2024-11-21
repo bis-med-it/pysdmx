@@ -34,6 +34,7 @@ from pysdmx.model import (
     CategoryScheme,
     Codelist,
     ConceptScheme,
+    Dataflow,
     DataflowInfo,
     DataProvider,
     Hierarchy,
@@ -284,6 +285,10 @@ class __BaseRegistryClient:
         )
         return q.get_url(API_VERSION, True)
 
+    def _dataflows_url(self, agency: str, id: str, version: str) -> str:
+        q = StructureQuery(StructureType.DATAFLOW, agency, id, version)
+        return q.get_url(API_VERSION, True)
+
 
 class RegistryClient(__BaseRegistryClient):
     """A client to be used to retrieve metadata from the FMR.
@@ -521,8 +526,30 @@ class RegistryClient(__BaseRegistryClient):
         url = super()._dataflow_details_url(agency, id, version, dr)
         out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(
-            out, self.deser.dataflow, cmps, agency, id, version
+            out, self.deser.dataflow_info, cmps, agency, id, version
         )
+
+    def get_dataflows(
+        self,
+        agency: str = "*",
+        id: str = "*",
+        version: str = "+",
+    ) -> Sequence[Dataflow]:
+        """Get the dataflow(s) matching the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the dataflow(s).
+            id: The ID of the dataflow(s) to be returned.
+            version: The version of the dataflow(s) to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested dataflow(s).
+        """
+        url = super()._dataflows_url(agency, id, version)
+        out = self.__fetch(f"{self.api_endpoint}{url}")
+        return super()._out(out, self.deser.dataflows)
 
     def get_hierarchy(
         self,
@@ -875,8 +902,30 @@ class AsyncRegistryClient(__BaseRegistryClient):
         url = super()._dataflow_details_url(agency, id, version, dr)
         out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(
-            out, self.deser.dataflow, cmps, agency, id, version
+            out, self.deser.dataflow_info, cmps, agency, id, version
         )
+
+    async def get_dataflows(
+        self,
+        agency: str = "*",
+        id: str = "*",
+        version: str = "+",
+    ) -> Sequence[Dataflow]:
+        """Get the dataflow(s) matching the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the dataflow(s).
+            id: The ID of the dataflow(s) to be returned.
+            version: The version of the dataflow(s) to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested dataflow(s).
+        """
+        url = super()._dataflows_url(agency, id, version)
+        out = await self.__fetch(f"{self.api_endpoint}{url}")
+        return super()._out(out, self.deser.dataflows)
 
     async def get_hierarchy(
         self,

@@ -9,7 +9,10 @@ from pysdmx.io.json.sdmxjson2.messages.code import (
     JsonHierarchyMessage,
 )
 from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptSchemeMessage
-from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflowMessage
+from pysdmx.io.json.sdmxjson2.messages.dataflow import (
+    JsonDataflowMessage,
+    JsonDataflowsMessage,
+)
 from pysdmx.io.json.sdmxjson2.messages.map import (
     JsonMappingMessage,
     JsonRepresentationMapMessage,
@@ -27,6 +30,7 @@ __all__ = [
     "JsonCodelistMessage",
     "JsonConceptSchemeMessage",
     "JsonDataflowMessage",
+    "JsonDataflowsMessage",
     "JsonProviderMessage",
     "JsonSchemaMessage",
     "JsonHierarchyAssociationMessage",
