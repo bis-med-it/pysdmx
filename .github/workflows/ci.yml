@@ -27,6 +27,8 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Fix version of pyproject-hooks
+      run: pip install pyproject-hooks==1.0.0
     - name: Install poetry
       run: pipx install --python ${{ matrix.python-version }} poetry
     - name: Install dependencies
