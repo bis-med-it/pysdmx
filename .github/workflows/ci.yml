@@ -32,7 +32,7 @@ jobs:
     - name: Install poetry
       run: pip install poetry
     - name: Generate requirements
-      run: poetry export -f requirements.txt --output requirements.txt
+      run: poetry export -f requirements.txt --output requirements.txt --with dev --extras "dc fmr xml data"
     - name: Install project
       run: pip install -r requirements.txt
     - name: Run lint checks
