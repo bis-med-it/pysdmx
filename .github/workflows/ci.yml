@@ -28,7 +28,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install poetry
-      run: pipx install poetry
+      run: pipx install --python ${{ matrix.python-version }} poetry
     - name: Install dependencies
       run: poetry install --all-extras
     - name: Run lint checks
