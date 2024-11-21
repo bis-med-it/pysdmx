@@ -31,13 +31,15 @@ jobs:
       run: pip install --upgrade pip setuptools wheel
     - name: Install poetry
       run: pip install poetry
-    - name: Install dependencies
-      run: poetry install --all-extras
+    - name: Generate requirements
+      run: poetry export -f requirements.txt --output requirements.txt
+    - name: Install project
+      run: pip install -r requirements.txt
     - name: Run lint checks
-      run: poetry run flake8 src tests
+      run: flake8 src tests
     - name: Run type checks
-      run: poetry run mypy
+      run: mypy
     - name: Run tests
-      run: poetry run pytest --cov=pysdmx --cov-branch
+      run: pytest --cov=pysdmx --cov-branch
     - name: Check coverage
-      run: poetry run coverage report --fail-under=100
+      run: coverage report --fail-under=100
