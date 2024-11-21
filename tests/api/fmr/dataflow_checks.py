@@ -1,11 +1,11 @@
 import httpx
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
-from pysdmx.model import DataflowRef
+from pysdmx.model import Dataflow
 
 
 def check_dfrefs(mock, fmr: RegistryClient, query, body):
-    """get_agencies() should return a collection of organizations."""
+    """get_dataflows() should return a collection of dataflows."""
     mock.get(query).mock(
         return_value=httpx.Response(
             200,
@@ -13,19 +13,22 @@ def check_dfrefs(mock, fmr: RegistryClient, query, body):
         )
     )
 
-    refs = fmr.get_dataflows()
+    flows = fmr.get_dataflows()
 
-    assert len(refs) == 3
-    for df in refs:
-        assert isinstance(df, DataflowRef)
-        assert df.id in ["CBS", "EXR", "ICP"]
-        assert df.agency == "SDMX"
+    assert len(flows) == 5
+    for df in flows:
+        assert isinstance(df, Dataflow)
+        assert df.id in [
+            "TEST_ARRAYS_DF",
+            "TEST_ARRAYS_DF_1",
+            "TEST_ARRAYS_DF_2",
+            "TEST_ARRAYS_DF_3",
+            "TEST_FACETS_FLOW",
+        ]
+        assert df.agency == "TEST"
         assert df.name is not None
-        if df.id == "CBS":
-            assert df.description is not None
-        else:
-            assert df.description is None
         assert df.version == "1.0"
+        assert df.structure is not None
 
 
 async def check_dfrefs_async(mock, fmr: AsyncRegistryClient, query, body):
@@ -37,8 +40,19 @@ async def check_dfrefs_async(mock, fmr: AsyncRegistryClient, query, body):
         )
     )
 
-    refs = await fmr.get_dataflows()
+    flows = await fmr.get_dataflows()
 
-    assert len(refs) == 3
-    for df in refs:
-        assert isinstance(df, DataflowRef)
+    assert len(flows) == 3
+    for df in flows:
+        assert isinstance(df, Dataflow)
+        assert df.id in [
+            "TEST_ARRAYS_DF",
+            "TEST_ARRAYS_DF_1",
+            "TEST_ARRAYS_DF_2",
+            "TEST_ARRAYS_DF_3",
+            "TEST_FACETS_FLOW",
+        ]
+        assert df.agency == "TEST"
+        assert df.name is not None
+        assert df.version == "1.0"
+        assert df.structure is not None
