@@ -4,7 +4,7 @@ from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
 from pysdmx.model import Dataflow
 
 
-def check_dfrefs(mock, fmr: RegistryClient, query, body):
+def check_dataflows(mock, fmr: RegistryClient, query, body):
     """get_dataflows() should return a collection of dataflows."""
     mock.get(query).mock(
         return_value=httpx.Response(
@@ -31,7 +31,7 @@ def check_dfrefs(mock, fmr: RegistryClient, query, body):
         assert df.structure is not None
 
 
-async def check_dfrefs_async(mock, fmr: AsyncRegistryClient, query, body):
+async def check_dataflows_async(mock, fmr: AsyncRegistryClient, query, body):
     """get_agencies() should return a collection of organizations."""
     mock.get(query).mock(
         return_value=httpx.Response(

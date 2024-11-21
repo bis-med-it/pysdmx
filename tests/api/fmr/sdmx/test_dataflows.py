@@ -36,10 +36,10 @@ def body():
 
 def test_returns_dataflows(respx_mock, fmr, query, body):
     """get_dataflows() should return a collection of dataflows."""
-    checks.check_dfrefs(respx_mock, fmr, query, body)
+    checks.check_dataflows(respx_mock, fmr, query, body)
 
 
 @pytest.mark.asyncio()
 async def test_returns_dataflows_async(respx_mock, async_fmr, query, body):
     """get_dataflows() should return a collection of dataflows (async)."""
-    await checks.check_dfrefs_async(respx_mock, async_fmr, query, body)
+    await checks.check_dataflows_async(respx_mock, async_fmr, query, body)
