@@ -40,6 +40,6 @@ jobs:
     - name: Run type checks
       run: mypy
     - name: Run tests
-      run: pytest --cov=pysdmx --cov-branch
+      run: pytest tests --cov=pysdmx --cov-branch
     - name: Check coverage
       run: coverage report --fail-under=100
