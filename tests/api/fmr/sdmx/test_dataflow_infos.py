@@ -1,5 +1,5 @@
 import pytest
-import tests.api.fmr.dataflow_checks as checks
+import tests.api.fmr.dataflow_infos_checks as checks
 
 from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 
