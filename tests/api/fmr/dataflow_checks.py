@@ -42,7 +42,7 @@ async def check_dfrefs_async(mock, fmr: AsyncRegistryClient, query, body):
 
     flows = await fmr.get_dataflows()
 
-    assert len(flows) == 3
+    assert len(flows) == 5
     for df in flows:
         assert isinstance(df, Dataflow)
         assert df.id in [
