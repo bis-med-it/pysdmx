@@ -253,13 +253,32 @@ class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
     is_partial: bool = False
 
 
-class DataflowRef(MaintainableArtefact, frozen=True, omit_defaults=True):
-    """Provide core information about a dataflow.
+class DataflowRef(Struct, frozen=True, omit_defaults=True):
+    """A unique reference to a dataflow.
 
     Attributes:
         id: The dataflow identifier (e.g. BIS_MACRO).
         agency: The organisation (or unit) responsible for the dataflow.
-        name: The dataflow name (e.g. MACRO dataflow).
-        description: Additional descriptive information about the dataflow.
         version: The version of the dataflow (e.g. 1.0).
     """
+
+    agency: str
+    id: str
+    version: str = "1.0"
+
+    def __hash__(self) -> int:
+        """Returns the dataflow reference's hash."""
+        return hash((self.agency, self.id, self.version))
+
+    def __eq__(self, other: Any) -> bool:
+        """Whether the 2 objects are equal."""
+        return (
+            self.__class__ == other.__class__
+            and self.agency == other.agency
+            and self.id == other.id
+            and self.version == other.version
+        )
+
+    def __str__(self) -> str:
+        """A string representating the dataflow's reference."""
+        return f"Dataflow={self.agency}:{self.id}({self.version})"

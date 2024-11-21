@@ -6,8 +6,8 @@ from typing import Dict, Optional, Sequence
 from msgspec import Struct
 
 from pysdmx.io.json.fusion.messages.core import FusionString
-from pysdmx.io.json.fusion.messages.dataflow import FusionDataflowRef
-from pysdmx.model import Category, CategoryScheme as CS, DataflowRef
+from pysdmx.io.json.fusion.messages.dataflow import FusionDataflow
+from pysdmx.model import Category, CategoryScheme as CS, Dataflow as DF
 from pysdmx.util import find_by_urn
 
 
@@ -65,10 +65,10 @@ class FusionCategorySchemeMessage(Struct, frozen=True):
 
     Categorisation: Sequence[FusionCategorisation]
     CategoryScheme: Sequence[FusionCategoryScheme]
-    Dataflow: Sequence[FusionDataflowRef]
+    Dataflow: Sequence[FusionDataflow]
 
-    def __group_flows(self) -> defaultdict[str, list[DataflowRef]]:
-        out: defaultdict[str, list[DataflowRef]] = defaultdict(list)
+    def __group_flows(self) -> defaultdict[str, list[DF]]:
+        out: defaultdict[str, list[DF]] = defaultdict(list)
         for c in self.Categorisation:
             d = find_by_urn(self.Dataflow, c.structureReference)
             src = c.categoryReference[c.categoryReference.find(")") + 2 :]
@@ -76,7 +76,7 @@ class FusionCategorySchemeMessage(Struct, frozen=True):
         return out
 
     def __add_flows(
-        self, cat: Category, cni: str, cf: Dict[str, list[DataflowRef]]
+        self, cat: Category, cni: str, cf: Dict[str, list[DF]]
     ) -> None:
         if cat.categories:
             for c in cat.categories:

@@ -4695,7 +4695,9 @@
                             "textFormat": {
                                 "textType": "String",
                                 "minLength": 1,
-                                "maxLength": 2
+                                "maxLength": 2,
+                                "minValue": "-15",
+                                "maxValue": "15"
                             },
                             "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_UNIT_MULT(1.0)"
                         },

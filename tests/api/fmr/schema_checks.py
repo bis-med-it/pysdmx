@@ -352,13 +352,16 @@ def check_facets(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
     schema = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0").components
 
     for comp in schema:
-        if comp.id == "TIME_PERIOD":
+        if comp.id in ["TIME_PERIOD", "OBS_PRE_BREAK", "OBS_STATUS"]:
             assert comp.facets is None
         elif comp.id == "OBS_VALUE":
             assert comp.facets.min_length == 1
             assert comp.facets.max_length == 15
-        elif comp.id == "OBS_PRE_BREAK" or comp.id == "OBS_STATUS":
-            assert comp.facets is None
+        elif comp.id == "DOUBLE":
+            assert comp.facets.min_length == 1
+            assert comp.facets.max_length == 2
+            assert comp.facets.min_value == -15
+            assert comp.facets.max_value == 15
         else:
             assert comp.facets is not None
             assert comp.facets.min_length > 0

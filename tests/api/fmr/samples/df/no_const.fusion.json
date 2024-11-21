@@ -10109,7 +10109,10 @@
                             "locale": "en",
                             "value": "Measure"
                         }
-                    ]
+                    ],
+                    "representation": {
+                        "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_STOCK_FLOW(0.9)"
+                    }
                 },
                 {
                     "id": "L_POSITION",

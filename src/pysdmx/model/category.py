@@ -4,9 +4,10 @@ An example of a category scheme is one which categorises data, sometimes
 known as a subject matter domain scheme or a data category scheme.
 """
 
-from typing import Iterator, List, Optional, Sequence, Set
+from typing import Iterator, Optional, Sequence, Union
 
 from pysdmx.model.__base import DataflowRef, Item, ItemScheme
+from pysdmx.model.dataflow import Dataflow
 
 
 class Category(Item, frozen=False, omit_defaults=True):  # type: ignore[misc]
@@ -31,7 +32,7 @@ class Category(Item, frozen=False, omit_defaults=True):  # type: ignore[misc]
     """
 
     categories: Sequence["Category"] = ()
-    dataflows: Sequence[DataflowRef] = ()
+    dataflows: Union[Sequence[DataflowRef], Sequence[Dataflow]] = ()
 
     def __iter__(self) -> Iterator["Category"]:
         """Return an iterator over the list of categories."""
@@ -71,9 +72,9 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
         return self.items  # type: ignore[return-value]
 
     @property
-    def dataflows(self) -> Sequence[DataflowRef]:
+    def dataflows(self) -> Union[Sequence[DataflowRef], Sequence[Dataflow]]:
         """Return the dataflows attached to any category in the scheme."""
-        flows: Set[DataflowRef] = set()
+        flows = set()  # type: ignore[var-annotated]
         for cat in self.categories:
             flows.update(self.__extract_flows(cat))
         return list(flows)
@@ -117,8 +118,10 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
                 return out[0]
         return None
 
-    def __extract_flows(self, c: Category) -> Sequence[DataflowRef]:
-        flows: List[DataflowRef] = []
+    def __extract_flows(
+        self, c: Category
+    ) -> Union[Sequence[DataflowRef], Sequence[Dataflow]]:
+        flows = []  # type: ignore[var-annotated]
         if c.dataflows:
             flows.extend(c.dataflows)
         for sub in c.categories:

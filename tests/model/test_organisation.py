@@ -25,8 +25,8 @@ def contact():
 
 @pytest.fixture()
 def dataflows():
-    df1 = DataflowRef(id="DF1", name="TEST", agency="T1")
-    df2 = DataflowRef(id="DF2", name="Also TEST", agency="T1")
+    df1 = DataflowRef(id="DF1", agency="T1")
+    df2 = DataflowRef(id="DF2", agency="T1")
     return [df1, df2]
 
 
