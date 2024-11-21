@@ -24,7 +24,7 @@ def async_fmr() -> AsyncRegistryClient:
 def query(fmr: RegistryClient) -> str:
     res = "/structure/dataflow"
     all = "*"
-    latest = "~"
+    latest = "+"
     return f"{fmr.api_endpoint}{res}/{all}/{all}/{latest}"
 
 
