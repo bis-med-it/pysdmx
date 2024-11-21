@@ -29,6 +29,8 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Upgrade core Python utilities
+      run: python -m pip install --upgrade pip setuptools wheel
     - name: Install dependencies
       run: poetry install --all-extras
     - name: Run lint checks
