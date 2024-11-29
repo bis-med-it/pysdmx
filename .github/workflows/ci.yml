@@ -32,7 +32,7 @@ jobs:
     - name: Install poetry
       run: pip install poetry
     - name: Disable experimental installer
-      if: ${{matrix.python-version >= "3.13"}}
+      if: ${{matrix.python-version >= '3.13'}}
       run: poetry config experimental.new-installer false
     - name: Install dependencies
       run: poetry install --all-extras
