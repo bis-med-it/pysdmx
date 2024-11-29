@@ -30,7 +30,7 @@ jobs:
     - name: Update pip
       run: pip install --upgrade pip
     - name: Install poetry
-      run: pip install --python ${{ matrix.python-version }} poetry
+      run: pip --python ${{ matrix.python-version }} install poetry
     - name: Install dependencies
       run: poetry install --all-extras
     - name: Run lint checks
