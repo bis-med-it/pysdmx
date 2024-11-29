@@ -8,7 +8,7 @@ from parsy import (  # type: ignore[import-untyped]
 
 from pysdmx.errors import Invalid
 
-__YEAR4 = string("yyyy").map(lambda x: r"%G")
+__YEAR4 = string("yyyy").map(lambda x: r"%Y")
 __YEAR2 = string("yy").map(lambda x: r"%y")
 __MONTH_F = string("MMMM").map(lambda x: r"%B")
 __MONTH_S = string("MMM").map(lambda x: r"%b")

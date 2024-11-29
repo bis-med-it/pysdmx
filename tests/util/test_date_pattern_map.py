@@ -7,7 +7,7 @@ from pysdmx.util import convert_dpm
 def test_full_year():
     out = convert_dpm("yyyy")
 
-    assert out == r"%G"
+    assert out == r"%Y"
 
 
 def test_short_year():
