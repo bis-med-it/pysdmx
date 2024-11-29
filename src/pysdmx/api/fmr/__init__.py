@@ -14,7 +14,6 @@ from typing import (
 import httpx
 from msgspec.json import decode
 
-from pysdmx.api.fmr.reader import Deserializer
 from pysdmx.api.qb import (
     ApiVersion,
     RefMetaByMetadatasetQuery,
@@ -29,6 +28,7 @@ from pysdmx.api.qb import (
 from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 from pysdmx.io.json.fusion.reader import deserializers as fusion_readers
 from pysdmx.io.json.sdmxjson2.reader import deserializers as sdmx_readers
+from pysdmx.io.serde import Deserializer
 from pysdmx.model import (
     Agency,
     CategoryScheme,

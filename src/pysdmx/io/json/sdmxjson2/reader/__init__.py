@@ -1,7 +1,8 @@
 """Collection of readers for SDMX-JSON messages."""
 
-from pysdmx.api.fmr.reader import Deserializers
 from pysdmx.io.json.sdmxjson2 import messages as msg
+from pysdmx.io.serde import Deserializers
+
 
 deserializers = Deserializers(
     agencies=msg.JsonAgencyMessage,  # type: ignore[arg-type]

@@ -1,4 +1,4 @@
-"""API for FMR readers."""
+"""Serializers and deserializers for SDMX messages."""
 
 from dataclasses import dataclass
 from typing import Any, Protocol, runtime_checkable

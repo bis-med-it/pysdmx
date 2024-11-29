@@ -1,7 +1,7 @@
 """Collection of readers for Fusion-JSON messages."""
 
-from pysdmx.api.fmr.reader import Deserializers
 from pysdmx.io.json.fusion import messages as msg
+from pysdmx.io.serde import Deserializers
 
 deserializers = Deserializers(
     agencies=msg.FusionAgencyMessage,  # type: ignore[arg-type]
