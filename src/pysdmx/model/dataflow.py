@@ -400,7 +400,7 @@ class Schema(Struct, frozen=True, omit_defaults=True):
         return ", ".join(out)
 
 
-class DataStructureDefinition(MaintainableArtefact):
+class DataStructureDefinition(MaintainableArtefact, frozen=True):
     """A collection of metadata concepts.
 
     Attributes:
@@ -423,7 +423,7 @@ class DataStructureDefinition(MaintainableArtefact):
 
     agency: Union[str, Agency] = ""
     annotations: Sequence[Annotation] = ()
-    id: str
+    id: str = ""
     description: Optional[str] = None
     is_external_reference: bool = False
     is_final: bool = False
