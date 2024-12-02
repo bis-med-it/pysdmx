@@ -377,7 +377,7 @@ class StructureParser(Struct):
         datastructure = {}
         scheme = DSDS
 
-        if json_element is not None and DSD in json_element:
+        if DSD in json_element:
             json_element[DSD] = add_list(json_element[DSD])
             for element in json_element[DSD]:
                 full_id = unique_id(
