@@ -1,5 +1,5 @@
 """Parsers for reading metadata."""
-
+from datetime import datetime
 from typing import Any, Dict
 
 from msgspec import Struct
@@ -23,6 +23,8 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     CS,
     DEPARTMENT,
     DESC,
+    DSD,
+    DSDS,
     EMAIL,
     EMAILS,
     FACETS,
@@ -52,7 +54,8 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     URI,
     URIS,
     URL,
-    VERSION,
+    URN,
+    VERSION, VALID_FROM, VALID_TO,
 )
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (
@@ -64,10 +67,11 @@ from pysdmx.model import (
     Facets,
 )
 from pysdmx.model.__base import Agency, Annotation, Contact, Item, ItemScheme
+from pysdmx.model.dataflow import DataStructureDefinition
 from pysdmx.model.message import CONCEPTS, ORGS
 from pysdmx.util import find_by_urn
 
-SCHEMES_CLASSES = {CL: Codelist, AGENCIES: ItemScheme, CS: ConceptScheme}
+SCHEMES_CLASSES = {CL: Codelist, AGENCIES: ItemScheme, CS: ConceptScheme, DSDS: DataStructureDefinition}
 ITEMS_CLASSES = {AGENCY: Agency, CODE: Code, CON: Concept}
 
 
@@ -167,6 +171,28 @@ class StructureParser(Struct):
                 del element[field]
         return element
 
+    def __extract_name(self, element: Any) -> Dict[str, Any]:
+        """Extracts the name from the element.
+
+        Args:
+            element: The element to extract the name from
+
+        Returns:
+            The element with the name extracted
+        """
+        name_key = NAME.lower()
+        if name_key in element:
+            name_value = element[name_key]
+            if isinstance(name_value, list):
+                for e in name_value:
+                    if e.get("lang") == "en":
+                        element[name_key] = self.__extract_text(e)
+                        return element
+                element[name_key] = self.__extract_text(name_value[0])
+            elif isinstance(name_value, dict):
+                element[name_key] = self.__extract_text(name_value)
+        return element
+
     @staticmethod
     def __format_facets(
         json_fac: Dict[str, Any], json_obj: Dict[str, Any]
@@ -248,6 +274,27 @@ class StructureParser(Struct):
             )
             json_obj["codes"] = codelist.codes
 
+    def __format_version(self, element: Dict[str, Any]) -> Dict[str, Any]:
+        """Formats the version in the element.
+
+        Args:
+            element: The element with the version to be formatted
+
+        Returns:
+            element with the version, validFrom and validTo formatted
+        """
+        if "VersionableType" in element:
+            if "NameableType" in element["VersionableType"]:
+                version_element = element["VersionableType"]["NameableType"]
+                if VERSION in version_element:
+                    element[VERSION] = version_element[VERSION]
+                if VALID_FROM in version_element:
+                    element[VALID_FROM] = version_element[VALID_FROM]
+                if VALID_TO in version_element:
+                    element[VALID_TO] = version_element[VALID_TO]
+            del element["VersionableType"]
+        return element
+
     def __format_item(
         self, item_json_info: Dict[str, Any], item_name_class: str
     ) -> Item:
@@ -310,6 +357,45 @@ class StructureParser(Struct):
 
         return elements
 
+    def __format_datastructures(self, json_element: Dict[str, Any]) -> Dict[str, Any]:
+        """Formats the structures in json format.
+        """
+
+        datastructure = {}
+        scheme = DSDS
+
+        if json_element is not None and DSD in json_element:
+            json_element[DSD] = add_list(json_element[DSD])
+            for element in json_element[DSD]:
+                full_id = unique_id(
+                    element[AGENCY_ID], element[ID], element[VERSION]
+                )
+
+                element = self.__format_annotations(element)
+                element = self.__format_name_description(element)
+                element = self.__extract_name(element)
+                element = self.__format_urls(element)
+                element = self.__format_agency(element)
+                element = self.__format_version(element)
+
+                if IS_EXTERNAL_REF in element:
+                    element[IS_EXTERNAL_REF_LOW] = element.pop(IS_EXTERNAL_REF)
+                if IS_FINAL in element:
+                    element[IS_FINAL_LOW] = element.pop(IS_FINAL)
+
+                # Extra attributes???
+                if IS_PARTIAL in element:
+                    del element[IS_PARTIAL_LOW]
+                if "Structure" in element:
+                    del element["Structure"]
+                if "DataStructureComponents" in element:
+                    del element["DataStructureComponents"]
+
+                structure = dict(map(lambda kv: (kv[0].lower(), kv[1]), element.items()))
+                datastructure[full_id] = SCHEMES_CLASSES[scheme](**structure)
+
+        return datastructure
+
     def format_structures(self, json_meta: Dict[str, Any]) -> Dict[str, Any]:
         """Formats the structures in json format.
 
@@ -331,5 +417,8 @@ class StructureParser(Struct):
             structures[CONCEPTS] = self.__format_scheme(
                 json_meta[CONCEPTS], CS, CON
             )
+        if DSDS in json_meta:
+            structures[DSDS] = self.__format_datastructures(json_meta[DSDS])
+
         # Reset global variables
         return structures

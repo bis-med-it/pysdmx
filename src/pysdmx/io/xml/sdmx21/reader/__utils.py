@@ -7,6 +7,8 @@ ID = "id"
 AGENCY_ID = "agencyID"
 XMLNS = "xmlns"
 VERSION = "version"
+VALID_FROM = "validFrom"
+VALID_TO = "validTo"
 
 # Structure Specific
 VALUE = "Value"
@@ -59,6 +61,7 @@ TITLE = "title"
 TEXT = "text"
 TYPE = "type"
 URL = "url"
+URN = "urn"
 
 # Facets
 FACETS = "facets"
@@ -95,6 +98,8 @@ CLS = "Codelists"
 CONCEPTS = "ConceptSchemes"
 CS = "ConceptScheme"
 CODE = "Code"
+DSD = "DataStructure"
+DSDS = "DataStructures"
 
 FacetType = {
     "minLength": "min_length",
