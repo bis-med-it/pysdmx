@@ -15,7 +15,12 @@ from typing import Any, Iterable, Optional, Sequence, Union
 from msgspec import Struct
 
 from pysdmx.errors import Invalid
-from pysdmx.model.__base import Agency, DataProvider, MaintainableArtefact, Annotation
+from pysdmx.model.__base import (
+    Agency,
+    Annotation,
+    DataProvider,
+    MaintainableArtefact,
+)
 from pysdmx.model.code import Codelist, Hierarchy
 from pysdmx.model.concept import Concept, DataType, Facets
 
@@ -394,16 +399,17 @@ class Schema(Struct, frozen=True, omit_defaults=True):
                 out.append(f"{k}={v}")
         return ", ".join(out)
 
+
 class DataStructureDefinition(MaintainableArtefact):
-    """A collection of metadata concepts, their structure and usage when used
-    to collect or disseminate data.
+    """A collection of metadata concepts.
 
     Attributes:
         agency: The organization responsible for the data structure.
         annotations: The list of annotations attached to the data structure.
         id: The identifier of the data structure.
-        description: Additional descriptive information about the data structure.
-        is_external_reference: Whether the data structure is an external reference.
+        description: descriptive information about the data structure.
+        is_external_reference: Whether the data structure is an external
+            reference.
         is_final: Whether the data structure is final.
         name: The data structure's name.
         service_url: The URL of the service providing the data structure.

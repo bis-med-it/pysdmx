@@ -1,5 +1,5 @@
 """Parsers for reading metadata."""
-from datetime import datetime
+
 from typing import Any, Dict
 
 from msgspec import Struct
@@ -54,8 +54,9 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     URI,
     URIS,
     URL,
-    URN,
-    VERSION, VALID_FROM, VALID_TO,
+    VALID_FROM,
+    VALID_TO,
+    VERSION,
 )
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (
@@ -71,7 +72,12 @@ from pysdmx.model.dataflow import DataStructureDefinition
 from pysdmx.model.message import CONCEPTS, ORGS
 from pysdmx.util import find_by_urn
 
-SCHEMES_CLASSES = {CL: Codelist, AGENCIES: ItemScheme, CS: ConceptScheme, DSDS: DataStructureDefinition}
+SCHEMES_CLASSES = {
+    CL: Codelist,
+    AGENCIES: ItemScheme,
+    CS: ConceptScheme,
+    DSDS: DataStructureDefinition,
+}
 ITEMS_CLASSES = {AGENCY: Agency, CODE: Code, CON: Concept}
 
 
@@ -357,10 +363,17 @@ class StructureParser(Struct):
 
         return elements
 
-    def __format_datastructures(self, json_element: Dict[str, Any]) -> Dict[str, Any]:
+    def __format_datastructures(
+        self, json_element: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Formats the structures in json format.
-        """
 
+        Args:
+            json_element: The structures in json format
+
+        Returns:
+            A dictionary with the structures formatted
+        """
         datastructure = {}
         scheme = DSDS
 
@@ -383,7 +396,6 @@ class StructureParser(Struct):
                 if IS_FINAL in element:
                     element[IS_FINAL_LOW] = element.pop(IS_FINAL)
 
-                # Extra attributes???
                 if IS_PARTIAL in element:
                     del element[IS_PARTIAL_LOW]
                 if "Structure" in element:
@@ -391,7 +403,9 @@ class StructureParser(Struct):
                 if "DataStructureComponents" in element:
                     del element["DataStructureComponents"]
 
-                structure = dict(map(lambda kv: (kv[0].lower(), kv[1]), element.items()))
+                structure = {
+                    key.lower(): value for key, value in element.items()
+                }
                 datastructure[full_id] = SCHEMES_CLASSES[scheme](**structure)
 
         return datastructure
