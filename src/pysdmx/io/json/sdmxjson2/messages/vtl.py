@@ -171,7 +171,7 @@ class JsonUserDefinedOperatorScheme(
     vtlVersion: str
     userDefinedOperators: Sequence[JsonUserDefinedOperator] = ()
     vtlMappingScheme: Optional[str] = None
-    rulesetSchemes: Optional[str] = None
+    rulesetSchemes: Sequence[str] = ()
     description: Optional[str] = None
     version: str = "1.0"
     isExternalReference: bool = False
@@ -195,7 +195,7 @@ class JsonUserDefinedOperatorScheme(
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
             vtl_mapping_scheme=self.vtlMappingScheme,
-            ruleset_scheme=self.rulesetSchemes,
+            ruleset_schemes=self.rulesetSchemes,
         )
 
 

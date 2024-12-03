@@ -112,7 +112,7 @@ class UserDefinedOperatorScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of user-defined operators."""
 
     vtl_mapping_scheme: Optional[str] = None
-    ruleset_scheme: Optional[str] = None
+    ruleset_schemes: Sequence[str] = ()
 
 
 class VtlMappingScheme(ItemScheme, frozen=True, omit_defaults=True):
