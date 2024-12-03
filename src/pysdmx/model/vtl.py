@@ -41,27 +41,27 @@ class VtlMapping(Item, frozen=True, omit_defaults=True):
     """Single VTL mapping."""
 
 
-class VtlDataflowMapping(VtlMapping, frozen=True, omit_defaults=True):
-    """Single mapping with a dataflow."""
-
-    dataflow: str = ""
-    dataflow_alias: str = ""
-    to_vtl_mapping_method: Optional[str] = None
-    from_vtl_mapping_method: Optional[str] = None
-
-
-class ToVtlMappingType(Struct, frozen=True, omit_defaults=True):
+class ToVtlMapping(Struct, frozen=True, omit_defaults=True):
     """The mapping method and filter used when mapping from SDMX to VTL."""
 
     to_vtl_sub_space: Sequence[str] = ()
     method: Optional[str] = None
 
 
-class FromVtlMappingType(Struct, frozen=True, omit_defaults=True):
+class FromVtlMapping(Struct, frozen=True, omit_defaults=True):
     """The mapping method and filter used when mapping from VTL to SDMX."""
 
-    to_vtl_sub_space: Sequence[str] = ()
+    from_vtl_sub_space: Sequence[str] = ()
     method: Optional[str] = None
+
+
+class VtlDataflowMapping(VtlMapping, frozen=True, omit_defaults=True):
+    """Single mapping with a dataflow."""
+
+    dataflow: str = ""
+    dataflow_alias: str = ""
+    to_vtl_mapping_method: Optional[ToVtlMapping] = None
+    from_vtl_mapping_method: Optional[FromVtlMapping] = None
 
 
 class VtlCodelistMapping(VtlMapping, frozen=True, omit_defaults=True):
@@ -105,9 +105,14 @@ class NamePersonalisationScheme(VtlScheme, frozen=True, omit_defaults=True):
 class RulesetScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of rulesets."""
 
+    vtl_mapping_scheme: Optional[str] = None
+
 
 class UserDefinedOperatorScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of user-defined operators."""
+
+    vtl_mapping_scheme: Optional[str] = None
+    ruleset_scheme: Optional[str] = None
 
 
 class VtlMappingScheme(ItemScheme, frozen=True, omit_defaults=True):
@@ -117,87 +122,8 @@ class VtlMappingScheme(ItemScheme, frozen=True, omit_defaults=True):
 class TransformationScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of transformations meant to be executed together."""
 
-    @property
-    def transformations(self) -> Sequence[Transformation]:
-        """The transformations in the scheme."""
-        return list(
-            filter(
-                lambda i: isinstance(  # type: ignore[arg-type]
-                    i,
-                    Transformation,
-                ),
-                self.items,
-            )
-        )
-
-    @property
-    def vtl_mapping_scheme(self) -> Optional[VtlMappingScheme]:
-        """The mapping scheme in the scheme (if any)."""
-        out = list(
-            filter(
-                lambda i: isinstance(
-                    i,
-                    VtlMappingScheme,
-                ),
-                self.items,
-            )
-        )
-        return out[0] if out else None  # type: ignore[return-value]
-
-    @property
-    def name_personalisation_scheme(
-        self,
-    ) -> Optional[NamePersonalisationScheme]:
-        """The name personalisation scheme in the scheme (if any)."""
-        out = list(
-            filter(
-                lambda i: isinstance(
-                    i,
-                    NamePersonalisationScheme,
-                ),
-                self.items,
-            )
-        )
-        return out[0] if out else None  # type: ignore[return-value]
-
-    @property
-    def custom_type_scheme(self) -> Optional[CustomTypeScheme]:
-        """The custom type scheme in the scheme (if any)."""
-        out = list(
-            filter(
-                lambda i: isinstance(
-                    i,
-                    CustomTypeScheme,
-                ),
-                self.items,
-            )
-        )
-        return out[0] if out else None  # type: ignore[return-value]
-
-    @property
-    def ruleset_schemes(self) -> Sequence[RulesetScheme]:
-        """The ruleset schemes in the scheme (if any)."""
-        return list(
-            filter(
-                lambda i: isinstance(  # type: ignore[arg-type]
-                    i,
-                    RulesetScheme,
-                ),
-                self.items,
-            )
-        )
-
-    @property
-    def user_defined_operator_schemes(
-        self,
-    ) -> Sequence[UserDefinedOperatorScheme]:
-        """The user defined operator schemes in the scheme (if any)."""
-        return list(
-            filter(
-                lambda i: isinstance(  # type: ignore[arg-type]
-                    i,
-                    UserDefinedOperatorScheme,
-                ),
-                self.items,
-            )
-        )
+    vtl_mapping_scheme: Optional[VtlMappingScheme] = None
+    name_personalisation_scheme: Optional[NamePersonalisationScheme] = None
+    custom_type_scheme: Optional[CustomTypeScheme] = None
+    ruleset_schemes: Sequence[RulesetScheme] = ()
+    user_defined_operator_schemes: Sequence[UserDefinedOperatorScheme] = None
