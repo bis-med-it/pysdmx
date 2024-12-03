@@ -395,9 +395,9 @@ class JsonTransformationScheme(
     agency: str
     vtlVersion: str
     transformations: Sequence[JsonTransformation]
-    vtlMappingScheme: Optional[str]
-    namePersonalisationScheme: Optional[str]
-    customTypeScheme: Optional[str]
+    vtlMappingScheme: Optional[str] = None
+    namePersonalisationScheme: Optional[str] = None
+    customTypeScheme: Optional[str] = None
     rulesetSchemes: Sequence[str] = ()
     userDefinedOperatorSchemes: Sequence[str] = ()
     description: Optional[str] = None
