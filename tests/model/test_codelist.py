@@ -5,22 +5,22 @@ import pytest
 from pysdmx.model.code import Code, Codelist
 
 
-@pytest.fixture()
+@pytest.fixture
 def id():
     return "id"
 
 
-@pytest.fixture()
+@pytest.fixture
 def name():
     return "name"
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "5B0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def sdmx_type():
     return "valuelist"
 

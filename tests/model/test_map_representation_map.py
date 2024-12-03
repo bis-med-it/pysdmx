@@ -5,42 +5,42 @@ import pytest
 from pysdmx.model import RepresentationMap, ValueMap
 
 
-@pytest.fixture()
+@pytest.fixture
 def id():
     return "id"
 
 
-@pytest.fixture()
+@pytest.fixture
 def name():
     return "name"
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "5B0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def source():
     return "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL1(1.0)"
 
 
-@pytest.fixture()
+@pytest.fixture
 def target():
     return "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL2(1.0)"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "2.0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def desc():
     return "my desc"
 
 
-@pytest.fixture()
+@pytest.fixture
 def mappings():
     vm1 = ValueMap("AR", "ARG")
     vm2 = ValueMap("UY", "URY")

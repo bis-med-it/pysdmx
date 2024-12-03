@@ -1,21 +1,21 @@
 import pytest
 
 from pysdmx.api.qb.data import DataContext, DataQuery
-from pysdmx.api.qb.util import ApiVersion, REST_ALL
+from pysdmx.api.qb.util import REST_ALL, ApiVersion
 from pysdmx.errors import Invalid
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "BIS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def res():
     return "CBS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.0"
 

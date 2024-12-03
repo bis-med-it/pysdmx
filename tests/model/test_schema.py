@@ -5,22 +5,22 @@ import pytest
 from pysdmx.model import Component, Components, DataType, Role, Schema
 
 
-@pytest.fixture()
+@pytest.fixture
 def id():
     return "5B0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "BIS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def context():
     return "dataflow"
 
 
-@pytest.fixture()
+@pytest.fixture
 def components():
     f1 = Component("FREQ", True, Role.DIMENSION, DataType.STRING)
     f2 = Component("INDICATOR", True, Role.DIMENSION, DataType.STRING)

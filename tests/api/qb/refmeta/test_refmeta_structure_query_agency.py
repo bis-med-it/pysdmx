@@ -7,32 +7,32 @@ from pysdmx.api.qb.structure import StructureType
 from pysdmx.api.qb.util import ApiVersion
 
 
-@pytest.fixture()
+@pytest.fixture
 def typ():
     return StructureType.METADATA_STRUCTURE
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "SDMX"
 
 
-@pytest.fixture()
+@pytest.fixture
 def agencies():
     return ["BIS", "SDMX"]
 
 
-@pytest.fixture()
+@pytest.fixture
 def res():
     return "REF_META"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.0.0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def detail():
     return RefMetaDetail.FULL
 

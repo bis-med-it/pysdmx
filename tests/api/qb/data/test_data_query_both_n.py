@@ -4,17 +4,17 @@ from pysdmx.api.qb.data import DataQuery
 from pysdmx.api.qb.util import ApiVersion
 
 
-@pytest.fixture()
+@pytest.fixture
 def res():
     return "CBS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def first_n():
     return 1
 
 
-@pytest.fixture()
+@pytest.fixture
 def last_n():
     return 2
 

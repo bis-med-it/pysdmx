@@ -5,7 +5,7 @@ from pysdmx.api.fmr import Format, RegistryClient
 from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 
 
-@pytest.fixture()
+@pytest.fixture
 def fmr() -> RegistryClient:
     return RegistryClient(
         "https://registry.sdmx.org/sdmx/v2",
@@ -13,14 +13,14 @@ def fmr() -> RegistryClient:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def query(fmr: RegistryClient) -> str:
     res = "/structure/agencyscheme/"
     agency = "BIS"
     return f"{fmr.api_endpoint}{res}{agency}"
 
 
-@pytest.fixture()
+@pytest.fixture
 def body():
     with open("tests/api/fmr/samples/orgs/agencies.fusion.json", "rb") as f:
         return f.read()

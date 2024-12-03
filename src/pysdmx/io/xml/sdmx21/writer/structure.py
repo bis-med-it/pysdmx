@@ -7,8 +7,8 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_COM,
     ABBR_MSG,
     ABBR_STR,
-    add_indent,
     MSG_CONTENT_PKG,
+    add_indent,
 )
 from pysdmx.model.__base import (
     AnnotableArtefact,

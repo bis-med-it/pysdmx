@@ -9,17 +9,17 @@ from pysdmx.model import (
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def source():
     return ["REF_AREA", "CURRENCY"]
 
 
-@pytest.fixture()
+@pytest.fixture
 def target():
     return "CURRENCY"
 
 
-@pytest.fixture()
+@pytest.fixture
 def values():
     vm1 = MultiValueMap(["CH", "LC1"], ["CHF"])
     vm2 = MultiValueMap(["CH", "CHF"], ["CHF"])

@@ -4,7 +4,7 @@ from typing import List
 import pytest
 
 from pysdmx.errors import NotImplemented
-from pysdmx.model import Component, Components, Concept, encoders, Role
+from pysdmx.model import Component, Components, Concept, Role, encoders
 
 
 def test_pattern():

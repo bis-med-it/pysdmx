@@ -1,10 +1,10 @@
 import pytest
-import tests.api.fmr.agency_checks as checks
 
 from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
+import tests.api.fmr.agency_checks as checks
 
 
-@pytest.fixture()
+@pytest.fixture
 def fmr() -> RegistryClient:
     return RegistryClient(
         "https://registry.sdmx.org/sdmx/v2",
@@ -12,7 +12,7 @@ def fmr() -> RegistryClient:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def async_fmr() -> AsyncRegistryClient:
     return AsyncRegistryClient(
         "https://registry.sdmx.org/sdmx/v2/",
@@ -20,14 +20,14 @@ def async_fmr() -> AsyncRegistryClient:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def query(fmr: RegistryClient) -> str:
     res = "/structure/agencyscheme/"
     agency = "BIS"
     return f"{fmr.api_endpoint}{res}{agency}"
 
 
-@pytest.fixture()
+@pytest.fixture
 def body():
     with open("tests/api/fmr/samples/orgs/agencies.fusion.json", "rb") as f:
         return f.read()
@@ -38,7 +38,7 @@ def test_returns_orgs(respx_mock, fmr, query, body):
     checks.check_orgs(respx_mock, fmr, query, body)
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_orgs_have_core_info(respx_mock, async_fmr, query, body):
     """Agencies must contain core information such as ID and name."""
     await checks.check_org_core_info(respx_mock, async_fmr, query, body)

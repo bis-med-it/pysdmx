@@ -61,14 +61,16 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 79
+lint.mccabe.max-complexity = 10
 lint.select = [
     "B","B9","C","C4","D","E","F","I","PT","S","SIM","W"
 ]
 lint.ignore = [
-    "E203","D411","F901","S410","S320"
+    "E203","D411","F901","S320"
 ]
-lint.mccabe.max-complexity = 10
 lint.pydocstyle.convention = "google"
+lint.isort.combine-as-imports = true
+lint.isort.force-sort-within-sections = true
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101","S311","D100","D103","D104"]

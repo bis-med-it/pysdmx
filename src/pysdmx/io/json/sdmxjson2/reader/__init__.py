@@ -3,7 +3,6 @@
 from pysdmx.io.json.sdmxjson2 import messages as msg
 from pysdmx.io.serde import Deserializers
 
-
 deserializers = Deserializers(
     agencies=msg.JsonAgencyMessage,  # type: ignore[arg-type]
     categories=msg.JsonCategorySchemeMessage,  # type: ignore[arg-type]

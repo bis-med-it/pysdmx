@@ -15,28 +15,28 @@ TEST_CS_URN = (
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def codelist_sample():
     base_path = Path(__file__).parent / "samples" / "codelist.xml"
     with open(base_path, "r") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def concept_sample():
     base_path = Path(__file__).parent / "samples" / "concept.xml"
     with open(base_path, "r") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def empty_sample():
     base_path = Path(__file__).parent / "samples" / "empty.xml"
     with open(base_path, "r") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def header():
     return Header(
         id="ID",
@@ -44,7 +44,7 @@ def header():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def complete_header():
     return Header(
         id="ID",

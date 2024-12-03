@@ -16,9 +16,9 @@ from pysdmx.api.dc.query import (
     TextFilter,
 )
 from pysdmx.api.qb.util import (
+    REST_ALL,
     ApiVersion,
     check_multiple_data_context,
-    REST_ALL,
 )
 from pysdmx.errors import Invalid
 

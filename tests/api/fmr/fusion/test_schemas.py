@@ -1,12 +1,12 @@
 import httpx
 import pytest
-import tests.api.fmr.schema_checks as checks
 
 from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 from pysdmx.errors import InternalError
+import tests.api.fmr.schema_checks as checks
 
 
-@pytest.fixture()
+@pytest.fixture
 def fmr():
     return RegistryClient(
         "https://registry.sdmx.org/sdmx/v2/",
@@ -14,7 +14,7 @@ def fmr():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def async_fmr():
     return AsyncRegistryClient(
         "https://registry.sdmx.org/sdmx/v2/",
@@ -22,7 +22,7 @@ def async_fmr():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def query(fmr):
     res = "/schema/dataflow/"
     agency = "BIS.CBS"
@@ -31,7 +31,7 @@ def query(fmr):
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
 
 
-@pytest.fixture()
+@pytest.fixture
 def query_pra(fmr):
     res = "/schema/provisionagreement/"
     agency = "BIS.CBS"
@@ -40,7 +40,7 @@ def query_pra(fmr):
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
 
 
-@pytest.fixture()
+@pytest.fixture
 def no_hca_query(fmr):
     res = "/structure/dataflow/"
     agency = "BIS.CBS"
@@ -52,7 +52,7 @@ def no_hca_query(fmr):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def no_hca_pra_query(fmr):
     res = "/structure/provisionagreement/"
     agency = "BIS.CBS"
@@ -64,7 +64,7 @@ def no_hca_pra_query(fmr):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def hierarchy_hca_query(fmr):
     res = "/structure/dataflow/"
     agency = "BIS"
@@ -76,7 +76,7 @@ def hierarchy_hca_query(fmr):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def hierarchy_hca_query_pra(fmr):
     res = "/structure/provisionagreement/"
     agency = "BIS.CBS"
@@ -88,7 +88,7 @@ def hierarchy_hca_query_pra(fmr):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def hierarchy_query(fmr):
     res = "/schema/dataflow/"
     agency = "BIS"
@@ -97,7 +97,7 @@ def hierarchy_query(fmr):
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
 
 
-@pytest.fixture()
+@pytest.fixture
 def hierarchy_query_pra(fmr):
     res = "/schema/provisionagreement/"
     agency = "BIS.CBS"
@@ -106,7 +106,7 @@ def hierarchy_query_pra(fmr):
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
 
 
-@pytest.fixture()
+@pytest.fixture
 def no_const_query(fmr):
     res = "/schema/datastructure/"
     agency = "BIS"
@@ -115,43 +115,43 @@ def no_const_query(fmr):
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
 
 
-@pytest.fixture()
+@pytest.fixture
 def body():
     with open("tests/api/fmr/samples/df/schema.fusion.json", "rb") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def body_from_pra():
     with open("tests/api/fmr/samples/pra/schema.fusion.json", "rb") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def no_const_body():
     with open("tests/api/fmr/samples/df/no_const.fusion.json", "rb") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def no_measure_body():
     with open("tests/api/fmr/samples/df/no_measure.fusion.json", "rb") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def no_attr_body():
     with open("tests/api/fmr/samples/df/no_attr.fusion.json", "rb") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def error_body():
     with open("tests/api/fmr/samples/df/errorlvl.fusion.json", "rb") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def hierarchy_body():
     with open(
         "tests/api/fmr/samples/df/hierarchy_schema.fusion.json", "rb"
@@ -159,13 +159,13 @@ def hierarchy_body():
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def hier_assoc_body():
     with open("tests/api/fmr/samples/df/hierarchy_hca.fusion.json", "rb") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def hierarchy_pra_body():
     with open(
         "tests/api/fmr/samples/pra/hierarchy_schema.fusion.json", "rb"
@@ -173,7 +173,7 @@ def hierarchy_pra_body():
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def hier_assoc_pra_body():
     with open(
         "tests/api/fmr/samples/pra/hierarchy_hca.fusion.json", "rb"
@@ -181,13 +181,13 @@ def hier_assoc_pra_body():
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def no_hca_body():
     with open("tests/api/fmr/samples/df/no_hca.fusion.json", "rb") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def no_hca_pra_body():
     with open("tests/api/fmr/samples/pra/no_hca.fusion.json", "rb") as f:
         return f.read()
@@ -221,7 +221,7 @@ def test_returns_pra_validation_context(
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_codes(
     respx_mock, async_fmr, query, no_hca_query, body, no_hca_body
 ):
@@ -231,7 +231,7 @@ async def test_codes(
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_codes_pra(
     respx_mock,
     async_fmr,
@@ -251,7 +251,7 @@ async def test_codes_pra(
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_core_local_repr_async(
     respx_mock,
     async_fmr,
