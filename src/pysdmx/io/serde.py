@@ -29,3 +29,4 @@ class Deserializers:
     report: Deserializer
     mapping: Deserializer
     code_map: Deserializer
+    transformation_scheme: Deserializer
