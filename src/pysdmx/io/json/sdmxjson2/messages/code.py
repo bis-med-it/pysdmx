@@ -272,13 +272,13 @@ class JsonHierarchyAssociations(Struct, frozen=True):
 
     codelists: Sequence[JsonCodelist] = ()
     hierarchies: Sequence[JsonHierarchy] = ()
-    hierarchyassociations: Sequence[JsonHierarchyAssociation] = ()
+    hierarchyAssociations: Sequence[JsonHierarchyAssociation] = ()
 
     def to_model(self) -> Sequence[HierarchyAssociation]:
         """Returns the requested hierarchy associations."""
         return [
             ha.to_model(self.hierarchies, self.codelists)
-            for ha in self.hierarchyassociations
+            for ha in self.hierarchyAssociations
         ]
 
 
