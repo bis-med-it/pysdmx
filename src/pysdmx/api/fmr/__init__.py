@@ -685,7 +685,7 @@ class RegistryClient(__BaseRegistryClient):
             The requested transformation scheme.
         """
         url = super()._vtl_ts_url(agency, id, version)
-        out = self.__fetch(f"{self.api_endpoint}{url}", True)
+        out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.transformation_scheme)
 
 
@@ -1080,5 +1080,5 @@ class AsyncRegistryClient(__BaseRegistryClient):
             The requested transformation scheme.
         """
         url = super()._vtl_ts_url(agency, id, version)
-        out = await self.__fetch(f"{self.api_endpoint}{url}", True)
+        out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.transformation_scheme)
