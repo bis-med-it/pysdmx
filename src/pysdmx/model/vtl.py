@@ -77,6 +77,16 @@ class Transformation(Item, frozen=True, omit_defaults=True, kw_only=True):
     Result: str
     isPersistent: bool = False
 
+    @property
+    def full_expression(self) -> str:
+        """Return the full expression with the semicolon."""
+        if self.isPersistent:
+            assign_operand = "<-"
+        else:
+            assign_operand = ":="
+
+        return f"{self.Result} {assign_operand} {self.Expression};"
+
     # TODO: Use VTL Engine for syntax/semantic validation based on VTL?
 
 
