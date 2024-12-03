@@ -287,6 +287,7 @@ def test_chunks(samples_folder, filename):
     assert num_rows == expected_num_rows
     assert num_columns == expected_num_columns
 
+
 def test_vtl_transformation_scheme(samples_folder):
     data_path = samples_folder / "transformation_scheme.xml"
     input_str, filetype = process_string_to_read(data_path)
@@ -304,4 +305,4 @@ def test_vtl_transformation_scheme(samples_folder):
     transformation = transformation_scheme.items[0]
     assert isinstance(transformation, Transformation)
     assert transformation.id == "test_rule"
-    assert transformation.full_expression == 'DS_r <- DS_1 + 1;'
+    assert transformation.full_expression == "DS_r <- DS_1 + 1;"
