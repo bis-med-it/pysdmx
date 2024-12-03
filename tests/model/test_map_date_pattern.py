@@ -95,10 +95,10 @@ def test_pypattern_ddMMyy(source, target, freq):
 def test_pypattern_MMddyyyy(source, target, freq):
     m = DatePatternMap(source, target, "MM/dd/yyyy", freq)
 
-    assert m.py_pattern == r"%m/%d/%G"
+    assert m.py_pattern == r"%m/%d/%Y"
 
 
 def test_pypattern_MMMyyyy(source, target, freq):
     m = DatePatternMap(source, target, "MMM yyyy", freq)
 
-    assert m.py_pattern == r"%b %G"
+    assert m.py_pattern == r"%b %Y"
