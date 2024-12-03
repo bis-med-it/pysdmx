@@ -126,4 +126,4 @@ class TransformationScheme(VtlScheme, frozen=True, omit_defaults=True):
     name_personalisation_scheme: Optional[NamePersonalisationScheme] = None
     custom_type_scheme: Optional[CustomTypeScheme] = None
     ruleset_schemes: Sequence[RulesetScheme] = ()
-    user_defined_operator_schemes: Sequence[UserDefinedOperatorScheme] = None
+    user_defined_operator_schemes: Sequence[UserDefinedOperatorScheme] = ()

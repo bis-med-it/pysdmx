@@ -316,7 +316,9 @@ class JsonVtlMapping(Struct, frozen=True):
                 name=self.name,
                 description=self.description,
                 dataflow=(
-                    self.dataflow if self.dataflow else self.genericDataflow
+                    self.dataflow
+                    if self.dataflow
+                    else self.genericDataflow  # type: ignore[arg-type]
                 ),
                 dataflow_alias=self.alias,
                 from_vtl_mapping_method=(
