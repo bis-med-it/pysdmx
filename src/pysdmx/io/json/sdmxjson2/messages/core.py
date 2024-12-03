@@ -52,10 +52,7 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
 
     def to_facets(self) -> Optional[Facets]:
         """Return a Facets domain object."""
-        if self.enumeration:
-            fmt = self.enumerationFormat
-        else:
-            fmt = self.format
+        fmt = self.enumerationFormat if self.enumeration else self.format
         if fmt and (
             fmt.minLength
             or fmt.maxLength

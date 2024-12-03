@@ -1,3 +1,4 @@
+"""Sphinx configuration."""
 import asyncio
 import os
 import sys
