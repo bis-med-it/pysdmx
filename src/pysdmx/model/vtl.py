@@ -41,7 +41,7 @@ class VTLItemScheme(ItemScheme, frozen=True, omit_defaults=True, kw_only=True):
 
 
 # Transformations
-class TransformationScheme(VTLItemScheme, kw_only=True):
+class TransformationScheme(VTLItemScheme, frozen=True, kw_only=True):
     """VTL Transformation Scheme class.
 
     TransformationScheme is a set of Transformations aimed at getting some
@@ -81,7 +81,7 @@ class Transformation(Item, frozen=True, omit_defaults=True, kw_only=True):
 
 
 # UDOs
-class UserDefinedOperatorScheme(VTLItemScheme, kw_only=True):
+class UserDefinedOperatorScheme(VTLItemScheme, frozen=True, kw_only=True):
     """VTL User Defined Operator Scheme class.
 
     The UserDefinedOperatorScheme is a container for zero of more
@@ -116,7 +116,7 @@ class UserDefinedOperator(Item, frozen=True, omit_defaults=True, kw_only=True):
 
 
 # Ruleset
-class RulesetScheme(VTLItemScheme, kw_only=True):
+class RulesetScheme(VTLItemScheme, frozen=True, kw_only=True):
     """VTL Ruleset Scheme class.
 
     The RulesetScheme is a container for zero or more Ruleset.
@@ -149,8 +149,7 @@ class Ruleset(Item, frozen=True, omit_defaults=True, kw_only=True):
     rulesetType: str
 
     def __post_init__(self) -> None:
-        """
-        Additional validation checks for Ruleset.
+        """Additional validation checks for Ruleset.
 
         Raises:
             Invalid: If the rulesetType is not a valid VTL ruleset type
