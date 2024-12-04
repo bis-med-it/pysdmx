@@ -217,6 +217,7 @@ def test_datastructure(samples_folder):
     result = read_xml(input_str, validate=True)
     assert "DataStructures" in result
 
+
 def test_partial_datastructure(samples_folder):
     data_path = samples_folder / "partial_datastructure.xml"
     input_str, filetype = process_string_to_read(data_path)

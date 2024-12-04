@@ -368,9 +368,7 @@ class StructureParser(Struct):
             if IS_FINAL in element:
                 element[IS_FINAL_LOW] = element.pop(IS_FINAL)
 
-            structure = {
-                key.lower(): value for key, value in element.items()
-            }
+            structure = {key.lower(): value for key, value in element.items()}
             datastructure[full_id] = SCHEMES_CLASSES[scheme](**structure)
 
         return datastructure
