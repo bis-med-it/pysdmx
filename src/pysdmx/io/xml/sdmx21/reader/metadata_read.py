@@ -290,7 +290,7 @@ class StructureParser(Struct):
             element with the version, validFrom and validTo formatted
         """
         if VERSION in element:
-            element[VERSION] = element.pop(VALID_FROM)
+            element[VERSION] = element.pop(VERSION)
         if VALID_FROM in element:
             element[VALID_FROM] = element.pop(VALID_FROM)
         if VALID_TO in element:
@@ -376,6 +376,7 @@ class StructureParser(Struct):
         if DSD in json_element:
             json_element[DSD] = add_list(json_element[DSD])
             for element in json_element[DSD]:
+
                 full_id = unique_id(
                     element[AGENCY_ID], element[ID], element[VERSION]
                 )
