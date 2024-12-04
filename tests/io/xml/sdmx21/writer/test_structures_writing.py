@@ -8,6 +8,7 @@ from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer import Header, writer
 from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme
 from pysdmx.model.__base import Annotation
+from pysdmx.model.dataflow import DataStructureDefinition
 
 TEST_CS_URN = (
     "urn:sdmx:org.sdmx.infomodel.conceptscheme."
@@ -167,3 +168,37 @@ def test_writer_no_header():
     assert "<mes:Test>true</mes:Test>" in result
     assert "<mes:Prepared>" in result
     assert '<mes:Sender id="ZZZ"/>' in result
+
+
+def test_writer_datastructure(complete_header):
+    datastructure = DataStructureDefinition(
+        agency=Agency(
+            id="BIS",
+            name="Bank for International Settlements",
+            urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+            "DataStructure=BIS:BIS_DER(1.0)",
+        ),
+        annotations=(),
+        id="BIS_DER",
+        description="BIS derivates statistics",
+        is_external_reference=None,
+        is_final=None,
+        name="BIS derivates statistics",
+        service_url=None,
+        structure_url=None,
+        uri="http://www.bis.org/statistics/derivatives.html",
+        urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+        "DataStructure=BIS:BIS_DER(1.0)",
+        valid_from=None,
+        valid_to=None,
+        version=None,
+    )
+
+    result = writer(
+        {"DataStructures": {"FREQ": datastructure}},
+        MessageType.Structure,
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    assert "DataStructure=BIS:BIS_DER(1.0)" in result

@@ -177,28 +177,6 @@ class StructureParser(Struct):
                 del element[field]
         return element
 
-    def __extract_name(self, element: Any) -> Dict[str, Any]:
-        """Extracts the name from the element.
-
-        Args:
-            element: The element to extract the name from
-
-        Returns:
-            The element with the name extracted
-        """
-        name_key = NAME.lower()
-        if name_key in element:
-            name_value = element[name_key]
-            if isinstance(name_value, list):
-                for e in name_value:
-                    if e.get("lang") == "en":
-                        element[name_key] = self.__extract_text(e)
-                        return element
-                element[name_key] = self.__extract_text(name_value[0])
-            elif isinstance(name_value, dict):
-                element[name_key] = self.__extract_text(name_value)
-        return element
-
     @staticmethod
     def __format_facets(
         json_fac: Dict[str, Any], json_obj: Dict[str, Any]
@@ -289,12 +267,11 @@ class StructureParser(Struct):
         Returns:
             element with the version, validFrom and validTo formatted
         """
-        if VERSION in element:
-            element[VERSION] = element.pop(VERSION)
+        element[VERSION] = element.pop(VERSION)
         if VALID_FROM in element:
-            element[VALID_FROM] = element.pop(VALID_FROM)
+            element["valid_from"] = element.pop(VALID_FROM)
         if VALID_TO in element:
-            element[VALID_TO] = element.pop(VALID_TO)
+            element["valid_to"] = element.pop(VALID_TO)
         return element
 
     def __format_item(
@@ -373,37 +350,28 @@ class StructureParser(Struct):
         datastructure = {}
         scheme = DSDS
 
-        if DSD in json_element:
-            json_element[DSD] = add_list(json_element[DSD])
-            for element in json_element[DSD]:
+        json_element[DSD] = add_list(json_element[DSD])
+        for element in json_element[DSD]:
 
-                full_id = unique_id(
-                    element[AGENCY_ID], element[ID], element[VERSION]
-                )
+            full_id = unique_id(
+                element[AGENCY_ID], element[ID], element[VERSION]
+            )
 
-                element = self.__format_annotations(element)
-                element = self.__format_name_description(element)
-                element = self.__extract_name(element)
-                element = self.__format_urls(element)
-                element = self.__format_agency(element)
-                element = self.__format_validity(element)
+            element = self.__format_annotations(element)
+            element = self.__format_name_description(element)
+            element = self.__format_urls(element)
+            element = self.__format_agency(element)
+            element = self.__format_validity(element)
 
-                if IS_EXTERNAL_REF in element:
-                    element[IS_EXTERNAL_REF_LOW] = element.pop(IS_EXTERNAL_REF)
-                if IS_FINAL in element:
-                    element[IS_FINAL_LOW] = element.pop(IS_FINAL)
+            if IS_EXTERNAL_REF in element:
+                element[IS_EXTERNAL_REF_LOW] = element.pop(IS_EXTERNAL_REF)
+            if IS_FINAL in element:
+                element[IS_FINAL_LOW] = element.pop(IS_FINAL)
 
-                if IS_PARTIAL in element:
-                    del element[IS_PARTIAL_LOW]
-                if "Structure" in element:
-                    del element["Structure"]
-                if "DataStructureComponents" in element:
-                    del element["DataStructureComponents"]
-
-                structure = {
-                    key.lower(): value for key, value in element.items()
-                }
-                datastructure[full_id] = SCHEMES_CLASSES[scheme](**structure)
+            structure = {
+                key.lower(): value for key, value in element.items()
+            }
+            datastructure[full_id] = SCHEMES_CLASSES[scheme](**structure)
 
         return datastructure
 
