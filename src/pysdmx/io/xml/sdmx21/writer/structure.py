@@ -3,6 +3,7 @@
 from collections import OrderedDict
 from typing import Any, Dict
 
+from pysdmx.io.xml.sdmx21.__parsing_config import DSD
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_COM,
     ABBR_MSG,
@@ -19,6 +20,7 @@ from pysdmx.model.__base import (
     NameableArtefact,
     VersionableArtefact,
 )
+from pysdmx.model.dataflow import DataStructureDefinition
 
 ANNOTATION_WRITER = OrderedDict(
     {
@@ -186,6 +188,27 @@ def __write_item_scheme(item_scheme: ItemScheme, indent: str) -> str:
     return outfile
 
 
+def __write_datastructure(datastructure: DataStructureDefinition, indent: str) -> str:
+    """Writes the datastructure to the XML file."""
+    label = f"{ABBR_STR}:{DSD}"
+
+    data = __write_maintainable(datastructure, indent)
+
+    outfile = ""
+
+    attributes = data.get("Attributes") or ""
+    attributes = attributes.replace("'", '"')
+
+    outfile += f"{indent}<{label}{attributes}>"
+
+    outfile += __export_intern_data(data, indent)
+
+    outfile += f"{indent}</{label}>"
+
+    return outfile
+
+
+
 def __write_metadata_element(
     package: Dict[str, Any], key: str, prettyprint: object
 ) -> str:
@@ -207,9 +230,12 @@ def __write_metadata_element(
 
     if key in package:
         outfile += f"{base_indent}<{ABBR_STR}:{MSG_CONTENT_PKG[key]}>"
-        for item_scheme in package[key].values():
-            outfile += __write_item_scheme(
-                item_scheme, add_indent(base_indent)
+        for element in package[key].values():
+            base_writer = __write_item_scheme
+            if issubclass(element.__class__, DataStructureDefinition):
+                base_writer = __write_datastructure
+            outfile += base_writer(
+                element, add_indent(base_indent)
             )
         outfile += f"{base_indent}</{ABBR_STR}:{MSG_CONTENT_PKG[key]}>"
 
