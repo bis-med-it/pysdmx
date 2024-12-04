@@ -188,7 +188,9 @@ def __write_item_scheme(item_scheme: ItemScheme, indent: str) -> str:
     return outfile
 
 
-def __write_datastructure(datastructure: DataStructureDefinition, indent: str) -> str:
+def __write_datastructure(
+    datastructure: DataStructureDefinition, indent: str
+) -> str:
     """Writes the datastructure to the XML file."""
     label = f"{ABBR_STR}:{DSD}"
 
@@ -206,7 +208,6 @@ def __write_datastructure(datastructure: DataStructureDefinition, indent: str) -
     outfile += f"{indent}</{label}>"
 
     return outfile
-
 
 
 def __write_metadata_element(
@@ -234,9 +235,7 @@ def __write_metadata_element(
             base_writer = __write_item_scheme
             if issubclass(element.__class__, DataStructureDefinition):
                 base_writer = __write_datastructure
-            outfile += base_writer(
-                element, add_indent(base_indent)
-            )
+            outfile += base_writer(element, add_indent(base_indent))
         outfile += f"{base_indent}</{ABBR_STR}:{MSG_CONTENT_PKG[key]}>"
 
     return outfile
