@@ -385,7 +385,7 @@ class StructureParser(Struct):
                 element = self.__extract_name(element)
                 element = self.__format_urls(element)
                 element = self.__format_agency(element)
-                element = self.__format_version(element)
+                element = self.__format_validity(element)
 
                 if IS_EXTERNAL_REF in element:
                     element[IS_EXTERNAL_REF_LOW] = element.pop(IS_EXTERNAL_REF)

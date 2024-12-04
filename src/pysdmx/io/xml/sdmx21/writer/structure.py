@@ -232,10 +232,10 @@ def __write_metadata_element(
     if key in package:
         outfile += f"{base_indent}<{ABBR_STR}:{MSG_CONTENT_PKG[key]}>"
         for element in package[key].values():
-            base_writer = __write_item_scheme
-            if issubclass(element.__class__, DataStructureDefinition):
-                base_writer = __write_datastructure
-            outfile += base_writer(element, add_indent(base_indent))
+            if issubclass(element.__class__, ItemScheme):
+                outfile = __write_item_scheme(element, add_indent(base_indent))
+            elif issubclass(element.__class__, DataStructureDefinition):
+                outfile = __write_datastructure(element, add_indent(base_indent))
         outfile += f"{base_indent}</{ABBR_STR}:{MSG_CONTENT_PKG[key]}>"
 
     return outfile
