@@ -280,7 +280,7 @@ class StructureParser(Struct):
             )
             json_obj["codes"] = codelist.codes
 
-    def __format_version(self, element: Dict[str, Any]) -> Dict[str, Any]:
+    def __format_validity(self, element: Dict[str, Any]) -> Dict[str, Any]:
         """Formats the version in the element.
 
         Args:
@@ -289,16 +289,12 @@ class StructureParser(Struct):
         Returns:
             element with the version, validFrom and validTo formatted
         """
-        if "VersionableType" in element:
-            if "NameableType" in element["VersionableType"]:
-                version_element = element["VersionableType"]["NameableType"]
-                if VERSION in version_element:
-                    element[VERSION] = version_element[VERSION]
-                if VALID_FROM in version_element:
-                    element[VALID_FROM] = version_element[VALID_FROM]
-                if VALID_TO in version_element:
-                    element[VALID_TO] = version_element[VALID_TO]
-            del element["VersionableType"]
+        if VERSION in element:
+            element[VERSION] = element.pop(VALID_FROM)
+        if VALID_FROM in element:
+            element[VALID_FROM] = element.pop(VALID_FROM)
+        if VALID_TO in element:
+            element[VALID_TO] = element.pop(VALID_TO)
         return element
 
     def __format_item(
