@@ -4,7 +4,8 @@ version = "1.0.0-rc-4"
 description = "Your opinionated Python SDMX library"
 authors = [
     "Xavier Sosnovsky <xavier.sosnovsky@bis.org>",
-    "Stratos Nikoloutsos <stratos.nikoloutsos@bis.org>"
+    "Stratos Nikoloutsos <stratos.nikoloutsos@bis.org>",
+    "Francisco Javier Hernandez del Caño <javier.hernandez@meaningfuldata.eu>"
 ]
 readme = "README.rst"
 documentation = "https://bis-med-it.github.io/pysdmx"
