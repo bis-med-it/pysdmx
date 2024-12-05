@@ -8,7 +8,7 @@ from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer import Header, writer
 from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme
 from pysdmx.model.__base import Annotation
-from pysdmx.model.dataflow import DataStructureDefinition
+from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
 
 TEST_CS_URN = (
     "urn:sdmx:org.sdmx.infomodel.conceptscheme."
@@ -189,9 +189,9 @@ def test_writer_datastructure(complete_header):
         uri="http://www.bis.org/statistics/derivatives.html",
         urn="urn:sdmx:org.sdmx.infomodel.datastructure."
         "DataStructure=BIS:BIS_DER(1.0)",
-        valid_from=None,
-        valid_to=None,
-        version=None,
+        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
+        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
+        version="1.0",
     )
 
     result = writer(
@@ -202,3 +202,33 @@ def test_writer_datastructure(complete_header):
     )
 
     assert "DataStructure=BIS:BIS_DER(1.0)" in result
+
+
+def test_writer_dataflow(complete_header):
+    dataflow = Dataflow(
+        agency="BIS",
+        annotations=(),
+        id="WEBSTATS_DER_DATAFLOW",
+        description="OTC derivatives and FX spot - turnover",
+        is_external_reference=None,
+        is_final=None,
+        name="OTC derivatives turnover",
+        service_url=None,
+        structure="Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)",
+        structure_url=None,
+        uri=None,
+        urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)",
+        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
+        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
+        version="1.0",
+    )
+
+    result = writer(
+        {"Dataflows": {"FREQ": dataflow}},
+        MessageType.Structure,
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result

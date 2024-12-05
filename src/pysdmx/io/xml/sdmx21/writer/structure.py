@@ -21,7 +21,7 @@ from pysdmx.model.__base import (
     NameableArtefact,
     VersionableArtefact,
 )
-from pysdmx.model.dataflow import DataStructureDefinition, Dataflow
+from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
 
 ANNOTATION_WRITER = OrderedDict(
     {
@@ -137,12 +137,14 @@ def __write_maintainable(
     """Writes the MaintainableArtefact to the XML file."""
     outfile = __write_versionable(maintainable, indent)
 
-    outfile["Attributes"] += (
-        f" isExternalReference="
-        f"{str(maintainable.is_external_reference).lower()!r}"
-    )
+    if maintainable.is_external_reference is not None:
+        outfile["Attributes"] += (
+            f" isExternalReference="
+            f"{str(maintainable.is_external_reference).lower()!r}"
+        )
 
-    outfile["Attributes"] += f" isFinal={str(maintainable.is_final).lower()!r}"
+    if maintainable.is_final is not None:
+        outfile["Attributes"] += f" isFinal={str(maintainable.is_final).lower()!r}"
 
     if isinstance(maintainable.agency, str):
         outfile["Attributes"] += f" agencyID={maintainable.agency!r}"
@@ -161,6 +163,13 @@ def __write_item(item: Item, indent: str) -> str:
     outfile = f"{indent}<{head}{attributes}>"
     outfile += __export_intern_data(data, add_indent(indent))
     outfile += f"{indent}</{head}>"
+    return outfile
+
+def __write_structure(item: Dataflow, indent: str) -> str:
+    """Writes the structure to the XML file."""
+    outfile = f"{indent}<Structure>"
+    outfile += f"{add_indent(indent)}<Ref package=\"datastructure\" agencyID=\"{item.agency}\" id=\"{item.id}\" version=\"{item.version}\" class=\"{DSD}\">"
+    outfile += f"{indent}</Structure>"
     return outfile
 
 
@@ -189,8 +198,8 @@ def __write_item_scheme(item_scheme: ItemScheme, indent: str) -> str:
     return outfile
 
 
-def __write_structure(
-    datastructure: DataStructureDefinition, indent: str, item: str
+def __write_metastructure(
+    datastructure: Any, indent: str, item: str
 ) -> str:
     """Writes the datastructure to the XML file."""
     label = f"{ABBR_STR}:{item}"
@@ -205,6 +214,9 @@ def __write_structure(
     outfile += f"{indent}<{label}{attributes}>"
 
     outfile += __export_intern_data(data, indent)
+
+    if item == DFW:
+        outfile += __write_structure(datastructure, indent)
 
     outfile += f"{indent}</{label}>"
 
@@ -237,9 +249,11 @@ def __write_metadata_element(
                 outfile += __write_item_scheme(
                     element, add_indent(base_indent)
                 )
-            if issubclass(element.__class__, (DataStructureDefinition, Dataflow)):
+            if issubclass(
+                element.__class__, (DataStructureDefinition, Dataflow)
+            ):
                 item = DFW if issubclass(element.__class__, Dataflow) else DSD
-                outfile += __write_structure(
+                outfile += __write_metastructure(
                     element, add_indent(base_indent), item
                 )
         outfile += f"{base_indent}</{ABBR_STR}:{MSG_CONTENT_PKG[key]}>"
