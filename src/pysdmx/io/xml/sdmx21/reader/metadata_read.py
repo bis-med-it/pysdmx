@@ -23,6 +23,8 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     CS,
     DEPARTMENT,
     DESC,
+    DFW,
+    DFWS,
     DSD,
     DSDS,
     EMAIL,
@@ -42,6 +44,7 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     ROLE,
     SER_URL,
     SER_URL_LOW,
+    STR,
     STR_URL,
     STR_URL_LOW,
     TELEPHONE,
@@ -68,15 +71,16 @@ from pysdmx.model import (
     Facets,
 )
 from pysdmx.model.__base import Agency, Annotation, Contact, Item, ItemScheme
-from pysdmx.model.dataflow import DataStructureDefinition
+from pysdmx.model.dataflow import DataStructureDefinition, Dataflow
 from pysdmx.model.message import CONCEPTS, ORGS
-from pysdmx.util import find_by_urn
+from pysdmx.util import find_by_urn, parse_urn
 
 SCHEMES_CLASSES = {
     CL: Codelist,
     AGENCIES: ItemScheme,
     CS: ConceptScheme,
     DSDS: DataStructureDefinition,
+    DFWS: Dataflow,
 }
 ITEMS_CLASSES = {AGENCY: Agency, CODE: Code, CON: Concept}
 
@@ -337,7 +341,7 @@ class StructureParser(Struct):
         return elements
 
     def __format_datastructures(
-        self, json_element: Dict[str, Any]
+        self, json_element: Dict[str, Any], scheme: str, item: str
     ) -> Dict[str, Any]:
         """Formats the structures in json format.
 
@@ -347,15 +351,17 @@ class StructureParser(Struct):
         Returns:
             A dictionary with the structures formatted
         """
-        datastructure = {}
-        scheme = DSDS
+        datastructures = {}
 
-        json_element[DSD] = add_list(json_element[DSD])
-        for element in json_element[DSD]:
-
-            full_id = unique_id(
-                element[AGENCY_ID], element[ID], element[VERSION]
-            )
+        json_element[item] = add_list(json_element[item])
+        for element in json_element[item]:
+            if element[URN.lower()] is not None:
+                full_id = parse_urn(element[URN.lower()]).__str__()
+            else:
+                full_id = unique_id(
+                    element[AGENCY_ID], element[ID], element[VERSION]
+                )
+                full_id = f"{item}={full_id}"
 
             element = self.__format_annotations(element)
             element = self.__format_name_description(element)
@@ -368,10 +374,20 @@ class StructureParser(Struct):
             if IS_FINAL in element:
                 element[IS_FINAL_LOW] = element.pop(IS_FINAL)
 
-            structure = {key.lower(): value for key, value in element.items()}
-            datastructure[full_id] = SCHEMES_CLASSES[scheme](**structure)
+            if item == DFW:
+                element[STR] = full_id
 
-        return datastructure
+            structure = {key.lower(): value for key, value in element.items()}
+            datastructures[full_id] = SCHEMES_CLASSES[scheme](**structure)
+
+        return datastructures
+
+
+    def __format_dataflows(self,
+                           json_element: Dict[str, Any], scheme: str, item: str
+                           ) -> Dict[str, Any]:
+        dataflows = self.__format_datastructures(json_element, scheme, item)
+        return dataflows
 
     def format_structures(self, json_meta: Dict[str, Any]) -> Dict[str, Any]:
         """Formats the structures in json format.
@@ -395,7 +411,13 @@ class StructureParser(Struct):
                 json_meta[CONCEPTS], CS, CON
             )
         if DSDS in json_meta:
-            structures[DSDS] = self.__format_datastructures(json_meta[DSDS])
+            structures[DSDS] = self.__format_datastructures(
+                json_meta[DSDS], DSDS, DSD
+            )
+        if DFWS in json_meta:
+            structures[DFWS] = self.__format_dataflows(
+                json_meta[DFWS], DFWS, DFW
+            )
 
         # Reset global variables
         return structures
