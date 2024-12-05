@@ -71,7 +71,7 @@ from pysdmx.model import (
     Facets,
 )
 from pysdmx.model.__base import Agency, Annotation, Contact, Item, ItemScheme
-from pysdmx.model.dataflow import DataStructureDefinition, Dataflow
+from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
 from pysdmx.model.message import CONCEPTS, ORGS
 from pysdmx.util import find_by_urn, parse_urn
 
@@ -79,8 +79,8 @@ SCHEMES_CLASSES = {
     CL: Codelist,
     AGENCIES: ItemScheme,
     CS: ConceptScheme,
-    DSDS: DataStructureDefinition,
     DFWS: Dataflow,
+    DSDS: DataStructureDefinition,
 }
 ITEMS_CLASSES = {AGENCY: Agency, CODE: Code, CON: Concept}
 
@@ -347,6 +347,8 @@ class StructureParser(Struct):
 
         Args:
             json_element: The structures in json format
+            scheme: The scheme of the structures
+            item: The item of the structures
 
         Returns:
             A dictionary with the structures formatted
@@ -382,10 +384,19 @@ class StructureParser(Struct):
 
         return datastructures
 
+    def __format_dataflows(
+        self, json_element: Dict[str, Any], scheme: str, item: str
+    ) -> Dict[str, Any]:
+        """Formats the dataflows in json format.
 
-    def __format_dataflows(self,
-                           json_element: Dict[str, Any], scheme: str, item: str
-                           ) -> Dict[str, Any]:
+        Args:
+            json_element: The dataflows in json format
+            scheme: The scheme of the dataflows
+            item: The item of the dataflows
+
+        Returns:
+            A dictionary with the dataflows formatted
+        """
         dataflows = self.__format_datastructures(json_element, scheme, item)
         return dataflows
 
@@ -410,13 +421,13 @@ class StructureParser(Struct):
             structures[CONCEPTS] = self.__format_scheme(
                 json_meta[CONCEPTS], CS, CON
             )
-        if DSDS in json_meta:
-            structures[DSDS] = self.__format_datastructures(
-                json_meta[DSDS], DSDS, DSD
-            )
         if DFWS in json_meta:
             structures[DFWS] = self.__format_dataflows(
                 json_meta[DFWS], DFWS, DFW
+            )
+        if DSDS in json_meta:
+            structures[DSDS] = self.__format_datastructures(
+                json_meta[DSDS], DSDS, DSD
             )
 
         # Reset global variables
