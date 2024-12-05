@@ -16,7 +16,6 @@ from pysdmx.model.__base import (
     AnnotableArtefact,
     IdentifiableArtefact,
     Item,
-    ItemScheme,
     MaintainableArtefact,
     NameableArtefact,
     VersionableArtefact,
@@ -144,7 +143,9 @@ def __write_maintainable(
         )
 
     if maintainable.is_final is not None:
-        outfile["Attributes"] += f" isFinal={str(maintainable.is_final).lower()!r}"
+        outfile[
+            "Attributes"
+        ] += f" isFinal={str(maintainable.is_final).lower()!r}"
 
     if isinstance(maintainable.agency, str):
         outfile["Attributes"] += f" agencyID={maintainable.agency!r}"
@@ -165,24 +166,32 @@ def __write_item(item: Item, indent: str) -> str:
     outfile += f"{indent}</{head}>"
     return outfile
 
+
 def __write_structure(item: Dataflow, indent: str) -> str:
     """Writes the dataflow structure to the XML file."""
     outfile = f"{indent}<Structure>"
-    outfile += f"{add_indent(indent)}<Ref package=\"datastructure\" agencyID=\"{item.agency}\" id=\"{item.id}\" version=\"{item.version}\" class=\"{DSD}\">"
+    outfile += (
+        f"{add_indent(indent)}<Ref "
+        f'package="datastructure" '
+        f"agencyID={item.agency!r}"
+        f'id="{item.id!r}" '
+        f'version="{item.version!r}" '
+        f'class="{DSD!r}">'
+    )
     outfile += f"{indent}</Structure>"
     return outfile
 
 
-def __write_scheme(
-    item_scheme: Any, indent: str, scheme: str
-) -> str:
+def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
     """Writes the scheme to the XML file."""
     label = f"{ABBR_STR}:{scheme}"
 
     data = __write_maintainable(item_scheme, indent)
 
     if scheme not in [DSD, DFW]:
-        data["Attributes"] += f" isPartial={str(item_scheme.is_final).lower()!r}"
+        data[
+            "Attributes"
+        ] += f" isPartial={str(item_scheme.is_final).lower()!r}"
 
     outfile = ""
 
@@ -197,8 +206,8 @@ def __write_scheme(
         outfile += __write_structure(item_scheme, indent)
 
     if scheme not in [DSD, DFW]:
-        for scheme in item_scheme.items:
-            outfile += __write_item(scheme, add_indent(indent))
+        for item in item_scheme.items:
+            outfile += __write_item(item, add_indent(indent))
 
     outfile += f"{indent}</{label}>"
 
@@ -227,10 +236,12 @@ def __write_metadata_element(
     if key in package:
         outfile += f"{base_indent}<{ABBR_STR}:{MSG_CONTENT_PKG[key]}>"
         for element in package[key].values():
-            item = DSD if issubclass(element.__class__, DataStructureDefinition) else type(element).__name__
-            outfile += __write_scheme(
-                element, add_indent(base_indent), item
+            item = (
+                DSD
+                if issubclass(element.__class__, DataStructureDefinition)
+                else type(element).__name__
             )
+            outfile += __write_scheme(element, add_indent(base_indent), item)
         outfile += f"{base_indent}</{ABBR_STR}:{MSG_CONTENT_PKG[key]}>"
 
     return outfile
