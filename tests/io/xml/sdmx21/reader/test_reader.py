@@ -215,7 +215,7 @@ def test_datastructure(samples_folder):
     input_str, filetype = process_string_to_read(data_path)
     assert filetype == "xml"
     result = read_xml(input_str, validate=True)
-    assert "DataStructures" in result
+    assert "DataStructure=BIS:BIS_DER(1.0)" in result["DataStructures"]
 
 
 def test_partial_datastructure(samples_folder):
@@ -223,7 +223,23 @@ def test_partial_datastructure(samples_folder):
     input_str, filetype = process_string_to_read(data_path)
     assert filetype == "xml"
     result = read_xml(input_str, validate=True)
-    assert "DataStructures" in result
+    assert "DataStructure=BIS:BIS_DER(1.0)" in result["DataStructures"]
+
+
+def test_dataflow_structure(samples_folder):
+    data_path = samples_folder / "dataflow_structure.xml"
+    input_str, filetype = process_string_to_read(data_path)
+    assert filetype == "xml"
+    result = read_xml(input_str, validate=True)
+    assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result["Dataflows"]
+
+
+def test_partial_dataflow_structure(samples_folder):
+    data_path = samples_folder / "partial_dataflow_structure.xml"
+    input_str, filetype = process_string_to_read(data_path)
+    assert filetype == "xml"
+    result = read_xml(input_str, validate=True)
+    assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result["Dataflows"]
 
 
 def test_header_structure_provision_agrement(samples_folder):

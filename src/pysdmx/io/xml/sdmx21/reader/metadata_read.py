@@ -357,7 +357,7 @@ class StructureParser(Struct):
 
         json_element[item] = add_list(json_element[item])
         for element in json_element[item]:
-            if element[URN.lower()] is not None:
+            if URN.lower() in element and element[URN.lower()] is not None:
                 full_id = parse_urn(element[URN.lower()]).__str__()
             else:
                 full_id = unique_id(
