@@ -1,5 +1,4 @@
 from datetime import datetime as dt, timezone as tz
-from typing import Pattern
 
 import httpx
 import pytest
