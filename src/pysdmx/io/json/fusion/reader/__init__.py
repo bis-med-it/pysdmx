@@ -17,5 +17,5 @@ deserializers = Deserializers(
     report=msg.FusionMetadataMessage,  # type: ignore[arg-type]
     mapping=msg.FusionMappingMessage,  # type: ignore[arg-type]
     code_map=msg.FusionRepresentationMapMessage,  # type: ignore[arg-type]
-    transformation_scheme=None,
+    transformation_scheme=msg.FusionTransfoMsg,  # type: ignore[arg-type]
 )
