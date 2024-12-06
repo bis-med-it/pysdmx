@@ -11,6 +11,7 @@ from pysdmx.model import (
     Transformation,
     TransformationScheme,
     UserDefinedOperator,
+    VtlDataflowMapping,
 )
 
 
@@ -41,6 +42,7 @@ def __check_response(resp: Any):
     __check_name_personalisation_scheme(resp)
     __check_custom_type_scheme(resp)
     __check_ruleset_scheme(resp)
+    __check_vtl_mapping_scheme(resp)
 
 
 def __check_transformations(ts: TransformationScheme):
@@ -143,3 +145,19 @@ def __check_ruleset_scheme(ts: TransformationScheme):
         )
         assert rule.ruleset_scope == "valuedomain"
         assert rule.ruleset_type == "datapoint"
+
+
+def __check_vtl_mapping_scheme(ts: TransformationScheme):
+    assert ts.vtl_mapping_scheme is not None
+    assert ts.vtl_mapping_scheme.agency == "TEST"
+    assert ts.vtl_mapping_scheme.id == "TEST_DETAIL"
+    assert ts.vtl_mapping_scheme.name == "VTL Mapping Scheme #1"
+    assert ts.vtl_mapping_scheme.description is None
+    assert ts.vtl_mapping_scheme.version == "1.0"
+    assert len(ts.vtl_mapping_scheme.items) == 1
+    for vm in ts.vtl_mapping_scheme.items:
+        assert isinstance(vm, VtlDataflowMapping)
+        assert vm.id == "VTLM1"
+        assert vm.name == "VTL Mapping #1"
+        assert "Dataflow=TEST:TEST_DETAIL(1.0)" in vm.dataflow
+        assert vm.dataflow_alias == "TEST_DETAIL_VTL"
