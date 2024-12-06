@@ -4,6 +4,8 @@ import httpx
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
 from pysdmx.model import (
+    CustomType,
+    DataType,
     NamePersonalisation,
     Transformation,
     TransformationScheme,
@@ -36,6 +38,7 @@ def __check_response(resp: Any):
     __check_transformations(resp)
     __check_user_defined_operator_scheme(resp)
     __check_name_personalisation_scheme(resp)
+    __check_custom_type_scheme(resp)
 
 
 def __check_transformations(ts: TransformationScheme):
@@ -98,3 +101,21 @@ def __check_name_personalisation_scheme(ts: TransformationScheme):
         assert np.vtl_artefact == "Dataflow"
         assert np.vtl_default_name == "Dataflow"
         assert np.personalised_name == "Dataset"
+
+
+def __check_custom_type_scheme(ts: TransformationScheme):
+    assert ts.custom_type_scheme is not None
+    assert ts.custom_type_scheme.agency == "TEST"
+    assert ts.custom_type_scheme.id == "TS_CTS"
+    assert ts.custom_type_scheme.name == "Test Custom Types"
+    assert ts.custom_type_scheme.description is None
+    assert ts.custom_type_scheme.version == "1.0"
+    assert ts.custom_type_scheme.vtl_version == "2.1"
+    assert len(ts.custom_type_scheme.items) == 1
+    for ct in ts.custom_type_scheme.items:
+        assert isinstance(ct, CustomType)
+        assert ct.id == "TITLE"
+        assert ct.name == "Title"
+        assert ct.vtl_scalar_type == "String"
+        assert ct.data_type == DataType.STRING
+        assert ct.null_value == "null"
