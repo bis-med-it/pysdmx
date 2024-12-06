@@ -5,8 +5,9 @@ subset** of the SDMX information model.
 """
 
 from re import Pattern
-from typing import Any
+from typing import Any, Type
 
+import msgspec
 from pysdmx.errors import NotImplemented
 from pysdmx.model.__base import (
     Agency,
@@ -84,6 +85,20 @@ def encoders(obj: Any) -> Any:
         raise NotImplemented(
             "Unsupported", f"Objects of type {type(obj)} are not supported"
         )
+
+
+def decoders(type: Type, obj: Any) -> Any:
+    """Decoders for msgspec deserialization."""
+    if type is Components:
+        comps = []
+        for item in obj:
+            comps.append(msgspec.convert(item, Component))
+        return Components(comps)
+    elif type is str and obj.startswith("regex:"):
+        p = obj.replace("regex:", "")
+        return Pattern(p)
+    else:
+        raise NotImplementedError(f"Objects of type {type} are not supported")
 
 
 __all__ = [

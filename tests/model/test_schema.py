@@ -1,8 +1,20 @@
 from datetime import datetime
 
+import msgspec
 import pytest
 
-from pysdmx.model import Component, Components, DataType, Role, Schema
+from pysdmx.model import (
+    ArrayBoundaries,
+    Component,
+    Components,
+    Concept,
+    DataType,
+    decoders,
+    encoders,
+    Facets,
+    Role,
+    Schema,
+)
 
 
 @pytest.fixture()
@@ -21,17 +33,42 @@ def context():
 
 
 @pytest.fixture()
+def artefacts():
+    return ["urn1", "urn2"]
+
+
+@pytest.fixture()
+def version():
+    return "1.42"
+
+
+@pytest.fixture()
 def components():
-    f1 = Component("FREQ", True, Role.DIMENSION, DataType.STRING)
-    f2 = Component("INDICATOR", True, Role.DIMENSION, DataType.STRING)
-    f3 = Component("PERIOD", True, Role.DIMENSION, DataType.PERIOD)
-    f4 = Component("VALUE", False, Role.MEASURE, DataType.INTEGER)
+    f1 = Component(
+        "FREQ",
+        True,
+        Role.DIMENSION,
+        Concept("FREQ", dtype=DataType.STRING),
+        DataType.ALPHA,
+        Facets(min_length=1, max_length=3),
+    )
+    f2 = Component(
+        "INDICATOR", True, Role.DIMENSION, Concept("IND"), DataType.STRING
+    )
+    f3 = Component(
+        "PERIOD", True, Role.DIMENSION, Concept("PERIOD"), DataType.PERIOD
+    )
+    f4 = Component(
+        "VALUE", False, Role.MEASURE, Concept("VALUE"), DataType.INTEGER
+    )
     f5 = Component(
         "CONF",
         True,
         Role.ATTRIBUTE,
+        Concept("CONF"),
         DataType.STRING,
         attachment_level="O",
+        array_def=ArrayBoundaries(1, 3),
     )
     return Components([f1, f2, f3, f4, f5])
 
@@ -48,16 +85,17 @@ def test_defaults(context, agency, id, components):
     assert isinstance(schema.generated, datetime)
 
 
-def test_full_instantiation(context, agency, id, components):
-    artefacts = ["urn1", "urn2"]
-    v = "1.42"
-    schema = Schema(context, agency, id, components, v, artefacts)
+def test_full_instantiation(
+    context, agency, id, components, version, artefacts
+):
+
+    schema = Schema(context, agency, id, components, version, artefacts)
 
     assert schema.context == context
     assert schema.agency == agency
     assert schema.id == id
     assert schema.components == components
-    assert schema.version == v
+    assert schema.version == version
     assert len(schema.artefacts) == 2
     assert schema.artefacts == artefacts
     assert isinstance(schema.generated, datetime)
@@ -98,3 +136,11 @@ def test_tostr(context, agency, id, components):
     )
 
     assert s.startswith(exp)
+
+
+def test_serialization(context, agency, id, components, version, artefacts):
+    schema = Schema(context, agency, id, components, version, artefacts)
+
+    ser = msgspec.msgpack.Encoder(enc_hook=encoders).encode(schema)
+    out = msgspec.msgpack.Decoder(Schema, dec_hook=decoders).decode(ser)
+    assert out == schema
