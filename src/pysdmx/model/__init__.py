@@ -79,7 +79,7 @@ def encoders(obj: Any) -> Any:
         The received object converted to supported Python types
 
     Raises:
-        NotImplemented: In case the object type is not one of the types
+        NotImplementedError: In case the object type is not one of the types
             needing conversion
     """
     if isinstance(obj, Components):
@@ -92,7 +92,19 @@ def encoders(obj: Any) -> Any:
 
 
 def decoders(type: Type, obj: Any) -> Any:  # type: ignore[type-arg]
-    """Decoders for msgspec deserialization."""
+    """Decoders for msgspec deserialization.
+
+    Args:
+        type: The target type for the object
+        obj: The object to be encoded
+
+    Returns:
+        The received object converted to the target types
+
+    Raises:
+        NotImplementedError: In case the type is not one of the supported
+            target types
+    """
     if type is Components:
         comps = []
         for item in obj:
