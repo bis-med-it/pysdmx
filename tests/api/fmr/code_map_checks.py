@@ -122,6 +122,6 @@ async def check_multi_code_mapping_details(
     assert len(m.source) == 4
     assert len(m.target) == 1
     for s in m.source:
-        assert isinstance(s, Pattern)
+        assert s.startswith("regex:")
     t = m.target[0]
     assert t == "address"

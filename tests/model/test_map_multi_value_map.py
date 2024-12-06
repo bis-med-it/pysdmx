@@ -16,7 +16,7 @@ def target():
 
 
 def test_default_instantiation(source, target):
-    m = MultiValueMap(source, target)
+    m = MultiValueMap(source=source, target=target)
 
     assert m.source == source
     assert m.target == target
@@ -27,7 +27,7 @@ def test_default_instantiation(source, target):
 def test_full_instantiation(source, target):
     vf = datetime.now(timezone.utc) - timedelta(days=1)
     vt = datetime.now(timezone.utc)
-    m = MultiValueMap(source, target, vf, vt)
+    m = MultiValueMap(source=source, target=target, valid_from=vf, valid_to=vt)
 
     assert m.source == source
     assert m.target == target
@@ -36,20 +36,22 @@ def test_full_instantiation(source, target):
 
 
 def test_immutable(source, target):
-    m = MultiValueMap(source, target)
+    m = MultiValueMap(source=source, target=target)
     with pytest.raises(AttributeError):
         m.valid_from = datetime.now(timezone.utc)
 
 
 def test_equal(source, target):
-    m1 = MultiValueMap(source, target)
-    m2 = MultiValueMap(source, target)
+    m1 = MultiValueMap(source=source, target=target)
+    m2 = MultiValueMap(source=source, target=target)
 
     assert m1 == m2
 
 
 def test_not_equal(source, target):
-    m1 = MultiValueMap(source, target)
-    m2 = MultiValueMap(source, target, datetime.now(timezone.utc))
+    m1 = MultiValueMap(source=source, target=target)
+    m2 = MultiValueMap(
+        source=source, target=target, valid_from=datetime.now(timezone.utc)
+    )
 
     assert m1 != m2

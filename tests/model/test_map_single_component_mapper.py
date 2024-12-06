@@ -17,8 +17,8 @@ def target():
 
 @pytest.fixture()
 def values():
-    vm1 = ValueMap("AR", "ARG")
-    vm2 = ValueMap("UY", "URY")
+    vm1 = ValueMap(source="AR", target="ARG")
+    vm2 = ValueMap(source="UY", target="URY")
     vms = [vm1, vm2]
     return RepresentationMap(
         id="RM_ID",
