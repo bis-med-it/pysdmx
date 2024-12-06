@@ -7,6 +7,7 @@ from pysdmx.model import (
     CustomType,
     DataType,
     NamePersonalisation,
+    Ruleset,
     Transformation,
     TransformationScheme,
     UserDefinedOperator,
@@ -39,6 +40,7 @@ def __check_response(resp: Any):
     __check_user_defined_operator_scheme(resp)
     __check_name_personalisation_scheme(resp)
     __check_custom_type_scheme(resp)
+    __check_ruleset_scheme(resp)
 
 
 def __check_transformations(ts: TransformationScheme):
@@ -119,3 +121,25 @@ def __check_custom_type_scheme(ts: TransformationScheme):
         assert ct.vtl_scalar_type == "String"
         assert ct.data_type == DataType.STRING
         assert ct.null_value == "null"
+
+
+def __check_ruleset_scheme(ts: TransformationScheme):
+    assert len(ts.ruleset_schemes) == 1
+    rs = ts.ruleset_schemes[0]
+    assert rs.agency == "TEST"
+    assert rs.id == "RS1"
+    assert rs.name == "Ruleset Scheme #1"
+    assert rs.description is None
+    assert rs.version == "1.0"
+    assert rs.vtl_version == "2.0"
+    assert len(rs.items) == 1
+    for rule in rs.items:
+        assert isinstance(rule, Ruleset)
+        assert rule.id == "UNIQUE_SOMETHING"
+        assert rule.name == "Datapoint Ruleset UNIQUE_SOMETHING"
+        assert (
+            rule.ruleset_definition
+            == "Here we should have a real VTL program instead..."
+        )
+        assert rule.ruleset_scope == "valuedomain"
+        assert rule.ruleset_type == "datapoint"
