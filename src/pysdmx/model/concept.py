@@ -172,6 +172,8 @@ class ConceptScheme(ItemScheme, frozen=True, omit_defaults=True):
         version: The scheme version (e.g. 2.0)
     """
 
+    items: Sequence[Concept] = ()
+
     @property
     def concepts(self) -> Sequence[Concept]:
         """Extract the items in the Concept Scheme."""
