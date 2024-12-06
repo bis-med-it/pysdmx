@@ -241,6 +241,20 @@ class MaintainableArtefact(
                 "Maintainable artefacts must reference an agency.",
             )
 
+    def short_urn(self) -> str:
+        """Returns the short URN for the artefact.
+
+        A short URN follows the syntax: Type=Agency:Id(Version). For example:
+        Codelist=SDMX:CL_FREQ(1.0)
+
+        Returns:
+            The short URN for the artefact.
+        """
+        agency = (
+            self.agency.id if isinstance(self.agency, Agency) else self.agency
+        )
+        return f"{self.__class__.__name__}={agency}:{self.id}({self.version})"
+
 
 class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
     """ItemScheme class.

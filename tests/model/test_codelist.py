@@ -149,3 +149,11 @@ def test_serialization(
     out = msgspec.msgpack.Decoder(Codelist).decode(ser)
 
     assert out == cl
+
+
+def test_short_urn(id, name, agency, version, codes):
+    cl = Codelist(
+        id=id, name=name, agency=agency, items=codes, version=version
+    )
+
+    assert cl.short_urn() == f"Codelist={agency}:{id}({version})"
