@@ -265,6 +265,7 @@ class DataflowRef(Struct, frozen=True, omit_defaults=True):
     agency: str
     id: str
     version: str = "1.0"
+    name: Optional[str] = None
 
     def __hash__(self) -> int:
         """Returns the dataflow reference's hash."""

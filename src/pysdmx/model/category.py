@@ -32,7 +32,7 @@ class Category(Item, frozen=False, omit_defaults=True):  # type: ignore[misc]
     """
 
     categories: Sequence["Category"] = ()
-    dataflows: Union[Sequence[DataflowRef], Sequence[Dataflow]] = ()
+    dataflows: Sequence[DataflowRef] = ()
 
     def __iter__(self) -> Iterator["Category"]:
         """Return an iterator over the list of categories."""
@@ -65,6 +65,8 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
             Subject-Matter Domains").
         version: The scheme version (e.g. 1.0)
     """
+
+    items: Sequence[Category] = ()
 
     @property
     def categories(self) -> Sequence[Category]:
