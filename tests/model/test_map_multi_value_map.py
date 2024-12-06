@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+import re
 
 import pytest
 
@@ -7,7 +8,7 @@ from pysdmx.model import MultiValueMap
 
 @pytest.fixture()
 def source():
-    return ["CH", "LC"]
+    return [r"regex:^[\d]{1}$", "LC"]
 
 
 @pytest.fixture()
@@ -55,3 +56,11 @@ def test_not_equal(source, target):
     )
 
     assert m1 != m2
+
+
+def test_regex(source, target):
+    vm = MultiValueMap(source=source, target=target)
+
+    for s in vm.typed_source:
+        if s != "LC":
+            assert s == re.compile(r"^[\d]{1}$")

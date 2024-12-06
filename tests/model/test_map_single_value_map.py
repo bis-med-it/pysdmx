@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+import re
 
 import pytest
 
@@ -55,3 +56,10 @@ def test_not_equal(source, target):
     )
 
     assert m1 != m2
+
+
+def test_regex(target):
+    regex = r"regex:^[\d]{1}$"
+    vm = ValueMap(source=regex, target=target)
+    assert vm.source == regex
+    assert vm.typed_source == re.compile(r"^[\d]{1}$")
