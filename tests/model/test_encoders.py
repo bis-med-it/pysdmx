@@ -2,7 +2,6 @@ from typing import List
 
 import pytest
 
-from pysdmx.errors import NotImplemented
 from pysdmx.model import Component, Components, Concept, encoders, Role
 
 
@@ -20,5 +19,5 @@ def test_components():
 
 
 def test_others():
-    with pytest.raises(NotImplemented):
+    with pytest.raises(NotImplementedError):
         encoders(42)

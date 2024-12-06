@@ -8,7 +8,6 @@ from typing import Any, Type
 
 import msgspec
 
-from pysdmx.errors import NotImplemented
 from pysdmx.model.__base import (
     Agency,
     Contact,
@@ -87,7 +86,7 @@ def encoders(obj: Any) -> Any:
         return list(obj)
     else:
         # Raise a NotImplemented for other types
-        raise NotImplemented(
+        raise NotImplementedError(
             "Unsupported", f"Objects of type {type(obj)} are not supported"
         )
 
