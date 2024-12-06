@@ -64,9 +64,9 @@ from pysdmx.model.vtl import (
     VtlCodelistMapping,
     VtlConceptMapping,
     VtlDataflowMapping,
-    VtlScheme,
     VtlMapping,
     VtlMappingScheme,
+    VtlScheme,
 )
 
 

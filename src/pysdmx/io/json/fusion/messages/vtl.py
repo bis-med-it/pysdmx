@@ -5,6 +5,7 @@ from typing import Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx.io.json.fusion.messages.core import FusionString
 from pysdmx.model.vtl import (
     CustomType,
     CustomTypeScheme,
@@ -24,7 +25,6 @@ from pysdmx.model.vtl import (
     VtlMapping,
     VtlMappingScheme,
 )
-from pysdmx.io.json.fusion.messages.core import FusionString
 
 
 class FusionCustomType(Struct, frozen=True):
