@@ -332,13 +332,12 @@ class JsonVtlMapping(Struct, frozen=True):
             )
 
 
-class JsonVtlMappingScheme(Struct, frozen=True):
+class JsonVtlMappingScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
     """SDMX-JSON payload for VTL mapping schemes."""
 
     id: str
     name: str
     agency: str
-    vtlVersion: str
     vtlMappings: Sequence[JsonVtlMapping] = ()
     vtlMappingScheme: Optional[str] = None
     description: Optional[str] = None
