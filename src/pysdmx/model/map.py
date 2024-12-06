@@ -213,8 +213,8 @@ class MultiRepresentationMap(
         version: The version of the representation map.
     """
 
-    source: Sequence[Union[str, DataType]] = []
-    target: Sequence[Union[str, DataType]] = []
+    source: Sequence[str] = []
+    target: Sequence[str] = []
     maps: Sequence[MultiValueMap] = []
 
     def __iter__(

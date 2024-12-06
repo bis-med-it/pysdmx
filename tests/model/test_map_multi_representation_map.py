@@ -1,8 +1,14 @@
 from typing import Iterable, Sized
 
+import msgspec
 import pytest
 
-from pysdmx.model import MultiRepresentationMap, MultiValueMap
+from pysdmx.model import (
+    decoders,
+    encoders,
+    MultiRepresentationMap,
+    MultiValueMap,
+)
 
 
 @pytest.fixture()
@@ -45,8 +51,8 @@ def desc():
 
 @pytest.fixture()
 def mappings():
-    vm1 = MultiValueMap(["AR", "XDC"], ["ARS"])
-    vm2 = MultiValueMap(["UY", "XDC"], ["UYU"])
+    vm1 = MultiValueMap(source=["AR", "XDC"], target=["ARS"])
+    vm2 = MultiValueMap(source=["UY", "XDC"], target=["UYU"])
     return [vm1, vm2]
 
 
@@ -136,3 +142,23 @@ def test_sized(id, name, agency, source, target, mappings):
 
     assert isinstance(sm, Sized)
     assert len(sm) == len(mappings)
+
+
+def test_serialization(
+    id, name, agency, source, target, mappings, version, desc
+):
+    rm = MultiRepresentationMap(
+        id=id,
+        name=name,
+        agency=agency,
+        source=source,
+        target=target,
+        maps=mappings,
+        description=desc,
+        version=version,
+    )
+    ser = msgspec.msgpack.Encoder(enc_hook=encoders).encode(rm)
+    out = msgspec.msgpack.Decoder(
+        MultiRepresentationMap, dec_hook=decoders
+    ).decode(ser)
+    assert out == rm
