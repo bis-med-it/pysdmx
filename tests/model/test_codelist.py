@@ -1,5 +1,7 @@
+from datetime import datetime, timezone
 from typing import Iterable, Sized
 
+import msgspec
 import pytest
 
 from pysdmx.model.code import Code, Codelist
@@ -25,6 +27,34 @@ def sdmx_type():
     return "valuelist"
 
 
+@pytest.fixture()
+def desc():
+    return "description"
+
+
+@pytest.fixture()
+def version():
+    return "1.42.0"
+
+
+@pytest.fixture()
+def valid_from():
+    return datetime(2020, 1, 1, tzinfo=timezone.utc)
+
+
+@pytest.fixture()
+def valid_to():
+    return datetime(2024, 1, 1, tzinfo=timezone.utc)
+
+
+@pytest.fixture()
+def codes():
+    return [
+        Code(id="child1", name="Child 1"),
+        Code(id="child2", name="Child 2"),
+    ]
+
+
 def test_defaults(id, name, agency):
     cl = Codelist(id=id, name=name, agency=agency)
 
@@ -38,14 +68,9 @@ def test_defaults(id, name, agency):
     assert cl.sdmx_type == "codelist"
 
 
-def test_full_initialization(id, name, agency, sdmx_type):
-    desc = "description"
-    version = "1.42.0"
-    codes = [
-        Code(id="child1", name="Child 1"),
-        Code(id="child2", name="Child 2"),
-    ]
-
+def test_full_initialization(
+    id, name, agency, sdmx_type, desc, version, codes
+):
     cl = Codelist(
         id=id,
         name=name,
@@ -92,20 +117,35 @@ def test_sized(id, name, agency):
     assert isinstance(cl, Sized)
 
 
-def test_get_code(id, name, agency):
-    id1 = "child1"
-    id2 = "child2"
-    id3 = "child3"
-
-    c1 = Code(id=id1, name="Child 1")
-    c2 = Code(id=id2, name="Child 2")
-    codes = [c1, c2]
+def test_get_code(id, name, agency, codes):
     cl = Codelist(id=id, name=name, agency=agency, items=codes)
 
-    resp1 = cl[id1]
-    resp2 = cl[id3]
+    resp1 = cl[codes[0].id]
+    resp2 = cl["NOT_IN_THE_CODELIST"]
 
-    assert resp1 == c1
-    assert id1 in cl
+    assert resp1 == codes[0]
+    assert codes[0].id in cl
     assert resp2 is None
-    assert id3 not in cl
+
+
+def test_serialization(
+    id, name, agency, sdmx_type, desc, version, codes, valid_from, valid_to
+):
+    cl = Codelist(
+        id=id,
+        name=name,
+        agency=agency,
+        description=desc,
+        version=version,
+        items=codes,
+        sdmx_type=sdmx_type,
+        is_partial=True,
+        valid_from=valid_from,
+        valid_to=valid_to,
+    )
+
+    ser = msgspec.msgpack.Encoder().encode(cl)
+
+    out = msgspec.msgpack.Decoder(Codelist).decode(ser)
+
+    assert out == cl

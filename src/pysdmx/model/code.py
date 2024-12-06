@@ -66,6 +66,7 @@ class Codelist(ItemScheme, frozen=True, omit_defaults=True):
         version: The codelist version (e.g. 2.0.42)
     """
 
+    items: Sequence[Code] = ()
     sdmx_type: Literal["codelist", "valuelist"] = "codelist"
 
     @property
