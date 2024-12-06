@@ -1,7 +1,7 @@
 """Model for Mapping Definitions."""
 
 from datetime import datetime
-from re import Pattern
+import re
 from typing import Any, Iterator, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
@@ -104,7 +104,7 @@ class ImplicitComponentMap(Struct, frozen=True, omit_defaults=True):
     target: str
 
 
-class MultiValueMap(Struct, frozen=True, omit_defaults=True):
+class MultiValueMap(Struct, frozen=True, omit_defaults=True, kw_only=True):
     """Provides the values for a mapping between one or more components.
 
     Examples:
@@ -141,13 +141,23 @@ class MultiValueMap(Struct, frozen=True, omit_defaults=True):
         valid_to: End of business validity for the mapping
     """
 
-    source: Sequence[Union[str, Pattern[str]]]
+    source: Sequence[str]
     target: Sequence[str]
     valid_from: Optional[datetime] = None
     valid_to: Optional[datetime] = None
 
+    @property
+    def source(self) -> Sequence[Union[str, re.Pattern[str]]]:
+        out = []
+        for s in self.source:
+            if s.startswith("regex:"):
+                r = s.replace("regex:", "")
+                out.append(re.compile(r))
+            else:
+                out.append(s)
 
-class ValueMap(Struct, frozen=True, omit_defaults=True):
+
+class ValueMap(Struct, frozen=True, omit_defaults=True, kw_only=True):
     """Maps the values of two components together.
 
     Examples:
@@ -169,10 +179,16 @@ class ValueMap(Struct, frozen=True, omit_defaults=True):
         valid_to: End of business validity for the mapping
     """
 
-    source: Union[str, Pattern[str]]
+    source: str
     target: str
     valid_from: Optional[datetime] = None
     valid_to: Optional[datetime] = None
+
+    @property
+    def source(self) -> Union[str, re.Pattern]:
+        if self.source.startswith("regex:"):
+            r = self.source.replace("regex:", "")
+            return re.compile(r)
 
 
 class MultiRepresentationMap(
@@ -258,8 +274,8 @@ class RepresentationMap(MaintainableArtefact, frozen=True, omit_defaults=True):
         version: The version of the representation map.
     """
 
-    source: Union[str, DataType, None] = None
-    target: Union[str, DataType, None] = None
+    source: Optional[str] = None
+    target: Optional[str] = None
     maps: Sequence[ValueMap] = []
 
     def __iter__(
