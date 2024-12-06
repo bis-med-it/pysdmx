@@ -11,7 +11,7 @@ from pysdmx.model.concept import DataType
 from pysdmx.util import convert_dpm
 
 
-class DatePatternMap(Struct, frozen=True, omit_defaults=True):
+class DatePatternMap(Struct, frozen=True, omit_defaults=True, tag=True):
     """A mapping based on a date pattern.
 
     Examples:
@@ -58,7 +58,7 @@ class DatePatternMap(Struct, frozen=True, omit_defaults=True):
         return convert_dpm(self.pattern)
 
 
-class FixedValueMap(Struct, frozen=True, omit_defaults=True):
+class FixedValueMap(Struct, frozen=True, omit_defaults=True, tag=True):
     """Set a component to a fixed value.
 
     Examples:
@@ -82,7 +82,7 @@ class FixedValueMap(Struct, frozen=True, omit_defaults=True):
     located_in: Literal["source", "target"] = "target"
 
 
-class ImplicitComponentMap(Struct, frozen=True, omit_defaults=True):
+class ImplicitComponentMap(Struct, frozen=True, omit_defaults=True, tag=True):
     """A mapping where the value in the source is copied to the target.
 
     Examples:
@@ -228,7 +228,7 @@ class MultiRepresentationMap(
         return len(self.maps)
 
 
-class MultiComponentMap(Struct, frozen=True, omit_defaults=True):
+class MultiComponentMap(Struct, frozen=True, omit_defaults=True, tag=True):
     """Maps one or more source components to one or more target components.
 
     Examples:
@@ -289,7 +289,7 @@ class RepresentationMap(MaintainableArtefact, frozen=True, omit_defaults=True):
         return len(self.maps)
 
 
-class ComponentMap(Struct, frozen=True, omit_defaults=True):
+class ComponentMap(Struct, frozen=True, omit_defaults=True, tag=True):
     """Maps a source component to a target component.
 
     Examples:
