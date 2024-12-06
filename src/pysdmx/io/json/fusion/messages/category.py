@@ -7,7 +7,13 @@ from msgspec import Struct
 
 from pysdmx.io.json.fusion.messages.core import FusionString
 from pysdmx.io.json.fusion.messages.dataflow import FusionDataflow
-from pysdmx.model import Category, CategoryScheme as CS, Dataflow as DF
+from pysdmx.model import (
+    Agency,
+    Category,
+    CategoryScheme as CS,
+    Dataflow as DF,
+    DataflowRef,
+)
 from pysdmx.util import find_by_urn
 
 
@@ -82,7 +88,20 @@ class FusionCategorySchemeMessage(Struct, frozen=True):
             for c in cat.categories:
                 self.__add_flows(c, f"{cni}.{c.id}", cf)
         if cni in cf:
-            cat.dataflows = cf[cni]
+            dfrefs = [
+                DataflowRef(
+                    (
+                        df.agency.id
+                        if isinstance(df.agency, Agency)
+                        else df.agency
+                    ),
+                    df.id,
+                    df.version,
+                    df.name,
+                )
+                for df in cf[cni]
+            ]
+            cat.dataflows = dfrefs
 
     def to_model(self) -> CS:
         """Returns the requested codelist."""

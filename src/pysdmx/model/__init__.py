@@ -92,7 +92,7 @@ def encoders(obj: Any) -> Any:
         )
 
 
-def decoders(type: Type, obj: Any) -> Any:
+def decoders(type: Type, obj: Any) -> Any:  # type: ignore[type-arg]
     """Decoders for msgspec deserialization."""
     if type is Components:
         comps = []

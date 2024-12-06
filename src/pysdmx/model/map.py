@@ -2,7 +2,7 @@
 
 from datetime import datetime
 import re
-from typing import Any, Iterator, Literal, Optional, Sequence, Union
+from typing import Any, Iterator, Literal, Optional, Sequence, Tuple, Union
 
 from msgspec import Struct
 
@@ -146,7 +146,7 @@ class MultiValueMap(Struct, frozen=True, omit_defaults=True, kw_only=True):
     valid_to: Optional[datetime] = None
 
     @property
-    def source(self) -> Sequence[Union[str, re.Pattern[str]]]:
+    def typed_source(self) -> Tuple[Union[str, re.Pattern[str]], ...]:
         """Gets the source as a list of strings and/or regex."""
         out = []
         for s in self.source:
@@ -154,7 +154,8 @@ class MultiValueMap(Struct, frozen=True, omit_defaults=True, kw_only=True):
                 r = s.replace("regex:", "")
                 out.append(re.compile(r))
             else:
-                out.append(s)
+                out.append(s)  # type: ignore[arg-type]
+        return tuple(out)
 
 
 class ValueMap(Struct, frozen=True, omit_defaults=True, kw_only=True):
@@ -185,11 +186,13 @@ class ValueMap(Struct, frozen=True, omit_defaults=True, kw_only=True):
     valid_to: Optional[datetime] = None
 
     @property
-    def source(self) -> Union[str, re.Pattern]:
+    def typed_source(self) -> Union[str, re.Pattern[str]]:
         """Gets the source as a string or regex."""
         if self.source.startswith("regex:"):
             r = self.source.replace("regex:", "")
             return re.compile(r)
+        else:
+            return self.source
 
 
 class MultiRepresentationMap(

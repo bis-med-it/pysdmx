@@ -71,7 +71,7 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
     @property
     def categories(self) -> Sequence[Category]:
         """The list of top level categories in the scheme."""
-        return self.items  # type: ignore[return-value]
+        return self.items
 
     @property
     def dataflows(self) -> Union[Sequence[DataflowRef], Sequence[Dataflow]]:
