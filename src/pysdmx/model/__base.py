@@ -200,7 +200,11 @@ class Agency(Organisation, frozen=True, omit_defaults=True):
 
 
 class DataProvider(Organisation, frozen=True, omit_defaults=True):
-    """An organisation that provides data or metadata."""
+    """An organisation that provides data."""
+
+
+class MetadataProvider(Organisation, frozen=True, omit_defaults=True):
+    """An organisation that provides reference metadata."""
 
 
 class DataConsumer(Organisation, frozen=True, omit_defaults=True):

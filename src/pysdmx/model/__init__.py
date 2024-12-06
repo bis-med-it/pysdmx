@@ -15,6 +15,7 @@ from pysdmx.model.__base import (
     DataConsumer,
     DataflowRef,
     DataProvider,
+    MetadataProvider,
     Organisation,
 )
 from pysdmx.model.category import Category, CategoryScheme
@@ -49,6 +50,12 @@ from pysdmx.model.map import (
     ValueMap,
 )
 from pysdmx.model.metadata import MetadataAttribute, MetadataReport
+from pysdmx.model.organisation import (
+    AgencyScheme,
+    DataConsumerScheme,
+    DataProviderScheme,
+    MetadataProviderScheme,
+)
 
 
 def encoders(obj: Any) -> Any:
@@ -103,6 +110,7 @@ def decoders(type: Type, obj: Any) -> Any:
 
 __all__ = [
     "Agency",
+    "AgencyScheme",
     "ArrayBoundaries",
     "Category",
     "CategoryScheme",
@@ -115,12 +123,14 @@ __all__ = [
     "ConceptScheme",
     "Contact",
     "DataConsumer",
+    "DataConsumerScheme",
     "Dataflow",
     "DataflowInfo",
     "DataflowRef",
     "DataType",
     "DatePatternMap",
     "DataProvider",
+    "DataProviderScheme",
     "Facets",
     "HierarchicalCode",
     "Hierarchy",
@@ -128,6 +138,8 @@ __all__ = [
     "ImplicitComponentMap",
     "StructureMap",
     "MetadataAttribute",
+    "MetadataProvider",
+    "MetadataProviderScheme",
     "MetadataReport",
     "MultiComponentMap",
     "MultiRepresentationMap",
