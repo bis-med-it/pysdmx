@@ -63,3 +63,10 @@ def test_regex(target):
     vm = ValueMap(source=regex, target=target)
     assert vm.source == regex
     assert vm.typed_source == re.compile(r"^[\d]{1}$")
+
+
+def test_no_regex(target):
+    value = "AR"
+    vm = ValueMap(source=value, target=target)
+    assert vm.source == value
+    assert vm.typed_source == value
