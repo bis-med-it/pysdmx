@@ -4,6 +4,7 @@ import httpx
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
 from pysdmx.model import (
+    NamePersonalisation,
     Transformation,
     TransformationScheme,
     UserDefinedOperator,
@@ -34,6 +35,7 @@ def __check_response(resp: Any):
     assert isinstance(resp, TransformationScheme)
     __check_transformations(resp)
     __check_user_defined_operator_scheme(resp)
+    __check_name_personalisation_scheme(resp)
 
 
 def __check_transformations(ts: TransformationScheme):
@@ -76,3 +78,23 @@ def __check_user_defined_operator_scheme(ts: TransformationScheme):
             assert udo.id == "AVG"
             assert udo.name == "Average"
             assert udo.operator_definition == "avg"
+
+
+def __check_name_personalisation_scheme(ts: TransformationScheme):
+    assert ts.name_personalisation_scheme is not None
+    assert ts.name_personalisation_scheme.agency == "BIS.TEST"
+    assert ts.name_personalisation_scheme.id == "TEST_NPS"
+    assert (
+        ts.name_personalisation_scheme.name == "Test for name personalisations"
+    )
+    assert ts.name_personalisation_scheme.description is None
+    assert ts.name_personalisation_scheme.version == "1.0"
+    assert ts.name_personalisation_scheme.vtl_version == "2.1"
+    assert len(ts.name_personalisation_scheme.items) == 1
+    for np in ts.name_personalisation_scheme.items:
+        assert isinstance(np, NamePersonalisation)
+        assert np.id == "ALDF"
+        assert np.name == "Alias for Dataflow"
+        assert np.vtl_artefact == "Dataflow"
+        assert np.vtl_default_name == "Dataflow"
+        assert np.personalised_name == "Dataset"
