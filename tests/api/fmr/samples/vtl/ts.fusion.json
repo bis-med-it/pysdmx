@@ -37,11 +37,12 @@
                     "mapped": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_DETAIL(1.0)",
                     "toVtlMethod": "to_test",
                     "toVtlSubSpace": [
-                        "ID_EQUIPEMENT"
+                        "ID"
                     ],
                     "fromVtlMethod": "from_test",
                     "fromVtlSuperSpace": [
-                        "ID_EQUIPEMENT"
+                        "ID1",
+                        "ID2"
                     ]
                 }
             ]

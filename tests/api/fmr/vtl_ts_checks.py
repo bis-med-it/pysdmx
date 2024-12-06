@@ -161,3 +161,9 @@ def __check_vtl_mapping_scheme(ts: TransformationScheme):
         assert vm.name == "VTL Mapping #1"
         assert "Dataflow=TEST:TEST_DETAIL(1.0)" in vm.dataflow
         assert vm.dataflow_alias == "TEST_DETAIL_VTL"
+        assert vm.to_vtl_mapping_method is not None
+        assert vm.to_vtl_mapping_method.method == "to_test"
+        assert vm.to_vtl_mapping_method.to_vtl_sub_space == ["ID"]
+        assert vm.from_vtl_mapping_method is not None
+        assert vm.from_vtl_mapping_method.method == "from_test"
+        assert vm.from_vtl_mapping_method.from_vtl_sub_space == ["ID1", "ID2"]

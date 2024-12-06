@@ -275,28 +275,6 @@ class FusionRulesetScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
         )
 
 
-class FusionToVtlMapping(Struct, frozen=True):
-    """Fusion-JSON payload for To VTL mappings."""
-
-    toVtlSubSpace: Sequence[str]
-    method: Optional[str] = None
-
-    def to_model(self) -> ToVtlMapping:
-        """Converts deserialized class to pysdmx model class."""
-        return ToVtlMapping(self.toVtlSubSpace, self.method)
-
-
-class FusionFromVtlMapping(Struct, frozen=True):
-    """Fusion-JSON payload for from VTL mappings."""
-
-    fromVtlSubSpace: Sequence[str]
-    method: Optional[str] = None
-
-    def to_model(self) -> FromVtlMapping:
-        """Converts deserialized class to pysdmx model class."""
-        return FromVtlMapping(self.fromVtlSubSpace, self.method)
-
-
 class FusionVtlMapping(Struct, frozen=True):
     """Fusion-JSON payload for VTL mappings."""
 
@@ -305,8 +283,10 @@ class FusionVtlMapping(Struct, frozen=True):
     mapped: str
     names: Sequence[FusionString] = ()
     descriptions: Sequence[FusionString] = ()
-    toVtlMapping: Optional[FusionToVtlMapping] = None
-    fromVtlMapping: Optional[FusionFromVtlMapping] = None
+    toVtlMethod: Optional[str] = None
+    toVtlSubSpace: Sequence[str] = ()
+    fromVtlMethod: Optional[str] = None
+    fromVtlSuperSpace: Sequence[str] = ()
 
     def to_model(self) -> VtlMapping:
         """Converts deserialized class to pysdmx model class."""
@@ -340,12 +320,14 @@ class FusionVtlMapping(Struct, frozen=True):
                 dataflow=self.mapped,
                 dataflow_alias=self.alias,
                 from_vtl_mapping_method=(
-                    self.fromVtlMapping.to_model()
-                    if self.fromVtlMapping
+                    FromVtlMapping(self.fromVtlSuperSpace, self.fromVtlMethod)
+                    if self.fromVtlMethod
                     else None
                 ),
                 to_vtl_mapping_method=(
-                    self.toVtlMapping.to_model() if self.toVtlMapping else None
+                    ToVtlMapping(self.toVtlSubSpace, self.toVtlMethod)
+                    if self.toVtlMethod
+                    else None
                 ),
             )
 

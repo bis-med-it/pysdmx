@@ -260,22 +260,22 @@ class JsonToVtlMapping(Struct, frozen=True):
     """SDMX-JSON payload for To VTL mappings."""
 
     toVtlSubSpace: Sequence[str]
-    method: Optional[str] = None
+    type: Optional[str] = None
 
     def to_model(self) -> ToVtlMapping:
         """Converts deserialized class to pysdmx model class."""
-        return ToVtlMapping(self.toVtlSubSpace, self.method)
+        return ToVtlMapping(self.toVtlSubSpace, self.type)
 
 
 class JsonFromVtlMapping(Struct, frozen=True):
     """SDMX-JSON payload for from VTL mappings."""
 
-    fromVtlSubSpace: Sequence[str]
-    method: Optional[str] = None
+    fromVtlSuperSpace: Sequence[str]
+    type: Optional[str] = None
 
     def to_model(self) -> FromVtlMapping:
         """Converts deserialized class to pysdmx model class."""
-        return FromVtlMapping(self.fromVtlSubSpace, self.method)
+        return FromVtlMapping(self.fromVtlSuperSpace, self.type)
 
 
 class JsonVtlMapping(Struct, frozen=True):
