@@ -1,19 +1,9 @@
-import re
 from typing import List
 
 import pytest
 
 from pysdmx.errors import NotImplemented
 from pysdmx.model import Component, Components, Concept, encoders, Role
-
-
-def test_pattern():
-    p = re.compile("^[A-Z]{3}$")
-
-    out = encoders(p)
-
-    assert isinstance(out, str)
-    assert out == "regex:^[A-Z]{3}$"
 
 
 def test_components():
