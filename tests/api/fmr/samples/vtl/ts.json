@@ -48,6 +48,18 @@
                             "en": "VTL Mapping #1"
                         },
                         "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_DETAIL(1.0)",
+                        "fromVtlMapping": {
+                            "type": "from_test",
+                            "fromVtlSuperSpace": [
+                                "ID_EQUIPEMENT"
+                            ]
+                        },
+                        "toVtlMapping": {
+                            "type": "to_test",
+                            "toVtlSubSpace": [
+                                "ID_EQUIPEMENT"
+                            ]
+                        },
                         "alias": "TEST_DETAIL_VTL"
                     }
                 ]
