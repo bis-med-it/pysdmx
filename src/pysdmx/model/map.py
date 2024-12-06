@@ -7,7 +7,6 @@ from typing import Any, Iterator, Literal, Optional, Sequence, Union
 from msgspec import Struct
 
 from pysdmx.model.__base import MaintainableArtefact
-from pysdmx.model.concept import DataType
 from pysdmx.util import convert_dpm
 
 
@@ -148,6 +147,7 @@ class MultiValueMap(Struct, frozen=True, omit_defaults=True, kw_only=True):
 
     @property
     def source(self) -> Sequence[Union[str, re.Pattern[str]]]:
+        """Gets the source as a list of strings and/or regex."""
         out = []
         for s in self.source:
             if s.startswith("regex:"):
@@ -186,6 +186,7 @@ class ValueMap(Struct, frozen=True, omit_defaults=True, kw_only=True):
 
     @property
     def source(self) -> Union[str, re.Pattern]:
+        """Gets the source as a string or regex."""
         if self.source.startswith("regex:"):
             r = self.source.replace("regex:", "")
             return re.compile(r)

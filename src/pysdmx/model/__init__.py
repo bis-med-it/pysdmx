@@ -4,10 +4,10 @@ This module contains data classes representing a **simplified and opinionated
 subset** of the SDMX information model.
 """
 
-from re import Pattern
 from typing import Any, Type
 
 import msgspec
+
 from pysdmx.errors import NotImplemented
 from pysdmx.model.__base import (
     Agency,
@@ -83,9 +83,7 @@ def encoders(obj: Any) -> Any:
         NotImplemented: In case the object type is not one of the types
             needing conversion
     """
-    if isinstance(obj, Pattern):
-        return f"regex:{obj.pattern}"
-    elif isinstance(obj, Components):
+    if isinstance(obj, Components):
         return list(obj)
     else:
         # Raise a NotImplemented for other types
@@ -101,9 +99,6 @@ def decoders(type: Type, obj: Any) -> Any:
         for item in obj:
             comps.append(msgspec.convert(item, Component))
         return Components(comps)
-    elif type is str and obj.startswith("regex:"):
-        p = obj.replace("regex:", "")
-        return Pattern(p)
     else:
         raise NotImplementedError(f"Objects of type {type} are not supported")
 
