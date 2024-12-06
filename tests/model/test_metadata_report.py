@@ -90,8 +90,8 @@ def test_get_attribute(id, name, structure, targets, attributes):
 
 
 def test_serialization(id, name, structure, targets, attributes):
-    cs = MetadataReport(id, name, structure, targets, attributes)
+    rep = MetadataReport(id, name, structure, targets, attributes)
 
-    ser = msgspec.msgpack.Encoder().encode(cs)
+    ser = msgspec.msgpack.Encoder().encode(rep)
     out = msgspec.msgpack.Decoder(MetadataReport).decode(ser)
-    assert out == cs
+    assert out == rep
