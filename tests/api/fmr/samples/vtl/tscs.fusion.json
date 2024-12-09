@@ -33,7 +33,7 @@
                             "value": "VTL Mapping #1"
                         }
                     ],
-                    "alias": "TEST_DETAIL_VTL",
+                    "alias": "OBS_CONF",
                     "mapped": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).CONF_STATUS"
                 }
             ]
