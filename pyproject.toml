@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pysdmx"
-version = "1.0.0-rc-4"
+version = "1.0.0-rc-5"
 description = "Your opinionated Python SDMX library"
 authors = [
     "Xavier Sosnovsky <xavier.sosnovsky@bis.org>",
