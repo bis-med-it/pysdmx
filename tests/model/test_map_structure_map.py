@@ -1,11 +1,14 @@
 from typing import Iterable, Sized
 import uuid
 
+import msgspec
 import pytest
 
 from pysdmx.model import (
     ComponentMap,
     DatePatternMap,
+    decoders,
+    encoders,
     FixedValueMap,
     ImplicitComponentMap,
     RepresentationMap,
@@ -54,7 +57,7 @@ def mappings():
     m1 = ImplicitComponentMap("OBS_CONF", "CONF_STATUS")
     m2 = ImplicitComponentMap("OBS_STATUS", "OBS_STATUS")
     m3 = FixedValueMap("FREQ", "M")
-    m4 = DatePatternMap("ACTIVITY_DATE", "TIME_PERIOD", "%B %Y", "M")
+    m4 = DatePatternMap("ACTIVITY_DATE", "TIME_PERIOD", "MMM YYYY", "M")
     m5 = ComponentMap(
         "SRC1",
         "TGT1",
@@ -64,7 +67,7 @@ def mappings():
             agency="BIS",
             source="CL1",
             target="CL2",
-            maps=[ValueMap("1", "A")],
+            maps=[ValueMap(source="1", target="A")],
         ),
     )
     m6 = ComponentMap(
@@ -76,7 +79,7 @@ def mappings():
             agency="BIS",
             source="CL1",
             target="CL2",
-            maps=[ValueMap("2", "B")],
+            maps=[ValueMap(source="2", target="B")],
         ),
     )
     m7 = ComponentMap(
@@ -88,7 +91,7 @@ def mappings():
             agency="BIS",
             source="CL1",
             target="CL2",
-            maps=[ValueMap("3", "C")],
+            maps=[ValueMap(source="3", target="C")],
         ),
     )
     return [m1, m2, m3, m4, m5, m6, m7]
@@ -207,3 +210,21 @@ def test_get_map(id, name, agency, source, target, mappings):
     assert len(resp1) == 1
     assert resp1[0] == mappings[3]
     assert resp2 is None
+
+
+def test_serialization(
+    id, name, agency, source, target, mappings, version, desc
+):
+    sm = StructureMap(
+        id=id,
+        name=name,
+        agency=agency,
+        source=source,
+        target=target,
+        maps=mappings,
+        description=desc,
+        version=version,
+    )
+    ser = msgspec.msgpack.Encoder(enc_hook=encoders).encode(sm)
+    out = msgspec.msgpack.Decoder(StructureMap, dec_hook=decoders).decode(ser)
+    assert out == sm

@@ -4,10 +4,10 @@ This module contains data classes representing a **simplified and opinionated
 subset** of the SDMX information model.
 """
 
-from re import Pattern
-from typing import Any
+from typing import Any, Type
 
-from pysdmx.errors import NotImplemented
+import msgspec
+
 from pysdmx.model.__base import (
     Agency,
     Contact,
@@ -79,18 +79,39 @@ def encoders(obj: Any) -> Any:
         The received object converted to supported Python types
 
     Raises:
-        NotImplemented: In case the object type is not one of the types
+        NotImplementedError: In case the object type is not one of the types
             needing conversion
     """
-    if isinstance(obj, Pattern):
-        return f"regex:{obj.pattern}"
-    elif isinstance(obj, Components):
+    if isinstance(obj, Components):
         return list(obj)
     else:
         # Raise a NotImplemented for other types
-        raise NotImplemented(
+        raise NotImplementedError(
             "Unsupported", f"Objects of type {type(obj)} are not supported"
         )
+
+
+def decoders(type: Type, obj: Any) -> Any:  # type: ignore[type-arg]
+    """Decoders for msgspec deserialization.
+
+    Args:
+        type: The target type for the object
+        obj: The object to be encoded
+
+    Returns:
+        The received object converted to the target types
+
+    Raises:
+        NotImplementedError: In case the type is not one of the supported
+            target types
+    """
+    if type is Components:
+        comps = []
+        for item in obj:
+            comps.append(msgspec.convert(item, Component))
+        return Components(comps)
+    else:
+        raise NotImplementedError(f"Objects of type {type} are not supported")
 
 
 __all__ = [

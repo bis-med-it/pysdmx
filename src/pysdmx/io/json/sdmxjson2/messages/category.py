@@ -8,7 +8,13 @@ from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
-from pysdmx.model import Category, CategoryScheme, Dataflow
+from pysdmx.model import (
+    Agency,
+    Category,
+    CategoryScheme,
+    Dataflow,
+    DataflowRef,
+)
 from pysdmx.util import find_by_urn
 
 
@@ -100,7 +106,20 @@ class JsonCategorySchemeMessage(Struct, frozen=True):
             for c in cat.categories:
                 self.__add_flows(c, f"{cni}.{c.id}", cf)
         if cni in cf:
-            cat.dataflows = cf[cni]
+            dfrefs = [
+                DataflowRef(
+                    (
+                        df.agency.id
+                        if isinstance(df.agency, Agency)
+                        else df.agency
+                    ),
+                    df.id,
+                    df.version,
+                    df.name,
+                )
+                for df in cf[cni]
+            ]
+            cat.dataflows = dfrefs
 
     def to_model(self) -> CategoryScheme:
         """Returns the requested codelist."""
