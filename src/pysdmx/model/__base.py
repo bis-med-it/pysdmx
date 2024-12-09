@@ -278,6 +278,10 @@ class DataflowRef(Struct, frozen=True, omit_defaults=True):
         id: The dataflow identifier (e.g. BIS_MACRO).
         agency: The organisation (or unit) responsible for the dataflow.
         version: The version of the dataflow (e.g. 1.0).
+        name: The name of the dataflow. This is optional as, typically,
+            a dataflow reference wouldn't have this information, but it
+            has been added as it can be useful in a data discovery
+            scenario, for example, in category scheme queries.
     """
 
     agency: str
