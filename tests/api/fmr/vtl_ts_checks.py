@@ -11,6 +11,8 @@ from pysdmx.model import (
     Transformation,
     TransformationScheme,
     UserDefinedOperator,
+    VtlCodelistMapping,
+    VtlConceptMapping,
     VtlDataflowMapping,
 )
 
@@ -33,6 +35,38 @@ async def check_transformation_scheme_async(
     ts = await fmr.get_vtl_transformation_scheme("TEST", "TEST_TS", "1.0")
 
     __check_response(ts)
+
+
+def check_cl_mapping(mock, fmr: RegistryClient, query, body):
+    """get_vtl_transformation_scheme() can map a codelist."""
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    ts = fmr.get_vtl_transformation_scheme("TEST", "TEST_TS", "1.0")
+
+    assert ts.vtl_mapping_scheme is not None
+    assert len(ts.vtl_mapping_scheme.items) == 1
+    for vm in ts.vtl_mapping_scheme.items:
+        assert isinstance(vm, VtlCodelistMapping)
+        assert vm.id == "VTLM1"
+        assert vm.name == "VTL Mapping #1"
+        assert "Codelist=SDMX:CL_FREQ(1.0)" in vm.codelist
+        assert vm.codelist_alias == "TEST_DETAIL_VTL"
+
+
+def check_concept_mapping(mock, fmr: RegistryClient, query, body):
+    """get_vtl_transformation_scheme() can map a concept."""
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    ts = fmr.get_vtl_transformation_scheme("TEST", "TEST_TS", "1.0")
+
+    assert ts.vtl_mapping_scheme is not None
+    assert len(ts.vtl_mapping_scheme.items) == 1
+    for vm in ts.vtl_mapping_scheme.items:
+        assert isinstance(vm, VtlConceptMapping)
+        assert vm.id == "VTLM1"
+        assert vm.name == "VTL Mapping #1"
+        assert "Concept=SDMX:CONCEPTS(1.0).CONF_STATUS" in vm.concept
+        assert vm.concept_alias == "OBS_CONF"
 
 
 def __check_response(resp: Any):

@@ -36,6 +36,18 @@ def body():
         return f.read()
 
 
+@pytest.fixture()
+def body_cl():
+    with open("tests/api/fmr/samples/vtl/tscl.fusion.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture()
+def body_cs():
+    with open("tests/api/fmr/samples/vtl/tscs.fusion.json", "rb") as f:
+        return f.read()
+
+
 def test_returns_transformation_scheme(respx_mock, fmr, query, body):
     """get_vtl_transformation_scheme() returns a transformation scheme."""
     checks.check_transformation_scheme(respx_mock, fmr, query, body)
@@ -49,3 +61,13 @@ async def test_returns_transformation_scheme_async(
     await checks.check_transformation_scheme_async(
         respx_mock, async_fmr, query, body
     )
+
+
+def test_vtl_codelist_mapping(respx_mock, fmr, query, body_cl):
+    """get_vtl_transformation_scheme() suports codelist mapping."""
+    checks.check_cl_mapping(respx_mock, fmr, query, body_cl)
+
+
+def test_vtl_concept_mapping(respx_mock, fmr, query, body_cs):
+    """get_vtl_transformation_scheme() supports concept mapping."""
+    checks.check_concept_mapping(respx_mock, fmr, query, body_cs)
