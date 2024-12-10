@@ -11,80 +11,83 @@ from pysdmx.model.vtl import (
 
 
 @pytest.fixture()
-def vtlVersion():
+def vtl_version():
     return "2.0"
 
 
 @pytest.fixture()
-def invalidVtlVersion():
+def invalid_vtl_version():
     return "2.4"
 
 
-def test_instantiation_ts(vtlVersion):
+def test_instantiation_ts(vtl_version):
     transformation = TransformationScheme(
-        id="id", name="name", description="description", vtlVersion=vtlVersion
+        id="id",
+        name="name",
+        description="description",
+        vtl_version=vtl_version,
     )
 
     assert transformation.id == "id"
     assert transformation.name == "name"
     assert transformation.description == "description"
-    assert transformation.vtlVersion == vtlVersion
+    assert transformation.vtl_version == vtl_version
 
 
-def test_instantiation_ts_invalid_vtl_version(invalidVtlVersion):
+def test_instantiation_ts_invalid_vtl_version(invalid_vtl_version):
     try:
         TransformationScheme(
             id="id",
             name="name",
             description="description",
-            vtlVersion=invalidVtlVersion,
+            vtl_version=invalid_vtl_version,
         )
     except Exception as e:
         assert type(e).__name__ == "Invalid"
-        assert str(e) == f"Invalid VTL version: {invalidVtlVersion}"
+        assert str(e) == f"Invalid VTL version: {invalid_vtl_version}"
 
 
-def test_instantiation_t(vtlVersion):
+def test_instantiation_t(vtl_version):
     transformation = Transformation(
         id="id",
         name="name",
         description="description",
-        Expression="DS_1 + 1",
-        Result="DS_r",
-        isPersistent=True,
+        expression="DS_1 + 1",
+        result="DS_r",
+        is_persistent=True,
     )
 
     assert transformation.id == "id"
     assert transformation.name == "name"
     assert transformation.description == "description"
-    assert transformation.Expression == "DS_1 + 1"
-    assert transformation.Result == "DS_r"
-    assert transformation.isPersistent
+    assert transformation.expression == "DS_1 + 1"
+    assert transformation.result == "DS_r"
+    assert transformation.is_persistent
     assert transformation.full_expression == "DS_r <- DS_1 + 1;"
 
 
-def test_instantiation_t_not_persistent(vtlVersion):
+def test_instantiation_t_not_persistent(vtl_version):
     transformation = Transformation(
         id="id",
         name="name",
         description="description",
-        Expression="DS_1 + 1",
-        Result="DS_r",
-        isPersistent=False,
+        expression="DS_1 + 1",
+        result="DS_r",
+        is_persistent=False,
     )
 
     assert transformation.id == "id"
     assert transformation.name == "name"
     assert transformation.description == "description"
-    assert transformation.Expression == "DS_1 + 1"
-    assert transformation.Result == "DS_r"
-    assert not transformation.isPersistent
+    assert transformation.expression == "DS_1 + 1"
+    assert transformation.result == "DS_r"
+    assert not transformation.is_persistent
     assert transformation.full_expression == "DS_r := DS_1 + 1;"
 
 
 def test_instantiation_udo():
     udo = UserDefinedOperator(
-        id="id", name="name", description="description", operatorDefinition=""
+        id="id", name="name", description="description", operator_definition=""
     )
 
     assert udo.id == "id"
@@ -92,52 +95,58 @@ def test_instantiation_udo():
     assert udo.description == "description"
 
 
-def test_instantiation_udo_scheme(vtlVersion):
+def test_instantiation_udo_scheme(vtl_version):
     udo_scheme = UserDefinedOperatorScheme(
-        id="id", name="name", description="description", vtlVersion=vtlVersion
+        id="id",
+        name="name",
+        description="description",
+        vtl_version=vtl_version,
     )
 
     assert udo_scheme.id == "id"
     assert udo_scheme.name == "name"
     assert udo_scheme.description == "description"
-    assert udo_scheme.vtlVersion == "2.0"
+    assert udo_scheme.vtl_version == "2.0"
 
 
-def test_instantiation_udo_scheme_invalid_vtl_version(invalidVtlVersion):
+def test_instantiation_udo_scheme_invalid_vtl_version(invalid_vtl_version):
     try:
         UserDefinedOperatorScheme(
             id="id",
             name="name",
             description="description",
-            vtlVersion=invalidVtlVersion,
+            vtl_version=invalid_vtl_version,
         )
     except Exception as e:
         assert type(e).__name__ == "Invalid"
-        assert str(e) == f"Invalid VTL version: {invalidVtlVersion}"
+        assert str(e) == f"Invalid VTL version: {invalid_vtl_version}"
 
 
-def test_instantiation_ruleset_scheme(vtlVersion):
+def test_instantiation_ruleset_scheme(vtl_version):
     ruleset_scheme = RulesetScheme(
-        id="id", name="name", description="description", vtlVersion=vtlVersion
+        id="id",
+        name="name",
+        description="description",
+        vtl_version=vtl_version,
     )
 
     assert ruleset_scheme.id == "id"
     assert ruleset_scheme.name == "name"
     assert ruleset_scheme.description == "description"
-    assert ruleset_scheme.vtlVersion == vtlVersion
+    assert ruleset_scheme.vtl_version == vtl_version
 
 
-def test_instantiation_ruleset_scheme_invalid_vtl_version(invalidVtlVersion):
+def test_instantiation_ruleset_scheme_invalid_vtl_version(invalid_vtl_version):
     try:
         RulesetScheme(
             id="id",
             name="name",
             description="description",
-            vtlVersion=invalidVtlVersion,
+            vtl_version=invalid_vtl_version,
         )
     except Exception as e:
         assert type(e).__name__ == "Invalid"
-        assert str(e) == f"Invalid VTL version: {invalidVtlVersion}"
+        assert str(e) == f"Invalid VTL version: {invalid_vtl_version}"
 
 
 def test_instantiation_ruleset():
@@ -145,9 +154,9 @@ def test_instantiation_ruleset():
         id="id",
         name="name",
         description="description",
-        rulesetType="datapoint",
-        rulesetDefinition="",
-        rulesetScope="",
+        ruleset_type="datapoint",
+        ruleset_definition="",
+        ruleset_scope="",
     )
 
     assert ruleset.id == "id"
@@ -161,9 +170,9 @@ def test_instantiation_ruleset_invalid_type():
             id="id",
             name="name",
             description="description",
-            rulesetType="invalid",
-            rulesetDefinition="",
-            rulesetScope="",
+            ruleset_type="invalid",
+            ruleset_definition="",
+            ruleset_scope="",
         )
     except Exception as e:
         assert type(e).__name__ == "Invalid"

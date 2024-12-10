@@ -269,6 +269,17 @@ class StructureParser(Struct):
             )
             json_obj["codes"] = codelist.codes
 
+    def __format_vtl(self, json_vtl: Dict[str, Any]) -> Dict[str, Any]:
+        if "isPersistent" in json_vtl:
+            json_vtl["is_persistent"] = json_vtl.pop("isPersistent")
+        if "Expression" in json_vtl:
+            json_vtl["expression"] = json_vtl.pop("Expression")
+        if "Result" in json_vtl:
+            json_vtl["result"] = json_vtl.pop("Result")
+        if "vtlVersion" in json_vtl:
+            json_vtl["vtl_version"] = json_vtl.pop("vtlVersion")
+        return json_vtl
+
     def __format_item(
         self, item_json_info: Dict[str, Any], item_name_class: str
     ) -> Item:
@@ -290,6 +301,8 @@ class StructureParser(Struct):
 
         if "Parent" in item_json_info:
             del item_json_info["Parent"]
+
+        item_json_info = self.__format_vtl(item_json_info)
 
         return ITEMS_CLASSES[item_name_class](**item_json_info)
 
@@ -327,6 +340,7 @@ class StructureParser(Struct):
                 self.concepts.update({e.id: e for e in items})
             element = self.__format_agency(element)
             element = self.__format_validity(element)
+            element = self.__format_vtl(element)
             # Dynamic creation with specific class
             elements[full_id] = SCHEMES_CLASSES[scheme](**element)
 
