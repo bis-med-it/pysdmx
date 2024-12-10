@@ -136,16 +136,12 @@ def __write_maintainable(
     """Writes the MaintainableArtefact to the XML file."""
     outfile = __write_versionable(maintainable, indent)
 
-    if maintainable.is_external_reference is not None:
-        outfile["Attributes"] += (
-            f" isExternalReference="
-            f"{str(maintainable.is_external_reference).lower()!r}"
-        )
+    outfile["Attributes"] += (
+        f" isExternalReference="
+        f"{str(maintainable.is_external_reference).lower()!r}"
+    )
 
-    if maintainable.is_final is not None:
-        outfile[
-            "Attributes"
-        ] += f" isFinal={str(maintainable.is_final).lower()!r}"
+    outfile["Attributes"] += f" isFinal={str(maintainable.is_final).lower()!r}"
 
     if isinstance(maintainable.agency, str):
         outfile["Attributes"] += f" agencyID={maintainable.agency!r}"

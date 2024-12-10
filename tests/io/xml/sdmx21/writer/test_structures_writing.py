@@ -163,14 +163,28 @@ def datastructure():
 
 
 @pytest.fixture()
+def partial_datastructure():
+    return DataStructureDefinition(
+        agency="BIS",
+        annotations=(),
+        id="BIS_DER",
+        description="BIS derivates statistics",
+        name="BIS derivates statistics",
+        urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+        "DataStructure=BIS:BIS_DER(1.0)",
+        version="1.0",
+    )
+
+
+@pytest.fixture()
 def dataflow():
     return Dataflow(
         agency="BIS",
         annotations=(),
         id="WEBSTATS_DER_DATAFLOW",
         description="OTC derivatives and FX spot - turnover",
-        is_external_reference=False,
-        is_final=False,
+        is_external_reference=True,
+        is_final=True,
         name="OTC derivatives turnover",
         service_url=None,
         structure="Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)",
@@ -241,6 +255,17 @@ def test_writer_no_header():
 def test_writer_datastructure(complete_header, datastructure):
     result = writer(
         {"DataStructures": {"FREQ": datastructure}},
+        MessageType.Structure,
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    assert "DataStructure=BIS:BIS_DER(1.0)" in result
+
+
+def test_writer_partial_datastructure(complete_header, partial_datastructure):
+    result = writer(
+        {"DataStructures": {"FREQ": partial_datastructure}},
         MessageType.Structure,
         header=complete_header,
         prettyprint=True,
