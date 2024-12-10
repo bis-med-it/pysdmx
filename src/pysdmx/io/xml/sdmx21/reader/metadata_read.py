@@ -1,5 +1,5 @@
 """Parsers for reading metadata."""
-
+from datetime import datetime
 from typing import Any, Dict
 
 from msgspec import Struct
@@ -273,8 +273,12 @@ class StructureParser(Struct):
         """
         element[VERSION] = element.pop(VERSION)
         if VALID_FROM in element:
+            if isinstance(element[VALID_FROM], str):
+                element[VALID_FROM] = datetime.fromisoformat(element[VALID_FROM])
             element["valid_from"] = element.pop(VALID_FROM)
         if VALID_TO in element:
+            if isinstance(element[VALID_TO], str):
+                element[VALID_TO] = datetime.fromisoformat(element[VALID_TO])
             element["valid_to"] = element.pop(VALID_TO)
         return element
 
@@ -373,8 +377,12 @@ class StructureParser(Struct):
 
             if IS_EXTERNAL_REF in element:
                 element[IS_EXTERNAL_REF_LOW] = element.pop(IS_EXTERNAL_REF)
+                if isinstance(element[IS_EXTERNAL_REF_LOW], str):
+                    element[IS_EXTERNAL_REF_LOW] = element[IS_EXTERNAL_REF_LOW].lower() == "true"
             if IS_FINAL in element:
                 element[IS_FINAL_LOW] = element.pop(IS_FINAL)
+                if isinstance(element[IS_FINAL_LOW], str):
+                    element[IS_FINAL_LOW] = element[IS_FINAL_LOW].lower() == "true"
 
             if item == DFW:
                 element[STR] = full_id

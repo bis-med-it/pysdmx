@@ -169,16 +169,16 @@ def __write_item(item: Item, indent: str) -> str:
 
 def __write_structure(item: Dataflow, indent: str) -> str:
     """Writes the dataflow structure to the XML file."""
-    outfile = f"{indent}<Structure>"
+    outfile = f"{indent}<{ABBR_STR}:Structure>"
     outfile += (
         f"{add_indent(indent)}<Ref "
         f'package="datastructure" '
-        f"agencyID={item.agency!r}"
+        f'agencyID="{item.agency!r}" '
         f'id="{item.id!r}" '
         f'version="{item.version!r}" '
-        f'class="{DSD!r}">'
+        f'class="{DSD!r}"/>'. replace("'", "")
     )
-    outfile += f"{indent}</Structure>"
+    outfile += f"{indent}</{ABBR_STR}:Structure>"
     return outfile
 
 
@@ -203,7 +203,7 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
     outfile += __export_intern_data(data, indent)
 
     if scheme == DFW:
-        outfile += __write_structure(item_scheme, indent)
+        outfile += __write_structure(item_scheme, add_indent(indent))
 
     if scheme not in [DSD, DFW]:
         for item in item_scheme.items:

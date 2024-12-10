@@ -4,7 +4,9 @@ from pathlib import Path
 import pytest
 
 from pysdmx.errors import NotImplemented
+from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.enums import MessageType
+from pysdmx.io.xml.sdmx21.reader import read_xml
 from pysdmx.io.xml.sdmx21.writer import Header, writer
 from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme
 from pysdmx.model.__base import Annotation
@@ -38,6 +40,13 @@ def empty_sample():
 
 
 @pytest.fixture()
+def read_write_sample():
+    base_path = Path(__file__).parent / "samples" / "read_write_test.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture()
 def header():
     return Header(
         id="ID",
@@ -56,8 +65,18 @@ def complete_header():
     )
 
 
-def test_codelist(codelist_sample, complete_header):
-    codelist = Codelist(
+@pytest.fixture()
+def read_write_header():
+    return Header(
+        id="IREF534795",
+        prepared=datetime.strptime("2021-03-05T14:11:16", "%Y-%m-%dT%H:%M:%S"),
+        sender="Unknown",
+        receiver="Not_Supplied",
+    )
+
+@pytest.fixture()
+def codelist():
+    return Codelist(
         annotations=[
             Annotation(
                 id="FREQ_ANOT",
@@ -88,17 +107,10 @@ def test_codelist(codelist_sample, complete_header):
         valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
     )
 
-    result = writer(
-        {"Codelists": {"CL_FREQ": codelist}},
-        MessageType.Structure,
-        header=complete_header,
-    )
 
-    assert result == codelist_sample
-
-
-def test_concept(concept_sample, complete_header):
-    concept = ConceptScheme(
+@pytest.fixture()
+def concept():
+    return ConceptScheme(
         id="FREQ",
         name="Frequency",
         agency=Agency(id="BIS"),
@@ -127,6 +139,61 @@ def test_concept(concept_sample, complete_header):
         ],
     )
 
+
+@pytest.fixture()
+def datastructure():
+    return DataStructureDefinition(
+        agency="BIS",
+        annotations=(),
+        id="BIS_DER",
+        description="BIS derivates statistics",
+        is_external_reference=False,
+        is_final=False,
+        name="BIS derivates statistics",
+        service_url=None,
+        structure_url=None,
+        uri="http://www.bis.org/statistics/derivatives.html",
+        urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+        "DataStructure=BIS:BIS_DER(1.0)",
+        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
+        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
+        version="1.0",
+    )
+
+
+@pytest.fixture()
+def dataflow():
+    return Dataflow(
+        agency="BIS",
+        annotations=(),
+        id="WEBSTATS_DER_DATAFLOW",
+        description="OTC derivatives and FX spot - turnover",
+        is_external_reference=False,
+        is_final=False,
+        name="OTC derivatives turnover",
+        service_url=None,
+        structure="Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)",
+        structure_url=None,
+        uri=None,
+        urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)",
+        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
+        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
+        version="1.0",
+    )
+
+
+def test_codelist(codelist_sample, complete_header, codelist):
+    result = writer(
+        {"Codelists": {"CL_FREQ": codelist}},
+        MessageType.Structure,
+        header=complete_header,
+    )
+
+    assert result == codelist_sample
+
+
+def test_concept(concept_sample, complete_header, concept):
     result = writer(
         {"Concepts": {"FREQ": concept}},
         MessageType.Structure,
@@ -170,30 +237,7 @@ def test_writer_no_header():
     assert '<mes:Sender id="ZZZ"/>' in result
 
 
-def test_writer_datastructure(complete_header):
-    datastructure = DataStructureDefinition(
-        agency=Agency(
-            id="BIS",
-            name="Bank for International Settlements",
-            urn="urn:sdmx:org.sdmx.infomodel.datastructure."
-            "DataStructure=BIS:BIS_DER(1.0)",
-        ),
-        annotations=(),
-        id="BIS_DER",
-        description="BIS derivates statistics",
-        is_external_reference=None,
-        is_final=None,
-        name="BIS derivates statistics",
-        service_url=None,
-        structure_url=None,
-        uri="http://www.bis.org/statistics/derivatives.html",
-        urn="urn:sdmx:org.sdmx.infomodel.datastructure."
-        "DataStructure=BIS:BIS_DER(1.0)",
-        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
-        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
-        version="1.0",
-    )
-
+def test_writer_datastructure(complete_header, datastructure):
     result = writer(
         {"DataStructures": {"FREQ": datastructure}},
         MessageType.Structure,
@@ -204,26 +248,7 @@ def test_writer_datastructure(complete_header):
     assert "DataStructure=BIS:BIS_DER(1.0)" in result
 
 
-def test_writer_dataflow(complete_header):
-    dataflow = Dataflow(
-        agency="BIS",
-        annotations=(),
-        id="WEBSTATS_DER_DATAFLOW",
-        description="OTC derivatives and FX spot - turnover",
-        is_external_reference=None,
-        is_final=None,
-        name="OTC derivatives turnover",
-        service_url=None,
-        structure="Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)",
-        structure_url=None,
-        uri=None,
-        urn="urn:sdmx:org.sdmx.infomodel.datastructure."
-        "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)",
-        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
-        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
-        version="1.0",
-    )
-
+def test_writer_dataflow(complete_header, dataflow):
     result = writer(
         {"Dataflows": {"FREQ": dataflow}},
         MessageType.Structure,
@@ -232,3 +257,36 @@ def test_writer_dataflow(complete_header):
     )
 
     assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result
+
+
+def test_read_rewrite(read_write_sample, complete_header):
+    content, filetype = process_string_to_read(read_write_sample)
+    assert filetype == "xml"
+    read_result = read_xml(content, validate=True)
+    writer_result = writer(
+        read_result,
+        MessageType.Structure,
+        header=complete_header,
+        prettyprint=True,
+    )
+    assert writer_result == content
+
+
+def test_write_read(complete_header, datastructure, dataflow):
+    content = {
+        "DataStructures": {"DataStructure=BIS:BIS_DER(1.0)": datastructure},
+        "Dataflows": {"Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)": dataflow},
+    }
+
+    write_result = writer(content,
+                          MessageType.Structure,
+                          header=complete_header,
+                          prettyprint=True
+                          )
+
+    with open("samples/a.xml", "w") as f:
+        f.write(write_result)
+
+    read_result = read_xml(write_result)
+
+    assert content == read_result
