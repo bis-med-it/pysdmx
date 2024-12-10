@@ -41,7 +41,7 @@ class Code(Item, frozen=True, omit_defaults=True):
     valid_to: Optional[datetime] = None
 
 
-class Codelist(ItemScheme, frozen=True, omit_defaults=True):
+class Codelist(ItemScheme, frozen=True, omit_defaults=True, tag=True):
     """An immutable collection of codes, such as the ISO 3166 country codes.
 
     A codelist is **maintained by its agency**, typically, an organisation
@@ -66,12 +66,13 @@ class Codelist(ItemScheme, frozen=True, omit_defaults=True):
         version: The codelist version (e.g. 2.0.42)
     """
 
+    items: Sequence[Code] = ()
     sdmx_type: Literal["codelist", "valuelist"] = "codelist"
 
     @property
     def codes(self) -> Sequence[Code]:
         """Extract the items in the Codelist."""
-        return self.items  # type: ignore[return-value]
+        return self.items
 
     def __iter__(self) -> Iterator[Code]:
         """Return an iterator over the list of codes."""
@@ -141,7 +142,9 @@ class HierarchicalCode(Struct, frozen=True, omit_defaults=True):
         return out
 
 
-class Hierarchy(MaintainableArtefact, frozen=True, omit_defaults=True):
+class Hierarchy(
+    MaintainableArtefact, frozen=True, omit_defaults=True, tag=True
+):
     """An immutable collection of codes, organized hierarchically.
 
     A hierarchy is **maintained by its agency**, typically, an organisation

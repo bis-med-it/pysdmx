@@ -1,17 +1,16 @@
 """Model for Mapping Definitions."""
 
 from datetime import datetime
-from re import Pattern
-from typing import Any, Iterator, Literal, Optional, Sequence, Union
+import re
+from typing import Any, Iterator, Literal, Optional, Sequence, Tuple, Union
 
 from msgspec import Struct
 
 from pysdmx.model.__base import MaintainableArtefact
-from pysdmx.model.concept import DataType
 from pysdmx.util import convert_dpm
 
 
-class DatePatternMap(Struct, frozen=True, omit_defaults=True):
+class DatePatternMap(Struct, frozen=True, omit_defaults=True, tag=True):
     """A mapping based on a date pattern.
 
     Examples:
@@ -58,7 +57,7 @@ class DatePatternMap(Struct, frozen=True, omit_defaults=True):
         return convert_dpm(self.pattern)
 
 
-class FixedValueMap(Struct, frozen=True, omit_defaults=True):
+class FixedValueMap(Struct, frozen=True, omit_defaults=True, tag=True):
     """Set a component to a fixed value.
 
     Examples:
@@ -82,7 +81,7 @@ class FixedValueMap(Struct, frozen=True, omit_defaults=True):
     located_in: Literal["source", "target"] = "target"
 
 
-class ImplicitComponentMap(Struct, frozen=True, omit_defaults=True):
+class ImplicitComponentMap(Struct, frozen=True, omit_defaults=True, tag=True):
     """A mapping where the value in the source is copied to the target.
 
     Examples:
@@ -104,7 +103,7 @@ class ImplicitComponentMap(Struct, frozen=True, omit_defaults=True):
     target: str
 
 
-class MultiValueMap(Struct, frozen=True, omit_defaults=True):
+class MultiValueMap(Struct, frozen=True, omit_defaults=True, kw_only=True):
     """Provides the values for a mapping between one or more components.
 
     Examples:
@@ -141,13 +140,25 @@ class MultiValueMap(Struct, frozen=True, omit_defaults=True):
         valid_to: End of business validity for the mapping
     """
 
-    source: Sequence[Union[str, Pattern[str]]]
+    source: Sequence[str]
     target: Sequence[str]
     valid_from: Optional[datetime] = None
     valid_to: Optional[datetime] = None
 
+    @property
+    def typed_source(self) -> Tuple[Union[str, re.Pattern[str]], ...]:
+        """Gets the source as a list of strings and/or regex."""
+        out = []
+        for s in self.source:
+            if s.startswith("regex:"):
+                r = s.replace("regex:", "")
+                out.append(re.compile(r))
+            else:
+                out.append(s)  # type: ignore[arg-type]
+        return tuple(out)
 
-class ValueMap(Struct, frozen=True, omit_defaults=True):
+
+class ValueMap(Struct, frozen=True, omit_defaults=True, kw_only=True):
     """Maps the values of two components together.
 
     Examples:
@@ -169,10 +180,19 @@ class ValueMap(Struct, frozen=True, omit_defaults=True):
         valid_to: End of business validity for the mapping
     """
 
-    source: Union[str, Pattern[str]]
+    source: str
     target: str
     valid_from: Optional[datetime] = None
     valid_to: Optional[datetime] = None
+
+    @property
+    def typed_source(self) -> Union[str, re.Pattern[str]]:
+        """Gets the source as a string or regex."""
+        if self.source.startswith("regex:"):
+            r = self.source.replace("regex:", "")
+            return re.compile(r)
+        else:
+            return self.source
 
 
 class MultiRepresentationMap(
@@ -197,8 +217,8 @@ class MultiRepresentationMap(
         version: The version of the representation map.
     """
 
-    source: Sequence[Union[str, DataType]] = []
-    target: Sequence[Union[str, DataType]] = []
+    source: Sequence[str] = []
+    target: Sequence[str] = []
     maps: Sequence[MultiValueMap] = []
 
     def __iter__(
@@ -212,7 +232,7 @@ class MultiRepresentationMap(
         return len(self.maps)
 
 
-class MultiComponentMap(Struct, frozen=True, omit_defaults=True):
+class MultiComponentMap(Struct, frozen=True, omit_defaults=True, tag=True):
     """Maps one or more source components to one or more target components.
 
     Examples:
@@ -258,8 +278,8 @@ class RepresentationMap(MaintainableArtefact, frozen=True, omit_defaults=True):
         version: The version of the representation map.
     """
 
-    source: Union[str, DataType, None] = None
-    target: Union[str, DataType, None] = None
+    source: Optional[str] = None
+    target: Optional[str] = None
     maps: Sequence[ValueMap] = []
 
     def __iter__(
@@ -273,7 +293,7 @@ class RepresentationMap(MaintainableArtefact, frozen=True, omit_defaults=True):
         return len(self.maps)
 
 
-class ComponentMap(Struct, frozen=True, omit_defaults=True):
+class ComponentMap(Struct, frozen=True, omit_defaults=True, tag=True):
     """Maps a source component to a target component.
 
     Examples:

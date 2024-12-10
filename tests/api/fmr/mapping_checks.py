@@ -1,5 +1,4 @@
 from datetime import datetime as dt, timezone as tz
-import re
 
 import httpx
 import pytest
@@ -133,7 +132,7 @@ def __check_component(m: ComponentMap):
             assert v.valid_from == dt(2008, 1, 1, 0, 0, 0, 0, tz.utc)
             assert v.valid_to == dt(2011, 1, 1, 10, 0, 42, 0, tz.utc)
         else:
-            assert v.source == re.compile("^([A-Z0-9]+)$")
+            assert v.source == "regex:^([A-Z0-9]+)$"
             assert v.target == "\\1"
             assert v.valid_from is None
             assert v.valid_to is None

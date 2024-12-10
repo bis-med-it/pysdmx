@@ -1,5 +1,6 @@
 from typing import Iterable, Sized
 
+import msgspec
 import pytest
 
 from pysdmx.model import MetadataAttribute, MetadataReport
@@ -32,9 +33,11 @@ def targets():
 
 @pytest.fixture()
 def attributes():
+    grandchild = MetadataAttribute("child211", "Child 2.1.1")
+    child = MetadataAttribute("child21", "Child 2.1", [grandchild])
     return [
-        MetadataAttribute("child1", 42),
-        MetadataAttribute("child2", "*"),
+        MetadataAttribute("child1", "Child 1"),
+        MetadataAttribute("child2", "Child 2", [child]),
     ]
 
 
@@ -63,36 +66,32 @@ def test_iterable(id, name, structure, targets, attributes):
     assert out == [a.id for a in attributes]
 
 
-def test_sized(id, name, structure, targets):
-    grandchild = MetadataAttribute("child211", "Child 2.1.1")
-    child = MetadataAttribute("child21", "Child 2.1", [grandchild])
-    attrs = [
-        MetadataAttribute("child1", "Child 1"),
-        MetadataAttribute("child2", "Child 2", [child]),
-    ]
-    report = MetadataReport(id, name, structure, targets, attrs)
+def test_sized(id, name, structure, targets, attributes):
+
+    report = MetadataReport(id, name, structure, targets, attributes)
 
     assert isinstance(report, Sized)
     assert len(report) == 4
     assert len(report.attributes) == 2
 
 
-def test_get_attribute(id, name, structure, targets):
-    grandchild = MetadataAttribute("child211", "Child 2.1.1")
-    child = MetadataAttribute("child21", "Child 2.1", [grandchild])
-    attrs = [
-        MetadataAttribute("child1", "Child 1"),
-        MetadataAttribute("child2", "Child 2", [child]),
-    ]
-
-    report = MetadataReport(id, name, structure, targets, attrs)
+def test_get_attribute(id, name, structure, targets, attributes):
+    report = MetadataReport(id, name, structure, targets, attributes)
 
     resp1 = report["child2.child21.child211"]
     resp2 = report["child2"]
     resp3 = report["child3"]
     resp4 = report["child2.child24.child421"]
 
-    assert resp1 == grandchild
-    assert resp2 == attrs[1]
+    assert resp1 == attributes[1].attributes[0].attributes[0]
+    assert resp2 == attributes[1]
     assert resp3 is None
     assert resp4 is None
+
+
+def test_serialization(id, name, structure, targets, attributes):
+    rep = MetadataReport(id, name, structure, targets, attributes)
+
+    ser = msgspec.msgpack.Encoder().encode(rep)
+    out = msgspec.msgpack.Decoder(MetadataReport).decode(ser)
+    assert out == rep

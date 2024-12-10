@@ -1,5 +1,6 @@
 from typing import Iterable, Sized
 
+import msgspec
 import pytest
 
 from pysdmx.model import HierarchicalCode, Hierarchy
@@ -28,6 +29,26 @@ def operator():
     )
 
 
+@pytest.fixture()
+def desc():
+    return "description"
+
+
+@pytest.fixture()
+def version():
+    return "1.42.0"
+
+
+@pytest.fixture()
+def codes():
+    grandchild = HierarchicalCode("child211", "Child 2.1.1")
+    child = HierarchicalCode("child21", "Child 2.1", codes=[grandchild])
+    return [
+        HierarchicalCode("child1", "Child 1"),
+        HierarchicalCode("child2", "Child 2", codes=[child]),
+    ]
+
+
 def test_defaults(id, name, agency):
     cs = Hierarchy(id=id, name=name, agency=agency)
 
@@ -41,15 +62,7 @@ def test_defaults(id, name, agency):
     assert cs.operator is None
 
 
-def test_full_initialization(id, name, agency, operator):
-    desc = "description"
-    version = "1.42.0"
-    grandchild = HierarchicalCode("Child211", "Child 2.1.1")
-    child = HierarchicalCode("Child21", "Child 2.1", codes=[grandchild])
-    codes = [
-        HierarchicalCode("child1", "Child 1"),
-        HierarchicalCode("child2", "Child 2", codes=[child]),
-    ]
+def test_full_initialization(id, name, agency, operator, desc, version, codes):
 
     cs = Hierarchy(
         id=id,
@@ -78,17 +91,11 @@ def test_immutable(id, name, agency):
         cs.description = "Description"
 
 
-def test_iterable(id, name, agency):
-    codes = [
-        HierarchicalCode("child1", "Child 1"),
-        HierarchicalCode("child2", "Child 2"),
-    ]
+def test_iterable(id, name, agency, codes):
     cs = Hierarchy(id=id, name=name, agency=agency, codes=codes)
 
     assert isinstance(cs, Iterable)
-    out = [c.id for c in cs]
-    assert len(out) == 2
-    assert out == ["child1", "child2"]
+    assert len(cs) == 4
 
 
 def test_sized(id, name, agency):
@@ -97,14 +104,7 @@ def test_sized(id, name, agency):
     assert isinstance(cs, Sized)
 
 
-def test_get_code(id, name, agency):
-    grandchild = HierarchicalCode("child211", "Child 2.1.1")
-    child = HierarchicalCode("child21", "Child 2.1", codes=[grandchild])
-    codes = [
-        HierarchicalCode("child1", "Child 1"),
-        HierarchicalCode("child2", "Child 2", codes=[child]),
-    ]
-
+def test_get_code(id, name, agency, codes):
     cs = Hierarchy(id=id, name=name, agency=agency, codes=codes)
 
     resp1 = cs["child2.child21.child211"]
@@ -112,7 +112,7 @@ def test_get_code(id, name, agency):
     resp3 = cs["child3"]
     resp4 = cs["child2.child24.child421"]
 
-    assert resp1 == grandchild
+    assert resp1 == codes[1].codes[0].codes[0]
     assert "child2.child21.child211" in cs
     assert resp2 == codes[1]
     assert "child2" in cs
@@ -122,13 +122,7 @@ def test_get_code(id, name, agency):
     assert "child2.child24.child421" not in cs
 
 
-def test_codes_by_id_no_parent_needed(id, name, agency):
-    grandchild = HierarchicalCode("child211", "Child 2.1.1")
-    child1 = HierarchicalCode("child21", "Child 2.1", codes=[grandchild])
-    codes = [
-        HierarchicalCode("child1", "Child 1"),
-        HierarchicalCode("child2", "Child 2", codes=[child1]),
-    ]
+def test_codes_by_id_no_parent_needed(id, name, agency, codes):
     cs = Hierarchy(id=id, name=name, agency=agency, codes=codes)
 
     m = cs.by_id("child211")
@@ -136,7 +130,7 @@ def test_codes_by_id_no_parent_needed(id, name, agency):
     assert isinstance(m, Iterable)
     assert len(m) == 1
     m = list(m)
-    assert m[0] == grandchild
+    assert m[0] == codes[1].codes[0].codes[0]
 
 
 def test_codes_by_id_is_a_set(id, name, agency):
@@ -204,3 +198,22 @@ def test_all_codes(id, name, agency):
 
     m = h.all_codes()
     assert len(m) == 7
+
+
+def test_serialization(id, name, agency, operator, desc, version, codes):
+
+    h = Hierarchy(
+        id=id,
+        name=name,
+        agency=agency,
+        description=desc,
+        version=version,
+        codes=codes,
+        operator=operator,
+    )
+
+    ser = msgspec.msgpack.Encoder().encode(h)
+
+    out = msgspec.msgpack.Decoder(Hierarchy).decode(ser)
+
+    assert out == h

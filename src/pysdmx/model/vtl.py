@@ -1,170 +1,129 @@
-"""VTL (Validation Transformation Language) model classes."""
+"""Model for VTL artefacts."""
 
-from enum import Enum
+from typing import Optional, Sequence
 
-from pysdmx.errors import Invalid
+from msgspec import Struct
+
 from pysdmx.model.__base import Item, ItemScheme
 
 
-class _VTLVersionEnum(Enum):
-    """Enumeration of VTL versions."""
+class Transformation(Item, frozen=True, omit_defaults=True):
+    """A statement which assigns the outcome of an expression to a result."""
 
-    VTL_1_0 = "1.0"
-    VTL_2_0 = "2.0"
-    VTL_2_1 = "2.1"
-
-
-class VTLItemScheme(ItemScheme, frozen=True, omit_defaults=True, kw_only=True):
-    """Superclass for VTL item schemes.
-
-    Not part of the SDMX Information Model.
-    Used only to provide a common interface for VTL items scheme
-    and not duplicating post_init checks.
-
-    Attributes:
-        vtlVersion: str.
-          The version of the VTL used.
-    """
-
-    vtlVersion: str
-
-    def __post_init__(self) -> None:
-        """Additional validation checks for VTL item schemes.
-
-        Version must be a valid VTL version.
-
-        Raises:
-            Invalid: If the version is not a valid VTL version
-        """
-        if self.vtlVersion not in _VTLVersionEnum._value2member_map_:
-            raise Invalid(f"Invalid VTL version: {self.vtlVersion}")
+    expression: str = ""
+    is_persistent: bool = False
+    result: str = ""
 
 
-# Transformations
-class TransformationScheme(VTLItemScheme, frozen=True, kw_only=True):
-    """VTL Transformation Scheme class.
+class Ruleset(Item, frozen=True, omit_defaults=True):
+    """A persistent set of rules."""
 
-    TransformationScheme is a set of Transformations aimed at getting some
-    meaningful results for the user
-    (e.g. the validation of one or more Data Sets).
-
-    This set of Transformations is meant to be executed together
-    (in the same run) and may contain any number of Transformations to
-    produce any number of results.
-    Therefore, a TransformationScheme can be considered as a VTL program.
-
-    The TransformationScheme must include the attribute vtlVersion expressed as
-    a string (e.g. “2.0”), as the version of the VTL determines which syntax
-    is used in defining the transformations of the scheme.
-    This attribute is inherited from the VTLItemScheme class.
-    """
-
-    pass
+    ruleset_definition: str = ""
+    ruleset_scope: str = ""
+    ruleset_type: str = ""
 
 
-class Transformation(Item, frozen=True, omit_defaults=True, kw_only=True):
-    """VTL Transformation class.
+class UserDefinedOperator(Item, frozen=True, omit_defaults=True):
+    """Custom VTL operator that extends the VTL standard library."""
 
-    Attributes:
-        Expression: str.
-          The expression bound to the Transformation (no semicolon).
-        Result: str.
-          The Dataset or Scalar name where we store the result.
-        isPersistent: bool = False. If the result is persistent.
-    """
-
-    Expression: str
-    Result: str
-    isPersistent: bool = False
-
-    @property
-    def full_expression(self) -> str:
-        """Return the full expression with the semicolon."""
-        if self.isPersistent:
-            assign_operand = "<-"
-        else:
-            assign_operand = ":="
-
-        return f"{self.Result} {assign_operand} {self.Expression};"
-
-    # TODO: Use VTL Engine for syntax/semantic validation based on VTL?
+    operator_definition: str = ""
 
 
-# UDOs
-class UserDefinedOperatorScheme(VTLItemScheme, frozen=True, kw_only=True):
-    """VTL User Defined Operator Scheme class.
+class NamePersonalisation(Item, frozen=True, omit_defaults=True):
+    """Definition of personalised name."""
 
-    The UserDefinedOperatorScheme is a container for zero of more
-    UserDefinedOperator.
-
-    The UserDefinedOperatorScheme must include the attribute
-    vtlVersion expressed as a string (e.g. “2.0”), as the version of
-    the VTL determines which syntax is used in defining
-    the User Defined Operators of the Scheme.
-    This attribute is inherited from the VTLItemScheme class.
-    """
-
-    pass
+    personalised_name: str = ""
+    vtl_artefact: str = ""
+    vtl_default_name: str = ""
 
 
-class UserDefinedOperator(Item, frozen=True, omit_defaults=True, kw_only=True):
-    """VTL User Defined Operator class.
-
-    The UserDefinedOperator is defined using VTL standard
-    operators. This is essential for understanding the actual behaviour of the
-    Transformations that invoke them.
-
-    Attributes:
-        operatorDefinition: str.
-          VTL statement that defines the operator according to the syntax
-          of the VTL definition language.
-    """
-
-    operatorDefinition: str
-
-    # TODO: Use VTL Engine for syntax/semantic validation based on VTL?
+class VtlMapping(Item, frozen=True, omit_defaults=True):
+    """Single VTL mapping."""
 
 
-# Ruleset
-class RulesetScheme(VTLItemScheme, frozen=True, kw_only=True):
-    """VTL Ruleset Scheme class.
+class ToVtlMapping(Struct, frozen=True, omit_defaults=True):
+    """The mapping method and filter used when mapping from SDMX to VTL."""
 
-    The RulesetScheme is a container for zero or more Ruleset.
-
-    The RulesetScheme must include the attribute vtlVersion expressed as a
-    string (e.g. “2.0”), as the version of the VTL determines which syntax
-    is used in defining the Rulesets of the scheme.
-    This attribute is inherited from the VTLItemScheme class.
-    """
-
-    pass
+    to_vtl_sub_space: Sequence[str] = ()
+    method: Optional[str] = None
 
 
-class _VTLRulesetTypeEnum(Enum):
-    """Enumeration of VTL Ruleset types."""
+class FromVtlMapping(Struct, frozen=True, omit_defaults=True):
+    """The mapping method and filter used when mapping from VTL to SDMX."""
 
-    DATAPOINT = "datapoint"
-    HIERARCHICAL = "hierarchical"
+    from_vtl_sub_space: Sequence[str] = ()
+    method: Optional[str] = None
 
 
-class Ruleset(Item, frozen=True, omit_defaults=True, kw_only=True):
-    """VTL Ruleset class.
+class VtlDataflowMapping(VtlMapping, frozen=True, omit_defaults=True):
+    """Single mapping with a dataflow."""
 
-    A persistent set of rules which can be invoked by
-    appropriate VTL operators.
-    """
+    dataflow: str = ""
+    dataflow_alias: str = ""
+    to_vtl_mapping_method: Optional[ToVtlMapping] = None
+    from_vtl_mapping_method: Optional[FromVtlMapping] = None
 
-    rulesetDefinition: str
-    rulesetScope: str
-    rulesetType: str
 
-    def __post_init__(self) -> None:
-        """Additional validation checks for Ruleset.
+class VtlCodelistMapping(VtlMapping, frozen=True, omit_defaults=True):
+    """Single mapping with a codelist."""
 
-        Raises:
-            Invalid: If the rulesetType is not a valid VTL ruleset type
-        """
-        if self.rulesetType not in _VTLRulesetTypeEnum._value2member_map_:
-            raise Invalid(f"Invalid VTL Ruleset type: {self.rulesetType}")
+    codelist: str = ""
+    codelist_alias: str = ""
 
-    # TODO: Use VTL Engine for syntax/semantic validation based on VTL?
+
+class VtlConceptMapping(VtlMapping, frozen=True, omit_defaults=True):
+    """Single mapping with a concept."""
+
+    concept: str = ""
+    concept_alias: str = ""
+
+
+class CustomType(Item, frozen=True, omit_defaults=True):
+    """Custom specification for a VTL basic scalar type."""
+
+    data_type: str = ""
+    null_value: Optional[str] = None
+    output_format: Optional[str] = None
+    vtl_literal_format: Optional[str] = None
+    vtl_scalar_type: str = ""
+
+
+class VtlScheme(ItemScheme, frozen=True, omit_defaults=True):
+    """A VTL item scheme with the additional propery 'vtl_version'."""
+
+    vtl_version: Optional[str] = None
+
+
+class CustomTypeScheme(VtlScheme, frozen=True, omit_defaults=True):
+    """A collection of custom specifications for VTL basic scalar types."""
+
+
+class NamePersonalisationScheme(VtlScheme, frozen=True, omit_defaults=True):
+    """A collection of name personalisations."""
+
+
+class RulesetScheme(VtlScheme, frozen=True, omit_defaults=True):
+    """A collection of rulesets."""
+
+    vtl_mapping_scheme: Optional[str] = None
+
+
+class UserDefinedOperatorScheme(VtlScheme, frozen=True, omit_defaults=True):
+    """A collection of user-defined operators."""
+
+    vtl_mapping_scheme: Optional[str] = None
+    ruleset_schemes: Sequence[str] = ()
+
+
+class VtlMappingScheme(ItemScheme, frozen=True, omit_defaults=True):
+    """A collection of VTL mappings."""
+
+
+class TransformationScheme(VtlScheme, frozen=True, omit_defaults=True):
+    """A collection of transformations meant to be executed together."""
+
+    vtl_mapping_scheme: Optional[VtlMappingScheme] = None
+    name_personalisation_scheme: Optional[NamePersonalisationScheme] = None
+    custom_type_scheme: Optional[CustomTypeScheme] = None
+    ruleset_schemes: Sequence[RulesetScheme] = ()
+    user_defined_operator_schemes: Sequence[UserDefinedOperatorScheme] = ()
