@@ -74,6 +74,7 @@ def read_write_header():
         receiver="Not_Supplied",
     )
 
+
 @pytest.fixture()
 def codelist():
     return Codelist(
@@ -278,11 +279,12 @@ def test_write_read(complete_header, datastructure, dataflow):
         "Dataflows": {"Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)": dataflow},
     }
 
-    write_result = writer(content,
-                          MessageType.Structure,
-                          header=complete_header,
-                          prettyprint=True
-                          )
+    write_result = writer(
+        content,
+        MessageType.Structure,
+        header=complete_header,
+        prettyprint=True,
+    )
 
     with open("samples/a.xml", "w") as f:
         f.write(write_result)

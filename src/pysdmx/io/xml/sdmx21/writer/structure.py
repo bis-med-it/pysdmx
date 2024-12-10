@@ -176,7 +176,7 @@ def __write_structure(item: Dataflow, indent: str) -> str:
         f'agencyID="{item.agency!r}" '
         f'id="{item.id!r}" '
         f'version="{item.version!r}" '
-        f'class="{DSD!r}"/>'. replace("'", "")
+        f'class="{DSD!r}"/>'.replace("'", "")
     )
     outfile += f"{indent}</{ABBR_STR}:Structure>"
     return outfile
