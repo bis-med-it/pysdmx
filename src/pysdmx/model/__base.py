@@ -200,7 +200,11 @@ class Agency(Organisation, frozen=True, omit_defaults=True):
 
 
 class DataProvider(Organisation, frozen=True, omit_defaults=True):
-    """An organisation that provides data or metadata."""
+    """An organisation that provides data."""
+
+
+class MetadataProvider(Organisation, frozen=True, omit_defaults=True):
+    """An organisation that provides reference metadata."""
 
 
 class DataConsumer(Organisation, frozen=True, omit_defaults=True):
@@ -237,6 +241,20 @@ class MaintainableArtefact(
                 "Maintainable artefacts must reference an agency.",
             )
 
+    def short_urn(self) -> str:
+        """Returns the short URN for the artefact.
+
+        A short URN follows the syntax: Type=Agency:Id(Version). For example:
+        Codelist=SDMX:CL_FREQ(1.0)
+
+        Returns:
+            The short URN for the artefact.
+        """
+        agency = (
+            self.agency.id if isinstance(self.agency, Agency) else self.agency
+        )
+        return f"{self.__class__.__name__}={agency}:{self.id}({self.version})"
+
 
 class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
     """ItemScheme class.
@@ -260,11 +278,16 @@ class DataflowRef(Struct, frozen=True, omit_defaults=True):
         id: The dataflow identifier (e.g. BIS_MACRO).
         agency: The organisation (or unit) responsible for the dataflow.
         version: The version of the dataflow (e.g. 1.0).
+        name: The name of the dataflow. This is optional as, typically,
+            a dataflow reference wouldn't have this information, but it
+            has been added as it can be useful in a data discovery
+            scenario, for example, in category scheme queries.
     """
 
     agency: str
     id: str
     version: str = "1.0"
+    name: Optional[str] = None
 
     def __hash__(self) -> int:
         """Returns the dataflow reference's hash."""

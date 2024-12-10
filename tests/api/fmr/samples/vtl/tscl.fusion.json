@@ -1,0 +1,226 @@
+{
+    "meta": {
+        "id": "IREF951447",
+        "test": false,
+        "prepared": "2024-12-06T14:25:43Z",
+        "contentLanguages": [
+            "en",
+            "fr"
+        ],
+        "sender": {
+            "id": "5B0_DEV"
+        }
+    },
+    "VtlMappingScheme": [
+        {
+            "id": "TEST_DETAIL",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "VTL Mapping Scheme #1"
+                }
+            ],
+            "agencyId": "TEST",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": false,
+            "items": [
+                {
+                    "id": "VTLM1",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "VTL Mapping #1"
+                        }
+                    ],
+                    "alias": "TEST_DETAIL_VTL",
+                    "mapped": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_FREQ(1.0)"
+                }
+            ]
+        }
+    ],
+    "UserDefinedOperatorScheme": [
+        {
+            "id": "OPS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=SDMX:OPS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Operators"
+                }
+            ],
+            "agencyId": "SDMX",
+            "version": "1.0",
+            "isFinal": false,
+            "vtlVersion": "2.0",
+            "isPartial": false,
+            "items": [
+                {
+                    "id": "SUM",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=SDMX:OPS(1.0).SUM",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Sum"
+                        }
+                    ],
+                    "operatorDefinition": "sum"
+                },
+                {
+                    "id": "AVG",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=SDMX:OPS(1.0).AVG",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Average"
+                        }
+                    ],
+                    "operatorDefinition": "avg"
+                }
+            ],
+            "vtlMappingScheme": "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=TEST:TEST_DETAIL(1.0)",
+            "rulesetSchemes": [
+                "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=TEST:RS1(1.0)"
+            ]
+        }
+    ],
+    "TransformationScheme": [
+        {
+            "id": "TEST_TS",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Transformation Scheme"
+                }
+            ],
+            "agencyId": "TEST",
+            "version": "1.0",
+            "isFinal": false,
+            "vtlVersion": "2.0",
+            "isPartial": false,
+            "items": [
+                {
+                    "id": "STEP_1",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Step 1"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Validation of something in input file"
+                        }
+                    ],
+                    "isPersistent": false,
+                    "expression": "check_datapoint(TEST_DETAIL_VTL, UNIQUE_SOMETHING invalid)",
+                    "result": "CHECK_SOMETHING"
+                }
+            ],
+            "vtlMappingScheme": "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=TEST:TEST_DETAIL(1.0)",
+            "namePersonalisationScheme": "urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisationScheme=BIS.TEST:TEST_NPS(1.0)",
+            "customTypeScheme": "urn:sdmx:org.sdmx.infomodel.transformation.CustomTypeScheme=TEST:TS_CTS(1.0)",
+            "rulesetSchemes": [
+                "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=TEST:RS1(1.0)"
+            ],
+            "userDefinedOperatorScheme": [
+                "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=SDMX:OPS(1.0)"
+            ]
+        }
+    ],
+    "NamePersonalisationScheme": [
+        {
+            "id": "TEST_NPS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisationScheme=BIS.TEST:TEST_NPS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Test for name personalisations"
+                }
+            ],
+            "agencyId": "BIS.TEST",
+            "version": "1.0",
+            "isFinal": false,
+            "vtlVersion": "2.1",
+            "isPartial": false,
+            "items": [
+                {
+                    "id": "ALDF",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisation=BIS.TEST:TEST_NPS(1.0).ALDF",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Alias for Dataflow"
+                        }
+                    ],
+                    "vtlArtefact": "Dataflow",
+                    "vtlDefaultName": "Dataflow",
+                    "personalisedName": "Dataset"
+                }
+            ]
+        }
+    ],
+    "RulesetScheme": [
+        {
+            "id": "RS1",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Ruleset Scheme #1"
+                }
+            ],
+            "agencyId": "TEST",
+            "version": "1.0",
+            "isFinal": false,
+            "vtlVersion": "2.0",
+            "isPartial": false,
+            "items": [
+                {
+                    "id": "UNIQUE_SOMETHING",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Datapoint Ruleset UNIQUE_SOMETHING"
+                        }
+                    ],
+                    "rulesetType": "datapoint",
+                    "rulesetScope": "valuedomain",
+                    "rulesetDefinition": "Here we should have a real VTL program instead..."
+                }
+            ]
+        }
+    ],
+    "CustomTypeScheme": [
+        {
+            "id": "TS_CTS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.transformation.CustomTypeScheme=TEST:TS_CTS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Test Custom Types"
+                }
+            ],
+            "agencyId": "TEST",
+            "version": "1.0",
+            "isFinal": false,
+            "vtlVersion": "2.1",
+            "isPartial": false,
+            "items": [
+                {
+                    "id": "TITLE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.transformation.CustomType=TEST:TS_CTS(1.0).TITLE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Title"
+                        }
+                    ],
+                    "vtlScalarType": "String",
+                    "dataType": "String",
+                    "nullValue": "null"
+                }
+            ]
+        }
+    ]
+}

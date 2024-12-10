@@ -21,9 +21,9 @@ def target():
 
 @pytest.fixture()
 def values():
-    vm1 = MultiValueMap(["CH", "LC1"], ["CHF"])
-    vm2 = MultiValueMap(["CH", "CHF"], ["CHF"])
-    vm3 = MultiValueMap(["DE", "LC1"], ["EUR"])
+    vm1 = MultiValueMap(source=["CH", "LC1"], target=["CHF"])
+    vm2 = MultiValueMap(source=["CH", "CHF"], target=["CHF"])
+    vm3 = MultiValueMap(source=["DE", "LC1"], target=["EUR"])
     vms = [vm1, vm2, vm3]
     return MultiRepresentationMap(
         id="RM_ID",

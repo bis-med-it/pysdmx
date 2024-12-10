@@ -23,6 +23,9 @@ from pysdmx.io.json.sdmxjson2.messages.org import (
 )
 from pysdmx.io.json.sdmxjson2.messages.report import JsonMetadataMessage
 from pysdmx.io.json.sdmxjson2.messages.schema import JsonSchemaMessage
+from pysdmx.io.json.sdmxjson2.messages.vtl import (
+    JsonVtlTransformationsMessage as JsonTransfoMsg,
+)
 
 __all__ = [
     "JsonAgencyMessage",
@@ -38,4 +41,5 @@ __all__ = [
     "JsonMetadataMessage",
     "JsonMappingMessage",
     "JsonRepresentationMapMessage",
+    "JsonTransfoMsg",
 ]

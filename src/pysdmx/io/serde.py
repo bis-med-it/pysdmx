@@ -1,4 +1,4 @@
-"""API for FMR readers."""
+"""Serializers and deserializers for SDMX messages."""
 
 from dataclasses import dataclass
 from typing import Any, Protocol, runtime_checkable
@@ -29,3 +29,4 @@ class Deserializers:
     report: Deserializer
     mapping: Deserializer
     code_map: Deserializer
+    transformation_scheme: Deserializer

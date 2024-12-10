@@ -14,7 +14,6 @@ from typing import (
 import httpx
 from msgspec.json import decode
 
-from pysdmx.api.fmr.reader import Deserializer
 from pysdmx.api.qb import (
     ApiVersion,
     RefMetaByMetadatasetQuery,
@@ -29,6 +28,7 @@ from pysdmx.api.qb import (
 from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 from pysdmx.io.json.fusion.reader import deserializers as fusion_readers
 from pysdmx.io.json.sdmxjson2.reader import deserializers as sdmx_readers
+from pysdmx.io.serde import Deserializer
 from pysdmx.model import (
     Agency,
     CategoryScheme,
@@ -287,6 +287,17 @@ class __BaseRegistryClient:
 
     def _dataflows_url(self, agency: str, id: str, version: str) -> str:
         q = StructureQuery(StructureType.DATAFLOW, agency, id, version)
+        return q.get_url(API_VERSION, True)
+
+    def _vtl_ts_url(self, agency: str, id: str, version: str) -> str:
+        q = StructureQuery(
+            StructureType.TRANSFORMATION_SCHEME,
+            agency,
+            id,
+            version,
+            detail=StructureDetail.REFERENCE_PARTIAL,
+            references=StructureReference.DESCENDANTS,
+        )
         return q.get_url(API_VERSION, True)
 
 
@@ -657,6 +668,25 @@ class RegistryClient(__BaseRegistryClient):
         url = super()._code_map_url(agency, id, version)
         out = self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.code_map)
+
+    def get_vtl_transformation_scheme(
+        self, agency: str, id: str, version: str = "+"
+    ) -> Union[MultiRepresentationMap, RepresentationMap]:
+        """Get a VTL transformation scheme.
+
+        Args:
+            agency: The agency maintaining the transformation scheme.
+            id: The ID of the transformation scheme map to be returned.
+            version: The version of the transformation scheme to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested transformation scheme.
+        """
+        url = super()._vtl_ts_url(agency, id, version)
+        out = self.__fetch(f"{self.api_endpoint}{url}")
+        return super()._out(out, self.deser.transformation_scheme)
 
 
 class AsyncRegistryClient(__BaseRegistryClient):
@@ -1033,3 +1063,22 @@ class AsyncRegistryClient(__BaseRegistryClient):
         url = super()._code_map_url(agency, id, version)
         out = await self.__fetch(f"{self.api_endpoint}{url}", True)
         return super()._out(out, self.deser.code_map)
+
+    async def get_vtl_transformation_scheme(
+        self, agency: str, id: str, version: str = "+"
+    ) -> Union[MultiRepresentationMap, RepresentationMap]:
+        """Get a VTL transformation scheme.
+
+        Args:
+            agency: The agency maintaining the transformation scheme.
+            id: The ID of the transformation scheme map to be returned.
+            version: The version of the transformation scheme to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested transformation scheme.
+        """
+        url = super()._vtl_ts_url(agency, id, version)
+        out = await self.__fetch(f"{self.api_endpoint}{url}")
+        return super()._out(out, self.deser.transformation_scheme)
