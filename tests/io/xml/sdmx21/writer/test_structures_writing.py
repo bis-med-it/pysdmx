@@ -286,9 +286,6 @@ def test_write_read(complete_header, datastructure, dataflow):
         prettyprint=True,
     )
 
-    with open("samples/a.xml", "w") as f:
-        f.write(write_result)
-
     read_result = read_xml(write_result)
 
     assert content == read_result
