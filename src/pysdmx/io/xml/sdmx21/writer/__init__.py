@@ -6,11 +6,16 @@ from pysdmx.errors import NotImplemented
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     __write_header,
+    ALL_DIM,
+    check_content_dataset,
     create_namespaces,
     get_end_message,
 )
 from pysdmx.io.xml.sdmx21.writer.structure import (
     generate_structures,
+)
+from pysdmx.io.xml.sdmx21.writer.structure_specific import (
+    write_data_structure_specific,
 )
 from pysdmx.model.message import Header
 
@@ -37,18 +42,36 @@ def writer(
     Raises:
         NotImplemented: If the MessageType is not Metadata
     """
-    if type_ != MessageType.Structure:
-        raise NotImplemented(
-            "Unsupported", "Only Metadata messages are supported"
-        )
-    outfile = create_namespaces(type_, content, prettyprint)
-
     if header is None:
         header = Header()
 
-    outfile += __write_header(header, prettyprint)
+    ss_namespaces = ""
 
-    outfile += generate_structures(content, prettyprint)
+    if type_ in (
+        MessageType.StructureSpecificDataSet,
+        MessageType.GenericDataSet,
+    ):
+        check_content_dataset(content)
+        header.dataset_references = {k: ALL_DIM for k in content.keys()}
+        # TODO: How to set the dimension at observation?
+        if type_ == MessageType.StructureSpecificDataSet:
+            for i, (short_urn, dimension) in enumerate(
+                header.dataset_references.items()
+            ):
+                ss_namespaces += (
+                    f'xmlns:ns{i + 1}="urn:sdmx:org.sdmx'
+                    f".infomodel.datastructure.{short_urn}"
+                    f':ObsLevelDim:{dimension}" '
+                )
+
+    outfile = create_namespaces(type_, ss_namespaces, prettyprint)
+    outfile += __write_header(header, prettyprint)
+    if type_ == MessageType.Structure:
+        outfile += generate_structures(content, prettyprint)
+    elif type_ == MessageType.StructureSpecificDataSet:
+        outfile += write_data_structure_specific(content, prettyprint)
+    else:
+        raise NotImplemented(f"MessageType {type_} not implemented")
 
     outfile += get_end_message(type_, prettyprint)
 

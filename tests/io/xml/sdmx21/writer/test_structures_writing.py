@@ -141,9 +141,7 @@ def test_writer_empty(empty_sample, header):
 
 
 def test_writing_not_supported():
-    with pytest.raises(
-        NotImplemented, match="Only Metadata messages are supported"
-    ):
+    with pytest.raises(NotImplemented):
         writer({}, MessageType.Error, prettyprint=True)
 
 

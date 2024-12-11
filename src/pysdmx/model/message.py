@@ -36,7 +36,7 @@ class ActionType(Enum):
     Information = "information"
 
 
-class Header(Struct, frozen=True, kw_only=True):
+class Header(Struct, kw_only=True):
     """Header for the SDMX messages."""
 
     id: str = str(uuid.uuid4())
@@ -46,6 +46,7 @@ class Header(Struct, frozen=True, kw_only=True):
     receiver: Optional[str] = None
     source: Optional[str] = None
     dataset_action: Optional[ActionType] = None
+    dataset_references: Optional[Dict[str, str]] = None
 
 
 ORGS = "OrganisationSchemes"
