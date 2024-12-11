@@ -9,6 +9,7 @@ from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
 from pysdmx.model import Contact
 from pysdmx.model.message import SubmissionResult
+from pysdmx.model.vtl import Transformation
 
 
 # Test parsing SDMX Registry Interface Submission Response
@@ -285,3 +286,23 @@ def test_chunks(samples_folder, filename):
     expected_num_columns = 20
     assert num_rows == expected_num_rows
     assert num_columns == expected_num_columns
+
+
+def test_vtl_transformation_scheme(samples_folder):
+    data_path = samples_folder / "transformation_scheme.xml"
+    input_str, filetype = process_string_to_read(data_path)
+    assert filetype == "xml"
+    result = read_xml(input_str, validate=True)
+    assert "Transformations" in result
+    assert len(result["Transformations"]) == 1
+    transformation_scheme = result["Transformations"]["SDMX:TEST(1.0)"]
+    assert transformation_scheme.id == "TEST"
+    assert transformation_scheme.name == "TEST"
+    assert transformation_scheme.description == "TEST Transformation Scheme"
+    assert transformation_scheme.valid_from == "2024-12-03T00:00:00"
+
+    assert len(transformation_scheme.items) == 1
+    transformation = transformation_scheme.items[0]
+    assert isinstance(transformation, Transformation)
+    assert transformation.id == "test_rule"
+    assert transformation.full_expression == "DS_r <- DS_1 + 1;"

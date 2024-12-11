@@ -1,18 +1,39 @@
 """Model for VTL artefacts."""
 
+from enum import Enum
 from typing import Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx.errors import Invalid
 from pysdmx.model.__base import Item, ItemScheme
 
 
 class Transformation(Item, frozen=True, omit_defaults=True):
-    """A statement which assigns the outcome of an expression to a result."""
+    """A statement which assigns the outcome of an expression to a result.
+
+    Attributes:
+        expression: str.
+          The expression bound to the Transformation (no semicolon).
+        result: str.
+          The Dataset or Scalar name where we store the result.
+        is_persistent: bool = False.
+          If the result is persistent.
+    """
 
     expression: str = ""
     is_persistent: bool = False
     result: str = ""
+
+    @property
+    def full_expression(self) -> str:
+        """Return the full expression with the semicolon."""
+        if self.is_persistent:
+            assign_operand = "<-"
+        else:
+            assign_operand = ":="
+
+        return f"{self.result} {assign_operand} {self.expression};"
 
 
 class Ruleset(Item, frozen=True, omit_defaults=True):
@@ -88,10 +109,29 @@ class CustomType(Item, frozen=True, omit_defaults=True):
     vtl_scalar_type: str = ""
 
 
+class _VTLVersionEnum(Enum):
+    """Enumeration of VTL versions."""
+
+    VTL_1_0 = "1.0"
+    VTL_2_0 = "2.0"
+    VTL_2_1 = "2.1"
+
+
 class VtlScheme(ItemScheme, frozen=True, omit_defaults=True):
     """A VTL item scheme with the additional propery 'vtl_version'."""
 
     vtl_version: Optional[str] = None
+
+    def __post_init__(self) -> None:
+        """Additional validation checks for VTL item schemes.
+
+        Version must be a valid VTL version.
+
+        Raises:
+            Invalid: If the version is not a valid VTL version
+        """
+        if self.vtl_version not in _VTLVersionEnum._value2member_map_:
+            raise Invalid(f"Invalid VTL version: {self.vtl_version}")
 
 
 class CustomTypeScheme(VtlScheme, frozen=True, omit_defaults=True):
@@ -120,7 +160,34 @@ class VtlMappingScheme(ItemScheme, frozen=True, omit_defaults=True):
 
 
 class TransformationScheme(VtlScheme, frozen=True, omit_defaults=True):
-    """A collection of transformations meant to be executed together."""
+    """VTL Transformation Scheme class.
+
+    TransformationScheme is a set of Transformations aimed at getting some
+    meaningful results for the user
+    (e.g. the validation of one or more Data Sets).
+
+    This set of Transformations is meant to be executed together
+    (in the same run) and may contain any number of Transformations to
+    produce any number of results.
+    Therefore, a TransformationScheme can be considered as a VTL program.
+
+    The TransformationScheme must include the attribute vtlVersion expressed as
+    a string (e.g. “2.0”), as the version of the VTL determines which syntax
+    is used in defining the transformations of the scheme.
+    This attribute is inherited from the VTLItemScheme class.
+
+    Attributes:
+        vtl_mapping_scheme: Optional[VtlMappingScheme].
+          The VTL mapping scheme.
+        name_personalisation_scheme: Optional[NamePersonalisationScheme].
+          The name personalisation scheme.
+        custom_type_scheme: Optional[CustomTypeScheme].
+          The custom type scheme.
+        ruleset_schemes: Sequence[RulesetScheme].
+          The ruleset schemes.
+        user_defined_operator_schemes: Sequence[UserDefinedOperatorScheme].
+          The user-defined operator schemes.
+    """
 
     vtl_mapping_scheme: Optional[VtlMappingScheme] = None
     name_personalisation_scheme: Optional[NamePersonalisationScheme] = None

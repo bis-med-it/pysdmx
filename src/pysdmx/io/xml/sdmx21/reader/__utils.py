@@ -95,6 +95,9 @@ CLS = "Codelists"
 CONCEPTS = "ConceptSchemes"
 CS = "ConceptScheme"
 CODE = "Code"
+TRANSFORMATIONS = "Transformations"
+TRANS_SCHEME = "TransformationScheme"
+TRANSFORMATION = "Transformation"
 
 FacetType = {
     "minLength": "min_length",
