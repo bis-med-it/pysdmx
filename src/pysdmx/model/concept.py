@@ -172,10 +172,12 @@ class ConceptScheme(ItemScheme, frozen=True, omit_defaults=True):
         version: The scheme version (e.g. 2.0)
     """
 
+    items: Sequence[Concept] = ()
+
     @property
     def concepts(self) -> Sequence[Concept]:
         """Extract the items in the Concept Scheme."""
-        return self.items  # type: ignore[return-value]
+        return self.items
 
     def __iter__(self) -> Iterator[Concept]:
         """Return an iterator over the list of concepts."""

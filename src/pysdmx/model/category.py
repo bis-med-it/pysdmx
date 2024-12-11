@@ -32,7 +32,7 @@ class Category(Item, frozen=False, omit_defaults=True):  # type: ignore[misc]
     """
 
     categories: Sequence["Category"] = ()
-    dataflows: Union[Sequence[DataflowRef], Sequence[Dataflow]] = ()
+    dataflows: Sequence[DataflowRef] = ()
 
     def __iter__(self) -> Iterator["Category"]:
         """Return an iterator over the list of categories."""
@@ -66,10 +66,12 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
         version: The scheme version (e.g. 1.0)
     """
 
+    items: Sequence[Category] = ()
+
     @property
     def categories(self) -> Sequence[Category]:
         """The list of top level categories in the scheme."""
-        return self.items  # type: ignore[return-value]
+        return self.items
 
     @property
     def dataflows(self) -> Union[Sequence[DataflowRef], Sequence[Dataflow]]:

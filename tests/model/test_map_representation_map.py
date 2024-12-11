@@ -1,8 +1,10 @@
+from datetime import datetime, timezone
 from typing import Iterable, Sized
 
+import msgspec
 import pytest
 
-from pysdmx.model import RepresentationMap, ValueMap
+from pysdmx.model import decoders, encoders, RepresentationMap, ValueMap
 
 
 @pytest.fixture()
@@ -42,8 +44,13 @@ def desc():
 
 @pytest.fixture()
 def mappings():
-    vm1 = ValueMap("AR", "ARG")
-    vm2 = ValueMap("UY", "URY")
+    vm1 = ValueMap(
+        source="AR",
+        target="ARG",
+        valid_from=datetime(2000, 1, 1, tzinfo=timezone.utc),
+        valid_to=datetime(2024, 1, 1, tzinfo=timezone.utc),
+    )
+    vm2 = ValueMap(source="UY", target="URY")
     return [vm1, vm2]
 
 
@@ -133,3 +140,24 @@ def test_sized(id, name, agency, source, target, mappings):
 
     assert isinstance(sm, Sized)
     assert len(sm) == len(mappings)
+
+
+def test_serialization(
+    id, name, agency, source, target, mappings, version, desc
+):
+    rm = RepresentationMap(
+        id=id,
+        name=name,
+        agency=agency,
+        source=source,
+        target=target,
+        maps=mappings,
+        description=desc,
+        version=version,
+    )
+
+    ser = msgspec.msgpack.Encoder(enc_hook=encoders).encode(rm)
+    out = msgspec.msgpack.Decoder(RepresentationMap, dec_hook=decoders).decode(
+        ser
+    )
+    assert out == rm

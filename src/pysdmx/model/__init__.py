@@ -4,16 +4,17 @@ This module contains data classes representing a **simplified and opinionated
 subset** of the SDMX information model.
 """
 
-from re import Pattern
-from typing import Any
+from typing import Any, Type
 
-from pysdmx.errors import NotImplemented
+import msgspec
+
 from pysdmx.model.__base import (
     Agency,
     Contact,
     DataConsumer,
     DataflowRef,
     DataProvider,
+    MetadataProvider,
     Organisation,
 )
 from pysdmx.model.category import Category, CategoryScheme
@@ -48,6 +49,32 @@ from pysdmx.model.map import (
     ValueMap,
 )
 from pysdmx.model.metadata import MetadataAttribute, MetadataReport
+from pysdmx.model.organisation import (
+    AgencyScheme,
+    DataConsumerScheme,
+    DataProviderScheme,
+    MetadataProviderScheme,
+)
+from pysdmx.model.vtl import (
+    CustomType,
+    CustomTypeScheme,
+    FromVtlMapping,
+    NamePersonalisation,
+    NamePersonalisationScheme,
+    Ruleset,
+    RulesetScheme,
+    ToVtlMapping,
+    Transformation,
+    TransformationScheme,
+    UserDefinedOperator,
+    UserDefinedOperatorScheme,
+    VtlCodelistMapping,
+    VtlConceptMapping,
+    VtlDataflowMapping,
+    VtlMapping,
+    VtlMappingScheme,
+    VtlScheme,
+)
 
 
 def encoders(obj: Any) -> Any:
@@ -72,25 +99,49 @@ def encoders(obj: Any) -> Any:
         The received object converted to supported Python types
 
     Raises:
-        NotImplemented: In case the object type is not one of the types
+        NotImplementedError: In case the object type is not one of the types
             needing conversion
     """
-    if isinstance(obj, Pattern):
-        return f"regex:{obj.pattern}"
-    elif isinstance(obj, Components):
+    if isinstance(obj, Components):
         return list(obj)
     else:
         # Raise a NotImplemented for other types
-        raise NotImplemented(
+        raise NotImplementedError(
             "Unsupported", f"Objects of type {type(obj)} are not supported"
         )
 
 
+def decoders(type: Type, obj: Any) -> Any:  # type: ignore[type-arg]
+    """Decoders for msgspec deserialization.
+
+    Args:
+        type: The target type for the object
+        obj: The object to be encoded
+
+    Returns:
+        The received object converted to the target types
+
+    Raises:
+        NotImplementedError: In case the type is not one of the supported
+            target types
+    """
+    if type is Components:
+        comps = []
+        for item in obj:
+            comps.append(msgspec.convert(item, Component))
+        return Components(comps)
+    else:
+        raise NotImplementedError(f"Objects of type {type} are not supported")
+
+
 __all__ = [
     "Agency",
+    "AgencyScheme",
     "ArrayBoundaries",
     "Category",
     "CategoryScheme",
+    "CustomType",
+    "CustomTypeScheme",
     "Code",
     "Codelist",
     "Component",
@@ -100,28 +151,48 @@ __all__ = [
     "ConceptScheme",
     "Contact",
     "DataConsumer",
+    "DataConsumerScheme",
     "Dataflow",
     "DataflowInfo",
     "DataflowRef",
     "DataType",
     "DatePatternMap",
     "DataProvider",
+    "DataProviderScheme",
     "Facets",
+    "FromVtlMapping",
+    "FixedValueMap",
     "HierarchicalCode",
     "Hierarchy",
     "HierarchyAssociation",
     "ImplicitComponentMap",
     "StructureMap",
     "MetadataAttribute",
+    "MetadataProvider",
+    "MetadataProviderScheme",
     "MetadataReport",
     "MultiComponentMap",
     "MultiRepresentationMap",
     "MultiValueMap",
+    "NamePersonalisation",
+    "NamePersonalisationScheme",
     "Organisation",
     "RepresentationMap",
     "Role",
+    "Ruleset",
+    "RulesetScheme",
     "Schema",
     "SeriesInfo",
+    "ToVtlMapping",
+    "Transformation",
+    "TransformationScheme",
+    "UserDefinedOperator",
+    "UserDefinedOperatorScheme",
     "ValueMap",
-    "FixedValueMap",
+    "VtlCodelistMapping",
+    "VtlConceptMapping",
+    "VtlDataflowMapping",
+    "VtlScheme",
+    "VtlMapping",
+    "VtlMappingScheme",
 ]

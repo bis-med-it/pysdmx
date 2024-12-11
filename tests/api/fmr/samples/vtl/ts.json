@@ -1,0 +1,316 @@
+{
+    "meta": {
+        "id": "IREF384710",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2024-12-03T15:07:53Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "ZZZ"
+        }
+    },
+    "data": {
+        "vtlMappingSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "vtlmappingscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=TEST:TEST_DETAIL(1.0)"
+                    }
+                ],
+                "id": "TEST_DETAIL",
+                "name": "VTL Mapping Scheme #1",
+                "names": {
+                    "en": "VTL Mapping Scheme #1"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "isPartial": false,
+                "vtlMappings": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "vtldataflowmapping",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.transformation.VtlDataflowMapping=TEST:TEST_DETAIL(1.0).VTLM1"
+                            }
+                        ],
+                        "id": "VTLM1",
+                        "name": "VTL Mapping #1",
+                        "names": {
+                            "en": "VTL Mapping #1"
+                        },
+                        "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_DETAIL(1.0)",
+                        "fromVtlMapping": {
+                            "type": "from_test",
+                            "fromVtlSuperSpace": [
+                                "ID1",
+                                "ID2"
+                            ]
+                        },
+                        "toVtlMapping": {
+                            "type": "to_test",
+                            "toVtlSubSpace": [
+                                "ID"
+                            ]
+                        },
+                        "alias": "TEST_DETAIL_VTL"
+                    }
+                ]
+            }
+        ],
+        "userDefinedOperatorSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "userdefinedoperatorscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=SDMX:OPS(1.0)"
+                    }
+                ],
+                "id": "OPS",
+                "name": "Operators",
+                "names": {
+                    "en": "Operators"
+                },
+                "version": "1.0",
+                "agencyID": "SDMX",
+                "isExternalReference": false,
+                "isFinal": false,
+                "vtlVersion": "2.0",
+                "vtlMappingScheme": "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=TEST:TEST_DETAIL(1.0)",
+                "rulesetSchemes": [
+                    "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=TEST:RS1(1.0)"
+                ],
+                "isPartial": false,
+                "userDefinedOperators": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "userdefinedoperator",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=SDMX:OPS(1.0).SUM"
+                            }
+                        ],
+                        "id": "SUM",
+                        "name": "Sum",
+                        "names": {
+                            "en": "Sum"
+                        },
+                        "operatorDefinition": "sum"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "userdefinedoperator",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=SDMX:OPS(1.0).AVG"
+                            }
+                        ],
+                        "id": "AVG",
+                        "name": "Average",
+                        "names": {
+                            "en": "Average"
+                        },
+                        "operatorDefinition": "avg"
+                    }
+                ]
+            }
+        ],
+        "transformationSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "transformationscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=TEST:TEST_TS(1.0)"
+                    }
+                ],
+                "id": "TEST_TS",
+                "name": "Transformation Scheme",
+                "names": {
+                    "en": "Transformation Scheme"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "vtlVersion": "2.0",
+                "vtlMappingScheme": "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=TEST:TEST_DETAIL(1.0)",
+                "namePersonalisationScheme": "urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisationScheme=BIS.TEST:TEST_NPS(1.0)",
+                "customTypeScheme": "urn:sdmx:org.sdmx.infomodel.transformation.CustomTypeScheme=TEST:TS_CTS(1.0)",
+                "rulesetSchemes": [
+                    "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=TEST:RS1(1.0)"
+                ],
+                "userDefinedOperatorSchemes": [
+                    "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=SDMX:OPS(1.0)"
+                ],
+                "isPartial": false,
+                "transformations": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "transformation",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.transformation.Transformation=TEST:TEST_TS(1.0).STEP_1"
+                            }
+                        ],
+                        "id": "STEP_1",
+                        "name": "Step 1",
+                        "names": {
+                            "en": "Step 1"
+                        },
+                        "description": "Validation of something in input file",
+                        "descriptions": {
+                            "en": "Validation of something in input file"
+                        },
+                        "expression": "check_datapoint(TEST_DETAIL_VTL, UNIQUE_SOMETHING invalid)",
+                        "result": "CHECK_SOMETHING",
+                        "isPersistent": false
+                    }
+                ]
+            }
+        ],
+        "rulesetSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "rulesetscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=TEST:RS1(1.0)"
+                    }
+                ],
+                "id": "RS1",
+                "name": "Ruleset Scheme #1",
+                "names": {
+                    "en": "Ruleset Scheme #1"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "vtlVersion": "2.0",
+                "isPartial": false,
+                "rulesets": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "ruleset",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.transformation.Ruleset=TEST:RS1(1.0).UNIQUE_SOMETHING"
+                            }
+                        ],
+                        "id": "UNIQUE_SOMETHING",
+                        "name": "Datapoint Ruleset UNIQUE_SOMETHING",
+                        "names": {
+                            "en": "Datapoint Ruleset UNIQUE_SOMETHING"
+                        },
+                        "rulesetDefinition": "Here we should have a real VTL program instead...",
+                        "rulesetScope": "valuedomain",
+                        "rulesetType": "datapoint"
+                    }
+                ]
+            }
+        ],
+        "namePersonalisationSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "namepersonalisationscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisationScheme=BIS.TEST:TEST_NPS(1.0)"
+                    }
+                ],
+                "id": "TEST_NPS",
+                "name": "Test for name personalisations",
+                "names": {
+                    "en": "Test for name personalisations"
+                },
+                "version": "1.0",
+                "agencyID": "BIS.TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "vtlVersion": "2.1",
+                "isPartial": false,
+                "namePersonalisations": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "namepersonalisation",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisation=BIS.TEST:TEST_NPS(1.0).ALDF"
+                            }
+                        ],
+                        "id": "ALDF",
+                        "name": "Alias for Dataflow",
+                        "names": {
+                            "en": "Alias for Dataflow"
+                        },
+                        "vtlDefaultName": "Dataflow",
+                        "personalisedName": "Dataset",
+                        "vtlArtefact": "Dataflow"
+                    }
+                ]
+            }
+        ],
+        "customTypeSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "customtypescheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.transformation.CustomTypeScheme=TEST:TS_CTS(1.0)"
+                    }
+                ],
+                "id": "TS_CTS",
+                "name": "Test Custom Types",
+                "names": {
+                    "en": "Test Custom Types"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "vtlVersion": "2.1",
+                "isPartial": false,
+                "customTypes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "customtype",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.transformation.CustomType=TEST:TS_CTS(1.0).TITLE"
+                            }
+                        ],
+                        "id": "TITLE",
+                        "name": "Title",
+                        "names": {
+                            "en": "Title"
+                        },
+                        "vtlScalarType": "String",
+                        "dataType": "String",
+                        "nullValue": "null"
+                    }
+                ]
+            }
+        ]
+    }
+}
