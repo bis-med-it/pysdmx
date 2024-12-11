@@ -17,7 +17,6 @@ from msgspec import Struct
 from pysdmx.errors import Invalid
 from pysdmx.model.__base import (
     Agency,
-    Annotation,
     DataProvider,
     MaintainableArtefact,
 )
@@ -421,20 +420,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True):
         version: The version of the data structure.
     """
 
-    agency: Union[str, Agency] = ""
-    annotations: Sequence[Annotation] = ()
-    id: str = ""
-    description: Optional[str] = None
-    is_external_reference: bool = False
-    is_final: bool = False
-    name: Optional[str] = None
-    service_url: Optional[str] = None
-    structure_url: Optional[str] = None
-    uri: Optional[str] = None
-    urn: Optional[str] = None
-    valid_from: Optional[datetime] = None
-    valid_to: Optional[datetime] = None
-    version: str = "1.0"
+    pass
 
 
 class Dataflow(MaintainableArtefact, frozen=True, omit_defaults=True):
