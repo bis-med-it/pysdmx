@@ -9,4 +9,4 @@ Mapping definitions
     - :ref:`map`.
 
 .. automodule:: pysdmx.model.map
-    :members: StructureMap, ComponentMap, MultiComponentMap, ValueMap, MultiValueMap, ImplicitComponentMap, FixedValueMap, DatePatternMap
+    :members: StructureMap, ComponentMap, RepresentationMap, MultiComponentMap, MultiRepresentationMap, ValueMap, MultiValueMap, ImplicitComponentMap, FixedValueMap, DatePatternMap
