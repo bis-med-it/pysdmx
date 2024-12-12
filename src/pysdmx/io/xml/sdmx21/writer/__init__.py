@@ -47,6 +47,7 @@ def writer(
         header = Header()
 
     ss_namespaces = ""
+    add_namespace_structure = False
 
     if type_ in (
         MessageType.StructureSpecificDataSet,
@@ -56,6 +57,7 @@ def writer(
         header.dataset_references = {k: ALL_DIM for k in content.keys()}
         # TODO: How to set the dimension at observation?
         if type_ == MessageType.StructureSpecificDataSet:
+            add_namespace_structure = True
             for i, (short_urn, dimension) in enumerate(
                 header.dataset_references.items()
             ):
@@ -66,7 +68,7 @@ def writer(
                 )
 
     outfile = create_namespaces(type_, ss_namespaces, prettyprint)
-    outfile += __write_header(header, prettyprint)
+    outfile += __write_header(header, prettyprint, add_namespace_structure)
     if type_ == MessageType.Structure:
         outfile += write_structures(content, prettyprint)
     elif type_ == MessageType.StructureSpecificDataSet:

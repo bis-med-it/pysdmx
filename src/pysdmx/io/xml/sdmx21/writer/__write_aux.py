@@ -151,12 +151,15 @@ def add_indent(indent: str) -> str:
     return indent + "\t"
 
 
-def __write_header(header: Header, prettyprint: bool) -> str:
+def __write_header(
+    header: Header, prettyprint: bool, add_namespace_structure: bool
+) -> str:
     """Writes the Header part of the message.
 
     Args:
         header: The Header to be written
         prettyprint: Prettyprint or not
+        add_namespace_structure: Add the namespace for the structure
 
     Returns:
         The XML string
@@ -176,7 +179,6 @@ def __write_header(header: Header, prettyprint: bool) -> str:
         """
         if not value:
             return ""
-        nl = "\n" if prettyprint else ""
         child2 = "\t\t" if prettyprint else ""
         return (
             f"{nl}{child2}<{ABBR_MSG}:{element}>"
@@ -198,27 +200,27 @@ def __write_header(header: Header, prettyprint: bool) -> str:
         """
         if not id_:
             return ""
-        nl = "\n" if prettyprint else ""
         child2 = "\t\t" if prettyprint else ""
         return f"{nl}{child2}<{ABBR_MSG}:{element} id={id_!r}/>"
 
     def __reference(urn_structure: str, dimension: str) -> str:
-        nl = "\n" if prettyprint else ""
         child2 = "\t\t" if prettyprint else ""
         child3 = "\t\t\t" if prettyprint else ""
         child4 = "\t\t\t\t" if prettyprint else ""
-
+        namespace = ""
         reference = parse_short_urn(urn_structure)
-        namespace = (
-            f"{URN_DS_BASE}={reference.agency}:{reference.id}"
-            f"({reference.version})"
-        )
+        if add_namespace_structure:
+            namespace = (
+                f"{URN_DS_BASE}={reference.agency}:{reference.id}"
+                f"({reference.version})"
+            )
+            namespace = f"namespace={namespace!r} "
 
         return (
             # First the message structure
             f"{nl}{child2}<{ABBR_MSG}:Structure "
             f"structureID={reference.id!r} "
-            f"namespace={namespace!r} "
+            f"{namespace}"
             f"dimensionAtObservation={dimension!r}>"
             # Then the common structure
             f"{nl}{child3}<{ABBR_COM}:Structure>"
