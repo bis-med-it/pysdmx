@@ -56,7 +56,7 @@ However, metadata can do so much more than that, i.e. they can be "active" and
 - :ref:`config`
 
 ``pysdmx`` supports retrieving metadata from an SDMX Registry or any service
-compliant with the SDMX-REST 2.0.0 API.
+compliant with the SDMX-REST 2.0.0 (or above) API.
 
 Install ``pysdmx`` with the ``fmr`` extra to enable this functionality:
 
@@ -73,6 +73,15 @@ allow:
 - Listing public SDMX services.
 - Discovering data available in these services.
 - Retrieving data from these services.
+
+Although this functionality is still under development, it is already
+possible to :ref:`build SDMX-REST queries and execute them against a 
+web service<sdmx-rest>`.
+
+Reading and writing SDMX datasets
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[TO BE COMPLETED]
 
 How can I get it?
 -----------------
