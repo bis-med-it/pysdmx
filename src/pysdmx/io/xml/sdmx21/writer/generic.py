@@ -262,58 +262,17 @@ def __series_processing(
         obs: pd.DataFrame,
     ) -> None:
         data_dict["Series"][0]["Obs"] = obs.to_dict(orient="records")
-        output_list.append(__format_ser_str(data_dict))
+        output_list.append(
+            __format_ser_str(
+                data_info=data_dict,
+                series_codes=series_codes,
+                series_att_codes=series_att_codes,
+                obs_codes=obs_codes,
+                obs_att_codes=obs_att_codes,
+                prettyprint=prettyprint,
+            )
+        )
         del data_dict["Series"][0]
-
-    def __format_ser_str(data_info: Dict[str, Any]) -> str:
-        child2 = "\t\t" if prettyprint else ""
-        child3 = "\t\t\t" if prettyprint else ""
-        child4 = "\t\t\t\t" if prettyprint else ""
-        child5 = "\t\t\t\t\t" if prettyprint else ""
-        nl = "\n" if prettyprint else ""
-
-        out_element = f"{child2}<{ABBR_GEN}:Series>"
-
-        # Series Key writing
-        out_element += f"{child3}<{ABBR_GEN}:SeriesKey>{nl}"
-        for k, v in data_info.items():
-            if k in series_codes:
-                out_element += f"{child4}{__value(k, v)}{nl}"
-        out_element += f"{child3}</{ABBR_GEN}:SeriesKey>{nl}"
-
-        # Series Attributes writing
-        if len(series_att_codes) > 0:
-            out_element += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
-            for k, v in data_info.items():
-                if k in series_att_codes:
-                    out_element += f"{child4}{__value(k, v)}{nl}"
-            out_element += f"{child3}</{ABBR_GEN}:Attributes>{nl}"
-
-        # Obs writing
-        for obs in data_info["Obs"]:
-            out_element += f"{child3}<{ABBR_GEN}:Obs>{nl}"
-
-            # Obs Dimension writing
-            out_element += (
-                f"{child4}<{ABBR_GEN}:ObsDimension value={obs_codes[0]!r}>{nl}"
-            )
-            # Obs Value writing
-            out_element += (
-                f"{child4}<{ABBR_GEN}:ObsValue value={obs_codes[1]!r}/>{nl}"
-            )
-
-            # Obs Attributes writing
-            if len(obs_att_codes) > 0:
-                out_element += f"{child4}<{ABBR_GEN}:Attributes>{nl}"
-                for k, v in obs.items():
-                    if k in obs_att_codes:
-                        out_element += f"{child5}{__value(k, v)}{nl}"
-                out_element += f"{child4}</{ABBR_GEN}:Attributes>{nl}"
-            out_element += f"{child3}<{ABBR_GEN}:Obs>"
-
-        out_element += f"{child2}</{ABBR_GEN}:Series>"
-
-        return out_element
 
     # Getting each datapoint from data and creating dict
     data = data.sort_values(series_codes, axis=0)
@@ -327,3 +286,61 @@ def __series_processing(
     out = __generate_series_str()
 
     return out
+
+
+def __format_ser_str(
+    data_info: Dict[str, Any],
+    series_codes: List[str],
+    series_att_codes: List[str],
+    obs_codes: List[str],
+    obs_att_codes: List[str],
+    prettyprint: bool,
+) -> str:
+    child2 = "\t\t" if prettyprint else ""
+    child3 = "\t\t\t" if prettyprint else ""
+    child4 = "\t\t\t\t" if prettyprint else ""
+    child5 = "\t\t\t\t\t" if prettyprint else ""
+    nl = "\n" if prettyprint else ""
+
+    out_element = f"{child2}<{ABBR_GEN}:Series>"
+
+    # Series Key writing
+    out_element += f"{child3}<{ABBR_GEN}:SeriesKey>{nl}"
+    for k, v in data_info.items():
+        if k in series_codes:
+            out_element += f"{child4}{__value(k, v)}{nl}"
+    out_element += f"{child3}</{ABBR_GEN}:SeriesKey>{nl}"
+
+    # Series Attributes writing
+    if len(series_att_codes) > 0:
+        out_element += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
+        for k, v in data_info.items():
+            if k in series_att_codes:
+                out_element += f"{child4}{__value(k, v)}{nl}"
+        out_element += f"{child3}</{ABBR_GEN}:Attributes>{nl}"
+
+    # Obs writing
+    for obs in data_info["Obs"]:
+        out_element += f"{child3}<{ABBR_GEN}:Obs>{nl}"
+
+        # Obs Dimension writing
+        out_element += (
+            f"{child4}<{ABBR_GEN}:ObsDimension value={obs_codes[0]!r}>{nl}"
+        )
+        # Obs Value writing
+        out_element += (
+            f"{child4}<{ABBR_GEN}:ObsValue value={obs_codes[1]!r}/>{nl}"
+        )
+
+        # Obs Attributes writing
+        if len(obs_att_codes) > 0:
+            out_element += f"{child4}<{ABBR_GEN}:Attributes>{nl}"
+            for k, v in obs.items():
+                if k in obs_att_codes:
+                    out_element += f"{child5}{__value(k, v)}{nl}"
+            out_element += f"{child4}</{ABBR_GEN}:Attributes>{nl}"
+        out_element += f"{child3}<{ABBR_GEN}:Obs>"
+
+    out_element += f"{child2}</{ABBR_GEN}:Series>"
+
+    return out_element
