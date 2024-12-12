@@ -8,5 +8,5 @@ SDMX service in a synchronous (i.e. blocking fashion).
 >>> gr = RegistryClient("https://registry.sdmx.org/sdmx/v2/")
 >>> schema = gr.get_schema("dataflow", "UIS", "EDUCAT_CLASS_A", "1.0")
 
-.. autoclass:: pysdmx.fmr.RegistryClient
+.. autoclass:: pysdmx.api.fmr.RegistryClient
     :members:

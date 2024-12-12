@@ -12,5 +12,5 @@ SDMX service in an asynchronous (i.e. non-blocking fashion).
 >>>     print(mapping)
 >>> asyncio.run(main())
 
-.. autoclass:: pysdmx.fmr.AsyncRegistryClient
+.. autoclass:: pysdmx.api.fmr.AsyncRegistryClient
     :members:
