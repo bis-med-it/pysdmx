@@ -6,7 +6,6 @@ from typing import Dict, Optional
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.enums import MessageType
-from pysdmx.model import Schema
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
@@ -317,15 +316,3 @@ def check_content_dataset(content: Dict[str, PandasDataset]):
     for dataset in content.values():
         if not isinstance(dataset, PandasDataset):
             raise Invalid("Message Content must be a dataset")
-
-
-def remove_optional_attributes_empty_data(
-    outfile: str, dataset: PandasDataset
-) -> str:
-    """This function removes data when optional attributes are found."""
-    if isinstance(dataset.structure, Schema):
-        for att in dataset.structure.components.attributes:
-            if not att.required:
-                outfile = outfile.replace(f"{att.id}='' ", "")
-                outfile = outfile.replace(f'{att.id}="" ', "")
-    return outfile

@@ -11,12 +11,12 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     CHUNKSIZE,
     get_codes,
     get_structure,
-    remove_optional_attributes_empty_data,
 )
+from pysdmx.model import Schema
 from pysdmx.util import parse_urn
 
 
-def __memory_optimization_str(
+def __memory_optimization_writing(
     dataset: PandasDataset, prettyprint: bool
 ) -> str:
     """Memory optimization for writing data."""
@@ -28,17 +28,19 @@ def __memory_optimization_str(
         while previous <= length_:
             # Sliding a window for efficient access to the data
             # and avoid memory issues
-            outfile += __obs_str(
+            outfile += __obs_processing(
                 dataset.data.iloc[previous:next_], prettyprint
             )
             previous = next_
             next_ += CHUNKSIZE
 
             if next_ >= length_:
-                outfile += __obs_str(dataset.data.iloc[previous:], prettyprint)
+                outfile += __obs_processing(
+                    dataset.data.iloc[previous:], prettyprint
+                )
                 previous = next_
     else:
-        outfile += __obs_str(dataset.data, prettyprint)
+        outfile += __obs_processing(dataset.data, prettyprint)
 
     return outfile
 
@@ -82,6 +84,16 @@ def __write_data_single_dataset(
     Returns:
         The data in SDMX-ML 2.1 Structure-Specific format, as string.
     """
+
+    def __remove_optional_attributes_empty_data(str_to_check: str) -> str:
+        """This function removes data when optional attributes are found."""
+        if isinstance(dataset.structure, Schema):
+            for att in dataset.structure.components.attributes:
+                if not att.required:
+                    str_to_check = str_to_check.replace(f"{att.id}='' ", "")
+                    str_to_check = str_to_check.replace(f'{att.id}="" ', "")
+        return str_to_check
+
     outfile = ""
     structure_urn = get_structure(dataset)
     id_structure = parse_urn(structure_urn).id
@@ -106,7 +118,7 @@ def __write_data_single_dataset(
     )
 
     if dim == ALL_DIM:
-        outfile += __memory_optimization_str(dataset, prettyprint)
+        outfile += __memory_optimization_writing(dataset, prettyprint)
     else:
         series_codes, obs_codes = get_codes(dim, dataset)
 
@@ -118,14 +130,14 @@ def __write_data_single_dataset(
         )
 
     # Remove optional attributes empty data
-    outfile = remove_optional_attributes_empty_data(outfile, dataset)
+    outfile = __remove_optional_attributes_empty_data(outfile)
 
     outfile += f"{child1}</{ABBR_MSG}:DataSet>"
 
     return outfile.replace("'", '"')
 
 
-def __obs_str(data: pd.DataFrame, prettyprint: bool = True) -> str:
+def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
     def __format_obs_str(element: Dict[str, Any]) -> str:
         if prettyprint:
             child2 = "\t\t"
