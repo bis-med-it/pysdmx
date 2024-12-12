@@ -40,6 +40,7 @@ Your opinionated Python SDMX library.
 
    api/model
    api/fmr
+   api/rest
    api/helper
 
 Indices and tables
