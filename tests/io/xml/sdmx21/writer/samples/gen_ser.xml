@@ -5,7 +5,7 @@
 		<mes:Test>true</mes:Test>
 		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
 		<mes:Sender id="ZZZ"/>
-		<mes:Structure structureID="TEST" dimensionAtObservation="AllDimensions">
+		<mes:Structure structureID="TEST" dimensionAtObservation="DIM1">
 			<com:Structure>
 				<Ref agencyID="MD" id="TEST" version="1.0" class="DataStructure"/>
 			</com:Structure>
@@ -16,44 +16,35 @@
 			<gen:Value id="ds_att1" value="value1"/>
 			<gen:Value id="ds_att2" value="10"/>
 		</gen:Attributes>
-		<gen:Obs>
-			<gen:ObsKey>
-				<gen:Value id="DIM1" value="1"/>
+		<gen:Series>
+			<gen:SeriesKey>
 				<gen:Value id="DIM2" value="4"/>
 				<gen:Value id="ATT1" value="A"/>
-			</gen:ObsKey>
-			<gen:ObsValue value="10"/>
-			<gen:Attributes>
-				<gen:Value id="DIM1" value="1"/>
-				<gen:Value id="DIM2" value="4"/>
-				<gen:Value id="ATT1" value="A"/>
-			</gen:Attributes>
-		</gen:Obs>
-		<gen:Obs>
-			<gen:ObsKey>
-				<gen:Value id="DIM1" value="2"/>
+			</gen:SeriesKey>
+			<gen:Obs>
+				<gen:ObsDimension value="1"/>
+				<gen:ObsValue value="M1"/>
+			</gen:Obs>
+		</gen:Series>
+		<gen:Series>
+			<gen:SeriesKey>
 				<gen:Value id="DIM2" value="5"/>
 				<gen:Value id="ATT1" value="B"/>
-			</gen:ObsKey>
-			<gen:ObsValue value="11"/>
-			<gen:Attributes>
-				<gen:Value id="DIM1" value="2"/>
-				<gen:Value id="DIM2" value="5"/>
-				<gen:Value id="ATT1" value="B"/>
-			</gen:Attributes>
-		</gen:Obs>
-		<gen:Obs>
-			<gen:ObsKey>
-				<gen:Value id="DIM1" value="3"/>
+			</gen:SeriesKey>
+			<gen:Obs>
+				<gen:ObsDimension value="2"/>
+				<gen:ObsValue value="M1"/>
+			</gen:Obs>
+		</gen:Series>
+		<gen:Series>
+			<gen:SeriesKey>
 				<gen:Value id="DIM2" value="6"/>
 				<gen:Value id="ATT1" value="C"/>
-			</gen:ObsKey>
-			<gen:ObsValue value="12"/>
-			<gen:Attributes>
-				<gen:Value id="DIM1" value="3"/>
-				<gen:Value id="DIM2" value="6"/>
-				<gen:Value id="ATT1" value="C"/>
-			</gen:Attributes>
-		</gen:Obs>
+			</gen:SeriesKey>
+			<gen:Obs>
+				<gen:ObsDimension value="3"/>
+				<gen:ObsValue value="M1"/>
+			</gen:Obs>
+		</gen:Series>
 	</mes:DataSet>
 </mes:GenericData>

@@ -85,23 +85,28 @@ def __memory_optimization_writing(
 
 
 def write_data_generic(
-    datasets: Dict[str, PandasDataset], prettyprint: bool = True
+    datasets: Dict[str, PandasDataset],
+    dim_mapping: Dict[str, str],
+    prettyprint: bool = True,
 ) -> str:
-    """Write data to SDMX-ML 2.1 Generic format.
+    """Write data to SDMX-ML 2.1 Structure-Specific format.
 
     Args:
         datasets: dict. Datasets to be written.
+        dim_mapping: dict. URN-DimensionAtObservation mapping.
         prettyprint: bool. Prettyprint or not.
 
     Returns:
-        The data in SDMX-ML 2.1 Generic format, as string.
+        The data in SDMX-ML 2.1 Structure-Specific format, as string.
     """
     outfile = ""
 
-    for dataset in datasets.values():
+    for short_urn, dataset in datasets.items():
         dataset.writing_validation()
         outfile += __write_data_single_dataset(
-            dataset=dataset, prettyprint=prettyprint
+            dataset=dataset,
+            prettyprint=prettyprint,
+            dim=dim_mapping[short_urn],
         )
 
     return outfile
@@ -269,7 +274,7 @@ def __series_processing(
         data_dict["Series"][0]["Obs"] = obs.to_dict(orient="records")
         output_list.append(
             __format_ser_str(
-                data_info=data_dict,
+                data_info=data_dict["Series"][0],
                 series_codes=series_codes,
                 series_att_codes=series_att_codes,
                 obs_codes=obs_codes,
@@ -294,7 +299,7 @@ def __series_processing(
 
 
 def __format_ser_str(
-    data_info: Dict[str, Any],
+    data_info: Dict[Any, Any],
     series_codes: List[str],
     series_att_codes: List[str],
     obs_codes: List[str],
@@ -307,7 +312,7 @@ def __format_ser_str(
     child5 = "\t\t\t\t\t" if prettyprint else ""
     nl = "\n" if prettyprint else ""
 
-    out_element = f"{child2}<{ABBR_GEN}:Series>"
+    out_element = f"{child2}<{ABBR_GEN}:Series>{nl}"
 
     # Series Key writing
     out_element += f"{child3}<{ABBR_GEN}:SeriesKey>{nl}"
@@ -331,7 +336,7 @@ def __format_ser_str(
         # Obs Dimension writing
         out_element += (
             f"{child4}<{ABBR_GEN}:ObsDimension "
-            f"value={str(obs[obs_codes[0]])!r}>{nl}"
+            f"value={str(obs[obs_codes[0]])!r}/>{nl}"
         )
         # Obs Value writing
         out_element += (
@@ -345,8 +350,8 @@ def __format_ser_str(
                 if k in obs_att_codes:
                     out_element += f"{child5}{__value(k, v)}{nl}"
             out_element += f"{child4}</{ABBR_GEN}:Attributes>{nl}"
-        out_element += f"{child3}<{ABBR_GEN}:Obs>"
+        out_element += f"{child3}</{ABBR_GEN}:Obs>{nl}"
 
-    out_element += f"{child2}</{ABBR_GEN}:Series>"
+    out_element += f"{child2}</{ABBR_GEN}:Series>{nl}"
 
     return out_element

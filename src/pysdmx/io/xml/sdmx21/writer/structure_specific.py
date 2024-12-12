@@ -47,12 +47,15 @@ def __memory_optimization_writing(
 
 
 def write_data_structure_specific(
-    datasets: Dict[str, PandasDataset], prettyprint: bool = True
+    datasets: Dict[str, PandasDataset],
+    dim_mapping: Dict[str, str],
+    prettyprint: bool = True,
 ) -> str:
     """Write data to SDMX-ML 2.1 Structure-Specific format.
 
     Args:
         datasets: dict. Datasets to be written.
+        dim_mapping: dict. URN-DimensionAtObservation mapping.
         prettyprint: bool. Prettyprint or not.
 
     Returns:
@@ -60,9 +63,12 @@ def write_data_structure_specific(
     """
     outfile = ""
 
-    for i, dataset in enumerate(datasets.values()):
+    for i, (short_urn, dataset) in enumerate(datasets.items()):
         outfile += __write_data_single_dataset(
-            dataset=dataset, prettyprint=prettyprint, count=i + 1
+            dataset=dataset,
+            prettyprint=prettyprint,
+            count=i + 1,
+            dim=dim_mapping[short_urn],
         )
 
     return outfile
@@ -183,16 +189,13 @@ def __series_processing(
         obs: Any,
     ) -> Any:
         data_dict["Series"][0]["Obs"] = obs.to_dict(orient="records")
-        output_list.append(__format_ser_str(data_dict))
+        output_list.append(__format_ser_str(data_dict["Series"][0]))
         del data_dict["Series"][0]
 
-    def __format_ser_str(data_info: Dict[str, Any]) -> str:
-        if prettyprint:
-            child2 = "\t\t"
-            child3 = "\t\t\t"
-            nl = "\n"
-        else:
-            child2 = child3 = nl = ""
+    def __format_ser_str(data_info: Dict[Any, Any]) -> str:
+        child2 = "\t\t" if prettyprint else ""
+        child3 = "\t\t\t" if prettyprint else ""
+        nl = "\n" if prettyprint else ""
 
         out_element = f"{child2}<Series "
 

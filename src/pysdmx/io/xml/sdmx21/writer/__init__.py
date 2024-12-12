@@ -6,8 +6,8 @@ from pysdmx.errors import NotImplemented
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     __write_header,
-    ALL_DIM,
     check_content_dataset,
+    check_dimension_at_observation,
     create_namespaces,
     get_end_message,
 )
@@ -27,6 +27,7 @@ def writer(
     path: str = "",
     prettyprint: bool = True,
     header: Optional[Header] = None,
+    dimension_at_observation: Optional[Dict[str, str]] = None,
 ) -> Optional[str]:
     """This function writes a SDMX-ML file from the Message Content.
 
@@ -36,6 +37,8 @@ def writer(
         path: The path to save the file
         prettyprint: Prettyprint or not
         header: The header to be used (generated if None)
+        dimension_at_observation:
+          The mapping between the dataset and the dimension at observation
 
     Returns:
         The XML string if path is empty, None otherwise
@@ -49,13 +52,19 @@ def writer(
     ss_namespaces = ""
     add_namespace_structure = False
 
+    # Checking if we have datasets,
+    # we need to ensure we can write them correctly
+    dim_mapping: Dict[str, str] = {}
     if type_ in (
         MessageType.StructureSpecificDataSet,
         MessageType.GenericDataSet,
     ):
         check_content_dataset(content)
-        header.dataset_references = {k: ALL_DIM for k in content.keys()}
-        # TODO: How to set the dimension at observation?
+        # Checking the dimension at observation mapping
+        dim_mapping = check_dimension_at_observation(
+            content, dimension_at_observation
+        )
+        header.dataset_references = dim_mapping
         if type_ == MessageType.StructureSpecificDataSet:
             add_namespace_structure = True
             for i, (short_urn, dimension) in enumerate(
@@ -67,14 +76,21 @@ def writer(
                     f':ObsLevelDim:{dimension}" '
                 )
 
+    # Generating the initial tag with namespaces
     outfile = create_namespaces(type_, ss_namespaces, prettyprint)
+    # Generating the header
     outfile += __write_header(header, prettyprint, add_namespace_structure)
+    # Writing the content
     if type_ == MessageType.Structure:
         outfile += write_structures(content, prettyprint)
     elif type_ == MessageType.StructureSpecificDataSet:
-        outfile += write_data_structure_specific(content, prettyprint)
+        outfile += write_data_structure_specific(
+            content, dim_mapping, prettyprint
+        )
     elif type_ == MessageType.GenericDataSet:
-        outfile += write_data_generic(content, prettyprint)
+        outfile += write_data_generic(
+            content, dim_mapping, prettyprint
+        )
     else:
         raise NotImplemented(f"MessageType {type_} not implemented")
 

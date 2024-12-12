@@ -36,6 +36,7 @@ def content():
         data=pd.DataFrame(
             {
                 "DIM1": [1, 2, 3],
+                "DIM2": [4, 5, 6],
                 "ATT1": ["A", "B", "C"],
                 "ATT2": [7, 8, 9],
                 "M1": [10, 11, 12],
@@ -52,6 +53,12 @@ def content():
                         id="DIM1",
                         role=Role.DIMENSION,
                         concept=Concept(id="DIM1"),
+                        required=True,
+                    ),
+                    Component(
+                        id="DIM2",
+                        role=Role.DIMENSION,
+                        concept=Concept(id="DIM2"),
                         required=True,
                     ),
                     Component(
@@ -83,16 +90,34 @@ def content():
 
 
 @pytest.mark.parametrize(
-    ("message_type", "filename"),
+    ("message_type", "filename", "dimension_at_observation"),
     [
-        (MessageType.GenericDataSet, "gen_all.xml"),
-        (MessageType.StructureSpecificDataSet, "str_all.xml"),
+        (MessageType.GenericDataSet, "gen_all.xml", {}),
+        (MessageType.StructureSpecificDataSet, "str_all.xml", None),
+        (
+            MessageType.GenericDataSet,
+            "str_ser.xml",
+            {"DataStructure=MD:TEST(1.0)": "DIM1"},
+        ),
+        (
+            MessageType.StructureSpecificDataSet,
+            "gen_ser.xml",
+            {"DataStructure=MD:TEST(1.0)": "DIM1"},
+        ),
     ],
 )
-def test_gen_all(header, content, message_type, filename):
+def test_data_writing(
+    header, content, message_type, filename, dimension_at_observation
+):
     samples_folder_path = Path(__file__).parent / "samples"
     # Write from Dataset
-    result = writer(content, type_=message_type, header=header)
+    result = writer(
+        content,
+        type_=message_type,
+        header=header,
+        dimension_at_observation=dimension_at_observation,
+    )
+    print(result)
     # Read the result to check for formal errors
     result_msg = read_xml(result, validate=True)
     assert "DataStructure=MD:TEST(1.0)" in result_msg

@@ -308,3 +308,32 @@ def check_content_dataset(content: Dict[str, PandasDataset]) -> None:
     for dataset in content.values():
         if not isinstance(dataset, PandasDataset):
             raise Invalid("Message Content must contain only Datasets.")
+
+
+def check_dimension_at_observation(
+    content: Dict[str, PandasDataset],
+    dimension_at_observation: Optional[Dict[str, str]],
+) -> Dict[str, str]:
+    """This function checks if the dimension at observation is valid."""
+    if dimension_at_observation is None:
+        dimension_at_observation = {k: ALL_DIM for k in content.keys()}
+        return dimension_at_observation
+    for ds in content.values():
+        ds.writing_validation()
+    for key, value in dimension_at_observation.items():
+        if key not in content:
+            raise Invalid(f"Dataset {key} not found in Message content.")
+        dimension_codes = [
+            dim.id for dim in content[key].structure.components.dimensions
+        ]
+        if value not in dimension_codes:
+            raise Invalid(
+                f"Dimension at observation {value} "
+                f"not found in dataset {key}."
+            )
+
+    for key, dataset in content.items():
+        dataset.writing_validation()
+        if key not in dimension_at_observation:
+            dimension_at_observation[key] = ALL_DIM
+    return dimension_at_observation
