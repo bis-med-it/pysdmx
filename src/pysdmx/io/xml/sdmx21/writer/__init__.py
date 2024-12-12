@@ -11,8 +11,9 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     create_namespaces,
     get_end_message,
 )
+from pysdmx.io.xml.sdmx21.writer.generic import write_data_generic
 from pysdmx.io.xml.sdmx21.writer.structure import (
-    generate_structures,
+    write_structures,
 )
 from pysdmx.io.xml.sdmx21.writer.structure_specific import (
     write_data_structure_specific,
@@ -67,9 +68,11 @@ def writer(
     outfile = create_namespaces(type_, ss_namespaces, prettyprint)
     outfile += __write_header(header, prettyprint)
     if type_ == MessageType.Structure:
-        outfile += generate_structures(content, prettyprint)
+        outfile += write_structures(content, prettyprint)
     elif type_ == MessageType.StructureSpecificDataSet:
         outfile += write_data_structure_specific(content, prettyprint)
+    elif type_ == MessageType.GenericDataSet:
+        outfile += write_data_generic(content, prettyprint)
     else:
         raise NotImplemented(f"MessageType {type_} not implemented")
 

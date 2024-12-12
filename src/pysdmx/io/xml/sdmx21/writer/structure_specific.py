@@ -13,7 +13,7 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     get_structure,
 )
 from pysdmx.model import Schema
-from pysdmx.util import parse_urn
+from pysdmx.util import parse_short_urn
 
 
 def __memory_optimization_writing(
@@ -96,7 +96,7 @@ def __write_data_single_dataset(
 
     outfile = ""
     structure_urn = get_structure(dataset)
-    id_structure = parse_urn(structure_urn).id
+    id_structure = parse_short_urn(structure_urn).id
 
     if prettyprint:
         child1 = "\t"
@@ -120,6 +120,7 @@ def __write_data_single_dataset(
     if dim == ALL_DIM:
         outfile += __memory_optimization_writing(dataset, prettyprint)
     else:
+        dataset.validate()
         series_codes, obs_codes = get_codes(dim, dataset)
 
         outfile += __series_processing(

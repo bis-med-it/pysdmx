@@ -14,7 +14,7 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     get_structure,
 )
 from pysdmx.model import Schema
-from pysdmx.util import parse_urn
+from pysdmx.util import parse_short_urn
 
 
 def __value(id: str, value: str) -> str:
@@ -95,6 +95,7 @@ def write_data_generic(
     outfile = ""
 
     for dataset in datasets.values():
+        dataset.validate()
         outfile += __write_data_single_dataset(
             dataset=dataset, prettyprint=prettyprint
         )
@@ -131,7 +132,7 @@ def __write_data_single_dataset(
 
     outfile = ""
     structure_urn = get_structure(dataset)
-    id_structure = parse_urn(structure_urn).id
+    id_structure = parse_short_urn(structure_urn).id
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
