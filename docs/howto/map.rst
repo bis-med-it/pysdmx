@@ -170,7 +170,7 @@ mappings can be retrieved via the ``component_maps`` property:
         #     target='CONTRACT',
         #     values=[
         #         ValueMap(source='PROD TYPE', target='_T', valid_from=None, valid_to=None),
-        #         ValueMap(source=re.compile('^([A-Z0-9]+)$'), target='\\1', valid_from=None, valid_to=None)
+        #         ValueMap(source='regex:^([A-Z0-9]+)$', target='\\1', valid_from=None, valid_to=None)
         #     ]
         # )
 
