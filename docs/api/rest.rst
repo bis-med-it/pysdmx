@@ -1,5 +1,5 @@
-SDMX-REST queries
-=================
+SDMX-REST services
+==================
 
 Overview
 --------
