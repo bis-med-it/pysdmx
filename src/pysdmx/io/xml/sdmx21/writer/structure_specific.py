@@ -1,3 +1,4 @@
+# mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 2.1 Structure Specific data messages."""
 
 from typing import Any, Dict, List
@@ -169,7 +170,7 @@ def __series_processing(
     prettyprint: bool = True,
 ) -> str:
     def __generate_series_str() -> str:
-        out_list = []
+        out_list: List[str] = []
         if all(elem in data.columns for elem in obs_codes):
             data.groupby(by=series_codes)[obs_codes].apply(
                 lambda x: __format_dict_ser(out_list, x)
@@ -178,9 +179,9 @@ def __series_processing(
         return "".join(out_list)
 
     def __format_dict_ser(
-        output_list: List[Any],
-        obs: pd.DataFrame,
-    ) -> None:
+        output_list: List[str],
+        obs: Any,
+    ) -> Any:
         data_dict["Series"][0]["Obs"] = obs.to_dict(orient="records")
         output_list.append(__format_ser_str(data_dict))
         del data_dict["Series"][0]

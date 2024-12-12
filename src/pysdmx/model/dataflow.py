@@ -395,7 +395,7 @@ class Schema(Struct, frozen=True, omit_defaults=True):
         return ", ".join(out)
 
     @property
-    def short_urn(self):
+    def short_urn(self) -> str:
         """Returns a short URN for the schema."""
         return f"{self.context}={self.agency}:{self.id}({self.version})"
 

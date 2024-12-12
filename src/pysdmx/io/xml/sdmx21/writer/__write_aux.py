@@ -1,7 +1,8 @@
+# mypy: disable-error-code="union-attr"
 """Writer auxiliary functions."""
 
 from collections import OrderedDict
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple, List
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.pd import PandasDataset
@@ -286,7 +287,9 @@ def remove_null_values_on_dataset(dataset: PandasDataset) -> PandasDataset:
     return dataset
 
 
-def get_codes(dimension_code: str, dataset: PandasDataset) -> tuple:
+def get_codes(
+    dimension_code: str, dataset: PandasDataset
+) -> Tuple[List[str], List[str]]:
     """This function gets the types and codes of a dataset."""
     series_codes = []
     obs_codes = [dimension_code, dataset.structure.components.measures[0].id]
@@ -311,7 +314,7 @@ def get_codes(dimension_code: str, dataset: PandasDataset) -> tuple:
     return series_codes, obs_codes
 
 
-def check_content_dataset(content: Dict[str, PandasDataset]):
+def check_content_dataset(content: Dict[str, PandasDataset]) -> None:
     """This function checks if the content is a dataset."""
     for dataset in content.values():
         if not isinstance(dataset, PandasDataset):

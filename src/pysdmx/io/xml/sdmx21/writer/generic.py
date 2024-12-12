@@ -1,5 +1,5 @@
+# mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 2.1 Generic data messages."""
-
 from typing import Any, Dict, List, Tuple
 
 import pandas as pd
@@ -36,7 +36,11 @@ def __generate_obs_structure(
     Returns:
         The structure of the observations
     """
-    obs_structure = ([], dataset.structure.components.measures[0].id, [])
+    obs_structure: Tuple[List[str], str, List[str]] = (
+        [],
+        dataset.structure.components.measures[0].id,
+        [],
+    )
     for dim in dataset.structure.components.dimensions:
         obs_structure[0].append(dim.id)
 
@@ -250,7 +254,7 @@ def __series_processing(
     prettyprint: bool = True,
 ) -> str:
     def __generate_series_str() -> str:
-        out_list = []
+        out_list: List[str] = []
         if all(elem in data.columns for elem in obs_codes):
             data.groupby(by=series_codes)[obs_codes].apply(
                 lambda x: __format_dict_ser(out_list, x)
@@ -259,9 +263,9 @@ def __series_processing(
         return "".join(out_list)
 
     def __format_dict_ser(
-        output_list: List[Any],
-        obs: pd.DataFrame,
-    ) -> None:
+        output_list: List[str],
+        obs: Any,
+    ) -> Any:
         data_dict["Series"][0]["Obs"] = obs.to_dict(orient="records")
         output_list.append(
             __format_ser_str(

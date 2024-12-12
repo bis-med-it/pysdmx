@@ -23,7 +23,7 @@ class PandasDataset(Dataset, frozen=False, kw_only=True):
 
     data: pd.DataFrame
 
-    def validate(self):
+    def validate(self) -> None:
         """Structural validation of the dataset."""
         if not isinstance(self.structure, Schema):
             raise Invalid(
