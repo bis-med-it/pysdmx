@@ -4,12 +4,21 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
 from pysdmx.io.xml.sdmx21.writer import writer
-from pysdmx.model import Schema, Components, Component, Role, Concept
+from pysdmx.model import (
+    Code,
+    Codelist,
+    Component,
+    Components,
+    Concept,
+    Role,
+    Schema,
+)
 from pysdmx.model.message import Header
 
 
@@ -21,7 +30,7 @@ def header():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def content():
     ds = PandasDataset(
         data=pd.DataFrame(
@@ -73,17 +82,17 @@ def content():
     return {ds.structure.short_urn: ds}
 
 
-params = [
-    (MessageType.GenericDataSet, "gen_all.xml"),
-    (MessageType.StructureSpecificDataSet, "str_all.xml"),
-]
-
-
-@pytest.mark.parametrize("type_, filename", params)
-def test_gen_all(header, content, type_, filename):
+@pytest.mark.parametrize(
+    ("message_type", "filename"),
+    [
+        (MessageType.GenericDataSet, "gen_all.xml"),
+        (MessageType.StructureSpecificDataSet, "str_all.xml"),
+    ],
+)
+def test_gen_all(header, content, message_type, filename):
     samples_folder_path = Path(__file__).parent / "samples"
     # Write from Dataset
-    result = writer(content, type_=type_, header=header)
+    result = writer(content, type_=message_type, header=header)
     # Read the result to check for formal errors
     result_msg = read_xml(result, validate=True)
     assert "DataStructure=MD:TEST(1.0)" in result_msg
@@ -98,3 +107,18 @@ def test_gen_all(header, content, type_, filename):
         reference_data.replace("nan", ""),
         check_like=True,
     )
+
+
+def test_invalid_content():
+    content = {
+        "Codelist=MD:TEST(1.0)": Codelist(
+            id="ID",
+            agency="MD",
+            version="1.0",
+            items=[Code(id="1", name="Name")],
+        )
+    }
+    with pytest.raises(
+        Invalid, match="Message Content must contain only Datasets."
+    ):
+        writer(content, type_=MessageType.StructureSpecificDataSet)

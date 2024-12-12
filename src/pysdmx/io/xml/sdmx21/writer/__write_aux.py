@@ -276,19 +276,6 @@ def get_structure(dataset: Dataset) -> str:
     return dataset.structure.short_urn
 
 
-def remove_null_values_on_dataset(dataset: PandasDataset) -> PandasDataset:
-    """This function removes null values from a dataset.
-
-    Args:
-        dataset: The dataset to remove null values from
-
-    Returns:
-        The dataset without null values
-    """
-    dataset.data = dataset.data.fillna(value="")
-    return dataset
-
-
 def get_codes(
     dimension_code: str, dataset: PandasDataset
 ) -> Tuple[List[str], List[str]]:
@@ -320,4 +307,4 @@ def check_content_dataset(content: Dict[str, PandasDataset]) -> None:
     """This function checks if the content is a dataset."""
     for dataset in content.values():
         if not isinstance(dataset, PandasDataset):
-            raise Invalid("Message Content must be a dataset")
+            raise Invalid("Message Content must contain only Datasets.")

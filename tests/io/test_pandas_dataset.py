@@ -3,7 +3,7 @@ import pytest
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
-from pysdmx.model import Schema, Component, Role, Concept, Components
+from pysdmx.model import Component, Components, Concept, Role, Schema
 
 
 def test_short_urn_using_full_urn():
@@ -148,7 +148,8 @@ def test_invalid_structure():
                 "M1": [10, 11, 12],
             }
         ),
-        structure="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_DER(1.0)",
+        structure="urn:sdmx:org.sdmx.infomodel.datastructure."
+        "DataStructure=BIS:BIS_DER(1.0)",
     )
     with pytest.raises(Invalid, match="Dataset Structure is not a Schema."):
         dataset.writing_validation()
@@ -238,11 +239,16 @@ def test_no_measures():
     ):
         dataset.writing_validation()
 
+
 def test_match_columns():
     dataset = PandasDataset(
         data=pd.DataFrame(
-            {"DIMX": [1, 2, 3], "ATT1": ["A", "B", "C"],
-             "ATT2": [7, 8, 9], "M1": [10, 11, 12]}
+            {
+                "DIMX": [1, 2, 3],
+                "ATT1": ["A", "B", "C"],
+                "ATT2": [7, 8, 9],
+                "M1": [10, 11, 12],
+            }
         ),
         structure=Schema(
             context="datastructure",
@@ -281,7 +287,5 @@ def test_match_columns():
             ),
         ),
     )
-    with pytest.raises(
-        Invalid, match="Data columns must match components."
-    ):
+    with pytest.raises(Invalid, match="Data columns must match components."):
         dataset.writing_validation()

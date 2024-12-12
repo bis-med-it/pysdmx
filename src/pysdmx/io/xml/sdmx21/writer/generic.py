@@ -329,7 +329,10 @@ def __format_ser_str(
         out_element += f"{child3}<{ABBR_GEN}:Obs>{nl}"
 
         # Obs Dimension writing
-        out_element += f"{child4}<{ABBR_GEN}:ObsDimension value={str(obs[obs_codes[0]])!r}>{nl}"
+        out_element += (
+            f"{child4}<{ABBR_GEN}:ObsDimension "
+            f"value={str(obs[obs_codes[0]])!r}>{nl}"
+        )
         # Obs Value writing
         out_element += (
             f"{child4}<{ABBR_GEN}:ObsValue value={str(obs_codes[1])!r}/>{nl}"
