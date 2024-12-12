@@ -1,0 +1,100 @@
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
+import pytest
+
+from pysdmx.io.input_processor import process_string_to_read
+from pysdmx.io.pd import PandasDataset
+from pysdmx.io.xml.enums import MessageType
+from pysdmx.io.xml.sdmx21.reader import read_xml
+from pysdmx.io.xml.sdmx21.writer import writer
+from pysdmx.model import Schema, Components, Component, Role, Concept
+from pysdmx.model.message import Header
+
+
+@pytest.fixture()
+def header():
+    return Header(
+        id="ID",
+        prepared=datetime.strptime("2021-01-01", "%Y-%m-%d"),
+    )
+
+
+@pytest.fixture
+def content():
+    ds = PandasDataset(
+        data=pd.DataFrame(
+            {
+                "DIM1": [1, 2, 3],
+                "ATT1": ["A", "B", "C"],
+                "ATT2": [7, 8, 9],
+                "M1": [10, 11, 12],
+            }
+        ),
+        structure=Schema(
+            context="DataStructure",
+            id="TEST",
+            agency="MD",
+            version="1.0",
+            components=Components(
+                [
+                    Component(
+                        id="DIM1",
+                        role=Role.DIMENSION,
+                        concept=Concept(id="DIM1"),
+                        required=True,
+                    ),
+                    Component(
+                        id="ATT1",
+                        role=Role.ATTRIBUTE,
+                        concept=Concept(id="ATT1"),
+                        required=False,
+                        attachment_level="D",
+                    ),
+                    Component(
+                        id="ATT2",
+                        role=Role.ATTRIBUTE,
+                        concept=Concept(id="ATT2"),
+                        required=False,
+                        attachment_level="O",
+                    ),
+                    Component(
+                        id="M1",
+                        role=Role.MEASURE,
+                        concept=Concept(id="M1"),
+                        required=True,
+                    ),
+                ]
+            ),
+        ),
+        attributes={"ds_att1": "value1", "ds_att2": 10},
+    )
+    return {ds.structure.short_urn: ds}
+
+
+params = [
+    (MessageType.GenericDataSet, "gen_all.xml"),
+    (MessageType.StructureSpecificDataSet, "str_all.xml"),
+]
+
+
+@pytest.mark.parametrize("type_, filename", params)
+def test_gen_all(header, content, type_, filename):
+    samples_folder_path = Path(__file__).parent / "samples"
+    # Write from Dataset
+    result = writer(content, type_=type_, header=header)
+    # Read the result to check for formal errors
+    result_msg = read_xml(result, validate=True)
+    assert "DataStructure=MD:TEST(1.0)" in result_msg
+    # Read the reference to compare with the result
+    infile, _ = process_string_to_read(samples_folder_path / filename)
+    reference_msg = read_xml(infile, validate=True)
+    result_data = result_msg["DataStructure=MD:TEST(1.0)"].data
+    reference_data = reference_msg["DataStructure=MD:TEST(1.0)"].data
+
+    pd.testing.assert_frame_equal(
+        result_data.fillna("").replace("nan", ""),
+        reference_data.replace("nan", ""),
+        check_like=True,
+    )

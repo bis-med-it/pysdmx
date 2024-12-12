@@ -107,7 +107,7 @@ def __write_data_single_dataset(
 
     attached_attributes_str = ""
     for k, v in dataset.attributes.items():
-        attached_attributes_str += f"{k}={v!r} "
+        attached_attributes_str += f"{k}={str(v)!r} "
 
     # Datasets
     outfile += (
@@ -121,7 +121,7 @@ def __write_data_single_dataset(
     if dim == ALL_DIM:
         outfile += __memory_optimization_writing(dataset, prettyprint)
     else:
-        dataset.validate()
+        dataset.writing_validation()
         series_codes, obs_codes = get_codes(dim, dataset)
 
         outfile += __series_processing(
@@ -150,7 +150,7 @@ def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
         out = f"{child2}<Obs "
 
         for k, v in element.items():
-            out += f"{k}={v!r} "
+            out += f"{k}={str(v)!r} "
 
         out += f"/>{nl}"
 
@@ -198,7 +198,7 @@ def __series_processing(
 
         for k, v in data_info.items():
             if k != "Obs":
-                out_element += f"{k}={v!r} "
+                out_element += f"{k}={str(v)!r} "
 
         out_element += f">{nl}"
 
@@ -206,7 +206,7 @@ def __series_processing(
             out_element += f"{child3}<Obs "
 
             for k, v in obs.items():
-                out_element += f"{k}={v!r} "
+                out_element += f"{k}={str(v)!r} "
 
             out_element += f"/>{nl}"
 

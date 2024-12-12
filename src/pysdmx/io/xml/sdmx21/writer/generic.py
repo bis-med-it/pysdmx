@@ -18,7 +18,7 @@ from pysdmx.util import parse_short_urn
 
 
 def __value(id: str, value: str) -> str:
-    return f"<{ABBR_GEN}:Value id={id!r} value={value!r}/>"
+    return f"<{ABBR_GEN}:Value id={id!r} value={str(value)!r}/>"
 
 
 def __generate_obs_structure(
@@ -99,7 +99,7 @@ def write_data_generic(
     outfile = ""
 
     for dataset in datasets.values():
-        dataset.validate()
+        dataset.writing_validation()
         outfile += __write_data_single_dataset(
             dataset=dataset, prettyprint=prettyprint
         )
@@ -224,7 +224,7 @@ def __obs_processing(
         # Obs Value writing
         out += (
             f"{child3}<{ABBR_GEN}:ObsValue "
-            f"value={element[obs_structure[1]]!r}/>{nl}"
+            f"value={str(element[obs_structure[1]])!r}/>{nl}"
         )
 
         # Obs Attributes writing
@@ -329,12 +329,10 @@ def __format_ser_str(
         out_element += f"{child3}<{ABBR_GEN}:Obs>{nl}"
 
         # Obs Dimension writing
-        out_element += (
-            f"{child4}<{ABBR_GEN}:ObsDimension value={obs_codes[0]!r}>{nl}"
-        )
+        out_element += f"{child4}<{ABBR_GEN}:ObsDimension value={str(obs[obs_codes[0]])!r}>{nl}"
         # Obs Value writing
         out_element += (
-            f"{child4}<{ABBR_GEN}:ObsValue value={obs_codes[1]!r}/>{nl}"
+            f"{child4}<{ABBR_GEN}:ObsValue value={str(obs_codes[1])!r}/>{nl}"
         )
 
         # Obs Attributes writing

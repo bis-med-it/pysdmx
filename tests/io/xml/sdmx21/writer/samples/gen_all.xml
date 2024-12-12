@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:GenericData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:gen="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>true</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Structure structureID="TEST" dimensionAtObservation="AllDimensions">
+			<com:Structure>
+				<Ref agencyID="MD" id="TEST" version="1.0" class="DataStructure"/>
+			</com:Structure>
+		</mes:Structure>
+	</mes:Header>
+	<mes:DataSet structureRef="TEST" action="Replace">
+		<gen:Attributes>
+			<gen:Value id="ds_att1" value="value1"/>
+			<gen:Value id="ds_att2" value="10"/>
+		</gen:Attributes>
+		<gen:Obs>
+			<gen:ObsKey>
+				<gen:Value id="DIM1" value="1"/>
+				<gen:Value id="ATT1" value="A"/>
+			</gen:ObsKey>
+			<gen:ObsValue value="10"/>
+			<gen:Attributes>
+				<gen:Value id="DIM1" value="1"/>
+				<gen:Value id="ATT1" value="A"/>
+			</gen:Attributes>
+		</gen:Obs>
+		<gen:Obs>
+			<gen:ObsKey>
+				<gen:Value id="DIM1" value="2"/>
+				<gen:Value id="ATT1" value="B"/>
+			</gen:ObsKey>
+			<gen:ObsValue value="11"/>
+			<gen:Attributes>
+				<gen:Value id="DIM1" value="2"/>
+				<gen:Value id="ATT1" value="B"/>
+			</gen:Attributes>
+		</gen:Obs>
+		<gen:Obs>
+			<gen:ObsKey>
+				<gen:Value id="DIM1" value="3"/>
+				<gen:Value id="ATT1" value="C"/>
+			</gen:ObsKey>
+			<gen:ObsValue value="12"/>
+			<gen:Attributes>
+				<gen:Value id="DIM1" value="3"/>
+				<gen:Value id="ATT1" value="C"/>
+			</gen:Attributes>
+		</gen:Obs>
+	</mes:DataSet>
+</mes:GenericData>

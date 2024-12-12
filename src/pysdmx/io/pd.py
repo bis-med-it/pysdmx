@@ -23,14 +23,14 @@ class PandasDataset(Dataset, frozen=False, kw_only=True):
 
     data: pd.DataFrame
 
-    def validate(self) -> None:
+    def writing_validation(self) -> None:
         """Structural validation of the dataset."""
         if not isinstance(self.structure, Schema):
             raise Invalid(
                 "Dataset Structure is not a Schema. "
                 "Cannot perform operation."
             )
-        if len(self.data) != len(self.structure.components):
+        if len(self.data.columns) != len(self.structure.components):
             raise Invalid("Data columns length must match components length.")
         columns = set(self.data.columns)
         components = {comp.id for comp in self.structure.components}
