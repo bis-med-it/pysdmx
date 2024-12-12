@@ -68,3 +68,4 @@ API Reference
    model/map
    model/refmeta
    model/organisation
+   model/vtl

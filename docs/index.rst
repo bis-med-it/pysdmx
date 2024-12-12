@@ -32,6 +32,7 @@ Your opinionated Python SDMX library.
    :caption: Handling SDMX datasets
 
    howto/data_rw
+   howto/vtl
 
 
 .. toctree::
