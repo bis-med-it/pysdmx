@@ -1,3 +1,5 @@
+.. _qb_api:
+
 SDMX-REST services
 ==================
 
