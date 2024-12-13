@@ -144,6 +144,7 @@ def __write_data_single_dataset(
 
 def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
     def __format_obs_str(element: Dict[str, Any]) -> str:
+        """Formats the observation as key=value pairs."""
         nl = "\n" if prettyprint else ""
         child2 = "\t\t" if prettyprint else ""
 
@@ -170,6 +171,7 @@ def __series_processing(
     prettyprint: bool = True,
 ) -> str:
     def __generate_series_str() -> str:
+        """Generates the series item with its observations."""
         out_list: List[str] = []
         data.groupby(by=series_codes)[obs_codes].apply(
             lambda x: __format_dict_ser(out_list, x)
@@ -181,11 +183,17 @@ def __series_processing(
         output_list: List[str],
         obs: Any,
     ) -> Any:
+        """Formats the series as key=value pairs."""
+        # Creating the observation dict,
+        # we always get the first element on Series
+        # as we are grouping by it
         data_dict["Series"][0]["Obs"] = obs.to_dict(orient="records")
         output_list.append(__format_ser_str(data_dict["Series"][0]))
+        # We remove the data for series as it is no longer necessary
         del data_dict["Series"][0]
 
     def __format_ser_str(data_info: Dict[Any, Any]) -> str:
+        """Formats the series as key=value pairs."""
         child2 = "\t\t" if prettyprint else ""
         child3 = "\t\t\t" if prettyprint else ""
         nl = "\n" if prettyprint else ""

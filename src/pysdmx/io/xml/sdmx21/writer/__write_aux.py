@@ -278,32 +278,27 @@ def get_structure(dataset: Dataset) -> str:
 def get_codes(
     dimension_code: str, dataset: PandasDataset
 ) -> Tuple[List[str], List[str]]:
-    """This function gets the types and codes of a dataset."""
+    """This function divides the components in Series and Obs."""
     series_codes = []
     obs_codes = [dimension_code, dataset.structure.components.measures[0].id]
 
+    # Getting the series and obs codes
     for dim in dataset.structure.components.dimensions:
         if dim.id != dimension_code:
             series_codes.append(dim.id)
 
+    # Adding the attributes based on the attachment level
     for att in dataset.structure.components.attributes:
         if att.attachment_level == "O":
             obs_codes.append(att.id)
         if att.attachment_level == "D":
             series_codes.append(att.id)
 
-    series_codes = [
-        x
-        for x in series_codes
-        if x not in obs_codes and x in dataset.data.columns
-    ]
-    obs_codes = [x for x in obs_codes if x in dataset.data.columns]
-
     return series_codes, obs_codes
 
 
 def check_content_dataset(content: Dict[str, PandasDataset]) -> None:
-    """This function checks if the content is a dataset."""
+    """Checks if the Message content is a dataset."""
     for dataset in content.values():
         if not isinstance(dataset, PandasDataset):
             raise Invalid("Message Content must contain only Datasets.")
@@ -314,11 +309,14 @@ def check_dimension_at_observation(
     dimension_at_observation: Optional[Dict[str, str]],
 ) -> Dict[str, str]:
     """This function checks if the dimension at observation is valid."""
+    # If dimension_at_observation is None, set it to ALL_DIM
     if dimension_at_observation is None:
         dimension_at_observation = {k: ALL_DIM for k in content.keys()}
         return dimension_at_observation
+    # Validate the datasets
     for ds in content.values():
         writing_validation(ds)
+    # Check the datasets and their dimensions are present
     for key, value in dimension_at_observation.items():
         if key not in content:
             raise Invalid(f"Dataset {key} not found in Message content.")
@@ -330,9 +328,8 @@ def check_dimension_at_observation(
                 f"Dimension at observation {value} "
                 f"not found in dataset {key}."
             )
-
-    for key, dataset in content.items():
-        writing_validation(dataset)
+    # Add the missing datasets on mapping with ALL_DIM
+    for key in content:
         if key not in dimension_at_observation:
             dimension_at_observation[key] = ALL_DIM
     return dimension_at_observation
@@ -342,10 +339,12 @@ def writing_validation(dataset: PandasDataset) -> None:
     """Structural validation of the dataset."""
     if not isinstance(dataset.structure, Schema):
         raise Invalid(
-            "Dataset Structure is not a Schema. " "Cannot perform operation."
+            "Dataset Structure is not a Schema. Cannot perform operation."
         )
+    # Columns size match
     if len(dataset.data.columns) != len(dataset.structure.components):
         raise Invalid("Data columns length must match components length.")
+    # Columns match components
     columns = set(dataset.data.columns)
     components = {comp.id for comp in dataset.structure.components}
     if columns != components:
@@ -354,7 +353,7 @@ def writing_validation(dataset: PandasDataset) -> None:
             f"Data columns must match components. "
             f"Difference: {', '.join(difference)}"
         )
-
+    # Check if the dataset has at least one dimension and one measure
     if not dataset.structure.components.dimensions:
         raise Invalid(
             "The dataset structure must have at least one dimension."

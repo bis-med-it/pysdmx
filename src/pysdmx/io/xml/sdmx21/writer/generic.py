@@ -18,6 +18,7 @@ from pysdmx.util import parse_short_urn
 
 
 def __value(id: str, value: str) -> str:
+    """Write a value tag."""
     return f"<{ABBR_GEN}:Value id={id!r} value={str(value)!r}/>"
 
 
@@ -89,7 +90,7 @@ def write_data_generic(
     dim_mapping: Dict[str, str],
     prettyprint: bool = True,
 ) -> str:
-    """Write data to SDMX-ML 2.1 Structure-Specific format.
+    """Write data to SDMX-ML 2.1 Generic format.
 
     Args:
         datasets: dict. Datasets to be written.
@@ -97,7 +98,7 @@ def write_data_generic(
         prettyprint: bool. Prettyprint or not.
 
     Returns:
-        The data in SDMX-ML 2.1 Structure-Specific format, as string.
+        The data in SDMX-ML 2.1 Generic format, as string.
     """
     outfile = ""
 
