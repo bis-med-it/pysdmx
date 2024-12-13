@@ -9,7 +9,7 @@ from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
-import pysdmx.io.xml.sdmx21.writer
+import pysdmx.io.xml.sdmx21.writer.config
 from pysdmx.io.xml.sdmx21.writer import writer
 from pysdmx.model import (
     Code,
@@ -66,7 +66,7 @@ def content():
                         id="ATT1",
                         role=Role.ATTRIBUTE,
                         concept=Concept(id="ATT1"),
-                        required=False,
+                        required=True,
                         attachment_level="D",
                     ),
                     Component(
@@ -154,7 +154,8 @@ def test_data_write_read(
 def test_data_write_df(
     header, content, message_type, dimension_at_observation
 ):
-    pysdmx.io.xml.sdmx21.writer.CHUNKSIZE = 30
+    setattr(pysdmx.io.xml.sdmx21.writer.structure_specific, "CHUNKSIZE", 20)
+    setattr(pysdmx.io.xml.sdmx21.writer.generic, "CHUNKSIZE", 20)
     # Write from DataFrame
     df = pd.DataFrame(
         {
@@ -167,6 +168,7 @@ def test_data_write_df(
     ds: PandasDataset = content["DataStructure=MD:TEST(1.0)"]
     ds.structure.components.remove(ds.structure.components["ATT2"])
     ds.data = df
+    ds.attributes = {}
     content["DataStructure=MD:TEST(1.0)"] = ds
 
     result = writer(
@@ -175,7 +177,6 @@ def test_data_write_df(
         header=header,
         dimension_at_observation=dimension_at_observation,
     )
-    print(result)
     # Read the result to check for formal errors
     result_msg = read_xml(result, validate=True)
     assert "DataStructure=MD:TEST(1.0)" in result_msg
@@ -197,3 +198,22 @@ def test_invalid_content():
         Invalid, match="Message Content must contain only Datasets."
     ):
         writer(content, type_=MessageType.StructureSpecificDataSet)
+
+def test_invalid_dimension(content):
+    dim_mapping = {"DataStructure=MD:TEST(1.0)": "DIM3"}
+    with pytest.raises(Invalid):
+        writer(
+            content,
+            type_=MessageType.StructureSpecificDataSet,
+            dimension_at_observation=dim_mapping,
+        )
+
+def test_invalid_dimension_key(content):
+
+    dim_mapping = {"DataStructure=AAA:TEST(1.0)": "DIM1"}
+    with pytest.raises(Invalid):
+        writer(
+            content,
+            type_=MessageType.StructureSpecificDataSet,
+            dimension_at_observation=dim_mapping,
+        )

@@ -63,6 +63,7 @@ def write_data_structure_specific(
     outfile = ""
 
     for i, (short_urn, dataset) in enumerate(datasets.items()):
+        dataset.data = dataset.data.fillna("").astype(str)
         outfile += __write_data_single_dataset(
             dataset=dataset,
             prettyprint=prettyprint,
@@ -169,10 +170,9 @@ def __series_processing(
 ) -> str:
     def __generate_series_str() -> str:
         out_list: List[str] = []
-        if all(elem in data.columns for elem in obs_codes):
-            data.groupby(by=series_codes)[obs_codes].apply(
-                lambda x: __format_dict_ser(out_list, x)
-            )
+        data.groupby(by=series_codes)[obs_codes].apply(
+            lambda x: __format_dict_ser(out_list, x)
+        )
 
         return "".join(out_list)
 

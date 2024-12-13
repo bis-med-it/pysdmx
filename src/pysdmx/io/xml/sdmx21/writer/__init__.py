@@ -2,7 +2,6 @@
 
 from typing import Any, Dict, Optional
 
-from pysdmx.errors import NotImplemented
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     __write_header,
@@ -83,14 +82,12 @@ def writer(
     # Writing the content
     if type_ == MessageType.Structure:
         outfile += write_structures(content, prettyprint)
-    elif type_ == MessageType.StructureSpecificDataSet:
+    if type_ == MessageType.StructureSpecificDataSet:
         outfile += write_data_structure_specific(
             content, dim_mapping, prettyprint
         )
-    elif type_ == MessageType.GenericDataSet:
+    if type_ == MessageType.GenericDataSet:
         outfile += write_data_generic(content, dim_mapping, prettyprint)
-    else:
-        raise NotImplemented(f"MessageType {type_} not implemented")
 
     outfile += get_end_message(type_, prettyprint)
 

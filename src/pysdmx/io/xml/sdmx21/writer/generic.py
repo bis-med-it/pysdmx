@@ -46,7 +46,7 @@ def __generate_obs_structure(
     for att in dataset.structure.components.attributes:
         if att.attachment_level == "O":
             obs_structure[2].append(att.id)
-        elif att.attachment_level == "D":
+        if att.attachment_level == "D":
             obs_structure[0].append(att.id)
 
     return obs_structure
@@ -102,6 +102,7 @@ def write_data_generic(
 
     for short_urn, dataset in datasets.items():
         dataset.writing_validation()
+        dataset.data = dataset.data.fillna("").astype(str)
         outfile += __write_data_single_dataset(
             dataset=dataset,
             prettyprint=prettyprint,
@@ -132,8 +133,7 @@ def __write_data_single_dataset(
         for att in dataset.structure.components.attributes:
             if not att.required:
                 to_replace = f'<{ABBR_GEN}:Value id={att.id!r} value=""/>'
-                if prettyprint:
-                    to_replace = f"{child3}{to_replace}{nl}"
+                to_replace = f"{child3}{to_replace}{nl}"
                 str_to_check = str_to_check.replace(to_replace, "")
         return str_to_check
 
@@ -252,10 +252,9 @@ def __series_processing(
 ) -> str:
     def __generate_series_str() -> str:
         out_list: List[str] = []
-        if all(elem in data.columns for elem in obs_codes):
-            data.groupby(by=series_codes + series_att_codes).apply(
-                lambda x: __format_dict_ser(out_list, x)
-            )
+        data.groupby(by=series_codes + series_att_codes).apply(
+            lambda x: __format_dict_ser(out_list, x)
+        )
 
         return "".join(out_list)
 
