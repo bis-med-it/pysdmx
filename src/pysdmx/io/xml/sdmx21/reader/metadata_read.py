@@ -33,7 +33,7 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     REF,
     REQUIRED,
     TEXT_FORMAT,
-    TIME_DIM,
+    TIME_DIM, LOCAL_FACETS_LOW,
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import (
     AGENCIES,
@@ -239,7 +239,7 @@ class StructureParser(Struct):
                     for k, v in json_fac.items()
                     if k in FacetType
                 }
-                json_obj[FACETS] = Facets(**facet_kwargs)
+                json_obj[FACETS.lower()] = Facets(**facet_kwargs)
 
     @staticmethod
     def __format_urls(json_elem: Dict[str, Any]) -> Dict[str, Any]:
@@ -335,7 +335,7 @@ class StructureParser(Struct):
                 concept_ref[LOCAL_DTYPE] = rep.pop(LOCAL_DTYPE)
 
             if FACETS in rep:
-                concept_ref[FACETS] = rep.pop(FACETS)
+                concept_ref[LOCAL_FACETS_LOW] = rep.pop(FACETS)
 
     def __format_con_id(self, concept_ref: Dict[str, Any]) -> Dict[str, Any]:
         rep = {}
@@ -377,7 +377,7 @@ class StructureParser(Struct):
         return rels
 
     def __format_component(self, comp: Dict[str, Any], role) -> Component:
-        comp[ROLE] = role
+        comp[ROLE.lower()] = role
         comp[REQUIRED] = True
 
         self.__format_con_rep(comp)

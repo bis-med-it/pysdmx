@@ -67,14 +67,14 @@ URL = "url"
 URN = "urn"
 
 # Facets
-FACETS = "facets"
+FACETS = "Facets"
 TEXT_TYPE = "textType"
 TEXT_TYPE_LOW = "text_type"
 
 # Contact
 CONTACT = "Contact"
 DEPARTMENT = "Department"
-ROLE = "role"
+ROLE = "Role"
 URIS = "uris"
 EMAILS = "emails"
 TELEPHONES = "telephones"
