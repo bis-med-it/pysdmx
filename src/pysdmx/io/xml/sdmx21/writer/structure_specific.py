@@ -11,6 +11,7 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ALL_DIM,
     get_codes,
     get_structure,
+    writing_validation,
 )
 from pysdmx.io.xml.sdmx21.writer.config import CHUNKSIZE
 from pysdmx.util import parse_short_urn
@@ -123,7 +124,7 @@ def __write_data_single_dataset(
     if dim == ALL_DIM:
         outfile += __memory_optimization_writing(dataset, prettyprint)
     else:
-        dataset.writing_validation()
+        writing_validation(dataset)
         series_codes, obs_codes = get_codes(dim, dataset)
 
         outfile += __series_processing(

@@ -7,6 +7,7 @@ from typing import Dict, List, Optional, Tuple
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.enums import MessageType
+from pysdmx.model import Schema
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
@@ -317,7 +318,7 @@ def check_dimension_at_observation(
         dimension_at_observation = {k: ALL_DIM for k in content.keys()}
         return dimension_at_observation
     for ds in content.values():
-        ds.writing_validation()
+        writing_validation(ds)
     for key, value in dimension_at_observation.items():
         if key not in content:
             raise Invalid(f"Dataset {key} not found in Message content.")
@@ -331,7 +332,32 @@ def check_dimension_at_observation(
             )
 
     for key, dataset in content.items():
-        dataset.writing_validation()
+        writing_validation(dataset)
         if key not in dimension_at_observation:
             dimension_at_observation[key] = ALL_DIM
     return dimension_at_observation
+
+
+def writing_validation(dataset: PandasDataset) -> None:
+    """Structural validation of the dataset."""
+    if not isinstance(dataset.structure, Schema):
+        raise Invalid(
+            "Dataset Structure is not a Schema. " "Cannot perform operation."
+        )
+    if len(dataset.data.columns) != len(dataset.structure.components):
+        raise Invalid("Data columns length must match components length.")
+    columns = set(dataset.data.columns)
+    components = {comp.id for comp in dataset.structure.components}
+    if columns != components:
+        difference = columns.symmetric_difference(components)
+        raise Invalid(
+            f"Data columns must match components. "
+            f"Difference: {', '.join(difference)}"
+        )
+
+    if not dataset.structure.components.dimensions:
+        raise Invalid(
+            "The dataset structure must have at least one dimension."
+        )
+    if not dataset.structure.components.measures:
+        raise Invalid("The dataset structure must have at least one measure.")

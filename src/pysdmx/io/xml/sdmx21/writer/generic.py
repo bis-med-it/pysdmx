@@ -11,6 +11,7 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ALL_DIM,
     get_codes,
     get_structure,
+    writing_validation,
 )
 from pysdmx.io.xml.sdmx21.writer.config import CHUNKSIZE
 from pysdmx.util import parse_short_urn
@@ -101,7 +102,7 @@ def write_data_generic(
     outfile = ""
 
     for short_urn, dataset in datasets.items():
-        dataset.writing_validation()
+        writing_validation(dataset)
         dataset.data = dataset.data.fillna("").astype(str)
         outfile += __write_data_single_dataset(
             dataset=dataset,
