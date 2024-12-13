@@ -41,9 +41,6 @@ def writer(
 
     Returns:
         The XML string if path is empty, None otherwise
-
-    Raises:
-        NotImplemented: If the MessageType is not Metadata
     """
     if header is None:
         header = Header()

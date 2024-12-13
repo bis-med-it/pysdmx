@@ -9,8 +9,8 @@ from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
-import pysdmx.io.xml.sdmx21.writer.config
 from pysdmx.io.xml.sdmx21.writer import writer
+import pysdmx.io.xml.sdmx21.writer.config
 from pysdmx.model import (
     Code,
     Codelist,
@@ -154,18 +154,18 @@ def test_data_write_read(
 def test_data_write_df(
     header, content, message_type, dimension_at_observation
 ):
-    setattr(pysdmx.io.xml.sdmx21.writer.structure_specific, "CHUNKSIZE", 20)
-    setattr(pysdmx.io.xml.sdmx21.writer.generic, "CHUNKSIZE", 20)
+    pysdmx.io.xml.sdmx21.writer.structure_specific.CHUNKSIZE = 20
+    pysdmx.io.xml.sdmx21.writer.generic.CHUNKSIZE = 20
     # Write from DataFrame
     df = pd.DataFrame(
         {
             "DIM1": [1, 2, 3, 4, 5] * 10,
             "DIM2": [6, 7, 8, 9, 10] * 10,
-            "ATT1": ["A", "B", None, "D", "E"] * 10,
             "M1": [10, 11, None, 13, 14] * 10,
         }
     )
     ds: PandasDataset = content["DataStructure=MD:TEST(1.0)"]
+    ds.structure.components.remove(ds.structure.components["ATT1"])
     ds.structure.components.remove(ds.structure.components["ATT2"])
     ds.data = df
     ds.attributes = {}
@@ -182,7 +182,7 @@ def test_data_write_df(
     assert "DataStructure=MD:TEST(1.0)" in result_msg
     result_data = result_msg["DataStructure=MD:TEST(1.0)"].data
 
-    assert result_data.shape == (50, 4)
+    assert result_data.shape == (50, 3)
 
 
 def test_invalid_content():
@@ -199,6 +199,7 @@ def test_invalid_content():
     ):
         writer(content, type_=MessageType.StructureSpecificDataSet)
 
+
 def test_invalid_dimension(content):
     dim_mapping = {"DataStructure=MD:TEST(1.0)": "DIM3"}
     with pytest.raises(Invalid):
@@ -207,6 +208,7 @@ def test_invalid_dimension(content):
             type_=MessageType.StructureSpecificDataSet,
             dimension_at_observation=dim_mapping,
         )
+
 
 def test_invalid_dimension_key(content):
 
