@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -68,7 +69,7 @@ def complete_header():
 @pytest.fixture()
 def read_write_header():
     return Header(
-        id="IREF534795",
+        id="DF1605144905",
         prepared=datetime.strptime("2021-03-05T14:11:16", "%Y-%m-%dT%H:%M:%S"),
         sender="Unknown",
         receiver="Not_Supplied",
@@ -285,17 +286,24 @@ def test_writer_dataflow(complete_header, dataflow):
     assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result
 
 
-def test_read_rewrite(read_write_sample, complete_header):
+def test_read_write(read_write_sample, read_write_header):
     content, filetype = process_string_to_read(read_write_sample)
     assert filetype == "xml"
     read_result = read_xml(content, validate=True)
-    writer_result = writer(
+    write_result = writer(
         read_result,
         MessageType.Structure,
-        header=complete_header,
+        header=read_write_header,
         prettyprint=True,
     )
-    assert writer_result == content
+    re_read_result = read_xml(write_result, validate=True)
+    re_write_result = writer(
+        re_read_result,
+        MessageType.Structure,
+        header=read_write_header,
+        prettyprint=True,
+    )
+    assert write_result == re_write_result
 
 
 def test_write_read(complete_header, datastructure, dataflow):

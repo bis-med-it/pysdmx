@@ -83,13 +83,16 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
         for attr, label in ANNOTATION_WRITER.items():
             if getattr(annotation, attr, None) is not None:
                 value = getattr(annotation, attr)
-                if not isinstance(value, str):
-                    value = str(value)
+                if attr == "text":
+                    value = __extract_text(value)
                 value = value.replace("&", "&amp;").rstrip()
+
                 if attr == "text":
                     head_tag = f'{ABBR_COM}:{label} xml:lang="en"'
+
                 else:
                     head_tag = f"{ABBR_COM}:{label}"
+
                 outfile += (
                     f"{child3}<{head_tag}>" f"{value}" f"</{ABBR_COM}:{label}>"
                 )
@@ -97,6 +100,22 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
         outfile += f"{child2}</{ABBR_COM}:Annotation>"
     outfile += f"{child1}</{ABBR_COM}:Annotations>"
     return outfile
+
+
+def __extract_text(item: Dict[str, Any]) -> str:
+    text = ""
+
+    if isinstance(item, list) and isinstance(item[0], dict):
+        for value in item:
+            if value.get("lang") == "en":
+                return value.get("#text")
+            text = value.get("#text")
+        return text
+
+    elif isinstance(item, dict):
+        return item.get("#text")
+
+    return item
 
 
 def __write_identifiable(
@@ -341,12 +360,12 @@ def __write_structure(item: Dataflow, indent: str) -> str:
     """Writes the dataflow structure to the XML file."""
     outfile = f"{indent}<{ABBR_STR}:Structure>"
     outfile += (
-        f"{add_indent(indent)}<Ref "
-        f'package="datastructure" '
-        f'agencyID="{item.agency!r}" '
-        f'id="{item.id!r}" '
-        f'version="{item.version!r}" '
-        f'class="{DSD!r}"/>'.replace("'", "")
+        f"{add_indent(indent)}<{REF} "
+        f'{PACKAGE}="datastructure" '
+        f'{AGENCY_ID}="{item.agency!r}" '
+        f'{ID}="{item.id!r}" '
+        f'{VERSION}="{item.version!r}" '
+        f'{CLASS}="{DSD!r}"/>'.replace("'", "")
     )
     outfile += f"{indent}</{ABBR_STR}:Structure>"
     return outfile

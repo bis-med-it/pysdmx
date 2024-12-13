@@ -33,7 +33,8 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     REF,
     REQUIRED,
     TEXT_FORMAT,
-    TIME_DIM, LOCAL_FACETS_LOW,
+    TIME_DIM,
+    LOCAL_FACETS_LOW,
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import (
     AGENCIES,
@@ -290,9 +291,13 @@ class StructureParser(Struct):
             self.__format_facets(json_rep[TEXT_FORMAT], json_obj)
 
         if ENUM in json_rep and len(self.codelists) > 0:
-            ref = json_rep[ENUM][REF]
-            if URN in ref:
-                codelist = find_by_urn(list(self.codelists.values()), ref[URN])
+            if REF in json_rep[ENUM]:
+                ref = json_rep[ENUM][REF]
+            else:
+                ref = json_rep[ENUM]
+
+            if "URN" in ref:
+                codelist = find_by_urn(list(self.codelists.values()), ref["URN"])
 
             else:
                 id = unique_id(ref[AGENCY_ID], ref[ID], ref[VERSION])
@@ -418,6 +423,7 @@ class StructureParser(Struct):
         comp_list = []
 
         if TIME_DIM in element:
+            element[DIM] = add_list(element[DIM])
             element[DIM].append(element[TIME_DIM])
             del element[TIME_DIM]
 

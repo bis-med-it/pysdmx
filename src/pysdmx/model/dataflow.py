@@ -111,8 +111,11 @@ class Component(Struct, frozen=True, omit_defaults=True):
     concept: Concept
     local_dtype: Optional[DataType] = None
     local_facets: Optional[Facets] = None
+    name: Optional[str] = None
+    description: Optional[str] = None
     local_codes: Union[Codelist, Hierarchy, None] = None
     attachment_level: Optional[str] = None
+    array_def: Optional[ArrayBoundaries] = None
 
     @property
     def dtype(self) -> DataType:
