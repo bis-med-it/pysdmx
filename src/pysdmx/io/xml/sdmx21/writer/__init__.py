@@ -88,9 +88,7 @@ def writer(
             content, dim_mapping, prettyprint
         )
     elif type_ == MessageType.GenericDataSet:
-        outfile += write_data_generic(
-            content, dim_mapping, prettyprint
-        )
+        outfile += write_data_generic(content, dim_mapping, prettyprint)
     else:
         raise NotImplemented(f"MessageType {type_} not implemented")
 

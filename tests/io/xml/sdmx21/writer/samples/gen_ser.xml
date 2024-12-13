@@ -19,31 +19,46 @@
 		<gen:Series>
 			<gen:SeriesKey>
 				<gen:Value id="DIM2" value="4"/>
-				<gen:Value id="ATT1" value="A"/>
 			</gen:SeriesKey>
+			<gen:Attributes>
+				<gen:Value id="ATT1" value="A"/>
+			</gen:Attributes>
 			<gen:Obs>
 				<gen:ObsDimension value="1"/>
 				<gen:ObsValue value="M1"/>
+				<gen:Attributes>
+					<gen:Value id="ATT2" value="7"/>
+				</gen:Attributes>
 			</gen:Obs>
 		</gen:Series>
 		<gen:Series>
 			<gen:SeriesKey>
 				<gen:Value id="DIM2" value="5"/>
-				<gen:Value id="ATT1" value="B"/>
 			</gen:SeriesKey>
+			<gen:Attributes>
+				<gen:Value id="ATT1" value="B"/>
+			</gen:Attributes>
 			<gen:Obs>
 				<gen:ObsDimension value="2"/>
 				<gen:ObsValue value="M1"/>
+				<gen:Attributes>
+					<gen:Value id="ATT2" value="8"/>
+				</gen:Attributes>
 			</gen:Obs>
 		</gen:Series>
 		<gen:Series>
 			<gen:SeriesKey>
 				<gen:Value id="DIM2" value="6"/>
-				<gen:Value id="ATT1" value="C"/>
 			</gen:SeriesKey>
+			<gen:Attributes>
+				<gen:Value id="ATT1" value="C"/>
+			</gen:Attributes>
 			<gen:Obs>
 				<gen:ObsDimension value="3"/>
 				<gen:ObsValue value="M1"/>
+				<gen:Attributes>
+					<gen:Value id="ATT2" value="9"/>
+				</gen:Attributes>
 			</gen:Obs>
 		</gen:Series>
 	</mes:DataSet>

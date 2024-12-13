@@ -9,11 +9,10 @@ from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_MSG,
     ALL_DIM,
-    CHUNKSIZE,
     get_codes,
     get_structure,
 )
-from pysdmx.model import Schema
+from pysdmx.io.xml.sdmx21.writer.config import CHUNKSIZE
 from pysdmx.util import parse_short_urn
 
 
@@ -94,22 +93,18 @@ def __write_data_single_dataset(
 
     def __remove_optional_attributes_empty_data(str_to_check: str) -> str:
         """This function removes data when optional attributes are found."""
-        if isinstance(dataset.structure, Schema):
-            for att in dataset.structure.components.attributes:
-                if not att.required:
-                    str_to_check = str_to_check.replace(f"{att.id}='' ", "")
-                    str_to_check = str_to_check.replace(f'{att.id}="" ', "")
+        for att in dataset.structure.components.attributes:
+            if not att.required:
+                str_to_check = str_to_check.replace(f"{att.id}='' ", "")
+                str_to_check = str_to_check.replace(f'{att.id}="" ', "")
         return str_to_check
 
     outfile = ""
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
 
-    if prettyprint:
-        child1 = "\t"
-        nl = "\n"
-    else:
-        child1 = nl = ""
+    nl = "\n" if prettyprint else ""
+    child1 = "\t" if prettyprint else ""
 
     attached_attributes_str = ""
     for k, v in dataset.attributes.items():
@@ -137,8 +132,8 @@ def __write_data_single_dataset(
             prettyprint=prettyprint,
         )
 
-    # Remove optional attributes empty data
-    outfile = __remove_optional_attributes_empty_data(outfile)
+        # Remove optional attributes empty data
+        outfile = __remove_optional_attributes_empty_data(outfile)
 
     outfile += f"{child1}</{ABBR_MSG}:DataSet>"
 
@@ -147,11 +142,8 @@ def __write_data_single_dataset(
 
 def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
     def __format_obs_str(element: Dict[str, Any]) -> str:
-        if prettyprint:
-            child2 = "\t\t"
-            nl = "\n"
-        else:
-            child2 = nl = ""
+        nl = "\n" if prettyprint else ""
+        child2 = "\t\t" if prettyprint else ""
 
         out = f"{child2}<Obs "
 

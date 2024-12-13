@@ -9,6 +9,7 @@ from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
+import pysdmx.io.xml.sdmx21.writer
 from pysdmx.io.xml.sdmx21.writer import writer
 from pysdmx.model import (
     Code,
@@ -95,18 +96,18 @@ def content():
         (MessageType.GenericDataSet, "gen_all.xml", {}),
         (MessageType.StructureSpecificDataSet, "str_all.xml", None),
         (
-            MessageType.GenericDataSet,
+            MessageType.StructureSpecificDataSet,
             "str_ser.xml",
             {"DataStructure=MD:TEST(1.0)": "DIM1"},
         ),
         (
-            MessageType.StructureSpecificDataSet,
+            MessageType.GenericDataSet,
             "gen_ser.xml",
             {"DataStructure=MD:TEST(1.0)": "DIM1"},
         ),
     ],
 )
-def test_data_writing(
+def test_data_write_read(
     header, content, message_type, filename, dimension_at_observation
 ):
     samples_folder_path = Path(__file__).parent / "samples"
@@ -117,7 +118,6 @@ def test_data_writing(
         header=header,
         dimension_at_observation=dimension_at_observation,
     )
-    print(result)
     # Read the result to check for formal errors
     result_msg = read_xml(result, validate=True)
     assert "DataStructure=MD:TEST(1.0)" in result_msg
@@ -127,11 +127,61 @@ def test_data_writing(
     result_data = result_msg["DataStructure=MD:TEST(1.0)"].data
     reference_data = reference_msg["DataStructure=MD:TEST(1.0)"].data
 
+    assert result_data.shape == (3, 5)
+
     pd.testing.assert_frame_equal(
         result_data.fillna("").replace("nan", ""),
         reference_data.replace("nan", ""),
         check_like=True,
     )
+
+
+@pytest.mark.parametrize(
+    ("message_type", "dimension_at_observation"),
+    [
+        (MessageType.GenericDataSet, {}),
+        (MessageType.StructureSpecificDataSet, None),
+        (
+            MessageType.StructureSpecificDataSet,
+            {"DataStructure=MD:TEST(1.0)": "DIM1"},
+        ),
+        (
+            MessageType.GenericDataSet,
+            {"DataStructure=MD:TEST(1.0)": "DIM1"},
+        ),
+    ],
+)
+def test_data_write_df(
+    header, content, message_type, dimension_at_observation
+):
+    pysdmx.io.xml.sdmx21.writer.CHUNKSIZE = 30
+    # Write from DataFrame
+    df = pd.DataFrame(
+        {
+            "DIM1": [1, 2, 3, 4, 5] * 10,
+            "DIM2": [6, 7, 8, 9, 10] * 10,
+            "ATT1": ["A", "B", None, "D", "E"] * 10,
+            "M1": [10, 11, None, 13, 14] * 10,
+        }
+    )
+    ds: PandasDataset = content["DataStructure=MD:TEST(1.0)"]
+    ds.structure.components.remove(ds.structure.components["ATT2"])
+    ds.data = df
+    content["DataStructure=MD:TEST(1.0)"] = ds
+
+    result = writer(
+        content,
+        type_=message_type,
+        header=header,
+        dimension_at_observation=dimension_at_observation,
+    )
+    print(result)
+    # Read the result to check for formal errors
+    result_msg = read_xml(result, validate=True)
+    assert "DataStructure=MD:TEST(1.0)" in result_msg
+    result_data = result_msg["DataStructure=MD:TEST(1.0)"].data
+
+    assert result_data.shape == (50, 4)
 
 
 def test_invalid_content():

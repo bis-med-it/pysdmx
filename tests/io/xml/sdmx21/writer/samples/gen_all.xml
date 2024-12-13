@@ -24,9 +24,7 @@
 			</gen:ObsKey>
 			<gen:ObsValue value="10"/>
 			<gen:Attributes>
-				<gen:Value id="DIM1" value="1"/>
-				<gen:Value id="DIM2" value="4"/>
-				<gen:Value id="ATT1" value="A"/>
+				<gen:Value id="ATT2" value="7"/>
 			</gen:Attributes>
 		</gen:Obs>
 		<gen:Obs>
@@ -37,9 +35,7 @@
 			</gen:ObsKey>
 			<gen:ObsValue value="11"/>
 			<gen:Attributes>
-				<gen:Value id="DIM1" value="2"/>
-				<gen:Value id="DIM2" value="5"/>
-				<gen:Value id="ATT1" value="B"/>
+				<gen:Value id="ATT2" value="8"/>
 			</gen:Attributes>
 		</gen:Obs>
 		<gen:Obs>
@@ -50,9 +46,7 @@
 			</gen:ObsKey>
 			<gen:ObsValue value="12"/>
 			<gen:Attributes>
-				<gen:Value id="DIM1" value="3"/>
-				<gen:Value id="DIM2" value="6"/>
-				<gen:Value id="ATT1" value="C"/>
+				<gen:Value id="ATT2" value="9"/>
 			</gen:Attributes>
 		</gen:Obs>
 	</mes:DataSet>

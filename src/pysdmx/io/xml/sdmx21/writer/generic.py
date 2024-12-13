@@ -9,11 +9,10 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_GEN,
     ABBR_MSG,
     ALL_DIM,
-    CHUNKSIZE,
     get_codes,
     get_structure,
 )
-from pysdmx.model import Schema
+from pysdmx.io.xml.sdmx21.writer.config import CHUNKSIZE
 from pysdmx.util import parse_short_urn
 
 
@@ -130,13 +129,12 @@ def __write_data_single_dataset(
 
     def __remove_optional_attributes_empty_data(str_to_check: str) -> str:
         """This function removes data when optional attributes are found."""
-        if isinstance(dataset.structure, Schema):
-            for att in dataset.structure.components.attributes:
-                if not att.required:
-                    to_replace = f'<{ABBR_GEN}:Value id={att.id!r} value=""/>'
-                    if prettyprint:
-                        to_replace = f"{child3}{to_replace}{nl}"
-                    str_to_check = str_to_check.replace(to_replace, "")
+        for att in dataset.structure.components.attributes:
+            if not att.required:
+                to_replace = f'<{ABBR_GEN}:Value id={att.id!r} value=""/>'
+                if prettyprint:
+                    to_replace = f"{child3}{to_replace}{nl}"
+                str_to_check = str_to_check.replace(to_replace, "")
         return str_to_check
 
     outfile = ""
@@ -175,16 +173,9 @@ def __write_data_single_dataset(
         )
     else:
         series_codes, obs_codes = get_codes(dim, dataset)
-        series_att_codes = [
-            x
-            for x in series_codes
-            if x in dataset.structure.components.attributes
-        ]
-        obs_att_codes = [
-            x
-            for x in obs_codes
-            if x in dataset.structure.components.attributes
-        ]
+        att_codes = [att.id for att in dataset.structure.components.attributes]
+        series_att_codes = [x for x in series_codes if x in att_codes]
+        obs_att_codes = [x for x in obs_codes if x in att_codes]
 
         series_codes = [x for x in series_codes if x not in series_att_codes]
         obs_codes = [x for x in obs_codes if x not in obs_att_codes]
@@ -232,12 +223,13 @@ def __obs_processing(
             f"value={str(element[obs_structure[1]])!r}/>{nl}"
         )
 
-        # Obs Attributes writing
-        out += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
-        for k, v in element.items():
-            if k in obs_structure[0]:
-                out += f"{child4}{__value(k, v)}{nl}"
-        out += f"{child3}</{ABBR_GEN}:Attributes>{nl}"
+        if len(obs_structure[2]) > 0:
+            # Obs Attributes writing
+            out += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
+            for k, v in element.items():
+                if k in obs_structure[2]:
+                    out += f"{child4}{__value(k, v)}{nl}"
+            out += f"{child3}</{ABBR_GEN}:Attributes>{nl}"
 
         out += f"{child2}</{ABBR_GEN}:Obs>{nl}"
 
@@ -261,7 +253,7 @@ def __series_processing(
     def __generate_series_str() -> str:
         out_list: List[str] = []
         if all(elem in data.columns for elem in obs_codes):
-            data.groupby(by=series_codes)[obs_codes].apply(
+            data.groupby(by=series_codes + series_att_codes).apply(
                 lambda x: __format_dict_ser(out_list, x)
             )
 
@@ -269,9 +261,17 @@ def __series_processing(
 
     def __format_dict_ser(
         output_list: List[str],
-        obs: Any,
+        group_data: Any,
     ) -> Any:
-        data_dict["Series"][0]["Obs"] = obs.to_dict(orient="records")
+        obs_data = group_data[obs_codes + obs_att_codes].copy()
+        data_dict["Series"][0]["Obs"] = obs_data.to_dict(orient="records")
+        data_dict["Series"][0].update(
+            {
+                k: v
+                for k, v in group_data[series_att_codes].iloc[0].items()
+                if k in series_att_codes
+            }
+        )
         output_list.append(
             __format_ser_str(
                 data_info=data_dict["Series"][0],

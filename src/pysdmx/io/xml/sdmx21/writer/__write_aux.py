@@ -259,8 +259,6 @@ def __write_header(
 # -- DATA WRITING --
 # ------------------
 
-CHUNKSIZE = 100000
-
 
 def get_structure(dataset: Dataset) -> str:
     """This function gets the structure of a dataset.
