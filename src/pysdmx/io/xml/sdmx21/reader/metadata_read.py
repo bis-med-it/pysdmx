@@ -1,11 +1,40 @@
 """Parsers for reading metadata."""
 
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from msgspec import Struct
 
-from pysdmx.io.xml.sdmx21.__parsing_config import CORE_REP, URN
+from pysdmx.io.xml.sdmx21.__parsing_config import (
+    AS_STATUS,
+    ATT,
+    ATT_LIST,
+    ATT_LVL,
+    ATT_REL,
+    CODES_LOW,
+    COMPS,
+    CON_ID,
+    CON_LOW,
+    CON_ROLE,
+    CON_ROLE_LOW,
+    CORE_REP,
+    DIM,
+    DIM_LIST,
+    DIM_REF,
+    DSD_COMPS,
+    ENUM,
+    GROUP,
+    GROUP_DIM,
+    LOCAL_CODES_LOW,
+    LOCAL_DTYPE,
+    LOCAL_REP,
+    ME_LIST,
+    PRIM_MEASURE,
+    REF,
+    REQUIRED,
+    TEXT_FORMAT,
+    TIME_DIM,
+)
 from pysdmx.io.xml.sdmx21.reader.__utils import (
     AGENCIES,
     AGENCY,
@@ -58,8 +87,11 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     URI,
     URIS,
     URL,
+    URN,
     VALID_FROM,
+    VALID_FROM_LOW,
     VALID_TO,
+    VALID_TO_LOW,
     VERSION,
 )
 from pysdmx.io.xml.utils import add_list
@@ -72,7 +104,7 @@ from pysdmx.model import (
     Facets,
 )
 from pysdmx.model.__base import Agency, Annotation, Contact, Item, ItemScheme
-from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
+from pysdmx.model.dataflow import Component, Dataflow, DataStructureDefinition
 from pysdmx.model.message import CONCEPTS, ORGS
 from pysdmx.util import find_by_urn, parse_urn
 
@@ -83,7 +115,12 @@ SCHEMES_CLASSES = {
     DFWS: Dataflow,
     DSDS: DataStructureDefinition,
 }
+
 ITEMS_CLASSES = {AGENCY: Agency, CODE: Code, CON: Concept}
+
+COMP_TYPES = [DIM, ATT, PRIM_MEASURE, GROUP_DIM]
+
+components: Dict[str, Any] = {}
 
 
 class StructureParser(Struct):
@@ -249,19 +286,19 @@ class StructureParser(Struct):
         self, json_rep: Dict[str, Any], json_obj: Dict[str, Any]
     ) -> None:
         """Formats the representation in the json_rep."""
-        if "TextFormat" in json_rep:
-            self.__format_facets(json_rep["TextFormat"], json_obj)
+        if TEXT_FORMAT in json_rep:
+            self.__format_facets(json_rep[TEXT_FORMAT], json_obj)
 
-        if (
-            "Enumeration" in json_rep
-            and URN in json_rep["Enumeration"]
-            and len(self.codelists) > 0
-        ):
-            codelist = find_by_urn(
-                list(self.codelists.values()),
-                json_rep["Enumeration"][URN],
-            )
-            json_obj["codes"] = codelist.codes
+        if ENUM in json_rep and len(self.codelists) > 0:
+            ref = json_rep[ENUM][REF]
+            if URN in ref:
+                codelist = find_by_urn(list(self.codelists.values()), ref[URN])
+
+            else:
+                id = unique_id(ref[AGENCY_ID], ref[ID], ref[VERSION])
+                codelist = self.codelists.get(id)
+
+            json_obj[CODES_LOW] = codelist.codes
 
     def __format_validity(self, element: Dict[str, Any]) -> Dict[str, Any]:
         """Formats the version in the element.
@@ -273,12 +310,144 @@ class StructureParser(Struct):
             element with the version, validFrom and validTo formatted
         """
         element[VERSION] = element.pop(VERSION)
+
         if VALID_FROM in element:
             element[VALID_FROM] = datetime.fromisoformat(element[VALID_FROM])
-            element["valid_from"] = element.pop(VALID_FROM)
+            element[VALID_FROM_LOW] = element.pop(VALID_FROM)
+
         if VALID_TO in element:
             element[VALID_TO] = datetime.fromisoformat(element[VALID_TO])
-            element["valid_to"] = element.pop(VALID_TO)
+            element[VALID_TO_LOW] = element.pop(VALID_TO)
+
+        return element
+
+    def __format_con_rep(self, concept_ref: Dict[str, Any]) -> Dict[str, Any]:
+        rep = {}
+
+        if LOCAL_REP in concept_ref:
+            self.__format_representation(concept_ref[LOCAL_REP], rep)
+            del concept_ref[LOCAL_REP]
+
+            if CODES_LOW in rep:
+                concept_ref[LOCAL_CODES_LOW] = rep.pop(CODES_LOW)
+
+            if LOCAL_DTYPE in rep:
+                concept_ref[LOCAL_DTYPE] = rep.pop(LOCAL_DTYPE)
+
+            if FACETS in rep:
+                concept_ref[FACETS] = rep.pop(FACETS)
+
+    def __format_con_id(self, concept_ref: Dict[str, Any]) -> Dict[str, Any]:
+        rep = {}
+        id = concept_ref[ID]
+
+        if id in self.concepts:
+            rep[CON] = self.concepts[id]
+            if CORE_REP in concept_ref:
+                core_rep = self.concepts[id].core_representation
+                cl = core_rep.codelist
+                if cl is not None:
+                    rep[CL.lower()] = cl
+
+        return rep
+
+    def __format_relationship(self, json_rel, att_name=None):
+        rels = {}
+
+        if DIM in json_rel:
+            json_rel[DIM] = add_list(json_rel[DIM])
+
+            for e in json_rel[DIM]:
+                if DIM_REF in e:
+                    element = e[DIM_REF][REF][ID]
+
+                else:
+                    element = e[REF][ID]
+
+                if element in components:
+                    rels[element] = components[element]
+
+        elif PRIM_MEASURE in json_rel:
+            if json_rel[PRIM_MEASURE][REF][ID] in components:
+                rels = components[json_rel[PRIM_MEASURE][REF][ID]]
+
+        else:
+            rels = "NoSpecifiedRelationship"
+
+        return rels
+
+    def __format_component(self, comp: Dict[str, Any], role) -> Component:
+        comp[ROLE] = role
+        comp[REQUIRED] = True
+
+        self.__format_con_rep(comp)
+
+        if CON_ID in comp:
+            rep = self.__format_con_id(comp[CON_ID][REF])
+            if CON in rep:
+                comp[CON_LOW] = rep.pop(CON)
+            del comp[CON_ID]
+
+        # Attribute Handling
+        if ATT_REL in comp:
+            comp[ATT_LVL] = self.__format_relationship(
+                comp[ATT_REL], att_name=comp[ID]
+            )
+            del comp[ATT_REL]
+
+        if AS_STATUS in comp:
+            if comp[AS_STATUS] != "Mandatory":
+                comp[REQUIRED] = False
+            del comp[AS_STATUS]
+
+        if CON_ROLE in comp:
+            comp[CON_ROLE_LOW] = None
+            del comp[CON_ROLE]
+
+        if "position" in comp:
+            del comp["position"]
+
+        if URN in comp:
+            del comp[URN]
+
+        return Component(**comp)
+
+    def __format_component_lists(
+        self, element: Dict[str, Any]
+    ) -> List[Component]:
+        comp_list = []
+
+        if TIME_DIM in element:
+            element[DIM].append(element[TIME_DIM])
+            del element[TIME_DIM]
+
+        role = list(set(element.keys()).intersection(COMP_TYPES))[0]
+        element[role] = add_list(element[role])
+
+        for comp in element[role]:
+            formatted_comp = self.__format_component(comp, role)
+            comp_list.append(formatted_comp)
+
+        return comp_list
+
+    def __format_components(self, element: Dict[str, Any]) -> Dict[str, Any]:
+        if DSD_COMPS in element:
+            element[COMPS] = []
+            comps = element[DSD_COMPS]
+            components.clear()
+
+            for comp in [DIM_LIST, ME_LIST, GROUP, ATT_LIST]:
+                if comp == GROUP and comp in comps:
+                    del comps[GROUP]
+
+                elif comp in comps:
+                    name = comp.lower()
+                    comp_list = self.__format_component_lists(comps[comp])
+                    components[name] = comp_list
+                    element[COMPS].extend(comp_list)
+
+            del element[DSD_COMPS]
+
         return element
 
     def __format_item(
@@ -373,6 +542,7 @@ class StructureParser(Struct):
             element = self.__format_urls(element)
             element = self.__format_agency(element)
             element = self.__format_validity(element)
+            element = self.__format_components(element)
 
             if IS_EXTERNAL_REF in element:
                 element[IS_EXTERNAL_REF_LOW] = element.pop(IS_EXTERNAL_REF)

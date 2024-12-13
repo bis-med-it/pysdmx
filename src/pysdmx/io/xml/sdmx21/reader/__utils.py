@@ -8,7 +8,9 @@ AGENCY_ID = "agencyID"
 XMLNS = "xmlns"
 VERSION = "version"
 VALID_FROM = "validFrom"
+VALID_FROM_LOW = "valid_from"
 VALID_TO = "validTo"
+VALID_TO_LOW = "valid_to"
 
 # Structure Specific
 VALUE = "Value"
@@ -72,7 +74,7 @@ TEXT_TYPE_LOW = "text_type"
 # Contact
 CONTACT = "Contact"
 DEPARTMENT = "Department"
-ROLE = "Role"
+ROLE = "role"
 URIS = "uris"
 EMAILS = "emails"
 TELEPHONES = "telephones"

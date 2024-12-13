@@ -1,9 +1,37 @@
 """Module for writing metadata to XML files."""
 
-from collections import OrderedDict
-from typing import Any, Dict
+import re
 
-from pysdmx.io.xml.sdmx21.__parsing_config import DSD
+from collections import OrderedDict
+from typing import Any, Dict, List
+
+from pysdmx.io.xml.sdmx21.__parsing_config import (
+    AGENCY_ID,
+    ATT,
+    CL,
+    CL_LOW,
+    CLASS,
+    CON,
+    CON_ID,
+    CON_LOW,
+    CORE_REP,
+    DIM,
+    DSD,
+    DSD_COMPS,
+    ENUM,
+    FACETS,
+    ID,
+    LOCAL_REP,
+    PACKAGE,
+    PAR_ID,
+    PAR_VER,
+    POSITION,
+    PRIM_MEASURE,
+    REF,
+    TEXT_FORMAT,
+    TEXT_TYPE,
+    VERSION,
+)
 from pysdmx.io.xml.sdmx21.reader.__utils import DFW
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_COM,
@@ -12,6 +40,7 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     add_indent,
     MSG_CONTENT_PKG,
 )
+from pysdmx.model import Concept, DataType, Facets
 from pysdmx.model.__base import (
     AnnotableArtefact,
     IdentifiableArtefact,
@@ -20,7 +49,7 @@ from pysdmx.model.__base import (
     NameableArtefact,
     VersionableArtefact,
 )
-from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
+from pysdmx.model.dataflow import Component, Dataflow, DataStructureDefinition
 
 ANNOTATION_WRITER = OrderedDict(
     {
@@ -54,6 +83,8 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
         for attr, label in ANNOTATION_WRITER.items():
             if getattr(annotation, attr, None) is not None:
                 value = getattr(annotation, attr)
+                if not isinstance(value, str):
+                    value = str(value)
                 value = value.replace("&", "&amp;").rstrip()
                 if attr == "text":
                     head_tag = f'{ABBR_COM}:{label} xml:lang="en"'
@@ -163,6 +194,149 @@ def __write_item(item: Item, indent: str) -> str:
     return outfile
 
 
+def __write_components(item: DataStructureDefinition, indent: str) -> str:
+    """Writes the components to the XML file."""
+    outfile = f"{indent}<{ABBR_STR}:{DSD_COMPS}>"
+    components = {
+        DIM: [],
+        PRIM_MEASURE: [],
+        ATT: [],
+    }
+
+    for comp in item.components:
+        if comp.role == DIM:
+            components[DIM].append(comp)
+        elif comp.role == ATT:
+            components[ATT].append(comp)
+        elif comp.role == PRIM_MEASURE:
+            components[PRIM_MEASURE].append(comp)
+
+    i = 1
+    for role, comps in components.items():
+        if comps:
+            outfile += f"{add_indent(indent)}<{ABBR_STR}:{comps[0].role.capitalize()}List>"
+            for comp in comps:
+                outfile += __write_component(
+                    comp, i, add_indent(add_indent(indent))
+                )
+                i += 1
+            outfile += f"{add_indent(indent)}</{ABBR_STR}:{comps[0].role.capitalize()}List>"
+
+    outfile += f"{indent}</{ABBR_STR}:{DSD_COMPS}>"
+    return outfile
+
+
+def __write_component(
+    item: Component, position, indent: str, CONCEPT=None
+) -> str:
+    """Writes the component to the XML file."""
+    head = f"{indent}<{ABBR_STR}:{item.role.capitalize()} "
+    attributes = f"{ID}={item.id} "
+    attributes += f"{POSITION}={position} "
+    attributes += ">"
+
+    concept_identity = __write_concept_identity(
+        item.concept, add_indent(indent)
+    )
+    representation = __write_representation(item, add_indent(indent))
+
+    outfile = head
+    outfile += attributes
+    outfile += concept_identity
+    outfile += representation
+    outfile += f"{indent}</{ABBR_STR}:{item.role.capitalize()}>"
+    return outfile
+
+
+def __write_concept_identity(concept: Concept, indent: str) -> str:
+    agency, parent_id, parent_version, id = __extract_urn_data(concept.urn)
+
+    outfile = f"{indent}<{ABBR_STR}:{CON_ID}>"
+    outfile += f"{add_indent(indent)}<{ABBR_STR}:{REF} "
+    outfile += f'{AGENCY_ID}="{agency!r}" '
+    outfile += f"{CLASS}={CON} "
+    outfile += f'{ID}="{id!r}" '
+    outfile += f'{PAR_ID}="{parent_id!r}" '
+    outfile += f'{PAR_VER}="{parent_version!r}" '
+    outfile += f'{PACKAGE}="{CON_LOW!r}" '
+    outfile += f"{indent}</{ABBR_STR}:{CON_ID}>"
+
+    return outfile
+
+
+def __write_representation(item: Component, indent: str) -> str:
+    representation = local_representation = core_representation = ""
+
+    if item.concept.facets is not None or item.concept.dtype is not None:
+        core_representation += __write_text_format(
+            item.concept.dtype, item.concept.facets, indent
+        )
+
+    if item.concept.codes is not None:
+        core_representation += __write_enumeration(item.concept.codes, indent)
+
+    if item.local_facets is not None or item.local_dtype is not None:
+        local_representation += __write_text_format(
+            item.local_dtype, item.local_facets, indent
+        )
+
+    if item.local_codes is not None:
+        local_representation += __write_enumeration(item.local_codes, indent)
+
+    if len(core_representation) > 0:
+        representation += f"{indent}<{ABBR_STR}:{CORE_REP}>"
+        representation += core_representation
+        representation += f"{indent}</{ABBR_STR}:{CORE_REP}>"
+
+    if len(local_representation) > 0:
+        representation += f"{indent}<{ABBR_STR}:{LOCAL_REP}>"
+        representation += local_representation
+        representation += f"{indent}</{ABBR_STR}:{LOCAL_REP}>"
+
+    return representation
+
+
+def __write_text_format(dtype: DataType, facets: Facets, indent: str) -> str:
+    """Writes the text format to the XML file."""
+    outfile = f"{add_indent(indent)}<{ABBR_STR}:{TEXT_FORMAT}"
+    if facets is not None:
+        active_facets = facets.__str__().replace(",", " ")
+        outfile += f" {FACETS}={active_facets!r}"
+    if dtype is not None:
+        outfile += f" {TEXT_TYPE}={dtype.name!r}"
+
+    outfile += f"{add_indent(indent)}<{ABBR_STR}:{TEXT_FORMAT}>"
+    return outfile
+
+
+def __write_enumeration(codes: List, indent: str) -> str:
+    agency, id, version, _ = __extract_urn_data(codes[0].urn)
+
+    outfile = f"{add_indent(indent)}<{ABBR_STR}:{ENUM}>"
+    outfile += f"{add_indent(add_indent(indent))}<{ABBR_STR}:{REF} "
+    outfile += f'{AGENCY_ID}="{agency!r}" '
+    outfile += f"{CLASS}={CL} "
+    outfile += f'{ID}="{id!r}" '
+    outfile += f'{PACKAGE}="{CL_LOW!r}" '
+    outfile += f'{VERSION}="{version!r}"/>'
+    outfile += f"{add_indent(indent)}</{ABBR_STR}:{ENUM}>"
+
+    return outfile
+
+
+def __extract_urn_data(urn: str) -> str:
+    pattern = r"(.+):(.+)\((.+)\)(?:\.(.+))?"
+
+    short_urn = urn.split("=")[-1]
+    match = re.match(pattern, short_urn)
+
+    if match is None:
+        return "", "", "", ""
+
+    agency, id, version, code_id = match.groups()
+    return agency, id, version, code_id
+
+
 def __write_structure(item: Dataflow, indent: str) -> str:
     """Writes the dataflow structure to the XML file."""
     outfile = f"{indent}<{ABBR_STR}:Structure>"
@@ -183,6 +357,9 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
     label = f"{ABBR_STR}:{scheme}"
 
     data = __write_maintainable(item_scheme, indent)
+
+    if scheme == DSD:
+        __write_components(item_scheme, add_indent(indent))
 
     if scheme not in [DSD, DFW]:
         data[
