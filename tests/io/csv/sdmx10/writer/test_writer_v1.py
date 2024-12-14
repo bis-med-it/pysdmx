@@ -43,6 +43,23 @@ def test_to_sdmx_csv_writing(data_path, data_path_reference):
         check_like=True,
     )
 
+def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir):
+    urn = "urn:sdmx:org.sdmx.infomodel.datastructure.DataFlow=MD:DS1(1.0)"
+
+    dataset = PandasDataset(
+        attributes={},
+        data=pd.read_json(data_path, orient="records"),
+        structure=urn,
+    )
+    dataset.data = dataset.data.astype("str")
+    writer(dataset, output_path=tmpdir / "output.csv")
+    result_df = pd.read_csv(tmpdir / "output.csv").astype(str)
+    reference_df = pd.read_csv(data_path_reference).astype(str)
+    pd.testing.assert_frame_equal(
+        result_df.fillna("").replace("nan", ""),
+        reference_df.replace("nan", ""),
+        check_like=True,
+    )
 
 def test_writer_attached_attrs(data_path, data_path_reference_atch_atts):
     urn = "urn:sdmx:org.sdmx.infomodel.datastructure.DataFlow=MD:DS1(1.0)"

@@ -37,13 +37,13 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
 
 
 def read(infile: str) -> Dict[str, PandasDataset]:
-    """Reads csv file and returns a payload dictionary.
+    """Reads csv file and returns a dictionary.
 
     Args:
-        infile: Path to file, str.
+        infile: A string containing the CSV file, comma separated.
 
     Returns:
-        payload: dict.
+        A dictionary containing the datasets with the short URN as keys.
 
     Raises:
         Invalid: If it is an invalid CSV file.

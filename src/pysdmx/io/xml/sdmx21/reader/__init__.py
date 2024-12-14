@@ -1,4 +1,4 @@
-"""SDMX 2.1 XML reader package."""
+"""SDMX 2.1 XML reader module."""
 
 from typing import Any, Dict, Optional
 
@@ -41,7 +41,7 @@ MODES = {
 
 
 def read_xml(
-    infile: str,
+    input: str,
     validate: bool = True,
     mode: Optional[MessageType] = None,
     use_dataset_id: bool = False,
@@ -49,25 +49,26 @@ def read_xml(
     """Reads an SDMX-ML file and returns a dictionary with the parsed data.
 
     Args:
-        infile: Path to file, URL, or string.
+        input: String to parse.
         validate: If True, the XML data will be validated against the XSD.
         mode: The type of message to parse.
         use_dataset_id: If True, the dataset ID will be used as the key in the
             resulting dictionary.
+            If False, the short URN will be used as the key.
 
     Returns:
-        dict: Dictionary with the parsed data.
+        A dictionary containing the datasets.
 
     Raises:
-        Invalid: If the SDMX data cannot be parsed.
+        Invalid: If the SDMX-ML 2.1 data message cannot be parsed.
     """
     if validate:
-        validate_doc(infile)
+        validate_doc(input)
     dict_info = xmltodict.parse(
-        infile, **XML_OPTIONS  # type: ignore[arg-type]
+        input, **XML_OPTIONS  # type: ignore[arg-type]
     )
 
-    del infile
+    del input
 
     if mode is not None and MODES[mode.value] not in dict_info:
         raise Invalid(

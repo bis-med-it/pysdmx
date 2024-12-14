@@ -19,8 +19,8 @@ os.environ["PYTHONPATH"] = ";".join(
 # -- Project information -----------------------------------------------------
 
 project = "pysdmx"
-copyright = "2023, BIS"
-author = "BIS"
+copyright = "2024, BIS, MeaningfulData"
+author = "BIS, MeaningfulData"
 
 
 # -- General configuration ---------------------------------------------------

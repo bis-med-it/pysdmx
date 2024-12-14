@@ -1,5 +1,5 @@
 """SDMX 2.1 writer package."""
-
+from pathlib import Path
 from typing import Any, Dict, Optional
 
 from pysdmx.errors import NotImplemented
@@ -18,7 +18,7 @@ from pysdmx.model.message import Header
 def writer(
     content: Dict[str, Any],
     type_: MessageType,
-    path: str = "",
+    path: Optional[Path] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
 ) -> Optional[str]:
@@ -52,7 +52,7 @@ def writer(
 
     outfile += get_end_message(type_, prettyprint)
 
-    if path == "":
+    if path is None:
         return outfile
 
     with open(path, "w", encoding="UTF-8", errors="replace") as f:

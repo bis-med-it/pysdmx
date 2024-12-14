@@ -1,6 +1,7 @@
 """SDMX 2.0 CSV writer module."""
 
 from copy import copy
+from pathlib import Path
 from typing import Optional
 
 import pandas as pd
@@ -10,7 +11,7 @@ from pysdmx.io.pd import PandasDataset
 
 
 def writer(
-    dataset: PandasDataset, output_path: Optional[str] = None
+    dataset: PandasDataset, output_path: Optional[Path] = None
 ) -> Optional[str]:
     """Converts a dataset to an SDMX CSV format.
 
