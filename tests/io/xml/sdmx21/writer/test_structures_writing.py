@@ -10,7 +10,7 @@ from pysdmx.io.xml.sdmx21.reader import read_xml
 from pysdmx.io.xml.sdmx21.writer import Header, writer
 from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme
 from pysdmx.model.__base import Annotation
-from pysdmx.model.dataflow import Dataflow, DataStructureDefinition, Components
+from pysdmx.model.dataflow import Components, Dataflow, DataStructureDefinition
 
 TEST_CS_URN = (
     "urn:sdmx:org.sdmx.infomodel.conceptscheme."

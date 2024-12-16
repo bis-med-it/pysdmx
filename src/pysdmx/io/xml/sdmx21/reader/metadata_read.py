@@ -15,8 +15,6 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     COMPS,
     CON_ID,
     CON_LOW,
-    CON_ROLE,
-    CON_ROLE_LOW,
     CORE_REP,
     DIM,
     DIM_LIST,
@@ -29,13 +27,13 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     LOCAL_DTYPE,
     LOCAL_FACETS_LOW,
     LOCAL_REP,
+    MANDATORY,
     ME_LIST,
     PRIM_MEASURE,
     REF,
     REQUIRED,
     TEXT_FORMAT,
     TIME_DIM,
-    MANDATORY,
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import (
     AGENCIES,
@@ -108,15 +106,15 @@ from pysdmx.model import (
 from pysdmx.model.__base import Agency, Annotation, Contact, Item, ItemScheme
 from pysdmx.model.dataflow import (
     Component,
+    Components,
     Dataflow,
     DataStructureDefinition,
-    Components,
     Role,
 )
 from pysdmx.model.message import CONCEPTS, ORGS
 from pysdmx.util import find_by_urn, parse_urn
 
-SCHEMES_CLASSES = {
+STRUCTURES_MAPPING = {
     CL: Codelist,
     AGENCIES: ItemScheme,
     CS: ConceptScheme,
@@ -513,7 +511,7 @@ class StructureParser(Struct):
                 self.concepts.update({e.id: e for e in items})
             element = self.__format_agency(element)
             # Dynamic creation with specific class
-            elements[full_id] = SCHEMES_CLASSES[scheme](**element)
+            elements[full_id] = STRUCTURES_MAPPING[scheme](**element)
 
         return elements
 
@@ -569,7 +567,7 @@ class StructureParser(Struct):
                     structure[COMPS] = Components(structure[COMPS])
                 else:
                     structure[COMPS] = Components([])
-            datastructures[full_id] = SCHEMES_CLASSES[schema](**structure)
+            datastructures[full_id] = STRUCTURES_MAPPING[schema](**structure)
 
         return datastructures
 

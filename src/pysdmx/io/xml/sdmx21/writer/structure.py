@@ -6,19 +6,24 @@ from typing import Any, Dict, Optional
 
 from pysdmx.io.xml.sdmx21.__parsing_config import (
     AGENCY_ID,
+    AS_STATUS,
     ATT,
+    ATT_REL,
     CL,
     CL_LOW,
     CLASS,
     CON,
     CON_ID,
-    CORE_REP,
+    CONDITIONAL,
+    CS,
     DIM,
     DSD,
     DSD_COMPS,
     ENUM,
     ID,
     LOCAL_REP,
+    MANDATORY,
+    MEASURE,
     PACKAGE,
     PAR_ID,
     PAR_VER,
@@ -27,18 +32,18 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     REF,
     TEXT_FORMAT,
     TEXT_TYPE,
+    TIME_DIM,
+    URN,
     VERSION,
-    MANDATORY,
-    CONDITIONAL,
-    AS_STATUS, URN, CS, TIME_DIM, MEASURE, ATT_REL,
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import DFW
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
+    __to_lower_camel_case,
     ABBR_COM,
     ABBR_MSG,
     ABBR_STR,
     add_indent,
-    MSG_CONTENT_PKG, __to_lower_camel_case,
+    MSG_CONTENT_PKG,
 )
 from pysdmx.model import Codelist, Concept, DataType, Facets
 from pysdmx.model.__base import (
@@ -255,11 +260,8 @@ def __write_attribute_relation(item: Component, indent: str) -> str:
     return outfile
 
 
-def __write_component(
-    item: Component, position, indent: str, CONCEPT=None
-) -> str:
+def __write_component(item: Component, position, indent: str) -> str:
     """Writes the component to the XML file."""
-
     role_name = ROLE_MAPPING[item.role]
     if role_name == DIM and item.id == "TIME_PERIOD":
         role_name = TIME_DIM
@@ -270,7 +272,9 @@ def __write_component(
     if item.role == Role.ATTRIBUTE:
         status = MANDATORY if item.required else CONDITIONAL
         attributes += f"{AS_STATUS}={status!r} "
-        attribute_relation = __write_attribute_relation(item, add_indent(indent))
+        attribute_relation = __write_attribute_relation(
+            item, add_indent(indent)
+        )
 
     attributes += f"{ID}={item.id!r}"
     if item.role == Role.DIMENSION:
@@ -379,12 +383,12 @@ def __write_structure(item: Dataflow, indent: str) -> str:
     """Writes the dataflow structure to the XML file."""
     outfile = f"{indent}<{ABBR_STR}:Structure>"
     outfile += (
-        f'{add_indent(indent)}<{REF} '
+        f"{add_indent(indent)}<{REF} "
         f'{PACKAGE}="datastructure" '
-        f'{AGENCY_ID}={item.agency!r} '
-        f'{ID}={item.id!r} '
-        f'{VERSION}={item.version!r} '
-        f'{CLASS}={DSD!r}/>'
+        f"{AGENCY_ID}={item.agency!r} "
+        f"{ID}={item.id!r} "
+        f"{VERSION}={item.version!r} "
+        f"{CLASS}={DSD!r}/>"
     )
     outfile += f"{indent}</{ABBR_STR}:Structure>"
 
