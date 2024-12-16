@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:GenericData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:gen="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>true</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Structure structureID="TEST" dimensionAtObservation="DIM1">
+			<com:Structure>
+				<Ref agencyID="MD" id="TEST" version="1.0" class="DataStructure"/>
+			</com:Structure>
+		</mes:Structure>
+	</mes:Header>
+	<mes:DataSet structureRef="TEST" action="Replace">
+		<gen:Attributes>
+			<gen:Value id="ds_att1" value="value1"/>
+			<gen:Value id="ds_att2" value="10"/>
+		</gen:Attributes>
+		<gen:Series>
+			<gen:SeriesKey>
+				<gen:Value id="DIM2" value="4"/>
+			</gen:SeriesKey>
+			<gen:Attributes>
+				<gen:Value id="ATT1" value="A"/>
+			</gen:Attributes>
+			<gen:Obs>
+				<gen:ObsDimension value="1"/>
+				<gen:ObsValue value="M1"/>
+				<gen:Attributes>
+					<gen:Value id="ATT2" value="7"/>
+				</gen:Attributes>
+			</gen:Obs>
+		</gen:Series>
+		<gen:Series>
+			<gen:SeriesKey>
+				<gen:Value id="DIM2" value="5"/>
+			</gen:SeriesKey>
+			<gen:Attributes>
+				<gen:Value id="ATT1" value="B"/>
+			</gen:Attributes>
+			<gen:Obs>
+				<gen:ObsDimension value="2"/>
+				<gen:ObsValue value="M1"/>
+				<gen:Attributes>
+					<gen:Value id="ATT2" value="8"/>
+				</gen:Attributes>
+			</gen:Obs>
+		</gen:Series>
+		<gen:Series>
+			<gen:SeriesKey>
+				<gen:Value id="DIM2" value="6"/>
+			</gen:SeriesKey>
+			<gen:Attributes>
+				<gen:Value id="ATT1" value="C"/>
+			</gen:Attributes>
+			<gen:Obs>
+				<gen:ObsDimension value="3"/>
+				<gen:ObsValue value="M1"/>
+				<gen:Attributes>
+					<gen:Value id="ATT2" value="9"/>
+				</gen:Attributes>
+			</gen:Obs>
+		</gen:Series>
+	</mes:DataSet>
+</mes:GenericData>

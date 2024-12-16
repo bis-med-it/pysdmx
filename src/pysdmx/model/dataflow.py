@@ -394,6 +394,11 @@ class Schema(Struct, frozen=True, omit_defaults=True):
                 out.append(f"{k}={v}")
         return ", ".join(out)
 
+    @property
+    def short_urn(self) -> str:
+        """Returns a short URN for the schema."""
+        return f"{self.context}={self.agency}:{self.id}({self.version})"
+
 
 class Dataflow(MaintainableArtefact, frozen=True, omit_defaults=True):
     """A flow of data that providers will provide."""

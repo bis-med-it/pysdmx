@@ -17,7 +17,6 @@ class PandasDataset(Dataset, frozen=False, kw_only=True):
         structure:
         URN or Schema related to this Dataset
         (DSD, Dataflow, ProvisionAgreement)
-        short_urn: Combination of Agency_id, Id and Version.
     """
 
     data: pd.DataFrame
