@@ -351,8 +351,8 @@ class StructureParser(Struct):
             if DTYPE in rep:
                 concept_ref[LOCAL_DTYPE] = rep.pop(DTYPE)
 
-            if FACETS in rep:
-                concept_ref[LOCAL_FACETS_LOW] = rep.pop(FACETS)
+            if FACETS.lower() in rep:
+                concept_ref[LOCAL_FACETS_LOW] = rep.pop(FACETS.lower())
 
     def __format_con_id(self, concept_ref: Dict[str, Any]) -> Dict[str, Any]:
         rep = {}

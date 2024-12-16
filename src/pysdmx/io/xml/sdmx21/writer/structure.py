@@ -12,13 +12,11 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     CLASS,
     CON,
     CON_ID,
-    CON_LOW,
     CORE_REP,
     DIM,
     DSD,
     DSD_COMPS,
     ENUM,
-    FACETS,
     ID,
     LOCAL_REP,
     PACKAGE,
@@ -32,7 +30,7 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     VERSION,
     MANDATORY,
     CONDITIONAL,
-    AS_STATUS, URN, CS, TIME_DIM, MEASURE,
+    AS_STATUS, URN, CS, TIME_DIM, MEASURE, ATT_REL,
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import DFW
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
@@ -40,7 +38,7 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_MSG,
     ABBR_STR,
     add_indent,
-    MSG_CONTENT_PKG,
+    MSG_CONTENT_PKG, __to_lower_camel_case,
 )
 from pysdmx.model import Codelist, Concept, DataType, Facets
 from pysdmx.model.__base import (
@@ -71,6 +69,12 @@ ROLE_MAPPING = {
     Role.DIMENSION: DIM,
     Role.ATTRIBUTE: ATT,
     Role.MEASURE: PRIM_MEASURE,
+}
+
+components: Dict[str, Any] = {
+    DIM: [],
+    ATT: [],
+    PRIM_MEASURE: [],
 }
 
 
@@ -211,11 +215,6 @@ def __write_item(item: Item, indent: str) -> str:
 def __write_components(item: DataStructureDefinition, indent: str) -> str:
     """Writes the components to the XML file."""
     outfile = f"{indent}<{ABBR_STR}:{DSD_COMPS}>"
-    components: Dict[str, Any] = {
-        DIM: [],
-        ATT: [],
-        PRIM_MEASURE: [],
-    }
 
     for comp in item.components:
         if comp.role == Role.DIMENSION:
@@ -243,6 +242,19 @@ def __write_components(item: DataStructureDefinition, indent: str) -> str:
     return outfile
 
 
+def __write_attribute_relation(item: Component, indent: str) -> str:
+
+    outfile = f"{indent}<{ABBR_STR}:{ATT_REL}>"
+    for rel in item.attachment_level:
+        related_role = ROLE_MAPPING[item.attachment_level[rel].role]
+        outfile += f"{add_indent(indent)}<{ABBR_STR}:{related_role}>"
+        outfile += f"{add_indent(add_indent(indent))}<{REF} {ID}={rel!r}/>"
+        outfile += f"{add_indent(indent)}</{ABBR_STR}:{related_role}>"
+    outfile += f"{indent}</{ABBR_STR}:{ATT_REL}>"
+
+    return outfile
+
+
 def __write_component(
     item: Component, position, indent: str, CONCEPT=None
 ) -> str:
@@ -252,10 +264,14 @@ def __write_component(
     if role_name == DIM and item.id == "TIME_PERIOD":
         role_name = TIME_DIM
     head = f"{indent}<{ABBR_STR}:{role_name} "
+
     attributes = ""
+    attribute_relation = ""
     if item.role == Role.ATTRIBUTE:
         status = MANDATORY if item.required else CONDITIONAL
         attributes += f"{AS_STATUS}={status!r} "
+        attribute_relation = __write_attribute_relation(item, add_indent(indent))
+
     attributes += f"{ID}={item.id!r}"
     if item.role == Role.DIMENSION:
         attributes += f" {POSITION}={str(position)!r}"
@@ -271,6 +287,8 @@ def __write_component(
     outfile += attributes
     outfile += concept_identity
     outfile += representation
+    outfile += attribute_relation
+
     outfile += f"{indent}</{ABBR_STR}:{role_name}>"
 
     outfile = outfile.replace("'", '"')
@@ -295,15 +313,8 @@ def __write_concept_identity(concept: Concept, indent: str) -> str:
 
 
 def __write_representation(item: Component, indent: str) -> str:
-    representation = local_representation = core_representation = ""
-
-    if item.concept.facets is not None or item.concept.dtype is not None:
-        core_representation += __write_text_format(
-            item.concept.dtype, item.concept.facets, indent
-        )
-
-    if item.concept.codes is not None:
-        core_representation += __write_enumeration(item.concept.codes, indent)
+    representation = ""
+    local_representation = ""
 
     if item.local_facets is not None or item.local_dtype is not None:
         local_representation += __write_text_format(
@@ -312,11 +323,6 @@ def __write_representation(item: Component, indent: str) -> str:
 
     if item.local_codes is not None:
         local_representation += __write_enumeration(item.local_codes, indent)
-
-    if len(core_representation) > 0:
-        representation += f"{indent}<{ABBR_STR}:{CORE_REP}>"
-        representation += core_representation
-        representation += f"{indent}</{ABBR_STR}:{CORE_REP}>"
 
     if len(local_representation) > 0:
         representation += f"{indent}<{ABBR_STR}:{LOCAL_REP}>"
@@ -334,6 +340,7 @@ def __write_text_format(
     if facets is not None:
         active_facets = facets.__str__().replace("=", '="').split(", ")
         for facet in active_facets:
+            facet = __to_lower_camel_case(facet)
             outfile += f' {facet}"'
     if dtype is not None:
         outfile += f" {TEXT_TYPE}={dtype.value!r}"

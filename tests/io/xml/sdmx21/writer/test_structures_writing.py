@@ -10,7 +10,7 @@ from pysdmx.io.xml.sdmx21.reader import read_xml
 from pysdmx.io.xml.sdmx21.writer import Header, writer
 from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme
 from pysdmx.model.__base import Annotation
-from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
+from pysdmx.model.dataflow import Dataflow, DataStructureDefinition, Components
 
 TEST_CS_URN = (
     "urn:sdmx:org.sdmx.infomodel.conceptscheme."
@@ -41,7 +41,7 @@ def empty_sample():
 
 @pytest.fixture()
 def read_write_sample():
-    base_path = Path(__file__).parent / "samples" / "read_write_test.xml"
+    base_path = Path(__file__).parent / "samples" / "read_write_sample.xml"
     with open(base_path, "r") as f:
         return f.read()
 
@@ -147,6 +147,7 @@ def datastructure():
         agency="BIS",
         annotations=(),
         id="BIS_DER",
+        components=Components([]),
         description="BIS derivates statistics",
         is_external_reference=False,
         is_final=False,
@@ -168,6 +169,7 @@ def partial_datastructure():
         agency="BIS",
         annotations=(),
         id="BIS_DER",
+        components=Components([]),
         description="BIS derivates statistics",
         name="BIS derivates statistics",
         urn="urn:sdmx:org.sdmx.infomodel.datastructure."
@@ -295,14 +297,8 @@ def test_read_write(read_write_sample, read_write_header):
         header=read_write_header,
         prettyprint=True,
     )
-    re_read_result = read_xml(write_result, validate=True)
-    re_write_result = writer(
-        re_read_result,
-        MessageType.Structure,
-        header=read_write_header,
-        prettyprint=True,
-    )
-    assert write_result == re_write_result
+
+    assert write_result == content
 
 
 def test_write_read(complete_header, datastructure, dataflow):

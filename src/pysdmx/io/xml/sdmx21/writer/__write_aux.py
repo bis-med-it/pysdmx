@@ -200,3 +200,14 @@ def __write_header(header: Header, prettyprint: bool) -> str:
         f"{__value('Source', header.source, prettyprint)}"
         f"{nl}{child1}</{ABBR_MSG}:Header>"
     ).replace("'", '"')
+
+
+def __to_camel_case(snake_str):
+    return "".join(x.capitalize() for x in snake_str.lower().split("_"))
+
+
+def __to_lower_camel_case(snake_str):
+    # We capitalize the first letter of each component except the first one
+    # with the 'capitalize' method and join them together.
+    camel_string = __to_camel_case(snake_str)
+    return snake_str[0].lower() + camel_string[1:]
