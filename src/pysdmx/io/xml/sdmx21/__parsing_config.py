@@ -128,6 +128,8 @@ ATT = "Attribute"
 ATT_LVL = "attachment_level"
 ATT_REL = "AttributeRelationship"
 AS_STATUS = "assignmentStatus"
+MANDATORY = "Mandatory"
+CONDITIONAL = "Conditional"
 # Measure
 ME_LIST = "MeasureList"
 ME_LIST_LOW = "measure_list"

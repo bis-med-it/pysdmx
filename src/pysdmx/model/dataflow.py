@@ -106,6 +106,7 @@ class Component(Struct, frozen=True, omit_defaults=True):
     """
 
     id: str
+    urn: str
     required: bool
     role: Role
     concept: Concept

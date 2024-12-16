@@ -35,6 +35,7 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     REQUIRED,
     TEXT_FORMAT,
     TIME_DIM,
+    MANDATORY,
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import (
     AGENCIES,
@@ -110,6 +111,7 @@ from pysdmx.model.dataflow import (
     Dataflow,
     DataStructureDefinition,
     Components,
+    Role,
 )
 from pysdmx.model.message import CONCEPTS, ORGS
 from pysdmx.util import find_by_urn, parse_urn
@@ -125,6 +127,12 @@ SCHEMES_CLASSES = {
 ITEMS_CLASSES = {AGENCY: Agency, CODE: Code, CON: Concept}
 
 COMP_TYPES = [DIM, ATT, PRIM_MEASURE, GROUP_DIM]
+
+ROLE_MAPPING = {
+    DIM: Role.DIMENSION,
+    ATT: Role.ATTRIBUTE,
+    PRIM_MEASURE: Role.MEASURE,
+}
 
 components: Dict[str, Any] = {}
 
@@ -374,7 +382,9 @@ class StructureParser(Struct):
 
         return rels
 
-    def __format_component(self, comp: Dict[str, Any], role: str) -> Component:
+    def __format_component(
+        self, comp: Dict[str, Any], role: Role
+    ) -> Component:
         comp[ROLE.lower()] = role
         comp[REQUIRED] = True
 
@@ -392,7 +402,7 @@ class StructureParser(Struct):
             del comp[ATT_REL]
 
         if AS_STATUS in comp:
-            if comp[AS_STATUS] != "Mandatory":
+            if comp[AS_STATUS] != MANDATORY:
                 comp[REQUIRED] = False
             del comp[AS_STATUS]
 
@@ -400,7 +410,7 @@ class StructureParser(Struct):
             del comp["position"]
 
         if URN in comp:
-            del comp[URN]
+            comp[URN.lower()] = comp.pop(URN)
 
         return Component(**comp)
 
@@ -414,10 +424,11 @@ class StructureParser(Struct):
             element[DIM].append(element[TIME_DIM])
             del element[TIME_DIM]
 
-        role = list(set(element.keys()).intersection(COMP_TYPES))[0]
-        element[role] = add_list(element[role])
+        role_name = list(set(element.keys()).intersection(COMP_TYPES))[0]
+        role = ROLE_MAPPING[role_name]
+        element[role_name] = add_list(element[role_name])
 
-        for comp in element[role]:
+        for comp in element[role_name]:
             formatted_comp = self.__format_component(comp, role)
             comp_list.append(formatted_comp)
 
@@ -439,6 +450,7 @@ class StructureParser(Struct):
                     components[name] = comp_list
                     element[COMPS].extend(comp_list)
 
+            element[COMPS] = Components(element[COMPS])
             del element[DSD_COMPS]
 
         return element
