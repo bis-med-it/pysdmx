@@ -21,6 +21,7 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     DIM,
     DIM_LIST,
     DSD_COMPS,
+    DTYPE,
     ENUM,
     GROUP,
     GROUP_DIM,
@@ -104,7 +105,12 @@ from pysdmx.model import (
     Facets,
 )
 from pysdmx.model.__base import Agency, Annotation, Contact, Item, ItemScheme
-from pysdmx.model.dataflow import Component, Dataflow, DataStructureDefinition
+from pysdmx.model.dataflow import (
+    Component,
+    Dataflow,
+    DataStructureDefinition,
+    Components,
+)
 from pysdmx.model.message import CONCEPTS, ORGS
 from pysdmx.util import find_by_urn, parse_urn
 
@@ -334,8 +340,8 @@ class StructureParser(Struct):
             if CODES_LOW in rep:
                 concept_ref[LOCAL_CODES_LOW] = rep.pop(CODES_LOW)
 
-            if LOCAL_DTYPE in rep:
-                concept_ref[LOCAL_DTYPE] = rep.pop(LOCAL_DTYPE)
+            if DTYPE in rep:
+                concept_ref[LOCAL_DTYPE] = rep.pop(DTYPE)
 
             if FACETS in rep:
                 concept_ref[LOCAL_FACETS_LOW] = rep.pop(FACETS)
@@ -344,14 +350,7 @@ class StructureParser(Struct):
         rep = {}
         id = concept_ref[ID]
 
-        if id in self.concepts:
-            rep[CON] = self.concepts[id]
-            if CORE_REP in concept_ref:
-                core_rep = self.concepts[id].core_representation
-                cl = core_rep.codelist
-                if cl is not None:
-                    rep[CL.lower()] = cl
-
+        rep[CON] = self.concepts[id]
         return rep
 
     def __format_relationship(
@@ -375,7 +374,7 @@ class StructureParser(Struct):
 
         return rels
 
-    def __format_component(self, comp: Dict[str, Any], role) -> Component:
+    def __format_component(self, comp: Dict[str, Any], role: str) -> Component:
         comp[ROLE.lower()] = role
         comp[REQUIRED] = True
 
@@ -396,10 +395,6 @@ class StructureParser(Struct):
             if comp[AS_STATUS] != "Mandatory":
                 comp[REQUIRED] = False
             del comp[AS_STATUS]
-
-        if CON_ROLE in comp:
-            comp[CON_ROLE_LOW] = None
-            del comp[CON_ROLE]
 
         if "position" in comp:
             del comp["position"]
@@ -510,14 +505,14 @@ class StructureParser(Struct):
 
         return elements
 
-    def __format_datastructures(
-        self, json_element: Dict[str, Any], scheme: str, item: str
+    def __format_schema(
+        self, json_element: Dict[str, Any], schema: str, item: str
     ) -> Dict[str, Any]:
         """Formats the structures in json format.
 
         Args:
             json_element: The structures in json format
-            scheme: The scheme of the structures
+            schema: The scheme of the structures
             item: The item of the structures
 
         Returns:
@@ -557,25 +552,14 @@ class StructureParser(Struct):
                 element[STR] = full_id
 
             structure = {key.lower(): value for key, value in element.items()}
-            datastructures[full_id] = SCHEMES_CLASSES[scheme](**structure)
+            if schema == DSDS:
+                if COMPS in structure:
+                    structure[COMPS] = Components(structure[COMPS])
+                else:
+                    structure[COMPS] = Components([])
+            datastructures[full_id] = SCHEMES_CLASSES[schema](**structure)
 
         return datastructures
-
-    def __format_dataflows(
-        self, json_element: Dict[str, Any], scheme: str, item: str
-    ) -> Dict[str, Any]:
-        """Formats the dataflows in json format.
-
-        Args:
-            json_element: The dataflows in json format
-            scheme: The scheme of the dataflows
-            item: The item of the dataflows
-
-        Returns:
-            A dictionary with the dataflows formatted
-        """
-        dataflows = self.__format_datastructures(json_element, scheme, item)
-        return dataflows
 
     def format_structures(self, json_meta: Dict[str, Any]) -> Dict[str, Any]:
         """Formats the structures in json format.
@@ -599,13 +583,9 @@ class StructureParser(Struct):
                 json_meta[CONCEPTS], CS, CON
             )
         if DFWS in json_meta:
-            structures[DFWS] = self.__format_dataflows(
-                json_meta[DFWS], DFWS, DFW
-            )
+            structures[DFWS] = self.__format_schema(json_meta[DFWS], DFWS, DFW)
         if DSDS in json_meta:
-            structures[DSDS] = self.__format_datastructures(
-                json_meta[DSDS], DSDS, DSD
-            )
+            structures[DSDS] = self.__format_schema(json_meta[DSDS], DSDS, DSD)
 
         # Reset global variables
         return structures

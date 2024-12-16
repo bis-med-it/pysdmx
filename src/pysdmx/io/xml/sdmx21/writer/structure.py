@@ -83,8 +83,6 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
         for attr, label in ANNOTATION_WRITER.items():
             if getattr(annotation, attr, None) is not None:
                 value = getattr(annotation, attr)
-                if attr == "text":
-                    value = __extract_text(value)
                 value = value.replace("&", "&amp;").rstrip()
 
                 if attr == "text":
@@ -100,22 +98,6 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
         outfile += f"{child2}</{ABBR_COM}:Annotation>"
     outfile += f"{child1}</{ABBR_COM}:Annotations>"
     return outfile
-
-
-def __extract_text(item: Dict[str, Any]) -> str:
-    text = ""
-
-    if isinstance(item, list) and isinstance(item[0], dict):
-        for value in item:
-            if value.get("lang") == "en":
-                return value.get("#text")
-            text = value.get("#text")
-        return text
-
-    elif isinstance(item, dict):
-        return item.get("#text")
-
-    return item
 
 
 def __write_identifiable(
@@ -227,7 +209,7 @@ def __write_components(item: DataStructureDefinition, indent: str) -> str:
             components[DIM].append(comp)
         elif comp.role == ATT:
             components[ATT].append(comp)
-        elif comp.role == PRIM_MEASURE:
+        else:
             components[PRIM_MEASURE].append(comp)
 
     position = 1
@@ -346,15 +328,11 @@ def __write_enumeration(codes: Codelist, indent: str) -> str:
     return outfile
 
 
-def __extract_urn_data(urn: str) -> Any:
+def __extract_urn_data(urn: str) -> (str, str, str, str):
     pattern = r"(.+):(.+)\((.+)\)(?:\.(.+))?"
 
     short_urn = urn.split("=")[-1]
     match = re.match(pattern, short_urn)
-
-    if match is None:
-        return "", "", "", ""
-
     agency, id, version, code_id = match.groups()
     return agency, id, version, code_id
 

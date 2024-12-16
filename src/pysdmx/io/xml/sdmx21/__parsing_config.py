@@ -171,6 +171,7 @@ URN = "URN"
 # Representation
 CORE_REP = "CoreRepresentation"
 CORE_REP_LOW = "core_representation"
+DTYPE = "dtype"
 LOCAL_DTYPE = "local_dtype"
 LOCAL_REP = "LocalRepresentation"
 LOCAL_REP_LOW = "local_representation"

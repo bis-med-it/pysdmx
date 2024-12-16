@@ -399,7 +399,7 @@ class Schema(Struct, frozen=True, omit_defaults=True):
         return ", ".join(out)
 
 
-class DataStructureDefinition(MaintainableArtefact, frozen=True):
+class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
     """A collection of metadata concepts.
 
     Attributes:
@@ -420,8 +420,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True):
         version: The version of the data structure.
     """
 
-    components: Components = []
-    pass
+    components: Components
 
 
 class Dataflow(MaintainableArtefact, frozen=True, omit_defaults=True):
