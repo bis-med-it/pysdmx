@@ -46,7 +46,7 @@ class Header(Struct, kw_only=True):
     receiver: Optional[str] = None
     source: Optional[str] = None
     dataset_action: Optional[ActionType] = None
-    dataset_references: Optional[Dict[str, str]] = None
+    structure: Optional[Dict[str, str]] = None
 
 
 ORGS = "OrganisationSchemes"

@@ -240,8 +240,8 @@ def __write_header(
     prepared = header.prepared.strftime("%Y-%m-%dT%H:%M:%S")
     test = str(header.test).lower()
     references_str = ""
-    if header.dataset_references is not None:
-        for short_urn, dim_at_obs in header.dataset_references.items():
+    if header.structure is not None:
+        for short_urn, dim_at_obs in header.structure.items():
             references_str += __reference(short_urn, dim_at_obs)
     return (
         f"{nl}{child1}<{ABBR_MSG}:Header>"

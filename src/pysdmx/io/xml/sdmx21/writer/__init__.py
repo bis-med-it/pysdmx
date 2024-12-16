@@ -60,11 +60,11 @@ def writer(
         dim_mapping = check_dimension_at_observation(
             content, dimension_at_observation
         )
-        header.dataset_references = dim_mapping
+        header.structure = dim_mapping
         if type_ == MessageType.StructureSpecificDataSet:
             add_namespace_structure = True
             for i, (short_urn, dimension) in enumerate(
-                header.dataset_references.items()
+                header.structure.items()
             ):
                 ss_namespaces += (
                     f'xmlns:ns{i + 1}="urn:sdmx:org.sdmx'
