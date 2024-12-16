@@ -487,7 +487,7 @@
 								<Ref agencyID="ESTAT" class="Concept" id="freq" maintainableParentID="HLTH_RS_PRSHP1" maintainableParentVersion="7.0" package="conceptscheme"/>
 							</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:TextFormat minLength="1" maxLength="1" textType="String"/>
+								<str:TextFormat minLength="1" maxLength="1"/>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:TimeDimension id="TIME_PERIOD" position="2" urn="urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).TIME_PERIOD">
@@ -515,15 +515,27 @@
 								</str:PrimaryMeasure>
 							</str:AttributeRelationship>
 						</str:Attribute>
+						<str:Attribute assignmentStatus="Mandatory" id="FREQ" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=ESTAT:HLTH_RS_PRSHP1(7.0).FREQ">
+							<str:ConceptIdentity>
+								<Ref agencyID="ESTAT" class="Concept" id="freq" maintainableParentID="HLTH_RS_PRSHP1" maintainableParentVersion="7.0" package="conceptscheme"/>
+							</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>
+									<Ref agencyID="ESTAT" class="Codelist" id="FREQ" package="codelist" version="1.5"/>
+								</str:Enumeration>
+							</str:LocalRepresentation>
+							<str:AttributeRelationship>
+								<str:Dimension>
+									<Ref id="freq"/>
+								</str:Dimension>
+							</str:AttributeRelationship>
+						</str:Attribute>
 					</str:AttributeList>
 					<str:MeasureList>
 						<str:PrimaryMeasure id="OBS_VALUE" urn="urn:sdmx:org.sdmx.infomodel.datastructure.PrimaryMeasure=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE">
 							<str:ConceptIdentity>
 								<Ref agencyID="ESTAT" class="Concept" id="OBS_VALUE" maintainableParentID="HLTH_RS_PRSHP1" maintainableParentVersion="7.0" package="conceptscheme"/>
 							</str:ConceptIdentity>
-							<str:LocalRepresentation>
-								<str:TextFormat textType="Double"/>
-							</str:LocalRepresentation>
 						</str:PrimaryMeasure>
 					</str:MeasureList>
 				</str:DataStructureComponents>

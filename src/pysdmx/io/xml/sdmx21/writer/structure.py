@@ -5,6 +5,7 @@ import re
 from typing import Any, Dict, Optional
 
 from pysdmx.io.xml.sdmx21.__parsing_config import (
+    AGENCIES,
     AGENCY_ID,
     AS_STATUS,
     ATT,
@@ -279,7 +280,9 @@ def __write_component(item: Component, position, indent: str) -> str:
     attributes += f"{ID}={item.id!r}"
     if item.role == Role.DIMENSION:
         attributes += f" {POSITION}={str(position)!r}"
-    attributes += f" {URN.lower()}={item.urn!r}"
+
+    urn = item.urn if item.urn is not None else "None"
+    attributes += f" {URN.lower()}={urn!r}"
     attributes += ">"
 
     concept_identity = __write_concept_identity(
@@ -301,6 +304,9 @@ def __write_component(item: Component, position, indent: str) -> str:
 
 def __write_concept_identity(concept: Concept, indent: str) -> str:
     agency, parent_id, parent_version, id = __extract_urn_data(concept.urn)
+
+    if id is None:
+        id = concept.id
 
     outfile = f"{indent}<{ABBR_STR}:{CON_ID}>"
     outfile += f"{add_indent(indent)}<{REF} "
@@ -372,6 +378,9 @@ def __write_enumeration(codes: Codelist, indent: str) -> str:
 
 def __extract_urn_data(urn: str) -> (str, str, str, str):
     pattern = r"(.+):(.+)\((.+)\)(?:\.(.+))?"
+
+    if urn is None:
+        return "", "", "", ""
 
     short_urn = urn.split("=")[-1]
     match = re.match(pattern, short_urn)
@@ -458,7 +467,11 @@ def __write_metadata_element(
             item = (
                 DSD
                 if issubclass(element.__class__, DataStructureDefinition)
-                else type(element).__name__
+                else (
+                    AGENCIES
+                    if element.id == "AGENCIES"
+                    else type(element).__name__
+                )
             )
             outfile += __write_scheme(element, add_indent(base_indent), item)
         outfile += f"{base_indent}</{ABBR_STR}:{MSG_CONTENT_PKG[key]}>"

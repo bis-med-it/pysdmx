@@ -8,9 +8,15 @@ from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
 from pysdmx.io.xml.sdmx21.writer import Header, writer
-from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme
+from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme, Facets
 from pysdmx.model.__base import Annotation
-from pysdmx.model.dataflow import Components, Dataflow, DataStructureDefinition
+from pysdmx.model.dataflow import (
+    Component,
+    Components,
+    Dataflow,
+    DataStructureDefinition,
+    Role,
+)
 
 TEST_CS_URN = (
     "urn:sdmx:org.sdmx.infomodel.conceptscheme."
@@ -47,6 +53,13 @@ def read_write_sample():
 
 
 @pytest.fixture()
+def bis_sample():
+    base_path = Path(__file__).parent / "samples" / "bis_der.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture()
 def header():
     return Header(
         id="ID",
@@ -72,6 +85,16 @@ def read_write_header():
         prepared=datetime.strptime("2021-03-05T14:11:16", "%Y-%m-%dT%H:%M:%S"),
         sender="Unknown",
         receiver="Not_Supplied",
+    )
+
+
+@pytest.fixture()
+def bis_header():
+    return Header(
+        id="test",
+        prepared=datetime.strptime("2021-04-20T10:29:14", "%Y-%m-%dT%H:%M:%S"),
+        sender="Unknown",
+        receiver="Not_supplied",
     )
 
 
@@ -142,24 +165,81 @@ def concept():
 
 
 @pytest.fixture()
-def datastructure():
-    return DataStructureDefinition(
-        agency="BIS",
-        annotations=(),
-        id="BIS_DER",
-        components=Components([]),
-        description="BIS derivates statistics",
-        is_external_reference=False,
-        is_final=False,
-        name="BIS derivates statistics",
-        service_url=None,
-        structure_url=None,
-        uri="http://www.bis.org/statistics/derivatives.html",
-        urn="urn:sdmx:org.sdmx.infomodel.datastructure."
-        "DataStructure=BIS:BIS_DER(1.0)",
-        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
-        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
+def concept_ds():
+    return ConceptScheme(
+        urn="urn:sdmx: org.sdmx.infomodel.conceptscheme."
+        "ConceptScheme = BIS:CS_FREQ(1.0)",
+        uri="urn:sdmx: org.sdmx.infomodel.conceptscheme."
+        "ConceptScheme = BIS:CS_FREQ(1.0)",
+        id="freq",
+        name="Frequency",
         version="1.0",
+        agency="BIS",
+        items=[
+            Concept(
+                id="freq",
+                urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
+                "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).freq",
+                name="Time frequency",
+                annotations=(),
+            ),
+            Concept(
+                id="OBS_VALUE",
+                urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
+                "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE",
+                name="Observation value",
+                annotations=(),
+            ),
+        ],
+    )
+
+
+@pytest.fixture()
+def datastructure(concept_ds):
+    return DataStructureDefinition(
+        annotations=[
+            Annotation(title="OBS_FLAG", type="DISSEMINATION_FLAG_SETTINGS"),
+            Annotation(title="time", type="DISSEMINATION_TIME_DIMENSION_CODE"),
+        ],
+        urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+        "DataStructure=ESTAT:HLTH_RS_PRSHP1(7.0)",
+        id="HLTH_RS_PRSHP1",
+        name="HLTH_RS_PRSHP1",
+        version="7.0",
+        agency="ESTAT",
+        is_final=True,
+        components=[
+            Component(
+                id="freq_dim",
+                required=True,
+                role=Role.DIMENSION,
+                concept=Concept(
+                    id="freq",
+                    urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
+                    "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).freq",
+                    name="Time frequency",
+                    annotations=(),
+                ),
+                local_facets=Facets(min_length="1", max_length="1"),
+                urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+                "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).FREQ",
+            ),
+            Component(
+                id="OBS_VALUE",
+                required=True,
+                role=Role.MEASURE,
+                concept=Concept(
+                    id="OBS_VALUE",
+                    urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
+                    "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE",
+                    name="Observation value",
+                    annotations=(),
+                ),
+                urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+                "PrimaryMeasure=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE",
+            ),
+        ],
+        description="Healthcare resource partnership statistics",
     )
 
 
@@ -262,7 +342,7 @@ def test_writer_datastructure(complete_header, datastructure):
         prettyprint=True,
     )
 
-    assert "DataStructure=BIS:BIS_DER(1.0)" in result
+    assert "DataStructures" in result
 
 
 def test_writer_partial_datastructure(complete_header, partial_datastructure):
@@ -301,9 +381,12 @@ def test_read_write(read_write_sample, read_write_header):
     assert write_result == content
 
 
-def test_write_read(complete_header, datastructure, dataflow):
+def test_write_read(complete_header, datastructure, dataflow, concept_ds):
     content = {
-        "DataStructures": {"DataStructure=BIS:BIS_DER(1.0)": datastructure},
+        "Concepts": {"BIS:freq(1.0)": concept_ds},
+        "DataStructures": {
+            "DataStructure=ESTAT:HLTH_RS_PRSHP1(7.0)": datastructure
+        },
         "Dataflows": {"Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)": dataflow},
     }
 

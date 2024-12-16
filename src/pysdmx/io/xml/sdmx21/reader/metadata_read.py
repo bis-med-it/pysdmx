@@ -367,16 +367,18 @@ class StructureParser(Struct):
         for scheme in [DIM, PRIM_MEASURE]:
             comp_list = DIM_LIST if scheme == DIM else ME_LIST
             if scheme in json_rel:
-                element = json_rel[scheme][REF][ID]
-                component = next(
-                    (
-                        comp
-                        for comp in components[comp_list]
-                        if comp.id == element
-                    ),
-                    None,
-                )
-                rels[element] = component
+                rel_list = add_list(json_rel[scheme])
+                for element in rel_list:
+                    element_id = element[REF][ID]
+                    component = next(
+                        (
+                            comp
+                            for comp in components[comp_list]
+                            if comp.id == element_id
+                        ),
+                        None,
+                    )
+                    rels[element_id] = component
 
         return rels
 
@@ -388,11 +390,9 @@ class StructureParser(Struct):
 
         self.__format_con_rep(comp)
 
-        if CON_ID in comp:
-            rep = self.__format_con_id(comp[CON_ID][REF])
-            if CON in rep:
-                comp[CON_LOW] = rep.pop(CON)
-            del comp[CON_ID]
+        rep = self.__format_con_id(comp[CON_ID][REF])
+        comp[CON_LOW] = rep.pop(CON)
+        del comp[CON_ID]
 
         # Attribute Handling
         if ATT_REL in comp:
@@ -493,11 +493,13 @@ class StructureParser(Struct):
             )
             element = self.__format_urls(element)
             if IS_EXTERNAL_REF in element:
-                element[IS_EXTERNAL_REF_LOW] = element.pop(IS_EXTERNAL_REF)
+                element[IS_EXTERNAL_REF_LOW] = (
+                    element.pop(IS_EXTERNAL_REF) == "true"
+                )
             if IS_FINAL in element:
-                element[IS_FINAL_LOW] = element.pop(IS_FINAL)
+                element[IS_FINAL_LOW] = element.pop(IS_FINAL) == "true"
             if IS_PARTIAL in element:
-                element[IS_PARTIAL_LOW] = element.pop(IS_PARTIAL)
+                element[IS_PARTIAL_LOW] = element.pop(IS_PARTIAL) == "true"
             element[item] = add_list(element[item])
             items = []
             for item_elem in element[item]:

@@ -106,7 +106,6 @@ class Component(Struct, frozen=True, omit_defaults=True):
     """
 
     id: str
-    urn: str
     required: bool
     role: Role
     concept: Concept
@@ -117,6 +116,7 @@ class Component(Struct, frozen=True, omit_defaults=True):
     local_codes: Union[Codelist, Hierarchy, None] = None
     attachment_level: Optional[str] = None
     array_def: Optional[ArrayBoundaries] = None
+    urn: Optional[str] = None
 
     @property
     def dtype(self) -> DataType:
