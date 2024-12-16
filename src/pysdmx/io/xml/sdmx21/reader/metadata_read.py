@@ -20,13 +20,13 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     CORE_REP,
     DIM,
     DIM_LIST,
-    DIM_REF,
     DSD_COMPS,
     ENUM,
     GROUP,
     GROUP_DIM,
     LOCAL_CODES_LOW,
     LOCAL_DTYPE,
+    LOCAL_FACETS_LOW,
     LOCAL_REP,
     ME_LIST,
     PRIM_MEASURE,
@@ -34,7 +34,6 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     REQUIRED,
     TEXT_FORMAT,
     TIME_DIM,
-    LOCAL_FACETS_LOW,
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import (
     AGENCIES,
@@ -291,13 +290,12 @@ class StructureParser(Struct):
             self.__format_facets(json_rep[TEXT_FORMAT], json_obj)
 
         if ENUM in json_rep and len(self.codelists) > 0:
-            if REF in json_rep[ENUM]:
-                ref = json_rep[ENUM][REF]
-            else:
-                ref = json_rep[ENUM]
+            ref = json_rep[ENUM].get(REF, json_rep[ENUM])
 
             if "URN" in ref:
-                codelist = find_by_urn(list(self.codelists.values()), ref["URN"])
+                codelist = find_by_urn(
+                    list(self.codelists.values()), ref["URN"]
+                )
 
             else:
                 id = unique_id(ref[AGENCY_ID], ref[ID], ref[VERSION])
@@ -326,8 +324,8 @@ class StructureParser(Struct):
 
         return element
 
-    def __format_con_rep(self, concept_ref: Dict[str, Any]) -> Dict[str, Any]:
-        rep = {}
+    def __format_con_rep(self, concept_ref: Dict[str, Any]) -> None:
+        rep: Dict[str, Any] = {}
 
         if LOCAL_REP in concept_ref:
             self.__format_representation(concept_ref[LOCAL_REP], rep)
@@ -356,28 +354,24 @@ class StructureParser(Struct):
 
         return rep
 
-    def __format_relationship(self, json_rel, att_name=None):
-        rels = {}
+    def __format_relationship(
+        self, json_rel: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        rels: Dict[str, Any] = {}
 
-        if DIM in json_rel:
-            json_rel[DIM] = add_list(json_rel[DIM])
-
-            for e in json_rel[DIM]:
-                if DIM_REF in e:
-                    element = e[DIM_REF][REF][ID]
-
-                else:
-                    element = e[REF][ID]
-
-                if element in components:
-                    rels[element] = components[element]
-
-        elif PRIM_MEASURE in json_rel:
-            if json_rel[PRIM_MEASURE][REF][ID] in components:
-                rels = components[json_rel[PRIM_MEASURE][REF][ID]]
-
-        else:
-            rels = "NoSpecifiedRelationship"
+        for scheme in [DIM, PRIM_MEASURE]:
+            comp_list = DIM_LIST if scheme == DIM else ME_LIST
+            if scheme in json_rel:
+                element = json_rel[scheme][REF][ID]
+                component = next(
+                    (
+                        comp
+                        for comp in components[comp_list]
+                        if comp.id == element
+                    ),
+                    None,
+                )
+                rels[element] = component
 
         return rels
 
@@ -395,9 +389,7 @@ class StructureParser(Struct):
 
         # Attribute Handling
         if ATT_REL in comp:
-            comp[ATT_LVL] = self.__format_relationship(
-                comp[ATT_REL], att_name=comp[ID]
-            )
+            comp[ATT_LVL] = self.__format_relationship(comp[ATT_REL])
             del comp[ATT_REL]
 
         if AS_STATUS in comp:
@@ -442,13 +434,13 @@ class StructureParser(Struct):
             comps = element[DSD_COMPS]
             components.clear()
 
-            for comp in [DIM_LIST, ME_LIST, GROUP, ATT_LIST]:
-                if comp == GROUP and comp in comps:
+            for comp_list in [DIM_LIST, ME_LIST, GROUP, ATT_LIST]:
+                if comp_list == GROUP and comp_list in comps:
                     del comps[GROUP]
 
-                elif comp in comps:
-                    name = comp.lower()
-                    comp_list = self.__format_component_lists(comps[comp])
+                elif comp_list in comps:
+                    name = comp_list
+                    comp_list = self.__format_component_lists(comps[comp_list])
                     components[name] = comp_list
                     element[COMPS].extend(comp_list)
 

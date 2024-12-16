@@ -1,9 +1,8 @@
 """Module for writing metadata to XML files."""
 
-import re
-
 from collections import OrderedDict
-from typing import Any, Dict, List
+import re
+from typing import Any, Dict, Optional
 
 from pysdmx.io.xml.sdmx21.__parsing_config import (
     AGENCY_ID,
@@ -40,7 +39,7 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     add_indent,
     MSG_CONTENT_PKG,
 )
-from pysdmx.model import Concept, DataType, Facets
+from pysdmx.model import Codelist, Concept, DataType, Facets
 from pysdmx.model.__base import (
     AnnotableArtefact,
     IdentifiableArtefact,
@@ -50,6 +49,7 @@ from pysdmx.model.__base import (
     VersionableArtefact,
 )
 from pysdmx.model.dataflow import Component, Dataflow, DataStructureDefinition
+
 
 ANNOTATION_WRITER = OrderedDict(
     {
@@ -216,7 +216,7 @@ def __write_item(item: Item, indent: str) -> str:
 def __write_components(item: DataStructureDefinition, indent: str) -> str:
     """Writes the components to the XML file."""
     outfile = f"{indent}<{ABBR_STR}:{DSD_COMPS}>"
-    components = {
+    components: Dict[str, Any] = {
         DIM: [],
         PRIM_MEASURE: [],
         ATT: [],
@@ -230,16 +230,17 @@ def __write_components(item: DataStructureDefinition, indent: str) -> str:
         elif comp.role == PRIM_MEASURE:
             components[PRIM_MEASURE].append(comp)
 
-    i = 1
-    for role, comps in components.items():
+    position = 1
+    for _, comps in components.items():
         if comps:
-            outfile += f"{add_indent(indent)}<{ABBR_STR}:{comps[0].role.capitalize()}List>"
+            role_name = comps[0].role.capitalize()
+            outfile += f"{add_indent(indent)}<{ABBR_STR}:{role_name}List>"
             for comp in comps:
                 outfile += __write_component(
-                    comp, i, add_indent(add_indent(indent))
+                    comp, position, add_indent(add_indent(indent))
                 )
-                i += 1
-            outfile += f"{add_indent(indent)}</{ABBR_STR}:{comps[0].role.capitalize()}List>"
+                position += 1
+            outfile += f"{add_indent(indent)}</{ABBR_STR}:{role_name}List>"
 
     outfile += f"{indent}</{ABBR_STR}:{DSD_COMPS}>"
     return outfile
@@ -315,7 +316,9 @@ def __write_representation(item: Component, indent: str) -> str:
     return representation
 
 
-def __write_text_format(dtype: DataType, facets: Facets, indent: str) -> str:
+def __write_text_format(
+    dtype: Optional[DataType], facets: Optional[Facets], indent: str
+) -> str:
     """Writes the text format to the XML file."""
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{TEXT_FORMAT}"
     if facets is not None:
@@ -328,7 +331,7 @@ def __write_text_format(dtype: DataType, facets: Facets, indent: str) -> str:
     return outfile
 
 
-def __write_enumeration(codes: List, indent: str) -> str:
+def __write_enumeration(codes: Codelist, indent: str) -> str:
     agency, id, version, _ = __extract_urn_data(codes[0].urn)
 
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{ENUM}>"
@@ -343,7 +346,7 @@ def __write_enumeration(codes: List, indent: str) -> str:
     return outfile
 
 
-def __extract_urn_data(urn: str) -> str:
+def __extract_urn_data(urn: str) -> Any:
     pattern = r"(.+):(.+)\((.+)\)(?:\.(.+))?"
 
     short_urn = urn.split("=")[-1]
