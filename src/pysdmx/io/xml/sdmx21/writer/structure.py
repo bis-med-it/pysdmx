@@ -1,7 +1,7 @@
 """Module for writing metadata to XML files."""
 
 from collections import OrderedDict
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 from pysdmx.io.xml.sdmx21.__parsing_config import (
     AGENCIES,
@@ -34,7 +34,7 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     TEXT_TYPE,
     TIME_DIM,
     URN,
-    VERSION,
+    VERSION, DEPARTMENT, ROLE, TELEPHONE, NAME, FAX, URI, EMAIL, ENUM_FORMAT, CORE_REP,
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import DFW
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
@@ -52,7 +52,7 @@ from pysdmx.model.__base import (
     Item,
     MaintainableArtefact,
     NameableArtefact,
-    VersionableArtefact,
+    VersionableArtefact, Agency,
 )
 from pysdmx.model.dataflow import (
     Component,
@@ -199,6 +199,30 @@ def __write_maintainable(
 
     return outfile
 
+def __write_contact(contact: Any, indent: str) -> str:
+    """Writes the contact to the XML file."""
+    outfile = f"{indent}<{ABBR_STR}:Contact>"
+    if contact.name is not None:
+        outfile += f"{add_indent(indent)}<{ABBR_COM}:{NAME}>{contact.name}</{ABBR_COM}:{NAME}>"
+    if contact.department is not None:
+        outfile += f"{add_indent(indent)}<{ABBR_STR}:{DEPARTMENT}>{contact.department}</{ABBR_STR}:{DEPARTMENT}>"
+    if contact.role is not None:
+        outfile += f"{add_indent(indent)}<{ABBR_STR}:{ROLE}>{contact.role}</{ABBR_STR}:{ROLE}>"
+    if contact.telephones is not None:
+        for tlf in contact.telephones:
+            outfile += f"{add_indent(indent)}<{ABBR_STR}:{TELEPHONE}>{tlf}</{ABBR_STR}:{TELEPHONE}>"
+    if contact.faxes is not None:
+        for fax in contact.faxes:
+            outfile += f"{add_indent(indent)}<{ABBR_STR}:{FAX}>{fax}</{ABBR_STR}:{FAX}>"
+    if contact.uris is not None:
+        for uri in contact.uris:
+            outfile += f"{add_indent(indent)}<{ABBR_STR}:{URI}>{uri}</{ABBR_STR}:{URI}>"
+    if contact.emails is not None:
+        for email in contact.emails:
+            outfile += f"{add_indent(indent)}<{ABBR_STR}:{EMAIL}>{email}</{ABBR_STR}:{EMAIL}>"
+    outfile += f"{indent}</{ABBR_STR}:Contact>"
+
+    return outfile
 
 def __write_item(item: Item, indent: str) -> str:
     """Writes the item to the XML file."""
@@ -208,6 +232,23 @@ def __write_item(item: Item, indent: str) -> str:
     attributes = data["Attributes"].replace("'", '"')
     outfile = f"{indent}<{head}{attributes}>"
     outfile += __export_intern_data(data, add_indent(indent))
+    if isinstance(item, Agency) and len(item.contacts) > 0:
+        for contact in item.contacts:
+            outfile += __write_contact(contact, add_indent(indent))
+    if isinstance(item, Concept):
+        if item.codes is not None or item.facets is not None or item.dtype is not None:
+            outfile += f"{add_indent(indent)}<{ABBR_STR}:{CORE_REP}>"
+            if item.codes is not None:
+                outfile += __write_enumeration(item.codes, add_indent(indent))
+            if item.facets is not None or item.dtype is not None:
+                if item.codes is not None:
+                    type_ = ENUM_FORMAT
+                else:
+                    type_ = TEXT_FORMAT
+                outfile += __write_text_format(
+                    item.dtype, item.facets, type_, add_indent(indent)
+                )
+            outfile += f"{add_indent(indent)}</{ABBR_STR}:{CORE_REP}>"
     outfile += f"{indent}</{head}>"
     return outfile
 
@@ -251,6 +292,8 @@ def __write_components(item: DataStructureDefinition, indent: str) -> str:
 def __write_attribute_relation(item: Component, indent: str) -> str:
 
     outfile = f"{indent}<{ABBR_STR}:{ATT_REL}>"
+    if len(item.attachment_level) == 0:
+        outfile += f"{add_indent(indent)}<{ABBR_STR}:None/>"
     for rel in item.attachment_level:
         related_role = ROLE_MAPPING[item.attachment_level[rel].role]
         outfile += f"{add_indent(indent)}<{ABBR_STR}:{related_role}>"
@@ -281,8 +324,9 @@ def __write_component(item: Component, position, indent: str) -> str:
     if item.role == Role.DIMENSION:
         attributes += f" {POSITION}={str(position)!r}"
 
-    urn = item.urn if item.urn is not None else "None"
-    attributes += f" {URN.lower()}={urn!r}"
+    if item.urn is not None:
+        attributes += f" {URN.lower()}={item.urn!r}"
+
     attributes += ">"
 
     concept_identity = __write_concept_identity(
@@ -309,7 +353,7 @@ def __write_concept_identity(concept: Concept, indent: str) -> str:
 
     outfile = f"{indent}<{ABBR_STR}:{CON_ID}>"
     outfile += f"{add_indent(indent)}<{REF} "
-    outfile += f"{AGENCY_ID}={ref.agency!r} "
+    outfile += f"{AGENCY_ID}={ref.agency if isinstance(ref.agency, str) else ref.agency.id!r} "
     outfile += f"{CLASS}={CON!r} "
     outfile += f"{ID}={id!r} "
     outfile += f"{PAR_ID}={ref.id!r} "
@@ -325,27 +369,32 @@ def __write_representation(item: Component, indent: str) -> str:
     representation = ""
     local_representation = ""
 
-    if item.local_facets is not None or item.local_dtype is not None:
-        local_representation += __write_text_format(
-            item.local_dtype, item.local_facets, indent
-        )
-
     if item.local_codes is not None:
         local_representation += __write_enumeration(item.local_codes, indent)
 
-    if len(local_representation) > 0:
-        representation += f"{indent}<{ABBR_STR}:{LOCAL_REP}>"
-        representation += local_representation
-        representation += f"{indent}</{ABBR_STR}:{LOCAL_REP}>"
+    if item.local_facets is not None or item.local_dtype is not None:
+        if item.local_codes is not None:
+            type_ = ENUM_FORMAT
+        else:
+            type_ = TEXT_FORMAT
+        local_representation += __write_text_format(
+            item.local_dtype, item.local_facets, type_, indent
+        )
+
+    representation += f"{indent}<{ABBR_STR}:{LOCAL_REP}>"
+    if len(local_representation) == 0:
+        representation += f"{add_indent(indent)}<{ABBR_STR}:{TEXT_FORMAT}/>"
+    representation += local_representation
+    representation += f"{indent}</{ABBR_STR}:{LOCAL_REP}>"
 
     return representation
 
 
 def __write_text_format(
-    dtype: Optional[DataType], facets: Optional[Facets], indent: str
+    dtype: Optional[DataType], facets: Optional[Facets], type_: str, indent: str
 ) -> str:
     """Writes the text format to the XML file."""
-    outfile = f"{add_indent(indent)}<{ABBR_STR}:{TEXT_FORMAT}"
+    outfile = f"{add_indent(indent)}<{ABBR_STR}:{type_}"
     if facets is not None:
         active_facets = facets.__str__().replace("=", '="').split(", ")
         for facet in active_facets:
@@ -364,7 +413,7 @@ def __write_enumeration(codes: Codelist, indent: str) -> str:
 
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{ENUM}>"
     outfile += f"{add_indent(add_indent(indent))}<{REF} "
-    outfile += f"{AGENCY_ID}={ref.agency!r} "
+    outfile += f"{AGENCY_ID}={ref.agency if isinstance(ref.agency, str) else ref.agency.id!r} "
     outfile += f"{CLASS}={CL!r} "
     outfile += f"{ID}={ref.id!r} "
     outfile += f"{PACKAGE}={CL_LOW!r} "
@@ -375,15 +424,19 @@ def __write_enumeration(codes: Codelist, indent: str) -> str:
     return outfile
 
 
-def __write_structure(item: Dataflow, indent: str) -> str:
+def __write_structure(item: Union[DataStructureDefinition, str], indent: str) -> str:
     """Writes the dataflow structure to the XML file."""
+    if isinstance(item, str):
+        ref = parse_urn(item)
+    else:
+        ref = parse_urn(item.urn)
     outfile = f"{indent}<{ABBR_STR}:Structure>"
     outfile += (
         f"{add_indent(indent)}<{REF} "
         f'{PACKAGE}="datastructure" '
-        f"{AGENCY_ID}={item.agency!r} "
-        f"{ID}={item.id!r} "
-        f"{VERSION}={item.version!r} "
+        f"{AGENCY_ID}={ref.agency!r} "
+        f"{ID}={ref.id!r} "
+        f"{VERSION}={ref.version!r} "
         f"{CLASS}={DSD!r}/>"
     )
     outfile += f"{indent}</{ABBR_STR}:Structure>"
@@ -418,7 +471,7 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
     outfile += components
 
     if scheme == DFW:
-        outfile += __write_structure(item_scheme, add_indent(indent))
+        outfile += __write_structure(item_scheme.structure, add_indent(indent))
 
     if scheme not in [DSD, DFW]:
         for item in item_scheme.items:
@@ -518,5 +571,8 @@ def generate_structures(content: Dict[str, Any], prettyprint: bool) -> str:
         outfile += __write_metadata_element(content, key, prettyprint)
 
     outfile += f"{nl}{child1}</{ABBR_MSG}:Structures>"
+
+    # Replace &amp; with & in the outfile
+    outfile = outfile.replace("& ", "&amp; ")
 
     return outfile

@@ -33,7 +33,7 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     REF,
     REQUIRED,
     TEXT_FORMAT,
-    TIME_DIM,
+    TIME_DIM, ENUM_FORMAT, CLASS,
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import (
     AGENCIES,
@@ -316,6 +316,8 @@ class StructureParser(Struct):
                 codelist = self.codelists[id]
 
             json_obj[CODES_LOW] = codelist
+        if ENUM_FORMAT in json_rep:
+            self.__format_facets(json_rep[ENUM_FORMAT], json_obj)
 
     def __format_validity(self, element: Dict[str, Any]) -> Dict[str, Any]:
         """Formats the version in the element.
@@ -338,21 +340,22 @@ class StructureParser(Struct):
 
         return element
 
-    def __format_con_rep(self, concept_ref: Dict[str, Any]) -> None:
+    def __format_local_rep(self, representation_info: Dict[str, Any]) -> None:
         rep: Dict[str, Any] = {}
 
-        if LOCAL_REP in concept_ref:
-            self.__format_representation(concept_ref[LOCAL_REP], rep)
-            del concept_ref[LOCAL_REP]
+        if LOCAL_REP in representation_info:
+            self.__format_representation(representation_info[LOCAL_REP], rep)
+            del representation_info[LOCAL_REP]
 
             if CODES_LOW in rep:
-                concept_ref[LOCAL_CODES_LOW] = rep.pop(CODES_LOW)
+                representation_info[LOCAL_CODES_LOW] = rep.pop(CODES_LOW)
 
             if DTYPE in rep:
-                concept_ref[LOCAL_DTYPE] = rep.pop(DTYPE)
+                representation_info[LOCAL_DTYPE] = rep.pop(DTYPE)
 
             if FACETS.lower() in rep:
-                concept_ref[LOCAL_FACETS_LOW] = rep.pop(FACETS.lower())
+                representation_info[LOCAL_FACETS_LOW] = rep.pop(FACETS.lower())
+
 
     def __format_con_id(self, concept_ref: Dict[str, Any]) -> Dict[str, Any]:
         rep = {}
@@ -390,7 +393,7 @@ class StructureParser(Struct):
         comp[ROLE.lower()] = role
         comp[REQUIRED] = True
 
-        self.__format_con_rep(comp)
+        self.__format_local_rep(comp)
 
         rep = self.__format_con_id(comp[CON_ID][REF])
         comp[CON_LOW] = rep.pop(CON)
@@ -566,7 +569,12 @@ class StructureParser(Struct):
                 )
 
             if item == DFW:
-                element[STR] = full_id
+                ref_data = element[STR][REF]
+                reference_str = f"{ref_data[CLASS]}={ref_data[AGENCY_ID]}:{ref_data[ID]}({ref_data[VERSION]})"
+                if reference_str in self.datastructures:
+                    element[STR] = self.datastructures[reference_str]
+                else:
+                    element[STR] = reference_str
 
             structure = {key.lower(): value for key, value in element.items()}
             if schema == DSDS:
@@ -574,6 +582,7 @@ class StructureParser(Struct):
                     structure[COMPS] = Components(structure[COMPS])
                 else:
                     structure[COMPS] = Components([])
+                self.datastructures[full_id] = STRUCTURES_MAPPING[schema](**structure)
             datastructures[full_id] = STRUCTURES_MAPPING[schema](**structure)
 
         return datastructures
@@ -599,10 +608,10 @@ class StructureParser(Struct):
             structures[CONCEPTS] = self.__format_scheme(
                 json_meta[CONCEPTS], CS, CON
             )
-        if DFWS in json_meta:
-            structures[DFWS] = self.__format_schema(json_meta[DFWS], DFWS, DFW)
         if DSDS in json_meta:
             structures[DSDS] = self.__format_schema(json_meta[DSDS], DSDS, DSD)
+        if DFWS in json_meta:
+            structures[DFWS] = self.__format_schema(json_meta[DFWS], DFWS, DFW)
 
         # Reset global variables
         return structures

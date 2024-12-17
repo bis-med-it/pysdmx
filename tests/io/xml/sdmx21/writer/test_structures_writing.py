@@ -412,5 +412,4 @@ def test_bis_der(bis_sample, bis_header):
         header=bis_header,
         prettyprint=True,
     )
-
     assert write_result == content

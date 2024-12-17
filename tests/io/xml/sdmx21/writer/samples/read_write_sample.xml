@@ -515,7 +515,7 @@
 								</str:PrimaryMeasure>
 							</str:AttributeRelationship>
 						</str:Attribute>
-						<str:Attribute assignmentStatus="Mandatory" id="FREQ" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=ESTAT:HLTH_RS_PRSHP1(7.0).FREQ">
+						<str:Attribute assignmentStatus="Mandatory" id="FREQ">
 							<str:ConceptIdentity>
 								<Ref agencyID="ESTAT" class="Concept" id="freq" maintainableParentID="HLTH_RS_PRSHP1" maintainableParentVersion="7.0" package="conceptscheme"/>
 							</str:ConceptIdentity>
