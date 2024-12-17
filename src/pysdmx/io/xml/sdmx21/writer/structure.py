@@ -54,7 +54,7 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     add_indent,
     MSG_CONTENT_PKG,
 )
-from pysdmx.model import Codelist, Concept, DataType, Facets
+from pysdmx.model import Codelist, Concept, DataType, Facets, Hierarchy
 from pysdmx.model.__base import (
     Agency,
     AnnotableArtefact,
@@ -305,19 +305,24 @@ def __write_components(item: DataStructureDefinition, indent: str) -> str:
 def __write_attribute_relation(item: Component, indent: str) -> str:
 
     outfile = f"{indent}<{ABBR_STR}:{ATT_REL}>"
-    if len(item.attachment_level) == 0:
+    att_rel = item.attribute_relationship
+    if att_rel is None or len(att_rel) == 0:
         outfile += f"{add_indent(indent)}<{ABBR_STR}:None/>"
-    for rel in item.attachment_level:
-        related_role = ROLE_MAPPING[item.attachment_level[rel].role]
-        outfile += f"{add_indent(indent)}<{ABBR_STR}:{related_role}>"
-        outfile += f"{add_indent(add_indent(indent))}<{REF} {ID}={rel!r}/>"
-        outfile += f"{add_indent(indent)}</{ABBR_STR}:{related_role}>"
+    else:
+        for comp_name, comp in att_rel.items():
+            related_role = ROLE_MAPPING[comp.role]
+            outfile += f"{add_indent(indent)}<{ABBR_STR}:{related_role}>"
+            outfile += (
+                f"{add_indent(add_indent(indent))}"
+                f"<{REF} {ID}={comp_name!r}/>"
+            )
+            outfile += f"{add_indent(indent)}</{ABBR_STR}:{related_role}>"
     outfile += f"{indent}</{ABBR_STR}:{ATT_REL}>"
 
     return outfile
 
 
-def __write_component(item: Component, position, indent: str) -> str:
+def __write_component(item: Component, position: int, indent: str) -> str:
     """Writes the component to the XML file."""
     role_name = ROLE_MAPPING[item.role]
     if role_name == DIM and item.id == "TIME_PERIOD":
@@ -360,14 +365,13 @@ def __write_component(item: Component, position, indent: str) -> str:
 
 
 def __write_concept_identity(concept: Concept, indent: str) -> str:
-    ref = parse_item_urn(concept.urn)
-    id = concept.id
+    ref = parse_item_urn(concept.urn)  # type: ignore[arg-type]
 
     outfile = f"{indent}<{ABBR_STR}:{CON_ID}>"
     outfile += f"{add_indent(indent)}<{REF} "
     outfile += f"{AGENCY_ID}={ref.agency!r} "
     outfile += f"{CLASS}={CON!r} "
-    outfile += f"{ID}={id!r} "
+    outfile += f"{ID}={concept.id!r} "
     outfile += f"{PAR_ID}={ref.id!r} "
     outfile += f"{PAR_VER}={ref.version!r} "
     outfile += f"{PACKAGE}={CS.lower()!r}/>"
@@ -423,8 +427,9 @@ def __write_text_format(
     return outfile
 
 
-def __write_enumeration(codes: Codelist, indent: str) -> str:
-    ref = parse_urn(codes.urn)
+def __write_enumeration(codes: Union[Codelist, Hierarchy], indent: str) -> str:
+    """Writes the enumeration to the XML file."""
+    ref = parse_short_urn(codes.short_urn())
 
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{ENUM}>"
     outfile += f"{add_indent(add_indent(indent))}<{REF} "
@@ -446,7 +451,7 @@ def __write_structure(
     if isinstance(item, str):
         ref = parse_short_urn(item)
     else:
-        ref = parse_urn(item.urn)
+        ref = parse_urn(item.urn)  # type: ignore[arg-type]
     outfile = f"{indent}<{ABBR_STR}:Structure>"
     outfile += (
         f"{add_indent(indent)}<{REF} "

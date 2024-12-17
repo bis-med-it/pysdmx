@@ -10,7 +10,7 @@ as part of the response.
 from collections import Counter, UserList
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Iterable, Optional, Sequence, Union
+from typing import Any, Dict, Iterable, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -102,6 +102,8 @@ class Component(Struct, frozen=True, omit_defaults=True):
             D (for dataset-level attributes), O (for observation-level
             attributes) or a combination of dimension IDs, separated by
             commas, for series- and group-level attributes).
+        attribute_relationship: The relationship between the attribute
+            and another component(s) (if role = A only)
         array_def: Any additional constraints for array types.
     """
 
@@ -115,8 +117,29 @@ class Component(Struct, frozen=True, omit_defaults=True):
     description: Optional[str] = None
     local_codes: Union[Codelist, Hierarchy, None] = None
     attachment_level: Optional[str] = None
+    attribute_relationship: Optional[Dict[str, "Component"]] = None
     array_def: Optional[ArrayBoundaries] = None
     urn: Optional[str] = None
+
+    def __post_init__(self) -> None:
+        """Validate the component."""
+        if self.role != Role.ATTRIBUTE and self.attachment_level is not None:
+            raise Invalid(
+                "Validation Error",
+                (
+                    "The attachment_level field is "
+                    "only allowed for attribute components"
+                ),
+            )
+        if (
+            self.role != Role.ATTRIBUTE
+            and self.attribute_relationship is not None
+        ):
+            raise Invalid(
+                "Validation Error",
+                "The attribute_relationship field is only "
+                "allowed for attribute components",
+            )
 
     @property
     def dtype(self) -> DataType:

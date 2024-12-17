@@ -11,6 +11,7 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     ATT_LIST,
     ATT_LVL,
     ATT_REL,
+    ATT_REL_LOW,
     CLASS,
     CODES_LOW,
     COMPS,
@@ -401,7 +402,11 @@ class StructureParser(Struct):
 
         # Attribute Handling
         if ATT_REL in comp:
-            comp[ATT_LVL] = self.__format_relationship(comp[ATT_REL])
+            if PRIM_MEASURE in comp[ATT_REL]:
+                comp[ATT_LVL] = "O"
+            else:
+                comp[ATT_LVL] = "D"
+            comp[ATT_REL_LOW] = self.__format_relationship(comp[ATT_REL])
             del comp[ATT_REL]
 
         if AS_STATUS in comp:
@@ -452,9 +457,9 @@ class StructureParser(Struct):
 
                 elif comp_list in comps:
                     name = comp_list
-                    comp_list = self.__format_component_lists(comps[comp_list])
-                    components[name] = comp_list
-                    element[COMPS].extend(comp_list)
+                    fmt_comps = self.__format_component_lists(comps[comp_list])
+                    components[name] = fmt_comps
+                    element[COMPS].extend(fmt_comps)
 
             element[COMPS] = Components(element[COMPS])
             del element[DSD_COMPS]

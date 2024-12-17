@@ -1,5 +1,6 @@
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.model import (
     ArrayBoundaries,
     Code,
@@ -236,3 +237,23 @@ def test_codes_property_none():
     assert component.concept.codes is None
     assert component.local_codes is None
     assert component.enumeration is None
+
+
+def test_invalid_role_attachment_level(concept):
+    with pytest.raises(Invalid):
+        Component(
+            "FREQ",
+            True,
+            concept=concept,
+            role=Role.DIMENSION,
+            attachment_level="X",
+        )
+
+    with pytest.raises(Invalid):
+        Component(
+            "FREQ",
+            True,
+            concept=concept,
+            role=Role.MEASURE,
+            attribute_relationship={},
+        )
