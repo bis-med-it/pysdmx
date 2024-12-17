@@ -400,3 +400,17 @@ def test_write_read(complete_header, datastructure, dataflow, concept_ds):
     read_result = read_xml(write_result)
 
     assert content == read_result
+
+
+def test_bis_der(bis_sample, bis_header):
+    content, filetype = process_string_to_read(bis_sample)
+    assert filetype == "xml"
+    read_result = read_xml(content, validate=True)
+    write_result = writer(
+        read_result,
+        MessageType.Structure,
+        header=bis_header,
+        prettyprint=True,
+    )
+
+    assert write_result == content

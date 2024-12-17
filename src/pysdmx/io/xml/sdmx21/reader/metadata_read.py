@@ -241,6 +241,8 @@ class StructureParser(Struct):
             json_fac: The element with the facets to be formatted
             json_obj: The element to store the formatted facets
         """
+        if json_fac is None:
+            return
         for key, _value in json_fac.items():
             if key == TEXT_TYPE and json_fac[TEXT_TYPE] in list(DataType):
                 json_obj["dtype"] = DataType(json_fac[TEXT_TYPE])
@@ -307,13 +309,13 @@ class StructureParser(Struct):
             if "URN" in ref:
                 codelist = find_by_urn(
                     list(self.codelists.values()), ref["URN"]
-                )
+                ).codes
 
             else:
                 id = unique_id(ref[AGENCY_ID], ref[ID], ref[VERSION])
-                codelist = self.codelists.get(id)
+                codelist = self.codelists[id]
 
-            json_obj[CODES_LOW] = codelist.codes
+            json_obj[CODES_LOW] = codelist
 
     def __format_validity(self, element: Dict[str, Any]) -> Dict[str, Any]:
         """Formats the version in the element.
@@ -406,6 +408,9 @@ class StructureParser(Struct):
 
         if "position" in comp:
             del comp["position"]
+
+        if ANNOTATIONS in comp:
+            del comp[ANNOTATIONS]
 
         if URN in comp:
             comp[URN.lower()] = comp.pop(URN)

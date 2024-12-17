@@ -1,7 +1,6 @@
 """Module for writing metadata to XML files."""
 
 from collections import OrderedDict
-import re
 from typing import Any, Dict, Optional
 
 from pysdmx.io.xml.sdmx21.__parsing_config import (
@@ -61,6 +60,7 @@ from pysdmx.model.dataflow import (
     DataStructureDefinition,
     Role,
 )
+from pysdmx.util import parse_item_urn, parse_urn
 
 ANNOTATION_WRITER = OrderedDict(
     {
@@ -76,8 +76,6 @@ ROLE_MAPPING = {
     Role.ATTRIBUTE: ATT,
     Role.MEASURE: PRIM_MEASURE,
 }
-
-
 
 
 def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
@@ -305,18 +303,17 @@ def __write_component(item: Component, position, indent: str) -> str:
 
 
 def __write_concept_identity(concept: Concept, indent: str) -> str:
-    agency, parent_id, parent_version, id = __extract_urn_data(concept.urn)
+    ref = parse_item_urn(concept.urn)
 
-    if id is None:
-        id = concept.id
+    id = concept.id
 
     outfile = f"{indent}<{ABBR_STR}:{CON_ID}>"
     outfile += f"{add_indent(indent)}<{REF} "
-    outfile += f"{AGENCY_ID}={agency!r} "
+    outfile += f"{AGENCY_ID}={ref.agency!r} "
     outfile += f"{CLASS}={CON!r} "
     outfile += f"{ID}={id!r} "
-    outfile += f"{PAR_ID}={parent_id!r} "
-    outfile += f"{PAR_VER}={parent_version!r} "
+    outfile += f"{PAR_ID}={ref.id!r} "
+    outfile += f"{PAR_VER}={ref.version!r} "
     outfile += f"{PACKAGE}={CS.lower()!r}/>"
     outfile += f"{indent}</{ABBR_STR}:{CON_ID}>"
 
@@ -363,31 +360,19 @@ def __write_text_format(
 
 
 def __write_enumeration(codes: Codelist, indent: str) -> str:
-    agency, id, version, _ = __extract_urn_data(codes[0].urn)
+    ref = parse_urn(codes.urn)
 
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{ENUM}>"
     outfile += f"{add_indent(add_indent(indent))}<{REF} "
-    outfile += f"{AGENCY_ID}={agency!r} "
+    outfile += f"{AGENCY_ID}={ref.agency!r} "
     outfile += f"{CLASS}={CL!r} "
-    outfile += f"{ID}={id!r} "
+    outfile += f"{ID}={ref.id!r} "
     outfile += f"{PACKAGE}={CL_LOW!r} "
-    outfile += f"{VERSION}={version!r}/>"
+    outfile += f"{VERSION}={ref.version!r}/>"
     outfile += f"{add_indent(indent)}</{ABBR_STR}:{ENUM}>"
 
     outfile = outfile.replace("'", '"')
     return outfile
-
-
-def __extract_urn_data(urn: str) -> (str, str, str, str):
-    pattern = r"(.+):(.+)\((.+)\)(?:\.(.+))?"
-
-    if urn is None:
-        return "", "", "", ""
-
-    short_urn = urn.split("=")[-1]
-    match = re.match(pattern, short_urn)
-    agency, id, version, code_id = match.groups()
-    return agency, id, version, code_id
 
 
 def __write_structure(item: Dataflow, indent: str) -> str:
