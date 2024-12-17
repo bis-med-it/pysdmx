@@ -378,7 +378,6 @@ class StructureParser(Struct):
                     for comp in components[comp_list]:
                         if comp.id == element_id:
                             rels[element_id] = comp
-                            break
 
         return rels
 
