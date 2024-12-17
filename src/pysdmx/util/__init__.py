@@ -52,6 +52,7 @@ class ItemReference(Struct, frozen=True):
 
 maintainable_urn_pattern = re.compile(r"^.*\.(.*)=(.*):(.*)\((.*)\)$")
 item_urn_pattern = re.compile(r"^.*\.(.*)=(.*):(.*)\((.*)\)\.(.*)$")
+short_urn_pattern = re.compile(r"^(.*)=(.*):(.*)\((.*)\)$")
 
 
 def parse_urn(urn: str) -> Reference:
@@ -81,6 +82,20 @@ def parse_item_urn(urn: str) -> ItemReference:
         )
     else:
         raise Invalid(NF, f"{urn} does not match {item_urn_pattern}.")
+
+
+def parse_short_urn(urn: str) -> Reference:
+    """Parses an SDMX short urn and returns an object with the details."""
+    m = re.match(short_urn_pattern, urn)
+    if m:
+        return Reference(
+            sdmx_type=m.group(1),
+            agency=m.group(2),
+            id=m.group(3),
+            version=m.group(4),
+        )
+    else:
+        raise Invalid(NF, f"{urn} does not match {short_urn_pattern}.")
 
 
 def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:

@@ -105,6 +105,9 @@ DFW = "Dataflow"
 DFWS = "Dataflows"
 DSD = "DataStructure"
 DSDS = "DataStructures"
+TRANSFORMATIONS = "Transformations"
+TRANS_SCHEME = "TransformationScheme"
+TRANSFORMATION = "Transformation"
 
 FacetType = {
     "minLength": "min_length",

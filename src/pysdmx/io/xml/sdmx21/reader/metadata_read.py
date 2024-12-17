@@ -82,6 +82,9 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     TEXT,
     TEXT_TYPE,
     TITLE,
+    TRANS_SCHEME,
+    TRANSFORMATION,
+    TRANSFORMATIONS,
     TYPE,
     unique_id,
     URI,
@@ -112,6 +115,7 @@ from pysdmx.model.dataflow import (
     Role,
 )
 from pysdmx.model.message import CONCEPTS, ORGS
+from pysdmx.model.vtl import Transformation, TransformationScheme
 from pysdmx.util import find_by_urn, parse_urn
 
 STRUCTURES_MAPPING = {
@@ -120,9 +124,14 @@ STRUCTURES_MAPPING = {
     CS: ConceptScheme,
     DFWS: Dataflow,
     DSDS: DataStructureDefinition,
+    TRANS_SCHEME: TransformationScheme,
 }
-
-ITEMS_CLASSES = {AGENCY: Agency, CODE: Code, CON: Concept}
+ITEMS_CLASSES = {
+    AGENCY: Agency,
+    CODE: Code,
+    CON: Concept,
+    TRANSFORMATION: Transformation,
+}
 
 COMP_TYPES = [DIM, ATT, PRIM_MEASURE, GROUP_DIM]
 
@@ -296,6 +305,13 @@ class StructureParser(Struct):
             orgs = {**orgs, **ag_sch}
         return orgs
 
+    def __format_validity(self, element: Dict[str, Any]) -> Dict[str, Any]:
+        if "validFrom" in element:
+            element["valid_from"] = element.pop("validFrom")
+        if "validTo" in element:
+            element["valid_to"] = element.pop("validTo")
+        return element
+
     def __format_representation(
         self, json_rep: Dict[str, Any], json_obj: Dict[str, Any]
     ) -> None:
@@ -461,6 +477,17 @@ class StructureParser(Struct):
 
         return element
 
+    def __format_vtl(self, json_vtl: Dict[str, Any]) -> Dict[str, Any]:
+        if "isPersistent" in json_vtl:
+            json_vtl["is_persistent"] = json_vtl.pop("isPersistent")
+        if "Expression" in json_vtl:
+            json_vtl["expression"] = json_vtl.pop("Expression")
+        if "Result" in json_vtl:
+            json_vtl["result"] = json_vtl.pop("Result")
+        if "vtlVersion" in json_vtl:
+            json_vtl["vtl_version"] = json_vtl.pop("vtlVersion")
+        return json_vtl
+
     def __format_item(
         self, item_json_info: Dict[str, Any], item_name_class: str
     ) -> Item:
@@ -482,6 +509,8 @@ class StructureParser(Struct):
 
         if "Parent" in item_json_info:
             del item_json_info["Parent"]
+
+        item_json_info = self.__format_vtl(item_json_info)
 
         return ITEMS_CLASSES[item_name_class](**item_json_info)
 
@@ -520,6 +549,8 @@ class StructureParser(Struct):
             if scheme == CS:
                 self.concepts.update({e.id: e for e in items})
             element = self.__format_agency(element)
+            element = self.__format_validity(element)
+            element = self.__format_vtl(element)
             # Dynamic creation with specific class
             elements[full_id] = STRUCTURES_MAPPING[scheme](**element)
 
@@ -613,5 +644,9 @@ class StructureParser(Struct):
         if DFWS in json_meta:
             structures[DFWS] = self.__format_schema(json_meta[DFWS], DFWS, DFW)
 
+        if TRANSFORMATIONS in json_meta:
+            structures[TRANSFORMATIONS] = self.__format_scheme(
+                json_meta[TRANSFORMATIONS], TRANS_SCHEME, TRANSFORMATION
+            )
         # Reset global variables
         return structures

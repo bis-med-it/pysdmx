@@ -552,7 +552,7 @@ def __export_intern_data(data: Dict[str, Any], indent: str) -> str:
     return outfile
 
 
-def generate_structures(content: Dict[str, Any], prettyprint: bool) -> str:
+def write_structures(content: Dict[str, Any], prettyprint: bool) -> str:
     """Writes the structures to the XML file.
 
     Args:
