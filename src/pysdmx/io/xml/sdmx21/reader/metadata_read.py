@@ -345,18 +345,17 @@ class StructureParser(Struct):
     def __format_local_rep(self, representation_info: Dict[str, Any]) -> None:
         rep: Dict[str, Any] = {}
 
-        if LOCAL_REP in representation_info:
-            self.__format_representation(representation_info[LOCAL_REP], rep)
-            del representation_info[LOCAL_REP]
+        self.__format_representation(representation_info[LOCAL_REP], rep)
+        del representation_info[LOCAL_REP]
 
-            if CODES_LOW in rep:
-                representation_info[LOCAL_CODES_LOW] = rep.pop(CODES_LOW)
+        if CODES_LOW in rep:
+            representation_info[LOCAL_CODES_LOW] = rep.pop(CODES_LOW)
 
-            if DTYPE in rep:
-                representation_info[LOCAL_DTYPE] = rep.pop(DTYPE)
+        if DTYPE in rep:
+            representation_info[LOCAL_DTYPE] = rep.pop(DTYPE)
 
-            if FACETS.lower() in rep:
-                representation_info[LOCAL_FACETS_LOW] = rep.pop(FACETS.lower())
+        if FACETS.lower() in rep:
+            representation_info[LOCAL_FACETS_LOW] = rep.pop(FACETS.lower())
 
     def __format_con_id(self, concept_ref: Dict[str, Any]) -> Dict[str, Any]:
         rep = {}
@@ -376,15 +375,10 @@ class StructureParser(Struct):
                 rel_list = add_list(json_rel[scheme])
                 for element in rel_list:
                     element_id = element[REF][ID]
-                    component = next(
-                        (
-                            comp
-                            for comp in components[comp_list]
-                            if comp.id == element_id
-                        ),
-                        None,
-                    )
-                    rels[element_id] = component
+                    for comp in components[comp_list]:
+                        if comp.id == element_id:
+                            rels[element_id] = comp
+                            break
 
         return rels
 
@@ -394,7 +388,7 @@ class StructureParser(Struct):
         comp[ROLE.lower()] = role
         comp[REQUIRED] = True
 
-        self.__format_local_rep(comp)
+        self.__format_local_rep(comp) if LOCAL_REP in comp else None
 
         rep = self.__format_con_id(comp[CON_ID][REF])
         comp[CON_LOW] = rep.pop(CON)

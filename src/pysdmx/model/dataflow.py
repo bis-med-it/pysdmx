@@ -117,8 +117,8 @@ class Component(Struct, frozen=True, omit_defaults=True):
     description: Optional[str] = None
     local_codes: Union[Codelist, Hierarchy, None] = None
     attachment_level: Optional[str] = None
-    attribute_relationship: Optional[Dict[str, "Component"]] = None
     array_def: Optional[ArrayBoundaries] = None
+    attribute_relationship: Optional[Dict[str, "Component"]] = None
     urn: Optional[str] = None
 
     def __post_init__(self) -> None:

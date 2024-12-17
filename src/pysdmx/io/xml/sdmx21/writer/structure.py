@@ -58,6 +58,7 @@ from pysdmx.model import Codelist, Concept, DataType, Facets, Hierarchy
 from pysdmx.model.__base import (
     Agency,
     AnnotableArtefact,
+    Contact,
     IdentifiableArtefact,
     Item,
     MaintainableArtefact,
@@ -209,7 +210,7 @@ def __write_maintainable(
     return outfile
 
 
-def __write_contact(contact: Any, indent: str) -> str:
+def __write_contact(contact: Contact, indent: str) -> str:
     """Writes the contact to the XML file."""
 
     def __item_to_str(item: Any, ns: str, tag: str) -> str:
