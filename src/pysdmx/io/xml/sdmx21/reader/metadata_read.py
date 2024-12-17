@@ -33,7 +33,9 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     REF,
     REQUIRED,
     TEXT_FORMAT,
-    TIME_DIM, ENUM_FORMAT, CLASS,
+    TIME_DIM,
+    ENUM_FORMAT,
+    CLASS,
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import (
     AGENCIES,
@@ -306,10 +308,10 @@ class StructureParser(Struct):
         return orgs
 
     def __format_validity(self, element: Dict[str, Any]) -> Dict[str, Any]:
-        if "validFrom" in element:
-            element["valid_from"] = element.pop("validFrom")
-        if "validTo" in element:
-            element["valid_to"] = element.pop("validTo")
+        if VALID_FROM in element:
+            element[VALID_FROM_LOW] = datetime.fromisoformat(element.pop(VALID_FROM))
+        if VALID_TO in element:
+            element[VALID_TO_LOW] = datetime.fromisoformat(element.pop(VALID_TO))
         return element
 
     def __format_representation(
@@ -335,27 +337,6 @@ class StructureParser(Struct):
         if ENUM_FORMAT in json_rep:
             self.__format_facets(json_rep[ENUM_FORMAT], json_obj)
 
-    def __format_validity(self, element: Dict[str, Any]) -> Dict[str, Any]:
-        """Formats the version in the element.
-
-        Args:
-            element: The element with the version to be formatted
-
-        Returns:
-            element with the version, validFrom and validTo formatted
-        """
-        element[VERSION] = element.pop(VERSION)
-
-        if VALID_FROM in element:
-            element[VALID_FROM] = datetime.fromisoformat(element[VALID_FROM])
-            element[VALID_FROM_LOW] = element.pop(VALID_FROM)
-
-        if VALID_TO in element:
-            element[VALID_TO] = datetime.fromisoformat(element[VALID_TO])
-            element[VALID_TO_LOW] = element.pop(VALID_TO)
-
-        return element
-
     def __format_local_rep(self, representation_info: Dict[str, Any]) -> None:
         rep: Dict[str, Any] = {}
 
@@ -371,7 +352,6 @@ class StructureParser(Struct):
 
             if FACETS.lower() in rep:
                 representation_info[LOCAL_FACETS_LOW] = rep.pop(FACETS.lower())
-
 
     def __format_con_id(self, concept_ref: Dict[str, Any]) -> Dict[str, Any]:
         rep = {}
@@ -613,7 +593,9 @@ class StructureParser(Struct):
                     structure[COMPS] = Components(structure[COMPS])
                 else:
                     structure[COMPS] = Components([])
-                self.datastructures[full_id] = STRUCTURES_MAPPING[schema](**structure)
+                self.datastructures[full_id] = STRUCTURES_MAPPING[schema](
+                    **structure
+                )
             datastructures[full_id] = STRUCTURES_MAPPING[schema](**structure)
 
         return datastructures

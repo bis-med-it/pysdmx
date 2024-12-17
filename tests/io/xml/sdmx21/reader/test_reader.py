@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -344,7 +345,7 @@ def test_vtl_transformation_scheme(samples_folder):
     assert transformation_scheme.id == "TEST"
     assert transformation_scheme.name == "TEST"
     assert transformation_scheme.description == "TEST Transformation Scheme"
-    assert transformation_scheme.valid_from == "2024-12-03T00:00:00"
+    assert transformation_scheme.valid_from == datetime(2024, 12, 3, 0, 0)
 
     assert len(transformation_scheme.items) == 1
     transformation = transformation_scheme.items[0]

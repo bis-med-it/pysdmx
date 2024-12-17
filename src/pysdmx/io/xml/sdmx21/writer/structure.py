@@ -34,7 +34,16 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     TEXT_TYPE,
     TIME_DIM,
     URN,
-    VERSION, DEPARTMENT, ROLE, TELEPHONE, NAME, FAX, URI, EMAIL, ENUM_FORMAT, CORE_REP,
+    VERSION,
+    DEPARTMENT,
+    ROLE,
+    TELEPHONE,
+    NAME,
+    FAX,
+    URI,
+    EMAIL,
+    ENUM_FORMAT,
+    CORE_REP,
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import DFW
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
@@ -52,7 +61,8 @@ from pysdmx.model.__base import (
     Item,
     MaintainableArtefact,
     NameableArtefact,
-    VersionableArtefact, Agency,
+    VersionableArtefact,
+    Agency,
 )
 from pysdmx.model.dataflow import (
     Component,
@@ -60,7 +70,7 @@ from pysdmx.model.dataflow import (
     DataStructureDefinition,
     Role,
 )
-from pysdmx.util import parse_item_urn, parse_urn
+from pysdmx.util import parse_item_urn, parse_urn, parse_short_urn
 
 ANNOTATION_WRITER = OrderedDict(
     {
@@ -199,6 +209,7 @@ def __write_maintainable(
 
     return outfile
 
+
 def __write_contact(contact: Any, indent: str) -> str:
     """Writes the contact to the XML file."""
     outfile = f"{indent}<{ABBR_STR}:Contact>"
@@ -224,6 +235,7 @@ def __write_contact(contact: Any, indent: str) -> str:
 
     return outfile
 
+
 def __write_item(item: Item, indent: str) -> str:
     """Writes the item to the XML file."""
     head = f"{ABBR_STR}:" + type(item).__name__
@@ -236,17 +248,17 @@ def __write_item(item: Item, indent: str) -> str:
         for contact in item.contacts:
             outfile += __write_contact(contact, add_indent(indent))
     if isinstance(item, Concept):
-        if item.codes is not None or item.facets is not None or item.dtype is not None:
+        if (
+            item.codes is not None
+            or item.facets is not None
+            or item.dtype is not None
+        ):
             outfile += f"{add_indent(indent)}<{ABBR_STR}:{CORE_REP}>"
             if item.codes is not None:
                 outfile += __write_enumeration(item.codes, add_indent(indent))
             if item.facets is not None or item.dtype is not None:
-                if item.codes is not None:
-                    type_ = ENUM_FORMAT
-                else:
-                    type_ = TEXT_FORMAT
                 outfile += __write_text_format(
-                    item.dtype, item.facets, type_, add_indent(indent)
+                    item.dtype, item.facets, TEXT_FORMAT, add_indent(indent)
                 )
             outfile += f"{add_indent(indent)}</{ABBR_STR}:{CORE_REP}>"
     outfile += f"{indent}</{head}>"
@@ -391,7 +403,10 @@ def __write_representation(item: Component, indent: str) -> str:
 
 
 def __write_text_format(
-    dtype: Optional[DataType], facets: Optional[Facets], type_: str, indent: str
+    dtype: Optional[DataType],
+    facets: Optional[Facets],
+    type_: str,
+    indent: str,
 ) -> str:
     """Writes the text format to the XML file."""
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{type_}"
@@ -424,10 +439,12 @@ def __write_enumeration(codes: Codelist, indent: str) -> str:
     return outfile
 
 
-def __write_structure(item: Union[DataStructureDefinition, str], indent: str) -> str:
+def __write_structure(
+    item: Union[DataStructureDefinition, str], indent: str
+) -> str:
     """Writes the dataflow structure to the XML file."""
     if isinstance(item, str):
-        ref = parse_urn(item)
+        ref = parse_short_urn(item)
     else:
         ref = parse_urn(item.urn)
     outfile = f"{indent}<{ABBR_STR}:Structure>"

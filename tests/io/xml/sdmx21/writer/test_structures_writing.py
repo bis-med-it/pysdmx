@@ -60,6 +60,13 @@ def bis_sample():
 
 
 @pytest.fixture()
+def groups_sample():
+    base_path = Path(__file__).parent / "samples" / "del_groups.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture()
 def header():
     return Header(
         id="ID",
@@ -269,7 +276,7 @@ def dataflow():
         is_final=True,
         name="OTC derivatives turnover",
         service_url=None,
-        structure="Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)",
+        structure="DataStructure=BIS:BIS_DER(1.0)",
         structure_url=None,
         uri=None,
         urn="urn:sdmx:org.sdmx.infomodel.datastructure."
@@ -286,6 +293,7 @@ def test_codelist(codelist_sample, complete_header, codelist):
         MessageType.Structure,
         header=complete_header,
     )
+    read_xml(result, validate=False)
 
     assert result == codelist_sample
 
@@ -411,3 +419,16 @@ def test_bis_der(bis_sample, bis_header):
         prettyprint=True,
     )
     assert write_result == content
+
+
+def test_group_deletion(groups_sample, header):
+    content, filetype = process_string_to_read(groups_sample)
+    assert filetype == "xml"
+    read_result = read_xml(content, validate=True)
+    write_result = writer(
+        read_result,
+        MessageType.Structure,
+        header=header,
+        prettyprint=True,
+    )
+    assert "Groups" not in write_result

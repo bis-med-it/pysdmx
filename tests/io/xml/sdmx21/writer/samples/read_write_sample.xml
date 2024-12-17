@@ -536,6 +536,9 @@
 							<str:ConceptIdentity>
 								<Ref agencyID="ESTAT" class="Concept" id="OBS_VALUE" maintainableParentID="HLTH_RS_PRSHP1" maintainableParentVersion="7.0" package="conceptscheme"/>
 							</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat/>
+							</str:LocalRepresentation>
 						</str:PrimaryMeasure>
 					</str:MeasureList>
 				</str:DataStructureComponents>
