@@ -432,3 +432,4 @@ def test_group_deletion(groups_sample, header):
         prettyprint=True,
     )
     assert "Groups" not in write_result
+    assert "DataStructure=BIS:BIS_DER(1.0)" in read_result["DataStructures"]

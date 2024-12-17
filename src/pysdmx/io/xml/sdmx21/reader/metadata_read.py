@@ -11,6 +11,7 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     ATT_LIST,
     ATT_LVL,
     ATT_REL,
+    CLASS,
     CODES_LOW,
     COMPS,
     CON_ID,
@@ -21,6 +22,7 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     DSD_COMPS,
     DTYPE,
     ENUM,
+    ENUM_FORMAT,
     GROUP,
     GROUP_DIM,
     LOCAL_CODES_LOW,
@@ -34,8 +36,6 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     REQUIRED,
     TEXT_FORMAT,
     TIME_DIM,
-    ENUM_FORMAT,
-    CLASS,
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import (
     AGENCIES,
@@ -309,9 +309,13 @@ class StructureParser(Struct):
 
     def __format_validity(self, element: Dict[str, Any]) -> Dict[str, Any]:
         if VALID_FROM in element:
-            element[VALID_FROM_LOW] = datetime.fromisoformat(element.pop(VALID_FROM))
+            element[VALID_FROM_LOW] = datetime.fromisoformat(
+                element.pop(VALID_FROM)
+            )
         if VALID_TO in element:
-            element[VALID_TO_LOW] = datetime.fromisoformat(element.pop(VALID_TO))
+            element[VALID_TO_LOW] = datetime.fromisoformat(
+                element.pop(VALID_TO)
+            )
         return element
 
     def __format_representation(
@@ -581,11 +585,13 @@ class StructureParser(Struct):
 
             if item == DFW:
                 ref_data = element[STR][REF]
-                reference_str = f"{ref_data[CLASS]}={ref_data[AGENCY_ID]}:{ref_data[ID]}({ref_data[VERSION]})"
-                if reference_str in self.datastructures:
-                    element[STR] = self.datastructures[reference_str]
-                else:
-                    element[STR] = reference_str
+                reference_str = (
+                    f"{ref_data[CLASS]}={ref_data[AGENCY_ID]}"
+                    f":{ref_data[ID]}({ref_data[VERSION]})"
+                )
+                element[STR] = self.datastructures.get(
+                    reference_str, reference_str
+                )
 
             structure = {key.lower(): value for key, value in element.items()}
             if schema == DSDS:

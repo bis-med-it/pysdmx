@@ -15,35 +15,35 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     CON,
     CON_ID,
     CONDITIONAL,
+    CORE_REP,
     CS,
+    DEPARTMENT,
     DIM,
     DSD,
     DSD_COMPS,
+    EMAIL,
     ENUM,
+    ENUM_FORMAT,
+    FAX,
     ID,
     LOCAL_REP,
     MANDATORY,
     MEASURE,
+    NAME,
     PACKAGE,
     PAR_ID,
     PAR_VER,
     POSITION,
     PRIM_MEASURE,
     REF,
+    ROLE,
+    TELEPHONE,
     TEXT_FORMAT,
     TEXT_TYPE,
     TIME_DIM,
+    URI,
     URN,
     VERSION,
-    DEPARTMENT,
-    ROLE,
-    TELEPHONE,
-    NAME,
-    FAX,
-    URI,
-    EMAIL,
-    ENUM_FORMAT,
-    CORE_REP,
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import DFW
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
@@ -56,21 +56,20 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
 )
 from pysdmx.model import Codelist, Concept, DataType, Facets
 from pysdmx.model.__base import (
+    Agency,
     AnnotableArtefact,
     IdentifiableArtefact,
     Item,
     MaintainableArtefact,
     NameableArtefact,
     VersionableArtefact,
-    Agency,
 )
 from pysdmx.model.dataflow import (
     Component,
-    Dataflow,
     DataStructureDefinition,
     Role,
 )
-from pysdmx.util import parse_item_urn, parse_urn, parse_short_urn
+from pysdmx.util import parse_item_urn, parse_short_urn, parse_urn
 
 ANNOTATION_WRITER = OrderedDict(
     {
@@ -212,25 +211,28 @@ def __write_maintainable(
 
 def __write_contact(contact: Any, indent: str) -> str:
     """Writes the contact to the XML file."""
+
+    def __item_to_str(item: Any, ns: str, tag: str) -> str:
+        return f"{add_indent(indent)}<{ns}:{tag}>{item}</{ns}:{tag}>"
+
+    def __items_to_str(items: Any, ns: str, tag: str) -> str:
+        return "".join([__item_to_str(item, ns, tag) for item in items])
+
     outfile = f"{indent}<{ABBR_STR}:Contact>"
     if contact.name is not None:
-        outfile += f"{add_indent(indent)}<{ABBR_COM}:{NAME}>{contact.name}</{ABBR_COM}:{NAME}>"
+        outfile += __item_to_str(contact.name, ABBR_COM, NAME)
     if contact.department is not None:
-        outfile += f"{add_indent(indent)}<{ABBR_STR}:{DEPARTMENT}>{contact.department}</{ABBR_STR}:{DEPARTMENT}>"
+        outfile += __item_to_str(contact.department, ABBR_STR, DEPARTMENT)
     if contact.role is not None:
-        outfile += f"{add_indent(indent)}<{ABBR_STR}:{ROLE}>{contact.role}</{ABBR_STR}:{ROLE}>"
+        outfile += __item_to_str(contact.role, ABBR_STR, ROLE)
     if contact.telephones is not None:
-        for tlf in contact.telephones:
-            outfile += f"{add_indent(indent)}<{ABBR_STR}:{TELEPHONE}>{tlf}</{ABBR_STR}:{TELEPHONE}>"
+        outfile += __items_to_str(contact.telephones, ABBR_STR, TELEPHONE)
     if contact.faxes is not None:
-        for fax in contact.faxes:
-            outfile += f"{add_indent(indent)}<{ABBR_STR}:{FAX}>{fax}</{ABBR_STR}:{FAX}>"
+        outfile += __items_to_str(contact.faxes, ABBR_STR, FAX)
     if contact.uris is not None:
-        for uri in contact.uris:
-            outfile += f"{add_indent(indent)}<{ABBR_STR}:{URI}>{uri}</{ABBR_STR}:{URI}>"
+        outfile += __items_to_str(contact.uris, ABBR_STR, URI)
     if contact.emails is not None:
-        for email in contact.emails:
-            outfile += f"{add_indent(indent)}<{ABBR_STR}:{EMAIL}>{email}</{ABBR_STR}:{EMAIL}>"
+        outfile += __items_to_str(contact.emails, ABBR_STR, EMAIL)
     outfile += f"{indent}</{ABBR_STR}:Contact>"
 
     return outfile
@@ -247,20 +249,19 @@ def __write_item(item: Item, indent: str) -> str:
     if isinstance(item, Agency) and len(item.contacts) > 0:
         for contact in item.contacts:
             outfile += __write_contact(contact, add_indent(indent))
-    if isinstance(item, Concept):
-        if (
-            item.codes is not None
-            or item.facets is not None
-            or item.dtype is not None
-        ):
-            outfile += f"{add_indent(indent)}<{ABBR_STR}:{CORE_REP}>"
-            if item.codes is not None:
-                outfile += __write_enumeration(item.codes, add_indent(indent))
-            if item.facets is not None or item.dtype is not None:
-                outfile += __write_text_format(
-                    item.dtype, item.facets, TEXT_FORMAT, add_indent(indent)
-                )
-            outfile += f"{add_indent(indent)}</{ABBR_STR}:{CORE_REP}>"
+    if isinstance(item, Concept) and (
+        item.codes is not None
+        or item.facets is not None
+        or item.dtype is not None
+    ):
+        outfile += f"{add_indent(indent)}<{ABBR_STR}:{CORE_REP}>"
+        if item.codes is not None:
+            outfile += __write_enumeration(item.codes, add_indent(indent))
+        if item.facets is not None or item.dtype is not None:
+            outfile += __write_text_format(
+                item.dtype, item.facets, TEXT_FORMAT, add_indent(indent)
+            )
+        outfile += f"{add_indent(indent)}</{ABBR_STR}:{CORE_REP}>"
     outfile += f"{indent}</{head}>"
     return outfile
 
@@ -360,12 +361,11 @@ def __write_component(item: Component, position, indent: str) -> str:
 
 def __write_concept_identity(concept: Concept, indent: str) -> str:
     ref = parse_item_urn(concept.urn)
-
     id = concept.id
 
     outfile = f"{indent}<{ABBR_STR}:{CON_ID}>"
     outfile += f"{add_indent(indent)}<{REF} "
-    outfile += f"{AGENCY_ID}={ref.agency if isinstance(ref.agency, str) else ref.agency.id!r} "
+    outfile += f"{AGENCY_ID}={ref.agency!r} "
     outfile += f"{CLASS}={CON!r} "
     outfile += f"{ID}={id!r} "
     outfile += f"{PAR_ID}={ref.id!r} "
@@ -428,7 +428,7 @@ def __write_enumeration(codes: Codelist, indent: str) -> str:
 
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{ENUM}>"
     outfile += f"{add_indent(add_indent(indent))}<{REF} "
-    outfile += f"{AGENCY_ID}={ref.agency if isinstance(ref.agency, str) else ref.agency.id!r} "
+    outfile += f"{AGENCY_ID}={ref.agency!r} "
     outfile += f"{CLASS}={CL!r} "
     outfile += f"{ID}={ref.id!r} "
     outfile += f"{PACKAGE}={CL_LOW!r} "
