@@ -77,11 +77,7 @@ ROLE_MAPPING = {
     Role.MEASURE: PRIM_MEASURE,
 }
 
-components: Dict[str, Any] = {
-    DIM: [],
-    ATT: [],
-    PRIM_MEASURE: [],
-}
+
 
 
 def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
@@ -221,6 +217,12 @@ def __write_item(item: Item, indent: str) -> str:
 def __write_components(item: DataStructureDefinition, indent: str) -> str:
     """Writes the components to the XML file."""
     outfile = f"{indent}<{ABBR_STR}:{DSD_COMPS}>"
+
+    components: Dict[str, Any] = {
+        DIM: [],
+        ATT: [],
+        PRIM_MEASURE: [],
+    }
 
     for comp in item.components:
         if comp.role == Role.DIMENSION:
