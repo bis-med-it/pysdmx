@@ -18,16 +18,16 @@ from pysdmx.model import (
 from pysdmx.util import find_by_urn
 
 
-class FusionCategorisation(Struct, frozen=True):
+class FusionCategorisation(Struct, frozen=True, rename={"agency": "agencyId"}):
     """Fusion-JSON payload for a categorisation."""
 
     id: str
     names: Sequence[FusionString]
     agency: str
-    descriptions: Optional[Sequence[FusionString]] = None
-    version: str = "1.0"
     categoryReference: str
     structureReference: str
+    descriptions: Optional[Sequence[FusionString]] = None
+    version: str = "1.0"
 
     def to_model(self) -> Categorisation:
         """Converts a JsonCodelist to a standard codelist."""

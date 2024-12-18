@@ -136,7 +136,9 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
         return flows
 
 
-class Categorisation(MaintainableArtefact, frozen=True, omit_defaults=True):
+class Categorisation(
+    MaintainableArtefact, frozen=True, omit_defaults=True, kw_only=True
+):
     """Link between a category and an artefact attached to it."""
 
     source: str
