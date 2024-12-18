@@ -8,7 +8,9 @@ from pysdmx.io.json.fusion.messages.core import FusionString
 from pysdmx.model import ProvisionAgreement as PA
 
 
-class FusionProvisionAgreement(Struct, frozen=True):
+class FusionProvisionAgreement(
+    Struct, frozen=True, rename={"agency": "agencyId"}
+):
     """Fusion-JSON payload for a provision agreement."""
 
     id: str
