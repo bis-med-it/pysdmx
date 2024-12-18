@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Tuple
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.enums import MessageType
-from pysdmx.model import Schema
+from pysdmx.model import Schema, Role
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
@@ -341,14 +341,28 @@ def writing_validation(dataset: PandasDataset) -> None:
         raise Invalid(
             "Dataset Structure is not a Schema. Cannot perform operation."
         )
-    # Columns size match
-    if len(dataset.data.columns) != len(dataset.structure.components):
-        raise Invalid("Data columns length must match components length.")
+    required_components = []
+    for dim in dataset.structure.components.dimensions:
+        required_components.append(dim.id)
+    for measure in dataset.structure.components.measures:
+        required_components.append(measure.id)
+    for att in dataset.structure.components.attributes:
+        if (att.required and att.attachment_level is not None
+                and att.attachment_level != "D"):
+            required_components.append(att.id)
+    non_required = [comp.id for comp in dataset.structure.components
+                    if comp.id not in required_components]
     # Columns match components
-    columns = set(dataset.data.columns)
-    components = {comp.id for comp in dataset.structure.components}
-    if columns != components:
-        difference = columns.symmetric_difference(components)
+    columns = dataset.data.columns
+    all_components = required_components + non_required
+    difference = []
+    for col in columns:
+        if col not in all_components:
+            difference.append(col)
+
+    for comp in required_components:
+        difference.append(comp) if comp not in columns else None
+    if difference:
         raise Invalid(
             f"Data columns must match components. "
             f"Difference: {', '.join(difference)}"

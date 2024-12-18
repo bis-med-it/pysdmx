@@ -372,7 +372,7 @@ class StructureParser(Struct):
                     dims = add_list(json_rel[DIM])
                     dims = [dim[REF][ID] for dim in dims]
                     att_level = ",".join(dims)
-                elif scheme == PRIM_MEASURE:
+                else:
                     att_level = "O"
 
         return att_level

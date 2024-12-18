@@ -77,6 +77,18 @@ def content():
                         attachment_level="O",
                     ),
                     Component(
+                        id="ds_att1",
+                        role=Role.ATTRIBUTE,
+                        concept=Concept(id="ds_att1"),
+                        required=True,
+                    ),
+                    Component(
+                        id="ds_att2",
+                        role=Role.ATTRIBUTE,
+                        concept=Concept(id="ds_att2"),
+                        required=False,
+                    ),
+                    Component(
                         id="M1",
                         role=Role.MEASURE,
                         concept=Concept(id="M1"),

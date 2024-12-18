@@ -79,7 +79,7 @@ def test_invalid_data_columns():
                         id="ATT1",
                         role=Role.ATTRIBUTE,
                         concept=Concept(id="ATT1"),
-                        required=False,
+                        required=True,
                         attachment_level="D",
                     ),
                     Component(
@@ -100,7 +100,7 @@ def test_invalid_data_columns():
         ),
     )
     with pytest.raises(
-        Invalid, match="Data columns length must match components length."
+        Invalid
     ):
         writing_validation(dataset)
 
