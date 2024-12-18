@@ -26,6 +26,7 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     EMAIL,
     EMAILS,
     FACETS,
+    FacetType,
     FAX,
     FAXES,
     ID,
@@ -47,12 +48,11 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     TEXT_TYPE,
     TITLE,
     TYPE,
+    unique_id,
     URI,
     URIS,
     URL,
     VERSION,
-    FacetType,
-    unique_id,
 )
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (

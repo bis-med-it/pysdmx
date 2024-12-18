@@ -4,7 +4,7 @@ from typing import Sequence
 
 from msgspec import Struct
 
-from pysdmx.model.metadata import MetadataReport, merge_attributes
+from pysdmx.model.metadata import merge_attributes, MetadataReport
 
 
 class JsonMetadataSets(Struct, frozen=True):

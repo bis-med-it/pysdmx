@@ -10,35 +10,36 @@ from pysdmx.io.xml.sdmx21.reader import read_xml
 from pysdmx.model import Contact
 from pysdmx.model.message import SubmissionResult
 
+
 # Test parsing SDMX Registry Interface Submission Response
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency_scheme_path():
     return Path(__file__).parent / "samples" / "agencies.xml"
 
 
-@pytest.fixture
+@pytest.fixture()
 def codelist_path():
     return Path(__file__).parent / "samples" / "codelists.xml"
 
 
-@pytest.fixture
+@pytest.fixture()
 def item_scheme_path():
     return Path(__file__).parent / "samples" / "item_scheme.xml"
 
 
-@pytest.fixture
+@pytest.fixture()
 def submission_path():
     return Path(__file__).parent / "samples" / "submission_append.xml"
 
 
-@pytest.fixture
+@pytest.fixture()
 def samples_folder():
     return Path(__file__).parent / "samples"
 
 
-@pytest.fixture
+@pytest.fixture()
 def error_304_path():
     return Path(__file__).parent / "samples" / "error_304.xml"
 

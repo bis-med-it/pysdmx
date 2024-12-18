@@ -9,25 +9,25 @@ from pysdmx.io.pd import PandasDataset
 from pysdmx.model.message import ActionType
 
 
-@pytest.fixture
+@pytest.fixture()
 def data_path():
     base_path = Path(__file__).parent / "samples" / "df.json"
     return str(base_path)
 
 
-@pytest.fixture
+@pytest.fixture()
 def data_path_reference():
     base_path = Path(__file__).parent / "samples" / "reference.csv"
     return base_path
 
 
-@pytest.fixture
+@pytest.fixture()
 def data_path_reference_attch_atts():
     base_path = Path(__file__).parent / "samples" / "reference_attch_atts.csv"
     return base_path
 
 
-@pytest.fixture
+@pytest.fixture()
 def data_path_reference_action():
     base_path = Path(__file__).parent / "samples" / "reference_with_action.csv"
     return base_path

@@ -1,10 +1,10 @@
 import pytest
-
-from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 import tests.api.fmr.dataflow_infos_checks as checks
 
+from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 
-@pytest.fixture
+
+@pytest.fixture()
 def fmr():
     return RegistryClient(
         "https://registry.sdmx.org/sdmx/v2/",
@@ -12,7 +12,7 @@ def fmr():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def async_fmr():
     return AsyncRegistryClient(
         "https://registry.sdmx.org/sdmx/v2/",
@@ -20,7 +20,7 @@ def async_fmr():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def schema_query(fmr):
     res = "/schema/dataflow/"
     agency = "BIS.CBS"
@@ -29,7 +29,7 @@ def schema_query(fmr):
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
 
 
-@pytest.fixture
+@pytest.fixture()
 def schema_query_no_version(fmr):
     res = "/schema/dataflow/"
     agency = "BIS.CBS"
@@ -38,7 +38,7 @@ def schema_query_no_version(fmr):
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
 
 
-@pytest.fixture
+@pytest.fixture()
 def no_hca_query(fmr):
     res = "/structure/dataflow/"
     agency = "BIS.CBS"
@@ -50,7 +50,7 @@ def no_hca_query(fmr):
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def no_hca_query_no_version(fmr):
     res = "/structure/dataflow/"
     agency = "BIS.CBS"
@@ -62,13 +62,13 @@ def no_hca_query_no_version(fmr):
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def no_hca_body():
     with open("tests/api/fmr/samples/df/no_hca.json", "rb") as f:
         return f.read()
 
 
-@pytest.fixture
+@pytest.fixture()
 def dataflow_query(fmr):
     res = "/structure/dataflow/"
     agency = "BIS.CBS"
@@ -78,7 +78,7 @@ def dataflow_query(fmr):
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}?{qst}"
 
 
-@pytest.fixture
+@pytest.fixture()
 def dataflow_query_no_version(fmr):
     res = "/structure/dataflow/"
     agency = "BIS.CBS"
@@ -88,7 +88,7 @@ def dataflow_query_no_version(fmr):
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}?{qst}"
 
 
-@pytest.fixture
+@pytest.fixture()
 def core_dataflow_query(fmr):
     res = "/structure/dataflow/"
     agency = "BIS.CBS"
@@ -98,19 +98,19 @@ def core_dataflow_query(fmr):
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}?{qst}"
 
 
-@pytest.fixture
+@pytest.fixture()
 def schema_body():
     with open("tests/api/fmr/samples/df/schema.json", "rb") as f:
         return f.read()
 
 
-@pytest.fixture
+@pytest.fixture()
 def dataflow_body():
     with open("tests/api/fmr/samples/df/details.json", "rb") as f:
         return f.read()
 
 
-@pytest.fixture
+@pytest.fixture()
 def core_dataflow_body():
     with open("tests/api/fmr/samples/df/details_core.json", "rb") as f:
         return f.read()
@@ -215,7 +215,7 @@ def test_returns_dataflow_info_with_schema(
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_async_returns_dataflow_info(
     respx_mock,
     async_fmr,
@@ -239,7 +239,7 @@ async def test_async_returns_dataflow_info(
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_returns_async_core_dataflow_info(
     respx_mock,
     async_fmr,

@@ -6,7 +6,7 @@ from typing import Optional
 import msgspec
 
 from pysdmx.api.qb.structure import _V2_0_ADDED, StructureType
-from pysdmx.api.qb.util import REST_ALL, REST_LATEST, ApiVersion
+from pysdmx.api.qb.util import ApiVersion, REST_ALL, REST_LATEST
 from pysdmx.errors import Invalid
 
 

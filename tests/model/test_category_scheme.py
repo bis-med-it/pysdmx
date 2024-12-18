@@ -6,17 +6,17 @@ from pysdmx.model.__base import DataflowRef
 from pysdmx.model.category import Category, CategoryScheme
 
 
-@pytest.fixture
+@pytest.fixture()
 def id():
     return "id"
 
 
-@pytest.fixture
+@pytest.fixture()
 def name():
     return "name"
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "5B0"
 

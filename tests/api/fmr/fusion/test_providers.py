@@ -1,10 +1,10 @@
 import pytest
-
-from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 import tests.api.fmr.provider_checks as checks
 
+from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 
-@pytest.fixture
+
+@pytest.fixture()
 def fmr():
     return RegistryClient(
         "https://registry.sdmx.org/sdmx/v2",
@@ -12,7 +12,7 @@ def fmr():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def async_fmr():
     return AsyncRegistryClient(
         "https://registry.sdmx.org/sdmx/v2/",
@@ -20,27 +20,27 @@ def async_fmr():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def query(fmr: RegistryClient):
     res = "/structure/dataproviderscheme/"
     agency = "BIS"
     return f"{fmr.api_endpoint}{res}{agency}"
 
 
-@pytest.fixture
+@pytest.fixture()
 def flowquery(fmr: RegistryClient):
     res = "/structure/dataproviderscheme/"
     agency = "BIS"
     return f"{fmr.api_endpoint}{res}{agency}?references=provisionagreement"
 
 
-@pytest.fixture
+@pytest.fixture()
 def body():
     with open("tests/api/fmr/samples/orgs/providers.fusion.json", "rb") as f:
         return f.read()
 
 
-@pytest.fixture
+@pytest.fixture()
 def flowbody():
     with open(
         "tests/api/fmr/samples/orgs/providersflows.fusion.json", "rb"
@@ -53,7 +53,7 @@ def test_returns_providers(respx_mock, fmr, query, body):
     checks.check_orgs(respx_mock, fmr, query, body)
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_providers_have_core_info(respx_mock, async_fmr, query, body):
     """Providers must contain core information such as ID, name, etc."""
     await checks.check_org_core_info(respx_mock, async_fmr, query, body)

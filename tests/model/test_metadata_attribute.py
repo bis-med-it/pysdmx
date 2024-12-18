@@ -5,17 +5,17 @@ import pytest
 from pysdmx.model import MetadataAttribute
 
 
-@pytest.fixture
+@pytest.fixture()
 def id():
     return "FX"
 
 
-@pytest.fixture
+@pytest.fixture()
 def value():
     return 42
 
 
-@pytest.fixture
+@pytest.fixture()
 def child():
     return MetadataAttribute("child", 422)
 

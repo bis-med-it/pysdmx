@@ -20,17 +20,17 @@ all_context = context_initial.copy()
 all_context.extend(context_2_0_0)
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "BIS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "CBS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def version():
     return "1.0"
 

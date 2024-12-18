@@ -12,6 +12,7 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     AGENCY_ID,
     ATTRIBUTES,
     DIM_OBS,
+    exc_attributes,
     GROUP,
     ID,
     OBS,
@@ -29,7 +30,6 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     URN,
     VALUE,
     VERSION,
-    exc_attributes,
 )
 from pysdmx.io.xml.utils import add_list
 from pysdmx.util import parse_urn
@@ -330,7 +330,7 @@ def create_dataset(
             f"of this dataset:{dataset[STRREF]}",
         )
     structure_info = str_info[dataset[STRREF]]
-    if global_mode == STRSPE:
+    if STRSPE == global_mode:
         return __parse_structure_specific_data(dataset, structure_info)
     else:
         return __parse_generic_data(dataset, structure_info)

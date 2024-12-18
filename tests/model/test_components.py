@@ -5,7 +5,7 @@ from pysdmx.model.concept import DataType
 from pysdmx.model.dataflow import Component, Components, Role
 
 
-@pytest.fixture
+@pytest.fixture()
 def components():
     f1 = Component("FREQ", True, Role.DIMENSION, DataType.STRING)
     f2 = Component("INDICATOR", True, Role.DIMENSION, DataType.STRING)

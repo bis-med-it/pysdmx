@@ -5,12 +5,12 @@ import pytest
 from pysdmx.model import MultiValueMap
 
 
-@pytest.fixture
+@pytest.fixture()
 def source():
     return ["CH", "LC"]
 
 
-@pytest.fixture
+@pytest.fixture()
 def target():
     return ["CHF"]
 

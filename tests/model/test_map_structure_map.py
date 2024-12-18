@@ -14,42 +14,42 @@ from pysdmx.model import (
 )
 
 
-@pytest.fixture
+@pytest.fixture()
 def id():
     return "id"
 
 
-@pytest.fixture
+@pytest.fixture()
 def name():
     return "name"
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "5B0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def source():
     return "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:CIBL(1.0)"
 
 
-@pytest.fixture
+@pytest.fixture()
 def target():
     return "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:CBS(1.0)"
 
 
-@pytest.fixture
+@pytest.fixture()
 def version():
     return "2.0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def desc():
     return "my desc"
 
 
-@pytest.fixture
+@pytest.fixture()
 def mappings():
     m1 = ImplicitComponentMap("OBS_CONF", "CONF_STATUS")
     m2 = ImplicitComponentMap("OBS_STATUS", "OBS_STATUS")

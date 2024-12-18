@@ -19,42 +19,42 @@ from pysdmx.api.dc.query._parsing_model import (
 from pysdmx.api.dc.query._sql_parser import sql_parser
 
 
-@pytest.fixture
+@pytest.fixture()
 def field() -> str:
     return "OBS_VALUE"
 
 
-@pytest.fixture
+@pytest.fixture()
 def int_value() -> int:
     return 42
 
 
-@pytest.fixture
+@pytest.fixture()
 def boolean_value() -> bool:
     return True
 
 
-@pytest.fixture
+@pytest.fixture()
 def datetime_value() -> str:
     return "2024-05-23"
 
 
-@pytest.fixture
+@pytest.fixture()
 def float_value() -> float:
     return 42.84
 
 
-@pytest.fixture
+@pytest.fixture()
 def str_value() -> str:
     return "A"
 
 
-@pytest.fixture
+@pytest.fixture()
 def int_values() -> Sequence[int]:
     return [42, 83]
 
 
-@pytest.fixture
+@pytest.fixture()
 def datetime_values() -> Sequence[str]:
     return ["2024-05-01", "2024-05-23"]
 

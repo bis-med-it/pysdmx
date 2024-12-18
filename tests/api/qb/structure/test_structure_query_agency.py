@@ -12,37 +12,37 @@ from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import Invalid
 
 
-@pytest.fixture
+@pytest.fixture()
 def typ():
     return StructureType.METADATA_STRUCTURE
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "SDMX"
 
 
-@pytest.fixture
+@pytest.fixture()
 def agencies():
     return ["BIS", "SDMX"]
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "REF_META"
 
 
-@pytest.fixture
+@pytest.fixture()
 def version():
     return "1.0.0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def detail():
     return StructureDetail.FULL
 
 
-@pytest.fixture
+@pytest.fixture()
 def refs():
     return StructureReference.NONE
 

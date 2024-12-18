@@ -11,12 +11,12 @@ from pysdmx.api.dc.query import (
     NumberFilter,
     TextFilter,
 )
-from pysdmx.api.qb.data import DataContext, _CoreDataQuery
+from pysdmx.api.qb.data import _CoreDataQuery, DataContext
 from pysdmx.api.qb.structure import StructureReference
 from pysdmx.api.qb.util import (
-    REST_ALL,
     ApiVersion,
     check_multiple_data_context,
+    REST_ALL,
 )
 from pysdmx.errors import Invalid
 

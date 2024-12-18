@@ -11,32 +11,32 @@ from pysdmx.api.qb import (
 from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 
 
-@pytest.fixture
+@pytest.fixture()
 def version() -> ApiVersion:
     return ApiVersion.V2_0_0
 
 
-@pytest.fixture
+@pytest.fixture()
 def end_point() -> str:
     return "https://registry.sdmx.org/sdmx/v2"
 
 
-@pytest.fixture
+@pytest.fixture()
 def service(end_point: str, version: ApiVersion) -> RestService:
     return RestService(end_point, version)
 
 
-@pytest.fixture
+@pytest.fixture()
 def query() -> AvailabilityQuery:
     return AvailabilityQuery(DataContext.DATAFLOW, "BIS", "CBS")
 
 
-@pytest.fixture
+@pytest.fixture()
 def url(end_point: str, query: AvailabilityQuery, version: ApiVersion) -> str:
     return f"{end_point}{query.get_url(version, True)}"
 
 
-@pytest.fixture
+@pytest.fixture()
 def body():
     with open("tests/api/fmr/samples/orgs/agencies.fusion.json", "rb") as f:
         return f.read()

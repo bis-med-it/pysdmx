@@ -12,35 +12,35 @@ from pysdmx.api.dc.query._model import (
     TextFilter,
 )
 from pysdmx.api.dc.query._py_parser import (
-    PythonOperator,
     _PythonCoreOperator,
     _PythonInOperator,
     _to_operator,
-    py_parser,
+    PythonOperator,
 )
+from pysdmx.api.dc.query._py_parser import py_parser
 
 
-@pytest.fixture
+@pytest.fixture()
 def field() -> str:
     return "OBS_VALUE"
 
 
-@pytest.fixture
+@pytest.fixture()
 def int_value() -> int:
     return 42
 
 
-@pytest.fixture
+@pytest.fixture()
 def float_value() -> float:
     return 42.84
 
 
-@pytest.fixture
+@pytest.fixture()
 def str_value() -> str:
     return "A"
 
 
-@pytest.fixture
+@pytest.fixture()
 def int_values() -> Sequence[int]:
     return [42, 83]
 

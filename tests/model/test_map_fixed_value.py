@@ -3,17 +3,17 @@ import pytest
 from pysdmx.model import FixedValueMap
 
 
-@pytest.fixture
+@pytest.fixture()
 def target():
     return "CONF_STATUS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def value():
     return "C"
 
 
-@pytest.fixture
+@pytest.fixture()
 def located_in():
     return "source"
 

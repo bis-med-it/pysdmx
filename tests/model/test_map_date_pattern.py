@@ -3,37 +3,37 @@ import pytest
 from pysdmx.model import DatePatternMap
 
 
-@pytest.fixture
+@pytest.fixture()
 def source():
     return "DATE"
 
 
-@pytest.fixture
+@pytest.fixture()
 def target():
     return "TIME_PERIOD"
 
 
-@pytest.fixture
+@pytest.fixture()
 def pattern():
     return "MMM yy"
 
 
-@pytest.fixture
+@pytest.fixture()
 def freq():
     return "M"
 
 
-@pytest.fixture
+@pytest.fixture()
 def pattern_type():
     return "variable"
 
 
-@pytest.fixture
+@pytest.fixture()
 def map_id():
     return "my_id"
 
 
-@pytest.fixture
+@pytest.fixture()
 def locale():
     return "es"
 

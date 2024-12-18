@@ -3,12 +3,12 @@ import pytest
 from pysdmx.api.dc.query import SortBy
 
 
-@pytest.fixture
+@pytest.fixture()
 def comp():
     return "TIME_PERIOD"
 
 
-@pytest.fixture
+@pytest.fixture()
 def order():
     return "desc"
 

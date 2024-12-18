@@ -13,6 +13,7 @@ from pysdmx.api.dc.query._model import (
     TextFilter,
 )
 
+
 __all__ = [
     "BooleanFilter",
     "DateTimeFilter",

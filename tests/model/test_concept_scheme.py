@@ -5,17 +5,17 @@ import pytest
 from pysdmx.model.concept import Concept, ConceptScheme
 
 
-@pytest.fixture
+@pytest.fixture()
 def id():
     return "id"
 
 
-@pytest.fixture
+@pytest.fixture()
 def name():
     return "name"
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "5B0"
 

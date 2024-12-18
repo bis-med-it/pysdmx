@@ -6,32 +6,32 @@ from pysdmx.api.qb.refmeta import RefMetaByMetadataflowQuery, RefMetaDetail
 from pysdmx.api.qb.util import ApiVersion
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "BIS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "CBS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def version():
     return "1.0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def provider():
     return "5B0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def versions():
     return ["1.0", "2.0"]
 
 
-@pytest.fixture
+@pytest.fixture()
 def detail():
     return RefMetaDetail.FULL
 

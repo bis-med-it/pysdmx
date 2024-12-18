@@ -1,10 +1,10 @@
 import pytest
-
-from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 import tests.api.fmr.report_checks as checks
 
+from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 
-@pytest.fixture
+
+@pytest.fixture()
 def fmr():
     return RegistryClient(
         "https://registry.sdmx.org/sdmx/v2/",
@@ -12,7 +12,7 @@ def fmr():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def async_fmr() -> AsyncRegistryClient:
     return AsyncRegistryClient(
         "https://registry.sdmx.org/sdmx/v2/",
@@ -20,7 +20,7 @@ def async_fmr() -> AsyncRegistryClient:
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def query(fmr):
     res = "/metadata/metadataset/"
     provider = "BIS.MEDIT"
@@ -29,13 +29,13 @@ def query(fmr):
     return f"{fmr.api_endpoint}{res}{provider}/{id}/{version}"
 
 
-@pytest.fixture
+@pytest.fixture()
 def body():
     with open("tests/api/fmr/samples/refmeta/report.json", "rb") as f:
         return f.read()
 
 
-@pytest.fixture
+@pytest.fixture()
 def query2(fmr):
     res = "/metadata/metadataset/"
     provider = "BIS.MEDIT"
@@ -44,7 +44,7 @@ def query2(fmr):
     return f"{fmr.api_endpoint}{res}{provider}/{id}/{version}"
 
 
-@pytest.fixture
+@pytest.fixture()
 def body2():
     with open("tests/api/fmr/samples/refmeta/report_attrs.json", "rb") as f:
         return f.read()
@@ -55,7 +55,7 @@ def test_returns_report(respx_mock, fmr, query, body):
     checks.check_report(respx_mock, fmr, query, body)
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_attributes(respx_mock, async_fmr, query, body):
     """Report contains the expected attributes."""
     await checks.check_attributes(respx_mock, async_fmr, query, body)

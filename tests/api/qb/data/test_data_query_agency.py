@@ -8,32 +8,32 @@ from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import Invalid
 
 
-@pytest.fixture
+@pytest.fixture()
 def context():
     return DataContext.DATAFLOW
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "SDMX"
 
 
-@pytest.fixture
+@pytest.fixture()
 def agencies():
     return ["BIS", "SDMX"]
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "REF_META"
 
 
-@pytest.fixture
+@pytest.fixture()
 def v1u():
     return random.choice([v for v in ApiVersion if v < ApiVersion.V2_0_0])
 
 
-@pytest.fixture
+@pytest.fixture()
 def v2u():
     return random.choice([v for v in ApiVersion if v >= ApiVersion.V2_0_0])
 

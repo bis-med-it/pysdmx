@@ -1,7 +1,7 @@
 from parsy import (  # type: ignore[import-untyped]
-    ParseError,
     alt,
     any_char,
+    ParseError,
     regex,
     string,
 )

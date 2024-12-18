@@ -7,17 +7,17 @@ from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import Invalid
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "CBS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def updated_after():
     return datetime(2011, 6, 17, 10, 42, 21, tzinfo=timezone.utc)
 
 
-@pytest.fixture
+@pytest.fixture()
 def expected():
     return "2011-06-17T10:42:21+00:00"
 

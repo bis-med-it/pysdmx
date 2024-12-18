@@ -3,27 +3,27 @@ import pytest
 from pysdmx.model import DataflowRef, Organisation
 
 
-@pytest.fixture
+@pytest.fixture()
 def id():
     return "5B0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def name():
     return "BIS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def desc():
     return "Bank for International Settlements"
 
 
-@pytest.fixture
+@pytest.fixture()
 def contact():
     return "support@email.address"
 
 
-@pytest.fixture
+@pytest.fixture()
 def dataflows():
     df1 = DataflowRef(id="DF1", agency="T1")
     df2 = DataflowRef(id="DF2", agency="T1")

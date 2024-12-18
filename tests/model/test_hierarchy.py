@@ -5,22 +5,22 @@ import pytest
 from pysdmx.model import HierarchicalCode, Hierarchy
 
 
-@pytest.fixture
+@pytest.fixture()
 def id():
     return "id"
 
 
-@pytest.fixture
+@pytest.fixture()
 def name():
     return "name"
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "5B0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def operator():
     return (
         "urn:sdmx:org.sdmx.infomodel.transformation."

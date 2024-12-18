@@ -8,27 +8,27 @@ from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import Invalid
 
 
-@pytest.fixture
+@pytest.fixture()
 def context():
     return SchemaContext.DATA_STRUCTURE
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "BIS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "CBS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def version():
     return "1.0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def obs_dim():
     return "TIME_PERIOD"
 

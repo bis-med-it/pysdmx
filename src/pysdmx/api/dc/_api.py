@@ -9,8 +9,8 @@ from typing import (
     Literal,
     Optional,
     Protocol,
-    Union,
     runtime_checkable,
+    Union,
 )
 
 from pysdmx.api.dc.query import (

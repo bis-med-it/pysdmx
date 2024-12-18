@@ -1,33 +1,33 @@
 import pytest
+from tests.api.qb.structure.test_common import types_2_0_0_deprecated
 
 from pysdmx.api.qb.refmeta import RefMetaByStructureQuery, RefMetaDetail
 from pysdmx.api.qb.structure import StructureType
 from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import Invalid
-from tests.api.qb.structure.test_common import types_2_0_0_deprecated
 
 
-@pytest.fixture
+@pytest.fixture()
 def typ():
     return StructureType.CATEGORISATION
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "SDMX"
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "CORE"
 
 
-@pytest.fixture
+@pytest.fixture()
 def version():
     return "1.0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def detail():
     return RefMetaDetail.FULL
 

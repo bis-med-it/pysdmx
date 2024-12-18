@@ -5,17 +5,17 @@ import pytest
 from pysdmx.model import Category, DataflowRef
 
 
-@pytest.fixture
+@pytest.fixture()
 def id():
     return "FX"
 
 
-@pytest.fixture
+@pytest.fixture()
 def name():
     return "Exchange rates"
 
 
-@pytest.fixture
+@pytest.fixture()
 def desc():
     return "Daily bilateral foreign exchange reference rates"
 

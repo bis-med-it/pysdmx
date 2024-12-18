@@ -6,27 +6,27 @@ import pytest
 from pysdmx.model import HierarchicalCode
 
 
-@pytest.fixture
+@pytest.fixture()
 def id():
     return "UY"
 
 
-@pytest.fixture
+@pytest.fixture()
 def name():
     return "Uruguay"
 
 
-@pytest.fixture
+@pytest.fixture()
 def desc():
     return "The Oriental Republic of Uruguay"
 
 
-@pytest.fixture
+@pytest.fixture()
 def vf():
     return datetime(1828, 8, 27, 0, 0, 0, tzinfo=timezone.utc)
 
 
-@pytest.fixture
+@pytest.fixture()
 def vt():
     return None
 

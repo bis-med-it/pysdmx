@@ -4,27 +4,27 @@ from pysdmx.errors import PysdmxError
 from pysdmx.model.__base import Annotation
 
 
-@pytest.fixture
+@pytest.fixture()
 def id():
     return "AnnotationID"
 
 
-@pytest.fixture
+@pytest.fixture()
 def title():
     return "Annotation 1"
 
 
-@pytest.fixture
+@pytest.fixture()
 def text():
     return "A short text of the annotation."
 
 
-@pytest.fixture
+@pytest.fixture()
 def url():
     return "http://example.com"
 
 
-@pytest.fixture
+@pytest.fixture()
 def type():
     return "type"
 

@@ -6,19 +6,19 @@ from pysdmx.errors import Invalid
 from pysdmx.io.csv.sdmx10.reader import read
 
 
-@pytest.fixture
+@pytest.fixture()
 def data_path():
     base_path = Path(__file__).parent / "samples" / "data_v1.csv"
     return str(base_path)
 
 
-@pytest.fixture
+@pytest.fixture()
 def data_path_exception():
     base_path = Path(__file__).parent / "samples" / "data_v1_exception.csv"
     return str(base_path)
 
 
-@pytest.fixture
+@pytest.fixture()
 def data_path_no_freq():
     base_path = Path(__file__).parent / "samples" / "data_v1_no_freq_cols.csv"
     return base_path

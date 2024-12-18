@@ -30,17 +30,17 @@ allowed_refs_v2 = [
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "CBS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def references():
     return StructureReference.ALL
 
 
-@pytest.fixture
+@pytest.fixture()
 def multiple_references():
     return [StructureReference.CODELIST, StructureReference.DATAFLOW]
 

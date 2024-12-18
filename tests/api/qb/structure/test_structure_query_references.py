@@ -1,6 +1,11 @@
 import random
 
 import pytest
+from tests.api.qb.structure.test_common import (
+    types_1_3_0,
+    types_1_5_0,
+    types_initial,
+)
 
 from pysdmx.api.qb.structure import (
     StructureDetail,
@@ -10,11 +15,6 @@ from pysdmx.api.qb.structure import (
 )
 from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import Invalid
-from tests.api.qb.structure.test_common import (
-    types_1_3_0,
-    types_1_5_0,
-    types_initial,
-)
 
 refs_initial = [
     StructureReference.ALL,
@@ -28,27 +28,27 @@ refs_initial = [
 refs_2_0_0 = [StructureReference.ANCESTORS]
 
 
-@pytest.fixture
+@pytest.fixture()
 def typ():
     return StructureType.DATAFLOW
 
 
-@pytest.fixture
+@pytest.fixture()
 def agency():
     return "BIS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def res():
     return "CBS"
 
 
-@pytest.fixture
+@pytest.fixture()
 def version():
     return "1.0"
 
 
-@pytest.fixture
+@pytest.fixture()
 def detail():
     return StructureDetail.ALL_STUBS
 
