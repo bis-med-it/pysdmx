@@ -32,6 +32,7 @@ from pysdmx.model.dataflow import (
     Components,
     Dataflow,
     DataflowInfo,
+    ProvisionAgreement,
     Role,
     Schema,
 )
@@ -178,6 +179,7 @@ __all__ = [
     "NamePersonalisation",
     "NamePersonalisationScheme",
     "Organisation",
+    "ProvisionAgreement",
     "RepresentationMap",
     "Role",
     "Ruleset",

@@ -6,6 +6,7 @@ from typing import Dict, Optional, Sequence, Set
 from msgspec import Struct
 
 from pysdmx.io.json.fusion.messages.core import FusionString
+from pysdmx.io.json.fusion.messages.pa import FusionProvisionAgreement
 from pysdmx.model import Agency, Contact, DataflowRef, DataProvider
 from pysdmx.util import parse_urn
 
@@ -103,13 +104,6 @@ class FusionAgencyMessage(Struct, frozen=True):
     def to_model(self) -> Sequence[Agency]:
         """Returns the requested list of agencies."""
         return self.AgencyScheme[0].to_model()
-
-
-class FusionProvisionAgreement(Struct, frozen=True):
-    """Fusion-JSON payload for a provision agreement."""
-
-    structureUsage: str
-    dataproviderRef: str
 
 
 class FusionProviderScheme(Struct, frozen=True):
