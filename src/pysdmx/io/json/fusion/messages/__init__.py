@@ -22,6 +22,9 @@ from pysdmx.io.json.fusion.messages.org import (
     FusionAgencyMessage,
     FusionProviderMessage,
 )
+from pysdmx.io.json.fusion.messages.pa import (
+    FusionProvisionAgreementMessage as FusionPAMessage,
+)
 from pysdmx.io.json.fusion.messages.report import FusionMetadataMessage
 from pysdmx.io.json.fusion.messages.schema import FusionSchemaMessage
 from pysdmx.io.json.fusion.messages.vtl import (
@@ -44,4 +47,5 @@ __all__ = [
     "FusionMetadataMessage",
     "FusionSchemaMessage",
     "FusionTransfoMsg",
+    "FusionPAMessage",
 ]
