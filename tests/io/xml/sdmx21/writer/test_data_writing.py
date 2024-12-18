@@ -67,7 +67,7 @@ def content():
                         role=Role.ATTRIBUTE,
                         concept=Concept(id="ATT1"),
                         required=True,
-                        attachment_level="D",
+                        attachment_level="DIM1",
                     ),
                     Component(
                         id="ATT2",

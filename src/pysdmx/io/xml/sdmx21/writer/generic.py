@@ -48,7 +48,7 @@ def __generate_obs_structure(
     for att in dataset.structure.components.attributes:
         if att.attachment_level == "O":
             obs_structure[2].append(att.id)
-        if att.attachment_level == "D":
+        elif att.attachment_level is not None and att.attachment_level != "D":
             obs_structure[0].append(att.id)
 
     return obs_structure

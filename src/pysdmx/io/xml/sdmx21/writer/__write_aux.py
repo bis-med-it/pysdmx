@@ -291,7 +291,7 @@ def get_codes(
     for att in dataset.structure.components.attributes:
         if att.attachment_level == "O":
             obs_codes.append(att.id)
-        if att.attachment_level == "D":
+        elif att.attachment_level is not None and att.attachment_level != "D":
             series_codes.append(att.id)
 
     return series_codes, obs_codes
