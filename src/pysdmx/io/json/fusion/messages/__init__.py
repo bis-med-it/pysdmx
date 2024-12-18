@@ -1,6 +1,9 @@
 """Schemas for Fusion-JSON messages."""
 
-from pysdmx.io.json.fusion.messages.category import FusionCategorySchemeMessage
+from pysdmx.io.json.fusion.messages.category import (
+    FusionCategorisationMessage,
+    FusionCategorySchemeMessage,
+)
 from pysdmx.io.json.fusion.messages.code import (
     FusionCodelistMessage,
     FusionHierarchyAssociationMessage,
@@ -26,6 +29,7 @@ from pysdmx.io.json.fusion.messages.vtl import (
 )
 
 __all__ = [
+    "FusionCategorisationMessage",
     "FusionCategorySchemeMessage",
     "FusionCodelistMessage",
     "FusionHierarchyAssociationMessage",

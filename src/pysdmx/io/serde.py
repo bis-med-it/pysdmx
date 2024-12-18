@@ -18,6 +18,7 @@ class Deserializers:
 
     agencies: Deserializer
     categories: Deserializer
+    categorisation: Deserializer
     codes: Deserializer
     concepts: Deserializer
     dataflow_info: Deserializer
