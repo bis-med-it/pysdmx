@@ -99,9 +99,7 @@ def test_invalid_data_columns():
             ),
         ),
     )
-    with pytest.raises(
-        Invalid
-    ):
+    with pytest.raises(Invalid):
         writing_validation(dataset)
 
 

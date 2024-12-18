@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Tuple
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.enums import MessageType
-from pysdmx.model import Schema, Role
+from pysdmx.model import Role, Schema
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
@@ -341,24 +341,27 @@ def writing_validation(dataset: PandasDataset) -> None:
         raise Invalid(
             "Dataset Structure is not a Schema. Cannot perform operation."
         )
-    required_components = []
-    for dim in dataset.structure.components.dimensions:
-        required_components.append(dim.id)
-    for measure in dataset.structure.components.measures:
-        required_components.append(measure.id)
+    required_components = [
+        comp.id
+        for comp in dataset.structure.components
+        if comp.role in (Role.DIMENSION, Role.MEASURE)
+    ]
     for att in dataset.structure.components.attributes:
-        if (att.required and att.attachment_level is not None
-                and att.attachment_level != "D"):
+        if (
+            att.required
+            and att.attachment_level is not None
+            and att.attachment_level != "D"
+        ):
             required_components.append(att.id)
-    non_required = [comp.id for comp in dataset.structure.components
-                    if comp.id not in required_components]
+    non_required = [
+        comp.id
+        for comp in dataset.structure.components
+        if comp.id not in required_components
+    ]
     # Columns match components
     columns = dataset.data.columns
     all_components = required_components + non_required
-    difference = []
-    for col in columns:
-        if col not in all_components:
-            difference.append(col)
+    difference = [col for col in columns if col not in all_components]
 
     for comp in required_components:
         difference.append(comp) if comp not in columns else None
