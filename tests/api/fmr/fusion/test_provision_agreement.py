@@ -35,7 +35,7 @@ def body():
 
 
 def test_returns_provision_agreement(respx_mock, fmr, query, body):
-    """get_provision_agreement() should return a provision_agreement."""
+    """get_provision_agreement() should return a provision agreement."""
     checks.check_provision_agreements(respx_mock, fmr, query, body)
 
 
@@ -43,7 +43,7 @@ def test_returns_provision_agreement(respx_mock, fmr, query, body):
 async def test_returns_provision_agreement_async(
     respx_mock, async_fmr, query, body
 ):
-    """get_provision_agreement() should return a provision_agreement (async)."""
+    """get_provision_agreement() should return a provision agreement, async."""
     await checks.check_provision_agreements_async(
         respx_mock, async_fmr, query, body
     )
