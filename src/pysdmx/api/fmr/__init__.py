@@ -436,7 +436,7 @@ class RegistryClient(__BaseRegistryClient):
         """
         url = super()._categorisation_url(agency, id, version)
         out = self.__fetch(f"{self.api_endpoint}{url}")
-        return super()._out(out, self.deser.categorisation)
+        return super()._out(out, self.deser.categorisation)[0]
 
     def get_codes(
         self,
@@ -847,7 +847,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         """
         url = super()._categorisation_url(agency, id, version)
         out = await self.__fetch(f"{self.api_endpoint}{url}")
-        return super()._out(out, self.deser.categorisation)
+        return super()._out(out, self.deser.categorisation)[0]
 
     async def get_codes(
         self,
