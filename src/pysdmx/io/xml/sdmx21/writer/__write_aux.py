@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Tuple
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.enums import MessageType
-from pysdmx.model import Schema
+from pysdmx.model import Role, Schema
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
@@ -291,7 +291,7 @@ def get_codes(
     for att in dataset.structure.components.attributes:
         if att.attachment_level == "O":
             obs_codes.append(att.id)
-        if att.attachment_level == "D":
+        elif att.attachment_level is not None and att.attachment_level != "D":
             series_codes.append(att.id)
 
     return series_codes, obs_codes
@@ -341,14 +341,31 @@ def writing_validation(dataset: PandasDataset) -> None:
         raise Invalid(
             "Dataset Structure is not a Schema. Cannot perform operation."
         )
-    # Columns size match
-    if len(dataset.data.columns) != len(dataset.structure.components):
-        raise Invalid("Data columns length must match components length.")
+    required_components = [
+        comp.id
+        for comp in dataset.structure.components
+        if comp.role in (Role.DIMENSION, Role.MEASURE)
+    ]
+    for att in dataset.structure.components.attributes:
+        if (
+            att.required
+            and att.attachment_level is not None
+            and att.attachment_level != "D"
+        ):
+            required_components.append(att.id)
+    non_required = [
+        comp.id
+        for comp in dataset.structure.components
+        if comp.id not in required_components
+    ]
     # Columns match components
-    columns = set(dataset.data.columns)
-    components = {comp.id for comp in dataset.structure.components}
-    if columns != components:
-        difference = columns.symmetric_difference(components)
+    columns = dataset.data.columns
+    all_components = required_components + non_required
+    difference = [col for col in columns if col not in all_components]
+
+    for comp in required_components:
+        difference.append(comp) if comp not in columns else None
+    if difference:
         raise Invalid(
             f"Data columns must match components. "
             f"Difference: {', '.join(difference)}"
@@ -360,3 +377,14 @@ def writing_validation(dataset: PandasDataset) -> None:
         )
     if not dataset.structure.components.measures:
         raise Invalid("The dataset structure must have at least one measure.")
+
+
+def __to_camel_case(snake_str: str) -> str:
+    return "".join(x.capitalize() for x in snake_str.lower().split("_"))
+
+
+def __to_lower_camel_case(snake_str: str) -> str:
+    # We capitalize the first letter of each component except the first one
+    # with the 'capitalize' method and join them together.
+    camel_string = __to_camel_case(snake_str)
+    return snake_str[0].lower() + camel_string[1:]
