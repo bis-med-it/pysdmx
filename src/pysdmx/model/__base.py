@@ -49,7 +49,7 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
     def __str__(self) -> str:
         """Returns a human-friendly description."""
         out = []
-        for k in self.__annotations__:
+        for k in self.__annotations__.keys():
             v = self.__getattribute__(k)
             if v:
                 out.append(f"{k}={str(v)}")
@@ -79,7 +79,7 @@ class AnnotableArtefact(Struct, frozen=True, omit_defaults=True, kw_only=True):
     def __str__(self) -> str:
         """Returns a human-friendly description."""
         out = []
-        for k in self.__all_annotations():
+        for k in self.__all_annotations().keys():
             v = self.__getattribute__(k)
             if v:
                 out.append(f"{k}={str(v)}")

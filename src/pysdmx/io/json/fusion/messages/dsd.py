@@ -109,7 +109,10 @@ class FusionAttribute(Struct, frozen=True):
             self.id, self.representation, cls, cons
         )
         lvl = self.__derive_level(groups)
-        desc = c.descriptions[0].value if c.descriptions else None
+        if c.descriptions:
+            desc = c.descriptions[0].value
+        else:
+            desc = None
         return Component(
             id=self.id,
             required=self.mandatory,
@@ -159,7 +162,10 @@ class FusionDimension(Struct, frozen=True):
         dt, facets, codes, ab = _get_representation(
             self.id, self.representation, cls, cons
         )
-        desc = c.descriptions[0].value if c.descriptions else None
+        if c.descriptions:
+            desc = c.descriptions[0].value
+        else:
+            desc = None
         return Component(
             id=self.id,
             required=True,
@@ -208,7 +214,10 @@ class FusionMeasure(Struct, frozen=True):
         dt, facets, codes, ab = _get_representation(
             self.id, self.representation, cls, cons
         )
-        desc = c.descriptions[0].value if c.descriptions else None
+        if c.descriptions:
+            desc = c.descriptions[0].value
+        else:
+            desc = None
         return Component(
             id=self.id,
             required=self.mandatory,
@@ -244,7 +253,10 @@ class FusionDataStructure(Struct, frozen=True, rename={"agency": "agencyId"}):
     ) -> Components:
         """Returns the schema for this DSD."""
         comps = []
-        cons = constraints[0].to_map() if constraints else {}
+        if constraints:
+            cons = constraints[0].to_map()
+        else:
+            cons = {}
         comps.extend(self.dimensionList.to_model(cs, cls, cons))
         if self.measures:
             comps.extend([m.to_model(cs, cls, cons) for m in self.measures])

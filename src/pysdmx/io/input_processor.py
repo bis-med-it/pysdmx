@@ -14,7 +14,10 @@ def __remove_bom(input_string: str) -> str:
 
 
 def __check_xml(infile: str) -> bool:
-    return infile[:5] == "<?xml"
+    if infile[:5] == "<?xml":
+        return True
+
+    return False
 
 
 def process_string_to_read(

@@ -108,7 +108,7 @@ class Facets(Struct, frozen=True, omit_defaults=True):
     def __str__(self) -> str:
         """Returns a human-friendly description."""
         out = []
-        for k in self.__annotations__:
+        for k in self.__annotations__.keys():
             v = self.__getattribute__(k)
             if v:
                 out.append(f"{k}={v}")
