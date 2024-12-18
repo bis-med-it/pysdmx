@@ -98,7 +98,6 @@ def test_full_initialization(
         codes,
         lvl,
         array_def,
-        {},
         urn,
     )
 
@@ -113,7 +112,6 @@ def test_full_initialization(
     assert f.enumeration == codes
     assert f.attachment_level == lvl
     assert f.array_def == array_def
-    assert f.attribute_relationship == {}
     assert f.urn == urn
 
 
