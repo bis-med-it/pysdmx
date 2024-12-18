@@ -1,7 +1,7 @@
 """Model for Mapping Definitions."""
 
-from datetime import datetime
 import re
+from datetime import datetime
 from typing import Any, Iterator, Literal, Optional, Sequence, Tuple, Union
 
 from msgspec import Struct

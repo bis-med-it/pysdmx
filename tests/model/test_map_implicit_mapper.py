@@ -3,12 +3,12 @@ import pytest
 from pysdmx.model import ImplicitComponentMap
 
 
-@pytest.fixture()
+@pytest.fixture
 def source():
     return "OBS_CONF"
 
 
-@pytest.fixture()
+@pytest.fixture
 def target():
     return "CONF_STATUS"
 

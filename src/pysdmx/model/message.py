@@ -12,10 +12,10 @@ Classes:
     SubmissionResult: Class that represents the result of a submission.
 """
 
+import uuid
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, Optional
-import uuid
 
 from msgspec import Struct
 

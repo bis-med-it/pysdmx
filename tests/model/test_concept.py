@@ -3,12 +3,12 @@ import pytest
 from pysdmx.model import Concept, DataType, Facets
 
 
-@pytest.fixture()
+@pytest.fixture
 def fid():
     return "FREQ"
 
 
-@pytest.fixture()
+@pytest.fixture
 def typ():
     return DataType.STRING
 

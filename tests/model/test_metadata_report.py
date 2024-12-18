@@ -6,17 +6,17 @@ import pytest
 from pysdmx.model import MetadataAttribute, MetadataReport
 
 
-@pytest.fixture()
+@pytest.fixture
 def id():
     return "id"
 
 
-@pytest.fixture()
+@pytest.fixture
 def name():
     return "name"
 
 
-@pytest.fixture()
+@pytest.fixture
 def structure():
     return (
         "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow="
@@ -24,14 +24,14 @@ def structure():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def targets():
     return [
         "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
     ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def attributes():
     grandchild = MetadataAttribute("child211", "Child 2.1.1")
     child = MetadataAttribute("child21", "Child 2.1", [grandchild])

@@ -10,12 +10,12 @@ from pysdmx.model.vtl import (
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def vtl_version():
     return "2.0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def invalid_vtl_version():
     return "2.4"
 

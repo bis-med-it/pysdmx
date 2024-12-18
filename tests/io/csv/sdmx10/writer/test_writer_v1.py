@@ -8,19 +8,19 @@ from pysdmx.io.csv.sdmx10.writer import writer
 from pysdmx.io.pd import PandasDataset
 
 
-@pytest.fixture()
+@pytest.fixture
 def data_path():
     base_path = Path(__file__).parent / "samples" / "df.json"
     return str(base_path)
 
 
-@pytest.fixture()
+@pytest.fixture
 def data_path_reference():
     base_path = Path(__file__).parent / "samples" / "reference.csv"
     return str(base_path)
 
 
-@pytest.fixture()
+@pytest.fixture
 def data_path_reference_atch_atts():
     base_path = Path(__file__).parent / "samples" / "reference_attch_atts.csv"
     return str(base_path)

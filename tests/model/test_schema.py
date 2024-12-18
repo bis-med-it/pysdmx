@@ -9,40 +9,40 @@ from pysdmx.model import (
     Components,
     Concept,
     DataType,
-    decoders,
-    encoders,
     Facets,
     Role,
     Schema,
+    decoders,
+    encoders,
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def id():
     return "5B0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "BIS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def context():
     return "dataflow"
 
 
-@pytest.fixture()
+@pytest.fixture
 def artefacts():
     return ["urn1", "urn2"]
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.42"
 
 
-@pytest.fixture()
+@pytest.fixture
 def components():
     f1 = Component(
         "FREQ",

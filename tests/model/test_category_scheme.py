@@ -7,32 +7,32 @@ from pysdmx.model.__base import DataflowRef
 from pysdmx.model.category import Category, CategoryScheme
 
 
-@pytest.fixture()
+@pytest.fixture
 def id():
     return "id"
 
 
-@pytest.fixture()
+@pytest.fixture
 def name():
     return "name"
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "5B0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def desc():
     return "description"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.42.0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataflows():
     df1 = DataflowRef(id="DF1", agency="BIS")
     df2 = DataflowRef(id="DF2", agency="BIS")
@@ -41,7 +41,7 @@ def dataflows():
     return [df1, df2, df3, df4]
 
 
-@pytest.fixture()
+@pytest.fixture
 def categories(dataflows):
 
     grandchild = Category(

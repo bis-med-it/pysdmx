@@ -17,11 +17,10 @@ from pysdmx.model.organisation import (
     MetadataProviderScheme,
 )
 
-
 ENCODER = msgspec.msgpack.Encoder()
 
 
-@pytest.fixture()
+@pytest.fixture
 def contacts():
     return [
         Contact(
@@ -34,12 +33,12 @@ def contacts():
     ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataflows():
     return [DataflowRef("BIS", "CBS", "1.0"), DataflowRef("BIS", "LBS", "1.0")]
 
 
-@pytest.fixture()
+@pytest.fixture
 def annotations():
     return [
         Annotation(
@@ -52,7 +51,7 @@ def annotations():
     ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def agencies(contacts, dataflows, annotations):
     a1 = Agency(
         "BIS",
@@ -66,7 +65,7 @@ def agencies(contacts, dataflows, annotations):
     return AgencyScheme(agency="TEST", items=[a1, a2])
 
 
-@pytest.fixture()
+@pytest.fixture
 def data_providers(contacts, dataflows, annotations):
     dp1 = DataProvider(
         "5B0",
@@ -80,7 +79,7 @@ def data_providers(contacts, dataflows, annotations):
     return DataProviderScheme(agency="TEST", items=[dp1, dp2])
 
 
-@pytest.fixture()
+@pytest.fixture
 def data_consumers(contacts, dataflows, annotations):
     dp1 = DataConsumer(
         "5B0",
@@ -94,7 +93,7 @@ def data_consumers(contacts, dataflows, annotations):
     return DataConsumerScheme(agency="TEST", items=[dp1, dp2])
 
 
-@pytest.fixture()
+@pytest.fixture
 def metadata_providers(contacts, dataflows, annotations):
     dp1 = MetadataProvider(
         "5B0",

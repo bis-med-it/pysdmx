@@ -4,13 +4,13 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+import pysdmx.io.xml.sdmx21.writer.config
 from pysdmx.errors import Invalid
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
 from pysdmx.io.xml.sdmx21.writer import writer
-import pysdmx.io.xml.sdmx21.writer.config
 from pysdmx.model import (
     Code,
     Codelist,
@@ -23,7 +23,7 @@ from pysdmx.model import (
 from pysdmx.model.message import Header
 
 
-@pytest.fixture()
+@pytest.fixture
 def header():
     return Header(
         id="ID",
@@ -31,7 +31,7 @@ def header():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def content():
     ds = PandasDataset(
         data=pd.DataFrame(

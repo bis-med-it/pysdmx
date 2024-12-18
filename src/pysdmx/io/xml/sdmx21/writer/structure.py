@@ -47,12 +47,12 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import DFW
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
-    __to_lower_camel_case,
     ABBR_COM,
     ABBR_MSG,
     ABBR_STR,
-    add_indent,
     MSG_CONTENT_PKG,
+    __to_lower_camel_case,
+    add_indent,
 )
 from pysdmx.model import Codelist, Concept, DataType, Facets, Hierarchy
 from pysdmx.model.__base import (

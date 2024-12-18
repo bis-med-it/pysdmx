@@ -6,27 +6,27 @@ from pysdmx.api.qb.refmeta import RefMetaByMetadatasetQuery, RefMetaDetail
 from pysdmx.api.qb.util import ApiVersion
 
 
-@pytest.fixture()
+@pytest.fixture
 def provider():
     return "5B0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def providers():
     return ["5B0", "4F0"]
 
 
-@pytest.fixture()
+@pytest.fixture
 def res():
     return "REF_META"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.0.0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def detail():
     return RefMetaDetail.FULL
 

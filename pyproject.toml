@@ -5,7 +5,8 @@ description = "Your opinionated Python SDMX library"
 authors = [
     "Xavier Sosnovsky <xavier.sosnovsky@bis.org>",
     "Stratos Nikoloutsos <stratos.nikoloutsos@bis.org>",
-    "Francisco Javier Hernandez del Caño <javier.hernandez@meaningfuldata.eu>"
+    "Francisco Javier Hernandez del Caño <javier.hernandez@meaningfuldata.eu>",
+    "Mateo de Lorenzo Argelés <mateo.delorenzo@meaningfuldata.eu>"
 ]
 readme = "README.rst"
 documentation = "https://bis-med-it.github.io/pysdmx"

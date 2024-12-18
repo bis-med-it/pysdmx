@@ -4,21 +4,21 @@ from pysdmx.api.qb.schema import (
     SchemaContext,
     SchemaQuery,
 )
-from pysdmx.api.qb.util import ApiVersion, REST_ALL
+from pysdmx.api.qb.util import REST_ALL, ApiVersion
 from pysdmx.errors import Invalid
 
 
-@pytest.fixture()
+@pytest.fixture
 def context():
     return SchemaContext.DATAFLOW
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "BIS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def res():
     return "CBS"
 
