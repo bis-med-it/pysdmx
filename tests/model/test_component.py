@@ -254,12 +254,3 @@ def test_invalid_role_attachment_level(concept):
             role=Role.DIMENSION,
             attachment_level="X",
         )
-
-    with pytest.raises(Invalid):
-        Component(
-            "FREQ",
-            True,
-            concept=concept,
-            role=Role.MEASURE,
-            attribute_relationship={},
-        )

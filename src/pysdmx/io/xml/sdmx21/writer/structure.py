@@ -294,7 +294,7 @@ def __write_components(item: DataStructureDefinition, indent: str) -> str:
             outfile += f"{add_indent(indent)}<{ABBR_STR}:{role_name}List>"
             for comp in comps:
                 outfile += __write_component(
-                    comp, position, add_indent(add_indent(indent))
+                    comp, position, add_indent(add_indent(indent)), components
                 )
                 position += 1
             outfile += f"{add_indent(indent)}</{ABBR_STR}:{role_name}List>"
@@ -303,15 +303,32 @@ def __write_components(item: DataStructureDefinition, indent: str) -> str:
     return outfile
 
 
-def __write_attribute_relation(item: Component, indent: str) -> str:
+def __write_attribute_relation(
+    item: Component, indent: str, component_info: Dict[str, Any]
+) -> str:
 
     outfile = f"{indent}<{ABBR_STR}:{ATT_REL}>"
-    att_rel = item.attribute_relationship
-    if att_rel is None or len(att_rel) == 0:
+    att_rel = item.attachment_level
+    if att_rel is None or att_rel == "D":
         outfile += f"{add_indent(indent)}<{ABBR_STR}:None/>"
     else:
-        for comp_name, comp in att_rel.items():
-            related_role = ROLE_MAPPING[comp.role]
+        # Check if it is a list of Dimensions or it is related to the
+        # primary measure
+        if "," in att_rel:
+            comps_to_relate = att_rel.split(",")
+        elif att_rel == "O":
+            comps_to_relate = [component_info[PRIM_MEASURE][0].id]
+        else:
+            comps_to_relate = [att_rel]
+
+        dim_names = [comp.id for comp in component_info[DIM]]
+
+        for comp_name in comps_to_relate:
+            if comp_name in dim_names:
+                role = Role.DIMENSION
+            else:
+                role = Role.MEASURE
+            related_role = ROLE_MAPPING[role]
             outfile += f"{add_indent(indent)}<{ABBR_STR}:{related_role}>"
             outfile += (
                 f"{add_indent(add_indent(indent))}"
@@ -323,7 +340,9 @@ def __write_attribute_relation(item: Component, indent: str) -> str:
     return outfile
 
 
-def __write_component(item: Component, position: int, indent: str) -> str:
+def __write_component(
+    item: Component, position: int, indent: str, component_info: Dict[str, Any]
+) -> str:
     """Writes the component to the XML file."""
     role_name = ROLE_MAPPING[item.role]
     if role_name == DIM and item.id == "TIME_PERIOD":
@@ -336,7 +355,7 @@ def __write_component(item: Component, position: int, indent: str) -> str:
         status = MANDATORY if item.required else CONDITIONAL
         attributes += f"{AS_STATUS}={status!r} "
         attribute_relation = __write_attribute_relation(
-            item, add_indent(indent)
+            item, add_indent(indent), component_info
         )
 
     attributes += f"{ID}={item.id!r}"

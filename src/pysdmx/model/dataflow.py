@@ -10,7 +10,7 @@ as part of the response.
 from collections import Counter, UserList
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, Iterable, Optional, Sequence, Union
+from typing import Any, Iterable, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -118,7 +118,6 @@ class Component(Struct, frozen=True, omit_defaults=True):
     local_codes: Union[Codelist, Hierarchy, None] = None
     attachment_level: Optional[str] = None
     array_def: Optional[ArrayBoundaries] = None
-    attribute_relationship: Optional[Dict[str, "Component"]] = None
     urn: Optional[str] = None
 
     def __post_init__(self) -> None:
@@ -130,15 +129,6 @@ class Component(Struct, frozen=True, omit_defaults=True):
                     "The attachment_level field is "
                     "only allowed for attribute components"
                 ),
-            )
-        if (
-            self.role != Role.ATTRIBUTE
-            and self.attribute_relationship is not None
-        ):
-            raise Invalid(
-                "Validation Error",
-                "The attribute_relationship field is only "
-                "allowed for attribute components",
             )
 
     @property

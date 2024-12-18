@@ -1,7 +1,7 @@
 """Parsers for reading metadata."""
 
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from msgspec import Struct
 
@@ -11,7 +11,6 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     ATT_LIST,
     ATT_LVL,
     ATT_REL,
-    ATT_REL_LOW,
     CLASS,
     CODES_LOW,
     COMPS,
@@ -364,22 +363,19 @@ class StructureParser(Struct):
         rep[CON] = self.concepts[id]
         return rep
 
-    def __format_relationship(
-        self, json_rel: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        rels: Dict[str, Any] = {}
+    def __format_relationship(self, json_rel: Dict[str, Any]) -> Optional[str]:
+        att_level = None
 
         for scheme in [DIM, PRIM_MEASURE]:
-            comp_list = DIM_LIST if scheme == DIM else ME_LIST
             if scheme in json_rel:
-                rel_list = add_list(json_rel[scheme])
-                for element in rel_list:
-                    element_id = element[REF][ID]
-                    for comp in components[comp_list]:
-                        if comp.id == element_id:
-                            rels[element_id] = comp
+                if scheme == DIM:
+                    dims = add_list(json_rel[DIM])
+                    dims = [dim[REF][ID] for dim in dims]
+                    att_level = ",".join(dims)
+                elif scheme == PRIM_MEASURE:
+                    att_level = "O"
 
-        return rels
+        return att_level
 
     def __format_component(
         self, comp: Dict[str, Any], role: Role
@@ -395,11 +391,7 @@ class StructureParser(Struct):
 
         # Attribute Handling
         if ATT_REL in comp:
-            if PRIM_MEASURE in comp[ATT_REL]:
-                comp[ATT_LVL] = "O"
-            else:
-                comp[ATT_LVL] = "D"
-            comp[ATT_REL_LOW] = self.__format_relationship(comp[ATT_REL])
+            comp[ATT_LVL] = self.__format_relationship(comp[ATT_REL])
             del comp[ATT_REL]
 
         if AS_STATUS in comp:
