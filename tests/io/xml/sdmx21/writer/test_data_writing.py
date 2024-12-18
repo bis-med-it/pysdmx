@@ -223,7 +223,6 @@ def test_invalid_dimension(content):
 
 
 def test_invalid_dimension_key(content):
-
     dim_mapping = {"DataStructure=AAA:TEST(1.0)": "DIM1"}
     with pytest.raises(Invalid):
         writer(

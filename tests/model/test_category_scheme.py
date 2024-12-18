@@ -43,7 +43,6 @@ def dataflows():
 
 @pytest.fixture
 def categories(dataflows):
-
     grandchild = Category(
         id="child211",
         name="Child 2.1.1",
@@ -74,7 +73,6 @@ def test_defaults(id, name, agency):
 
 
 def test_full_initialization(id, name, agency, desc, version, categories):
-
     cs = CategoryScheme(
         id=id,
         name=name,
@@ -138,7 +136,6 @@ def test_get_category(id, name, agency, categories):
 
 
 def test_dataflows(id, name, agency, categories, dataflows):
-
     cs = CategoryScheme(id=id, name=name, agency=agency, items=categories)
 
     flows = cs.dataflows
@@ -149,7 +146,6 @@ def test_dataflows(id, name, agency, categories, dataflows):
 
 
 def test_serialization(id, name, agency, desc, version, categories):
-
     cs = CategoryScheme(
         id=id,
         name=name,

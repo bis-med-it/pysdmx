@@ -63,7 +63,6 @@ def test_defaults(id, name, agency):
 
 
 def test_full_initialization(id, name, agency, operator, desc, version, codes):
-
     cs = Hierarchy(
         id=id,
         name=name,
@@ -201,7 +200,6 @@ def test_all_codes(id, name, agency):
 
 
 def test_serialization(id, name, agency, operator, desc, version, codes):
-
     h = Hierarchy(
         id=id,
         name=name,

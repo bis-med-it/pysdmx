@@ -53,7 +53,6 @@ class DataFormat(Enum):
 
 
 class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
-
     def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
         """The URL for the query in the selected SDMX-REST API version."""
         self._validate_query(version)

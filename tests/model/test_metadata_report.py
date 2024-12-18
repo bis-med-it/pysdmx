@@ -67,7 +67,6 @@ def test_iterable(id, name, structure, targets, attributes):
 
 
 def test_sized(id, name, structure, targets, attributes):
-
     report = MetadataReport(id, name, structure, targets, attributes)
 
     assert isinstance(report, Sized)

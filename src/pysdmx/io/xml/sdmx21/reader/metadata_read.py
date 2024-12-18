@@ -302,7 +302,9 @@ class StructureParser(Struct):
         json_orgs = add_list(json_orgs)  # type: ignore[assignment]
         for e in json_orgs:
             ag_sch = self.__format_scheme(
-                e, AGENCIES, AGENCY  # type: ignore[arg-type]
+                e,
+                AGENCIES,
+                AGENCY,  # type: ignore[arg-type]
             )
             orgs = {**orgs, **ag_sch}
         return orgs

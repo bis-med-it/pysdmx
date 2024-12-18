@@ -88,7 +88,6 @@ def test_defaults(context, agency, id, components):
 def test_full_instantiation(
     context, agency, id, components, version, artefacts
 ):
-
     schema = Schema(context, agency, id, components, version, artefacts)
 
     assert schema.context == context

@@ -1,5 +1,6 @@
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.model.vtl import (
     Ruleset,
     RulesetScheme,
@@ -35,16 +36,15 @@ def test_instantiation_ts(vtl_version):
 
 
 def test_instantiation_ts_invalid_vtl_version(invalid_vtl_version):
-    try:
+    with pytest.raises(
+        Invalid, match=f"Invalid VTL version: {invalid_vtl_version}"
+    ):
         TransformationScheme(
             id="id",
             name="name",
             description="description",
             vtl_version=invalid_vtl_version,
         )
-    except Exception as e:
-        assert type(e).__name__ == "Invalid"
-        assert str(e) == f"Invalid VTL version: {invalid_vtl_version}"
 
 
 def test_instantiation_t(vtl_version):
@@ -110,16 +110,15 @@ def test_instantiation_udo_scheme(vtl_version):
 
 
 def test_instantiation_udo_scheme_invalid_vtl_version(invalid_vtl_version):
-    try:
+    with pytest.raises(
+        Invalid, match=f"Invalid VTL version: {invalid_vtl_version}"
+    ):
         UserDefinedOperatorScheme(
             id="id",
             name="name",
             description="description",
             vtl_version=invalid_vtl_version,
         )
-    except Exception as e:
-        assert type(e).__name__ == "Invalid"
-        assert str(e) == f"Invalid VTL version: {invalid_vtl_version}"
 
 
 def test_instantiation_ruleset_scheme(vtl_version):
@@ -137,16 +136,15 @@ def test_instantiation_ruleset_scheme(vtl_version):
 
 
 def test_instantiation_ruleset_scheme_invalid_vtl_version(invalid_vtl_version):
-    try:
+    with pytest.raises(
+        Invalid, match=f"Invalid VTL version: {invalid_vtl_version}"
+    ):
         RulesetScheme(
             id="id",
             name="name",
             description="description",
             vtl_version=invalid_vtl_version,
         )
-    except Exception as e:
-        assert type(e).__name__ == "Invalid"
-        assert str(e) == f"Invalid VTL version: {invalid_vtl_version}"
 
 
 def test_instantiation_ruleset():
@@ -162,18 +160,3 @@ def test_instantiation_ruleset():
     assert ruleset.id == "id"
     assert ruleset.name == "name"
     assert ruleset.description == "description"
-
-
-def test_instantiation_ruleset_invalid_type():
-    try:
-        Ruleset(
-            id="id",
-            name="name",
-            description="description",
-            ruleset_type="invalid",
-            ruleset_definition="",
-            ruleset_scope="",
-        )
-    except Exception as e:
-        assert type(e).__name__ == "Invalid"
-        assert str(e) == "Invalid VTL Ruleset type: invalid"

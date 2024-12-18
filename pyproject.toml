@@ -67,7 +67,7 @@ lint.select = [
     "B","B9","C","C4","D","E","F","I","PT","S","SIM","W"
 ]
 lint.ignore = [
-    "E203","D411","F901","S410","S320"
+    "E203","D411","F901","S320"
 ]
 lint.mccabe.max-complexity = 10
 lint.pydocstyle.convention = "google"
