@@ -6,7 +6,12 @@ known as a subject matter domain scheme or a data category scheme.
 
 from typing import Iterator, Optional, Sequence, Union
 
-from pysdmx.model.__base import DataflowRef, Item, ItemScheme
+from pysdmx.model.__base import (
+    DataflowRef,
+    Item,
+    ItemScheme,
+    MaintainableArtefact,
+)
 from pysdmx.model.dataflow import Dataflow
 
 
@@ -129,3 +134,10 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
         for sub in c.categories:
             flows.extend(self.__extract_flows(sub))
         return flows
+
+
+class Categorisation(MaintainableArtefact, frozen=True, omit_defaults=True):
+    """Link between a category and an artefact attached to it."""
+
+    source: str
+    target: str
