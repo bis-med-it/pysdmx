@@ -7,15 +7,40 @@ from msgspec import Struct
 
 from pysdmx.io.json.fusion.messages.core import FusionString
 from pysdmx.io.json.fusion.messages.dataflow import FusionDataflow
-from pysdmx.model import Category, CategoryScheme as CS, Dataflow as DF
+from pysdmx.model import (
+    Agency,
+    Categorisation as CT,
+    Category,
+    CategoryScheme as CS,
+    Dataflow as DF,
+    DataflowRef,
+)
 from pysdmx.util import find_by_urn
 
 
-class FusionCategorisation(Struct, frozen=True):
+class FusionCategorisation(Struct, frozen=True, rename={"agency": "agencyId"}):
     """Fusion-JSON payload for a categorisation."""
 
+    id: str
+    names: Sequence[FusionString]
+    agency: str
     categoryReference: str
     structureReference: str
+    descriptions: Optional[Sequence[FusionString]] = None
+    version: str = "1.0"
+
+    def to_model(self) -> CT:
+        """Converts a JsonCategorisation to a standard categorisation."""
+        description = self.descriptions[0].value if self.descriptions else None
+        return CT(
+            id=self.id,
+            name=self.names[0].value,
+            agency=self.agency,
+            description=description,
+            version=self.version,
+            source=self.structureReference,
+            target=self.categoryReference,
+        )
 
 
 class FusionCategory(Struct, frozen=True):
@@ -82,12 +107,35 @@ class FusionCategorySchemeMessage(Struct, frozen=True):
             for c in cat.categories:
                 self.__add_flows(c, f"{cni}.{c.id}", cf)
         if cni in cf:
-            cat.dataflows = cf[cni]
+            dfrefs = [
+                DataflowRef(
+                    (
+                        df.agency.id
+                        if isinstance(df.agency, Agency)
+                        else df.agency
+                    ),
+                    df.id,
+                    df.version,
+                    df.name,
+                )
+                for df in cf[cni]
+            ]
+            cat.dataflows = dfrefs
 
     def to_model(self) -> CS:
-        """Returns the requested codelist."""
+        """Returns the requested category scheme."""
         cf = self.__group_flows()
         cs = self.CategoryScheme[0].to_model()
         for c in cs:
             self.__add_flows(c, c.id, cf)
         return cs
+
+
+class FusionCategorisationMessage(Struct, frozen=True):
+    """Fusion-JSON payload for /categorisation queries."""
+
+    Categorisation: Sequence[FusionCategorisation]
+
+    def to_model(self) -> Sequence[CT]:
+        """Returns the requested categorisations."""
+        return [c.to_model() for c in self.Categorisation]

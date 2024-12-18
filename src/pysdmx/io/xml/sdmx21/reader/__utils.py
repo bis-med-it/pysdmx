@@ -7,6 +7,10 @@ ID = "id"
 AGENCY_ID = "agencyID"
 XMLNS = "xmlns"
 VERSION = "version"
+VALID_FROM = "validFrom"
+VALID_FROM_LOW = "valid_from"
+VALID_TO = "validTo"
+VALID_TO_LOW = "valid_to"
 
 # Structure Specific
 VALUE = "Value"
@@ -18,6 +22,7 @@ REF = "Ref"
 # Common
 NAME = "Name"
 DESC = "Description"
+STR = "Structure"
 STR_URL = "structureURL"
 STR_URL_LOW = "structure_url"
 SER_URL = "serviceURL"
@@ -59,9 +64,10 @@ TITLE = "title"
 TEXT = "text"
 TYPE = "type"
 URL = "url"
+URN = "urn"
 
 # Facets
-FACETS = "facets"
+FACETS = "Facets"
 TEXT_TYPE = "textType"
 TEXT_TYPE_LOW = "text_type"
 
@@ -95,6 +101,13 @@ CLS = "Codelists"
 CONCEPTS = "ConceptSchemes"
 CS = "ConceptScheme"
 CODE = "Code"
+DFW = "Dataflow"
+DFWS = "Dataflows"
+DSD = "DataStructure"
+DSDS = "DataStructures"
+TRANSFORMATIONS = "Transformations"
+TRANS_SCHEME = "TransformationScheme"
+TRANSFORMATION = "Transformation"
 
 FacetType = {
     "minLength": "min_length",

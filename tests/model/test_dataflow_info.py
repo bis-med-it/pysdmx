@@ -1,13 +1,20 @@
 from datetime import datetime, timezone
 
+import msgspec
 import pytest
 
 from pysdmx.model import (
+    Agency,
+    ArrayBoundaries,
     Component,
     Components,
+    Concept,
     DataflowInfo,
+    DataProvider,
     DataType,
-    Organisation,
+    decoders,
+    encoders,
+    Facets,
     Role,
 )
 
@@ -19,16 +26,31 @@ def id():
 
 @pytest.fixture()
 def comps():
-    f1 = Component("FREQ", True, Role.DIMENSION, DataType.STRING)
-    f2 = Component("INDICATOR", True, Role.DIMENSION, DataType.STRING)
-    f3 = Component("PERIOD", True, Role.DIMENSION, DataType.PERIOD)
-    f4 = Component("VALUE", False, Role.MEASURE, DataType.INTEGER)
+    f1 = Component(
+        "FREQ",
+        True,
+        Role.DIMENSION,
+        Concept("FREQ", dtype=DataType.STRING),
+        DataType.ALPHA,
+        Facets(min_length=1, max_length=3),
+    )
+    f2 = Component(
+        "INDICATOR", True, Role.DIMENSION, Concept("IND"), DataType.STRING
+    )
+    f3 = Component(
+        "PERIOD", True, Role.DIMENSION, Concept("PERIOD"), DataType.PERIOD
+    )
+    f4 = Component(
+        "VALUE", False, Role.MEASURE, Concept("VALUE"), DataType.INTEGER
+    )
     f5 = Component(
         "CONF",
         True,
         Role.ATTRIBUTE,
+        Concept("CONF"),
         DataType.STRING,
         attachment_level="O",
+        array_def=ArrayBoundaries(1, 3),
     )
     return Components([f1, f2, f3, f4, f5])
 
@@ -45,7 +67,7 @@ def desc():
 
 @pytest.fixture()
 def agency():
-    return Organisation("BIS")
+    return Agency("BIS")
 
 
 @pytest.fixture()
@@ -55,7 +77,7 @@ def version():
 
 @pytest.fixture()
 def providers():
-    return [Organisation("5B0"), Organisation("4F0")]
+    return [DataProvider("5B0"), DataProvider("4F0")]
 
 
 @pytest.fixture()
@@ -219,3 +241,39 @@ def test_tostr_more(
         f"name={name}, version=1.0, providers={providers}, obs_count={obs}, "
         f"start_period={start}, end_period={end}, last_updated={upd}"
     )
+
+
+def test_serialization(
+    id,
+    comps,
+    name,
+    desc,
+    agency,
+    version,
+    providers,
+    series,
+    obs,
+    start,
+    end,
+    upd,
+    dsd,
+):
+    ds = DataflowInfo(
+        id,
+        comps,
+        agency,
+        name,
+        desc,
+        version,
+        providers,
+        series,
+        obs,
+        start,
+        end,
+        upd,
+        dsd,
+    )
+
+    ser = msgspec.msgpack.Encoder(enc_hook=encoders).encode(ds)
+    out = msgspec.msgpack.Decoder(DataflowInfo, dec_hook=decoders).decode(ser)
+    assert out == ds

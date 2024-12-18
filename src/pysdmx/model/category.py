@@ -6,7 +6,12 @@ known as a subject matter domain scheme or a data category scheme.
 
 from typing import Iterator, Optional, Sequence, Union
 
-from pysdmx.model.__base import DataflowRef, Item, ItemScheme
+from pysdmx.model.__base import (
+    DataflowRef,
+    Item,
+    ItemScheme,
+    MaintainableArtefact,
+)
 from pysdmx.model.dataflow import Dataflow
 
 
@@ -32,7 +37,7 @@ class Category(Item, frozen=False, omit_defaults=True):  # type: ignore[misc]
     """
 
     categories: Sequence["Category"] = ()
-    dataflows: Union[Sequence[DataflowRef], Sequence[Dataflow]] = ()
+    dataflows: Sequence[DataflowRef] = ()
 
     def __iter__(self) -> Iterator["Category"]:
         """Return an iterator over the list of categories."""
@@ -66,10 +71,12 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
         version: The scheme version (e.g. 1.0)
     """
 
+    items: Sequence[Category] = ()
+
     @property
     def categories(self) -> Sequence[Category]:
         """The list of top level categories in the scheme."""
-        return self.items  # type: ignore[return-value]
+        return self.items
 
     @property
     def dataflows(self) -> Union[Sequence[DataflowRef], Sequence[Dataflow]]:
@@ -127,3 +134,12 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
         for sub in c.categories:
             flows.extend(self.__extract_flows(sub))
         return flows
+
+
+class Categorisation(
+    MaintainableArtefact, frozen=True, omit_defaults=True, kw_only=True
+):
+    """Link between a category and an artefact attached to it."""
+
+    source: str
+    target: str

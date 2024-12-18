@@ -1,5 +1,6 @@
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.model import (
     ArrayBoundaries,
     Code,
@@ -82,6 +83,8 @@ def test_full_initialization(
     name = "Signal quality"
     desc = "The quality of the GPS signal"
     lvl = "O"
+    role = Role.ATTRIBUTE
+    urn = "urn..."
 
     f = Component(
         fid,
@@ -95,6 +98,7 @@ def test_full_initialization(
         codes,
         lvl,
         array_def,
+        urn,
     )
 
     assert f.id == fid
@@ -108,6 +112,7 @@ def test_full_initialization(
     assert f.enumeration == codes
     assert f.attachment_level == lvl
     assert f.array_def == array_def
+    assert f.urn == urn
 
 
 def test_immutable(fid, req, role, concept, typ):
@@ -236,3 +241,14 @@ def test_codes_property_none():
     assert component.concept.codes is None
     assert component.local_codes is None
     assert component.enumeration is None
+
+
+def test_invalid_role_attachment_level(concept):
+    with pytest.raises(Invalid):
+        Component(
+            "FREQ",
+            True,
+            concept=concept,
+            role=Role.DIMENSION,
+            attachment_level="X",
+        )

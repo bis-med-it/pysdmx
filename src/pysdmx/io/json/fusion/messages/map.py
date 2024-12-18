@@ -1,7 +1,6 @@
 """Collection of Fusion-JSON schemas for structure map queries."""
 
 from datetime import datetime as dt, timezone as tz
-import re
 from typing import Any, Dict, Optional, Sequence, Union
 
 from msgspec import Struct
@@ -29,10 +28,10 @@ class FusionSourceValue(Struct, frozen=True):
     value: str
     regEx: bool = False
 
-    def to_model(self) -> Union[str, re.Pattern[str]]:
+    def to_model(self) -> str:
         """Returns the requested source value."""
         if self.regEx:
-            return re.compile(self.value)
+            return f"regex:{self.value}"
         else:
             return self.value
 
@@ -54,17 +53,21 @@ class FusionRepresentationMapping(Struct, frozen=True):
         """Returns the requested value maps."""
         if is_multi:
             return MultiValueMap(
-                [src.to_model() for src in self.source],
-                self.target,
-                self.__get_dt(self.validFrom) if self.validFrom else None,
-                self.__get_dt(self.validTo) if self.validTo else None,
+                source=[src.to_model() for src in self.source],
+                target=self.target,
+                valid_from=(
+                    self.__get_dt(self.validFrom) if self.validFrom else None
+                ),
+                valid_to=self.__get_dt(self.validTo) if self.validTo else None,
             )
         else:
             return ValueMap(
-                self.source[0].to_model(),
-                self.target[0],
-                self.__get_dt(self.validFrom) if self.validFrom else None,
-                self.__get_dt(self.validTo) if self.validTo else None,
+                source=self.source[0].to_model(),
+                target=self.target[0],
+                valid_from=(
+                    self.__get_dt(self.validFrom) if self.validFrom else None
+                ),
+                valid_to=self.__get_dt(self.validTo) if self.validTo else None,
             )
 
 

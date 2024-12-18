@@ -1,10 +1,42 @@
 """Parsers for reading metadata."""
 
-from typing import Any, Dict
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from msgspec import Struct
 
-from pysdmx.io.xml.sdmx21.__parsing_config import CORE_REP, URN
+from pysdmx.io.xml.sdmx21.__parsing_config import (
+    AS_STATUS,
+    ATT,
+    ATT_LIST,
+    ATT_LVL,
+    ATT_REL,
+    CLASS,
+    CODES_LOW,
+    COMPS,
+    CON_ID,
+    CON_LOW,
+    CORE_REP,
+    DIM,
+    DIM_LIST,
+    DSD_COMPS,
+    DTYPE,
+    ENUM,
+    ENUM_FORMAT,
+    GROUP,
+    GROUP_DIM,
+    LOCAL_CODES_LOW,
+    LOCAL_DTYPE,
+    LOCAL_FACETS_LOW,
+    LOCAL_REP,
+    MANDATORY,
+    ME_LIST,
+    PRIM_MEASURE,
+    REF,
+    REQUIRED,
+    TEXT_FORMAT,
+    TIME_DIM,
+)
 from pysdmx.io.xml.sdmx21.reader.__utils import (
     AGENCIES,
     AGENCY,
@@ -23,6 +55,10 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     CS,
     DEPARTMENT,
     DESC,
+    DFW,
+    DFWS,
+    DSD,
+    DSDS,
     EMAIL,
     EMAILS,
     FACETS,
@@ -40,6 +76,7 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     ROLE,
     SER_URL,
     SER_URL_LOW,
+    STR,
     STR_URL,
     STR_URL_LOW,
     TELEPHONE,
@@ -47,11 +84,19 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     TEXT,
     TEXT_TYPE,
     TITLE,
+    TRANS_SCHEME,
+    TRANSFORMATION,
+    TRANSFORMATIONS,
     TYPE,
     unique_id,
     URI,
     URIS,
     URL,
+    URN,
+    VALID_FROM,
+    VALID_FROM_LOW,
+    VALID_TO,
+    VALID_TO_LOW,
     VERSION,
 )
 from pysdmx.io.xml.utils import add_list
@@ -64,11 +109,41 @@ from pysdmx.model import (
     Facets,
 )
 from pysdmx.model.__base import Agency, Annotation, Contact, Item, ItemScheme
+from pysdmx.model.dataflow import (
+    Component,
+    Components,
+    Dataflow,
+    DataStructureDefinition,
+    Role,
+)
 from pysdmx.model.message import CONCEPTS, ORGS
-from pysdmx.util import find_by_urn
+from pysdmx.model.vtl import Transformation, TransformationScheme
+from pysdmx.util import find_by_urn, parse_urn
 
-SCHEMES_CLASSES = {CL: Codelist, AGENCIES: ItemScheme, CS: ConceptScheme}
-ITEMS_CLASSES = {AGENCY: Agency, CODE: Code, CON: Concept}
+STRUCTURES_MAPPING = {
+    CL: Codelist,
+    AGENCIES: ItemScheme,
+    CS: ConceptScheme,
+    DFWS: Dataflow,
+    DSDS: DataStructureDefinition,
+    TRANS_SCHEME: TransformationScheme,
+}
+ITEMS_CLASSES = {
+    AGENCY: Agency,
+    CODE: Code,
+    CON: Concept,
+    TRANSFORMATION: Transformation,
+}
+
+COMP_TYPES = [DIM, ATT, PRIM_MEASURE, GROUP_DIM]
+
+ROLE_MAPPING = {
+    DIM: Role.DIMENSION,
+    ATT: Role.ATTRIBUTE,
+    PRIM_MEASURE: Role.MEASURE,
+}
+
+components: Dict[str, Any] = {}
 
 
 class StructureParser(Struct):
@@ -177,6 +252,8 @@ class StructureParser(Struct):
             json_fac: The element with the facets to be formatted
             json_obj: The element to store the formatted facets
         """
+        if json_fac is None:
+            return
         for key, _value in json_fac.items():
             if key == TEXT_TYPE and json_fac[TEXT_TYPE] in list(DataType):
                 json_obj["dtype"] = DataType(json_fac[TEXT_TYPE])
@@ -187,7 +264,7 @@ class StructureParser(Struct):
                     for k, v in json_fac.items()
                     if k in FacetType
                 }
-                json_obj[FACETS] = Facets(**facet_kwargs)
+                json_obj[FACETS.lower()] = Facets(**facet_kwargs)
 
     @staticmethod
     def __format_urls(json_elem: Dict[str, Any]) -> Dict[str, Any]:
@@ -230,23 +307,160 @@ class StructureParser(Struct):
             orgs = {**orgs, **ag_sch}
         return orgs
 
+    def __format_validity(self, element: Dict[str, Any]) -> Dict[str, Any]:
+        if VALID_FROM in element:
+            element[VALID_FROM_LOW] = datetime.fromisoformat(
+                element.pop(VALID_FROM)
+            )
+        if VALID_TO in element:
+            element[VALID_TO_LOW] = datetime.fromisoformat(
+                element.pop(VALID_TO)
+            )
+        return element
+
     def __format_representation(
         self, json_rep: Dict[str, Any], json_obj: Dict[str, Any]
     ) -> None:
         """Formats the representation in the json_rep."""
-        if "TextFormat" in json_rep:
-            self.__format_facets(json_rep["TextFormat"], json_obj)
+        if TEXT_FORMAT in json_rep:
+            self.__format_facets(json_rep[TEXT_FORMAT], json_obj)
 
-        if (
-            "Enumeration" in json_rep
-            and URN in json_rep["Enumeration"]
-            and len(self.codelists) > 0
-        ):
-            codelist = find_by_urn(
-                list(self.codelists.values()),
-                json_rep["Enumeration"][URN],
-            )
-            json_obj["codes"] = codelist.codes
+        if ENUM in json_rep and len(self.codelists) > 0:
+            ref = json_rep[ENUM].get(REF, json_rep[ENUM])
+
+            if "URN" in ref:
+                codelist = find_by_urn(
+                    list(self.codelists.values()), ref["URN"]
+                ).codes
+
+            else:
+                id = unique_id(ref[AGENCY_ID], ref[ID], ref[VERSION])
+                codelist = self.codelists[id]
+
+            json_obj[CODES_LOW] = codelist
+        if ENUM_FORMAT in json_rep:
+            self.__format_facets(json_rep[ENUM_FORMAT], json_obj)
+
+    def __format_local_rep(self, representation_info: Dict[str, Any]) -> None:
+        rep: Dict[str, Any] = {}
+
+        self.__format_representation(representation_info[LOCAL_REP], rep)
+        del representation_info[LOCAL_REP]
+
+        if CODES_LOW in rep:
+            representation_info[LOCAL_CODES_LOW] = rep.pop(CODES_LOW)
+
+        if DTYPE in rep:
+            representation_info[LOCAL_DTYPE] = rep.pop(DTYPE)
+
+        if FACETS.lower() in rep:
+            representation_info[LOCAL_FACETS_LOW] = rep.pop(FACETS.lower())
+
+    def __format_con_id(self, concept_ref: Dict[str, Any]) -> Dict[str, Any]:
+        rep = {}
+        id = concept_ref[ID]
+
+        rep[CON] = self.concepts[id]
+        return rep
+
+    def __format_relationship(self, json_rel: Dict[str, Any]) -> Optional[str]:
+        att_level = None
+
+        for scheme in [DIM, PRIM_MEASURE]:
+            if scheme in json_rel:
+                if scheme == DIM:
+                    dims = add_list(json_rel[DIM])
+                    dims = [dim[REF][ID] for dim in dims]
+                    att_level = ",".join(dims)
+                else:
+                    att_level = "O"
+
+        return att_level
+
+    def __format_component(
+        self, comp: Dict[str, Any], role: Role
+    ) -> Component:
+        comp[ROLE.lower()] = role
+        comp[REQUIRED] = True
+
+        self.__format_local_rep(comp) if LOCAL_REP in comp else None
+
+        rep = self.__format_con_id(comp[CON_ID][REF])
+        comp[CON_LOW] = rep.pop(CON)
+        del comp[CON_ID]
+
+        # Attribute Handling
+        if ATT_REL in comp:
+            comp[ATT_LVL] = self.__format_relationship(comp[ATT_REL])
+            del comp[ATT_REL]
+
+        if AS_STATUS in comp:
+            if comp[AS_STATUS] != MANDATORY:
+                comp[REQUIRED] = False
+            del comp[AS_STATUS]
+
+        if "position" in comp:
+            del comp["position"]
+
+        if ANNOTATIONS in comp:
+            del comp[ANNOTATIONS]
+
+        if URN in comp:
+            comp[URN.lower()] = comp.pop(URN)
+
+        return Component(**comp)
+
+    def __format_component_lists(
+        self, element: Dict[str, Any]
+    ) -> List[Component]:
+        comp_list = []
+
+        if TIME_DIM in element:
+            element[DIM] = add_list(element[DIM])
+            element[DIM].append(element[TIME_DIM])
+            del element[TIME_DIM]
+
+        role_name = list(set(element.keys()).intersection(COMP_TYPES))[0]
+        role = ROLE_MAPPING[role_name]
+        element[role_name] = add_list(element[role_name])
+
+        for comp in element[role_name]:
+            formatted_comp = self.__format_component(comp, role)
+            comp_list.append(formatted_comp)
+
+        return comp_list
+
+    def __format_components(self, element: Dict[str, Any]) -> Dict[str, Any]:
+        if DSD_COMPS in element:
+            element[COMPS] = []
+            comps = element[DSD_COMPS]
+            components.clear()
+
+            for comp_list in [DIM_LIST, ME_LIST, GROUP, ATT_LIST]:
+                if comp_list == GROUP and comp_list in comps:
+                    del comps[GROUP]
+
+                elif comp_list in comps:
+                    name = comp_list
+                    fmt_comps = self.__format_component_lists(comps[comp_list])
+                    components[name] = fmt_comps
+                    element[COMPS].extend(fmt_comps)
+
+            element[COMPS] = Components(element[COMPS])
+            del element[DSD_COMPS]
+
+        return element
+
+    def __format_vtl(self, json_vtl: Dict[str, Any]) -> Dict[str, Any]:
+        if "isPersistent" in json_vtl:
+            json_vtl["is_persistent"] = json_vtl.pop("isPersistent")
+        if "Expression" in json_vtl:
+            json_vtl["expression"] = json_vtl.pop("Expression")
+        if "Result" in json_vtl:
+            json_vtl["result"] = json_vtl.pop("Result")
+        if "vtlVersion" in json_vtl:
+            json_vtl["vtl_version"] = json_vtl.pop("vtlVersion")
+        return json_vtl
 
     def __format_item(
         self, item_json_info: Dict[str, Any], item_name_class: str
@@ -270,6 +484,8 @@ class StructureParser(Struct):
         if "Parent" in item_json_info:
             del item_json_info["Parent"]
 
+        item_json_info = self.__format_vtl(item_json_info)
+
         return ITEMS_CLASSES[item_name_class](**item_json_info)
 
     def __format_scheme(
@@ -288,11 +504,13 @@ class StructureParser(Struct):
             )
             element = self.__format_urls(element)
             if IS_EXTERNAL_REF in element:
-                element[IS_EXTERNAL_REF_LOW] = element.pop(IS_EXTERNAL_REF)
+                element[IS_EXTERNAL_REF_LOW] = (
+                    element.pop(IS_EXTERNAL_REF) == "true"
+                )
             if IS_FINAL in element:
-                element[IS_FINAL_LOW] = element.pop(IS_FINAL)
+                element[IS_FINAL_LOW] = element.pop(IS_FINAL) == "true"
             if IS_PARTIAL in element:
-                element[IS_PARTIAL_LOW] = element.pop(IS_PARTIAL)
+                element[IS_PARTIAL_LOW] = element.pop(IS_PARTIAL) == "true"
             element[item] = add_list(element[item])
             items = []
             for item_elem in element[item]:
@@ -305,10 +523,78 @@ class StructureParser(Struct):
             if scheme == CS:
                 self.concepts.update({e.id: e for e in items})
             element = self.__format_agency(element)
+            element = self.__format_validity(element)
+            element = self.__format_vtl(element)
             # Dynamic creation with specific class
-            elements[full_id] = SCHEMES_CLASSES[scheme](**element)
+            elements[full_id] = STRUCTURES_MAPPING[scheme](**element)
 
         return elements
+
+    def __format_schema(
+        self, json_element: Dict[str, Any], schema: str, item: str
+    ) -> Dict[str, Any]:
+        """Formats the structures in json format.
+
+        Args:
+            json_element: The structures in json format
+            schema: The scheme of the structures
+            item: The item of the structures
+
+        Returns:
+            A dictionary with the structures formatted
+        """
+        datastructures = {}
+
+        json_element[item] = add_list(json_element[item])
+        for element in json_element[item]:
+            if URN.lower() in element and element[URN.lower()] is not None:
+                full_id = parse_urn(element[URN.lower()]).__str__()
+            else:
+                full_id = unique_id(
+                    element[AGENCY_ID], element[ID], element[VERSION]
+                )
+                full_id = f"{item}={full_id}"
+
+            element = self.__format_annotations(element)
+            element = self.__format_name_description(element)
+            element = self.__format_urls(element)
+            element = self.__format_agency(element)
+            element = self.__format_validity(element)
+            element = self.__format_components(element)
+
+            if IS_EXTERNAL_REF in element:
+                element[IS_EXTERNAL_REF_LOW] = element.pop(IS_EXTERNAL_REF)
+                element[IS_EXTERNAL_REF_LOW] = (
+                    str(element[IS_EXTERNAL_REF_LOW]).lower() == "true"
+                )
+            if IS_FINAL in element:
+                element[IS_FINAL_LOW] = element.pop(IS_FINAL)
+                element[IS_FINAL_LOW] = (
+                    str(element[IS_FINAL_LOW]).lower() == "true"
+                )
+
+            if item == DFW:
+                ref_data = element[STR][REF]
+                reference_str = (
+                    f"{ref_data[CLASS]}={ref_data[AGENCY_ID]}"
+                    f":{ref_data[ID]}({ref_data[VERSION]})"
+                )
+                element[STR] = self.datastructures.get(
+                    reference_str, reference_str
+                )
+
+            structure = {key.lower(): value for key, value in element.items()}
+            if schema == DSDS:
+                if COMPS in structure:
+                    structure[COMPS] = Components(structure[COMPS])
+                else:
+                    structure[COMPS] = Components([])
+                self.datastructures[full_id] = STRUCTURES_MAPPING[schema](
+                    **structure
+                )
+            datastructures[full_id] = STRUCTURES_MAPPING[schema](**structure)
+
+        return datastructures
 
     def format_structures(self, json_meta: Dict[str, Any]) -> Dict[str, Any]:
         """Formats the structures in json format.
@@ -330,6 +616,15 @@ class StructureParser(Struct):
         if CONCEPTS in json_meta:
             structures[CONCEPTS] = self.__format_scheme(
                 json_meta[CONCEPTS], CS, CON
+            )
+        if DSDS in json_meta:
+            structures[DSDS] = self.__format_schema(json_meta[DSDS], DSDS, DSD)
+        if DFWS in json_meta:
+            structures[DFWS] = self.__format_schema(json_meta[DFWS], DFWS, DFW)
+
+        if TRANSFORMATIONS in json_meta:
+            structures[TRANSFORMATIONS] = self.__format_scheme(
+                json_meta[TRANSFORMATIONS], TRANS_SCHEME, TRANSFORMATION
             )
         # Reset global variables
         return structures

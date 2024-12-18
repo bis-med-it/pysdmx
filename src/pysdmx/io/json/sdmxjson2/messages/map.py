@@ -1,7 +1,6 @@
 """Collection of SDMX-JSON schemas for structure map queries."""
 
 from datetime import datetime as dt, timezone as tz
-import re
 from typing import Any, Dict, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
@@ -29,10 +28,10 @@ class JsonSourceValue(Struct, frozen=True):
     value: str
     isRegEx: bool = False
 
-    def to_model(self) -> Union[str, re.Pattern[str]]:
+    def to_model(self) -> str:
         """Returns the requested source value."""
         if self.isRegEx:
-            return re.compile(self.value)
+            return f"regex:{self.value}"
         else:
             return self.value
 
@@ -52,17 +51,21 @@ class JsonRepresentationMapping(Struct, frozen=True):
         """Returns the requested value maps."""
         if is_multi:
             return MultiValueMap(
-                [src.to_model() for src in self.sourceValues],
-                self.targetValues,
-                self.__get_dt(self.validFrom) if self.validFrom else None,
-                self.__get_dt(self.validTo) if self.validTo else None,
+                source=[src.to_model() for src in self.sourceValues],
+                target=self.targetValues,
+                valid_from=(
+                    self.__get_dt(self.validFrom) if self.validFrom else None
+                ),
+                valid_to=self.__get_dt(self.validTo) if self.validTo else None,
             )
         else:
             return ValueMap(
-                self.sourceValues[0].to_model(),
-                self.targetValues[0],
-                self.__get_dt(self.validFrom) if self.validFrom else None,
-                self.__get_dt(self.validTo) if self.validTo else None,
+                source=self.sourceValues[0].to_model(),
+                target=self.targetValues[0],
+                valid_from=(
+                    self.__get_dt(self.validFrom) if self.validFrom else None
+                ),
+                valid_to=self.__get_dt(self.validTo) if self.validTo else None,
             )
 
 
