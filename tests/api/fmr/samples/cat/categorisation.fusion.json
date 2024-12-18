@@ -1,0 +1,19 @@
+{
+    "Categorisation": [
+        {
+            "id": "06E00965-AB55-F0C3-5CA3-9D454F3BE88F",
+            "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Categorisation=TEST:06E00965-AB55-F0C3-5CA3-9D454F3BE88F(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Category 'TEST:TEST_CS(1.0).TWO.TWO_KID' linking to Dataflow 'TEST:TEST_FACETS_FLOW(1.0)'"
+                }
+            ],
+            "agencyId": "TEST",
+            "version": "1.0",
+            "isFinal": false,
+            "structureReference": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_FACETS_FLOW(1.0)",
+            "categoryReference": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).TWO.TWO_KID"
+        }
+    ]
+}
