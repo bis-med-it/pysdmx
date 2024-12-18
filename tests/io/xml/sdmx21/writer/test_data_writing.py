@@ -67,7 +67,7 @@ def content():
                         role=Role.ATTRIBUTE,
                         concept=Concept(id="ATT1"),
                         required=True,
-                        attachment_level="D",
+                        attachment_level="DIM1",
                     ),
                     Component(
                         id="ATT2",
@@ -75,6 +75,18 @@ def content():
                         concept=Concept(id="ATT2"),
                         required=False,
                         attachment_level="O",
+                    ),
+                    Component(
+                        id="ds_att1",
+                        role=Role.ATTRIBUTE,
+                        concept=Concept(id="ds_att1"),
+                        required=True,
+                    ),
+                    Component(
+                        id="ds_att2",
+                        role=Role.ATTRIBUTE,
+                        concept=Concept(id="ds_att2"),
+                        required=False,
                     ),
                     Component(
                         id="M1",

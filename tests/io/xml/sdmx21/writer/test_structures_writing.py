@@ -4,10 +4,19 @@ from pathlib import Path
 import pytest
 
 from pysdmx.errors import NotImplemented
+from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.enums import MessageType
+from pysdmx.io.xml.sdmx21.reader import read_xml
 from pysdmx.io.xml.sdmx21.writer import Header, writer
-from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme
+from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme, Facets
 from pysdmx.model.__base import Annotation
+from pysdmx.model.dataflow import (
+    Component,
+    Components,
+    Dataflow,
+    DataStructureDefinition,
+    Role,
+)
 
 TEST_CS_URN = (
     "urn:sdmx:org.sdmx.infomodel.conceptscheme."
@@ -37,6 +46,27 @@ def empty_sample():
 
 
 @pytest.fixture()
+def read_write_sample():
+    base_path = Path(__file__).parent / "samples" / "read_write_sample.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture()
+def bis_sample():
+    base_path = Path(__file__).parent / "samples" / "bis_der.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture()
+def groups_sample():
+    base_path = Path(__file__).parent / "samples" / "del_groups.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture()
 def header():
     return Header(
         id="ID",
@@ -55,8 +85,29 @@ def complete_header():
     )
 
 
-def test_codelist(codelist_sample, complete_header):
-    codelist = Codelist(
+@pytest.fixture()
+def read_write_header():
+    return Header(
+        id="DF1605144905",
+        prepared=datetime.strptime("2021-03-05T14:11:16", "%Y-%m-%dT%H:%M:%S"),
+        sender="Unknown",
+        receiver="Not_Supplied",
+    )
+
+
+@pytest.fixture()
+def bis_header():
+    return Header(
+        id="test",
+        prepared=datetime.strptime("2021-04-20T10:29:14", "%Y-%m-%dT%H:%M:%S"),
+        sender="Unknown",
+        receiver="Not_supplied",
+    )
+
+
+@pytest.fixture()
+def codelist():
+    return Codelist(
         annotations=[
             Annotation(
                 id="FREQ_ANOT",
@@ -87,17 +138,10 @@ def test_codelist(codelist_sample, complete_header):
         valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
     )
 
-    result = writer(
-        {"Codelists": {"CL_FREQ": codelist}},
-        MessageType.Structure,
-        header=complete_header,
-    )
 
-    assert result == codelist_sample
-
-
-def test_concept(concept_sample, complete_header):
-    concept = ConceptScheme(
+@pytest.fixture()
+def concept():
+    return ConceptScheme(
         id="FREQ",
         name="Frequency",
         agency=Agency(id="BIS"),
@@ -126,6 +170,135 @@ def test_concept(concept_sample, complete_header):
         ],
     )
 
+
+@pytest.fixture()
+def concept_ds():
+    return ConceptScheme(
+        urn="urn:sdmx: org.sdmx.infomodel.conceptscheme."
+        "ConceptScheme = BIS:CS_FREQ(1.0)",
+        uri="urn:sdmx: org.sdmx.infomodel.conceptscheme."
+        "ConceptScheme = BIS:CS_FREQ(1.0)",
+        id="freq",
+        name="Frequency",
+        version="1.0",
+        agency="BIS",
+        items=[
+            Concept(
+                id="freq",
+                urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
+                "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).freq",
+                name="Time frequency",
+                annotations=(),
+            ),
+            Concept(
+                id="OBS_VALUE",
+                urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
+                "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE",
+                name="Observation value",
+                annotations=(),
+            ),
+        ],
+    )
+
+
+@pytest.fixture()
+def datastructure(concept_ds):
+    return DataStructureDefinition(
+        annotations=[
+            Annotation(title="OBS_FLAG", type="DISSEMINATION_FLAG_SETTINGS"),
+            Annotation(title="time", type="DISSEMINATION_TIME_DIMENSION_CODE"),
+        ],
+        urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+        "DataStructure=ESTAT:HLTH_RS_PRSHP1(7.0)",
+        id="HLTH_RS_PRSHP1",
+        name="HLTH_RS_PRSHP1",
+        version="7.0",
+        agency="ESTAT",
+        is_final=True,
+        components=[
+            Component(
+                id="freq_dim",
+                required=True,
+                role=Role.DIMENSION,
+                concept=Concept(
+                    id="freq",
+                    urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
+                    "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).freq",
+                    name="Time frequency",
+                    annotations=(),
+                ),
+                local_facets=Facets(min_length="1", max_length="1"),
+                urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+                "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).FREQ",
+            ),
+            Component(
+                id="OBS_VALUE",
+                required=True,
+                role=Role.MEASURE,
+                concept=Concept(
+                    id="OBS_VALUE",
+                    urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
+                    "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE",
+                    name="Observation value",
+                    annotations=(),
+                ),
+                urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+                "PrimaryMeasure=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE",
+            ),
+        ],
+        description="Healthcare resource partnership statistics",
+    )
+
+
+@pytest.fixture()
+def partial_datastructure():
+    return DataStructureDefinition(
+        agency="BIS",
+        annotations=(),
+        id="BIS_DER",
+        components=Components([]),
+        description="BIS derivates statistics",
+        name="BIS derivates statistics",
+        urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+        "DataStructure=BIS:BIS_DER(1.0)",
+        version="1.0",
+    )
+
+
+@pytest.fixture()
+def dataflow():
+    return Dataflow(
+        agency="BIS",
+        annotations=(),
+        id="WEBSTATS_DER_DATAFLOW",
+        description="OTC derivatives and FX spot - turnover",
+        is_external_reference=True,
+        is_final=True,
+        name="OTC derivatives turnover",
+        service_url=None,
+        structure="DataStructure=BIS:BIS_DER(1.0)",
+        structure_url=None,
+        uri=None,
+        urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)",
+        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
+        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
+        version="1.0",
+    )
+
+
+def test_codelist(codelist_sample, complete_header, codelist):
+    result = writer(
+        {"Codelists": {"CL_FREQ": codelist}},
+        MessageType.Structure,
+        header=complete_header,
+    )
+    read_xml(result, validate=False)
+
+    assert result == codelist_sample
+
+
+def test_concept(concept_sample, complete_header, concept):
     result = writer(
         {"Concepts": {"FREQ": concept}},
         MessageType.Structure,
@@ -165,3 +338,98 @@ def test_writer_no_header():
     assert "<mes:Test>true</mes:Test>" in result
     assert "<mes:Prepared>" in result
     assert '<mes:Sender id="ZZZ"/>' in result
+
+
+def test_writer_datastructure(complete_header, datastructure):
+    result = writer(
+        {"DataStructures": {"FREQ": datastructure}},
+        MessageType.Structure,
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    assert "DataStructures" in result
+
+
+def test_writer_partial_datastructure(complete_header, partial_datastructure):
+    result = writer(
+        {"DataStructures": {"FREQ": partial_datastructure}},
+        MessageType.Structure,
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    assert "DataStructure=BIS:BIS_DER(1.0)" in result
+
+
+def test_writer_dataflow(complete_header, dataflow):
+    result = writer(
+        {"Dataflows": {"FREQ": dataflow}},
+        MessageType.Structure,
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result
+
+
+def test_read_write(read_write_sample, read_write_header):
+    content, filetype = process_string_to_read(read_write_sample)
+    assert filetype == "xml"
+    read_result = read_xml(content, validate=True)
+    write_result = writer(
+        read_result,
+        MessageType.Structure,
+        header=read_write_header,
+        prettyprint=True,
+    )
+
+    assert write_result == content
+
+
+def test_write_read(complete_header, datastructure, dataflow, concept_ds):
+    content = {
+        "Concepts": {"BIS:freq(1.0)": concept_ds},
+        "DataStructures": {
+            "DataStructure=ESTAT:HLTH_RS_PRSHP1(7.0)": datastructure
+        },
+        "Dataflows": {"Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)": dataflow},
+    }
+
+    write_result = writer(
+        content,
+        MessageType.Structure,
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    read_result = read_xml(write_result)
+
+    assert content == read_result
+
+
+def test_bis_der(bis_sample, bis_header):
+    content, filetype = process_string_to_read(bis_sample)
+    assert filetype == "xml"
+    read_result = read_xml(content, validate=True)
+    write_result = writer(
+        read_result,
+        MessageType.Structure,
+        header=bis_header,
+        prettyprint=True,
+    )
+    assert write_result == content
+
+
+def test_group_deletion(groups_sample, header):
+    content, filetype = process_string_to_read(groups_sample)
+    assert filetype == "xml"
+    read_result = read_xml(content, validate=True)
+    write_result = writer(
+        read_result,
+        MessageType.Structure,
+        header=header,
+        prettyprint=True,
+    )
+    assert "Groups" not in write_result
+    assert "DataStructure=BIS:BIS_DER(1.0)" in read_result["DataStructures"]

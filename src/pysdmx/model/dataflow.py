@@ -15,7 +15,11 @@ from typing import Any, Iterable, Optional, Sequence, Union
 from msgspec import Struct
 
 from pysdmx.errors import Invalid
-from pysdmx.model.__base import Agency, DataProvider, MaintainableArtefact
+from pysdmx.model.__base import (
+    Agency,
+    DataProvider,
+    MaintainableArtefact,
+)
 from pysdmx.model.code import Codelist, Hierarchy
 from pysdmx.model.concept import Concept, DataType, Facets
 
@@ -112,6 +116,18 @@ class Component(Struct, frozen=True, omit_defaults=True):
     local_codes: Union[Codelist, Hierarchy, None] = None
     attachment_level: Optional[str] = None
     array_def: Optional[ArrayBoundaries] = None
+    urn: Optional[str] = None
+
+    def __post_init__(self) -> None:
+        """Validate the component."""
+        if self.role != Role.ATTRIBUTE and self.attachment_level is not None:
+            raise Invalid(
+                "Validation Error",
+                (
+                    "The attachment_level field is "
+                    "only allowed for attribute components"
+                ),
+            )
 
     @property
     def dtype(self) -> DataType:
@@ -360,7 +376,7 @@ class Schema(Struct, frozen=True, omit_defaults=True):
 
     Attributes:
         context: The context for which the schema is provided.
-            One of datastructure, dataflow or provisionagreement.
+            One of datastructure, dataflow or provision agreement.
         agency: The agency maintaining the context (e.g. BIS).
         id: The ID of the context (e.g. BIS_MACRO).
         components: The list of components along with their
@@ -400,7 +416,40 @@ class Schema(Struct, frozen=True, omit_defaults=True):
         return f"{self.context}={self.agency}:{self.id}({self.version})"
 
 
+class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
+    """A collection of metadata concepts.
+
+    Attributes:
+        agency: The organization responsible for the data structure.
+        annotations: The list of annotations attached to the data structure.
+        id: The identifier of the data structure.
+        description: descriptive information about the data structure.
+        is_external_reference: Whether the data structure is an external
+            reference.
+        is_final: Whether the data structure is final.
+        name: The data structure's name.
+        service_url: The URL of the service providing the data structure.
+        structure_url: The URL of the structure.
+        uri: The URI of the data structure.
+        urn: The URN of the data structure.
+        valid_from: The date from which the data structure is valid.
+        valid_to: The date until which the data structure is valid.
+        version: The version of the data structure.
+    """
+
+    components: Components
+
+
 class Dataflow(MaintainableArtefact, frozen=True, omit_defaults=True):
     """A flow of data that providers will provide."""
 
     structure: Optional[str] = None
+
+
+class ProvisionAgreement(
+    MaintainableArtefact, frozen=True, omit_defaults=True, kw_only=True
+):
+    """Link between a data provider and dataflow."""
+
+    dataflow: str
+    provider: str

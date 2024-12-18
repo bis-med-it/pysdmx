@@ -24,6 +24,7 @@ class Deserializers:
     dataflow_info: Deserializer
     dataflows: Deserializer
     providers: Deserializer
+    provision_agreement: Deserializer
     schema: Deserializer
     hier_assoc: Deserializer
     hierarchy: Deserializer
