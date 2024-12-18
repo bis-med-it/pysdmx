@@ -128,3 +128,7 @@ class JsonCategorySchemeMessage(Struct, frozen=True):
         for c in cs:
             self.__add_flows(c, c.id, cf)
         return cs
+
+
+class JsonCategorisationMessage(Struct, frozen=True):
+    """SDMX-JSON payload for /categorisation queries."""

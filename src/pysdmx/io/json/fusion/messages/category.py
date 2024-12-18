@@ -110,3 +110,7 @@ class FusionCategorySchemeMessage(Struct, frozen=True):
         for c in cs:
             self.__add_flows(c, c.id, cf)
         return cs
+
+
+class FusionCategorisationMessage(Struct, frozen=True):
+    pass
