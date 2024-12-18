@@ -10,6 +10,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
 from pysdmx.model import (
     Agency,
+    Categorisation,
     Category,
     CategoryScheme,
     Dataflow,
@@ -32,6 +33,21 @@ class JsonCategorisation(Struct, frozen=True, rename={"agency": "agencyID"}):
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
     annotations: Optional[Sequence[JsonAnnotation]] = None
+
+    def to_model(self) -> Categorisation:
+        """Converts a FusionCategorisation to a standard categorisation."""
+        return Categorisation(
+            id=self.id,
+            agency=self.agency,
+            version=self.version,
+            source=self.source,
+            target=self.target,
+            name=self.name,
+            description=self.description,
+            is_external_reference=self.isExternalReference,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
+        )
 
 
 class JsonCategory(Struct, frozen=True):
@@ -130,5 +146,17 @@ class JsonCategorySchemeMessage(Struct, frozen=True):
         return cs
 
 
+class JsonCategorisations(Struct, frozen=True):
+    """SDMX-JSON payload for the list of categorisations."""
+
+    categorisations: Sequence[JsonCategorisation]
+
+
 class JsonCategorisationMessage(Struct, frozen=True):
     """SDMX-JSON payload for /categorisation queries."""
+
+    data: JsonCategorisations
+
+    def to_model(self) -> Categorisation:
+        """Returns the requested categorisations."""
+        return [cat.to_model() for cat in self.data.categorisations]
