@@ -35,7 +35,7 @@ class JsonCategorisation(Struct, frozen=True, rename={"agency": "agencyID"}):
     annotations: Optional[Sequence[JsonAnnotation]] = None
 
     def to_model(self) -> Categorisation:
-        """Converts a FusionCategorisation to a standard categorisation."""
+        """Converts a JsonCategorisation to a standard categorisation."""
         return Categorisation(
             id=self.id,
             agency=self.agency,
