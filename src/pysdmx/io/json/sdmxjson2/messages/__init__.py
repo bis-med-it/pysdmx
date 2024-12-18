@@ -22,6 +22,9 @@ from pysdmx.io.json.sdmxjson2.messages.org import (
     JsonAgencyMessage,
     JsonProviderMessage,
 )
+from pysdmx.io.json.sdmxjson2.messages.pa import (
+    JsonProvisionAgreementsMessage as JsonPAMessage,
+)
 from pysdmx.io.json.sdmxjson2.messages.report import JsonMetadataMessage
 from pysdmx.io.json.sdmxjson2.messages.schema import JsonSchemaMessage
 from pysdmx.io.json.sdmxjson2.messages.vtl import (
@@ -37,6 +40,7 @@ __all__ = [
     "JsonDataflowMessage",
     "JsonDataflowsMessage",
     "JsonProviderMessage",
+    "JsonPAMessage",
     "JsonSchemaMessage",
     "JsonHierarchyAssociationMessage",
     "JsonHierarchyMessage",

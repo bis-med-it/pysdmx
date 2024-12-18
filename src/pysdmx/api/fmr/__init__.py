@@ -42,6 +42,7 @@ from pysdmx.model import (
     HierarchyAssociation,
     MetadataReport,
     MultiRepresentationMap,
+    ProvisionAgreement,
     RepresentationMap,
     Schema,
     StructureMap,
@@ -305,6 +306,12 @@ class __BaseRegistryClient:
         q = StructureQuery(StructureType.CATEGORISATION, agency, id, version)
         return q.get_url(API_VERSION, True)
 
+    def _pa_url(self, agency: str, id: str, version: str) -> str:
+        q = StructureQuery(
+            StructureType.PROVISION_AGREEMENT, agency, id, version
+        )
+        return q.get_url(API_VERSION, True)
+
 
 class RegistryClient(__BaseRegistryClient):
     """A client to be used to retrieve metadata from the FMR.
@@ -437,6 +444,28 @@ class RegistryClient(__BaseRegistryClient):
         url = super()._categorisation_url(agency, id, version)
         out = self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.categorisation)[0]
+
+    def get_provision_agreement(
+        self,
+        agency: str,
+        id: str,
+        version: str = "+",
+    ) -> ProvisionAgreement:
+        """Get the provision agreement matching the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the provision agreement.
+            id: The ID of the provision agreement to be returned.
+            version: The version of the provision agreement to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested provision agreement.
+        """
+        url = super()._pa_url(agency, id, version)
+        out = self.__fetch(f"{self.api_endpoint}{url}")
+        return super()._out(out, self.deser.provision_agreement)[0]
 
     def get_codes(
         self,
@@ -848,6 +877,28 @@ class AsyncRegistryClient(__BaseRegistryClient):
         url = super()._categorisation_url(agency, id, version)
         out = await self.__fetch(f"{self.api_endpoint}{url}")
         return super()._out(out, self.deser.categorisation)[0]
+
+    async def get_provision_agreement(
+        self,
+        agency: str,
+        id: str,
+        version: str = "+",
+    ) -> ProvisionAgreement:
+        """Get the provision agreement matching the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the provision agreement.
+            id: The ID of the provision agreement to be returned.
+            version: The version of the provision agreement to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested provision agreement.
+        """
+        url = super()._pa_url(agency, id, version)
+        out = await self.__fetch(f"{self.api_endpoint}{url}")
+        return super()._out(out, self.deser.provision_agreement)[0]
 
     async def get_codes(
         self,
