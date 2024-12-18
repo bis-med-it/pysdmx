@@ -9,7 +9,7 @@ from pysdmx.io.json.fusion.messages.core import FusionString
 from pysdmx.io.json.fusion.messages.dataflow import FusionDataflow
 from pysdmx.model import (
     Agency,
-    Categorisation,
+    Categorisation as CT,
     Category,
     CategoryScheme as CS,
     Dataflow as DF,
@@ -29,10 +29,10 @@ class FusionCategorisation(Struct, frozen=True, rename={"agency": "agencyId"}):
     descriptions: Optional[Sequence[FusionString]] = None
     version: str = "1.0"
 
-    def to_model(self) -> Categorisation:
+    def to_model(self) -> CT:
         """Converts a JsonCodelist to a standard codelist."""
         description = self.descriptions[0].value if self.descriptions else None
-        return Categorisation(
+        return CT(
             id=self.id,
             name=self.names[0].value,
             agency=self.agency,
@@ -136,6 +136,6 @@ class FusionCategorisationMessage(Struct, frozen=True):
 
     Categorisation: Sequence[FusionCategorisation]
 
-    def to_model(self) -> CS:
+    def to_model(self) -> Sequence[CT]:
         """Returns the requested categorisations."""
         return [c.to_model() for c in self.Categorisation]

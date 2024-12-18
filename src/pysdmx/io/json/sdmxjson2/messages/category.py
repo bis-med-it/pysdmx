@@ -157,6 +157,6 @@ class JsonCategorisationMessage(Struct, frozen=True):
 
     data: JsonCategorisations
 
-    def to_model(self) -> Categorisation:
+    def to_model(self) -> Sequence[Categorisation]:
         """Returns the requested categorisations."""
         return [cat.to_model() for cat in self.data.categorisations]
