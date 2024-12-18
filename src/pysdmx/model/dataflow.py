@@ -102,8 +102,6 @@ class Component(Struct, frozen=True, omit_defaults=True):
             D (for dataset-level attributes), O (for observation-level
             attributes) or a combination of dimension IDs, separated by
             commas, for series- and group-level attributes).
-        attribute_relationship: The relationship between the attribute
-            and another component(s) (if role = A only)
         array_def: Any additional constraints for array types.
     """
 
