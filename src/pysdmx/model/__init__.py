@@ -17,7 +17,7 @@ from pysdmx.model.__base import (
     MetadataProvider,
     Organisation,
 )
-from pysdmx.model.category import Category, CategoryScheme
+from pysdmx.model.category import Categorisation, Category, CategoryScheme
 from pysdmx.model.code import (
     Code,
     Codelist,
@@ -138,6 +138,7 @@ __all__ = [
     "Agency",
     "AgencyScheme",
     "ArrayBoundaries",
+    "Categorisation",
     "Category",
     "CategoryScheme",
     "CustomType",
