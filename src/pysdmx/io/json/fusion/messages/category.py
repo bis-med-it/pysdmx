@@ -30,7 +30,7 @@ class FusionCategorisation(Struct, frozen=True, rename={"agency": "agencyId"}):
     version: str = "1.0"
 
     def to_model(self) -> CT:
-        """Converts a JsonCodelist to a standard codelist."""
+        """Converts a JsonCategorisation to a standard categorisation."""
         description = self.descriptions[0].value if self.descriptions else None
         return CT(
             id=self.id,

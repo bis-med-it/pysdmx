@@ -446,3 +446,12 @@ class Dataflow(MaintainableArtefact, frozen=True, omit_defaults=True):
     """A flow of data that providers will provide."""
 
     structure: Optional[str] = None
+
+
+class ProvisionAgreement(
+    MaintainableArtefact, frozen=True, omit_defaults=True, kw_only=True
+):
+    """Link between a data provider and dataflow."""
+
+    dataflow: str
+    provider: str

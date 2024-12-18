@@ -1,0 +1,19 @@
+{
+    "ProvisionAgreement": [
+        {
+            "id": "CBS_BIS_5B0",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_5B0(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "BIS for Consolidated Banking Statistics"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
+            "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).5B0"
+        }
+    ]
+}
