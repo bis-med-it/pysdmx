@@ -11,7 +11,7 @@ from collections import Counter, UserList
 from datetime import datetime, timezone
 from enum import Enum
 import json
-from typing import Any, Iterable, Optional, Sequence, Union
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -440,7 +440,9 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
 
     components: Components
 
-    def to_vtl_json(self, path: str = None):
+    def to_vtl_json(
+        self, path: Optional[str] = None
+    ) -> Optional[Dict[str, Any]]:
         """Formats the DataStructureDefinition as a VTL DataStructure."""
         from pysdmx.model.__utils import VTL_DTYPES_MAPPING, VTL_ROLE_MAPPING
 
@@ -451,7 +453,8 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
         TYPE = "type"
         NULLABLE = "nullable"
 
-        _components = self.components.dimensions
+        _components: List[Component] = []
+        _components.extend(self.components.dimensions)
         _components.extend(self.components.measures)
         _components.extend(self.components.attributes)
 
@@ -475,8 +478,9 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
         if path is not None:
             with open(path, "w") as fp:
                 json.dump(result, fp)
-        else:
-            return result
+            return None
+
+        return result
 
 
 class Dataflow(MaintainableArtefact, frozen=True, omit_defaults=True):
