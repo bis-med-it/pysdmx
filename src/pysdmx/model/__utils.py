@@ -1,5 +1,3 @@
-from vtlengine.AST import Role as VTL_Role
-
 from pysdmx.model import Role
 
 VTL_DTYPES_MAPPING = {
@@ -46,7 +44,7 @@ VTL_DTYPES_MAPPING = {
 }
 
 VTL_ROLE_MAPPING = {
-    Role.DIMENSION: VTL_Role.IDENTIFIER.value,
-    Role.MEASURE: VTL_Role.MEASURE.value,
-    Role.ATTRIBUTE: VTL_Role.ATTRIBUTE.value,
+    Role.DIMENSION: "Identifier",
+    Role.MEASURE: "Measure",
+    Role.ATTRIBUTE: "Attribute",
 }

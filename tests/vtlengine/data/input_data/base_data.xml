@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<message:StructureSpecificData xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/structurespecific" xmlns:footer="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message/footer" xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:WS_CBS_PUB(1.0):ObsLevelDim:TIME_PERIOD" xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:WS_CBS_PUB(1.0):ObsLevelDim:TIME_PERIOD https://stats.bis.org/ws/public/sdmxapi/rest/schema/dataflow/BIS/WS_CBS_PUB/1.0?format=sdmx-2.1">
+	<message:Header>
+		<message:ID>IDREFff0b093b-5920-42cf-ae60-dd3f738bccd5</message:ID>
+		<message:Test>false</message:Test>
+		<message:Prepared>2024-12-16T16:59:27Z</message:Prepared>
+		<message:Sender id="UNKNOWN"/>
+		<message:Receiver id="guest"/>
+		<message:Structure structureID="DS_1" namespace="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:WS_CBS_PUB(1.0):ObsLevelDim:TIME_PERIOD" dimensionAtObservation="TIME_PERIOD">
+			<common:StructureUsage>
+				<Ref agencyID="Test" id="DS_1" version="1.0"/>
+			</common:StructureUsage>
+		</message:Structure>
+		<message:DataSetAction>Information</message:DataSetAction>
+		<message:DataSetID>35507086-5f4a-4085-b039-b8364d22fa5d</message:DataSetID>
+		<message:Extracted>2024-12-16T16:59:27</message:Extracted>
+		<message:ReportingBegin>2024-01-01T00:00:00</message:ReportingBegin>
+		<message:ReportingEnd>2024-04-01T23:59:59</message:ReportingEnd>
+	</message:Header>
+	<message:DataSet ss:dataScope="DataStructure" xsi:type="ns1:DataSetType" ss:structureRef="DS_1">
+		<Obs Id_1="A" Id_2="1" TIME_PERIOD="2020-Q1" OBS_VALUE="3256.0"/>
+		<Obs Id_1="B" Id_2="1" TIME_PERIOD="2020-Q2" OBS_VALUE="2163.0"/>
+		<Obs Id_1="A" Id_2="2" TIME_PERIOD="2021-Q1" OBS_VALUE="914.0"/>
+		<Obs Id_1="B" Id_2="2" TIME_PERIOD="2022-Q2" OBS_VALUE="1117.0"/>
+		<Obs Id_1="A" Id_2="3" TIME_PERIOD="2023-Q1" OBS_VALUE="453.0"/>
+		<Obs Id_1="B" Id_2="3" TIME_PERIOD="2023-Q2" OBS_VALUE="824.0"/>
+		<Obs Id_1="A" Id_2="4" TIME_PERIOD="2024-Q1" OBS_VALUE="437.0"/>
+		<Obs Id_1="B" Id_2="4" TIME_PERIOD="2024-Q2" OBS_VALUE="1646.0"/>
+    </message:DataSet>
+</message:StructureSpecificData>

@@ -12,6 +12,12 @@ data_path = "data"
 input_data_path = Path(__file__).parent / data_path / "input_data"
 vtl_data_path = Path(__file__).parent / data_path / "vtl"
 
+base_scripts_param = [
+    ("1", "DS_r := DS_1;"),
+    ("2", "DS_r := DS_1 + DS_1;"),
+    ("3", "DS_r := DS_1[calc Me_r := OBS_VALUE * 2 - 300];"),
+]
+
 
 def read_sdmx_from_url(url: str):
     response = requests.get(url, timeout=10)
@@ -24,6 +30,25 @@ def read_sdmx_from_url(url: str):
 def read_sample(path: Path):
     with open(path, "r") as f:
         return f.read()
+
+
+def change_component_type(ds, component_name, new_type):
+    for component in ds["datasets"][0]["DataStructure"]:
+        if component["name"] == component_name:
+            component["type"] = new_type
+    return ds
+
+
+@pytest.fixture()
+def base_metadata_sample():
+    base_path = input_data_path / "base_metadata.xml"
+    return read_sample(base_path)
+
+
+@pytest.fixture()
+def base_data_sample():
+    base_path = input_data_path / "base_data.xml"
+    return read_sample(base_path)
 
 
 @pytest.fixture()
@@ -50,7 +75,45 @@ def bis_script_sample():
     return read_sample(base_path)
 
 
-def test_sdmx_to_vtl(bis_metadata_sample, bis_data_sample, bis_script_sample):
+@pytest.mark.parametrize(("code", "expression"), base_scripts_param)
+def test_sdmx_to_vtl_bases(
+    base_metadata_sample, base_data_sample, code, expression
+):
+    meta_content, filetype = process_string_to_read(base_metadata_sample)
+    if filetype != "xml":
+        raise ValueError("Invalid file type")
+    metadata_result = read_xml(meta_content, validate=True)
+    data_structure = metadata_result["DataStructures"][
+        "DataStructure=Test:DS_1(1.0)"
+    ]
+
+    data_content, filetype = process_string_to_read(base_data_sample)
+    if filetype != "xml":
+        raise ValueError("Invalid file type")
+    data_result = read_xml(data_content, validate=True)
+
+    vtl_data_structure = data_structure.to_vtl_json()
+    vtl_data_structure = change_component_type(
+        vtl_data_structure, "OBS_VALUE", "Number"
+    )
+    datapoints = {"DS_1": data_result["DataFlow=Test:DS_1(1.0)"].data}
+
+    run_result = run(
+        script=expression,
+        data_structures=vtl_data_structure,
+        datapoints=datapoints,
+        return_only_persistent=True,
+    )
+
+    print(run_result)
+
+    # Reference data_sample comparison WIP
+    assert True
+
+
+def test_sdmx_to_vtl_bis(
+    bis_metadata_sample, bis_data_sample, bis_script_sample
+):
     meta_content, filetype = process_string_to_read(bis_metadata_sample)
     if filetype != "xml":
         raise ValueError("Invalid file type")

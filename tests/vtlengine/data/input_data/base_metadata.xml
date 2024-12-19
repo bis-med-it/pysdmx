@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+               xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+               xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+    <mes:Header>
+        <mes:ID>IDREFd504df17-eba9-4e5b-ad70-28a1db0a16c8</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2024-12-18T23:37:37Z</mes:Prepared>
+        <mes:Sender id="UNKNOWN"/>
+        <mes:Receiver id="not_supplied"/>
+    </mes:Header>
+    <mes:Structures>
+        <str:Concepts>
+            <str:ConceptScheme isExternalReference="false" agencyID="BIS" id="STANDALONE_CONCEPT_SCHEME"
+                              isFinal="false" version="1.0">
+                <com:Name xml:lang="en">Test Concept Scheme</com:Name>
+                    <str:Concept id="Id_1">
+                        <com:Name xml:lang="en">First identifier concept</com:Name>
+                    </str:Concept>
+                    <str:Concept id="Id_2">
+                        <com:Name xml:lang="en">Second identifier concept</com:Name>
+                    </str:Concept>
+                    <str:Concept id="OBS_VALUE">
+                        <com:Name xml:lang="en">First measure concept</com:Name>
+                    </str:Concept>
+                    <str:Concept id="TIME_PERIOD">
+                        <com:Name xml:lang="en">Time period or range</com:Name>
+                    </str:Concept>
+            </str:ConceptScheme>
+        </str:Concepts>
+        <str:DataStructures>
+            <str:DataStructure isExternalReference="false" agencyID="Test" id="DS_1" isFinal="false" version="1.0">
+                <com:Name xml:lang="en">Test DataStructure 1</com:Name>
+                <str:DataStructureComponents>
+                    <str:DimensionList id="DimensionDescriptor">
+                        <str:Dimension id="Id_1" position="1">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="STANDALONE_CONCEPT_SCHEME" package="conceptscheme"
+                                     maintainableParentVersion="1.0" agencyID="Test" id="Id_1" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:LocalRepresentation>
+                                <str:TextFormat textType="String"/>
+                            </str:LocalRepresentation>
+                        </str:Dimension>
+                         <str:Dimension id="Id_2" position="2">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="STANDALONE_CONCEPT_SCHEME" package="conceptscheme"
+                                     maintainableParentVersion="1.0" agencyID="Test" id="Id_2" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:LocalRepresentation>
+                                <str:TextFormat textType="Integer"/>
+                            </str:LocalRepresentation>
+                        </str:Dimension>
+                        <str:TimeDimension id="TIME_PERIOD" position="3">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="STANDALONE_CONCEPT_SCHEME" package="conceptscheme"
+                                     maintainableParentVersion="1.0" agencyID="Test" id="TIME_PERIOD" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:LocalRepresentation>
+                                <str:TextFormat textType="ObservationalTimePeriod"/>
+                            </str:LocalRepresentation>
+                        </str:TimeDimension>
+                    </str:DimensionList>
+                    <str:MeasureList id="MeasureDescriptor">
+                        <str:PrimaryMeasure id="OBS_VALUE">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="STANDALONE_CONCEPT_SCHEME" package="conceptscheme"
+                                     maintainableParentVersion="1.0" agencyID="Test" id="OBS_VALUE" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:LocalRepresentation>
+                                <str:TextFormat minLength="1" textType="String" maxLength="15"/>
+                            </str:LocalRepresentation>
+                        </str:PrimaryMeasure>
+                    </str:MeasureList>
+                </str:DataStructureComponents>
+            </str:DataStructure>
+        </str:DataStructures>
+    </mes:Structures>
+</mes:Structure>
