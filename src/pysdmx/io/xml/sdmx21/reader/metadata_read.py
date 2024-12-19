@@ -1,10 +1,11 @@
 """Parsers for reading metadata."""
-
+from copy import copy
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from msgspec import Struct
 
+from pysdmx.errors import Invalid
 from pysdmx.io.xml.sdmx21.__parsing_config import (
     AS_STATUS,
     ATT,
@@ -35,7 +36,7 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     REF,
     REQUIRED,
     TEXT_FORMAT,
-    TIME_DIM,
+    TIME_DIM, PAR_ID, PAR_VER,
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import (
     AGENCIES,
@@ -108,7 +109,7 @@ from pysdmx.model import (
     Concept,
     ConceptScheme,
     DataType,
-    Facets,
+    Facets, AgencyScheme,
 )
 from pysdmx.model.__base import Agency, Annotation, Contact, Item, ItemScheme
 from pysdmx.model.dataflow import (
@@ -119,11 +120,11 @@ from pysdmx.model.dataflow import (
     Role,
 )
 from pysdmx.model.vtl import Transformation, TransformationScheme
-from pysdmx.util import find_by_urn, parse_urn
+from pysdmx.util import find_by_urn, parse_urn, Reference, ItemReference
 
 STRUCTURES_MAPPING = {
     CL: Codelist,
-    AGENCIES: ItemScheme,
+    AGENCIES: AgencyScheme,
     CS: ConceptScheme,
     DFWS: Dataflow,
     DSDS: DataStructureDefinition,
@@ -335,8 +336,13 @@ class StructureParser(Struct):
                 ).codes
 
             else:
-                id = unique_id(ref[AGENCY_ID], ref[ID], ref[VERSION])
-                codelist = self.codelists[id]
+                short_urn = str(Reference(
+                    sdmx_type=ref[CLASS],
+                    agency=ref[AGENCY_ID],
+                    id=ref[ID],
+                    version=ref[VERSION]
+                ))
+                codelist = self.codelists[short_urn]
 
             json_obj[CODES_LOW] = codelist
         if ENUM_FORMAT in json_rep:
@@ -359,9 +365,29 @@ class StructureParser(Struct):
 
     def __format_con_id(self, concept_ref: Dict[str, Any]) -> Dict[str, Any]:
         rep = {}
-        id = concept_ref[ID]
+        item_reference = ItemReference(
+            sdmx_type=concept_ref[CLASS],
+            agency=concept_ref[AGENCY_ID],
+            id=concept_ref[PAR_ID],
+            version=concept_ref[PAR_VER],
+            item_id=concept_ref[ID]
+        )
+        scheme_reference = Reference(
+            sdmx_type=CS,
+            agency=concept_ref[AGENCY_ID],
+            id=concept_ref[PAR_ID],
+            version=concept_ref[PAR_VER]
+        )
 
-        rep[CON] = self.concepts[id]
+        concept_scheme = self.concepts.get(str(scheme_reference))
+        if concept_scheme is None:
+            return {CON: item_reference}
+        for con in concept_scheme.concepts:
+            if con.id == concept_ref[ID]:
+                rep[CON] = con
+                break
+        if CON not in rep:
+            return {CON: item_reference}
         return rep
 
     def __format_relationship(self, json_rel: Dict[str, Any]) -> Optional[str]:
@@ -386,8 +412,8 @@ class StructureParser(Struct):
 
         self.__format_local_rep(comp) if LOCAL_REP in comp else None
 
-        rep = self.__format_con_id(comp[CON_ID][REF])
-        comp[CON_LOW] = rep.pop(CON)
+        concept_id = self.__format_con_id(comp[CON_ID][REF])
+        comp[CON_LOW] = concept_id.pop(CON)
         del comp[CON_ID]
 
         # Attribute Handling
@@ -491,8 +517,8 @@ class StructureParser(Struct):
 
     def __format_scheme(
         self, json_elem: Dict[str, Any], scheme: str, item: str
-    ) -> Dict[str, Any]:
-        elements: Dict[str, Any] = {}
+    ) -> Dict[str, ItemScheme]:
+        elements: Dict[str, ItemScheme] = {}
 
         json_elem[scheme] = add_list(json_elem[scheme])
         for element in json_elem[scheme]:
@@ -500,9 +526,6 @@ class StructureParser(Struct):
 
             element = self.__format_annotations(element)
             element = self.__format_name_description(element)
-            full_id = unique_id(
-                element[AGENCY_ID], element[ID], element[VERSION]
-            )
             element = self.__format_urls(element)
             if IS_EXTERNAL_REF in element:
                 element[IS_EXTERNAL_REF_LOW] = (
@@ -519,15 +542,12 @@ class StructureParser(Struct):
                 items.append(self.__format_item(item_elem, item))
             del element[item]
             element["items"] = items
-            if scheme == AGENCIES:
-                self.agencies.update({e.id: e for e in items})
-            if scheme == CS:
-                self.concepts.update({e.id: e for e in items})
             element = self.__format_agency(element)
             element = self.__format_validity(element)
             element = self.__format_vtl(element)
             # Dynamic creation with specific class
-            elements[full_id] = STRUCTURES_MAPPING[scheme](**element)
+            result: ItemScheme = STRUCTURES_MAPPING[scheme](**element)
+            elements[result.short_urn()] = result
 
         return elements
 
@@ -611,6 +631,7 @@ class StructureParser(Struct):
 
         if ORGS in json_meta:
             structures[ORGS] = self.__format_orgs(json_meta[ORGS])
+            self.agencies = structures[ORGS]
         if CLS in json_meta:
             structures[CLS] = self.__format_scheme(json_meta[CLS], CL, CODE)
             self.codelists = structures[CLS]
@@ -618,6 +639,7 @@ class StructureParser(Struct):
             structures[CONCEPTS] = self.__format_scheme(
                 json_meta[CONCEPTS], CS, CON
             )
+            self.concepts = structures[CONCEPTS]
         if DSDS in json_meta:
             structures[DSDS] = self.__format_schema(json_meta[DSDS], DSDS, DSD)
         if DFWS in json_meta:

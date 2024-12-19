@@ -22,6 +22,7 @@ from pysdmx.model.__base import (
 )
 from pysdmx.model.code import Codelist, Hierarchy
 from pysdmx.model.concept import Concept, DataType, Facets
+from pysdmx.util import ItemReference
 
 
 class Role(str, Enum):
@@ -108,7 +109,7 @@ class Component(Struct, frozen=True, omit_defaults=True):
     id: str
     required: bool
     role: Role
-    concept: Concept
+    concept: Union[Concept, ItemReference]
     local_dtype: Optional[DataType] = None
     local_facets: Optional[Facets] = None
     name: Optional[str] = None

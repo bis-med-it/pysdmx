@@ -70,7 +70,8 @@ from pysdmx.model.dataflow import (
     DataStructureDefinition,
     Role,
 )
-from pysdmx.util import parse_item_urn, parse_short_urn, parse_urn
+from pysdmx.util import parse_item_urn, parse_short_urn, parse_urn, \
+    ItemReference
 
 ANNOTATION_WRITER = OrderedDict(
     {
@@ -384,14 +385,17 @@ def __write_component(
     return outfile
 
 
-def __write_concept_identity(concept: Concept, indent: str) -> str:
-    ref = parse_item_urn(concept.urn)  # type: ignore[arg-type]
+def __write_concept_identity(identity: Union[Concept, ItemReference], indent: str) -> str:
+    if isinstance(identity, ItemReference):
+        ref = identity
+    else:
+        ref = parse_item_urn(identity.urn)
 
     outfile = f"{indent}<{ABBR_STR}:{CON_ID}>"
     outfile += f"{add_indent(indent)}<{REF} "
     outfile += f"{AGENCY_ID}={ref.agency!r} "
     outfile += f"{CLASS}={CON!r} "
-    outfile += f"{ID}={concept.id!r} "
+    outfile += f"{ID}={ref.item_id!r} "
     outfile += f"{PAR_ID}={ref.id!r} "
     outfile += f"{PAR_VER}={ref.version!r} "
     outfile += f"{PACKAGE}={CS.lower()!r}/>"

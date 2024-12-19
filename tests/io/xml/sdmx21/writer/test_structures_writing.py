@@ -174,11 +174,11 @@ def concept():
 @pytest.fixture()
 def concept_ds():
     return ConceptScheme(
-        urn="urn:sdmx: org.sdmx.infomodel.conceptscheme."
-        "ConceptScheme = BIS:CS_FREQ(1.0)",
-        uri="urn:sdmx: org.sdmx.infomodel.conceptscheme."
-        "ConceptScheme = BIS:CS_FREQ(1.0)",
-        id="freq",
+        urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
+        "ConceptScheme=BIS:CS_FREQ(1.0)",
+        uri="urn:sdmx:org.sdmx.infomodel.conceptscheme."
+        "ConceptScheme=BIS:CS_FREQ(1.0)",
+        id="CS_FREQ",
         name="Frequency",
         version="1.0",
         agency="BIS",
@@ -186,14 +186,14 @@ def concept_ds():
             Concept(
                 id="freq",
                 urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
-                "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).freq",
+                "Concept=BIS:CS_FREQ(1.0).freq",
                 name="Time frequency",
                 annotations=(),
             ),
             Concept(
                 id="OBS_VALUE",
                 urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
-                "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE",
+                "Concept=BIS:CS_FREQ(1.0).OBS_VALUE",
                 name="Observation value",
                 annotations=(),
             ),
@@ -220,13 +220,7 @@ def datastructure(concept_ds):
                 id="freq_dim",
                 required=True,
                 role=Role.DIMENSION,
-                concept=Concept(
-                    id="freq",
-                    urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
-                    "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).freq",
-                    name="Time frequency",
-                    annotations=(),
-                ),
+                concept=concept_ds.concepts[0],
                 local_facets=Facets(min_length="1", max_length="1"),
                 urn="urn:sdmx:org.sdmx.infomodel.datastructure."
                 "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).FREQ",
@@ -235,13 +229,7 @@ def datastructure(concept_ds):
                 id="OBS_VALUE",
                 required=True,
                 role=Role.MEASURE,
-                concept=Concept(
-                    id="OBS_VALUE",
-                    urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
-                    "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE",
-                    name="Observation value",
-                    annotations=(),
-                ),
+                concept=concept_ds.concepts[1],
                 urn="urn:sdmx:org.sdmx.infomodel.datastructure."
                 "PrimaryMeasure=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE",
             ),
@@ -389,7 +377,7 @@ def test_read_write(read_write_sample, read_write_header):
 
 def test_write_read(complete_header, datastructure, dataflow, concept_ds):
     content = {
-        "Concepts": {"BIS:freq(1.0)": concept_ds},
+        "Concepts": {concept_ds.short_urn(): concept_ds},
         "DataStructures": {
             "DataStructure=ESTAT:HLTH_RS_PRSHP1(7.0)": datastructure
         },
