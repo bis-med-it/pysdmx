@@ -6,6 +6,7 @@ information typically provided via the data structure (and related
 structures like concept schemes and codelists) is already provided
 as part of the response.
 """
+import json
 
 from collections import Counter, UserList
 from datetime import datetime, timezone
@@ -438,6 +439,42 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
     """
 
     components: Components
+
+    def to_vtl_json(self, path: str = None):
+        """Formats the DataStructureDefinition as a VTL DataStructure"""
+        from pysdmx.model.__utils import VTL_DTYPES_MAPPING, VTL_ROLE_MAPPING
+
+        dataset_name = self.id
+        components = []
+        NAME = "name"
+        ROLE = "role"
+        TYPE = "type"
+        NULLABLE = "nullable"
+
+        _components = self.components.dimensions
+        _components.extend(self.components.measures)
+        _components.extend(self.components.attributes)
+
+        for c in _components:
+            _type = VTL_DTYPES_MAPPING[c.dtype]
+            _nullability = c.role != Role.DIMENSION
+            _role = VTL_ROLE_MAPPING[c.role]
+
+            component = {NAME: c.id,
+                         ROLE: _role,
+                         TYPE: _type,
+                         NULLABLE: _nullability
+                         }
+
+            components.append(component)
+
+        result = {"datasets": [{"name": dataset_name,
+                                "DataStructure": components}]}
+        if path is not None:
+            with open(path, 'w') as fp:
+                json.dump(result, fp)
+        else:
+            return result
 
 
 class Dataflow(MaintainableArtefact, frozen=True, omit_defaults=True):
