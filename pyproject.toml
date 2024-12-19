@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "pysdmx"
-version = "1.0.0-rc-5"
+version = "1.0.0-rc-6"
 description = "Your opinionated Python SDMX library"
 authors = [
     "Xavier Sosnovsky <xavier.sosnovsky@bis.org>",
     "Stratos Nikoloutsos <stratos.nikoloutsos@bis.org>",
     "Francisco Javier Hernandez del Caño <javier.hernandez@meaningfuldata.eu>",
-    "Mateo de Lorenzo Argeles <mateo.delorenzo@meaningfuldata.eu>"
+    "Mateo de Lorenzo Argelés <mateo.delorenzo@meaningfuldata.eu>"
 ]
 readme = "README.rst"
 documentation = "https://bis-med-it.github.io/pysdmx"
@@ -29,11 +29,11 @@ lxml = {version = "5.*", optional = true}
 xmltodict = {version = "0.*", optional = true}
 sdmxschemas = {version = "0.2.0", optional = true}
 python-dateutil = {version = "^2.9.0.post0", optional = true}
-parsy = {version = "^2.1", optional = true}
+parsy = "^2.1"
 pandas = {version = "^2.2.2", optional = true}
 
 [tool.poetry.extras]
-dc = ["parsy", "python-dateutil"]
+dc = ["python-dateutil"]
 fmr = ["httpx"]
 xml = ["lxml", "xmltodict", "sdmxschemas"]
 data = ["pandas"]

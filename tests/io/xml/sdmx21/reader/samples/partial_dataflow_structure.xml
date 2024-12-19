@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>true</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Receiver id="Not_Supplied"/>
+		<mes:Source>PySDMX</mes:Source>
+	</mes:Header>
+	<mes:Structures>
+		<str:Dataflows>
+            <str:Dataflow isExternalReference="false" agencyID="BIS" id="WEBSTATS_DER_DATAFLOW" isFinal="false"
+                          version="1.0">
+                <com:Name xml:lang="en">OTC derivatives turnover</com:Name>
+                <com:Description xml:lang="en">OTC derivatives and FX spot - turnover</com:Description>
+                <str:Structure>
+                    <Ref package="datastructure" agencyID="BIS" id="BIS_DER" version="1.0" class="DataStructure"/>
+                </str:Structure>
+            </str:Dataflow>
+        </str:Dataflows>
+	</mes:Structures>
+</mes:Structure>

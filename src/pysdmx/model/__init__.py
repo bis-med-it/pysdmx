@@ -17,7 +17,7 @@ from pysdmx.model.__base import (
     MetadataProvider,
     Organisation,
 )
-from pysdmx.model.category import Category, CategoryScheme
+from pysdmx.model.category import Categorisation, Category, CategoryScheme
 from pysdmx.model.code import (
     Code,
     Codelist,
@@ -32,6 +32,7 @@ from pysdmx.model.dataflow import (
     Components,
     Dataflow,
     DataflowInfo,
+    ProvisionAgreement,
     Role,
     Schema,
 )
@@ -138,6 +139,7 @@ __all__ = [
     "Agency",
     "AgencyScheme",
     "ArrayBoundaries",
+    "Categorisation",
     "Category",
     "CategoryScheme",
     "CustomType",
@@ -177,6 +179,7 @@ __all__ = [
     "NamePersonalisation",
     "NamePersonalisationScheme",
     "Organisation",
+    "ProvisionAgreement",
     "RepresentationMap",
     "Role",
     "Ruleset",

@@ -7,11 +7,13 @@ from pysdmx.io.serde import Deserializers
 deserializers = Deserializers(
     agencies=msg.JsonAgencyMessage,  # type: ignore[arg-type]
     categories=msg.JsonCategorySchemeMessage,  # type: ignore[arg-type]
+    categorisation=msg.JsonCategorisationMessage,  # type: ignore[arg-type]
     codes=msg.JsonCodelistMessage,  # type: ignore[arg-type]
     concepts=msg.JsonConceptSchemeMessage,  # type: ignore[arg-type]
     dataflow_info=msg.JsonDataflowMessage,  # type: ignore[arg-type]
     dataflows=msg.JsonDataflowsMessage,  # type: ignore[arg-type]
     providers=msg.JsonProviderMessage,  # type: ignore[arg-type]
+    provision_agreement=msg.JsonPAMessage,  # type: ignore[arg-type]
     schema=msg.JsonSchemaMessage,  # type: ignore[arg-type]
     hier_assoc=msg.JsonHierarchyAssociationMessage,  # type: ignore[arg-type]
     hierarchy=msg.JsonHierarchyMessage,  # type: ignore[arg-type]

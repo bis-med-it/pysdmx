@@ -18,11 +18,13 @@ class Deserializers:
 
     agencies: Deserializer
     categories: Deserializer
+    categorisation: Deserializer
     codes: Deserializer
     concepts: Deserializer
     dataflow_info: Deserializer
     dataflows: Deserializer
     providers: Deserializer
+    provision_agreement: Deserializer
     schema: Deserializer
     hier_assoc: Deserializer
     hierarchy: Deserializer
