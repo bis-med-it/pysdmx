@@ -1,10 +1,12 @@
 """Processes the input that comes into read_sdmx function."""
-
-from io import BytesIO, TextIOWrapper
+import os.path
+from io import BytesIO, TextIOWrapper, StringIO
 from json import JSONDecodeError, loads
 from os import PathLike
 from pathlib import Path
 from typing import Tuple, Union
+
+import pandas as pd
 
 from pysdmx.errors import Invalid
 
@@ -18,6 +20,16 @@ def __check_xml(infile: str) -> bool:
         return True
 
     return False
+
+def __check_csv(infile: str) -> bool:
+    try:
+        pd.read_csv(StringIO(infile), nrows=2)
+        if len(infile.splitlines()) > 1:
+            return True
+        elif infile.splitlines()[0].count(",") > 1:
+            return True
+    except Exception as e:
+        return False
 
 
 def process_string_to_read(
@@ -34,6 +46,8 @@ def process_string_to_read(
     Raises:
         Invalid: If the input cannot be parsed as SDMX.
     """
+    if isinstance(infile, str) and os.path.exists(infile):
+        infile = Path(infile)
     # Read file as string
     if isinstance(infile, (Path, PathLike)):
         with open(infile, "r", encoding="utf-8-sig", errors="replace") as f:
@@ -63,6 +77,10 @@ def process_string_to_read(
     # Check if string is a valid XML
     if __check_xml(out_str):
         return out_str, "xml"
+
+    # Check if string is a valid CSV
+    if __check_csv(out_str):
+        return out_str, "csv"
 
     raise Invalid(
         "Validation Error", f"Cannot parse input as SDMX. Found {infile}"

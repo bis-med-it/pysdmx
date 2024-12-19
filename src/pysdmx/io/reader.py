@@ -52,7 +52,7 @@ def read_sdmx(
     validate: bool = True,
     use_dataset_id: bool = False,
 ) -> Message:
-    """Reads any sdmx file and returns a dictionary.
+    """Reads any sdmx file or buffer and returns a dictionary.
 
     Supported metadata formats are:
     - SDMX-ML 2.1

@@ -55,7 +55,7 @@ def test_agency_scheme_read(agency_scheme_path):
     assert "OrganisationSchemes" in result
     agency_scheme = result["OrganisationSchemes"]
     assert len(agency_scheme) == 1
-    agency_sdmx = agency_scheme["SDMX:AGENCIES(1.0)"].items[0]
+    agency_sdmx = agency_scheme["AgencyScheme=SDMX:AGENCIES(1.0)"].items[0]
     assert agency_sdmx.id == "SDMX"
     assert agency_sdmx.name == "SDMX"
 
@@ -68,7 +68,7 @@ def test_code_list_read(codelist_path):
     assert "Codelists" in result
     codelists = result["Codelists"]
     assert len(codelists) == 5
-    codelist_sdmx = codelists["SDMX:CL_UNIT_MULT(1.0)"]
+    codelist_sdmx = codelists["Codelist=SDMX:CL_UNIT_MULT(1.0)"]
     assert codelist_sdmx.id == "CL_UNIT_MULT"
     assert (
         codelist_sdmx.name == "code list for the Unit Multiplier (UNIT_MULT)"
@@ -89,10 +89,10 @@ def test_item_scheme_read(item_scheme_path):
     # Agency Scheme (OrganisationSchemes) assertions
     agency_scheme = result["OrganisationSchemes"]
     assert len(agency_scheme) == 1
-    agency_sdmx = agency_scheme["SDMX:AGENCIES(1.0)"].items[0]
+    agency_sdmx = agency_scheme["AgencyScheme=SDMX:AGENCIES(1.0)"].items[0]
     assert agency_sdmx.id == "SDMX"
     assert agency_sdmx.name == "SDMX"
-    agency_uis = agency_scheme["SDMX:AGENCIES(1.0)"].items[2]
+    agency_uis = agency_scheme["AgencyScheme=SDMX:AGENCIES(1.0)"].items[2]
 
     assert agency_uis.id == "UIS"
     assert isinstance(agency_uis.contacts[0], Contact)
@@ -101,7 +101,7 @@ def test_item_scheme_read(item_scheme_path):
     # Codelist
     codelists = result["Codelists"]
     assert len(codelists) == 5
-    codelist_sdmx = codelists["SDMX:CL_UNIT_MULT(1.0)"]
+    codelist_sdmx = codelists["Codelist=SDMX:CL_UNIT_MULT(1.0)"]
     assert codelist_sdmx.id == "CL_UNIT_MULT"
     assert (
         codelist_sdmx.name == "code list for the "
@@ -113,7 +113,8 @@ def test_item_scheme_read(item_scheme_path):
     # Concept
     concepts = result["Concepts"]
     assert len(concepts) == 1
-    concept_scheme_sdmx = concepts["SDMX:CROSS_DOMAIN_CONCEPTS(1.0)"]
+    concept_scheme_sdmx = concepts[("ConceptScheme="
+                                    "SDMX:CROSS_DOMAIN_CONCEPTS(1.0)")]
     assert concept_scheme_sdmx.id == "CROSS_DOMAIN_CONCEPTS"
     assert concept_scheme_sdmx.name == "SDMX Cross Domain Concept Scheme"
     assert concept_scheme_sdmx.items[0].id == "COLL_METHOD"
@@ -341,7 +342,7 @@ def test_vtl_transformation_scheme(samples_folder):
     result = read_xml(input_str, validate=True)
     assert "Transformations" in result
     assert len(result["Transformations"]) == 1
-    transformation_scheme = result["Transformations"]["SDMX:TEST(1.0)"]
+    transformation_scheme = result["Transformations"]["TransformationScheme=SDMX:TEST(1.0)"]
     assert transformation_scheme.id == "TEST"
     assert transformation_scheme.name == "TEST"
     assert transformation_scheme.description == "TEST Transformation Scheme"
