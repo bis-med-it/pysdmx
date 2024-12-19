@@ -10,6 +10,7 @@ from pysdmx.io.xml.sdmx21.reader import read_xml
 
 data_path = "data"
 input_data_path = Path(__file__).parent / data_path / "input_data"
+expected_data_path = Path(__file__).parent / data_path / "expected"
 vtl_data_path = Path(__file__).parent / data_path / "vtl"
 
 base_scripts_param = [
@@ -75,6 +76,12 @@ def bis_script_sample():
     return read_sample(base_path)
 
 
+@pytest.fixture()
+def bis_expected_sample():
+    base_path = expected_data_path / "bis.csv"
+    return read_sample(base_path)
+
+
 @pytest.mark.parametrize(("code", "expression"), base_scripts_param)
 def test_sdmx_to_vtl_bases(
     base_metadata_sample, base_data_sample, code, expression
@@ -102,17 +109,20 @@ def test_sdmx_to_vtl_bases(
         script=expression,
         data_structures=vtl_data_structure,
         datapoints=datapoints,
-        return_only_persistent=True,
+        return_only_persistent=False,
     )
 
-    print(run_result)
+    expected = read_sample(expected_data_path / f"reference_{code}.csv")
+    csv_result = run_result["DS_r"].data.to_csv(index=False).replace("\r", "")
 
-    # Reference data_sample comparison WIP
-    assert True
+    assert expected == csv_result
 
 
 def test_sdmx_to_vtl_bis(
-    bis_metadata_sample, bis_data_sample, bis_script_sample
+    bis_metadata_sample,
+    bis_data_sample,
+    bis_expected_sample,
+    bis_script_sample,
 ):
     meta_content, filetype = process_string_to_read(bis_metadata_sample)
     if filetype != "xml":
@@ -127,12 +137,6 @@ def test_sdmx_to_vtl_bis(
         raise ValueError("Invalid file type")
     data_result = read_xml(data_content, validate=True)
 
-    def change_component_type(ds, component_name, new_type):
-        for component in ds["datasets"][0]["DataStructure"]:
-            if component["name"] == component_name:
-                component["type"] = new_type
-        return ds
-
     vtl_data_structure = data_structure.to_vtl_json()
     vtl_data_structure = change_component_type(
         vtl_data_structure, "OBS_VALUE", "Number"
@@ -146,7 +150,9 @@ def test_sdmx_to_vtl_bis(
         return_only_persistent=True,
     )
 
-    print(run_result)
-
-    # Reference data_sample comparison WIP
-    assert True
+    csv_result = (
+        run_result["validation_result"]
+        .data.to_csv(index=False)
+        .replace("\r", "")
+    )
+    assert bis_expected_sample == csv_result
