@@ -7,7 +7,7 @@ from pysdmx.io import read_sdmx
 from pysdmx.io.reader import ReadFormat
 
 
-@pytest.fixture()
+@pytest.fixture
 def empty_message():
     file_path = Path(__file__).parent / "samples" / "empty_message.xml"
     with open(file_path, "r") as f:

@@ -101,7 +101,6 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     VALID_TO_LOW,
     VERSION,
     FacetType,
-    unique_id,
 )
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (
@@ -122,7 +121,7 @@ from pysdmx.model.dataflow import (
     Role,
 )
 from pysdmx.model.vtl import Transformation, TransformationScheme
-from pysdmx.util import find_by_urn, ItemReference, parse_urn, Reference
+from pysdmx.util import ItemReference, Reference, find_by_urn, parse_urn
 
 STRUCTURES_MAPPING = {
     CL: Codelist,

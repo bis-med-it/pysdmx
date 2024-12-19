@@ -37,9 +37,7 @@ class ReadFormat(Enum):
         #     return True
         if self == ReadFormat.SDMX_CSV_1_0 and extension == "csv":
             return True
-        if self == ReadFormat.SDMX_CSV_2_0 and extension == "csv":
-            return True
-        return False
+        return bool(self == ReadFormat.SDMX_CSV_2_0 and extension == "csv")
 
     def __str__(self) -> str:
         """Return the string representation of the format."""

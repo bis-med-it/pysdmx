@@ -1,8 +1,11 @@
 import pytest
 
 from pysdmx.errors import Invalid, NotFound
-from pysdmx.model import Codelist, ConceptScheme
 from pysdmx.model.__base import ItemScheme
+from pysdmx.model.code import Codelist
+from pysdmx.model.concept import ConceptScheme
+from pysdmx.model.dataflow import Components, Dataflow, DataStructureDefinition
+from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Message
 
 
@@ -60,6 +63,73 @@ def test_get_concepts():
     }
 
     assert message.get_concept_scheme("ConceptScheme=cs1:cs1(1.0)") == cs1
+
+
+def test_get_data_structure_definitions():
+    dsd1 = DataStructureDefinition(
+        id="dsd1", agency="dsd1", components=Components([])
+    )
+
+    message = Message(
+        {
+            "DataStructures": {
+                "DataStructureDefinition=dsd1:dsd1(1.0)": dsd1,
+            }
+        }
+    )
+    assert message.get_data_structure_definitions() == {
+        "DataStructureDefinition=dsd1:dsd1(1.0)": dsd1,
+    }
+    assert (
+        message.get_data_structure_definition(
+            "DataStructureDefinition" "=dsd1:dsd1(1.0)"
+        )
+        == dsd1
+    )
+
+
+def test_get_dataflows():
+    df1 = Dataflow(id="df1", agency="df1")
+
+    message = Message(
+        {
+            "Dataflows": {
+                "Dataflow=dsd1:dsd1(1.0)": df1,
+            }
+        }
+    )
+    assert message.get_dataflows() == {
+        "Dataflow=dsd1:dsd1(1.0)": df1,
+    }
+
+    assert message.get_dataflow("Dataflow=dsd1:dsd1(1.0)") == df1
+
+
+def test_get_datasets():
+    ds = Dataset(structure="DataStructure=ds1:ds1(1.0)")
+    message = Message(None, {"DataStructure=ds1:ds1(1.0)": ds})
+
+    assert message.get_datasets() == {
+        "DataStructure=ds1:ds1(1.0)": ds,
+    }
+
+    assert message.get_dataset("DataStructure=ds1:ds1(1.0)") == ds
+
+
+def test_wrong_initialization_data_message():
+    exc_message = "Invalid data type: str"
+    with pytest.raises(Invalid) as exc_info:
+        Message({}, {"DataStructure=ds1:ds1(1.0)": "invalid"})
+    assert exc_message in str(exc_info.value.title)
+
+
+def test_cannot_get_datasets():
+    message = Message({})
+    with pytest.raises(NotFound):
+        message.get_datasets()
+
+    with pytest.raises(NotFound):
+        message.get_dataset("DataStructure=ds1:ds1(1.0)")
 
 
 def test_empty_get_elements():

@@ -14,18 +14,14 @@ Classes:
 
 import uuid
 from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Dict, Optional
 from typing import Any, Dict, Optional, Union
-import uuid
 
 from msgspec import Struct
 
 from pysdmx.errors import Invalid, NotFound
-from pysdmx.io.xml.sdmx21.__parsing_config import DSDS
-from pysdmx.io.xml.sdmx21.reader.__utils import DFWS
-from pysdmx.model import Codelist, ConceptScheme
 from pysdmx.model.__base import ItemScheme
+from pysdmx.model.code import Codelist
+from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
 from pysdmx.model.dataset import ActionType, Dataset
 
@@ -43,9 +39,12 @@ class Header(Struct, kw_only=True):
     structure: Optional[Dict[str, str]] = None
 
 
+# Prevent circular import by defining the words in the message module
 ORGS = "OrganisationSchemes"
 CLS = "Codelists"
 CONCEPTS = "Concepts"
+DSDS = "DataStructures"
+DFWS = "Dataflows"
 
 MSG_CONTENT_PKG = {
     ORGS: ItemScheme,
@@ -107,12 +106,12 @@ class Message(Struct, frozen=True):
                             "structure on structures.",
                         )
         if self.data is not None:
-            for data_key, data_value in self.data.items():
+            for data_value in self.data.values():
                 if not isinstance(data_value, Dataset):
                     raise Invalid(
-                        f"Invalid data value type: "
+                        f"Invalid data type: "
                         f"{type(data_value).__name__} "
-                        f"for {data_key}",
+                        f"for Data Message, requires a Dataset object.",
                         "Check the docs for the proper structure on data.",
                     )
 
@@ -184,3 +183,21 @@ class Message(Struct, frozen=True):
     def get_dataflow(self, short_urn: str) -> Dataflow:
         """Returns a specific Dataflow."""
         return self.__get_single_structure(DFWS, short_urn)
+
+    def get_datasets(self) -> Dict[str, Dataset]:
+        """Returns the Datasets."""
+        if self.data is not None:
+            return self.data
+        raise NotFound(
+            "No Datasets found in content",
+            "Could not find any Datasets in content.",
+        )
+
+    def get_dataset(self, short_urn: str) -> Dataset:
+        """Returns a specific Dataset."""
+        if self.data is not None and short_urn in self.data:
+            return self.data[short_urn]
+        raise NotFound(
+            f"No Dataset with Short URN {short_urn} found in content",
+            "Could not find the requested Dataset.",
+        )

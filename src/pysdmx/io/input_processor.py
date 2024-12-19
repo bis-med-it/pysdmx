@@ -1,9 +1,9 @@
 """Processes the input that comes into read_sdmx function."""
 
+import os.path
 from io import BytesIO, StringIO, TextIOWrapper
 from json import JSONDecodeError, loads
 from os import PathLike
-import os.path
 from pathlib import Path
 from typing import Tuple, Union
 
