@@ -115,7 +115,6 @@ class Message(Struct, frozen=True):
 
     def __get_elements(self, type_: str) -> Dict[str, Any]:
         """Returns the elements from content."""
-
         if self.structures is not None and type_ in self.structures:
             return self.structures[type_]
         raise NotFound(

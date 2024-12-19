@@ -41,7 +41,7 @@ def data_path_structures():
 @pytest.fixture()
 def data_path_structures_exc():
     base_path = (
-            Path(__file__).parent / "samples" / "data_v2_structures_exception.csv"
+        Path(__file__).parent / "samples" / "data_v2_structures_exception.csv"
     )
     return base_path
 
@@ -61,7 +61,7 @@ def data_path_three_actions():
 @pytest.fixture()
 def data_path_invalid_action():
     base_path = (
-            Path(__file__).parent / "samples" / "data_v2_invalid_action.csv"
+        Path(__file__).parent / "samples" / "data_v2_invalid_action.csv"
     )
     return base_path
 
@@ -158,7 +158,7 @@ def test_reading_three_actions(data_path_three_actions):
     with open(data_path_three_actions, "r") as f:
         infile = f.read()
     with pytest.raises(
-            Invalid, match="Cannot have more than one value on ACTION column"
+        Invalid, match="Cannot have more than one value on ACTION column"
     ):
         read(infile)
 

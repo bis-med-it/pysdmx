@@ -70,8 +70,12 @@ from pysdmx.model.dataflow import (
     DataStructureDefinition,
     Role,
 )
-from pysdmx.util import parse_item_urn, parse_short_urn, parse_urn, \
-    ItemReference
+from pysdmx.util import (
+    ItemReference,
+    parse_item_urn,
+    parse_short_urn,
+    parse_urn,
+)
 
 ANNOTATION_WRITER = OrderedDict(
     {
@@ -385,11 +389,13 @@ def __write_component(
     return outfile
 
 
-def __write_concept_identity(identity: Union[Concept, ItemReference], indent: str) -> str:
+def __write_concept_identity(
+    identity: Union[Concept, ItemReference], indent: str
+) -> str:
     if isinstance(identity, ItemReference):
         ref = identity
     else:
-        ref = parse_item_urn(identity.urn)
+        ref = parse_item_urn(identity.urn)  # type: ignore[arg-type]
 
     outfile = f"{indent}<{ABBR_STR}:{CON_ID}>"
     outfile += f"{add_indent(indent)}<{REF} "

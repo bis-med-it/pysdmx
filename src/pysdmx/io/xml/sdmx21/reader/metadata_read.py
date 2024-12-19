@@ -1,11 +1,10 @@
 """Parsers for reading metadata."""
-from copy import copy
+
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from msgspec import Struct
 
-from pysdmx.errors import Invalid
 from pysdmx.io.xml.sdmx21.__parsing_config import (
     AS_STATUS,
     ATT,
@@ -32,11 +31,13 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     LOCAL_REP,
     MANDATORY,
     ME_LIST,
+    PAR_ID,
+    PAR_VER,
     PRIM_MEASURE,
     REF,
     REQUIRED,
     TEXT_FORMAT,
-    TIME_DIM, PAR_ID, PAR_VER,
+    TIME_DIM,
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import (
     AGENCIES,
@@ -104,12 +105,13 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
 )
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (
+    AgencyScheme,
     Code,
     Codelist,
     Concept,
     ConceptScheme,
     DataType,
-    Facets, AgencyScheme,
+    Facets,
 )
 from pysdmx.model.__base import Agency, Annotation, Contact, Item, ItemScheme
 from pysdmx.model.dataflow import (
@@ -120,7 +122,7 @@ from pysdmx.model.dataflow import (
     Role,
 )
 from pysdmx.model.vtl import Transformation, TransformationScheme
-from pysdmx.util import find_by_urn, parse_urn, Reference, ItemReference
+from pysdmx.util import find_by_urn, ItemReference, parse_urn, Reference
 
 STRUCTURES_MAPPING = {
     CL: Codelist,
@@ -336,12 +338,14 @@ class StructureParser(Struct):
                 ).codes
 
             else:
-                short_urn = str(Reference(
-                    sdmx_type=ref[CLASS],
-                    agency=ref[AGENCY_ID],
-                    id=ref[ID],
-                    version=ref[VERSION]
-                ))
+                short_urn = str(
+                    Reference(
+                        sdmx_type=ref[CLASS],
+                        agency=ref[AGENCY_ID],
+                        id=ref[ID],
+                        version=ref[VERSION],
+                    )
+                )
                 codelist = self.codelists[short_urn]
 
             json_obj[CODES_LOW] = codelist
@@ -370,13 +374,13 @@ class StructureParser(Struct):
             agency=concept_ref[AGENCY_ID],
             id=concept_ref[PAR_ID],
             version=concept_ref[PAR_VER],
-            item_id=concept_ref[ID]
+            item_id=concept_ref[ID],
         )
         scheme_reference = Reference(
             sdmx_type=CS,
             agency=concept_ref[AGENCY_ID],
             id=concept_ref[PAR_ID],
-            version=concept_ref[PAR_VER]
+            version=concept_ref[PAR_VER],
         )
 
         concept_scheme = self.concepts.get(str(scheme_reference))

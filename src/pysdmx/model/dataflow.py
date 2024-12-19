@@ -144,7 +144,7 @@ class Component(Struct, frozen=True, omit_defaults=True):
         """
         if self.local_dtype:
             return self.local_dtype
-        elif self.concept.dtype:
+        elif isinstance(self.concept, Concept) and self.concept.dtype:
             return self.concept.dtype
         else:
             return DataType.STRING
@@ -162,7 +162,7 @@ class Component(Struct, frozen=True, omit_defaults=True):
         """
         if self.local_facets:
             return self.local_facets
-        elif self.concept.facets:
+        elif isinstance(self.concept, Concept) and self.concept.facets:
             return self.concept.facets
         else:
             return None
@@ -180,7 +180,7 @@ class Component(Struct, frozen=True, omit_defaults=True):
         """
         if self.local_codes:
             return self.local_codes
-        elif self.concept.codes:
+        elif isinstance(self.concept, Concept) and self.concept.codes:
             return self.concept.codes
         else:
             return None

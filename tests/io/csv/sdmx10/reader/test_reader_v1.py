@@ -35,12 +35,14 @@ def test_reading_data_v1(data_path):
     assert len(df) == 1000
     assert "DATAFLOW" not in df.columns
 
+
 def test_reading_sdmx_csv_v1(data_path):
     dataset_dict = read_sdmx(data_path, format=ReadFormat.SDMX_CSV_1_0).data
     assert "DataFlow=BIS:BIS_DER(1.0)" in dataset_dict
     df = dataset_dict["DataFlow=BIS:BIS_DER(1.0)"].data
     assert len(df) == 1000
     assert "DATAFLOW" not in df.columns
+
 
 def test_reading_sdmx_csv_v1_string(data_path):
     with open(data_path, "r") as f:
@@ -50,6 +52,7 @@ def test_reading_sdmx_csv_v1_string(data_path):
     df = dataset_dict["DataFlow=BIS:BIS_DER(1.0)"].data
     assert len(df) == 1000
     assert "DATAFLOW" not in df.columns
+
 
 def test_reading_data_v1_exception(data_path_exception):
     with open(data_path_exception, "r") as f:

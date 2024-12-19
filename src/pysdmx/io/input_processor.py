@@ -1,8 +1,9 @@
 """Processes the input that comes into read_sdmx function."""
-import os.path
-from io import BytesIO, TextIOWrapper, StringIO
+
+from io import BytesIO, StringIO, TextIOWrapper
 from json import JSONDecodeError, loads
 from os import PathLike
+import os.path
 from pathlib import Path
 from typing import Tuple, Union
 
@@ -21,15 +22,18 @@ def __check_xml(infile: str) -> bool:
 
     return False
 
+
 def __check_csv(infile: str) -> bool:
     try:
         pd.read_csv(StringIO(infile), nrows=2)
-        if len(infile.splitlines()) > 1:
+        if (
+            len(infile.splitlines()) > 1
+            or infile.splitlines()[0].count(",") > 1
+        ):
             return True
-        elif infile.splitlines()[0].count(",") > 1:
-            return True
-    except Exception as e:
+    except Exception:
         return False
+    return False
 
 
 def process_string_to_read(

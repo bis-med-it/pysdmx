@@ -113,8 +113,9 @@ def test_item_scheme_read(item_scheme_path):
     # Concept
     concepts = result["Concepts"]
     assert len(concepts) == 1
-    concept_scheme_sdmx = concepts[("ConceptScheme="
-                                    "SDMX:CROSS_DOMAIN_CONCEPTS(1.0)")]
+    concept_scheme_sdmx = concepts[
+        ("ConceptScheme=" "SDMX:CROSS_DOMAIN_CONCEPTS(1.0)")
+    ]
     assert concept_scheme_sdmx.id == "CROSS_DOMAIN_CONCEPTS"
     assert concept_scheme_sdmx.name == "SDMX Cross Domain Concept Scheme"
     assert concept_scheme_sdmx.items[0].id == "COLL_METHOD"
@@ -342,7 +343,9 @@ def test_vtl_transformation_scheme(samples_folder):
     result = read_xml(input_str, validate=True)
     assert "Transformations" in result
     assert len(result["Transformations"]) == 1
-    transformation_scheme = result["Transformations"]["TransformationScheme=SDMX:TEST(1.0)"]
+    transformation_scheme = result["Transformations"][
+        "TransformationScheme=SDMX:TEST(1.0)"
+    ]
     assert transformation_scheme.id == "TEST"
     assert transformation_scheme.name == "TEST"
     assert transformation_scheme.description == "TEST Transformation Scheme"
