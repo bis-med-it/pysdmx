@@ -15,9 +15,8 @@ def writer(
     """Converts a dataset to an SDMX CSV format.
 
     Args:
-        dataset: dataset
-        output_path: Path to file, if None, returns the
-          SDMX CSV data as a string
+        dataset: PandasDataset object
+        output_path: Path to save the SDMX CSV file
 
     Returns:
         SDMX CSV data as a string

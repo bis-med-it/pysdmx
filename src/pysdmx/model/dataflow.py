@@ -6,11 +6,11 @@ information typically provided via the data structure (and related
 structures like concept schemes and codelists) is already provided
 as part of the response.
 """
-import json
 
 from collections import Counter, UserList
 from datetime import datetime, timezone
 from enum import Enum
+import json
 from typing import Any, Iterable, Optional, Sequence, Union
 
 from msgspec import Struct
@@ -441,7 +441,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
     components: Components
 
     def to_vtl_json(self, path: str = None):
-        """Formats the DataStructureDefinition as a VTL DataStructure"""
+        """Formats the DataStructureDefinition as a VTL DataStructure."""
         from pysdmx.model.__utils import VTL_DTYPES_MAPPING, VTL_ROLE_MAPPING
 
         dataset_name = self.id
@@ -460,18 +460,20 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
             _nullability = c.role != Role.DIMENSION
             _role = VTL_ROLE_MAPPING[c.role]
 
-            component = {NAME: c.id,
-                         ROLE: _role,
-                         TYPE: _type,
-                         NULLABLE: _nullability
-                         }
+            component = {
+                NAME: c.id,
+                ROLE: _role,
+                TYPE: _type,
+                NULLABLE: _nullability,
+            }
 
             components.append(component)
 
-        result = {"datasets": [{"name": dataset_name,
-                                "DataStructure": components}]}
+        result = {
+            "datasets": [{"name": dataset_name, "DataStructure": components}]
+        }
         if path is not None:
-            with open(path, 'w') as fp:
+            with open(path, "w") as fp:
                 json.dump(result, fp)
         else:
             return result

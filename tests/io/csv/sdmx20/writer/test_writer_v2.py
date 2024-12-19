@@ -53,6 +53,7 @@ def test_to_sdmx_csv_writing(data_path, data_path_reference):
         check_like=True,
     )
 
+
 def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir):
     urn = (
         "urn:sdmx:org.sdmx.infomodel.registry."
@@ -72,7 +73,6 @@ def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir):
         reference_df.replace("nan", ""),
         check_like=True,
     )
-
 
 
 def test_writer_attached_attrs(data_path, data_path_reference_attch_atts):

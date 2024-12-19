@@ -1,6 +1,6 @@
-from pysdmx.model import Role
-
 from vtlengine.AST import Role as VTL_Role
+
+from pysdmx.model import Role
 
 VTL_DTYPES_MAPPING = {
     "String": "String",
@@ -42,7 +42,7 @@ VTL_DTYPES_MAPPING = {
     "MonthDay": "String",
     "Day": "String",
     "Time": "String",
-    "Duration": "Duration"
+    "Duration": "Duration",
 }
 
 VTL_ROLE_MAPPING = {
