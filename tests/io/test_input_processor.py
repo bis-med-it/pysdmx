@@ -64,6 +64,12 @@ def test_process_string_to_read_str(valid_xml):
     assert filetype == "xml"
 
 
+def test_process_string_to_read_str_path(valid_xml, valid_xml_path):
+    infile, filetype = process_string_to_read(str(valid_xml_path))
+    assert infile == valid_xml
+    assert filetype == "xml"
+
+
 def test_process_string_to_read_bom(valid_xml, valid_xml_bom):
     infile, filetype = process_string_to_read(valid_xml_bom)
     assert infile[:5] == "<?xml"
@@ -98,6 +104,11 @@ def test_process_string_to_read_valid_json():
 def test_process_string_to_read_invalid_json():
     with pytest.raises(Invalid, match="Cannot parse input as SDMX."):
         process_string_to_read('{"key": "value"')
+
+
+def test_check_csv_exception():
+    with pytest.raises(Invalid):
+        process_string_to_read("")
 
 
 def test_process_string_to_read_invalid_allowed_error(invalid_message_xml):

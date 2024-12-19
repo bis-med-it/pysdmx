@@ -36,6 +36,14 @@ def __check_csv(infile: str) -> bool:
     return False
 
 
+def __check_json(infile: str) -> bool:
+    try:
+        loads(infile)
+        return True
+    except JSONDecodeError:
+        return False
+
+
 def process_string_to_read(
     infile: Union[str, Path, BytesIO]
 ) -> Tuple[str, str]:
@@ -72,11 +80,8 @@ def process_string_to_read(
     out_str = __remove_bom(out_str)
 
     # Check if string is a valid JSON
-    try:
-        loads(out_str)
+    if __check_json(out_str):
         return out_str, "json"
-    except JSONDecodeError:
-        pass
 
     # Check if string is a valid XML
     if __check_xml(out_str):

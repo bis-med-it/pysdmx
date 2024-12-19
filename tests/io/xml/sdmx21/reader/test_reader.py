@@ -5,7 +5,9 @@ import pytest
 
 import pysdmx
 from pysdmx.errors import Invalid, NotImplemented
+from pysdmx.io import read_sdmx
 from pysdmx.io.input_processor import process_string_to_read
+from pysdmx.io.reader import ReadFormat
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
 from pysdmx.io.xml.sdmx21.writer import writer as write_xml
@@ -187,6 +189,25 @@ def test_reading_validation(samples_folder, filename):
     assert data.shape == (1000, 20)
 
 
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "gen_all.xml",
+        "gen_ser.xml",
+        "str_all.xml",
+        "str_ser.xml",
+        "str_ser_group.xml",
+    ],
+)
+def test_reading_validation_read_sdmx(samples_folder, filename):
+    result = read_sdmx(
+        samples_folder / filename, format=ReadFormat.SDMX_ML_2_1, validate=True
+    ).data
+    assert result is not None
+    data = result["DataStructure=BIS:BIS_DER(1.0)"].data
+    assert data.shape == (1000, 20)
+
+
 # Test reading of dataflow SDMX file
 def test_dataflow(samples_folder):
     data_path = samples_folder / "dataflow.xml"
@@ -228,6 +249,15 @@ def test_dataflow_structure(samples_folder):
     input_str, filetype = process_string_to_read(data_path)
     assert filetype == "xml"
     result = read_xml(input_str, validate=True)
+    assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result["Dataflows"]
+
+
+def test_dataflow_structure_read_sdmx(samples_folder):
+    result = read_sdmx(
+        samples_folder / "dataflow_structure.xml",
+        format=ReadFormat.SDMX_ML_2_1,
+        validate=True,
+    ).structures
     assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result["Dataflows"]
 
 
