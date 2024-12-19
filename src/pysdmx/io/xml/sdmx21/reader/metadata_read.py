@@ -92,7 +92,6 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     TRANSFORMATION,
     TRANSFORMATIONS,
     TYPE,
-    unique_id,
     URI,
     URIS,
     URL,
@@ -568,17 +567,19 @@ class StructureParser(Struct):
         Returns:
             A dictionary with the structures formatted
         """
-        datastructures = {}
+        schemas = {}
 
         json_element[item] = add_list(json_element[item])
         for element in json_element[item]:
             if URN.lower() in element and element[URN.lower()] is not None:
-                full_id = parse_urn(element[URN.lower()]).__str__()
+                short_urn = parse_urn(element[URN.lower()]).__str__()
             else:
-                full_id = unique_id(
-                    element[AGENCY_ID], element[ID], element[VERSION]
-                )
-                full_id = f"{item}={full_id}"
+                short_urn = Reference(
+                    sdmx_type=item,
+                    agency=element[AGENCY_ID],
+                    id=element[ID],
+                    version=element[VERSION],
+                ).__str__()
 
             element = self.__format_annotations(element)
             element = self.__format_name_description(element)
@@ -614,12 +615,9 @@ class StructureParser(Struct):
                     structure[COMPS] = Components(structure[COMPS])
                 else:
                     structure[COMPS] = Components([])
-                self.datastructures[full_id] = STRUCTURES_MAPPING[schema](
-                    **structure
-                )
-            datastructures[full_id] = STRUCTURES_MAPPING[schema](**structure)
+            schemas[short_urn] = STRUCTURES_MAPPING[schema](**structure)
 
-        return datastructures
+        return schemas
 
     def format_structures(self, json_meta: Dict[str, Any]) -> Dict[str, Any]:
         """Formats the structures in json format.
@@ -646,6 +644,7 @@ class StructureParser(Struct):
             self.concepts = structures[CONCEPTS]
         if DSDS in json_meta:
             structures[DSDS] = self.__format_schema(json_meta[DSDS], DSDS, DSD)
+            self.datastructures = structures[DSDS]
         if DFWS in json_meta:
             structures[DFWS] = self.__format_schema(json_meta[DFWS], DFWS, DFW)
 

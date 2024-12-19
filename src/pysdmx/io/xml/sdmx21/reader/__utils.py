@@ -124,17 +124,3 @@ FacetType = {
     "endTime": "end_time",
     "isSequence": "is_sequence",
 }
-
-
-def unique_id(agencyID: str, id_: str, version: str) -> str:
-    """Create a unique ID for an object.
-
-    Args:
-        agencyID: The agency ID
-        id_: The ID of the object
-        version: The version of the object
-
-    Returns:
-        A string with the unique ID
-    """
-    return f"{agencyID}:{id_}({version})"
