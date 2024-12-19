@@ -47,12 +47,12 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
 )
 from pysdmx.io.xml.sdmx21.reader.__utils import DFW
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
-    __to_lower_camel_case,
     ABBR_COM,
     ABBR_MSG,
     ABBR_STR,
-    add_indent,
     MSG_CONTENT_PKG,
+    __to_lower_camel_case,
+    add_indent,
 )
 from pysdmx.model import Codelist, Concept, DataType, Facets, Hierarchy
 from pysdmx.model.__base import (
@@ -311,7 +311,6 @@ def __write_components(item: DataStructureDefinition, indent: str) -> str:
 def __write_attribute_relation(
     item: Component, indent: str, component_info: Dict[str, Any]
 ) -> str:
-
     outfile = f"{indent}<{ABBR_STR}:{ATT_REL}>"
     att_rel = item.attachment_level
     if att_rel is None or att_rel == "D":
@@ -329,10 +328,7 @@ def __write_attribute_relation(
         dim_names = [comp.id for comp in component_info[DIM]]
 
         for comp_name in comps_to_relate:
-            if comp_name in dim_names:
-                role = Role.DIMENSION
-            else:
-                role = Role.MEASURE
+            role = Role.DIMENSION if comp_name in dim_names else Role.MEASURE
             related_role = ROLE_MAPPING[role]
             outfile += f"{add_indent(indent)}<{ABBR_STR}:{related_role}>"
             outfile += (
@@ -419,10 +415,7 @@ def __write_representation(item: Component, indent: str) -> str:
         local_representation += __write_enumeration(item.local_codes, indent)
 
     if item.local_facets is not None or item.local_dtype is not None:
-        if item.local_codes is not None:
-            type_ = ENUM_FORMAT
-        else:
-            type_ = TEXT_FORMAT
+        type_ = ENUM_FORMAT if item.local_codes is not None else TEXT_FORMAT
         local_representation += __write_text_format(
             item.local_dtype, item.local_facets, type_, indent
         )
@@ -507,9 +500,9 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
         components = __write_components(item_scheme, add_indent(indent))
 
     if scheme not in [DSD, DFW]:
-        data[
-            "Attributes"
-        ] += f" isPartial={str(item_scheme.is_final).lower()!r}"
+        data["Attributes"] += (
+            f" isPartial={str(item_scheme.is_final).lower()!r}"
+        )
 
     outfile = ""
 

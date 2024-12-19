@@ -1,7 +1,7 @@
 """Utility classes for pysdmx REST query builders."""
 
-from enum import IntEnum
 import re
+from enum import IntEnum
 from typing import Sequence, Union
 
 from pysdmx.errors import Invalid

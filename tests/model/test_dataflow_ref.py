@@ -3,17 +3,17 @@ import pytest
 from pysdmx.model import DataflowRef
 
 
-@pytest.fixture()
+@pytest.fixture
 def dsi():
     return "ICP"
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "5B0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.0"
 

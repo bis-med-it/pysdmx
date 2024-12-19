@@ -13,42 +13,42 @@ from pysdmx.model import (
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def fid():
     return "FREQ"
 
 
-@pytest.fixture()
+@pytest.fixture
 def req():
     return True
 
 
-@pytest.fixture()
+@pytest.fixture
 def role():
     return Role.DIMENSION
 
 
-@pytest.fixture()
+@pytest.fixture
 def typ():
     return DataType.STRING
 
 
-@pytest.fixture()
+@pytest.fixture
 def cl_ref():
     return "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
 
 
-@pytest.fixture()
+@pytest.fixture
 def array_def():
     return ArrayBoundaries(1, 10)
 
 
-@pytest.fixture()
+@pytest.fixture
 def concept():
     return Concept("TEST", name="A test concept")
 
 
-@pytest.fixture()
+@pytest.fixture
 def codes():
     c1 = Code("A", "Annual")
     c2 = Code("D", "Daily")
@@ -57,7 +57,7 @@ def codes():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def facets():
     return Facets(min_length=2)
 

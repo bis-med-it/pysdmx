@@ -28,10 +28,7 @@ class Transformation(Item, frozen=True, omit_defaults=True):
     @property
     def full_expression(self) -> str:
         """Return the full expression with the semicolon."""
-        if self.is_persistent:
-            assign_operand = "<-"
-        else:
-            assign_operand = ":="
+        assign_operand = "<-" if self.is_persistent else ":="
 
         return f"{self.result} {assign_operand} {self.expression};"
 

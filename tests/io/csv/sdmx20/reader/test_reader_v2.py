@@ -8,37 +8,37 @@ from pysdmx.io.csv.sdmx20.reader import read
 from pysdmx.io.reader import ReadFormat
 
 
-@pytest.fixture()
+@pytest.fixture
 def data_path():
     base_path = Path(__file__).parent / "samples" / "data_v2.csv"
     return base_path
 
 
-@pytest.fixture()
+@pytest.fixture
 def data_path_exception():
     base_path = Path(__file__).parent / "samples" / "data_v2_exception.csv"
     return base_path
 
 
-@pytest.fixture()
+@pytest.fixture
 def data_path_no_freq():
     base_path = Path(__file__).parent / "samples" / "data_v2_no_freq_cols.csv"
     return base_path
 
 
-@pytest.fixture()
+@pytest.fixture
 def data_path_action():
     base_path = Path(__file__).parent / "samples" / "data_v2_action_col.csv"
     return base_path
 
 
-@pytest.fixture()
+@pytest.fixture
 def data_path_structures():
     base_path = Path(__file__).parent / "samples" / "data_v2_structures.csv"
     return base_path
 
 
-@pytest.fixture()
+@pytest.fixture
 def data_path_structures_exc():
     base_path = (
         Path(__file__).parent / "samples" / "data_v2_structures_exception.csv"
@@ -46,19 +46,19 @@ def data_path_structures_exc():
     return base_path
 
 
-@pytest.fixture()
+@pytest.fixture
 def data_path_two_actions():
     base_path = Path(__file__).parent / "samples" / "data_v2_two_actions.csv"
     return base_path
 
 
-@pytest.fixture()
+@pytest.fixture
 def data_path_three_actions():
     base_path = Path(__file__).parent / "samples" / "data_v2_three_actions.csv"
     return base_path
 
 
-@pytest.fixture()
+@pytest.fixture
 def data_path_invalid_action():
     base_path = (
         Path(__file__).parent / "samples" / "data_v2_invalid_action.csv"

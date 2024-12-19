@@ -1,17 +1,17 @@
-from datetime import datetime, timedelta, timezone
 import re
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
 from pysdmx.model import MultiValueMap
 
 
-@pytest.fixture()
+@pytest.fixture
 def source():
     return [r"regex:^[\d]{1}$", "LC"]
 
 
-@pytest.fixture()
+@pytest.fixture
 def target():
     return ["CHF"]
 

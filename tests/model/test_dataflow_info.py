@@ -12,19 +12,19 @@ from pysdmx.model import (
     DataflowInfo,
     DataProvider,
     DataType,
-    decoders,
-    encoders,
     Facets,
     Role,
+    decoders,
+    encoders,
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def id():
     return "EXR"
 
 
-@pytest.fixture()
+@pytest.fixture
 def comps():
     f1 = Component(
         "FREQ",
@@ -55,57 +55,57 @@ def comps():
     return Components([f1, f2, f3, f4, f5])
 
 
-@pytest.fixture()
+@pytest.fixture
 def name():
     return "EXR name"
 
 
-@pytest.fixture()
+@pytest.fixture
 def desc():
     return "EXR desc"
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return Agency("BIS")
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.42"
 
 
-@pytest.fixture()
+@pytest.fixture
 def providers():
     return [DataProvider("5B0"), DataProvider("4F0")]
 
 
-@pytest.fixture()
+@pytest.fixture
 def series():
     return 42_000
 
 
-@pytest.fixture()
+@pytest.fixture
 def obs():
     return 20_110_617
 
 
-@pytest.fixture()
+@pytest.fixture
 def start():
     return "2000"
 
 
-@pytest.fixture()
+@pytest.fixture
 def end():
     return "2042"
 
 
-@pytest.fixture()
+@pytest.fixture
 def upd():
     return datetime.now(timezone.utc)
 
 
-@pytest.fixture()
+@pytest.fixture
 def dsd():
     return (
         "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure="

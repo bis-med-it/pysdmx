@@ -7,12 +7,12 @@ from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import Invalid
 
 
-@pytest.fixture()
+@pytest.fixture
 def res():
     return "CBS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def mult_attrs():
     return ["CONF_STATUS", "OBS_STATUS"]
 

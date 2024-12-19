@@ -1,5 +1,6 @@
 # mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 2.1 Generic data messages."""
+
 from typing import Any, Dict, List, Tuple
 
 import pandas as pd
@@ -204,7 +205,6 @@ def __obs_processing(
     obs_structure: Tuple[List[str], str, List[str]],
     prettyprint: bool = True,
 ) -> str:
-
     def __format_obs_str(element: Dict[str, Any]) -> str:
         child2 = "\t\t" if prettyprint else ""
         child3 = "\t\t\t" if prettyprint else ""

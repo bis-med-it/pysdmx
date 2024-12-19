@@ -26,49 +26,49 @@ TEST_CS_URN = (
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def codelist_sample():
     base_path = Path(__file__).parent / "samples" / "codelist.xml"
     with open(base_path, "r") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def concept_sample():
     base_path = Path(__file__).parent / "samples" / "concept.xml"
     with open(base_path, "r") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def empty_sample():
     base_path = Path(__file__).parent / "samples" / "empty.xml"
     with open(base_path, "r") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def read_write_sample():
     base_path = Path(__file__).parent / "samples" / "read_write_sample.xml"
     with open(base_path, "r") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def bis_sample():
     base_path = Path(__file__).parent / "samples" / "bis_der.xml"
     with open(base_path, "r") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def groups_sample():
     base_path = Path(__file__).parent / "samples" / "del_groups.xml"
     with open(base_path, "r") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def header():
     return Header(
         id="ID",
@@ -76,7 +76,7 @@ def header():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def complete_header():
     return Header(
         id="ID",
@@ -87,7 +87,7 @@ def complete_header():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def read_write_header():
     return Header(
         id="DF1605144905",
@@ -97,7 +97,7 @@ def read_write_header():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def bis_header():
     return Header(
         id="test",
@@ -107,7 +107,7 @@ def bis_header():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def codelist():
     return Codelist(
         annotations=[
@@ -141,7 +141,7 @@ def codelist():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def concept():
     return ConceptScheme(
         id="FREQ",
@@ -173,7 +173,7 @@ def concept():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def concept_ds():
     return ConceptScheme(
         urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
@@ -203,7 +203,7 @@ def concept_ds():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def datastructure(concept_ds):
     return DataStructureDefinition(
         annotations=[
@@ -272,7 +272,7 @@ def datastructure(concept_ds):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def partial_datastructure():
     return DataStructureDefinition(
         agency="BIS",
@@ -287,7 +287,7 @@ def partial_datastructure():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataflow():
     return Dataflow(
         agency="BIS",

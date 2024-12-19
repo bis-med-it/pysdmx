@@ -188,7 +188,7 @@ class Component(Struct, frozen=True, omit_defaults=True):
     def __str__(self) -> str:
         """Returns a human-friendly description."""
         out = []
-        for k in self.__annotations__.keys():
+        for k in self.__annotations__:
             v = self.__getattribute__(k)
             if v:
                 if k == "concept":
@@ -357,7 +357,7 @@ class DataflowInfo(Struct, frozen=True, omit_defaults=True):
     def __str__(self) -> str:
         """Returns a human-friendly description."""
         out = []
-        for k in self.__annotations__.keys():
+        for k in self.__annotations__:
             v = self.__getattribute__(k)
             if v:
                 out.append(f"{k}={v}")
@@ -405,7 +405,7 @@ class Schema(Struct, frozen=True, omit_defaults=True):
     def __str__(self) -> str:
         """Returns a human-friendly description."""
         out = []
-        for k in self.__annotations__.keys():
+        for k in self.__annotations__:
             v = self.__getattribute__(k)
             if v:
                 out.append(f"{k}={v}")

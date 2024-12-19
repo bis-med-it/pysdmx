@@ -9,7 +9,6 @@ from pysdmx.api.qb.structure import (
 from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import Invalid
 
-
 details_initial = [
     StructureDetail.FULL,
     StructureDetail.ALL_STUBS,
@@ -27,27 +26,27 @@ details_1_3_0 = [
 details_2_0_0 = [StructureDetail.RAW]
 
 
-@pytest.fixture()
+@pytest.fixture
 def typ():
     return StructureType.DATAFLOW
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "BIS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def res():
     return "CBS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def refs():
     return StructureReference.ALL
 

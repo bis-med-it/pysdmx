@@ -6,22 +6,22 @@ import pytest
 from pysdmx.model import HierarchicalCode, Hierarchy
 
 
-@pytest.fixture()
+@pytest.fixture
 def id():
     return "id"
 
 
-@pytest.fixture()
+@pytest.fixture
 def name():
     return "name"
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "5B0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def operator():
     return (
         "urn:sdmx:org.sdmx.infomodel.transformation."
@@ -29,17 +29,17 @@ def operator():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def desc():
     return "description"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.42.0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def codes():
     grandchild = HierarchicalCode("child211", "Child 2.1.1")
     child = HierarchicalCode("child21", "Child 2.1", codes=[grandchild])
@@ -63,7 +63,6 @@ def test_defaults(id, name, agency):
 
 
 def test_full_initialization(id, name, agency, operator, desc, version, codes):
-
     cs = Hierarchy(
         id=id,
         name=name,
@@ -201,7 +200,6 @@ def test_all_codes(id, name, agency):
 
 
 def test_serialization(id, name, agency, operator, desc, version, codes):
-
     h = Hierarchy(
         id=id,
         name=name,

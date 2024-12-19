@@ -7,32 +7,32 @@ from pysdmx.model.__base import DataflowRef
 from pysdmx.model.category import Category, CategoryScheme
 
 
-@pytest.fixture()
+@pytest.fixture
 def id():
     return "id"
 
 
-@pytest.fixture()
+@pytest.fixture
 def name():
     return "name"
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "5B0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def desc():
     return "description"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.42.0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataflows():
     df1 = DataflowRef(id="DF1", agency="BIS")
     df2 = DataflowRef(id="DF2", agency="BIS")
@@ -41,9 +41,8 @@ def dataflows():
     return [df1, df2, df3, df4]
 
 
-@pytest.fixture()
+@pytest.fixture
 def categories(dataflows):
-
     grandchild = Category(
         id="child211",
         name="Child 2.1.1",
@@ -74,7 +73,6 @@ def test_defaults(id, name, agency):
 
 
 def test_full_initialization(id, name, agency, desc, version, categories):
-
     cs = CategoryScheme(
         id=id,
         name=name,
@@ -138,7 +136,6 @@ def test_get_category(id, name, agency, categories):
 
 
 def test_dataflows(id, name, agency, categories, dataflows):
-
     cs = CategoryScheme(id=id, name=name, agency=agency, items=categories)
 
     flows = cs.dataflows
@@ -149,7 +146,6 @@ def test_dataflows(id, name, agency, categories, dataflows):
 
 
 def test_serialization(id, name, agency, desc, version, categories):
-
     cs = CategoryScheme(
         id=id,
         name=name,

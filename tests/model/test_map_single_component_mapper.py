@@ -5,17 +5,17 @@ import pytest
 from pysdmx.model import ComponentMap, RepresentationMap, ValueMap
 
 
-@pytest.fixture()
+@pytest.fixture
 def source():
     return "COUNTRY"
 
 
-@pytest.fixture()
+@pytest.fixture
 def target():
     return "REF_AREA"
 
 
-@pytest.fixture()
+@pytest.fixture
 def values():
     vm1 = ValueMap(source="AR", target="ARG")
     vm2 = ValueMap(source="UY", target="URY")

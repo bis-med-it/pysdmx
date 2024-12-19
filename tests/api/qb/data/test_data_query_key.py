@@ -7,32 +7,32 @@ from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import Invalid
 
 
-@pytest.fixture()
+@pytest.fixture
 def context():
     return DataContext.DATAFLOW
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "BIS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def res():
     return "CBS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def key():
     return "A.EUR.CHF"
 
 
-@pytest.fixture()
+@pytest.fixture
 def keys():
     return ["A.EUR.CHF", "A.JPY.CHF"]
 

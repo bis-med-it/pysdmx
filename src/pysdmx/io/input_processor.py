@@ -17,10 +17,7 @@ def __remove_bom(input_string: str) -> str:
 
 
 def __check_xml(infile: str) -> bool:
-    if infile[:5] == "<?xml":
-        return True
-
-    return False
+    return infile[:5] == "<?xml"
 
 
 def __check_csv(infile: str) -> bool:
@@ -45,7 +42,7 @@ def __check_json(infile: str) -> bool:
 
 
 def process_string_to_read(
-    infile: Union[str, Path, BytesIO]
+    infile: Union[str, Path, BytesIO],
 ) -> Tuple[str, str]:
     """Processes the input that comes into read_sdmx function.
 
