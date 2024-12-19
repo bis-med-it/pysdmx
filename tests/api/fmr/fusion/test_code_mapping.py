@@ -1,10 +1,10 @@
 import pytest
-import tests.api.fmr.code_map_checks as checks
 
+import tests.api.fmr.code_map_checks as checks
 from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 
 
-@pytest.fixture()
+@pytest.fixture
 def fmr():
     return RegistryClient(
         "https://registry.sdmx.org/sdmx/v2/",
@@ -12,7 +12,7 @@ def fmr():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def async_fmr() -> AsyncRegistryClient:
     return AsyncRegistryClient(
         "https://registry.sdmx.org/sdmx/v2/",
@@ -20,7 +20,7 @@ def async_fmr() -> AsyncRegistryClient:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def query(fmr):
     res = "/structure/representationmap/"
     provider = "BIS"
@@ -29,13 +29,13 @@ def query(fmr):
     return f"{fmr.api_endpoint}{res}{provider}/{id}/{version}"
 
 
-@pytest.fixture()
+@pytest.fixture
 def body():
     with open("tests/api/fmr/samples/map/code_map.fusion.json", "rb") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def multi_query(fmr):
     res = "/structure/representationmap/"
     provider = "BIS"
@@ -44,7 +44,7 @@ def multi_query(fmr):
     return f"{fmr.api_endpoint}{res}{provider}/{id}/{version}"
 
 
-@pytest.fixture()
+@pytest.fixture
 def multi_body():
     with open(
         "tests/api/fmr/samples/map/multi_code_map.fusion.json", "rb"
@@ -57,7 +57,7 @@ def test_returns_code_map(respx_mock, fmr, query, body):
     checks.check_code_mapping_core(respx_mock, fmr, query, body)
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_mapping_details(respx_mock, async_fmr, query, body):
     """The response contains the expected mappings."""
     await checks.check_code_mapping_details(respx_mock, async_fmr, query, body)
@@ -70,7 +70,7 @@ def test_returns_multi_code_map(respx_mock, fmr, multi_query, multi_body):
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_multi_mapping_details(
     respx_mock, async_fmr, multi_query, multi_body
 ):

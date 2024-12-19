@@ -7,27 +7,27 @@ from pysdmx.api.qb.schema import (
 from pysdmx.api.qb.util import ApiVersion
 
 
-@pytest.fixture()
+@pytest.fixture
 def context():
     return SchemaContext.METADATA_STRUCTURE
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "BIS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def res():
     return "CBS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def obs_dim():
     return "TIME_PERIOD"
 

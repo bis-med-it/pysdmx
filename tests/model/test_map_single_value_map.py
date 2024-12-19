@@ -1,17 +1,17 @@
-from datetime import datetime, timedelta, timezone
 import re
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
 from pysdmx.model import ValueMap
 
 
-@pytest.fixture()
+@pytest.fixture
 def source():
     return "UY"
 
 
-@pytest.fixture()
+@pytest.fixture
 def target():
     return "URY"
 

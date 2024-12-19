@@ -9,11 +9,17 @@ from pysdmx.io.json.fusion.messages.core import FusionString
 from pysdmx.io.json.fusion.messages.dataflow import FusionDataflow
 from pysdmx.model import (
     Agency,
-    Categorisation as CT,
     Category,
-    CategoryScheme as CS,
-    Dataflow as DF,
     DataflowRef,
+)
+from pysdmx.model import (
+    Categorisation as CT,
+)
+from pysdmx.model import (
+    CategoryScheme as CS,
+)
+from pysdmx.model import (
+    Dataflow as DF,
 )
 from pysdmx.util import find_by_urn
 

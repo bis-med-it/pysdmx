@@ -9,9 +9,11 @@ from pysdmx.io.json.fusion.messages.org import FusionProviderScheme
 from pysdmx.model import (
     Agency,
     Components,
-    Dataflow as DF,
     DataflowInfo,
     DataProvider,
+)
+from pysdmx.model import (
+    Dataflow as DF,
 )
 
 

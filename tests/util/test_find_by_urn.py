@@ -5,7 +5,7 @@ from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist
 from pysdmx.util import find_by_urn
 
 
-@pytest.fixture()
+@pytest.fixture
 def codelists():
     cl1 = JsonCodelist("CL_FREQ", "Freq", "BIS")
     cl2 = JsonCodelist("CL_AREA", "Area", "BIS")

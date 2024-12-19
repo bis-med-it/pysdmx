@@ -2,31 +2,31 @@ import pytest
 
 from pysdmx.api.qb.refmeta import RefMetaByStructureQuery, RefMetaDetail
 from pysdmx.api.qb.structure import StructureType
-from pysdmx.api.qb.util import ApiVersion, REST_ALL, REST_LATEST
+from pysdmx.api.qb.util import REST_ALL, REST_LATEST, ApiVersion
 from pysdmx.errors import Invalid
 
 
-@pytest.fixture()
+@pytest.fixture
 def typ():
     return StructureType.DATA_STRUCTURE
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "BIS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def res():
     return "CBS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def detail():
     return RefMetaDetail.ALL_STUBS
 

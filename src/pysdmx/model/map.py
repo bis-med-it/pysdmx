@@ -1,7 +1,7 @@
 """Model for Mapping Definitions."""
 
-from datetime import datetime
 import re
+from datetime import datetime
 from typing import Any, Iterator, Literal, Optional, Sequence, Tuple, Union
 
 from msgspec import Struct
@@ -435,7 +435,9 @@ class StructureMap(MaintainableArtefact, frozen=True, omit_defaults=True):
         """Return the number of mapping rules in the structure map."""
         return len(self.maps)
 
-    def __getitem__(self, id_: str) -> Optional[
+    def __getitem__(
+        self, id_: str
+    ) -> Optional[
         Sequence[
             Union[
                 ComponentMap,

@@ -3,17 +3,17 @@ import pytest
 from pysdmx.model.message import SubmissionResult
 
 
-@pytest.fixture()
+@pytest.fixture
 def action():
     return "Append"
 
 
-@pytest.fixture()
+@pytest.fixture
 def short_urn():
     return "Codelist=BIS:BIS_DER(1.0)"
 
 
-@pytest.fixture()
+@pytest.fixture
 def status():
     return "Success"
 

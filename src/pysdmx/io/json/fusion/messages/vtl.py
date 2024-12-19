@@ -16,7 +16,6 @@ from pysdmx.model.vtl import (
     RulesetScheme,
     ToVtlMapping,
     Transformation,
-    TransformationScheme as TS,
     UserDefinedOperator,
     UserDefinedOperatorScheme,
     VtlCodelistMapping,
@@ -24,6 +23,9 @@ from pysdmx.model.vtl import (
     VtlDataflowMapping,
     VtlMapping,
     VtlMappingScheme,
+)
+from pysdmx.model.vtl import (
+    TransformationScheme as TS,
 )
 
 

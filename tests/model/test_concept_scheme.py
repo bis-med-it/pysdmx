@@ -6,32 +6,32 @@ import pytest
 from pysdmx.model.concept import Concept, ConceptScheme, DataType, Facets
 
 
-@pytest.fixture()
+@pytest.fixture
 def id():
     return "id"
 
 
-@pytest.fixture()
+@pytest.fixture
 def name():
     return "name"
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "5B0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def desc():
     return "description"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.42.0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def concepts():
     return [
         Concept(
@@ -58,7 +58,6 @@ def test_defaults(id, name, agency):
 
 
 def test_full_initialization(id, name, agency, desc, version, concepts):
-
     cs = ConceptScheme(
         id=id,
         name=name,
@@ -112,7 +111,6 @@ def test_get_concept(id, name, agency, concepts):
 
 
 def test_serialization(id, name, agency, desc, version, concepts):
-
     cs = ConceptScheme(
         id=id,
         name=name,

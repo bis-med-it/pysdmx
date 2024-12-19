@@ -5,37 +5,37 @@ import pytest
 from pysdmx.model import SeriesInfo
 
 
-@pytest.fixture()
+@pytest.fixture
 def id():
     return "A.B.42"
 
 
-@pytest.fixture()
+@pytest.fixture
 def name():
     return "AB42"
 
 
-@pytest.fixture()
+@pytest.fixture
 def obs():
     return 4242
 
 
-@pytest.fixture()
+@pytest.fixture
 def start():
     return "2000"
 
 
-@pytest.fixture()
+@pytest.fixture
 def end():
     return "2042"
 
 
-@pytest.fixture()
+@pytest.fixture
 def upd():
     return datetime.now(timezone.utc)
 
 
-@pytest.fixture()
+@pytest.fixture
 def active():
     return True
 

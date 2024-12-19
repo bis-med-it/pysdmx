@@ -1,7 +1,7 @@
 import pytest
 
 from pysdmx.errors import Invalid
-from pysdmx.util import parse_short_urn, Reference
+from pysdmx.util import Reference, parse_short_urn
 
 
 def test_no_match():

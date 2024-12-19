@@ -311,7 +311,7 @@ def check_dimension_at_observation(
     """This function checks if the dimension at observation is valid."""
     # If dimension_at_observation is None, set it to ALL_DIM
     if dimension_at_observation is None:
-        dimension_at_observation = {k: ALL_DIM for k in content.keys()}
+        dimension_at_observation = {k: ALL_DIM for k in content}
         return dimension_at_observation
     # Validate the datasets
     for ds in content.values():
