@@ -12,9 +12,9 @@ Classes:
     SubmissionResult: Class that represents the result of a submission.
 """
 
-import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional, Union
+import uuid
 
 from msgspec import Struct
 
@@ -23,8 +23,8 @@ from pysdmx.io.xml.sdmx21.__parsing_config import DSDS
 from pysdmx.io.xml.sdmx21.reader.__utils import DFWS
 from pysdmx.model import Codelist, ConceptScheme
 from pysdmx.model.__base import ItemScheme
-from pysdmx.model.dataflow import DataStructureDefinition, Dataflow
-from pysdmx.model.dataset import Dataset, ActionType
+from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
+from pysdmx.model.dataset import ActionType, Dataset
 
 
 class Header(Struct, kw_only=True):
@@ -61,6 +61,9 @@ class Message(Struct, frozen=True):
             content type (e.g. ``OrganisationSchemes``, ``Codelists``, etc.),
             and the values are the content objects (e.g. ``ItemScheme``,
             ``Codelist``, etc.).
+        data (dict): Content of the Data Message.
+             The keys are the dataset short URNs, and the values
+             are the Dataset objects.
     """
 
     structures: Optional[
@@ -94,7 +97,8 @@ class Message(Struct, frozen=True):
                 for obj_ in content_value.values():
                     if not isinstance(obj_, MSG_CONTENT_PKG[content_key]):
                         raise Invalid(
-                            f"Invalid content value type: {type(obj_).__name__} "
+                            f"Invalid content value type: "
+                            f"{type(obj_).__name__} "
                             f"for {content_key}",
                             "Check the docs for the proper "
                             "structure on structures.",
@@ -103,29 +107,31 @@ class Message(Struct, frozen=True):
             for data_key, data_value in self.data.items():
                 if not isinstance(data_value, Dataset):
                     raise Invalid(
-                        f"Invalid data value type: {type(data_value).__name__} "
+                        f"Invalid data value type: "
+                        f"{type(data_value).__name__} "
                         f"for {data_key}",
                         "Check the docs for the proper structure on data.",
                     )
 
     def __get_elements(self, type_: str) -> Dict[str, Any]:
         """Returns the elements from content."""
-        if type_ in self.structures:
+
+        if self.structures is not None and type_ in self.structures:
             return self.structures[type_]
         raise NotFound(
             f"No {type_} found in content",
             f"Could not find any {type_} in content.",
         )
 
-    def __get_single_element(self, type_: str, short_urn: str) -> Any:
+    def __get_single_structure(self, type_: str, short_urn: str) -> Any:
         """Returns a specific element from content."""
-        if type_ not in self.structures:
+        if self.structures is not None and type_ not in self.structures:
             raise NotFound(
                 f"No {type_} found.",
                 f"Could not find any {type_} in content.",
             )
 
-        if short_urn in self.structures[type_]:
+        if self.structures is not None and short_urn in self.structures[type_]:
             return self.structures[type_][short_urn]
 
         raise NotFound(
@@ -157,22 +163,22 @@ class Message(Struct, frozen=True):
 
     def get_organisation_scheme(self, short_urn: str) -> ItemScheme:
         """Returns a specific OrganisationScheme."""
-        return self.__get_single_element(ORGS, short_urn)
+        return self.__get_single_structure(ORGS, short_urn)
 
     def get_codelist(self, short_urn: str) -> Codelist:
         """Returns a specific Codelist."""
-        return self.__get_single_element(CLS, short_urn)
+        return self.__get_single_structure(CLS, short_urn)
 
     def get_concept_scheme(self, short_urn: str) -> ConceptScheme:
         """Returns a specific Concept."""
-        return self.__get_single_element(CONCEPTS, short_urn)
+        return self.__get_single_structure(CONCEPTS, short_urn)
 
     def get_data_structure_definition(
         self, short_urn: str
     ) -> DataStructureDefinition:
         """Returns a specific DataStructureDefinition."""
-        return self.__get_single_element(DSDS, short_urn)
+        return self.__get_single_structure(DSDS, short_urn)
 
     def get_dataflow(self, short_urn: str) -> Dataflow:
         """Returns a specific Dataflow."""
-        return self.__get_single_element(DFWS, short_urn)
+        return self.__get_single_structure(DFWS, short_urn)

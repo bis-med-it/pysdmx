@@ -1,7 +1,9 @@
+"""SDMX All formats reader module."""
+
 from enum import Enum
 from io import BytesIO
 from pathlib import Path
-from typing import Union, Any
+from typing import Union
 
 from pysdmx.errors import Invalid
 from pysdmx.io.input_processor import process_string_to_read
@@ -19,8 +21,7 @@ class ReadFormat(Enum):
     SDMX_CSV_2_0 = "SDMX-CSV 2.0"
 
     def check_extension(self, extension: str) -> bool:
-        """
-        Check if the extension is valid for the format.
+        """Check if the extension is valid for the format.
 
         Args:
             extension: The file extension.
@@ -40,7 +41,8 @@ class ReadFormat(Enum):
             return True
         return False
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the string representation of the format."""
         return self.value
 
 
@@ -50,11 +52,12 @@ def read_sdmx(
     validate: bool = True,
     use_dataset_id: bool = False,
 ) -> Message:
-    """
-    Reads any sdmx file and returns a dictionary.
+    """Reads any sdmx file and returns a dictionary.
 
     Supported metadata formats are:
     - SDMX-ML 2.1
+    - SDMX JSON 2.0.0
+    - FusionJSON
 
     Supported data formats are:
     - SDMX-ML 2.1
@@ -65,7 +68,7 @@ def read_sdmx(
         infile: Path to file (pathlib.Path), URL, or string.
         format: Enumerated format of the SDMX file.
         use_dataset_id: Whether to use the dataset ID as
-          the key in the resulting dictionary (only for SDMX-ML).
+            the key in the resulting dictionary (only for SDMX-ML).
         validate: Validate the input file (only for SDMX-ML).
 
     Returns:
@@ -74,7 +77,6 @@ def read_sdmx(
     Raises:
         Invalid: If the file is empty or the format is not supported.
     """
-
     input_str, ext = process_string_to_read(infile)
     if not format.check_extension(ext):
         raise Invalid(f"Invalid format {format} for extension {ext}.")
@@ -99,10 +101,9 @@ def read_sdmx(
     if len(result) == 0:
         raise Invalid("Empty SDMX Message")
 
-    # Additional processing for all formats will be placed here
-
     # TODO: Add here the Schema download for Datasets, based on structure
 
+    # Returning a Message class
     if format in (ReadFormat.SDMX_CSV_1_0, ReadFormat.SDMX_CSV_2_0):
         return Message(data=result)
 

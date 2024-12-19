@@ -51,6 +51,7 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     CLS,
     CODE,
     CON,
+    CONCEPTS,
     CONTACT,
     CS,
     DEPARTMENT,
@@ -73,6 +74,7 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     IS_PARTIAL,
     IS_PARTIAL_LOW,
     NAME,
+    ORGS,
     ROLE,
     SER_URL,
     SER_URL_LOW,
@@ -116,7 +118,6 @@ from pysdmx.model.dataflow import (
     DataStructureDefinition,
     Role,
 )
-from pysdmx.io.xml.sdmx21.__parsing_config import CONCEPTS, ORGS
 from pysdmx.model.vtl import Transformation, TransformationScheme
 from pysdmx.util import find_by_urn, parse_urn
 

@@ -1,3 +1,5 @@
+"""A module to represent a Submission Result."""
+
 from msgspec import Struct
 
 
