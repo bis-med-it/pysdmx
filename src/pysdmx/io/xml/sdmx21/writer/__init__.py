@@ -1,4 +1,5 @@
 """SDMX 2.1 writer package."""
+
 from pathlib import Path
 from typing import Any, Dict, Optional
 
