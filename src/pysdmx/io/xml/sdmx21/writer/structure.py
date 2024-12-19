@@ -251,7 +251,7 @@ def __write_item(item: Item, indent: str) -> str:
     data = __write_nameable(item, add_indent(indent))
     attributes = data["Attributes"].replace("'", '"')
     outfile = f"{indent}<{head}{attributes}>"
-    outfile += __export_intern_data(data, add_indent(indent))
+    outfile += __export_intern_data(data)
     if isinstance(item, Agency) and len(item.contacts) > 0:
         for contact in item.contacts:
             outfile += __write_contact(contact, add_indent(indent))
@@ -518,7 +518,7 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
 
     outfile += f"{indent}<{label}{attributes}>"
 
-    outfile += __export_intern_data(data, indent)
+    outfile += __export_intern_data(data)
 
     outfile += components
 
@@ -587,12 +587,11 @@ def __get_outfile(obj_: Dict[str, Any], key: str = "") -> str:
     return "".join(element)
 
 
-def __export_intern_data(data: Dict[str, Any], indent: str) -> str:
+def __export_intern_data(data: Dict[str, Any]) -> str:
     """Export internal data (Annotations, Name, Description) on the XML file.
 
     Args:
         data: Information to be exported
-        indent: Indentation used
 
     Returns:
         The XML string with the exported data

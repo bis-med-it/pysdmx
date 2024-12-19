@@ -82,21 +82,22 @@ def read_sdmx(
         raise Invalid(f"Invalid format {format} for extension {ext}.")
 
     elif format == ReadFormat.SDMX_ML_2_1:
+        # SDMX-ML 2.1
         from pysdmx.io.xml.sdmx21.reader import read_xml
 
         result = read_xml(
             input_str, validate=validate, use_dataset_id=use_dataset_id
         )
     elif format == ReadFormat.SDMX_CSV_1_0:
+        # SDMX-CSV 1.0
         from pysdmx.io.csv.sdmx10.reader import read
 
         result = read(input_str)
-    elif format == ReadFormat.SDMX_CSV_2_0:
+    else:
+        # SDMX-CSV 2.0
         from pysdmx.io.csv.sdmx20.reader import read
 
         result = read(input_str)
-    else:
-        raise Invalid("Invalid format", f"Format {format} is not supported.")
 
     if len(result) == 0:
         raise Invalid("Empty SDMX Message")

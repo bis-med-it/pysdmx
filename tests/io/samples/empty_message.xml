@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message:Structure xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                   xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message ../../schemas/SDMXMessage.xsd">
+    <message:Header>
+        <message:ID>SDMX_COG</message:ID>
+        <message:Test>false</message:Test>
+        <message:Prepared>2010-11-13T08:00:33+08:00</message:Prepared>
+        <message:Sender id="SDMX"/>
+    </message:Header>
+    <message:Structures>
+        <str:Structures>
+        </str:Structures>
+    </message:Structures>
+</message:Structure>
