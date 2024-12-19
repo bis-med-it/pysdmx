@@ -32,7 +32,7 @@ class Reference(Struct, frozen=True):
         return f"{self.sdmx_type}={self.agency}:{self.id}({self.version})"
 
 
-class ItemReference(Struct, frozen=True):
+class ItemReference(Struct, frozen=True, tag=True):
     """The coordinates of an SDMX non-nested item.
 
     Attributes:
