@@ -128,4 +128,48 @@ format using the ``to_vtl_json`` upcoming **DataStructureDefinition** method:
 Preparing the Dictionary
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-To be defined
+To create the datapoint, a dictionary containing the required data and
+structures must first be prepared. The arguments `data_structures` and
+`datapoints` support the following types:
+
+- `Dict[str, Any]`
+- `Path`
+- `List[Union[Dict[str, Any], Path]]`
+
+The example below uses dictionaries for simplicity:
+
+.. code-block:: python
+
+    vtl_data_structures = {
+        "DS_1": vtl_data_structure_1,
+        "DS_2": vtl_data_structure_2,
+    }
+
+    datapoints = {
+        "DS_1": data_1,
+        "DS_2": data_2,
+    }
+
+Defining the Expression and Execution
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Next, define the expression to be executed and utilize the ``run``
+method of ``vtlengine`` to perform the operation. The following example
+demonstrates the addition of the datapoints `DS_1` and `DS_2`, with the
+result assigned to a new datapoint `DS_r`:
+
+For reference please check
+`vtlengine run documentation <https://docs.vtlengine.meaningfuldata.eu/api.html#vtlengine.run>`_
+
+.. code-block:: python
+
+    import vtlengine
+
+    expression = "DS_r <- DS_1 + DS_2;"
+
+    run_result = run(
+        script=expression,
+        data_structures=vtl_data_structures,
+        datapoints=datapoints,
+        return_only_persistent=True,
+    )
