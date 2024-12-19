@@ -1,0 +1,324 @@
+define operator filRound (ds dataset, comp component<number>, margin number) returns dataset is
+        ds[filter comp > margin or comp < -margin]
+    end operator;
+    define hierarchical ruleset sectors (valuedomain rule CL_SECTOR) is
+
+        SCHL: S = C + H + L errorcode "cc_01_05_18";
+        RFS: R = F + S errorcode "cc_02_06_19";
+        ABORU: A = B + O + R + U errorcode "cc_03_07_20"
+
+    end hierarchical ruleset;
+    define operator outerSum3 (ds1 dataset, ds2 dataset, ds3 dataset)
+    returns dataset is
+
+        full_join( ds1[rename OBS_VALUE to OBS_VALUE_1][keep OBS_VALUE_1] as dataset1,
+                   ds2[rename OBS_VALUE to OBS_VALUE_2][keep OBS_VALUE_2] as dataset2,
+                   ds3[rename OBS_VALUE to OBS_VALUE_3][keep OBS_VALUE_3] as dataset3
+                 )[calc OBS_VALUE := nvl(OBS_VALUE_1, 0) + nvl(OBS_VALUE_2, 0) + nvl(OBS_VALUE_3, 0)]
+                  [keep OBS_VALUE]
+
+    end operator;
+    define hierarchical ruleset instruments (valuedomain rule CL_INSTR) is
+        cc_12: S <= R errorcode "cc_12";
+        cc_14: E <= A errorcode "cc_14"
+    end hierarchical ruleset;
+    define hierarchical ruleset maturities (valuedomain rule CL_MATURITY) is
+        cc_04: A = M + N + U + X errorcode "CC:04"
+    end hierarchical ruleset;
+    define hierarchical ruleset positions (variable rule L_POSITION) is
+        cc_11: C <= F errorcode "cc_11"  ;
+        cc_15: F = K + L errorcode "cc_15";
+        cc_21: C = B + D errorcode "cc_21"
+    end hierarchical ruleset;
+    define operator prepare_oe_ds (ds dataset)
+      returns dataset is
+        ds
+            [filter bool_var = false]
+            [drop bool_var]
+    end operator;
+    define operator outerSum (ds1 dataset, ds2 dataset)
+    returns dataset is
+
+        full_join( ds1[rename OBS_VALUE to OBS_VALUE_1][keep OBS_VALUE_1] as dataset1,
+                   ds2[rename OBS_VALUE to OBS_VALUE_2][keep OBS_VALUE_2] as dataset2
+                 )[calc OBS_VALUE := nvl(OBS_VALUE_1, 0) + nvl(OBS_VALUE_2, 0)]
+                  [keep OBS_VALUE]
+
+    end operator;
+    define hierarchical ruleset basis (valuedomain rule CL_BASIS) is
+
+        cc_10: P = Q + O errorcode "CC:10"
+
+    end hierarchical ruleset;
+    define operator outerSum5 (ds1 dataset, ds2 dataset, ds3 dataset, ds4 dataset, ds5 dataset)
+    returns dataset is
+
+        full_join( ds1[rename OBS_VALUE to OBS_VALUE_1][keep OBS_VALUE_1] as dataset1,
+                   ds2[rename OBS_VALUE to OBS_VALUE_2][keep OBS_VALUE_2] as dataset2,
+                   ds3[rename OBS_VALUE to OBS_VALUE_3][keep OBS_VALUE_3] as dataset3,
+                   ds4[rename OBS_VALUE to OBS_VALUE_4][keep OBS_VALUE_4] as dataset4,
+                   ds5[rename OBS_VALUE to OBS_VALUE_5][keep OBS_VALUE_5] as dataset5
+                 )[calc OBS_VALUE := nvl(OBS_VALUE_1, 0) + nvl(OBS_VALUE_2, 0) + nvl(OBS_VALUE_3, 0) + nvl(OBS_VALUE_4, 0) + nvl (OBS_VALUE_5, 0)]
+                  [keep OBS_VALUE]
+
+    end operator;
+    define operator prepare_hr_ds (ds dataset)
+      returns dataset is
+        ds
+            [filter not isnull(OBS_VALUE)]
+            [drop OBS_VALUE]
+    end operator;
+    /*******************************************************************************
+    *       Module checks
+    *******************************************************************************/
+    checks.cc_00 :=
+    	check(
+    		BIS_CBS
+    			[sub CBS_BANK_TYPE = "4M"]
+    		=
+    		 sum(
+    				BIS_CBS
+    					[filter CBS_BANK_TYPE in { "4C","4D","4E" }]
+    				group except CBS_BANK_TYPE
+    			)
+    			errorcode "CC:00"
+    			imbalance abs(BIS_CBS
+    				[sub CBS_BANK_TYPE = "4M"] - sum(
+    					BIS_CBS
+    						[filter CBS_BANK_TYPE in { "4C","4D","4E" }]
+    					group except CBS_BANK_TYPE
+    				))
+    				invalid);
+
+    checks.cc_13 :=
+    	check(
+    		BIS_CBS
+    			[sub L_POSITION = "K",L_INSTR = "R"]
+    		<=
+    		BIS_CBS
+    			[sub L_POSITION = "F",L_INSTR = "E"]
+    		errorcode "CC:13"
+    		imbalance BIS_CBS
+    			[sub L_POSITION = "K",L_INSTR = "R"] - BIS_CBS
+    			[sub L_POSITION = "F",L_INSTR = "E"]
+    		invalid);
+
+    checks.cc_08 :=
+    	check(
+    		BIS_CBS
+    			[sub L_POSITION = "B",CURR_TYPE_BOOK = "FC1"]
+    		<=
+    		BIS_CBS
+    			[sub L_POSITION = "I",CURR_TYPE_BOOK = "TO1"]
+    		errorcode "CC:08"
+    		imbalance BIS_CBS
+    			[sub L_POSITION = "B",CURR_TYPE_BOOK = "FC1"] - BIS_CBS
+    			[sub L_POSITION = "I",CURR_TYPE_BOOK = "TO1"]
+    		invalid);
+
+    checks.cc_17 :=
+    	check(
+    		BIS_CBS
+    			[sub L_POSITION = "M",CURR_TYPE_BOOK = "LC1"]
+    		<=
+    		BIS_CBS
+    			[sub L_POSITION = "L",CURR_TYPE_BOOK = "TO1"]
+    		errorcode "CC:17"
+    		imbalance BIS_CBS
+    			[sub L_POSITION = "M",CURR_TYPE_BOOK = "LC1"] - BIS_CBS
+    			[sub L_POSITION = "L",CURR_TYPE_BOOK = "TO1"]
+    		invalid);
+
+    checks.cc_09 :=
+    	check(
+    		BIS_CBS
+    			[sub L_POSITION = "C",CURR_TYPE_BOOK = "TO1"]
+    		=
+    		 outerSum(
+    			BIS_CBS
+    				[sub L_POSITION = "I",CURR_TYPE_BOOK = "TO1"],
+    			BIS_CBS
+    				[sub L_POSITION = "B",CURR_TYPE_BOOK = "LC1"])
+    		errorcode "CC:09"
+    		imbalance BIS_CBS
+    			[sub L_POSITION = "C",CURR_TYPE_BOOK = "TO1"] - outerSum(
+    			BIS_CBS
+    				[sub L_POSITION = "I",CURR_TYPE_BOOK = "TO1"],
+    			BIS_CBS
+    				[sub L_POSITION = "B",CURR_TYPE_BOOK = "LC1"])
+    		invalid);
+
+    checks.dsGA :=
+    	BIS_CBS
+    		[sub L_INSTR = "G",REM_MATURITY = "A"];
+
+    checks.dsDU :=
+    	BIS_CBS
+    		[sub L_INSTR = "D",REM_MATURITY = "U"];
+
+    checks.dsDW :=
+    	BIS_CBS
+    		[sub L_INSTR = "D",REM_MATURITY = "W"];
+
+    checks.dsVA :=
+    	BIS_CBS
+    		[sub L_INSTR = "V",REM_MATURITY = "A"];
+
+    checks.dsKA :=
+    	BIS_CBS
+    		[sub L_INSTR = "K",REM_MATURITY = "A"];
+
+    checks.cc_16 :=
+    	check(
+    		BIS_CBS
+    			[sub L_INSTR = "A",REM_MATURITY = "A"]
+    		=
+    		 outerSum5(
+    			checks.dsGA,
+    			checks.dsDU,
+    			checks.dsDW,
+    			checks.dsVA,
+    			checks.dsKA)
+    		errorcode "CC:16"
+    		imbalance BIS_CBS
+    			[sub L_INSTR = "A",REM_MATURITY = "A"] - outerSum5(
+    			checks.dsGA,
+    			checks.dsDU,
+    			checks.dsDW,
+    			checks.dsVA,
+    			checks.dsKA)
+    		invalid);
+
+    checks.dsFITO1 :=
+    	BIS_CBS
+    		[sub CBS_BASIS = "F",L_POSITION = "I",CURR_TYPE_BOOK = "TO1"];
+
+    checks.dsFBLC1 :=
+    	BIS_CBS
+    		[sub CBS_BASIS = "F",L_POSITION = "B",CURR_TYPE_BOOK = "LC1"];
+
+    checks.dsQCTO1 :=
+    	BIS_CBS
+    		[sub CBS_BASIS = "Q",L_POSITION = "C",CURR_TYPE_BOOK = "TO1"];
+
+    checks.cc_22 :=
+    	check(
+    		BIS_CBS
+    			[sub CBS_BASIS = "U",L_POSITION = "C",CURR_TYPE_BOOK = "TO1"]
+    		=
+    		 outerSum3(
+    			checks.dsFITO1,
+    			checks.dsFBLC1,
+    			checks.dsQCTO1)
+    		errorcode "CC:22"
+    		imbalance BIS_CBS
+    			[sub CBS_BASIS = "U",L_POSITION = "C",CURR_TYPE_BOOK = "TO1"] - outerSum3(
+    			checks.dsFITO1,
+    			checks.dsFBLC1,
+    			checks.dsQCTO1)
+    		invalid);
+
+    /*******************************************************************************
+    *       Module hierarchies
+    *******************************************************************************/
+    hierarchies.hierarchy_rem_maturity :=
+    	check_hierarchy(
+    		BIS_CBS,
+    		maturities
+    		rule REM_MATURITY non_null);
+
+    hierarchies.hierarchy_basis :=
+    	check_hierarchy(
+    		BIS_CBS,
+    		basis
+    		rule CBS_BASIS non_null);
+
+    hierarchies.hierarchy_sectors :=
+    	check_hierarchy(
+    		BIS_CBS,
+    		sectors
+    		rule L_CP_SECTOR non_null);
+
+    hierarchies.hierarhcy_positions :=
+    	check_hierarchy(
+    		BIS_CBS,
+    		positions
+    		rule L_POSITION non_null);
+
+    hierarchies.hierarhcy_instruments :=
+    	check_hierarchy(
+    		BIS_CBS,
+    		instruments
+    		rule L_INSTR non_null);
+
+    /*******************************************************************************
+    *       Module technical
+    *******************************************************************************/
+    technical.partial_hierarchies :=
+    	union(hierarchies.hierarchy_basis,hierarchies.hierarhcy_instruments,hierarchies.hierarchy_rem_maturity,hierarchies.hierarchy_sectors,hierarchies.hierarhcy_positions);
+
+    technical.cc_00_pepared :=
+    	prepare_oe_ds(
+    		checks.cc_00
+    			[calc identifier CBS_BANK_TYPE := "*",
+    				identifier ruleid := "cc_00"
+    			]);
+
+    technical.cc_13_prepared :=
+    	prepare_oe_ds(
+    		checks.cc_13
+    			[calc identifier L_POSITION := "*",
+    				identifier L_INSTR := "*",
+    				identifier ruleid := "cc_13"
+    			]);
+
+    technical.cc_08_prepared :=
+    	prepare_oe_ds(
+    		checks.cc_08
+    			[calc identifier L_POSITION := "*",
+    				identifier CURR_TYPE_BOOK := "*",
+    				identifier ruleid := "cc_08"
+    			]);
+
+    technical.cc_17_prepared :=
+    	prepare_oe_ds(
+    		checks.cc_17
+    			[calc identifier L_POSITION := "*",
+    				identifier CURR_TYPE_BOOK := "*",
+    				identifier ruleid := "cc_17"
+    			]);
+
+    technical.cc_09_prepared :=
+    	prepare_oe_ds(
+    		checks.cc_09
+    			[calc identifier L_POSITION := "*",
+    				identifier CURR_TYPE_BOOK := "*",
+    				identifier ruleid := "cc_09"
+    			]);
+
+    technical.cc_16_prepared :=
+    	prepare_oe_ds(
+    		checks.cc_16
+    			[calc identifier L_INSTR := "*",
+    				identifier REM_MATURITY := "*",
+    				identifier ruleid := "cc_16"
+    			]);
+
+    technical.cc_22_prepared :=
+    	prepare_oe_ds(
+    		checks.cc_22
+    			[calc identifier CBS_BASIS := "*",
+    				identifier L_POSITION := "*",
+    				identifier CURR_TYPE_BOOK := "*",
+    				identifier ruleid := "cc_22"
+    			]);
+
+    technical.validation_result_pre_filter :=
+    	union(prepare_hr_ds(
+    		technical.partial_hierarchies),technical.cc_00_pepared,technical.cc_13_prepared,technical.cc_08_prepared,technical.cc_17_prepared,technical.cc_09_prepared,technical.cc_16_prepared,technical.cc_22_prepared);
+
+    validation_result <-
+    	 filRound(
+    		technical.validation_result_pre_filter,
+    		'imbalance',
+    		3);
