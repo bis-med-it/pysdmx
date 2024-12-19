@@ -1,6 +1,8 @@
+"""Sphinx configuration."""
+
+import asyncio
 import os
 import sys
-import asyncio
 
 if (
     sys.version_info[0] == 3

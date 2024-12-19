@@ -12,52 +12,52 @@ from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import Invalid
 
 
-@pytest.fixture()
+@pytest.fixture
 def typ():
     return StructureType.CODELIST
 
 
-@pytest.fixture()
+@pytest.fixture
 def hcl():
     return StructureType.HIERARCHICAL_CODELIST
 
 
-@pytest.fixture()
+@pytest.fixture
 def hier():
     return StructureType.HIERARCHY
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "BIS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def res():
     return "CL_FREQ"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def item():
     return "A"
 
 
-@pytest.fixture()
+@pytest.fixture
 def items():
     return ["A", "M"]
 
 
-@pytest.fixture()
+@pytest.fixture
 def detail():
     return StructureDetail.FULL
 
 
-@pytest.fixture()
+@pytest.fixture
 def refs():
     return StructureReference.NONE
 

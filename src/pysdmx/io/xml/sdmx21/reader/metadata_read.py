@@ -62,7 +62,6 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     EMAIL,
     EMAILS,
     FACETS,
-    FacetType,
     FAX,
     FAXES,
     ID,
@@ -88,7 +87,6 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     TRANSFORMATION,
     TRANSFORMATIONS,
     TYPE,
-    unique_id,
     URI,
     URIS,
     URL,
@@ -98,6 +96,8 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     VALID_TO,
     VALID_TO_LOW,
     VERSION,
+    FacetType,
+    unique_id,
 )
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (
@@ -299,10 +299,12 @@ class StructureParser(Struct):
 
     def __format_orgs(self, json_orgs: Dict[str, Any]) -> Dict[str, Any]:
         orgs: Dict[str, Any] = {}
-        json_orgs = add_list(json_orgs)  # type: ignore[assignment]
-        for e in json_orgs:
+        json_list = add_list(json_orgs)
+        for e in json_list:
             ag_sch = self.__format_scheme(
-                e, AGENCIES, AGENCY  # type: ignore[arg-type]
+                e,
+                AGENCIES,
+                AGENCY,
             )
             orgs = {**orgs, **ag_sch}
         return orgs

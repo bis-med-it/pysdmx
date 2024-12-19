@@ -5,7 +5,7 @@ from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import Invalid
 
 
-@pytest.fixture()
+@pytest.fixture
 def res():
     return "CBS"
 

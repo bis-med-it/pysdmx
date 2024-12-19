@@ -6,10 +6,10 @@ from typing import Sequence, Union
 import msgspec
 
 from pysdmx.api.qb.util import (
-    ApiVersion,
-    check_multiple_items,
     REST_ALL,
     REST_LATEST,
+    ApiVersion,
+    check_multiple_items,
 )
 from pysdmx.errors import Invalid
 

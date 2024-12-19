@@ -1,6 +1,7 @@
 """Collection of SDMX-JSON schemas for structure map queries."""
 
-from datetime import datetime as dt, timezone as tz
+from datetime import datetime as dt
+from datetime import timezone as tz
 from typing import Any, Dict, Literal, Optional, Sequence, Union
 
 from msgspec import Struct

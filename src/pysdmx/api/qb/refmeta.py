@@ -9,9 +9,9 @@ from msgspec.json import Decoder
 
 from pysdmx.api.qb.structure import _API_RESOURCES, StructureType
 from pysdmx.api.qb.util import (
-    ApiVersion,
     REST_ALL,
     REST_LATEST,
+    ApiVersion,
 )
 from pysdmx.errors import Invalid
 

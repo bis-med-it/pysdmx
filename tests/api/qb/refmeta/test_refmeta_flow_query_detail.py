@@ -3,26 +3,25 @@ import pytest
 from pysdmx.api.qb.refmeta import RefMetaByMetadataflowQuery, RefMetaDetail
 from pysdmx.api.qb.util import ApiVersion
 
-
 details = [RefMetaDetail.FULL, RefMetaDetail.ALL_STUBS]
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "BIS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def res():
     return "CBS"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def provider():
     return "5B0"
 

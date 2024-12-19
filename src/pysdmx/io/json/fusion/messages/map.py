@@ -1,6 +1,7 @@
 """Collection of Fusion-JSON schemas for structure map queries."""
 
-from datetime import datetime as dt, timezone as tz
+from datetime import datetime as dt
+from datetime import timezone as tz
 from typing import Any, Dict, Optional, Sequence, Union
 
 from msgspec import Struct
@@ -16,8 +17,10 @@ from pysdmx.model import (
     MultiRepresentationMap,
     MultiValueMap,
     RepresentationMap,
-    StructureMap as SM,
     ValueMap,
+)
+from pysdmx.model import (
+    StructureMap as SM,
 )
 from pysdmx.util import find_by_urn
 

@@ -1,10 +1,10 @@
 import pytest
-import tests.api.fmr.vl_code_checks as checks
 
+import tests.api.fmr.vl_code_checks as checks
 from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
 
 
-@pytest.fixture()
+@pytest.fixture
 def fmr():
     return RegistryClient(
         "https://registry.sdmx.org/sdmx/v2/",
@@ -12,7 +12,7 @@ def fmr():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def async_fmr():
     return AsyncRegistryClient(
         "https://registry.sdmx.org/sdmx/v2/",
@@ -20,7 +20,7 @@ def async_fmr():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def q1(fmr):
     res = "/structure/codelist/"
     agency = "TEST"
@@ -29,7 +29,7 @@ def q1(fmr):
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
 
 
-@pytest.fixture()
+@pytest.fixture
 def q2(fmr):
     res = "/structure/valuelist/"
     agency = "TEST"
@@ -38,7 +38,7 @@ def q2(fmr):
     return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
 
 
-@pytest.fixture()
+@pytest.fixture
 def body():
     with open("tests/api/fmr/samples/code/vl.fusion.json", "rb") as f:
         return f.read()
@@ -49,7 +49,7 @@ def test_returns_codelist_from_vl(respx_mock, fmr, q1, q2, body):
     checks.check_vl_codelist(respx_mock, fmr, q1, q2, body)
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_codes_from_vl_have_core_info(
     respx_mock,
     async_fmr,

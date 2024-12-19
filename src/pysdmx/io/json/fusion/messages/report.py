@@ -6,9 +6,9 @@ from msgspec import Struct
 
 from pysdmx.io.json.fusion.messages.core import FusionString
 from pysdmx.model.metadata import (
-    merge_attributes,
     MetadataAttribute,
     MetadataReport,
+    merge_attributes,
 )
 
 

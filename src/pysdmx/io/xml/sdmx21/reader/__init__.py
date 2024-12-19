@@ -64,7 +64,8 @@ def read_xml(
     if validate:
         validate_doc(infile)
     dict_info = xmltodict.parse(
-        infile, **XML_OPTIONS  # type: ignore[arg-type]
+        infile,
+        **XML_OPTIONS,  # type: ignore[arg-type]
     )
 
     del infile

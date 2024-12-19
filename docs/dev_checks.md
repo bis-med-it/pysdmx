@@ -2,22 +2,37 @@
 
 Run the following commands in this order to ensure every commit is properly formatted and linted.
 
-- Flake8
+## Ruff
 
+### Check
 ```bash
-poetry run flake8 src tests
+poetry run ruff check
 ```
 
-- MyPy
+### Fix
+```bash
+poetry run ruff check --fix
+```
+
+### Unsafe fixes (to be checked manually)
+```bash
+poetry run ruff check --fix --unsafe-fixes
+```
+
+## MyPy
 
 ```bash
 poetry run mypy
 ```
 
-- Pytest
+## Pytest
 
 ```bash
-poetry run pytest
+poetry run pytest --cov=pysdmx
 ```
 
-- Code Coverage (must be always 100%)
+## Code Coverage (must be always 100%)
+
+```bash
+coverage html
+```

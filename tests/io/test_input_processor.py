@@ -8,38 +8,38 @@ from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.sdmx21.reader import read_xml
 
 
-@pytest.fixture()
+@pytest.fixture
 def valid_xml_path():
     return Path(__file__).parent / "samples" / "valid.xml"
 
 
-@pytest.fixture()
+@pytest.fixture
 def valid_xml_bytes(valid_xml):
     return BytesIO(valid_xml.encode("utf-8"))
 
 
-@pytest.fixture()
+@pytest.fixture
 def valid_xml():
     path = Path(__file__).parent / "samples" / "valid.xml"
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def valid_xml_bom():
     path = Path(__file__).parent / "samples" / "valid_bom.xml"
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def invalid_xml():
     path = Path(__file__).parent / "samples" / "invalid.xml"
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
-@pytest.fixture()
+@pytest.fixture
 def invalid_message_xml():
     path = Path(__file__).parent / "samples" / "invalid_message.xml"
     with open(path, "r", encoding="utf-8") as f:

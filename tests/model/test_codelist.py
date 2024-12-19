@@ -7,47 +7,47 @@ import pytest
 from pysdmx.model.code import Code, Codelist
 
 
-@pytest.fixture()
+@pytest.fixture
 def id():
     return "id"
 
 
-@pytest.fixture()
+@pytest.fixture
 def name():
     return "name"
 
 
-@pytest.fixture()
+@pytest.fixture
 def agency():
     return "5B0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def sdmx_type():
     return "valuelist"
 
 
-@pytest.fixture()
+@pytest.fixture
 def desc():
     return "description"
 
 
-@pytest.fixture()
+@pytest.fixture
 def version():
     return "1.42.0"
 
 
-@pytest.fixture()
+@pytest.fixture
 def valid_from():
     return datetime(2020, 1, 1, tzinfo=timezone.utc)
 
 
-@pytest.fixture()
+@pytest.fixture
 def valid_to():
     return datetime(2024, 1, 1, tzinfo=timezone.utc)
 
 
-@pytest.fixture()
+@pytest.fixture
 def codes():
     return [
         Code(id="child1", name="Child 1"),
