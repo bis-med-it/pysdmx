@@ -7,6 +7,7 @@ from pysdmx.errors import NotImplemented
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
+from pysdmx.io.xml.sdmx21.reader.__utils import CON
 from pysdmx.io.xml.sdmx21.writer import Header, writer
 from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme, Facets
 from pysdmx.model.__base import Annotation
@@ -17,6 +18,7 @@ from pysdmx.model.dataflow import (
     DataStructureDefinition,
     Role,
 )
+from pysdmx.util import ItemReference
 
 TEST_CS_URN = (
     "urn:sdmx:org.sdmx.infomodel.conceptscheme."
@@ -224,6 +226,38 @@ def datastructure(concept_ds):
                 local_facets=Facets(min_length="1", max_length="1"),
                 urn="urn:sdmx:org.sdmx.infomodel.datastructure."
                 "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).FREQ",
+            ),
+            Component(
+                id="DIM2",
+                required=True,
+                role=Role.DIMENSION,
+                # Missing Concept Scheme
+                concept=ItemReference(
+                    id="CS_FREQ2",
+                    sdmx_type=CON,
+                    agency="BIS",
+                    version="1.0",
+                    item_id="DIM2",
+                ),
+                local_facets=Facets(min_length="1", max_length="1"),
+                urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+                "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).DIM2",
+            ),
+            Component(
+                id="DIM3",
+                required=True,
+                role=Role.DIMENSION,
+                # Missing Concept in Concept Identity
+                concept=ItemReference(
+                    id="CS_FREQ",
+                    sdmx_type=CON,
+                    agency="BIS",
+                    version="1.0",
+                    item_id="DIM3",
+                ),
+                local_facets=Facets(min_length="1", max_length="1"),
+                urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+                    "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).DIM2",
             ),
             Component(
                 id="OBS_VALUE",
