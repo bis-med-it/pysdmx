@@ -257,7 +257,7 @@ def datastructure(concept_ds):
                 ),
                 local_facets=Facets(min_length="1", max_length="1"),
                 urn="urn:sdmx:org.sdmx.infomodel.datastructure."
-                    "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).DIM2",
+                "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).DIM2",
             ),
             Component(
                 id="OBS_VALUE",

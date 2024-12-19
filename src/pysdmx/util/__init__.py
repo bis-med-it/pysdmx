@@ -130,4 +130,12 @@ def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:
         )
 
 
-__all__ = ["convert_dpm", "find_by_urn", "parse_item_urn", "parse_urn"]
+__all__ = [
+    "convert_dpm",
+    "find_by_urn",
+    "parse_item_urn",
+    "parse_urn",
+    "parse_short_urn",
+    "Reference",
+    "ItemReference",
+]
