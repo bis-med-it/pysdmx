@@ -1,6 +1,6 @@
 import pytest
 
-from pysdmx.model.message import SubmissionResult
+from pysdmx.model.submission import SubmissionResult
 
 
 @pytest.fixture()

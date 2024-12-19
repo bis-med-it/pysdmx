@@ -7,7 +7,7 @@ import pandas as pd
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
-from pysdmx.model.message import ActionType
+from pysdmx.model.dataset import ActionType
 
 ACTION_SDMX_CSV_MAPPER_READING = {
     "A": ActionType.Append,

@@ -7,8 +7,9 @@ from pysdmx.model.message import Message
 
 
 def test_initialization():
-    message = Message({})
-    assert message.content == {}
+    message = Message({}, {})
+    assert message.structures == {}
+    assert message.data == {}
 
 
 def test_get_organisation():
@@ -16,15 +17,17 @@ def test_get_organisation():
     message = Message(
         {
             "OrganisationSchemes": {
-                "org1:orgs1(1.0)": org1,
+                "AgencyScheme=org1:orgs1(1.0)": org1,
             }
         }
     )
     assert message.get_organisation_schemes() == {
-        "org1:orgs1(1.0)": org1,
+        "AgencyScheme=org1:orgs1(1.0)": org1,
     }
 
-    assert message.get_organisation_scheme_by_uid("org1:orgs1(1.0)") == org1
+    assert (
+        message.get_organisation_scheme("AgencyScheme=org1:orgs1(1.0)") == org1
+    )
 
 
 def test_get_codelists():
@@ -32,15 +35,15 @@ def test_get_codelists():
     message = Message(
         {
             "Codelists": {
-                "cl1:cl1(1.0)": cl1,
+                "Codelist=cl1:cl1(1.0)": cl1,
             }
         }
     )
     assert message.get_codelists() == {
-        "cl1:cl1(1.0)": cl1,
+        "Codelist=cl1:cl1(1.0)": cl1,
     }
 
-    assert message.get_codelist_by_uid("cl1:cl1(1.0)") == cl1
+    assert message.get_codelist("Codelist=cl1:cl1(1.0)") == cl1
 
 
 def test_get_concepts():
@@ -48,15 +51,15 @@ def test_get_concepts():
     message = Message(
         {
             "Concepts": {
-                "cs1:cs1(1.0)": cs1,
+                "ConceptScheme=cs1:cs1(1.0)": cs1,
             }
         }
     )
     assert message.get_concept_schemes() == {
-        "cs1:cs1(1.0)": cs1,
+        "ConceptScheme=cs1:cs1(1.0)": cs1,
     }
 
-    assert message.get_concept_scheme_by_uid("cs1:cs1(1.0)") == cs1
+    assert message.get_concept_scheme("ConceptScheme=cs1:cs1(1.0)") == cs1
 
 
 def test_empty_get_elements():
@@ -77,31 +80,31 @@ def test_empty_get_elements():
     assert "No Concepts found" in str(exc_info.value.title)
 
 
-def test_empty_get_element_by_uid():
+def test_empty_get_element_by_short_urn():
     message = Message({})
     with pytest.raises(NotFound) as exc_info:
-        message.get_organisation_scheme_by_uid("org1:orgs1(1.0)")
+        message.get_organisation_scheme("AgencyScheme=org1:orgs1(1.0)")
 
     assert "No OrganisationSchemes found" in str(exc_info.value.title)
 
     with pytest.raises(NotFound) as exc_info:
-        message.get_codelist_by_uid("cl1:cl1(1.0)")
+        message.get_codelist("Codelist=cl1:cl1(1.0)")
 
     assert "No Codelists found" in str(exc_info.value.title)
 
     with pytest.raises(NotFound) as exc_info:
-        message.get_concept_scheme_by_uid("cs1:cs1(1.0)")
+        message.get_concept_scheme("ConceptScheme=cs1:cs1(1.0)")
 
     assert "No Concepts found" in str(exc_info.value.title)
 
 
-def test_invalid_get_element_by_uid():
+def test_invalid_get_element_by_short_urn():
     message = Message({"OrganisationSchemes": {}})
 
-    e_m = "No OrganisationSchemes with id"
+    e_m = "No OrganisationSchemes with Short URN"
 
     with pytest.raises(NotFound) as exc_info:
-        message.get_organisation_scheme_by_uid("org12:orgs1(1.0)")
+        message.get_organisation_scheme("AgencyScheme=org12:orgs1(1.0)")
     assert e_m in str(exc_info.value.title)
 
 
@@ -115,9 +118,9 @@ def test_invalid_initialization_content_key():
 @pytest.mark.parametrize(
     ("key", "value"),
     [
-        ("OrganisationSchemes", {"org1:orgs1(1.0)": "invalid"}),
-        ("Codelists", {"cl1:cl1(1.0)": "invalid"}),
-        ("Concepts", {"cs1:cs1(1.0)": "invalid"}),
+        ("OrganisationSchemes", {"AgencyScheme=org1:orgs1(1.0)": "invalid"}),
+        ("Codelists", {"Codelist=cl1:cl1(1.0)": "invalid"}),
+        ("Concepts", {"ConceptScheme=cs1:cs1(1.0)": "invalid"}),
     ],
 )
 def test_invalid_initialization_content_value(key, value):

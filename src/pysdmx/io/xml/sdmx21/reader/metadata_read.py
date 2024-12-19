@@ -116,7 +116,7 @@ from pysdmx.model.dataflow import (
     DataStructureDefinition,
     Role,
 )
-from pysdmx.model.message import CONCEPTS, ORGS
+from pysdmx.io.xml.sdmx21.__parsing_config import CONCEPTS, ORGS
 from pysdmx.model.vtl import Transformation, TransformationScheme
 from pysdmx.util import find_by_urn, parse_urn
 

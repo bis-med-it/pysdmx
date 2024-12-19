@@ -10,7 +10,7 @@ from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
 from pysdmx.io.xml.sdmx21.writer import writer as write_xml
 from pysdmx.model import Contact
-from pysdmx.model.message import SubmissionResult
+from pysdmx.model.submission import SubmissionResult
 from pysdmx.model.vtl import Transformation
 
 

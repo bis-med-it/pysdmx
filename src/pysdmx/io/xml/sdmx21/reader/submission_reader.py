@@ -13,7 +13,7 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     SUBMITTED_STRUCTURE,
     URN,
 )
-from pysdmx.model.message import SubmissionResult
+from pysdmx.model.submission import SubmissionResult
 from pysdmx.util import parse_urn
 
 
