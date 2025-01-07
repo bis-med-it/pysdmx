@@ -37,7 +37,7 @@ class Category(Item, frozen=False, omit_defaults=True):  # type: ignore[misc]
     """
 
     categories: Sequence["Category"] = ()
-    dataflows: Sequence[DataflowRef] = ()
+    dataflows: Sequence[Union[Dataflow, DataflowRef]] = ()
 
     def __iter__(self) -> Iterator["Category"]:
         """Return an iterator over the list of categories."""
