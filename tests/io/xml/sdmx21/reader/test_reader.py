@@ -374,5 +374,7 @@ def test_estat_metadata(estat_metadata_path):
 def test_estat_data(estat_data_path):
     input_str, filetype = process_string_to_read(estat_data_path)
     assert filetype == "xml"
-    with pytest.raises(Invalid, match="No dataset found in the message"):
-        read_xml(input_str, validate=False)
+
+    result = read_xml(input_str, validate=False)
+    assert "DataFlow=ESTAT:NRG_BAL_S(1.0)" in result
+    assert len(result["DataFlow=ESTAT:NRG_BAL_S(1.0)"].data) == 33
