@@ -5,6 +5,7 @@ import pytest
 
 import pysdmx
 from pysdmx.errors import Invalid, NotImplemented
+from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml import read
 from pysdmx.io.xml.sdmx21.writer.structure_specific import write
@@ -361,3 +362,21 @@ def test_vtl_transformation_scheme(samples_folder):
     assert isinstance(transformation, Transformation)
     assert transformation.id == "test_rule"
     assert transformation.full_expression == "DS_r <- DS_1 + 1;"
+
+
+def test_estat_metadata(estat_metadata_path):
+    input_str, filetype = process_string_to_read(estat_metadata_path)
+    assert filetype == "xml"
+    result = read(input_str, validate=True)
+    codelists = [cl for cl in result if isinstance(cl, Codelist)]
+    assert len(codelists) == 6
+    assert len(result) == 9
+
+
+def test_estat_data(estat_data_path):
+    input_str, filetype = process_string_to_read(estat_data_path)
+    assert filetype == "xml"
+
+    result = read(input_str, validate=False)
+    assert isinstance(result[0].structure, str)
+    assert len(result[0].data) == 33
