@@ -271,7 +271,7 @@ class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
     is_partial: bool = False
 
 
-class DataflowRef(Struct, frozen=True, omit_defaults=True):
+class DataflowRef(Struct, frozen=True, omit_defaults=True, tag=True):
     """A unique reference to a dataflow.
 
     Attributes:
