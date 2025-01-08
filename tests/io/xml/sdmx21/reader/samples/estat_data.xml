@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<m:StructureSpecificData xmlns:m="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                         xmlns:s="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/structurespecific"
+                         xmlns:u="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=ESTAT:NRG_BAL_S(46.0):ObsLevelDim:TIME_PERIOD"
+                         xmlns:c="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <m:Header>
+        <m:ID>2143DDA25C4A4FF296D3C64217242F46</m:ID>
+        <m:Test>false</m:Test>
+        <m:Prepared>2024-12-20T10:54:02.827Z</m:Prepared>
+        <m:Sender id="ESTAT"/>
+        <m:Structure namespace="" dimensionAtObservation="TIME_PERIOD" structureID="STR1">
+            <c:StructureUsage>
+                <Ref id="NRG_BAL_S" agencyID="ESTAT" version="1.0"/>
+            </c:StructureUsage>
+        </m:Structure>
+        <m:DataSetID>NRG_BAL_S</m:DataSetID>
+        <m:Extracted>2024-12-20T10:54:02.827Z</m:Extracted>
+    </m:Header>
+    <u:DataSet s:structureRef="STR1" s:dataScope="DataStructure" xsi:type="u:DataSetType">
+        <Series geo="AL" siec="C0000X0350-0370" unit="GWH" freq="A" nrg_bal="AFC">
+            <Obs TIME_PERIOD="1990" OBS_VALUE="6644.088"/>
+            <Obs TIME_PERIOD="1991" OBS_VALUE="3816.945"/>
+            <Obs TIME_PERIOD="1992" OBS_VALUE="1067.475"/>
+            <Obs TIME_PERIOD="1993" OBS_VALUE="525.540"/>
+            <Obs TIME_PERIOD="1994" OBS_VALUE="459.514"/>
+            <Obs TIME_PERIOD="1995" OBS_VALUE="213.788"/>
+            <Obs TIME_PERIOD="1996" OBS_VALUE="308.961"/>
+            <Obs TIME_PERIOD="1997" OBS_VALUE="106.633"/>
+            <Obs TIME_PERIOD="1998" OBS_VALUE="133.974"/>
+            <Obs TIME_PERIOD="1999" OBS_VALUE="226.936"/>
+            <Obs TIME_PERIOD="2000" OBS_VALUE="128.506"/>
+            <Obs TIME_PERIOD="2001" OBS_VALUE="150.379"/>
+            <Obs TIME_PERIOD="2002" OBS_VALUE="87.493"/>
+            <Obs TIME_PERIOD="2003" OBS_VALUE="125.772"/>
+            <Obs TIME_PERIOD="2004" OBS_VALUE="174.987"/>
+            <Obs TIME_PERIOD="2005" OBS_VALUE="147.645"/>
+            <Obs TIME_PERIOD="2006" OBS_VALUE="147.645"/>
+            <Obs TIME_PERIOD="2007" OBS_VALUE="147.645"/>
+            <Obs TIME_PERIOD="2008" OBS_VALUE="191.392"/>
+            <Obs TIME_PERIOD="2009" OBS_VALUE="1168.818"/>
+            <Obs TIME_PERIOD="2010" OBS_VALUE="1289.769"/>
+            <Obs TIME_PERIOD="2011" OBS_VALUE="1616.273"/>
+            <Obs TIME_PERIOD="2012" OBS_VALUE="898.126"/>
+            <Obs TIME_PERIOD="2013" OBS_VALUE="779.266"/>
+            <Obs TIME_PERIOD="2014" OBS_VALUE="1005.406"/>
+            <Obs TIME_PERIOD="2015" OBS_VALUE="1094.259"/>
+            <Obs TIME_PERIOD="2016" OBS_VALUE="580.819"/>
+            <Obs TIME_PERIOD="2017" OBS_VALUE="1432.220"/>
+            <Obs TIME_PERIOD="2018" OBS_VALUE="2780.662"/>
+            <Obs TIME_PERIOD="2019" OBS_VALUE="1436.330"/>
+            <Obs TIME_PERIOD="2020" OBS_VALUE="1752.246"/>
+            <Obs TIME_PERIOD="2021" OBS_VALUE="2640.835"/>
+            <Obs TIME_PERIOD="2022" OBS_VALUE="1668.153"/>
+        </Series>
+    </u:DataSet>
+</m:StructureSpecificData>

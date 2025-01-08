@@ -37,6 +37,16 @@ def submission_path():
 
 
 @pytest.fixture
+def estat_metadata_path():
+    return Path(__file__).parent / "samples" / "estat_metadata.xml"
+
+
+@pytest.fixture
+def estat_data_path():
+    return Path(__file__).parent / "samples" / "estat_data.xml"
+
+
+@pytest.fixture
 def samples_folder():
     return Path(__file__).parent / "samples"
 
@@ -351,3 +361,18 @@ def test_vtl_transformation_scheme(samples_folder):
     assert isinstance(transformation, Transformation)
     assert transformation.id == "test_rule"
     assert transformation.full_expression == "DS_r <- DS_1 + 1;"
+
+
+def test_estat_metadata(estat_metadata_path):
+    input_str, filetype = process_string_to_read(estat_metadata_path)
+    assert filetype == "xml"
+    result = read_xml(input_str, validate=True)
+    assert len(result["Codelists"]) == 6
+    assert len(result["Concepts"]) == 1
+
+
+def test_estat_data(estat_data_path):
+    input_str, filetype = process_string_to_read(estat_data_path)
+    assert filetype == "xml"
+    with pytest.raises(Invalid, match="No dataset found in the message"):
+        read_xml(input_str, validate=False)
