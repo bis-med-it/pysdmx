@@ -5,8 +5,8 @@ import pytest
 
 from pysdmx.errors import NotImplemented
 from pysdmx.io.input_processor import process_string_to_read
+from pysdmx.io.xml import read, write_metadata
 from pysdmx.io.xml.enums import MessageType
-from pysdmx.io.xml.sdmx21.reader import read_xml
 from pysdmx.io.xml.sdmx21.writer import Header, writer
 from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme, Facets
 from pysdmx.model.__base import Annotation
@@ -288,20 +288,18 @@ def dataflow():
 
 
 def test_codelist(codelist_sample, complete_header, codelist):
-    result = writer(
+    result = write_metadata(
         {"Codelists": {"CL_FREQ": codelist}},
-        MessageType.Structure,
         header=complete_header,
     )
-    read_xml(result, validate=False)
+    read(result, validate=False)
 
     assert result == codelist_sample
 
 
 def test_concept(concept_sample, complete_header, concept):
-    result = writer(
+    result = write_metadata(
         {"Concepts": {"FREQ": concept}},
-        MessageType.Structure,
         header=complete_header,
     )
 
@@ -309,7 +307,7 @@ def test_concept(concept_sample, complete_header, concept):
 
 
 def test_writer_empty(empty_sample, header):
-    result = writer({}, MessageType.Structure, prettyprint=True, header=header)
+    result = write_metadata({}, prettyprint=True, header=header)
     assert result == empty_sample
 
 
@@ -320,10 +318,9 @@ def test_writing_not_supported():
 
 def test_write_to_file(empty_sample, tmpdir, header):
     file = tmpdir.join("output.txt")
-    result = writer(
+    result = write_metadata(
         {},
-        MessageType.Structure,
-        path=file.strpath,
+        output_path=file.strpath,
         prettyprint=True,
         header=header,
     )  # or use str(file)
@@ -332,7 +329,7 @@ def test_write_to_file(empty_sample, tmpdir, header):
 
 
 def test_writer_no_header():
-    result: str = writer({}, MessageType.Structure, prettyprint=False)
+    result: str = write_metadata({}, prettyprint=False)
     assert "<mes:Header>" in result
     assert "<mes:ID>" in result
     assert "<mes:Test>true</mes:Test>" in result
@@ -341,9 +338,8 @@ def test_writer_no_header():
 
 
 def test_writer_datastructure(complete_header, datastructure):
-    result = writer(
+    result = write_metadata(
         {"DataStructures": {"FREQ": datastructure}},
-        MessageType.Structure,
         header=complete_header,
         prettyprint=True,
     )
@@ -352,9 +348,8 @@ def test_writer_datastructure(complete_header, datastructure):
 
 
 def test_writer_partial_datastructure(complete_header, partial_datastructure):
-    result = writer(
+    result = write_metadata(
         {"DataStructures": {"FREQ": partial_datastructure}},
-        MessageType.Structure,
         header=complete_header,
         prettyprint=True,
     )
@@ -363,9 +358,8 @@ def test_writer_partial_datastructure(complete_header, partial_datastructure):
 
 
 def test_writer_dataflow(complete_header, dataflow):
-    result = writer(
+    result = write_metadata(
         {"Dataflows": {"FREQ": dataflow}},
-        MessageType.Structure,
         header=complete_header,
         prettyprint=True,
     )
@@ -376,10 +370,9 @@ def test_writer_dataflow(complete_header, dataflow):
 def test_read_write(read_write_sample, read_write_header):
     content, filetype = process_string_to_read(read_write_sample)
     assert filetype == "xml"
-    read_result = read_xml(content, validate=True)
-    write_result = writer(
+    read_result = read(content, validate=True)
+    write_result = write_metadata(
         read_result,
-        MessageType.Structure,
         header=read_write_header,
         prettyprint=True,
     )
@@ -396,25 +389,22 @@ def test_write_read(complete_header, datastructure, dataflow, concept_ds):
         "Dataflows": {"Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)": dataflow},
     }
 
-    write_result = writer(
+    write_result = write_metadata(
         content,
-        MessageType.Structure,
         header=complete_header,
         prettyprint=True,
     )
 
-    read_result = read_xml(write_result)
+    read_result = read(write_result)
 
     assert content == read_result
 
 
 def test_bis_der(bis_sample, bis_header):
-    content, filetype = process_string_to_read(bis_sample)
-    assert filetype == "xml"
-    read_result = read_xml(content, validate=True)
-    write_result = writer(
+    content, _ = process_string_to_read(bis_sample)
+    read_result = read(bis_sample, validate=True)
+    write_result = write_metadata(
         read_result,
-        MessageType.Structure,
         header=bis_header,
         prettyprint=True,
     )
@@ -422,12 +412,9 @@ def test_bis_der(bis_sample, bis_header):
 
 
 def test_group_deletion(groups_sample, header):
-    content, filetype = process_string_to_read(groups_sample)
-    assert filetype == "xml"
-    read_result = read_xml(content, validate=True)
-    write_result = writer(
+    read_result = read(groups_sample, validate=True)
+    write_result = write_metadata(
         read_result,
-        MessageType.Structure,
         header=header,
         prettyprint=True,
     )

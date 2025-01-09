@@ -8,9 +8,8 @@ import pysdmx.io.xml.sdmx21.writer.config
 from pysdmx.errors import Invalid
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.pd import PandasDataset
+from pysdmx.io.xml import write_data, read
 from pysdmx.io.xml.enums import MessageType
-from pysdmx.io.xml.sdmx21.reader import read_xml
-from pysdmx.io.xml.sdmx21.writer import writer
 from pysdmx.model import (
     Code,
     Codelist,
@@ -123,19 +122,18 @@ def test_data_write_read(
     header, content, message_type, filename, dimension_at_observation
 ):
     samples_folder_path = Path(__file__).parent / "samples"
-    # Write from Dataset
-    result = writer(
+    # write_data from Dataset
+    result = write_data(
         content,
-        type_=message_type,
         header=header,
         dimension_at_observation=dimension_at_observation,
     )
     # Read the result to check for formal errors
-    result_msg = read_xml(result, validate=True)
+    result_msg = read(result, validate=True)
     assert "DataStructure=MD:TEST(1.0)" in result_msg
     # Read the reference to compare with the result
     infile, _ = process_string_to_read(samples_folder_path / filename)
-    reference_msg = read_xml(infile, validate=True)
+    reference_msg = read(infile, validate=True)
     result_data = result_msg["DataStructure=MD:TEST(1.0)"].data
     reference_data = reference_msg["DataStructure=MD:TEST(1.0)"].data
 
@@ -168,7 +166,7 @@ def test_data_write_df(
 ):
     pysdmx.io.xml.sdmx21.writer.structure_specific.CHUNKSIZE = 20
     pysdmx.io.xml.sdmx21.writer.generic.CHUNKSIZE = 20
-    # Write from DataFrame
+    # write_data from DataFrame
     df = pd.DataFrame(
         {
             "DIM1": [1, 2, 3, 4, 5] * 10,
@@ -183,14 +181,13 @@ def test_data_write_df(
     ds.attributes = {}
     content["DataStructure=MD:TEST(1.0)"] = ds
 
-    result = writer(
+    result = write_data(
         content,
-        type_=message_type,
         header=header,
         dimension_at_observation=dimension_at_observation,
     )
     # Read the result to check for formal errors
-    result_msg = read_xml(result, validate=True)
+    result_msg = read(result, validate=True)
     assert "DataStructure=MD:TEST(1.0)" in result_msg
     result_data = result_msg["DataStructure=MD:TEST(1.0)"].data
 
@@ -209,15 +206,14 @@ def test_invalid_content():
     with pytest.raises(
         Invalid, match="Message Content must contain only Datasets."
     ):
-        writer(content, type_=MessageType.StructureSpecificDataSet)
+        write_data(content)
 
 
 def test_invalid_dimension(content):
     dim_mapping = {"DataStructure=MD:TEST(1.0)": "DIM3"}
     with pytest.raises(Invalid):
-        writer(
+        write_data(
             content,
-            type_=MessageType.StructureSpecificDataSet,
             dimension_at_observation=dim_mapping,
         )
 
@@ -225,8 +221,7 @@ def test_invalid_dimension(content):
 def test_invalid_dimension_key(content):
     dim_mapping = {"DataStructure=AAA:TEST(1.0)": "DIM1"}
     with pytest.raises(Invalid):
-        writer(
+        write_data(
             content,
-            type_=MessageType.StructureSpecificDataSet,
             dimension_at_observation=dim_mapping,
         )

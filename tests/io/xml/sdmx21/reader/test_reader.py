@@ -5,9 +5,8 @@ import pytest
 
 import pysdmx
 from pysdmx.errors import Invalid, NotImplemented
-from pysdmx.io.input_processor import process_string_to_read
+from pysdmx.io.xml import read
 from pysdmx.io.xml.enums import MessageType
-from pysdmx.io.xml.sdmx21.reader import read_xml
 from pysdmx.io.xml.sdmx21.writer import writer as write_xml
 from pysdmx.model import Contact
 from pysdmx.model.message import SubmissionResult
@@ -47,9 +46,7 @@ def error_304_path():
 
 
 def test_agency_scheme_read(agency_scheme_path):
-    input_str, filetype = process_string_to_read(agency_scheme_path)
-    assert filetype == "xml"
-    result = read_xml(input_str, validate=True)
+    result = read(agency_scheme_path, validate=True)
 
     assert "OrganisationSchemes" in result
     agency_scheme = result["OrganisationSchemes"]
@@ -60,9 +57,7 @@ def test_agency_scheme_read(agency_scheme_path):
 
 
 def test_code_list_read(codelist_path):
-    input_str, filetype = process_string_to_read(codelist_path)
-    assert filetype == "xml"
-    result = read_xml(input_str, validate=True)
+    result = read(codelist_path, validate=True)
 
     assert "Codelists" in result
     codelists = result["Codelists"]
@@ -77,9 +72,7 @@ def test_code_list_read(codelist_path):
 
 
 def test_item_scheme_read(item_scheme_path):
-    input_str, filetype = process_string_to_read(item_scheme_path)
-    assert filetype == "xml"
-    result = read_xml(input_str, validate=True)
+    result = read(item_scheme_path, validate=True)
 
     assert "OrganisationSchemes" in result
     assert "Codelists" in result
@@ -120,9 +113,7 @@ def test_item_scheme_read(item_scheme_path):
 
 
 def test_submission_result(submission_path):
-    input_str, filetype = process_string_to_read(submission_path)
-    assert filetype == "xml"
-    result = read_xml(input_str, validate=True)
+    result = read(submission_path, validate=True)
 
     short_urn_1 = "DataStructure=BIS:BIS_DER(1.0)"
     short_urn_2 = "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"
@@ -143,10 +134,8 @@ def test_submission_result(submission_path):
 
 
 def test_error_304(error_304_path):
-    input_str, filetype = process_string_to_read(error_304_path)
-    assert filetype == "xml"
     with pytest.raises(Invalid) as e:
-        read_xml(input_str, validate=False, mode=MessageType.Error)
+        read(error_304_path, validate=False)
     reference_title = (
         "304: Either no structures were submitted,\n"
         "            or the submitted structures "
@@ -157,11 +146,9 @@ def test_error_304(error_304_path):
     assert e.value.description == reference_title
 
 
-def test_error_message_with_different_mode(error_304_path):
-    input_str, filetype = process_string_to_read(error_304_path)
-    assert filetype == "xml"
-    with pytest.raises(Invalid, match="Unable to parse sdmx file as"):
-        read_xml(input_str, validate=True, mode=MessageType.Submission)
+# def test_error_message_with_different_mode(error_304_path):
+#     with pytest.raises(Invalid, match="Unable to parse sdmx file as"):
+#         reader(error_304_path, validate=True)
 
 
 @pytest.mark.parametrize(
@@ -176,9 +163,7 @@ def test_error_message_with_different_mode(error_304_path):
 )
 def test_reading_validation(samples_folder, filename):
     data_path = samples_folder / filename
-    input_str, filetype = process_string_to_read(data_path)
-    assert filetype == "xml"
-    result = read_xml(input_str, validate=True)
+    result = read(data_path, validate=True)
     assert result is not None
     data = result["DataStructure=BIS:BIS_DER(1.0)"].data
     assert data.shape == (1000, 20)
@@ -187,9 +172,7 @@ def test_reading_validation(samples_folder, filename):
 # Test reading of dataflow SDMX file
 def test_dataflow(samples_folder):
     data_path = samples_folder / "dataflow.xml"
-    input_str, filetype = process_string_to_read(data_path)
-    assert filetype == "xml"
-    result = read_xml(input_str, validate=True)
+    result = read(data_path, validate=True)
     assert "DataFlow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result
     data_dataflow = result["DataFlow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"].data
     num_rows = len(data_dataflow)
@@ -206,67 +189,51 @@ def test_dataflow(samples_folder):
 
 def test_structure_ref_urn(samples_folder):
     data_path = samples_folder / "structure_ref_urn.xml"
-    input_str, filetype = process_string_to_read(data_path)
-    assert filetype == "xml"
-    result = read_xml(input_str, validate=True)
+    result = read(data_path, validate=True)
     assert "DataStructure=BIS:BIS_DER(1.0)" in result
 
 
 def test_partial_datastructure(samples_folder):
     data_path = samples_folder / "partial_datastructure.xml"
-    input_str, filetype = process_string_to_read(data_path)
-    assert filetype == "xml"
-    result = read_xml(input_str, validate=True)
+    result = read(data_path, validate=True)
     assert "DataStructure=BIS:BIS_DER(1.0)" in result["DataStructures"]
 
 
 def test_dataflow_structure(samples_folder):
     data_path = samples_folder / "dataflow_structure.xml"
-    input_str, filetype = process_string_to_read(data_path)
-    assert filetype == "xml"
-    result = read_xml(input_str, validate=True)
+    result = read(data_path, validate=True)
     assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result["Dataflows"]
 
 
 def test_partial_dataflow_structure(samples_folder):
     data_path = samples_folder / "partial_dataflow_structure.xml"
-    input_str, filetype = process_string_to_read(data_path)
-    assert filetype == "xml"
-    result = read_xml(input_str, validate=True)
+    result = read(data_path, validate=True)
     assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result["Dataflows"]
 
 
 def test_header_structure_provision_agrement(samples_folder):
     data_path = samples_folder / "header_structure_provision_agrement.xml"
-    input_str, filetype = process_string_to_read(data_path)
-    assert filetype == "xml"
     with pytest.raises(NotImplemented, match="ProvisionAgrement"):
-        read_xml(input_str, validate=True)
+        read(data_path, validate=True)
 
 
 def test_stref_dif_strid(samples_folder):
     data_path = samples_folder / "str_dif_ref_and_ID.xml"
-    input_str, filetype = process_string_to_read(data_path)
-    assert filetype == "xml"
     with pytest.raises(
         Exception,
         match="Cannot find the structure reference of this dataset:A",
     ):
-        read_xml(input_str, validate=True)
+        read(data_path, validate=True)
 
 
 def test_gen_all_no_atts(samples_folder):
     data_path = samples_folder / "gen_all_no_atts.xml"
-    input_str, filetype = process_string_to_read(data_path)
-    assert filetype == "xml"
-    read_xml(input_str, validate=True)
+    read(data_path, validate=True)
 
 
 def test_gen_ser_no_atts(samples_folder):
     data_path = samples_folder / "gen_ser_no_atts.xml"
-    input_str, filetype = process_string_to_read(data_path)
-    assert filetype == "xml"
-    read_xml(input_str, validate=True)
+    read(data_path, validate=True)
 
 
 @pytest.mark.parametrize(
@@ -278,9 +245,7 @@ def test_gen_ser_no_atts(samples_folder):
 )
 def test_ser_no_obs(samples_folder, filename):
     data_path = samples_folder / filename
-    input_str, filetype = process_string_to_read(data_path)
-    assert filetype == "xml"
-    result = read_xml(input_str, validate=True)
+    result = read(data_path, validate=True)
     df = result["DataStructure=BIS:BIS_DER(1.0)"].data
     assert df.shape == (1, 16)
 
@@ -298,9 +263,7 @@ def test_ser_no_obs(samples_folder, filename):
 def test_chunks(samples_folder, filename):
     pysdmx.io.xml.sdmx21.reader.data_read.READING_CHUNKSIZE = 100
     data_path = samples_folder / filename
-    input_str, filetype = process_string_to_read(data_path)
-    assert filetype == "xml"
-    result = read_xml(input_str, validate=True)
+    result = read(data_path, validate=True)
     assert result is not None
     data = result["DataStructure=BIS:BIS_DER(1.0)"].data
     num_rows = len(data)
@@ -315,16 +278,13 @@ def test_chunks(samples_folder, filename):
 
 def test_read_write_structure_specific_all(samples_folder):
     data_path = samples_folder / "str_all.xml"
-    input_str, filetype = process_string_to_read(data_path)
-    assert filetype == "xml"
-    content = read_xml(input_str, validate=True)
+    content = read(data_path, validate=True)
     assert content is not None
     assert "DataStructure=BIS:BIS_DER(1.0)" in content
     shape_read = content["DataStructure=BIS:BIS_DER(1.0)"].data.shape
     assert shape_read == (1000, 20)
     result = write_xml(content, MessageType.StructureSpecificDataSet)
-    # Check if it is well formed using validate=True
-    content_result = read_xml(result, validate=True)
+    content_result = read(result, validate=True)
     # Check we read the same data
     assert content_result is not None
     assert "DataStructure=BIS:BIS_DER(1.0)" in content_result
@@ -335,9 +295,7 @@ def test_read_write_structure_specific_all(samples_folder):
 
 def test_vtl_transformation_scheme(samples_folder):
     data_path = samples_folder / "transformation_scheme.xml"
-    input_str, filetype = process_string_to_read(data_path)
-    assert filetype == "xml"
-    result = read_xml(input_str, validate=True)
+    result = read(data_path, validate=True)
     assert "Transformations" in result
     assert len(result["Transformations"]) == 1
     transformation_scheme = result["Transformations"]["SDMX:TEST(1.0)"]
