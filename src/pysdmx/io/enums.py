@@ -1,3 +1,5 @@
+"""IO Enumerations for SDMX files."""
+
 from enum import Enum
 
 
