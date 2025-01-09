@@ -24,9 +24,6 @@ def read(
     use_dataset_id: bool = False,
 ) -> Dict[str, ALL_TYPES]:
     """Reads an SDMX-ML file and returns a dictionary with the parsed data."""
-    if isinstance(infile, Path):
-        infile = str(infile)
-
     input_str, filetype = process_string_to_read(infile)
 
     if filetype == "xml":

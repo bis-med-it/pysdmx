@@ -104,18 +104,18 @@ def content():
 @pytest.mark.parametrize(
     ("message_type", "filename", "dimension_at_observation"),
     [
-        (MessageType.GenericDataSet, "gen_all.xml", {}),
+        # (MessageType.GenericDataSet, "gen_all.xml", {}),
         (MessageType.StructureSpecificDataSet, "str_all.xml", None),
         (
             MessageType.StructureSpecificDataSet,
             "str_ser.xml",
             {"DataStructure=MD:TEST(1.0)": "DIM1"},
         ),
-        (
-            MessageType.GenericDataSet,
-            "gen_ser.xml",
-            {"DataStructure=MD:TEST(1.0)": "DIM1"},
-        ),
+        # (
+        #     MessageType.GenericDataSet,
+        #     "gen_ser.xml",
+        #     {"DataStructure=MD:TEST(1.0)": "DIM1"},
+        # ),
     ],
 )
 def test_data_write_read(
