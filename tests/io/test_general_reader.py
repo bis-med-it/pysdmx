@@ -4,7 +4,7 @@ import pytest
 
 from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
-from pysdmx.io.enums import ReadFormat
+from pysdmx.io.enums import SDMXFormat
 
 
 @pytest.fixture
@@ -21,14 +21,14 @@ def test_read_sdmx_invalid_extension():
 
 
 def test_read_format_str():
-    assert str(ReadFormat.SDMX_ML_2_1_STRUCTURE) == "SDMX-ML 2.1 Structure"
-    assert str(ReadFormat.SDMX_ML_2_1_DATA_GENERIC) == "SDMX-ML 2.1 Generic"
+    assert str(SDMXFormat.SDMX_ML_2_1_STRUCTURE) == "SDMX-ML 2.1 Structure"
+    assert str(SDMXFormat.SDMX_ML_2_1_DATA_GENERIC) == "SDMX-ML 2.1 Generic"
     assert (
-        str(ReadFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC)
+        str(SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC)
         == "SDMX-ML 2.1 StructureSpecific"
     )
-    assert str(ReadFormat.SDMX_CSV_1_0) == "SDMX-CSV 1.0"
-    assert str(ReadFormat.SDMX_CSV_2_0) == "SDMX-CSV 2.0"
+    assert str(SDMXFormat.SDMX_CSV_1_0) == "SDMX-CSV 1.0"
+    assert str(SDMXFormat.SDMX_CSV_2_0) == "SDMX-CSV 2.0"
 
 
 def test_empty_result(empty_message):

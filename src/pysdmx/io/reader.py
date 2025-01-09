@@ -4,8 +4,8 @@ from io import BytesIO
 from pathlib import Path
 from typing import Union
 
-from pysdmx.errors import Invalid
-from pysdmx.io.enums import ReadFormat
+from pysdmx.errors import Invalid, NotImplemented
+from pysdmx.io.enums import SDMXFormat
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.model.message import Message
 
@@ -42,9 +42,9 @@ def read_sdmx(
     input_str, read_format = process_string_to_read(infile)
 
     if read_format in (
-        ReadFormat.SDMX_ML_2_1_DATA_GENERIC,
-        ReadFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC,
-        ReadFormat.SDMX_ML_2_1_STRUCTURE,
+        SDMXFormat.SDMX_ML_2_1_DATA_GENERIC,
+        SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC,
+        SDMXFormat.SDMX_ML_2_1_STRUCTURE,
     ):
         # SDMX-ML 2.1
         from pysdmx.io.xml.sdmx21.reader import read_xml
@@ -52,7 +52,9 @@ def read_sdmx(
         result = read_xml(
             input_str, validate=validate, use_dataset_id=use_dataset_id
         )
-    elif read_format == ReadFormat.SDMX_CSV_1_0:
+    elif read_format in (SDMXFormat.SDMX_JSON_2, SDMXFormat.FUSION_JSON):
+        raise NotImplemented("JSON formats reading are not supported yet")
+    elif read_format == SDMXFormat.SDMX_CSV_1_0:
         # SDMX-CSV 1.0
         from pysdmx.io.csv.sdmx10.reader import read
 
@@ -66,15 +68,14 @@ def read_sdmx(
     if len(result) == 0:
         raise Invalid("Empty SDMX Message")
 
-    # TODO: Add here the Schema download for Datasets, based on structure
-
     # Returning a Message class
     if read_format in (
-        ReadFormat.SDMX_CSV_1_0,
-        ReadFormat.SDMX_CSV_2_0,
-        ReadFormat.SDMX_ML_2_1_DATA_GENERIC,
-        ReadFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC,
+        SDMXFormat.SDMX_CSV_1_0,
+        SDMXFormat.SDMX_CSV_2_0,
+        SDMXFormat.SDMX_ML_2_1_DATA_GENERIC,
+        SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC,
     ):
+        # TODO: Add here the Schema download for Datasets, based on structure
         return Message(data=result)
 
     return Message(structures=result)

@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from pysdmx.errors import Invalid, NotImplemented
-from pysdmx.io.enums import ReadFormat
+from pysdmx.io.enums import SDMXFormat
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.sdmx21.reader import read_xml
 
@@ -50,31 +50,31 @@ def invalid_message_xml():
 def test_process_string_to_read(valid_xml, valid_xml_path):
     infile, read_format = process_string_to_read(valid_xml_path)
     assert infile == valid_xml
-    assert read_format == ReadFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
 
 
 def test_process_string_to_read_bytes(valid_xml, valid_xml_bytes):
     infile, read_format = process_string_to_read(valid_xml_bytes)
     assert infile == valid_xml
-    assert read_format == ReadFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
 
 
 def test_process_string_to_read_str(valid_xml):
     infile, read_format = process_string_to_read(valid_xml)
     assert infile == valid_xml
-    assert read_format == ReadFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
 
 
 def test_process_string_to_read_str_path(valid_xml, valid_xml_path):
     infile, read_format = process_string_to_read(str(valid_xml_path))
     assert infile == valid_xml
-    assert read_format == ReadFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
 
 
 def test_process_string_to_read_bom(valid_xml, valid_xml_bom):
     infile, read_format = process_string_to_read(valid_xml_bom)
     assert infile[:5] == "<?xml"
-    assert read_format == ReadFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
 
 
 def test_process_string_to_read_invalid_xml(invalid_xml):
@@ -99,7 +99,7 @@ def test_process_string_to_read_invalid_path():
 def test_process_string_to_read_valid_json():
     infile, filetype = process_string_to_read('{"key": "value"}')
     assert infile == '{"key": "value"}'
-    assert filetype == ReadFormat.SDMX_JSON_2
+    assert filetype == SDMXFormat.SDMX_JSON_2
 
 
 def test_process_string_to_read_invalid_json():

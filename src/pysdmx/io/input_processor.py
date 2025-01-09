@@ -11,8 +11,7 @@ from typing import Tuple, Union
 import pandas as pd
 
 from pysdmx.errors import Invalid
-
-from .enums import ReadFormat
+from pysdmx.io.enums import SDMXFormat
 
 
 def __remove_bom(input_string: str) -> str:
@@ -44,28 +43,33 @@ def __check_json(infile: str) -> bool:
         return False
 
 
-def __get_sdmx_ml_flavour(infile: str) -> Tuple[str, ReadFormat]:
-    if "generic" in infile.lower():
-        return infile, ReadFormat.SDMX_ML_2_1_DATA_GENERIC
-    if "structurespecificdata" in infile.lower():
-        return infile, ReadFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
-    if "structure" in infile.lower():
-        return infile, ReadFormat.SDMX_ML_2_1_STRUCTURE
+def __get_sdmx_ml_flavour(infile: str) -> Tuple[str, SDMXFormat]:
+    flavour_check = infile[:1000].lower()
+    if ":generic" in flavour_check:
+        return infile, SDMXFormat.SDMX_ML_2_1_DATA_GENERIC
+    if ":structurespecificdata" in flavour_check:
+        return infile, SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
+    if ":structure" in flavour_check:
+        return infile, SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    if ":registryinterface" in flavour_check:
+        return infile, SDMXFormat.SDMX_ML_2_1_SUBMISSION
+    if ":error" in flavour_check:
+        return infile, SDMXFormat.SDMX_ML_2_1_ERROR
     raise Invalid("Validation Error", "Cannot parse input as SDMX.")
 
 
-def __get_sdmx_csv_flavour(infile: str) -> Tuple[str, ReadFormat]:
+def __get_sdmx_csv_flavour(infile: str) -> Tuple[str, SDMXFormat]:
     headers = csv.reader(StringIO(infile)).__next__()
     if "DATAFLOW" in headers:
-        return infile, ReadFormat.SDMX_CSV_1_0
+        return infile, SDMXFormat.SDMX_CSV_1_0
     elif "STRUCTURE" in headers and "STRUCTURE_ID" in headers:
-        return infile, ReadFormat.SDMX_CSV_2_0
+        return infile, SDMXFormat.SDMX_CSV_2_0
     raise Invalid("Validation Error", "Cannot parse input as SDMX.")
 
 
 def process_string_to_read(
     infile: Union[str, Path, BytesIO],
-) -> Tuple[str, ReadFormat]:
+) -> Tuple[str, SDMXFormat]:
     """Processes the input that comes into read_sdmx function.
 
     Args:
@@ -100,7 +104,7 @@ def process_string_to_read(
 
     # Check if string is a valid JSON
     if __check_json(out_str):
-        return out_str, ReadFormat.SDMX_JSON_2
+        return out_str, SDMXFormat.SDMX_JSON_2
 
     # Check if string is a valid XML
     if __check_xml(out_str):

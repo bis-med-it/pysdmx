@@ -14,7 +14,7 @@ Classes:
 
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -83,7 +83,7 @@ class Message(Struct, frozen=True):
             ],
         ]
     ] = None
-    data: Optional[Dict[str, Dataset]] = None
+    data: Optional[Sequence[Dataset]] = None
 
     def __post_init__(self) -> None:
         """Checks if the content is valid."""
@@ -106,7 +106,7 @@ class Message(Struct, frozen=True):
                             "structure on structures.",
                         )
         if self.data is not None:
-            for data_value in self.data.values():
+            for data_value in self.data:
                 if not isinstance(data_value, Dataset):
                     raise Invalid(
                         f"Invalid data type: "
@@ -184,7 +184,7 @@ class Message(Struct, frozen=True):
         """Returns a specific Dataflow."""
         return self.__get_single_structure(DFWS, short_urn)
 
-    def get_datasets(self) -> Dict[str, Dataset]:
+    def get_datasets(self) -> Sequence[Dataset]:
         """Returns the Datasets."""
         if self.data is not None:
             return self.data
@@ -195,8 +195,10 @@ class Message(Struct, frozen=True):
 
     def get_dataset(self, short_urn: str) -> Dataset:
         """Returns a specific Dataset."""
-        if self.data is not None and short_urn in self.data:
-            return self.data[short_urn]
+        if self.data is not None:
+            for dataset in self.data:
+                if dataset.short_urn == short_urn:
+                    return dataset
         raise NotFound(
             f"No Dataset with Short URN {short_urn} found in content",
             "Could not find the requested Dataset.",
