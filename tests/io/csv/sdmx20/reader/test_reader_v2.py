@@ -5,7 +5,6 @@ import pytest
 from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
 from pysdmx.io.csv.sdmx20.reader import read
-from pysdmx.io.reader import ReadFormat
 
 
 @pytest.fixture
@@ -79,7 +78,7 @@ def test_reading_data_v2(data_path):
 
 
 def test_reading_sdmx_csv_v2(data_path):
-    dataset_dict = read_sdmx(data_path, format=ReadFormat.SDMX_CSV_2_0).data
+    dataset_dict = read_sdmx(data_path).data
     assert "DataFlow=BIS:BIS_DER(1.0)" in dataset_dict
     df = dataset_dict["DataFlow=BIS:BIS_DER(1.0)"].data
     assert len(df) == 1000
@@ -91,7 +90,7 @@ def test_reading_sdmx_csv_v2(data_path):
 def test_reading_sdmx_csv_v2_string(data_path):
     with open(data_path, "r") as f:
         infile = f.read()
-    dataset_dict = read_sdmx(infile, format=ReadFormat.SDMX_CSV_2_0).data
+    dataset_dict = read_sdmx(infile).data
     assert "DataFlow=BIS:BIS_DER(1.0)" in dataset_dict
     df = dataset_dict["DataFlow=BIS:BIS_DER(1.0)"].data
     assert len(df) == 1000

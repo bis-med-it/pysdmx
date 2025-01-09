@@ -1,5 +1,6 @@
 """Processes the input that comes into read_sdmx function."""
 
+import csv
 import os.path
 from io import BytesIO, StringIO, TextIOWrapper
 from json import JSONDecodeError, loads
@@ -10,6 +11,8 @@ from typing import Tuple, Union
 import pandas as pd
 
 from pysdmx.errors import Invalid
+
+from .enums import ReadFormat
 
 
 def __remove_bom(input_string: str) -> str:
@@ -41,9 +44,28 @@ def __check_json(infile: str) -> bool:
         return False
 
 
+def __get_sdmx_ml_flavour(infile: str) -> Tuple[str, ReadFormat]:
+    if "generic" in infile.lower():
+        return infile, ReadFormat.SDMX_ML_2_1_DATA_GENERIC
+    if "structurespecificdata" in infile.lower():
+        return infile, ReadFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
+    if "structure" in infile.lower():
+        return infile, ReadFormat.SDMX_ML_2_1_STRUCTURE
+    raise Invalid("Validation Error", "Cannot parse input as SDMX.")
+
+
+def __get_sdmx_csv_flavour(infile: str) -> Tuple[str, ReadFormat]:
+    headers = csv.reader(StringIO(infile)).__next__()
+    if "DATAFLOW" in headers:
+        return infile, ReadFormat.SDMX_CSV_1_0
+    elif "STRUCTURE" in headers and "STRUCTURE_ID" in headers:
+        return infile, ReadFormat.SDMX_CSV_2_0
+    raise Invalid("Validation Error", "Cannot parse input as SDMX.")
+
+
 def process_string_to_read(
     infile: Union[str, Path, BytesIO],
-) -> Tuple[str, str]:
+) -> Tuple[str, ReadFormat]:
     """Processes the input that comes into read_sdmx function.
 
     Args:
@@ -78,15 +100,15 @@ def process_string_to_read(
 
     # Check if string is a valid JSON
     if __check_json(out_str):
-        return out_str, "json"
+        return out_str, ReadFormat.SDMX_JSON_2
 
     # Check if string is a valid XML
     if __check_xml(out_str):
-        return out_str, "xml"
+        return __get_sdmx_ml_flavour(out_str)
 
     # Check if string is a valid CSV
     if __check_csv(out_str):
-        return out_str, "csv"
+        return __get_sdmx_csv_flavour(out_str)
 
     raise Invalid(
         "Validation Error", f"Cannot parse input as SDMX. Found {infile}"

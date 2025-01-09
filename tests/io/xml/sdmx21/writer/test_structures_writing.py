@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from pysdmx.errors import NotImplemented
+from pysdmx.io.enums import ReadFormat
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
@@ -396,8 +397,8 @@ def test_writer_dataflow(complete_header, dataflow):
 
 
 def test_read_write(read_write_sample, read_write_header):
-    content, filetype = process_string_to_read(read_write_sample)
-    assert filetype == "xml"
+    content, read_format = process_string_to_read(read_write_sample)
+    assert read_format == ReadFormat.SDMX_ML_2_1_STRUCTURE
     read_result = read_xml(content, validate=True)
     write_result = writer(
         read_result,
@@ -431,8 +432,8 @@ def test_write_read(complete_header, datastructure, dataflow, concept_ds):
 
 
 def test_bis_der(bis_sample, bis_header):
-    content, filetype = process_string_to_read(bis_sample)
-    assert filetype == "xml"
+    content, read_format = process_string_to_read(bis_sample)
+    assert read_format == ReadFormat.SDMX_ML_2_1_STRUCTURE
     read_result = read_xml(content, validate=True)
     write_result = writer(
         read_result,
@@ -444,8 +445,8 @@ def test_bis_der(bis_sample, bis_header):
 
 
 def test_group_deletion(groups_sample, header):
-    content, filetype = process_string_to_read(groups_sample)
-    assert filetype == "xml"
+    content, read_format = process_string_to_read(groups_sample)
+    assert read_format == ReadFormat.SDMX_ML_2_1_STRUCTURE
     read_result = read_xml(content, validate=True)
     write_result = writer(
         read_result,
