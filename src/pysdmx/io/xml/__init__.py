@@ -1,7 +1,7 @@
 """XML readers and writers."""
 
 from pathlib import Path
-from typing import Dict, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 from pysdmx.errors import Invalid
 from pysdmx.io.input_processor import process_string_to_read
@@ -43,23 +43,26 @@ def read(
 
 
 def _write_common(
-    datasets: Union[Dict[str, any], Sequence[Dict[str, any]]],
+    datasets: Any,
     output_path: Optional[str],
     prettyprint: bool,
     header: Optional[Header],
     dimension_at_observation: Optional[Dict[str, str]],
     type_: MessageType,
-) -> Optional[Union[str, Sequence[str]]]:
+) -> Optional[
+    Union[str, List[str]]
+]:  # Use List[str] for clarity and mutability
     """Internal common logic for writing data or metadata."""
-    result: Union[str, Sequence[str]] = (
-        [] if isinstance(datasets, Sequence) else None
-    )
+    result: Optional[Union[str, List[str]]] = None
 
     if output_path is None:
         output_path = ""
 
-    if not isinstance(datasets, Sequence):
-        datasets = [datasets]
+    if not isinstance(datasets, Sequence) or isinstance(datasets, Dict):
+        datasets = [datasets]  # Convert Sequence to a mutable list
+
+    if len(datasets) > 1:
+        result = []
 
     for content in datasets:
         if header is None:
@@ -73,8 +76,9 @@ def _write_common(
             header=header,
             dimension_at_observation=dimension_at_observation,
         )
-        if isinstance(result, list):
-            result.append(xml_str)
+        if isinstance(result, List):
+            if xml_str is not None:
+                result.append(xml_str)
         else:
             result = xml_str
 
