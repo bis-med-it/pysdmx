@@ -8,7 +8,7 @@ import pysdmx.io.xml.sdmx21.writer.config
 from pysdmx.errors import Invalid
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml import write_data, read
+from pysdmx.io.xml import read, write_data
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.model import (
     Code,

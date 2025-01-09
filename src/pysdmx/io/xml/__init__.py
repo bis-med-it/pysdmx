@@ -1,6 +1,7 @@
 """XML readers and writers."""
+
 from pathlib import Path
-from typing import Dict, Optional, Sequence, Union, Any
+from typing import Dict, Optional, Sequence, Union
 
 from pysdmx.errors import Invalid
 from pysdmx.io.input_processor import process_string_to_read
@@ -9,21 +10,18 @@ from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
 from pysdmx.io.xml.sdmx21.writer import writer
 from pysdmx.model import Codelist, ConceptScheme
-from pysdmx.model.dataflow import DataStructureDefinition, Dataflow
+from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
 from pysdmx.model.message import Header
 
-STR_TYPES = Union[
-    Codelist,
-    ConceptScheme,
-    DataStructureDefinition,
-    Dataflow
-]
+STR_TYPES = Union[Codelist, ConceptScheme, DataStructureDefinition, Dataflow]
 STR_DICT_TYPE = Dict[str, STR_TYPES]
 ALL_TYPES = Union[STR_DICT_TYPE, PandasDataset]
 
 
 def read(
-    infile: Union[str, Path], validate: bool = False, use_dataset_id: bool = False
+    infile: Union[str, Path],
+    validate: bool = False,
+    use_dataset_id: bool = False,
 ) -> Dict[str, ALL_TYPES]:
     """Reads an SDMX-ML file and returns a dictionary with the parsed data."""
     if isinstance(infile, Path):
@@ -39,7 +37,9 @@ def read(
             use_dataset_id=use_dataset_id,
         )
     else:
-        raise Invalid("Invalid file type", f"File type {filetype} is not supported.")
+        raise Invalid(
+            "Invalid file type", f"File type {filetype} is not supported."
+        )
 
 
 def _write_common(
@@ -51,7 +51,9 @@ def _write_common(
     type_: MessageType,
 ) -> Optional[Union[str, Sequence[str]]]:
     """Internal common logic for writing data or metadata."""
-    result: Union[str, Sequence[str]] = [] if isinstance(datasets, Sequence) else None
+    result: Union[str, Sequence[str]] = (
+        [] if isinstance(datasets, Sequence) else None
+    )
 
     if output_path is None:
         output_path = ""
@@ -80,7 +82,9 @@ def _write_common(
 
 
 def write_data(
-    datasets: Union[Dict[str, PandasDataset], Sequence[Dict[str, PandasDataset]]],
+    datasets: Union[
+        Dict[str, PandasDataset], Sequence[Dict[str, PandasDataset]]
+    ],
     output_path: Optional[str] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
@@ -98,7 +102,9 @@ def write_data(
 
 
 def write_metadata(
-    datasets: Union[Dict[str, STR_DICT_TYPE], Sequence[Dict[str, STR_DICT_TYPE]]],
+    datasets: Union[
+        Dict[str, STR_DICT_TYPE], Sequence[Dict[str, STR_DICT_TYPE]]
+    ],
     output_path: Optional[str] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
