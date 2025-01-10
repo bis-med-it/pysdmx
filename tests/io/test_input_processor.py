@@ -97,9 +97,10 @@ def test_process_string_to_read_invalid_path():
 
 
 def test_process_string_to_read_valid_json():
-    infile, filetype = process_string_to_read('{"key": "value"}')
-    assert infile == '{"key": "value"}'
-    assert filetype == SDMXFormat.SDMX_JSON_2
+    with pytest.raises(
+        NotImplemented, match="JSON formats reading are not supported yet"
+    ):
+        process_string_to_read('{"key": "value"}')
 
 
 def test_process_string_to_read_invalid_json():

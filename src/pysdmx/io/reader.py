@@ -4,7 +4,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import Sequence, Union
 
-from pysdmx.errors import Invalid, NotFound, NotImplemented
+from pysdmx.errors import Invalid, NotFound
 from pysdmx.io.enums import SDMXFormat
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.model import Schema
@@ -46,6 +46,8 @@ def read_sdmx(
         SDMXFormat.SDMX_ML_2_1_DATA_GENERIC,
         SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC,
         SDMXFormat.SDMX_ML_2_1_STRUCTURE,
+        SDMXFormat.SDMX_ML_2_1_SUBMISSION,
+        SDMXFormat.SDMX_ML_2_1_ERROR,
     ):
         # SDMX-ML 2.1
         from pysdmx.io.xml.sdmx21.reader import read_xml
@@ -53,8 +55,6 @@ def read_sdmx(
         result = read_xml(
             input_str, validate=validate, use_dataset_id=use_dataset_id
         )
-    elif read_format in (SDMXFormat.SDMX_JSON_2, SDMXFormat.FUSION_JSON):
-        raise NotImplemented("JSON formats reading are not supported yet")
     elif read_format == SDMXFormat.SDMX_CSV_1_0:
         # SDMX-CSV 1.0
         from pysdmx.io.csv.sdmx10.reader import read

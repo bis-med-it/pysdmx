@@ -72,6 +72,28 @@ def test_read_format_str():
     assert str(SDMXFormat.SDMX_CSV_2_0) == "SDMX-CSV 2.0"
 
 
+def test_read_url_invalid():
+    with pytest.raises(
+        Invalid, match="Cannot retrieve a SDMX Message from URL"
+    ):
+        read_sdmx("https://www.google.com/404")
+
+
+def test_read_url_valid():
+    url = "https://stats.bis.org/api/v1/datastructure/BIS/BIS_DER/1.0?references=none&detail=full"
+    result = read_sdmx(url)
+    assert len(result.structures) == 1
+
+
+def test_url_invalid_sdmx_error():
+    url = "https://stats.bis.org/api/v1/datastructure/BIS/BIS_DER/1.0?references=none&detail=none"
+    with pytest.raises(
+        Invalid,
+        match="150:",
+    ):
+        read_sdmx(url)
+
+
 def test_empty_result(empty_message):
     with pytest.raises(Invalid, match="Empty SDMX Message"):
         read_sdmx(empty_message, validate=False)

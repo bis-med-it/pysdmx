@@ -9,8 +9,9 @@ from pathlib import Path
 from typing import Tuple, Union
 
 import pandas as pd
+from httpx import get as httpx_get
 
-from pysdmx.errors import Invalid
+from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.enums import SDMXFormat
 
 
@@ -67,13 +68,27 @@ def __get_sdmx_csv_flavour(infile: str) -> Tuple[str, SDMXFormat]:
     raise Invalid("Validation Error", "Cannot parse input as SDMX-CSV.")
 
 
+def __check_sdmx_str(infile: str) -> Tuple[str, SDMXFormat]:
+    """Attempts to infer the SDMX format of the input string."""
+    if __check_xml(infile):
+        return __get_sdmx_ml_flavour(infile)
+    if __check_csv(infile):
+        return __get_sdmx_csv_flavour(infile)
+    if __check_json(infile):
+        raise NotImplemented("JSON formats reading are not supported yet")
+    raise Invalid("Validation Error", "Cannot parse input as SDMX.")
+
+
 def process_string_to_read(
-    infile: Union[str, Path, BytesIO],
+    input: Union[str, Path, BytesIO],
 ) -> Tuple[str, SDMXFormat]:
     """Processes the input that comes into read_sdmx function.
 
+    Automatically detects the format of the input. The input can be a file,
+    URL, or string.
+
     Args:
-        infile: Path to file, URL, or string.
+        input: Path to file, URL, or string.
 
     Returns:
         tuple: Tuple containing the parsed input and the format of the input.
@@ -81,39 +96,40 @@ def process_string_to_read(
     Raises:
         Invalid: If the input cannot be parsed as SDMX.
     """
-    if isinstance(infile, str) and os.path.exists(infile):
-        infile = Path(infile)
+    if isinstance(input, str) and os.path.exists(input):
+        input = Path(input)
     # Read file as string
-    if isinstance(infile, (Path, PathLike)):
-        with open(infile, "r", encoding="utf-8-sig", errors="replace") as f:
+    if isinstance(input, (Path, PathLike)):
+        with open(input, "r", encoding="utf-8-sig", errors="replace") as f:
             out_str = f.read()
 
     # Read from BytesIO
-    elif isinstance(infile, BytesIO):
-        text_wrap = TextIOWrapper(infile, encoding="utf-8", errors="replace")
+    elif isinstance(input, BytesIO):
+        text_wrap = TextIOWrapper(input, encoding="utf-8", errors="replace")
         out_str = text_wrap.read()
 
-    elif isinstance(infile, str):
-        out_str = infile
+    elif isinstance(input, str):
+        if input.startswith("http"):
+            try:
+                response = httpx_get(input, timeout=60)
+                if (
+                    response.status_code != 200
+                    and "<?xml" not in response.text
+                ):
+                    raise Exception("Invalid URL, no SDMX Error found")
+                out_str = response.text
+            except Exception:
+                raise Invalid(
+                    "Validation Error",
+                    f"Cannot retrieve a SDMX Message from URL: {input}.",
+                ) from None
+        else:
+            out_str = input
     else:
         raise Invalid(
-            "Validation Error", f"Cannot parse input of type {type(infile)}."
+            "Validation Error", f"Cannot parse input of type {type(input)}."
         )
 
     out_str = __remove_bom(out_str)
 
-    # Check if string is a valid JSON
-    if __check_json(out_str):
-        return out_str, SDMXFormat.SDMX_JSON_2
-
-    # Check if string is a valid XML
-    if __check_xml(out_str):
-        return __get_sdmx_ml_flavour(out_str)
-
-    # Check if string is a valid CSV
-    if __check_csv(out_str):
-        return __get_sdmx_csv_flavour(out_str)
-
-    raise Invalid(
-        "Validation Error", f"Cannot parse input as SDMX. Found {infile}"
-    )
+    return __check_sdmx_str(out_str)
