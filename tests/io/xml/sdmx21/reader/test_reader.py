@@ -404,16 +404,16 @@ def test_vtl_transformation_scheme(samples_folder):
 
 
 def test_estat_metadata(estat_metadata_path):
-    input_str, filetype = process_string_to_read(estat_metadata_path)
-    assert filetype == "xml"
+    input_str, sdmx_format = process_string_to_read(estat_metadata_path)
+    assert sdmx_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
     result = read_xml(input_str, validate=True)
     assert len(result["Codelists"]) == 6
     assert len(result["Concepts"]) == 1
 
 
 def test_estat_data(estat_data_path):
-    input_str, filetype = process_string_to_read(estat_data_path)
-    assert filetype == "xml"
+    input_str, sdmx_format = process_string_to_read(estat_data_path)
+    assert sdmx_format == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
 
     result = read_xml(input_str, validate=False)
     assert "DataFlow=ESTAT:NRG_BAL_S(1.0)" in result

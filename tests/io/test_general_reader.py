@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import httpx
 import pytest
 
 from pysdmx.errors import Invalid, NotImplemented
@@ -38,6 +39,14 @@ def data_csv_v1_path():
 
 
 @pytest.fixture
+def data_csv_v1_str():
+    base_path = Path(__file__).parent / "samples" / "data_v1.csv"
+    with open(base_path, "r") as f:
+        text = f.read()
+    return text
+
+
+@pytest.fixture
 def structures_path():
     base_path = Path(__file__).parent / "samples" / "datastructure.xml"
     return str(base_path)
@@ -47,6 +56,14 @@ def structures_path():
 def dataflow_path():
     base_path = Path(__file__).parent / "samples" / "dataflow.xml"
     return str(base_path)
+
+
+@pytest.fixture
+def sdmx_error_str():
+    base_path = Path(__file__).parent / "samples" / "error.xml"
+    with open(base_path, "r") as f:
+        text = f.read()
+    return text
 
 
 def test_read_sdmx_invalid_extension():
@@ -72,25 +89,41 @@ def test_read_format_str():
     assert str(SDMXFormat.SDMX_CSV_2_0) == "SDMX-CSV 2.0"
 
 
-def test_read_url_invalid():
+def test_read_url_invalid(respx_mock):
+    url = "https://invalidurl.com"
+    respx_mock.get(url).mock(
+        return_value=httpx.Response(
+            404,
+            content="",
+        )
+    )
     with pytest.raises(
         Invalid, match="Cannot retrieve a SDMX Message from URL"
     ):
-        read_sdmx("https://www.google.com/404")
+        read_sdmx(url)
 
 
-def test_read_url_valid():
-    url = "https://stats.bis.org/api/v1/datastructure/BIS/BIS_DER/1.0?references=none&detail=full"
+def test_read_url_valid(respx_mock, data_csv_v1_str):
+    url = "http://validurl.com"
+    respx_mock.get(url).mock(
+        return_value=httpx.Response(
+            200,
+            content=data_csv_v1_str,
+        )
+    )
     result = read_sdmx(url)
-    assert len(result.structures) == 1
+    assert result.data is not None
 
 
-def test_url_invalid_sdmx_error():
-    url = "https://stats.bis.org/api/v1/datastructure/BIS/BIS_DER/1.0?references=none&detail=none"
-    with pytest.raises(
-        Invalid,
-        match="150:",
-    ):
+def test_url_invalid_sdmx_error(respx_mock, sdmx_error_str):
+    url = "http://invalid_sdmx_error.com"
+    respx_mock.get(url).mock(
+        return_value=httpx.Response(
+            404,
+            content=sdmx_error_str,
+        )
+    )
+    with pytest.raises(Invalid, match="150: "):
         read_sdmx(url)
 
 
