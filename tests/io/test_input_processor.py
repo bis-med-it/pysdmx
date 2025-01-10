@@ -116,3 +116,8 @@ def test_process_string_to_read_invalid_allowed_error(invalid_message_xml):
     message = "Cannot parse input as SDMX."
     with pytest.raises(NotImplemented, match=message):
         read_xml(invalid_message_xml, validate=False)
+
+
+def test_invalid_xml_flavour():
+    with pytest.raises(Invalid):
+        process_string_to_read("<?xmlAAAA")

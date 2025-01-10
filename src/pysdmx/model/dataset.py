@@ -76,9 +76,7 @@ class Dataset(Struct, frozen=False, kw_only=True):
             URN formatted string
         """
         if isinstance(self.structure, str):
-            structure_type, unique_id = self.structure.split("=", maxsplit=1)
-            structure = structure_type.rsplit(".", maxsplit=1)[1]
-            return f"{structure}={unique_id}"
+            return self.structure
         else:
             s = self.structure
             return f"{s.context}={s.agency}:{s.id}({s.version})"

@@ -269,10 +269,7 @@ def __parse_structure_specific_data(
         # Structure Specific All dimensions
         df = pd.DataFrame(dataset[OBS]).replace(np.nan, "")
 
-    urn = (
-        "urn:sdmx:org.sdmx.infomodel.datastructure."
-        f"{structure_info['structure_type']}={structure_info['unique_id']}"
-    )
+    urn = f"{structure_info['structure_type']}={structure_info['unique_id']}"
 
     return PandasDataset(
         structure=urn, attributes=attached_attributes, data=df
@@ -292,10 +289,7 @@ def __parse_generic_data(
         # Generic All Dimensions
         df = __reading_generic_all(dataset)
 
-    urn = (
-        "urn:sdmx:org.sdmx.infomodel.datastructure."
-        f"{structure_info['structure_type']}={structure_info['unique_id']}"
-    )
+    urn = f"{structure_info['structure_type']}={structure_info['unique_id']}"
 
     return PandasDataset(
         structure=urn, attributes=attached_attributes, data=df

@@ -49,20 +49,11 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
     df_csv = data.drop(["STRUCTURE", "STRUCTURE_ID"], axis=1)
 
     if structure_type == "DataStructure".lower():
-        urn = (
-            "urn:sdmx:org.sdmx.infomodel.datastructure."
-            f"DataStructure={structure_id}"
-        )
+        urn = f"DataStructure={structure_id}"
     elif structure_type == "DataFlow".lower():
-        urn = (
-            "urn:sdmx:org.sdmx.infomodel.datastructure."
-            f"DataFlow={structure_id}"
-        )
+        urn = f"DataFlow={structure_id}"
     elif structure_type == "dataprovision":
-        urn = (
-            f"urn:sdmx:org.sdmx.infomodel.registry."
-            f"ProvisionAgreement={structure_id}"
-        )
+        urn = f"ProvisionAgreement={structure_id}"
     else:
         raise Invalid(
             "Invalid value on STRUCTURE column",

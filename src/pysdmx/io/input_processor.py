@@ -55,7 +55,7 @@ def __get_sdmx_ml_flavour(infile: str) -> Tuple[str, SDMXFormat]:
         return infile, SDMXFormat.SDMX_ML_2_1_SUBMISSION
     if ":error" in flavour_check:
         return infile, SDMXFormat.SDMX_ML_2_1_ERROR
-    raise Invalid("Validation Error", "Cannot parse input as SDMX.")
+    raise Invalid("Validation Error", "Cannot parse input as SDMX-ML.")
 
 
 def __get_sdmx_csv_flavour(infile: str) -> Tuple[str, SDMXFormat]:
@@ -64,7 +64,7 @@ def __get_sdmx_csv_flavour(infile: str) -> Tuple[str, SDMXFormat]:
         return infile, SDMXFormat.SDMX_CSV_1_0
     elif "STRUCTURE" in headers and "STRUCTURE_ID" in headers:
         return infile, SDMXFormat.SDMX_CSV_2_0
-    raise Invalid("Validation Error", "Cannot parse input as SDMX.")
+    raise Invalid("Validation Error", "Cannot parse input as SDMX-CSV.")
 
 
 def process_string_to_read(

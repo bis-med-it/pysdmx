@@ -83,7 +83,7 @@ class Message(Struct, frozen=True):
             ],
         ]
     ] = None
-    data: Optional[Sequence[Dataset]] = None
+    data: Optional[Dict[str, Dataset]] = None
 
     def __post_init__(self) -> None:
         """Checks if the content is valid."""
@@ -106,7 +106,7 @@ class Message(Struct, frozen=True):
                             "structure on structures.",
                         )
         if self.data is not None:
-            for data_value in self.data:
+            for data_value in self.data.values():
                 if not isinstance(data_value, Dataset):
                     raise Invalid(
                         f"Invalid data type: "
@@ -187,7 +187,7 @@ class Message(Struct, frozen=True):
     def get_datasets(self) -> Sequence[Dataset]:
         """Returns the Datasets."""
         if self.data is not None:
-            return self.data
+            return list(self.data.values())
         raise NotFound(
             "No Datasets found in content",
             "Could not find any Datasets in content.",
@@ -196,7 +196,7 @@ class Message(Struct, frozen=True):
     def get_dataset(self, short_urn: str) -> Dataset:
         """Returns a specific Dataset."""
         if self.data is not None:
-            for dataset in self.data:
+            for dataset in self.data.values():
                 if dataset.short_urn == short_urn:
                     return dataset
         raise NotFound(

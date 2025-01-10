@@ -14,10 +14,7 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
     structure_id = data["DATAFLOW"].iloc[0]
     # Drop 'DATAFLOW' column from DataFrame
     df_csv = data.drop(["DATAFLOW"], axis=1)
-    urn = (
-        f"urn:sdmx:org.sdmx.infomodel.datastructure."
-        f"DataFlow={structure_id}"
-    )
+    urn = f"DataFlow={structure_id}"
 
     # Extract dataset attributes from sdmx-csv (all values are the same)
     attributes = {

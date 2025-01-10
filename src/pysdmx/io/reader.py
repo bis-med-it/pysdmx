@@ -7,6 +7,7 @@ from typing import Sequence, Union
 from pysdmx.errors import Invalid, NotFound, NotImplemented
 from pysdmx.io.enums import SDMXFormat
 from pysdmx.io.input_processor import process_string_to_read
+from pysdmx.model import Schema
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Message
 from pysdmx.util import parse_short_urn
@@ -21,8 +22,6 @@ def read_sdmx(
 
     Supported metadata formats are:
     - SDMX-ML 2.1
-    - SDMX JSON 2.0.0
-    - FusionJSON
 
     Supported data formats are:
     - SDMX-ML 2.1
@@ -79,7 +78,7 @@ def read_sdmx(
     ):
         # TODO: Add here the Schema download for Datasets, based on structure
         # TODO: Ensure we have changed the signature of the data readers
-        return Message(data=result)  # type: ignore[arg-type]
+        return Message(data=result)
 
     # TODO: Ensure we have changed the signature of the structure readers
     return Message(structures=result)
@@ -100,24 +99,25 @@ def get_datasets(
         A sequence of Datasets
     """
     data_msg = read_sdmx(data)
-    if data_msg.data is None:
+    if not data_msg.data:
         raise Invalid("No data found in the data message")
 
     structure_msg = read_sdmx(structure)
     if structure_msg.structures is None:
         raise Invalid("No structure found in the structure message")
 
-    for dataset in data_msg.data:
-        short_urn = dataset.structure
-        if isinstance(short_urn, str):
-            sdmx_type = parse_short_urn(short_urn).sdmx_type
-            if sdmx_type == "DataStructure":
-                try:
-                    dsd = structure_msg.get_data_structure_definition(
-                        short_urn
-                    )
-                    dataset.structure = dsd.to_schema()
-                except NotFound:
-                    continue
+    for dataset in data_msg.data.values():
+        short_urn: str = (
+            dataset.structure.short_urn
+            if isinstance(dataset.structure, Schema)
+            else dataset.structure
+        )
+        sdmx_type = parse_short_urn(short_urn).sdmx_type
+        if sdmx_type == "DataStructure":
+            try:
+                dsd = structure_msg.get_data_structure_definition(short_urn)
+                dataset.structure = dsd.to_schema()
+            except NotFound:
+                continue
 
-    return data_msg.data
+    return list(data_msg.data.values())

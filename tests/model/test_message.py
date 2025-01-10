@@ -109,10 +109,7 @@ def test_get_datasets():
     ds = Dataset(structure="DataStructure=ds1:ds1(1.0)")
     message = Message(None, {"DataStructure=ds1:ds1(1.0)": ds})
 
-    assert message.get_datasets() == {
-        "DataStructure=ds1:ds1(1.0)": ds,
-    }
-
+    assert message.get_datasets() == [ds]
     assert message.get_dataset("DataStructure=ds1:ds1(1.0)") == ds
 
 
@@ -130,6 +127,18 @@ def test_cannot_get_datasets():
 
     with pytest.raises(NotFound):
         message.get_dataset("DataStructure=ds1:ds1(1.0)")
+
+
+def test_cannot_get_dataset():
+    message = Message(
+        data={
+            "DataStructure=ds1:ds1(1.0)": Dataset(
+                structure="DataStructure=ds1:ds1(1.0)"
+            )
+        }
+    )
+    with pytest.raises(NotFound):
+        message.get_dataset("DataStructure=ds2:ds2(1.0)")
 
 
 def test_empty_get_elements():

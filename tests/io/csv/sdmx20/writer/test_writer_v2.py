@@ -58,8 +58,7 @@ def test_writer_attached_attrs(data_path, data_path_reference_attch_atts):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),
-        structure="urn:sdmx:org.sdmx.infomodel.datastructure."
-        "DataStructure=MD:DS1(2.0)",
+        structure="DataStructure=MD:DS1(2.0)",
     )
     dataset.data = dataset.data.astype(str)
     result_sdmx = writer(dataset)
@@ -76,8 +75,7 @@ def test_writer_with_action(data_path, data_path_reference_action):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),
-        structure="urn:sdmx:org.sdmx.infomodel.datastructure."
-        "DataStructure=MD:DS1(2.0)",
+        structure="DataStructure=MD:DS1(2.0)",
         action=ActionType.Replace,
     )
     dataset.data = dataset.data.astype(str)
