@@ -26,7 +26,7 @@ def writer(
     type_: MessageType = MessageType.StructureSpecificDataSet,
     output_path: str = "",
     prettyprint: bool = True,
-    header: Optional[Header] = Header(),
+    header: Optional[Header] = None,
     dimension_at_observation: Optional[Dict[str, str]] = None,
 ) -> Optional[str]:
     """This function writes a SDMX-ML file from the Message Content.
@@ -47,6 +47,8 @@ def writer(
 
     ss_namespaces = ""
     add_namespace_structure = False
+    if header is None:
+        header = Header()
 
     # Checking if we have datasets,
     # we need to ensure we can write them correctly

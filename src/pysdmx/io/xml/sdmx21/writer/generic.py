@@ -1,7 +1,7 @@
 # mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 2.1 Generic data messages."""
 
-from typing import Any, Dict, List, Tuple, Sequence, Optional
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import pandas as pd
 
@@ -12,10 +12,14 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_GEN,
     ABBR_MSG,
     ALL_DIM,
-    get_codes,
-    get_structure,
-    writing_validation, get_end_message, __write_header, create_namespaces, check_dimension_at_observation,
+    __write_header,
     check_content_dataset,
+    check_dimension_at_observation,
+    create_namespaces,
+    get_codes,
+    get_end_message,
+    get_structure,
+    writing_validation,
 )
 from pysdmx.io.xml.sdmx21.writer.config import CHUNKSIZE
 from pysdmx.model.message import Header
@@ -366,7 +370,7 @@ def write(
     datasets: Sequence[PandasDataset],
     output_path: str = "",
     prettyprint: bool = True,
-    header: Optional[Header] = Header(),
+    header: Optional[Header] = None,
     dimension_at_observation: Optional[Dict[str, str]] = None,
 ) -> Optional[str]:
     """Write data to SDMX-ML 2.1 Generic format.
@@ -382,14 +386,17 @@ def write(
     Returns:
         The XML string if path is empty, None otherwise.
     """
-    if (not isinstance(datasets, Sequence) or not
-    all(isinstance(dataset, PandasDataset) for dataset in datasets)):
+    if not isinstance(datasets, Sequence) or not all(
+        isinstance(dataset, PandasDataset) for dataset in datasets
+    ):
         raise Invalid("Message Content must only contain a Dataset sequence.")
 
     ss_namespaces = ""
     add_namespace_structure = False
     type_ = MessageType.GenericDataSet
     content = {dataset.short_urn: dataset for dataset in datasets}
+    if header is None:
+        header = Header()
 
     # Checking if we have datasets,
     # we need to ensure we can write them correctly

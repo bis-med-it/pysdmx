@@ -10,8 +10,10 @@ from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
-from pysdmx.io.xml.sdmx21.writer.structure_specific import write as write_str_spec
 from pysdmx.io.xml.sdmx21.writer.generic import write as write_gen
+from pysdmx.io.xml.sdmx21.writer.structure_specific import (
+    write as write_str_spec,
+)
 from pysdmx.model import (
     Code,
     Codelist,
@@ -125,9 +127,13 @@ def test_data_write_read(
 ):
     samples_folder_path = Path(__file__).parent / "samples"
     # Write from Dataset
-    write = write_str_spec if message_type == MessageType.StructureSpecificDataSet else write_gen
+    write = (
+        write_str_spec
+        if message_type == MessageType.StructureSpecificDataSet
+        else write_gen
+    )
     result = write(
-        [dataset for dataset in content.values()],
+        list(content.values()),
         header=header,
         dimension_at_observation=dimension_at_observation,
     )
@@ -184,7 +190,11 @@ def test_data_write_df(
     ds.attributes = {}
     content = [ds]
 
-    write = write_str_spec if message_type == MessageType.StructureSpecificDataSet else write_gen
+    write = (
+        write_str_spec
+        if message_type == MessageType.StructureSpecificDataSet
+        else write_gen
+    )
     result = write(
         content,
         header=header,
@@ -215,7 +225,7 @@ def test_invalid_content():
 
 def test_invalid_dimension(content):
     dim_mapping = {"DataStructure=MD:TEST(1.0)": "DIM3"}
-    content = [dataset for dataset in content.values()]
+    content = list(content.values())
     with pytest.raises(Invalid):
         write_str_spec(
             content,
@@ -225,7 +235,7 @@ def test_invalid_dimension(content):
 
 def test_invalid_dimension_key(content):
     dim_mapping = {"DataStructure=AAA:TEST(1.0)": "DIM1"}
-    content = [dataset for dataset in content.values()]
+    content = list(content.values())
     with pytest.raises(Invalid):
         write_str_spec(
             content,

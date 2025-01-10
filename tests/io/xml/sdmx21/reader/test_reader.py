@@ -9,11 +9,10 @@ from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml import read
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer import writer as write_xml
-from pysdmx.model import Contact, Codelist, ConceptScheme, Dataflow
+from pysdmx.model import Codelist, ConceptScheme, Contact
 from pysdmx.model.__base import ItemScheme
 from pysdmx.model.message import SubmissionResult
 from pysdmx.model.vtl import Transformation, TransformationScheme
-
 
 # Test parsing SDMX Registry Interface Submission Response
 
@@ -105,7 +104,9 @@ def test_item_scheme_read(item_scheme_path):
     assert codelist_sdmx.items[0].name == "Units"
 
     # Concept
-    concept_scheme_sdmx = next(cs for cs in result if isinstance(cs, ConceptScheme))
+    concept_scheme_sdmx = next(
+        cs for cs in result if isinstance(cs, ConceptScheme)
+    )
     assert concept_scheme_sdmx.id == "CROSS_DOMAIN_CONCEPTS"
     assert concept_scheme_sdmx.name == "SDMX Cross Domain Concept Scheme"
     assert concept_scheme_sdmx.items[0].id == "COLL_METHOD"
@@ -165,7 +166,9 @@ def test_reading_validation(samples_folder, filename):
     data_path = samples_folder / filename
     result = read(data_path, validate=True)
     assert result is not None
-    data = next(ds for ds in result if ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)').data
+    data = next(
+        ds for ds in result if ds.short_urn == "DataStructure=BIS:BIS_DER(1.0)"
+    ).data
     assert data.shape == (1000, 20)
 
 
@@ -174,7 +177,11 @@ def test_dataflow(samples_folder):
     data_path = samples_folder / "dataflow.xml"
     result = read(data_path, validate=True)
     assert any(isinstance(item, PandasDataset) for item in result)
-    data_dataflow = next(df for df in result if df.short_urn == 'DataFlow=BIS:WEBSTATS_DER_DATAFLOW(1.0)').data
+    data_dataflow = next(
+        df
+        for df in result
+        if df.short_urn == "DataFlow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"
+    ).data
     num_rows = len(data_dataflow)
     num_columns = data_dataflow.shape[1]
     assert num_rows > 0
@@ -190,25 +197,31 @@ def test_dataflow(samples_folder):
 def test_structure_ref_urn(samples_folder):
     data_path = samples_folder / "structure_ref_urn.xml"
     result = read(data_path, validate=True)
-    assert any(e.short_urn == 'DataStructure=BIS:BIS_DER(1.0)' for e in result)
+    assert any(e.short_urn == "DataStructure=BIS:BIS_DER(1.0)" for e in result)
 
 
 def test_partial_datastructure(samples_folder):
     data_path = samples_folder / "partial_datastructure.xml"
     result = read(data_path, validate=True)
-    assert (e.short_urn == 'DataStructure=BIS:BIS_DER(1.0)' for e in result)
+    assert (e.short_urn == "DataStructure=BIS:BIS_DER(1.0)" for e in result)
 
 
 def test_dataflow_structure(samples_folder):
     data_path = samples_folder / "dataflow_structure.xml"
     result = read(data_path, validate=True)
-    assert (e.short_urn == 'Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)' for e in result)
+    assert (
+        e.short_urn == "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"
+        for e in result
+    )
 
 
 def test_partial_dataflow_structure(samples_folder):
     data_path = samples_folder / "partial_dataflow_structure.xml"
     result = read(data_path, validate=True)
-    assert (e.short_urn == 'Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)' for e in result)
+    assert (
+        e.short_urn == "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"
+        for e in result
+    )
 
 
 def test_header_structure_provision_agrement(samples_folder):
@@ -246,7 +259,9 @@ def test_gen_ser_no_atts(samples_folder):
 def test_ser_no_obs(samples_folder, filename):
     data_path = samples_folder / filename
     result = read(data_path, validate=True)
-    data = next(ds for ds in result if ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)').data
+    data = next(
+        ds for ds in result if ds.short_urn == "DataStructure=BIS:BIS_DER(1.0)"
+    ).data
     assert data.shape == (1, 16)
 
 
@@ -265,8 +280,12 @@ def test_chunks(samples_folder, filename):
     data_path = samples_folder / filename
     result = read(data_path, validate=True)
     assert result is not None
-    assert any(ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)' for ds in result)
-    data = next(ds for ds in result if ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)').data
+    assert any(
+        ds.short_urn == "DataStructure=BIS:BIS_DER(1.0)" for ds in result
+    )
+    data = next(
+        ds for ds in result if ds.short_urn == "DataStructure=BIS:BIS_DER(1.0)"
+    ).data
     num_rows = len(data)
     num_columns = data.shape[1]
     assert num_rows > 0
@@ -281,15 +300,28 @@ def test_read_write_structure_specific_all(samples_folder):
     data_path = samples_folder / "str_all.xml"
     content = read(data_path, validate=True)
     assert content is not None
-    assert any(ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)' for ds in content)
-    shape_read = next(ds for ds in content if ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)').data.shape
+    assert any(
+        ds.short_urn == "DataStructure=BIS:BIS_DER(1.0)" for ds in content
+    )
+    shape_read = next(
+        ds
+        for ds in content
+        if ds.short_urn == "DataStructure=BIS:BIS_DER(1.0)"
+    ).data.shape
     assert shape_read == (1000, 20)
     result = write_xml(content, MessageType.StructureSpecificDataSet)
     content_result = read(result, validate=True)
     # Check we read the same data
     assert content_result is not None
-    assert any(ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)' for ds in content_result)
-    data_written = next(ds for ds in content_result if ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)').data
+    assert any(
+        ds.short_urn == "DataStructure=BIS:BIS_DER(1.0)"
+        for ds in content_result
+    )
+    data_written = next(
+        ds
+        for ds in content_result
+        if ds.short_urn == "DataStructure=BIS:BIS_DER(1.0)"
+    ).data
     shape_written = data_written.shape
     assert shape_read == shape_written
 
@@ -299,7 +331,8 @@ def test_vtl_transformation_scheme(samples_folder):
     result = read(data_path, validate=True)
     assert any(isinstance(ts, TransformationScheme) for ts in result)
     assert len(result) == 1
-    urn = 'urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=SDMX:TEST(1.0)'
+    urn = ("urn:sdmx:org.sdmx.infomodel.transformation."
+           "TransformationScheme=SDMX:TEST(1.0)")
     transformation_scheme = next(ts for ts in result if ts.urn == urn)
     assert transformation_scheme.id == "TEST"
     assert transformation_scheme.name == "TEST"

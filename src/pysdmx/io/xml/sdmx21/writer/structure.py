@@ -1,7 +1,7 @@
 """Module for writing metadata to XML files."""
 
 from collections import OrderedDict
-from typing import Any, Dict, Optional, Union, Sequence
+from typing import Any, Dict, Optional, Sequence, Union
 
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.__parsing_config import (
@@ -53,23 +53,35 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_STR,
     MSG_CONTENT_PKG,
     __to_lower_camel_case,
-    add_indent, create_namespaces, __write_header, get_end_message,
+    __write_header,
+    add_indent,
+    create_namespaces,
+    get_end_message,
 )
-from pysdmx.model import Codelist, Concept, DataType, Facets, Hierarchy, ConceptScheme
+from pysdmx.model import (
+    Codelist,
+    Concept,
+    ConceptScheme,
+    DataType,
+    Facets,
+    Hierarchy,
+)
 from pysdmx.model.__base import (
     Agency,
     AnnotableArtefact,
     Contact,
     IdentifiableArtefact,
     Item,
+    ItemScheme,
     MaintainableArtefact,
     NameableArtefact,
-    VersionableArtefact, ItemScheme,
+    VersionableArtefact,
 )
 from pysdmx.model.dataflow import (
     Component,
+    Dataflow,
     DataStructureDefinition,
-    Role, Dataflow,
+    Role,
 )
 from pysdmx.model.message import Header
 from pysdmx.util import parse_item_urn, parse_short_urn, parse_urn
@@ -90,13 +102,13 @@ ROLE_MAPPING = {
 }
 
 STR_TYPE = Sequence[
-               Union[
-                    ItemScheme,
-                    Codelist,
-                    ConceptScheme,
-                    DataStructureDefinition,
-                    Dataflow,
-                ],
+    Union[
+        ItemScheme,
+        Codelist,
+        ConceptScheme,
+        DataStructureDefinition,
+        Dataflow,
+    ],
 ]
 
 STR_DICT_TYPE_LIST = {
@@ -637,7 +649,7 @@ def write(
     datasets: Sequence[STR_TYPE],
     output_path: str = "",
     prettyprint: bool = True,
-    header: Optional[Header] = Header(),
+    header: Optional[Header] = None,
     dimension_at_observation: Optional[Dict[str, str]] = None,
 ) -> Optional[str]:
     """This function writes a SDMX-ML file from the Message Content.
@@ -655,6 +667,8 @@ def write(
     """
     type_ = MessageType.Structure
     elements = {dataset.short_urn(): dataset for dataset in datasets}
+    if header is None:
+        header = Header()
 
     content = {}
     for urn, element in elements.items():

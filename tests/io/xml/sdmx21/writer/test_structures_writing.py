@@ -3,12 +3,10 @@ from pathlib import Path
 
 import pytest
 
-from pysdmx.errors import NotImplemented
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml import read
-from pysdmx.io.xml.enums import MessageType
-from pysdmx.io.xml.sdmx21.writer.structure import write
 from pysdmx.io.xml.sdmx21.writer.error import write as write_err
+from pysdmx.io.xml.sdmx21.writer.structure import write
 from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme, Facets
 from pysdmx.model.__base import Annotation
 from pysdmx.model.dataflow import (

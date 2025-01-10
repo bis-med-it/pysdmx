@@ -1,4 +1,4 @@
-from typing import Optional, Sequence, Dict
+from typing import Dict, Optional, Sequence
 
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model.message import Header
@@ -8,7 +8,7 @@ def write(
     datasets: Sequence[PandasDataset],
     output_path: str = "",
     prettyprint: bool = True,
-    header: Optional[Header] = Header(),
+    header: Optional[Header] = None,
     dimension_at_observation: Optional[Dict[str, str]] = None,
 ) -> Optional[str]:
     """Write data to SDMX-ML 2.1 Generic format.
@@ -24,4 +24,7 @@ def write(
     Returns:
         The XML string if path is empty, None otherwise.
     """
+    if header is None:
+        header = Header()
+
     raise NotImplementedError("Not implemented yet.")
