@@ -453,7 +453,12 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
         )
 
 
-class Dataflow(MaintainableArtefact, frozen=True, omit_defaults=True):
+class Dataflow(
+    MaintainableArtefact,
+    frozen=True,
+    omit_defaults=True,
+    tag=True,
+):
     """A flow of data that providers will provide."""
 
     structure: Optional[str] = None

@@ -1,5 +1,10 @@
-.. image:: https://img.shields.io/pypi/v/pysdmx.svg
+.. |pypi badge| image:: https://img.shields.io/pypi/v/pysdmx.svg
    :target: https://pypi.org/project/pysdmx/
+
+.. |awesome badge| image:: https://awesome.re/mentioned-badge.svg
+   :target: http://www.awesomeofficialstatistics.org
+
+|pypi badge| |awesome badge|
 
 ``pysdmx`` in a nutshell
 ========================
