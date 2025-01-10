@@ -76,6 +76,8 @@ def read_sdmx(
         SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC,
     ):
         # TODO: Add here the Schema download for Datasets, based on structure
-        return Message(data=result)
+        # TODO: Ensure we have changed the signature of the data readers
+        return Message(data=result)  # type: ignore[arg-type]
 
+    # TODO: Ensure we have changed the signature of the structure readers
     return Message(structures=result)
