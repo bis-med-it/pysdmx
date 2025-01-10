@@ -2,7 +2,7 @@
 """Writer auxiliary functions."""
 
 from collections import OrderedDict
-from typing import Dict, List, Optional, Tuple, Sequence
+from typing import Dict, List, Optional, Sequence, Tuple
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.pd import PandasDataset

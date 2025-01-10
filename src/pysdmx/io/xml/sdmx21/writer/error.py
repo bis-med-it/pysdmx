@@ -27,4 +27,4 @@ def write(
     Returns:
         The XML string if path is empty, None otherwise.
     """
-    outfile = __namespaces_from_type(MessageType.Error)
+    __namespaces_from_type(MessageType.Error)

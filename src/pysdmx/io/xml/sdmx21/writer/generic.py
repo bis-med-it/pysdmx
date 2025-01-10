@@ -5,7 +5,6 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import pandas as pd
 
-from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
@@ -386,7 +385,6 @@ def write(
     Returns:
         The XML string if path is empty, None otherwise.
     """
-
     ss_namespaces = ""
     add_namespace_structure = False
     type_ = MessageType.GenericDataSet

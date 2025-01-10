@@ -165,7 +165,6 @@ def test_data_write_read(
 def test_write_data_file(
     header, content, message_type, filename, dimension_at_observation
 ):
-    samples_folder_path = Path(__file__).parent / "samples"
     output_file = Path(__file__).parent / "test_output_data.xml"
     # Write from Dataset
     write = (

@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pytest
 
+from pysdmx.errors import NotImplemented
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml import read
 from pysdmx.io.xml.sdmx21.writer.error import write as write_err
@@ -17,7 +18,6 @@ from pysdmx.model.dataflow import (
     Role,
 )
 from pysdmx.model.message import Header
-from pysdmx.errors import NotImplemented
 
 TEST_CS_URN = (
     "urn:sdmx:org.sdmx.infomodel.conceptscheme."
