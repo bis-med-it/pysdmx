@@ -15,7 +15,7 @@ from pysdmx.model.message import SubmissionResult
 STR_TYPES = Union[
     ItemScheme, Codelist, ConceptScheme, DataStructureDefinition, Dataflow
 ]
-ALL_TYPES = Union[STR_TYPES, PandasDataset]
+ALL_TYPES = Union[STR_TYPES, PandasDataset, SubmissionResult]
 
 
 def read(

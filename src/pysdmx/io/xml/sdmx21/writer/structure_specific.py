@@ -260,7 +260,7 @@ def write(
     Returns:
         The XML string if path is empty, None otherwise.
     """
-    if not isinstance(datasets, Sequence) or not all(
+    if not all(
         isinstance(dataset, PandasDataset) for dataset in datasets
     ):
         raise Invalid("Message Content must only contain a Dataset sequence.")
@@ -301,3 +301,5 @@ def write(
 
     with open(output_path, "w", encoding="UTF-8", errors="replace") as f:
         f.write(outfile)
+
+    return None

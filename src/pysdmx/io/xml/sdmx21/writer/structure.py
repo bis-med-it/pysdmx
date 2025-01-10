@@ -101,15 +101,13 @@ ROLE_MAPPING = {
     Role.MEASURE: PRIM_MEASURE,
 }
 
-STR_TYPE = Sequence[
-    Union[
+STR_TYPES = Union[
         ItemScheme,
         Codelist,
         ConceptScheme,
         DataStructureDefinition,
         Dataflow,
-    ],
-]
+    ]
 
 STR_DICT_TYPE_LIST = {
     ItemScheme: "OrganisationSchemes",
@@ -646,7 +644,7 @@ def write_structures(content: Dict[str, Any], prettyprint: bool) -> str:
 
 
 def write(
-    datasets: Sequence[STR_TYPE],
+    datasets: Sequence[STR_TYPES],
     output_path: str = "",
     prettyprint: bool = True,
     header: Optional[Header] = None,
@@ -670,7 +668,7 @@ def write(
     if header is None:
         header = Header()
 
-    content = {}
+    content: Dict[str, Dict[str, STR_TYPES]] = {}
     for urn, element in elements.items():
         list_ = STR_DICT_TYPE_LIST[type(element)]
         if list_ not in content:
@@ -694,3 +692,5 @@ def write(
 
     with open(output_path, "w", encoding="UTF-8", errors="replace") as f:
         f.write(outfile)
+
+    return None

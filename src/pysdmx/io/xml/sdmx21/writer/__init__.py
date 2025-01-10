@@ -93,3 +93,5 @@ def writer(
 
     with open(output_path, "w", encoding="UTF-8", errors="replace") as f:
         f.write(outfile)
+
+    return None
