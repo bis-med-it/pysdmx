@@ -12,8 +12,7 @@ from pysdmx.model.dataflow import DataStructureDefinition, Dataflow
 from pysdmx.model.message import SubmissionResult
 
 STR_TYPES = Union[ItemScheme, Codelist, ConceptScheme, DataStructureDefinition, Dataflow]
-STR_DICT_TYPE = Dict[str, STR_TYPES]
-ALL_TYPES = Union[STR_DICT_TYPE, PandasDataset]
+ALL_TYPES = Union[STR_TYPES, PandasDataset]
 
 
 def read(
