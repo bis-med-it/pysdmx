@@ -159,7 +159,7 @@ def test_data_write_read(
     ("message_type", "filename", "dimension_at_observation"),
     [
         (MessageType.GenericDataSet, "gen_all.xml", {}),
-        (MessageType.StructureSpecificDataSet, "str_all.xml", None)
+        (MessageType.StructureSpecificDataSet, "str_all.xml", None),
     ],
 )
 def test_write_data_file(

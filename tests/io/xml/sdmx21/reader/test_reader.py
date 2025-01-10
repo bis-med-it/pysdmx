@@ -346,8 +346,10 @@ def test_vtl_transformation_scheme(samples_folder):
     result = read(data_path, validate=True)
     assert any(isinstance(ts, TransformationScheme) for ts in result)
     assert len(result) == 1
-    urn = ("urn:sdmx:org.sdmx.infomodel.transformation."
-           "TransformationScheme=SDMX:TEST(1.0)")
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.transformation."
+        "TransformationScheme=SDMX:TEST(1.0)"
+    )
     transformation_scheme = next(ts for ts in result if ts.urn == urn)
     assert transformation_scheme.id == "TEST"
     assert transformation_scheme.name == "TEST"

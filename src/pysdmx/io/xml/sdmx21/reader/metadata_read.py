@@ -164,17 +164,6 @@ class StructureParser(Struct):
         Returns:
             The text extracted from the element
         """
-        if isinstance(element, list):
-            aux = {}
-            for language_element in element:
-                if (
-                    "lang" in language_element
-                    and language_element["lang"] == "en"
-                ):
-                    aux = language_element
-            if not aux:
-                aux = element[0]
-            element = aux
         if isinstance(element, dict) and "#text" in element:
             element = element["#text"]
         return element
@@ -538,8 +527,6 @@ class StructureParser(Struct):
             element = self.__format_agency(element)
             element = self.__format_validity(element)
             element = self.__format_vtl(element)
-            if "xmlns" in element:
-                del element["xmlns"]
             # Dynamic creation with specific class
             elements[full_id] = STRUCTURES_MAPPING[scheme](**element)
 
@@ -576,9 +563,6 @@ class StructureParser(Struct):
             element = self.__format_agency(element)
             element = self.__format_validity(element)
             element = self.__format_components(element)
-
-            if "xmlns" in element:
-                del element["xmlns"]
 
             if IS_EXTERNAL_REF in element:
                 element[IS_EXTERNAL_REF_LOW] = element.pop(IS_EXTERNAL_REF)

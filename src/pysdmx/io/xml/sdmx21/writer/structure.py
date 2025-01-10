@@ -102,12 +102,12 @@ ROLE_MAPPING = {
 }
 
 STR_TYPES = Union[
-        ItemScheme,
-        Codelist,
-        ConceptScheme,
-        DataStructureDefinition,
-        Dataflow,
-    ]
+    ItemScheme,
+    Codelist,
+    ConceptScheme,
+    DataStructureDefinition,
+    Dataflow,
+]
 
 STR_DICT_TYPE_LIST = {
     ItemScheme: "OrganisationSchemes",
@@ -520,9 +520,9 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
         components = __write_components(item_scheme, add_indent(indent))
 
     if scheme not in [DSD, DFW]:
-        data[
-            "Attributes"
-        ] += f" isPartial={str(item_scheme.is_final).lower()!r}"
+        data["Attributes"] += (
+            f" isPartial={str(item_scheme.is_final).lower()!r}"
+        )
 
     outfile = ""
 
@@ -648,7 +648,6 @@ def write(
     output_path: str = "",
     prettyprint: bool = True,
     header: Optional[Header] = None,
-    dimension_at_observation: Optional[Dict[str, str]] = None,
 ) -> Optional[str]:
     """This function writes a SDMX-ML file from the Message Content.
 
@@ -657,8 +656,6 @@ def write(
         output_path: The path to save the file
         prettyprint: Prettyprint or not
         header: The header to be used (generated if None)
-        dimension_at_observation:
-          The mapping between the dataset and the dimension at observation
 
     Returns:
         The XML string if path is empty, None otherwise
