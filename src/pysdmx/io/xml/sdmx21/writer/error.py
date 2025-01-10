@@ -13,7 +13,7 @@ def write(
     prettyprint: bool = True,
     header: Optional[Header] = None,
     dimension_at_observation: Optional[Dict[str, str]] = None,
-):
+) -> None:
     """Write data to SDMX-ML 2.1 Generic format.
 
     Args:
