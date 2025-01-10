@@ -85,7 +85,9 @@ def read_sdmx(
 
 
 def get_datasets(
-    data: Union[str, Path, BytesIO], structure: Union[str, Path, BytesIO]
+    data: Union[str, Path, BytesIO],
+    structure: Union[str, Path, BytesIO],
+    validate: bool = True,
 ) -> Sequence[Dataset]:
     """Reads a data message and a structure message and returns a dataset.
 
@@ -94,15 +96,16 @@ def get_datasets(
         structure:
           Path to file (pathlib.Path), URL, or string
           for the structure message.
+        validate: Validate the input file (only for SDMX-ML).
 
     Returns:
         A sequence of Datasets
     """
-    data_msg = read_sdmx(data)
+    data_msg = read_sdmx(data, validate=validate)
     if not data_msg.data:
         raise Invalid("No data found in the data message")
 
-    structure_msg = read_sdmx(structure)
+    structure_msg = read_sdmx(structure, validate=validate)
     if structure_msg.structures is None:
         raise Invalid("No structure found in the structure message")
 
