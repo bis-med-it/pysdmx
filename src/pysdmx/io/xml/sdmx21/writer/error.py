@@ -1,3 +1,4 @@
+"""Module for writing SDMX-ML 2.1 Error messages."""
 from typing import Dict, Optional, Sequence
 
 from pysdmx.io.pd import PandasDataset

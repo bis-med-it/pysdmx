@@ -34,7 +34,7 @@ def read(
             use_dataset_id=use_dataset_id,
         )
         result = []
-        for key, value in dict_.items():
+        for _, value in dict_.items():
             if isinstance(value, (PandasDataset, SubmissionResult)):
                 result.append(value)
             else:
