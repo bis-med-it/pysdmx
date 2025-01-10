@@ -2,12 +2,14 @@
 
 from io import BytesIO
 from pathlib import Path
-from typing import Union
+from typing import Sequence, Union
 
-from pysdmx.errors import Invalid, NotImplemented
+from pysdmx.errors import Invalid, NotFound, NotImplemented
 from pysdmx.io.enums import SDMXFormat
 from pysdmx.io.input_processor import process_string_to_read
+from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Message
+from pysdmx.util import parse_short_urn
 
 
 def read_sdmx(
@@ -81,3 +83,41 @@ def read_sdmx(
 
     # TODO: Ensure we have changed the signature of the structure readers
     return Message(structures=result)
+
+
+def get_datasets(
+    data: Union[str, Path, BytesIO], structure: Union[str, Path, BytesIO]
+) -> Sequence[Dataset]:
+    """Reads a data message and a structure message and returns a dataset.
+
+    Args:
+        data: Path to file (pathlib.Path), URL, or string for the data message.
+        structure:
+          Path to file (pathlib.Path), URL, or string
+          for the structure message.
+
+    Returns:
+        A sequence of Datasets
+    """
+    data_msg = read_sdmx(data)
+    if data_msg.data is None:
+        raise Invalid("No data found in the data message")
+
+    structure_msg = read_sdmx(structure)
+    if structure_msg.structures is None:
+        raise Invalid("No structure found in the structure message")
+
+    for dataset in data_msg.data:
+        short_urn = dataset.structure
+        if isinstance(short_urn, str):
+            sdmx_type = parse_short_urn(short_urn).sdmx_type
+            if sdmx_type == "DataStructure":
+                try:
+                    dsd = structure_msg.get_data_structure_definition(
+                        short_urn
+                    )
+                    dataset.structure = dsd.to_schema()
+                except NotFound:
+                    continue
+
+    return data_msg.data

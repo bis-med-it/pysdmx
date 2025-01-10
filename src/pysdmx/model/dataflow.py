@@ -440,6 +440,18 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
 
     components: Components
 
+    def to_schema(self) -> Schema:
+        """Generates a Schema class from the DataStructureDefinition."""
+        return Schema(
+            context="datastructure",
+            agency=self.agency.id
+            if isinstance(self.agency, Agency)
+            else self.agency,
+            id=self.id,
+            components=self.components,
+            version=self.version,
+        )
+
 
 class Dataflow(MaintainableArtefact, frozen=True, omit_defaults=True):
     """A flow of data that providers will provide."""
