@@ -1,8 +1,9 @@
 """Module for writing metadata to XML files."""
 
 from collections import OrderedDict
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Union, Sequence
 
+from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.__parsing_config import (
     AGENCIES,
     AGENCY_ID,
@@ -52,9 +53,9 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_STR,
     MSG_CONTENT_PKG,
     __to_lower_camel_case,
-    add_indent,
+    add_indent, create_namespaces, __write_header, get_end_message,
 )
-from pysdmx.model import Codelist, Concept, DataType, Facets, Hierarchy
+from pysdmx.model import Codelist, Concept, DataType, Facets, Hierarchy, ConceptScheme
 from pysdmx.model.__base import (
     Agency,
     AnnotableArtefact,
@@ -63,13 +64,14 @@ from pysdmx.model.__base import (
     Item,
     MaintainableArtefact,
     NameableArtefact,
-    VersionableArtefact,
+    VersionableArtefact, ItemScheme,
 )
 from pysdmx.model.dataflow import (
     Component,
     DataStructureDefinition,
-    Role,
+    Role, Dataflow,
 )
+from pysdmx.model.message import Header
 from pysdmx.util import parse_item_urn, parse_short_urn, parse_urn
 
 ANNOTATION_WRITER = OrderedDict(
@@ -85,6 +87,24 @@ ROLE_MAPPING = {
     Role.DIMENSION: DIM,
     Role.ATTRIBUTE: ATT,
     Role.MEASURE: PRIM_MEASURE,
+}
+
+STR_TYPE = Sequence[
+               Union[
+                    ItemScheme,
+                    Codelist,
+                    ConceptScheme,
+                    DataStructureDefinition,
+                    Dataflow,
+                ],
+]
+
+STR_DICT_TYPE_LIST = {
+    ItemScheme: "OrganisationSchemes",
+    Codelist: "Codelists",
+    ConceptScheme: "Concepts",
+    DataStructureDefinition: "DataStructures",
+    Dataflow: "Dataflows",
 }
 
 
@@ -611,3 +631,52 @@ def write_structures(content: Dict[str, Any], prettyprint: bool) -> str:
     outfile = outfile.replace("& ", "&amp; ")
 
     return outfile
+
+
+def write(
+    datasets: Sequence[STR_TYPE],
+    output_path: str = "",
+    prettyprint: bool = True,
+    header: Optional[Header] = Header(),
+    dimension_at_observation: Optional[Dict[str, str]] = None,
+) -> Optional[str]:
+    """This function writes a SDMX-ML file from the Message Content.
+
+    Args:
+        datasets: The content to be written
+        output_path: The path to save the file
+        prettyprint: Prettyprint or not
+        header: The header to be used (generated if None)
+        dimension_at_observation:
+          The mapping between the dataset and the dimension at observation
+
+    Returns:
+        The XML string if path is empty, None otherwise
+    """
+    type_ = MessageType.Structure
+    elements = {dataset.short_urn(): dataset for dataset in datasets}
+
+    content = {}
+    for urn, element in elements.items():
+        list_ = STR_DICT_TYPE_LIST[type(element)]
+        if list_ not in content:
+            content[list_] = {}
+        content[list_][urn] = element
+
+    ss_namespaces = ""
+    add_namespace_structure = False
+
+    # Generating the initial tag with namespaces
+    outfile = create_namespaces(type_, ss_namespaces, prettyprint)
+    # Generating the header
+    outfile += __write_header(header, prettyprint, add_namespace_structure)
+    # Writing the content
+    outfile += write_structures(content, prettyprint)
+
+    outfile += get_end_message(type_, prettyprint)
+
+    if output_path == "":
+        return outfile
+
+    with open(output_path, "w", encoding="UTF-8", errors="replace") as f:
+        f.write(outfile)

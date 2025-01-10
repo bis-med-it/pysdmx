@@ -5,12 +5,15 @@ import pytest
 
 import pysdmx
 from pysdmx.errors import Invalid, NotImplemented
+from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml import read
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer import writer as write_xml
-from pysdmx.model import Contact
+from pysdmx.model import Contact, Codelist, ConceptScheme, Dataflow
+from pysdmx.model.__base import ItemScheme
 from pysdmx.model.message import SubmissionResult
-from pysdmx.model.vtl import Transformation
+from pysdmx.model.vtl import Transformation, TransformationScheme
+
 
 # Test parsing SDMX Registry Interface Submission Response
 
@@ -48,10 +51,9 @@ def error_304_path():
 def test_agency_scheme_read(agency_scheme_path):
     result = read(agency_scheme_path, validate=True)
 
-    assert "OrganisationSchemes" in result
-    agency_scheme = result["OrganisationSchemes"]
-    assert len(agency_scheme) == 1
-    agency_sdmx = agency_scheme["SDMX:AGENCIES(1.0)"].items[0]
+    agency_scheme = result[0]
+    assert isinstance(agency_scheme, ItemScheme)
+    agency_sdmx = agency_scheme.items[0]
     assert agency_sdmx.id == "SDMX"
     assert agency_sdmx.name == "SDMX"
 
@@ -59,10 +61,10 @@ def test_agency_scheme_read(agency_scheme_path):
 def test_code_list_read(codelist_path):
     result = read(codelist_path, validate=True)
 
-    assert "Codelists" in result
-    codelists = result["Codelists"]
-    assert len(codelists) == 5
-    codelist_sdmx = codelists["SDMX:CL_UNIT_MULT(1.0)"]
+    assert len(result) == 5
+    assert all(isinstance(item, Codelist) for item in result)
+    codelist_sdmx = result[-1]
+    assert isinstance(codelist_sdmx, Codelist)
     assert codelist_sdmx.id == "CL_UNIT_MULT"
     assert (
         codelist_sdmx.name == "code list for the Unit Multiplier (UNIT_MULT)"
@@ -74,26 +76,26 @@ def test_code_list_read(codelist_path):
 def test_item_scheme_read(item_scheme_path):
     result = read(item_scheme_path, validate=True)
 
-    assert "OrganisationSchemes" in result
-    assert "Codelists" in result
-    assert "Concepts" in result
+    assert any(isinstance(item, ItemScheme) for item in result)
+    assert any(isinstance(item, Codelist) for item in result)
+    assert any(isinstance(item, ConceptScheme) for item in result)
 
     # Agency Scheme (OrganisationSchemes) assertions
-    agency_scheme = result["OrganisationSchemes"]
-    assert len(agency_scheme) == 1
-    agency_sdmx = agency_scheme["SDMX:AGENCIES(1.0)"].items[0]
+    # que pille el primer item scheme de la lista
+    agency_scheme = next(e for e in result if isinstance(e, ItemScheme))
+    agency_sdmx = agency_scheme.items[0]
     assert agency_sdmx.id == "SDMX"
     assert agency_sdmx.name == "SDMX"
-    agency_uis = agency_scheme["SDMX:AGENCIES(1.0)"].items[2]
+    agency_uis = agency_scheme.items[2]
 
     assert agency_uis.id == "UIS"
     assert isinstance(agency_uis.contacts[0], Contact)
     assert agency_uis.contacts[0].emails == ["uis.datarequests@unesco.org"]
 
     # Codelist
-    codelists = result["Codelists"]
+    codelists = [cl for cl in result if isinstance(cl, Codelist)]
     assert len(codelists) == 5
-    codelist_sdmx = codelists["SDMX:CL_UNIT_MULT(1.0)"]
+    codelist_sdmx = next(cl for cl in codelists if cl.id == "CL_UNIT_MULT")
     assert codelist_sdmx.id == "CL_UNIT_MULT"
     assert (
         codelist_sdmx.name == "code list for the "
@@ -103,9 +105,7 @@ def test_item_scheme_read(item_scheme_path):
     assert codelist_sdmx.items[0].name == "Units"
 
     # Concept
-    concepts = result["Concepts"]
-    assert len(concepts) == 1
-    concept_scheme_sdmx = concepts["SDMX:CROSS_DOMAIN_CONCEPTS(1.0)"]
+    concept_scheme_sdmx = next(cs for cs in result if isinstance(cs, ConceptScheme))
     assert concept_scheme_sdmx.id == "CROSS_DOMAIN_CONCEPTS"
     assert concept_scheme_sdmx.name == "SDMX Cross Domain Concept Scheme"
     assert concept_scheme_sdmx.items[0].id == "COLL_METHOD"
@@ -118,15 +118,15 @@ def test_submission_result(submission_path):
     short_urn_1 = "DataStructure=BIS:BIS_DER(1.0)"
     short_urn_2 = "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"
 
-    assert short_urn_1 in result
-    submission_1 = result[short_urn_1]
+    assert any(short_urn_1 == sm.short_urn for sm in result)
+    submission_1 = next(sm for sm in result if sm.short_urn == short_urn_1)
     assert isinstance(submission_1, SubmissionResult)
     assert submission_1.action == "Append"
     assert submission_1.short_urn == short_urn_1
     assert submission_1.status == "Success"
 
-    assert short_urn_2 in result
-    submission_2 = result[short_urn_2]
+    assert any(short_urn_2 == sm.short_urn for sm in result)
+    submission_2 = next(sm for sm in result if sm.short_urn == short_urn_2)
     assert isinstance(submission_2, SubmissionResult)
     assert submission_2.action == "Append"
     assert submission_2.short_urn == short_urn_2
@@ -148,7 +148,7 @@ def test_error_304(error_304_path):
 
 # def test_error_message_with_different_mode(error_304_path):
 #     with pytest.raises(Invalid, match="Unable to parse sdmx file as"):
-#         reader(error_304_path, validate=True)
+#         read(error_304_path, validate=True)
 
 
 @pytest.mark.parametrize(
@@ -165,7 +165,7 @@ def test_reading_validation(samples_folder, filename):
     data_path = samples_folder / filename
     result = read(data_path, validate=True)
     assert result is not None
-    data = result["DataStructure=BIS:BIS_DER(1.0)"].data
+    data = next(ds for ds in result if ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)').data
     assert data.shape == (1000, 20)
 
 
@@ -173,8 +173,8 @@ def test_reading_validation(samples_folder, filename):
 def test_dataflow(samples_folder):
     data_path = samples_folder / "dataflow.xml"
     result = read(data_path, validate=True)
-    assert "DataFlow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result
-    data_dataflow = result["DataFlow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"].data
+    assert any(isinstance(item, PandasDataset) for item in result)
+    data_dataflow = next(df for df in result if df.short_urn == 'DataFlow=BIS:WEBSTATS_DER_DATAFLOW(1.0)').data
     num_rows = len(data_dataflow)
     num_columns = data_dataflow.shape[1]
     assert num_rows > 0
@@ -190,25 +190,25 @@ def test_dataflow(samples_folder):
 def test_structure_ref_urn(samples_folder):
     data_path = samples_folder / "structure_ref_urn.xml"
     result = read(data_path, validate=True)
-    assert "DataStructure=BIS:BIS_DER(1.0)" in result
+    assert any(e.short_urn == 'DataStructure=BIS:BIS_DER(1.0)' for e in result)
 
 
 def test_partial_datastructure(samples_folder):
     data_path = samples_folder / "partial_datastructure.xml"
     result = read(data_path, validate=True)
-    assert "DataStructure=BIS:BIS_DER(1.0)" in result["DataStructures"]
+    assert (e.short_urn == 'DataStructure=BIS:BIS_DER(1.0)' for e in result)
 
 
 def test_dataflow_structure(samples_folder):
     data_path = samples_folder / "dataflow_structure.xml"
     result = read(data_path, validate=True)
-    assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result["Dataflows"]
+    assert (e.short_urn == 'Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)' for e in result)
 
 
 def test_partial_dataflow_structure(samples_folder):
     data_path = samples_folder / "partial_dataflow_structure.xml"
     result = read(data_path, validate=True)
-    assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result["Dataflows"]
+    assert (e.short_urn == 'Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)' for e in result)
 
 
 def test_header_structure_provision_agrement(samples_folder):
@@ -246,8 +246,8 @@ def test_gen_ser_no_atts(samples_folder):
 def test_ser_no_obs(samples_folder, filename):
     data_path = samples_folder / filename
     result = read(data_path, validate=True)
-    df = result["DataStructure=BIS:BIS_DER(1.0)"].data
-    assert df.shape == (1, 16)
+    data = next(ds for ds in result if ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)').data
+    assert data.shape == (1, 16)
 
 
 @pytest.mark.parametrize(
@@ -265,7 +265,8 @@ def test_chunks(samples_folder, filename):
     data_path = samples_folder / filename
     result = read(data_path, validate=True)
     assert result is not None
-    data = result["DataStructure=BIS:BIS_DER(1.0)"].data
+    assert any(ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)' for ds in result)
+    data = next(ds for ds in result if ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)').data
     num_rows = len(data)
     num_columns = data.shape[1]
     assert num_rows > 0
@@ -280,15 +281,15 @@ def test_read_write_structure_specific_all(samples_folder):
     data_path = samples_folder / "str_all.xml"
     content = read(data_path, validate=True)
     assert content is not None
-    assert "DataStructure=BIS:BIS_DER(1.0)" in content
-    shape_read = content["DataStructure=BIS:BIS_DER(1.0)"].data.shape
+    assert any(ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)' for ds in content)
+    shape_read = next(ds for ds in content if ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)').data.shape
     assert shape_read == (1000, 20)
     result = write_xml(content, MessageType.StructureSpecificDataSet)
     content_result = read(result, validate=True)
     # Check we read the same data
     assert content_result is not None
-    assert "DataStructure=BIS:BIS_DER(1.0)" in content_result
-    data_written = content_result["DataStructure=BIS:BIS_DER(1.0)"].data
+    assert any(ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)' for ds in content_result)
+    data_written = next(ds for ds in content_result if ds.short_urn == 'DataStructure=BIS:BIS_DER(1.0)').data
     shape_written = data_written.shape
     assert shape_read == shape_written
 
@@ -296,9 +297,10 @@ def test_read_write_structure_specific_all(samples_folder):
 def test_vtl_transformation_scheme(samples_folder):
     data_path = samples_folder / "transformation_scheme.xml"
     result = read(data_path, validate=True)
-    assert "Transformations" in result
-    assert len(result["Transformations"]) == 1
-    transformation_scheme = result["Transformations"]["SDMX:TEST(1.0)"]
+    assert any(isinstance(ts, TransformationScheme) for ts in result)
+    assert len(result) == 1
+    urn = 'urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=SDMX:TEST(1.0)'
+    transformation_scheme = next(ts for ts in result if ts.urn == urn)
     assert transformation_scheme.id == "TEST"
     assert transformation_scheme.name == "TEST"
     assert transformation_scheme.description == "TEST Transformation Scheme"

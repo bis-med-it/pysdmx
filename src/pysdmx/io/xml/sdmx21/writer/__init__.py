@@ -1,7 +1,8 @@
 """SDMX 2.1 writer package."""
 
-from typing import Any, Dict, Optional
+from typing import Dict, Optional, Sequence
 
+from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     __write_header,
@@ -21,19 +22,19 @@ from pysdmx.model.message import Header
 
 
 def writer(
-    content: Dict[str, Any],
-    type_: MessageType,
-    path: str = "",
+    datasets: Sequence[PandasDataset],
+    type_: MessageType = MessageType.StructureSpecificDataSet,
+    output_path: str = "",
     prettyprint: bool = True,
-    header: Optional[Header] = None,
+    header: Optional[Header] = Header(),
     dimension_at_observation: Optional[Dict[str, str]] = None,
 ) -> Optional[str]:
     """This function writes a SDMX-ML file from the Message Content.
 
     Args:
-        content: The content to be written
+        datasets: The content to be written
         type_: The type of message to be written
-        path: The path to save the file
+        output_path: The path to save the file
         prettyprint: Prettyprint or not
         header: The header to be used (generated if None)
         dimension_at_observation:
@@ -42,8 +43,7 @@ def writer(
     Returns:
         The XML string if path is empty, None otherwise
     """
-    if header is None:
-        header = Header()
+    content = {dataset.short_urn: dataset for dataset in datasets}
 
     ss_namespaces = ""
     add_namespace_structure = False
@@ -77,8 +77,6 @@ def writer(
     # Generating the header
     outfile += __write_header(header, prettyprint, add_namespace_structure)
     # Writing the content
-    if type_ == MessageType.Structure:
-        outfile += write_structures(content, prettyprint)
     if type_ == MessageType.StructureSpecificDataSet:
         outfile += write_data_structure_specific(
             content, dim_mapping, prettyprint
@@ -88,10 +86,8 @@ def writer(
 
     outfile += get_end_message(type_, prettyprint)
 
-    if path == "":
+    if output_path == "":
         return outfile
 
-    with open(path, "w", encoding="UTF-8", errors="replace") as f:
+    with open(output_path, "w", encoding="UTF-8", errors="replace") as f:
         f.write(outfile)
-
-    return None

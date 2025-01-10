@@ -1,19 +1,23 @@
 # mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 2.1 Structure Specific data messages."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Sequence, Optional
 
 import pandas as pd
 
+from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
+from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_MSG,
     ALL_DIM,
     get_codes,
     get_structure,
-    writing_validation,
+    writing_validation, create_namespaces, __write_header, get_end_message, check_content_dataset,
+    check_dimension_at_observation,
 )
 from pysdmx.io.xml.sdmx21.writer.config import CHUNKSIZE
+from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
 
 
@@ -230,3 +234,67 @@ def __series_processing(
     out = __generate_series_str()
 
     return out
+
+
+def write(
+    datasets: Sequence[PandasDataset],
+    output_path: str = "",
+    prettyprint: bool = True,
+    header: Optional[Header] = Header(),
+    dimension_at_observation: Optional[Dict[str, str]] = None,
+) -> Optional[str]:
+    """Write data to SDMX-ML 2.1 Generic format.
+
+    Args:
+        datasets: The datasets to be written.
+        output_path: The path to save the file.
+        prettyprint: Prettyprint or not.
+        header: The header to be used (generated if None).
+        dimension_at_observation:
+          The mapping between the dataset and the dimension at observation.
+
+    Returns:
+        The XML string if path is empty, None otherwise.
+    """
+    if (not isinstance(datasets, Sequence) or not
+    all(isinstance(dataset, PandasDataset) for dataset in datasets)):
+        raise Invalid("Message Content must only contain a Dataset sequence.")
+
+    ss_namespaces = ""
+    type_ = MessageType.StructureSpecificDataSet
+    content = {dataset.short_urn: dataset for dataset in datasets}
+
+    # Checking if we have datasets,
+    # we need to ensure we can write them correctly
+    check_content_dataset(content)
+    # Checking the dimension at observation mapping
+    dim_mapping = check_dimension_at_observation(
+        content, dimension_at_observation
+    )
+    header.structure = dim_mapping
+    add_namespace_structure = True
+    for i, (short_urn, dimension) in enumerate(
+            header.structure.items()
+    ):
+        ss_namespaces += (
+            f'xmlns:ns{i + 1}="urn:sdmx:org.sdmx'
+            f".infomodel.datastructure.{short_urn}"
+            f':ObsLevelDim:{dimension}" '
+        )
+
+    # Generating the initial tag with namespaces
+    outfile = create_namespaces(type_, ss_namespaces, prettyprint)
+    # Generating the header
+    outfile += __write_header(header, prettyprint, add_namespace_structure)
+    # Writing the content
+    outfile += write_data_structure_specific(
+        content, dim_mapping, prettyprint
+    )
+
+    outfile += get_end_message(type_, prettyprint)
+
+    if output_path == "":
+        return outfile
+
+    with open(output_path, "w", encoding="UTF-8", errors="replace") as f:
+        f.write(outfile)
