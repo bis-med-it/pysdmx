@@ -2,6 +2,8 @@
 from typing import Dict, Optional, Sequence
 
 from pysdmx.io.pd import PandasDataset
+from pysdmx.io.xml.enums import MessageType
+from pysdmx.io.xml.sdmx21.writer.__write_aux import __namespaces_from_type
 from pysdmx.model.message import Header
 
 
@@ -11,7 +13,7 @@ def write(
     prettyprint: bool = True,
     header: Optional[Header] = None,
     dimension_at_observation: Optional[Dict[str, str]] = None,
-) -> Optional[str]:
+):
     """Write data to SDMX-ML 2.1 Generic format.
 
     Args:
@@ -25,7 +27,4 @@ def write(
     Returns:
         The XML string if path is empty, None otherwise.
     """
-    if header is None:
-        header = Header()
-
-    raise NotImplementedError("Not implemented yet.")
+    outfile = __namespaces_from_type(MessageType.Error)

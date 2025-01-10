@@ -17,6 +17,7 @@ from pysdmx.model.dataflow import (
     Role,
 )
 from pysdmx.model.message import Header
+from pysdmx.errors import NotImplemented
 
 TEST_CS_URN = (
     "urn:sdmx:org.sdmx.infomodel.conceptscheme."
@@ -308,13 +309,26 @@ def test_concept(concept_sample, complete_header, concept):
     assert result == concept_sample
 
 
+def test_file_writing(concept_sample, complete_header, concept):
+    content = [concept]
+    output_path = Path(__file__).parent / "samples" / "test_output.xml"
+    write(
+        content,
+        output_path=output_path,
+        header=complete_header,
+    )
+
+    with open(output_path, "r") as f:
+        assert f.read() == concept_sample
+
+
 def test_writer_empty(empty_sample, header):
     result = write([], prettyprint=True, header=header)
     assert result == empty_sample
 
 
 def test_writing_not_supported():
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(NotImplemented):
         write_err({})
 
 

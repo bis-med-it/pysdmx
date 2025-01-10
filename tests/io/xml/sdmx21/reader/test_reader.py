@@ -7,8 +7,7 @@ import pysdmx
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml import read
-from pysdmx.io.xml.enums import MessageType
-from pysdmx.io.xml.sdmx21.writer import writer as write_xml
+from pysdmx.io.xml.sdmx21.writer.structure_specific import write
 from pysdmx.model import Codelist, ConceptScheme, Contact
 from pysdmx.model.__base import ItemScheme
 from pysdmx.model.message import SubmissionResult
@@ -194,6 +193,12 @@ def test_dataflow(samples_folder):
     assert "DER_CURR_LEG1" in data_dataflow.columns
 
 
+def test_invalid_filetype(samples_folder):
+    data_path = samples_folder / "invalid_filetype.csv"
+    with pytest.raises(Invalid):
+        read(data_path, validate=True)
+
+
 def test_structure_ref_urn(samples_folder):
     data_path = samples_folder / "structure_ref_urn.xml"
     result = read(data_path, validate=True)
@@ -309,7 +314,7 @@ def test_read_write_structure_specific_all(samples_folder):
         if ds.short_urn == "DataStructure=BIS:BIS_DER(1.0)"
     ).data.shape
     assert shape_read == (1000, 20)
-    result = write_xml(content, MessageType.StructureSpecificDataSet)
+    result = write(content)
     content_result = read(result, validate=True)
     # Check we read the same data
     assert content_result is not None

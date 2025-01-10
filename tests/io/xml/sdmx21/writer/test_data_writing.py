@@ -156,6 +156,33 @@ def test_data_write_read(
 
 
 @pytest.mark.parametrize(
+    ("message_type", "filename", "dimension_at_observation"),
+    [
+        (MessageType.GenericDataSet, "gen_all.xml", {}),
+        (MessageType.StructureSpecificDataSet, "str_all.xml", None)
+    ],
+)
+def test_write_data_file(
+    header, content, message_type, filename, dimension_at_observation
+):
+    samples_folder_path = Path(__file__).parent / "samples"
+    output_file = Path(__file__).parent / "test_output_data.xml"
+    # Write from Dataset
+    write = (
+        write_str_spec
+        if message_type == MessageType.StructureSpecificDataSet
+        else write_gen
+    )
+    write(
+        list(content.values()),
+        output_path=output_file,
+        dimension_at_observation=dimension_at_observation,
+    )
+
+    assert output_file.exists()
+
+
+@pytest.mark.parametrize(
     ("message_type", "dimension_at_observation"),
     [
         (MessageType.GenericDataSet, {}),
@@ -221,6 +248,11 @@ def test_invalid_content():
         Invalid, match="Message Content must only contain a Dataset sequence."
     ):
         write_str_spec(content)
+
+    with pytest.raises(
+        Invalid, match="Message Content must only contain a Dataset sequence."
+    ):
+        write_gen(content)
 
 
 def test_invalid_dimension(content):

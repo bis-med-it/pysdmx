@@ -2,7 +2,7 @@
 """Writer auxiliary functions."""
 
 from collections import OrderedDict
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Sequence
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.pd import PandasDataset
@@ -297,11 +297,10 @@ def get_codes(
     return series_codes, obs_codes
 
 
-def check_content_dataset(content: Dict[str, PandasDataset]) -> None:
+def check_content_dataset(content: Sequence[PandasDataset]) -> None:
     """Checks if the Message content is a dataset."""
-    for dataset in content.values():
-        if not isinstance(dataset, PandasDataset):
-            raise Invalid("Message Content must contain only Datasets.")
+    if not all(isinstance(dataset, PandasDataset) for dataset in content):
+        raise Invalid("Message Content must only contain a Dataset sequence.")
 
 
 def check_dimension_at_observation(

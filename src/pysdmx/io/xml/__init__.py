@@ -26,22 +26,16 @@ def read(
     """Reads an SDMX-ML file and returns a dictionary with the parsed data."""
     input_str, filetype = process_string_to_read(infile)
 
-    if filetype == "xml":
-        dict_ = read_xml(
-            input_str,
-            validate=validate,
-            mode=None,
-            use_dataset_id=use_dataset_id,
-        )
-        result = []
-        for _, value in dict_.items():
-            if isinstance(value, (PandasDataset, SubmissionResult)):
-                result.append(value)
-            else:
-                for item in value.values():
-                    result.append(item)
-        return result
-    else:
-        raise Invalid(
-            "Invalid file type", f"File type {filetype} is not supported."
-        )
+    dict_ = read_xml(
+        input_str,
+        validate=validate,
+        use_dataset_id=use_dataset_id,
+    )
+    result = []
+    for _, value in dict_.items():
+        if isinstance(value, (PandasDataset, SubmissionResult)):
+            result.append(value)
+        else:
+            for item in value.values():
+                result.append(item)
+    return result

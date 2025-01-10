@@ -260,20 +260,17 @@ def write(
     Returns:
         The XML string if path is empty, None otherwise.
     """
-    if not all(
-        isinstance(dataset, PandasDataset) for dataset in datasets
-    ):
-        raise Invalid("Message Content must only contain a Dataset sequence.")
-
     ss_namespaces = ""
     type_ = MessageType.StructureSpecificDataSet
-    content = {dataset.short_urn: dataset for dataset in datasets}
-    if header is None:
-        header = Header()
 
     # Checking if we have datasets,
     # we need to ensure we can write them correctly
-    check_content_dataset(content)
+    check_content_dataset(datasets)
+    content = {dataset.short_urn: dataset for dataset in datasets}
+
+    if header is None:
+        header = Header()
+
     # Checking the dimension at observation mapping
     dim_mapping = check_dimension_at_observation(
         content, dimension_at_observation
