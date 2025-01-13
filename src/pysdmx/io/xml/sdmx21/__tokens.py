@@ -64,9 +64,9 @@ DESC = "Description"
 LANG = "lang"
 XML_TEXT = "#text"
 STR_URL = "structureURL"
-STR_URL_LOW = "structureUrl"
+STR_URL_LOW = "structure_url"
 SER_URL = "serviceURL"
-SER_URL_LOW = "serviceUrl"
+SER_URL_LOW = "service_url"
 
 # General
 ANNOTATIONS = "Annotations"

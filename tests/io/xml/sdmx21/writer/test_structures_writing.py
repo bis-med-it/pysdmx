@@ -6,8 +6,8 @@ import pytest
 from pysdmx.errors import NotImplemented
 from pysdmx.io.enums import SDMXFormat
 from pysdmx.io.input_processor import process_string_to_read
-from pysdmx.io.xml import read
-from pysdmx.io.xml.sdmx21.reader.__utils import CON
+from pysdmx.io.xml.sdmx21.__tokens import CON
+from pysdmx.io.xml.sdmx21.reader.structure import read
 from pysdmx.io.xml.sdmx21.writer.error import write as write_err
 from pysdmx.io.xml.sdmx21.writer.structure import write
 from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme, Facets
@@ -451,11 +451,11 @@ def test_bis_der(bis_sample, bis_header):
 def test_group_deletion(groups_sample, header):
     content, read_format = process_string_to_read(groups_sample)
     assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
-    read_result = read_xml(content, validate=True)
-    write_result = writer(
+    read_result = read(content, validate=True)
+    write_result = write(
         read_result,
         header=header,
         prettyprint=True,
     )
     assert "Groups" not in write_result
-    assert any("BIS:BIS_DER(1.0)" in e.short_urn() for e in read_result)
+    assert any("BIS:BIS_DER(1.0)" in e.short_urn for e in read_result)

@@ -15,8 +15,11 @@ from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
 from pysdmx.io.xml.sdmx21.reader.structure_specific import read as read_str_spe
 from pysdmx.io.xml.sdmx21.reader.submission import read as read_sub
 from pysdmx.model import Schema
+from pysdmx.model.__base import ItemScheme
+from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Message
+from pysdmx.model.submission import SubmissionResult
 from pysdmx.util import parse_short_urn
 
 
@@ -50,9 +53,11 @@ def read_sdmx(
     """
     input_str, read_format = process_string_to_read(sdmx_document)
 
-    result_data = []
-    result_structures = {}
-    result_submission = []
+    result_data: Sequence[Dataset] = []
+    result_structures: Sequence[
+        Union[ItemScheme, Dataflow, DataStructureDefinition]
+    ] = []
+    result_submission: Sequence[SubmissionResult] = []
     if read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE:
         # SDMX-ML 2.1 Structure
         result_structures = read_structure(input_str, validate=validate)
