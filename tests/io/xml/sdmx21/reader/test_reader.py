@@ -9,7 +9,9 @@ from pysdmx.io import read_sdmx
 from pysdmx.io.enums import SDMXFormat
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.sdmx21.reader.error import read as read_error
+from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
+from pysdmx.io.xml.sdmx21.reader.structure_specific import read as read_str_spe
 from pysdmx.io.xml.sdmx21.reader.submission import read as read_sub
 from pysdmx.io.xml.sdmx21.writer.structure_specific import write
 from pysdmx.model import AgencyScheme, Codelist, ConceptScheme, Contact
@@ -57,6 +59,13 @@ def samples_folder():
 @pytest.fixture
 def error_304_path():
     return Path(__file__).parent / "samples" / "error_304.xml"
+
+
+@pytest.fixture
+def error_str(error_304_path):
+    with open(error_304_path, "r") as f:
+        text = f.read()
+    return text
 
 
 def test_agency_scheme_read(agency_scheme_path):
@@ -149,6 +158,15 @@ def test_submission_result(submission_path):
     assert submission_2.action == "Append"
     assert submission_2.short_urn == short_urn_2
     assert submission_2.status == "Success"
+
+
+def test_submission_result_read_sdmx(submission_path):
+    result = read_sdmx(submission_path, validate=True).submission
+    assert len(result) == 2
+    assert result[0].action == "Append"
+    assert result[0].short_urn == "DataStructure=BIS:BIS_DER(1.0)"
+    assert result[1].action == "Append"
+    assert result[1].short_urn == "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"
 
 
 def test_error_304(error_304_path):
@@ -259,7 +277,7 @@ def test_partial_datastructure(samples_folder):
 
 
 def test_dataflow_structure(samples_folder):
-    data_path = samples_folder / "dataflow_structure.xml"
+    data_path = samples_folder / "dataflow_structure_no_children.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
     result = read_sdmx(input_str, validate=True).structures
@@ -270,7 +288,7 @@ def test_dataflow_structure(samples_folder):
 
 def test_dataflow_structure_read_sdmx(samples_folder):
     result = read_sdmx(
-        samples_folder / "dataflow_structure.xml",
+        samples_folder / "dataflow_structure_no_children.xml",
         validate=True,
     ).structures
     assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in [
@@ -437,5 +455,25 @@ def test_estat_data(estat_data_path):
     assert result is not None
     assert len(result) == 1
     dataset = result[0]
-    assert dataset.short_urn == "DataFlow=ESTAT:NRG_BAL_S(1.0)"
+    assert dataset.short_urn == "Dataflow=ESTAT:NRG_BAL_S(1.0)"
     assert len(dataset.data) == 33
+
+
+def test_wrong_flavour_structure(error_str):
+    with pytest.raises(Invalid):
+        read_structure(error_str, validate=True)
+
+
+def test_wrong_flavour_submission(error_str):
+    with pytest.raises(Invalid):
+        read_sub(error_str, validate=True)
+
+
+def test_wrong_flavour_generic(error_str):
+    with pytest.raises(Invalid):
+        read_generic(error_str, validate=True)
+
+
+def test_wrong_flavour_structure_specific(error_str):
+    with pytest.raises(Invalid):
+        read_str_spe(error_str, validate=True)

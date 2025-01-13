@@ -89,7 +89,6 @@ from pysdmx.util import (
     ItemReference,
     parse_item_urn,
     parse_short_urn,
-    parse_urn,
 )
 
 ANNOTATION_WRITER = OrderedDict(
@@ -498,14 +497,9 @@ def __write_enumeration(codes: Union[Codelist, Hierarchy], indent: str) -> str:
     return outfile
 
 
-def __write_structure(
-    item: Union[DataStructureDefinition, str], indent: str
-) -> str:
+def __write_structure(item: str, indent: str) -> str:
     """Writes the dataflow structure to the XML file."""
-    if isinstance(item, str):
-        ref = parse_short_urn(item)
-    else:
-        ref = parse_urn(item.urn)  # type: ignore[arg-type]
+    ref = parse_short_urn(item)
     outfile = f"{indent}<{ABBR_STR}:Structure>"
     outfile += (
         f"{add_indent(indent)}<{REF} "

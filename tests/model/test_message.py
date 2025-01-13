@@ -112,7 +112,7 @@ def test_empty_get_elements():
 
 
 def test_empty_get_element_by_short_urn():
-    message = Message({})
+    message = Message([])
     with pytest.raises(NotFound) as exc_info:
         message.get_organisation_scheme("AgencyScheme=org1:orgs1(1.0)")
 
@@ -127,6 +127,14 @@ def test_empty_get_element_by_short_urn():
         message.get_concept_scheme("ConceptScheme=cs1:cs1(1.0)")
 
     assert "No ConceptScheme with Short URN" in str(exc_info.value.title)
+
+
+def test_none_get_element_by_short_urn():
+    message = Message()
+    with pytest.raises(NotFound) as exc_info:
+        message.get_organisation_scheme("AgencyScheme=org1:orgs1(1.0)")
+
+    assert "No AgencyScheme found" in str(exc_info.value.title)
 
 
 def test_invalid_get_element_by_short_urn():

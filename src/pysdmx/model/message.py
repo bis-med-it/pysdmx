@@ -106,7 +106,7 @@ class Message(Struct, frozen=True):
         """Returns a specific element from content."""
         if self.structures is None:
             raise NotFound(
-                "No Structures found in message.",
+                f"No {type_.__name__} found in message.",
                 "Could not find any Structures in this message.",
             )
         for structure in self.structures:
@@ -114,7 +114,7 @@ class Message(Struct, frozen=True):
                 return structure
 
         raise NotFound(
-            f"No {type_.__name__} with Short URN {short_urn} found in content",
+            f"No {type_.__name__} with Short URN {short_urn} found in message",
             "Could not find the requested element.",
         )
 

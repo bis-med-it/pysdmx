@@ -2,7 +2,7 @@
 
 from io import BytesIO
 from pathlib import Path
-from typing import Sequence, Union
+from typing import Optional, Sequence, Union
 
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.io.csv.sdmx10.reader import read as read_csv_v1
@@ -100,37 +100,10 @@ def read_sdmx(
     return Message(structures=result_structures)
 
 
-def get_datasets(
-    data: Union[str, Path, BytesIO],
-    structure: Union[str, Path, BytesIO],
-    validate: bool = True,
-) -> Sequence[Dataset]:
-    """Reads a data message and a structure message and returns a dataset.
-
-    Args:
-        data: Path to file (pathlib.Path), URL, or string for the data message.
-        structure:
-          Path to file (pathlib.Path), URL, or string
-          for the structure message.
-        validate: Validate the input file (only for SDMX-ML).
-
-    Returns:
-        A sequence of Datasets
-
-    Raises:
-        Invalid:
-            If the data message is empty or the related data structure
-            (or dataflow with its children) is not found.
-    """
-    data_msg = read_sdmx(data, validate=validate)
-    if not data_msg.data:
-        raise Invalid("No data found in the data message")
-
-    structure_msg = read_sdmx(structure, validate=validate)
-    if structure_msg.structures is None:
-        raise Invalid("No structure found in the structure message")
-
-    for dataset in data_msg.data:
+def __assign_structure_to_dataset(
+    datasets: Sequence[Dataset], structure_msg: Message
+) -> None:
+    for dataset in datasets:
         short_urn: str = (
             dataset.structure.short_urn
             if isinstance(dataset.structure, Schema)
@@ -143,16 +116,59 @@ def get_datasets(
                 dataset.structure = dsd.to_schema()
             except NotFound:
                 continue
-        elif sdmx_type == "DataFlow":
+        else:
             try:
                 dataflow = structure_msg.get_dataflow(short_urn)
-                if dataflow.structure is None:
-                    continue
                 dsd = structure_msg.get_data_structure_definition(
-                    dataflow.structure
+                    dataflow.structure if dataflow.structure else ""
                 )
                 dataset.structure = dsd.to_schema()
             except NotFound:
                 continue
 
-    return list(data_msg.data)
+
+def get_datasets(
+    data: Union[str, Path, BytesIO],
+    structure: Optional[Union[str, Path, BytesIO]] = None,
+    validate: bool = True,
+) -> Sequence[Dataset]:
+    """Reads a data message and a structure message and returns a dataset.
+
+    Args:
+        data: Path to file (pathlib.Path), URL, or string for the data message.
+        structure:
+          Path to file (pathlib.Path), URL, or string
+          for the structure message, if needed.
+        validate: Validate the input file (only for SDMX-ML).
+
+    Returns:
+        A sequence of Datasets
+
+    Raises:
+        Invalid:
+            If the data message is empty or the related data structure
+            (or dataflow with its children) is not found.
+        NotFound:
+            If the related data structure (or dataflow with its children)
+            is not found.
+    """
+    data_msg = read_sdmx(data, validate=validate)
+    if not data_msg.data:
+        raise Invalid("No data found in the data message")
+
+    if structure is None:
+        return data_msg.data
+    structure_msg = read_sdmx(structure, validate=validate)
+    if structure_msg.structures is None:
+        raise Invalid("No structure found in the structure message")
+
+    __assign_structure_to_dataset(data_msg.data, structure_msg)
+
+    # Check if any dataset does not have a structure
+    for dataset in data_msg.data:
+        if not isinstance(dataset.structure, Schema):
+            raise Invalid(
+                f"Missing DataStructure for dataset {dataset.short_urn}"
+            )
+
+    return data_msg.data

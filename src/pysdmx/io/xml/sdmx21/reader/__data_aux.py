@@ -82,7 +82,7 @@ def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
         tuple_ids = __get_ids_from_structure(structure[STRUCTURE])
 
     elif STR_USAGE in structure:
-        structure_type = "DataFlow"
+        structure_type = "Dataflow"
         tuple_ids = __get_ids_from_structure(structure[STR_USAGE])
     else:
         raise NotImplemented(

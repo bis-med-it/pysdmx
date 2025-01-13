@@ -53,8 +53,40 @@ def structures_path():
 
 
 @pytest.fixture
-def dataflow_path():
-    base_path = Path(__file__).parent / "samples" / "dataflow.xml"
+def dataflow_no_children():
+    base_path = (
+        Path(__file__).parent
+        / "samples"
+        / "dataflow_structure_no_children.xml"
+    )
+    return str(base_path)
+
+
+@pytest.fixture
+def dataflow_children():
+    base_path = (
+        Path(__file__).parent / "samples" / "dataflow_structure_children.xml"
+    )
+    return str(base_path)
+
+
+@pytest.fixture
+def data_wrong_dataflow():
+    base_path = Path(__file__).parent / "samples" / "data_wrong_dataflow.xml"
+    return str(base_path)
+
+
+@pytest.fixture
+def data_dataflow():
+    base_path = Path(__file__).parent / "samples" / "data_dataflow.xml"
+    return str(base_path)
+
+
+@pytest.fixture
+def data_wrong_dsd():
+    base_path = (
+        Path(__file__).parent / "samples" / "data_wrong_datastructure.xml"
+    )
     return str(base_path)
 
 
@@ -153,16 +185,35 @@ def test_get_datasets_no_structure_found(data_path, structures_path):
         get_datasets(data_path, data_path)
 
 
-def test_get_datasets_no_datastructure(data_path, dataflow_path):
-    result = get_datasets(data_path, dataflow_path)
+def test_get_datasets_csv_v1(data_csv_v1_path):
+    result = get_datasets(data_csv_v1_path)
     assert len(result) == 1
-    assert result[0].data is not None
-    assert isinstance(result[0].structure, str)
+    dataset = result[0]
+    assert isinstance(dataset.structure, str)
+    assert dataset.data is not None
+    assert len(dataset.data) == 1000
 
 
-def test_get_datasets_dataflow_reference(data_csv_v1_path, dataflow_path):
-    result = get_datasets(data_csv_v1_path, dataflow_path)
+def test_get_datasets_dataflow_children(data_dataflow, dataflow_children):
+    result = get_datasets(data_dataflow, dataflow_children)
     assert len(result) == 1
     assert result[0].data is not None
-    assert isinstance(result[0].structure, str)
-    assert result[0].structure == "DataFlow=BIS:BIS_DER(1.0)"
+    assert isinstance(result[0].structure, Schema)
+    assert len(result[0].data) == 1000
+
+
+def test_get_datasets_wrong_dataflow(
+    data_wrong_dataflow, dataflow_no_children
+):
+    with pytest.raises(Invalid, match="Missing DataStructure for dataset "):
+        get_datasets(data_wrong_dataflow, dataflow_no_children)
+
+
+def test_get_datasets_wrong_dsd(data_wrong_dsd, dataflow_children):
+    with pytest.raises(Invalid, match="Missing DataStructure for dataset "):
+        get_datasets(data_wrong_dsd, dataflow_children)
+
+
+def test_get_datasets_no_children(data_dataflow, dataflow_no_children):
+    with pytest.raises(Invalid, match="Missing DataStructure for dataset "):
+        get_datasets(data_dataflow, dataflow_no_children)

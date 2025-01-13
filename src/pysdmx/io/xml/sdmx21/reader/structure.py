@@ -464,9 +464,6 @@ class StructureParser(Struct):
         if ANNOTATIONS in comp:
             del comp[ANNOTATIONS]
 
-        if URN in comp:
-            comp[URN.lower()] = comp.pop(URN)
-
         return Component(**comp)
 
     def __format_component_lists(
@@ -637,9 +634,7 @@ class StructureParser(Struct):
                     f"{ref_data[CLASS]}={ref_data[AGENCY_ID]}"
                     f":{ref_data[ID]}({ref_data[VERSION]})"
                 )
-                element[STRUCTURE] = self.datastructures.get(
-                    reference_str, reference_str
-                )
+                element[STRUCTURE] = reference_str
 
             structure = {key.lower(): value for key, value in element.items()}
             if schema == DSDS:

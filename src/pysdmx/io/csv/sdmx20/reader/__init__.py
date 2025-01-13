@@ -50,8 +50,8 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
 
     if structure_type == "DataStructure".lower():
         urn = f"DataStructure={structure_id}"
-    elif structure_type == "DataFlow".lower():
-        urn = f"DataFlow={structure_id}"
+    elif structure_type == "Dataflow".lower():
+        urn = f"Dataflow={structure_id}"
     elif structure_type == "dataprovision":
         urn = f"ProvisionAgreement={structure_id}"
     else:

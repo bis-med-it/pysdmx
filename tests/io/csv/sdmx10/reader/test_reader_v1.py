@@ -29,7 +29,7 @@ def test_reading_data_v1(data_path):
     with open(data_path, "r") as f:
         infile = f.read()
     datasets = read(infile)
-    assert datasets[0].short_urn == "DataFlow=BIS:BIS_DER(1.0)"
+    assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
     assert len(df) == 1000
     assert "DATAFLOW" not in df.columns
@@ -37,7 +37,7 @@ def test_reading_data_v1(data_path):
 
 def test_reading_sdmx_csv_v1(data_path):
     datasets = read_sdmx(data_path).data
-    assert datasets[0].short_urn == "DataFlow=BIS:BIS_DER(1.0)"
+    assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
     assert len(df) == 1000
     assert "DATAFLOW" not in df.columns
@@ -47,7 +47,7 @@ def test_reading_sdmx_csv_v1_string(data_path):
     with open(data_path, "r") as f:
         infile = f.read()
     datasets = read(infile)
-    assert datasets[0].short_urn == "DataFlow=BIS:BIS_DER(1.0)"
+    assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
     assert len(df) == 1000
     assert "DATAFLOW" not in df.columns
@@ -66,7 +66,7 @@ def test_reading_no_freq_v1(data_path_no_freq):
     datasets = read(infile)
     assert (
         datasets[0].short_urn
-        == "DataFlow=WB:GCI(1.0):GlobalCompetitivenessIndex"
+        == "Dataflow=WB:GCI(1.0):GlobalCompetitivenessIndex"
     )
     df = datasets[0].data
     assert len(df) == 7

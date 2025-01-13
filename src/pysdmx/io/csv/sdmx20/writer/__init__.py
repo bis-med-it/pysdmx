@@ -36,7 +36,7 @@ def writer(
             df[k] = v
 
         structure_ref, unique_id = dataset.short_urn.split("=", maxsplit=1)
-        if structure_ref in ["DataStructure", "DataFlow"]:
+        if structure_ref in ["DataStructure", "Dataflow"]:
             structure_ref = structure_ref.lower()
         else:
             structure_ref = "dataprovision"

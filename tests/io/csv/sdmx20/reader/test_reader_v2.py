@@ -69,7 +69,7 @@ def test_reading_data_v2(data_path):
     with open(data_path, "r") as f:
         infile = f.read()
     datasets = read(infile)
-    assert datasets[0].short_urn == "DataFlow=BIS:BIS_DER(1.0)"
+    assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
     assert len(df) == 1000
     assert "STRUCTURE" not in df.columns
@@ -79,7 +79,7 @@ def test_reading_data_v2(data_path):
 
 def test_reading_sdmx_csv_v2(data_path):
     datasets = read_sdmx(data_path).data
-    assert datasets[0].short_urn == "DataFlow=BIS:BIS_DER(1.0)"
+    assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
     assert len(df) == 1000
     assert "STRUCTURE" not in df.columns
@@ -91,7 +91,7 @@ def test_reading_sdmx_csv_v2_string(data_path):
     with open(data_path, "r") as f:
         infile = f.read()
     datasets = read_sdmx(infile).data
-    assert datasets[0].short_urn == "DataFlow=BIS:BIS_DER(1.0)"
+    assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
     assert len(df) == 1000
     assert "STRUCTURE" not in df.columns
@@ -112,7 +112,7 @@ def test_reading_no_freq_v2(data_path_no_freq):
     datasets = read(infile)
     assert (
         datasets[0].short_urn
-        == "DataFlow=WB:GCI(1.0):GlobalCompetitivenessIndex"
+        == "Dataflow=WB:GCI(1.0):GlobalCompetitivenessIndex"
     )
     df = datasets[0].data
     assert len(df) == 7
@@ -125,7 +125,7 @@ def test_reading_col_action(data_path_action):
     with open(data_path_action, "r") as f:
         infile = f.read()
     datasets = read(infile)
-    assert datasets[0].short_urn == "DataFlow=BIS:BIS_DER(1.0)"
+    assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
     assert len(df) == 1000
     assert "STRUCTURE" not in df.columns
@@ -138,7 +138,7 @@ def test_reading_more_structures(data_path_structures):
     datasets = read(infile)
     assert len(datasets) == 3
     short_urns = [ds.short_urn for ds in datasets]
-    assert "DataFlow=ESTAT:DF_A(1.6.0)" in short_urns
+    assert "Dataflow=ESTAT:DF_A(1.6.0)" in short_urns
     assert "DataStructure=ESTAT:DSD_B(1.7.0)" in short_urns
     assert "ProvisionAgreement=ESTAT:DPA_C(1.8.0)" in short_urns
 
