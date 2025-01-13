@@ -34,7 +34,7 @@ def test_to_sdmx_csv_writing(data_path, data_path_reference):
         structure=urn,
     )
     dataset.data = dataset.data.astype("str")
-    result_sdmx_csv = writer(dataset)
+    result_sdmx_csv = writer([dataset])
     result_df = pd.read_csv(StringIO(result_sdmx_csv)).astype(str)
     reference_df = pd.read_csv(data_path_reference).astype(str)
     pd.testing.assert_frame_equal(
@@ -52,7 +52,7 @@ def test_writer_attached_attrs(data_path, data_path_reference_atch_atts):
         structure=urn,
     )
     dataset.data = dataset.data.astype("str")
-    result_sdmx_csv = writer(dataset)
+    result_sdmx_csv = writer([dataset])
     result_df = pd.read_csv(StringIO(result_sdmx_csv)).astype(str)
     reference_df = pd.read_csv(data_path_reference_atch_atts).astype(str)
     pd.testing.assert_frame_equal(

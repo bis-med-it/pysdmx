@@ -1,7 +1,7 @@
 """SDMX 1.0 CSV writer module."""
 
 from copy import copy
-from typing import Optional
+from typing import Optional, Sequence
 
 import pandas as pd
 
@@ -9,27 +9,34 @@ from pysdmx.io.pd import PandasDataset
 
 
 def writer(
-    dataset: PandasDataset, output_path: Optional[str] = None
+    datasets: Sequence[PandasDataset], output_path: Optional[str] = None
 ) -> Optional[str]:
-    """Converts a dataset to an SDMX CSV format.
+    """Write data to SDMX-CSV 1.0 format.
 
     Args:
-        dataset: dataset
-        output_path: output_path
+        datasets: List of datasets to write.
+          Must have the same components.
+        output_path: Path to write the data to.
+          If None, the data is returned as a string.
 
     Returns:
-        SDMX CSV data as a string
+        SDMX CSV data as a string, if output_path is None.
     """
     # Link to pandas.to_csv documentation on sphinx:
     # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html
 
     # Create a copy of the dataset
-    df: pd.DataFrame = copy(dataset.data)
-    df.insert(0, "DATAFLOW", dataset.short_urn.split("=")[1])
+    dataframes = []
+    for dataset in datasets:
+        df: pd.DataFrame = copy(dataset.data)
+        df.insert(0, "DATAFLOW", dataset.short_urn.split("=")[1])
 
-    # Add additional attributes to the dataset
-    for k, v in dataset.attributes.items():
-        df[k] = v
+        # Add additional attributes to the dataset
+        for k, v in dataset.attributes.items():
+            df[k] = v
+        dataframes.append(df)
 
+    # Concatenate the dataframes
+    all_data = pd.concat(dataframes, ignore_index=True, axis=0)
     # Return the SDMX CSV data as a string
-    return df.to_csv(output_path, index=False, header=True)
+    return all_data.to_csv(output_path, index=False, header=True)
