@@ -19,6 +19,7 @@ from typing import Any, Dict, List, Optional, Sequence, Type, Union
 from msgspec import Struct
 
 from pysdmx.errors import Invalid, NotFound
+from pysdmx.model import AgencyScheme
 from pysdmx.model.__base import ItemScheme
 from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
@@ -88,7 +89,9 @@ class Message(Struct, frozen=True):
     def __get_elements(self, type_: Type[Any]) -> List[Any]:
         """Returns a list of elements of a specific type."""
         if self.structures is None:
-            return []
+            raise NotFound(
+                f"No {type_.__name__} found in message.",
+            )
         structures = []
         for element in self.structures:
             if isinstance(element, type_):
@@ -111,13 +114,13 @@ class Message(Struct, frozen=True):
                 return structure
 
         raise NotFound(
-            f"No {type_} with Short URN {short_urn} found in content",
+            f"No {type_.__name__} with Short URN {short_urn} found in content",
             "Could not find the requested element.",
         )
 
-    def get_organisation_schemes(self) -> List[ItemScheme]:
-        """Returns the OrganisationSchemes."""
-        return self.__get_elements(ItemScheme)
+    def get_agency_schemes(self) -> List[AgencyScheme]:
+        """Returns the AgencySchemes."""
+        return self.__get_elements(AgencyScheme)
 
     def get_codelists(self) -> List[Codelist]:
         """Returns the Codelists."""
@@ -137,9 +140,9 @@ class Message(Struct, frozen=True):
         """Returns the Dataflows."""
         return self.__get_elements(Dataflow)
 
-    def get_organisation_scheme(self, short_urn: str) -> ItemScheme:
+    def get_organisation_scheme(self, short_urn: str) -> AgencyScheme:
         """Returns a specific OrganisationScheme."""
-        return self.__get_single_structure(ItemScheme, short_urn)
+        return self.__get_single_structure(AgencyScheme, short_urn)
 
     def get_codelist(self, short_urn: str) -> Codelist:
         """Returns a specific Codelist."""
