@@ -1,7 +1,7 @@
 """SDMX 1.0 CSV reader module."""
 
 from io import StringIO
-from typing import Dict
+from typing import Sequence
 
 import pandas as pd
 
@@ -33,7 +33,7 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
     )
 
 
-def read(infile: str) -> Dict[str, PandasDataset]:
+def read(infile: str) -> Sequence[PandasDataset]:
     """Reads csv file and returns a payload dictionary.
 
     Args:
@@ -85,13 +85,13 @@ def read(infile: str) -> Dict[str, PandasDataset]:
 
     # Create a payload dictionary to store datasets with the
     # different unique_ids as keys
-    payload = {}
+    payload = []
     for df in list_df:
         # Generate a dataset from each subset of the DataFrame
         dataset = __generate_dataset_from_sdmx_csv(data=df)
 
         # Add the dataset to the payload dictionary
-        payload[dataset.short_urn] = dataset
+        payload.append(dataset)
 
     # Return the payload generated
     return payload

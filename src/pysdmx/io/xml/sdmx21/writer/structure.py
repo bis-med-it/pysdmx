@@ -4,7 +4,7 @@ from collections import OrderedDict
 from typing import Any, Dict, Optional, Sequence, Union
 
 from pysdmx.io.xml.enums import MessageType
-from pysdmx.io.xml.sdmx21.__parsing_config import (
+from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCIES,
     AGENCY_ID,
     AS_STATUS,

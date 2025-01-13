@@ -5,41 +5,7 @@ from typing import Any, Dict, List, Optional
 
 from msgspec import Struct
 
-from pysdmx.io.xml.sdmx21.__parsing_config import (
-    AS_STATUS,
-    ATT,
-    ATT_LIST,
-    ATT_LVL,
-    ATT_REL,
-    CLASS,
-    CODES_LOW,
-    COMPS,
-    CON_ID,
-    CON_LOW,
-    CORE_REP,
-    DIM,
-    DIM_LIST,
-    DSD_COMPS,
-    DTYPE,
-    ENUM,
-    ENUM_FORMAT,
-    GROUP,
-    GROUP_DIM,
-    LOCAL_CODES_LOW,
-    LOCAL_DTYPE,
-    LOCAL_FACETS_LOW,
-    LOCAL_REP,
-    MANDATORY,
-    ME_LIST,
-    PAR_ID,
-    PAR_VER,
-    PRIM_MEASURE,
-    REF,
-    REQUIRED,
-    TEXT_FORMAT,
-    TIME_DIM,
-)
-from pysdmx.io.xml.sdmx21.reader.__utils import (
+from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCIES,
     AGENCY,
     AGENCY_ID,
@@ -49,24 +15,43 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     ANNOTATION_TYPE,
     ANNOTATION_URL,
     ANNOTATIONS,
+    AS_STATUS,
+    ATT,
+    ATT_LIST,
+    ATT_LVL,
+    ATT_REL,
     CL,
+    CLASS,
     CLS,
     CODE,
+    CODES_LOW,
+    COMPS,
     CON,
+    CON_ID,
+    CON_LOW,
     CONCEPTS,
     CONTACT,
+    CORE_REP,
     CS,
     DEPARTMENT,
     DESC,
     DFW,
     DFWS,
+    DIM,
+    DIM_LIST,
     DSD,
+    DSD_COMPS,
     DSDS,
+    DTYPE,
     EMAIL,
     EMAILS,
+    ENUM,
+    ENUM_FORMAT,
     FACETS,
     FAX,
     FAXES,
+    GROUP,
+    GROUP_DIM,
     ID,
     IS_EXTERNAL_REF,
     IS_EXTERNAL_REF_LOW,
@@ -74,18 +59,31 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     IS_FINAL_LOW,
     IS_PARTIAL,
     IS_PARTIAL_LOW,
+    LOCAL_CODES_LOW,
+    LOCAL_DTYPE,
+    LOCAL_FACETS_LOW,
+    LOCAL_REP,
+    MANDATORY,
+    ME_LIST,
     NAME,
     ORGS,
+    PAR_ID,
+    PAR_VER,
+    PRIM_MEASURE,
+    REF,
+    REQUIRED,
     ROLE,
     SER_URL,
     SER_URL_LOW,
-    STR,
     STR_URL,
     STR_URL_LOW,
+    STRUCTURE,
     TELEPHONE,
     TELEPHONES,
     TEXT,
+    TEXT_FORMAT,
     TEXT_TYPE,
+    TIME_DIM,
     TITLE,
     TRANS_SCHEME,
     TRANSFORMATION,
@@ -100,7 +98,6 @@ from pysdmx.io.xml.sdmx21.reader.__utils import (
     VALID_TO,
     VALID_TO_LOW,
     VERSION,
-    FacetType,
 )
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (
@@ -146,7 +143,43 @@ ROLE_MAPPING = {
     PRIM_MEASURE: Role.MEASURE,
 }
 
-components: Dict[str, Any] = {}
+FACETS_MAPPING = {
+    "minLength": "min_length",
+    "maxLength": "max_length",
+    "minValue": "min_value",
+    "maxValue": "max_value",
+    "startValue": "start_value",
+    "endValue": "end_value",
+    "interval": "interval",
+    "timeInterval": "time_interval",
+    "decimals": "decimals",
+    "pattern": "pattern",
+    "startTime": "start_time",
+    "endTime": "end_time",
+    "isSequence": "is_sequence",
+}
+
+
+def _extract_text(element: Any) -> str:
+    """Extracts the text from the element.
+
+    Args:
+        element: The element to extract the text from
+
+    Returns:
+        The text extracted from the element
+    """
+    if isinstance(element, list):
+        aux = {}
+        for language_element in element:
+            if "lang" in language_element and language_element["lang"] == "en":
+                aux = language_element
+        if not aux:
+            aux = element[0]
+        element = aux
+    if isinstance(element, dict) and "#text" in element:
+        element = element["#text"]
+    return element
 
 
 class StructureParser(Struct):
@@ -157,30 +190,6 @@ class StructureParser(Struct):
     concepts: Dict[str, Any] = {}
     datastructures: Dict[str, Any] = {}
     dataflows: Dict[str, Any] = {}
-
-    def __extract_text(self, element: Any) -> str:
-        """Extracts the text from the element.
-
-        Args:
-            element: The element to extract the text from
-
-        Returns:
-            The text extracted from the element
-        """
-        if isinstance(element, list):
-            aux = {}
-            for language_element in element:
-                if (
-                    "lang" in language_element
-                    and language_element["lang"] == "en"
-                ):
-                    aux = language_element
-            if not aux:
-                aux = element[0]
-            element = aux
-        if isinstance(element, dict) and "#text" in element:
-            element = element["#text"]
-        return element
 
     def __format_contact(self, json_contact: Dict[str, Any]) -> Contact:
         """Creates a Contact object from a json_contact.
@@ -206,17 +215,18 @@ class StructureParser(Struct):
         for k, v in xml_node_to_attribute.items():
             if k in json_contact:
                 if k in [DEPARTMENT, ROLE]:
-                    json_contact[v] = self.__extract_text(json_contact.pop(k))
+                    json_contact[v] = _extract_text(json_contact.pop(k))
                     continue
                 field_info = add_list(json_contact.pop(k))
                 for i, element in enumerate(field_info):
-                    field_info[i] = self.__extract_text(element)
+                    field_info[i] = _extract_text(element)
                 json_contact[v] = field_info
 
         return Contact(**json_contact)
 
-    def __format_annotations(self, item_elem: Any) -> Dict[str, Any]:
-        """Formats the annotations in the item_elem.
+    @staticmethod
+    def __format_annotations(item_elem: Any) -> Dict[str, Any]:
+        """Formats the annotations in this element.
 
         Args:
             item_elem: The element to be formatted
@@ -236,7 +246,7 @@ class StructureParser(Struct):
             if ANNOTATION_TYPE in e:
                 e[TYPE] = e.pop(ANNOTATION_TYPE)
             if ANNOTATION_TEXT in e:
-                e[TEXT] = self.__extract_text(e[ANNOTATION_TEXT])
+                e[TEXT] = _extract_text(e[ANNOTATION_TEXT])
                 del e[ANNOTATION_TEXT]
             if ANNOTATION_URL in e:
                 e[URL] = e.pop(ANNOTATION_URL)
@@ -248,11 +258,12 @@ class StructureParser(Struct):
 
         return item_elem
 
-    def __format_name_description(self, element: Any) -> Dict[str, Any]:
+    @staticmethod
+    def __format_name_description(element: Any) -> Dict[str, Any]:
         node = [NAME, DESC]
         for field in node:
             if field in element:
-                element[field.lower()] = self.__extract_text(element[field])
+                element[field.lower()] = _extract_text(element[field])
                 del element[field]
         return element
 
@@ -260,7 +271,7 @@ class StructureParser(Struct):
     def __format_facets(
         json_fac: Dict[str, Any], json_obj: Dict[str, Any]
     ) -> None:
-        """Formats the facets in the json_fac to be stored in json_obj.
+        """Formats the facets from the JSON information.
 
         Args:
             json_fac: The element with the facets to be formatted
@@ -272,13 +283,25 @@ class StructureParser(Struct):
             if key == TEXT_TYPE and json_fac[TEXT_TYPE] in list(DataType):
                 json_obj["dtype"] = DataType(json_fac[TEXT_TYPE])
 
-            if key in FacetType:
+            if key in FACETS_MAPPING:
                 facet_kwargs = {
-                    FacetType[k]: v
+                    FACETS_MAPPING[k]: v
                     for k, v in json_fac.items()
-                    if k in FacetType
+                    if k in FACETS_MAPPING
                 }
                 json_obj[FACETS.lower()] = Facets(**facet_kwargs)
+
+    @staticmethod
+    def __format_validity(element: Dict[str, Any]) -> Dict[str, Any]:
+        if VALID_FROM in element:
+            element[VALID_FROM_LOW] = datetime.fromisoformat(
+                element.pop(VALID_FROM)
+            )
+        if VALID_TO in element:
+            element[VALID_TO_LOW] = datetime.fromisoformat(
+                element.pop(VALID_TO)
+            )
+        return element
 
     @staticmethod
     def __format_urls(json_elem: Dict[str, Any]) -> Dict[str, Any]:
@@ -323,21 +346,10 @@ class StructureParser(Struct):
             orgs = {**orgs, **ag_sch}
         return orgs
 
-    def __format_validity(self, element: Dict[str, Any]) -> Dict[str, Any]:
-        if VALID_FROM in element:
-            element[VALID_FROM_LOW] = datetime.fromisoformat(
-                element.pop(VALID_FROM)
-            )
-        if VALID_TO in element:
-            element[VALID_TO_LOW] = datetime.fromisoformat(
-                element.pop(VALID_TO)
-            )
-        return element
-
     def __format_representation(
         self, json_rep: Dict[str, Any], json_obj: Dict[str, Any]
     ) -> None:
-        """Formats the representation in the json_rep."""
+        """Formats the representation in the JSON Representation."""
         if TEXT_FORMAT in json_rep:
             self.__format_facets(json_rep[TEXT_FORMAT], json_obj)
 
@@ -406,7 +418,8 @@ class StructureParser(Struct):
             return {CON: item_reference}
         return rep
 
-    def __format_relationship(self, json_rel: Dict[str, Any]) -> Optional[str]:
+    @staticmethod
+    def __format_relationship(json_rel: Dict[str, Any]) -> Optional[str]:
         att_level = None
 
         for scheme in [DIM, PRIM_MEASURE]:
@@ -477,16 +490,13 @@ class StructureParser(Struct):
         if DSD_COMPS in element:
             element[COMPS] = []
             comps = element[DSD_COMPS]
-            components.clear()
 
             for comp_list in [DIM_LIST, ME_LIST, GROUP, ATT_LIST]:
                 if comp_list == GROUP and comp_list in comps:
                     del comps[GROUP]
 
                 elif comp_list in comps:
-                    name = comp_list
                     fmt_comps = self.__format_component_lists(comps[comp_list])
-                    components[name] = fmt_comps
                     element[COMPS].extend(fmt_comps)
 
             element[COMPS] = Components(element[COMPS])
@@ -494,7 +504,8 @@ class StructureParser(Struct):
 
         return element
 
-    def __format_vtl(self, json_vtl: Dict[str, Any]) -> Dict[str, Any]:
+    @staticmethod
+    def __format_vtl(json_vtl: Dict[str, Any]) -> Dict[str, Any]:
         if "isPersistent" in json_vtl:
             json_vtl["is_persistent"] = json_vtl.pop("isPersistent")
         if "Expression" in json_vtl:
@@ -618,12 +629,12 @@ class StructureParser(Struct):
                 )
 
             if item == DFW:
-                ref_data = element[STR][REF]
+                ref_data = element[STRUCTURE][REF]
                 reference_str = (
                     f"{ref_data[CLASS]}={ref_data[AGENCY_ID]}"
                     f":{ref_data[ID]}({ref_data[VERSION]})"
                 )
-                element[STR] = self.datastructures.get(
+                element[STRUCTURE] = self.datastructures.get(
                     reference_str, reference_str
                 )
 

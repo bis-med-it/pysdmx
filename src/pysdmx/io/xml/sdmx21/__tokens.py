@@ -1,24 +1,6 @@
 """Parsing configuration for SDMX-ML 2.1 messages."""
 
-SCHEMA_ROOT = "http://www.sdmx.org/resources/sdmxml/schemas/v2_1/"
-NAMESPACES_21 = {
-    SCHEMA_ROOT + "message": None,
-    SCHEMA_ROOT + "common": None,
-    SCHEMA_ROOT + "structure": None,
-    "http://www.w3.org/2001/XMLSchema-instance": "xsi",
-    "http://www.w3.org/XML/1998/namespace": None,
-    SCHEMA_ROOT + "data/structurespecific": None,
-    SCHEMA_ROOT + "data/generic": None,
-    SCHEMA_ROOT + "registry": None,
-    "http://schemas.xmlsoap.org/soap/envelope/": None,
-}
-
-XML_OPTIONS = {
-    "process_namespaces": True,
-    "namespaces": NAMESPACES_21,
-    "dict_constructor": dict,
-    "attr_prefix": "",
-}
+from typing import Any, Dict, List
 
 # Common
 HEADER = "Header"
@@ -220,3 +202,35 @@ DATAFLOWS_CM = "Dataflows"
 CODELISTS_CM = "Codelists"
 CONCEPTS_CM = "Concepts"
 ORGANISATIONSCHEMES_CM = "OrganisationSchemes"
+
+VALID_FROM = "validFrom"
+VALID_FROM_LOW = "valid_from"
+VALID_TO = "validTo"
+VALID_TO_LOW = "valid_to"
+
+# Structures
+IS_EXTERNAL_REF = "isExternalReference"
+IS_EXTERNAL_REF_LOW = "is_external_reference"
+IS_FINAL = "isFinal"
+IS_FINAL_LOW = "is_final"
+IS_PARTIAL = "isPartial"
+IS_PARTIAL_LOW = "is_partial"
+
+
+# Contact
+URIS = "uris"
+EMAILS = "emails"
+TELEPHONES = "telephones"
+FAXES = "faxes"
+
+# Errors
+missing_rep: Dict[str, List[Any]] = {"CON": [], "CS": [], "CL": []}
+dsd_id: str = ""
+
+# Structure types
+CLS = "Codelists"
+DFW = "Dataflow"
+DFWS = "Dataflows"
+TRANSFORMATIONS = "Transformations"
+TRANS_SCHEME = "TransformationScheme"
+TRANSFORMATION = "Transformation"
