@@ -579,7 +579,7 @@ class StructureParser(Struct):
                 del element["xmlns"]
             # Dynamic creation with specific class
             result: ItemScheme = STRUCTURES_MAPPING[scheme](**element)
-            elements[result.short_urn()] = result
+            elements[result.short_urn] = result
 
         return elements
 

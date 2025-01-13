@@ -483,7 +483,7 @@ def __write_text_format(
 
 def __write_enumeration(codes: Union[Codelist, Hierarchy], indent: str) -> str:
     """Writes the enumeration to the XML file."""
-    ref = parse_short_urn(codes.short_urn())
+    ref = parse_short_urn(codes.short_urn)
 
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{ENUM}>"
     outfile += f"{add_indent(add_indent(indent))}<{REF} "
@@ -671,7 +671,7 @@ def write(
         The XML string if path is empty, None otherwise
     """
     type_ = MessageType.Structure
-    elements = {structure.short_urn(): structure for structure in structures}
+    elements = {structure.short_urn: structure for structure in structures}
     if header is None:
         header = Header()
 
