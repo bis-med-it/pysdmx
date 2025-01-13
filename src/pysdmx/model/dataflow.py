@@ -452,6 +452,11 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
             version=self.version,
         )
 
+    @property
+    def short_urn(self) -> str:
+        """Returns a short URN for the data structure."""
+        return f"DataStructure={self.agency}:{self.id}({self.version})"
+
 
 class Dataflow(
     MaintainableArtefact,

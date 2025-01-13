@@ -6,7 +6,7 @@ import pytest
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.enums import SDMXFormat
 from pysdmx.io.input_processor import process_string_to_read
-from pysdmx.io.xml.sdmx21.reader import read_xml
+from pysdmx.io.reader import read_sdmx
 
 
 @pytest.fixture
@@ -81,7 +81,7 @@ def test_process_string_to_read_invalid_xml(invalid_xml):
     message = "This element is not expected."
     process_string_to_read(invalid_xml)
     with pytest.raises(Invalid, match=message):
-        read_xml(invalid_xml, validate=True)
+        read_sdmx(invalid_xml, validate=True)
 
 
 def test_process_string_to_read_invalid_type():
@@ -114,9 +114,9 @@ def test_check_csv_exception():
 
 
 def test_process_string_to_read_invalid_allowed_error(invalid_message_xml):
-    message = "Cannot parse input as SDMX."
-    with pytest.raises(NotImplemented, match=message):
-        read_xml(invalid_message_xml, validate=False)
+    message = "Cannot parse input as SDMX-ML."
+    with pytest.raises(Invalid, match=message):
+        read_sdmx(invalid_message_xml, validate=False)
 
 
 def test_invalid_xml_flavour():

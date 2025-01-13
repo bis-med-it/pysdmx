@@ -26,8 +26,12 @@ def read_sdmx(
 ) -> Message:
     """Reads any SDMX message and returns a dictionary.
 
-    Supported metadata formats are:
-    - SDMX-ML 2.1
+    Supported structures formats are:
+    - SDMX-ML 2.1 Structures
+
+    Supported webservices submissions are:
+    - SDMX-ML 2.1 RegistryInterface (Submission)
+    - SDMX-ML 2.1 Error (raises an exception with the error content)
 
     Supported data formats are:
     - SDMX-ML 2.1
@@ -46,24 +50,24 @@ def read_sdmx(
     """
     input_str, read_format = process_string_to_read(sdmx_document)
 
-    result_data = None
-    result_structures = None
-    result_submission = None
+    result_data = []
+    result_structures = {}
+    result_submission = []
     if read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE:
         # SDMX-ML 2.1 Structure
-        result_structures = read_structure(input_str)
+        result_structures = read_structure(input_str, validate=validate)
     elif read_format == SDMXFormat.SDMX_ML_2_1_DATA_GENERIC:
         # SDMX-ML 2.1 Generic Data
         result_data = read_generic(input_str, validate=validate)
     elif read_format == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC:
         # SDMX-ML 2.1 Structure Specific Data
-        result_data = read_str_spe(input_str)
-    elif read_format == SDMXFormat.SDMX_ML_2_1_SUBMISSION:
+        result_data = read_str_spe(input_str, validate=validate)
+    elif read_format == SDMXFormat.SDMX_ML_2_1_REGISTRY_INTERFACE:
         # SDMX-ML 2.1 Submission
-        result_submission = read_sub(input_str)
+        result_submission = read_sub(input_str, validate=validate)
     elif read_format == SDMXFormat.SDMX_ML_2_1_ERROR:
         # SDMX-ML 2.1 Error
-        read_error(input_str)
+        read_error(input_str, validate=validate)
     elif read_format == SDMXFormat.SDMX_CSV_1_0:
         # SDMX-CSV 1.0
         result_data = read_csv_v1(input_str)
@@ -71,11 +75,7 @@ def read_sdmx(
         # SDMX-CSV 2.0
         result_data = read_csv_v2(input_str)
 
-    if (
-        result_data is None
-        and result_structures is None
-        and result_submission is None
-    ):
+    if not (result_data or result_structures or result_submission):
         raise Invalid("Empty SDMX Message")
 
     # Returning a Message class
@@ -88,7 +88,7 @@ def read_sdmx(
         # TODO: Add here the Schema download for Datasets, based on structure
         # TODO: Ensure we have changed the signature of the data readers
         return Message(data=result_data)
-    elif read_format == SDMXFormat.SDMX_ML_2_1_SUBMISSION:
+    elif read_format == SDMXFormat.SDMX_ML_2_1_REGISTRY_INTERFACE:
         return Message(submission=result_submission)
 
     # TODO: Ensure we have changed the signature of the structure readers

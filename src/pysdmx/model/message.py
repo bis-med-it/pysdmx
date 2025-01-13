@@ -107,9 +107,7 @@ class Message(Struct, frozen=True):
                 "Could not find any Structures in this message.",
             )
         for structure in self.structures:
-            if structure.short_urn == short_urn and isinstance(
-                structure, type_
-            ):
+            if structure.short_urn == short_urn:
                 return structure
 
         raise NotFound(

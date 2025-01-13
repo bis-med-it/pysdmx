@@ -9,7 +9,7 @@ class SDMXFormat(Enum):
     SDMX_ML_2_1_STRUCTURE = "SDMX-ML 2.1 Structure"
     SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC = "SDMX-ML 2.1 StructureSpecific"
     SDMX_ML_2_1_DATA_GENERIC = "SDMX-ML 2.1 Generic"
-    SDMX_ML_2_1_SUBMISSION = "SDMX-ML 2.1 Submission"
+    SDMX_ML_2_1_REGISTRY_INTERFACE = "SDMX-ML 2.1 Registry Interface"
     SDMX_ML_2_1_ERROR = "SDMX-ML 2.1 Error"
     SDMX_JSON_2 = "SDMX-JSON 2.0.0"
     FUSION_JSON = "FusionJSON"
