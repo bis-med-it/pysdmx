@@ -52,14 +52,16 @@ class Message(Struct, frozen=True):
               contents of a SDMX Submission Message.
     """
 
-    structures: Sequence[
-        Union[
-            ItemScheme,
-            DataStructureDefinition,
-            Dataflow,
-        ],
+    structures: Optional[
+        Sequence[
+            Union[
+                ItemScheme,
+                DataStructureDefinition,
+                Dataflow,
+            ]
+        ]
     ] = None
-    data: Sequence[Dataset] = None
+    data: Optional[Sequence[Dataset]] = None
     submission: Optional[Sequence[SubmissionResult]] = None
 
     def __post_init__(self) -> None:
@@ -93,12 +95,20 @@ class Message(Struct, frozen=True):
                 structures.append(element)
         return structures
 
-    def __get_single_structure(self, type_: Type[Any], short_urn: str) -> Any:
+    def __get_single_structure(
+        self,
+        type_: Type[Union[ItemScheme, DataStructureDefinition, Dataflow]],
+        short_urn: str,
+    ) -> Any:
         """Returns a specific element from content."""
+        if self.structures is None:
+            raise NotFound(
+                "No Structures found in message.",
+                "Could not find any Structures in this message.",
+            )
         for structure in self.structures:
-            if (
-                structure.short_urn == short_urn  # type: ignore[attr-defined]
-                and isinstance(structure, type_)
+            if structure.short_urn == short_urn and isinstance(
+                structure, type_
             ):
                 return structure
 

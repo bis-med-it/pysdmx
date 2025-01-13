@@ -1,10 +1,11 @@
 """Parsers for reading metadata."""
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.errors import Invalid
 from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCIES,
     AGENCY,
@@ -78,6 +79,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     STR_URL,
     STR_URL_LOW,
     STRUCTURE,
+    STRUCTURES,
     TELEPHONE,
     TELEPHONES,
     TEXT,
@@ -651,7 +653,7 @@ class StructureParser(Struct):
 
     def format_structures(
         self, json_meta: Dict[str, Any]
-    ) -> Sequence[ItemScheme, DataStructureDefinition, Dataflow]:
+    ) -> Sequence[Union[ItemScheme, DataStructureDefinition, Dataflow]]:
         """Formats the structures in json format.
 
         Args:
@@ -694,15 +696,21 @@ class StructureParser(Struct):
 
 
 def read(
-    infile: str,
-) -> Sequence[ItemScheme, DataStructureDefinition, Dataflow]:
-    """Reads an SDMX-ML 2.1 Structure file and returns a sequence with the structures.
+    input_str: str,
+    validate: bool = True,
+) -> Sequence[Union[ItemScheme, DataStructureDefinition, Dataflow]]:
+    """Reads an SDMX-ML 2.1 Structure file and returns the structures.
 
     Args:
-        infile: string to read XML data from.
+        input_str: string to read XML data from.
+        validate: If True, the XML data will be validated against the XSD.
 
     Returns:
         dict: Dictionary with the parsed structures.
     """
-    dict_info = parse_xml(infile)
-    return StructureParser().format_structures(dict_info[STRUCTURE])
+    dict_info = parse_xml(input_str, validate)
+    if STRUCTURE not in dict_info:
+        raise Invalid("This SDMX document is not SDMX-ML 2.1 Structure.")
+    return StructureParser().format_structures(
+        dict_info[STRUCTURE][STRUCTURES]
+    )

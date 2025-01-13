@@ -5,8 +5,15 @@ from pathlib import Path
 from typing import Sequence, Union
 
 from pysdmx.errors import Invalid, NotFound
+from pysdmx.io.csv.sdmx10.reader import read as read_csv_v1
+from pysdmx.io.csv.sdmx20.reader import read as read_csv_v2
 from pysdmx.io.enums import SDMXFormat
 from pysdmx.io.input_processor import process_string_to_read
+from pysdmx.io.xml.sdmx21.reader.error import read as read_error
+from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
+from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
+from pysdmx.io.xml.sdmx21.reader.structure_specific import read as read_str_spe
+from pysdmx.io.xml.sdmx21.reader.submission import read as read_sub
 from pysdmx.model import Schema
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Message
@@ -41,39 +48,25 @@ def read_sdmx(
 
     if read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE:
         # SDMX-ML 2.1 Structure
-        from pysdmx.io.xml.sdmx21.reader.structure import read
-
-        result = read(input_str)
+        result = read_structure(input_str)
     elif read_format == SDMXFormat.SDMX_ML_2_1_DATA_GENERIC:
         # SDMX-ML 2.1 Generic Data
-        from pysdmx.io.xml.sdmx21.reader.generic import read
-
-        result = read(input_str, validate=validate)
+        result = read_generic(input_str, validate=validate)
     elif read_format == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC:
         # SDMX-ML 2.1 Structure Specific Data
-        from pysdmx.io.xml.sdmx21.reader.structure_specific import read
-
-        result = read(input_str)
+        result = read_str_spe(input_str)
     elif read_format == SDMXFormat.SDMX_ML_2_1_SUBMISSION:
         # SDMX-ML 2.1 Submission
-        from pysdmx.io.xml.sdmx21.reader.submission import read
-
-        result = read(input_str)
+        result = read_sub(input_str)
     elif read_format == SDMXFormat.SDMX_ML_2_1_ERROR:
         # SDMX-ML 2.1 Error
-        from pysdmx.io.xml.sdmx21.reader.error import read
-
-        result = read(input_str)
+        result = read_error(input_str)
     elif read_format == SDMXFormat.SDMX_CSV_1_0:
         # SDMX-CSV 1.0
-        from pysdmx.io.csv.sdmx10.reader import read
-
-        result = read(input_str)
+        result = read_csv_v1(input_str)
     else:
         # SDMX-CSV 2.0
-        from pysdmx.io.csv.sdmx20.reader import read
-
-        result = read(input_str)
+        result = read_csv_v2(input_str)
 
     if len(result) == 0:
         raise Invalid("Empty SDMX Message")

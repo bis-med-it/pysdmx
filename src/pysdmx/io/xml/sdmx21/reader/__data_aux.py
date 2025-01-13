@@ -1,7 +1,8 @@
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
+from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCY_ID,
     DATASET,
@@ -11,12 +12,12 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     REF,
     STR_USAGE,
     STRID,
+    STRREF,
     STRUCTURE,
     URN,
     VERSION,
 )
 from pysdmx.io.xml.utils import add_list
-from pysdmx.model.dataset import Dataset
 from pysdmx.util import parse_urn
 
 READING_CHUNKSIZE = 50000
@@ -110,7 +111,7 @@ def __extract_structure(structure: Any) -> Any:
     return str_info
 
 
-def get_data_objects(dict_info: Dict[str, Any]) -> Sequence[Dataset]:
+def get_data_objects(dict_info: Dict[str, Any]) -> Tuple[Any, Any]:
     """Parse dataset.
 
     Args:
@@ -128,4 +129,11 @@ def get_data_objects(dict_info: Dict[str, Any]) -> Sequence[Dataset]:
                 dataset_info = add_list(dict_info[key])
     else:
         dataset_info = add_list(dict_info[DATASET])
+
+    for d in dataset_info:
+        if d[STRREF] not in str_info:
+            raise Invalid(
+                f"Dataset Structure Reference {d[STRREF]} "
+                f"not found in the Header"
+            )
     return dataset_info, str_info

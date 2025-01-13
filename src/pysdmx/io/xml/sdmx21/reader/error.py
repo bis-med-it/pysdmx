@@ -10,7 +10,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
 from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 
 
-def read(input_str: str, validate: bool = True):
+def read(input_str: str, validate: bool = True) -> None:
     """Reads an Error message from the SDMX-ML file and raises the exception.
 
     Args:
@@ -21,6 +21,10 @@ def read(input_str: str, validate: bool = True):
         Invalid: Error message as exception.
     """
     dict_info = parse_xml(input_str, validate=validate)
+    if ERROR not in dict_info:
+        raise Invalid(
+            "This SDMX document is not an SDMX-ML 2.1 Error message."
+        )
     code = dict_info[ERROR][ERROR_MESSAGE][ERROR_CODE]
     text = dict_info[ERROR][ERROR_MESSAGE][ERROR_TEXT]
     raise Invalid("Invalid", f"{code}: {text}")

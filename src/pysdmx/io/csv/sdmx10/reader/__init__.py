@@ -33,11 +33,11 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
     )
 
 
-def read(infile: str) -> Sequence[PandasDataset]:
+def read(input_str: str) -> Sequence[PandasDataset]:
     """Reads csv file and returns a payload dictionary.
 
     Args:
-        infile: Path to file, str.
+        input_str: Path to file, str.
 
     Returns:
         payload: dict.
@@ -46,7 +46,7 @@ def read(infile: str) -> Sequence[PandasDataset]:
         Invalid: If it is an invalid CSV file.
     """
     # Get Dataframe from CSV file
-    df_csv = pd.read_csv(StringIO(infile))
+    df_csv = pd.read_csv(StringIO(input_str))
     # Drop empty columns
     df_csv = df_csv.dropna(axis=1, how="all")
 

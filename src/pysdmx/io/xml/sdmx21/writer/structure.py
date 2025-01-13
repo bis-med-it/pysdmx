@@ -19,6 +19,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     CORE_REP,
     CS,
     DEPARTMENT,
+    DFW,
     DIM,
     DSD,
     DSD_COMPS,
@@ -46,7 +47,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     URN,
     VERSION,
 )
-from pysdmx.io.xml.sdmx21.reader.__utils import DFW
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_COM,
     ABBR_MSG,
@@ -59,6 +59,7 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     get_end_message,
 )
 from pysdmx.model import (
+    AgencyScheme,
     Codelist,
     Concept,
     ConceptScheme,
@@ -115,7 +116,7 @@ STR_TYPES = Union[
 ]
 
 STR_DICT_TYPE_LIST = {
-    ItemScheme: "OrganisationSchemes",
+    AgencyScheme: "OrganisationSchemes",
     Codelist: "Codelists",
     ConceptScheme: "Concepts",
     DataStructureDefinition: "DataStructures",

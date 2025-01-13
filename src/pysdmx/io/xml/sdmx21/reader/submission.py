@@ -2,6 +2,7 @@
 
 from typing import Any, Dict, Sequence
 
+from pysdmx.errors import Invalid
 from pysdmx.io.xml.sdmx21.__tokens import (
     ACTION,
     MAINTAINABLE_OBJECT,
@@ -43,12 +44,14 @@ def __handle_registry_interface(
     return result
 
 
-def read(infile: str, validate: bool = True) -> Sequence[SubmissionResult]:
+def read(input_str: str, validate: bool = True) -> Sequence[SubmissionResult]:
     """Reads an SDMX-ML 2.1 Submission Result file.
 
     Args:
-        infile: string to read XML data from.
+        input_str: string to read XML data from.
         validate: If True, the XML data will be validated against the XSD.
     """
-    dict_info = parse_xml(infile, validate=validate)
+    dict_info = parse_xml(input_str, validate=validate)
+    if REG_INTERFACE not in dict_info:
+        raise Invalid("This SDMX document is not an SDMX-ML 2.1 Submission.")
     return __handle_registry_interface(dict_info)

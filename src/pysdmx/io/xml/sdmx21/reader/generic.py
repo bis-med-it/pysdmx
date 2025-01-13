@@ -4,9 +4,11 @@ from typing import Any, Dict, Sequence
 
 import pandas as pd
 
+from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.sdmx21.__tokens import (
     ATTRIBUTES,
+    GENERIC,
     ID,
     OBS,
     OBS_DIM,
@@ -14,6 +16,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     OBSVALUE,
     SERIES,
     SERIESKEY,
+    STRREF,
     VALUE,
 )
 from pysdmx.io.xml.sdmx21.reader.__data_aux import (
@@ -123,17 +126,20 @@ def __parse_generic_data(
     )
 
 
-def read(infile: str, validate: bool = True) -> Sequence[PandasDataset]:
+def read(input_str: str, validate: bool = True) -> Sequence[PandasDataset]:
     """Reads an SDMX-ML 2.1 Generic file and returns a Sequence of Datasets.
 
     Args:
-        infile: string to read XML data from.
+        input_str: string to read XML data from.
         validate: If True, the XML data will be validated against the XSD.
     """
-    dict_info = parse_xml(infile, validate=validate)
-    dataset_info, str_info = get_data_objects(dict_info)
+    dict_info = parse_xml(input_str, validate=validate)
+    if GENERIC not in dict_info:
+        raise Invalid("This SDMX document is not SDMX-ML 2.1 Generic.")
+    dataset_info, str_info = get_data_objects(dict_info[GENERIC])
+
     datasets = []
     for dataset in dataset_info:
-        ds = __parse_generic_data(dataset, str_info[dataset])
+        ds = __parse_generic_data(dataset, str_info[dataset[STRREF]])
         datasets.append(ds)
     return datasets
