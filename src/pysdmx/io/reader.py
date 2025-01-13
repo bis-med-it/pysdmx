@@ -46,29 +46,36 @@ def read_sdmx(
     """
     input_str, read_format = process_string_to_read(sdmx_document)
 
+    result_data = None
+    result_structures = None
+    result_submission = None
     if read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE:
         # SDMX-ML 2.1 Structure
-        result = read_structure(input_str)
+        result_structures = read_structure(input_str)
     elif read_format == SDMXFormat.SDMX_ML_2_1_DATA_GENERIC:
         # SDMX-ML 2.1 Generic Data
-        result = read_generic(input_str, validate=validate)
+        result_data = read_generic(input_str, validate=validate)
     elif read_format == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC:
         # SDMX-ML 2.1 Structure Specific Data
-        result = read_str_spe(input_str)
+        result_data = read_str_spe(input_str)
     elif read_format == SDMXFormat.SDMX_ML_2_1_SUBMISSION:
         # SDMX-ML 2.1 Submission
-        result = read_sub(input_str)
+        result_submission = read_sub(input_str)
     elif read_format == SDMXFormat.SDMX_ML_2_1_ERROR:
         # SDMX-ML 2.1 Error
-        result = read_error(input_str)
+        read_error(input_str)
     elif read_format == SDMXFormat.SDMX_CSV_1_0:
         # SDMX-CSV 1.0
-        result = read_csv_v1(input_str)
+        result_data = read_csv_v1(input_str)
     else:
         # SDMX-CSV 2.0
-        result = read_csv_v2(input_str)
+        result_data = read_csv_v2(input_str)
 
-    if len(result) == 0:
+    if (
+        result_data is None
+        and result_structures is None
+        and result_submission is None
+    ):
         raise Invalid("Empty SDMX Message")
 
     # Returning a Message class
@@ -80,12 +87,12 @@ def read_sdmx(
     ):
         # TODO: Add here the Schema download for Datasets, based on structure
         # TODO: Ensure we have changed the signature of the data readers
-        return Message(data=result)
+        return Message(data=result_data)
     elif read_format == SDMXFormat.SDMX_ML_2_1_SUBMISSION:
-        return Message(submission=result)
+        return Message(submission=result_submission)
 
     # TODO: Ensure we have changed the signature of the structure readers
-    return Message(structures=result)
+    return Message(structures=result_structures)
 
 
 def get_datasets(
@@ -139,7 +146,7 @@ def get_datasets(
                 dsd = structure_msg.get_data_structure_definition(
                     dataflow.structure
                 )
-                dataflow.structure = dsd.to_schema()
+                dataset.structure = dsd.to_schema()
             except NotFound:
                 continue
 
