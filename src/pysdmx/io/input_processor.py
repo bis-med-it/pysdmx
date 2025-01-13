@@ -19,16 +19,16 @@ def __remove_bom(input_string: str) -> str:
     return input_string.replace("\ufeff", "")
 
 
-def __check_xml(infile: str) -> bool:
-    return infile[:5] == "<?xml"
+def __check_xml(input_str: str) -> bool:
+    return input_str[:5] == "<?xml"
 
 
-def __check_csv(infile: str) -> bool:
+def __check_csv(input_str: str) -> bool:
     try:
-        pd.read_csv(StringIO(infile), nrows=2)
+        pd.read_csv(StringIO(input_str), nrows=2)
         if (
-            len(infile.splitlines()) > 1
-            or infile.splitlines()[0].count(",") > 1
+            len(input_str.splitlines()) > 1
+            or input_str.splitlines()[0].count(",") > 1
         ):
             return True
     except Exception:
@@ -36,45 +36,45 @@ def __check_csv(infile: str) -> bool:
     return False
 
 
-def __check_json(infile: str) -> bool:
+def __check_json(input_str: str) -> bool:
     try:
-        loads(infile)
+        loads(input_str)
         return True
     except JSONDecodeError:
         return False
 
 
-def __get_sdmx_ml_flavour(infile: str) -> Tuple[str, SDMXFormat]:
-    flavour_check = infile[:1000].lower()
+def __get_sdmx_ml_flavour(input_str: str) -> Tuple[str, SDMXFormat]:
+    flavour_check = input_str[:1000].lower()
     if ":generic" in flavour_check:
-        return infile, SDMXFormat.SDMX_ML_2_1_DATA_GENERIC
+        return input_str, SDMXFormat.SDMX_ML_2_1_DATA_GENERIC
     if ":structurespecificdata" in flavour_check:
-        return infile, SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
+        return input_str, SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
     if ":structure" in flavour_check:
-        return infile, SDMXFormat.SDMX_ML_2_1_STRUCTURE
+        return input_str, SDMXFormat.SDMX_ML_2_1_STRUCTURE
     if ":registryinterface" in flavour_check:
-        return infile, SDMXFormat.SDMX_ML_2_1_REGISTRY_INTERFACE
+        return input_str, SDMXFormat.SDMX_ML_2_1_REGISTRY_INTERFACE
     if ":error" in flavour_check:
-        return infile, SDMXFormat.SDMX_ML_2_1_ERROR
+        return input_str, SDMXFormat.SDMX_ML_2_1_ERROR
     raise Invalid("Validation Error", "Cannot parse input as SDMX-ML.")
 
 
-def __get_sdmx_csv_flavour(infile: str) -> Tuple[str, SDMXFormat]:
-    headers = csv.reader(StringIO(infile)).__next__()
+def __get_sdmx_csv_flavour(input_str: str) -> Tuple[str, SDMXFormat]:
+    headers = csv.reader(StringIO(input_str)).__next__()
     if "DATAFLOW" in headers:
-        return infile, SDMXFormat.SDMX_CSV_1_0
+        return input_str, SDMXFormat.SDMX_CSV_1_0
     elif "STRUCTURE" in headers and "STRUCTURE_ID" in headers:
-        return infile, SDMXFormat.SDMX_CSV_2_0
+        return input_str, SDMXFormat.SDMX_CSV_2_0
     raise Invalid("Validation Error", "Cannot parse input as SDMX-CSV.")
 
 
-def __check_sdmx_str(infile: str) -> Tuple[str, SDMXFormat]:
+def __check_sdmx_str(input_str: str) -> Tuple[str, SDMXFormat]:
     """Attempts to infer the SDMX format of the input string."""
-    if __check_xml(infile):
-        return __get_sdmx_ml_flavour(infile)
-    if __check_csv(infile):
-        return __get_sdmx_csv_flavour(infile)
-    if __check_json(infile):
+    if __check_xml(input_str):
+        return __get_sdmx_ml_flavour(input_str)
+    if __check_csv(input_str):
+        return __get_sdmx_csv_flavour(input_str)
+    if __check_json(input_str):
         raise NotImplemented("JSON formats reading are not supported yet")
     raise Invalid("Validation Error", "Cannot parse input as SDMX.")
 
