@@ -93,7 +93,7 @@ def __memory_optimization_writing(
     return outfile
 
 
-def write_data_generic(
+def __write_data_generic(
     datasets: Dict[str, PandasDataset],
     dim_mapping: Dict[str, str],
     prettyprint: bool = True,
@@ -385,8 +385,6 @@ def write(
     Returns:
         The XML string if path is empty, None otherwise.
     """
-    ss_namespaces = ""
-    add_namespace_structure = False
     type_ = MessageType.GenericDataSet
 
     # Checking if we have datasets,
@@ -403,11 +401,11 @@ def write(
     )
     header.structure = dim_mapping
     # Generating the initial tag with namespaces
-    outfile = create_namespaces(type_, ss_namespaces, prettyprint)
+    outfile = create_namespaces(type_, prettyprint=prettyprint)
     # Generating the header
-    outfile += __write_header(header, prettyprint, add_namespace_structure)
+    outfile += __write_header(header, prettyprint)
     # Writing the content
-    outfile += write_data_generic(content, dim_mapping, prettyprint)
+    outfile += __write_data_generic(content, dim_mapping, prettyprint)
 
     outfile += get_end_message(type_, prettyprint)
 

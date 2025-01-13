@@ -617,7 +617,7 @@ def __export_intern_data(data: Dict[str, Any], indent: str) -> str:
     return outfile
 
 
-def write_structures(content: Dict[str, Any], prettyprint: bool) -> str:
+def __write_structures(content: Dict[str, Any], prettyprint: bool) -> str:
     """Writes the structures to the XML file.
 
     Args:
@@ -644,7 +644,7 @@ def write_structures(content: Dict[str, Any], prettyprint: bool) -> str:
 
 
 def write(
-    datasets: Sequence[STR_TYPES],
+    structures: Sequence[STR_TYPES],
     output_path: str = "",
     prettyprint: bool = True,
     header: Optional[Header] = None,
@@ -652,7 +652,7 @@ def write(
     """This function writes a SDMX-ML file from the Message Content.
 
     Args:
-        datasets: The content to be written
+        structures: The content to be written
         output_path: The path to save the file
         prettyprint: Prettyprint or not
         header: The header to be used (generated if None)
@@ -661,7 +661,7 @@ def write(
         The XML string if path is empty, None otherwise
     """
     type_ = MessageType.Structure
-    elements = {dataset.short_urn(): dataset for dataset in datasets}
+    elements = {structure.short_urn(): structure for structure in structures}
     if header is None:
         header = Header()
 
@@ -672,15 +672,12 @@ def write(
             content[list_] = {}
         content[list_][urn] = element
 
-    ss_namespaces = ""
-    add_namespace_structure = False
-
     # Generating the initial tag with namespaces
-    outfile = create_namespaces(type_, ss_namespaces, prettyprint)
+    outfile = create_namespaces(type_, prettyprint=prettyprint)
     # Generating the header
-    outfile += __write_header(header, prettyprint, add_namespace_structure)
+    outfile += __write_header(header, prettyprint)
     # Writing the content
-    outfile += write_structures(content, prettyprint)
+    outfile += __write_structures(content, prettyprint)
 
     outfile += get_end_message(type_, prettyprint)
 

@@ -53,7 +53,7 @@ def __memory_optimization_writing(
     return outfile
 
 
-def write_data_structure_specific(
+def __write_data_structure_specific(
     datasets: Dict[str, PandasDataset],
     dim_mapping: Dict[str, str],
     prettyprint: bool = True,
@@ -288,7 +288,9 @@ def write(
     # Generating the header
     outfile += __write_header(header, prettyprint, add_namespace_structure)
     # Writing the content
-    outfile += write_data_structure_specific(content, dim_mapping, prettyprint)
+    outfile += __write_data_structure_specific(
+        content, dim_mapping, prettyprint
+    )
 
     outfile += get_end_message(type_, prettyprint)
 
