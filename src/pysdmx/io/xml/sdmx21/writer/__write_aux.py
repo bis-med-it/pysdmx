@@ -5,19 +5,19 @@ from collections import OrderedDict
 from typing import Dict, List, Optional, Sequence, Tuple
 
 from pysdmx.errors import Invalid, NotImplemented
+from pysdmx.io.enums import SDMXFormat
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.enums import MessageType
 from pysdmx.model import Role, Schema
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
 
 MESSAGE_TYPE_MAPPING = {
-    MessageType.GenericDataSet: "GenericData",
-    MessageType.StructureSpecificDataSet: "StructureSpecificData",
-    MessageType.Structure: "Structure",
-    MessageType.Error: "Error",
-    MessageType.Submission: "RegistryInterface",
+    SDMXFormat.SDMX_ML_2_1_DATA_GENERIC: "GenericData",
+    SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC: "StructureSpecificData",
+    SDMXFormat.SDMX_ML_2_1_STRUCTURE: "Structure",
+    SDMXFormat.SDMX_ML_2_1_ERROR: "Error",
+    SDMXFormat.SDMX_ML_2_1_REGISTRY_INTERFACE: "RegistryInterface",
 }
 
 ABBR_MSG = "mes"
@@ -51,7 +51,7 @@ NAMESPACES = {
 URN_DS_BASE = "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure="
 
 
-def __namespaces_from_type(type_: MessageType) -> str:
+def __namespaces_from_type(type_: SDMXFormat) -> str:
     """Returns the namespaces for the XML file based on type.
 
     Args:
@@ -63,18 +63,18 @@ def __namespaces_from_type(type_: MessageType) -> str:
     Raises:
         NotImplemented: If the MessageType is not implemented
     """
-    if type_ == MessageType.Structure:
+    if type_ == SDMXFormat.SDMX_ML_2_1_STRUCTURE:
         return f"xmlns:{ABBR_STR}={NAMESPACES[ABBR_STR]!r} "
-    elif type_ == MessageType.StructureSpecificDataSet:
+    elif type_ == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC:
         return f"xmlns:{ABBR_SPE}={NAMESPACES[ABBR_SPE]!r} "
-    elif type_ == MessageType.GenericDataSet:
+    elif type_ == SDMXFormat.SDMX_ML_2_1_DATA_GENERIC:
         return f"xmlns:{ABBR_GEN}={NAMESPACES[ABBR_GEN]!r} "
     else:
         raise NotImplemented(f"{type_} not implemented")
 
 
 def create_namespaces(
-    type_: MessageType, ss_namespaces: str = "", prettyprint: bool = False
+    type_: SDMXFormat, ss_namespaces: str = "", prettyprint: bool = False
 ) -> str:
     """Creates the namespaces for the XML file.
 
@@ -116,17 +116,7 @@ MSG_CONTENT_PKG = OrderedDict(
 )
 
 
-MSG_CONTENT_ITEM = {
-    ORGS: "AgencyScheme",
-    DATAFLOWS: "Dataflow",
-    CODELISTS: "Codelist",
-    CONCEPTS: "ConceptScheme",
-    DSDS: "DataStructure",
-    CONSTRAINTS: "ContentConstraint",
-}
-
-
-def get_end_message(type_: MessageType, prettyprint: bool) -> str:
+def get_end_message(type_: SDMXFormat, prettyprint: bool) -> str:
     """Returns the end message for the XML file.
 
     Args:
@@ -310,7 +300,7 @@ def check_dimension_at_observation(
     """This function checks if the dimension at observation is valid."""
     # If dimension_at_observation is None, set it to ALL_DIM
     if dimension_at_observation is None:
-        dimension_at_observation = {k: ALL_DIM for k in content}
+        dimension_at_observation = dict.fromkeys(content, ALL_DIM)
         return dimension_at_observation
     # Validate the datasets
     for ds in content.values():

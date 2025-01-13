@@ -5,8 +5,8 @@ from typing import Any, Dict, List, Optional, Sequence
 
 import pandas as pd
 
+from pysdmx.io.enums import SDMXFormat
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_MSG,
     ALL_DIM,
@@ -246,7 +246,7 @@ def write(
     header: Optional[Header] = None,
     dimension_at_observation: Optional[Dict[str, str]] = None,
 ) -> Optional[str]:
-    """Write data to SDMX-ML 2.1 Generic format.
+    """Write data to SDMX-ML 2.1 Structure Specific format.
 
     Args:
         datasets: The datasets to be written.
@@ -260,7 +260,7 @@ def write(
         The XML string if path is empty, None otherwise.
     """
     ss_namespaces = ""
-    type_ = MessageType.StructureSpecificDataSet
+    type_ = SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
 
     # Checking if we have datasets,
     # we need to ensure we can write them correctly

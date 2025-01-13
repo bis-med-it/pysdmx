@@ -3,7 +3,7 @@
 from collections import OrderedDict
 from typing import Any, Dict, Optional, Sequence, Union
 
-from pysdmx.io.xml.enums import MessageType
+from pysdmx.io.enums import SDMXFormat
 from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCIES,
     AGENCY_ID,
@@ -662,9 +662,9 @@ def write(
         header: The header to be used (generated if None)
 
     Returns:
-        The XML string if path is empty, None otherwise
+        The XML string if output_path is empty, None otherwise
     """
-    type_ = MessageType.Structure
+    type_ = SDMXFormat.SDMX_ML_2_1_STRUCTURE
     elements = {structure.short_urn: structure for structure in structures}
     if header is None:
         header = Header()
@@ -690,5 +690,3 @@ def write(
 
     with open(output_path, "w", encoding="UTF-8", errors="replace") as f:
         f.write(outfile)
-
-    return None
