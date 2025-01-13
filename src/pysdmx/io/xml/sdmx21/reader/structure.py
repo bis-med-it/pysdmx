@@ -1,7 +1,7 @@
 """Parsers for reading metadata."""
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
 from msgspec import Struct
 
@@ -99,6 +99,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VALID_TO_LOW,
     VERSION,
 )
+from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (
     AgencyScheme,
@@ -648,7 +649,9 @@ class StructureParser(Struct):
 
         return schemas
 
-    def format_structures(self, json_meta: Dict[str, Any]) -> Dict[str, Any]:
+    def format_structures(
+        self, json_meta: Dict[str, Any]
+    ) -> Sequence[ItemScheme, DataStructureDefinition, Dataflow]:
         """Formats the structures in json format.
 
         Args:
@@ -682,4 +685,24 @@ class StructureParser(Struct):
                 json_meta[TRANSFORMATIONS], TRANS_SCHEME, TRANSFORMATION
             )
         # Reset global variables
-        return structures
+        result = []
+        for value in structures.values():
+            for compound in value.values():
+                result.append(compound)
+
+        return result
+
+
+def read(
+    infile: str,
+) -> Sequence[ItemScheme, DataStructureDefinition, Dataflow]:
+    """Reads an SDMX-ML 2.1 Structure file and returns a sequence with the structures.
+
+    Args:
+        infile: string to read XML data from.
+
+    Returns:
+        dict: Dictionary with the parsed structures.
+    """
+    dict_info = parse_xml(infile)
+    return StructureParser().format_structures(dict_info[STRUCTURE])

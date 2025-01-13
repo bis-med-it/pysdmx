@@ -80,7 +80,7 @@ def __check_sdmx_str(infile: str) -> Tuple[str, SDMXFormat]:
 
 
 def process_string_to_read(
-    input: Union[str, Path, BytesIO],
+    sdmx_document: Union[str, Path, BytesIO],
 ) -> Tuple[str, SDMXFormat]:
     """Processes the input that comes into read_sdmx function.
 
@@ -88,7 +88,7 @@ def process_string_to_read(
     URL, or string.
 
     Args:
-        input: Path to file, URL, or string.
+        sdmx_document: Path to file, URL, or string.
 
     Returns:
         tuple: Tuple containing the parsed input and the format of the input.
@@ -96,22 +96,26 @@ def process_string_to_read(
     Raises:
         Invalid: If the input cannot be parsed as SDMX.
     """
-    if isinstance(input, str) and os.path.exists(input):
-        input = Path(input)
+    if isinstance(sdmx_document, str) and os.path.exists(sdmx_document):
+        sdmx_document = Path(sdmx_document)
     # Read file as string
-    if isinstance(input, (Path, PathLike)):
-        with open(input, "r", encoding="utf-8-sig", errors="replace") as f:
+    if isinstance(sdmx_document, (Path, PathLike)):
+        with open(
+            sdmx_document, "r", encoding="utf-8-sig", errors="replace"
+        ) as f:
             out_str = f.read()
 
     # Read from BytesIO
-    elif isinstance(input, BytesIO):
-        text_wrap = TextIOWrapper(input, encoding="utf-8", errors="replace")
+    elif isinstance(sdmx_document, BytesIO):
+        text_wrap = TextIOWrapper(
+            sdmx_document, encoding="utf-8", errors="replace"
+        )
         out_str = text_wrap.read()
 
-    elif isinstance(input, str):
-        if input.startswith("http"):
+    elif isinstance(sdmx_document, str):
+        if sdmx_document.startswith("http"):
             try:
-                response = httpx_get(input, timeout=60)
+                response = httpx_get(sdmx_document, timeout=60)
                 if (
                     response.status_code != 200
                     and "<?xml" not in response.text
@@ -121,13 +125,15 @@ def process_string_to_read(
             except Exception:
                 raise Invalid(
                     "Validation Error",
-                    f"Cannot retrieve a SDMX Message from URL: {input}.",
+                    f"Cannot retrieve a SDMX Message "
+                    f"from URL: {sdmx_document}.",
                 ) from None
         else:
-            out_str = input
+            out_str = sdmx_document
     else:
         raise Invalid(
-            "Validation Error", f"Cannot parse input of type {type(input)}."
+            "Validation Error",
+            f"Cannot parse input of type {type(sdmx_document)}.",
         )
 
     out_str = __remove_bom(out_str)

@@ -1,7 +1,5 @@
 """SDMX 2.1 XML error reader."""
 
-from typing import Any, Dict
-
 from pysdmx.errors import Invalid
 from pysdmx.io.xml.sdmx21.__tokens import (
     ERROR,
@@ -9,17 +7,20 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     ERROR_MESSAGE,
     ERROR_TEXT,
 )
+from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 
 
-def read(dict_info: Dict[str, Any]):
+def read(input_str: str, validate: bool = True):
     """Reads an Error message from the SDMX-ML file and raises the exception.
 
     Args:
-        dict_info: The dictionary with the error message.
+        input_str: The SDMX-ML file as a string.
+        validate: If True, the input is validated before
 
     Raises:
         Invalid: Error message as exception.
     """
+    dict_info = parse_xml(input_str, validate=validate)
     code = dict_info[ERROR][ERROR_MESSAGE][ERROR_CODE]
     text = dict_info[ERROR][ERROR_MESSAGE][ERROR_TEXT]
     raise Invalid("Invalid", f"{code}: {text}")

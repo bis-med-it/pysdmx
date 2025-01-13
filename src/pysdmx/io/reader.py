@@ -14,11 +14,10 @@ from pysdmx.util import parse_short_urn
 
 
 def read_sdmx(
-    infile: Union[str, Path, BytesIO],
+    sdmx_document: Union[str, Path, BytesIO],
     validate: bool = True,
-    use_dataset_id: bool = False,
 ) -> Message:
-    """Reads any sdmx file or buffer and returns a dictionary.
+    """Reads any SDMX message and returns a dictionary.
 
     Supported metadata formats are:
     - SDMX-ML 2.1
@@ -29,9 +28,7 @@ def read_sdmx(
     - SDMX-CSV 2.0
 
     Args:
-        infile: Path to file (pathlib.Path), URL, or string.
-        use_dataset_id: Whether to use the dataset ID as
-            the key in the resulting dictionary (only for SDMX-ML).
+        sdmx_document: Path to file (pathlib.Path), URL, or string.
         validate: Validate the input file (only for SDMX-ML).
 
     Returns:
@@ -40,21 +37,33 @@ def read_sdmx(
     Raises:
         Invalid: If the file is empty or the format is not supported.
     """
-    input_str, read_format = process_string_to_read(infile)
+    input_str, read_format = process_string_to_read(sdmx_document)
 
-    if read_format in (
-        SDMXFormat.SDMX_ML_2_1_DATA_GENERIC,
-        SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC,
-        SDMXFormat.SDMX_ML_2_1_STRUCTURE,
-        SDMXFormat.SDMX_ML_2_1_SUBMISSION,
-        SDMXFormat.SDMX_ML_2_1_ERROR,
-    ):
-        # SDMX-ML 2.1
-        from pysdmx.io.xml.sdmx21.reader import read_xml
+    if read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE:
+        # SDMX-ML 2.1 Structure
+        from pysdmx.io.xml.sdmx21.reader.structure import read
 
-        result = read_xml(
-            input_str, validate=validate, use_dataset_id=use_dataset_id
-        )
+        result = read(input_str)
+    elif read_format == SDMXFormat.SDMX_ML_2_1_DATA_GENERIC:
+        # SDMX-ML 2.1 Generic Data
+        from pysdmx.io.xml.sdmx21.reader.generic import read
+
+        result = read(input_str, validate=validate)
+    elif read_format == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC:
+        # SDMX-ML 2.1 Structure Specific Data
+        from pysdmx.io.xml.sdmx21.reader.structure_specific import read
+
+        result = read(input_str)
+    elif read_format == SDMXFormat.SDMX_ML_2_1_SUBMISSION:
+        # SDMX-ML 2.1 Submission
+        from pysdmx.io.xml.sdmx21.reader.submission import read
+
+        result = read(input_str)
+    elif read_format == SDMXFormat.SDMX_ML_2_1_ERROR:
+        # SDMX-ML 2.1 Error
+        from pysdmx.io.xml.sdmx21.reader.error import read
+
+        result = read(input_str)
     elif read_format == SDMXFormat.SDMX_CSV_1_0:
         # SDMX-CSV 1.0
         from pysdmx.io.csv.sdmx10.reader import read
@@ -79,6 +88,8 @@ def read_sdmx(
         # TODO: Add here the Schema download for Datasets, based on structure
         # TODO: Ensure we have changed the signature of the data readers
         return Message(data=result)
+    elif read_format == SDMXFormat.SDMX_ML_2_1_SUBMISSION:
+        return Message(submission=result)
 
     # TODO: Ensure we have changed the signature of the structure readers
     return Message(structures=result)
@@ -100,6 +111,11 @@ def get_datasets(
 
     Returns:
         A sequence of Datasets
+
+    Raises:
+        Invalid:
+            If the data message is empty or the related data structure
+            (or dataflow with its children) is not found.
     """
     data_msg = read_sdmx(data, validate=validate)
     if not data_msg.data:
@@ -109,7 +125,7 @@ def get_datasets(
     if structure_msg.structures is None:
         raise Invalid("No structure found in the structure message")
 
-    for dataset in data_msg.data.values():
+    for dataset in data_msg.data:
         short_urn: str = (
             dataset.structure.short_urn
             if isinstance(dataset.structure, Schema)
@@ -122,5 +138,16 @@ def get_datasets(
                 dataset.structure = dsd.to_schema()
             except NotFound:
                 continue
+        elif sdmx_type == "DataFlow":
+            try:
+                dataflow = structure_msg.get_dataflow(short_urn)
+                if dataflow.structure is None:
+                    continue
+                dsd = structure_msg.get_data_structure_definition(
+                    dataflow.structure
+                )
+                dataflow.structure = dsd.to_schema()
+            except NotFound:
+                continue
 
-    return list(data_msg.data.values())
+    return list(data_msg.data)

@@ -24,6 +24,7 @@ from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
 from pysdmx.model.dataset import ActionType, Dataset
+from pysdmx.model.submission import SubmissionResult
 
 
 class Header(Struct, kw_only=True):
@@ -47,6 +48,8 @@ class Message(Struct, frozen=True):
            They represent the contents of a Structure Message.
         data: Sequence of Dataset objects. They represent the contents of a
            SDMX Data Message in any format.
+        submission: Sequence of SubmissionResult objects. They represent the
+              contents of a SDMX Submission Message.
     """
 
     structures: Sequence[
@@ -57,6 +60,7 @@ class Message(Struct, frozen=True):
         ],
     ] = None
     data: Sequence[Dataset] = None
+    submission: Optional[Sequence[SubmissionResult]] = None
 
     def __post_init__(self) -> None:
         """Checks if the content is valid."""
