@@ -9,20 +9,20 @@ from pysdmx.errors import Invalid
 from pysdmx.io.xml.__allowed_lxml_errors import ALLOWED_ERRORS_CONTENT
 
 
-def validate_doc(infile: str) -> None:
-    """Validates the XML file against the XSD schema for SDMX-ML 2.1.
+def validate_doc(input_str: str) -> None:
+    """Validates the SDMX-ML data against the XSD schema for SDMX-ML 2.1.
 
     Args:
-        infile (str): The path to the XML file to validate.
+        input_str: The SDMX-ML data to validate.
 
     Raises:
-        Invalid: If the XML file does not validate against the schema.
+        Invalid: If the SDMX-ML data does not validate against the schema.
     """
     parser = etree.ETCompatXMLParser()
     xmlschema_doc = etree.parse(SCHEMA_PATH)
     xmlschema = etree.XMLSchema(xmlschema_doc)
 
-    bytes_infile = BytesIO(bytes(infile, "UTF_8"))
+    bytes_infile = BytesIO(bytes(input_str, "UTF_8"))
 
     doc = etree.parse(bytes_infile, parser=parser)
     if not xmlschema.validate(doc):

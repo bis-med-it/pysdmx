@@ -26,14 +26,14 @@ XML_OPTIONS = {
 
 
 def parse_xml(
-    infile: str,
+    input_str: str,
     validate: bool = True,
 ) -> Dict[str, Any]:
-    """Reads an SDMX-ML file and returns a dictionary with the parsed data.
+    """Reads SDMX-ML data and returns a dictionary with the parsed data.
 
     Args:
-        infile: Path to file, URL, or string.
-        validate: If True, the XML data will be validated against the XSD.
+        input_str: SDMX-ML data to be parsed.
+        validate: If True, the SDMX-ML data will be validated against the XSD.
 
     Returns:
         dict: Dictionary with the parsed data.
@@ -42,12 +42,12 @@ def parse_xml(
         Invalid: If the SDMX data cannot be parsed.
     """
     if validate:
-        validate_doc(infile)
+        validate_doc(input_str)
     dict_info = xmltodict.parse(
-        infile,
+        input_str,
         **XML_OPTIONS,  # type: ignore[arg-type]
     )
 
-    del infile
+    del input_str
 
     return dict_info

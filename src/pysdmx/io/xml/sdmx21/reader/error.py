@@ -11,10 +11,10 @@ from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 
 
 def read(input_str: str, validate: bool = True) -> None:
-    """Reads an Error message from the SDMX-ML file and raises the exception.
+    """Reads an Error message from the SDMX-ML data and raises the exception.
 
     Args:
-        input_str: The SDMX-ML file as a string.
+        input_str: The SDMX-ML data as a string.
         validate: If True, the input is validated before
 
     Raises:

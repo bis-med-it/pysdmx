@@ -694,10 +694,10 @@ def read(
     input_str: str,
     validate: bool = True,
 ) -> Sequence[Union[ItemScheme, DataStructureDefinition, Dataflow]]:
-    """Reads an SDMX-ML 2.1 Structure file and returns the structures.
+    """Reads an SDMX-ML 2.1 Structure data and returns the structures.
 
     Args:
-        input_str: string to read XML data from.
+        input_str: SDMX-ML data to read.
         validate: If True, the XML data will be validated against the XSD.
 
     Returns:

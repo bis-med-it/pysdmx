@@ -48,7 +48,7 @@ def read(input_str: str, validate: bool = True) -> Sequence[SubmissionResult]:
     """Reads an SDMX-ML 2.1 Submission Result file.
 
     Args:
-        input_str: string to read XML data from.
+        input_str: SDMX-ML data to read.
         validate: If True, the XML data will be validated against the XSD.
     """
     dict_info = parse_xml(input_str, validate=validate)
