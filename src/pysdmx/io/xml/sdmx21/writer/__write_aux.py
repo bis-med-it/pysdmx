@@ -2,7 +2,7 @@
 """Writer auxiliary functions."""
 
 from collections import OrderedDict
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.pd import PandasDataset
@@ -74,7 +74,7 @@ def __namespaces_from_type(type_: MessageType) -> str:
 
 
 def create_namespaces(
-    type_: MessageType, ss_namespaces: str, prettyprint: bool = False
+    type_: MessageType, ss_namespaces: str = "", prettyprint: bool = False
 ) -> str:
     """Creates the namespaces for the XML file.
 
@@ -153,7 +153,7 @@ def add_indent(indent: str) -> str:
 
 
 def __write_header(
-    header: Header, prettyprint: bool, add_namespace_structure: bool
+    header: Header, prettyprint: bool, add_namespace_structure: bool = False
 ) -> str:
     """Writes the Header part of the message.
 
@@ -297,11 +297,10 @@ def get_codes(
     return series_codes, obs_codes
 
 
-def check_content_dataset(content: Dict[str, PandasDataset]) -> None:
+def check_content_dataset(content: Sequence[PandasDataset]) -> None:
     """Checks if the Message content is a dataset."""
-    for dataset in content.values():
-        if not isinstance(dataset, PandasDataset):
-            raise Invalid("Message Content must contain only Datasets.")
+    if not all(isinstance(dataset, PandasDataset) for dataset in content):
+        raise Invalid("Message Content must only contain a Dataset sequence.")
 
 
 def check_dimension_at_observation(

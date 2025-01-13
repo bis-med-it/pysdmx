@@ -10,7 +10,10 @@ from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.enums import MessageType
 from pysdmx.io.xml.sdmx21.reader import read_xml
-from pysdmx.io.xml.sdmx21.writer import writer
+from pysdmx.io.xml.sdmx21.writer.generic import write as write_gen
+from pysdmx.io.xml.sdmx21.writer.structure_specific import (
+    write as write_str_spec,
+)
 from pysdmx.model import (
     Code,
     Codelist,
@@ -124,9 +127,13 @@ def test_data_write_read(
 ):
     samples_folder_path = Path(__file__).parent / "samples"
     # Write from Dataset
-    result = writer(
-        content,
-        type_=message_type,
+    write = (
+        write_str_spec
+        if message_type == MessageType.StructureSpecificDataSet
+        else write_gen
+    )
+    result = write(
+        list(content.values()),
         header=header,
         dimension_at_observation=dimension_at_observation,
     )
@@ -146,6 +153,32 @@ def test_data_write_read(
         reference_data.replace("nan", ""),
         check_like=True,
     )
+
+
+@pytest.mark.parametrize(
+    ("message_type", "filename", "dimension_at_observation"),
+    [
+        (MessageType.GenericDataSet, "gen_all.xml", {}),
+        (MessageType.StructureSpecificDataSet, "str_all.xml", None),
+    ],
+)
+def test_write_data_file(
+    header, content, message_type, filename, dimension_at_observation
+):
+    output_file = Path(__file__).parent / "test_output_data.xml"
+    # Write from Dataset
+    write = (
+        write_str_spec
+        if message_type == MessageType.StructureSpecificDataSet
+        else write_gen
+    )
+    write(
+        list(content.values()),
+        output_path=output_file,
+        dimension_at_observation=dimension_at_observation,
+    )
+
+    assert output_file.exists()
 
 
 @pytest.mark.parametrize(
@@ -181,11 +214,15 @@ def test_data_write_df(
     ds.structure.components.remove(ds.structure.components["ATT2"])
     ds.data = df
     ds.attributes = {}
-    content["DataStructure=MD:TEST(1.0)"] = ds
+    content = [ds]
 
-    result = writer(
+    write = (
+        write_str_spec
+        if message_type == MessageType.StructureSpecificDataSet
+        else write_gen
+    )
+    result = write(
         content,
-        type_=message_type,
         header=header,
         dimension_at_observation=dimension_at_observation,
     )
@@ -207,26 +244,31 @@ def test_invalid_content():
         )
     }
     with pytest.raises(
-        Invalid, match="Message Content must contain only Datasets."
+        Invalid, match="Message Content must only contain a Dataset sequence."
     ):
-        writer(content, type_=MessageType.StructureSpecificDataSet)
+        write_str_spec(content)
+
+    with pytest.raises(
+        Invalid, match="Message Content must only contain a Dataset sequence."
+    ):
+        write_gen(content)
 
 
 def test_invalid_dimension(content):
     dim_mapping = {"DataStructure=MD:TEST(1.0)": "DIM3"}
+    content = list(content.values())
     with pytest.raises(Invalid):
-        writer(
+        write_str_spec(
             content,
-            type_=MessageType.StructureSpecificDataSet,
             dimension_at_observation=dim_mapping,
         )
 
 
 def test_invalid_dimension_key(content):
     dim_mapping = {"DataStructure=AAA:TEST(1.0)": "DIM1"}
+    content = list(content.values())
     with pytest.raises(Invalid):
-        writer(
+        write_str_spec(
             content,
-            type_=MessageType.StructureSpecificDataSet,
             dimension_at_observation=dim_mapping,
         )

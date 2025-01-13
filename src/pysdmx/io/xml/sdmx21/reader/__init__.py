@@ -1,6 +1,6 @@
 """SDMX 2.1 XML reader package."""
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import xmltodict
 
@@ -43,7 +43,6 @@ MODES = {
 def read_xml(
     infile: str,
     validate: bool = True,
-    mode: Optional[MessageType] = None,
     use_dataset_id: bool = False,
 ) -> Dict[str, Any]:
     """Reads an SDMX-ML file and returns a dictionary with the parsed data.
@@ -69,12 +68,6 @@ def read_xml(
     )
 
     del infile
-
-    if mode is not None and MODES[mode.value] not in dict_info:
-        raise Invalid(
-            "Validation Error",
-            f"Unable to parse sdmx file as {MODES[mode.value]} file",
-        )
 
     result = __generate_sdmx_objects_from_xml(dict_info, use_dataset_id)
 
