@@ -127,7 +127,13 @@ def __parse_dataset(message_info: Dict[str, Any], mode: str) -> Dict[str, Any]:
         A dictionary of datasets.
     """
     str_info = __extract_structure(message_info[HEADER][STRUCTURE])
-    dataset_info = add_list(message_info[DATASET])
+    if DATASET not in message_info:
+        dataset_info = []
+        for key in message_info:
+            if DATASET in key:
+                dataset_info = add_list(message_info[key])
+    else:
+        dataset_info = add_list(message_info[DATASET])
     datasets = {}
     for dataset in dataset_info:
         ds = create_dataset(dataset, str_info, mode)
