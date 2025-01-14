@@ -23,7 +23,7 @@ tutorial will focus exclusively on the fundamental ones.
 Required Metadata
 -----------------
 
-For the present scenario, the requisite metadata is contingent
+For the present scenario, the required metadata is contingent
 upon the desired operations. For reference please check
 `sdmx to vtl documentation <https://sdmx.org/wp-content/uploads/SDMX_3-0-0_SECTION_2_FINAL-1_0.pdf#%5B%7B%22num%22%3A295%2C%22gen%22%3A0[…]e%22%3A%22XYZ%22%7D%2C87%2C736%2C0%5D>`_
 
@@ -31,7 +31,7 @@ Step-by-Step Solution
 ---------------------
 
 ``pysdmx`` facilitates the reading of data and metadata from an SDMX
-file. For the purpose of this tutorial, we shall employ the XML files
+file or service. For the purpose of this tutorial, we shall employ the XML files
 ``metadata.xml`` (data structure) and ``data.xml`` (data).
 
 Reading the Data
