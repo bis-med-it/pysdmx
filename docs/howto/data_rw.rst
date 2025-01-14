@@ -138,13 +138,17 @@ raise an issue in `GitHub <https://github.com/bis-med-it/pysdmx>`_.
    # Accessing the data of the test dataset
    df = dataset[0].data
 
-SDMX-ML 2.1
-^^^^^^^^^^^
+SDMX-ML 2.1 Data Readers
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 SDMX-ML 2.1 format is described
 `here (pdf file for IM) <https://sdmx.org/wp-content/uploads/SDMX_2-1_SECTION_2_InformationModel_2020-07.pdf>`_
 
-.. autofunction:: pysdmx.io.xml.sdmx21.reader.read_xml
+```pysdmx`` supports both Generic and Structure Specific SDMX-ML 2.1 to handle data on SDMX-ML, both as All Dimensions or Series format.
+
+.. autofunction:: pysdmx.io.xml.sdmx21.reader.generic.read
+
+.. autofunction:: pysdmx.io.xml.sdmx21.reader.structure_specific.read
 
 We do not support the following elements:
 
@@ -156,24 +160,25 @@ It will automatically detect any structural validation errors (if validate=True)
 
 .. warning::
 
-    The SDMX-ML 2.1 Generic format is deprecated and should not be used for new implementations.
-    SDMX-ML 3.0 only uses the Structure Specific format, which is more efficient and easier to use.
+    The SDMX-ML 2.1 Generic format is deprecated and should not be used for new implementations. SDMX-ML 3.0 only uses the Structure Specific format, which is more efficient and easier to use.
 
 .. code-block:: python
 
    from pysdmx.io.input_processor import process_string_to_read
-   from pysdmx.io.xml.sdmx21.reader import read_xml
+   from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic  # For Generic format
+   from pysdmx.io.xml.sdmx21.reader.structure_specific import read # For Structure Specific format
    from pathlib import Path
 
    # Read file from the same folder as this code
    file_path = Path(__file__).parent / "sample21.xml"
-   input_str, extension = process_string_to_read(file_path)
+   input_str, format = process_string_to_read(file_path)
 
-   # Using reader, result will be a dictionary (key: dataset.short_urn, value: dataset)
-   datasets = read_xml(input_str, validate=True)
+   # Using reader, result will be a list of datasets
+   datasets = read(input_str, validate=True)
 
    # Accessing the data of the test dataset
-   df = dataset["DataStructure=TEST_AGENCY:TEST_ID(1.0)"].data
+   df = dataset[0].data
+
 
 Writing data
 ------------
@@ -199,7 +204,9 @@ SDMX-CSV 1.0
 
    # Write to file sample.csv in the same folder as this code
    file_path = Path(__file__).parent / "sample.csv"
-   writer(dataset, file_path)
+
+   # Write the datasets (list of Dataset or PandasDataset) to the file
+   writer(datasets, file_path)
 
 
 SDMX-CSV 2.0
@@ -226,8 +233,8 @@ SDMX-CSV 2.0
    file_path = Path(__file__).parent / "sample.csv"
    writer(dataset, file_path)
 
-SDMX-ML 2.1
-^^^^^^^^^^^
+SDMX-ML 2.1 Data Writers
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 SDMX-ML 2.1 format is described
 `here (pdf file for IM) <https://sdmx.org/wp-content/uploads/SDMX_2-1_SECTION_2_InformationModel_2020-07.pdf>`_
@@ -237,27 +244,28 @@ SDMX-ML 2.1 format allows to write multiple datasets at once. To use the Series 
 .. important::
 
     For each dataset, if dataset.structure is not a Schema, the writer can only write in the Structure Specific All Dimensions format.
-    We perform a check to ensure that the dataset has a Schema structure for the remaining formats as we need to know the roles for each component. This check also ensures that the dataset.structure has at least one dimension and one measure defined.
+    We perform a check to ensure that the dataset has a Schema structure for the remaining formats as we need to know the roles for each component.
+    This check also ensures that the dataset.structure has at least one dimension and one measure defined.
 
-.. autofunction:: pysdmx.io.xml.sdmx21.writer.writer
+.. autofunction:: pysdmx.io.xml.sdmx21.writer.generic.write
+.. autofunction:: pysdmx.io.xml.sdmx21.writer.structure_specific.write
 
 .. code-block:: python
 
-    from pysdmx.io.xml.sdmx21.writer import writer
+    from pysdmx.io.xml.sdmx21.writer.generic import write as write_generic  # For Generic format
+    from pysdmx.io.xml.sdmx21.writer.structure_specific import write  # For StructureSpecific format
     from pysdmx.io.xml.enums import MessageType
     from pathlib import Path
 
-    # Dictionary of datasets to write
-    datasets = {
-        "DataStructure=TEST_AGENCY:TEST_ID(1.0)": dataset
-    }
+    # List of datasets to write
+    datasets = [dataset1, dataset2]
 
-    # Dimension at observation mapping
+    # Dimension at observation mapping (do not need to set them all if not needed
     dim_mapping = {
         "DataStructure=TEST_AGENCY:TEST_ID(1.0)": "TIME_PERIOD"
     }
 
     # Write to file sample.xml in the same folder as this code
     file_path = Path(__file__).parent / "sample.xml"
-    writer(content=datasets, type_=MessageType.StructureSpecificDataSet, path=file_path, dimension_at_observation=dim_mapping)
+    write(datasets, file_path, dimension_at_observation=dim_mapping)  # This will write a Dataset in Series and another in AllDimensions format
 
