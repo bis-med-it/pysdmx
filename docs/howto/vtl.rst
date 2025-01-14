@@ -5,8 +5,9 @@ Using VTL for Validation
 
 .. important::
     A seamless integration of ``pysdmx`` and ``vtlengine`` will modify this
-    tutorial. The current version is a placeholder for the upcoming changes.
-    For the latest updates, please check
+    tutorial. The current version is a placeholder for the upcoming changes
+    showing the use of both libraries separated.
+    For the latest updates on VTL usage, please check
     `issue #158 <https://github.com/bis-med-it/pysdmx/issues/158>`_.
 
 In this tutorial, we shall examine the utilization of ``pysdmx``
@@ -32,46 +33,49 @@ Step-by-Step Solution
 
 ``pysdmx`` facilitates the reading of data and metadata from an SDMX
 file or service. For the purpose of this tutorial, we shall employ the XML files
-``metadata.xml`` (data structure) and ``data.xml`` (data).
+``structures.xml`` (data structure) and ``data.csv`` (data).
 
 Reading the Data
 ~~~~~~~~~~~~~~~~
 
 The initial step involves reading the data structure and data from the
-SDMX files:
+SDMX files. The following code snippet demonstrates the process:
 
 .. code-block:: python
 
-    def read_sample(path: Path):
-        with open(path, "r") as f:
-            return f.read()
+    from pathlib import Path
 
-    # Read metadata
-    metadata_sample = read_sample(Path("metadata.xml"))
-    meta_content, filetype = process_string_to_read(metadata_sample)
-    metadata_result = read_xml(meta_content, validate=True)
+    # Path to the structures file in SDMX-ML 2.1 (same directory as this script)
+    path_to_structures = Path(__file__).parent / "structures.xml"
 
-    # Read data
-    data_sample = read_sample(Path("data.xml"))
-    data_content, filetype = process_string_to_read(data_sample)
-    data_result = read_xml(data_content, validate=True)
+    # Path to the data file
+    path_to_data = Path(__file__).parent / "data.csv"
 
-Filtering the Data
-~~~~~~~~~~~~~~~~~~
+    # Get Structures SDMX Message
+    structures_msg = read_sdmx(path_to_structures)
 
-Subsequent to obtaining the metadata and data, the desired dataflows and
-data structures must be filtered:
+    # Get Data message
+    data_msg = read_sdmx(path_to_data)
+
+
+Extracting the Data and Data Structure
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+After reading the data and metadata, the next step is to extract the
+data and data structure from the SDMX messages. The following code snippet demonstrates
+the process using the Short URN ``SDMX_TYPE=AGENCY_ID:ID(VERSION)``
 
 .. code-block:: python
 
-    data_structure_1 = metadata_result["DataStructures"]["DS_1"]
-    data_1 = data_result["DS_1"].data
+    # Extract the data structure and data for DS_1
+    data_structure_1 = structures_msg.get_data_structure_definition("DataStructure=MD:DS_1(1.0)")
+    data_1 = data_msg.get_data("DataStructure=MD:DS_1(1.0)")
 
-    data_structure_2 = metadata_result["DataStructures"]["DS_2"]
-    data_2 = data_result["DS_2"].data
+    # Extract the data structure and data for DS_2
+    data_structure_2 = structures_msg.get_data_structure_definition("DataStructure=BIS:DS_2(1.0)")
+    data_2 = data_msg.get_data("DataStructure=BIS:DS_2(1.0)")
 
-Parsing the Metadata
-~~~~~~~~~~~~~~~~~~~~
+
 
 To construct the datapoint, the metadata must be converted to the VTL
 format using the ``to_vtl_json`` upcoming **DataStructureDefinition** method:
