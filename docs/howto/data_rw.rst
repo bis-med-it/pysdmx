@@ -20,26 +20,66 @@ Currently, all data-related readers and writers are based on PandasDataset class
 Reading data
 ------------
 
-To read data, we may pass the string to the reading functions or use the input processor:
+To read data, we recommend using the read_sdmx function or the get_datasets function:
 
-.. automodule:: pysdmx.io.input_processor
-    :members: process_string_to_read
+.. automodule:: pysdmx.io.reader
+    :members: read_sdmx
 
-A typical example to read data from a file, a string or a buffer
+A typical example to read data from a file, a string or a buffer, using read_sdmx
 
 .. code-block:: python
 
-   from pysdmx.io.input_processor import process_string_to_read
-   # Import from desired reader
+   from pysdmx.io import read_sdmx
 
-   # Read file sample.csv from the same folder as this code
-   file_path = Path(__file__).parent / "sample.csv"
-   input_str, extension = process_string_to_read(file_path)
+    # Read file from the same folder as this code
+    file_path = Path(__file__).parent / "sample.csv"
 
-   # Using reader, result will be a dictionary (key: dataset.short_urn, value: dataset)
-   datasets = read(input_str)
-   # Accessing the data of the test dataset
-   df = dataset["DataStructure=TEST_AGENCY:TEST_ID(1.0)"].data
+    # Read from file
+    data_msg = read_sdmx(file_path)
+
+    # Read from URL
+    data_msg = read_sdmx("https://example.com/sample.csv")
+
+    # Extracting the datasets (list of Dataset)
+    datasets = data_msg.data
+
+    # Accessing the data of the test dataset by its Short URN
+    df = data_msg.get_dataset("DataStructure=TEST_AGENCY:TEST_ID(1.0)").data
+
+    # Accessing the data of the test dataset by its position in the SDMX Message
+    df = data_msg.data[0].data
+
+
+By default, the read_sdmx function will automatically detect the format of the file and use the appropriate reader. We may as well use the get_datasets to associate a dataset to its Schema:
+
+.. automodule:: pysdmx.io.reader
+    :members: get_datasets
+
+.. important::
+
+        If the structures message is used, the get_datasets function will associate the dataset to its Schema. If the structures message is not used, the get_datasets function will return a list of datasets without any Schema association.
+        If a dataset references a dataflow, the structure message requires to have the dataflow children (or all descendants), i.e. the DataStructureDefinitions associated to this Dataflow in the same SDMX Message (with or without referenced artefacts like Codelists, ConceptSchemes, etc).
+
+.. code-block:: python
+
+    from pysdmx.io import get_datasets
+
+    # Read file from the same folder as this code (SDMX-CSV 2.0)
+    data_path = Path(__file__).parent / "sample.csv"
+
+    # Data contains a reference to the dataflow ``Dataflow=MD:TEST(1.0)``
+    datasets = get_datasets(data_path)
+
+    print(datasets[0].structure)  # Outputs a string with the Schema Short URN -> "Dataflow=MD:TEST(1.0)"
+
+    # Reading the datasets and associating the schema
+    datasets = get_datasets(data_path, "https://example.com/dataflow/MD/TEST/1.0?references=descendants")
+
+    print(datasets[0].structure)  # Outputs a Schema object with the associated components
+
+
+Both methods are based on the individual readers for each format supported, which are described below.
+All individual readers will have as input a string.
 
 SDMX-CSV 1.0
 ^^^^^^^^^^^^
@@ -57,16 +97,17 @@ SDMX-CSV 1.0
 
    from pysdmx.io.input_processor import process_string_to_read
    from pysdmx.io.csv.sdmx10.reader import read
+
    from pathlib import Path
 
    # Read file sample.csv from the same folder as this code
    file_path = Path(__file__).parent / "sample10.csv"
-   input_str, extension = process_string_to_read(file_path)
+   input_str, format = process_string_to_read(file_path)
 
-   # Using reader, result will be a dictionary (key: dataset.short_urn, value: dataset)
+   # Using reader, result will be a list of datasets
    datasets = read(input_str)
    # Accessing the data of the test dataset
-   df = dataset["Dataflow=TEST_AGENCY:TEST_ID(1.0)"].data
+   df = dataset[0].data
 
 SDMX-CSV 2.0
 ^^^^^^^^^^^^
@@ -90,12 +131,12 @@ raise an issue in `GitHub <https://github.com/bis-med-it/pysdmx>`_.
 
    # Read file from the same folder as this code
    file_path = Path(__file__).parent / "sample20.csv"
-   input_str, extension = process_string_to_read(file_path)
+   input_str, format = process_string_to_read(file_path)
 
-   # Using reader, result will be a dictionary (key: dataset.short_urn, value: dataset)
+   # Using reader, result will be a list of datasets
    datasets = read(input_str)
    # Accessing the data of the test dataset
-   df = dataset["DataStructure=TEST_AGENCY:TEST_ID(1.0)"].data
+   df = dataset[0].data
 
 SDMX-ML 2.1
 ^^^^^^^^^^^
