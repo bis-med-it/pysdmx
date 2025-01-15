@@ -81,7 +81,7 @@ web service<sdmx-rest>`.
 Reading and writing SDMX datasets
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-[TO BE COMPLETED]
+Head to the :ref:`how-to guide<data-rw>` to learn how to read and write SDMX datasets
 
 How can I get it?
 -----------------

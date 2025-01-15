@@ -3,6 +3,12 @@
 Reading and writing SDMX datasets
 =================================
 
+.. note::
+
+        This tutorial shows how to read and write SDMX datasets using ``pysdmx``.
+
+    - :ref:`data-rw`.
+
 ``pysdmx`` allows to read and write SDMX datasets in the following formats:
 
 - SDMX-CSV 1.0 (located in ``pysdmx.io.csv.sdmx10``)
