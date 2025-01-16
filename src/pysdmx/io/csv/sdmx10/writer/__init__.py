@@ -8,7 +8,7 @@ import pandas as pd
 from pysdmx.io.pd import PandasDataset
 
 
-def writer(
+def write(
     datasets: Sequence[PandasDataset], output_path: Optional[str] = None
 ) -> Optional[str]:
     """Write data to SDMX-CSV 1.0 format.

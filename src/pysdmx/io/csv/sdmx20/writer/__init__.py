@@ -9,7 +9,7 @@ from pysdmx.io.csv.sdmx20 import SDMX_CSV_ACTION_MAPPER
 from pysdmx.io.pd import PandasDataset
 
 
-def writer(
+def write(
     datasets: Sequence[PandasDataset], output_path: Optional[str] = None
 ) -> Optional[str]:
     """Write data to SDMX-CSV 2.0 format.
