@@ -10,18 +10,21 @@ from pysdmx.model import ArrayBoundaries, Codelist, Facets
 from pysdmx.util import find_by_urn
 
 
-class FusionAnnotation(msgspec.Struct, frozen=True):
-    """Fusion-JSON payload for annotations."""
-
-    title: str
-    type: str
-
-
 class FusionString(msgspec.Struct, frozen=True):
     """Fusion-JSON payload for an international string."""
 
     locale: str
     value: str
+
+
+class FusionAnnotation(msgspec.Struct, frozen=True):
+    """Fusion-JSON payload for annotations."""
+
+    id: Optional[str] = None
+    title: Optional[str] = None
+    type: Optional[str] = None
+    value: Optional[str] = None
+    text: Sequence[FusionString] = ()
 
 
 class FusionLink(msgspec.Struct, frozen=True):
