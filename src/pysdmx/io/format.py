@@ -32,8 +32,17 @@ class Format(Enum):
     STRUCTURE_SDMX_ML_3_0 = f"{_BASE}structure+xml;version=3.0.0"
 
 
+class AvailabilityFormat(Enum):
+    """The SDMX Availability formats."""
+
+    SDMX_JSON_1_0_0 = Format.STRUCTURE_SDMX_JSON_1_0_0.value
+    SDMX_JSON_2_0_0 = Format.STRUCTURE_SDMX_JSON_2_0_0.value
+    SDMX_ML_2_1_STRUCTURE = Format.STRUCTURE_SDMX_ML_2_1.value
+    SDMX_ML_3_0_STRUCTURE = Format.STRUCTURE_SDMX_ML_3_0.value
+
+
 class DataFormat(Enum):
-    """The response formats for data queries."""
+    """The SDMX Data formats."""
 
     SDMX_CSV_1_0_0 = Format.DATA_SDMX_CSV_1_0_0.value
     SDMX_CSV_2_0_0 = Format.DATA_SDMX_CSV_2_0_0.value
@@ -47,7 +56,7 @@ class DataFormat(Enum):
 
 
 class RefMetaFormat(Enum):
-    """The response formats."""
+    """The SDMX Reference Metadata formats."""
 
     SDMX_CSV_2_0_0 = Format.REFMETA_SDMX_CSV_2_0_0.value
     SDMX_JSON_2_0_0 = Format.REFMETA_SDMX_JSON_2_0_0.value
@@ -55,7 +64,7 @@ class RefMetaFormat(Enum):
 
 
 class SchemaFormat(Enum):
-    """The response formats."""
+    """The SDMX Schema formats."""
 
     SDMX_JSON_1_0_0_SCHEMA = Format.SCHEMA_SDMX_JSON_1_0_0.value
     SDMX_JSON_2_0_0_SCHEMA = Format.SCHEMA_SDMX_JSON_2_0_0.value
