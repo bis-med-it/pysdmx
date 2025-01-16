@@ -1,7 +1,7 @@
 """Collection of Fusion-JSON schemas for common artefacts."""
 
 from datetime import datetime
-from typing import Any, Optional, Sequence
+from typing import Any, Optional, Sequence, Union
 
 import msgspec
 
@@ -58,6 +58,12 @@ class FusionRepresentation(msgspec.Struct, frozen=True):
     minOccurs: Optional[int] = None
     maxOccurs: Optional[int] = None
 
+    def __to_number(self, input: str) -> Union[int, float]:
+        try:
+            return int(input)
+        except ValueError:
+            return float(input)
+
     def to_facets(self) -> Optional[Facets]:
         """Return a Facets domain object."""
         if self.textFormat and (
@@ -73,14 +79,35 @@ class FusionRepresentation(msgspec.Struct, frozen=True):
             or self.textFormat.startTime
             or self.textFormat.endTime
         ):
+            min = (
+                self.__to_number(self.textFormat.minValue)
+                if self.textFormat.minValue
+                else None
+            )
+            max = (
+                self.__to_number(self.textFormat.maxValue)
+                if self.textFormat.maxValue
+                else None
+            )
+            sta = (
+                self.__to_number(self.textFormat.startValue)
+                if self.textFormat.startValue
+                else None
+            )
+            end = (
+                self.__to_number(self.textFormat.endValue)
+                if self.textFormat.endValue
+                else None
+            )
+
             return Facets(
                 min_length=self.textFormat.minLength,
                 max_length=self.textFormat.maxLength,
                 is_sequence=self.textFormat.isSequence,
-                min_value=self.textFormat.minValue,  # type: ignore[arg-type]
-                max_value=self.textFormat.maxValue,  # type: ignore[arg-type]
-                start_value=self.textFormat.startValue,  # type: ignore
-                end_value=self.textFormat.endValue,  # type: ignore[arg-type]
+                min_value=min,
+                max_value=max,
+                start_value=sta,
+                end_value=end,
                 decimals=self.textFormat.decimals,
                 pattern=self.textFormat.pattern,
                 start_time=self.textFormat.startTime,
