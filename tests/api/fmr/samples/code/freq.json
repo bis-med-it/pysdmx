@@ -55,6 +55,12 @@
                                 "texts": {
                                     "en": "N:Annual"
                                 }
+                            },
+                            {
+                                "text": "Empty",
+                                "texts": {
+                                    "en": "Empty"
+                                }
                             }
                         ],
                         "name": "Annual",

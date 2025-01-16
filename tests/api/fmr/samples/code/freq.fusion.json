@@ -34,6 +34,14 @@
                                     "value": "N:Annual"
                                 }
                             ]
+                        },
+                        {
+                            "text": [
+                                {
+                                    "locale": "en",
+                                    "value": "Empty"
+                                }
+                            ]
                         }
                     ],
                     "names": [
