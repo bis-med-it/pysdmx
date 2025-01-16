@@ -89,7 +89,7 @@ class __BaseRegistryClient:
         if fmt not in (Format.SDMX_JSON_2_0_0, Format.FUSION_JSON):
             raise NotImplemented(
                 "Unsupported format",
-                "Only SDMX-JSON v2.0.0 and Fusion-JSON are currently supported.",
+                "Only SDMX-JSON v2.0.0 and Fusion-JSON are supported.",
                 {"requested_format": fmt.value},
             )
         self.format = fmt
