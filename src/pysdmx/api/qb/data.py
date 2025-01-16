@@ -21,6 +21,7 @@ from pysdmx.api.qb.util import (
     check_multiple_data_context,
 )
 from pysdmx.errors import Invalid
+from pysdmx.io.format import DataFormat
 
 
 class DataContext(Enum):
@@ -30,26 +31,6 @@ class DataContext(Enum):
     DATAFLOW = "dataflow"
     PROVISION_AGREEMENT = "provisionagreement"
     ALL = REST_ALL
-
-
-class DataFormat(Enum):
-    """The response formats for data queries."""
-
-    SDMX_JSON_1_0_0 = "application/vnd.sdmx.data+json;version=1.0.0"
-    SDMX_JSON_2_0_0 = "application/vnd.sdmx.data+json;version=2.0.0"
-    SDMX_CSV_1_0_0 = "application/vnd.sdmx.data+csv;version=1.0.0"
-    SDMX_CSV_2_0_0 = "application/vnd.sdmx.data+csv;version=2.0.0"
-    SDMX_ML_2_1_GEN = "application/vnd.sdmx.genericdata+xml;version=2.1"
-    SDMX_ML_2_1_STR = (
-        "application/vnd.sdmx.structurespecificdata+xml;version=2.1"
-    )
-    SDMX_ML_2_1_GENTS = (
-        "application/vnd.sdmx.generictimeseriesdata+xml;version=2.1"
-    )
-    SDMX_ML_2_1_STRTS = (
-        "application/vnd.sdmx.structurespecifictimeseriesdata+xml;version=2.1"
-    )
-    SDMX_ML_3_0 = "application/vnd.sdmx.data+xml;version=3.0.0"
 
 
 class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
@@ -604,3 +585,10 @@ def _create_component_mult_filter(
 
 _data_decoder = msgspec.json.Decoder(DataQuery)
 _encoder = msgspec.json.Encoder()
+
+__all__ = [
+    "ApiVersion",
+    "DataContext",
+    "DataFormat",
+    "DataQuery",
+]
