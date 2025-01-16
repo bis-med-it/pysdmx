@@ -10639,9 +10639,11 @@
                     "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Measure=BIS:BIS_CBS(1.0).OBS_VALUE",
                     "representation": {
                         "textFormat": {
-                            "textType": "String",
+                            "textType": "Double",
                             "minLength": 1,
-                            "maxLength": 15
+                            "maxLength": 15,
+                            "startValue": "0.00",
+                            "endValue": "42.99"
                         }
                     },
                     "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_VALUE",
