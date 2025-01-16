@@ -12,6 +12,7 @@ from pysdmx.api.qb.util import (
     check_multiple_items,
 )
 from pysdmx.errors import Invalid
+from pysdmx.io.format import StructureFormat
 
 
 class StructureDetail(Enum):
@@ -139,15 +140,6 @@ class StructureType(Enum):
     METADATA_PROVIDER_SCHEME = "metadataproviderscheme"
     METADATA_PROVISION_AGREEMENT = "metadataprovisionagreement"
     ALL = REST_ALL
-
-
-class StructureFormat(Enum):
-    """The response formats."""
-
-    SDMX_ML_2_1_STRUCTURE = "application/vnd.sdmx.structure+xml;version=2.1"
-    SDMX_ML_3_0_STRUCTURE = "application/vnd.sdmx.structure+xml;version=3.0.0"
-    SDMX_JSON_1_0_0 = "application/vnd.sdmx.structure+json;version=1.0.0"
-    SDMX_JSON_2_0_0 = "application/vnd.sdmx.structure+json;version=2.0.0"
 
 
 ITEM_SCHEMES = {
