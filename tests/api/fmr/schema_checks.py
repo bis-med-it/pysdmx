@@ -1,4 +1,5 @@
 from datetime import datetime
+
 import httpx
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
