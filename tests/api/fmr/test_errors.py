@@ -8,8 +8,7 @@ from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 @pytest.fixture
 def fmr() -> RegistryClient:
     return RegistryClient(
-        "https://registry.sdmx.org/sdmx/v2",
-        Format.SDMX_JSON,
+        "https://registry.sdmx.org/sdmx/v2", Format.SDMX_JSON_2_0_0
     )
 
 
