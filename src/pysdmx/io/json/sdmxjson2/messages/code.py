@@ -32,16 +32,13 @@ class JsonCode(Struct, frozen=True):
     def __get_val(
         self, a: JsonAnnotation
     ) -> Tuple[Optional[datetime], Optional[datetime]]:
-        if a.title:
-            vals = a.title.split("/")
-            if a.title.startswith("/"):
-                return (None, self.__handle_date(vals[1]))
-            else:
-                valid_from = self.__handle_date(vals[0])
-                valid_to = self.__handle_date(vals[1]) if vals[1] else None
-                return (valid_from, valid_to)
+        vals = a.title.split("/")  # type: ignore[union-attr]
+        if a.title.startswith("/"):  # type: ignore[union-attr]
+            return (None, self.__handle_date(vals[1]))
         else:
-            return (None, None)
+            valid_from = self.__handle_date(vals[0])
+            valid_to = self.__handle_date(vals[1]) if vals[1] else None
+            return (valid_from, valid_to)
 
     def to_model(self) -> Code:
         """Converts a JsonCode to a standard code."""
