@@ -25,7 +25,13 @@ from pysdmx.api.qb import (
     StructureReference,
     StructureType,
 )
-from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
+from pysdmx.errors import (
+    InternalError,
+    Invalid,
+    NotFound,
+    NotImplemented,
+    Unavailable,
+)
 from pysdmx.io.format import StructureFormat as Format
 from pysdmx.io.json.fusion.reader import deserializers as fusion_readers
 from pysdmx.io.json.sdmxjson2.reader import deserializers as sdmx_readers
@@ -80,6 +86,12 @@ class __BaseRegistryClient:
         if api_endpoint.endswith("/"):
             api_endpoint = api_endpoint[0:-1]
         self.api_endpoint = api_endpoint
+        if fmt not in (Format.SDMX_JSON_2_0_0, Format.FUSION_JSON):
+            raise NotImplemented(
+                "Unsupported format",
+                "Only SDMX-JSON v2.0.0 and Fusion-JSON are currently supported.",
+                {"requested_format": fmt},
+            )
         self.format = fmt
         if fmt == Format.FUSION_JSON:
             self.deser = fusion_readers
