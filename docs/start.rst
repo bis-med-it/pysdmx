@@ -58,11 +58,8 @@ However, metadata can do so much more than that, i.e. they can be "active" and
 ``pysdmx`` supports retrieving metadata from an SDMX Registry or any service
 compliant with the SDMX-REST 2.0.0 (or above) API.
 
-Install ``pysdmx`` with the ``fmr`` extra to enable this functionality:
-
-.. code:: bash
-
-    pip install pysdmx[fmr]
+These classes are part of the core functionality and don't require additional
+installations.
 
 Data discovery and data retrieval
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -81,7 +78,7 @@ web service<sdmx-rest>`.
 Reading and writing SDMX datasets
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Head to the :ref:`how-to guide<data-rw>` to learn how to read and write SDMX datasets
+Head to the :ref:`how-to guide<data-rw>` to learn how to read and write SDMX datasets.
 
 How can I get it?
 -----------------
@@ -98,9 +95,21 @@ For the core functionality, use:
 
 Some use cases require additional dependencies, which can be installed using 
 `extras <https://peps.python.org/pep-0508/#extras>`_. For example,
-to retrieve metadata from an SDMX Registry, install the ``fmr``
-extra:
+to parse SDMX-ML messages, install the ``xml`` extra:
 
 .. code:: bash
 
-    pip install pysdmx[fmr]
+    pip install pysdmx[xml]
+
+The following extras are available:
+
+.. list-table:: Available extras
+   :widths: 25 50
+   :header-rows: 1
+
+   * - Name
+     - Purpose
+   * - ``xml``
+     - Read and Write SDMX-ML messages
+   * - ``pandas``
+     - Handle SDMX datasets as Pandas data frames
