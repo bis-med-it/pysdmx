@@ -41,8 +41,8 @@ class FusionCode(Struct, frozen=True):
     def __get_val(
         self, a: FusionAnnotation
     ) -> Tuple[Optional[datetime], Optional[datetime]]:
-        vals = a.title.split("/")
-        if a.title.startswith("/"):
+        vals = a.title.split("/")  # type: ignore[union-attr]
+        if a.title.startswith("/"):  # type: ignore[union-attr]
             return (None, self.__handle_date(vals[1]))
         else:
             valid_from = self.__handle_date(vals[0])
