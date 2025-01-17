@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -184,6 +185,7 @@ def test_write_data_file(
     )
 
     assert output_file.exists()
+    os.remove(output_file)
 
 
 @pytest.mark.parametrize(
