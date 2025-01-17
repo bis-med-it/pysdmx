@@ -6,7 +6,7 @@ _BASE = "application/vnd.sdmx."
 
 
 class Format(Enum):
-    """The SDMX Structure formats."""
+    """The list of SDMX formats since version 2.1."""
 
     DATA_SDMX_CSV_1_0_0 = f"{_BASE}data+csv;version=1.0.0"
     DATA_SDMX_CSV_2_0_0 = f"{_BASE}data+csv;version=2.0.0"
