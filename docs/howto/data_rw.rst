@@ -9,6 +9,21 @@ Reading and writing SDMX datasets
 
     - :ref:`data-rw`.
 
+.. warning::
+    To read and write data, you must use the extra "data". You may need to install it using the following command:
+
+    .. code-block:: bash
+
+        pip install pysdmx[data]
+
+    For SDMX-ML format, you need to install the extra "xml" as well:
+
+    .. code-block:: bash
+
+        pip install pysdmx[data,xml]
+
+
+
 ``pysdmx`` allows to read and write SDMX datasets in the following formats:
 
 - SDMX-CSV 1.0 (located in ``pysdmx.io.csv.sdmx10``)
