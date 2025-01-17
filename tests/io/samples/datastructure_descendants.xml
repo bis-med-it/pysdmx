@@ -4676,6 +4676,11 @@
 				</com:Annotations>
 					<com:Name xml:lang="en">Frequency</com:Name>
 					<com:Description xml:lang="en">Frequency</com:Description>
+					<str:CoreRepresentation>
+						<str:Enumeration>
+							<Ref package="codelist" agencyID="BIS" id="CL_FREQ" version="1.0" class="Codelist"/>
+						</str:Enumeration>
+					</str:CoreRepresentation>
 				</str:Concept>
 				<str:Concept  id="IBLN_CATEGORY" urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).IBLN_CATEGORY">
 					<com:Name xml:lang="en">Measure (outstanding / change)</com:Name>

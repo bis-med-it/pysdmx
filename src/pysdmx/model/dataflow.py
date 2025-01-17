@@ -449,6 +449,8 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
             # Concept URNs
             if isinstance(c.concept, Concept):
                 out.append(c.concept.urn)
+                if c.concept.codes:
+                    out.append(c.concept.codes.urn)
             else:
                 urn_header = "urn:sdmx:org.sdmx.infomodel.conceptscheme."
                 out.append(urn_header + str(c.concept))
