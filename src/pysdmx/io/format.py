@@ -22,6 +22,7 @@ class Format(Enum):
     REFMETA_SDMX_CSV_2_0_0 = f"{_BASE}metadata+csv;version=2.0.0"
     REFMETA_SDMX_JSON_2_0_0 = f"{_BASE}metadata+json;version=2.0.0"
     REFMETA_SDMX_ML_3_0 = f"{_BASE}metadata+xml;version=3.0.0"
+    REGISTRY_SDMX_ML_2_1 = "application/xml"
     SCHEMA_SDMX_JSON_1_0_0 = f"{_BASE}schema+json;version=1.0.0"
     SCHEMA_SDMX_JSON_2_0_0 = f"{_BASE}schema+json;version=2.0.0"
     SCHEMA_SDMX_ML_2_1 = f"{_BASE}schema+xml;version=2.1"
@@ -30,6 +31,7 @@ class Format(Enum):
     STRUCTURE_SDMX_JSON_2_0_0 = f"{_BASE}structure+json;version=2.0.0"
     STRUCTURE_SDMX_ML_2_1 = f"{_BASE}structure+xml;version=2.1"
     STRUCTURE_SDMX_ML_3_0 = f"{_BASE}structure+xml;version=3.0.0"
+    ERROR_SDMX_ML_2_1 = "application/error.xml"
     FUSION_JSON = "application/vnd.fusion.json"
 
 

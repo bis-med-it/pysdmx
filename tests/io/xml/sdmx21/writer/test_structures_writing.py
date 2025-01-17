@@ -1,13 +1,16 @@
+import os
 from datetime import datetime
 from pathlib import Path
 
 import pytest
 
 from pysdmx.errors import NotImplemented
+from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
-from pysdmx.io.xml.enums import MessageType
-from pysdmx.io.xml.sdmx21.reader import read_xml
-from pysdmx.io.xml.sdmx21.writer import Header, writer
+from pysdmx.io.xml.sdmx21.__tokens import CON
+from pysdmx.io.xml.sdmx21.reader.structure import read
+from pysdmx.io.xml.sdmx21.writer.error import write as write_err
+from pysdmx.io.xml.sdmx21.writer.structure import write
 from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme, Facets
 from pysdmx.model.__base import Annotation
 from pysdmx.model.dataflow import (
@@ -17,6 +20,8 @@ from pysdmx.model.dataflow import (
     DataStructureDefinition,
     Role,
 )
+from pysdmx.model.message import Header
+from pysdmx.util import ItemReference
 
 TEST_CS_URN = (
     "urn:sdmx:org.sdmx.infomodel.conceptscheme."
@@ -174,11 +179,11 @@ def concept():
 @pytest.fixture
 def concept_ds():
     return ConceptScheme(
-        urn="urn:sdmx: org.sdmx.infomodel.conceptscheme."
-        "ConceptScheme = BIS:CS_FREQ(1.0)",
-        uri="urn:sdmx: org.sdmx.infomodel.conceptscheme."
-        "ConceptScheme = BIS:CS_FREQ(1.0)",
-        id="freq",
+        urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
+        "ConceptScheme=BIS:CS_FREQ(1.0)",
+        uri="urn:sdmx:org.sdmx.infomodel.conceptscheme."
+        "ConceptScheme=BIS:CS_FREQ(1.0)",
+        id="CS_FREQ",
         name="Frequency",
         version="1.0",
         agency="BIS",
@@ -186,14 +191,14 @@ def concept_ds():
             Concept(
                 id="freq",
                 urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
-                "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).freq",
+                "Concept=BIS:CS_FREQ(1.0).freq",
                 name="Time frequency",
                 annotations=(),
             ),
             Concept(
                 id="OBS_VALUE",
                 urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
-                "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE",
+                "Concept=BIS:CS_FREQ(1.0).OBS_VALUE",
                 name="Observation value",
                 annotations=(),
             ),
@@ -220,28 +225,48 @@ def datastructure(concept_ds):
                 id="freq_dim",
                 required=True,
                 role=Role.DIMENSION,
-                concept=Concept(
-                    id="freq",
-                    urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
-                    "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).freq",
-                    name="Time frequency",
-                    annotations=(),
-                ),
+                concept=concept_ds.concepts[0],
                 local_facets=Facets(min_length="1", max_length="1"),
                 urn="urn:sdmx:org.sdmx.infomodel.datastructure."
                 "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).FREQ",
             ),
             Component(
+                id="DIM2",
+                required=True,
+                role=Role.DIMENSION,
+                # Missing Concept Scheme
+                concept=ItemReference(
+                    id="CS_FREQ2",
+                    sdmx_type=CON,
+                    agency="BIS",
+                    version="1.0",
+                    item_id="DIM2",
+                ),
+                local_facets=Facets(min_length="1", max_length="1"),
+                urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+                "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).DIM2",
+            ),
+            Component(
+                id="DIM3",
+                required=True,
+                role=Role.DIMENSION,
+                # Missing Concept in Concept Identity
+                concept=ItemReference(
+                    id="CS_FREQ",
+                    sdmx_type=CON,
+                    agency="BIS",
+                    version="1.0",
+                    item_id="DIM3",
+                ),
+                local_facets=Facets(min_length="1", max_length="1"),
+                urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+                "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).DIM2",
+            ),
+            Component(
                 id="OBS_VALUE",
                 required=True,
                 role=Role.MEASURE,
-                concept=Concept(
-                    id="OBS_VALUE",
-                    urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
-                    "Concept=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE",
-                    name="Observation value",
-                    annotations=(),
-                ),
+                concept=concept_ds.concepts[1],
                 urn="urn:sdmx:org.sdmx.infomodel.datastructure."
                 "PrimaryMeasure=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE",
             ),
@@ -288,42 +313,55 @@ def dataflow():
 
 
 def test_codelist(codelist_sample, complete_header, codelist):
-    result = writer(
-        {"Codelists": {"CL_FREQ": codelist}},
-        MessageType.Structure,
+    content = [codelist]
+    result = write(
+        content,
         header=complete_header,
     )
-    read_xml(result, validate=False)
+    read(result, validate=False)
 
     assert result == codelist_sample
 
 
 def test_concept(concept_sample, complete_header, concept):
-    result = writer(
-        {"Concepts": {"FREQ": concept}},
-        MessageType.Structure,
+    content = [concept]
+    result = write(
+        content,
         header=complete_header,
     )
 
     assert result == concept_sample
 
 
+def test_file_writing(concept_sample, complete_header, concept):
+    content = [concept]
+    output_path = Path(__file__).parent / "samples" / "test_output.xml"
+    write(
+        content,
+        output_path=output_path,
+        header=complete_header,
+    )
+
+    with open(output_path, "r") as f:
+        assert f.read() == concept_sample
+    os.remove(output_path)
+
+
 def test_writer_empty(empty_sample, header):
-    result = writer({}, MessageType.Structure, prettyprint=True, header=header)
+    result = write([], prettyprint=True, header=header)
     assert result == empty_sample
 
 
 def test_writing_not_supported():
     with pytest.raises(NotImplemented):
-        writer({}, MessageType.Error, prettyprint=True)
+        write_err({})
 
 
 def test_write_to_file(empty_sample, tmpdir, header):
     file = tmpdir.join("output.txt")
-    result = writer(
-        {},
-        MessageType.Structure,
-        path=file.strpath,
+    result = write(
+        [],
+        output_path=file.strpath,
         prettyprint=True,
         header=header,
     )  # or use str(file)
@@ -332,7 +370,7 @@ def test_write_to_file(empty_sample, tmpdir, header):
 
 
 def test_writer_no_header():
-    result: str = writer({}, MessageType.Structure, prettyprint=False)
+    result: str = write({}, prettyprint=False)
     assert "<mes:Header>" in result
     assert "<mes:ID>" in result
     assert "<mes:Test>true</mes:Test>" in result
@@ -341,9 +379,9 @@ def test_writer_no_header():
 
 
 def test_writer_datastructure(complete_header, datastructure):
-    result = writer(
-        {"DataStructures": {"FREQ": datastructure}},
-        MessageType.Structure,
+    content = [datastructure]
+    result = write(
+        content,
         header=complete_header,
         prettyprint=True,
     )
@@ -352,9 +390,9 @@ def test_writer_datastructure(complete_header, datastructure):
 
 
 def test_writer_partial_datastructure(complete_header, partial_datastructure):
-    result = writer(
-        {"DataStructures": {"FREQ": partial_datastructure}},
-        MessageType.Structure,
+    content = [partial_datastructure]
+    result = write(
+        content,
         header=complete_header,
         prettyprint=True,
     )
@@ -363,9 +401,9 @@ def test_writer_partial_datastructure(complete_header, partial_datastructure):
 
 
 def test_writer_dataflow(complete_header, dataflow):
-    result = writer(
-        {"Dataflows": {"FREQ": dataflow}},
-        MessageType.Structure,
+    content = [dataflow]
+    result = write(
+        content,
         header=complete_header,
         prettyprint=True,
     )
@@ -374,12 +412,12 @@ def test_writer_dataflow(complete_header, dataflow):
 
 
 def test_read_write(read_write_sample, read_write_header):
-    content, filetype = process_string_to_read(read_write_sample)
-    assert filetype == "xml"
-    read_result = read_xml(content, validate=True)
-    write_result = writer(
+    content, read_format = process_string_to_read(read_write_sample)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    read_result = read(content, validate=True)
+
+    write_result = write(
         read_result,
-        MessageType.Structure,
         header=read_write_header,
         prettyprint=True,
     )
@@ -388,33 +426,24 @@ def test_read_write(read_write_sample, read_write_header):
 
 
 def test_write_read(complete_header, datastructure, dataflow, concept_ds):
-    content = {
-        "Concepts": {"BIS:freq(1.0)": concept_ds},
-        "DataStructures": {
-            "DataStructure=ESTAT:HLTH_RS_PRSHP1(7.0)": datastructure
-        },
-        "Dataflows": {"Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)": dataflow},
-    }
+    content = [concept_ds, datastructure, dataflow]
 
-    write_result = writer(
+    write_result = write(
         content,
-        MessageType.Structure,
         header=complete_header,
         prettyprint=True,
     )
 
-    read_result = read_xml(write_result)
+    read_result = read(write_result)
 
     assert content == read_result
 
 
 def test_bis_der(bis_sample, bis_header):
-    content, filetype = process_string_to_read(bis_sample)
-    assert filetype == "xml"
-    read_result = read_xml(content, validate=True)
-    write_result = writer(
+    content, _ = process_string_to_read(bis_sample)
+    read_result = read(bis_sample, validate=True)
+    write_result = write(
         read_result,
-        MessageType.Structure,
         header=bis_header,
         prettyprint=True,
     )
@@ -422,14 +451,13 @@ def test_bis_der(bis_sample, bis_header):
 
 
 def test_group_deletion(groups_sample, header):
-    content, filetype = process_string_to_read(groups_sample)
-    assert filetype == "xml"
-    read_result = read_xml(content, validate=True)
-    write_result = writer(
+    content, read_format = process_string_to_read(groups_sample)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    read_result = read(content, validate=True)
+    write_result = write(
         read_result,
-        MessageType.Structure,
         header=header,
         prettyprint=True,
     )
     assert "Groups" not in write_result
-    assert "DataStructure=BIS:BIS_DER(1.0)" in read_result["DataStructures"]
+    assert any("BIS:BIS_DER(1.0)" in e.short_urn for e in read_result)

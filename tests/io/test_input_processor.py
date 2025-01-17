@@ -4,8 +4,9 @@ from pathlib import Path
 import pytest
 
 from pysdmx.errors import Invalid, NotImplemented
+from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
-from pysdmx.io.xml.sdmx21.reader import read_xml
+from pysdmx.io.reader import read_sdmx
 
 
 @pytest.fixture
@@ -47,34 +48,40 @@ def invalid_message_xml():
 
 
 def test_process_string_to_read(valid_xml, valid_xml_path):
-    infile, filetype = process_string_to_read(valid_xml_path)
+    infile, read_format = process_string_to_read(valid_xml_path)
     assert infile == valid_xml
-    assert filetype == "xml"
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
 
 
 def test_process_string_to_read_bytes(valid_xml, valid_xml_bytes):
-    infile, filetype = process_string_to_read(valid_xml_bytes)
+    infile, read_format = process_string_to_read(valid_xml_bytes)
     assert infile == valid_xml
-    assert filetype == "xml"
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
 
 
 def test_process_string_to_read_str(valid_xml):
-    infile, filetype = process_string_to_read(valid_xml)
+    infile, read_format = process_string_to_read(valid_xml)
     assert infile == valid_xml
-    assert filetype == "xml"
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+
+
+def test_process_string_to_read_str_path(valid_xml, valid_xml_path):
+    infile, read_format = process_string_to_read(str(valid_xml_path))
+    assert infile == valid_xml
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
 
 
 def test_process_string_to_read_bom(valid_xml, valid_xml_bom):
-    infile, filetype = process_string_to_read(valid_xml_bom)
+    infile, read_format = process_string_to_read(valid_xml_bom)
     assert infile[:5] == "<?xml"
-    assert filetype == "xml"
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
 
 
 def test_process_string_to_read_invalid_xml(invalid_xml):
     message = "This element is not expected."
     process_string_to_read(invalid_xml)
     with pytest.raises(Invalid, match=message):
-        read_xml(invalid_xml, validate=True)
+        read_sdmx(invalid_xml, validate=True)
 
 
 def test_process_string_to_read_invalid_type():
@@ -90,9 +97,10 @@ def test_process_string_to_read_invalid_path():
 
 
 def test_process_string_to_read_valid_json():
-    infile, filetype = process_string_to_read('{"key": "value"}')
-    assert infile == '{"key": "value"}'
-    assert filetype == "json"
+    with pytest.raises(
+        NotImplemented, match="JSON formats reading are not supported yet"
+    ):
+        process_string_to_read('{"key": "value"}')
 
 
 def test_process_string_to_read_invalid_json():
@@ -100,7 +108,17 @@ def test_process_string_to_read_invalid_json():
         process_string_to_read('{"key": "value"')
 
 
+def test_check_csv_exception():
+    with pytest.raises(Invalid):
+        process_string_to_read("")
+
+
 def test_process_string_to_read_invalid_allowed_error(invalid_message_xml):
-    message = "Cannot parse input as SDMX."
-    with pytest.raises(NotImplemented, match=message):
-        read_xml(invalid_message_xml, validate=False)
+    message = "Cannot parse input as SDMX-ML."
+    with pytest.raises(Invalid, match=message):
+        read_sdmx(invalid_message_xml, validate=False)
+
+
+def test_invalid_xml_flavour():
+    with pytest.raises(Invalid):
+        process_string_to_read("<?xmlAAAA")

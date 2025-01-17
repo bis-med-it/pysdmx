@@ -156,4 +156,4 @@ def test_short_urn(id, name, agency, version, codes):
         id=id, name=name, agency=agency, items=codes, version=version
     )
 
-    assert cl.short_urn() == f"Codelist={agency}:{id}({version})"
+    assert cl.short_urn == f"Codelist={agency}:{id}({version})"

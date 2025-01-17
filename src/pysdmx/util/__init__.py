@@ -32,7 +32,7 @@ class Reference(Struct, frozen=True):
         return f"{self.sdmx_type}={self.agency}:{self.id}({self.version})"
 
 
-class ItemReference(Struct, frozen=True):
+class ItemReference(Struct, frozen=True, tag=True):
     """The coordinates of an SDMX non-nested item.
 
     Attributes:
@@ -48,6 +48,13 @@ class ItemReference(Struct, frozen=True):
     id: str
     version: str
     item_id: str
+
+    def __str__(self) -> str:
+        """Returns a string representation of the object."""
+        return (
+            f"{self.sdmx_type}={self.agency}:{self.id}"
+            f"({self.version}).{self.item_id}"
+        )
 
 
 maintainable_urn_pattern = re.compile(r"^.*\.(.*)=(.*):(.*)\((.*)\)$")
@@ -130,4 +137,12 @@ def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:
         )
 
 
-__all__ = ["convert_dpm", "find_by_urn", "parse_item_urn", "parse_urn"]
+__all__ = [
+    "convert_dpm",
+    "find_by_urn",
+    "parse_item_urn",
+    "parse_urn",
+    "parse_short_urn",
+    "Reference",
+    "ItemReference",
+]

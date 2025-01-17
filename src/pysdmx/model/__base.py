@@ -241,6 +241,7 @@ class MaintainableArtefact(
                 "Maintainable artefacts must reference an agency.",
             )
 
+    @property
     def short_urn(self) -> str:
         """Returns the short URN for the artefact.
 

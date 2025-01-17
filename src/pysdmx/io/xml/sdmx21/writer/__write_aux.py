@@ -2,22 +2,22 @@
 """Writer auxiliary functions."""
 
 from collections import OrderedDict
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 
 from pysdmx.errors import Invalid, NotImplemented
+from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.enums import MessageType
 from pysdmx.model import Role, Schema
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
 
 MESSAGE_TYPE_MAPPING = {
-    MessageType.GenericDataSet: "GenericData",
-    MessageType.StructureSpecificDataSet: "StructureSpecificData",
-    MessageType.Structure: "Structure",
-    MessageType.Error: "Error",
-    MessageType.Submission: "RegistryInterface",
+    Format.DATA_SDMX_ML_2_1_GEN: "GenericData",
+    Format.DATA_SDMX_ML_2_1_STR: "StructureSpecificData",
+    Format.STRUCTURE_SDMX_ML_2_1: "Structure",
+    Format.ERROR_SDMX_ML_2_1: "Error",
+    Format.REGISTRY_SDMX_ML_2_1: "RegistryInterface",
 }
 
 ABBR_MSG = "mes"
@@ -51,7 +51,7 @@ NAMESPACES = {
 URN_DS_BASE = "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure="
 
 
-def __namespaces_from_type(type_: MessageType) -> str:
+def __namespaces_from_type(type_: Format) -> str:
     """Returns the namespaces for the XML file based on type.
 
     Args:
@@ -63,18 +63,18 @@ def __namespaces_from_type(type_: MessageType) -> str:
     Raises:
         NotImplemented: If the MessageType is not implemented
     """
-    if type_ == MessageType.Structure:
+    if type_ == Format.STRUCTURE_SDMX_ML_2_1:
         return f"xmlns:{ABBR_STR}={NAMESPACES[ABBR_STR]!r} "
-    elif type_ == MessageType.StructureSpecificDataSet:
+    elif type_ == Format.DATA_SDMX_ML_2_1_STR:
         return f"xmlns:{ABBR_SPE}={NAMESPACES[ABBR_SPE]!r} "
-    elif type_ == MessageType.GenericDataSet:
+    elif type_ == Format.DATA_SDMX_ML_2_1_GEN:
         return f"xmlns:{ABBR_GEN}={NAMESPACES[ABBR_GEN]!r} "
     else:
         raise NotImplemented(f"{type_} not implemented")
 
 
 def create_namespaces(
-    type_: MessageType, ss_namespaces: str, prettyprint: bool = False
+    type_: Format, ss_namespaces: str = "", prettyprint: bool = False
 ) -> str:
     """Creates the namespaces for the XML file.
 
@@ -116,17 +116,7 @@ MSG_CONTENT_PKG = OrderedDict(
 )
 
 
-MSG_CONTENT_ITEM = {
-    ORGS: "AgencyScheme",
-    DATAFLOWS: "Dataflow",
-    CODELISTS: "Codelist",
-    CONCEPTS: "ConceptScheme",
-    DSDS: "DataStructure",
-    CONSTRAINTS: "ContentConstraint",
-}
-
-
-def get_end_message(type_: MessageType, prettyprint: bool) -> str:
+def get_end_message(type_: Format, prettyprint: bool) -> str:
     """Returns the end message for the XML file.
 
     Args:
@@ -153,7 +143,7 @@ def add_indent(indent: str) -> str:
 
 
 def __write_header(
-    header: Header, prettyprint: bool, add_namespace_structure: bool
+    header: Header, prettyprint: bool, add_namespace_structure: bool = False
 ) -> str:
     """Writes the Header part of the message.
 
@@ -297,11 +287,10 @@ def get_codes(
     return series_codes, obs_codes
 
 
-def check_content_dataset(content: Dict[str, PandasDataset]) -> None:
+def check_content_dataset(content: Sequence[PandasDataset]) -> None:
     """Checks if the Message content is a dataset."""
-    for dataset in content.values():
-        if not isinstance(dataset, PandasDataset):
-            raise Invalid("Message Content must contain only Datasets.")
+    if not all(isinstance(dataset, PandasDataset) for dataset in content):
+        raise Invalid("Message Content must only contain a Dataset sequence.")
 
 
 def check_dimension_at_observation(
@@ -311,7 +300,7 @@ def check_dimension_at_observation(
     """This function checks if the dimension at observation is valid."""
     # If dimension_at_observation is None, set it to ALL_DIM
     if dimension_at_observation is None:
-        dimension_at_observation = {k: ALL_DIM for k in content}
+        dimension_at_observation = dict.fromkeys(content, ALL_DIM)
         return dimension_at_observation
     # Validate the datasets
     for ds in content.values():

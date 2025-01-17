@@ -1,9 +1,10 @@
 """Module for writing metadata to XML files."""
 
 from collections import OrderedDict
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Sequence, Union
 
-from pysdmx.io.xml.sdmx21.__parsing_config import (
+from pysdmx.io.format import Format
+from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCIES,
     AGENCY_ID,
     AS_STATUS,
@@ -18,6 +19,7 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     CORE_REP,
     CS,
     DEPARTMENT,
+    DFW,
     DIM,
     DSD,
     DSD_COMPS,
@@ -45,32 +47,49 @@ from pysdmx.io.xml.sdmx21.__parsing_config import (
     URN,
     VERSION,
 )
-from pysdmx.io.xml.sdmx21.reader.__utils import DFW
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_COM,
     ABBR_MSG,
     ABBR_STR,
     MSG_CONTENT_PKG,
     __to_lower_camel_case,
+    __write_header,
     add_indent,
+    create_namespaces,
+    get_end_message,
 )
-from pysdmx.model import Codelist, Concept, DataType, Facets, Hierarchy
+from pysdmx.model import (
+    AgencyScheme,
+    Codelist,
+    Concept,
+    ConceptScheme,
+    DataType,
+    Facets,
+    Hierarchy,
+)
 from pysdmx.model.__base import (
     Agency,
     AnnotableArtefact,
     Contact,
     IdentifiableArtefact,
     Item,
+    ItemScheme,
     MaintainableArtefact,
     NameableArtefact,
     VersionableArtefact,
 )
 from pysdmx.model.dataflow import (
     Component,
+    Dataflow,
     DataStructureDefinition,
     Role,
 )
-from pysdmx.util import parse_item_urn, parse_short_urn, parse_urn
+from pysdmx.model.message import Header
+from pysdmx.util import (
+    ItemReference,
+    parse_item_urn,
+    parse_short_urn,
+)
 
 ANNOTATION_WRITER = OrderedDict(
     {
@@ -85,6 +104,22 @@ ROLE_MAPPING = {
     Role.DIMENSION: DIM,
     Role.ATTRIBUTE: ATT,
     Role.MEASURE: PRIM_MEASURE,
+}
+
+STR_TYPES = Union[
+    ItemScheme,
+    Codelist,
+    ConceptScheme,
+    DataStructureDefinition,
+    Dataflow,
+]
+
+STR_DICT_TYPE_LIST = {
+    AgencyScheme: "OrganisationSchemes",
+    Codelist: "Codelists",
+    ConceptScheme: "Concepts",
+    DataStructureDefinition: "DataStructures",
+    Dataflow: "Dataflows",
 }
 
 
@@ -246,7 +281,7 @@ def __write_item(item: Item, indent: str) -> str:
     data = __write_nameable(item, add_indent(indent))
     attributes = data["Attributes"].replace("'", '"')
     outfile = f"{indent}<{head}{attributes}>"
-    outfile += __export_intern_data(data, add_indent(indent))
+    outfile += __export_intern_data(data)
     if isinstance(item, Agency) and len(item.contacts) > 0:
         for contact in item.contacts:
             outfile += __write_contact(contact, add_indent(indent))
@@ -380,14 +415,19 @@ def __write_component(
     return outfile
 
 
-def __write_concept_identity(concept: Concept, indent: str) -> str:
-    ref = parse_item_urn(concept.urn)  # type: ignore[arg-type]
+def __write_concept_identity(
+    identity: Union[Concept, ItemReference], indent: str
+) -> str:
+    if isinstance(identity, ItemReference):
+        ref = identity
+    else:
+        ref = parse_item_urn(identity.urn)  # type: ignore[arg-type]
 
     outfile = f"{indent}<{ABBR_STR}:{CON_ID}>"
     outfile += f"{add_indent(indent)}<{REF} "
     outfile += f"{AGENCY_ID}={ref.agency!r} "
     outfile += f"{CLASS}={CON!r} "
-    outfile += f"{ID}={concept.id!r} "
+    outfile += f"{ID}={ref.item_id!r} "
     outfile += f"{PAR_ID}={ref.id!r} "
     outfile += f"{PAR_VER}={ref.version!r} "
     outfile += f"{PACKAGE}={CS.lower()!r}/>"
@@ -442,7 +482,7 @@ def __write_text_format(
 
 def __write_enumeration(codes: Union[Codelist, Hierarchy], indent: str) -> str:
     """Writes the enumeration to the XML file."""
-    ref = parse_short_urn(codes.short_urn())
+    ref = parse_short_urn(codes.short_urn)
 
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{ENUM}>"
     outfile += f"{add_indent(add_indent(indent))}<{REF} "
@@ -457,14 +497,9 @@ def __write_enumeration(codes: Union[Codelist, Hierarchy], indent: str) -> str:
     return outfile
 
 
-def __write_structure(
-    item: Union[DataStructureDefinition, str], indent: str
-) -> str:
+def __write_structure(item: str, indent: str) -> str:
     """Writes the dataflow structure to the XML file."""
-    if isinstance(item, str):
-        ref = parse_short_urn(item)
-    else:
-        ref = parse_urn(item.urn)  # type: ignore[arg-type]
+    ref = parse_short_urn(item)
     outfile = f"{indent}<{ABBR_STR}:Structure>"
     outfile += (
         f"{add_indent(indent)}<{REF} "
@@ -501,7 +536,7 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
 
     outfile += f"{indent}<{label}{attributes}>"
 
-    outfile += __export_intern_data(data, indent)
+    outfile += __export_intern_data(data)
 
     outfile += components
 
@@ -570,12 +605,11 @@ def __get_outfile(obj_: Dict[str, Any], key: str = "") -> str:
     return "".join(element)
 
 
-def __export_intern_data(data: Dict[str, Any], indent: str) -> str:
+def __export_intern_data(data: Dict[str, Any]) -> str:
     """Export internal data (Annotations, Name, Description) on the XML file.
 
     Args:
         data: Information to be exported
-        indent: Indentation used
 
     Returns:
         The XML string with the exported data
@@ -587,7 +621,7 @@ def __export_intern_data(data: Dict[str, Any], indent: str) -> str:
     return outfile
 
 
-def write_structures(content: Dict[str, Any], prettyprint: bool) -> str:
+def __write_structures(content: Dict[str, Any], prettyprint: bool) -> str:
     """Writes the structures to the XML file.
 
     Args:
@@ -611,3 +645,48 @@ def write_structures(content: Dict[str, Any], prettyprint: bool) -> str:
     outfile = outfile.replace("& ", "&amp; ")
 
     return outfile
+
+
+def write(
+    structures: Sequence[STR_TYPES],
+    output_path: str = "",
+    prettyprint: bool = True,
+    header: Optional[Header] = None,
+) -> Optional[str]:
+    """This function writes a SDMX-ML file from the Message Content.
+
+    Args:
+        structures: The content to be written
+        output_path: The path to save the file
+        prettyprint: Prettyprint or not
+        header: The header to be used (generated if None)
+
+    Returns:
+        The XML string if output_path is empty, None otherwise
+    """
+    type_ = Format.STRUCTURE_SDMX_ML_2_1
+    elements = {structure.short_urn: structure for structure in structures}
+    if header is None:
+        header = Header()
+
+    content: Dict[str, Dict[str, STR_TYPES]] = {}
+    for urn, element in elements.items():
+        list_ = STR_DICT_TYPE_LIST[type(element)]
+        if list_ not in content:
+            content[list_] = {}
+        content[list_][urn] = element
+
+    # Generating the initial tag with namespaces
+    outfile = create_namespaces(type_, prettyprint=prettyprint)
+    # Generating the header
+    outfile += __write_header(header, prettyprint)
+    # Writing the content
+    outfile += __write_structures(content, prettyprint)
+
+    outfile += get_end_message(type_, prettyprint)
+
+    if output_path == "":
+        return outfile
+    with open(output_path, "w", encoding="UTF-8", errors="replace") as f:
+        f.write(outfile)
+    return None

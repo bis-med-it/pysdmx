@@ -1,13 +1,13 @@
 """SDMX 2.0 CSV reader module."""
 
 from io import StringIO
-from typing import Dict
+from typing import Sequence
 
 import pandas as pd
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
-from pysdmx.model.message import ActionType
+from pysdmx.model.dataset import ActionType
 
 ACTION_SDMX_CSV_MAPPER_READING = {
     "A": ActionType.Append,
@@ -49,20 +49,11 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
     df_csv = data.drop(["STRUCTURE", "STRUCTURE_ID"], axis=1)
 
     if structure_type == "DataStructure".lower():
-        urn = (
-            "urn:sdmx:org.sdmx.infomodel.datastructure."
-            f"DataStructure={structure_id}"
-        )
-    elif structure_type == "DataFlow".lower():
-        urn = (
-            "urn:sdmx:org.sdmx.infomodel.datastructure."
-            f"DataFlow={structure_id}"
-        )
+        urn = f"DataStructure={structure_id}"
+    elif structure_type == "Dataflow".lower():
+        urn = f"Dataflow={structure_id}"
     elif structure_type == "dataprovision":
-        urn = (
-            f"urn:sdmx:org.sdmx.infomodel.registry."
-            f"ProvisionAgreement={structure_id}"
-        )
+        urn = f"ProvisionAgreement={structure_id}"
     else:
         raise Invalid(
             "Invalid value on STRUCTURE column",
@@ -87,11 +78,11 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
     )
 
 
-def read(infile: str) -> Dict[str, PandasDataset]:
+def read(input_str: str) -> Sequence[PandasDataset]:
     """Reads csv file and returns a payload dictionary.
 
     Args:
-        infile: Path to file, str.
+        input_str: Path to file, str.
 
     Returns:
         payload: dict.
@@ -100,7 +91,7 @@ def read(infile: str) -> Dict[str, PandasDataset]:
         Invalid: If it is an invalid CSV file.
     """
     # Get Dataframe from CSV file
-    df_csv = pd.read_csv(StringIO(infile))
+    df_csv = pd.read_csv(StringIO(input_str))
     # Drop empty columns
     df_csv = df_csv.dropna(axis=1, how="all")
 
@@ -142,13 +133,13 @@ def read(infile: str) -> Dict[str, PandasDataset]:
 
     # Create a payload dictionary to store datasets with the
     # different unique_ids as keys
-    payload = {}
+    payload = []
     for df in list_df:
         # Generate a dataset from each subset of the DataFrame
         dataset = __generate_dataset_from_sdmx_csv(data=df)
 
         # Add the dataset to the payload dictionary
-        payload[dataset.short_urn] = dataset
+        payload.append(dataset)
 
     # Return the payload generated
     return payload

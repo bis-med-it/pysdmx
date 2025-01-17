@@ -1,6 +1,6 @@
 """SDMX 2.0 CSV reader and writer."""
 
-from pysdmx.model.message import ActionType
+from pysdmx.model.dataset import ActionType
 
 SDMX_CSV_ACTION_MAPPER = {
     ActionType.Append: "A",
