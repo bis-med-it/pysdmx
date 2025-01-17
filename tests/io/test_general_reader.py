@@ -53,6 +53,14 @@ def structures_path():
 
 
 @pytest.fixture
+def structures_descendants_path():
+    base_path = (
+        Path(__file__).parent / "samples" / "datastructure_descendants.xml"
+    )
+    return str(base_path)
+
+
+@pytest.fixture
 def dataflow_no_children():
     base_path = (
         Path(__file__).parent
@@ -171,6 +179,27 @@ def test_get_datasets_valid(data_path, structures_path):
     assert isinstance(dataset.structure, Schema)
     assert dataset.data is not None
     assert len(dataset.data) == 1000
+    assert len(dataset.structure.artefacts) == 26
+
+
+def test_get_datasets_valid_descendants(
+    data_path, structures_descendants_path
+):
+    result = get_datasets(data_path, structures_descendants_path)
+    assert len(result) == 1
+    dataset = result[0]
+    assert isinstance(dataset.structure, Schema)
+    assert dataset.data is not None
+    assert len(dataset.data) == 1000
+    assert len(dataset.structure.artefacts) == 45
+    assert (
+        "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept="
+        "BIS:BIS_CONCEPT_SCHEME(1.0)"
+        ".TITLE_TS"
+    ) in dataset.structure.artefacts
+    assert (
+        "urn:sdmx:org.sdmx.infomodel.codelist." "Codelist=BIS:CL_DECIMALS(1.0)"
+    ) in dataset.structure.artefacts
 
 
 def test_get_datasets_no_data_found(data_path, structures_path):

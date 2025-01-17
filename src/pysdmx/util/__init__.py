@@ -49,6 +49,13 @@ class ItemReference(Struct, frozen=True, tag=True):
     version: str
     item_id: str
 
+    def __str__(self) -> str:
+        """Returns a string representation of the object."""
+        return (
+            f"{self.sdmx_type}={self.agency}:{self.id}"
+            f"({self.version}).{self.item_id}"
+        )
+
 
 maintainable_urn_pattern = re.compile(r"^.*\.(.*)=(.*):(.*)\((.*)\)$")
 item_urn_pattern = re.compile(r"^.*\.(.*)=(.*):(.*)\((.*)\)\.(.*)$")

@@ -440,6 +440,21 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
 
     components: Components
 
+    def __extract_artefacts(self) -> Sequence[str]:
+        """Extract the artefacts used to generate the schema."""
+        out = []
+        for c in self.components:
+            if c.local_codes:
+                out.append(c.local_codes.urn)
+            # Concept URNs
+            if isinstance(c.concept, Concept):
+                out.append(c.concept.urn)
+            else:
+                urn_header = "urn:sdmx:org.sdmx.infomodel.conceptscheme."
+                out.append(urn_header + str(c.concept))
+        result = list({a for a in out if a})
+        return result
+
     def to_schema(self) -> Schema:
         """Generates a Schema class from the DataStructureDefinition."""
         return Schema(
@@ -450,6 +465,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
             id=self.id,
             components=self.components,
             version=self.version,
+            artefacts=self.__extract_artefacts(),
         )
 
     @property
