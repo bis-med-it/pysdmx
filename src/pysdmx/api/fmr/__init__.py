@@ -32,7 +32,7 @@ from pysdmx.errors import (
     NotImplemented,
     Unavailable,
 )
-from pysdmx.io.format import StructureFormat as Format
+from pysdmx.io.format import StructureFormat
 from pysdmx.io.json.fusion.reader import deserializers as fusion_readers
 from pysdmx.io.json.sdmxjson2.reader import deserializers as sdmx_readers
 from pysdmx.io.serde import Deserializer
@@ -79,21 +79,24 @@ class __BaseRegistryClient:
     def __init__(
         self,
         api_endpoint: str,
-        fmt: Format = Format.SDMX_JSON_2_0_0,
+        fmt: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
         pem: Optional[str] = None,
     ):
         """Instantiate a new client against the target endpoint."""
         if api_endpoint.endswith("/"):
             api_endpoint = api_endpoint[0:-1]
         self.api_endpoint = api_endpoint
-        if fmt not in (Format.SDMX_JSON_2_0_0, Format.FUSION_JSON):
+        if fmt not in (
+            StructureFormat.SDMX_JSON_2_0_0,
+            StructureFormat.FUSION_JSON,
+        ):
             raise NotImplemented(
                 "Unsupported format",
                 "Only SDMX-JSON v2.0.0 and Fusion-JSON are supported.",
                 {"requested_format": fmt.value},
             )
         self.format = fmt
-        if fmt == Format.FUSION_JSON:
+        if fmt == StructureFormat.FUSION_JSON:
             self.deser = fusion_readers
         else:
             self.deser = sdmx_readers
@@ -326,7 +329,7 @@ class RegistryClient(__BaseRegistryClient):
     def __init__(
         self,
         api_endpoint: str,
-        format: Format = Format.SDMX_JSON_2_0_0,
+        format: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
         pem: Optional[str] = None,
     ):
         """Instantiate a new client against the target endpoint.
@@ -344,7 +347,10 @@ class RegistryClient(__BaseRegistryClient):
     def __fetch(self, url: str, is_ref_meta: bool = False) -> bytes:
         with httpx.Client(verify=self.ssl_context) as client:
             try:
-                if is_ref_meta and self.format == Format.SDMX_JSON_2_0_0:
+                if (
+                    is_ref_meta
+                    and self.format == StructureFormat.SDMX_JSON_2_0_0
+                ):
                     h = self.headers.copy()
                     h["Accept"] = (
                         "application/vnd.sdmx.metadata+json;version=2.0.0"
@@ -758,7 +764,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
     def __init__(
         self,
         api_endpoint: str,
-        format: Format = Format.SDMX_JSON_2_0_0,
+        format: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
         pem: Optional[str] = None,
     ):
         """Instantiate a new client against the target endpoint.
@@ -779,7 +785,10 @@ class AsyncRegistryClient(__BaseRegistryClient):
             timeout=10.0,
         ) as client:
             try:
-                if is_ref_meta and self.format == Format.SDMX_JSON_2_0_0:
+                if (
+                    is_ref_meta
+                    and self.format == StructureFormat.SDMX_JSON_2_0_0
+                ):
                     h = self.headers.copy()
                     h["Accept"] = (
                         "application/vnd.sdmx.metadata+json;version=2.0.0"
