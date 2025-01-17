@@ -1,14 +1,14 @@
 import httpx
 import pytest
 
-from pysdmx.api.fmr import Format, RegistryClient
+from pysdmx.api.fmr import RegistryClient, StructureFormat
 from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 
 
 @pytest.fixture
 def fmr() -> RegistryClient:
     return RegistryClient(
-        "https://registry.sdmx.org/sdmx/v2", Format.SDMX_JSON_2_0_0
+        "https://registry.sdmx.org/sdmx/v2", StructureFormat.SDMX_JSON_2_0_0
     )
 
 

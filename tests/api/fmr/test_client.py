@@ -1,6 +1,6 @@
 import pytest
 
-from pysdmx.api.fmr import Format, RegistryClient
+from pysdmx.api.fmr import RegistryClient, StructureFormat
 from pysdmx.errors import NotImplemented
 
 
@@ -8,8 +8,9 @@ from pysdmx.errors import NotImplemented
     "fmt",
     (
         f
-        for f in Format
-        if f not in [Format.FUSION_JSON, Format.SDMX_JSON_2_0_0]
+        for f in StructureFormat
+        if f
+        not in [StructureFormat.FUSION_JSON, StructureFormat.SDMX_JSON_2_0_0]
     ),
 )
 def test_unsupported_format(fmt):

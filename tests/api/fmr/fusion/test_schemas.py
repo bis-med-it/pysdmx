@@ -2,7 +2,7 @@ import httpx
 import pytest
 
 import tests.api.fmr.schema_checks as checks
-from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
+from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient, StructureFormat
 from pysdmx.errors import InternalError
 
 
@@ -10,7 +10,7 @@ from pysdmx.errors import InternalError
 def fmr():
     return RegistryClient(
         "https://registry.sdmx.org/sdmx/v2/",
-        Format.FUSION_JSON,
+        StructureFormat.FUSION_JSON,
     )
 
 
@@ -18,7 +18,7 @@ def fmr():
 def async_fmr():
     return AsyncRegistryClient(
         "https://registry.sdmx.org/sdmx/v2/",
-        Format.FUSION_JSON,
+        StructureFormat.FUSION_JSON,
     )
 
 
