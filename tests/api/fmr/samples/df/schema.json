@@ -6680,7 +6680,7 @@
                                         "minLength": 1,
                                         "minValue": -15,
                                         "maxValue": 15,
-                                        "dataType": "String"
+                                        "dataType": "Integer"
                                     },
                                     "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_UNIT_MULT(1.0)"
                                 },

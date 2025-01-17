@@ -293,6 +293,8 @@ def check_core_local_repr(
     ).components
     freq = schema["FREQ"]
     title = schema["TITLE_GRP"]
+    unit_mult = schema["UNIT_MULT"]
+    obs_value = schema["OBS_VALUE"]
 
     assert isinstance(freq, Component)
     assert len(freq.enumeration) == 8
@@ -304,6 +306,20 @@ def check_core_local_repr(
     assert not title.enumeration
     assert title.dtype == DataType.STRING
     assert title.facets is None
+
+    assert isinstance(unit_mult, Component)
+    assert unit_mult.dtype == DataType.INTEGER
+    assert len(unit_mult.enumeration) == 10
+    assert unit_mult.facets.min_length == 1
+    assert unit_mult.facets.max_length == 2
+    assert unit_mult.facets.min_value == -15
+    assert unit_mult.facets.max_value == 15
+
+    assert isinstance(obs_value, Component)
+    assert obs_value.dtype == DataType.DOUBLE
+    assert obs_value.enumeration is None
+    assert obs_value.facets.start_value == 0.0
+    assert obs_value.facets.end_value == 42.99
 
 
 def check_roles(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
@@ -338,6 +354,8 @@ def check_types(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
             assert comp.dtype == DataType.PERIOD
         elif comp.id == "DECIMALS":
             assert comp.dtype == DataType.BIG_INTEGER
+        elif comp.id == "UNIT_MULT":
+            assert comp.dtype == DataType.INTEGER
         else:
             assert comp.dtype == DataType.STRING
 
