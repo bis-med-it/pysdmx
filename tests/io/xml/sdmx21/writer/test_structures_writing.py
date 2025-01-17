@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from pysdmx.errors import NotImplemented
-from pysdmx.io.enums import SDMXFormat
+from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.sdmx21.__tokens import CON
 from pysdmx.io.xml.sdmx21.reader.structure import read
@@ -411,7 +411,7 @@ def test_writer_dataflow(complete_header, dataflow):
 
 def test_read_write(read_write_sample, read_write_header):
     content, read_format = process_string_to_read(read_write_sample)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
     read_result = read(content, validate=True)
 
     write_result = write(
@@ -450,7 +450,7 @@ def test_bis_der(bis_sample, bis_header):
 
 def test_group_deletion(groups_sample, header):
     content, read_format = process_string_to_read(groups_sample)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
     read_result = read(content, validate=True)
     write_result = write(
         read_result,

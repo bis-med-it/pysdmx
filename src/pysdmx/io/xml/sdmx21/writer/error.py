@@ -2,7 +2,7 @@
 
 from typing import Dict, Optional, Sequence
 
-from pysdmx.io.enums import SDMXFormat
+from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.sdmx21.writer.__write_aux import __namespaces_from_type
 from pysdmx.model.message import Header
@@ -28,4 +28,4 @@ def write(
     Returns:
         The XML string if path is empty, None otherwise.
     """
-    __namespaces_from_type(SDMXFormat.SDMX_ML_2_1_ERROR)
+    __namespaces_from_type(Format.ERROR_SDMX_ML_2_1)

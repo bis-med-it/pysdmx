@@ -12,7 +12,7 @@ import pandas as pd
 from httpx import get as httpx_get
 
 from pysdmx.errors import Invalid, NotImplemented
-from pysdmx.io.enums import SDMXFormat
+from pysdmx.io.format import Format
 
 
 def __remove_bom(input_string: str) -> str:
@@ -44,31 +44,31 @@ def __check_json(input_str: str) -> bool:
         return False
 
 
-def __get_sdmx_ml_flavour(input_str: str) -> Tuple[str, SDMXFormat]:
+def __get_sdmx_ml_flavour(input_str: str) -> Tuple[str, Format]:
     flavour_check = input_str[:1000].lower()
     if ":generic" in flavour_check:
-        return input_str, SDMXFormat.SDMX_ML_2_1_DATA_GENERIC
+        return input_str, Format.DATA_SDMX_ML_2_1_GEN
     if ":structurespecificdata" in flavour_check:
-        return input_str, SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
+        return input_str, Format.DATA_SDMX_ML_2_1_STR
     if ":structure" in flavour_check:
-        return input_str, SDMXFormat.SDMX_ML_2_1_STRUCTURE
+        return input_str, Format.STRUCTURE_SDMX_ML_2_1
     if ":registryinterface" in flavour_check:
-        return input_str, SDMXFormat.SDMX_ML_2_1_REGISTRY_INTERFACE
+        return input_str, Format.REGISTRY_INTERFACE_SDMX_ML_2_1
     if ":error" in flavour_check:
-        return input_str, SDMXFormat.SDMX_ML_2_1_ERROR
+        return input_str, Format.ERROR_SDMX_ML_2_1
     raise Invalid("Validation Error", "Cannot parse input as SDMX-ML.")
 
 
-def __get_sdmx_csv_flavour(input_str: str) -> Tuple[str, SDMXFormat]:
+def __get_sdmx_csv_flavour(input_str: str) -> Tuple[str, Format]:
     headers = csv.reader(StringIO(input_str)).__next__()
     if "DATAFLOW" in headers:
-        return input_str, SDMXFormat.SDMX_CSV_1_0
+        return input_str, Format.DATA_SDMX_CSV_1_0_0
     elif "STRUCTURE" in headers and "STRUCTURE_ID" in headers:
-        return input_str, SDMXFormat.SDMX_CSV_2_0
+        return input_str, Format.DATA_SDMX_CSV_2_0_0
     raise Invalid("Validation Error", "Cannot parse input as SDMX-CSV.")
 
 
-def __check_sdmx_str(input_str: str) -> Tuple[str, SDMXFormat]:
+def __check_sdmx_str(input_str: str) -> Tuple[str, Format]:
     """Attempts to infer the SDMX format of the input string."""
     if __check_xml(input_str):
         return __get_sdmx_ml_flavour(input_str)
@@ -81,7 +81,7 @@ def __check_sdmx_str(input_str: str) -> Tuple[str, SDMXFormat]:
 
 def process_string_to_read(
     sdmx_document: Union[str, Path, BytesIO],
-) -> Tuple[str, SDMXFormat]:
+) -> Tuple[str, Format]:
     """Processes the input that comes into read_sdmx function.
 
     Automatically detects the format of the input. The input can be a file,

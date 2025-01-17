@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import pandas as pd
 
-from pysdmx.io.enums import SDMXFormat
+from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_GEN,
@@ -385,7 +385,7 @@ def write(
     Returns:
         The XML string if path is empty, None otherwise.
     """
-    type_ = SDMXFormat.SDMX_ML_2_1_DATA_GENERIC
+    type_ = Format.DATA_SDMX_ML_2_1_GEN
 
     # Checking if we have datasets,
     # we need to ensure we can write them correctly

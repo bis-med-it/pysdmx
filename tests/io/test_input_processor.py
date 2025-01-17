@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from pysdmx.errors import Invalid, NotImplemented
-from pysdmx.io.enums import SDMXFormat
+from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
 
@@ -50,31 +50,31 @@ def invalid_message_xml():
 def test_process_string_to_read(valid_xml, valid_xml_path):
     infile, read_format = process_string_to_read(valid_xml_path)
     assert infile == valid_xml
-    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
 
 
 def test_process_string_to_read_bytes(valid_xml, valid_xml_bytes):
     infile, read_format = process_string_to_read(valid_xml_bytes)
     assert infile == valid_xml
-    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
 
 
 def test_process_string_to_read_str(valid_xml):
     infile, read_format = process_string_to_read(valid_xml)
     assert infile == valid_xml
-    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
 
 
 def test_process_string_to_read_str_path(valid_xml, valid_xml_path):
     infile, read_format = process_string_to_read(str(valid_xml_path))
     assert infile == valid_xml
-    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
 
 
 def test_process_string_to_read_bom(valid_xml, valid_xml_bom):
     infile, read_format = process_string_to_read(valid_xml_bom)
     assert infile[:5] == "<?xml"
-    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
 
 
 def test_process_string_to_read_invalid_xml(invalid_xml):

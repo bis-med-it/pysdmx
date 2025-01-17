@@ -5,7 +5,6 @@ import pytest
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
-from pysdmx.io.enums import SDMXFormat
 from pysdmx.io.reader import get_datasets
 from pysdmx.model import Schema
 
@@ -116,17 +115,6 @@ def test_read_sdmx_json_not_supported(sdmx_json):
         NotImplemented, match="JSON formats reading are not supported yet"
     ):
         read_sdmx(sdmx_json, validate=False)
-
-
-def test_read_format_str():
-    assert str(SDMXFormat.SDMX_ML_2_1_STRUCTURE) == "SDMX-ML 2.1 Structure"
-    assert str(SDMXFormat.SDMX_ML_2_1_DATA_GENERIC) == "SDMX-ML 2.1 Generic"
-    assert (
-        str(SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC)
-        == "SDMX-ML 2.1 StructureSpecific"
-    )
-    assert str(SDMXFormat.SDMX_CSV_1_0) == "SDMX-CSV 1.0"
-    assert str(SDMXFormat.SDMX_CSV_2_0) == "SDMX-CSV 2.0"
 
 
 def test_read_url_invalid(respx_mock):

@@ -7,7 +7,7 @@ import pytest
 import pysdmx.io.xml.sdmx21.writer.config
 from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
-from pysdmx.io.enums import SDMXFormat
+from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.sdmx21.writer.generic import write as write_gen
@@ -108,15 +108,15 @@ def content():
 @pytest.mark.parametrize(
     ("message_type", "filename", "dimension_at_observation"),
     [
-        (SDMXFormat.SDMX_ML_2_1_DATA_GENERIC, "gen_all.xml", {}),
-        (SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC, "str_all.xml", None),
+        (Format.DATA_SDMX_ML_2_1_GEN, "gen_all.xml", {}),
+        (Format.DATA_SDMX_ML_2_1_STR, "str_all.xml", None),
         (
-            SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC,
+            Format.DATA_SDMX_ML_2_1_STR,
             "str_ser.xml",
             {"DataStructure=MD:TEST(1.0)": "DIM1"},
         ),
         (
-            SDMXFormat.SDMX_ML_2_1_DATA_GENERIC,
+            Format.DATA_SDMX_ML_2_1_GEN,
             "gen_ser.xml",
             {"DataStructure=MD:TEST(1.0)": "DIM1"},
         ),
@@ -129,7 +129,7 @@ def test_data_write_read(
     # Write from Dataset
     write = (
         write_str_spec
-        if message_type == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
+        if message_type == Format.DATA_SDMX_ML_2_1_STR
         else write_gen
     )
     result = write(
@@ -163,8 +163,8 @@ def test_data_write_read(
 @pytest.mark.parametrize(
     ("message_type", "filename", "dimension_at_observation"),
     [
-        (SDMXFormat.SDMX_ML_2_1_DATA_GENERIC, "gen_all.xml", {}),
-        (SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC, "str_all.xml", None),
+        (Format.DATA_SDMX_ML_2_1_GEN, "gen_all.xml", {}),
+        (Format.DATA_SDMX_ML_2_1_STR, "str_all.xml", None),
     ],
 )
 def test_write_data_file(
@@ -174,7 +174,7 @@ def test_write_data_file(
     # Write from Dataset
     write = (
         write_str_spec
-        if message_type == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
+        if message_type == Format.DATA_SDMX_ML_2_1_STR
         else write_gen
     )
     write(
@@ -189,14 +189,14 @@ def test_write_data_file(
 @pytest.mark.parametrize(
     ("message_type", "dimension_at_observation"),
     [
-        (SDMXFormat.SDMX_ML_2_1_DATA_GENERIC, {}),
-        (SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC, None),
+        (Format.DATA_SDMX_ML_2_1_GEN, {}),
+        (Format.DATA_SDMX_ML_2_1_STR, None),
         (
-            SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC,
+            Format.DATA_SDMX_ML_2_1_GEN,
             {"DataStructure=MD:TEST(1.0)": "DIM1"},
         ),
         (
-            SDMXFormat.SDMX_ML_2_1_DATA_GENERIC,
+            Format.DATA_SDMX_ML_2_1_STR,
             {"DataStructure=MD:TEST(1.0)": "DIM1"},
         ),
     ],
@@ -223,7 +223,7 @@ def test_data_write_df(
 
     write = (
         write_str_spec
-        if message_type == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
+        if message_type == Format.DATA_SDMX_ML_2_1_STR
         else write_gen
     )
     result = write(

@@ -6,7 +6,7 @@ import pytest
 import pysdmx
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
-from pysdmx.io.enums import SDMXFormat
+from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.sdmx21.reader.error import read as read_error
 from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
@@ -70,7 +70,7 @@ def error_str(error_304_path):
 
 def test_agency_scheme_read(agency_scheme_path):
     input_str, read_format = process_string_to_read(agency_scheme_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
     result = read_structure(input_str, validate=True)
     assert isinstance(result[0], AgencyScheme)
 
@@ -82,7 +82,7 @@ def test_agency_scheme_read(agency_scheme_path):
 
 def test_code_list_read(codelist_path):
     input_str, read_format = process_string_to_read(codelist_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
     codelists = read_structure(input_str, validate=True)
 
     assert isinstance(codelists[0], Codelist)
@@ -98,7 +98,7 @@ def test_code_list_read(codelist_path):
 
 def test_item_scheme_read(item_scheme_path):
     input_str, read_format = process_string_to_read(item_scheme_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
     result = read_structure(input_str, validate=True)
 
     assert any(isinstance(r, Codelist) for r in result)
@@ -141,7 +141,7 @@ def test_item_scheme_read(item_scheme_path):
 
 def test_submission_result(submission_path):
     input_str, read_format = process_string_to_read(submission_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_REGISTRY_INTERFACE
+    assert read_format == Format.REGISTRY_INTERFACE_SDMX_ML_2_1
     result = read_sub(input_str, validate=True)
 
     short_urn_1 = "DataStructure=BIS:BIS_DER(1.0)"
@@ -171,7 +171,7 @@ def test_submission_result_read_sdmx(submission_path):
 
 def test_error_304(error_304_path):
     input_str, read_format = process_string_to_read(error_304_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_ERROR
+    assert read_format == Format.ERROR_SDMX_ML_2_1
     with pytest.raises(Invalid) as e:
         read_error(input_str, validate=False)
     reference_title = (
@@ -186,7 +186,7 @@ def test_error_304(error_304_path):
 
 def test_error_message_with_different_mode(agency_scheme_path):
     input_str, read_format = process_string_to_read(agency_scheme_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
     with pytest.raises(
         Invalid,
         match="This SDMX document is not an SDMX-ML 2.1 Error message.",
@@ -208,8 +208,8 @@ def test_reading_validation(samples_folder, filename):
     data_path = samples_folder / filename
     input_str, read_format = process_string_to_read(data_path)
     assert read_format in (
-        SDMXFormat.SDMX_ML_2_1_DATA_GENERIC,
-        SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC,
+        Format.DATA_SDMX_ML_2_1_GEN,
+        Format.DATA_SDMX_ML_2_1_STR,
     )
     result = read_sdmx(input_str, validate=True).data
     assert result is not None
@@ -241,7 +241,7 @@ def test_reading_validation_read_sdmx(samples_folder, filename):
 def test_dataflow(samples_folder):
     data_path = samples_folder / "dataflow.xml"
     input_str, read_format = process_string_to_read(data_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
     result = read_sdmx(input_str, validate=True).data
     assert len(result) == 1
     dataset = result[0]
@@ -261,7 +261,7 @@ def test_dataflow(samples_folder):
 def test_structure_ref_urn(samples_folder):
     data_path = samples_folder / "structure_ref_urn.xml"
     input_str, read_format = process_string_to_read(data_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
     result = read_sdmx(input_str, validate=True).data
     assert len(result) == 1
     dataset = result[0]
@@ -271,7 +271,7 @@ def test_structure_ref_urn(samples_folder):
 def test_partial_datastructure(samples_folder):
     data_path = samples_folder / "partial_datastructure.xml"
     input_str, read_format = process_string_to_read(data_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
     result = read_sdmx(input_str, validate=True).structures
     assert "DataStructure=BIS:BIS_DER(1.0)" in [ds.short_urn for ds in result]
 
@@ -279,7 +279,7 @@ def test_partial_datastructure(samples_folder):
 def test_dataflow_structure(samples_folder):
     data_path = samples_folder / "dataflow_structure_no_children.xml"
     input_str, read_format = process_string_to_read(data_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
     result = read_sdmx(input_str, validate=True).structures
     assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in [
         ds.short_urn for ds in result
@@ -299,7 +299,7 @@ def test_dataflow_structure_read_sdmx(samples_folder):
 def test_partial_dataflow_structure(samples_folder):
     data_path = samples_folder / "partial_dataflow_structure.xml"
     input_str, read_format = process_string_to_read(data_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
     result = read_sdmx(input_str, validate=True).structures
     assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in [
         ds.short_urn for ds in result
@@ -309,7 +309,7 @@ def test_partial_dataflow_structure(samples_folder):
 def test_header_structure_provision_agrement(samples_folder):
     data_path = samples_folder / "header_structure_provision_agrement.xml"
     input_str, read_format = process_string_to_read(data_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
     with pytest.raises(NotImplemented, match="ProvisionAgrement"):
         read_sdmx(input_str, validate=True)
 
@@ -317,7 +317,7 @@ def test_header_structure_provision_agrement(samples_folder):
 def test_stref_dif_strid(samples_folder):
     data_path = samples_folder / "str_dif_ref_and_ID.xml"
     input_str, read_format = process_string_to_read(data_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
     with pytest.raises(
         Exception,
         match="Dataset Structure Reference A not found in the Header",
@@ -328,14 +328,14 @@ def test_stref_dif_strid(samples_folder):
 def test_gen_all_no_atts(samples_folder):
     data_path = samples_folder / "gen_all_no_atts.xml"
     input_str, read_format = process_string_to_read(data_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_DATA_GENERIC
+    assert read_format == Format.DATA_SDMX_ML_2_1_GEN
     read_sdmx(input_str, validate=True)
 
 
 def test_gen_ser_no_atts(samples_folder):
     data_path = samples_folder / "gen_ser_no_atts.xml"
     input_str, read_format = process_string_to_read(data_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_DATA_GENERIC
+    assert read_format == Format.DATA_SDMX_ML_2_1_GEN
     read_sdmx(input_str, validate=True)
 
 
@@ -350,9 +350,9 @@ def test_ser_no_obs(samples_folder, filename):
     data_path = samples_folder / filename
     input_str, read_format = process_string_to_read(data_path)
     if "gen" in filename:
-        assert read_format == SDMXFormat.SDMX_ML_2_1_DATA_GENERIC
+        assert read_format == Format.DATA_SDMX_ML_2_1_GEN
     else:
-        assert read_format == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
+        assert read_format == Format.DATA_SDMX_ML_2_1_STR
     result = read_sdmx(input_str, validate=True).data
     assert len(result) == 1
     df = result[0].data
@@ -374,9 +374,9 @@ def test_chunks(samples_folder, filename):
     data_path = samples_folder / filename
     input_str, read_format = process_string_to_read(data_path)
     if "gen" in filename:
-        assert read_format == SDMXFormat.SDMX_ML_2_1_DATA_GENERIC
+        assert read_format == Format.DATA_SDMX_ML_2_1_GEN
     else:
-        assert read_format == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
+        assert read_format == Format.DATA_SDMX_ML_2_1_STR
     result = read_sdmx(input_str, validate=True).data
     assert result is not None
     assert len(result) == 1
@@ -394,7 +394,7 @@ def test_chunks(samples_folder, filename):
 def test_read_write_structure_specific_all(samples_folder):
     data_path = samples_folder / "str_all.xml"
     input_str, read_format = process_string_to_read(data_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
     datasets = read_sdmx(input_str, validate=True).data
     assert datasets is not None
     assert len(datasets) == 1
@@ -418,7 +418,7 @@ def test_read_write_structure_specific_all(samples_folder):
 def test_vtl_transformation_scheme(samples_folder):
     data_path = samples_folder / "transformation_scheme.xml"
     input_str, read_format = process_string_to_read(data_path)
-    assert read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
     result = read_sdmx(input_str, validate=True).structures
 
     assert result is not None
@@ -439,7 +439,7 @@ def test_vtl_transformation_scheme(samples_folder):
 
 def test_estat_metadata(estat_metadata_path):
     input_str, sdmx_format = process_string_to_read(estat_metadata_path)
-    assert sdmx_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE
+    assert sdmx_format == Format.STRUCTURE_SDMX_ML_2_1
     result = read_sdmx(input_str, validate=True)
     codelists = result.get_codelists()
     concepts = result.get_concept_schemes()
@@ -449,7 +449,7 @@ def test_estat_metadata(estat_metadata_path):
 
 def test_estat_data(estat_data_path):
     input_str, sdmx_format = process_string_to_read(estat_data_path)
-    assert sdmx_format == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC
+    assert sdmx_format == Format.DATA_SDMX_ML_2_1_STR
 
     result = read_sdmx(input_str, validate=False).data
     assert result is not None

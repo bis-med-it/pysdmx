@@ -7,7 +7,7 @@ from typing import Optional, Sequence, Union
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.io.csv.sdmx10.reader import read as read_csv_v1
 from pysdmx.io.csv.sdmx20.reader import read as read_csv_v2
-from pysdmx.io.enums import SDMXFormat
+from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.sdmx21.reader.error import read as read_error
 from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
@@ -58,22 +58,22 @@ def read_sdmx(
         Union[ItemScheme, Dataflow, DataStructureDefinition]
     ] = []
     result_submission: Sequence[SubmissionResult] = []
-    if read_format == SDMXFormat.SDMX_ML_2_1_STRUCTURE:
+    if read_format == Format.STRUCTURE_SDMX_ML_2_1:
         # SDMX-ML 2.1 Structure
         result_structures = read_structure(input_str, validate=validate)
-    elif read_format == SDMXFormat.SDMX_ML_2_1_DATA_GENERIC:
+    elif read_format == Format.DATA_SDMX_ML_2_1_GEN:
         # SDMX-ML 2.1 Generic Data
         result_data = read_generic(input_str, validate=validate)
-    elif read_format == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC:
+    elif read_format == Format.DATA_SDMX_ML_2_1_STR:
         # SDMX-ML 2.1 Structure Specific Data
         result_data = read_str_spe(input_str, validate=validate)
-    elif read_format == SDMXFormat.SDMX_ML_2_1_REGISTRY_INTERFACE:
+    elif read_format == Format.REGISTRY_INTERFACE_SDMX_ML_2_1:
         # SDMX-ML 2.1 Submission
         result_submission = read_sub(input_str, validate=validate)
-    elif read_format == SDMXFormat.SDMX_ML_2_1_ERROR:
+    elif read_format == Format.ERROR_SDMX_ML_2_1:
         # SDMX-ML 2.1 Error
         read_error(input_str, validate=validate)
-    elif read_format == SDMXFormat.SDMX_CSV_1_0:
+    elif read_format == Format.DATA_SDMX_CSV_1_0_0:
         # SDMX-CSV 1.0
         result_data = read_csv_v1(input_str)
     else:
@@ -85,15 +85,15 @@ def read_sdmx(
 
     # Returning a Message class
     if read_format in (
-        SDMXFormat.SDMX_CSV_1_0,
-        SDMXFormat.SDMX_CSV_2_0,
-        SDMXFormat.SDMX_ML_2_1_DATA_GENERIC,
-        SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC,
+        Format.DATA_SDMX_CSV_1_0_0,
+        Format.DATA_SDMX_CSV_2_0_0,
+        Format.DATA_SDMX_ML_2_1_GEN,
+        Format.DATA_SDMX_ML_2_1_STR,
     ):
         # TODO: Add here the Schema download for Datasets, based on structure
         # TODO: Ensure we have changed the signature of the data readers
         return Message(data=result_data)
-    elif read_format == SDMXFormat.SDMX_ML_2_1_REGISTRY_INTERFACE:
+    elif read_format == Format.REGISTRY_INTERFACE_SDMX_ML_2_1:
         return Message(submission=result_submission)
 
     # TODO: Ensure we have changed the signature of the structure readers

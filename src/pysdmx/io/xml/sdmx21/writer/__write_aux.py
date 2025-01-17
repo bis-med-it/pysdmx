@@ -5,7 +5,7 @@ from collections import OrderedDict
 from typing import Dict, List, Optional, Sequence, Tuple
 
 from pysdmx.errors import Invalid, NotImplemented
-from pysdmx.io.enums import SDMXFormat
+from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Role, Schema
 from pysdmx.model.dataset import Dataset
@@ -13,11 +13,11 @@ from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
 
 MESSAGE_TYPE_MAPPING = {
-    SDMXFormat.SDMX_ML_2_1_DATA_GENERIC: "GenericData",
-    SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC: "StructureSpecificData",
-    SDMXFormat.SDMX_ML_2_1_STRUCTURE: "Structure",
-    SDMXFormat.SDMX_ML_2_1_ERROR: "Error",
-    SDMXFormat.SDMX_ML_2_1_REGISTRY_INTERFACE: "RegistryInterface",
+    Format.DATA_SDMX_ML_2_1_GEN: "GenericData",
+    Format.DATA_SDMX_ML_2_1_STR: "StructureSpecificData",
+    Format.STRUCTURE_SDMX_ML_2_1: "Structure",
+    Format.ERROR_SDMX_ML_2_1: "Error",
+    Format.REGISTRY_INTERFACE_SDMX_ML_2_1: "RegistryInterface",
 }
 
 ABBR_MSG = "mes"
@@ -51,7 +51,7 @@ NAMESPACES = {
 URN_DS_BASE = "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure="
 
 
-def __namespaces_from_type(type_: SDMXFormat) -> str:
+def __namespaces_from_type(type_: Format) -> str:
     """Returns the namespaces for the XML file based on type.
 
     Args:
@@ -63,18 +63,18 @@ def __namespaces_from_type(type_: SDMXFormat) -> str:
     Raises:
         NotImplemented: If the MessageType is not implemented
     """
-    if type_ == SDMXFormat.SDMX_ML_2_1_STRUCTURE:
+    if type_ == Format.STRUCTURE_SDMX_ML_2_1:
         return f"xmlns:{ABBR_STR}={NAMESPACES[ABBR_STR]!r} "
-    elif type_ == SDMXFormat.SDMX_ML_2_1_DATA_STRUCTURE_SPECIFIC:
+    elif type_ == Format.DATA_SDMX_ML_2_1_STR:
         return f"xmlns:{ABBR_SPE}={NAMESPACES[ABBR_SPE]!r} "
-    elif type_ == SDMXFormat.SDMX_ML_2_1_DATA_GENERIC:
+    elif type_ == Format.DATA_SDMX_ML_2_1_GEN:
         return f"xmlns:{ABBR_GEN}={NAMESPACES[ABBR_GEN]!r} "
     else:
         raise NotImplemented(f"{type_} not implemented")
 
 
 def create_namespaces(
-    type_: SDMXFormat, ss_namespaces: str = "", prettyprint: bool = False
+    type_: Format, ss_namespaces: str = "", prettyprint: bool = False
 ) -> str:
     """Creates the namespaces for the XML file.
 
@@ -116,7 +116,7 @@ MSG_CONTENT_PKG = OrderedDict(
 )
 
 
-def get_end_message(type_: SDMXFormat, prettyprint: bool) -> str:
+def get_end_message(type_: Format, prettyprint: bool) -> str:
     """Returns the end message for the XML file.
 
     Args:
