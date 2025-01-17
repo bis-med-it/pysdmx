@@ -141,7 +141,7 @@ def test_item_scheme_read(item_scheme_path):
 
 def test_submission_result(submission_path):
     input_str, read_format = process_string_to_read(submission_path)
-    assert read_format == Format.REGISTRY_INTERFACE_SDMX_ML_2_1
+    assert read_format == Format.REGISTRY_SDMX_ML_2_1
     result = read_sub(input_str, validate=True)
 
     short_urn_1 = "DataStructure=BIS:BIS_DER(1.0)"

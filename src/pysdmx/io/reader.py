@@ -67,7 +67,7 @@ def read_sdmx(
     elif read_format == Format.DATA_SDMX_ML_2_1_STR:
         # SDMX-ML 2.1 Structure Specific Data
         result_data = read_str_spe(input_str, validate=validate)
-    elif read_format == Format.REGISTRY_INTERFACE_SDMX_ML_2_1:
+    elif read_format == Format.REGISTRY_SDMX_ML_2_1:
         # SDMX-ML 2.1 Submission
         result_submission = read_sub(input_str, validate=validate)
     elif read_format == Format.ERROR_SDMX_ML_2_1:
@@ -93,7 +93,7 @@ def read_sdmx(
         # TODO: Add here the Schema download for Datasets, based on structure
         # TODO: Ensure we have changed the signature of the data readers
         return Message(data=result_data)
-    elif read_format == Format.REGISTRY_INTERFACE_SDMX_ML_2_1:
+    elif read_format == Format.REGISTRY_SDMX_ML_2_1:
         return Message(submission=result_submission)
 
     # TODO: Ensure we have changed the signature of the structure readers

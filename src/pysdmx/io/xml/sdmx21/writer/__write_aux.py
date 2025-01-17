@@ -17,7 +17,7 @@ MESSAGE_TYPE_MAPPING = {
     Format.DATA_SDMX_ML_2_1_STR: "StructureSpecificData",
     Format.STRUCTURE_SDMX_ML_2_1: "Structure",
     Format.ERROR_SDMX_ML_2_1: "Error",
-    Format.REGISTRY_INTERFACE_SDMX_ML_2_1: "RegistryInterface",
+    Format.REGISTRY_SDMX_ML_2_1: "RegistryInterface",
 }
 
 ABBR_MSG = "mes"

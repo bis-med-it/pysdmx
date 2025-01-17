@@ -53,7 +53,7 @@ def __get_sdmx_ml_flavour(input_str: str) -> Tuple[str, Format]:
     if ":structure" in flavour_check:
         return input_str, Format.STRUCTURE_SDMX_ML_2_1
     if ":registryinterface" in flavour_check:
-        return input_str, Format.REGISTRY_INTERFACE_SDMX_ML_2_1
+        return input_str, Format.REGISTRY_SDMX_ML_2_1
     if ":error" in flavour_check:
         return input_str, Format.ERROR_SDMX_ML_2_1
     raise Invalid("Validation Error", "Cannot parse input as SDMX-ML.")

@@ -31,9 +31,6 @@ class Format(Enum):
     STRUCTURE_SDMX_JSON_2_0_0 = f"{_BASE}structure+json;version=2.0.0"
     STRUCTURE_SDMX_ML_2_1 = f"{_BASE}structure+xml;version=2.1"
     STRUCTURE_SDMX_ML_3_0 = f"{_BASE}structure+xml;version=3.0.0"
-    REGISTRY_INTERFACE_SDMX_ML_2_1 = (
-        f"{_BASE}registryinterface+xml;version=2.1"
-    )
     ERROR_SDMX_ML_2_1 = f"{_BASE}error+xml;version=2.1"
     FUSION_JSON = "application/vnd.fusion.json"
 
