@@ -4693,7 +4693,7 @@
                         "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).UNIT_MULT",
                         "representation": {
                             "textFormat": {
-                                "textType": "String",
+                                "textType": "Integer",
                                 "minLength": 1,
                                 "maxLength": 2,
                                 "minValue": "-15",
