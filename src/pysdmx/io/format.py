@@ -38,8 +38,8 @@ class AvailabilityFormat(Enum):
 
     SDMX_JSON_1_0_0 = Format.STRUCTURE_SDMX_JSON_1_0_0.value
     SDMX_JSON_2_0_0 = Format.STRUCTURE_SDMX_JSON_2_0_0.value
-    SDMX_ML_2_1_STRUCTURE = Format.STRUCTURE_SDMX_ML_2_1.value
-    SDMX_ML_3_0_STRUCTURE = Format.STRUCTURE_SDMX_ML_3_0.value
+    SDMX_ML_2_1 = Format.STRUCTURE_SDMX_ML_2_1.value
+    SDMX_ML_3_0 = Format.STRUCTURE_SDMX_ML_3_0.value
 
 
 class DataFormat(Enum):
