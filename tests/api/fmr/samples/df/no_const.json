@@ -15474,7 +15474,9 @@
                                     "enumerationFormat": {
                                         "maxLength": 2,
                                         "minLength": 1,
-                                        "dataType": "String"
+                                        "minValue": -15,
+                                        "maxValue": 15,
+                                        "dataType": "Integer"
                                     },
                                     "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_UNIT_MULT(1.0)"
                                 },
@@ -15803,9 +15805,9 @@
                                 "id": "OBS_VALUE",
                                 "localRepresentation": {
                                     "format": {
-                                        "maxLength": 15,
-                                        "minLength": 1,
-                                        "dataType": "String"
+                                        "dataType": "Double",
+                                        "startValue": 0.0,
+                                        "endValue": 42.99
                                     }
                                 },
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_VALUE"

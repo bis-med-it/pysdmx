@@ -30,7 +30,7 @@
                     "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=BIS:AGENCIES(1.0).CBS",
                     "annotations": [
                         {
-                            "title": "cbmemcpa",
+                            "title": "xx000000",
                             "type": "contact_uid"
                         }
                     ],
@@ -48,7 +48,7 @@
                     ],
                     "contacts": [
                         {
-                            "id": "cbmemcpa",
+                            "id": "xx000000",
                             "roles": [
                                 {
                                     "locale": "en",
