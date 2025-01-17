@@ -1,10 +1,9 @@
 from datetime import timezone
 from typing import Sequence, Union
 
-import dateutil
-import dateutil.parser
 from parsy import digit, regex, string  # type: ignore[import-untyped]
 
+from pysdmx.__extras_check import __check_dc_extra
 from pysdmx.api.dc.query._model import (
     DateTimeFilter,
     Filter,
@@ -46,6 +45,9 @@ def __map_filter(f: _Filter) -> Filter:
 
 
 def __map_string(input: str) -> Union[_DateTime, _String]:
+    __check_dc_extra()
+    import dateutil.parser
+
     rec = input[1:-1]
     try:
         dt = dateutil.parser.parse(rec)
