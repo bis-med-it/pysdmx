@@ -8,7 +8,6 @@ from os import PathLike
 from pathlib import Path
 from typing import Tuple, Union
 
-import pandas as pd
 from httpx import get as httpx_get
 
 from pysdmx.errors import Invalid, NotImplemented
@@ -25,11 +24,16 @@ def __check_xml(input_str: str) -> bool:
 
 def __check_csv(input_str: str) -> bool:
     try:
-        pd.read_csv(StringIO(input_str), nrows=2)
+        max_length = len(input_str) if len(input_str) < 1024 else 1024
+        dialect = csv.Sniffer().sniff(input_str[:max_length])
+        control_csv_format = (
+            dialect.delimiter == "," and dialect.quotechar == '"'
+        )
+        # Check we can access the data and it is not empty
         if (
             len(input_str.splitlines()) > 1
             or input_str.splitlines()[0].count(",") > 1
-        ):
+        ) and control_csv_format:
             return True
     except Exception:
         return False
