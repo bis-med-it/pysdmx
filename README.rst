@@ -22,6 +22,8 @@ Key features:
 - **Metadata in action**: ``pysdmx`` supports retrieving metadata from an SDMX
   Registry or any service compliant with the SDMX-REST 2.0.0 API. Use these
   metadata to power statistical processes.
+- **Reading and writing SDMX files**: ``pysdmx`` support reading and writing
+  SDMX data and structure messages, in various formats.
 - **Data discovery and retrieval**: This functionality is under development.
   ``pysdmx`` will enable listing public SDMX services, discovering available
   data available, and retrieving data from these services.
