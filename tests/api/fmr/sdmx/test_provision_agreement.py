@@ -1,22 +1,20 @@
 import pytest
 
 import tests.api.fmr.pa_checks as checks
-from pysdmx.api.fmr import AsyncRegistryClient, Format, RegistryClient
+from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient, StructureFormat
 
 
 @pytest.fixture
 def fmr():
     return RegistryClient(
-        "https://registry.sdmx.org/sdmx/v2/",
-        Format.SDMX_JSON,
+        "https://registry.sdmx.org/sdmx/v2/", StructureFormat.SDMX_JSON_2_0_0
     )
 
 
 @pytest.fixture
 def async_fmr() -> AsyncRegistryClient:
     return AsyncRegistryClient(
-        "https://registry.sdmx.org/sdmx/v2",
-        Format.SDMX_JSON,
+        "https://registry.sdmx.org/sdmx/v2", StructureFormat.SDMX_JSON_2_0_0
     )
 
 

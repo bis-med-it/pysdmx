@@ -8,6 +8,7 @@ import msgspec
 from pysdmx.api.qb.structure import _V2_0_ADDED, StructureType
 from pysdmx.api.qb.util import REST_ALL, REST_LATEST, ApiVersion
 from pysdmx.errors import Invalid
+from pysdmx.io.format import SchemaFormat
 
 
 class SchemaContext(Enum):
@@ -19,23 +20,6 @@ class SchemaContext(Enum):
     METADATA_FLOW = "metadataflow"
     PROVISION_AGREEMENT = "provisionagreement"
     METADATA_PROVISION_AGREEMENT = "metadataprovisionagreement"
-
-
-class SchemaFormat(Enum):
-    """The response formats."""
-
-    SDMX_JSON_1_0_0_SCHEMA = "application/vnd.sdmx.schema+json;version=1.0.0"
-    SDMX_JSON_2_0_0_SCHEMA = "application/vnd.sdmx.schema+json;version=2.0.0"
-    SDMX_JSON_1_0_0_STRUCTURE = (
-        "application/vnd.sdmx.structure+json;version=1.0.0"
-    )
-    SDMX_JSON_2_0_0_STRUCTURE = (
-        "application/vnd.sdmx.structure+json;version=2.0.0"
-    )
-    SDMX_ML_2_1_SCHEMA = "application/vnd.sdmx.schema+xml;version=2.1"
-    SDMX_ML_3_0_SCHEMA = "application/vnd.sdmx.schema+xml;version=3.0.0"
-    SDMX_ML_2_1_STRUCTURE = "application/vnd.sdmx.structure+xml;version=2.1"
-    SDMX_ML_3_0_STRUCTURE = "application/vnd.sdmx.structure+xml;version=3.0.0"
 
 
 class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
