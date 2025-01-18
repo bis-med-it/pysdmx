@@ -53,7 +53,7 @@ def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir):
         structure=urn,
     )
     dataset.data = dataset.data.astype("str")
-    writer(dataset, output_path=tmpdir / "output.csv")
+    write([dataset], output_path=tmpdir / "output.csv")
     result_df = pd.read_csv(tmpdir / "output.csv").astype(str)
     reference_df = pd.read_csv(data_path_reference).astype(str)
     pd.testing.assert_frame_equal(
