@@ -22,6 +22,7 @@ from pysdmx.model.__base import (
 )
 from pysdmx.model.code import Codelist, Hierarchy
 from pysdmx.model.concept import Concept, DataType, Facets
+from pysdmx.util import ItemReference
 
 
 class Role(str, Enum):
@@ -108,7 +109,7 @@ class Component(Struct, frozen=True, omit_defaults=True):
     id: str
     required: bool
     role: Role
-    concept: Concept
+    concept: Union[Concept, ItemReference]
     local_dtype: Optional[DataType] = None
     local_facets: Optional[Facets] = None
     name: Optional[str] = None
@@ -143,7 +144,7 @@ class Component(Struct, frozen=True, omit_defaults=True):
         """
         if self.local_dtype:
             return self.local_dtype
-        elif self.concept.dtype:
+        elif isinstance(self.concept, Concept) and self.concept.dtype:
             return self.concept.dtype
         else:
             return DataType.STRING
@@ -161,7 +162,7 @@ class Component(Struct, frozen=True, omit_defaults=True):
         """
         if self.local_facets:
             return self.local_facets
-        elif self.concept.facets:
+        elif isinstance(self.concept, Concept) and self.concept.facets:
             return self.concept.facets
         else:
             return None
@@ -179,7 +180,7 @@ class Component(Struct, frozen=True, omit_defaults=True):
         """
         if self.local_codes:
             return self.local_codes
-        elif self.concept.codes:
+        elif isinstance(self.concept, Concept) and self.concept.codes:
             return self.concept.codes
         else:
             return None
@@ -438,6 +439,41 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
     """
 
     components: Components
+
+    def __extract_artefacts(self) -> Sequence[str]:
+        """Extract the artefacts used to generate the schema."""
+        out = []
+        for c in self.components:
+            if c.local_codes:
+                out.append(c.local_codes.urn)
+            # Concept URNs
+            if isinstance(c.concept, Concept):
+                out.append(c.concept.urn)
+                if c.concept.codes:
+                    out.append(c.concept.codes.urn)
+            else:
+                urn_header = "urn:sdmx:org.sdmx.infomodel.conceptscheme."
+                out.append(urn_header + str(c.concept))
+        result = list({a for a in out if a})
+        return result
+
+    def to_schema(self) -> Schema:
+        """Generates a Schema class from the DataStructureDefinition."""
+        return Schema(
+            context="datastructure",
+            agency=self.agency.id
+            if isinstance(self.agency, Agency)
+            else self.agency,
+            id=self.id,
+            components=self.components,
+            version=self.version,
+            artefacts=self.__extract_artefacts(),
+        )
+
+    @property
+    def short_urn(self) -> str:
+        """Returns a short URN for the data structure."""
+        return f"DataStructure={self.agency}:{self.id}({self.version})"
 
 
 class Dataflow(

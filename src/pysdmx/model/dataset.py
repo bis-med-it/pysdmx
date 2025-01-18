@@ -1,12 +1,24 @@
 """Dataset module."""
 
 from datetime import date, datetime
+from enum import Enum
 from typing import Any, Dict, Optional, Union
 
 from msgspec import Struct
 
 from pysdmx.model import Schema
-from pysdmx.model.message import ActionType
+
+
+class ActionType(Enum):
+    """ActionType enumeration.
+
+    Enumeration that withholds the Action type for writing purposes.
+    """
+
+    Append = "append"
+    Replace = "replace"
+    Delete = "delete"
+    Information = "information"
 
 
 class SeriesInfo(Struct, frozen=True):
@@ -64,9 +76,7 @@ class Dataset(Struct, frozen=False, kw_only=True):
             URN formatted string
         """
         if isinstance(self.structure, str):
-            structure_type, unique_id = self.structure.split("=", maxsplit=1)
-            structure = structure_type.rsplit(".", maxsplit=1)[1]
-            return f"{structure}={unique_id}"
+            return self.structure
         else:
             s = self.structure
             return f"{s.context}={s.agency}:{s.id}({s.version})"

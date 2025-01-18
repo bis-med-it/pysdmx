@@ -14,6 +14,7 @@ from pysdmx.api.qb.util import (
     ApiVersion,
 )
 from pysdmx.errors import Invalid
+from pysdmx.io.format import RefMetaFormat
 
 
 class RefMetaDetail(Enum):
@@ -21,14 +22,6 @@ class RefMetaDetail(Enum):
 
     FULL = "full"
     ALL_STUBS = "allstubs"
-
-
-class RefMetaFormat(Enum):
-    """The response formats."""
-
-    SDMX_ML_3_0_STRUCTURE = "application/vnd.sdmx.metadata+xml;version=3.0.0"
-    SDMX_JSON_2_0_0 = "application/vnd.sdmx.metadata+json;version=2.0.0"
-    SDMX_CSV_2_0_0 = "application/vnd.sdmx.metadata+csv;version=2.0.0"
 
 
 class _RefMetaCoreQuery(

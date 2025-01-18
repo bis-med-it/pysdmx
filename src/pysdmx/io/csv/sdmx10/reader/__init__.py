@@ -1,7 +1,7 @@
 """SDMX 1.0 CSV reader module."""
 
 from io import StringIO
-from typing import Dict
+from typing import Sequence
 
 import pandas as pd
 
@@ -14,10 +14,7 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
     structure_id = data["DATAFLOW"].iloc[0]
     # Drop 'DATAFLOW' column from DataFrame
     df_csv = data.drop(["DATAFLOW"], axis=1)
-    urn = (
-        f"urn:sdmx:org.sdmx.infomodel.datastructure."
-        f"DataFlow={structure_id}"
-    )
+    urn = f"Dataflow={structure_id}"
 
     # Extract dataset attributes from sdmx-csv (all values are the same)
     attributes = {
@@ -36,20 +33,20 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
     )
 
 
-def read(infile: str) -> Dict[str, PandasDataset]:
-    """Reads csv file and returns a dictionary.
+def read(input_str: str) -> Sequence[PandasDataset]:
+    """Reads csv file and returns a payload dictionary.
 
     Args:
-        infile: A string containing the CSV file, comma separated.
+        input_str: Path to file, str.
 
     Returns:
-        A dictionary containing the datasets with the short URN as keys.
+        payload: dict.
 
     Raises:
         Invalid: If it is an invalid CSV file.
     """
     # Get Dataframe from CSV file
-    df_csv = pd.read_csv(StringIO(infile))
+    df_csv = pd.read_csv(StringIO(input_str))
     # Drop empty columns
     df_csv = df_csv.dropna(axis=1, how="all")
 
@@ -88,13 +85,13 @@ def read(infile: str) -> Dict[str, PandasDataset]:
 
     # Create a payload dictionary to store datasets with the
     # different unique_ids as keys
-    payload = {}
+    payload = []
     for df in list_df:
         # Generate a dataset from each subset of the DataFrame
         dataset = __generate_dataset_from_sdmx_csv(data=df)
 
         # Add the dataset to the payload dictionary
-        payload[dataset.short_urn] = dataset
+        payload.append(dataset)
 
     # Return the payload generated
     return payload

@@ -14,26 +14,18 @@ Classes:
 
 import uuid
 from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Sequence, Type, Union
 
 from msgspec import Struct
 
 from pysdmx.errors import Invalid, NotFound
-from pysdmx.model import Codelist, ConceptScheme
+from pysdmx.model import AgencyScheme
 from pysdmx.model.__base import ItemScheme
-
-
-class ActionType(Enum):
-    """ActionType enumeration.
-
-    Enumeration that withholds the Action type for writing purposes.
-    """
-
-    Append = "append"
-    Replace = "replace"
-    Delete = "delete"
-    Information = "information"
+from pysdmx.model.code import Codelist
+from pysdmx.model.concept import ConceptScheme
+from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
+from pysdmx.model.dataset import ActionType, Dataset
+from pysdmx.model.submission import SubmissionResult
 
 
 class Header(Struct, kw_only=True):
@@ -49,109 +41,143 @@ class Header(Struct, kw_only=True):
     structure: Optional[Dict[str, str]] = None
 
 
-ORGS = "OrganisationSchemes"
-CLS = "Codelists"
-CONCEPTS = "Concepts"
-
-MSG_CONTENT_PKG = {
-    ORGS: ItemScheme,
-    CLS: Codelist,
-    CONCEPTS: ConceptScheme,
-}
-
-
 class Message(Struct, frozen=True):
     """Message class holds the content of SDMX Message.
 
     Attributes:
-        content (Dict[str, Any]): Content of the message. The keys are the
-            content type (e.g. ``OrganisationSchemes``, ``Codelists``, etc.),
-            and the values are the content objects (e.g. ``ItemScheme``,
-            ``Codelist``, etc.).
+        structures: Sequence of structure objects (ItemScheme, Schema).
+           They represent the contents of a Structure Message.
+        data: Sequence of Dataset objects. They represent the contents of a
+           SDMX Data Message in any format.
+        submission: Sequence of SubmissionResult objects. They represent the
+              contents of a SDMX Submission Message.
     """
 
-    content: Dict[str, Any]
+    structures: Optional[
+        Sequence[
+            Union[
+                ItemScheme,
+                DataStructureDefinition,
+                Dataflow,
+            ]
+        ]
+    ] = None
+    data: Optional[Sequence[Dataset]] = None
+    submission: Optional[Sequence[SubmissionResult]] = None
 
     def __post_init__(self) -> None:
         """Checks if the content is valid."""
-        for content_key, content_value in self.content.items():
-            if content_key not in MSG_CONTENT_PKG:
-                raise Invalid(
-                    f"Invalid content type: {content_key}",
-                    "Check the docs for the proper structure on content.",
-                )
-
-            for obj_ in content_value.values():
-                if not isinstance(obj_, MSG_CONTENT_PKG[content_key]):
+        if self.structures is not None:
+            for obj_ in self.structures:
+                if not isinstance(
+                    obj_, (ItemScheme, DataStructureDefinition, Dataflow)
+                ):
                     raise Invalid(
-                        f"Invalid content value type: {type(obj_).__name__} "
-                        f"for {content_key}",
-                        "Check the docs for the proper "
-                        "structure on content.",
+                        f"Invalid structure: " f"{type(obj_).__name__} ",
+                        "Check the docs on structures.",
+                    )
+        if self.data is not None:
+            for data_value in self.data:
+                if not isinstance(data_value, Dataset):
+                    raise Invalid(
+                        f"Invalid data type: "
+                        f"{type(data_value).__name__} "
+                        f"for Data Message, requires a Dataset object.",
+                        "Check the docs for the proper structure on data.",
                     )
 
-    def __get_elements(self, type_: str) -> Dict[str, Any]:
-        """Returns the elements from content."""
-        if type_ in self.content:
-            return self.content[type_]
-        raise NotFound(
-            f"No {type_} found in content",
-            f"Could not find any {type_} in content.",
-        )
-
-    def __get_element_by_uid(self, type_: str, unique_id: str) -> Any:
-        """Returns a specific element from content."""
-        if type_ not in self.content:
+    def __get_elements(self, type_: Type[Any]) -> List[Any]:
+        """Returns a list of elements of a specific type."""
+        if self.structures is None:
             raise NotFound(
-                f"No {type_} found.",
-                f"Could not find any {type_} in content.",
+                f"No {type_.__name__} found in message.",
             )
+        structures = []
+        for element in self.structures:
+            if isinstance(element, type_):
+                structures.append(element)
+        return structures
 
-        if unique_id in self.content[type_]:
-            return self.content[type_][unique_id]
+    def __get_single_structure(
+        self,
+        type_: Type[Union[ItemScheme, DataStructureDefinition, Dataflow]],
+        short_urn: str,
+    ) -> Any:
+        """Returns a specific element from content."""
+        if self.structures is None:
+            raise NotFound(
+                f"No {type_.__name__} found in message.",
+                "Could not find any Structures in this message.",
+            )
+        for structure in self.structures:
+            if structure.short_urn == short_urn:
+                return structure
 
         raise NotFound(
-            f"No {type_} with id {unique_id} found in content",
+            f"No {type_.__name__} with Short URN {short_urn} found in message",
             "Could not find the requested element.",
         )
 
-    def get_organisation_schemes(self) -> Dict[str, ItemScheme]:
-        """Returns the OrganisationScheme."""
-        return self.__get_elements(ORGS)
+    def get_agency_schemes(self) -> List[AgencyScheme]:
+        """Returns the AgencySchemes."""
+        return self.__get_elements(AgencyScheme)
 
-    def get_codelists(self) -> Dict[str, Codelist]:
-        """Returns the Codelist."""
-        return self.__get_elements(CLS)
+    def get_codelists(self) -> List[Codelist]:
+        """Returns the Codelists."""
+        return self.__get_elements(Codelist)
 
-    def get_concept_schemes(self) -> Dict[str, ConceptScheme]:
-        """Returns the Concept."""
-        return self.__get_elements(CONCEPTS)
+    def get_concept_schemes(self) -> List[ConceptScheme]:
+        """Returns the Concept Schemes."""
+        return self.__get_elements(ConceptScheme)
 
-    def get_organisation_scheme_by_uid(self, unique_id: str) -> ItemScheme:
+    def get_data_structure_definitions(
+        self,
+    ) -> List[DataStructureDefinition]:
+        """Returns the DataStructureDefinitions."""
+        return self.__get_elements(DataStructureDefinition)
+
+    def get_dataflows(self) -> List[Dataflow]:
+        """Returns the Dataflows."""
+        return self.__get_elements(Dataflow)
+
+    def get_organisation_scheme(self, short_urn: str) -> AgencyScheme:
         """Returns a specific OrganisationScheme."""
-        return self.__get_element_by_uid(ORGS, unique_id)
+        return self.__get_single_structure(AgencyScheme, short_urn)
 
-    def get_codelist_by_uid(self, unique_id: str) -> Codelist:
+    def get_codelist(self, short_urn: str) -> Codelist:
         """Returns a specific Codelist."""
-        return self.__get_element_by_uid(CLS, unique_id)
+        return self.__get_single_structure(Codelist, short_urn)
 
-    def get_concept_scheme_by_uid(self, unique_id: str) -> ConceptScheme:
-        """Returns a specific Concept."""
-        return self.__get_element_by_uid(CONCEPTS, unique_id)
+    def get_concept_scheme(self, short_urn: str) -> ConceptScheme:
+        """Returns a specific Concept Scheme."""
+        return self.__get_single_structure(ConceptScheme, short_urn)
 
+    def get_data_structure_definition(
+        self, short_urn: str
+    ) -> DataStructureDefinition:
+        """Returns a specific DataStructureDefinition."""
+        return self.__get_single_structure(DataStructureDefinition, short_urn)
 
-class SubmissionResult(Struct, frozen=True):
-    """A class to represent a Submission Result."""
+    def get_dataflow(self, short_urn: str) -> Dataflow:
+        """Returns a specific Dataflow."""
+        return self.__get_single_structure(Dataflow, short_urn)
 
-    action: str
-    short_urn: str
-    status: str
+    def get_datasets(self) -> Sequence[Dataset]:
+        """Returns the Datasets."""
+        if self.data is not None:
+            return self.data
+        raise NotFound(
+            "No Datasets found in data.",
+            "Could not find any Datasets in content.",
+        )
 
-    def __str__(self) -> str:
-        """Return a string representation of the SubmissionResult."""
-        return (
-            f"<Submission Result - "
-            f"Action: {self.action} - "
-            f"Short URN: {self.short_urn} - "
-            f"Status: {self.status}>"
+    def get_dataset(self, short_urn: str) -> Dataset:
+        """Returns a specific Dataset."""
+        if self.data is not None:
+            for dataset in self.data:
+                if dataset.short_urn == short_urn:
+                    return dataset
+        raise NotFound(
+            f"No Dataset with Short URN {short_urn} found in data.",
+            "Could not find the requested Dataset.",
         )

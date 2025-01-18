@@ -1,20 +1,27 @@
 # mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 2.1 Generic data messages."""
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import pandas as pd
 
+from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_GEN,
     ABBR_MSG,
     ALL_DIM,
+    __write_header,
+    check_content_dataset,
+    check_dimension_at_observation,
+    create_namespaces,
     get_codes,
+    get_end_message,
     get_structure,
     writing_validation,
 )
 from pysdmx.io.xml.sdmx21.writer.config import CHUNKSIZE
+from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
 
 
@@ -86,7 +93,7 @@ def __memory_optimization_writing(
     return outfile
 
 
-def write_data_generic(
+def __write_data_generic(
     datasets: Dict[str, PandasDataset],
     dim_mapping: Dict[str, str],
     prettyprint: bool = True,
@@ -356,3 +363,56 @@ def __format_ser_str(
     out_element += f"{child2}</{ABBR_GEN}:Series>{nl}"
 
     return out_element
+
+
+def write(
+    datasets: Sequence[PandasDataset],
+    output_path: str = "",
+    prettyprint: bool = True,
+    header: Optional[Header] = None,
+    dimension_at_observation: Optional[Dict[str, str]] = None,
+) -> Optional[str]:
+    """Write data to SDMX-ML 2.1 Generic format.
+
+    Args:
+        datasets: The datasets to be written.
+        output_path: The path to save the file.
+        prettyprint: Prettyprint or not.
+        header: The header to be used (generated if None).
+        dimension_at_observation:
+          The mapping between the dataset and the dimension at observation.
+
+    Returns:
+        The XML string if path is empty, None otherwise.
+    """
+    type_ = Format.DATA_SDMX_ML_2_1_GEN
+
+    # Checking if we have datasets,
+    # we need to ensure we can write them correctly
+    check_content_dataset(datasets)
+    content = {dataset.short_urn: dataset for dataset in datasets}
+
+    if header is None:
+        header = Header()
+
+    # Checking the dimension at observation mapping
+    dim_mapping = check_dimension_at_observation(
+        content, dimension_at_observation
+    )
+    header.structure = dim_mapping
+    # Generating the initial tag with namespaces
+    outfile = create_namespaces(type_, prettyprint=prettyprint)
+    # Generating the header
+    outfile += __write_header(header, prettyprint)
+    # Writing the content
+    outfile += __write_data_generic(content, dim_mapping, prettyprint)
+
+    outfile += get_end_message(type_, prettyprint)
+
+    if output_path == "":
+        return outfile
+
+    with open(output_path, "w", encoding="UTF-8", errors="replace") as f:
+        f.write(outfile)
+
+    return None

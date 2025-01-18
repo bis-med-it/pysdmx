@@ -19,6 +19,7 @@ from pysdmx.api.qb.util import (
     check_multiple_data_context,
 )
 from pysdmx.errors import Invalid
+from pysdmx.io.format import AvailabilityFormat
 
 
 class AvailabilityMode(str, Enum):
@@ -26,15 +27,6 @@ class AvailabilityMode(str, Enum):
 
     AVAILABLE = "available"
     EXACT = "exact"
-
-
-class AvailabilityFormat(Enum):
-    """The response formats for availabillity queries."""
-
-    SDMX_ML_2_1_STRUCTURE = "application/vnd.sdmx.structure+xml;version=2.1"
-    SDMX_ML_3_0_STRUCTURE = "application/vnd.sdmx.structure+xml;version=3.0.0"
-    SDMX_JSON_1_0_0 = "application/vnd.sdmx.structure+json;version=1.0.0"
-    SDMX_JSON_2_0_0 = "application/vnd.sdmx.structure+json;version=2.0.0"
 
 
 REFERENCES_V1 = [
@@ -261,3 +253,10 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
 
 
 _availability_decoder = msgspec.json.Decoder(AvailabilityQuery)
+
+__all__ = [
+    "ApiVersion",
+    "AvailabilityFormat",
+    "AvailabilityMode",
+    "AvailabilityQuery",
+]

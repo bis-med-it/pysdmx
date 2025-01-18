@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pysdmx"
-version = "1.0.0-rc-6"
+version = "1.0.0"
 description = "Your opinionated Python SDMX library"
 authors = [
     "Xavier Sosnovsky <xavier.sosnovsky@bis.org>",
@@ -23,7 +23,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-httpx = {version = "0.*", optional = true}
+httpx = "^0.27.0"
 msgspec = "0.*"
 lxml = {version = "5.*", optional = true}
 xmltodict = {version = "0.*", optional = true}
@@ -34,7 +34,6 @@ pandas = {version = "^2.2.2", optional = true}
 
 [tool.poetry.extras]
 dc = ["python-dateutil"]
-fmr = ["httpx"]
 xml = ["lxml", "xmltodict", "sdmxschemas"]
 data = ["pandas"]
 
