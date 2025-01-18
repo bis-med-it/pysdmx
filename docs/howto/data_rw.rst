@@ -43,8 +43,7 @@ Reading data
 
 To read data, we recommend using the read_sdmx function or the get_datasets function:
 
-.. automodule:: pysdmx.io.reader
-    :members: read_sdmx
+.. autofunction:: pysdmx.io.read_sdmx
 
 A typical example to read data from a file, a string or a buffer, using read_sdmx
 
@@ -73,8 +72,7 @@ A typical example to read data from a file, a string or a buffer, using read_sdm
 
 By default, the read_sdmx function will automatically detect the format of the file and use the appropriate reader. We may as well use the get_datasets to associate a dataset to its Schema:
 
-.. automodule:: pysdmx.io.reader
-    :members: get_datasets
+.. autofunction:: pysdmx.io.get_datasets
 
 .. important::
 
@@ -216,18 +214,18 @@ SDMX-CSV 1.0
         The SDMX-CSV 1.0 format is deprecated and should not be used for new implementations.
         It only allows a dataflow to be represented, which is not enough for most use cases.
 
-.. autofunction:: pysdmx.io.csv.sdmx10.writer.writer
+.. autofunction:: pysdmx.io.csv.sdmx10.writer.write
 
 .. code-block:: python
 
-   from pysdmx.io.csv.sdmx10.writer import writer
+   from pysdmx.io.csv.sdmx10.writer import write
    from pathlib import Path
 
    # Write to file sample.csv in the same folder as this code
    file_path = Path(__file__).parent / "sample.csv"
 
    # Write the datasets (list of Dataset or PandasDataset) to the file
-   writer(datasets, file_path)
+   write(datasets, file_path)
 
 
 SDMX-CSV 2.0
@@ -243,16 +241,16 @@ SDMX-CSV 2.0
 
         We use only comma as the delimiter.
 
-.. autofunction:: pysdmx.io.csv.sdmx20.writer.writer
+.. autofunction:: pysdmx.io.csv.sdmx20.writer.write
 
 .. code-block:: python
 
-   from pysdmx.io.csv.sdmx20.writer import writer
+   from pysdmx.io.csv.sdmx20.writer import write
    from pathlib import Path
 
    # Write to file sample.csv in the same folder as this code
    file_path = Path(__file__).parent / "sample.csv"
-   writer(dataset, file_path)
+   write(dataset, file_path)
 
 SDMX-ML 2.1 Data Writers
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -275,7 +273,6 @@ SDMX-ML 2.1 format allows to write multiple datasets at once. To use the Series 
 
     from pysdmx.io.xml.sdmx21.writer.generic import write as write_generic  # For Generic format
     from pysdmx.io.xml.sdmx21.writer.structure_specific import write  # For StructureSpecific format
-    from pysdmx.io.xml.enums import MessageType
     from pathlib import Path
 
     # List of datasets to write
