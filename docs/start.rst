@@ -101,6 +101,12 @@ to parse SDMX-ML messages, install the ``xml`` extra:
 
     pip install pysdmx[xml]
 
+To install all extras, use:
+
+.. code:: bash
+
+    pip install pysdmx[all]
+
 The following extras are available:
 
 .. list-table:: Available extras
@@ -110,6 +116,10 @@ The following extras are available:
    * - Name
      - Purpose
    * - ``xml``
-     - Read and Write SDMX-ML messages
-   * - ``pandas``
-     - Handle SDMX datasets as Pandas data frames
+     - Read and Write SDMX-ML messages, on pysdmx.io.xml.
+   * - ``data``
+     - Handle SDMX datasets as Pandas data frames, it is required also for reading and writing SDMX-CSV files as of today.
+   * - ``dc``
+     - Only required to use the pysdmx.api.dc module when generating queries based on dates.
+   * - ``all``
+     - Install all extras.
