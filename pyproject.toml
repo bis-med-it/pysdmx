@@ -36,6 +36,7 @@ pandas = {version = "^2.2.2", optional = true}
 dc = ["python-dateutil"]
 xml = ["lxml", "xmltodict", "sdmxschemas"]
 data = ["pandas"]
+all = ["lxml", "xmltodict", "sdmxschemas", "pandas", "python-dateutil"]
 
 [tool.poetry.group.dev.dependencies]
 darglint = "^1.8.1"
