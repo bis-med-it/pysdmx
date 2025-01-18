@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pysdmx"
-version = "1.0.0-rc-6"
+version = "1.0.0-rc-11"
 description = "Your opinionated Python SDMX library"
 authors = [
     "Xavier Sosnovsky <xavier.sosnovsky@bis.org>",
@@ -36,6 +36,7 @@ pandas = {version = "^2.2.2", optional = true}
 dc = ["python-dateutil"]
 xml = ["lxml", "xmltodict", "sdmxschemas"]
 data = ["pandas"]
+all = ["lxml", "xmltodict", "sdmxschemas", "python-dateutil", "pandas"]
 
 [tool.poetry.group.dev.dependencies]
 darglint = "^1.8.1"
