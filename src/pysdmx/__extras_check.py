@@ -1,4 +1,4 @@
-EXTRAS_DOCS = ""
+EXTRAS_DOCS = "https://py.sdmx.io/start.html#how-can-i-get-it"
 ERROR_MESSAGE = (
     "The '{extra_name}' extra is required to run {extra_desc}. "
     "Please install it using 'pip install pysdmx[{extra_name}]' or "
