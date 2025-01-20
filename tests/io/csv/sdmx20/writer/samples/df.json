@@ -1,0 +1,24 @@
+[
+  {
+    "FREQ": "A",
+    "DER_TYPE": "U",
+    "DER_INSTR": "A",
+    "DER_RISK": "B",
+    "DER_REP_CTY": "5J",
+    "DER_SECTOR_CPY": "A",
+    "DER_CPC": "1E",
+    "DER_SECTOR_UDL": "A",
+    "DER_CURR_LEG1": "HKD",
+    "DER_CURR_LEG2": "TO1",
+    "DER_ISSUE_MAT": "A",
+    "DER_RATING": "A",
+    "DER_EX_METHOD": "3",
+    "DER_BASIS": "C",
+    "TIME_PERIOD": "2002",
+    "OBS_VALUE": "nan",
+    "AVAILABILITY": "K",
+    "COLLECTION": "S",
+    "OBS_STATUS": "M",
+    "OBS_CONF": "F"
+  }
+]

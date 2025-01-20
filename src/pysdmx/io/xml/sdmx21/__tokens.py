@@ -1,0 +1,236 @@
+"""Parsing configuration for SDMX-ML 2.1 messages."""
+
+from typing import Any, Dict, List
+
+# Common
+HEADER = "Header"
+DATASET = "DataSet"
+SERIES = "Series"
+OBS = "Obs"
+AGENCY_ID = "agencyID"
+ID = "id"
+VERSION = "version"
+REQUIRED = "required"
+POSITION = "position"
+CLASS = "class"
+PACKAGE = "package"
+
+# Structure Specific
+STRSPE = "StructureSpecificData"
+GENERIC = "GenericData"
+SERIESKEY = "SeriesKey"
+ATTRIBUTES = "Attributes"
+VALUE = "Value"
+OBS_DIM = "ObsDimension"
+OBSVALUE = "ObsValue"
+OBSKEY = "ObsKey"
+# Header
+STRREF = "structureRef"
+STRUCTURE = "Structure"
+STR_USAGE = "StructureUsage"
+STRID = "structureID"
+STRTYPE = "structure_type"
+DIM_OBS = "dimensionAtObservation"
+ALL_DIM = "AllDimensions"
+REF = "Ref"
+DATASET_ID = "DataSetID"
+
+# SDMX Error handling
+ERROR = "Error"
+ERROR_MESSAGE = "ErrorMessage"
+ERROR_CODE = "code"
+ERROR_TEXT = "Text"
+
+# SDMX Registry Interface handling
+REG_INTERFACE = "RegistryInterface"
+SUBMIT_STRUCTURE_RESPONSE = "SubmitStructureResponse"
+SUBMISSION_RESULT = "SubmissionResult"
+SUBMITTED_STRUCTURE = "SubmittedStructure"
+MAINTAINABLE_OBJECT = "MaintainableObject"
+ACTION = "action"
+STATUS_MSG = "StatusMessage"
+STATUS = "status"
+
+# SOAP API handling
+FAULT = "Fault"
+FAULTCODE = "faultcode"
+FAULTSTRING = "faultstring"
+
+
+# Structures
+# Common
+NAME = "Name"
+DESC = "Description"
+LANG = "lang"
+XML_TEXT = "#text"
+STR_URL = "structureURL"
+STR_URL_LOW = "structure_url"
+SER_URL = "serviceURL"
+SER_URL_LOW = "service_url"
+
+# General
+ANNOTATIONS = "Annotations"
+STRUCTURES = "Structures"
+ORGS = "OrganisationSchemes"
+AGENCIES = "AgencyScheme"
+CODELISTS = "Codelists"
+CONCEPTS = "Concepts"
+DSDS = "DataStructures"
+DATAFLOWS = "Dataflows"
+CONSTRAINTS = "Constraints"
+
+# Individual
+AGENCY = "Agency"
+CL = "Codelist"
+CL_LOW = "codelist"
+CODE = "Code"
+CODES = "Codes"
+CODES_LOW = "codes"
+CS = "ConceptScheme"
+CS_LOW = "concept_scheme"
+CON = "Concept"
+CON_LOW = "concept"
+DSD = "DataStructure"
+
+# DSD components
+DSD_COMPS = "DataStructureComponents"
+CON_ID = "ConceptIdentity"
+CON_ID_LOW = "concept_identity"
+CON_ROLE = "ConceptRole"
+CON_ROLE_LOW = "concept_role"
+# Dimension
+DIM_LIST = "DimensionList"
+DIM_LIST_LOW = "dimension_list"
+DIM = "Dimension"
+TIME_DIM = "TimeDimension"
+# Attribute
+ATT_LIST = "AttributeList"
+ATT_LIST_LOW = "attribute_list"
+ATT = "Attribute"
+ATT_LVL = "attachment_level"
+ATT_REL_LOW = "attribute_relationship"
+ATT_REL = "AttributeRelationship"
+AS_STATUS = "assignmentStatus"
+MANDATORY = "Mandatory"
+CONDITIONAL = "Conditional"
+# Measure
+ME_LIST = "MeasureList"
+ME_LIST_LOW = "measure_list"
+MEASURE = "Measure"
+PRIM_MEASURE = "PrimaryMeasure"
+# Group Dimension
+GROUP = "Group"
+GROUP_DIM_LOW = "group_dimension_descriptor"
+GROUP_DIM = "GroupDimension"
+DIM_REF = "DimensionReference"
+
+# Dataflows
+DF = "Dataflow"
+
+# Constraints
+CON_CONS = "ContentConstraint"
+CONS_ATT = "ConstraintAttachment"
+CUBE_REGION = "CubeRegion"
+CONTENT_REGION = "dataContentRegion"
+KEY = "Key"
+KEY_VALUE = "KeyValue"
+DATA_KEY_SET = "DataKeySet"
+DATA_KEY_SET_LOW = "dataKeySet"
+INCLUDED = "isIncluded"
+INCLUDE = "include"
+
+# Annotation
+ANNOTATION = "Annotation"
+ANNOTATION_TITLE = "AnnotationTitle"
+ANNOTATION_TYPE = "AnnotationType"
+ANNOTATION_TEXT = "AnnotationText"
+ANNOTATION_URL = "AnnotationURL"
+
+TITLE = "title"
+TYPE_ = "type_"
+TYPE = "type"
+TEXT = "text"
+URL = "url"
+URN = "URN"
+
+# Representation
+CORE_REP = "CoreRepresentation"
+CORE_REP_LOW = "core_representation"
+DTYPE = "dtype"
+LOCAL_DTYPE = "local_dtype"
+LOCAL_REP = "LocalRepresentation"
+LOCAL_REP_LOW = "local_representation"
+LOCAL_CODES = "LocalCodes"
+LOCAL_CODES_LOW = "local_codes"
+LOCAL_FACETS = "LocalFacets"
+LOCAL_FACETS_LOW = "local_facets"
+ENUM = "Enumeration"
+ENUM_FORMAT = "EnumerationFormat"
+TEXT_FORMAT = "TextFormat"
+
+# Facets
+FACETS = "facets"
+TEXT_TYPE = "textType"
+TEXT_TYPE_LOW = "text_type"
+
+# Contact
+CONTACT = "Contact"
+DEPARTMENT = "Department"
+ROLE = "Role"
+URI = "URI"
+EMAIL = "Email"
+X400 = "X400"
+TELEPHONE = "Telephone"
+FAX = "Fax"
+
+# Extras
+MAINTAINER = "maintainer"
+XMLNS = "xmlns"
+COMPS = "components"
+PARENT = "Parent"
+PAR_ID = "maintainableParentID"
+PAR_VER = "maintainableParentVersion"
+REL_TO = "relatedTo"
+NO_REL = "NoSpecifiedRelationship"
+
+# To exclude from attached_attributes
+exc_attributes = [STRREF, "action", "dataScope", "xsi:type", SERIES, OBS]
+
+# Content types
+DATASTRUCTURES_CM = "DataStructures"
+DATAFLOWS_CM = "Dataflows"
+CODELISTS_CM = "Codelists"
+CONCEPTS_CM = "Concepts"
+ORGANISATIONSCHEMES_CM = "OrganisationSchemes"
+
+VALID_FROM = "validFrom"
+VALID_FROM_LOW = "valid_from"
+VALID_TO = "validTo"
+VALID_TO_LOW = "valid_to"
+
+# Structures
+IS_EXTERNAL_REF = "isExternalReference"
+IS_EXTERNAL_REF_LOW = "is_external_reference"
+IS_FINAL = "isFinal"
+IS_FINAL_LOW = "is_final"
+IS_PARTIAL = "isPartial"
+IS_PARTIAL_LOW = "is_partial"
+
+
+# Contact
+URIS = "uris"
+EMAILS = "emails"
+TELEPHONES = "telephones"
+FAXES = "faxes"
+
+# Errors
+missing_rep: Dict[str, List[Any]] = {"CON": [], "CS": [], "CL": []}
+dsd_id: str = ""
+
+# Structure types
+CLS = "Codelists"
+DFW = "Dataflow"
+DFWS = "Dataflows"
+TRANSFORMATIONS = "Transformations"
+TRANS_SCHEME = "TransformationScheme"
+TRANSFORMATION = "Transformation"

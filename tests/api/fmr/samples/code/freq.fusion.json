@@ -1,0 +1,209 @@
+{
+    "Codelist": [
+        {
+            "id": "CL_FREQ",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_FREQ(2.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Frequency"
+                }
+            ],
+            "descriptions": [
+                {
+                    "locale": "en",
+                    "value": "The frequency of the data"
+                }
+            ],
+            "agencyId": "SDMX",
+            "version": "2.0",
+            "isFinal": false,
+            "isPartial": false,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "A",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).A",
+                    "annotations": [
+                        {
+                            "title": "/1987-06-01T00:00:00Z",
+                            "type": "FR_VALIDITY_PERIOD",
+                            "text": [
+                                {
+                                    "locale": "en",
+                                    "value": "N:Annual"
+                                }
+                            ]
+                        },
+                        {
+                            "text": [
+                                {
+                                    "locale": "en",
+                                    "value": "Empty"
+                                }
+                            ]
+                        }
+                    ],
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Annual"
+                        }
+                    ]
+                },
+                {
+                    "id": "S",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).S",
+                    "annotations": [
+                        {
+                            "title": "1989-06-01T00:00:00Z/",
+                            "type": "FR_VALIDITY_PERIOD",
+                            "text": [
+                                {
+                                    "locale": "en",
+                                    "value": "N:Half-yearly, semester"
+                                }
+                            ]
+                        }
+                    ],
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Half-yearly, semester"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "To be used for data collected or disseminated every semester."
+                        }
+                    ]
+                },
+                {
+                    "id": "Q",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).Q",
+                    "annotations": [
+                        {
+                            "title": "1987-06-01T00:00:00Z/1989-06-01T00:00:00Z",
+                            "type": "FR_VALIDITY_PERIOD",
+                            "text": [
+                                {
+                                    "locale": "en",
+                                    "value": "N:Quarterly"
+                                }
+                            ]
+                        }
+                    ],
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Quarterly"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "To be used for data collected or disseminated every quarter."
+                        }
+                    ]
+                },
+                {
+                    "id": "M",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).M",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Monthly"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "To be used for data collected or disseminated every month."
+                        }
+                    ]
+                },
+                {
+                    "id": "W",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).W",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Weekly"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "To be used for data collected or disseminated every week."
+                        }
+                    ]
+                },
+                {
+                    "id": "D",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).D",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Daily"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "To be used for data collected or disseminated every day."
+                        }
+                    ]
+                },
+                {
+                    "id": "H",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).H",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Hourly"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "To be used for data collected or disseminated every hour."
+                        }
+                    ]
+                },
+                {
+                    "id": "B",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).B",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Daily – businessweek"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Similar to \"daily\", however there are no observations for Saturdays and Sundays (so, neither \"missing values\" nor \"numeric values\" should be provided for Saturday and Sunday). This treatment  (\"business\") is one way to deal with such cases, but it is not the only option. Such a time series could alternatively be considered daily (\"D\"), thus, with missing values in the weekend."
+                        }
+                    ]
+                },
+                {
+                    "id": "N",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_FREQ(2.0).N",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Minutely"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "While N denotes \"minutely\", usually, there may be no observations every minute (for several series the frequency is usually \"irregular\" within a day/days). And though observations may be sparse (not collected or disseminated every minute), missing values do not need to be given for the minutes when no observations exist: in any case the time stamp determines when an observation is observed."
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

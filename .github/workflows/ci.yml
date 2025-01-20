@@ -1,0 +1,41 @@
+name: Build
+
+on:
+  push:
+    branches: [ "develop", "main" ]
+  pull_request:
+    branches: [ "develop", "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ${{matrix.os}}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+      fail-fast: false
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install poetry
+      run: pipx install --python ${{ matrix.python-version }} poetry
+    - name: Install dependencies
+      run: poetry install --all-extras
+    - name: Run lint checks
+      run: poetry run ruff check
+    - name: Run type checks
+      run: poetry run mypy
+    - name: Run tests
+      run: poetry run pytest --cov=pysdmx --cov-branch
+    - name: Check coverage
+      run: poetry run coverage report --fail-under=100

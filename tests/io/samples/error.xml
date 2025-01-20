@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message:Error xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+  <message:ErrorMessage code="150">
+    <com:Text>Unable to parse value for key 'detail'.
+Unknown parameter 'none'. Allowed parameters: full, allstubs, referencecompletestubs, allcompletestubs, referencepartial, referencestubs, referencecompletestubs, raw, partialraw</com:Text>
+  </message:ErrorMessage>
+</message:Error>
