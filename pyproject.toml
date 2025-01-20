@@ -36,6 +36,7 @@ pandas = {version = "^2.2.2", optional = true}
 dc = ["python-dateutil"]
 xml = ["lxml", "xmltodict", "sdmxschemas"]
 data = ["pandas"]
+all = ["lxml", "xmltodict", "sdmxschemas", "pandas", "python-dateutil"]
 
 [tool.poetry.group.dev.dependencies]
 darglint = "^1.8.1"
@@ -92,3 +93,7 @@ warn_return_any = false
 
 [tool.coverage.run]
 branch = true
+omit = [
+    # We cannot test this properly with pytest as we always install all extras
+    "__extras_check.py"
+]
