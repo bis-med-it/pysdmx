@@ -9,4 +9,4 @@ Category schemes
     - :ref:`fs`.
 
 .. automodule:: pysdmx.model.category
-    :members: Category, CategoryScheme
+    :members: Category, CategoryScheme, DataflowRef

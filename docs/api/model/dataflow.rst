@@ -10,4 +10,4 @@ Dataflows and data structures
     - :ref:`validate`.
 
 .. automodule:: pysdmx.model.dataflow
-    :members: Component, Components, DataflowInfo, Role, Schema
+    :members: Component, Components, Dataflow, DataflowInfo, Role, Schema

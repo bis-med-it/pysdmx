@@ -16,11 +16,11 @@ class PandasDataset(Dataset, frozen=False, kw_only=True):
     withhold data.
 
     Args:
-        attributes: Attributes at dataset level-
-        data: Dataframe.
+        attributes: Attributes at dataset level.
+        data: Pandas Dataframe.
         structure:
-        URN or Schema related to this Dataset
-        (DSD, Dataflow, ProvisionAgreement)
+          URN or Schema related to this Dataset
+          (DSD, Dataflow, ProvisionAgreement)
     """
 
     data: pd.DataFrame

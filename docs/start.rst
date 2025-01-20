@@ -56,13 +56,10 @@ However, metadata can do so much more than that, i.e. they can be "active" and
 - :ref:`config`
 
 ``pysdmx`` supports retrieving metadata from an SDMX Registry or any service
-compliant with the SDMX-REST 2.0.0 API.
+compliant with the SDMX-REST 2.0.0 (or above) API.
 
-Install ``pysdmx`` with the ``fmr`` extra to enable this functionality:
-
-.. code:: bash
-
-    pip install pysdmx[fmr]
+These classes are part of the core functionality and don't require additional
+installations.
 
 Data discovery and data retrieval
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -73,6 +70,15 @@ allow:
 - Listing public SDMX services.
 - Discovering data available in these services.
 - Retrieving data from these services.
+
+Although this functionality is still under development, it is already
+possible to :ref:`build SDMX-REST queries and execute them against a 
+web service<sdmx-rest>`.
+
+Reading and writing SDMX datasets
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Head to the :ref:`how-to guide<data-rw>` to learn how to read and write SDMX datasets.
 
 How can I get it?
 -----------------
@@ -89,9 +95,31 @@ For the core functionality, use:
 
 Some use cases require additional dependencies, which can be installed using 
 `extras <https://peps.python.org/pep-0508/#extras>`_. For example,
-to retrieve metadata from an SDMX Registry, install the ``fmr``
-extra:
+to parse SDMX-ML messages, install the ``xml`` extra:
 
 .. code:: bash
 
-    pip install pysdmx[fmr]
+    pip install pysdmx[xml]
+
+To install all extras, use:
+
+.. code:: bash
+
+    pip install pysdmx[all]
+
+The following extras are available:
+
+.. list-table:: Available extras
+   :widths: 25 50
+   :header-rows: 1
+
+   * - Name
+     - Purpose
+   * - ``xml``
+     - Read and Write SDMX-ML messages, on pysdmx.io.xml.
+   * - ``data``
+     - Handle SDMX datasets as Pandas data frames, it is required also for reading and writing SDMX-CSV files as of today.
+   * - ``dc``
+     - Only required to use the pysdmx.api.dc module when generating queries based on dates.
+   * - ``all``
+     - Install all extras.

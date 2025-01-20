@@ -95,8 +95,8 @@ Connecting to a Registry
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``pysdmx`` allows retrieving metadata from an SDMX Registry in either a
-synchronous (via ``pymedal.fmr.RegistryClient``) or asynchronous fashion
-(via ``pymedal.fmr.AsyncRegistryClient``). The choice depends on your use
+synchronous (via ``pysdmx.api.fmr.RegistryClient``) or asynchronous fashion
+(via ``pysdmx.api.fmr.AsyncRegistryClient``). The choice depends on your use
 case. The asynchronous client is often preferred as it is non-blocking.
 
 To connect to your target Registry, instantiate the client by passing the

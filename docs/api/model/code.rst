@@ -2,4 +2,4 @@ Codelists, hierarchies and value lists
 ======================================
 
 .. automodule:: pysdmx.model.code
-    :members: Code, Codelist, HierarchicalCode, Hierarchy
+    :members: Code, Codelist, HierarchicalCode, Hierarchy, HierarchyAssociation

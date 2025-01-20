@@ -32,6 +32,7 @@ coverage-report.xml
 
 # Ignore Sphinx doc build result
 **/_build
+**/_site
 
 # Ignore tox related folders/files
 .tox/**

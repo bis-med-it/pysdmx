@@ -61,10 +61,11 @@ API Reference
 .. toctree::
    :maxdepth: 1
 
-   model/organisation
    model/code
    model/concept
    model/dataflow
    model/category
    model/map
    model/refmeta
+   model/organisation
+   model/vtl

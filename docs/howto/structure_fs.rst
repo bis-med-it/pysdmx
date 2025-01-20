@@ -42,8 +42,8 @@ Step-by-step Solution
 ---------------------
 
 ``pysdmx`` allows retrieving metadata from an SDMX Registry either
-synchronously (via ``pymedal.fmr.RegistryClient``) or asynchronously
-(via ``pymedal.fmr.AsyncRegistryClient``).
+synchronously (via ``pysdmx.api.fmr.RegistryClient``) or asynchronously
+(via ``pysdmx.api.fmr.AsyncRegistryClient``).
 
 Connecting to a Registry
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -67,7 +67,7 @@ in a **category scheme** and related **categorizations**.
 
 .. code-block:: python
 
-    cs = await client.get_categories("MY_AGENCY", "MY_DATAFLOWS")
+    cs = await client.get_categories("MY_AGENCY", "MY_CATEGORY_SCHEME")
 
 Now we iterate over the categories (and their sub-categories) to find
 the dataflows attached to them. Use the ``dataflows`` property to get a set

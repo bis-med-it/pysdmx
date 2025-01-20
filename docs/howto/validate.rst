@@ -66,8 +66,8 @@ Step-by-step solution
 ---------------------
 
 ``pysdmx`` allows retrieving metadata from an SDMX Registry in either a
-synchronous (via ``pymedal.fmr.RegistryClient``) or asynchronous fashion
-(via ``pymedal.fmr.AsyncRegistryClient``). Which one to use depends on the
+synchronous (via ``pysdmx.api.fmr.RegistryClient``) or asynchronous fashion
+(via ``pysdmx.api.fmr.AsyncRegistryClient``). Which one to use depends on the
 use case (and taste), but we tend to use the asynchronous client by default,
 as it is non-blocking.
 

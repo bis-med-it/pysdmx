@@ -79,13 +79,13 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
 
 
 def read(input_str: str) -> Sequence[PandasDataset]:
-    """Reads csv file and returns a payload dictionary.
+    """Reads csv data and returns a sequence of Datasets.
 
     Args:
-        input_str: Path to file, str.
+        input_str: str.
 
     Returns:
-        payload: dict.
+        A Sequence of Pandas Datasets.
 
     Raises:
         Invalid: If it is an invalid CSV file.

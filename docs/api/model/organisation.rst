@@ -2,4 +2,4 @@ Organisations
 =============
 
 .. automodule:: pysdmx.model.organisation
-    :members: Organisation, Contact, DataflowRef
+    :members: Agency, AgencyScheme, DataConsumer, DataConsumerScheme, DataProvider, DataProviderScheme, MetadataProvider, MetadataProviderScheme
