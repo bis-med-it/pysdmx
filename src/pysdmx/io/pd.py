@@ -1,8 +1,12 @@
 """Pandas SDMX Dataset."""
 
-import pandas as pd
-
+from pysdmx.__extras_check import __check_data_extra
 from pysdmx.model.dataset import Dataset
+
+__check_data_extra()
+
+# E402 is needed here to ensure a clear message is used on missing import
+import pandas as pd  # noqa: E402
 
 
 class PandasDataset(Dataset, frozen=False, kw_only=True):
