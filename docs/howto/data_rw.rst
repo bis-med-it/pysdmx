@@ -45,7 +45,7 @@ To read data, we recommend using the read_sdmx function or the get_datasets func
 
 .. autofunction:: pysdmx.io.read_sdmx
 
-A typical example to read data from a file, a string or a buffer, using read_sdmx
+A typical example to read data from a file, a string or a buffer, using read_sdmx:
 
 .. code-block:: python
 
@@ -98,7 +98,7 @@ By default, the read_sdmx function will automatically detect the format of the f
 
 
 Both methods are based on the individual readers for each format supported, which are described below.
-All individual readers will have as input a string.
+All individual readers will have a string as input.
 
 SDMX-CSV 1.0
 ^^^^^^^^^^^^
@@ -139,7 +139,7 @@ We currently support only comma as the delimiter.
 Only the `ordinary case <https://github.com/sdmx-twg/sdmx-csv/blob/v2.0.0/data-message/docs/
 sdmx-csv-field-guide.md#1-ordinary-case>`_ is supported.
 
-You may use any custom script for the remaining use cases, if any one is interested in them, please
+You may use any custom script for the remaining use cases, if anyone is interested in them, please
 raise an issue in `GitHub <https://github.com/bis-med-it/pysdmx>`_.
 
 .. code-block:: python
