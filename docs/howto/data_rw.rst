@@ -161,7 +161,7 @@ SDMX-ML 2.1 Data Readers
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 SDMX-ML 2.1 format is described
-`here (pdf file for IM) <https://sdmx.org/wp-content/uploads/SDMX_2-1_SECTION_2_InformationModel_2020-07.pdf>`_
+`here (in documentation folder) <https://github.com/sdmx-twg/sdmx-ml/releases/tag/v2.1>`_
 
 ```pysdmx`` supports both Generic and Structure Specific SDMX-ML 2.1 to handle data on SDMX-ML, both as All Dimensions or Series format.
 
@@ -256,7 +256,7 @@ SDMX-ML 2.1 Data Writers
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 SDMX-ML 2.1 format is described
-`here (pdf file for IM) <https://sdmx.org/wp-content/uploads/SDMX_2-1_SECTION_2_InformationModel_2020-07.pdf>`_
+`here (in documentation folder) <https://github.com/sdmx-twg/sdmx-ml/releases/tag/v2.1>`_
 
 SDMX-ML 2.1 format allows to write multiple datasets at once. To use the Series format, you need to pass the dimension at observation dictionary, where the key is the dataset short urn and the value is the dimension id to be observed.
 
