@@ -181,3 +181,102 @@ class RestService(_CoreRestService):
                 return r.content
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 self._map_error(e)
+
+
+class AsyncRestService(_CoreRestService):
+    """Asynchronous connector to SDMX-REST services.
+
+    Attributes:
+        api_endpoint: The entry point (URL) of the SDMX-REST service.
+        api_version: The most recent version of the SDMX-REST specification
+            supported by the service.
+        data_format: The default format for data queries.
+        structure_format: The default format for structure queries.
+        schema_format: The default format for schema queries.
+        refmeta_format: The default format for reference metadata queries.
+        avail_format: The default format for availability queries.
+        pem: In case the service uses SSL/TLS with self-signed certificate,
+            this attribute should be used to pass the pem file with the
+            list of trusted certicate authorities.
+        timeout: The maximum number of seconds to wait before considering
+            that a request timed out. Defaults to 5 seconds.
+    """
+
+    def __init__(
+        self,
+        api_endpoint: str,
+        api_version: ApiVersion,
+        data_format: DataFormat = DataFormat.SDMX_JSON_2_0_0,
+        structure_format: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
+        schema_format: SchemaFormat = SchemaFormat.SDMX_JSON_2_0_0_STRUCTURE,
+        refmeta_format: RefMetaFormat = RefMetaFormat.SDMX_JSON_2_0_0,
+        avail_format: AvailabilityFormat = AvailabilityFormat.SDMX_JSON_2_0_0,
+        pem: Optional[str] = None,
+        timeout: Optional[float] = 5.0,
+    ):
+        """Instantiate a connector to a SDMX-REST service."""
+        super().__init__(
+            api_endpoint,
+            api_version,
+            data_format,
+            structure_format,
+            schema_format,
+            refmeta_format,
+            avail_format,
+            pem,
+            timeout,
+        )
+
+    async def data(self, query: DataQuery) -> bytes:
+        """Execute a data query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._data_format.value
+        out = await self.__fetch(q, f)
+        return out
+
+    async def structure(self, query: StructureQuery) -> bytes:
+        """Execute a structure query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._structure_format.value
+        out = await self.__fetch(q, f)
+        return out
+
+    async def schema(self, query: SchemaQuery) -> bytes:
+        """Execute a schema query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._schema_format.value
+        out = await self.__fetch(q, f)
+        return out
+
+    async def availability(self, query: AvailabilityQuery) -> bytes:
+        """Execute an availability query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._avail_format.value
+        out = await self.__fetch(q, f)
+        return out
+
+    async def reference_metadata(
+        self,
+        query: Union[
+            RefMetaByMetadataflowQuery,
+            RefMetaByMetadatasetQuery,
+            RefMetaByStructureQuery,
+        ],
+    ) -> bytes:
+        """Execute a reference metadata query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._refmeta_format.value
+        out = await self.__fetch(q, f)
+        return out
+
+    async def __fetch(self, query: str, format: str) -> bytes:
+        async with httpx.AsyncClient(verify=self._ssl_context) as client:
+            try:
+                url = f"{self._api_endpoint}{query}"
+                h = self._headers.copy()
+                h["Accept"] = format
+                r = await client.get(url, headers=h, timeout=self._timeout)
+                r.raise_for_status()
+                return r.content
+            except (httpx.RequestError, httpx.HTTPStatusError) as e:
+                self._map_error(e)
