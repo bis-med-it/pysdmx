@@ -10,7 +10,6 @@ from typing import (
     Union,
 )
 
-import httpx
 from msgspec.json import decode
 
 from pysdmx.api.qb import (
@@ -95,17 +94,6 @@ class __BaseRegistryClient:
             self.deser = fusion_readers
         else:
             self.deser = sdmx_readers
-        self.ssl_context = (
-            httpx.create_ssl_context(
-                verify=pem,
-            )
-            if pem
-            else httpx.create_ssl_context()
-        )
-        self.headers = {
-            "Accept": self.format.value,
-            "Accept-Encoding": "gzip, deflate",
-        }
 
     def _out(self, response: bytes, typ: Deserializer, *params: Any) -> Any:
         return decode(response, type=typ).to_model(*params)
