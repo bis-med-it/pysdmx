@@ -19,7 +19,23 @@ from pysdmx.api.qb.util import ApiVersion
 
 
 class RestService:
-    """Connector to SDMX-REST services."""
+    """Connector to SDMX-REST services.
+
+    Attributes:
+        api_endpoint: The entry point (URL) of the SDMX-REST service.
+        api_version: The most version of the SDMX-REST specification
+            supported by the service.
+        data_format: The default format for data queries.
+        structure_format: The default format for structure queries.
+        schema_format: The default format for schema queries.
+        refmeta_format: The default format for reference metadata queries.
+        avail_format: The default format for availability queries.
+        pem: In case the service uses SSL/TLS with self-signed certificate,
+            this attribute should be used to pass the pem file with the
+            list of trusted certicate authorities.
+        timeout: The maximum number of seconds to wait before considering
+            that the request timed out. Defaults to 5 seconds.
+    """
 
     def __init__(
         self,
