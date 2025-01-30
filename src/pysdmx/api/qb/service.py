@@ -19,7 +19,23 @@ from pysdmx.api.qb.util import ApiVersion
 
 
 class RestService:
-    """Connector to SDMX-REST services."""
+    """Connector to SDMX-REST services.
+
+    Attributes:
+        api_endpoint: The entry point (URL) of the SDMX-REST service.
+        api_version: The most recent version of the SDMX-REST specification
+            supported by the service.
+        data_format: The default format for data queries.
+        structure_format: The default format for structure queries.
+        schema_format: The default format for schema queries.
+        refmeta_format: The default format for reference metadata queries.
+        avail_format: The default format for availability queries.
+        pem: In case the service uses SSL/TLS with self-signed certificate,
+            this attribute should be used to pass the pem file with the
+            list of trusted certicate authorities.
+        timeout: The maximum number of seconds to wait before considering
+            that a request timed out. Defaults to 5 seconds.
+    """
 
     def __init__(
         self,
@@ -31,6 +47,7 @@ class RestService:
         refmeta_format: RefMetaFormat = RefMetaFormat.SDMX_JSON_2_0_0,
         avail_format: AvailabilityFormat = AvailabilityFormat.SDMX_JSON_2_0_0,
         pem: Optional[str] = None,
+        timeout: Optional[float] = 5.0,
     ):
         """Instantiate a connector to a SDMX-REST service."""
         self.__api_endpoint = (
@@ -50,9 +67,10 @@ class RestService:
             if pem
             else httpx.create_ssl_context()
         )
-        self.headers = {
+        self.__headers = {
             "Accept-Encoding": "gzip, deflate",
         }
+        self.__timeout = timeout
 
     def data(self, query: DataQuery) -> bytes:
         """Execute a data query against the service."""
@@ -95,9 +113,9 @@ class RestService:
         with httpx.Client(verify=self.__ssl_context) as client:
             try:
                 url = f"{self.__api_endpoint}{query}"
-                h = self.headers.copy()
+                h = self.__headers.copy()
                 h["Accept"] = format
-                r = client.get(url, headers=h)
+                r = client.get(url, headers=h, timeout=self.__timeout)
                 r.raise_for_status()
                 return r.content
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
