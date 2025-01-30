@@ -51,7 +51,7 @@ class RestService:
             if pem
             else httpx.create_ssl_context()
         )
-        self.headers = {
+        self.__headers = {
             "Accept-Encoding": "gzip, deflate",
         }
         self.__timeout = timeout
@@ -97,7 +97,7 @@ class RestService:
         with httpx.Client(verify=self.__ssl_context) as client:
             try:
                 url = f"{self.__api_endpoint}{query}"
-                h = self.headers.copy()
+                h = self.__headers.copy()
                 h["Accept"] = format
                 r = client.get(url, headers=h, timeout=self.__timeout)
                 r.raise_for_status()
