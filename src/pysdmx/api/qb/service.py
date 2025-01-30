@@ -31,6 +31,7 @@ class RestService:
         refmeta_format: RefMetaFormat = RefMetaFormat.SDMX_JSON_2_0_0,
         avail_format: AvailabilityFormat = AvailabilityFormat.SDMX_JSON_2_0_0,
         pem: Optional[str] = None,
+        timeout: Optional[float] = 5.0,
     ):
         """Instantiate a connector to a SDMX-REST service."""
         self.__api_endpoint = (
@@ -53,6 +54,7 @@ class RestService:
         self.headers = {
             "Accept-Encoding": "gzip, deflate",
         }
+        self.__timeout = timeout
 
     def data(self, query: DataQuery) -> bytes:
         """Execute a data query against the service."""
@@ -97,7 +99,7 @@ class RestService:
                 url = f"{self.__api_endpoint}{query}"
                 h = self.headers.copy()
                 h["Accept"] = format
-                r = client.get(url, headers=h)
+                r = client.get(url, headers=h, timeout=self.__timeout)
                 r.raise_for_status()
                 return r.content
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
