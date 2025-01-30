@@ -23,7 +23,7 @@ class RestService:
 
     Attributes:
         api_endpoint: The entry point (URL) of the SDMX-REST service.
-        api_version: The most version of the SDMX-REST specification
+        api_version: The most recent version of the SDMX-REST specification
             supported by the service.
         data_format: The default format for data queries.
         structure_format: The default format for structure queries.
@@ -34,7 +34,7 @@ class RestService:
             this attribute should be used to pass the pem file with the
             list of trusted certicate authorities.
         timeout: The maximum number of seconds to wait before considering
-            that the request timed out. Defaults to 5 seconds.
+            that a request timed out. Defaults to 5 seconds.
     """
 
     def __init__(
