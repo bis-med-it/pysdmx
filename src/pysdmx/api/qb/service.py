@@ -18,24 +18,8 @@ from pysdmx.api.qb.structure import StructureFormat, StructureQuery
 from pysdmx.api.qb.util import ApiVersion
 
 
-class RestService:
-    """Connector to SDMX-REST services.
-
-    Attributes:
-        api_endpoint: The entry point (URL) of the SDMX-REST service.
-        api_version: The most recent version of the SDMX-REST specification
-            supported by the service.
-        data_format: The default format for data queries.
-        structure_format: The default format for structure queries.
-        schema_format: The default format for schema queries.
-        refmeta_format: The default format for reference metadata queries.
-        avail_format: The default format for availability queries.
-        pem: In case the service uses SSL/TLS with self-signed certificate,
-            this attribute should be used to pass the pem file with the
-            list of trusted certicate authorities.
-        timeout: The maximum number of seconds to wait before considering
-            that a request timed out. Defaults to 5 seconds.
-    """
+class _CoreRestService:
+    """Abstract connector."""
 
     def __init__(
         self,
@@ -50,78 +34,29 @@ class RestService:
         timeout: Optional[float] = 5.0,
     ):
         """Instantiate a connector to a SDMX-REST service."""
-        self.__api_endpoint = (
+        self._api_endpoint = (
             api_endpoint[0:-1] if api_endpoint.endswith("/") else api_endpoint
         )
 
-        self.__api_version = api_version
-        self.__data_format = data_format
-        self.__structure_format = structure_format
-        self.__schema_format = schema_format
-        self.__refmeta_format = refmeta_format
-        self.__avail_format = avail_format
-        self.__ssl_context = (
+        self._api_version = api_version
+        self._data_format = data_format
+        self._structure_format = structure_format
+        self._schema_format = schema_format
+        self._refmeta_format = refmeta_format
+        self._avail_format = avail_format
+        self._ssl_context = (
             httpx.create_ssl_context(
                 verify=pem,
             )
             if pem
             else httpx.create_ssl_context()
         )
-        self.__headers = {
+        self._headers = {
             "Accept-Encoding": "gzip, deflate",
         }
-        self.__timeout = timeout
+        self._timeout = timeout
 
-    def data(self, query: DataQuery) -> bytes:
-        """Execute a data query against the service."""
-        q = query.get_url(self.__api_version, True)
-        f = self.__data_format.value
-        return self.__fetch(q, f)
-
-    def structure(self, query: StructureQuery) -> bytes:
-        """Execute a structure query against the service."""
-        q = query.get_url(self.__api_version, True)
-        f = self.__structure_format.value
-        return self.__fetch(q, f)
-
-    def schema(self, query: SchemaQuery) -> bytes:
-        """Execute a schema query against the service."""
-        q = query.get_url(self.__api_version, True)
-        f = self.__schema_format.value
-        return self.__fetch(q, f)
-
-    def availability(self, query: AvailabilityQuery) -> bytes:
-        """Execute an availability query against the service."""
-        q = query.get_url(self.__api_version, True)
-        f = self.__avail_format.value
-        return self.__fetch(q, f)
-
-    def reference_metadata(
-        self,
-        query: Union[
-            RefMetaByMetadataflowQuery,
-            RefMetaByMetadatasetQuery,
-            RefMetaByStructureQuery,
-        ],
-    ) -> bytes:
-        """Execute a reference metadata query against the service."""
-        q = query.get_url(self.__api_version, True)
-        f = self.__refmeta_format.value
-        return self.__fetch(q, f)
-
-    def __fetch(self, query: str, format: str) -> bytes:
-        with httpx.Client(verify=self.__ssl_context) as client:
-            try:
-                url = f"{self.__api_endpoint}{query}"
-                h = self.__headers.copy()
-                h["Accept"] = format
-                r = client.get(url, headers=h, timeout=self.__timeout)
-                r.raise_for_status()
-                return r.content
-            except (httpx.RequestError, httpx.HTTPStatusError) as e:
-                self.__map_error(e)
-
-    def __map_error(
+    def _map_error(
         self, e: Union[httpx.RequestError, httpx.HTTPStatusError]
     ) -> NoReturn:
         q = e.request.url
@@ -152,3 +87,196 @@ class RestService:
                 f"The query was `{q}`. The error message was: `{e}`."
             )
             raise errors.Unavailable("Connection error", msg) from e
+
+
+class RestService(_CoreRestService):
+    """Synchronous connector to SDMX-REST services.
+
+    Attributes:
+        api_endpoint: The entry point (URL) of the SDMX-REST service.
+        api_version: The most recent version of the SDMX-REST specification
+            supported by the service.
+        data_format: The default format for data queries.
+        structure_format: The default format for structure queries.
+        schema_format: The default format for schema queries.
+        refmeta_format: The default format for reference metadata queries.
+        avail_format: The default format for availability queries.
+        pem: In case the service uses SSL/TLS with self-signed certificate,
+            this attribute should be used to pass the pem file with the
+            list of trusted certicate authorities.
+        timeout: The maximum number of seconds to wait before considering
+            that a request timed out. Defaults to 5 seconds.
+    """
+
+    def __init__(
+        self,
+        api_endpoint: str,
+        api_version: ApiVersion,
+        data_format: DataFormat = DataFormat.SDMX_JSON_2_0_0,
+        structure_format: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
+        schema_format: SchemaFormat = SchemaFormat.SDMX_JSON_2_0_0_STRUCTURE,
+        refmeta_format: RefMetaFormat = RefMetaFormat.SDMX_JSON_2_0_0,
+        avail_format: AvailabilityFormat = AvailabilityFormat.SDMX_JSON_2_0_0,
+        pem: Optional[str] = None,
+        timeout: Optional[float] = 5.0,
+    ):
+        """Instantiate a connector to a SDMX-REST service."""
+        super().__init__(
+            api_endpoint,
+            api_version,
+            data_format,
+            structure_format,
+            schema_format,
+            refmeta_format,
+            avail_format,
+            pem,
+            timeout,
+        )
+
+    def data(self, query: DataQuery) -> bytes:
+        """Execute a data query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._data_format.value
+        return self.__fetch(q, f)
+
+    def structure(self, query: StructureQuery) -> bytes:
+        """Execute a structure query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._structure_format.value
+        return self.__fetch(q, f)
+
+    def schema(self, query: SchemaQuery) -> bytes:
+        """Execute a schema query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._schema_format.value
+        return self.__fetch(q, f)
+
+    def availability(self, query: AvailabilityQuery) -> bytes:
+        """Execute an availability query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._avail_format.value
+        return self.__fetch(q, f)
+
+    def reference_metadata(
+        self,
+        query: Union[
+            RefMetaByMetadataflowQuery,
+            RefMetaByMetadatasetQuery,
+            RefMetaByStructureQuery,
+        ],
+    ) -> bytes:
+        """Execute a reference metadata query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._refmeta_format.value
+        return self.__fetch(q, f)
+
+    def __fetch(self, query: str, format: str) -> bytes:
+        with httpx.Client(verify=self._ssl_context) as client:
+            try:
+                url = f"{self._api_endpoint}{query}"
+                h = self._headers.copy()
+                h["Accept"] = format
+                r = client.get(url, headers=h, timeout=self._timeout)
+                r.raise_for_status()
+                return r.content
+            except (httpx.RequestError, httpx.HTTPStatusError) as e:
+                self._map_error(e)
+
+
+class AsyncRestService(_CoreRestService):
+    """Asynchronous connector to SDMX-REST services.
+
+    Attributes:
+        api_endpoint: The entry point (URL) of the SDMX-REST service.
+        api_version: The most recent version of the SDMX-REST specification
+            supported by the service.
+        data_format: The default format for data queries.
+        structure_format: The default format for structure queries.
+        schema_format: The default format for schema queries.
+        refmeta_format: The default format for reference metadata queries.
+        avail_format: The default format for availability queries.
+        pem: In case the service uses SSL/TLS with self-signed certificate,
+            this attribute should be used to pass the pem file with the
+            list of trusted certicate authorities.
+        timeout: The maximum number of seconds to wait before considering
+            that a request timed out. Defaults to 5 seconds.
+    """
+
+    def __init__(
+        self,
+        api_endpoint: str,
+        api_version: ApiVersion,
+        data_format: DataFormat = DataFormat.SDMX_JSON_2_0_0,
+        structure_format: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
+        schema_format: SchemaFormat = SchemaFormat.SDMX_JSON_2_0_0_STRUCTURE,
+        refmeta_format: RefMetaFormat = RefMetaFormat.SDMX_JSON_2_0_0,
+        avail_format: AvailabilityFormat = AvailabilityFormat.SDMX_JSON_2_0_0,
+        pem: Optional[str] = None,
+        timeout: Optional[float] = 5.0,
+    ):
+        """Instantiate a connector to a SDMX-REST service."""
+        super().__init__(
+            api_endpoint,
+            api_version,
+            data_format,
+            structure_format,
+            schema_format,
+            refmeta_format,
+            avail_format,
+            pem,
+            timeout,
+        )
+
+    async def data(self, query: DataQuery) -> bytes:
+        """Execute a data query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._data_format.value
+        out = await self.__fetch(q, f)
+        return out
+
+    async def structure(self, query: StructureQuery) -> bytes:
+        """Execute a structure query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._structure_format.value
+        out = await self.__fetch(q, f)
+        return out
+
+    async def schema(self, query: SchemaQuery) -> bytes:
+        """Execute a schema query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._schema_format.value
+        out = await self.__fetch(q, f)
+        return out
+
+    async def availability(self, query: AvailabilityQuery) -> bytes:
+        """Execute an availability query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._avail_format.value
+        out = await self.__fetch(q, f)
+        return out
+
+    async def reference_metadata(
+        self,
+        query: Union[
+            RefMetaByMetadataflowQuery,
+            RefMetaByMetadatasetQuery,
+            RefMetaByStructureQuery,
+        ],
+    ) -> bytes:
+        """Execute a reference metadata query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._refmeta_format.value
+        out = await self.__fetch(q, f)
+        return out
+
+    async def __fetch(self, query: str, format: str) -> bytes:
+        async with httpx.AsyncClient(verify=self._ssl_context) as client:
+            try:
+                url = f"{self._api_endpoint}{query}"
+                h = self._headers.copy()
+                h["Accept"] = format
+                r = await client.get(url, headers=h, timeout=self._timeout)
+                r.raise_for_status()
+                return r.content
+            except (httpx.RequestError, httpx.HTTPStatusError) as e:
+                self._map_error(e)

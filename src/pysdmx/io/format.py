@@ -64,6 +64,7 @@ class RefMetaFormat(Enum):
     SDMX_CSV_2_0_0 = Format.REFMETA_SDMX_CSV_2_0_0.value
     SDMX_JSON_2_0_0 = Format.REFMETA_SDMX_JSON_2_0_0.value
     SDMX_ML_3_0 = Format.REFMETA_SDMX_ML_3_0.value
+    FUSION_JSON = Format.FUSION_JSON.value
 
 
 class SchemaFormat(Enum):
@@ -77,6 +78,7 @@ class SchemaFormat(Enum):
     SDMX_ML_3_0_SCHEMA = Format.SCHEMA_SDMX_ML_3_0.value
     SDMX_ML_2_1_STRUCTURE = Format.STRUCTURE_SDMX_ML_2_1.value
     SDMX_ML_3_0_STRUCTURE = Format.STRUCTURE_SDMX_ML_3_0.value
+    FUSION_JSON = Format.FUSION_JSON.value
 
 
 class StructureFormat(Enum):
