@@ -1,0 +1,19 @@
+{
+    "CategoryScheme": [
+        {
+            "id": "TEST_CS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.CategoryScheme=TEST:TEST_CS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Test Category Scheme"
+                }
+            ],
+            "agencyId": "TEST",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": false,
+            "validityType": "standard"
+        }
+    ]
+}
