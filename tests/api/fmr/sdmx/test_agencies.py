@@ -31,6 +31,12 @@ def body():
         return f.read()
 
 
+@pytest.fixture
+def empty():
+    with open("tests/api/fmr/samples/orgs/empty_agencies.json", "rb") as f:
+        return f.read()
+
+
 def test_returns_orgs(respx_mock, fmr, query, body):
     """get_agencies() should return a collection of organizations."""
     checks.check_orgs(respx_mock, fmr, query, body)
@@ -45,3 +51,8 @@ async def test_orgs_have_core_info(respx_mock, async_fmr, query, body):
 def test_detailed_orgs(respx_mock, fmr, query, body):
     """Agencies may have contact information."""
     checks.check_org_details(respx_mock, fmr, query, body)
+
+
+def test_empty_orgs(respx_mock, fmr, query, empty):
+    """get_agencies() can handle empty schemes."""
+    checks.check_orgs(respx_mock, fmr, query, empty)
