@@ -1,0 +1,19 @@
+{
+    "ConceptScheme": [
+        {
+            "id": "MEDIT_CS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS.MEDIT:MEDIT_CS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "List of concepts used by MED IT"
+                }
+            ],
+            "agencyId": "BIS.MEDIT",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": false,
+            "validityType": "standard"
+        }
+    ]
+}
