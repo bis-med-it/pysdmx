@@ -55,4 +55,4 @@ def test_detailed_orgs(respx_mock, fmr, query, body):
 
 def test_empty_orgs(respx_mock, fmr, query, empty):
     """get_agencies() can handle empty schemes."""
-    checks.check_orgs(respx_mock, fmr, query, empty)
+    checks.check_empty(respx_mock, fmr, query, empty)
