@@ -32,6 +32,12 @@ def body():
         return f.read()
 
 
+@pytest.fixture
+def empty():
+    with open("tests/api/fmr/samples/concept/empty_cs.json", "rb") as f:
+        return f.read()
+
+
 def test_returns_cs(respx_mock, fmr, query, body):
     """get_concepts() should return a concept scheme."""
     checks.check_cs(respx_mock, fmr, query, body)
@@ -46,3 +52,8 @@ async def test_concepts_have_core_info(respx_mock, async_fmr, query, body):
 def test_concepts_have_details(respx_mock, fmr, query, body):
     """Concepts may have extended information."""
     checks.check_concept_details(respx_mock, fmr, query, body)
+
+
+def test_empty(respx_mock, fmr, query, empty):
+    """Can handle empty schemes."""
+    checks.check_empty(respx_mock, fmr, query, empty)

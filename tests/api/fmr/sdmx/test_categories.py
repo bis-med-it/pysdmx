@@ -34,6 +34,12 @@ def body():
         return f.read()
 
 
+@pytest.fixture
+def empty():
+    with open("tests/api/fmr/samples/cat/empty_cs.json", "rb") as f:
+        return f.read()
+
+
 def test_returns_categories(respx_mock, fmr, query, body):
     """get_categories() should return a category scheme."""
     checks.check_categories(respx_mock, fmr, query, body)
@@ -48,3 +54,8 @@ async def test_categories_have_core_info(respx_mock, async_fmr, query, body):
 def test_categories_have_details(respx_mock, fmr, query, body):
     """Categories may have extended information."""
     checks.check_category_details(respx_mock, fmr, query, body)
+
+
+def test_empty(respx_mock, fmr, query, empty):
+    """Can handle empty schemes."""
+    checks.check_empty(respx_mock, fmr, query, empty)

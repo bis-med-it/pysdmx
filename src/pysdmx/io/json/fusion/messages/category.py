@@ -94,9 +94,9 @@ class FusionCategoryScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
 class FusionCategorySchemeMessage(Struct, frozen=True):
     """Fusion-JSON payload for /categoryscheme queries."""
 
-    Categorisation: Sequence[FusionCategorisation]
     CategoryScheme: Sequence[FusionCategoryScheme]
-    Dataflow: Sequence[FusionDataflow]
+    Categorisation: Sequence[FusionCategorisation] = ()
+    Dataflow: Sequence[FusionDataflow] = ()
 
     def __group_flows(self) -> defaultdict[str, list[DF]]:
         out: defaultdict[str, list[DF]] = defaultdict(list)

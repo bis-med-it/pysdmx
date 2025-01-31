@@ -80,8 +80,8 @@ class FusionConceptSchemeMessage(
 ):
     """Fusion-JSON payload for /conceptscheme queries."""
 
-    Codelist: Sequence[FusionCodelist]
     ConceptScheme: Sequence[FusionConceptScheme]
+    Codelist: Sequence[FusionCodelist] = ()
 
     def to_model(self) -> CS:
         """Returns the requested concept scheme."""

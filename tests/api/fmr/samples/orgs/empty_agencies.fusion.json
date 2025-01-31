@@ -1,0 +1,18 @@
+{
+    "AgencyScheme": [
+        {
+            "id": "AGENCIES",
+            "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=BIS:AGENCIES(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "AGENCIES"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": false
+        }
+    ]
+}

@@ -81,3 +81,17 @@ def check_org_details(mock, fmr: RegistryClient, query, body):
             assert not c2.uris
         else:
             pytest.fail(f"Unexpected agency: {agency.id}")
+
+
+def check_empty(mock, fmr: RegistryClient, query, body):
+    """get_agencies() can handle empty messages."""
+    mock.get(query).mock(
+        return_value=httpx.Response(
+            200,
+            content=body,
+        )
+    )
+
+    agencies = fmr.get_agencies("BIS")
+
+    assert len(agencies) == 0

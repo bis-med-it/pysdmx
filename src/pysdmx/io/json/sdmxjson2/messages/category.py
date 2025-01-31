@@ -97,9 +97,9 @@ class JsonCategoryScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
 class JsonCategorySchemes(Struct, frozen=True):
     """SDMX-JSON payload for the list of category schemes."""
 
-    categorisations: Sequence[JsonCategorisation]
     categorySchemes: Sequence[JsonCategoryScheme]
-    dataflows: Sequence[JsonDataflow]
+    categorisations: Sequence[JsonCategorisation] = ()
+    dataflows: Sequence[JsonDataflow] = ()
 
 
 class JsonCategorySchemeMessage(Struct, frozen=True):

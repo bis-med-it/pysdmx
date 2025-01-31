@@ -103,3 +103,23 @@ def check_concept_details(mock, fmr: RegistryClient, query, body):
             assert concept.facets is None
         else:
             pytest.fail(f"Unexpected concept {concept.id}")
+
+
+def check_empty(mock, fmr: RegistryClient, query, body):
+    """Can handle empty messages."""
+    mock.get(query).mock(
+        return_value=httpx.Response(
+            200,
+            content=body,
+        )
+    )
+
+    cs = fmr.get_concepts("BIS.MEDIT", "MEDIT_CS")
+
+    assert isinstance(cs, ConceptScheme)
+    assert cs.id == "MEDIT_CS"
+    assert cs.name == "List of concepts used by MED IT"
+    assert cs.agency == "BIS.MEDIT"
+    assert cs.description is None
+    assert cs.version == "1.0"
+    assert len(cs) == 0

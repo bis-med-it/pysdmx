@@ -89,7 +89,7 @@ class FusionAgencyScheme(Struct, frozen=True):
     """Fusion-JSON payload for an agency scheme."""
 
     agencyId: str
-    items: Sequence[FusionAgency]
+    items: Sequence[FusionAgency] = ()
 
     def to_model(self) -> Sequence[Agency]:
         """Converts a FusionAgencyScheme to a list of Organisations."""
@@ -109,7 +109,7 @@ class FusionAgencyMessage(Struct, frozen=True):
 class FusionProviderScheme(Struct, frozen=True):
     """Fusion-JSON payload for a data provider scheme."""
 
-    items: Sequence[FusionProvider]
+    items: Sequence[FusionProvider] = ()
 
     def __get_df_ref(self, ref: str) -> DataflowRef:
         a = parse_urn(ref)
