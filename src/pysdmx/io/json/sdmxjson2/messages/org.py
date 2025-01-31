@@ -77,7 +77,7 @@ class JsonAgencyScheme(Struct, frozen=True):
     """SDMX-JSON payload for an agency scheme."""
 
     agencyID: str
-    agencies: Sequence[Agency]
+    agencies: Sequence[Agency] = ()
     description: Optional[str] = None
     isExternalReference: bool = False
     validFrom: Optional[datetime] = None

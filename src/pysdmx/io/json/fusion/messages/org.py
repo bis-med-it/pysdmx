@@ -89,7 +89,7 @@ class FusionAgencyScheme(Struct, frozen=True):
     """Fusion-JSON payload for an agency scheme."""
 
     agencyId: str
-    items: Sequence[FusionAgency]
+    items: Sequence[FusionAgency] = ()
 
     def to_model(self) -> Sequence[Agency]:
         """Converts a FusionAgencyScheme to a list of Organisations."""
