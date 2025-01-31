@@ -1,0 +1,38 @@
+{
+    "meta": {
+        "id": "IREF050759",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2023-07-24T13:24:32Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0"
+        }
+    },
+    "data": {
+        "dataProviderSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "dataproviderscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProviderScheme=BIS:DATA_PROVIDERS(1.0)"
+                    }
+                ],
+                "id": "DATA_PROVIDERS",
+                "name": "DATA_PROVIDERS",
+                "names": {
+                    "en": "DATA_PROVIDERS"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isFinal": false,
+                "isPartial": false
+            }
+        ]
+    }
+}

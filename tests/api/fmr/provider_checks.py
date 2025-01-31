@@ -94,3 +94,17 @@ def check_with_flows(mock, fmr, query, body):
             assert len(prv.dataflows) == 0
         else:
             pytest.fail(f"Unexepcted provider: {prv.id}")
+
+
+def check_empty(mock, fmr: RegistryClient, query, body):
+    """Can handle empty messages."""
+    mock.get(query).mock(
+        return_value=httpx.Response(
+            200,
+            content=body,
+        )
+    )
+
+    agencies = fmr.get_providers("BIS")
+
+    assert len(agencies) == 0
