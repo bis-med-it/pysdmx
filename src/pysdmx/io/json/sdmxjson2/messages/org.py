@@ -16,7 +16,7 @@ class JsonDataProviderScheme(Struct, frozen=True):
     """SDMX-JSON payload for a data provider scheme."""
 
     agencyID: str
-    dataProviders: Sequence[DataProvider]
+    dataProviders: Sequence[DataProvider] = ()
     description: Optional[str] = None
     isExternalReference: bool = False
     validFrom: Optional[datetime] = None
