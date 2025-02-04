@@ -256,5 +256,7 @@ _encoder = msgspec.json.Encoder()
 __all__ = [
     "RefMetaDetail",
     "RefMetaFormat",
+    "RefMetaByMetadataflowQuery",
+    "RefMetaByMetadatasetQuery",
     "RefMetaByStructureQuery",
 ]
