@@ -110,7 +110,7 @@ class RegistrationByIdQuery(
         registration_id: The registration id(s).
     """
 
-    registration_id: Union[str, Sequence[str]] = REST_ALL
+    registration_id: str
 
     def _validate_query(self, version: ApiVersion) -> None:
         super().validate()
@@ -120,16 +120,10 @@ class RegistrationByIdQuery(
         return _by_id_decoder
 
     def _create_full_query(self) -> str:
-        i = super()._join_mult(self.registration_id)
-        return f"/registration/id/{i}"
+        return f"/registration/id/{self.registration_id}"
 
     def _create_short_query(self) -> str:
-        i = (
-            f"/{super()._join_mult(self.registration_id)}"
-            if self.registration_id != REST_ALL
-            else ""
-        )
-        return f"/registration/id{i}"
+        return self._create_full_query()
 
 
 class RegistrationByProviderQuery(
