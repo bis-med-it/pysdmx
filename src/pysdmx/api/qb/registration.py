@@ -45,14 +45,16 @@ class _CoreRegistrationQuery(
             )
 
     def _check_updated_consistency(
-        self, updated_before: datetime, updated_after: datetime
+        self,
+        updated_before: Optional[datetime],
+        updated_after: Optional[datetime],
     ) -> None:
         if updated_before and updated_after and updated_before < updated_after:
             raise Invalid(
                 "Inconsistent updated timestamps",
                 (
                     "The updated_after timestamp should be before "
-                    "the updated_before timestamp.",
+                    "the updated_before timestamp."
                 ),
                 csi={
                     "updated_after": str(updated_after),
