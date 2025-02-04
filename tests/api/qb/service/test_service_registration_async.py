@@ -3,9 +3,9 @@ import pytest
 
 from pysdmx.api.qb import (
     ApiVersion,
+    AsyncRestService,
     RegistrationByIdQuery,
     RegistryFormat,
-    AsyncRestService,
 )
 from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 
