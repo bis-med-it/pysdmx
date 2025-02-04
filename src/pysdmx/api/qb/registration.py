@@ -212,6 +212,9 @@ class RegistrationByContextQuery(
     def _validate_query(self, version: ApiVersion) -> None:
         super().validate()
         super()._check_version(version)
+        super()._check_updated_consistency(
+            self.updated_before, self.updated_after
+        )
 
     def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
         return _by_ctx_decoder
@@ -247,7 +250,7 @@ class RegistrationByContextQuery(
             else ""
         )
         q = super()._create_qs(self.updated_before, self.updated_after)
-        return f"/registration/{c}{q}"
+        return f"/registration{c}{q}"
 
 
 _by_id_decoder = msgspec.json.Decoder(RegistrationByIdQuery)
