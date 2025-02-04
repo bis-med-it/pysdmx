@@ -47,22 +47,22 @@ class _CoreRegistrationQuery(
 
     def _join_mult(self, vals: Union[str, Sequence[str]]) -> str:
         return vals if isinstance(vals, str) else ",".join(vals)
-    
-    def _create_qs(self, updated_before: Optional[datetime], updated_after: Optional[datetime]) -> str:
+
+    def _create_qs(
+        self,
+        updated_before: Optional[datetime],
+        updated_after: Optional[datetime],
+    ) -> str:
         qs = ""
         if updated_before:
             qs += (
-                    "updatedBefore="
-                    f"{updated_before.isoformat("T", "seconds")}"
+                "updatedBefore=" f'{updated_before.isoformat("T", "seconds")}'
             )
         if updated_after:
             if qs:
                 qs += "&"
-            qs += (
-                "updatedAfter="
-                f"{updated_after.isoformat("T", "seconds")}"
-            )
-        if qs: 
+            qs += "updatedAfter=" f'{updated_after.isoformat("T", "seconds")}'
+        if qs:
             qs = f"?{qs}"
         return qs
 
@@ -222,7 +222,11 @@ class RegistrationByContextQuery(
             if r or self.agency_id != REST_ALL
             else ""
         )
-        c = f"/{self.context.value}{a}" if a or self.context != DataContext.ALL else ""
+        c = (
+            f"/{self.context.value}{a}"
+            if a or self.context != DataContext.ALL
+            else ""
+        )
         q = super()._create_qs(self.updated_before, self.updated_after)
         return f"/registration/{c}{q}"
 
