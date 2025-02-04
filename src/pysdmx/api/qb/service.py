@@ -13,6 +13,12 @@ from pysdmx.api.qb.refmeta import (
     RefMetaByStructureQuery,
     RefMetaFormat,
 )
+from pysdmx.api.qb.registration import (
+    RegistrationByContextQuery,
+    RegistrationByIdQuery,
+    RegistrationByProviderQuery,
+    RegistryFormat,
+)
 from pysdmx.api.qb.schema import SchemaFormat, SchemaQuery
 from pysdmx.api.qb.structure import StructureFormat, StructureQuery
 from pysdmx.api.qb.util import ApiVersion
@@ -25,11 +31,12 @@ class _CoreRestService:
         self,
         api_endpoint: str,
         api_version: ApiVersion,
-        data_format: DataFormat = DataFormat.SDMX_JSON_2_0_0,
-        structure_format: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
-        schema_format: SchemaFormat = SchemaFormat.SDMX_JSON_2_0_0_STRUCTURE,
-        refmeta_format: RefMetaFormat = RefMetaFormat.SDMX_JSON_2_0_0,
-        avail_format: AvailabilityFormat = AvailabilityFormat.SDMX_JSON_2_0_0,
+        data_format: DataFormat,
+        structure_format: StructureFormat,
+        schema_format: SchemaFormat,
+        refmeta_format: RefMetaFormat,
+        avail_format: AvailabilityFormat,
+        registry_format: RegistryFormat,
         pem: Optional[str] = None,
         timeout: Optional[float] = 5.0,
     ):
@@ -44,6 +51,7 @@ class _CoreRestService:
         self._schema_format = schema_format
         self._refmeta_format = refmeta_format
         self._avail_format = avail_format
+        self._registry_format = registry_format
         self._ssl_context = (
             httpx.create_ssl_context(
                 verify=pem,
@@ -101,6 +109,7 @@ class RestService(_CoreRestService):
         schema_format: The default format for schema queries.
         refmeta_format: The default format for reference metadata queries.
         avail_format: The default format for availability queries.
+        registry_format: The default format for registration queries.
         pem: In case the service uses SSL/TLS with self-signed certificate,
             this attribute should be used to pass the pem file with the
             list of trusted certicate authorities.
@@ -117,6 +126,7 @@ class RestService(_CoreRestService):
         schema_format: SchemaFormat = SchemaFormat.SDMX_JSON_2_0_0_STRUCTURE,
         refmeta_format: RefMetaFormat = RefMetaFormat.SDMX_JSON_2_0_0,
         avail_format: AvailabilityFormat = AvailabilityFormat.SDMX_JSON_2_0_0,
+        registry_format: RegistryFormat = RegistryFormat.FUSION_JSON,
         pem: Optional[str] = None,
         timeout: Optional[float] = 5.0,
     ):
@@ -129,6 +139,7 @@ class RestService(_CoreRestService):
             schema_format,
             refmeta_format,
             avail_format,
+            registry_format,
             pem,
             timeout,
         )
@@ -170,6 +181,19 @@ class RestService(_CoreRestService):
         f = self._refmeta_format.value
         return self.__fetch(q, f)
 
+    def registration(
+        self,
+        query: Union[
+            RegistrationByContextQuery,
+            RegistrationByIdQuery,
+            RegistrationByProviderQuery,
+        ],
+    ) -> bytes:
+        """Execute a registration query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._registry_format.value
+        return self.__fetch(q, f)
+
     def __fetch(self, query: str, format: str) -> bytes:
         with httpx.Client(verify=self._ssl_context) as client:
             try:
@@ -195,6 +219,7 @@ class AsyncRestService(_CoreRestService):
         schema_format: The default format for schema queries.
         refmeta_format: The default format for reference metadata queries.
         avail_format: The default format for availability queries.
+        registry_format: The default format for registration queries.
         pem: In case the service uses SSL/TLS with self-signed certificate,
             this attribute should be used to pass the pem file with the
             list of trusted certicate authorities.
@@ -211,6 +236,7 @@ class AsyncRestService(_CoreRestService):
         schema_format: SchemaFormat = SchemaFormat.SDMX_JSON_2_0_0_STRUCTURE,
         refmeta_format: RefMetaFormat = RefMetaFormat.SDMX_JSON_2_0_0,
         avail_format: AvailabilityFormat = AvailabilityFormat.SDMX_JSON_2_0_0,
+        registry_format: RegistryFormat = RegistryFormat.FUSION_JSON,
         pem: Optional[str] = None,
         timeout: Optional[float] = 5.0,
     ):
@@ -223,6 +249,7 @@ class AsyncRestService(_CoreRestService):
             schema_format,
             refmeta_format,
             avail_format,
+            registry_format,
             pem,
             timeout,
         )
@@ -266,6 +293,20 @@ class AsyncRestService(_CoreRestService):
         """Execute a reference metadata query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._refmeta_format.value
+        out = await self.__fetch(q, f)
+        return out
+
+    async def registration(
+        self,
+        query: Union[
+            RegistrationByContextQuery,
+            RegistrationByIdQuery,
+            RegistrationByProviderQuery,
+        ],
+    ) -> bytes:
+        """Execute a registration query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._registry_format.value
         out = await self.__fetch(q, f)
         return out
 
