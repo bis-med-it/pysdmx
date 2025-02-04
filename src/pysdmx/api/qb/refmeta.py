@@ -1,4 +1,4 @@
-"""Build SDMX-REST structure queries."""
+"""Build SDMX-REST reference metadata queries."""
 
 from abc import abstractmethod
 from enum import Enum

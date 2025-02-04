@@ -1,4 +1,4 @@
-"""Build SDMX-REST data queries."""
+"""Build SDMX-REST availability queries."""
 
 from datetime import datetime
 from enum import Enum

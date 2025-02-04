@@ -1,4 +1,4 @@
-"""Build SDMX-REST structure queries."""
+"""Build SDMX-REST registration queries."""
 
 from abc import abstractmethod
 from datetime import datetime
