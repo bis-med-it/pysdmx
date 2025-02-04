@@ -10,6 +10,7 @@ from msgspec.json import Decoder
 from pysdmx.api.qb.data import DataContext
 from pysdmx.api.qb.util import REST_ALL, ApiVersion
 from pysdmx.errors import Invalid
+from pysdmx.io.format import RegistryFormat
 
 
 class _CoreRegistrationQuery(
@@ -258,4 +259,5 @@ __all__ = [
     "RegistrationByIdQuery",
     "RegistrationByProviderQuery",
     "RegistrationByContextQuery",
+    "RegistryFormat",
 ]

@@ -90,3 +90,11 @@ class StructureFormat(Enum):
     SDMX_ML_2_1 = Format.STRUCTURE_SDMX_ML_2_1.value
     SDMX_ML_3_0 = Format.STRUCTURE_SDMX_ML_3_0.value
     FUSION_JSON = Format.FUSION_JSON.value
+
+
+class RegistryFormat(Enum):
+    """The SDMX Registry formats."""
+
+    SDMX_ML_2_1 = Format.REGISTRY_SDMX_ML_2_1.value
+    SDMX_ML_3_0 = Format.REGISTRY_SDMX_ML_3_0.value
+    FUSION_JSON = Format.FUSION_JSON.value
