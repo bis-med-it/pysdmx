@@ -45,6 +45,22 @@ class _CoreRegistrationQuery(
                 ),
             )
 
+    def _check_updated_consistency(
+        self, updated_before: datetime, updated_after: datetime
+    ) -> None:
+        if updated_before and updated_after and updated_before < updated_after:
+            raise Invalid(
+                "Inconsistent updated timestamps",
+                (
+                    "The updated_after timestamp should be before "
+                    "the updated_before timestamp.",
+                ),
+                csi={
+                    "updated_after": str(updated_after),
+                    "updated_before": str(updated_before),
+                },
+            )
+
     def _join_mult(self, vals: Union[str, Sequence[str]]) -> str:
         return vals if isinstance(vals, str) else ",".join(vals)
 
@@ -141,6 +157,9 @@ class RegistrationByProviderQuery(
     def _validate_query(self, version: ApiVersion) -> None:
         super().validate()
         super()._check_version(version)
+        super()._check_updated_consistency(
+            self.updated_before, self.updated_after
+        )
 
     def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
         return _by_prov_decoder

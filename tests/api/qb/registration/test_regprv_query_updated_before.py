@@ -1,19 +1,21 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
 from pysdmx.api.qb.registration import RegistrationByProviderQuery
 from pysdmx.api.qb.util import ApiVersion
-
-
-@pytest.fixture
-def updated_before():
-    return datetime.now(timezone.utc)
+from pysdmx.errors import Invalid
 
 
 @pytest.fixture
 def updated_after():
     return datetime.now(timezone.utc)
+
+
+@pytest.fixture
+def updated_before():
+    b = datetime.now(timezone.utc)
+    return b + timedelta(minutes=10)
 
 
 @pytest.mark.parametrize(
@@ -86,3 +88,20 @@ def test_url_omit_defaults_updated_before(
     url = q.get_url(api_version, True)
 
     assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_1_0)
+)
+def test_url_updated_consistency(
+    updated_before: datetime,
+    updated_after: datetime,
+    api_version: ApiVersion,
+):
+
+    q = RegistrationByProviderQuery(
+        updated_before=updated_after, updated_after=updated_before
+    )
+
+    with pytest.raises(Invalid):
+        q.get_url(api_version)
