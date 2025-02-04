@@ -38,7 +38,7 @@ def test_url_multiple_agencies(
 def test_url_default_agency(
     api_version: ApiVersion,
 ):
-    expected = f"/registration/provider/*/*"
+    expected = "/registration/provider/*/*"
 
     q = RegistrationByProviderQuery()
     url = q.get_url(api_version)
@@ -67,7 +67,7 @@ def test_url_single_agency(
 def test_url_omit_default_agency(
     api_version: ApiVersion,
 ):
-    expected = f"/registration/provider"
+    expected = "/registration/provider"
 
     q = RegistrationByProviderQuery()
     url = q.get_url(api_version, True)

@@ -23,7 +23,7 @@ def updated_before():
     (v for v in ApiVersion if v >= ApiVersion.V2_1_0),
 )
 def test_url_no_default_updated_before(api_version: ApiVersion):
-    expected = f"/registration/*/*/*/*"
+    expected = "/registration/*/*/*/*"
 
     q = RegistrationByContextQuery()
     url = q.get_url(api_version)

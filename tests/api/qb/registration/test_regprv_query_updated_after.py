@@ -18,7 +18,7 @@ def updated_after():
 def test_url_no_default_updated_after(
     api_version: ApiVersion,
 ):
-    expected = f"/registration/provider/*/*"
+    expected = "/registration/provider/*/*"
 
     q = RegistrationByProviderQuery()
     url = q.get_url(api_version)

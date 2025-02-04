@@ -7,7 +7,6 @@ from typing import Optional, Sequence, Union
 import msgspec
 from msgspec.json import Decoder
 
-
 from pysdmx.api.qb.data import DataContext
 from pysdmx.api.qb.util import REST_ALL, ApiVersion
 from pysdmx.errors import Invalid

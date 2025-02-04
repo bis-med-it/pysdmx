@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 
 from pysdmx.api.qb.data import DataContext
@@ -17,7 +15,7 @@ def context():
     (v for v in ApiVersion if v >= ApiVersion.V2_1_0),
 )
 def test_url_default_context(api_version: ApiVersion):
-    expected = f"/registration/*/*/*/*"
+    expected = "/registration/*/*/*/*"
 
     q = RegistrationByContextQuery()
     url = q.get_url(api_version)
@@ -41,7 +39,7 @@ def test_url_single_context(context: DataContext, api_version: ApiVersion):
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_1_0)
 )
 def test_url_omit_default_context(api_version: ApiVersion):
-    expected = f"/registration"
+    expected = "/registration"
 
     q = RegistrationByContextQuery()
     url = q.get_url(api_version, True)
