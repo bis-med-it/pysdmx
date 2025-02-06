@@ -95,8 +95,8 @@ class JsonConceptSchemes(
 ):
     """SDMX-JSON payload for the list of concept schemes."""
 
-    codelists: Sequence[JsonCodelist]
     conceptSchemes: Sequence[JsonConceptScheme]
+    codelists: Sequence[JsonCodelist] = ()
 
 
 class JsonConceptSchemeMessage(

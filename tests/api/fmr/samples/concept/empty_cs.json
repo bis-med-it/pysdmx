@@ -1,0 +1,38 @@
+{
+    "meta": {
+        "id": "IREF398951",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2023-07-27T06:38:10Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0"
+        }
+    },
+    "data": {
+        "conceptSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "conceptscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS.MEDIT:MEDIT_CS(1.0)"
+                    }
+                ],
+                "id": "MEDIT_CS",
+                "name": "List of concepts used by MED IT",
+                "names": {
+                    "en": "List of concepts used by MED IT"
+                },
+                "version": "1.0",
+                "agencyID": "BIS.MEDIT",
+                "isExternalReference": false,
+                "isFinal": false,
+                "isPartial": false
+            }
+        ]
+    }
+}

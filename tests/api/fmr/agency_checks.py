@@ -2,10 +2,13 @@ import httpx
 import pytest
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
+from pysdmx.io.format import Format
 from pysdmx.model import Organisation
 
 
-def check_orgs(mock, fmr: RegistryClient, query, body):
+def check_orgs(
+    mock, fmr: RegistryClient, query, body, is_fusion: bool = False
+):
     """get_agencies() should return a collection of organizations."""
     mock.get(query).mock(
         return_value=httpx.Response(
@@ -15,6 +18,17 @@ def check_orgs(mock, fmr: RegistryClient, query, body):
     )
 
     agencies = fmr.get_agencies("BIS")
+
+    assert len(mock.calls) == 1
+    if is_fusion:
+        assert (
+            mock.calls[0].request.headers["Accept"] == Format.FUSION_JSON.value
+        )
+    else:
+        assert (
+            mock.calls[0].request.headers["Accept"]
+            == Format.STRUCTURE_SDMX_JSON_2_0_0.value
+        )
 
     assert len(agencies) == 2
     for agency in agencies:
@@ -81,3 +95,17 @@ def check_org_details(mock, fmr: RegistryClient, query, body):
             assert not c2.uris
         else:
             pytest.fail(f"Unexpected agency: {agency.id}")
+
+
+def check_empty(mock, fmr: RegistryClient, query, body):
+    """get_agencies() can handle empty messages."""
+    mock.get(query).mock(
+        return_value=httpx.Response(
+            200,
+            content=body,
+        )
+    )
+
+    agencies = fmr.get_agencies("BIS")
+
+    assert len(agencies) == 0

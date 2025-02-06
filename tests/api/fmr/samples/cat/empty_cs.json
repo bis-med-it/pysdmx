@@ -1,0 +1,38 @@
+{
+    "meta": {
+        "id": "IREF324476",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2023-08-14T11:57:49Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0"
+        }
+    },
+    "data": {
+        "categorySchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "categoryscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.CategoryScheme=TEST:TEST_CATSCH(1.0)"
+                    }
+                ],
+                "id": "TEST_CS",
+                "name": "Test Category Scheme",
+                "names": {
+                    "en": "Test Category Scheme"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "isPartial": false
+            }
+        ]
+    }
+}

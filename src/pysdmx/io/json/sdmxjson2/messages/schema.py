@@ -1,6 +1,6 @@
 """Collection of SDMX-JSON schemas for SDMX-REST schema queries."""
 
-from typing import Sequence
+from typing import Literal, Sequence
 
 import msgspec
 
@@ -45,7 +45,7 @@ class JsonSchemaMessage(
 
     def to_model(
         self,
-        context: str,
+        context: Literal["datastructure", "dataflow", "provisionagreement"],
         agency: str,
         id_: str,
         version: str,

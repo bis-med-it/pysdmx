@@ -1,0 +1,38 @@
+{
+    "meta": {
+        "id": "IREF853205",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2023-07-25T11:42:05Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0"
+        }
+    },
+    "data": {
+        "agencySchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "agencyscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=BIS:AGENCIES(1.0)"
+                    }
+                ],
+                "id": "AGENCIES",
+                "name": "AGENCIES",
+                "names": {
+                    "en": "AGENCIES"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isFinal": false,
+                "isPartial": false
+            }
+        ]
+    }
+}

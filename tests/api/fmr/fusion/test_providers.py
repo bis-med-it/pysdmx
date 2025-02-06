@@ -41,6 +41,14 @@ def body():
 
 
 @pytest.fixture
+def empty():
+    with open(
+        "tests/api/fmr/samples/orgs/empty_providers.fusion.json", "rb"
+    ) as f:
+        return f.read()
+
+
+@pytest.fixture
 def flowbody():
     with open(
         "tests/api/fmr/samples/orgs/providersflows.fusion.json", "rb"
@@ -50,7 +58,7 @@ def flowbody():
 
 def test_returns_providers(respx_mock, fmr, query, body):
     """get_providers() should return a collection of organizations."""
-    checks.check_orgs(respx_mock, fmr, query, body)
+    checks.check_orgs(respx_mock, fmr, query, body, True)
 
 
 @pytest.mark.asyncio
@@ -67,3 +75,8 @@ def test_detailed_providers(respx_mock, fmr, query, body):
 def test_providers_with_flows(respx_mock, fmr, flowquery, flowbody):
     """Providers may have a list of dataflows for which they provide data."""
     checks.check_with_flows(respx_mock, fmr, flowquery, flowbody)
+
+
+def test_empty_orgs(respx_mock, fmr, query, empty):
+    """Can handle empty schemes."""
+    checks.check_empty(respx_mock, fmr, query, empty)

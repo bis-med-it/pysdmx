@@ -1,6 +1,7 @@
 import httpx
 
 from pysdmx.api.fmr import AsyncRegistryClient, DataflowDetails, RegistryClient
+from pysdmx.io.format import Format
 from pysdmx.model import Component, Components, DataflowInfo, Organisation
 
 
@@ -13,6 +14,7 @@ def check_dataflow_info(
     dataflow_body,
     hca_query,
     hca_body,
+    is_fusion: bool = False,
 ):
     """get_schema() should return a schema."""
     route1 = mock.get(hca_query).mock(
@@ -26,6 +28,16 @@ def check_dataflow_info(
     )
 
     dsi = fmr.get_dataflow_details("BIS.CBS", "CBS", "1.0")
+
+    assert len(mock.calls) == 3  # We also fetch the schema and its hierarchy
+    for call in mock.calls:
+        if is_fusion:
+            assert call.request.headers["Accept"] == Format.FUSION_JSON.value
+        else:
+            assert (
+                call.request.headers["Accept"]
+                == Format.STRUCTURE_SDMX_JSON_2_0_0.value
+            )
 
     assert route1.called
     assert route2.called
