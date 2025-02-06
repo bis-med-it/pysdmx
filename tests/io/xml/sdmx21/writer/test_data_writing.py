@@ -48,7 +48,7 @@ def content():
             }
         ),
         structure=Schema(
-            context="DataStructure",
+            context="datastructure",
             id="TEST",
             agency="MD",
             version="1.0",
