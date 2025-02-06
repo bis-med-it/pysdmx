@@ -44,7 +44,7 @@ def empty():
 
 def test_returns_categories(respx_mock, fmr, query, body):
     """get_categories() should return a category scheme."""
-    checks.check_categories(respx_mock, fmr, query, body)
+    checks.check_categories(respx_mock, fmr, query, body, True)
 
 
 @pytest.mark.asyncio

@@ -50,7 +50,7 @@ def body_cs():
 
 def test_returns_transformation_scheme(respx_mock, fmr, query, body):
     """get_vtl_transformation_scheme() returns a transformation scheme."""
-    checks.check_transformation_scheme(respx_mock, fmr, query, body)
+    checks.check_transformation_scheme(respx_mock, fmr, query, body, True)
 
 
 @pytest.mark.asyncio
