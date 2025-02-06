@@ -78,5 +78,4 @@ class Dataset(Struct, frozen=False, kw_only=True):
         if isinstance(self.structure, str):
             return self.structure
         else:
-            s = self.structure
-            return f"{s.context}={s.agency}:{s.id}({s.version})"
+            return self.structure.short_urn
