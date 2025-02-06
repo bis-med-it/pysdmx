@@ -54,7 +54,7 @@ def body2():
 
 def test_returns_mapping_definition(respx_mock, fmr, query1, body1):
     """get_mapping() should return a mapping definition."""
-    checks.check_mapping(respx_mock, fmr, query1, body1)
+    checks.check_mapping(respx_mock, fmr, query1, body1, True)
 
 
 def test_returns_multi_mapping_definition(respx_mock, fmr, query2, body2):

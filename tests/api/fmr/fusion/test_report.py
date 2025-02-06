@@ -54,7 +54,7 @@ def body2():
 
 def test_returns_report(respx_mock, fmr, query, body):
     """get_hierarchy() should return a metadata report."""
-    checks.check_report(respx_mock, fmr, query, body)
+    checks.check_report(respx_mock, fmr, query, body, True)
 
 
 @pytest.mark.asyncio

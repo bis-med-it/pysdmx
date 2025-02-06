@@ -2,10 +2,13 @@ import httpx
 import pytest
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
+from pysdmx.io.format import Format
 from pysdmx.model import MetadataAttribute, MetadataReport
 
 
-def check_report(mock, fmr: RegistryClient, query, body):
+def check_report(
+    mock, fmr: RegistryClient, query, body, is_fusion: bool = False
+):
     """get_report() should return a metadata report."""
     mock.get(query).mock(
         return_value=httpx.Response(
@@ -15,6 +18,17 @@ def check_report(mock, fmr: RegistryClient, query, body):
     )
 
     report = fmr.get_report("BIS.MEDIT", "DTI_BIS_MACRO", "1.0")
+
+    assert len(mock.calls) == 1
+    if is_fusion:
+        assert (
+            mock.calls[0].request.headers["Accept"] == Format.FUSION_JSON.value
+        )
+    else:
+        assert (
+            mock.calls[0].request.headers["Accept"]
+            == Format.REFMETA_SDMX_JSON_2_0_0.value
+        )
 
     assert isinstance(report, MetadataReport)
     assert report.id == "DTI_BIS_MACRO"

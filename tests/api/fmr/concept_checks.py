@@ -4,14 +4,26 @@ import httpx
 import pytest
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
+from pysdmx.io.format import Format
 from pysdmx.model import Code, Codelist, Concept, ConceptScheme, DataType
 
 
-def check_cs(mock, fmr: RegistryClient, query, body):
+def check_cs(mock, fmr: RegistryClient, query, body, is_fusion: bool = False):
     """get_concepts() should return a concept scheme."""
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
     cs = fmr.get_concepts("BIS.MEDIT", "MEDIT_CS")
+
+    assert len(mock.calls) == 1
+    if is_fusion:
+        assert (
+            mock.calls[0].request.headers["Accept"] == Format.FUSION_JSON.value
+        )
+    else:
+        assert (
+            mock.calls[0].request.headers["Accept"]
+            == Format.STRUCTURE_SDMX_JSON_2_0_0.value
+        )
 
     assert isinstance(cs, ConceptScheme)
     assert len(cs) == 5

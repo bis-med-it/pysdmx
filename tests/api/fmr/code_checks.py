@@ -3,10 +3,13 @@ from datetime import datetime, timezone
 import httpx
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
+from pysdmx.io.format import Format
 from pysdmx.model import Code, Codelist
 
 
-def check_codelist(mock, fmr: RegistryClient, query, body):
+def check_codelist(
+    mock, fmr: RegistryClient, query, body, is_fusion: bool = False
+):
     """get_codes() should return a codelist with the expected codes."""
     mock.get(query).mock(
         return_value=httpx.Response(
@@ -16,6 +19,17 @@ def check_codelist(mock, fmr: RegistryClient, query, body):
     )
 
     codelist = fmr.get_codes("SDMX", "CL_FREQ", "2.0")
+
+    assert len(mock.calls) == 1
+    if is_fusion:
+        assert (
+            mock.calls[0].request.headers["Accept"] == Format.FUSION_JSON.value
+        )
+    else:
+        assert (
+            mock.calls[0].request.headers["Accept"]
+            == Format.STRUCTURE_SDMX_JSON_2_0_0.value
+        )
 
     assert isinstance(codelist, Codelist)
     assert len(codelist) == 9
