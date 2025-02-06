@@ -68,6 +68,12 @@ class DataType(str, Enum):
     YEAR_MONTH = "GregorianYearMonth"
     """An ISO 8601 year and month (e.g. ``2000-01``)."""
 
+    def __str__(self) -> str:
+        """Data Type String representation."""
+        return self.value
+
+    __repr__ = __str__
+
 
 class Facets(Struct, frozen=True, omit_defaults=True):
     """Additional information about the concept expected values.

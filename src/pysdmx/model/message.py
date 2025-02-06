@@ -86,6 +86,49 @@ class Message(Struct, frozen=True):
                         "Check the docs for the proper structure on data.",
                     )
 
+    def __str__(self) -> str:
+        """Returns a human-friendly description."""
+        # Get the number of each type of structure or datasets
+        out_str = ""
+        if self.structures is not None:
+            structures_count = {
+                "AgencyScheme": len(
+                    [x for x in self.structures if isinstance(x, AgencyScheme)]
+                ),
+                "Codelist": len(
+                    [x for x in self.structures if isinstance(x, Codelist)]
+                ),
+                "ConceptScheme": len(
+                    [
+                        x
+                        for x in self.structures
+                        if isinstance(x, ConceptScheme)
+                    ]
+                ),
+                "DataStructureDefinition": len(
+                    [
+                        x
+                        for x in self.structures
+                        if isinstance(x, DataStructureDefinition)
+                    ]
+                ),
+                "Dataflow": len(
+                    [x for x in self.structures if isinstance(x, Dataflow)]
+                ),
+            }
+            for k, v in structures_count.items():
+                if v > 0:
+                    end_word = k + "s" if v > 1 else k
+                    out_str += f"{v} {end_word}, "
+            out_str = out_str[:-2] if len(out_str) > 3 else out_str
+            return f"Message({out_str})"
+
+        elif self.data is not None:
+            end_word = "Datasets" if len(self.data) > 1 else "Dataset"
+            return f"Message({len(self.data)} {end_word})"
+        else:
+            return "Message()"
+
     def __get_elements(self, type_: Type[Any]) -> List[Any]:
         """Returns a list of elements of a specific type."""
         if self.structures is None:

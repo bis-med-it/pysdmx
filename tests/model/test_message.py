@@ -152,3 +152,29 @@ def test_invalid_initialization_content_key():
     with pytest.raises(Invalid) as exc_info:
         Message([Dataset(structure="DataStructure=ds1:ds1(1.0)")])
     assert exc_message in str(exc_info.value.title)
+
+
+def test_tostr_data():
+    message = Message(data=[Dataset(structure="DataStructure=ds1:ds1(1.0)")])
+    s = str(message)
+
+    assert s == "Message(1 Dataset)"
+
+
+def test_tostr_structure():
+    message = Message(
+        [
+            AgencyScheme(id="orgs1", agency="org1"),
+            Codelist(id="cl1", agency="cl1"),
+        ]
+    )
+    s = str(message)
+
+    assert s == "Message(1 AgencyScheme, 1 Codelist)"
+
+
+def test_tostr_empty():
+    message = Message()
+    s = str(message)
+
+    assert s == "Message()"
