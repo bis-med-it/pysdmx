@@ -1,6 +1,6 @@
 """Collection of Fusion-JSON schemas for SDMX-REST schema queries."""
 
-from typing import List, Sequence
+from typing import List, Literal, Sequence
 
 import msgspec
 
@@ -31,7 +31,7 @@ class FusionSchemaMessage(msgspec.Struct, frozen=True):
 
     def to_model(
         self,
-        context: str,
+        context: Literal["datastructure", "dataflow", "provisionagreement"],
         agency: str,
         id_: str,
         version: str,

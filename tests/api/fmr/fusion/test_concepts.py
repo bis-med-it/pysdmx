@@ -42,7 +42,7 @@ def empty():
 
 def test_returns_cs(respx_mock, fmr, query, body):
     """get_concepts() should return a concept scheme."""
-    checks.check_cs(respx_mock, fmr, query, body)
+    checks.check_cs(respx_mock, fmr, query, body, True)
 
 
 @pytest.mark.asyncio

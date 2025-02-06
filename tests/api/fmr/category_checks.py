@@ -3,10 +3,13 @@ from typing import Sequence
 import httpx
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
+from pysdmx.io.format import Format
 from pysdmx.model import Category, CategoryScheme
 
 
-def check_categories(mock, fmr: RegistryClient, query, body):
+def check_categories(
+    mock, fmr: RegistryClient, query, body, is_fusion: bool = False
+):
     """get_categories() should return a category scheme."""
     mock.get(query).mock(
         return_value=httpx.Response(
@@ -16,6 +19,17 @@ def check_categories(mock, fmr: RegistryClient, query, body):
     )
 
     cs = fmr.get_categories("TEST", "TEST_CS")
+
+    assert len(mock.calls) == 1
+    if is_fusion:
+        assert (
+            mock.calls[0].request.headers["Accept"] == Format.FUSION_JSON.value
+        )
+    else:
+        assert (
+            mock.calls[0].request.headers["Accept"]
+            == Format.STRUCTURE_SDMX_JSON_2_0_0.value
+        )
 
     assert isinstance(cs, CategoryScheme)
     assert len(cs) == 8

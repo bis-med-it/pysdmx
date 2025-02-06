@@ -4,10 +4,13 @@ from typing import Sequence
 import httpx
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
+from pysdmx.io.format import Format
 from pysdmx.model import HierarchicalCode, Hierarchy
 
 
-def check_hierarchy(mock, fmr: RegistryClient, query, body):
+def check_hierarchy(
+    mock, fmr: RegistryClient, query, body, is_fusion: bool = False
+):
     """get_hierarchy() should return a hierarchy."""
     mock.get(query).mock(
         return_value=httpx.Response(
@@ -17,6 +20,17 @@ def check_hierarchy(mock, fmr: RegistryClient, query, body):
     )
 
     h = fmr.get_hierarchy("TEST", "HCL_ELEMENT")
+
+    assert len(mock.calls) == 1
+    if is_fusion:
+        assert (
+            mock.calls[0].request.headers["Accept"] == Format.FUSION_JSON.value
+        )
+    else:
+        assert (
+            mock.calls[0].request.headers["Accept"]
+            == Format.STRUCTURE_SDMX_JSON_2_0_0.value
+        )
 
     assert isinstance(h, Hierarchy)
     assert len(h) == 18

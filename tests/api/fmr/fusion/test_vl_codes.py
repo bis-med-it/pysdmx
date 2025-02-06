@@ -46,7 +46,7 @@ def body():
 
 def test_returns_codelist_from_vl(respx_mock, fmr, q1, q2, body):
     """get_codelist() should return a codelist with the expected codes."""
-    checks.check_vl_codelist(respx_mock, fmr, q1, q2, body)
+    checks.check_vl_codelist(respx_mock, fmr, q1, q2, body, True)
 
 
 @pytest.mark.asyncio

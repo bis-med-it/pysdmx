@@ -36,7 +36,7 @@ def body():
 
 def test_returns_dataflows(respx_mock, fmr, query, body):
     """get_dataflows() should return a collection of dataflows."""
-    checks.check_dataflows(respx_mock, fmr, query, body)
+    checks.check_dataflows(respx_mock, fmr, query, body, True)
 
 
 @pytest.mark.asyncio

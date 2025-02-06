@@ -40,7 +40,7 @@ def body():
 
 def test_returns_mult_report(respx_mock, fmr, query, body):
     """get_reports() should return multiple reports."""
-    checks.check_reports(respx_mock, fmr, query, body)
+    checks.check_reports(respx_mock, fmr, query, body, True)
 
 
 @pytest.mark.asyncio
