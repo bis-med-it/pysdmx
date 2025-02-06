@@ -10,7 +10,7 @@ as part of the response.
 from collections import Counter, UserList
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Iterable, Optional, Sequence, Union
+from typing import Any, Iterable, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -371,13 +371,13 @@ class Schema(Struct, frozen=True, omit_defaults=True):
     SDMX-REST API.
 
     The response contains the list of allowed values for the
-    selected context (one of data structure, dataflow or
-    provision agreement), and is typially used for validation
+    selected context (one of datastructure, dataflow or
+    provisionagreement), and is typically used for validation
     purposes.
 
     Attributes:
         context: The context for which the schema is provided.
-            One of datastructure, dataflow or provision agreement.
+            One of datastructure, dataflow or provisionagreement.
         agency: The agency maintaining the context (e.g. BIS).
         id: The ID of the context (e.g. BIS_MACRO).
         components: The list of components along with their
@@ -394,7 +394,7 @@ class Schema(Struct, frozen=True, omit_defaults=True):
             generated, you might want to regenerate the schema.
     """
 
-    context: str
+    context: Literal["datastructure", "dataflow", "provisionagreement"]
     agency: str
     id: str
     components: Components
@@ -414,7 +414,13 @@ class Schema(Struct, frozen=True, omit_defaults=True):
     @property
     def short_urn(self) -> str:
         """Returns a short URN for the schema."""
-        return f"{self.context}={self.agency}:{self.id}({self.version})"
+        SHORT_URN_MAPPING = {
+            "datastructure": "DataStructure",
+            "dataflow": "Dataflow",
+            "provisionagreement": "ProvisionAgreement",
+        }
+        sdmx_type = SHORT_URN_MAPPING[self.context]
+        return f"{sdmx_type}={self.agency}:{self.id}({self.version})"
 
 
 class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
