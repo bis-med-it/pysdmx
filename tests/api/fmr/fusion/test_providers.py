@@ -58,7 +58,7 @@ def flowbody():
 
 def test_returns_providers(respx_mock, fmr, query, body):
     """get_providers() should return a collection of organizations."""
-    checks.check_orgs(respx_mock, fmr, query, body)
+    checks.check_orgs(respx_mock, fmr, query, body, True)
 
 
 @pytest.mark.asyncio

@@ -198,7 +198,7 @@ def test_returns_validation_context(
 ):
     """get_validation_context() should return a schema."""
     checks.check_schema(
-        respx_mock, fmr, query, no_hca_query, body, no_hca_body
+        respx_mock, fmr, query, no_hca_query, body, no_hca_body, True
     )
 
 

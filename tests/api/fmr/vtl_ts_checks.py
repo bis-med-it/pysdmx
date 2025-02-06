@@ -3,6 +3,7 @@ from typing import Any
 import httpx
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
+from pysdmx.io.format import Format
 from pysdmx.model import (
     CustomType,
     DataType,
@@ -17,11 +18,24 @@ from pysdmx.model import (
 )
 
 
-def check_transformation_scheme(mock, fmr: RegistryClient, query, body):
+def check_transformation_scheme(
+    mock, fmr: RegistryClient, query, body, is_fusion: bool = False
+):
     """get_vtl_transformation_scheme() returns a transformation scheme."""
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
     ts = fmr.get_vtl_transformation_scheme("TEST", "TEST_TS", "1.0")
+
+    assert len(mock.calls) == 1
+    if is_fusion:
+        assert (
+            mock.calls[0].request.headers["Accept"] == Format.FUSION_JSON.value
+        )
+    else:
+        assert (
+            mock.calls[0].request.headers["Accept"]
+            == Format.STRUCTURE_SDMX_JSON_2_0_0.value
+        )
 
     __check_response(ts)
 
