@@ -1,6 +1,24 @@
 Release notes
 =============
 
+1.1.0 (2025-02-06)
+------------------
+
+Added
+^^^^^
+
+- Support SDMX-REST v2.1.0 (and registration queries).
+- Asynchronous client for SDMX-REST services.
+- Option to set a timeout to SDMX-REST services client.
+
+Fixed
+^^^^^
+
+- Handling of empty item schemes in SDMX-JSON and Fusion-JSON.
+- Wrong URN returned by Schema objects.
+- Wrong media type for mapping queries in the fmr module (SDMX-JSON only).
+
+
 1.0.0 (2025-01-20)
 ------------------
 
