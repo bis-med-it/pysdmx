@@ -120,21 +120,16 @@ def test_not_equal(context, agency, id, components):
     assert org1 != org2
 
 
-def test_tostr(context, agency, id, components):
-    o = Schema(context, agency, id, components)
+def test_tostr(context, agency, id, components, artefacts):
+    o = Schema(context, agency, id, components, artefacts=artefacts)
 
     s = str(o)
 
-    exp = (
-        f"context={context}, "
-        f"agency={agency}, "
-        f"id={id}, "
-        f"components={str(components)}, "
-        f"version=1.0, "
-        f"generated="
+    assert s == (
+        f"Schema(context='dataflow', agency='BIS', id='5B0', "
+        f"components=[5 components], version='1.0', artefacts=[2 artefacts], "
+        f"generated={str(o.generated)!r})"
     )
-
-    assert s.startswith(exp)
 
 
 def test_serialization(context, agency, id, components, version, artefacts):

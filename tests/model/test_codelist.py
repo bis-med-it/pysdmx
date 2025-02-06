@@ -157,3 +157,16 @@ def test_short_urn(id, name, agency, version, codes):
     )
 
     assert cl.short_urn == f"Codelist={agency}:{id}({version})"
+
+
+def test_tostr(id, name, agency, version, codes):
+    cl = Codelist(
+        id=id, name=name, agency=agency, items=codes, version=version
+    )
+
+    s = str(cl)
+
+    assert s == (
+        "Codelist(id='id', name='name', version='1.42.0', agency='5B0', "
+        "sdmx_type='codelist', items=[2 Codes])"
+    )
