@@ -53,10 +53,16 @@ def __generate_obs_structure(
     for dim in dataset.structure.components.dimensions:
         obs_structure[0].append(dim.id)
 
+    cols = dataset.data.columns
+
     for att in dataset.structure.components.attributes:
-        if att.attachment_level == "O":
+        if att.attachment_level == "O" and att.id in cols:
             obs_structure[2].append(att.id)
-        elif att.attachment_level is not None and att.attachment_level != "D":
+        elif (
+            att.attachment_level is not None
+            and att.attachment_level != "D"
+            and att.id in cols
+        ):
             obs_structure[0].append(att.id)
 
     return obs_structure

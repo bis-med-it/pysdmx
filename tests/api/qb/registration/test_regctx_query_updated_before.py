@@ -93,7 +93,6 @@ def test_url_updated_consistency(
     updated_after: datetime,
     api_version: ApiVersion,
 ):
-
     q = RegistrationByContextQuery(
         updated_before=updated_after, updated_after=updated_before
     )
