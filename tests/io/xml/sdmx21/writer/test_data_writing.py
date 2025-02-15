@@ -301,6 +301,16 @@ def test_write_empty_data(header, content):
         header=header,
         prettyprint=True,
     )
+
+    # Check the source is present and there are references to the structure
+    assert "Source" in result_spe
+    assert "Source" in result_gen
+
+    reference = (
+        '<Ref agencyID="MD" id="TEST" version="1.0" class="DataStructure"/>'
+    )
+    assert reference in result_spe
+    assert reference in result_gen
     # Checks validation against XSD
     msg_spe = read_sdmx(result_spe, validate=True)
     msg_gen = read_sdmx(result_gen, validate=True)
