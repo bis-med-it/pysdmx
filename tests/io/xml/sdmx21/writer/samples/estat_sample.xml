@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<m:Structure xmlns:m="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+             xmlns:s="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+             xmlns:c="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+    <m:Header>
+        <m:ID>DF1737844368</m:ID>
+        <m:Test>false</m:Test>
+        <m:Prepared>2025-01-25T23:32:48.84+01:00</m:Prepared>
+        <m:Sender id="ESTAT"/>
+    </m:Header>
+    <m:Structures>
+        <s:Dataflows>
+            <s:Dataflow id="ISOC_CI_ID_H"
+                        urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=ESTAT:ISOC_CI_ID_H(1.0)"
+                        agencyID="ESTAT" version="1.0" isFinal="false">
+                <c:Annotations>
+                    <c:Annotation>
+                        <c:AnnotationTitle>2009-03-27T17:52:43+0100</c:AnnotationTitle>
+                        <c:AnnotationType>CREATED</c:AnnotationType>
+                    </c:Annotation>
+                    <c:Annotation>
+                        <c:AnnotationTitle>&lt;adms:identifier xmlns:adms="http://www.w3.org/ns/adms#"
+                            xmlns:skos="http://www.w3.org/2004/02/skos/core.html" xmlns:dct="http://purl.org/dc/terms/"
+                            xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">&lt;adms:Identifier
+                            rdf:about="https://doi.org/10.2908/ISOC_CI_ID_H">&lt;skos:notation
+                            rdf:datatype="http://purl.org/spar/datacite/doi">10.2908/ISOC_CI_ID_H&lt;/skos:notation>&lt;dct:creator
+                            rdf:resource="http://publications.europa.eu/resource/authority/corporate-body/ESTAT"/>&lt;dct:issued
+                            rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-01-19&lt;/dct:issued>&lt;/adms:Identifier>&lt;/adms:identifier>
+                        </c:AnnotationTitle>
+                        <c:AnnotationType>DISSEMINATION_DOI_XML</c:AnnotationType>
+                    </c:Annotation>
+                    <c:Annotation>
+                        <c:AnnotationTitle>DATASET</c:AnnotationTitle>
+                        <c:AnnotationType>DISSEMINATION_OBJECT_TYPE</c:AnnotationType>
+                    </c:Annotation>
+                    <c:Annotation>
+                        <c:AnnotationTitle>2025-01-24T23:00:00+0100</c:AnnotationTitle>
+                        <c:AnnotationType>DISSEMINATION_TIMESTAMP_DATA</c:AnnotationType>
+                    </c:Annotation>
+                    <c:Annotation>
+                        <c:AnnotationTitle>2025-01-24T23:00:00+0100</c:AnnotationTitle>
+                        <c:AnnotationType>DISSEMINATION &amp; TIMESTAMP_GLOBAL</c:AnnotationType>
+                    </c:Annotation>
+                    <c:Annotation>
+                        <c:AnnotationTitle>2025-01-24T23:00:00+0100</c:AnnotationTitle>
+                        <c:AnnotationType>DISSEMINATION_TIMESTAMP_PLANNED</c:AnnotationType>
+                    </c:Annotation>
+                    <c:Annotation>
+                        <c:AnnotationTitle>Explanatory texts (metadata)</c:AnnotationTitle>
+                        <c:AnnotationType>ESMS_HTML</c:AnnotationType>
+                        <c:AnnotationURL>https://ec.europa.eu/eurostat/cache/metadata/en/isoc_i_esms.htm
+                        </c:AnnotationURL>
+                    </c:Annotation>
+                    <c:Annotation>
+                        <c:AnnotationTitle>Explanatory texts (metadata)</c:AnnotationTitle>
+                        <c:AnnotationType>ESMS_SDMX</c:AnnotationType>
+                        <c:AnnotationURL>
+                            https://ec.europa.eu/eurostat/api/dissemination/files?file=metadata/isoc_i_esms.sdmx.zip&amp;test=false
+                        </c:AnnotationURL>
+                    </c:Annotation>
+                    <c:Annotation>
+                        <c:AnnotationTitle>95814</c:AnnotationTitle>
+                        <c:AnnotationType>OBS_COUNT</c:AnnotationType>
+                    </c:Annotation>
+                    <c:Annotation>
+                        <c:AnnotationTitle>2014</c:AnnotationTitle>
+                        <c:AnnotationType>OBS_PERIOD_OVERALL_LATEST</c:AnnotationType>
+                    </c:Annotation>
+                    <c:Annotation>
+                        <c:AnnotationTitle>2002</c:AnnotationTitle>
+                        <c:AnnotationType>OBS_PERIOD_OVERALL_OLDEST</c:AnnotationType>
+                    </c:Annotation>
+                    <c:Annotation>
+                        <c:AnnotationType>SOURCE_INSTITUTIONS</c:AnnotationType>
+                        <c:AnnotationText xml:lang="fr">Eurostat</c:AnnotationText>
+                        <c:AnnotationText xml:lang="en">Eurostat</c:AnnotationText>
+                        <c:AnnotationText xml:lang="de">Eurostat</c:AnnotationText>
+                    </c:Annotation>
+                    <c:Annotation>
+                        <c:AnnotationTitle>2024-06-16T23:00:00+0200</c:AnnotationTitle>
+                        <c:AnnotationType>UPDATE_DATA</c:AnnotationType>
+                    </c:Annotation>
+                    <c:Annotation>
+                        <c:AnnotationTitle>2024-01-03T23:00:00+0100</c:AnnotationTitle>
+                        <c:AnnotationType>UPDATE_STRUCTURE</c:AnnotationType>
+                    </c:Annotation>
+                </c:Annotations>
+                <c:Name xml:lang="de">Haushalte - Verfügbarkeit von Internet-Geräten</c:Name>
+                <c:Name xml:lang="en">Households - "devices" to access the internet &amp; other</c:Name>
+                <c:Name xml:lang="fr">Ménages - dispositifs pour accéder à l'internet</c:Name>
+                <s:Structure>
+                    <Ref id="ISOC_CI_ID_H" version="36.1" agencyID="ESTAT" package="datastructure"
+                         class="DataStructure"/>
+                </s:Structure>
+            </s:Dataflow>
+        </s:Dataflows>
+    </m:Structures>
+</m:Structure>

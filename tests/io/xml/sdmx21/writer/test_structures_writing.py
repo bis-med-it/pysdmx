@@ -65,6 +65,13 @@ def bis_sample():
 
 
 @pytest.fixture
+def estat_sample():
+    base_path = Path(__file__).parent / "samples" / "estat_sample.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
 def groups_sample():
     base_path = Path(__file__).parent / "samples" / "del_groups.xml"
     with open(base_path, "r") as f:
@@ -335,7 +342,7 @@ def test_concept(concept_sample, complete_header, concept):
 
 def test_file_writing(concept_sample, complete_header, concept):
     content = [concept]
-    output_path = Path(__file__).parent / "samples" / "test_output.xml"
+    output_path = str(Path(__file__).parent / "samples" / "test_output.xml")
     write(
         content,
         output_path=output_path,
@@ -461,3 +468,14 @@ def test_group_deletion(groups_sample, header):
     )
     assert "Groups" not in write_result
     assert any("BIS:BIS_DER(1.0)" in e.short_urn for e in read_result)
+
+
+def test_check_escape(estat_sample):
+    structures = read(estat_sample, validate=True)
+    result = write(structures, prettyprint=True)
+    assert result.count("&lt;") == 9
+    assert result.count("&gt;") == 9
+    assert result.count("&amp;") == 3
+
+    structures_after_loop = read(result, validate=True)
+    assert structures == structures_after_loop
