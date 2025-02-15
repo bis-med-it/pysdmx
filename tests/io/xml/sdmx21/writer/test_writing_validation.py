@@ -3,7 +3,7 @@ import pytest
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.sdmx21.writer.__write_aux import writing_validation
+from pysdmx.io.xml.sdmx21.writer.__write_data_aux import writing_validation
 from pysdmx.model import Component, Components, Concept, Role, Schema
 
 

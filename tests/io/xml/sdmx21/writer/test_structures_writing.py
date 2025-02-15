@@ -354,7 +354,7 @@ def test_writer_empty(empty_sample, header):
 
 def test_writing_not_supported():
     with pytest.raises(NotImplemented):
-        write_err({})
+        write_err()
 
 
 def test_write_to_file(empty_sample, tmpdir, header):
