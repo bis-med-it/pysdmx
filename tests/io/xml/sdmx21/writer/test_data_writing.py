@@ -292,11 +292,18 @@ def test_dataset_action_and_header_action_dataset_id(content, header):
     header.dataset_action = ActionType.Append
     header.dataset_id = "TEST_ID"
 
-    result = write_str_spec(content, header=header)
+    result_spe = write_str_spec(content, header=header)
+    result_gen = write_gen(content, header=header)
 
-    assert "DataSetAction>Append</" in result
-    assert "DataSetID>TEST_ID</" in result
+    assert "DataSetAction>Append</" in result_spe
+    assert "DataSetAction>Append</" in result_gen
+    assert "DataSetID>TEST_ID</" in result_spe
+    assert "DataSetID>TEST_ID</" in result_gen
 
     # Read the result to check for formal errors
-    result_msg = read_sdmx(result, validate=True)
-    assert result_msg.data[0].action == ActionType.Append
+    data_spe = read_sdmx(result_spe, validate=True)
+    data_gen = read_sdmx(result_gen, validate=True)
+    assert data_spe.data[0].action == ActionType.Append
+    # We cannot define action for a specific dataset in a generic message
+    # as the attribute is not defined in the XSD
+    assert data_gen.data[0].action == ActionType.Information

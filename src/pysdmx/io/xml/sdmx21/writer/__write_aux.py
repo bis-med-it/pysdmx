@@ -143,7 +143,10 @@ def add_indent(indent: str) -> str:
 
 
 def __write_header(
-    header: Header, prettyprint: bool, add_namespace_structure: bool = False
+    header: Header,
+    prettyprint: bool,
+    add_namespace_structure: bool = False,
+    data_message: bool = True,
 ) -> str:
     """Writes the Header part of the message.
 
@@ -151,6 +154,7 @@ def __write_header(
         header: The Header to be written
         prettyprint: Prettyprint or not
         add_namespace_structure: Add the namespace for the structure
+        data_message: If the message is a data message
 
     Returns:
         The XML string
@@ -236,6 +240,11 @@ def __write_header(
     if header.structure is not None:
         for short_urn, dim_at_obs in header.structure.items():
             references_str += __reference(short_urn, dim_at_obs)
+    if not data_message and (header.dataset_id or header.dataset_action):
+        raise Invalid(
+            "Header must not contain DataSetID or DataSetAction "
+            "when writing a Structures Message."
+        )
     return (
         f"{nl}{child1}<{ABBR_MSG}:Header>"
         f"{__value('ID', header.id)}"

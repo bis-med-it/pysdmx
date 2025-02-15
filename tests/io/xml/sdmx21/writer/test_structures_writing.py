@@ -1,10 +1,11 @@
+import copy
 import os
 from datetime import datetime
 from pathlib import Path
 
 import pytest
 
-from pysdmx.errors import NotImplemented
+from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.sdmx21.__tokens import CON
@@ -20,6 +21,7 @@ from pysdmx.model.dataflow import (
     DataStructureDefinition,
     Role,
 )
+from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import Header
 from pysdmx.util import ItemReference
 
@@ -461,3 +463,14 @@ def test_group_deletion(groups_sample, header):
     )
     assert "Groups" not in write_result
     assert any("BIS:BIS_DER(1.0)" in e.short_urn for e in read_result)
+
+
+def test_invalid_header_for_data(header):
+    header_da = copy.deepcopy(header)
+    header_did = copy.deepcopy(header)
+    header_da.dataset_action = ActionType.Append
+    with pytest.raises(Invalid):
+        write([], header=header_da)
+    header_did.dataset_id = "ID"
+    with pytest.raises(Invalid):
+        write([], header=header_did)

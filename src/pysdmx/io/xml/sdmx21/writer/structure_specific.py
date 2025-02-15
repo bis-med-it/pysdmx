@@ -287,7 +287,9 @@ def write(
     # Generating the initial tag with namespaces
     outfile = create_namespaces(type_, ss_namespaces, prettyprint)
     # Generating the header
-    outfile += __write_header(header, prettyprint, add_namespace_structure)
+    outfile += __write_header(
+        header, prettyprint, add_namespace_structure, data_message=True
+    )
     # Writing the content
     outfile += __write_data_structure_specific(
         datasets=content,
