@@ -22,6 +22,7 @@ from pysdmx.io.xml.sdmx21.reader.__data_aux import (
 )
 from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.io.xml.utils import add_list
+from pysdmx.model.dataset import ActionType
 
 
 def __reading_str_series(dataset: Dict[str, Any]) -> pd.DataFrame:
@@ -90,9 +91,11 @@ def __parse_structure_specific_data(
         df = pd.DataFrame(dataset[OBS]).replace(np.nan, "")
 
     urn = f"{structure_info['structure_type']}={structure_info['unique_id']}"
+    action = dataset.get("action", "Information")
+    action = ActionType(action)
 
     return PandasDataset(
-        structure=urn, attributes=attached_attributes, data=df
+        structure=urn, attributes=attached_attributes, data=df, action=action
     )
 
 

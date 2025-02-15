@@ -15,10 +15,10 @@ class ActionType(Enum):
     Enumeration that withholds the Action type for writing purposes.
     """
 
-    Append = "append"
-    Replace = "replace"
-    Delete = "delete"
-    Information = "information"
+    Append = "Append"
+    Replace = "Replace"
+    Delete = "Delete"
+    Information = "Information"
 
 
 class SeriesInfo(Struct, frozen=True):

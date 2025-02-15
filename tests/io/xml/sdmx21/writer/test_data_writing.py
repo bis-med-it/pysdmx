@@ -24,6 +24,7 @@ from pysdmx.model import (
     Role,
     Schema,
 )
+from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import Header
 
 
@@ -282,3 +283,20 @@ def test_invalid_dimension_key(content):
             content,
             dimension_at_observation=dim_mapping,
         )
+
+
+def test_dataset_action_and_header_action_dataset_id(content, header):
+    content = list(content.values())
+    content[0].action = ActionType.Append
+
+    header.dataset_action = ActionType.Append
+    header.dataset_id = "TEST_ID"
+
+    result = write_str_spec(content, header=header)
+
+    assert "DataSetAction>Append</" in result
+    assert "DataSetID>TEST_ID</" in result
+
+    # Read the result to check for formal errors
+    result_msg = read_sdmx(result, validate=True)
+    assert result_msg.data[0].action == ActionType.Append

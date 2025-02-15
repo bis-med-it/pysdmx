@@ -230,6 +230,9 @@ def __write_header(
     prepared = header.prepared.strftime("%Y-%m-%dT%H:%M:%S")
     test = str(header.test).lower()
     references_str = ""
+    action_value = (
+        header.dataset_action.value if header.dataset_action else None
+    )
     if header.structure is not None:
         for short_urn, dim_at_obs in header.structure.items():
             references_str += __reference(short_urn, dim_at_obs)
@@ -242,6 +245,8 @@ def __write_header(
         f"{__item('Receiver', header.receiver)}"
         f"{__value('Source', header.source)}"
         f"{references_str}"
+        f"{__value('DataSetAction', action_value)}"
+        f"{__value('DataSetID', header.dataset_id)}"
         f"{nl}{child1}</{ABBR_MSG}:Header>"
     ).replace("'", '"')
 
