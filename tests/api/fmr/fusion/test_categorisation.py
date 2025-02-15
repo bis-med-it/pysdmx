@@ -38,7 +38,7 @@ def body():
 
 def test_returns_categorisation(respx_mock, fmr, query, body):
     """get_categorisation() should return a categorisation."""
-    checks.check_categorisations(respx_mock, fmr, query, body)
+    checks.check_categorisations(respx_mock, fmr, query, body, True)
 
 
 @pytest.mark.asyncio

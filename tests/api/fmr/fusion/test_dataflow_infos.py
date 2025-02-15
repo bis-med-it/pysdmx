@@ -136,6 +136,7 @@ def test_returns_dataflow_info(
         dataflow_body,
         no_hca_query,
         no_hca_body,
+        True,
     )
 
 

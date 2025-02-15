@@ -3,6 +3,7 @@ from datetime import datetime
 import httpx
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
+from pysdmx.io.format import Format
 from pysdmx.model import (
     Codelist,
     Component,
@@ -14,7 +15,15 @@ from pysdmx.model import (
 )
 
 
-def check_schema(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
+def check_schema(
+    mock,
+    fmr: RegistryClient,
+    query,
+    hca_query,
+    body,
+    hca_body,
+    is_fusion: bool = False,
+):
     """get_schema() should return a schema."""
     mock.get(hca_query).mock(
         return_value=httpx.Response(200, content=hca_body)
@@ -22,6 +31,17 @@ def check_schema(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
     vc = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0")
+
+    assert len(mock.calls) == 2  # We fetch hierarchies too in this case
+    if is_fusion:
+        assert (
+            mock.calls[0].request.headers["Accept"] == Format.FUSION_JSON.value
+        )
+    else:
+        assert (
+            mock.calls[0].request.headers["Accept"]
+            == Format.STRUCTURE_SDMX_JSON_2_0_0.value
+        )
 
     assert isinstance(vc, Schema)
     assert vc.agency == "BIS.CBS"

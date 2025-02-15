@@ -43,7 +43,7 @@ def empty():
 
 def test_returns_orgs(respx_mock, fmr, query, body):
     """get_agencies() should return a collection of organizations."""
-    checks.check_orgs(respx_mock, fmr, query, body)
+    checks.check_orgs(respx_mock, fmr, query, body, True)
 
 
 @pytest.mark.asyncio

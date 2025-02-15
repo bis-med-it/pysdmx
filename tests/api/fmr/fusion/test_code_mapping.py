@@ -54,7 +54,7 @@ def multi_body():
 
 def test_returns_code_map(respx_mock, fmr, query, body):
     """get_code_map() should return a list of code mappings."""
-    checks.check_code_mapping_core(respx_mock, fmr, query, body)
+    checks.check_code_mapping_core(respx_mock, fmr, query, body, True)
 
 
 @pytest.mark.asyncio

@@ -37,7 +37,7 @@ def body():
 
 def test_returns_hierarchy(respx_mock, fmr, query, body):
     """get_hierarchy() should return a hierarchy."""
-    checks.check_hierarchy(respx_mock, fmr, query, body)
+    checks.check_hierarchy(respx_mock, fmr, query, body, True)
 
 
 @pytest.mark.asyncio

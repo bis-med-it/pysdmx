@@ -5,6 +5,7 @@ import httpx
 import pytest
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
+from pysdmx.io.format import Format
 from pysdmx.model.concept import DataType
 from pysdmx.model.map import (
     MultiRepresentationMap,
@@ -14,7 +15,9 @@ from pysdmx.model.map import (
 )
 
 
-def check_code_mapping_core(mock, fmr: RegistryClient, query, body):
+def check_code_mapping_core(
+    mock, fmr: RegistryClient, query, body, is_fusion: bool = False
+):
     """get_code_mappings() should return a dict with mapped codes."""
     mock.get(query).mock(
         return_value=httpx.Response(
@@ -24,6 +27,17 @@ def check_code_mapping_core(mock, fmr: RegistryClient, query, body):
     )
 
     mapping = fmr.get_code_map("BIS", "ISO3166-A3_2_CTY", "1.0")
+
+    assert len(mock.calls) == 1
+    if is_fusion:
+        assert (
+            mock.calls[0].request.headers["Accept"] == Format.FUSION_JSON.value
+        )
+    else:
+        assert (
+            mock.calls[0].request.headers["Accept"]
+            == Format.STRUCTURE_SDMX_JSON_2_0_0.value
+        )
 
     assert isinstance(mapping, RepresentationMap)
     assert len(mapping) == 3

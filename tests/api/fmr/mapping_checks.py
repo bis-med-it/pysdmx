@@ -5,6 +5,7 @@ import httpx
 import pytest
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
+from pysdmx.io.format import Format
 from pysdmx.model.concept import DataType
 from pysdmx.model.map import (
     ComponentMap,
@@ -20,7 +21,9 @@ from pysdmx.model.map import (
 )
 
 
-def check_mapping(mock, fmr: RegistryClient, query, body):
+def check_mapping(
+    mock, fmr: RegistryClient, query, body, is_fusion: bool = False
+):
     """get_mapping() should return a mapping definition report."""
     mock.get(query).mock(
         return_value=httpx.Response(
@@ -30,6 +33,17 @@ def check_mapping(mock, fmr: RegistryClient, query, body):
     )
 
     mapping = fmr.get_mapping("BIS", "SRC_2_MDD", "1.0")
+
+    assert len(mock.calls) == 1
+    if is_fusion:
+        assert (
+            mock.calls[0].request.headers["Accept"] == Format.FUSION_JSON.value
+        )
+    else:
+        assert (
+            mock.calls[0].request.headers["Accept"]
+            == Format.STRUCTURE_SDMX_JSON_2_0_0.value
+        )
 
     assert isinstance(mapping, StructureMap)
     assert mapping.id == "SRC_2_MDD"

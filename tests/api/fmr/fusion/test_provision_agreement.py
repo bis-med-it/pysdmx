@@ -36,7 +36,7 @@ def body():
 
 def test_returns_provision_agreement(respx_mock, fmr, query, body):
     """get_provision_agreement() should return a provision agreement."""
-    checks.check_provision_agreements(respx_mock, fmr, query, body)
+    checks.check_provision_agreements(respx_mock, fmr, query, body, True)
 
 
 @pytest.mark.asyncio
