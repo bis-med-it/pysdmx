@@ -32,6 +32,9 @@ def header():
     return Header(
         id="ID",
         prepared=datetime.strptime("2021-01-01", "%Y-%m-%d"),
+        sender="SENDER",
+        receiver="RECEIVER",
+        source="PySDMX",
     )
 
 
@@ -282,3 +285,25 @@ def test_invalid_dimension_key(content):
             content,
             dimension_at_observation=dim_mapping,
         )
+
+
+def test_write_empty_data(header, content):
+    content = list(content.values())
+    content[0].data = pd.DataFrame(columns=content[0].data.columns)
+    content[0].attributes = {}
+    result_spe = write_str_spec(
+        content,
+        header=header,
+        prettyprint=True,
+    )
+    result_gen = write_gen(
+        content,
+        header=header,
+        prettyprint=True,
+    )
+    # Checks validation against XSD
+    msg_spe = read_sdmx(result_spe, validate=True)
+    msg_gen = read_sdmx(result_gen, validate=True)
+
+    assert msg_spe.data[0].data.empty
+    assert msg_gen.data[0].data.empty

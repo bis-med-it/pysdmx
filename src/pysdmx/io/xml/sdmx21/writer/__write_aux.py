@@ -240,8 +240,8 @@ def __write_header(
         f"{__value('Prepared', prepared)}"
         f"{__item('Sender', header.sender)}"
         f"{__item('Receiver', header.receiver)}"
-        f"{__value('Source', header.source)}"
         f"{references_str}"
+        f"{__value('Source', header.source)}"
         f"{nl}{child1}</{ABBR_MSG}:Header>"
     ).replace("'", '"')
 
