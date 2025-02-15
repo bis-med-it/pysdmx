@@ -473,9 +473,9 @@ def test_group_deletion(groups_sample, header):
 def test_check_escape(estat_sample):
     structures = read(estat_sample, validate=True)
     result = write(structures, prettyprint=True)
-    assert result.count("&lt;") == 9
-    assert result.count("&gt;") == 9
-    assert result.count("&amp;") == 3
+    assert result.count("&lt;") == 10
+    assert result.count("&gt;") == 10
+    assert result.count("&amp;") == 4
 
     structures_after_loop = read(result, validate=True)
     assert structures == structures_after_loop

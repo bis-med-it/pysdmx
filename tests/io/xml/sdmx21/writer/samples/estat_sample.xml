@@ -88,6 +88,9 @@
                 <c:Name xml:lang="de">Haushalte - Verfügbarkeit von Internet-Geräten</c:Name>
                 <c:Name xml:lang="en">Households - "devices" to access the internet &amp; other</c:Name>
                 <c:Name xml:lang="fr">Ménages - dispositifs pour accéder à l'internet</c:Name>
+                <c:Description xml:lang="en">
+                    Test description with some special characters: &lt; &gt; &amp;
+                </c:Description>
                 <s:Structure>
                     <Ref id="ISOC_CI_ID_H" version="36.1" agencyID="ESTAT" package="datastructure"
                          class="DataStructure"/>
