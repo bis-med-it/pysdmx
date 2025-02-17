@@ -12,12 +12,14 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ALL_DIM,
     __escape_xml,
     __write_header,
-    check_content_dataset,
-    check_dimension_at_observation,
     create_namespaces,
-    get_codes,
     get_end_message,
     get_structure,
+)
+from pysdmx.io.xml.sdmx21.writer.__write_data_aux import (
+    check_content_dataset,
+    check_dimension_at_observation,
+    get_codes,
     writing_validation,
 )
 from pysdmx.io.xml.sdmx21.writer.config import CHUNKSIZE
@@ -133,7 +135,11 @@ def __write_data_single_dataset(
         data += __memory_optimization_writing(dataset, prettyprint)
     else:
         writing_validation(dataset)
-        series_codes, obs_codes = get_codes(dim, dataset)
+        series_codes, obs_codes = get_codes(
+            dimension_code=dim,
+            structure=dataset.structure,  # type: ignore[arg-type]
+            data=dataset.data,
+        )
 
         data += __series_processing(
             data=dataset.data,
