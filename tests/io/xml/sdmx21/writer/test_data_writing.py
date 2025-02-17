@@ -32,6 +32,9 @@ def header():
     return Header(
         id="ID",
         prepared=datetime.strptime("2021-01-01", "%Y-%m-%d"),
+        sender="SENDER",
+        receiver="RECEIVER",
+        source="PySDMX",
     )
 
 
@@ -282,6 +285,58 @@ def test_invalid_dimension_key(content):
             content,
             dimension_at_observation=dim_mapping,
         )
+
+
+def test_data_writing_escape(content):
+    content = list(content.values())
+    content[0].data["ATT1"] = ["<A", ">B", "&C"]
+    result_spe = write_str_spec(content)
+    assert "&lt;A" in result_spe
+    assert "&gt;B" in result_spe
+    assert "&amp;C" in result_spe
+    result_gen = write_gen(content)
+    assert "&lt;A" in result_spe
+    assert "&gt;B" in result_spe
+    assert "&amp;C" in result_spe
+
+    # Read the result to check for formal errors
+    data_spe = read_sdmx(result_spe, validate=True).data[0]
+    data_gen = read_sdmx(result_gen, validate=True).data[0]
+
+    assert data_spe.data["ATT1"].tolist() == ["<A", ">B", "&C"]
+    assert data_gen.data["ATT1"].tolist() == ["<A", ">B", "&C"]
+
+
+def test_write_empty_data(header, content):
+    content = list(content.values())
+    content[0].data = pd.DataFrame(columns=content[0].data.columns)
+    content[0].attributes = {}
+    result_spe = write_str_spec(
+        content,
+        header=header,
+        prettyprint=True,
+    )
+    result_gen = write_gen(
+        content,
+        header=header,
+        prettyprint=True,
+    )
+
+    # Check the source is present and there are references to the structure
+    assert "Source" in result_spe
+    assert "Source" in result_gen
+
+    reference = (
+        '<Ref agencyID="MD" id="TEST" version="1.0" class="DataStructure"/>'
+    )
+    assert reference in result_spe
+    assert reference in result_gen
+    # Checks validation against XSD
+    msg_spe = read_sdmx(result_spe, validate=True)
+    msg_gen = read_sdmx(result_gen, validate=True)
+
+    assert msg_spe.data[0].data.empty
+    assert msg_gen.data[0].data.empty
 
 
 def test_optional_data_attributes(content):
