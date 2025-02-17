@@ -369,7 +369,7 @@ def test_optional_data_attributes(content):
     assert data_spe_all.shape == (3, 4)
 
 
-def test_invalid_structures_header(content, header):
+def test_dataset_action_and_header_action_dataset_id(content, header):
     content = list(content.values())
     content[0].action = ActionType.Append
 
