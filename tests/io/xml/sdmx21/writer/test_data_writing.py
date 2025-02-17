@@ -373,14 +373,14 @@ def test_dataset_action_and_header_action_dataset_id(content, header):
     content = list(content.values())
     content[0].action = ActionType.Append
 
-    header.dataset_action = ActionType.Append
+    header.dataset_action = ActionType.Replace
     header.dataset_id = "TEST_ID"
 
     result_spe = write_str_spec(content, header=header)
     result_gen = write_gen(content, header=header)
 
-    assert "DataSetAction>Append</" in result_spe
-    assert "DataSetAction>Append</" in result_gen
+    assert "DataSetAction>Replace</" in result_spe
+    assert "DataSetAction>Replace</" in result_gen
     assert "DataSetID>TEST_ID</" in result_spe
     assert "DataSetID>TEST_ID</" in result_gen
 
@@ -388,6 +388,4 @@ def test_dataset_action_and_header_action_dataset_id(content, header):
     data_spe = read_sdmx(result_spe, validate=True)
     data_gen = read_sdmx(result_gen, validate=True)
     assert data_spe.data[0].action == ActionType.Append
-    # We cannot define action for a specific dataset in a generic message
-    # as the attribute is not defined in the XSD
-    assert data_gen.data[0].action == ActionType.Information
+    assert data_gen.data[0].action == ActionType.Append

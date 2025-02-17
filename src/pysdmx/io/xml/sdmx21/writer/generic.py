@@ -169,7 +169,7 @@ def __write_data_single_dataset(
     outfile += (
         f"{nl}{child1}<{ABBR_MSG}:DataSet "
         f"structureRef={id_structure!r} "
-        f'action="Replace">{nl}'
+        f"action={dataset.action.value!r}>{nl}"
     )
     data = ""
     # Write attached attributes

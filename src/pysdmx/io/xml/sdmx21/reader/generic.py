@@ -25,6 +25,7 @@ from pysdmx.io.xml.sdmx21.reader.__data_aux import (
 )
 from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.io.xml.utils import add_list
+from pysdmx.model.dataset import ActionType
 
 
 def __get_element_to_list(data: Dict[str, Any], mode: Any) -> Dict[str, Any]:
@@ -121,10 +122,13 @@ def __parse_generic_data(
         # Generic All Dimensions
         df = __reading_generic_all(dataset)
 
+    action = dataset.get("action", "Information")
+    action = ActionType(action)
+
     urn = f"{structure_info['structure_type']}={structure_info['unique_id']}"
 
     return PandasDataset(
-        structure=urn, attributes=attached_attributes, data=df
+        structure=urn, attributes=attached_attributes, data=df, action=action
     )
 
 
