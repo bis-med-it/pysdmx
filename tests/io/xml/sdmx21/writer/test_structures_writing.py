@@ -483,7 +483,7 @@ def test_check_escape(estat_sample):
     assert structures == structures_after_loop
 
 
-def test_invalid_header_for_data(header):
+def test_invalid_structure_header(header):
     header_da = copy.deepcopy(header)
     header_did = copy.deepcopy(header)
     header_da.dataset_action = ActionType.Append
