@@ -3,6 +3,7 @@
 
 from collections import OrderedDict
 from typing import Dict, List, Optional, Sequence, Tuple
+from xml.sax.saxutils import escape
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
@@ -377,3 +378,7 @@ def __to_lower_camel_case(snake_str: str) -> str:
     # with the 'capitalize' method and join them together.
     camel_string = __to_camel_case(snake_str)
     return snake_str[0].lower() + camel_string[1:]
+
+
+def __escape_xml(value: str) -> str:
+    return escape(value)

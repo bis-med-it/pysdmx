@@ -287,6 +287,26 @@ def test_invalid_dimension_key(content):
         )
 
 
+def test_data_writing_escape(content):
+    content = list(content.values())
+    content[0].data["ATT1"] = ["<A", ">B", "&C"]
+    result_spe = write_str_spec(content)
+    assert "&lt;A" in result_spe
+    assert "&gt;B" in result_spe
+    assert "&amp;C" in result_spe
+    result_gen = write_gen(content)
+    assert "&lt;A" in result_spe
+    assert "&gt;B" in result_spe
+    assert "&amp;C" in result_spe
+
+    # Read the result to check for formal errors
+    data_spe = read_sdmx(result_spe, validate=True).data[0]
+    data_gen = read_sdmx(result_gen, validate=True).data[0]
+
+    assert data_spe.data["ATT1"].tolist() == ["<A", ">B", "&C"]
+    assert data_gen.data["ATT1"].tolist() == ["<A", ">B", "&C"]
+
+
 def test_write_empty_data(header, content):
     content = list(content.values())
     content[0].data = pd.DataFrame(columns=content[0].data.columns)
