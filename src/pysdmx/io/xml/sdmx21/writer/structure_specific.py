@@ -10,13 +10,16 @@ from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_MSG,
     ALL_DIM,
+    __escape_xml,
     __write_header,
-    check_content_dataset,
-    check_dimension_at_observation,
     create_namespaces,
-    get_codes,
     get_end_message,
     get_structure,
+)
+from pysdmx.io.xml.sdmx21.writer.__write_data_aux import (
+    check_content_dataset,
+    check_dimension_at_observation,
+    get_codes,
     writing_validation,
 )
 from pysdmx.io.xml.sdmx21.writer.config import CHUNKSIZE
@@ -128,14 +131,18 @@ def __write_data_single_dataset(
         f'ss:dataScope="{sdmx_type}" '
         f'action="{dataset.action.value}">{nl}'
     )
-
+    data = ""
     if dim == ALL_DIM:
-        outfile += __memory_optimization_writing(dataset, prettyprint)
+        data += __memory_optimization_writing(dataset, prettyprint)
     else:
         writing_validation(dataset)
-        series_codes, obs_codes = get_codes(dim, dataset)
+        series_codes, obs_codes = get_codes(
+            dimension_code=dim,
+            structure=dataset.structure,  # type: ignore[arg-type]
+            data=dataset.data,
+        )
 
-        outfile += __series_processing(
+        data += __series_processing(
             data=dataset.data,
             series_codes=series_codes,
             obs_codes=obs_codes,
@@ -143,7 +150,10 @@ def __write_data_single_dataset(
         )
 
         # Remove optional attributes empty data
-        outfile = __remove_optional_attributes_empty_data(outfile)
+        data = __remove_optional_attributes_empty_data(data)
+
+    # Adding to outfile
+    outfile += data
 
     outfile += f"{child1}</{ABBR_MSG}:DataSet>"
 
@@ -159,7 +169,7 @@ def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
         out = f"{child2}<Obs "
 
         for k, v in element.items():
-            out += f"{k}={str(v)!r} "
+            out += f"{k}={__escape_xml(str(v))!r} "
 
         out += f"/>{nl}"
 
@@ -210,7 +220,7 @@ def __series_processing(
 
         for k, v in data_info.items():
             if k != "Obs":
-                out_element += f"{k}={str(v)!r} "
+                out_element += f"{k}={__escape_xml(str(v))!r} "
 
         out_element += f">{nl}"
 
@@ -218,7 +228,7 @@ def __series_processing(
             out_element += f"{child3}<Obs "
 
             for k, v in obs.items():
-                out_element += f"{k}={str(v)!r} "
+                out_element += f"{k}={__escape_xml(str(v))!r} "
 
             out_element += f"/>{nl}"
 

@@ -52,6 +52,7 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_MSG,
     ABBR_STR,
     MSG_CONTENT_PKG,
+    __escape_xml,
     __to_lower_camel_case,
     __write_header,
     add_indent,
@@ -145,7 +146,7 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
         for attr, label in ANNOTATION_WRITER.items():
             if getattr(annotation, attr, None) is not None:
                 value = getattr(annotation, attr)
-                value = value.replace("&", "&amp;").rstrip()
+                value = __escape_xml(str(value))
 
                 if attr == "text":
                     head_tag = f'{ABBR_COM}:{label} xml:lang="en"'
@@ -193,11 +194,13 @@ def __write_nameable(
 
     for attr in attrs:
         if getattr(nameable, attr.lower(), None) is not None:
+            value = getattr(nameable, attr.lower())
+            value = __escape_xml(str(value))
             outfile[attr] = [
                 (
                     f"{indent}"
                     f'<{ABBR_COM}:{attr} xml:lang="en">'
-                    f"{getattr(nameable, attr.lower())}"
+                    f"{value}"
                     f"</{ABBR_COM}:{attr}>"
                 )
             ]
@@ -249,7 +252,12 @@ def __write_contact(contact: Contact, indent: str) -> str:
     """Writes the contact to the XML file."""
 
     def __item_to_str(item: Any, ns: str, tag: str) -> str:
-        return f"{add_indent(indent)}<{ns}:{tag}>{item}</{ns}:{tag}>"
+        return (
+            f"{add_indent(indent)}"
+            f"<{ns}:{tag}>"
+            f"{__escape_xml(str(item))}"
+            f"</{ns}:{tag}>"
+        )
 
     def __items_to_str(items: Any, ns: str, tag: str) -> str:
         return "".join([__item_to_str(item, ns, tag) for item in items])
