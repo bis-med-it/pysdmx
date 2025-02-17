@@ -337,3 +337,32 @@ def test_write_empty_data(header, content):
 
     assert msg_spe.data[0].data.empty
     assert msg_gen.data[0].data.empty
+
+
+def test_optional_data_attributes(content):
+    content = list(content.values())
+    # Removing optional attribute ATT2 only from data
+    content[0].data = content[0].data.drop(columns=["ATT2"])
+
+    assert "ATT2" in [c.id for c in content[0].structure.components]
+    assert not content[0].structure.components["ATT2"].required
+
+    # Writing with ATT2 removed to check issue #209
+    result_spe = write_str_spec(
+        content,
+        dimension_at_observation={content[0].structure.short_urn: "DIM1"},
+    )
+    result_spe_all = write_str_spec(content)
+    result_gen = write_gen(content)
+
+    # Reading the output to check the shape
+    msg_spe = read_sdmx(result_spe, validate=True)
+    msg_gen = read_sdmx(result_gen, validate=True)
+    msg_spe_all = read_sdmx(result_spe_all, validate=True)
+    data_spe = msg_spe.get_dataset(content[0].structure.short_urn).data
+    data_gen = msg_gen.get_dataset(content[0].structure.short_urn).data
+    data_spe_all = msg_spe_all.get_dataset(content[0].structure.short_urn).data
+
+    assert data_spe.shape == (3, 4)
+    assert data_gen.shape == (3, 4)
+    assert data_spe_all.shape == (3, 4)

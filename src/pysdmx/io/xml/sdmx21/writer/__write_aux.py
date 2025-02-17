@@ -272,6 +272,7 @@ def get_codes(
     """This function divides the components in Series and Obs."""
     series_codes = []
     obs_codes = [dimension_code, dataset.structure.components.measures[0].id]
+    cols = dataset.data.columns
 
     # Getting the series and obs codes
     for dim in dataset.structure.components.dimensions:
@@ -280,9 +281,13 @@ def get_codes(
 
     # Adding the attributes based on the attachment level
     for att in dataset.structure.components.attributes:
-        if att.attachment_level == "O":
+        if att.attachment_level == "O" and att.id in cols:
             obs_codes.append(att.id)
-        elif att.attachment_level is not None and att.attachment_level != "D":
+        elif (
+            att.attachment_level is not None
+            and att.attachment_level != "D"
+            and att.id in cols
+        ):
             series_codes.append(att.id)
 
     return series_codes, obs_codes
