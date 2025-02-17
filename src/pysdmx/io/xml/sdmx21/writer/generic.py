@@ -11,6 +11,7 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_GEN,
     ABBR_MSG,
     ALL_DIM,
+    __escape_xml,
     __write_header,
     check_content_dataset,
     check_dimension_at_observation,
@@ -27,7 +28,7 @@ from pysdmx.util import parse_short_urn
 
 def __value(id: str, value: str) -> str:
     """Write a value tag."""
-    return f"<{ABBR_GEN}:Value id={id!r} value={str(value)!r}/>"
+    return f"<{ABBR_GEN}:Value id={id!r} value={__escape_xml(str(value))!r}/>"
 
 
 def __generate_obs_structure(
@@ -162,21 +163,21 @@ def __write_data_single_dataset(
         f"structureRef={id_structure!r} "
         f'action="Replace">{nl}'
     )
-
+    data = ""
     # Write attached attributes
     attached_attributes_str = []
     for k, v in dataset.attributes.items():
         attached_attributes_str.append(__value(k, v))
 
     if len(attached_attributes_str) > 0:
-        outfile += f"{child2}<{ABBR_GEN}:Attributes>{nl}"
+        data += f"{child2}<{ABBR_GEN}:Attributes>{nl}"
         for att in attached_attributes_str:
-            outfile += f"{child3}{att}{nl}"
-        outfile += f"{child2}</{ABBR_GEN}:Attributes>{nl}"
+            data += f"{child3}{att}{nl}"
+        data += f"{child2}</{ABBR_GEN}:Attributes>{nl}"
 
     if dim == ALL_DIM:
         obs_structure = __generate_obs_structure(dataset)
-        outfile += __memory_optimization_writing(
+        data += __memory_optimization_writing(
             dataset=dataset,
             obs_structure=obs_structure,
             prettyprint=prettyprint,
@@ -190,7 +191,7 @@ def __write_data_single_dataset(
         series_codes = [x for x in series_codes if x not in series_att_codes]
         obs_codes = [x for x in obs_codes if x not in obs_att_codes]
 
-        outfile += __series_processing(
+        data += __series_processing(
             data=dataset.data,
             series_codes=series_codes,
             series_att_codes=series_att_codes,
@@ -200,7 +201,10 @@ def __write_data_single_dataset(
         )
 
     # Remove optional attributes empty data
-    outfile = __remove_optional_attributes_empty_data(outfile)
+    data = __remove_optional_attributes_empty_data(data)
+
+    # Add to outfile
+    outfile += data
 
     outfile += f"{child1}</{ABBR_MSG}:DataSet>"
 
