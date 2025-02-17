@@ -76,6 +76,8 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
 def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
     # Generic All Dimensions
     test_list = []
+    if OBS not in dataset:
+        return pd.DataFrame()
     df = None
     dataset[OBS] = add_list(dataset[OBS])
     for data in dataset[OBS]:
