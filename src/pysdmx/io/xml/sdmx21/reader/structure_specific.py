@@ -74,6 +74,8 @@ def __parse_structure_specific_data(
 ) -> PandasDataset:
     attached_attributes = __get_at_att_str(dataset)
 
+    df = pd.DataFrame()
+
     # Parsing data
     if SERIES in dataset:
         # Structure Specific Series
@@ -84,7 +86,7 @@ def __parse_structure_specific_data(
                 set(df.columns).intersection(set(df_group.columns))
             )
             df = pd.merge(df, df_group, on=common_columns, how="left")
-    else:
+    elif OBS in dataset:
         dataset[OBS] = add_list(dataset[OBS])
         # Structure Specific All dimensions
         df = pd.DataFrame(dataset[OBS]).replace(np.nan, "")
