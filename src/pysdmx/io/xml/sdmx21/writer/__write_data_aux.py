@@ -1,5 +1,7 @@
 from typing import Dict, List, Optional, Sequence, Tuple
 
+import pandas as pd
+
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.sdmx21.writer.__write_aux import ALL_DIM
@@ -88,7 +90,7 @@ def writing_validation(dataset: PandasDataset) -> None:
 
 
 def get_codes(
-    dimension_code: str, structure: Schema
+    dimension_code: str, structure: Schema, data: pd.DataFrame
 ) -> Tuple[List[str], List[str]]:
     """This function divides the components in Series and Obs."""
     series_codes = []
@@ -101,9 +103,13 @@ def get_codes(
 
     # Adding the attributes based on the attachment level
     for att in structure.components.attributes:
-        if att.attachment_level == "O":
+        if att.attachment_level == "O" and att.id in data.columns:
             obs_codes.append(att.id)
-        elif att.attachment_level is not None and att.attachment_level != "D":
+        elif (
+            att.attachment_level is not None
+            and att.attachment_level != "D"
+            and att.id in data.columns
+        ):
             series_codes.append(att.id)
 
     return series_codes, obs_codes

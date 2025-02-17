@@ -138,6 +138,7 @@ def __write_data_single_dataset(
         series_codes, obs_codes = get_codes(
             dimension_code=dim,
             structure=dataset.structure,  # type: ignore[arg-type]
+            data=dataset.data,
         )
 
         data += __series_processing(

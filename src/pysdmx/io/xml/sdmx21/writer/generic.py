@@ -194,6 +194,7 @@ def __write_data_single_dataset(
         series_codes, obs_codes = get_codes(
             dimension_code=dim,
             structure=dataset.structure,  # type: ignore[arg-type]
+            data=dataset.data,
         )
         att_codes = [att.id for att in dataset.structure.components.attributes]
         series_att_codes = [x for x in series_codes if x in att_codes]
