@@ -31,7 +31,7 @@ class JsonDataProviderScheme(Struct, frozen=True):
 
     def to_model(
         self, pas: Sequence[JsonProvisionAgreement]
-    ) -> Sequence[DataProvider]:
+    ) -> DataProviderScheme:
         """Converts a JsonDataProviderScheme to a list of Organisations."""
         if pas:
             paprs: Dict[str, Set[DataflowRef]] = defaultdict(set)
