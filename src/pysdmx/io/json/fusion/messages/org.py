@@ -14,6 +14,9 @@ from pysdmx.model import (
     DataProvider,
 )
 from pysdmx.model import (
+    AgencyScheme as AS,
+)
+from pysdmx.model import (
     DataProviderScheme as DPS,
 )
 from pysdmx.util import parse_item_urn, parse_urn
@@ -97,11 +100,19 @@ class FusionAgencyScheme(Struct, frozen=True):
     """Fusion-JSON payload for an agency scheme."""
 
     agencyId: str
+    descriptions: Sequence[FusionString] = ()
     items: Sequence[FusionAgency] = ()
 
-    def to_model(self) -> Sequence[Agency]:
+    def to_model(self) -> AS:
         """Converts a FusionAgencyScheme to a list of Organisations."""
-        return [o.to_model(self.agencyId) for o in self.items]
+        agencies = [o.to_model(self.agencyId) for o in self.items]
+        return AS(
+            description=(
+                self.descriptions[0].value if self.descriptions else None
+            ),
+            agency=self.agencyId,
+            items=agencies,
+        )
 
 
 class FusionAgencyMessage(Struct, frozen=True):
@@ -109,9 +120,9 @@ class FusionAgencyMessage(Struct, frozen=True):
 
     AgencyScheme: Sequence[FusionAgencyScheme]
 
-    def to_model(self) -> Sequence[Agency]:
-        """Returns the requested list of agencies."""
-        return self.AgencyScheme[0].to_model()
+    def to_model(self) -> Sequence[AS]:
+        """Returns the requested agency schemes."""
+        return [a.to_model() for a in self.AgencyScheme]
 
 
 class FusionProviderScheme(Struct, frozen=True):

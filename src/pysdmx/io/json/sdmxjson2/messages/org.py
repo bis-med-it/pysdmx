@@ -8,7 +8,13 @@ from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
 from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
-from pysdmx.model import Agency, DataflowRef, DataProvider, DataProviderScheme
+from pysdmx.model import (
+    Agency,
+    AgencyScheme,
+    DataflowRef,
+    DataProvider,
+    DataProviderScheme,
+)
 from pysdmx.util import parse_item_urn, parse_urn
 
 
@@ -100,11 +106,28 @@ class JsonAgencyScheme(Struct, frozen=True):
     annotations: Optional[Sequence[JsonAnnotation]] = None
     isPartial: bool = False
 
+    def __add_owner(self, owner: str, a: Agency) -> Agency:
+        oid = f"{owner}.{a.id}" if owner != "SDMX" else a.id
+        return Agency(
+            id=oid, name=a.name, description=a.description, contacts=a.contacts
+        )
+
+    def to_model(self) -> AgencyScheme:
+        """Returns the requested list of agencies."""
+        agencies = [self.__add_owner(self.agencyID, a) for a in self.agencies]
+        return AgencyScheme(
+            description=self.description, agency=self.agencyID, items=agencies
+        )
+
 
 class JsonAgencySchemes(Struct, frozen=True):
     """SDMX-JSON payload for the list of agency schemes."""
 
     agencySchemes: Sequence[JsonAgencyScheme]
+
+    def to_model(self) -> Sequence[AgencyScheme]:
+        """Returns the requested agency schemes."""
+        return [a.to_model() for a in self.agencySchemes]
 
 
 class JsonAgencyMessage(Struct, frozen=True):
@@ -112,15 +135,6 @@ class JsonAgencyMessage(Struct, frozen=True):
 
     data: JsonAgencySchemes
 
-    def __add_owner(self, owner: str, a: Agency) -> Agency:
-        oid = f"{owner}.{a.id}" if owner != "SDMX" else a.id
-        return Agency(
-            id=oid, name=a.name, description=a.description, contacts=a.contacts
-        )
-
-    def to_model(self) -> Sequence[Agency]:
-        """Returns the requested list of agencies."""
-        return [
-            self.__add_owner(self.data.agencySchemes[0].agencyID, a)
-            for a in self.data.agencySchemes[0].agencies
-        ]
+    def to_model(self) -> Sequence[AgencyScheme]:
+        """Returns the requested agency schemes."""
+        return self.data.to_model()
