@@ -239,7 +239,9 @@ def __write_header(
     if header.structure is not None:
         for short_urn, dim_at_obs in header.structure.items():
             references_str += __reference(short_urn, dim_at_obs)
-    if not data_message and (header.dataset_id or header.dataset_action):
+    if not data_message and (
+        header.dataset_id or header.dataset_action or header.structure
+    ):
         raise Invalid(
             "Header must not contain DataSetID or DataSetAction "
             "when writing a Structures Message."

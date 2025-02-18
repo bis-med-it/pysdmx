@@ -486,9 +486,13 @@ def test_check_escape(estat_sample):
 def test_invalid_structure_header(header):
     header_da = copy.deepcopy(header)
     header_did = copy.deepcopy(header)
+    header_structures = copy.deepcopy(header)
     header_da.dataset_action = ActionType.Append
     with pytest.raises(Invalid):
         write([], header=header_da)
     header_did.dataset_id = "ID"
     with pytest.raises(Invalid):
         write([], header=header_did)
+    header_structures.structure = {"BIS_DER": "DataStructure=BIS:BIS_DER(1.0)"}
+    with pytest.raises(Invalid):
+        write([], header=header_structures)
