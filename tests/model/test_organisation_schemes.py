@@ -196,3 +196,22 @@ def test_dcs_get_consumer(data_consumers):
         assert p.id in data_consumers
 
     assert data_consumers["NOT_IN_THE_SCHEME"] is None
+
+
+def test_as_iterable(agencies):
+    assert isinstance(agencies, Iterable)
+    out = list(agencies)
+    assert len(out) == len(agencies.agencies)
+    assert out == agencies.agencies
+
+
+def test_as_sized(agencies):
+    assert isinstance(agencies, Sized)
+
+
+def test_as_get_agency(agencies):
+    for p in agencies.items:
+        assert agencies[p.id] == p
+        assert p.id in agencies
+
+    assert agencies["NOT_IN_THE_SCHEME"] is None
