@@ -687,7 +687,7 @@ def write(
     # Generating the initial tag with namespaces
     outfile = create_namespaces(type_, prettyprint=prettyprint)
     # Generating the header
-    outfile += __write_header(header, prettyprint)
+    outfile += __write_header(header, prettyprint, data_message=False)
     # Writing the content
     outfile += __write_structures(content, prettyprint)
 
