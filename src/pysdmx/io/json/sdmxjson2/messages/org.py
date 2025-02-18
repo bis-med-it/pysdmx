@@ -8,14 +8,15 @@ from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
 from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
-from pysdmx.model import Agency, DataflowRef, DataProvider
-from pysdmx.util import parse_urn
+from pysdmx.model import Agency, DataflowRef, DataProvider, DataProviderScheme
+from pysdmx.util import parse_item_urn, parse_urn
 
 
 class JsonDataProviderScheme(Struct, frozen=True):
     """SDMX-JSON payload for a data provider scheme."""
 
     agencyID: str
+    name: str
     dataProviders: Sequence[DataProvider] = ()
     description: Optional[str] = None
     isExternalReference: bool = False
@@ -36,20 +37,31 @@ class JsonDataProviderScheme(Struct, frozen=True):
             paprs: Dict[str, Set[DataflowRef]] = defaultdict(set)
             for pa in pas:
                 df = self.__get_df_ref(pa.dataflow)
-                pr = pa.dataProvider[pa.dataProvider.rindex(".") + 1 :]
-                paprs[pr].add(df)
-            return [
+                ref = parse_item_urn(pa.dataProvider)
+                paprs[f"{ref.agency}:{ref.item_id}"].add(df)
+            provs = [
                 DataProvider(
                     id=p.id,
                     name=p.name,
                     description=p.description,
                     contacts=p.contacts,
-                    dataflows=list(paprs[p.id]),
+                    dataflows=list(paprs[f"{self.agencyID}:{p.id}"]),
                 )
                 for p in self.dataProviders
             ]
+            return DataProviderScheme(
+                agency=self.agencyID,
+                name=self.name,
+                description=self.description,
+                items=provs,
+            )
         else:
-            return self.dataProviders
+            return DataProviderScheme(
+                agency=self.agencyID,
+                name=self.name,
+                description=self.description,
+                items=self.dataProviders,
+            )
 
 
 class JsonDataProviderSchemes(Struct, frozen=True):
@@ -58,9 +70,12 @@ class JsonDataProviderSchemes(Struct, frozen=True):
     dataProviderSchemes: Sequence[JsonDataProviderScheme]
     provisionAgreements: Sequence[JsonProvisionAgreement] = ()
 
-    def to_model(self) -> Sequence[DataProvider]:
+    def to_model(self) -> Sequence[DataProviderScheme]:
         """Converts a JsonDataProviderSchemes to a list of Organisations."""
-        return self.dataProviderSchemes[0].to_model(self.provisionAgreements)
+        return [
+            s.to_model(self.provisionAgreements)
+            for s in self.dataProviderSchemes
+        ]
 
 
 class JsonProviderMessage(Struct, frozen=True):
@@ -68,8 +83,8 @@ class JsonProviderMessage(Struct, frozen=True):
 
     data: JsonDataProviderSchemes
 
-    def to_model(self) -> Sequence[DataProvider]:
-        """Returns the requested list of providers."""
+    def to_model(self) -> Sequence[DataProviderScheme]:
+        """Returns the requested list of data provider schemes."""
         return self.data.to_model()
 
 
