@@ -3,7 +3,7 @@ import pytest
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
 from pysdmx.io.format import Format
-from pysdmx.model import DataProvider, DataProviderScheme
+from pysdmx.model import Organisation
 
 
 def check_orgs(
@@ -17,7 +17,7 @@ def check_orgs(
         )
     )
 
-    schemes = fmr.get_providers("BIS")
+    prvs = fmr.get_providers("BIS")
 
     assert len(mock.calls) == 1
     if is_fusion:
@@ -30,12 +30,9 @@ def check_orgs(
             == Format.STRUCTURE_SDMX_JSON_2_0_0.value
         )
 
-    assert len(schemes) == 1
-    for s in schemes:
-        assert isinstance(s, DataProviderScheme)
-        assert len(s) == 2
-        for p in s:
-            assert isinstance(p, DataProvider)
+    assert len(prvs) == 2
+    for prv in prvs:
+        assert isinstance(prv, Organisation)
 
 
 async def check_org_core_info(mock, fmr: AsyncRegistryClient, query, body):
@@ -47,16 +44,15 @@ async def check_org_core_info(mock, fmr: AsyncRegistryClient, query, body):
         )
     )
 
-    schemes = await fmr.get_providers("BIS")
+    prvs = await fmr.get_providers("BIS")
 
-    for s in schemes:
-        for prv in s:
-            if prv.id == "CH2":
-                assert prv.name == "Swiss National Bank"
-            elif prv.id == "TST":
-                assert prv.name == "Test data provider"
-            else:
-                pytest.fail(f"Unexepcted provider: {prv.id}")
+    for prv in prvs:
+        if prv.id == "CH2":
+            assert prv.name == "Swiss National Bank"
+        elif prv.id == "TST":
+            assert prv.name == "Test data provider"
+        else:
+            pytest.fail(f"Unexepcted provider: {prv.id}")
 
 
 def check_org_details(mock, fmr: RegistryClient, query, body):
@@ -68,29 +64,28 @@ def check_org_details(mock, fmr: RegistryClient, query, body):
         )
     )
 
-    schemes = fmr.get_providers("BIS")
+    prvs = fmr.get_providers("BIS")
 
-    for s in schemes:
-        for prv in s:
-            if prv.id == "CH2":
-                assert prv.description is None
-                assert not prv.contacts
-            elif prv.id == "TST":
-                assert prv.description == "Description for the test provider."
-                assert len(prv.contacts) == 1
-                c = prv.contacts[0]
-                assert c.id is None
-                assert c.name == "Support"
-                assert c.department == "Client Support"
-                assert c.role == "Head of Support"
-                assert len(c.emails) == 1
-                assert c.emails[0] == "support@test.com"
-                assert len(c.telephones) == 1
-                assert c.telephones[0] == "+42.(0)42.4242.4242"
-                assert not c.faxes
-                assert not c.uris
-            else:
-                pytest.fail(f"Unexepcted provider: {prv.id}")
+    for prv in prvs:
+        if prv.id == "CH2":
+            assert prv.description is None
+            assert not prv.contacts
+        elif prv.id == "TST":
+            assert prv.description == "Description for the test provider."
+            assert len(prv.contacts) == 1
+            c = prv.contacts[0]
+            assert c.id is None
+            assert c.name == "Support"
+            assert c.department == "Client Support"
+            assert c.role == "Head of Support"
+            assert len(c.emails) == 1
+            assert c.emails[0] == "support@test.com"
+            assert len(c.telephones) == 1
+            assert c.telephones[0] == "+42.(0)42.4242.4242"
+            assert not c.faxes
+            assert not c.uris
+        else:
+            pytest.fail(f"Unexepcted provider: {prv.id}")
 
 
 def check_with_flows(mock, fmr, query, body):
@@ -102,16 +97,17 @@ def check_with_flows(mock, fmr, query, body):
         )
     )
 
-    schemes = fmr.get_providers("BIS", True)
+    prvs = fmr.get_providers("BIS", True)
 
-    for s in schemes:
-        p1 = s["TEST"]
-        assert len(p1.dataflows) == 2
-        for df in p1.dataflows:
-            assert df.id in ["DF1", "DF2"]
-
-        p2 = s["TEST2"]
-        assert len(p2.dataflows) == 0
+    for prv in prvs:
+        if prv.id == "TEST":
+            assert len(prv.dataflows) == 2
+            for df in prv.dataflows:
+                assert df.id in ["DF1", "DF2"]
+        elif prv.id == "TEST2":
+            assert len(prv.dataflows) == 0
+        else:
+            pytest.fail(f"Unexepcted provider: {prv.id}")
 
 
 def check_empty(mock, fmr: RegistryClient, query, body):
@@ -123,7 +119,6 @@ def check_empty(mock, fmr: RegistryClient, query, body):
         )
     )
 
-    schemes = fmr.get_providers("BIS")
+    agencies = fmr.get_providers("BIS")
 
-    for s in schemes:
-        assert len(s) == 0
+    assert len(agencies) == 0
