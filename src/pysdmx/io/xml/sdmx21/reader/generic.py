@@ -119,8 +119,8 @@ def __parse_generic_data(
         # Generic Series
         df = __reading_generic_series(dataset)
         dim_at_obs = structure_info["dimensionAtObservation"]
-        # In case there are observations defined, we need to move the
-        # replace the OBS_DIM column with the dimension at observation
+        # In case there are observations defined, we need to replace the
+        # OBS_DIM column with the dimension at observation
         if OBS_DIM in df.columns:
             df[dim_at_obs] = df[OBS_DIM]
             del df[OBS_DIM]
