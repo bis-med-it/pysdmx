@@ -1,3 +1,5 @@
+from typing import Iterable, Sized
+
 import msgspec
 import pytest
 
@@ -137,3 +139,22 @@ def test_metadata_provider_scheme_serde(metadata_providers):
     deser = msgspec.msgpack.Decoder(MetadataProviderScheme).decode(ser)
 
     assert deser == metadata_providers
+
+
+def test_dps_iterable(data_providers):
+    assert isinstance(data_providers, Iterable)
+    out = [p for p in data_providers]
+    assert len(out) == len(data_providers.providers)
+    assert out == data_providers.providers
+
+
+def test_dps_sized(data_providers):
+    assert isinstance(data_providers, Sized)
+
+
+def test_dps_get_provider(data_providers):
+    for p in data_providers.items:
+        assert data_providers[p.id] == p
+        assert p.id in data_providers
+
+    assert data_providers["NOT_IN_THE_SCHEME"] is None
