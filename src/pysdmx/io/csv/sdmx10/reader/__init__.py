@@ -16,20 +16,10 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
     df_csv = data.drop(["DATAFLOW"], axis=1)
     urn = f"Dataflow={structure_id}"
 
-    # Extract dataset attributes from sdmx-csv (all values are the same)
-    attributes = {
-        col: df_csv[col].iloc[0]
-        for col in df_csv.columns
-        if df_csv[col].nunique() == 1
-    }
-    for col in attributes:
-        df_csv = df_csv.drop(col, axis=1)
-
     # Return a Dataset object with the extracted information
     return PandasDataset(
         structure=urn,
         data=df_csv,
-        attributes=attributes,
     )
 
 
