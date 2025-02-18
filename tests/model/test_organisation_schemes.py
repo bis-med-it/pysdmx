@@ -1,3 +1,5 @@
+from typing import Iterable, Sized
+
 import msgspec
 import pytest
 
@@ -107,7 +109,7 @@ def metadata_providers(contacts, dataflows, annotations):
     return MetadataProviderScheme(agency="TEST", items=[dp1, dp2])
 
 
-def test_agency_scheme_serde(agencies):
+def test_as_serde(agencies):
     ser = ENCODER.encode(agencies)
 
     deser = msgspec.msgpack.Decoder(AgencyScheme).decode(ser)
@@ -115,7 +117,7 @@ def test_agency_scheme_serde(agencies):
     assert deser == agencies
 
 
-def test_data_provider_scheme_serde(data_providers):
+def test_dps_serde(data_providers):
     ser = ENCODER.encode(data_providers)
 
     deser = msgspec.msgpack.Decoder(DataProviderScheme).decode(ser)
@@ -123,7 +125,7 @@ def test_data_provider_scheme_serde(data_providers):
     assert deser == data_providers
 
 
-def test_data_consumer_scheme_serde(data_consumers):
+def test_dcs_serde(data_consumers):
     ser = ENCODER.encode(data_consumers)
 
     deser = msgspec.msgpack.Decoder(DataConsumerScheme).decode(ser)
@@ -131,9 +133,85 @@ def test_data_consumer_scheme_serde(data_consumers):
     assert deser == data_consumers
 
 
-def test_metadata_provider_scheme_serde(metadata_providers):
+def test_mps_serde(metadata_providers):
     ser = ENCODER.encode(metadata_providers)
 
     deser = msgspec.msgpack.Decoder(MetadataProviderScheme).decode(ser)
 
     assert deser == metadata_providers
+
+
+def test_dps_iterable(data_providers):
+    assert isinstance(data_providers, Iterable)
+    out = list(data_providers)
+    assert len(out) == len(data_providers.providers)
+    assert out == data_providers.providers
+
+
+def test_dps_sized(data_providers):
+    assert isinstance(data_providers, Sized)
+
+
+def test_dps_get_provider(data_providers):
+    for p in data_providers.items:
+        assert data_providers[p.id] == p
+        assert p.id in data_providers
+
+    assert data_providers["NOT_IN_THE_SCHEME"] is None
+
+
+def test_mps_iterable(metadata_providers):
+    assert isinstance(metadata_providers, Iterable)
+    out = list(metadata_providers)
+    assert len(out) == len(metadata_providers.providers)
+    assert out == metadata_providers.providers
+
+
+def test_mps_sized(metadata_providers):
+    assert isinstance(metadata_providers, Sized)
+
+
+def test_mps_get_provider(metadata_providers):
+    for p in metadata_providers.items:
+        assert metadata_providers[p.id] == p
+        assert p.id in metadata_providers
+
+    assert metadata_providers["NOT_IN_THE_SCHEME"] is None
+
+
+def test_dcs_iterable(data_consumers):
+    assert isinstance(data_consumers, Iterable)
+    out = list(data_consumers)
+    assert len(out) == len(data_consumers.consumers)
+    assert out == data_consumers.consumers
+
+
+def test_dcs_sized(data_consumers):
+    assert isinstance(data_consumers, Sized)
+
+
+def test_dcs_get_consumer(data_consumers):
+    for p in data_consumers.items:
+        assert data_consumers[p.id] == p
+        assert p.id in data_consumers
+
+    assert data_consumers["NOT_IN_THE_SCHEME"] is None
+
+
+def test_as_iterable(agencies):
+    assert isinstance(agencies, Iterable)
+    out = list(agencies)
+    assert len(out) == len(agencies.agencies)
+    assert out == agencies.agencies
+
+
+def test_as_sized(agencies):
+    assert isinstance(agencies, Sized)
+
+
+def test_as_get_agency(agencies):
+    for p in agencies.items:
+        assert agencies[p.id] == p
+        assert p.id in agencies
+
+    assert agencies["NOT_IN_THE_SCHEME"] is None

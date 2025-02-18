@@ -111,7 +111,7 @@ def check_with_flows(mock, fmr, query, body):
 
 
 def check_empty(mock, fmr: RegistryClient, query, body):
-    """Can handle empty messages."""
+    """Can handle scheme with no providers."""
     mock.get(query).mock(
         return_value=httpx.Response(
             200,
@@ -119,6 +119,6 @@ def check_empty(mock, fmr: RegistryClient, query, body):
         )
     )
 
-    agencies = fmr.get_providers("BIS")
+    prvs = fmr.get_providers("BIS")
 
-    assert len(agencies) == 0
+    assert len(prvs) == 0
