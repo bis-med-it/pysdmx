@@ -75,6 +75,7 @@ def test_reading_data_v2(data_path):
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
     assert "ACTION" not in df.columns
+    assert len(datasets[0].attributes) == 0
 
 
 def test_reading_sdmx_csv_v2(data_path):
@@ -85,6 +86,7 @@ def test_reading_sdmx_csv_v2(data_path):
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
     assert "ACTION" not in df.columns
+    assert len(datasets[0].attributes) == 0
 
 
 def test_reading_sdmx_csv_v2_string(data_path):
@@ -97,6 +99,7 @@ def test_reading_sdmx_csv_v2_string(data_path):
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
     assert "ACTION" not in df.columns
+    assert len(datasets[0].attributes) == 0
 
 
 def test_reading_v2_exception(data_path_exception):
