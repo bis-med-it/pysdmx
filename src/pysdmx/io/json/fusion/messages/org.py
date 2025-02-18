@@ -12,6 +12,8 @@ from pysdmx.model import (
     Contact,
     DataflowRef,
     DataProvider,
+)
+from pysdmx.model import (
     DataProviderScheme as DPS,
 )
 from pysdmx.util import parse_item_urn, parse_urn
