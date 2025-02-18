@@ -41,6 +41,7 @@ def test_reading_sdmx_csv_v1(data_path):
     df = datasets[0].data
     assert len(df) == 1000
     assert "DATAFLOW" not in df.columns
+    assert len(datasets[0].attributes) == 0
 
 
 def test_reading_sdmx_csv_v1_string(data_path):
@@ -51,6 +52,7 @@ def test_reading_sdmx_csv_v1_string(data_path):
     df = datasets[0].data
     assert len(df) == 1000
     assert "DATAFLOW" not in df.columns
+    assert len(datasets[0].attributes) == 0
 
 
 def test_reading_data_v1_exception(data_path_exception):
