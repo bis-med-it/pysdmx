@@ -158,3 +158,22 @@ def test_dps_get_provider(data_providers):
         assert p.id in data_providers
 
     assert data_providers["NOT_IN_THE_SCHEME"] is None
+
+
+def test_mps_iterable(metadata_providers):
+    assert isinstance(metadata_providers, Iterable)
+    out = list(metadata_providers)
+    assert len(out) == len(metadata_providers.providers)
+    assert out == metadata_providers.providers
+
+
+def test_mps_sized(metadata_providers):
+    assert isinstance(metadata_providers, Sized)
+
+
+def test_mps_get_provider(metadata_providers):
+    for p in metadata_providers.items:
+        assert metadata_providers[p.id] == p
+        assert p.id in metadata_providers
+
+    assert metadata_providers["NOT_IN_THE_SCHEME"] is None

@@ -62,6 +62,31 @@ class MetadataProviderScheme(ItemScheme, frozen=True, omit_defaults=True):
     version: str = "1.0"
     items: Sequence[MetadataProvider] = ()
 
+    @property
+    def providers(self) -> Sequence[MetadataProvider]:
+        """Extract the items in the scheme."""
+        return self.items
+
+    def __iter__(self) -> Iterator[MetadataProvider]:
+        """Return an iterator over the list of metadata providers."""
+        yield from self.items
+
+    def __len__(self) -> int:
+        """Return the number of metadata providers in the scheme."""
+        return len(self.items)
+
+    def __getitem__(self, id_: str) -> Optional[MetadataProvider]:
+        """Return the metadata provider identified by the supplied ID."""
+        out = list(filter(lambda p: p.id == id_, self.items))
+        if len(out) == 0:
+            return None
+        else:
+            return out[0]
+
+    def __contains__(self, id_: str) -> bool:
+        """Whether a provider with the supplied ID is present in the scheme."""
+        return bool(self.__getitem__(id_))
+
 
 class DataConsumerScheme(ItemScheme, frozen=True, omit_defaults=True):
     """An immutable collection of data consumers."""
