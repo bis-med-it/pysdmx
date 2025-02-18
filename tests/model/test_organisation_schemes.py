@@ -177,3 +177,22 @@ def test_mps_get_provider(metadata_providers):
         assert p.id in metadata_providers
 
     assert metadata_providers["NOT_IN_THE_SCHEME"] is None
+
+
+def test_dcs_iterable(data_consumers):
+    assert isinstance(data_consumers, Iterable)
+    out = list(data_consumers)
+    assert len(out) == len(data_consumers.consumers)
+    assert out == data_consumers.consumers
+
+
+def test_dcs_sized(data_consumers):
+    assert isinstance(data_consumers, Sized)
+
+
+def test_dcs_get_consumer(data_consumers):
+    for p in data_consumers.items:
+        assert data_consumers[p.id] == p
+        assert p.id in data_consumers
+
+    assert data_consumers["NOT_IN_THE_SCHEME"] is None

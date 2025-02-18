@@ -95,3 +95,28 @@ class DataConsumerScheme(ItemScheme, frozen=True, omit_defaults=True):
     name: str = "DATA_CONSUMERS"
     version: str = "1.0"
     items: Sequence[DataConsumer] = ()
+
+    @property
+    def consumers(self) -> Sequence[DataConsumer]:
+        """Extract the items in the scheme."""
+        return self.items
+
+    def __iter__(self) -> Iterator[DataConsumer]:
+        """Return an iterator over the list of data consumers."""
+        yield from self.items
+
+    def __len__(self) -> int:
+        """Return the number of data consumers in the scheme."""
+        return len(self.items)
+
+    def __getitem__(self, id_: str) -> Optional[DataConsumer]:
+        """Return the data consumer identified by the supplied ID."""
+        out = list(filter(lambda p: p.id == id_, self.items))
+        if len(out) == 0:
+            return None
+        else:
+            return out[0]
+
+    def __contains__(self, id_: str) -> bool:
+        """Whether a consumer with the supplied ID is present in the scheme."""
+        return bool(self.__getitem__(id_))
