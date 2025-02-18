@@ -143,7 +143,7 @@ def test_metadata_provider_scheme_serde(metadata_providers):
 
 def test_dps_iterable(data_providers):
     assert isinstance(data_providers, Iterable)
-    out = [p for p in data_providers]
+    out = list(data_providers)
     assert len(out) == len(data_providers.providers)
     assert out == data_providers.providers
 
