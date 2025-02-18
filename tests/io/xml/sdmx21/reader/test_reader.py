@@ -8,6 +8,7 @@ from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
+from pysdmx.io.xml.sdmx21.__tokens import OBS_DIM
 from pysdmx.io.xml.sdmx21.reader.error import read as read_error
 from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
@@ -197,11 +198,11 @@ def test_error_message_with_different_mode(agency_scheme_path):
 @pytest.mark.parametrize(
     "filename",
     [
-        # "gen_all.xml",
+        "gen_all.xml",
         "gen_ser.xml",
-        # "str_all.xml",
-        # "str_ser.xml",
-        # "str_ser_group.xml",
+        "str_all.xml",
+        "str_ser.xml",
+        "str_ser_group.xml",
     ],
 )
 def test_reading_validation(samples_folder, filename):
@@ -219,6 +220,7 @@ def test_reading_validation(samples_folder, filename):
     data = dataset.data
     assert data.shape == (1000, 20)
     assert "TIME_PERIOD" in data.columns
+    assert OBS_DIM not in data.columns
 
 
 @pytest.mark.parametrize(
