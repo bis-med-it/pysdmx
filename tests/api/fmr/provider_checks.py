@@ -105,15 +105,13 @@ def check_with_flows(mock, fmr, query, body):
     schemes = fmr.get_providers("BIS", True)
 
     for s in schemes:
-        for prv in s:
-            if prv.id == "TEST":
-                assert len(prv.dataflows) == 2
-                for df in prv.dataflows:
-                    assert df.id in ["DF1", "DF2"]
-            elif prv.id == "TEST2":
-                assert len(prv.dataflows) == 0
-            else:
-                pytest.fail(f"Unexepcted provider: {prv.id}")
+        p1 = s["TEST"]
+        assert len(p1.dataflows) == 2
+        for df in p1.dataflows:
+            assert df.id in ["DF1", "DF2"]
+
+        p2 = s["TEST2"]
+        assert len(p2.dataflows) == 0
 
 
 def check_empty(mock, fmr: RegistryClient, query, body):
