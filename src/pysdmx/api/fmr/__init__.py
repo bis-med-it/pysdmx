@@ -378,7 +378,11 @@ class RegistryClient(__BaseRegistryClient):
         """
         query = super()._providers_q(agency, with_flows)
         out = self.__fetch(query)
-        return super()._out(out, self.deser.providers)
+        schemes = super()._out(out, self.deser.providers)
+        if schemes:
+            return schemes[0].items
+        else:
+            return ()
 
     def get_categories(
         self,
@@ -828,7 +832,11 @@ class AsyncRegistryClient(__BaseRegistryClient):
         """
         query = super()._providers_q(agency, with_flows)
         out = await self.__fetch(query)
-        return super()._out(out, self.deser.providers)
+        schemes = super()._out(out, self.deser.providers)
+        if schemes:
+            return schemes[0].items
+        else:
+            return ()
 
     async def get_categories(
         self,
