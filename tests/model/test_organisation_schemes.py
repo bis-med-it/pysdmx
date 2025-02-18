@@ -109,7 +109,7 @@ def metadata_providers(contacts, dataflows, annotations):
     return MetadataProviderScheme(agency="TEST", items=[dp1, dp2])
 
 
-def test_agency_scheme_serde(agencies):
+def test_as_serde(agencies):
     ser = ENCODER.encode(agencies)
 
     deser = msgspec.msgpack.Decoder(AgencyScheme).decode(ser)
@@ -117,7 +117,7 @@ def test_agency_scheme_serde(agencies):
     assert deser == agencies
 
 
-def test_data_provider_scheme_serde(data_providers):
+def test_dps_serde(data_providers):
     ser = ENCODER.encode(data_providers)
 
     deser = msgspec.msgpack.Decoder(DataProviderScheme).decode(ser)
@@ -125,7 +125,7 @@ def test_data_provider_scheme_serde(data_providers):
     assert deser == data_providers
 
 
-def test_data_consumer_scheme_serde(data_consumers):
+def test_dcs_serde(data_consumers):
     ser = ENCODER.encode(data_consumers)
 
     deser = msgspec.msgpack.Decoder(DataConsumerScheme).decode(ser)
@@ -133,7 +133,7 @@ def test_data_consumer_scheme_serde(data_consumers):
     assert deser == data_consumers
 
 
-def test_metadata_provider_scheme_serde(metadata_providers):
+def test_mps_serde(metadata_providers):
     ser = ENCODER.encode(metadata_providers)
 
     deser = msgspec.msgpack.Decoder(MetadataProviderScheme).decode(ser)
