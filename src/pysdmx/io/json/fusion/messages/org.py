@@ -7,8 +7,14 @@ from msgspec import Struct
 
 from pysdmx.io.json.fusion.messages.core import FusionString
 from pysdmx.io.json.fusion.messages.pa import FusionProvisionAgreement
-from pysdmx.model import Agency, Contact, DataflowRef, DataProvider
-from pysdmx.util import parse_urn
+from pysdmx.model import (
+    Agency,
+    Contact,
+    DataflowRef,
+    DataProvider,
+    DataProviderScheme as DPS,
+)
+from pysdmx.util import parse_item_urn, parse_urn
 
 
 class FusionContact(Struct, frozen=True):
@@ -109,35 +115,52 @@ class FusionAgencyMessage(Struct, frozen=True):
 class FusionProviderScheme(Struct, frozen=True):
     """Fusion-JSON payload for a data provider scheme."""
 
+    id: str
+    agencyId: str
+    names: Sequence[FusionString] = ()
+    descriptions: Sequence[FusionString] = ()
     items: Sequence[FusionProvider] = ()
 
     def __get_df_ref(self, ref: str) -> DataflowRef:
         a = parse_urn(ref)
         return DataflowRef(id=a.id, agency=a.agency, version=a.version)
 
-    def to_model(
-        self, pas: Sequence[FusionProvisionAgreement]
-    ) -> Sequence[DataProvider]:
-        """Converts a FusionProviderScheme to a list of Organisations."""
+    def to_model(self, pas: Sequence[FusionProvisionAgreement]) -> DPS:
+        """Converts a FusionProviderScheme to a DataProviderScheme."""
         if pas:
             paprs: Dict[str, Set[DataflowRef]] = defaultdict(set)
             for pa in pas:
                 df = self.__get_df_ref(pa.structureUsage)
-                pr = pa.dataproviderRef[pa.dataproviderRef.rindex(".") + 1 :]
-                paprs[pr].add(df)
+                ref = parse_item_urn(pa.dataproviderRef)
+                paprs[f"{ref.agency}:{ref.item_id}"].add(df)
             prvs = [o.to_model() for o in self.items]
-            return [
+            prvs = [
                 DataProvider(
                     id=p.id,
                     name=p.name,
                     description=p.description,
                     contacts=p.contacts,
-                    dataflows=list(paprs[p.id]),
+                    dataflows=list(paprs[f"{self.agencyId}:{p.id}"]),
                 )
                 for p in prvs
             ]
+            return DPS(
+                agency=self.agencyId,
+                name=self.names[0].value,
+                description=(
+                    self.descriptions[0].value if self.descriptions else None
+                ),
+                items=prvs,
+            )
         else:
-            return [o.to_model() for o in self.items]
+            return DPS(
+                agency=self.agencyId,
+                name=self.names[0].value,
+                description=(
+                    self.descriptions[0].value if self.descriptions else None
+                ),
+                items=[o.to_model() for o in self.items],
+            )
 
 
 class FusionProviderMessage(Struct, frozen=True):
@@ -146,6 +169,9 @@ class FusionProviderMessage(Struct, frozen=True):
     DataProviderScheme: Sequence[FusionProviderScheme]
     ProvisionAgreement: Sequence[FusionProvisionAgreement] = ()
 
-    def to_model(self) -> Sequence[DataProvider]:
+    def to_model(self) -> Sequence[DPS]:
         """Returns the requested list of providers."""
-        return self.DataProviderScheme[0].to_model(self.ProvisionAgreement)
+        return [
+            p.to_model(self.ProvisionAgreement)
+            for p in self.DataProviderScheme
+        ]
