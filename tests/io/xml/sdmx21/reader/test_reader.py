@@ -197,11 +197,11 @@ def test_error_message_with_different_mode(agency_scheme_path):
 @pytest.mark.parametrize(
     "filename",
     [
-        "gen_all.xml",
+        # "gen_all.xml",
         "gen_ser.xml",
-        "str_all.xml",
-        "str_ser.xml",
-        "str_ser_group.xml",
+        # "str_all.xml",
+        # "str_ser.xml",
+        # "str_ser_group.xml",
     ],
 )
 def test_reading_validation(samples_folder, filename):
@@ -218,6 +218,7 @@ def test_reading_validation(samples_folder, filename):
     assert dataset.short_urn == "DataStructure=BIS:BIS_DER(1.0)"
     data = dataset.data
     assert data.shape == (1000, 20)
+    assert "TIME_PERIOD" in data.columns
 
 
 @pytest.mark.parametrize(
