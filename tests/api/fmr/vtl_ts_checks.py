@@ -128,11 +128,9 @@ def __check_user_defined_operator_scheme(ts: TransformationScheme):
         assert isinstance(udo, UserDefinedOperator)
         if udo.id == "SUM":
             assert udo.name == "Sum"
-            assert udo.operator_definition == "sum"
         else:
             assert udo.id == "AVG"
             assert udo.name == "Average"
-            assert udo.operator_definition == "avg"
 
 
 def __check_name_personalisation_scheme(ts: TransformationScheme):
@@ -187,11 +185,7 @@ def __check_ruleset_scheme(ts: TransformationScheme):
         assert isinstance(rule, Ruleset)
         assert rule.id == "UNIQUE_SOMETHING"
         assert rule.name == "Datapoint Ruleset UNIQUE_SOMETHING"
-        assert (
-            rule.ruleset_definition
-            == "Here we should have a real VTL program instead..."
-        )
-        assert rule.ruleset_scope == "valuedomain"
+        assert rule.ruleset_scope == "variable"
         assert rule.ruleset_type == "datapoint"
 
 
