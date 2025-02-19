@@ -1,12 +1,17 @@
 """Model for VTL artefacts."""
 
 from enum import Enum
-from typing import Optional, Sequence, Literal
+from typing import Literal, Optional, Sequence
 
 from msgspec import Struct
 from vtlengine.API import create_ast  # type: ignore[import-untyped]
-from vtlengine.AST import DPRuleset as ASTDPRuleset, HRuleset as ASTHRuleset  # type: ignore[import-untyped]
-from vtlengine.AST import Operator as ASTOperator  # type: ignore[import-untyped]
+from vtlengine.AST import (  # type: ignore[import-untyped]
+    DPRuleset as ASTDPRuleset,
+)
+from vtlengine.AST import HRuleset as ASTHRuleset
+from vtlengine.AST import (
+    Operator as ASTOperator,
+)
 
 from pysdmx.errors import Invalid
 from pysdmx.model.__base import Item, ItemScheme
@@ -29,20 +34,24 @@ class Transformation(Item, frozen=True, omit_defaults=True):
     result: str = ""
 
     def __post_init__(self) -> None:
+        """Additional validation checks for transformations."""
         try:
-            ast = create_ast(self.full_expression)
+            create_ast(self.full_expression)
         except Exception as e:
-            raise Invalid(f"Invalid transformation definition: {str(e)}") from e
-        if isinstance(ast.children[0], ASTOperator) or isinstance(ast.children[0], ASTDPRuleset) or isinstance(
-                ast.children[0], ASTHRuleset):
-            raise Invalid("Invalid transformation definition")
+            raise Invalid(
+                f"Invalid transformation definition: {str(e)}"
+            ) from e
 
     @property
     def full_expression(self) -> str:
         """Return the full expression with the semicolon."""
         assign_operand = "<-" if self.is_persistent else ":="
         full_expression = f"{self.result} {assign_operand} {self.expression}"
-        return full_expression if full_expression.strip().endswith(";") else f"{full_expression};"
+        return (
+            full_expression
+            if full_expression.strip().endswith(";")
+            else f"{full_expression};"
+        )
 
 
 class Ruleset(Item, frozen=True, omit_defaults=True):
@@ -53,18 +62,31 @@ class Ruleset(Item, frozen=True, omit_defaults=True):
     ruleset_type: Optional[Literal["datapoint", "hierarchical"]] = None
 
     def __post_init__(self) -> None:
+        """Additional validation checks for rulesets."""
         try:
             ast = create_ast(self.ruleset_definition)
         except Exception as e:
             raise Invalid(f"Invalid ruleset definition: {str(e)}") from e
-        if self.ruleset_type == "hierarchical" and not isinstance(ast.children[0], ASTHRuleset):
-            raise Invalid("Invalid ruleset definition")
-        if self.ruleset_type == "datapoint" and not isinstance(ast.children[0], ASTDPRuleset):
-            raise Invalid("Invalid ruleset definition")
-        if self.ruleset_scope == "variable" and ast.children[0].__getattribute__("signature_type") != "variable":
-            raise Invalid("Invalid ruleset definition")
-        if self.ruleset_scope == "valuedomain" and ast.children[0].__getattribute__("signature_type") != "valuedomain":
-            raise Invalid("Invalid ruleset definition")
+        if self.ruleset_type == "hierarchical" and not isinstance(
+            ast.children[0], ASTHRuleset
+        ):
+            raise Invalid("Ruleset type does not match the definition")
+        if self.ruleset_type == "datapoint" and not isinstance(
+            ast.children[0], ASTDPRuleset
+        ):
+            raise Invalid("Ruleset type does not match the definition")
+        if (
+            self.ruleset_scope == "variable"
+            and ast.children[0].__getattribute__("signature_type")
+            != "variable"
+        ):
+            raise Invalid("Ruleset scope does not match the definition")
+        if (
+            self.ruleset_scope == "valuedomain"
+            and ast.children[0].__getattribute__("signature_type")
+            != "valuedomain"
+        ):
+            raise Invalid("Ruleset scope does not match the definition")
 
 
 class UserDefinedOperator(Item, frozen=True, omit_defaults=True):
@@ -73,12 +95,15 @@ class UserDefinedOperator(Item, frozen=True, omit_defaults=True):
     operator_definition: str = ""
 
     def __post_init__(self) -> None:
+        """Additional validation checks for user defined operators."""
         try:
             ast = create_ast(self.operator_definition)
         except Exception as e:
             raise Invalid(f"Invalid operator definition: {str(e)}") from e
         if not isinstance(ast.children[0], ASTOperator):
-            raise Invalid("Invalid operator definition")
+            raise Invalid(
+                "User defined operator type does not match the definition"
+            )
 
 
 class NamePersonalisation(Item, frozen=True, omit_defaults=True):
@@ -229,7 +254,7 @@ class TransformationScheme(VtlScheme, frozen=True, omit_defaults=True):
     user_defined_operator_schemes: Sequence[UserDefinedOperatorScheme] = ()
     items: Sequence[Transformation] = ()
 
-    def generate_vtl_script(self, syntax_validation: bool = True) -> str:
+    def generate_vtl_script(self) -> str:
         """Generates the full VTL Transformation Scheme script."""
         vtl_script = """""".strip()
 
@@ -244,14 +269,4 @@ class TransformationScheme(VtlScheme, frozen=True, omit_defaults=True):
         for transformation in self.items:
             vtl_script += f"{transformation.full_expression}\n"
 
-        syntax_validator(vtl_script)
-
         return vtl_script
-
-
-def syntax_validator(script: str) -> None:
-    """Validates the VTL script syntax."""
-    try:
-        create_ast(script)
-    except Exception as e:
-        raise ValueError(f"The syntax is invalid: {str(e)}") from e
