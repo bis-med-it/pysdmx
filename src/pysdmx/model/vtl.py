@@ -1,9 +1,12 @@
 """Model for VTL artefacts."""
 
 from enum import Enum
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Literal
 
 from msgspec import Struct
+from vtlengine.API import create_ast  # type: ignore[import-untyped]
+from vtlengine.AST import DPRuleset as ASTDPRuleset, HRuleset as ASTHRuleset  # type: ignore[import-untyped]
+from vtlengine.AST import Operator as ASTOperator  # type: ignore[import-untyped]
 
 from pysdmx.errors import Invalid
 from pysdmx.model.__base import Item, ItemScheme
@@ -25,26 +28,57 @@ class Transformation(Item, frozen=True, omit_defaults=True):
     is_persistent: bool = False
     result: str = ""
 
+    def __post_init__(self) -> None:
+        try:
+            ast = create_ast(self.full_expression)
+        except Exception as e:
+            raise Invalid(f"Invalid transformation definition: {str(e)}") from e
+        if isinstance(ast.children[0], ASTOperator) or isinstance(ast.children[0], ASTDPRuleset) or isinstance(
+                ast.children[0], ASTHRuleset):
+            raise Invalid("Invalid transformation definition")
+
     @property
     def full_expression(self) -> str:
         """Return the full expression with the semicolon."""
         assign_operand = "<-" if self.is_persistent else ":="
-
-        return f"{self.result} {assign_operand} {self.expression};"
+        full_expression = f"{self.result} {assign_operand} {self.expression}"
+        return full_expression if full_expression.strip().endswith(";") else f"{full_expression};"
 
 
 class Ruleset(Item, frozen=True, omit_defaults=True):
     """A persistent set of rules."""
 
     ruleset_definition: str = ""
-    ruleset_scope: str = ""
-    ruleset_type: str = ""
+    ruleset_scope: Optional[Literal["variable", "valuedomain"]] = None
+    ruleset_type: Optional[Literal["datapoint", "hierarchical"]] = None
+
+    def __post_init__(self) -> None:
+        try:
+            ast = create_ast(self.ruleset_definition)
+        except Exception as e:
+            raise Invalid(f"Invalid ruleset definition: {str(e)}") from e
+        if self.ruleset_type == "hierarchical" and not isinstance(ast.children[0], ASTHRuleset):
+            raise Invalid("Invalid ruleset definition")
+        if self.ruleset_type == "datapoint" and not isinstance(ast.children[0], ASTDPRuleset):
+            raise Invalid("Invalid ruleset definition")
+        if self.ruleset_scope == "variable" and ast.children[0].__getattribute__("signature_type") != "variable":
+            raise Invalid("Invalid ruleset definition")
+        if self.ruleset_scope == "valuedomain" and ast.children[0].__getattribute__("signature_type") != "valuedomain":
+            raise Invalid("Invalid ruleset definition")
 
 
 class UserDefinedOperator(Item, frozen=True, omit_defaults=True):
     """Custom VTL operator that extends the VTL standard library."""
 
     operator_definition: str = ""
+
+    def __post_init__(self) -> None:
+        try:
+            ast = create_ast(self.operator_definition)
+        except Exception as e:
+            raise Invalid(f"Invalid operator definition: {str(e)}") from e
+        if not isinstance(ast.children[0], ASTOperator):
+            raise Invalid("Invalid operator definition")
 
 
 class NamePersonalisation(Item, frozen=True, omit_defaults=True):
@@ -143,6 +177,7 @@ class RulesetScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of rulesets."""
 
     vtl_mapping_scheme: Optional[str] = None
+    items: Sequence[Ruleset] = ()
 
 
 class UserDefinedOperatorScheme(VtlScheme, frozen=True, omit_defaults=True):
@@ -150,6 +185,7 @@ class UserDefinedOperatorScheme(VtlScheme, frozen=True, omit_defaults=True):
 
     vtl_mapping_scheme: Optional[str] = None
     ruleset_schemes: Sequence[str] = ()
+    items: Sequence[UserDefinedOperator] = ()
 
 
 class VtlMappingScheme(ItemScheme, frozen=True, omit_defaults=True):
@@ -191,3 +227,31 @@ class TransformationScheme(VtlScheme, frozen=True, omit_defaults=True):
     custom_type_scheme: Optional[CustomTypeScheme] = None
     ruleset_schemes: Sequence[RulesetScheme] = ()
     user_defined_operator_schemes: Sequence[UserDefinedOperatorScheme] = ()
+    items: Sequence[Transformation] = ()
+
+    def generate_vtl_script(self, syntax_validation: bool = True) -> str:
+        """Generates the full VTL Transformation Scheme script."""
+        vtl_script = """""".strip()
+
+        for ruleset_scheme in self.ruleset_schemes:
+            for ruleset in ruleset_scheme.items:
+                vtl_script += f"{ruleset.ruleset_definition}\n"
+
+        for udo_scheme in self.user_defined_operator_schemes:
+            for udo in udo_scheme.items:
+                vtl_script += f"{udo.operator_definition}\n"
+
+        for transformation in self.items:
+            vtl_script += f"{transformation.full_expression}\n"
+
+        syntax_validator(vtl_script)
+
+        return vtl_script
+
+
+def syntax_validator(script: str) -> None:
+    """Validates the VTL script syntax."""
+    try:
+        create_ast(script)
+    except Exception as e:
+        raise ValueError(f"The syntax is invalid: {str(e)}") from e
