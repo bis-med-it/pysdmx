@@ -24,6 +24,7 @@ from pysdmx.model import (
     Role,
     Schema,
 )
+from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import Header
 
 
@@ -32,6 +33,9 @@ def header():
     return Header(
         id="ID",
         prepared=datetime.strptime("2021-01-01", "%Y-%m-%d"),
+        sender="SENDER",
+        receiver="RECEIVER",
+        source="PySDMX",
     )
 
 
@@ -282,3 +286,106 @@ def test_invalid_dimension_key(content):
             content,
             dimension_at_observation=dim_mapping,
         )
+
+
+def test_data_writing_escape(content):
+    content = list(content.values())
+    content[0].data["ATT1"] = ["<A", ">B", "&C"]
+    result_spe = write_str_spec(content)
+    assert "&lt;A" in result_spe
+    assert "&gt;B" in result_spe
+    assert "&amp;C" in result_spe
+    result_gen = write_gen(content)
+    assert "&lt;A" in result_spe
+    assert "&gt;B" in result_spe
+    assert "&amp;C" in result_spe
+
+    # Read the result to check for formal errors
+    data_spe = read_sdmx(result_spe, validate=True).data[0]
+    data_gen = read_sdmx(result_gen, validate=True).data[0]
+
+    assert data_spe.data["ATT1"].tolist() == ["<A", ">B", "&C"]
+    assert data_gen.data["ATT1"].tolist() == ["<A", ">B", "&C"]
+
+
+def test_write_empty_data(header, content):
+    content = list(content.values())
+    content[0].data = pd.DataFrame(columns=content[0].data.columns)
+    content[0].attributes = {}
+    result_spe = write_str_spec(
+        content,
+        header=header,
+        prettyprint=True,
+    )
+    result_gen = write_gen(
+        content,
+        header=header,
+        prettyprint=True,
+    )
+
+    # Check the source is present and there are references to the structure
+    assert "Source" in result_spe
+    assert "Source" in result_gen
+
+    reference = (
+        '<Ref agencyID="MD" id="TEST" version="1.0" class="DataStructure"/>'
+    )
+    assert reference in result_spe
+    assert reference in result_gen
+    # Checks validation against XSD
+    msg_spe = read_sdmx(result_spe, validate=True)
+    msg_gen = read_sdmx(result_gen, validate=True)
+
+    assert msg_spe.data[0].data.empty
+    assert msg_gen.data[0].data.empty
+
+
+def test_optional_data_attributes(content):
+    content = list(content.values())
+    # Removing optional attribute ATT2 only from data
+    content[0].data = content[0].data.drop(columns=["ATT2"])
+
+    assert "ATT2" in [c.id for c in content[0].structure.components]
+    assert not content[0].structure.components["ATT2"].required
+
+    # Writing with ATT2 removed to check issue #209
+    result_spe = write_str_spec(
+        content,
+        dimension_at_observation={content[0].structure.short_urn: "DIM1"},
+    )
+    result_spe_all = write_str_spec(content)
+    result_gen = write_gen(content)
+
+    # Reading the output to check the shape
+    msg_spe = read_sdmx(result_spe, validate=True)
+    msg_gen = read_sdmx(result_gen, validate=True)
+    msg_spe_all = read_sdmx(result_spe_all, validate=True)
+    data_spe = msg_spe.get_dataset(content[0].structure.short_urn).data
+    data_gen = msg_gen.get_dataset(content[0].structure.short_urn).data
+    data_spe_all = msg_spe_all.get_dataset(content[0].structure.short_urn).data
+
+    assert data_spe.shape == (3, 4)
+    assert data_gen.shape == (3, 4)
+    assert data_spe_all.shape == (3, 4)
+
+
+def test_dataset_action_and_header_action_dataset_id(content, header):
+    content = list(content.values())
+    content[0].action = ActionType.Append
+
+    header.dataset_action = ActionType.Replace
+    header.dataset_id = "TEST_ID"
+
+    result_spe = write_str_spec(content, header=header)
+    result_gen = write_gen(content, header=header)
+
+    assert "DataSetAction>Replace</" in result_spe
+    assert "DataSetAction>Replace</" in result_gen
+    assert "DataSetID>TEST_ID</" in result_spe
+    assert "DataSetID>TEST_ID</" in result_gen
+
+    # Read the result to check for formal errors
+    data_spe = read_sdmx(result_spe, validate=True)
+    data_gen = read_sdmx(result_gen, validate=True)
+    assert data_spe.data[0].action == ActionType.Append
+    assert data_gen.data[0].action == ActionType.Append

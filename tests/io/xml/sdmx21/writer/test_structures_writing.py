@@ -1,10 +1,11 @@
+import copy
 import os
 from datetime import datetime
 from pathlib import Path
 
 import pytest
 
-from pysdmx.errors import NotImplemented
+from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.sdmx21.__tokens import CON
@@ -20,6 +21,7 @@ from pysdmx.model.dataflow import (
     DataStructureDefinition,
     Role,
 )
+from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import Header
 from pysdmx.util import ItemReference
 
@@ -60,6 +62,13 @@ def read_write_sample():
 @pytest.fixture
 def bis_sample():
     base_path = Path(__file__).parent / "samples" / "bis_der.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def estat_sample():
+    base_path = Path(__file__).parent / "samples" / "estat_sample.xml"
     with open(base_path, "r") as f:
         return f.read()
 
@@ -335,7 +344,7 @@ def test_concept(concept_sample, complete_header, concept):
 
 def test_file_writing(concept_sample, complete_header, concept):
     content = [concept]
-    output_path = Path(__file__).parent / "samples" / "test_output.xml"
+    output_path = str(Path(__file__).parent / "samples" / "test_output.xml")
     write(
         content,
         output_path=output_path,
@@ -354,7 +363,7 @@ def test_writer_empty(empty_sample, header):
 
 def test_writing_not_supported():
     with pytest.raises(NotImplemented):
-        write_err({})
+        write_err()
 
 
 def test_write_to_file(empty_sample, tmpdir, header):
@@ -461,3 +470,29 @@ def test_group_deletion(groups_sample, header):
     )
     assert "Groups" not in write_result
     assert any("BIS:BIS_DER(1.0)" in e.short_urn for e in read_result)
+
+
+def test_check_escape(estat_sample):
+    structures = read(estat_sample, validate=True)
+    result = write(structures, prettyprint=True)
+    assert result.count("&lt;") == 10
+    assert result.count("&gt;") == 10
+    assert result.count("&amp;") == 4
+
+    structures_after_loop = read(result, validate=True)
+    assert structures == structures_after_loop
+
+
+def test_invalid_structure_header(header):
+    header_da = copy.deepcopy(header)
+    header_did = copy.deepcopy(header)
+    header_structures = copy.deepcopy(header)
+    header_da.dataset_action = ActionType.Append
+    with pytest.raises(Invalid):
+        write([], header=header_da)
+    header_did.dataset_id = "ID"
+    with pytest.raises(Invalid):
+        write([], header=header_did)
+    header_structures.structure = {"BIS_DER": "DataStructure=BIS:BIS_DER(1.0)"}
+    with pytest.raises(Invalid):
+        write([], header=header_structures)

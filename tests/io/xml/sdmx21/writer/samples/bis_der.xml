@@ -3535,7 +3535,7 @@
 					<com:Name xml:lang="en">South African Rand</com:Name>
 				</str:Code>
 				<str:Code id="ZZZ" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_UNIT(1.0).ZZZ">
-					<com:Name xml:lang="en">Temp unit --> CODE OBSOLETE SINCE 2013.04.05</com:Name>
+					<com:Name xml:lang="en">Temp unit --&gt; CODE OBSOLETE SINCE 2013.04.05</com:Name>
 				</str:Code>
 				<str:Code id="XDC" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_UNIT(1.0).XDC">
 					<com:Name xml:lang="en">Domestic currency (incl. conversion to current currency made using a fix

@@ -2,12 +2,11 @@
 """Writer auxiliary functions."""
 
 from collections import OrderedDict
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Optional
+from xml.sax.saxutils import escape
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
-from pysdmx.io.pd import PandasDataset
-from pysdmx.model import Role, Schema
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
@@ -143,7 +142,10 @@ def add_indent(indent: str) -> str:
 
 
 def __write_header(
-    header: Header, prettyprint: bool, add_namespace_structure: bool = False
+    header: Header,
+    prettyprint: bool,
+    add_namespace_structure: bool = False,
+    data_message: bool = True,
 ) -> str:
     """Writes the Header part of the message.
 
@@ -151,6 +153,7 @@ def __write_header(
         header: The Header to be written
         prettyprint: Prettyprint or not
         add_namespace_structure: Add the namespace for the structure
+        data_message: If the message is a data message
 
     Returns:
         The XML string
@@ -230,9 +233,19 @@ def __write_header(
     prepared = header.prepared.strftime("%Y-%m-%dT%H:%M:%S")
     test = str(header.test).lower()
     references_str = ""
+    action_value = (
+        header.dataset_action.value if header.dataset_action else None
+    )
     if header.structure is not None:
         for short_urn, dim_at_obs in header.structure.items():
             references_str += __reference(short_urn, dim_at_obs)
+    if not data_message and (
+        header.dataset_id or header.dataset_action or header.structure
+    ):
+        raise Invalid(
+            "Header must not contain DataSetID or DataSetAction "
+            "when writing a Structures Message."
+        )
     return (
         f"{nl}{child1}<{ABBR_MSG}:Header>"
         f"{__value('ID', header.id)}"
@@ -240,8 +253,10 @@ def __write_header(
         f"{__value('Prepared', prepared)}"
         f"{__item('Sender', header.sender)}"
         f"{__item('Receiver', header.receiver)}"
-        f"{__value('Source', header.source)}"
         f"{references_str}"
+        f"{__value('DataSetAction', action_value)}"
+        f"{__value('DataSetID', header.dataset_id)}"
+        f"{__value('Source', header.source)}"
         f"{nl}{child1}</{ABBR_MSG}:Header>"
     ).replace("'", '"')
 
@@ -265,109 +280,6 @@ def get_structure(dataset: Dataset) -> str:
     return dataset.structure.short_urn
 
 
-def get_codes(
-    dimension_code: str, dataset: PandasDataset
-) -> Tuple[List[str], List[str]]:
-    """This function divides the components in Series and Obs."""
-    series_codes = []
-    obs_codes = [dimension_code, dataset.structure.components.measures[0].id]
-
-    # Getting the series and obs codes
-    for dim in dataset.structure.components.dimensions:
-        if dim.id != dimension_code:
-            series_codes.append(dim.id)
-
-    # Adding the attributes based on the attachment level
-    for att in dataset.structure.components.attributes:
-        if att.attachment_level == "O":
-            obs_codes.append(att.id)
-        elif att.attachment_level is not None and att.attachment_level != "D":
-            series_codes.append(att.id)
-
-    return series_codes, obs_codes
-
-
-def check_content_dataset(content: Sequence[PandasDataset]) -> None:
-    """Checks if the Message content is a dataset."""
-    if not all(isinstance(dataset, PandasDataset) for dataset in content):
-        raise Invalid("Message Content must only contain a Dataset sequence.")
-
-
-def check_dimension_at_observation(
-    content: Dict[str, PandasDataset],
-    dimension_at_observation: Optional[Dict[str, str]],
-) -> Dict[str, str]:
-    """This function checks if the dimension at observation is valid."""
-    # If dimension_at_observation is None, set it to ALL_DIM
-    if dimension_at_observation is None:
-        dimension_at_observation = dict.fromkeys(content, ALL_DIM)
-        return dimension_at_observation
-    # Validate the datasets
-    for ds in content.values():
-        writing_validation(ds)
-    # Check the datasets and their dimensions are present
-    for key, value in dimension_at_observation.items():
-        if key not in content:
-            raise Invalid(f"Dataset {key} not found in Message content.")
-        dimension_codes = [
-            dim.id for dim in content[key].structure.components.dimensions
-        ]
-        if value not in dimension_codes:
-            raise Invalid(
-                f"Dimension at observation {value} "
-                f"not found in dataset {key}."
-            )
-    # Add the missing datasets on mapping with ALL_DIM
-    for key in content:
-        if key not in dimension_at_observation:
-            dimension_at_observation[key] = ALL_DIM
-    return dimension_at_observation
-
-
-def writing_validation(dataset: PandasDataset) -> None:
-    """Structural validation of the dataset."""
-    if not isinstance(dataset.structure, Schema):
-        raise Invalid(
-            "Dataset Structure is not a Schema. Cannot perform operation."
-        )
-    required_components = [
-        comp.id
-        for comp in dataset.structure.components
-        if comp.role in (Role.DIMENSION, Role.MEASURE)
-    ]
-    for att in dataset.structure.components.attributes:
-        if (
-            att.required
-            and att.attachment_level is not None
-            and att.attachment_level != "D"
-        ):
-            required_components.append(att.id)
-    non_required = [
-        comp.id
-        for comp in dataset.structure.components
-        if comp.id not in required_components
-    ]
-    # Columns match components
-    columns = dataset.data.columns
-    all_components = required_components + non_required
-    difference = [col for col in columns if col not in all_components]
-
-    for comp in required_components:
-        difference.append(comp) if comp not in columns else None
-    if difference:
-        raise Invalid(
-            f"Data columns must match components. "
-            f"Difference: {', '.join(difference)}"
-        )
-    # Check if the dataset has at least one dimension and one measure
-    if not dataset.structure.components.dimensions:
-        raise Invalid(
-            "The dataset structure must have at least one dimension."
-        )
-    if not dataset.structure.components.measures:
-        raise Invalid("The dataset structure must have at least one measure.")
-
-
 def __to_camel_case(snake_str: str) -> str:
     return "".join(x.capitalize() for x in snake_str.lower().split("_"))
 
@@ -377,3 +289,7 @@ def __to_lower_camel_case(snake_str: str) -> str:
     # with the 'capitalize' method and join them together.
     camel_string = __to_camel_case(snake_str)
     return snake_str[0].lower() + camel_string[1:]
+
+
+def __escape_xml(value: str) -> str:
+    return escape(value)
