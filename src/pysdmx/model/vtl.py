@@ -36,11 +36,13 @@ class Transformation(Item, frozen=True, omit_defaults=True):
     def __post_init__(self) -> None:
         """Additional validation checks for transformations."""
         try:
-            create_ast(self.full_expression)
+            ast = create_ast(self.full_expression)
         except Exception as e:
             raise Invalid(
                 f"Invalid transformation definition: {str(e)}"
             ) from e
+        if len(ast.children) > 1:
+            raise Invalid("A single Assignment is valid in a Transformation")
 
     @property
     def full_expression(self) -> str:
@@ -67,6 +69,8 @@ class Ruleset(Item, frozen=True, omit_defaults=True):
             ast = create_ast(self.ruleset_definition)
         except Exception as e:
             raise Invalid(f"Invalid ruleset definition: {str(e)}") from e
+        if len(ast.children) > 1:
+            raise Invalid("A single RulesetDefinition is valid in a Ruleset")
         if self.ruleset_type == "hierarchical" and not isinstance(
             ast.children[0], ASTHRuleset
         ):
@@ -77,14 +81,12 @@ class Ruleset(Item, frozen=True, omit_defaults=True):
             raise Invalid("Ruleset type does not match the definition")
         if (
             self.ruleset_scope == "variable"
-            and ast.children[0].__getattribute__("signature_type")
-            != "variable"
+            and ast.children[0].signature_type != "variable"
         ):
             raise Invalid("Ruleset scope does not match the definition")
         if (
             self.ruleset_scope == "valuedomain"
-            and ast.children[0].__getattribute__("signature_type")
-            != "valuedomain"
+            and ast.children[0].signature_type != "valuedomain"
         ):
             raise Invalid("Ruleset scope does not match the definition")
 
@@ -100,6 +102,10 @@ class UserDefinedOperator(Item, frozen=True, omit_defaults=True):
             ast = create_ast(self.operator_definition)
         except Exception as e:
             raise Invalid(f"Invalid operator definition: {str(e)}") from e
+        if len(ast.children) > 1:
+            raise Invalid(
+                "A single OperatorDefinition is valid in a UserDefinedOperator"
+            )
         if not isinstance(ast.children[0], ASTOperator):
             raise Invalid(
                 "User defined operator type does not match the definition"
