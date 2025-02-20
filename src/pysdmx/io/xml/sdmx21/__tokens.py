@@ -1,7 +1,5 @@
 """Parsing configuration for SDMX-ML 2.1 messages."""
 
-from typing import Any, Dict, List
-
 # Common
 HEADER = "Header"
 DATASET = "DataSet"
@@ -16,20 +14,20 @@ CLASS = "class"
 PACKAGE = "package"
 
 # Structure Specific
-STRSPE = "StructureSpecificData"
+STR_SPE = "StructureSpecificData"
 GENERIC = "GenericData"
-SERIESKEY = "SeriesKey"
+SERIES_KEY = "SeriesKey"
 ATTRIBUTES = "Attributes"
 VALUE = "Value"
 OBS_DIM = "ObsDimension"
-OBSVALUE = "ObsValue"
-OBSKEY = "ObsKey"
+OBS_VALUE_XML_TAG = "ObsValue"
+OBS_KEY = "ObsKey"
 # Header
-STRREF = "structureRef"
+STR_REF = "structureRef"
 STRUCTURE = "Structure"
 STR_USAGE = "StructureUsage"
-STRID = "structureID"
-STRTYPE = "structure_type"
+STR_ID = "structureID"
+STR_TYPE = "structure_type"
 DIM_OBS = "dimensionAtObservation"
 ALL_DIM = "AllDimensions"
 REF = "Ref"
@@ -50,12 +48,6 @@ MAINTAINABLE_OBJECT = "MaintainableObject"
 ACTION = "action"
 STATUS_MSG = "StatusMessage"
 STATUS = "status"
-
-# SOAP API handling
-FAULT = "Fault"
-FAULTCODE = "faultcode"
-FAULTSTRING = "faultstring"
-
 
 # Structures
 # Common
@@ -124,9 +116,6 @@ GROUP_DIM_LOW = "group_dimension_descriptor"
 GROUP_DIM = "GroupDimension"
 DIM_REF = "DimensionReference"
 
-# Dataflows
-DF = "Dataflow"
-
 # Constraints
 CON_CONS = "ContentConstraint"
 CONS_ATT = "ConstraintAttachment"
@@ -194,7 +183,7 @@ REL_TO = "relatedTo"
 NO_REL = "NoSpecifiedRelationship"
 
 # To exclude from attached_attributes
-exc_attributes = [STRREF, "action", "dataScope", "xsi:type", SERIES, OBS]
+EXCLUDED_ATTRIBUTES = [STR_REF, "action", "dataScope", "xsi:type", SERIES, OBS]
 
 # Content types
 DATASTRUCTURES_CM = "DataStructures"
@@ -222,10 +211,6 @@ URIS = "uris"
 EMAILS = "emails"
 TELEPHONES = "telephones"
 FAXES = "faxes"
-
-# Errors
-missing_rep: Dict[str, List[Any]] = {"CON": [], "CS": [], "CL": []}
-dsd_id: str = ""
 
 # Structure types
 CLS = "Codelists"

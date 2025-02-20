@@ -10,9 +10,9 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     HEADER,
     ID,
     REF,
+    STR_ID,
+    STR_REF,
     STR_USAGE,
-    STRID,
-    STRREF,
     STRUCTURE,
     URN,
     VERSION,
@@ -102,7 +102,7 @@ def __extract_structure(structure: Any) -> Any:
 
         str_id = f"{agency_id}:{id_}({version})"
 
-        str_info[str_item[STRID]] = {
+        str_info[str_item[STR_ID]] = {
             DIM_OBS: str_item[DIM_OBS],
             "unique_id": str_id,
             "structure_type": structure_type,
@@ -131,9 +131,9 @@ def get_data_objects(dict_info: Dict[str, Any]) -> Tuple[Any, Any]:
         dataset_info = add_list(dict_info[DATASET])
 
     for d in dataset_info:
-        if d[STRREF] not in str_info:
+        if d[STR_REF] not in str_info:
             raise Invalid(
-                f"Dataset Structure Reference {d[STRREF]} "
+                f"Dataset Structure Reference {d[STR_REF]} "
                 f"not found in the Header"
             )
     return dataset_info, str_info
