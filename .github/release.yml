@@ -1,0 +1,14 @@
+changelog:
+  categories:
+    - title: Added
+      labels:
+        - "new feature"
+    - title: Changed
+      labels:
+        - enhancement
+    - title: Fixed
+      labels:
+        - bug
+    - title: Security
+      labels:
+        - dependencies
