@@ -12,12 +12,12 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     ID,
     OBS,
     OBS_DIM,
+    OBS_KEY,
     OBS_VALUE_ID,
-    OBSKEY,
-    OBSVALUE,
+    OBS_VALUE_XML_TAG,
     SERIES,
-    SERIESKEY,
-    STRREF,
+    SERIES_KEY,
+    STR_REF,
     VALUE,
 )
 from pysdmx.io.xml.sdmx21.reader.__data_aux import (
@@ -45,8 +45,8 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
     for series in dataset[SERIES]:
         keys = {}
         # Series Keys
-        series[SERIESKEY][VALUE] = add_list(series[SERIESKEY][VALUE])
-        for v in series[SERIESKEY][VALUE]:
+        series[SERIES_KEY][VALUE] = add_list(series[SERIES_KEY][VALUE])
+        for v in series[SERIES_KEY][VALUE]:
             keys[v[ID]] = v[VALUE.lower()]
         if ATTRIBUTES in series:
             series[ATTRIBUTES][VALUE] = add_list(series[ATTRIBUTES][VALUE])
@@ -58,7 +58,7 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
             for data in series[OBS]:
                 obs = {
                     OBS_DIM: data[OBS_DIM][VALUE.lower()],
-                    OBS_VALUE_ID: data[OBSVALUE][VALUE.lower()],
+                    OBS_VALUE_ID: data[OBS_VALUE_XML_TAG][VALUE.lower()],
                 }
                 if ATTRIBUTES in data:
                     obs = {
@@ -86,8 +86,8 @@ def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
         obs: Dict[str, Any] = {}
         obs = {
             **obs,
-            **__get_element_to_list(data, mode=OBSKEY),
-            OBS_VALUE_ID: data[OBSVALUE][VALUE.lower()],
+            **__get_element_to_list(data, mode=OBS_KEY),
+            OBS_VALUE_ID: data[OBS_VALUE_XML_TAG][VALUE.lower()],
         }
         if ATTRIBUTES in data:
             obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
@@ -153,6 +153,6 @@ def read(input_str: str, validate: bool = True) -> Sequence[PandasDataset]:
 
     datasets = []
     for dataset in dataset_info:
-        ds = __parse_generic_data(dataset, str_info[dataset[STRREF]])
+        ds = __parse_generic_data(dataset, str_info[dataset[STR_REF]])
         datasets.append(ds)
     return datasets
