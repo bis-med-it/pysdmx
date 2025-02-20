@@ -21,6 +21,7 @@ ATTRIBUTES = "Attributes"
 VALUE = "Value"
 OBS_DIM = "ObsDimension"
 OBS_VALUE_XML_TAG = "ObsValue"
+OBS_VALUE_ID = "OBS_VALUE"
 OBS_KEY = "ObsKey"
 # Header
 STR_REF = "structureRef"
