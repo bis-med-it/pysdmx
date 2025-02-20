@@ -12,10 +12,8 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     ID,
     OBS,
     OBS_DIM,
-    OBS_VALUE_ID,
-    OBSKEY,
-    OBSVALUE,
     OBS_KEY,
+    OBS_VALUE_ID,
     OBS_VALUE_XML_TAG,
     SERIES,
     SERIES_KEY,
@@ -88,9 +86,9 @@ def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
         obs: Dict[str, Any] = {}
         obs = {
             **obs,
-            **__get_element_to_list(data, mode=OBSKEY),
+            **__get_element_to_list(data, mode=OBS_KEY),
             OBS_VALUE_ID: data[OBS_VALUE_XML_TAG][VALUE.lower()],
-                    }
+        }
         if ATTRIBUTES in data:
             obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
         test_list.append({**obs})
