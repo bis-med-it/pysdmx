@@ -12,7 +12,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     ID,
     OBS,
     OBS_DIM,
-    OBS_VALUE_DATA,
+    OBS_VALUE_ID,
     OBSKEY,
     OBSVALUE,
     SERIES,
@@ -58,7 +58,7 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
             for data in series[OBS]:
                 obs = {
                     OBS_DIM: data[OBS_DIM][VALUE.lower()],
-                    OBS_VALUE_DATA: data[OBSVALUE][VALUE.lower()],
+                    OBS_VALUE_ID: data[OBSVALUE][VALUE.lower()],
                 }
                 if ATTRIBUTES in data:
                     obs = {
@@ -87,7 +87,7 @@ def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
         obs = {
             **obs,
             **__get_element_to_list(data, mode=OBSKEY),
-            OBS_VALUE_DATA: data[OBSVALUE][VALUE.lower()],
+            OBS_VALUE_ID: data[OBSVALUE][VALUE.lower()],
         }
         if ATTRIBUTES in data:
             obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}

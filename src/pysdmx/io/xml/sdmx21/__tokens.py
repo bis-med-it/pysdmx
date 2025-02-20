@@ -23,7 +23,7 @@ ATTRIBUTES = "Attributes"
 VALUE = "Value"
 OBS_DIM = "ObsDimension"
 OBSVALUE = "ObsValue"
-OBS_VALUE_DATA = "OBS_VALUE"
+OBS_VALUE_ID = "OBS_VALUE"
 OBSKEY = "ObsKey"
 # Header
 STRREF = "structureRef"
