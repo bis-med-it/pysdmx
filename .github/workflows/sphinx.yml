@@ -35,7 +35,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v3
       - name: Install dependencies
-        run: poetry install
+        run: poetry install --all-extras
       - name: Build with Sphinx
         run: |
           poetry run sphinx-build docs _site
