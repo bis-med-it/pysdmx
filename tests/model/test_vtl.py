@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
 
 from pysdmx.errors import Invalid
@@ -9,6 +11,16 @@ from pysdmx.model.vtl import (
     UserDefinedOperator,
     UserDefinedOperatorScheme,
 )
+
+
+@pytest.fixture
+def generate_vtl_script_sample():
+    with open(
+        "tests/model/samples/generate_vtl_script_sample.vtl",
+        "r",
+        encoding="utf-8",
+    ) as f:
+        return f.read()
 
 
 @pytest.fixture
@@ -119,6 +131,27 @@ def test_invalid_instantiation_t(vtl_version):
         )
 
 
+def test_transformation_invalid_ast():
+    mock_ast = MagicMock()
+    mock_ast.children = [MagicMock(), MagicMock()]
+
+    with (
+        patch("pysdmx.model.vtl.create_ast", return_value=mock_ast),
+        pytest.raises(
+            Invalid,
+            match="A single Assignment is valid in a Transformation",
+        ),
+    ):
+        Transformation(
+            id="id",
+            name="name",
+            description="description",
+            expression="DS_1 + 1",
+            result="DS_r",
+            is_persistent=True,
+        )
+
+
 def test_instantiation_t_not_persistent(vtl_version):
     transformation = Transformation(
         id="id",
@@ -160,6 +193,31 @@ def test_invalid_instantiation_udo():
             returns dataset is ds1
             [filter Me_1 > great_cons and Me_2 < less_cons]
             end operator""",
+        )
+
+
+def test_udo_invalid_ast():
+    mock_ast = MagicMock()
+    mock_ast.children = [MagicMock(), MagicMock()]
+
+    with (
+        patch("pysdmx.model.vtl.create_ast", return_value=mock_ast),
+        pytest.raises(
+            Invalid,
+            match="A single OperatorDefinition is valid in "
+            "a UserDefinedOperator",
+        ),
+    ):
+        UserDefinedOperator(
+            id="id",
+            name="name",
+            description="description",
+            operator_definition="""define operator filter_ds
+                        (ds1 dataset, great_cons string default "1",
+                         less_cons number default 4.0)
+                        returns dataset
+                        is ds1[filter Me_1 > great_cons and Me_2 < less_cons]
+                        end operator;""",
         )
 
 
@@ -242,6 +300,33 @@ def test_instantiation_ruleset(valid_ruleset):
     assert ruleset.description == "description"
     assert ruleset.ruleset_type == "datapoint"
     assert ruleset.ruleset_scope == "variable"
+
+
+def test_ruleset_invalid_ast():
+    mock_ast = MagicMock()
+    mock_ast.children = [MagicMock(), MagicMock()]
+
+    with (
+        patch("pysdmx.model.vtl.create_ast", return_value=mock_ast),
+        pytest.raises(
+            Invalid, match="A single RulesetDefinition is valid in a Ruleset"
+        ),
+    ):
+        Ruleset(
+            id="id",
+            name="name",
+            description="description",
+            ruleset_type="datapoint",
+            ruleset_definition="""define datapoint ruleset signValidation
+                        (variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM as IAI,
+                            FUNCTIONAL_CAT as FC,
+                            INSTR_ASSET as IA, OBS_VALUE as O)
+                            is sign1c: when AE = "C" and IAI = "G"
+                            then O > 0 errorcode
+                            "sign1c" errorlevel 1
+                            end datapoint ruleset;""",
+            ruleset_scope="variable",
+        )
 
 
 def test_invalid_instantiation_ruleset():
@@ -340,7 +425,9 @@ def test_invalid_ruleset_scope2():
         )
 
 
-def test_generate_vtl_script(valid_ruleset, valid_udo, valid_transformation):
+def test_generate_vtl_script(
+    valid_ruleset, valid_udo, valid_transformation, generate_vtl_script_sample
+):
     ruleset = valid_ruleset
 
     rulesetscheme = RulesetScheme(
@@ -375,4 +462,6 @@ def test_generate_vtl_script(valid_ruleset, valid_udo, valid_transformation):
         user_defined_operator_schemes=[userdefinedoperatorscheme],
     )
 
-    transformationscheme.generate_vtl_script()
+    message = transformationscheme.generate_vtl_script()
+
+    assert message.strip() == generate_vtl_script_sample.strip()
