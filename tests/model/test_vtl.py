@@ -1,5 +1,3 @@
-from unittest.mock import MagicMock, patch
-
 import pytest
 
 from pysdmx.errors import Invalid
@@ -131,22 +129,15 @@ def test_invalid_instantiation_t(vtl_version):
         )
 
 
-def test_transformation_invalid_ast():
-    mock_ast = MagicMock()
-    mock_ast.children = [MagicMock(), MagicMock()]
-
-    with (
-        patch("pysdmx.model.vtl.create_ast", return_value=mock_ast),
-        pytest.raises(
-            Invalid,
-            match="A single Assignment is valid in a Transformation",
-        ),
+def test_transformation_invalid_children_number():
+    with pytest.raises(
+        Invalid, match="A single Assignment is valid in a Transformation"
     ):
         Transformation(
             id="id",
             name="name",
             description="description",
-            expression="DS_1 + 1",
+            expression="DS_1 + 1;DS_r := DS_2 + 1",
             result="DS_r",
             is_persistent=True,
         )
@@ -196,23 +187,22 @@ def test_invalid_instantiation_udo():
         )
 
 
-def test_udo_invalid_ast():
-    mock_ast = MagicMock()
-    mock_ast.children = [MagicMock(), MagicMock()]
-
-    with (
-        patch("pysdmx.model.vtl.create_ast", return_value=mock_ast),
-        pytest.raises(
-            Invalid,
-            match="A single OperatorDefinition is valid in "
-            "a UserDefinedOperator",
-        ),
+def test_udo_invalid_children_number():
+    with pytest.raises(
+        Invalid,
+        match="A single OperatorDefinition is valid in a UserDefinedOperator",
     ):
         UserDefinedOperator(
             id="id",
             name="name",
             description="description",
             operator_definition="""define operator filter_ds
+                        (ds1 dataset, great_cons string default "1",
+                         less_cons number default 4.0)
+                        returns dataset
+                        is ds1[filter Me_1 > great_cons and Me_2 < less_cons]
+                        end operator;
+                        define operator filter_ds
                         (ds1 dataset, great_cons string default "1",
                          less_cons number default 4.0)
                         returns dataset
@@ -302,15 +292,9 @@ def test_instantiation_ruleset(valid_ruleset):
     assert ruleset.ruleset_scope == "variable"
 
 
-def test_ruleset_invalid_ast():
-    mock_ast = MagicMock()
-    mock_ast.children = [MagicMock(), MagicMock()]
-
-    with (
-        patch("pysdmx.model.vtl.create_ast", return_value=mock_ast),
-        pytest.raises(
-            Invalid, match="A single RulesetDefinition is valid in a Ruleset"
-        ),
+def test_ruleset_invalid_children_number():
+    with pytest.raises(
+        Invalid, match="A single RulesetDefinition is valid in a Ruleset"
     ):
         Ruleset(
             id="id",
@@ -318,13 +302,19 @@ def test_ruleset_invalid_ast():
             description="description",
             ruleset_type="datapoint",
             ruleset_definition="""define datapoint ruleset signValidation
-                        (variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM as IAI,
-                            FUNCTIONAL_CAT as FC,
-                            INSTR_ASSET as IA, OBS_VALUE as O)
-                            is sign1c: when AE = "C" and IAI = "G"
-                            then O > 0 errorcode
-                            "sign1c" errorlevel 1
-                            end datapoint ruleset;""",
+                (variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM as IAI,
+                    FUNCTIONAL_CAT as FC, INSTR_ASSET as IA, OBS_VALUE as O)
+                    is
+                    sign1c: when AE = "C" and IAI = "G" then O > 0 errorcode
+                    "sign1c" errorlevel 1
+                    end datapoint ruleset;
+                    define datapoint ruleset signValidation
+                (variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM as IAI,
+                    FUNCTIONAL_CAT as FC, INSTR_ASSET as IA, OBS_VALUE as O)
+                    is
+                    sign1c: when AE = "C" and IAI = "G" then O > 0 errorcode
+                    "sign1c" errorlevel 1
+                    end datapoint ruleset;""",
             ruleset_scope="variable",
         )
 
