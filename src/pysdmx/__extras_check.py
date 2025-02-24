@@ -42,3 +42,15 @@ def __check_xml_extra() -> None:
                 extra_desc="the reading and writing of SDMX-ML Messages",
             )
         ) from None
+
+
+def __check_vtl_extra() -> None:
+    try:
+        import vtlengine  # type: ignore[import-untyped]  # noqa: F401
+    except ImportError:
+        raise ImportError(
+            ERROR_MESSAGE.format(
+                extra_name="vtlengine",
+                extra_desc="validations for VTL engine",
+            )
+        ) from None
