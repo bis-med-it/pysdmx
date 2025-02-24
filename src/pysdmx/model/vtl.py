@@ -4,14 +4,6 @@ from enum import Enum
 from typing import Literal, Optional, Sequence
 
 from msgspec import Struct
-from vtlengine.API import create_ast  # type: ignore[import-untyped]
-from vtlengine.AST import (  # type: ignore[import-untyped]
-    DPRuleset as ASTDPRuleset,
-)
-from vtlengine.AST import HRuleset as ASTHRuleset
-from vtlengine.AST import (
-    Operator as ASTOperator,
-)
 
 from pysdmx.errors import Invalid
 from pysdmx.model.__base import Item, ItemScheme
@@ -33,17 +25,6 @@ class Transformation(Item, frozen=True, omit_defaults=True):
     is_persistent: bool = False
     result: str = ""
 
-    def __post_init__(self) -> None:
-        """Additional validation checks for transformations."""
-        try:
-            ast = create_ast(self.full_expression)
-        except Exception as e:
-            raise Invalid(
-                f"Invalid transformation definition: {str(e)}"
-            ) from e
-        if len(ast.children) > 1:
-            raise Invalid("A single Assignment is valid in a Transformation")
-
     @property
     def full_expression(self) -> str:
         """Return the full expression with the semicolon."""
@@ -63,53 +44,11 @@ class Ruleset(Item, frozen=True, omit_defaults=True):
     ruleset_scope: Optional[Literal["variable", "valuedomain"]] = None
     ruleset_type: Optional[Literal["datapoint", "hierarchical"]] = None
 
-    def __post_init__(self) -> None:
-        """Additional validation checks for rulesets."""
-        try:
-            ast = create_ast(self.ruleset_definition)
-        except Exception as e:
-            raise Invalid(f"Invalid ruleset definition: {str(e)}") from e
-        if len(ast.children) > 1:
-            raise Invalid("A single RulesetDefinition is valid in a Ruleset")
-        if self.ruleset_type == "hierarchical" and not isinstance(
-            ast.children[0], ASTHRuleset
-        ):
-            raise Invalid("Ruleset type does not match the definition")
-        if self.ruleset_type == "datapoint" and not isinstance(
-            ast.children[0], ASTDPRuleset
-        ):
-            raise Invalid("Ruleset type does not match the definition")
-        if (
-            self.ruleset_scope == "variable"
-            and ast.children[0].signature_type != "variable"
-        ):
-            raise Invalid("Ruleset scope does not match the definition")
-        if (
-            self.ruleset_scope == "valuedomain"
-            and ast.children[0].signature_type != "valuedomain"
-        ):
-            raise Invalid("Ruleset scope does not match the definition")
-
 
 class UserDefinedOperator(Item, frozen=True, omit_defaults=True):
     """Custom VTL operator that extends the VTL standard library."""
 
     operator_definition: str = ""
-
-    def __post_init__(self) -> None:
-        """Additional validation checks for user defined operators."""
-        try:
-            ast = create_ast(self.operator_definition)
-        except Exception as e:
-            raise Invalid(f"Invalid operator definition: {str(e)}") from e
-        if len(ast.children) > 1:
-            raise Invalid(
-                "A single OperatorDefinition is valid in a UserDefinedOperator"
-            )
-        if not isinstance(ast.children[0], ASTOperator):
-            raise Invalid(
-                "User defined operator type does not match the definition"
-            )
 
 
 class NamePersonalisation(Item, frozen=True, omit_defaults=True):
@@ -259,20 +198,3 @@ class TransformationScheme(VtlScheme, frozen=True, omit_defaults=True):
     ruleset_schemes: Sequence[RulesetScheme] = ()
     user_defined_operator_schemes: Sequence[UserDefinedOperatorScheme] = ()
     items: Sequence[Transformation] = ()
-
-    def generate_vtl_script(self) -> str:
-        """Generates the full VTL Transformation Scheme script."""
-        vtl_script = """""".strip()
-
-        for ruleset_scheme in self.ruleset_schemes:
-            for ruleset in ruleset_scheme.items:
-                vtl_script += f"{ruleset.ruleset_definition}\n"
-
-        for udo_scheme in self.user_defined_operator_schemes:
-            for udo in udo_scheme.items:
-                vtl_script += f"{udo.operator_definition}\n"
-
-        for transformation in self.items:
-            vtl_script += f"{transformation.full_expression}\n"
-
-        return vtl_script
