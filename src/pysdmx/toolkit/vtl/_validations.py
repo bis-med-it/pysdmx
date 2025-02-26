@@ -53,6 +53,8 @@ def _ruleset_scheme_validations(ruleset_scheme: RulesetScheme) -> None:
     if not ruleset_scheme.items:
         raise Invalid("RulesetScheme must contain at least one Ruleset")
     for ruleset in ruleset_scheme.items:
+        if not isinstance(ruleset, Ruleset):
+            raise Invalid("RulesetScheme must contain Ruleset items")
         _ruleset_validation(ruleset)
 
 
@@ -82,6 +84,11 @@ def _user_defined_operator_scheme_validations(
             "UserDefinedOperator"
         )
     for udo in udo_scheme.items:
+        if not isinstance(udo, UserDefinedOperator):
+            raise Invalid(
+                "UserDefinedOperatorScheme must contain UserDefinedOperator "
+                "items"
+            )
         _user_defined_operator_validation(udo)
 
 
@@ -109,4 +116,8 @@ def _transformation_scheme_validations(
     for udo_scheme in transformation_scheme.user_defined_operator_schemes:
         _user_defined_operator_scheme_validations(udo_scheme)
     for transformation in transformation_scheme.items:
+        if not isinstance(transformation, Transformation):
+            raise Invalid(
+                "TransformationScheme must contain Transformation items"
+            )
         _transformation_validations(transformation)

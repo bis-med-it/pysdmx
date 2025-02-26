@@ -1,5 +1,5 @@
 """VTL toolkit for PySDMX."""
 
-from pysdmx.__extras_check import __check_vtl_extra
+from pysdmx.toolkit.vtl import generate_vtl_script, model_validations
 
-__check_vtl_extra()
+__all__ = ["model_validations", "generate_vtl_script"]

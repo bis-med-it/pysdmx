@@ -2,6 +2,7 @@
 
 from typing import Union
 
+from pysdmx.__extras_check import __check_vtl_extra
 from pysdmx.errors import Invalid
 from pysdmx.model import (
     Ruleset,
@@ -13,7 +14,7 @@ from pysdmx.model import (
     VtlScheme,
 )
 from pysdmx.model.__base import Item
-from pysdmx.toolkit.vtl.validations import (
+from pysdmx.toolkit.vtl._validations import (
     _ruleset_scheme_validations,
     _ruleset_validation,
     _transformation_scheme_validations,
@@ -24,19 +25,14 @@ from pysdmx.toolkit.vtl.validations import (
 
 
 def model_validations(model_obj: Union[VtlScheme, Item]) -> None:
-    """Validation checks for VTL models."""
-    if not isinstance(
-        model_obj,
-        (
-            RulesetScheme,
-            Ruleset,
-            UserDefinedOperatorScheme,
-            UserDefinedOperator,
-            TransformationScheme,
-            Transformation,
-        ),
-    ):
-        raise Invalid("Invalid model object")
+    """Validation checks for VTL models.
+
+    Args:
+        model_obj: A vtlscheme or Item object.
+    raises:
+        Invalid: Invalid model object if the model object is not valid.
+    """
+    __check_vtl_extra()
 
     if isinstance(model_obj, Ruleset):
         _ruleset_validation(model_obj)
@@ -50,3 +46,5 @@ def model_validations(model_obj: Union[VtlScheme, Item]) -> None:
         _transformation_validations(model_obj)
     elif isinstance(model_obj, TransformationScheme):
         _transformation_scheme_validations(model_obj)
+    else:
+        raise Invalid("Invalid model object")
