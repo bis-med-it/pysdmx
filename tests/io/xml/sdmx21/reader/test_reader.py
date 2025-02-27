@@ -8,6 +8,7 @@ from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
+from pysdmx.io.xml.sdmx21.__tokens import OBS_DIM, OBS_VALUE_ID
 from pysdmx.io.xml.sdmx21.reader.error import read as read_error
 from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
@@ -218,6 +219,9 @@ def test_reading_validation(samples_folder, filename):
     assert dataset.short_urn == "DataStructure=BIS:BIS_DER(1.0)"
     data = dataset.data
     assert data.shape == (1000, 20)
+    assert "TIME_PERIOD" in data.columns
+    assert OBS_DIM not in data.columns
+    assert OBS_VALUE_ID in data.columns
 
 
 @pytest.mark.parametrize(
@@ -235,6 +239,9 @@ def test_reading_validation_read_sdmx(samples_folder, filename):
     assert result is not None
     data = result[0].data
     assert data.shape == (1000, 20)
+    assert "TIME_PERIOD" in data.columns
+    assert OBS_DIM not in data.columns
+    assert OBS_VALUE_ID in data.columns
 
 
 # Test reading of dataflow SDMX file

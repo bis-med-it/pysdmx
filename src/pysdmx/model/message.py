@@ -39,6 +39,7 @@ class Header(Struct, kw_only=True):
     source: Optional[str] = None
     dataset_action: Optional[ActionType] = None
     structure: Optional[Dict[str, str]] = None
+    dataset_id: Optional[str] = None
 
 
 class Message(Struct, frozen=True):

@@ -12,11 +12,12 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     ID,
     OBS,
     OBS_DIM,
-    OBSKEY,
-    OBSVALUE,
+    OBS_KEY,
+    OBS_VALUE_ID,
+    OBS_VALUE_XML_TAG,
     SERIES,
-    SERIESKEY,
-    STRREF,
+    SERIES_KEY,
+    STR_REF,
     VALUE,
 )
 from pysdmx.io.xml.sdmx21.reader.__data_aux import (
@@ -25,6 +26,7 @@ from pysdmx.io.xml.sdmx21.reader.__data_aux import (
 )
 from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.io.xml.utils import add_list
+from pysdmx.model.dataset import ActionType
 
 
 def __get_element_to_list(data: Dict[str, Any], mode: Any) -> Dict[str, Any]:
@@ -43,8 +45,8 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
     for series in dataset[SERIES]:
         keys = {}
         # Series Keys
-        series[SERIESKEY][VALUE] = add_list(series[SERIESKEY][VALUE])
-        for v in series[SERIESKEY][VALUE]:
+        series[SERIES_KEY][VALUE] = add_list(series[SERIES_KEY][VALUE])
+        for v in series[SERIES_KEY][VALUE]:
             keys[v[ID]] = v[VALUE.lower()]
         if ATTRIBUTES in series:
             series[ATTRIBUTES][VALUE] = add_list(series[ATTRIBUTES][VALUE])
@@ -56,7 +58,7 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
             for data in series[OBS]:
                 obs = {
                     OBS_DIM: data[OBS_DIM][VALUE.lower()],
-                    OBSVALUE.upper(): data[OBSVALUE][VALUE.lower()],
+                    OBS_VALUE_ID: data[OBS_VALUE_XML_TAG][VALUE.lower()],
                 }
                 if ATTRIBUTES in data:
                     obs = {
@@ -76,14 +78,16 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
 def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
     # Generic All Dimensions
     test_list = []
+    if OBS not in dataset:
+        return pd.DataFrame()
     df = None
     dataset[OBS] = add_list(dataset[OBS])
     for data in dataset[OBS]:
         obs: Dict[str, Any] = {}
         obs = {
             **obs,
-            **__get_element_to_list(data, mode=OBSKEY),
-            OBSVALUE.upper(): data[OBSVALUE][VALUE.lower()],
+            **__get_element_to_list(data, mode=OBS_KEY),
+            OBS_VALUE_ID: data[OBS_VALUE_XML_TAG][VALUE.lower()],
         }
         if ATTRIBUTES in data:
             obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
@@ -115,14 +119,23 @@ def __parse_generic_data(
     if SERIES in dataset:
         # Generic Series
         df = __reading_generic_series(dataset)
+        dim_at_obs = structure_info["dimensionAtObservation"]
+        # In case there are observations defined, we need to replace the
+        # OBS_DIM column with the dimension at observation
+        if OBS_DIM in df.columns:
+            df[dim_at_obs] = df[OBS_DIM]
+            del df[OBS_DIM]
     else:
         # Generic All Dimensions
         df = __reading_generic_all(dataset)
 
+    action = dataset.get("action", "Information")
+    action = ActionType(action)
+
     urn = f"{structure_info['structure_type']}={structure_info['unique_id']}"
 
     return PandasDataset(
-        structure=urn, attributes=attached_attributes, data=df
+        structure=urn, attributes=attached_attributes, data=df, action=action
     )
 
 
@@ -140,6 +153,6 @@ def read(input_str: str, validate: bool = True) -> Sequence[PandasDataset]:
 
     datasets = []
     for dataset in dataset_info:
-        ds = __parse_generic_data(dataset, str_info[dataset[STRREF]])
+        ds = __parse_generic_data(dataset, str_info[dataset[STR_REF]])
         datasets.append(ds)
     return datasets

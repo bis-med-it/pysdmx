@@ -9,12 +9,12 @@ import pandas as pd
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.sdmx21.__tokens import (
+    EXCLUDED_ATTRIBUTES,
     GROUP,
     OBS,
     SERIES,
-    STRREF,
-    STRSPE,
-    exc_attributes,
+    STR_REF,
+    STR_SPE,
 )
 from pysdmx.io.xml.sdmx21.reader.__data_aux import (
     __process_df,
@@ -22,6 +22,7 @@ from pysdmx.io.xml.sdmx21.reader.__data_aux import (
 )
 from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.io.xml.utils import add_list
+from pysdmx.model.dataset import ActionType
 
 
 def __reading_str_series(dataset: Dict[str, Any]) -> pd.DataFrame:
@@ -66,13 +67,15 @@ def __reading_group_data(dataset: Dict[str, Any]) -> pd.DataFrame:
 
 def __get_at_att_str(dataset: Dict[str, Any]) -> Dict[str, Any]:
     """Gets the elements of the dataset if it is Structure Specific Data."""
-    return {k: dataset[k] for k in dataset if k not in exc_attributes}
+    return {k: dataset[k] for k in dataset if k not in EXCLUDED_ATTRIBUTES}
 
 
 def __parse_structure_specific_data(
     dataset: Dict[str, Any], structure_info: Dict[str, Any]
 ) -> PandasDataset:
     attached_attributes = __get_at_att_str(dataset)
+
+    df = pd.DataFrame()
 
     # Parsing data
     if SERIES in dataset:
@@ -84,15 +87,17 @@ def __parse_structure_specific_data(
                 set(df.columns).intersection(set(df_group.columns))
             )
             df = pd.merge(df, df_group, on=common_columns, how="left")
-    else:
+    elif OBS in dataset:
         dataset[OBS] = add_list(dataset[OBS])
         # Structure Specific All dimensions
         df = pd.DataFrame(dataset[OBS]).replace(np.nan, "")
 
     urn = f"{structure_info['structure_type']}={structure_info['unique_id']}"
+    action = dataset.get("action", "Information")
+    action = ActionType(action)
 
     return PandasDataset(
-        structure=urn, attributes=attached_attributes, data=df
+        structure=urn, attributes=attached_attributes, data=df, action=action
     )
 
 
@@ -104,15 +109,15 @@ def read(input_str: str, validate: bool = True) -> Sequence[PandasDataset]:
         validate: If True, the XML data will be validated against the XSD.
     """
     dict_info = parse_xml(input_str, validate=validate)
-    if STRSPE not in dict_info:
+    if STR_SPE not in dict_info:
         raise Invalid(
             "This SDMX document is not an SDMX-ML 2.1 StructureSpecificData."
         )
-    dataset_info, str_info = get_data_objects(dict_info[STRSPE])
+    dataset_info, str_info = get_data_objects(dict_info[STR_SPE])
     datasets = []
     for dataset in dataset_info:
         ds = __parse_structure_specific_data(
-            dataset, str_info[dataset[STRREF]]
+            dataset, str_info[dataset[STR_REF]]
         )
         datasets.append(ds)
     return datasets
