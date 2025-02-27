@@ -46,6 +46,7 @@ class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     version: str = REST_LATEST
     obs_dimension: Optional[str] = None
     explicit: bool = False
+    deletion: bool = False
     as_of: Optional[datetime] = None
 
     def validate(self) -> None:
@@ -97,12 +98,20 @@ class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                 f"as_of not supported in {version.value}.",
             )
 
+    def __check_deletion(self, version: ApiVersion) -> None:
+        if self.deletion and version < ApiVersion.V2_2_0:
+            raise Invalid(
+                "Validation Error",
+                f"deletion parameter is not supported in {version.value}.",
+            )
+
     def __validate_query(self, version: ApiVersion) -> None:
         self.validate()
         self.__check_context(version)
         self.__check_version()
         self.__check_explicit(version)
         self.__check_as_of(version)
+        self.__check_deletion(version)
 
     def __create_full_query(self, ver: ApiVersion) -> str:
         u = (
@@ -110,7 +119,12 @@ class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             f"{self.agency_id}/{self.resource_id}"
         )
         u += f"/{self.__to_kw(self.version, ver)}"
-        if self.obs_dimension or self.as_of or ver < ApiVersion.V2_0_0:
+        if (
+            self.obs_dimension
+            or self.as_of
+            or ver < ApiVersion.V2_0_0
+            or ver >= ApiVersion.V2_2_0
+        ):
             u += "?"
         if self.obs_dimension:
             u += f"dimensionAtObservation={self.obs_dimension}"
@@ -122,6 +136,10 @@ class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             if self.obs_dimension:
                 u += "&"
             u += f'asOf={self.as_of.isoformat("T", "seconds")}'
+        if ver >= ApiVersion.V2_2_0:
+            if self.obs_dimension or self.as_of:
+                u += "&"
+            u += f"deletion={str(self.deletion).lower()}"
         return u
 
     def __create_short_query(self, ver: ApiVersion) -> str:
@@ -131,7 +149,7 @@ class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         )
         if self.version != REST_LATEST:
             u += f"/{self.__to_kw(self.version, ver)}"
-        if self.obs_dimension or self.explicit or self.as_of:
+        if self.obs_dimension or self.explicit or self.as_of or self.deletion:
             u += "?"
         if self.obs_dimension:
             u += f"dimensionAtObservation={self.obs_dimension}"
@@ -143,6 +161,10 @@ class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             if self.obs_dimension:
                 u += "&"
             u += f'asOf={self.as_of.isoformat("T", "seconds")}'
+        if self.deletion:
+            if self.obs_dimension or self.as_of:
+                u += "&"
+            u += f"deletion={str(self.deletion).lower()}"
         return u
 
 

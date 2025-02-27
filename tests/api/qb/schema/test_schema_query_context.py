@@ -57,7 +57,12 @@ def test_url_core_context_before_2_0_0(
 
 
 @pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
 )
 @pytest.mark.parametrize("context", context_initial)
 def test_url_core_context_since_2_0_0(
@@ -68,6 +73,28 @@ def test_url_core_context_since_2_0_0(
     api_version: ApiVersion,
 ):
     expected = f"/schema/{context.value}/{agency}/{res}/{version}"
+
+    q = SchemaQuery(context, agency, res, version)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version",
+    (v for v in ApiVersion if v >= ApiVersion.V2_2_0),
+)
+@pytest.mark.parametrize("context", context_initial)
+def test_url_core_context_since_2_2_0(
+    context: SchemaContext,
+    agency: str,
+    res: str,
+    version: str,
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/schema/{context.value}/{agency}/{res}/{version}?deletion=false"
+    )
 
     q = SchemaQuery(context, agency, res, version)
     url = q.get_url(api_version)
@@ -93,7 +120,12 @@ def test_url_2_0_0_context_before_2_0_0(
 
 
 @pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
 )
 @pytest.mark.parametrize("context", context_2_0_0)
 def test_url_2_0_0_context_since_2_0_0(
@@ -104,6 +136,28 @@ def test_url_2_0_0_context_since_2_0_0(
     api_version: ApiVersion,
 ):
     expected = f"/schema/{context.value}/{agency}/{res}/{version}"
+
+    q = SchemaQuery(context, agency, res, version)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version",
+    (v for v in ApiVersion if v >= ApiVersion.V2_2_0),
+)
+@pytest.mark.parametrize("context", context_2_0_0)
+def test_url_2_0_0_context_since_2_0_0(
+    context: SchemaContext,
+    agency: str,
+    res: str,
+    version: str,
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/schema/{context.value}/{agency}/{res}/{version}?deletion=false"
+    )
 
     q = SchemaQuery(context, agency, res, version)
     url = q.get_url(api_version)
