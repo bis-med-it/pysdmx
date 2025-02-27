@@ -148,7 +148,7 @@ def test_url_2_0_0_context_since_2_0_0(
     (v for v in ApiVersion if v >= ApiVersion.V2_2_0),
 )
 @pytest.mark.parametrize("context", context_2_0_0)
-def test_url_2_0_0_context_since_2_0_0(
+def test_url_2_0_0_context_since_2_2_0(
     context: SchemaContext,
     agency: str,
     res: str,
