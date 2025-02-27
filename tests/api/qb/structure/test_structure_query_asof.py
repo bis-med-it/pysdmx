@@ -87,7 +87,7 @@ def test_short_url_asof_since_2_2_0(
     as_of: datetime,
     api_version: ApiVersion,
 ):
-    expected = f"/structure?asOf=2025-01-01T12:42:21+00:00"
+    expected = "/structure?asOf=2025-01-01T12:42:21+00:00"
 
     q = StructureQuery(as_of=as_of)
     url = q.get_url(api_version, True)
