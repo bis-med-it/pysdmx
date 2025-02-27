@@ -126,3 +126,25 @@ def test_url_asof_since_2_2_0(
     url = q.get_url(api_version)
 
     assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+def test_url_asof_no_obs_dim_since_2_2_0(
+    context: SchemaContext,
+    agency: str,
+    res: str,
+    version: str,
+    as_of: datetime,
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/schema/{context.value}/{agency}/{res}/{version}"
+        "?asOf=2025-01-01T12:42:21+00:00"
+    )
+
+    q = SchemaQuery(context, agency, res, version, as_of=as_of)
+    url = q.get_url(api_version)
+
+    assert url == expected
