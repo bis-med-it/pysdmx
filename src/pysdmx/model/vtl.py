@@ -1,7 +1,7 @@
 """Model for VTL artefacts."""
 
 from enum import Enum
-from typing import Optional, Sequence
+from typing import Literal, Optional, Sequence
 
 from msgspec import Struct
 
@@ -29,16 +29,20 @@ class Transformation(Item, frozen=True, omit_defaults=True):
     def full_expression(self) -> str:
         """Return the full expression with the semicolon."""
         assign_operand = "<-" if self.is_persistent else ":="
-
-        return f"{self.result} {assign_operand} {self.expression};"
+        full_expression = f"{self.result} {assign_operand} {self.expression}"
+        return (
+            full_expression
+            if full_expression.strip().endswith(";")
+            else f"{full_expression};"
+        )
 
 
 class Ruleset(Item, frozen=True, omit_defaults=True):
     """A persistent set of rules."""
 
     ruleset_definition: str = ""
-    ruleset_scope: str = ""
-    ruleset_type: str = ""
+    ruleset_scope: Optional[Literal["variable", "valuedomain"]] = None
+    ruleset_type: Optional[Literal["datapoint", "hierarchical"]] = None
 
 
 class UserDefinedOperator(Item, frozen=True, omit_defaults=True):
@@ -143,6 +147,7 @@ class RulesetScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of rulesets."""
 
     vtl_mapping_scheme: Optional[str] = None
+    items: Sequence[Ruleset] = ()
 
 
 class UserDefinedOperatorScheme(VtlScheme, frozen=True, omit_defaults=True):
@@ -150,6 +155,7 @@ class UserDefinedOperatorScheme(VtlScheme, frozen=True, omit_defaults=True):
 
     vtl_mapping_scheme: Optional[str] = None
     ruleset_schemes: Sequence[str] = ()
+    items: Sequence[UserDefinedOperator] = ()
 
 
 class VtlMappingScheme(ItemScheme, frozen=True, omit_defaults=True):
@@ -191,3 +197,4 @@ class TransformationScheme(VtlScheme, frozen=True, omit_defaults=True):
     custom_type_scheme: Optional[CustomTypeScheme] = None
     ruleset_schemes: Sequence[RulesetScheme] = ()
     user_defined_operator_schemes: Sequence[UserDefinedOperatorScheme] = ()
+    items: Sequence[Transformation] = ()
