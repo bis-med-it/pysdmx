@@ -99,7 +99,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VALID_FROM_LOW,
     VALID_TO,
     VALID_TO_LOW,
-    VERSION,
+    VERSION, UDO, UDO_SCHEME, RULE_SCHEME, RULE, RULESETS, UDOS,
 )
 from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.io.xml.utils import add_list
@@ -120,7 +120,14 @@ from pysdmx.model.dataflow import (
     DataStructureDefinition,
     Role,
 )
-from pysdmx.model.vtl import Transformation, TransformationScheme
+from pysdmx.model.vtl import (
+    Transformation,
+    TransformationScheme,
+    UserDefinedOperator,
+    UserDefinedOperatorScheme,
+    Ruleset,
+    RulesetScheme
+)
 from pysdmx.util import ItemReference, Reference, find_by_urn, parse_urn
 
 STRUCTURES_MAPPING = {
@@ -129,12 +136,16 @@ STRUCTURES_MAPPING = {
     CS: ConceptScheme,
     DFWS: Dataflow,
     DSDS: DataStructureDefinition,
+    RULE_SCHEME: RulesetScheme,
+    UDO_SCHEME: UserDefinedOperatorScheme,
     TRANS_SCHEME: TransformationScheme,
 }
 ITEMS_CLASSES = {
     AGENCY: Agency,
     CODE: Code,
     CON: Concept,
+    RULE: Ruleset,
+    UDO: UserDefinedOperator,
     TRANSFORMATION: Transformation,
 }
 
@@ -272,7 +283,7 @@ class StructureParser(Struct):
 
     @staticmethod
     def __format_facets(
-        json_fac: Dict[str, Any], json_obj: Dict[str, Any]
+            json_fac: Dict[str, Any], json_obj: Dict[str, Any]
     ) -> None:
         """Formats the facets from the JSON information.
 
@@ -350,7 +361,7 @@ class StructureParser(Struct):
         return orgs
 
     def __format_representation(
-        self, json_rep: Dict[str, Any], json_obj: Dict[str, Any]
+            self, json_rep: Dict[str, Any], json_obj: Dict[str, Any]
     ) -> None:
         """Formats the representation in the JSON Representation."""
         if TEXT_FORMAT in json_rep:
@@ -437,7 +448,7 @@ class StructureParser(Struct):
         return att_level
 
     def __format_component(
-        self, comp: Dict[str, Any], role: Role
+            self, comp: Dict[str, Any], role: Role
     ) -> Component:
         comp[ROLE.lower()] = role
         comp[REQUIRED] = True
@@ -467,7 +478,7 @@ class StructureParser(Struct):
         return Component(**comp)
 
     def __format_component_lists(
-        self, element: Dict[str, Any]
+            self, element: Dict[str, Any]
     ) -> List[Component]:
         comp_list = []
 
@@ -514,10 +525,18 @@ class StructureParser(Struct):
             json_vtl["result"] = json_vtl.pop("Result")
         if "vtlVersion" in json_vtl:
             json_vtl["vtl_version"] = json_vtl.pop("vtlVersion")
+        if "rulesetScope" in json_vtl:
+            json_vtl["ruleset_scope"] = json_vtl.pop("rulesetScope")
+        if "rulesetType" in json_vtl:
+            json_vtl["ruleset_type"] = json_vtl.pop("rulesetType")
+        if "RulesetDefinition" in json_vtl:
+            json_vtl["ruleset_definition"] = json_vtl.pop("RulesetDefinition")
+        if "OperatorDefinition" in json_vtl:
+            json_vtl["operator_definition"] = json_vtl.pop("OperatorDefinition")
         return json_vtl
 
     def __format_item(
-        self, item_json_info: Dict[str, Any], item_name_class: str
+            self, item_json_info: Dict[str, Any], item_name_class: str
     ) -> Item:
         item_json_info = self.__format_annotations(item_json_info)
         item_json_info = self.__format_name_description(item_json_info)
@@ -543,7 +562,7 @@ class StructureParser(Struct):
         return ITEMS_CLASSES[item_name_class](**item_json_info)
 
     def __format_scheme(
-        self, json_elem: Dict[str, Any], scheme: str, item: str
+            self, json_elem: Dict[str, Any], scheme: str, item: str
     ) -> Dict[str, ItemScheme]:
         elements: Dict[str, ItemScheme] = {}
 
@@ -556,7 +575,7 @@ class StructureParser(Struct):
             element = self.__format_urls(element)
             if IS_EXTERNAL_REF in element:
                 element[IS_EXTERNAL_REF_LOW] = (
-                    element.pop(IS_EXTERNAL_REF) == "true"
+                        element.pop(IS_EXTERNAL_REF) == "true"
                 )
             if IS_FINAL in element:
                 element[IS_FINAL_LOW] = element.pop(IS_FINAL) == "true"
@@ -581,7 +600,7 @@ class StructureParser(Struct):
         return elements
 
     def __format_schema(
-        self, json_element: Dict[str, Any], schema: str, item: str
+            self, json_element: Dict[str, Any], schema: str, item: str
     ) -> Dict[str, Any]:
         """Formats the structures in json format.
 
@@ -620,12 +639,12 @@ class StructureParser(Struct):
             if IS_EXTERNAL_REF in element:
                 element[IS_EXTERNAL_REF_LOW] = element.pop(IS_EXTERNAL_REF)
                 element[IS_EXTERNAL_REF_LOW] = (
-                    str(element[IS_EXTERNAL_REF_LOW]).lower() == "true"
+                        str(element[IS_EXTERNAL_REF_LOW]).lower() == "true"
                 )
             if IS_FINAL in element:
                 element[IS_FINAL_LOW] = element.pop(IS_FINAL)
                 element[IS_FINAL_LOW] = (
-                    str(element[IS_FINAL_LOW]).lower() == "true"
+                        str(element[IS_FINAL_LOW]).lower() == "true"
                 )
 
             if item == DFW:
@@ -647,7 +666,7 @@ class StructureParser(Struct):
         return schemas
 
     def format_structures(
-        self, json_meta: Dict[str, Any]
+            self, json_meta: Dict[str, Any]
     ) -> Sequence[Union[ItemScheme, DataStructureDefinition, Dataflow]]:
         """Formats the structures in json format.
 
@@ -681,6 +700,15 @@ class StructureParser(Struct):
             structures[TRANSFORMATIONS] = self.__format_scheme(
                 json_meta[TRANSFORMATIONS], TRANS_SCHEME, TRANSFORMATION
             )
+        if RULESETS in json_meta:
+            structures[RULESETS] = self.__format_scheme(
+                json_meta[RULESETS], RULE_SCHEME, RULE
+            )
+        if UDOS in json_meta:
+            structures[UDOS] = self.__format_scheme(
+                json_meta[UDOS], UDO_SCHEME, UDO
+            )
+
         # Reset global variables
         result = []
         for value in structures.values():
@@ -691,8 +719,8 @@ class StructureParser(Struct):
 
 
 def read(
-    input_str: str,
-    validate: bool = True,
+        input_str: str,
+        validate: bool = True,
 ) -> Sequence[Union[ItemScheme, DataStructureDefinition, Dataflow]]:
     """Reads an SDMX-ML 2.1 Structure data and returns the structures.
 

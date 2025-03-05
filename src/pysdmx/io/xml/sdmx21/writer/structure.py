@@ -45,7 +45,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     TIME_DIM,
     URI,
     URN,
-    VERSION,
+    VERSION, RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME,
 )
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_COM,
@@ -66,7 +66,8 @@ from pysdmx.model import (
     ConceptScheme,
     DataType,
     Facets,
-    Hierarchy,
+    Hierarchy, RulesetScheme, UserDefinedOperatorScheme, TransformationScheme, Ruleset, Transformation,
+    UserDefinedOperator, VtlScheme,
 )
 from pysdmx.model.__base import (
     Agency,
@@ -113,6 +114,10 @@ STR_TYPES = Union[
     ConceptScheme,
     DataStructureDefinition,
     Dataflow,
+    RulesetScheme,
+    UserDefinedOperatorScheme,
+    TransformationScheme,
+
 ]
 
 STR_DICT_TYPE_LIST = {
@@ -121,6 +126,10 @@ STR_DICT_TYPE_LIST = {
     ConceptScheme: "Concepts",
     DataStructureDefinition: "DataStructures",
     Dataflow: "Dataflows",
+    RulesetScheme: "Rulesets",
+    UserDefinedOperatorScheme: "UserDefinedOperators",
+    TransformationScheme: "Transformations",
+
 }
 
 
@@ -164,7 +173,7 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
 
 
 def __write_identifiable(
-    identifiable: IdentifiableArtefact, indent: str
+        identifiable: IdentifiableArtefact, indent: str
 ) -> Dict[str, Any]:
     """Writes the IdentifiableArtefact to the XML file."""
     attributes = ""
@@ -186,7 +195,7 @@ def __write_identifiable(
 
 
 def __write_nameable(
-    nameable: NameableArtefact, indent: str
+        nameable: NameableArtefact, indent: str
 ) -> Dict[str, Any]:
     """Writes the NameableArtefact to the XML file."""
     outfile = __write_identifiable(nameable, indent)
@@ -209,7 +218,7 @@ def __write_nameable(
 
 
 def __write_versionable(
-    versionable: VersionableArtefact, indent: str
+        versionable: VersionableArtefact, indent: str
 ) -> Dict[str, Any]:
     """Writes the VersionableArtefact to the XML file."""
     outfile = __write_nameable(versionable, add_indent(indent))
@@ -228,7 +237,7 @@ def __write_versionable(
 
 
 def __write_maintainable(
-    maintainable: MaintainableArtefact, indent: str
+        maintainable: MaintainableArtefact, indent: str
 ) -> Dict[str, Any]:
     """Writes the MaintainableArtefact to the XML file."""
     outfile = __write_versionable(maintainable, indent)
@@ -294,9 +303,9 @@ def __write_item(item: Item, indent: str) -> str:
         for contact in item.contacts:
             outfile += __write_contact(contact, add_indent(indent))
     if isinstance(item, Concept) and (
-        item.codes is not None
-        or item.facets is not None
-        or item.dtype is not None
+            item.codes is not None
+            or item.facets is not None
+            or item.dtype is not None
     ):
         outfile += f"{add_indent(indent)}<{ABBR_STR}:{CORE_REP}>"
         if item.codes is not None:
@@ -306,6 +315,8 @@ def __write_item(item: Item, indent: str) -> str:
                 item.dtype, item.facets, TEXT_FORMAT, add_indent(indent)
             )
         outfile += f"{add_indent(indent)}</{ABBR_STR}:{CORE_REP}>"
+    if isinstance(item, (Ruleset, Transformation, UserDefinedOperator)):
+        outfile = _write_vtl(item, indent)
     outfile += f"{indent}</{head}>"
     return outfile
 
@@ -347,7 +358,7 @@ def __write_components(item: DataStructureDefinition, indent: str) -> str:
 
 
 def __write_attribute_relation(
-    item: Component, indent: str, component_info: Dict[str, Any]
+        item: Component, indent: str, component_info: Dict[str, Any]
 ) -> str:
     outfile = f"{indent}<{ABBR_STR}:{ATT_REL}>"
     att_rel = item.attachment_level
@@ -380,7 +391,7 @@ def __write_attribute_relation(
 
 
 def __write_component(
-    item: Component, position: int, indent: str, component_info: Dict[str, Any]
+        item: Component, position: int, indent: str, component_info: Dict[str, Any]
 ) -> str:
     """Writes the component to the XML file."""
     role_name = ROLE_MAPPING[item.role]
@@ -424,7 +435,7 @@ def __write_component(
 
 
 def __write_concept_identity(
-    identity: Union[Concept, ItemReference], indent: str
+        identity: Union[Concept, ItemReference], indent: str
 ) -> str:
     if isinstance(identity, ItemReference):
         ref = identity
@@ -468,10 +479,10 @@ def __write_representation(item: Component, indent: str) -> str:
 
 
 def __write_text_format(
-    dtype: Optional[DataType],
-    facets: Optional[Facets],
-    type_: str,
-    indent: str,
+        dtype: Optional[DataType],
+        facets: Optional[Facets],
+        type_: str,
+        indent: str,
 ) -> str:
     """Writes the text format to the XML file."""
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{type_}"
@@ -536,6 +547,9 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
         data["Attributes"] += (
             f" isPartial={str(item_scheme.is_final).lower()!r}"
         )
+    if scheme in [RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME]:
+        data["Attributes"] += \
+            f" {_write_vtl(item_scheme, indent)}"
 
     outfile = ""
 
@@ -561,7 +575,7 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
 
 
 def __write_metadata_element(
-    package: Dict[str, Any], key: str, prettyprint: object
+        package: Dict[str, Any], key: str, prettyprint: object
 ) -> str:
     """Writes the metadata element to the XML file.
 
@@ -655,11 +669,55 @@ def __write_structures(content: Dict[str, Any], prettyprint: bool) -> str:
     return outfile
 
 
+def _write_vtl(item_or_scheme: any, indent) -> str:
+    """Writes the VTL attribute to the XML file for a single item or an item scheme."""
+    outfile = ""
+    if isinstance(item_or_scheme, Item):
+        head = f"{ABBR_STR}:" + type(item_or_scheme).__name__
+
+        data = __write_nameable(item_or_scheme, add_indent(indent))
+        attributes = data["Attributes"].replace("'", '"')
+
+        previous_data = __export_intern_data(data)
+
+        if isinstance(item_or_scheme, Ruleset):
+            if item_or_scheme.ruleset_scope is not None:
+                attributes += f" rulesetScope={item_or_scheme.ruleset_scope!r}"
+            if item_or_scheme.ruleset_type is not None:
+                attributes += f" rulesetType={item_or_scheme.ruleset_type!r}"
+            if item_or_scheme.ruleset_definition is not None:
+                previous_data += f"{indent}\t<{ABBR_STR}:RulesetDefinition>{item_or_scheme.ruleset_definition}</{ABBR_STR}:RulesetDefinition>"
+        if isinstance(item_or_scheme, UserDefinedOperator):
+            if item_or_scheme.operator_definition is not None:
+                previous_data += f"{indent}\t<{ABBR_STR}:OperatorDefinition>{item_or_scheme.operator_definition}</{ABBR_STR}:OperatorDefinition>"
+        if isinstance(item_or_scheme, Transformation):
+            if item_or_scheme.is_persistent is not None:
+                attributes += f" isPersistent={item_or_scheme.is_persistent!r}"
+            if item_or_scheme.expression is not None:
+                previous_data += f"{indent}\t<{ABBR_STR}:Expression>{item_or_scheme.expression}</{ABBR_STR}:Expression>"
+            if item_or_scheme.result is not None:
+                previous_data += f"{indent}\t<{ABBR_STR}:Result>{item_or_scheme.result}</{ABBR_STR}:Result>"
+
+        outfile = f"{indent}<{head}{attributes}>"
+        outfile += previous_data
+
+    if isinstance(item_or_scheme, VtlScheme):
+        if item_or_scheme.vtl_version is not None:
+            outfile += f" vtlVersion={item_or_scheme.vtl_version!r}"
+
+    outfile = outfile.replace("'", '"')
+    outfile = outfile.replace("& ", "&amp; ")
+    outfile = outfile.replace("< ", "&lt; ")  # Escapa '<'
+    outfile = outfile.replace("> ", "&gt; ")  # Escapa '>'
+
+    return outfile
+
+
 def write(
-    structures: Sequence[STR_TYPES],
-    output_path: str = "",
-    prettyprint: bool = True,
-    header: Optional[Header] = None,
+        structures: Sequence[STR_TYPES],
+        output_path: str = "",
+        prettyprint: bool = True,
+        header: Optional[Header] = None,
 ) -> Optional[str]:
     """This function writes a SDMX-ML file from the Message Content.
 

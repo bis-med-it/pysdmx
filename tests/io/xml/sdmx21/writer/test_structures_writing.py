@@ -353,7 +353,6 @@ def test_file_writing(concept_sample, complete_header, concept):
 
     with open(output_path, "r") as f:
         assert f.read() == concept_sample
-    os.remove(output_path)
 
 
 def test_writer_empty(empty_sample, header):
