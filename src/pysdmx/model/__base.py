@@ -81,9 +81,14 @@ class AnnotableArtefact(Struct, frozen=True, omit_defaults=True, kw_only=True):
         out = []
         for k in self.__all_annotations():
             v = self.__getattribute__(k)
-            if v:
-                out.append(f"{k}={str(v)}")
-        return ", ".join(out)
+            if isinstance(v, list) and len(v) > 0:
+                item_type = v[0].__class__.__name__
+                out.append(f"{k}=[{len(v)} {item_type}s]")
+            elif v is not None and v:
+                out.append(f"{k}={v!r}")
+        return self.__class__.__name__ + "(" + ", ".join(out) + ")"
+
+    __repr__ = __str__
 
 
 class IdentifiableArtefact(AnnotableArtefact, frozen=True, omit_defaults=True):
