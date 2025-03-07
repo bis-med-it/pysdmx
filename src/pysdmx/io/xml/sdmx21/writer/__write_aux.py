@@ -7,7 +7,7 @@ from xml.sax.saxutils import escape
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
-from pysdmx.io.xml.sdmx21.__tokens import RULESETS, UDOS, TRANSFORMATIONS
+from pysdmx.io.xml.sdmx21.__tokens import RULESETS, TRANSFORMATIONS, UDOS
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
@@ -112,9 +112,9 @@ MSG_CONTENT_PKG = OrderedDict(
         (CONCEPTS, "Concepts"),
         (DSDS, "DataStructures"),
         (CONSTRAINTS, "ContentConstraints"),
-        (RULESETS, "RuleSets"),
-        (UDOS, "UserDefinedOperators"),
+        (RULESETS, "Rulesets"),
         (TRANSFORMATIONS, "Transformations"),
+        (UDOS, "UserDefinedOperators"),
     ]
 )
 
