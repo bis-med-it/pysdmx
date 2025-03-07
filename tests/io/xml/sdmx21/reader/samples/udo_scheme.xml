@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+  <mes:Header>
+    <mes:ID>IREF169844</mes:ID>
+    <mes:Test>false</mes:Test>
+    <mes:Prepared>2024-12-03T09:09:40Z</mes:Prepared>
+    <mes:Sender id="Unknown"/>
+    <mes:Receiver id="not_supplied"/>
+  </mes:Header>
+  <mes:Structures>
+    <str:UserDefinedOperators>
+      <str:UserDefinedOperatorScheme urn="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=MD:TEST_UDO_SCHEME(1.0)" vtlVersion="2.0" isExternalReference="false" agencyID="MD" id="TEST_UDO_SCHEME" isFinal="false" version="1.0">
+        <com:Name xml:lang="en">Testing UDO Scheme</com:Name>
+        <str:UserDefinedOperator urn="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=MD:TEST_UDO_SCHEME(1.0).TEST_UDO" id="TEST_UDO">
+          <com:Name xml:lang="en">UDO Testing</com:Name>
+          <str:OperatorDefinition>define operator filter_ds (ds1 dataset, great_cons string default "1", less_cons number default 4.0)   returns dataset is     ds1[filter Me_1 > great_cons and Me_2 &lt; less_cons] end operator;</str:OperatorDefinition>
+        </str:UserDefinedOperator>
+      </str:UserDefinedOperatorScheme>
+    </str:UserDefinedOperators></mes:Structures></mes:Structure>

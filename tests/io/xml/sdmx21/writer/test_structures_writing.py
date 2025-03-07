@@ -12,7 +12,20 @@ from pysdmx.io.xml.sdmx21.__tokens import CON
 from pysdmx.io.xml.sdmx21.reader.structure import read
 from pysdmx.io.xml.sdmx21.writer.error import write as write_err
 from pysdmx.io.xml.sdmx21.writer.structure import write
-from pysdmx.model import Agency, Code, Codelist, Concept, ConceptScheme, Facets
+from pysdmx.model import (
+    Agency,
+    Code,
+    Codelist,
+    Concept,
+    ConceptScheme,
+    Facets,
+    Ruleset,
+    RulesetScheme,
+    Transformation,
+    TransformationScheme,
+    UserDefinedOperator,
+    UserDefinedOperatorScheme,
+)
 from pysdmx.model.__base import Annotation
 from pysdmx.model.dataflow import (
     Component,
@@ -216,6 +229,154 @@ def concept_ds():
 
 
 @pytest.fixture
+def transformation_sample():
+    base_path = Path(__file__).parent / "samples" / "transformation_scheme.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def transformation_scheme_structure():
+    return TransformationScheme(
+        id="TEST",
+        uri=None,
+        urn="urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=SDMX:TEST(1.0)",
+        name="TEST",
+        description="TEST Transformation Scheme",
+        version="1.0",
+        valid_from=datetime(2024, 12, 3, 0, 0),
+        valid_to=datetime(2024, 12, 7, 0, 0),
+        is_final=False,
+        is_external_reference=False,
+        service_url=None,
+        structure_url=None,
+        agency="SDMX",
+        items=[
+            Transformation(
+                id="test_rule",
+                uri=None,
+                urn="urn:sdmx:org.sdmx.infomodel.transformation."
+                "Transformation=SDMX:TEST(1.0).test_rule",
+                name="TEST_RULE_NAME",
+                description="TEST_RULE_DESC",
+                expression="DS_1 + 1",
+                is_persistent="false",
+                result="DS_r",
+                annotations=(),
+            )
+        ],
+        is_partial=False,
+        vtl_version="2.1",
+        vtl_mapping_scheme=None,
+        name_personalisation_scheme=None,
+        custom_type_scheme=None,
+        ruleset_schemes=(),
+        user_defined_operator_schemes=(),
+        annotations=(),
+    )
+
+
+@pytest.fixture
+def ruleset_sample():
+    base_path = Path(__file__).parent / "samples" / "ruleset_scheme.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def ruleset_scheme_structure():
+    return RulesetScheme(
+        id="TEST_RULESET_SCHEME",
+        uri=None,
+        urn="urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=MD:TEST_RULESET_SCHEME(1.0)",
+        name="Testing Ruleset Scheme",
+        description=None,
+        version="1.0",
+        valid_from=None,
+        valid_to=None,
+        is_final=False,
+        is_external_reference=False,
+        service_url=None,
+        structure_url=None,
+        agency="MD",
+        items=[
+            Ruleset(
+                id="TEST_DATAPOINT_RULESET",
+                uri=None,
+                urn="urn:sdmx:org.sdmx.infomodel.transformation.Ruleset=MD:"
+                "TEST_RULESET_SCHEME(1.0).TEST_DATAPOINT_RULESET",
+                name="Testing Datapoint Ruleset",
+                description=None,
+                ruleset_definition="define datapoint ruleset signValidation "
+                "(variable ACCOUNTING_ENTRY as AE, "
+                "INT_ACC_ITEM as IAI,                 "
+                "FUNCTIONAL_CAT as FC, INSTR_ASSET as IA,"
+                " OBS_VALUE as O) is      "
+                'sign1c: when AE = "C" and IAI = "G" then O > 0 '
+                'errorcode "sign1c" errorlevel 1;     '
+                "end datapoint ruleset;",
+                ruleset_scope="variable",
+                ruleset_type="datapoint",
+                annotations=(),
+            )
+        ],
+        is_partial=False,
+        vtl_version="2.0",
+        vtl_mapping_scheme=None,
+        annotations=(),
+    )
+
+
+@pytest.fixture
+def udo_sample():
+    base_path = Path(__file__).parent / "samples" / "udo_scheme.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def udo_scheme_structure():
+    return UserDefinedOperatorScheme(
+        id="TEST_UDO_SCHEME",
+        uri=None,
+        urn="urn:sdmx:org.sdmx.infomodel.transformation."
+        "UserDefinedOperatorScheme=MD:TEST_UDO_SCHEME(1.0)",
+        name="Testing UDO Scheme",
+        description=None,
+        version="1.0",
+        valid_from=None,
+        valid_to=None,
+        is_final=False,
+        is_external_reference=False,
+        service_url=None,
+        structure_url=None,
+        agency="MD",
+        items=[
+            UserDefinedOperator(
+                id="TEST_UDO",
+                uri=None,
+                urn="urn:sdmx:org.sdmx.infomodel.transformation."
+                "UserDefinedOperator=MD:TEST_UDO_SCHEME(1.0).TEST_UDO",
+                name="UDO Testing",
+                description=None,
+                operator_definition="define operator filter_ds "
+                "(ds1 dataset, great_cons string "
+                'default "1", less_cons number '
+                "default 4.0)   returns dataset is"
+                "     ds1[filter Me_1 > great_cons "
+                "and Me_2 < less_cons] end operator;",
+                annotations=(),
+            )
+        ],
+        is_partial=False,
+        vtl_version="2.0",
+        vtl_mapping_scheme=None,
+        ruleset_schemes=(),
+        annotations=(),
+    )
+
+
+@pytest.fixture
 def datastructure(concept_ds):
     return DataStructureDefinition(
         annotations=[
@@ -353,6 +514,7 @@ def test_file_writing(concept_sample, complete_header, concept):
 
     with open(output_path, "r") as f:
         assert f.read() == concept_sample
+    os.remove(output_path)
 
 
 def test_writer_empty(empty_sample, header):
@@ -495,3 +657,60 @@ def test_invalid_structure_header(header):
     header_structures.structure = {"BIS_DER": "DataStructure=BIS:BIS_DER(1.0)"}
     with pytest.raises(Invalid):
         write([], header=header_structures)
+
+
+def test_writer_transformation_scheme_structure(
+    complete_header, transformation_scheme_structure, transformation_sample
+):
+    content = [transformation_scheme_structure]
+    output_path = str(
+        Path(__file__).parent / "samples" / "transformation_scheme_output.xml"
+    )
+    write(
+        content,
+        output_path=output_path,
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    with open(output_path, "r") as f:
+        assert f.read() == transformation_sample
+    os.remove(output_path)
+
+
+def test_writer_ruleset_scheme_structure(
+    complete_header, ruleset_scheme_structure, ruleset_sample
+):
+    content = [ruleset_scheme_structure]
+    output_path = str(
+        Path(__file__).parent / "samples" / "ruleset_scheme_output.xml"
+    )
+    write(
+        content,
+        output_path=output_path,
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    with open(output_path, "r") as f:
+        assert f.read() == ruleset_sample
+    os.remove(output_path)
+
+
+def test_writer_udo_scheme_structure(
+    complete_header, udo_scheme_structure, udo_sample
+):
+    content = [udo_scheme_structure]
+    output_path = str(
+        Path(__file__).parent / "samples" / "udo_scheme_output.xml"
+    )
+    write(
+        content,
+        output_path=output_path,
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    with open(output_path, "r") as f:
+        assert f.read() == udo_sample
+    os.remove(output_path)

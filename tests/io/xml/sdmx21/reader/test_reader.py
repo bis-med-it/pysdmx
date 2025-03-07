@@ -17,7 +17,7 @@ from pysdmx.io.xml.sdmx21.reader.submission import read as read_sub
 from pysdmx.io.xml.sdmx21.writer.structure_specific import write
 from pysdmx.model import AgencyScheme, Codelist, ConceptScheme, Contact
 from pysdmx.model.submission import SubmissionResult
-from pysdmx.model.vtl import Transformation
+from pysdmx.model.vtl import Ruleset, Transformation, UserDefinedOperator
 
 # Test parsing SDMX Registry Interface Submission Response
 
@@ -442,6 +442,64 @@ def test_vtl_transformation_scheme(samples_folder):
     assert isinstance(transformation, Transformation)
     assert transformation.id == "test_rule"
     assert transformation.full_expression == "DS_r <- DS_1 + 1;"
+
+
+def test_vtl_ruleset_scheme(samples_folder):
+    data_path = samples_folder / "ruleset_scheme.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+
+    assert result is not None
+    assert len(result) == 1
+
+    ruleset_scheme = result[0]
+    assert ruleset_scheme.id == "TEST_RULESET_SCHEME"
+    assert ruleset_scheme.name == "Testing Ruleset Scheme"
+
+    assert len(ruleset_scheme.items) == 1
+    ruleset = ruleset_scheme.items[0]
+    assert isinstance(ruleset, Ruleset)
+    assert ruleset.id == "TEST_DATAPOINT_RULESET"
+    assert ruleset.name == "Testing Datapoint Ruleset"
+    assert ruleset.ruleset_scope == "variable"
+    assert ruleset.ruleset_type == "datapoint"
+    assert ruleset.ruleset_definition == (
+        "define datapoint ruleset signValidation "
+        "(variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM"
+        " as IAI,                 "
+        "FUNCTIONAL_CAT as FC, INSTR_ASSET as IA,"
+        " OBS_VALUE as O) is      "
+        'sign1c: when AE = "C" and IAI = "G" then O > 0 '
+        'errorcode "sign1c" errorlevel 1;     '
+        "end datapoint ruleset;"
+    )
+
+
+def test_vtl_udo_scheme(samples_folder):
+    data_path = samples_folder / "udo_scheme.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+
+    assert result is not None
+    assert len(result) == 1
+
+    udo_scheme = result[0]
+    assert udo_scheme.id == "TEST_UDO_SCHEME"
+    assert udo_scheme.name == "Testing UDO Scheme"
+
+    assert len(udo_scheme.items) == 1
+    udo = udo_scheme.items[0]
+    assert isinstance(udo, UserDefinedOperator)
+    assert udo.id == "TEST_UDO"
+    assert udo.name == "UDO Testing"
+    assert udo.operator_definition == (
+        "define operator filter_ds "
+        '(ds1 dataset, great_cons string default "1", '
+        "less_cons number default 4.0)   returns dataset is     "
+        "ds1[filter Me_1 > great_cons and Me_2 < less_cons] end operator;"
+    )
 
 
 def test_estat_metadata(estat_metadata_path):
