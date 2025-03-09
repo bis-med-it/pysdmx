@@ -184,7 +184,7 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
 
 
 def __write_identifiable(
-        identifiable: IdentifiableArtefact, indent: str
+    identifiable: IdentifiableArtefact, indent: str
 ) -> Dict[str, Any]:
     """Writes the IdentifiableArtefact to the XML file."""
     attributes = ""
@@ -206,7 +206,7 @@ def __write_identifiable(
 
 
 def __write_nameable(
-        nameable: NameableArtefact, indent: str
+    nameable: NameableArtefact, indent: str
 ) -> Dict[str, Any]:
     """Writes the NameableArtefact to the XML file."""
     outfile = __write_identifiable(nameable, indent)
@@ -229,7 +229,7 @@ def __write_nameable(
 
 
 def __write_versionable(
-        versionable: VersionableArtefact, indent: str
+    versionable: VersionableArtefact, indent: str
 ) -> Dict[str, Any]:
     """Writes the VersionableArtefact to the XML file."""
     outfile = __write_nameable(versionable, add_indent(indent))
@@ -248,7 +248,7 @@ def __write_versionable(
 
 
 def __write_maintainable(
-        maintainable: MaintainableArtefact, indent: str
+    maintainable: MaintainableArtefact, indent: str
 ) -> Dict[str, Any]:
     """Writes the MaintainableArtefact to the XML file."""
     outfile = __write_versionable(maintainable, indent)
@@ -314,9 +314,9 @@ def __write_item(item: Item, indent: str) -> str:
         for contact in item.contacts:
             outfile += __write_contact(contact, add_indent(indent))
     if isinstance(item, Concept) and (
-            item.codes is not None
-            or item.facets is not None
-            or item.dtype is not None
+        item.codes is not None
+        or item.facets is not None
+        or item.dtype is not None
     ):
         outfile += f"{add_indent(indent)}<{ABBR_STR}:{CORE_REP}>"
         if item.codes is not None:
@@ -326,8 +326,6 @@ def __write_item(item: Item, indent: str) -> str:
                 item.dtype, item.facets, TEXT_FORMAT, add_indent(indent)
             )
         outfile += f"{add_indent(indent)}</{ABBR_STR}:{CORE_REP}>"
-    if isinstance(item, (Ruleset, Transformation, UserDefinedOperator)):
-        outfile += _write_vtl(item, indent)
     outfile += f"{indent}</{head}>"
     return outfile
 
@@ -369,7 +367,7 @@ def __write_components(item: DataStructureDefinition, indent: str) -> str:
 
 
 def __write_attribute_relation(
-        item: Component, indent: str, component_info: Dict[str, Any]
+    item: Component, indent: str, component_info: Dict[str, Any]
 ) -> str:
     outfile = f"{indent}<{ABBR_STR}:{ATT_REL}>"
     att_rel = item.attachment_level
@@ -402,7 +400,7 @@ def __write_attribute_relation(
 
 
 def __write_component(
-        item: Component, position: int, indent: str, component_info: Dict[str, Any]
+    item: Component, position: int, indent: str, component_info: Dict[str, Any]
 ) -> str:
     """Writes the component to the XML file."""
     role_name = ROLE_MAPPING[item.role]
@@ -446,7 +444,7 @@ def __write_component(
 
 
 def __write_concept_identity(
-        identity: Union[Concept, ItemReference], indent: str
+    identity: Union[Concept, ItemReference], indent: str
 ) -> str:
     if isinstance(identity, ItemReference):
         ref = identity
@@ -490,10 +488,10 @@ def __write_representation(item: Component, indent: str) -> str:
 
 
 def __write_text_format(
-        dtype: Optional[DataType],
-        facets: Optional[Facets],
-        type_: str,
-        indent: str,
+    dtype: Optional[DataType],
+    facets: Optional[Facets],
+    type_: str,
+    indent: str,
 ) -> str:
     """Writes the text format to the XML file."""
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{type_}"
@@ -588,7 +586,7 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
 
 
 def __write_metadata_element(
-        package: Dict[str, Any], key: str, prettyprint: object
+    package: Dict[str, Any], key: str, prettyprint: object
 ) -> str:
     """Writes the metadata element to the XML file.
 
@@ -714,7 +712,7 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
                 f"rulesetType={item_or_scheme.ruleset_type!r}"
             )
 
-        elif isinstance(item_or_scheme, Transformation):
+        if isinstance(item_or_scheme, Transformation):
             label = f"{ABBR_STR}:{TRANSFORMATION}"
             data += f"{add_indent(indent)}<{ABBR_STR}:Expression>"
             data += f"{item_or_scheme.expression}</{ABBR_STR}:Expression>"
@@ -722,7 +720,7 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
             data += f"{item_or_scheme.result}</{ABBR_STR}:Result>"
             attrib += f" isPersistent={item_or_scheme.is_persistent!r}"
 
-        elif isinstance(item_or_scheme, UserDefinedOperator):
+        if isinstance(item_or_scheme, UserDefinedOperator):
             label = f"{ABBR_STR}:{UDO}"
             data += f"{add_indent(indent)}<{ABBR_STR}:OperatorDefinition>"
             data += (
@@ -751,7 +749,7 @@ def _write_vtl_references(scheme: ItemScheme, indent: str) -> str:
     """Writes references to VTL elements to the XML file."""
 
     def process_references(
-            references: Union[Any, Sequence[Any]], element_name: str
+        references: Union[Any, Sequence[Any]], element_name: str
     ) -> str:
         """Process the references to VTL elements."""
         if isinstance(references, Reference):
@@ -790,10 +788,10 @@ def _write_vtl_references(scheme: ItemScheme, indent: str) -> str:
 
 
 def write(
-        structures: Sequence[STR_TYPES],
-        output_path: str = "",
-        prettyprint: bool = True,
-        header: Optional[Header] = None,
+    structures: Sequence[STR_TYPES],
+    output_path: str = "",
+    prettyprint: bool = True,
+    header: Optional[Header] = None,
 ) -> Optional[str]:
     """This function writes a SDMX-ML file from the Message Content.
 

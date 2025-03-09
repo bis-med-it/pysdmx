@@ -36,7 +36,7 @@ from pysdmx.model.dataflow import (
 )
 from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import Header
-from pysdmx.util import ItemReference
+from pysdmx.util import ItemReference, Reference
 
 TEST_CS_URN = (
     "urn:sdmx:org.sdmx.infomodel.conceptscheme."
@@ -229,6 +229,13 @@ def concept_ds():
 
 
 @pytest.fixture
+def full_structure_sample():
+    base_path = Path(__file__).parent / "samples" / "full_scheme_structure.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
 def transformation_sample():
     base_path = Path(__file__).parent / "samples" / "transformation_scheme.xml"
     with open(base_path, "r") as f:
@@ -238,40 +245,51 @@ def transformation_sample():
 @pytest.fixture
 def transformation_scheme_structure():
     return TransformationScheme(
-        id="TEST",
+        id="TEST_TS",
         uri=None,
-        urn="urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=SDMX:TEST(1.0)",
-        name="TEST",
-        description="TEST Transformation Scheme",
+        urn="urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=MD:TEST_TS(1.0)",
+        name="Testing TS",
+        description=None,
         version="1.0",
-        valid_from=datetime(2024, 12, 3, 0, 0),
-        valid_to=datetime(2024, 12, 7, 0, 0),
+        valid_from=None,
+        valid_to=None,
         is_final=False,
         is_external_reference=False,
         service_url=None,
         structure_url=None,
-        agency="SDMX",
+        agency="MD",
         items=[
             Transformation(
-                id="test_rule",
+                id="TEST_Tr",
                 uri=None,
-                urn="urn:sdmx:org.sdmx.infomodel.transformation."
-                "Transformation=SDMX:TEST(1.0).test_rule",
-                name="TEST_RULE_NAME",
-                description="TEST_RULE_DESC",
-                expression="DS_1 + 1",
+                urn="urn:sdmx:org.sdmx.infomodel.transformation.Transformation=MD:TEST_TS(1.0).TEST_Tr",
+                name="Testing Transformation",
+                description=None,
+                expression="sum(             BIS_LOC_STATS"
+                "              group by REP_COUNTRY,"
+                "COUNT_SECTOR,REF_DATE)",
                 is_persistent="false",
-                result="DS_r",
+                result="aggr.agg1",
                 annotations=(),
             )
         ],
         is_partial=False,
-        vtl_version="2.1",
+        vtl_version="2.0",
         vtl_mapping_scheme=None,
         name_personalisation_scheme=None,
         custom_type_scheme=None,
-        ruleset_schemes=(),
-        user_defined_operator_schemes=(),
+        ruleset_schemes=Reference(
+            sdmx_type="transformation",
+            agency="MD",
+            id="TEST_RULESET_SCHEME",
+            version="1.0",
+        ),
+        user_defined_operator_schemes=Reference(
+            sdmx_type="transformation",
+            agency="MD",
+            id="TEST_UDO_SCHEME",
+            version="1.0",
+        ),
         annotations=(),
     )
 
@@ -339,8 +357,7 @@ def udo_scheme_structure():
     return UserDefinedOperatorScheme(
         id="TEST_UDO_SCHEME",
         uri=None,
-        urn="urn:sdmx:org.sdmx.infomodel.transformation."
-        "UserDefinedOperatorScheme=MD:TEST_UDO_SCHEME(1.0)",
+        urn="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=MD:TEST_UDO_SCHEME(1.0)",
         name="Testing UDO Scheme",
         description=None,
         version="1.0",
@@ -355,23 +372,37 @@ def udo_scheme_structure():
             UserDefinedOperator(
                 id="TEST_UDO",
                 uri=None,
-                urn="urn:sdmx:org.sdmx.infomodel.transformation."
-                "UserDefinedOperator=MD:TEST_UDO_SCHEME(1.0).TEST_UDO",
+                urn="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=MD:TEST_UDO_SCHEME(1.0).TEST_UDO",
                 name="UDO Testing",
                 description=None,
-                operator_definition="define operator filter_ds "
-                "(ds1 dataset, great_cons string "
-                'default "1", less_cons number '
-                "default 4.0)   returns dataset is"
-                "     ds1[filter Me_1 > great_cons "
-                "and Me_2 < less_cons] end operator;",
+                operator_definition="define operator filter_ds"
+                " (ds1 dataset, great_cons "
+                'string default "1",'
+                " less_cons number default 4.0)"
+                "   returns dataset is"
+                "     ds1[filter Me_1 > great_cons"
+                " and Me_2 < less_cons]"
+                " end operator;",
                 annotations=(),
             )
         ],
         is_partial=False,
         vtl_version="2.0",
         vtl_mapping_scheme=None,
-        ruleset_schemes=(),
+        ruleset_schemes=[
+            Reference(
+                sdmx_type="transformation",
+                agency="MD",
+                id="TEST_RULESET_SCHEME",
+                version="1.0",
+            ),
+            Reference(
+                sdmx_type="transformation",
+                agency="MD",
+                id="TEST_RULESET_SCHEME",
+                version="1.0",
+            ),
+        ],
         annotations=(),
     )
 
@@ -713,4 +744,32 @@ def test_writer_udo_scheme_structure(
 
     with open(output_path, "r") as f:
         assert f.read() == udo_sample
+    os.remove(output_path)
+
+
+def test_writer_full_scheme_structure(
+    complete_header,
+    transformation_scheme_structure,
+    ruleset_scheme_structure,
+    udo_scheme_structure,
+    full_structure_sample,
+):
+    content = [
+        ruleset_scheme_structure,
+        transformation_scheme_structure,
+        udo_scheme_structure,
+    ]
+
+    output_path = str(
+        Path(__file__).parent / "samples" / "full_scheme_structure_output.xml"
+    )
+    write(
+        content,
+        output_path=output_path,
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    with open(output_path, "r") as f:
+        assert f.read() == full_structure_sample
     os.remove(output_path)

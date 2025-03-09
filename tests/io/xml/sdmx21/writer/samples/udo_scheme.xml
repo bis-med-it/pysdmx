@@ -16,6 +16,12 @@
 					<com:Name xml:lang="en">UDO Testing</com:Name>
 					<str:OperatorDefinition>define operator filter_ds (ds1 dataset, great_cons string default "1", less_cons number default 4.0)   returns dataset is     ds1[filter Me_1 &gt; great_cons and Me_2 &lt; less_cons] end operator;</str:OperatorDefinition>
 				</str:UserDefinedOperator>
+				<str:RulesetScheme>
+					<Ref package="transformation" agencyID="MD" id="TEST_RULESET_SCHEME" version="1.0" class="RulesetScheme"/>
+				</str:RulesetScheme>
+				<str:RulesetScheme>
+					<Ref package="transformation" agencyID="MD" id="TEST_RULESET_SCHEME" version="1.0" class="RulesetScheme"/>
+				</str:RulesetScheme>
 			</str:UserDefinedOperatorScheme>
 		</str:UserDefinedOperators>
 	</mes:Structures>

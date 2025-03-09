@@ -10,15 +10,19 @@
 	</mes:Header>
 	<mes:Structures>
 		<str:Transformations>
-			<str:TransformationScheme id="TEST" urn="urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=SDMX:TEST(1.0)" version="1.0" validFrom="2024-12-03T00:00:00" validTo="2024-12-07T00:00:00" isExternalReference="false" isFinal="false" agencyID="SDMX"  vtlVersion="2.1">
-				<com:Name xml:lang="en">TEST</com:Name>
-				<com:Description xml:lang="en">TEST Transformation Scheme</com:Description>
-				<str:Transformation id="test_rule" urn="urn:sdmx:org.sdmx.infomodel.transformation.Transformation=SDMX:TEST(1.0).test_rule" isPersistent="false">
-					<com:Name xml:lang="en">TEST_RULE_NAME</com:Name>
-					<com:Description xml:lang="en">TEST_RULE_DESC</com:Description>
-					<str:Expression>DS_1 + 1</str:Expression>
-					<str:Result>DS_r</str:Result>
+			<str:TransformationScheme id="TEST_TS" urn="urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=MD:TEST_TS(1.0)" version="1.0" isExternalReference="false" isFinal="false" agencyID="MD"  vtlVersion="2.0">
+				<com:Name xml:lang="en">Testing TS</com:Name>
+				<str:Transformation id="TEST_Tr" urn="urn:sdmx:org.sdmx.infomodel.transformation.Transformation=MD:TEST_TS(1.0).TEST_Tr" isPersistent="false">
+					<com:Name xml:lang="en">Testing Transformation</com:Name>
+					<str:Expression>sum(             BIS_LOC_STATS              group by REP_COUNTRY,COUNT_SECTOR,REF_DATE)</str:Expression>
+					<str:Result>aggr.agg1</str:Result>
 				</str:Transformation>
+				<str:RulesetScheme>
+					<Ref package="transformation" agencyID="MD" id="TEST_RULESET_SCHEME" version="1.0" class="RulesetScheme"/>
+				</str:RulesetScheme>
+				<str:UserDefinedOperatorScheme>
+					<Ref package="transformation" agencyID="MD" id="TEST_UDO_SCHEME" version="1.0" class="UserDefinedOperatorScheme"/>
+				</str:UserDefinedOperatorScheme>
 			</str:TransformationScheme>
 		</str:Transformations>
 	</mes:Structures>
