@@ -694,57 +694,40 @@ def test_writer_transformation_scheme_structure(
     complete_header, transformation_scheme_structure, transformation_sample
 ):
     content = [transformation_scheme_structure]
-    output_path = str(
-        Path(__file__).parent / "samples" / "transformation_scheme_output.xml"
-    )
-    write(
+    structure = write(
         content,
-        output_path=output_path,
         header=complete_header,
         prettyprint=True,
     )
 
-    with open(output_path, "r") as f:
-        assert f.read() == transformation_sample
-    os.remove(output_path)
+    assert structure == transformation_sample
 
 
 def test_writer_ruleset_scheme_structure(
     complete_header, ruleset_scheme_structure, ruleset_sample
 ):
     content = [ruleset_scheme_structure]
-    output_path = str(
-        Path(__file__).parent / "samples" / "ruleset_scheme_output.xml"
-    )
-    write(
+
+    structure = write(
         content,
-        output_path=output_path,
         header=complete_header,
         prettyprint=True,
     )
-
-    with open(output_path, "r") as f:
-        assert f.read() == ruleset_sample
-    os.remove(output_path)
+    assert structure == ruleset_sample
 
 
 def test_writer_udo_scheme_structure(
     complete_header, udo_scheme_structure, udo_sample
 ):
     content = [udo_scheme_structure]
-    output_path = str(
-        Path(__file__).parent / "samples" / "udo_scheme_output.xml"
-    )
-    write(
+
+    structure = write(
         content,
-        output_path=output_path,
         header=complete_header,
         prettyprint=True,
     )
 
-    with open(output_path, "r") as f:
-        assert f.read() == udo_sample
-    os.remove(output_path)
+    assert structure == udo_sample
 
 
 def test_writer_full_scheme_structure(
@@ -759,17 +742,9 @@ def test_writer_full_scheme_structure(
         transformation_scheme_structure,
         udo_scheme_structure,
     ]
-
-    output_path = str(
-        Path(__file__).parent / "samples" / "full_scheme_structure_output.xml"
-    )
-    write(
+    structure = write(
         content,
-        output_path=output_path,
         header=complete_header,
         prettyprint=True,
     )
-
-    with open(output_path, "r") as f:
-        assert f.read() == full_structure_sample
-    os.remove(output_path)
+    assert structure == full_structure_sample

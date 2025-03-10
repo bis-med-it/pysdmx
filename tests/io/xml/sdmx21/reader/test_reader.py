@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from pathlib import Path
 
@@ -60,6 +61,16 @@ def samples_folder():
 @pytest.fixture
 def error_304_path():
     return Path(__file__).parent / "samples" / "error_304.xml"
+
+
+@pytest.fixture
+def scheme_examples_json():
+    with open(
+        Path(__file__).parent / "samples" / "examples.json",
+        "r",
+        encoding="utf-8",
+    ) as file:
+        return json.load(file)
 
 
 @pytest.fixture
@@ -444,7 +455,7 @@ def test_vtl_transformation_scheme(samples_folder):
     assert transformation.full_expression == "DS_r <- DS_1 + 1;"
 
 
-def test_vtl_ruleset_scheme(samples_folder):
+def test_vtl_ruleset_scheme(samples_folder, scheme_examples_json):
     data_path = samples_folder / "ruleset_scheme.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1
@@ -454,29 +465,22 @@ def test_vtl_ruleset_scheme(samples_folder):
     assert len(result) == 1
 
     ruleset_scheme = result[0]
-    assert ruleset_scheme.id == "TEST_RULESET_SCHEME"
-    assert ruleset_scheme.name == "Testing Ruleset Scheme"
+    expected_ruleset_scheme = scheme_examples_json["ruleset_scheme"]
+    assert ruleset_scheme.id == expected_ruleset_scheme["id"]
+    assert ruleset_scheme.name == expected_ruleset_scheme["name"]
 
     assert len(ruleset_scheme.items) == 1
     ruleset = ruleset_scheme.items[0]
+    expected_ruleset = expected_ruleset_scheme["items"][0]
     assert isinstance(ruleset, Ruleset)
-    assert ruleset.id == "TEST_DATAPOINT_RULESET"
-    assert ruleset.name == "Testing Datapoint Ruleset"
-    assert ruleset.ruleset_scope == "variable"
-    assert ruleset.ruleset_type == "datapoint"
-    assert ruleset.ruleset_definition == (
-        "define datapoint ruleset signValidation "
-        "(variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM"
-        " as IAI,                 "
-        "FUNCTIONAL_CAT as FC, INSTR_ASSET as IA,"
-        " OBS_VALUE as O) is      "
-        'sign1c: when AE = "C" and IAI = "G" then O > 0 '
-        'errorcode "sign1c" errorlevel 1;     '
-        "end datapoint ruleset;"
-    )
+    assert ruleset.id == expected_ruleset["id"]
+    assert ruleset.name == expected_ruleset["name"]
+    assert ruleset.ruleset_scope == expected_ruleset["ruleset_scope"]
+    assert ruleset.ruleset_type == expected_ruleset["ruleset_type"]
+    assert ruleset.ruleset_definition == expected_ruleset["ruleset_definition"]
 
 
-def test_vtl_udo_scheme(samples_folder):
+def test_vtl_udo_scheme(samples_folder, scheme_examples_json):
     data_path = samples_folder / "udo_scheme.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1
@@ -486,20 +490,17 @@ def test_vtl_udo_scheme(samples_folder):
     assert len(result) == 1
 
     udo_scheme = result[0]
-    assert udo_scheme.id == "TEST_UDO_SCHEME"
-    assert udo_scheme.name == "Testing UDO Scheme"
+    expected_udo_scheme = scheme_examples_json["udo_scheme"]
+    assert udo_scheme.id == expected_udo_scheme["id"]
+    assert udo_scheme.name == expected_udo_scheme["name"]
 
     assert len(udo_scheme.items) == 1
     udo = udo_scheme.items[0]
+    expected_udo = expected_udo_scheme["items"][0]
     assert isinstance(udo, UserDefinedOperator)
-    assert udo.id == "TEST_UDO"
-    assert udo.name == "UDO Testing"
-    assert udo.operator_definition == (
-        "define operator filter_ds "
-        '(ds1 dataset, great_cons string default "1", '
-        "less_cons number default 4.0)   returns dataset is     "
-        "ds1[filter Me_1 > great_cons and Me_2 < less_cons] end operator;"
-    )
+    assert udo.id == expected_udo["id"]
+    assert udo.name == expected_udo["name"]
+    assert udo.operator_definition == expected_udo["operator_definition"]
 
 
 def test_estat_metadata(estat_metadata_path):
