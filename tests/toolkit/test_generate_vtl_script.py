@@ -1,0 +1,171 @@
+import pytest
+
+from pysdmx.model import (
+    Ruleset,
+    RulesetScheme,
+    Transformation,
+    TransformationScheme,
+    UserDefinedOperator,
+    UserDefinedOperatorScheme,
+)
+from pysdmx.toolkit.vtl.generate_vtl_script import generate_vtl_script
+from pysdmx.util import Reference
+
+
+@pytest.fixture
+def generate_vtl_script_sample():
+    with open(
+        "tests/toolkit/samples/generate_vtl_script_sample.vtl",
+        "r",
+        encoding="utf-8",
+    ) as f:
+        return f.read()
+
+
+@pytest.fixture
+def generate_vtl_script_sample_with_reference():
+    with open(
+        "tests/toolkit/samples/generate_vtl_script_sample_with_reference.vtl",
+        "r",
+        encoding="utf-8",
+    ) as f:
+        return f.read()
+
+
+@pytest.fixture
+def valid_ruleset():
+    return Ruleset(
+        id="id",
+        name="name",
+        description="description",
+        ruleset_type="datapoint",
+        ruleset_definition="""define datapoint ruleset signValidation
+            (variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM as IAI,
+                FUNCTIONAL_CAT as FC, INSTR_ASSET as IA, OBS_VALUE as O)
+                is
+                sign1c: when AE = "C" and IAI = "G" then O > 0 errorcode
+                "sign1c" errorlevel 1
+                end datapoint ruleset;""",
+        ruleset_scope="variable",
+    )
+
+
+@pytest.fixture
+def valid_udo():
+    return UserDefinedOperator(
+        id="id",
+        name="name",
+        description="description",
+        operator_definition="""define operator filter_ds
+            (ds1 dataset, great_cons string default "1",
+             less_cons number default 4.0)
+            returns dataset
+            is ds1[filter Me_1 > great_cons and Me_2 < less_cons]
+            end operator;""",
+    )
+
+
+@pytest.fixture
+def valid_transformation():
+    return Transformation(
+        id="id",
+        name="name",
+        description="description",
+        expression="DS_1 + 1",
+        result="DS_r",
+        is_persistent=True,
+    )
+
+
+@pytest.fixture
+def valid_ruleset_scheme(valid_ruleset):
+    return RulesetScheme(
+        id="id",
+        name="name",
+        description="description",
+        vtl_version="2.0",
+        items=[valid_ruleset],
+    )
+
+
+@pytest.fixture
+def valid_udo_scheme(valid_udo):
+    return UserDefinedOperatorScheme(
+        id="id",
+        name="name",
+        description="description",
+        vtl_version="2.0",
+        items=[valid_udo],
+    )
+
+
+@pytest.fixture
+def valid_ts(
+    valid_udo,
+    valid_ruleset,
+    valid_transformation,
+    valid_ruleset_scheme,
+    valid_udo_scheme,
+):
+    return TransformationScheme(
+        id="id",
+        name="name",
+        description="description",
+        vtl_version="2.0",
+        ruleset_schemes=[valid_ruleset_scheme],
+        user_defined_operator_schemes=[valid_udo_scheme],
+        items=[valid_transformation],
+    )
+
+
+@pytest.fixture
+def valid_reference():
+    return Reference(
+        sdmx_type="transformation", agency="ECB", id="id", version="2.0"
+    )
+
+
+@pytest.fixture
+def valid_ts_with_reference(
+    valid_udo,
+    valid_ruleset,
+    valid_transformation,
+    valid_ruleset_scheme,
+    valid_udo_scheme,
+    valid_reference,
+):
+    return TransformationScheme(
+        id="id",
+        name="name",
+        description="description",
+        vtl_version="2.0",
+        ruleset_schemes=[valid_ruleset_scheme, valid_reference],
+        user_defined_operator_schemes=[valid_udo_scheme, valid_reference],
+        items=[valid_transformation],
+    )
+
+
+def test_generate_vtl_script_model_validation(
+    valid_ts, generate_vtl_script_sample
+):
+    generate_vtl_script(valid_ts)
+    vtl_script = generate_vtl_script(valid_ts)
+    assert vtl_script.strip() == generate_vtl_script_sample.strip()
+
+
+def test_generate_vtl_script_with_reference(
+    valid_ts_with_reference, generate_vtl_script_sample_with_reference
+):
+    generate_vtl_script(valid_ts_with_reference)
+    vtl_script = generate_vtl_script(valid_ts_with_reference)
+    assert (
+        vtl_script.strip() == generate_vtl_script_sample_with_reference.strip()
+    )
+
+
+def test_generate_vtl_script_no_model_validation(
+    valid_ts, generate_vtl_script_sample
+):
+    generate_vtl_script(valid_ts, False)
+    vtl_script = generate_vtl_script(valid_ts)
+    assert vtl_script.strip() == generate_vtl_script_sample.strip()

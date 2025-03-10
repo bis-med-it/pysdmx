@@ -106,7 +106,7 @@
                         "names": {
                             "en": "Sum"
                         },
-                        "operatorDefinition": "sum"
+                        "operatorDefinition": "define operator filter_ds (ds1 dataset, great_cons string default \"1\", less_cons number default 4.0) returns dataset is ds1[filter Me_1 > great_cons and Me_2 < less_cons] end operator;"
                     },
                     {
                         "links": [
@@ -122,7 +122,7 @@
                         "names": {
                             "en": "Average"
                         },
-                        "operatorDefinition": "avg"
+                        "operatorDefinition": "define operator filter_ds (ds1 dataset, great_cons string default \"1\", less_cons number default 4.0) returns dataset is ds1[filter Me_1 > great_cons and Me_2 < less_cons] end operator;"
                     }
                 ]
             }
@@ -219,8 +219,8 @@
                         "names": {
                             "en": "Datapoint Ruleset UNIQUE_SOMETHING"
                         },
-                        "rulesetDefinition": "Here we should have a real VTL program instead...",
-                        "rulesetScope": "valuedomain",
+                        "rulesetDefinition": "define datapoint ruleset signValidation (variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM as IAI,FUNCTIONAL_CAT as FC, INSTR_ASSET as IA, OBS_VALUE as O) is sign1c: when AE = \"C\" and IAI = \"G\" then O > 0 errorcode \"sign1c\" errorlevel 1 end datapoint ruleset;",
+                        "rulesetScope": "variable",
                         "rulesetType": "datapoint"
                     }
                 ]
