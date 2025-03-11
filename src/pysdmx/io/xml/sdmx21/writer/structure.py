@@ -752,21 +752,36 @@ def _write_vtl_references(scheme: ItemScheme, indent: str) -> str:
         references: Union[Any, Sequence[Any]], element_name: str
     ) -> str:
         """Process the references to VTL elements."""
-        if isinstance(references, Reference):
+        outreference = []
+        if not isinstance(references, (list, tuple)):
             references = [references]
 
-        return "".join(
-            f"{indent}<{ABBR_STR}:{element_name}>"
-            f"{add_indent(indent)}<{REF} "
-            f"{PACKAGE}={ref.sdmx_type!r} "
-            f"{AGENCY_ID}={ref.agency!r} "
-            f"{ID}={ref.id!r} "
-            f"{VERSION}={ref.version!r} "
-            f"{CLASS}={element_name!r}/>"
-            f"{indent}</{ABBR_STR}:{element_name}>"
-            for ref in references
-            if isinstance(ref, Reference)
-        )
+        for ref in references:
+            if isinstance(ref, Reference):
+                outreference.append(
+                    f"{indent}<{ABBR_STR}:{element_name}>"
+                    f"{add_indent(indent)}<{REF} "
+                    f"{PACKAGE}={ref.sdmx_type!r} "
+                    f"{AGENCY_ID}={ref.agency!r} "
+                    f"{ID}={ref.id!r} "
+                    f"{VERSION}={ref.version!r} "
+                    f"{CLASS}={element_name!r}/>"
+                    f"{indent}</{ABBR_STR}:{element_name}>"
+                )
+            else:
+                if isinstance(ref, ItemScheme):
+                    ref_to_use = parse_short_urn(ref.short_urn)
+                    outreference.append(
+                        f"{indent}<{ABBR_STR}:{element_name}>"
+                        f"{add_indent(indent)}<{REF} "
+                        f"{PACKAGE}={ref_to_use.sdmx_type!r} "
+                        f"{AGENCY_ID}={ref_to_use.agency!r} "
+                        f"{ID}={ref_to_use.id!r} "
+                        f"{VERSION}={ref_to_use.version!r} "
+                        f"{CLASS}={element_name!r}/>"
+                        f"{indent}</{ABBR_STR}:{element_name}>"
+                    )
+        return "".join(outreference)
 
     outfile = ""
     if isinstance(scheme, TransformationScheme):

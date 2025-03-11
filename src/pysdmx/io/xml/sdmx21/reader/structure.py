@@ -457,27 +457,55 @@ class StructureParser(Struct):
 
         return att_level
 
-    @staticmethod
-    def __format_vtl_references(json_elem: Dict[str, Any]) -> Dict[str, Any]:
+    def __format_vtl_references(
+        self, json_elem: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Formats the references in the VTL element."""
-        if RULE_SCHEME in json_elem and REF in json_elem[RULE_SCHEME]:
-            rule_reference = Reference(
-                sdmx_type=json_elem[RULE_SCHEME][REF][PACKAGE],
-                agency=json_elem[RULE_SCHEME][REF][AGENCY_ID],
-                id=json_elem[RULE_SCHEME][REF][ID],
-                version=json_elem[RULE_SCHEME][REF][VERSION],
-            )
-            json_elem.pop(RULE_SCHEME)
-            json_elem["ruleset_schemes"] = rule_reference
-        if UDO_SCHEME in json_elem and REF in json_elem[UDO_SCHEME]:
-            udo_reference = Reference(
-                sdmx_type=json_elem[UDO_SCHEME][REF][PACKAGE],
-                agency=json_elem[UDO_SCHEME][REF][AGENCY_ID],
-                id=json_elem[UDO_SCHEME][REF][ID],
-                version=json_elem[UDO_SCHEME][REF][VERSION],
-            )
-            json_elem.pop(UDO_SCHEME)
-            json_elem["user_defined_operator_schemes"] = udo_reference
+
+        def extract_references(
+            scheme: str, new_key: str, object_list: Dict[str, Any]
+        ) -> None:
+            if scheme in json_elem:
+                references = []
+                scheme_entries = (
+                    json_elem[scheme]
+                    if isinstance(json_elem[scheme], list)
+                    else [json_elem[scheme]]
+                )
+                for entry in scheme_entries:
+                    if isinstance(entry, dict) and REF in entry:
+                        ref = entry[REF]
+                        if isinstance(ref, dict):
+                            ref_id = ref[ID]
+                            matching_object = next(
+                                (
+                                    obj
+                                    for obj in object_list.values()
+                                    if getattr(obj, ID, None) == ref_id
+                                ),
+                                None,
+                            )
+
+                            if matching_object:
+                                references.append(matching_object)
+                            else:
+                                references.append(
+                                    Reference(
+                                        sdmx_type=ref[PACKAGE],
+                                        agency=ref[AGENCY_ID],
+                                        id=ref_id,
+                                        version=ref[VERSION],
+                                    )
+                                )
+
+                json_elem[new_key] = references
+                json_elem.pop(scheme)
+
+        extract_references(RULE_SCHEME, "ruleset_schemes", self.rulesets)
+        extract_references(
+            UDO_SCHEME, "user_defined_operator_schemes", self.udos
+        )
+
         return json_elem
 
     def __format_component(
@@ -617,7 +645,6 @@ class StructureParser(Struct):
             if IS_PARTIAL in element:
                 element[IS_PARTIAL_LOW] = element.pop(IS_PARTIAL) == "true"
             element[item] = add_list(element[item])
-            element = self.__format_vtl_references(element)
             items = []
             for item_elem in element[item]:
                 # Dynamic
@@ -627,6 +654,7 @@ class StructureParser(Struct):
             element = self.__format_agency(element)
             element = self.__format_validity(element)
             element = self.__format_vtl(element)
+            element = self.__format_vtl_references(element)
             if "xmlns" in element:
                 del element["xmlns"]
             # Dynamic creation with specific class
