@@ -279,17 +279,64 @@ def transformation_scheme_structure():
         name_personalisation_scheme=None,
         custom_type_scheme=None,
         ruleset_schemes=Reference(
-            sdmx_type="transformation",
+            sdmx_type="RulesetScheme",
             agency="MD",
             id="TEST_RULESET_SCHEME",
             version="1.0",
         ),
         user_defined_operator_schemes=Reference(
-            sdmx_type="transformation",
+            sdmx_type="UserDefinedOperatorScheme",
             agency="MD",
             id="TEST_UDO_SCHEME",
             version="1.0",
         ),
+        annotations=(),
+    )
+
+
+@pytest.fixture
+def transformation_scheme_structure_with_object(udo_scheme_structure):
+    return TransformationScheme(
+        id="TEST_TS",
+        uri=None,
+        urn="urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=MD:TEST_TS(1.0)",
+        name="Testing TS",
+        description=None,
+        version="1.0",
+        valid_from=None,
+        valid_to=None,
+        is_final=False,
+        is_external_reference=False,
+        service_url=None,
+        structure_url=None,
+        agency="MD",
+        items=[
+            Transformation(
+                id="TEST_Tr",
+                uri=None,
+                urn="urn:sdmx:org.sdmx.infomodel.transformation.Transformation=MD:TEST_TS(1.0).TEST_Tr",
+                name="Testing Transformation",
+                description=None,
+                expression="sum(             BIS_LOC_STATS"
+                "              group by REP_COUNTRY,"
+                "COUNT_SECTOR,REF_DATE)",
+                is_persistent="false",
+                result="aggr.agg1",
+                annotations=(),
+            )
+        ],
+        is_partial=False,
+        vtl_version="2.0",
+        vtl_mapping_scheme=None,
+        name_personalisation_scheme=None,
+        custom_type_scheme=None,
+        ruleset_schemes=Reference(
+            sdmx_type="RulesetScheme",
+            agency="MD",
+            id="TEST_RULESET_SCHEME",
+            version="1.0",
+        ),
+        user_defined_operator_schemes=[udo_scheme_structure],
         annotations=(),
     )
 
@@ -391,13 +438,13 @@ def udo_scheme_structure():
         vtl_mapping_scheme=None,
         ruleset_schemes=[
             Reference(
-                sdmx_type="transformation",
+                sdmx_type="RulesetScheme",
                 agency="MD",
                 id="TEST_RULESET_SCHEME",
                 version="1.0",
             ),
             Reference(
-                sdmx_type="transformation",
+                sdmx_type="RulesetScheme",
                 agency="MD",
                 id="TEST_RULESET_SCHEME",
                 version="1.0",
@@ -740,6 +787,26 @@ def test_writer_full_scheme_structure(
     content = [
         ruleset_scheme_structure,
         transformation_scheme_structure,
+        udo_scheme_structure,
+    ]
+    structure = write(
+        content,
+        header=complete_header,
+        prettyprint=True,
+    )
+    assert structure == full_structure_sample
+
+
+def test_writer_full_scheme_structure_with_object(
+    complete_header,
+    transformation_scheme_structure_with_object,
+    ruleset_scheme_structure,
+    udo_scheme_structure,
+    full_structure_sample,
+):
+    content = [
+        ruleset_scheme_structure,
+        transformation_scheme_structure_with_object,
         udo_scheme_structure,
     ]
     structure = write(

@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+  <mes:Header>
+    <mes:ID>IREF069167</mes:ID>
+    <mes:Test>false</mes:Test>
+    <mes:Prepared>2025-02-17T15:41:59Z</mes:Prepared>
+    <mes:Sender id="Unknown"/>
+    <mes:Receiver id="not_supplied"/>
+  </mes:Header>
+  <mes:Structures>
+    <str:Rulesets>
+      <str:RulesetScheme urn="urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=MD:TEST_RULESET_SCHEME(1.0)" vtlVersion="2.0" isExternalReference="false" agencyID="MD" id="TEST_RULESET_SCHEME" isFinal="false" version="1.0">
+        <com:Name xml:lang="en">Testing Ruleset Scheme</com:Name>
+        <str:Ruleset urn="urn:sdmx:org.sdmx.infomodel.transformation.Ruleset=MD:TEST_RULESET_SCHEME(1.0).TEST_DATAPOINT_RULESET" rulesetScope="variables" id="TEST_DATAPOINT_RULESET" rulesetType="datapoints">
+          <com:Name xml:lang="en">Testing Datapoint Ruleset</com:Name>
+          <str:RulesetDefinition>define datapoint ruleset signValidation (variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM as IAI,                 FUNCTIONAL_CAT as FC, INSTR_ASSET as IA, OBS_VALUE as O) is      sign1c: when AE = "C" and IAI = "G" then O > 0 errorcode "sign1c" errorlevel 1;     sign2c: when AE = "C" and IAI = "GA" then O > 0 errorcode "sign2c" errorlevel 1;     sign3c: when AE = "C" and IAI = "S" then O > 0 errorcode "sign3c" errorlevel 1;     sign4c: when AE = "C" and IAI = "IN1" then O > 0 errorcode "sign4c" errorlevel 2;     sign9: when IAI = "D4Q" and FC = "D" and IA = "FL" then O > 0 errorcode "sign9" errorlevel 3;     sign10: when IAI = "D45" and FC = "P" and IA = "F" then O > 0 errorcode "sign10" errorlevel 4  end datapoint ruleset;</str:RulesetDefinition>
+        </str:Ruleset>
+      </str:RulesetScheme>
+    </str:Rulesets>
+    <str:Transformations>
+      <str:TransformationScheme urn="urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=MD:TEST_TS(1.0)" vtlVersion="2.0" isExternalReference="false" agencyID="MD" id="TEST_TS" isFinal="false" version="1.0">
+        <com:Name xml:lang="en">Testing TS</com:Name>
+        <str:Transformation urn="urn:sdmx:org.sdmx.infomodel.transformation.Transformation=MD:TEST_TS(1.0).TEST_Tr" isPersistent="false" id="TEST_Tr">
+          <com:Name xml:lang="en">Testing Transformation</com:Name>
+          <str:Expression>sum(             BIS_LOC_STATS              group by REP_COUNTRY,COUNT_SECTOR,REF_DATE)</str:Expression>
+          <str:Result>aggr.agg1</str:Result>
+        </str:Transformation>
+        <str:RulesetScheme>
+          <Ref package="transformation" agencyID="MD" id="TEST_RULESET_SCHEME" version="1.0" class="RulesetScheme"/>
+        </str:RulesetScheme>
+        <str:UserDefinedOperatorScheme>
+          <Ref package="transformation" agencyID="MD" id="TEST_UDO_SCHEME" version="1.0" class="UserDefinedOperatorScheme"/>
+        </str:UserDefinedOperatorScheme>
+      </str:TransformationScheme>
+    </str:Transformations>
+    <str:UserDefinedOperators>
+      <str:UserDefinedOperatorScheme urn="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=MD:TEST_UDO_SCHEME(1.0)" vtlVersion="2.0" isExternalReference="false" agencyID="MD" id="TEST_UDO_SCHEME" isFinal="false" version="1.0">
+        <com:Name xml:lang="en">Testing UDO Scheme</com:Name>
+        <str:UserDefinedOperator urn="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=MD:TEST_UDO_SCHEME(1.0).TEST_UDO" id="TEST_UDO">
+          <com:Name xml:lang="en">UDO Testing</com:Name>
+          <str:OperatorDefinition>define operator filter_ds (ds1 dataset, great_cons string default "1", less_cons number default 4.0)   returns dataset is     ds1[filter Me_1 > great_cons and Me_2 &lt; less_cons] end operator;</str:OperatorDefinition>
+        </str:UserDefinedOperator>
+        <str:RulesetScheme>
+          <Ref package="transformation" agencyID="MD" id="TEST_RULESET_SCHEME" version="1.0" class="RulesetScheme"/>
+        </str:RulesetScheme>
+      </str:UserDefinedOperatorScheme>
+    </str:UserDefinedOperators></mes:Structures></mes:Structure>

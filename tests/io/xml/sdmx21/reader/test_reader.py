@@ -74,6 +74,16 @@ def scheme_examples_json():
 
 
 @pytest.fixture
+def full_structure_example():
+    with open(
+        Path(__file__).parent / "samples" / "full_structure_example.vtl",
+        "r",
+        encoding="utf-8",
+    ) as file:
+        return file.read()
+
+
+@pytest.fixture
 def error_str(error_304_path):
     with open(error_304_path, "r") as f:
         text = f.read()
@@ -501,6 +511,18 @@ def test_vtl_udo_scheme(samples_folder, scheme_examples_json):
     assert udo.id == expected_udo["id"]
     assert udo.name == expected_udo["name"]
     assert udo.operator_definition == expected_udo["operator_definition"]
+
+
+def test_vtl_full_scheme(samples_folder, full_structure_example):
+    data_path = samples_folder / "full_vtl_structure.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+
+    assert (
+        str(result).strip()
+        == str(full_structure_example).replace("\n", "").strip()
+    )
 
 
 def test_estat_metadata(estat_metadata_path):
