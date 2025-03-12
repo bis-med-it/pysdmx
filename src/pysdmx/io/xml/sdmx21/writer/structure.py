@@ -761,26 +761,26 @@ def _write_vtl_references(scheme: ItemScheme, indent: str) -> str:
                 outreference.append(
                     f"{indent}<{ABBR_STR}:{element_name}>"
                     f"{add_indent(indent)}<{REF} "
-                    f"{PACKAGE}={ref.sdmx_type!r} "
+                    f"{PACKAGE}={TRANSFORMATION.lower()!r} "
                     f"{AGENCY_ID}={ref.agency!r} "
                     f"{ID}={ref.id!r} "
                     f"{VERSION}={ref.version!r} "
-                    f"{CLASS}={element_name!r}/>"
+                    f"{CLASS}={ref.sdmx_type!r}/>"
                     f"{indent}</{ABBR_STR}:{element_name}>"
                 )
-            else:
-                if isinstance(ref, ItemScheme):
-                    ref_to_use = parse_short_urn(ref.short_urn)
-                    outreference.append(
-                        f"{indent}<{ABBR_STR}:{element_name}>"
-                        f"{add_indent(indent)}<{REF} "
-                        f"{PACKAGE}={ref_to_use.sdmx_type!r} "
-                        f"{AGENCY_ID}={ref_to_use.agency!r} "
-                        f"{ID}={ref_to_use.id!r} "
-                        f"{VERSION}={ref_to_use.version!r} "
-                        f"{CLASS}={element_name!r}/>"
-                        f"{indent}</{ABBR_STR}:{element_name}>"
-                    )
+            if isinstance(ref, ItemScheme):
+                ref_to_use = parse_short_urn(ref.short_urn)
+                outreference.append(
+                    f"{indent}<{ABBR_STR}:{element_name}>"
+                    f"{add_indent(indent)}<{REF} "
+                    f"{PACKAGE}={TRANSFORMATION.lower()!r} "
+                    f"{AGENCY_ID}={ref_to_use.agency!r} "
+                    f"{ID}={ref_to_use.id!r} "
+                    f"{VERSION}={ref_to_use.version!r} "
+                    f"{CLASS}={ref_to_use.sdmx_type!r}/>"
+                    f"{indent}</{ABBR_STR}:{element_name}>"
+                )
+
         return "".join(outreference)
 
     outfile = ""

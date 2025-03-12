@@ -68,7 +68,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     ME_LIST,
     NAME,
     ORGS,
-    PACKAGE,
     PAR_ID,
     PAR_VER,
     PRIM_MEASURE,
@@ -473,30 +472,29 @@ class StructureParser(Struct):
                     else [json_elem[scheme]]
                 )
                 for entry in scheme_entries:
-                    if isinstance(entry, dict) and REF in entry:
-                        ref = entry[REF]
-                        if isinstance(ref, dict):
-                            ref_id = ref[ID]
-                            matching_object = next(
-                                (
-                                    obj
-                                    for obj in object_list.values()
-                                    if getattr(obj, ID, None) == ref_id
-                                ),
-                                None,
-                            )
+                    ref = entry[REF]
 
-                            if matching_object:
-                                references.append(matching_object)
-                            else:
-                                references.append(
-                                    Reference(
-                                        sdmx_type=ref[PACKAGE],
-                                        agency=ref[AGENCY_ID],
-                                        id=ref_id,
-                                        version=ref[VERSION],
-                                    )
-                                )
+                    ref_id = ref[ID]
+                    matching_object = next(
+                        (
+                            obj
+                            for obj in object_list.values()
+                            if getattr(obj, ID, None) == ref_id
+                        ),
+                        None,
+                    )
+
+                    if matching_object:
+                        references.append(matching_object)
+                    else:
+                        references.append(
+                            Reference(
+                                sdmx_type=ref[CLASS],
+                                agency=ref[AGENCY_ID],
+                                id=ref_id,
+                                version=ref[VERSION],
+                            )
+                        )
 
                 json_elem[new_key] = references
                 json_elem.pop(scheme)
