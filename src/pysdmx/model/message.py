@@ -32,9 +32,9 @@ class Header(Struct, kw_only=True):
     """Header for the SDMX messages."""
 
     id: str = str(uuid.uuid4())
-    test: bool = True
+    test: bool = False
     prepared: datetime = datetime.now(timezone.utc)
-    sender: str = "ZZZ"
+    sender: str = ""
     receiver: Optional[str] = None
     source: Optional[str] = None
     dataset_action: Optional[ActionType] = None
@@ -54,6 +54,7 @@ class Message(Struct, frozen=True):
               contents of a SDMX Submission Message.
     """
 
+    header: Optional[Header] = None
     structures: Optional[
         Sequence[
             Union[

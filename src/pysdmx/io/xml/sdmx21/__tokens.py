@@ -33,6 +33,14 @@ DIM_OBS = "dimensionAtObservation"
 ALL_DIM = "AllDimensions"
 REF = "Ref"
 DATASET_ID = "DataSetID"
+DATASET_ACTION = "DataSetAction"
+TEST = "Test"
+PREPARED = "Prepared"
+SENDER = "Sender"
+RECEIVER = "Receiver"
+SOURCE = "Source"
+HEADER_ID = "ID"
+
 
 # SDMX Error handling
 ERROR = "Error"
