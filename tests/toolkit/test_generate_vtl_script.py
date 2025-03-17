@@ -33,6 +33,26 @@ def generate_vtl_script_sample_with_reference():
 
 
 @pytest.fixture
+def generate_vtl_script_sample_with_only_reference():
+    with open(
+        "tests/toolkit/samples/generate_vtl_script_sample_with_only_reference.vtl",
+        "r",
+        encoding="utf-8",
+    ) as f:
+        return f.read()
+
+
+@pytest.fixture
+def generate_vtl_script_sample_with_several_references():
+    with open(
+        "tests/toolkit/samples/generate_vtl_script_sample_with_several_references.vtl",
+        "r",
+        encoding="utf-8",
+    ) as f:
+        return f.read()
+
+
+@pytest.fixture
 def valid_ruleset():
     return Ruleset(
         id="id",
@@ -119,9 +139,19 @@ def valid_ts(
 
 
 @pytest.fixture
-def valid_reference():
+def valid_udo_scheme_reference():
     return Reference(
-        sdmx_type="transformation", agency="ECB", id="id", version="2.0"
+        sdmx_type="UserDefinedOperatorScheme",
+        agency="ECB",
+        id="id",
+        version="2.0",
+    )
+
+
+@pytest.fixture
+def valid_ruleset_scheme_reference():
+    return Reference(
+        sdmx_type="RulesetScheme", agency="ECB", id="id", version="2.0"
     )
 
 
@@ -132,15 +162,63 @@ def valid_ts_with_reference(
     valid_transformation,
     valid_ruleset_scheme,
     valid_udo_scheme,
-    valid_reference,
+    valid_ruleset_scheme_reference,
+    valid_udo_scheme_reference,
 ):
     return TransformationScheme(
         id="id",
         name="name",
         description="description",
         vtl_version="2.0",
-        ruleset_schemes=[valid_ruleset_scheme, valid_reference],
-        user_defined_operator_schemes=[valid_udo_scheme, valid_reference],
+        ruleset_schemes=[valid_ruleset_scheme, valid_ruleset_scheme_reference],
+        user_defined_operator_schemes=[
+            valid_udo_scheme,
+            valid_udo_scheme_reference,
+        ],
+        items=[valid_transformation],
+    )
+
+
+@pytest.fixture
+def valid_ts_with_only_references(
+    valid_udo,
+    valid_ruleset,
+    valid_transformation,
+    valid_ruleset_scheme_reference,
+    valid_udo_scheme_reference,
+):
+    return TransformationScheme(
+        id="id",
+        name="name",
+        description="description",
+        vtl_version="2.0",
+        ruleset_schemes=[valid_ruleset_scheme_reference],
+        user_defined_operator_schemes=[valid_udo_scheme_reference],
+        items=[valid_transformation],
+    )
+
+
+@pytest.fixture
+def valid_ts_with_several_references(
+    valid_udo,
+    valid_ruleset,
+    valid_transformation,
+    valid_ruleset_scheme_reference,
+    valid_udo_scheme_reference,
+):
+    return TransformationScheme(
+        id="id",
+        name="name",
+        description="description",
+        vtl_version="2.0",
+        ruleset_schemes=[
+            valid_ruleset_scheme_reference,
+            valid_ruleset_scheme_reference,
+        ],
+        user_defined_operator_schemes=[
+            valid_udo_scheme_reference,
+            valid_udo_scheme_reference,
+        ],
         items=[valid_transformation],
     )
 
@@ -148,7 +226,6 @@ def valid_ts_with_reference(
 def test_generate_vtl_script_model_validation(
     valid_ts, generate_vtl_script_sample
 ):
-    generate_vtl_script(valid_ts)
     vtl_script = generate_vtl_script(valid_ts)
     assert vtl_script.strip() == generate_vtl_script_sample.strip()
 
@@ -156,16 +233,36 @@ def test_generate_vtl_script_model_validation(
 def test_generate_vtl_script_with_reference(
     valid_ts_with_reference, generate_vtl_script_sample_with_reference
 ):
-    generate_vtl_script(valid_ts_with_reference)
     vtl_script = generate_vtl_script(valid_ts_with_reference)
     assert (
         vtl_script.strip() == generate_vtl_script_sample_with_reference.strip()
     )
 
 
+def test_generate_vtl_script_with_only_reference(
+    valid_ts_with_only_references,
+    generate_vtl_script_sample_with_only_reference,
+):
+    vtl_script = generate_vtl_script(valid_ts_with_only_references)
+    assert (
+        vtl_script.strip()
+        == generate_vtl_script_sample_with_only_reference.strip()
+    )
+
+
+def test_generate_vtl_script_with_several_references(
+    valid_ts_with_several_references,
+    generate_vtl_script_sample_with_several_references,
+):
+    vtl_script = generate_vtl_script(valid_ts_with_several_references)
+    assert (
+        vtl_script.strip()
+        == generate_vtl_script_sample_with_several_references.strip()
+    )
+
+
 def test_generate_vtl_script_no_model_validation(
     valid_ts, generate_vtl_script_sample
 ):
-    generate_vtl_script(valid_ts, False)
-    vtl_script = generate_vtl_script(valid_ts)
+    vtl_script = generate_vtl_script(valid_ts, False)
     assert vtl_script.strip() == generate_vtl_script_sample.strip()
