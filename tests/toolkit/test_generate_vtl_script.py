@@ -15,7 +15,7 @@ from pysdmx.util import Reference
 @pytest.fixture
 def generate_vtl_script_sample():
     with open(
-        "tests/toolkit/samples/generate_vtl_script_sample.vtl",
+        "tests/toolkit/samples/generate_vtl_script_sample_objects.vtl",
         "r",
         encoding="utf-8",
     ) as f:
@@ -25,27 +25,7 @@ def generate_vtl_script_sample():
 @pytest.fixture
 def generate_vtl_script_sample_with_reference():
     with open(
-        "tests/toolkit/samples/generate_vtl_script_sample_with_reference.vtl",
-        "r",
-        encoding="utf-8",
-    ) as f:
-        return f.read()
-
-
-@pytest.fixture
-def generate_vtl_script_sample_with_only_reference():
-    with open(
-        "tests/toolkit/samples/generate_vtl_script_sample_with_only_reference.vtl",
-        "r",
-        encoding="utf-8",
-    ) as f:
-        return f.read()
-
-
-@pytest.fixture
-def generate_vtl_script_sample_with_several_references():
-    with open(
-        "tests/toolkit/samples/generate_vtl_script_sample_with_several_references.vtl",
+        "tests/toolkit/samples/generate_vtl_script_sample_references.vtl",
         "r",
         encoding="utf-8",
     ) as f:
@@ -231,33 +211,29 @@ def test_generate_vtl_script_model_validation(
 
 
 def test_generate_vtl_script_with_reference(
-    valid_ts_with_reference, generate_vtl_script_sample_with_reference
+    valid_ts_with_reference, generate_vtl_script_sample
 ):
     vtl_script = generate_vtl_script(valid_ts_with_reference)
+    assert vtl_script.strip() == generate_vtl_script_sample.strip()
+
+
+def test_generate_vtl_script_with_only_reference(
+    valid_ts_with_only_references,
+    generate_vtl_script_sample_with_reference,
+):
+    vtl_script = generate_vtl_script(valid_ts_with_only_references)
     assert (
         vtl_script.strip() == generate_vtl_script_sample_with_reference.strip()
     )
 
 
-def test_generate_vtl_script_with_only_reference(
-    valid_ts_with_only_references,
-    generate_vtl_script_sample_with_only_reference,
-):
-    vtl_script = generate_vtl_script(valid_ts_with_only_references)
-    assert (
-        vtl_script.strip()
-        == generate_vtl_script_sample_with_only_reference.strip()
-    )
-
-
 def test_generate_vtl_script_with_several_references(
     valid_ts_with_several_references,
-    generate_vtl_script_sample_with_several_references,
+    generate_vtl_script_sample_with_reference,
 ):
     vtl_script = generate_vtl_script(valid_ts_with_several_references)
     assert (
-        vtl_script.strip()
-        == generate_vtl_script_sample_with_several_references.strip()
+        vtl_script.strip() == generate_vtl_script_sample_with_reference.strip()
     )
 
 
