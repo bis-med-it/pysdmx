@@ -10,6 +10,7 @@ from vtlengine.AST import (
 )
 
 from pysdmx.errors import Invalid
+from pysdmx.io.xml.sdmx21.__tokens import RULE_SCHEME, UDO_SCHEME
 from pysdmx.model.vtl import (
     Ruleset,
     RulesetScheme,
@@ -18,6 +19,7 @@ from pysdmx.model.vtl import (
     UserDefinedOperator,
     UserDefinedOperatorScheme,
 )
+from pysdmx.util import Reference
 
 
 def _ruleset_validation(ruleset: Ruleset) -> None:
@@ -58,6 +60,15 @@ def _ruleset_scheme_validations(ruleset_scheme: RulesetScheme) -> None:
         _ruleset_validation(ruleset)
 
 
+def _ruleset_scheme_reference_validations(ruleset_scheme: Reference) -> None:
+    """Additional validation checks for ruleset schemes."""
+    if ruleset_scheme.sdmx_type != RULE_SCHEME:
+        raise Invalid(
+            "Reference in Ruleset Schemes must point to a Ruleset Scheme, "
+            f"got {ruleset_scheme.sdmx_type}"
+        )
+
+
 def _user_defined_operator_validation(udo: UserDefinedOperator) -> None:
     """Additional validation checks for user defined operators."""
     try:
@@ -92,6 +103,16 @@ def _user_defined_operator_scheme_validations(
         _user_defined_operator_validation(udo)
 
 
+def _udo_scheme_reference_validations(udo_scheme: Reference) -> None:
+    """Additional validation checks for ruleset schemes."""
+    if udo_scheme.sdmx_type != UDO_SCHEME:
+        raise Invalid(
+            "Reference in User Defined Operator Schemes"
+            " must point to a Defined Operator Scheme, "
+            f"got {udo_scheme.sdmx_type}"
+        )
+
+
 def _transformation_validations(transformation: Transformation) -> None:
     """Additional validation checks for transformations."""
     try:
@@ -114,9 +135,13 @@ def _transformation_scheme_validations(
     for ruleset_scheme in transformation_scheme.ruleset_schemes:
         if isinstance(ruleset_scheme, RulesetScheme):
             _ruleset_scheme_validations(ruleset_scheme)
+        if isinstance(ruleset_scheme, Reference):
+            _ruleset_scheme_reference_validations(ruleset_scheme)
     for udo_scheme in transformation_scheme.user_defined_operator_schemes:
         if isinstance(udo_scheme, UserDefinedOperatorScheme):
             _user_defined_operator_scheme_validations(udo_scheme)
+        if isinstance(udo_scheme, Reference):
+            _udo_scheme_reference_validations(udo_scheme)
     for transformation in transformation_scheme.items:
         if not isinstance(transformation, Transformation):
             raise Invalid(
