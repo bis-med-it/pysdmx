@@ -21,8 +21,6 @@ def _process_ruleset_scheme(
         if isinstance(ruleset_scheme, RulesetScheme):
             for ruleset in ruleset_scheme.items:
                 vtl_script += f"{ruleset.ruleset_definition}\n"
-        if isinstance(ruleset_scheme, Reference):
-            vtl_script += f"{ruleset_scheme}\n"
 
     return vtl_script
 
@@ -36,8 +34,6 @@ def _process_udo_scheme(
         if isinstance(udo_scheme, UserDefinedOperatorScheme):
             for udo in udo_scheme.items:
                 vtl_script += f"{udo.operator_definition}\n"
-        if isinstance(udo_scheme, Reference):
-            vtl_script += f"{udo_scheme}\n"
 
     return vtl_script
 

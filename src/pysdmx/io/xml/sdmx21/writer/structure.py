@@ -2,7 +2,6 @@
 
 from collections import OrderedDict
 from typing import Any, Dict, Optional, Sequence, Union
-from xml.sax import saxutils
 
 from pysdmx.io.format import Format
 from pysdmx.io.xml.sdmx21.__tokens import (
@@ -705,7 +704,7 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
             label = f"{ABBR_STR}:{RULE}"
             data += f"{add_indent(indent)}<{ABBR_STR}:RulesetDefinition>"
             data += (
-                f"{item_or_scheme.ruleset_definition}"
+                f"{__escape_xml(item_or_scheme.ruleset_definition)}"
                 f"</{ABBR_STR}:RulesetDefinition>"
             )
             attrib += (
@@ -716,7 +715,10 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
         if isinstance(item_or_scheme, Transformation):
             label = f"{ABBR_STR}:{TRANSFORMATION}"
             data += f"{add_indent(indent)}<{ABBR_STR}:Expression>"
-            data += f"{item_or_scheme.expression}</{ABBR_STR}:Expression>"
+            data += (
+                f"{__escape_xml(item_or_scheme.expression)}"
+                f"</{ABBR_STR}:Expression>"
+            )
             data += f"{add_indent(indent)}<{ABBR_STR}:Result>"
             data += f"{item_or_scheme.result}</{ABBR_STR}:Result>"
             attrib += f" isPersistent={item_or_scheme.is_persistent!r}"
@@ -725,7 +727,7 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
             label = f"{ABBR_STR}:{UDO}"
             data += f"{add_indent(indent)}<{ABBR_STR}:OperatorDefinition>"
             data += (
-                f"{item_or_scheme.operator_definition}"
+                f"{__escape_xml(item_or_scheme.operator_definition)}"
                 f"</{ABBR_STR}:OperatorDefinition>"
             )
 
@@ -737,7 +739,6 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
         outfile += f" vtlVersion={item_or_scheme.vtl_version!r}"
 
     outfile = outfile.replace("'", '"')
-    outfile = saxutils.escape(outfile)
 
     return outfile
 
@@ -790,7 +791,6 @@ def _write_vtl_references(scheme: ItemScheme, indent: str) -> str:
         outfile += process_references(scheme.ruleset_schemes, "RulesetScheme")
 
     outfile = outfile.replace("'", '"')
-    outfile = saxutils.escape(outfile)
 
     return outfile
 
