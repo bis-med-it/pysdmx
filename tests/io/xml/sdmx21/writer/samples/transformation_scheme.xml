@@ -12,17 +12,17 @@
 		<str:Transformations>
 			<str:TransformationScheme id="TEST_TS" urn="urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=MD:TEST_TS(1.0)" version="1.0" isExternalReference="false" isFinal="false" agencyID="MD"  vtlVersion="2.0">
 				<com:Name xml:lang="en">Testing TS</com:Name>
-				<str:Transformation id="TEST_Tr" urn="urn:sdmx:org.sdmx.infomodel.transformation.Transformation=MD:TEST_TS(1.0).TEST_Tr" isPersistent="false">
-					<com:Name xml:lang="en">Testing Transformation</com:Name>
-					<str:Expression>sum(             BIS_LOC_STATS              group by REP_COUNTRY,COUNT_SECTOR,REF_DATE)</str:Expression>
-					<str:Result>aggr.agg1</str:Result>
-				</str:Transformation>
-				<str:RulesetScheme>
-					<Ref package="transformation" agencyID="MD" id="TEST_RULESET_SCHEME" version="1.0" class="RulesetScheme"/>
-				</str:RulesetScheme>
-				<str:UserDefinedOperatorScheme>
-					<Ref package="transformation" agencyID="MD" id="TEST_UDO_SCHEME" version="1.0" class="UserDefinedOperatorScheme"/>
-				</str:UserDefinedOperatorScheme>
+				&lt;str:Transformation id="TEST_Tr" urn="urn:sdmx:org.sdmx.infomodel.transformation.Transformation=MD:TEST_TS(1.0).TEST_Tr" isPersistent="false"&gt;
+					&lt;com:Name xml:lang="en"&gt;Testing Transformation&lt;/com:Name&gt;
+					&lt;str:Expression&gt;sum(             BIS_LOC_STATS              group by REP_COUNTRY,COUNT_SECTOR,REF_DATE)&lt;/str:Expression&gt;
+					&lt;str:Result&gt;aggr.agg1&lt;/str:Result&gt;
+				&lt;/str:Transformation&gt;
+				&lt;str:RulesetScheme&gt;
+					&lt;Ref package="transformation" agencyID="MD" id="TEST_RULESET_SCHEME" version="1.0" class="RulesetScheme"/&gt;
+				&lt;/str:RulesetScheme&gt;
+				&lt;str:UserDefinedOperatorScheme&gt;
+					&lt;Ref package="transformation" agencyID="MD" id="TEST_UDO_SCHEME" version="1.0" class="UserDefinedOperatorScheme"/&gt;
+				&lt;/str:UserDefinedOperatorScheme&gt;
 			</str:TransformationScheme>
 		</str:Transformations>
 	</mes:Structures>

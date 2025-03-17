@@ -12,10 +12,10 @@
 		<str:Rulesets>
 			<str:RulesetScheme id="TEST_RULESET_SCHEME" urn="urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=MD:TEST_RULESET_SCHEME(1.0)" version="1.0" isExternalReference="false" isFinal="false" agencyID="MD"  vtlVersion="2.0">
 				<com:Name xml:lang="en">Testing Ruleset Scheme</com:Name>
-				<str:Ruleset id="TEST_DATAPOINT_RULESET" urn="urn:sdmx:org.sdmx.infomodel.transformation.Ruleset=MD:TEST_RULESET_SCHEME(1.0).TEST_DATAPOINT_RULESET" rulesetScope="variable" rulesetType="datapoint">
-					<com:Name xml:lang="en">Testing Datapoint Ruleset</com:Name>
-					<str:RulesetDefinition>define datapoint ruleset signValidation (variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM as IAI,                 FUNCTIONAL_CAT as FC, INSTR_ASSET as IA, OBS_VALUE as O) is      sign1c: when AE = "C" and IAI = "G" then O &gt; 0 errorcode "sign1c" errorlevel 1;     end datapoint ruleset;</str:RulesetDefinition>
-				</str:Ruleset>
+				&lt;str:Ruleset id="TEST_DATAPOINT_RULESET" urn="urn:sdmx:org.sdmx.infomodel.transformation.Ruleset=MD:TEST_RULESET_SCHEME(1.0).TEST_DATAPOINT_RULESET" rulesetScope="variable" rulesetType="datapoint"&gt;
+					&lt;com:Name xml:lang="en"&gt;Testing Datapoint Ruleset&lt;/com:Name&gt;
+					&lt;str:RulesetDefinition&gt;define datapoint ruleset signValidation (variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM as IAI,                 FUNCTIONAL_CAT as FC, INSTR_ASSET as IA, OBS_VALUE as O) is      sign1c: when AE = "C" and IAI = "G" then O &gt; 0 errorcode "sign1c" errorlevel 1;     end datapoint ruleset;&lt;/str:RulesetDefinition&gt;
+				&lt;/str:Ruleset&gt;
 			</str:RulesetScheme>
 		</str:Rulesets>
 	</mes:Structures>
