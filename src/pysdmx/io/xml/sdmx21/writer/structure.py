@@ -2,6 +2,7 @@
 
 from collections import OrderedDict
 from typing import Any, Dict, Optional, Sequence, Union
+from xml.sax import saxutils
 
 from pysdmx.io.format import Format
 from pysdmx.io.xml.sdmx21.__tokens import (
@@ -735,12 +736,8 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
     if isinstance(item_or_scheme, VtlScheme):
         outfile += f" vtlVersion={item_or_scheme.vtl_version!r}"
 
-    outfile = (
-        outfile.replace("'", '"')
-        .replace("& ", "&amp; ")
-        .replace("< ", "&lt; ")
-        .replace("> ", "&gt; ")
-    )
+    outfile = outfile.replace("'", '"')
+    outfile = saxutils.escape(outfile)
 
     return outfile
 
@@ -792,12 +789,8 @@ def _write_vtl_references(scheme: ItemScheme, indent: str) -> str:
     if isinstance(scheme, UserDefinedOperatorScheme):
         outfile += process_references(scheme.ruleset_schemes, "RulesetScheme")
 
-    outfile = (
-        outfile.replace("'", '"')
-        .replace("& ", "&amp; ")
-        .replace("< ", "&lt; ")
-        .replace("> ", "&gt; ")
-    )
+    outfile = outfile.replace("'", '"')
+    outfile = saxutils.escape(outfile)
 
     return outfile
 
