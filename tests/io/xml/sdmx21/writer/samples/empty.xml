@@ -2,9 +2,9 @@
 <mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
 	<mes:Header>
 		<mes:ID>ID</mes:ID>
-		<mes:Test>true</mes:Test>
+		<mes:Test>false</mes:Test>
 		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
-		<mes:Sender id="ZZZ"/>
+		<mes:Sender id="unknown"/>
 	</mes:Header>
 	<mes:Structures>
 	</mes:Structures>

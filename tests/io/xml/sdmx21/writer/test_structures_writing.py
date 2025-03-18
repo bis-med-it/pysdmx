@@ -382,9 +382,9 @@ def test_writer_no_header():
     result: str = write({}, prettyprint=False)
     assert "<mes:Header>" in result
     assert "<mes:ID>" in result
-    assert "<mes:Test>true</mes:Test>" in result
+    assert "<mes:Test>false</mes:Test>" in result
     assert "<mes:Prepared>" in result
-    assert '<mes:Sender id="ZZZ"/>' in result
+    assert '<mes:Sender id="unknown"/>' in result
 
 
 def test_writer_datastructure(complete_header, datastructure):

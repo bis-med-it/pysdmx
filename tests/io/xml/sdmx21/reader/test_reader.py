@@ -484,3 +484,11 @@ def test_wrong_flavour_generic(error_str):
 def test_wrong_flavour_structure_specific(error_str):
     with pytest.raises(Invalid):
         read_str_spe(error_str, validate=True)
+
+
+def test_strcuture_no_header(samples_folder):
+    data_path = samples_folder / "structure_no_header.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    header = read_sdmx(input_str, validate=False).header
+    assert header is None
