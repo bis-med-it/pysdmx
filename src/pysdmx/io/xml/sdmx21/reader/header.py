@@ -2,16 +2,17 @@
 
 from typing import Any, Dict, Optional
 
-from pysdmx.errors import Invalid
 from pysdmx.io.xml.sdmx21.__tokens import (
     DATASET_ACTION,
     DATASET_ID,
+    GENERIC,
     HEADER,
     HEADER_ID,
     PREPARED,
     RECEIVER,
     SENDER,
     SOURCE,
+    STR_SPE,
     STRUCTURE,
     TEST,
 )
@@ -28,24 +29,16 @@ def __parse_header(header: Dict[str, Any]) -> Header:
     Returns:
         Header: The header of the SDMX message.
 
-    Raises:
-        Invalid: If the header is missing required fields.
     """
-    required_fields = [HEADER_ID, TEST, PREPARED, SENDER]
-    missing_fields = [
-        field for field in required_fields if field not in header
-    ]
-
-    if missing_fields:
-        raise Invalid(
-            f"Missing required fields in header: {', '.join(missing_fields)}"
-        )
-
     parsed_header = Header(
-        id=header[HEADER_ID],
-        test=header[TEST],
-        prepared=header[PREPARED],
-        sender=header[SENDER],
+        id=header.get(HEADER_ID, ""),
+        test=header.get(TEST, ""),
+        prepared=header.get(PREPARED, ""),
+        sender=(
+            header[SENDER]["id"]
+            if isinstance(header.get(SENDER), dict)
+            else header.get(SENDER, "")
+        ),
         receiver=header.get(RECEIVER),
         source=header.get(SOURCE),
         dataset_action=header.get(DATASET_ACTION),
@@ -70,11 +63,9 @@ def read(
         The header of the SDMX message.
     """
     dict_info = parse_xml(input_str, validate)
-    possible_keys = ["StructureSpecificData", "GenericData", "Structure"]
-    selected_key = next(
-        (key for key in possible_keys if key in dict_info), None
-    )
-    if selected_key is None or HEADER not in dict_info[selected_key]:
+    possible_keys = [STR_SPE, GENERIC, STRUCTURE]
+    selected_key = next((key for key in possible_keys if key in dict_info))
+    if HEADER not in dict_info[selected_key]:
         return None
     header = dict_info[selected_key][HEADER]
     return __parse_header(header)
