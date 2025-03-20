@@ -30,23 +30,25 @@ def __parse_header(header: Dict[str, Any]) -> Header:
         Header: The header of the SDMX message.
 
     """
-    parsed_header = Header(
-        id=header.get(HEADER_ID, ""),
-        test=header.get(TEST, ""),
-        prepared=header.get(PREPARED, ""),
-        sender=(
-            header[SENDER]["id"]
-            if isinstance(header.get(SENDER), dict)
-            else header.get(SENDER, "")
+    dict_header = {
+        "id": header[HEADER_ID],
+        "test": header[TEST],
+        "prepared": header[PREPARED],
+        "sender": header[SENDER]["id"]
+        if isinstance(header[SENDER], dict)
+        else header[SENDER],
+        **({"receiver": header[RECEIVER]} if RECEIVER in header else {}),
+        **({"source": header[SOURCE]} if SOURCE in header else {}),
+        **(
+            {"dataset_action": header[DATASET_ACTION]}
+            if DATASET_ACTION in header
+            else {}
         ),
-        receiver=header.get(RECEIVER),
-        source=header.get(SOURCE),
-        dataset_action=header.get(DATASET_ACTION),
-        structure=header.get(STRUCTURE),
-        dataset_id=header.get(DATASET_ID),
-    )
+        **({"structure": header[STRUCTURE]} if STRUCTURE in header else {}),
+        **({"dataset_id": header[DATASET_ID]} if DATASET_ID in header else {}),
+    }
 
-    return parsed_header
+    return Header(**dict_header)
 
 
 def read(
