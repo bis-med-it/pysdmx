@@ -7,6 +7,7 @@ from xml.sax.saxutils import escape
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
+from pysdmx.io.xml.sdmx21.__tokens import RULESETS, TRANSFORMATIONS, UDOS
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
@@ -73,7 +74,7 @@ def __namespaces_from_type(type_: Format) -> str:
 
 
 def create_namespaces(
-    type_: Format, ss_namespaces: str = "", prettyprint: bool = False
+        type_: Format, ss_namespaces: str = "", prettyprint: bool = False
 ) -> str:
     """Creates the namespaces for the XML file.
 
@@ -111,6 +112,9 @@ MSG_CONTENT_PKG = OrderedDict(
         (CONCEPTS, "Concepts"),
         (DSDS, "DataStructures"),
         (CONSTRAINTS, "ContentConstraints"),
+        (RULESETS, "Rulesets"),
+        (TRANSFORMATIONS, "Transformations"),
+        (UDOS, "UserDefinedOperators"),
     ]
 )
 
@@ -142,10 +146,10 @@ def add_indent(indent: str) -> str:
 
 
 def __write_header(
-    header: Header,
-    prettyprint: bool,
-    add_namespace_structure: bool = False,
-    data_message: bool = True,
+        header: Header,
+        prettyprint: bool,
+        add_namespace_structure: bool = False,
+        data_message: bool = True,
 ) -> str:
     """Writes the Header part of the message.
 
@@ -240,7 +244,7 @@ def __write_header(
         for short_urn, dim_at_obs in header.structure.items():
             references_str += __reference(short_urn, dim_at_obs)
     if not data_message and (
-        header.dataset_id or header.dataset_action or header.structure
+            header.dataset_id or header.dataset_action or header.structure
     ):
         raise Invalid(
             "Header must not contain DataSetID or DataSetAction "

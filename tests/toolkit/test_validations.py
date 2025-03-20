@@ -17,6 +17,7 @@ from pysdmx.toolkit.vtl._validations import (
     _user_defined_operator_scheme_validations,
     _user_defined_operator_validation,
 )
+from pysdmx.util import Reference
 
 
 @pytest.fixture
@@ -101,6 +102,83 @@ def valid_ts(
         vtl_version="2.0",
         ruleset_schemes=[valid_ruleset_scheme],
         user_defined_operator_schemes=[valid_udo_scheme],
+        items=[valid_transformation],
+    )
+
+
+@pytest.fixture
+def valid_udo_scheme_reference():
+    return Reference(
+        sdmx_type="UserDefinedOperatorScheme",
+        agency="ECB",
+        id="id",
+        version="2.0",
+    )
+
+
+@pytest.fixture
+def valid_ruleset_scheme_reference():
+    return Reference(
+        sdmx_type="RulesetScheme", agency="ECB", id="id", version="2.0"
+    )
+
+
+@pytest.fixture
+def valid_ts_with_reference(
+    valid_udo,
+    valid_ruleset,
+    valid_transformation,
+    valid_ruleset_scheme,
+    valid_udo_scheme,
+    valid_ruleset_scheme_reference,
+    valid_udo_scheme_reference,
+):
+    return TransformationScheme(
+        id="id",
+        name="name",
+        description="description",
+        vtl_version="2.0",
+        ruleset_schemes=[valid_ruleset_scheme, valid_ruleset_scheme_reference],
+        user_defined_operator_schemes=[
+            valid_udo_scheme,
+            valid_udo_scheme_reference,
+        ],
+        items=[valid_transformation],
+    )
+
+
+@pytest.fixture
+def invalid_ts_with_wrong_ruleset_scheme_reference(
+    valid_udo,
+    valid_ruleset,
+    valid_transformation,
+    valid_ruleset_scheme,
+    valid_udo_scheme_reference,
+):
+    return TransformationScheme(
+        id="id",
+        name="name",
+        description="description",
+        vtl_version="2.0",
+        ruleset_schemes=[valid_udo_scheme_reference],
+        items=[valid_transformation],
+    )
+
+
+@pytest.fixture
+def invalid_ts_with_wrong_udo_scheme_reference(
+    valid_udo,
+    valid_ruleset,
+    valid_transformation,
+    valid_udo_scheme,
+    valid_ruleset_scheme_reference,
+):
+    return TransformationScheme(
+        id="id",
+        name="name",
+        description="description",
+        vtl_version="2.0",
+        user_defined_operator_schemes=[valid_ruleset_scheme_reference],
         items=[valid_transformation],
     )
 
@@ -415,6 +493,38 @@ def test_transformation_invalid_children_number():
 
 def test_transformation_scheme_validation(valid_ts):
     _transformation_scheme_validations(valid_ts)
+
+
+def test_transformation_scheme_validation_with_reference(
+    valid_ts_with_reference,
+):
+    _transformation_scheme_validations(valid_ts_with_reference)
+
+
+def test_invalid_ts_with_wrong_ruleset_scheme_reference(
+    invalid_ts_with_wrong_ruleset_scheme_reference,
+):
+    with pytest.raises(
+        Invalid,
+        match="Reference in Ruleset Schemes must point "
+        "to a Ruleset Scheme, got UserDefinedOperatorScheme",
+    ):
+        _transformation_scheme_validations(
+            invalid_ts_with_wrong_ruleset_scheme_reference
+        )
+
+
+def test_invalid_ts_with_wrong_udo_scheme_reference(
+    invalid_ts_with_wrong_udo_scheme_reference,
+):
+    with pytest.raises(
+        Invalid,
+        match="Reference in User Defined Operator Schemes must "
+        "point to a Defined Operator Scheme, got RulesetScheme",
+    ):
+        _transformation_scheme_validations(
+            invalid_ts_with_wrong_udo_scheme_reference
+        )
 
 
 def test_empty_items_transformation_scheme(
