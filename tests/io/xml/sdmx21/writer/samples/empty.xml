@@ -4,7 +4,7 @@
 		<mes:ID>ID</mes:ID>
 		<mes:Test>false</mes:Test>
 		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
-		<mes:Sender id="unknown"/>
+		<mes:Sender id="ZZZ"/>
 	</mes:Header>
 	<mes:Structures>
 	</mes:Structures>
