@@ -1,12 +1,13 @@
 """Model for VTL artefacts."""
 
 from enum import Enum
-from typing import Literal, Optional, Sequence
+from typing import Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
 from pysdmx.errors import Invalid
 from pysdmx.model.__base import Item, ItemScheme
+from pysdmx.util import Reference
 
 
 class Transformation(Item, frozen=True, omit_defaults=True):
@@ -154,7 +155,7 @@ class UserDefinedOperatorScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of user-defined operators."""
 
     vtl_mapping_scheme: Optional[str] = None
-    ruleset_schemes: Sequence[str] = ()
+    ruleset_schemes: Sequence[Union[str, Reference]] = ()
     items: Sequence[UserDefinedOperator] = ()
 
 
@@ -195,6 +196,8 @@ class TransformationScheme(VtlScheme, frozen=True, omit_defaults=True):
     vtl_mapping_scheme: Optional[VtlMappingScheme] = None
     name_personalisation_scheme: Optional[NamePersonalisationScheme] = None
     custom_type_scheme: Optional[CustomTypeScheme] = None
-    ruleset_schemes: Sequence[RulesetScheme] = ()
-    user_defined_operator_schemes: Sequence[UserDefinedOperatorScheme] = ()
+    ruleset_schemes: Sequence[Union[RulesetScheme, Reference]] = ()
+    user_defined_operator_schemes: Sequence[
+        Union[UserDefinedOperatorScheme, Reference]
+    ] = ()
     items: Sequence[Transformation] = ()

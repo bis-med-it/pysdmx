@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>true</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Receiver id="Not_Supplied"/>
+		<mes:Source>PySDMX</mes:Source>
+	</mes:Header>
+	<mes:Structures>
+		<str:UserDefinedOperators>
+			<str:UserDefinedOperatorScheme id="TEST_UDO_SCHEME" urn="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=MD:TEST_UDO_SCHEME(1.0)" version="1.0" isExternalReference="false" isFinal="false" agencyID="MD"  vtlVersion="2.0">
+				<com:Name xml:lang="en">Testing UDO Scheme</com:Name>
+				<str:UserDefinedOperator id="TEST_UDO" urn="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=MD:TEST_UDO_SCHEME(1.0).TEST_UDO">
+					<com:Name xml:lang="en">UDO Testing</com:Name>
+					<str:OperatorDefinition>define operator filter_ds (ds1 dataset, great_cons string default "1", less_cons number default 4.0)   returns dataset is     ds1[filter Me_1 &gt; great_cons and Me_2 &lt; less_cons] end operator;</str:OperatorDefinition>
+				</str:UserDefinedOperator>
+				<str:RulesetScheme>
+					<Ref package="transformation" agencyID="MD" id="TEST_RULESET_SCHEME" version="1.0" class="RulesetScheme"/>
+				</str:RulesetScheme>
+				<str:RulesetScheme>
+					<Ref package="transformation" agencyID="MD" id="TEST_RULESET_SCHEME" version="1.0" class="RulesetScheme"/>
+				</str:RulesetScheme>
+			</str:UserDefinedOperatorScheme>
+		</str:UserDefinedOperators>
+	</mes:Structures>
+</mes:Structure>
