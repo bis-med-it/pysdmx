@@ -31,24 +31,20 @@ def __parse_header(header: Dict[str, Any]) -> Header:
 
     """
     dict_header = {
-        "id": header[HEADER_ID],
-        "test": header[TEST],
-        "prepared": header[PREPARED],
-        "sender": header[SENDER]["id"]
-        if isinstance(header[SENDER], dict)
-        else header[SENDER],
-        **({"receiver": header[RECEIVER]} if RECEIVER in header else {}),
-        **({"source": header[SOURCE]} if SOURCE in header else {}),
-        **(
-            {"dataset_action": header[DATASET_ACTION]}
-            if DATASET_ACTION in header
-            else {}
-        ),
-        **({"structure": header[STRUCTURE]} if STRUCTURE in header else {}),
-        **({"dataset_id": header[DATASET_ID]} if DATASET_ID in header else {}),
+        "id": header.get(HEADER_ID),
+        "test": header.get(TEST),
+        "prepared": header.get(PREPARED),
+        "sender": header.get(SENDER).get("id")  # type: ignore[union-attr]
+        if isinstance(header.get(SENDER), dict)
+        else header.get(SENDER),
+        "receiver": header.get(RECEIVER),
+        "source": header.get(SOURCE),
+        "dataset_action": header.get(DATASET_ACTION),
+        "structure": header.get(STRUCTURE),
+        "dataset_id": header.get(DATASET_ID),
     }
 
-    return Header(**dict_header)
+    return Header(**dict_header)  # type: ignore[arg-type]
 
 
 def read(
