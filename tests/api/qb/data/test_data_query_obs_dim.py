@@ -44,7 +44,11 @@ def test_url_obs_dim_before_2_0_0(
 
 @pytest.mark.parametrize(
     "api_version",
-    (v for v in ApiVersion if v >= ApiVersion.V2_0_0 & v < ApiVersion.V2_2_0),
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
 )
 def test_url_obs_dim_since_2_0_0(
     obs_dim: str,

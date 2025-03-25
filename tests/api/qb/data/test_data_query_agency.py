@@ -160,8 +160,16 @@ def test_url_single_agency_before_2_0_0(
     assert url == expected
 
 
+@pytest.mark.parametrize(
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
+)
 def test_url_single_agency_since_2_0_0(
-    context: DataContext, agency: str, v2u: ApiVersion
+    context: DataContext, agency: str, api_version: ApiVersion
 ):
     expected = (
         f"/data/{context.value}/{agency}/*/*/*"
@@ -169,7 +177,25 @@ def test_url_single_agency_since_2_0_0(
     )
 
     q = DataQuery(context, agency)
-    url = q.get_url(v2u)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version",
+    (v for v in ApiVersion if v >= ApiVersion.V2_2_0),
+)
+def test_url_single_agency_since_2_2_0(
+    context: DataContext, agency: str, api_version: ApiVersion
+):
+    expected = (
+        f"/data/{context.value}/{agency}/*/*/*"
+        "?attributes=dsd&measures=all&includeHistory=false&offset=0"
+    )
+
+    q = DataQuery(context, agency)
+    url = q.get_url(api_version)
 
     assert url == expected
 
