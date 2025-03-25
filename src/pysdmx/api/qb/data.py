@@ -13,6 +13,7 @@ from pysdmx.api.dc.query import (
     MultiFilter,
     NumberFilter,
     Operator,
+    SortBy,
     TextFilter,
 )
 from pysdmx.api.qb.util import (
@@ -300,6 +301,14 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         offset: The number of observations (or series) to skip before
             beginning to return observation (or series).
         limit: The maximum number of observations to be returned.
+        sort: The order in which the returned data should be sorted.
+            It contains either one or more components, by which the data
+            should be sorted, or the * operator, which represents all
+            dimensions as positioned in the DSD, or the keyword series_key,
+            which represents all dimensions not presented at the observational
+            level and as positioned in the DSD. In addition, each component,
+            or the set of components (through the operator or keyword) can be
+            sorted in ascending or descending order.
         as_of: Retrieve the data as they were at the specified point
             in time (aka time travel).
         reporting_year_start_day: The start day of a reporting year, when
@@ -328,6 +337,7 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
     include_history: bool = False
     offset: int = 0
     limit: Optional[int] = None
+    sort: Sequence[SortBy] = []
     as_of: Optional[datetime] = None
     reporting_year_start_day: Optional[str] = None
 
@@ -359,6 +369,9 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         )
         super()._check_version(
             "limit", self.limit, api_version, ApiVersion.V2_2_0
+        )
+        super()._check_version(
+            "sort", self.sort, api_version, ApiVersion.V2_2_0
         )
         self.__check_pos_int("offset", self.offset)
         self.__check_pos_int("limit", self.limit)
@@ -399,6 +412,9 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         if api_version >= ApiVersion.V2_2_0 and self.offset != 0:
             qs = super()._append_qs_param(qs, self.offset, "offset")
         qs = super()._append_qs_param(qs, self.limit, "limit")
+        qs = super()._append_qs_param(
+            qs, self.sort, "sort", self.__get_sort(self.sort)
+        )
         qs = super()._append_qs_param(
             qs,
             self.as_of,
@@ -524,6 +540,9 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             qs = super()._append_qs_param(qs, self.offset, "offset")
         qs = super()._append_qs_param(qs, self.limit, "limit")
         qs = super()._append_qs_param(
+            qs, self.sort, "sort", self.__get_sort(self.sort)
+        )
+        qs = super()._append_qs_param(
             qs,
             self.as_of,
             "asOf",
@@ -533,6 +552,9 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             qs, self.reporting_year_start_day, "reportingYearStartDay"
         )
         return f"{o}?{qs}"
+
+    def __get_sort(self, sort: Sequence[SortBy]) -> str:
+        return "+".join([f"{s.component}:{s.order}" for s in sort])
 
     def _create_short_query(self, api_version: ApiVersion) -> str:
         if api_version >= ApiVersion.V2_0_0:
