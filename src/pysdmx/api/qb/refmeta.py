@@ -120,7 +120,14 @@ class RefMetaByMetadatasetQuery(
         p = super()._join_mult(self.provider_id)
         i = super()._join_mult(self.metadataset_id)
         v = super()._join_mult(self.version)
-        return f"/metadata/metadataset/{p}/{i}/{v}?detail={self.detail.value}"
+        ao = (
+            f'&asOf={self.as_of.isoformat("T", "seconds")}'
+            if self.as_of
+            else ""
+        )
+        return (
+            f"/metadata/metadataset/{p}/{i}/{v}?detail={self.detail.value}{ao}"
+        )
 
     def _create_short_query(self) -> str:
         v = f"/{self.version}" if self.version != REST_LATEST else ""
@@ -134,12 +141,20 @@ class RefMetaByMetadatasetQuery(
             if i or self.provider_id != REST_ALL
             else ""
         )
+        q = "?" if self.detail != RefMetaDetail.FULL or self.as_of else ""
         d = (
-            f"?detail={self.detail.value}"
+            f"detail={self.detail.value}"
             if self.detail != RefMetaDetail.FULL
             else ""
         )
-        return f"/metadata/metadataset{p}{d}"
+        if d and self.as_of:
+            d += "&"
+        ao = (
+            f'asOf={self.as_of.isoformat("T", "seconds")}'
+            if self.as_of
+            else ""
+        )
+        return f"/metadata/metadataset{p}{q}{d}{ao}"
 
 
 class RefMetaByStructureQuery(
