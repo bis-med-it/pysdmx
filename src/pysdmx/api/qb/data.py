@@ -299,6 +299,9 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             were disseminated in the past.
         as_of: Retrieve the data as they were at the specified point
             in time (aka time travel).
+        reporting_year_start_day: The start day of a reporting year, when
+            the year is not a Gregorian calendar year, for example when
+            the year represents a fiscal year.
     """
 
     context: DataContext = DataContext.ALL
@@ -321,6 +324,7 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
     ] = "all"
     include_history: bool = False
     as_of: Optional[datetime] = None
+    reporting_year_start_day: Optional[str] = None
 
     def _validate_query(self, api_version: ApiVersion) -> None:
         self.validate()
@@ -336,8 +340,14 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         super()._check_version(
             "components", self.components, api_version, ApiVersion.V2_0_0
         )
-        self._check_version(
+        super()._check_version(
             "as_of", self.as_of, api_version, ApiVersion.V2_2_0
+        )
+        super()._check_version(
+            "reporting_year_start_day",
+            self.reporting_year_start_day,
+            api_version,
+            ApiVersion.V2_2_0,
         )
 
     def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
@@ -378,6 +388,9 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             self.as_of,
             "asOf",
             self.as_of.isoformat("T", "seconds") if self.as_of else None,
+        )
+        qs = super()._append_qs_param(
+            qs, self.reporting_year_start_day, "reportingYearStartDay"
         )
         return f"?{qs}" if qs else qs
 
@@ -489,6 +502,9 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             self.as_of,
             "asOf",
             self.as_of.isoformat("T", "seconds") if self.as_of else None,
+        )
+        qs = super()._append_qs_param(
+            qs, self.reporting_year_start_day, "reportingYearStartDay"
         )
         return f"{o}?{qs}"
 
