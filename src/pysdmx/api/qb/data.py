@@ -360,6 +360,8 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         super()._check_version(
             "limit", self.limit, api_version, ApiVersion.V2_2_0
         )
+        self.__check_pos_int("offset", self.offset)
+        self.__check_pos_int("limit", self.limit)
 
     def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
         return _data_decoder
@@ -454,6 +456,13 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                     "combination for the detail attribute in SDMX-REST "
                     f"{api_version.value}."
                 ),
+            )
+
+    def __check_pos_int(self, field: str, value: int) -> None:
+        if value < 0:
+            raise Invalid(
+                "Validation Error",
+                f"{field} is must be a positive integer.",
             )
 
     def _create_full_query(self, api_version: ApiVersion) -> str:
