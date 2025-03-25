@@ -96,7 +96,7 @@ def test_url_multi_measures(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
 )
-def test_url_multi_measures(
+def test_url_multi_measures_since_2_2_0(
     mult_meas: List[str],
     api_version: ApiVersion,
 ):

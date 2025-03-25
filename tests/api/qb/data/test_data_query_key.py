@@ -84,7 +84,7 @@ def test_url_multiple_keys_since_2_0_0(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
 )
-def test_url_multiple_keys_since_2_0_0(
+def test_url_multiple_keys_since_2_2_0(
     context: DataContext,
     agency: str,
     res: str,
