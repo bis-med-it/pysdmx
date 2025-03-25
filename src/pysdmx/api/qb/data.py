@@ -316,6 +316,7 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         Sequence[str],
     ] = "all"
     include_history: bool = False
+    as_of: Optional[datetime] = None
 
     def _validate_query(self, api_version: ApiVersion) -> None:
         self.validate()
@@ -329,6 +330,7 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         )
         super()._check_resource_id(self.resource_id, api_version)
         super()._check_components(self.components, api_version)
+        self.__check_as_of(self.as_of, api_version)
 
     def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
         return _data_decoder
@@ -362,6 +364,12 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             self.include_history,
             "includeHistory",
             str(self.include_history).lower(),
+        )
+        qs = super()._append_qs_param(
+            qs,
+            self.as_of,
+            "asOf",
+            self.as_of.isoformat("T", "seconds"),
         )
         return f"?{qs}" if qs else qs
 
@@ -468,6 +476,12 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         qs = super()._append_qs_param(
             qs, str(self.include_history).lower(), "includeHistory"
         )
+        qs = super()._append_qs_param(
+            qs,
+            self.as_of,
+            "asOf",
+            self.as_of.isoformat("T", "seconds"),
+        )
         return f"{o}?{qs}"
 
     def _create_short_query(self, api_version: ApiVersion) -> str:
@@ -495,6 +509,15 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             q = self.__get_short_v1_qs(api_version)
             o = f"{p}{q}"
         return o
+
+    def __check_as_of(
+        self, as_of: Optional[datetime], version: ApiVersion
+    ) -> None:
+        if as_of and version < ApiVersion.V2_2_0:
+            raise Invalid(
+                "Validation Error",
+                f"as_of not supported in {version.value}.",
+            )
 
 
 def __map_like_operator(value: Any) -> str:
