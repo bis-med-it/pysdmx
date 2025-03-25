@@ -69,6 +69,24 @@ class _RefMetaCoreQuery(
     def _join_mult(self, vals: Union[str, Sequence[str]]) -> str:
         return vals if isinstance(vals, str) else ",".join(vals)
 
+    def _get_as_of_value(self, as_of: Optional[datetime]) -> str:
+        return f'&asOf={as_of.isoformat("T", "seconds")}' if as_of else ""
+
+    def _get_short_qs(
+        self, detail: RefMetaDetail, as_of: Optional[datetime]
+    ) -> str:
+        if detail != RefMetaDetail.FULL or as_of:
+            qs = "?"
+            if detail != RefMetaDetail.FULL:
+                qs += f"detail={detail.value}"
+                if as_of:
+                    qs += "&"
+            if as_of:
+                qs += f'asOf={as_of.isoformat("T", "seconds")}'
+            return qs
+        else:
+            return ""
+
     @abstractmethod
     def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
         """Returns the decoder to be used for validation."""
@@ -120,11 +138,7 @@ class RefMetaByMetadatasetQuery(
         p = super()._join_mult(self.provider_id)
         i = super()._join_mult(self.metadataset_id)
         v = super()._join_mult(self.version)
-        ao = (
-            f'&asOf={self.as_of.isoformat("T", "seconds")}'
-            if self.as_of
-            else ""
-        )
+        ao = super()._get_as_of_value(self.as_of)
         return (
             f"/metadata/metadataset/{p}/{i}/{v}?detail={self.detail.value}{ao}"
         )
@@ -141,20 +155,8 @@ class RefMetaByMetadatasetQuery(
             if i or self.provider_id != REST_ALL
             else ""
         )
-        q = "?" if self.detail != RefMetaDetail.FULL or self.as_of else ""
-        d = (
-            f"detail={self.detail.value}"
-            if self.detail != RefMetaDetail.FULL
-            else ""
-        )
-        if d and self.as_of:
-            d += "&"
-        ao = (
-            f'asOf={self.as_of.isoformat("T", "seconds")}'
-            if self.as_of
-            else ""
-        )
-        return f"/metadata/metadataset{p}{q}{d}{ao}"
+        q = super()._get_short_qs(self.detail, self.as_of)
+        return f"/metadata/metadataset{p}{q}"
 
 
 class RefMetaByStructureQuery(
@@ -207,11 +209,7 @@ class RefMetaByStructureQuery(
         a = super()._join_mult(self.agency_id)
         r = super()._join_mult(self.resource_id)
         v = super()._join_mult(self.version)
-        ao = (
-            f'&asOf={self.as_of.isoformat("T", "seconds")}'
-            if self.as_of
-            else ""
-        )
+        ao = super()._get_as_of_value(self.as_of)
         return (
             f"/metadata/structure/{self.artefact_type.value}/{a}/{r}/{v}"
             f"?detail={self.detail.value}{ao}"
@@ -230,20 +228,8 @@ class RefMetaByStructureQuery(
             if a or self.artefact_type != StructureType.ALL
             else ""
         )
-        q = "?" if self.detail != RefMetaDetail.FULL or self.as_of else ""
-        d = (
-            f"detail={self.detail.value}"
-            if self.detail != RefMetaDetail.FULL
-            else ""
-        )
-        if d and self.as_of:
-            d += "&"
-        ao = (
-            f'asOf={self.as_of.isoformat("T", "seconds")}'
-            if self.as_of
-            else ""
-        )
-        return f"/metadata/structure{t}{q}{d}{ao}"
+        q = super()._get_short_qs(self.detail, self.as_of)
+        return f"/metadata/structure{t}{q}"
 
 
 class RefMetaByMetadataflowQuery(
@@ -287,11 +273,7 @@ class RefMetaByMetadataflowQuery(
         r = super()._join_mult(self.resource_id)
         v = super()._join_mult(self.version)
         p = super()._join_mult(self.provider_id)
-        ao = (
-            f'&asOf={self.as_of.isoformat("T", "seconds")}'
-            if self.as_of
-            else ""
-        )
+        ao = super()._get_as_of_value(self.as_of)
         return (
             f"/metadata/metadataflow/{a}/{r}/{v}/{p}"
             f"?detail={self.detail.value}{ao}"
@@ -306,20 +288,8 @@ class RefMetaByMetadataflowQuery(
             else ""
         )
         a = f"/{self.agency_id}{r}" if r or self.agency_id != REST_ALL else ""
-        q = "?" if self.detail != RefMetaDetail.FULL or self.as_of else ""
-        d = (
-            f"detail={self.detail.value}"
-            if self.detail != RefMetaDetail.FULL
-            else ""
-        )
-        if d and self.as_of:
-            d += "&"
-        ao = (
-            f'asOf={self.as_of.isoformat("T", "seconds")}'
-            if self.as_of
-            else ""
-        )
-        return f"/metadata/metadataflow{a}{q}{d}{ao}"
+        q = super()._get_short_qs(self.detail, self.as_of)
+        return f"/metadata/metadataflow{a}{q}"
 
 
 _by_mds_decoder = msgspec.json.Decoder(RefMetaByMetadatasetQuery)
