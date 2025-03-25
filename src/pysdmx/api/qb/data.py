@@ -458,8 +458,8 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 ),
             )
 
-    def __check_pos_int(self, field: str, value: int) -> None:
-        if value < 0:
+    def __check_pos_int(self, field: str, value: Optional[int]) -> None:
+        if value and value < 0:
             raise Invalid(
                 "Validation Error",
                 f"{field} is must be a positive integer.",
