@@ -1,8 +1,9 @@
 """Build SDMX-REST reference metadata queries."""
 
 from abc import abstractmethod
+from datetime import datetime
 from enum import Enum
-from typing import Sequence, Union
+from typing import Optional, Sequence, Union
 
 import msgspec
 from msgspec.json import Decoder
@@ -56,6 +57,15 @@ class _RefMetaCoreQuery(
                 ),
             )
 
+    def _check_as_of(
+        self, as_of: Optional[datetime], version: ApiVersion
+    ) -> None:
+        if as_of and version < ApiVersion.V2_2_0:
+            raise Invalid(
+                "Validation Error",
+                f"as_of not supported in {version.value}.",
+            )
+
     def _join_mult(self, vals: Union[str, Sequence[str]]) -> str:
         return vals if isinstance(vals, str) else ",".join(vals)
 
@@ -88,16 +98,20 @@ class RefMetaByMetadatasetQuery(
         metadataset_id: The id(s) of the metadataset(s) to be returned.
         version: The version(s) of the metadataset(s) to be returned.
         detail: The desired amount of information to be returned.
+        as_of: Retrieve the metadata as they were at the specified point
+            in time (aka time travel).
     """
 
     provider_id: Union[str, Sequence[str]] = REST_ALL
     metadataset_id: Union[str, Sequence[str]] = REST_ALL
     version: Union[str, Sequence[str]] = REST_LATEST
     detail: RefMetaDetail = RefMetaDetail.FULL
+    as_of: Optional[datetime] = None
 
     def _validate_query(self, version: ApiVersion) -> None:
         super().validate()
         super()._check_version(version)
+        super()._check_as_of(self.as_of, version)
 
     def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
         return _by_mds_decoder
@@ -141,6 +155,8 @@ class RefMetaByStructureQuery(
         version: The version(s) of the artefact(s) to which the reference
             metadata to be returned are attached.
         detail: The desired amount of information to be returned.
+        as_of: Retrieve the metadata as they were at the specified point
+            in time (aka time travel).
     """
 
     artefact_type: StructureType = StructureType.ALL
@@ -148,10 +164,12 @@ class RefMetaByStructureQuery(
     resource_id: Union[str, Sequence[str]] = REST_ALL
     version: Union[str, Sequence[str]] = REST_LATEST
     detail: RefMetaDetail = RefMetaDetail.FULL
+    as_of: Optional[datetime] = None
 
     def _validate_query(self, version: ApiVersion) -> None:
         super().validate()
         super()._check_version(version)
+        super()._check_as_of(self.as_of, version)
         self.__check_artefact_type(self.artefact_type, version)
 
     def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
@@ -170,9 +188,14 @@ class RefMetaByStructureQuery(
         a = super()._join_mult(self.agency_id)
         r = super()._join_mult(self.resource_id)
         v = super()._join_mult(self.version)
+        ao = (
+            f'&asOf={self.as_of.isoformat("T", "seconds")}'
+            if self.as_of
+            else ""
+        )
         return (
             f"/metadata/structure/{self.artefact_type.value}/{a}/{r}/{v}"
-            f"?detail={self.detail.value}"
+            f"?detail={self.detail.value}{ao}"
         )
 
     def _create_short_query(self) -> str:
@@ -188,8 +211,20 @@ class RefMetaByStructureQuery(
             if a or self.artefact_type != StructureType.ALL
             else ""
         )
-        d = f"?{self.detail}" if self.detail != RefMetaDetail.FULL else ""
-        return f"/metadata/structure{t}{d}"
+        q = "?" if self.detail != RefMetaDetail.FULL or self.as_of else ""
+        d = (
+            f"detail={self.detail.value}"
+            if self.detail != RefMetaDetail.FULL
+            else ""
+        )
+        if d and self.as_of:
+            d += "&"
+        ao = (
+            f'asOf={self.as_of.isoformat("T", "seconds")}'
+            if self.as_of
+            else ""
+        )
+        return f"/metadata/structure{t}{q}{d}{ao}"
 
 
 class RefMetaByMetadataflowQuery(
@@ -209,6 +244,8 @@ class RefMetaByMetadataflowQuery(
         provider_id: The id(s) of the providers that provided the reference
             metadata to be returned.
         detail: The desired amount of information to be returned.
+        as_of: Retrieve the metadata as they were at the specified point
+            in time (aka time travel).
     """
 
     agency_id: Union[str, Sequence[str]] = REST_ALL
@@ -216,10 +253,12 @@ class RefMetaByMetadataflowQuery(
     version: Union[str, Sequence[str]] = REST_LATEST
     provider_id: Union[str, Sequence[str]] = REST_ALL
     detail: RefMetaDetail = RefMetaDetail.FULL
+    as_of: Optional[datetime] = None
 
     def _validate_query(self, version: ApiVersion) -> None:
         super().validate()
         super()._check_version(version)
+        super()._check_as_of(self.as_of, version)
 
     def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
         return _by_flow_decoder
