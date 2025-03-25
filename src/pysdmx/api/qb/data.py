@@ -369,7 +369,7 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             qs,
             self.as_of,
             "asOf",
-            self.as_of.isoformat("T", "seconds"),
+            self.as_of.isoformat("T", "seconds") if self.as_of else None,
         )
         return f"?{qs}" if qs else qs
 
@@ -480,7 +480,7 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             qs,
             self.as_of,
             "asOf",
-            self.as_of.isoformat("T", "seconds"),
+            self.as_of.isoformat("T", "seconds") if self.as_of else None,
         )
         return f"{o}?{qs}"
 
