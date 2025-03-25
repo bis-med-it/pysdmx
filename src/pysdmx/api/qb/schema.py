@@ -38,6 +38,12 @@ class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         resource_id: The id of the context to be considered.
         version: The version of the context to be considered.
         obs_dimension: The ID of the dimension at the observation level.
+        explicit: For cross-sectional data validation, indicates whether
+            observations are strongly typed.
+        deletion: Whether the schema will be used to validate deletion
+            messages.
+        as_of: Retrieve the schema as it was at the specified point
+            in time (aka time travel).
     """
 
     context: SchemaContext

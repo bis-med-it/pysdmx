@@ -263,6 +263,8 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         item_id: The id(s) of the item(s) to be returned.
         detail: The desired amount of information to be returned.
         references: The additional artefact(s) to include in the response.
+        as_of: Retrieve the artefact as it was at the specified point
+            in time (aka time travel).
     """
 
     artefact_type: StructureType = StructureType.ALL
