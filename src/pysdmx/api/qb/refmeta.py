@@ -134,7 +134,11 @@ class RefMetaByMetadatasetQuery(
             if i or self.provider_id != REST_ALL
             else ""
         )
-        d = f"?{self.detail}" if self.detail != RefMetaDetail.FULL else ""
+        d = (
+            f"?detail={self.detail.value}"
+            if self.detail != RefMetaDetail.FULL
+            else ""
+        )
         return f"/metadata/metadataset{p}{d}"
 
 
