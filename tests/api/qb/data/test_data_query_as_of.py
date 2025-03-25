@@ -52,7 +52,8 @@ def test_url_as_of(
 ):
     expected = (
         "/data/*/*/*/*/*?"
-        f"attributes=dsd&measures=all&includeHistory=false&asOf={expected}"
+        "attributes=dsd&measures=all&includeHistory=false&offset=0"
+        f"&asOf={expected}"
     )
 
     q = DataQuery(as_of=as_of)

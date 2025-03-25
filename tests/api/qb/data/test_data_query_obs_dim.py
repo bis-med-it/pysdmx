@@ -43,7 +43,8 @@ def test_url_obs_dim_before_2_0_0(
 
 
 @pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+    "api_version",
+    (v for v in ApiVersion if v >= ApiVersion.V2_0_0 & v < ApiVersion.V2_2_0),
 )
 def test_url_obs_dim_since_2_0_0(
     obs_dim: str,
@@ -52,6 +53,24 @@ def test_url_obs_dim_since_2_0_0(
     expected = (
         f"/data/*/*/*/*/*?dimensionAtObservation={obs_dim}"
         "&attributes=dsd&measures=all&includeHistory=false"
+    )
+
+    q = DataQuery(obs_dimension=obs_dim)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+def test_url_obs_dim_since_2_0_0(
+    obs_dim: str,
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/data/*/*/*/*/*?dimensionAtObservation={obs_dim}"
+        "&attributes=dsd&measures=all&includeHistory=false&offset=0"
     )
 
     q = DataQuery(obs_dimension=obs_dim)

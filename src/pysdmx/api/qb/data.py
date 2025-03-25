@@ -215,7 +215,7 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     def _append_qs_param(
         self, qs: str, value: Any, field: str, disp_value: Any = None
     ) -> str:
-        if value:
+        if value or (not isinstance(value, bool) and value == 0):
             if qs:
                 qs += "&"
             qs += f"{field}={disp_value if disp_value else value}"
@@ -297,6 +297,9 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             The ID of the one or more measures to be returned.
         include_history: Retrieve previous versions of the data, as they
             were disseminated in the past.
+        offset: The number of observations (or series) to skip before
+            beginning to return observation (or series).
+        limit: The maximum number of observations to be returned.
         as_of: Retrieve the data as they were at the specified point
             in time (aka time travel).
         reporting_year_start_day: The start day of a reporting year, when
@@ -323,6 +326,8 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         Sequence[str],
     ] = "all"
     include_history: bool = False
+    offset: int = 0
+    limit: Optional[int] = None
     as_of: Optional[datetime] = None
     reporting_year_start_day: Optional[str] = None
 
@@ -348,6 +353,12 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             self.reporting_year_start_day,
             api_version,
             ApiVersion.V2_2_0,
+        )
+        super()._check_version(
+            "offset", self.offset, api_version, ApiVersion.V2_2_0
+        )
+        super()._check_version(
+            "limit", self.limit, api_version, ApiVersion.V2_2_0
         )
 
     def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
@@ -383,6 +394,9 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             "includeHistory",
             str(self.include_history).lower(),
         )
+        if api_version >= ApiVersion.V2_2_0 and self.offset != 0:
+            qs = super()._append_qs_param(qs, self.offset, "offset")
+        qs = super()._append_qs_param(qs, self.limit, "limit")
         qs = super()._append_qs_param(
             qs,
             self.as_of,
@@ -497,6 +511,9 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         qs = super()._append_qs_param(
             qs, str(self.include_history).lower(), "includeHistory"
         )
+        if api_version >= ApiVersion.V2_2_0:
+            qs = super()._append_qs_param(qs, self.offset, "offset")
+        qs = super()._append_qs_param(qs, self.limit, "limit")
         qs = super()._append_qs_param(
             qs,
             self.as_of,

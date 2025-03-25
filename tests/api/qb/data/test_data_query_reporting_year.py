@@ -50,7 +50,7 @@ def test_url_reporting_year_start_day(
 ):
     expected = (
         "/data/*/*/*/*/*?"
-        "attributes=dsd&measures=all&includeHistory=false"
+        "attributes=dsd&measures=all&includeHistory=false&offset=0"
         f"&reportingYearStartDay={reporting_year_start_day}"
     )
 

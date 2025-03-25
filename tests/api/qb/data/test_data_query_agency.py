@@ -47,8 +47,16 @@ def test_url_multiple_agencies_before_2_0_0(
         q.get_url(v1u)
 
 
+@pytest.mark.parametrize(
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
+)
 def test_url_multiple_agencies_since_2_0_0(
-    context: DataContext, agencies: List[str], v2u: ApiVersion
+    context: DataContext, agencies: List[str], api_version: ApiVersion
 ):
     expected = (
         f"/data/{context.value}/{','.join(agencies)}/*/*/*"
@@ -56,7 +64,24 @@ def test_url_multiple_agencies_since_2_0_0(
     )
 
     q = DataQuery(context, agencies)
-    url = q.get_url(v2u)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+def test_url_multiple_agencies_since_2_2_0(
+    context: DataContext, agencies: List[str], api_version: ApiVersion
+):
+    expected = (
+        f"/data/{context.value}/{','.join(agencies)}/*/*/*"
+        f"?attributes=dsd&measures=all&includeHistory=false&offset=0"
+    )
+
+    q = DataQuery(context, agencies)
+    url = q.get_url(api_version)
 
     assert url == expected
 
@@ -83,14 +108,41 @@ def test_url_default_agency_before_2_0_0(
     assert url == expected
 
 
-def test_url_default_agency_since_2_0_0(context: DataContext, v2u: ApiVersion):
+@pytest.mark.parametrize(
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
+)
+def test_url_default_agency_since_2_0_0(
+    context: DataContext, api_version: ApiVersion
+):
     expected = (
         f"/data/{context.value}/*/*/*/*"
         "?attributes=dsd&measures=all&includeHistory=false"
     )
 
     q = DataQuery(context)
-    url = q.get_url(v2u)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+def test_url_default_agency_since_2_2_0(
+    context: DataContext, api_version: ApiVersion
+):
+    expected = (
+        f"/data/{context.value}/*/*/*/*"
+        "?attributes=dsd&measures=all&includeHistory=false&offset=0"
+    )
+
+    q = DataQuery(context)
+    url = q.get_url(api_version)
 
     assert url == expected
 
