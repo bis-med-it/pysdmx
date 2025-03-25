@@ -21,6 +21,51 @@ def invalid_vtl_version():
     return "2.4"
 
 
+@pytest.fixture
+def valid_ruleset():
+    return Ruleset(
+        id="id",
+        name="name",
+        description="description",
+        ruleset_type="datapoint",
+        ruleset_definition="""define datapoint ruleset signValidation
+            (variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM as IAI,
+                FUNCTIONAL_CAT as FC, INSTR_ASSET as IA, OBS_VALUE as O)
+                is
+                sign1c: when AE = "C" and IAI = "G" then O > 0 errorcode
+                "sign1c" errorlevel 1
+                end datapoint ruleset;""",
+        ruleset_scope="variable",
+    )
+
+
+@pytest.fixture
+def valid_udo():
+    return UserDefinedOperator(
+        id="id",
+        name="name",
+        description="description",
+        operator_definition="""define operator filter_ds
+            (ds1 dataset, great_cons string default "1",
+             less_cons number default 4.0)
+            returns dataset
+            is ds1[filter Me_1 > great_cons and Me_2 < less_cons]
+            end operator;""",
+    )
+
+
+@pytest.fixture
+def valid_transformation():
+    return Transformation(
+        id="id",
+        name="name",
+        description="description",
+        expression="DS_1 + 1",
+        result="DS_r",
+        is_persistent=True,
+    )
+
+
 def test_instantiation_ts(vtl_version):
     transformation = TransformationScheme(
         id="id",
@@ -47,15 +92,8 @@ def test_instantiation_ts_invalid_vtl_version(invalid_vtl_version):
         )
 
 
-def test_instantiation_t(vtl_version):
-    transformation = Transformation(
-        id="id",
-        name="name",
-        description="description",
-        expression="DS_1 + 1",
-        result="DS_r",
-        is_persistent=True,
-    )
+def test_instantiation_t(vtl_version, valid_transformation):
+    transformation = valid_transformation
 
     assert transformation.id == "id"
     assert transformation.name == "name"
@@ -85,10 +123,8 @@ def test_instantiation_t_not_persistent(vtl_version):
     assert transformation.full_expression == "DS_r := DS_1 + 1;"
 
 
-def test_instantiation_udo():
-    udo = UserDefinedOperator(
-        id="id", name="name", description="description", operator_definition=""
-    )
+def test_instantiation_udo(valid_udo):
+    udo = valid_udo
 
     assert udo.id == "id"
     assert udo.name == "name"
@@ -147,16 +183,11 @@ def test_instantiation_ruleset_scheme_invalid_vtl_version(invalid_vtl_version):
         )
 
 
-def test_instantiation_ruleset():
-    ruleset = Ruleset(
-        id="id",
-        name="name",
-        description="description",
-        ruleset_type="datapoint",
-        ruleset_definition="",
-        ruleset_scope="",
-    )
+def test_instantiation_ruleset(valid_ruleset):
+    ruleset = valid_ruleset
 
     assert ruleset.id == "id"
     assert ruleset.name == "name"
     assert ruleset.description == "description"
+    assert ruleset.ruleset_type == "datapoint"
+    assert ruleset.ruleset_scope == "variable"

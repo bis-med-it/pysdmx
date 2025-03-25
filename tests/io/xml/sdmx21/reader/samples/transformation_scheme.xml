@@ -18,5 +18,11 @@
           <str:Expression>DS_1 + 1</str:Expression>
           <str:Result>DS_r</str:Result>
         </str:Transformation>
+        <str:RulesetScheme>
+          <Ref package="transformation" agencyID="MD" id="TEST_RULESET_SCHEME" version="1.0" class="RulesetScheme"/>
+        </str:RulesetScheme>
+        <str:UserDefinedOperatorScheme>
+          <Ref package="transformation" agencyID="MD" id="TEST_UDO_SCHEME" version="1.0" class="UserDefinedOperatorScheme"/>
+        </str:UserDefinedOperatorScheme>
       </str:TransformationScheme>
     </str:Transformations></mes:Structures></mes:Structure>
