@@ -90,16 +90,18 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                 ),
             )
 
-    def _check_components(
+    def _check_version(
         self,
-        components: Union[MultiFilter, None, NumberFilter, TextFilter],
+        field: str,
+        value: Any,
         api_version: ApiVersion,
+        allowed_version: ApiVersion,
     ) -> None:
-        if api_version < ApiVersion.V2_0_0 and components:
+        if value and api_version < allowed_version:
             raise Invalid(
                 "Validation Error",
                 (
-                    "Components filter is not supported in "
+                    f"{field} is not supported in "
                     f"SDMX-REST {api_version.value}."
                 ),
             )
@@ -295,6 +297,8 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             The ID of the one or more measures to be returned.
         include_history: Retrieve previous versions of the data, as they
             were disseminated in the past.
+        as_of: Retrieve the data as they were at the specified point
+            in time (aka time travel).
     """
 
     context: DataContext = DataContext.ALL
@@ -329,8 +333,12 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             api_version,
         )
         super()._check_resource_id(self.resource_id, api_version)
-        super()._check_components(self.components, api_version)
-        self.__check_as_of(self.as_of, api_version)
+        super()._check_version(
+            "components", self.components, api_version, ApiVersion.V2_0_0
+        )
+        self._check_version(
+            "as_of", self.as_of, api_version, ApiVersion.V2_2_0
+        )
 
     def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
         return _data_decoder
@@ -509,15 +517,6 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             q = self.__get_short_v1_qs(api_version)
             o = f"{p}{q}"
         return o
-
-    def __check_as_of(
-        self, as_of: Optional[datetime], version: ApiVersion
-    ) -> None:
-        if as_of and version < ApiVersion.V2_2_0:
-            raise Invalid(
-                "Validation Error",
-                f"as_of not supported in {version.value}.",
-            )
 
 
 def __map_like_operator(value: Any) -> str:

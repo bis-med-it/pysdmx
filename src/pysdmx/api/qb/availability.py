@@ -103,7 +103,9 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             api_version,
         )
         super()._check_resource_id(self.resource_id, api_version)
-        super()._check_components(self.components, api_version)
+        super()._check_version(
+            "components", self.components, api_version, ApiVersion.V2_0_0
+        )
         self.__validate_references(api_version)
         self.__validate_component_id(api_version)
 
