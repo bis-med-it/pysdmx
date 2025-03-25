@@ -287,9 +287,14 @@ class RefMetaByMetadataflowQuery(
         r = super()._join_mult(self.resource_id)
         v = super()._join_mult(self.version)
         p = super()._join_mult(self.provider_id)
+        ao = (
+            f'&asOf={self.as_of.isoformat("T", "seconds")}'
+            if self.as_of
+            else ""
+        )
         return (
             f"/metadata/metadataflow/{a}/{r}/{v}/{p}"
-            f"?detail={self.detail.value}"
+            f"?detail={self.detail.value}{ao}"
         )
 
     def _create_short_query(self) -> str:
@@ -301,8 +306,20 @@ class RefMetaByMetadataflowQuery(
             else ""
         )
         a = f"/{self.agency_id}{r}" if r or self.agency_id != REST_ALL else ""
-        d = f"?{self.detail}" if self.detail != RefMetaDetail.FULL else ""
-        return f"/metadata/metadataflow{a}{d}"
+        q = "?" if self.detail != RefMetaDetail.FULL or self.as_of else ""
+        d = (
+            f"detail={self.detail.value}"
+            if self.detail != RefMetaDetail.FULL
+            else ""
+        )
+        if d and self.as_of:
+            d += "&"
+        ao = (
+            f'asOf={self.as_of.isoformat("T", "seconds")}'
+            if self.as_of
+            else ""
+        )
+        return f"/metadata/metadataflow{a}{q}{d}{ao}"
 
 
 _by_mds_decoder = msgspec.json.Decoder(RefMetaByMetadatasetQuery)
