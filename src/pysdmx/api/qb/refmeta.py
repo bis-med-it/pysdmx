@@ -1,6 +1,5 @@
 """Build SDMX-REST reference metadata queries."""
 
-from abc import abstractmethod
 from datetime import datetime
 from enum import Enum
 from typing import Optional, Sequence, Union
@@ -9,11 +8,7 @@ import msgspec
 from msgspec.json import Decoder
 
 from pysdmx.api.qb.structure import _API_RESOURCES, StructureType
-from pysdmx.api.qb.util import (
-    REST_ALL,
-    REST_LATEST,
-    ApiVersion,
-)
+from pysdmx.api.qb.util import REST_ALL, REST_LATEST, ApiVersion, CoreQuery
 from pysdmx.errors import Invalid
 from pysdmx.io.format import RefMetaFormat
 
@@ -25,28 +20,7 @@ class RefMetaDetail(Enum):
     ALL_STUBS = "allstubs"
 
 
-class _RefMetaCoreQuery(
-    msgspec.Struct,
-    frozen=True,
-    omit_defaults=True,
-):
-    def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
-        """The URL for the query in the selected SDMX-REST API version."""
-        self._validate_query(version)
-        if omit_defaults:
-            return self._create_short_query()
-        else:
-            return self._create_full_query()
-
-    def validate(self) -> None:
-        """Validate the query."""
-        try:
-            self._get_decoder().decode(_encoder.encode(self))
-        except msgspec.DecodeError as err:
-            raise Invalid(
-                "Invalid Reference Metadata Query", str(err)
-            ) from err
-
+class _RefMetaCoreQuery(CoreQuery, frozen=True, omit_defaults=True):
     def _check_version(self, version: ApiVersion) -> None:
         if version < ApiVersion.V2_0_0:
             raise Invalid(
@@ -87,22 +61,6 @@ class _RefMetaCoreQuery(
         else:
             return ""
 
-    @abstractmethod
-    def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
-        """Returns the decoder to be used for validation."""
-
-    @abstractmethod
-    def _validate_query(self, version: ApiVersion) -> None:
-        """Any additional validation steps to be performed by subclasses."""
-
-    @abstractmethod
-    def _create_full_query(self) -> str:
-        """Creates a URL, with default values."""
-
-    @abstractmethod
-    def _create_short_query(self) -> str:
-        """Creates a URL, omitting default values when possible."""
-
 
 class RefMetaByMetadatasetQuery(
     _RefMetaCoreQuery,
@@ -134,7 +92,7 @@ class RefMetaByMetadatasetQuery(
     def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
         return _by_mds_decoder
 
-    def _create_full_query(self) -> str:
+    def _create_full_query(self, ver: ApiVersion) -> str:
         p = super()._join_mult(self.provider_id)
         i = super()._join_mult(self.metadataset_id)
         v = super()._join_mult(self.version)
@@ -143,7 +101,7 @@ class RefMetaByMetadatasetQuery(
             f"/metadata/metadataset/{p}/{i}/{v}?detail={self.detail.value}{ao}"
         )
 
-    def _create_short_query(self) -> str:
+    def _create_short_query(self, ver: ApiVersion) -> str:
         v = f"/{self.version}" if self.version != REST_LATEST else ""
         i = (
             f"/{self.metadataset_id}{v}"
@@ -205,7 +163,7 @@ class RefMetaByStructureQuery(
                 f"{atyp} is not valid for SDMX-REST {version.name}.",
             )
 
-    def _create_full_query(self) -> str:
+    def _create_full_query(self, ver: ApiVersion) -> str:
         a = super()._join_mult(self.agency_id)
         r = super()._join_mult(self.resource_id)
         v = super()._join_mult(self.version)
@@ -215,7 +173,7 @@ class RefMetaByStructureQuery(
             f"?detail={self.detail.value}{ao}"
         )
 
-    def _create_short_query(self) -> str:
+    def _create_short_query(self, ver: ApiVersion) -> str:
         v = f"/{self.version}" if self.version != REST_LATEST else ""
         r = (
             f"/{self.resource_id}{v}"
@@ -268,7 +226,7 @@ class RefMetaByMetadataflowQuery(
     def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
         return _by_flow_decoder
 
-    def _create_full_query(self) -> str:
+    def _create_full_query(self, ver: ApiVersion) -> str:
         a = super()._join_mult(self.agency_id)
         r = super()._join_mult(self.resource_id)
         v = super()._join_mult(self.version)
@@ -279,7 +237,7 @@ class RefMetaByMetadataflowQuery(
             f"?detail={self.detail.value}{ao}"
         )
 
-    def _create_short_query(self) -> str:
+    def _create_short_query(self, ver: ApiVersion) -> str:
         p = f"/{self.provider_id}" if self.provider_id != REST_ALL else ""
         v = f"/{self.version}{p}" if p or self.version != REST_LATEST else ""
         r = (
@@ -295,7 +253,6 @@ class RefMetaByMetadataflowQuery(
 _by_mds_decoder = msgspec.json.Decoder(RefMetaByMetadatasetQuery)
 _by_struct_decoder = msgspec.json.Decoder(RefMetaByStructureQuery)
 _by_flow_decoder = msgspec.json.Decoder(RefMetaByMetadataflowQuery)
-_encoder = msgspec.json.Encoder()
 
 
 __all__ = [
