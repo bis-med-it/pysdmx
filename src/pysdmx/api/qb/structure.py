@@ -11,6 +11,7 @@ from pysdmx.api.qb.util import (
     REST_LATEST,
     ApiVersion,
     check_multiple_items,
+    CoreQuery,
 )
 from pysdmx.errors import Invalid
 from pysdmx.io.format import StructureFormat
@@ -251,7 +252,7 @@ _API_RESOURCES = {
 }
 
 
-class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
+class StructureQuery(CoreQuery, frozen=True, omit_defaults=True):
     """A query for structural metadata.
 
     Attributes:
@@ -276,22 +277,7 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     references: StructureReference = StructureReference.NONE
     as_of: Optional[datetime] = None
 
-    def validate(self) -> None:
-        """Validate the query."""
-        try:
-            decoder.decode(encoder.encode(self))
-        except msgspec.DecodeError as err:
-            raise Invalid("Invalid Structure Query", str(err)) from err
-
-    def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
-        """The URL for the query in the selected SDMX-REST API version."""
-        self.__validate_query(version)
-        if omit_defaults:
-            return self.__create_short_query(version)
-        else:
-            return self.__create_full_query(version)
-
-    def __validate_query(self, version: ApiVersion) -> None:
+    def _validate_query(self, version: ApiVersion) -> None:
         self.validate()
         self.__check_multiple_items(version)
         self.__check_artefact_type(self.artefact_type, version)
@@ -375,22 +361,15 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             out = val.value
         return out
 
-    def __to_kw(self, val: str, ver: ApiVersion) -> str:
-        if val == "*" and ver < ApiVersion.V2_0_0:
-            val = "all"
-        elif val == "~" and ver < ApiVersion.V2_0_0:
-            val = "latest"
-        return val
-
     def __to_kws(
         self, vals: Union[str, Sequence[str]], ver: ApiVersion
     ) -> str:
         vals = [vals] if isinstance(vals, str) else vals
-        mapped = [self.__to_kw(v, ver) for v in vals]
+        mapped = [self._to_kw(v, ver) for v in vals]
         sep = "+" if ver < ApiVersion.V2_0_0 else ","
         return sep.join(mapped)
 
-    def __create_full_query(self, ver: ApiVersion) -> str:
+    def _create_full_query(self, ver: ApiVersion) -> str:
         u = "/"
         u += "structure/" if ver >= ApiVersion.V2_0_0 else ""
         t = self.__to_type_kw(self.artefact_type, ver)
@@ -406,7 +385,7 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             u += f'&asOf={self.as_of.isoformat("T", "seconds")}'
         return u
 
-    def __create_short_query(self, ver: ApiVersion) -> str:
+    def _create_short_query(self, ver: ApiVersion) -> str:
         u = "/structure" if ver >= ApiVersion.V2_0_0 else ""
         t = self.__to_type_kw(self.artefact_type, ver)
         a = self.__to_kws(self.agency_id, ver)
@@ -468,9 +447,11 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         )
         return u
 
+    def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
+        return _decoder
 
-decoder = msgspec.json.Decoder(StructureQuery)
-encoder = msgspec.json.Encoder()
+
+_decoder = msgspec.json.Decoder(StructureQuery)
 
 
 __all__ = [
