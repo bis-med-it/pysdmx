@@ -5,9 +5,10 @@ from enum import Enum
 from typing import Optional
 
 import msgspec
+from msgspec.json import Decoder
 
 from pysdmx.api.qb.structure import _V2_0_ADDED, StructureType
-from pysdmx.api.qb.util import REST_ALL, REST_LATEST, ApiVersion
+from pysdmx.api.qb.util import REST_ALL, REST_LATEST, ApiVersion, CoreQuery
 from pysdmx.errors import Invalid
 from pysdmx.io.format import SchemaFormat
 
@@ -23,7 +24,7 @@ class SchemaContext(Enum):
     METADATA_PROVISION_AGREEMENT = "metadataprovisionagreement"
 
 
-class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
+class SchemaQuery(CoreQuery, frozen=True, omit_defaults=True):
     """A schema query.
 
     Schema queries allow retrieving the definition of data validity for a
@@ -54,26 +55,6 @@ class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     explicit: bool = False
     deletion: bool = False
     as_of: Optional[datetime] = None
-
-    def validate(self) -> None:
-        """Validate the query."""
-        try:
-            decoder.decode(encoder.encode(self))
-        except msgspec.DecodeError as err:
-            raise Invalid("Invalid Schema Query", str(err)) from err
-
-    def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
-        """The URL for the query in the selected SDMX-REST API version."""
-        self.__validate_query(version)
-        if omit_defaults:
-            return self.__create_short_query(version)
-        else:
-            return self.__create_full_query(version)
-
-    def __to_kw(self, val: str, ver: ApiVersion) -> str:
-        if val == "~" and ver < ApiVersion.V2_0_0:
-            val = "latest"
-        return val
 
     def __check_context(self, version: ApiVersion) -> None:
         ct = StructureType(self.context.value)
@@ -111,7 +92,7 @@ class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                 f"deletion parameter is not supported in {version.value}.",
             )
 
-    def __validate_query(self, version: ApiVersion) -> None:
+    def _validate_query(self, version: ApiVersion) -> None:
         self.validate()
         self.__check_context(version)
         self.__check_version()
@@ -119,12 +100,12 @@ class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         self.__check_as_of(version)
         self.__check_deletion(version)
 
-    def __create_full_query(self, ver: ApiVersion) -> str:
+    def _create_full_query(self, ver: ApiVersion) -> str:
         u = (
             f"/schema/{self.context.value}/"
             f"{self.agency_id}/{self.resource_id}"
         )
-        u += f"/{self.__to_kw(self.version, ver)}"
+        u += f"/{self._to_kw(self.version, ver)}"
         if (
             self.obs_dimension
             or self.as_of
@@ -148,13 +129,13 @@ class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             u += f"deletion={str(self.deletion).lower()}"
         return u
 
-    def __create_short_query(self, ver: ApiVersion) -> str:
+    def _create_short_query(self, ver: ApiVersion) -> str:
         u = (
             f"/schema/{self.context.value}/"
             f"{self.agency_id}/{self.resource_id}"
         )
         if self.version != REST_LATEST:
-            u += f"/{self.__to_kw(self.version, ver)}"
+            u += f"/{self._to_kw(self.version, ver)}"
         if self.obs_dimension or self.explicit or self.as_of or self.deletion:
             u += "?"
         if self.obs_dimension:
@@ -173,9 +154,10 @@ class SchemaQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             u += f"deletion={str(self.deletion).lower()}"
         return u
 
+    def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
+        return _decoder
 
-decoder = msgspec.json.Decoder(SchemaQuery)
-encoder = msgspec.json.Encoder()
 
+_decoder = msgspec.json.Decoder(SchemaQuery)
 
 __all__ = ["SchemaContext", "SchemaFormat", "SchemaQuery"]
