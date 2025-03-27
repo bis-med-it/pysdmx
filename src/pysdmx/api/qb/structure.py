@@ -10,8 +10,8 @@ from pysdmx.api.qb.util import (
     REST_ALL,
     REST_LATEST,
     ApiVersion,
-    check_multiple_items,
     CoreQuery,
+    check_multiple_items,
 )
 from pysdmx.errors import Invalid
 from pysdmx.io.format import StructureFormat
