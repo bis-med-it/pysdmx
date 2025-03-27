@@ -40,9 +40,6 @@ class _RefMetaCoreQuery(CoreQuery, frozen=True, omit_defaults=True):
                 f"as_of not supported in {version.value}.",
             )
 
-    def _join_mult(self, vals: Union[str, Sequence[str]]) -> str:
-        return vals if isinstance(vals, str) else ",".join(vals)
-
     def _get_as_of_value(self, as_of: Optional[datetime]) -> str:
         return f'&asOf={as_of.isoformat("T", "seconds")}' if as_of else ""
 
