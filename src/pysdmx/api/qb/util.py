@@ -84,6 +84,9 @@ class CoreQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         mapped = [self._to_kw(v, ver) for v in vals]
         return ",".join(mapped)
 
+    def _join_mult(self, vals: Union[str, Sequence[str]]) -> str:
+        return vals if isinstance(vals, str) else ",".join(vals)
+
     def _append_qs_param(
         self, qs: str, value: Any, field: str, disp_value: Any = None
     ) -> str:
