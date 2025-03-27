@@ -46,17 +46,18 @@ class _RefMetaCoreQuery(CoreQuery, frozen=True, omit_defaults=True):
     def _get_short_qs(
         self, detail: RefMetaDetail, as_of: Optional[datetime]
     ) -> str:
-        if detail != RefMetaDetail.FULL or as_of:
-            qs = "?"
-            if detail != RefMetaDetail.FULL:
-                qs += f"detail={detail.value}"
-                if as_of:
-                    qs += "&"
-            if as_of:
-                qs += f'asOf={as_of.isoformat("T", "seconds")}'
-            return qs
-        else:
-            return ""
+        qs = ""
+        if detail != RefMetaDetail.FULL:
+            qs = super()._append_qs_param(qs, detail.value, "detail")
+        qs = super()._append_qs_param(
+            qs,
+            as_of,
+            "asOf",
+            as_of.isoformat("T", "seconds") if as_of else None,
+        )
+        if qs:
+            qs = f"?{qs}"
+        return qs
 
 
 class RefMetaByMetadatasetQuery(
