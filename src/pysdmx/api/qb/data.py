@@ -1,6 +1,5 @@
 """Build SDMX-REST data queries."""
 
-from abc import abstractmethod
 from collections import defaultdict
 from datetime import datetime
 from enum import Enum
@@ -19,6 +18,7 @@ from pysdmx.api.dc.query import (
 from pysdmx.api.qb.util import (
     REST_ALL,
     ApiVersion,
+    CoreQuery,
     check_multiple_data_context,
 )
 from pysdmx.errors import Invalid
@@ -34,25 +34,7 @@ class DataContext(Enum):
     ALL = REST_ALL
 
 
-class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
-    def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
-        """The URL for the query in the selected SDMX-REST API version."""
-        self._validate_query(version)
-        if omit_defaults:
-            return self._create_short_query(version)
-        else:
-            return self._create_full_query(version)
-
-    def validate(self) -> None:
-        """Validate the query."""
-        try:
-            self._get_decoder().decode(_encoder.encode(self))
-        except msgspec.DecodeError as err:
-            raise Invalid("Invalid Schema Query", str(err)) from err
-
-    @abstractmethod
-    def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
-        """Returns the decoder to be used for validation."""
+class _CoreDataQuery(CoreQuery, frozen=True, omit_defaults=True):
 
     def _validate_context(
         self, context: DataContext, api_version: ApiVersion
@@ -106,18 +88,6 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                     f"SDMX-REST {api_version.value}."
                 ),
             )
-
-    def _to_kw(self, val: str, ver: ApiVersion) -> str:
-        if val == "*" and ver < ApiVersion.V2_0_0:
-            val = "all"
-        elif val == "~" and ver < ApiVersion.V2_0_0:
-            val = "latest"
-        return val
-
-    def _to_kws(self, vals: Union[str, Sequence[str]], ver: ApiVersion) -> str:
-        vals = [vals] if isinstance(vals, str) else vals
-        mapped = [self._to_kw(v, ver) for v in vals]
-        return ",".join(mapped)
 
     def _get_v2_context_id(
         self,
@@ -213,15 +183,6 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         k = f"/{key}" if key != REST_ALL else ""
         return f"/{resource}/{a}{k}"
 
-    def _append_qs_param(
-        self, qs: str, value: Any, field: str, disp_value: Any = None
-    ) -> str:
-        if value or (not isinstance(value, bool) and value == 0):
-            if qs:
-                qs += "&"
-            qs += f"{field}={disp_value if disp_value else value}"
-        return qs
-
     def _create_component_filters(
         self, components: Union[MultiFilter, NumberFilter, TextFilter]
     ) -> str:
@@ -249,18 +210,6 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             return "&".join(flts)
         else:
             return _create_component_filter(components)
-
-    @abstractmethod
-    def _validate_query(self, version: ApiVersion) -> None:
-        """Any additional validation steps to be performed by subclasses."""
-
-    @abstractmethod
-    def _create_full_query(self, ver: ApiVersion) -> str:
-        """Creates a URL, with default values."""
-
-    @abstractmethod
-    def _create_short_query(self, ver: ApiVersion) -> str:
-        """Creates a URL, omitting default values when possible."""
 
 
 class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
@@ -670,7 +619,6 @@ def _create_component_mult_filter(
 
 
 _data_decoder = msgspec.json.Decoder(DataQuery)
-_encoder = msgspec.json.Encoder()
 
 __all__ = [
     "ApiVersion",
