@@ -45,23 +45,23 @@ class _CoreRegistrationQuery(
                 },
             )
 
-    def _join_mult(self, vals: Union[str, Sequence[str]]) -> str:
-        return vals if isinstance(vals, str) else ",".join(vals)
-
     def _create_qs(
         self,
-        updated_before: Optional[datetime],
-        updated_after: Optional[datetime],
+        updb: Optional[datetime],
+        upda: Optional[datetime],
     ) -> str:
-        qs = ""
-        if updated_before:
-            qs += (
-                "updatedBefore=" f'{updated_before.isoformat("T", "seconds")}'
-            )
-        if updated_after:
-            if qs:
-                qs += "&"
-            qs += "updatedAfter=" f'{updated_after.isoformat("T", "seconds")}'
+        qs = super()._append_qs_param(
+            "",
+            updb,
+            "updatedBefore",
+            updb.isoformat("T", "seconds") if updb else None,
+        )
+        qs = super()._append_qs_param(
+            qs,
+            upda,
+            "updatedAfter",
+            upda.isoformat("T", "seconds") if upda else None,
+        )
         if qs:
             qs = f"?{qs}"
         return qs
