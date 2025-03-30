@@ -40,6 +40,8 @@ SENDER = "Sender"
 RECEIVER = "Receiver"
 SOURCE = "Source"
 HEADER_ID = "ID"
+NAMESPACE = "namespace"
+DIMENSIONATOBSERVATION = "dimensionAtObservation"
 
 
 # SDMX Error handling
