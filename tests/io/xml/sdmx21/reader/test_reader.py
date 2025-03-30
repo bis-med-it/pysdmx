@@ -567,9 +567,30 @@ def test_wrong_flavour_structure_specific(error_str):
         read_str_spe(error_str, validate=True)
 
 
-def test_strcuture_no_header(samples_folder):
+def test_structure_no_header(samples_folder):
     data_path = samples_folder / "structure_no_header.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1
     header = read_sdmx(input_str, validate=False).header
     assert header is None
+
+
+def test_message_full(samples_folder):
+    data_path = samples_folder / "message_full.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+    result = read_sdmx(input_str, validate=True).header
+    assert result.sender == {
+        "id": "Unknown",
+        "names": ["name=Unknown", "name=Unknown"],
+    }
+    assert result.receiver == {"id": "Not_supplied"}
+    assert result.structure == "DataStructure=BIS:BIS_DER(1.0):AllDimensions"
+
+
+def test_message_full_no_namespace(samples_folder):
+    data_path = samples_folder / "message_full_no_namespace.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_GEN
+    result = read_sdmx(input_str, validate=True).header
+    assert result.structure == "DataStructure=BIS:BIS_DER(1.0):AllDimensions"

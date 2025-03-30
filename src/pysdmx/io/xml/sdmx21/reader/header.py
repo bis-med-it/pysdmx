@@ -6,24 +6,30 @@ from typing import Any, Dict, Optional
 from pysdmx.io.xml.sdmx21.__tokens import (
     DATASET_ACTION,
     DATASET_ID,
+    DIMENSIONATOBSERVATION,
     GENERIC,
     HEADER,
     HEADER_ID,
+    NAME,
+    NAMESPACE,
     PREPARED,
     RECEIVER,
+    REF,
     SENDER,
     SOURCE,
     STR_SPE,
     STRUCTURE,
-    TEST, NAME, NAMESPACE, DIMENSIONATOBSERVATION, REF,
+    TEST,
 )
 from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.model.message import Header
 
 
-def __parse_sender_receiver(sender_receiver: Dict[str, Any]) -> Dict[str, Any] | None:
+def __parse_sender_receiver(
+    sender_receiver: Dict[str, Any],
+) -> Dict[str, Any] | None:
     """Parses the sender or receiver of the SDMX message."""
-    sender_receiver_dict = {}
+    sender_receiver_dict: Dict[str, Any] = {}
     if sender_receiver is None:
         return None
     else:
@@ -41,13 +47,22 @@ def __parse_structure(structure: Dict[str, Any]) -> str | None:
     if structure is None:
         return None
     elif structure.get(NAMESPACE) is not None:
-        match = re.search(r'([^.]+)=([^:]+):([^(]+)\(([^)]+)\)', structure.get(NAMESPACE))
-        namespace = (f"{match.group(1)}={match.group(2)}:{match.group(3)}({match.group(4)}):"
-                     f"{structure.get(DIMENSIONATOBSERVATION)}")
+        match = re.search(
+            r"([^.]+)=([^:]+):([^(]+)\(([^)]+)\)",
+            structure.get(NAMESPACE),  # type: ignore[arg-type]
+        )
+        namespace = (
+            f"{match.group(1)}={match.group(2)}:{match.group(3)}({match.group(4)}):"  # type: ignore[union-attr]
+            f"{structure.get(DIMENSIONATOBSERVATION)}"
+        )
         return namespace
     else:
-        reference = structure.get(STRUCTURE).get(REF)
-        return f"{reference.get("class")}={reference.get("agencyID")}:{reference.get("id")}({reference.get("version")}):{structure.get("dimensionAtObservation")}"
+        reference = structure.get(STRUCTURE).get(REF)  # type: ignore[union-attr]
+        return (
+            f"{reference.get("class")}={reference.get("agencyID")}:"
+            f"{reference.get("id")}({reference.get("version")}):"
+            f"{structure.get("dimensionAtObservation")}"
+        )
 
 
 def __parse_header(header: Dict[str, Any]) -> Header:
@@ -64,11 +79,11 @@ def __parse_header(header: Dict[str, Any]) -> Header:
         "id": header.get(HEADER_ID),
         "test": header.get(TEST),
         "prepared": header.get(PREPARED),
-        "sender": __parse_sender_receiver(header.get(SENDER)),
-        "receiver": __parse_sender_receiver(header.get(RECEIVER)),
+        "sender": __parse_sender_receiver(header.get(SENDER)),  # type: ignore[arg-type]
+        "receiver": __parse_sender_receiver(header.get(RECEIVER)),  # type: ignore[arg-type]
         "source": header.get(SOURCE),
         "dataset_action": header.get(DATASET_ACTION),
-        "structure": __parse_structure(header.get(STRUCTURE)),
+        "structure": __parse_structure(header.get(STRUCTURE)),  # type: ignore[arg-type]
         "dataset_id": header.get(DATASET_ID),
     }
 
@@ -76,8 +91,8 @@ def __parse_header(header: Dict[str, Any]) -> Header:
 
 
 def read(
-        input_str: str,
-        validate: bool = True,
+    input_str: str,
+    validate: bool = True,
 ) -> Optional[Header]:
     """Reads and retrieves the header of the SDMX message.
 
