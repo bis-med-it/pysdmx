@@ -1,7 +1,7 @@
 """SDMX 2.1 XML Header reader module."""
 
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCY_ID,
@@ -33,7 +33,7 @@ from pysdmx.model.message import Header
 
 def __parse_sender_receiver(
     sender_receiver: Dict[str, Any],
-) -> Dict[str, Any] | None:
+) -> Union[Dict[str, Any], None]:
     """Parses the sender or receiver of the SDMX message."""
     sender_receiver_dict: Dict[str, Any] = {}
     if sender_receiver is None:
@@ -48,7 +48,7 @@ def __parse_sender_receiver(
         return sender_receiver_dict
 
 
-def __parse_structure(structure: Dict[str, Any]) -> str | None:
+def __parse_structure(structure: Dict[str, Any]) -> Union[str, None]:
     """Parses the structure of the SDMX header."""
     if structure is None:
         return None
