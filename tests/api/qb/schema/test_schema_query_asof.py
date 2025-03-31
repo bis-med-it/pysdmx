@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 import pytest
 
 from pysdmx.api.qb.schema import (
@@ -5,6 +7,7 @@ from pysdmx.api.qb.schema import (
     SchemaQuery,
 )
 from pysdmx.api.qb.util import ApiVersion
+from pysdmx.errors import Invalid
 
 
 @pytest.fixture
@@ -32,109 +35,116 @@ def obs_dim():
     return "TIME_PERIOD"
 
 
-@pytest.mark.parametrize("api_version", ApiVersion)
-def test_url_no_obs_dim_short(
+@pytest.fixture
+def as_of():
+    return datetime(2025, 1, 1, 12, 42, 21, tzinfo=timezone.utc)
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+def test_short_url_asof(
     context: SchemaContext,
     agency: str,
     res: str,
     version: str,
-    api_version: ApiVersion,
-):
-    expected = f"/schema/{context.value}/{agency}/{res}/{version}"
-
-    q = SchemaQuery(context, agency, res, version)
-    url = q.get_url(api_version, True)
-
-    assert url == expected
-
-
-@pytest.mark.parametrize("api_version", ApiVersion)
-def test_url_with_obs_dim_short(
-    context: SchemaContext,
-    agency: str,
-    res: str,
-    version: str,
-    obs_dim: str,
+    as_of: datetime,
     api_version: ApiVersion,
 ):
     expected = (
         f"/schema/{context.value}/{agency}/{res}/{version}"
-        f"?dimensionAtObservation={obs_dim}"
+        "?asOf=2025-01-01T12:42:21+00:00"
     )
 
-    q = SchemaQuery(context, agency, res, version, obs_dim)
+    q = SchemaQuery(context, agency, res, version, as_of=as_of)
     url = q.get_url(api_version, True)
 
     assert url == expected
 
 
 @pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v < ApiVersion.V2_0_0)
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
 )
-def test_url_with_obs_dim_full_before_2_0_0(
+def test_short_url_asof_and_obs_dim(
     context: SchemaContext,
     agency: str,
     res: str,
     version: str,
     obs_dim: str,
-    api_version: ApiVersion,
-):
-    expected = (
-        f"/schema/{context.value}/{agency}/{res}/{version}"
-        f"?dimensionAtObservation={obs_dim}&explicit=false"
-    )
-
-    q = SchemaQuery(context, agency, res, version, obs_dim)
-    url = q.get_url(api_version)
-
-    assert url == expected
-
-
-@pytest.mark.parametrize(
-    "api_version",
-    (
-        v
-        for v in ApiVersion
-        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
-    ),
-)
-def test_url_with_obs_dim_full_since_2_0_0(
-    context: SchemaContext,
-    agency: str,
-    res: str,
-    version: str,
-    obs_dim: str,
+    as_of: datetime,
     api_version: ApiVersion,
 ):
     expected = (
         f"/schema/{context.value}/{agency}/{res}/{version}"
         f"?dimensionAtObservation={obs_dim}"
+        "&asOf=2025-01-01T12:42:21+00:00"
     )
 
-    q = SchemaQuery(context, agency, res, version, obs_dim)
+    q = SchemaQuery(context, agency, res, version, obs_dim, as_of=as_of)
+    url = q.get_url(api_version, True)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v < ApiVersion.V2_2_0)
+)
+def test_url_asof_before_2_2_0(
+    context: SchemaContext,
+    agency: str,
+    res: str,
+    version: str,
+    obs_dim: str,
+    as_of: datetime,
+    api_version: ApiVersion,
+):
+    q = SchemaQuery(context, agency, res, version, obs_dim, as_of=as_of)
+
+    with pytest.raises(Invalid):
+        q.get_url(api_version)
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+def test_url_asof_since_2_2_0(
+    context: SchemaContext,
+    agency: str,
+    res: str,
+    version: str,
+    obs_dim: str,
+    as_of: datetime,
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/schema/{context.value}/{agency}/{res}/{version}"
+        f"?dimensionAtObservation={obs_dim}"
+        "&asOf=2025-01-01T12:42:21+00:00&deletion=false"
+    )
+
+    q = SchemaQuery(context, agency, res, version, obs_dim, as_of=as_of)
     url = q.get_url(api_version)
 
     assert url == expected
 
 
 @pytest.mark.parametrize(
-    "api_version",
-    (v for v in ApiVersion if v >= ApiVersion.V2_2_0),
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
 )
-def test_url_with_obs_dim_full_since_2_2_0(
+def test_url_asof_no_obs_dim_since_2_2_0(
     context: SchemaContext,
     agency: str,
     res: str,
     version: str,
-    obs_dim: str,
+    as_of: datetime,
     api_version: ApiVersion,
 ):
     expected = (
         f"/schema/{context.value}/{agency}/{res}/{version}"
-        f"?dimensionAtObservation={obs_dim}&deletion=false"
+        "?asOf=2025-01-01T12:42:21+00:00&deletion=false"
     )
 
-    q = SchemaQuery(context, agency, res, version, obs_dim)
+    q = SchemaQuery(context, agency, res, version, as_of=as_of)
     url = q.get_url(api_version)
 
     assert url == expected

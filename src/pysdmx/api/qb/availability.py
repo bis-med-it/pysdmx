@@ -77,6 +77,9 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             by executing the query (mode="exact") vs a Cube Region showing
             what values remain valid selections that could be added to the
             data query (mode="available").
+        reporting_year_start_day: The start day of a reporting year, when
+            the year is not a Gregorian calendar year, for example when
+            the year represents a fiscal year.
     """
 
     context: DataContext = DataContext.ALL
@@ -91,6 +94,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         StructureReference.NONE
     )
     mode: AvailabilityMode = AvailabilityMode.EXACT
+    reporting_year_start_day: Optional[str] = None
 
     def _validate_query(self, api_version: ApiVersion) -> None:
         self.validate()
@@ -103,7 +107,15 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             api_version,
         )
         super()._check_resource_id(self.resource_id, api_version)
-        super()._check_components(self.components, api_version)
+        super()._check_version(
+            "components", self.components, api_version, ApiVersion.V2_0_0
+        )
+        super()._check_version(
+            "reporting_year_start_day",
+            self.reporting_year_start_day,
+            api_version,
+            ApiVersion.V2_2_0,
+        )
         self.__validate_references(api_version)
         self.__validate_component_id(api_version)
 
@@ -161,6 +173,9 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             qs = super()._append_qs_param(qs, r, "references")
         if self.mode != AvailabilityMode.EXACT:
             qs = super()._append_qs_param(qs, self.mode.value, "mode")
+        qs = super()._append_qs_param(
+            qs, self.reporting_year_start_day, "reportingYearStartDay"
+        )
         return f"?{qs}" if qs else qs
 
     def __get_short_v1_qs(self) -> str:
@@ -222,6 +237,9 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             r = ",".join(refs)
         qs = super()._append_qs_param(qs, r, "references")
         qs = super()._append_qs_param(qs, self.mode.value, "mode")
+        qs = super()._append_qs_param(
+            qs, self.reporting_year_start_day, "reportingYearStartDay"
+        )
         return f"{o}?{qs}"
 
     def _create_short_query(self, api_version: ApiVersion) -> str:
