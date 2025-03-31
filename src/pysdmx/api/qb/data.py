@@ -1,6 +1,5 @@
 """Build SDMX-REST data queries."""
 
-from abc import abstractmethod
 from collections import defaultdict
 from datetime import datetime
 from enum import Enum
@@ -13,11 +12,13 @@ from pysdmx.api.dc.query import (
     MultiFilter,
     NumberFilter,
     Operator,
+    SortBy,
     TextFilter,
 )
 from pysdmx.api.qb.util import (
     REST_ALL,
     ApiVersion,
+    CoreQuery,
     check_multiple_data_context,
 )
 from pysdmx.errors import Invalid
@@ -33,25 +34,7 @@ class DataContext(Enum):
     ALL = REST_ALL
 
 
-class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
-    def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
-        """The URL for the query in the selected SDMX-REST API version."""
-        self._validate_query(version)
-        if omit_defaults:
-            return self._create_short_query(version)
-        else:
-            return self._create_full_query(version)
-
-    def validate(self) -> None:
-        """Validate the query."""
-        try:
-            self._get_decoder().decode(_encoder.encode(self))
-        except msgspec.DecodeError as err:
-            raise Invalid("Invalid Schema Query", str(err)) from err
-
-    @abstractmethod
-    def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
-        """Returns the decoder to be used for validation."""
+class _CoreDataQuery(CoreQuery, frozen=True, omit_defaults=True):
 
     def _validate_context(
         self, context: DataContext, api_version: ApiVersion
@@ -90,31 +73,21 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                 ),
             )
 
-    def _check_components(
+    def _check_version(
         self,
-        components: Union[MultiFilter, None, NumberFilter, TextFilter],
+        field: str,
+        value: Any,
         api_version: ApiVersion,
+        allowed_version: ApiVersion,
     ) -> None:
-        if api_version < ApiVersion.V2_0_0 and components:
+        if value and api_version < allowed_version:
             raise Invalid(
                 "Validation Error",
                 (
-                    "Components filter is not supported in "
+                    f"{field} is not supported in "
                     f"SDMX-REST {api_version.value}."
                 ),
             )
-
-    def _to_kw(self, val: str, ver: ApiVersion) -> str:
-        if val == "*" and ver < ApiVersion.V2_0_0:
-            val = "all"
-        elif val == "~" and ver < ApiVersion.V2_0_0:
-            val = "latest"
-        return val
-
-    def _to_kws(self, vals: Union[str, Sequence[str]], ver: ApiVersion) -> str:
-        vals = [vals] if isinstance(vals, str) else vals
-        mapped = [self._to_kw(v, ver) for v in vals]
-        return ",".join(mapped)
 
     def _get_v2_context_id(
         self,
@@ -210,15 +183,6 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         k = f"/{key}" if key != REST_ALL else ""
         return f"/{resource}/{a}{k}"
 
-    def _append_qs_param(
-        self, qs: str, value: Any, field: str, disp_value: Any = None
-    ) -> str:
-        if value:
-            if qs:
-                qs += "&"
-            qs += f"{field}={disp_value if disp_value else value}"
-        return qs
-
     def _create_component_filters(
         self, components: Union[MultiFilter, NumberFilter, TextFilter]
     ) -> str:
@@ -246,18 +210,6 @@ class _CoreDataQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             return "&".join(flts)
         else:
             return _create_component_filter(components)
-
-    @abstractmethod
-    def _validate_query(self, version: ApiVersion) -> None:
-        """Any additional validation steps to be performed by subclasses."""
-
-    @abstractmethod
-    def _create_full_query(self, ver: ApiVersion) -> str:
-        """Creates a URL, with default values."""
-
-    @abstractmethod
-    def _create_short_query(self, ver: ApiVersion) -> str:
-        """Creates a URL, omitting default values when possible."""
 
 
 class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
@@ -295,6 +247,22 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             The ID of the one or more measures to be returned.
         include_history: Retrieve previous versions of the data, as they
             were disseminated in the past.
+        offset: The number of observations (or series) to skip before
+            beginning to return observation (or series).
+        limit: The maximum number of observations to be returned.
+        sort: The order in which the returned data should be sorted.
+            It contains either one or more components, by which the data
+            should be sorted, or the * operator, which represents all
+            dimensions as positioned in the DSD, or the keyword series_key,
+            which represents all dimensions not presented at the observational
+            level and as positioned in the DSD. In addition, each component,
+            or the set of components (through the operator or keyword) can be
+            sorted in ascending or descending order.
+        as_of: Retrieve the data as they were at the specified point
+            in time (aka time travel).
+        reporting_year_start_day: The start day of a reporting year, when
+            the year is not a Gregorian calendar year, for example when
+            the year represents a fiscal year.
     """
 
     context: DataContext = DataContext.ALL
@@ -316,6 +284,11 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         Sequence[str],
     ] = "all"
     include_history: bool = False
+    offset: int = 0
+    limit: Optional[int] = None
+    sort: Sequence[SortBy] = []
+    as_of: Optional[datetime] = None
+    reporting_year_start_day: Optional[str] = None
 
     def _validate_query(self, api_version: ApiVersion) -> None:
         self.validate()
@@ -328,7 +301,29 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             api_version,
         )
         super()._check_resource_id(self.resource_id, api_version)
-        super()._check_components(self.components, api_version)
+        super()._check_version(
+            "components", self.components, api_version, ApiVersion.V2_0_0
+        )
+        super()._check_version(
+            "as_of", self.as_of, api_version, ApiVersion.V2_2_0
+        )
+        super()._check_version(
+            "reporting_year_start_day",
+            self.reporting_year_start_day,
+            api_version,
+            ApiVersion.V2_2_0,
+        )
+        super()._check_version(
+            "offset", self.offset, api_version, ApiVersion.V2_2_0
+        )
+        super()._check_version(
+            "limit", self.limit, api_version, ApiVersion.V2_2_0
+        )
+        super()._check_version(
+            "sort", self.sort, api_version, ApiVersion.V2_2_0
+        )
+        self.__check_pos_int("offset", self.offset)
+        self.__check_pos_int("limit", self.limit)
 
     def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
         return _data_decoder
@@ -362,6 +357,21 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
             self.include_history,
             "includeHistory",
             str(self.include_history).lower(),
+        )
+        if api_version >= ApiVersion.V2_2_0 and self.offset != 0:
+            qs = super()._append_qs_param(qs, self.offset, "offset")
+        qs = super()._append_qs_param(qs, self.limit, "limit")
+        qs = super()._append_qs_param(
+            qs, self.sort, "sort", self.__get_sort(self.sort)
+        )
+        qs = super()._append_qs_param(
+            qs,
+            self.as_of,
+            "asOf",
+            self.as_of.isoformat("T", "seconds") if self.as_of else None,
+        )
+        qs = super()._append_qs_param(
+            qs, self.reporting_year_start_day, "reportingYearStartDay"
         )
         return f"?{qs}" if qs else qs
 
@@ -411,6 +421,13 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                     "combination for the detail attribute in SDMX-REST "
                     f"{api_version.value}."
                 ),
+            )
+
+    def __check_pos_int(self, field: str, value: Optional[int]) -> None:
+        if value and value < 0:
+            raise Invalid(
+                "Validation Error",
+                f"{field} is must be a positive integer.",
             )
 
     def _create_full_query(self, api_version: ApiVersion) -> str:
@@ -468,7 +485,25 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         qs = super()._append_qs_param(
             qs, str(self.include_history).lower(), "includeHistory"
         )
+        if api_version >= ApiVersion.V2_2_0:
+            qs = super()._append_qs_param(qs, self.offset, "offset")
+        qs = super()._append_qs_param(qs, self.limit, "limit")
+        qs = super()._append_qs_param(
+            qs, self.sort, "sort", self.__get_sort(self.sort)
+        )
+        qs = super()._append_qs_param(
+            qs,
+            self.as_of,
+            "asOf",
+            self.as_of.isoformat("T", "seconds") if self.as_of else None,
+        )
+        qs = super()._append_qs_param(
+            qs, self.reporting_year_start_day, "reportingYearStartDay"
+        )
         return f"{o}?{qs}"
+
+    def __get_sort(self, sort: Sequence[SortBy]) -> str:
+        return "+".join([f"{s.component}:{s.order}" for s in sort])
 
     def _create_short_query(self, api_version: ApiVersion) -> str:
         if api_version >= ApiVersion.V2_0_0:
@@ -584,7 +619,6 @@ def _create_component_mult_filter(
 
 
 _data_decoder = msgspec.json.Decoder(DataQuery)
-_encoder = msgspec.json.Encoder()
 
 __all__ = [
     "ApiVersion",

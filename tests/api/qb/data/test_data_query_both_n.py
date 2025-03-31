@@ -41,7 +41,12 @@ def test_url_last_n_before_2_0_0(
 
 
 @pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
 )
 def test_url_last_n_since_2_0_0(
     first_n: int,
@@ -52,6 +57,26 @@ def test_url_last_n_since_2_0_0(
         f"/data/*/*/*/*/*"
         f"?firstNObservations={first_n}&lastNObservations={last_n}"
         "&attributes=dsd&measures=all&includeHistory=false"
+    )
+
+    q = DataQuery(first_n_obs=first_n, last_n_obs=last_n)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+def test_url_last_n_since_2_2_0(
+    first_n: int,
+    last_n: int,
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/data/*/*/*/*/*"
+        f"?firstNObservations={first_n}&lastNObservations={last_n}"
+        "&attributes=dsd&measures=all&includeHistory=false&offset=0"
     )
 
     q = DataQuery(first_n_obs=first_n, last_n_obs=last_n)
