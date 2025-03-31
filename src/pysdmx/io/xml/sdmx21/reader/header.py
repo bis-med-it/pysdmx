@@ -4,13 +4,18 @@ import re
 from typing import Any, Dict, Optional
 
 from pysdmx.io.xml.sdmx21.__tokens import (
+    AGENCY_ID,
+    CLASS,
     DATASET_ACTION,
     DATASET_ID,
+    DIM_OBS,
     DIMENSIONATOBSERVATION,
     GENERIC,
     HEADER,
     HEADER_ID,
+    ID,
     NAME,
+    NAMES,
     NAMESPACE,
     PREPARED,
     RECEIVER,
@@ -20,6 +25,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     STR_SPE,
     STRUCTURE,
     TEST,
+    VERSION,
 )
 from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.model.message import Header
@@ -37,8 +43,8 @@ def __parse_sender_receiver(
         if names is not None:
             if not isinstance(names, list):
                 names = [names]
-            sender_receiver_dict["names"] = [f"name={name}" for name in names]
-        sender_receiver_dict["id"] = sender_receiver.get("id")
+            sender_receiver_dict[NAMES] = [f"name={name}" for name in names]
+        sender_receiver_dict[ID] = sender_receiver.get(ID)
         return sender_receiver_dict
 
 
@@ -59,9 +65,9 @@ def __parse_structure(structure: Dict[str, Any]) -> str | None:
     else:
         reference = structure.get(STRUCTURE).get(REF)  # type: ignore[union-attr]
         return (
-            f"{reference.get("class")}={reference.get("agencyID")}:"
-            f"{reference.get("id")}({reference.get("version")}):"
-            f"{structure.get("dimensionAtObservation")}"
+            f"{reference.get(CLASS)}={reference.get(AGENCY_ID)}:"
+            f"{reference.get(ID)}({reference.get(VERSION)}):"
+            f"{structure.get(DIM_OBS)}"
         )
 
 

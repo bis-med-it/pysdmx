@@ -42,6 +42,7 @@ SOURCE = "Source"
 HEADER_ID = "ID"
 NAMESPACE = "namespace"
 DIMENSIONATOBSERVATION = "dimensionAtObservation"
+NAMES = "names"
 
 
 # SDMX Error handling
