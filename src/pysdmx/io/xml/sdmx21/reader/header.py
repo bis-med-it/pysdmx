@@ -1,6 +1,7 @@
 """SDMX 2.1 XML Header reader module."""
 
 import re
+import warnings
 from typing import Any, Dict, Optional, Union
 
 from pysdmx.io.xml.sdmx21.__tokens import (
@@ -57,6 +58,16 @@ def __parse_sender_receiver(
                     ),
                     names[0].get("#text"),
                 )
+
+        expected_keys = {NAME, ID}
+        unexpected_keys = set(sender_receiver.keys()) - expected_keys
+        if unexpected_keys:
+            warnings.warn(
+                f"The following attributes will be lost: "
+                f"{', '.join(unexpected_keys)}",
+                UserWarning,
+                stacklevel=2,
+            )
 
         organisation = Organisation(
             id=sender_receiver.get(ID),  # type: ignore[arg-type]

@@ -610,3 +610,12 @@ def test_message_full_no_namespace(samples_folder):
     assert read_format == Format.DATA_SDMX_ML_2_1_GEN
     result = read_sdmx(input_str, validate=True).header
     assert result.structure == "DataStructure=BIS:BIS_DER(1.0):AllDimensions"
+
+
+def test_message_full_warning(samples_folder, recwarn):
+    data_path = samples_folder / "message_full_warning.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+    result = read_sdmx(input_str, validate=True).header
+    assert result.structure == "DataStructure=BIS:BIS_DER(1.0):AllDimensions"
+    assert len(recwarn) == 1
