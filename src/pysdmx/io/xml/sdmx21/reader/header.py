@@ -15,7 +15,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     HEADER_ID,
     ID,
     NAME,
-    NAMES,
     NAMESPACE,
     PREPARED,
     RECEIVER,
@@ -28,24 +27,43 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VERSION,
 )
 from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
+from pysdmx.model import Organisation
 from pysdmx.model.message import Header
 
 
 def __parse_sender_receiver(
     sender_receiver: Dict[str, Any],
-) -> Union[Dict[str, Any], None]:
+) -> Union[Organisation, None]:
     """Parses the sender or receiver of the SDMX message."""
-    sender_receiver_dict: Dict[str, Any] = {}
     if sender_receiver is None:
         return None
     else:
         names = sender_receiver.get(NAME)
+        selected_name = None
+
         if names is not None:
             if not isinstance(names, list):
                 names = [names]
-            sender_receiver_dict[NAMES] = [f"name={name}" for name in names]
-        sender_receiver_dict[ID] = sender_receiver.get(ID)
-        return sender_receiver_dict
+
+            if isinstance(names[0], str):
+                selected_name = names[0]
+
+            else:
+                selected_name = next(
+                    (
+                        name.get("#text")
+                        for name in names
+                        if name.get("lang") == "en"
+                    ),
+                    names[0].get("#text"),
+                )
+
+        organisation = Organisation(
+            id=sender_receiver.get(ID),  # type: ignore[arg-type]
+            name=selected_name,
+        )
+
+        return organisation
 
 
 def __parse_structure(structure: Dict[str, Any]) -> Union[str, None]:
