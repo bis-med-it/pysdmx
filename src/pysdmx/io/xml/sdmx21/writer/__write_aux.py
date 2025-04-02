@@ -1,6 +1,7 @@
 # mypy: disable-error-code="union-attr"
 """Writer auxiliary functions."""
 
+import warnings
 from collections import OrderedDict
 from datetime import datetime
 from typing import Optional, Union
@@ -8,7 +9,13 @@ from xml.sax.saxutils import escape
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
-from pysdmx.io.xml.sdmx21.__tokens import RULESETS, TRANSFORMATIONS, UDOS
+from pysdmx.io.xml.sdmx21.__tokens import (
+    ID,
+    NAME_LOW,
+    RULESETS,
+    TRANSFORMATIONS,
+    UDOS,
+)
 from pysdmx.model import Organisation
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
@@ -168,22 +175,41 @@ def __item(
     """
     child2 = "\t\t" if prettyprint else ""
     child3 = "\t\t\t" if prettyprint else ""
-    if isinstance(sender_receiver, Organisation):
-        message = (
-            f"{nl}{child2}<{ABBR_MSG}:{element} id={sender_receiver.id!r}"
-        )
-        if sender_receiver.name:
-            message += (
-                f">"
-                f"{nl}{child3}<{ABBR_COM}:Name>{sender_receiver.name}</{ABBR_COM}:Name>"
-                f"{nl}{child2}</{ABBR_MSG}:{element}>"
-            )
-        else:
-            message += "/>"
-        return message
-    elif sender_receiver is None:
+    name = None
+    org_id = None
+
+    if sender_receiver is None:
         return ""
-    return f"{nl}{child2}<{ABBR_MSG}:{element} id={sender_receiver!r}/>"
+    if isinstance(sender_receiver, Organisation):
+        org_id = sender_receiver.id
+        name = sender_receiver.name
+    elif isinstance(sender_receiver, dict):
+        org_id = sender_receiver.get(ID)
+        name = sender_receiver.get(NAME_LOW)
+
+        expected_keys = {ID, NAME_LOW}
+        unexpected_keys = set(sender_receiver.keys()) - expected_keys
+
+        if unexpected_keys:
+            warnings.warn(
+                f"The following attributes will be lost: "
+                f"{', '.join(unexpected_keys)}",
+                UserWarning,
+                stacklevel=2,
+            )
+    else:
+        return f"{nl}{child2}<{ABBR_MSG}:{element} id={sender_receiver!r}/>"
+
+    message = f"{nl}{child2}<{ABBR_MSG}:{element} id={org_id!r}"
+    if name is not None:
+        message += (
+            f">"
+            f"{nl}{child3}<{ABBR_COM}:Name>{name}</{ABBR_COM}:Name>"
+            f"{nl}{child2}</{ABBR_MSG}:{element}>"
+        )
+    else:
+        message += "/>"
+    return message
 
 
 def __reference(

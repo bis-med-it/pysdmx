@@ -64,6 +64,7 @@ STATUS = "status"
 # Structures
 # Common
 NAME = "Name"
+NAME_LOW = "name"
 DESC = "Description"
 LANG = "lang"
 XML_TEXT = "#text"

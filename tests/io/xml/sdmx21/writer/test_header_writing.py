@@ -20,7 +20,7 @@ def header():
             uri=None,
             urn=None,
             name="unknown",
-            description=None,
+            description="Description",
             contacts=(),
             dataflows=(),
             annotations=(),
@@ -49,7 +49,35 @@ def header_no_name():
             dataflows=(),
             annotations=(),
         ),
-        receiver=None,
+        receiver={"id": "ZZZ"},
+        source=None,
+        dataset_action=None,
+        structure="DataStructure=MD:TEST(1.0):AllDimensions",
+        dataset_id=None,
+    )
+
+
+@pytest.fixture
+def header_warning():
+    return Header(
+        id="ID",
+        test="true",
+        prepared="2021-01-01T00:00:00",
+        sender=Organisation(
+            id="ZZZ",
+            uri=None,
+            urn=None,
+            name=None,
+            description=None,
+            contacts=(),
+            dataflows=(),
+            annotations=(),
+        ),
+        receiver={
+            "id": "ZZZ",
+            "name": "unknown",
+            "description": "Description",
+        },
         source=None,
         dataset_action=None,
         structure="DataStructure=MD:TEST(1.0):AllDimensions",
@@ -84,3 +112,12 @@ def test_write_header_namespace(header_no_name, samples_folder):
     with open(file_path, "r") as f:
         expected = f.read()
     assert header == expected
+
+
+def test_write_header_warning(header_warning, samples_folder, recwarn):
+    file_path = samples_folder / "header_warning.xml"
+    header = write_header_aux(header_warning, False, False, True)
+    with open(file_path, "r") as f:
+        expected = f.read()
+    assert header == expected
+    assert len(recwarn) == 1
