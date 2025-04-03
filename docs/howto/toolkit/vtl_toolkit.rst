@@ -38,7 +38,7 @@ Step-by-step Solution
 Reading the metadata
 ^^^^^^^^^^^^^^^^^^^^
 
-First of all, we need to extract the metadat with ``reader.sdmx.read_sdmx``.
+First of all, we need to extract the metadata with ``pysdmx.io.read_sdmx``.
 The ``read_sdmx`` function reads the metadata from the input file and returns the metadata.
 
 data_path is the path to the metadata file, but we can algo use a string with the metadata in the correct format.
@@ -46,8 +46,7 @@ data_path is the path to the metadata file, but we can algo use a string with th
 
 .. code-block:: python
 
-    from pysdmx.reader.sdmx import read_sdmx
-    from pysdmx.reader.sdmx import process_string_to_read
+    from pysdmx.io import read_sdmx
     from pysdmx.model import RulesetScheme, UserDefinedOperatorScheme, TransformationScheme
 
     data_path = "[metadata_file_path]"
@@ -99,10 +98,8 @@ Generating the VTL script
 
 Now we can generate the VTL script using the metadata with ``toolkit.vtl.generate_vtl_script.generate_vtl_script``.
 
-In this function, we can set the model_validation parameter to True or False:
-
-- True: Is the default value It will do the model validation explained in the previous step.
-- False: It will not do the model validation.
+The model_validation parameter defines a flag to perform the validation of the VTL objects
+(explained in previous step). Default value is True
 
 This function will generate the VTL script with the information form the items of the Transformation Scheme
 and the attached Ruleset Scheme and User Defined Operator Scheme.
