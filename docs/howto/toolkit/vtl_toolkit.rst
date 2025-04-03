@@ -1,26 +1,22 @@
 .. _toolkit:
-Description
-===============================
 
-The toolkit module is a collection of utility functions for user
-convenience when working with pysdmx in combination with other standards such as VTL
-or SDMX-based tools like the FMR.
+VTL Toolkit
+===========
 
-The toolkit functions does not follow any particular
-version of the SDMX standard, we will try our best to not include any
-change that breaks backward compatibility but we cannot ensure it.
-
+The toolkit module is a set of functions that help to generate VTL script from metadata.
+The purpose of this module is to provide a set of functions that can be used to validate the metadata from a transformation scheme,
+ruleset scheme, and user defined operator scheme and generate the VTL script from the transformation scheme.
 
 
 Generate VTL script
-===============================
+-------------------
 
 In this tutorial, we learn how generate VTL script step by step using metadata stored in a
 XML file with a Transformation Scheme structure.
 We will be reading the metadata from the XML file, validating the metadata, and generating the VTL script.
 
 Required Metadata
------------------
+^^^^^^^^^^^^^^^^^
 
 For this use case, we need metadata read with the sdmx reader or generated from another source:
 
@@ -40,7 +36,7 @@ Step-by-step Solution
 ---------------------
 
 Reading the metadata
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 
 First of all, we need to extract the metadat with ``reader.sdmx.read_sdmx``.
 The ``read_sdmx`` function reads the metadata from the input file and returns the metadata.
@@ -59,7 +55,7 @@ input_str is the string of the metadata file and read_format is the format of th
 
 
 Getting the metadata
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 
 Now we have the metadata, we can extract the Transformation Scheme.
 As the Transformation Scheme contains the references for Ruleset Scheme and User Defined Operator Scheme, there is no need to extract them separately.
@@ -73,7 +69,7 @@ As the Transformation Scheme contains the references for Ruleset Scheme and User
 
 
 Validating the metadata
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 Now we have the transformation, we can validate it with ``toolkit.vtl.model_validations.model_validations`` module.
 This validation step ensures that both the structure and content of your metadata are correct before generating the final VTL script.
@@ -99,7 +95,7 @@ This validation step ensures that both the structure and content of your metadat
 
 
 Generating the VTL script
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Now we can generate the VTL script using the metadata with ``toolkit.vtl.generate_vtl_script.generate_vtl_script``.
 
@@ -107,6 +103,7 @@ In this function, we can set the model_validation parameter to True or False:
 
 - True: Is the default value It will do the model validation explained in the previous step.
 - False: It will not do the model validation.
+
 This function will generate the VTL script with the information form the items of the Transformation Scheme
 and the attached Ruleset Scheme and User Defined Operator Scheme.
 
@@ -123,14 +120,20 @@ We can only generate the VTL script from a Transformation Scheme.
 
 
 How to use the VTL script
-^^^^^^^^^^^^^^^^^^^^^^^^
-Now the VTL script is generated, we are ready to use it.
+-------------------------
+
+Now that the VTL script has been generated,
+you are ready to run it. In the following resources,
+you will find everything you need to execute and validate your VTL script,
+including documentation for the engine, semantic validation, script execution, and official manuals.
 
 Useful information:
 
-- `VTL Engine <https://docs.vtlengine.meaningfuldata.eu/index.html>`_.
+- `VTL Engine Docs <https://docs.vtlengine.meaningfuldata.eu/index.html>`_.
 - `VTL Semantic validation <https://docs.vtlengine.meaningfuldata.eu/api.html#vtlengine.semantic_analysis>`_.
-- `VTL Engine Script run <https://docs.vtlengine.meaningfuldata.eu/api.html#vtlengine.run>`_.
+- `VTL Script run <https://docs.vtlengine.meaningfuldata.eu/api.html#vtlengine.run>`_.
+- `VTL Reference manual <https://sdmx.org/wp-content/uploads/VTL-2.1-Reference-Manual.pdf>`_.
+- `VTL User manual <https://sdmx.org/wp-content/uploads/VTL-2.1-User-Manual.pdf>`_.
 
 Summary
 -------
