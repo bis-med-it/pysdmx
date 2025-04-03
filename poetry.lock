@@ -2006,4 +2006,4 @@ xml = ["lxml", "sdmxschemas", "xmltodict"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "3810d79c28fb1b501c1351dde533e2e806f448e309eccf69bd37c60da50ca33e"
+content-hash = "5dab4ce761f2cd3c946a064c8751bd918cc3cbfaba4bf7a57be67536d210dc9c"
