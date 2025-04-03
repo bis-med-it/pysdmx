@@ -1,6 +1,5 @@
 """Build SDMX-REST registration queries."""
 
-from abc import abstractmethod
 from datetime import datetime
 from typing import Optional, Sequence, Union
 
@@ -8,33 +7,16 @@ import msgspec
 from msgspec.json import Decoder
 
 from pysdmx.api.qb.data import DataContext
-from pysdmx.api.qb.util import REST_ALL, ApiVersion
+from pysdmx.api.qb.util import REST_ALL, ApiVersion, CoreQuery
 from pysdmx.errors import Invalid
 from pysdmx.io.format import RegistryFormat
 
 
 class _CoreRegistrationQuery(
-    msgspec.Struct,
+    CoreQuery,
     frozen=True,
     omit_defaults=True,
 ):
-    def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
-        """The URL for the query in the selected SDMX-REST API version."""
-        self._validate_query(version)
-        if omit_defaults:
-            return self._create_short_query()
-        else:
-            return self._create_full_query()
-
-    def validate(self) -> None:
-        """Validate the query."""
-        try:
-            self._get_decoder().decode(_encoder.encode(self))
-        except msgspec.DecodeError as err:
-            raise Invalid(
-                "Invalid Reference Metadata Query", str(err)
-            ) from err
-
     def _check_version(self, version: ApiVersion) -> None:
         if version < ApiVersion.V2_1_0:
             raise Invalid(
@@ -63,42 +45,26 @@ class _CoreRegistrationQuery(
                 },
             )
 
-    def _join_mult(self, vals: Union[str, Sequence[str]]) -> str:
-        return vals if isinstance(vals, str) else ",".join(vals)
-
     def _create_qs(
         self,
-        updated_before: Optional[datetime],
-        updated_after: Optional[datetime],
+        updb: Optional[datetime],
+        upda: Optional[datetime],
     ) -> str:
-        qs = ""
-        if updated_before:
-            qs += (
-                "updatedBefore=" f'{updated_before.isoformat("T", "seconds")}'
-            )
-        if updated_after:
-            if qs:
-                qs += "&"
-            qs += "updatedAfter=" f'{updated_after.isoformat("T", "seconds")}'
+        qs = super()._append_qs_param(
+            "",
+            updb,
+            "updatedBefore",
+            updb.isoformat("T", "seconds") if updb else None,
+        )
+        qs = super()._append_qs_param(
+            qs,
+            upda,
+            "updatedAfter",
+            upda.isoformat("T", "seconds") if upda else None,
+        )
         if qs:
             qs = f"?{qs}"
         return qs
-
-    @abstractmethod
-    def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
-        """Returns the decoder to be used for validation."""
-
-    @abstractmethod
-    def _validate_query(self, version: ApiVersion) -> None:
-        """Any additional validation steps to be performed by subclasses."""
-
-    @abstractmethod
-    def _create_full_query(self) -> str:
-        """Creates a URL, with default values."""
-
-    @abstractmethod
-    def _create_short_query(self) -> str:
-        """Creates a URL, omitting default values when possible."""
 
 
 class RegistrationByIdQuery(
@@ -121,11 +87,11 @@ class RegistrationByIdQuery(
     def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
         return _by_id_decoder
 
-    def _create_full_query(self) -> str:
+    def _create_full_query(self, ver: ApiVersion) -> str:
         return f"/registration/id/{self.registration_id}"
 
-    def _create_short_query(self) -> str:
-        return self._create_full_query()
+    def _create_short_query(self, ver: ApiVersion) -> str:
+        return self._create_full_query(ver)
 
 
 class RegistrationByProviderQuery(
@@ -160,13 +126,13 @@ class RegistrationByProviderQuery(
     def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
         return _by_prov_decoder
 
-    def _create_full_query(self) -> str:
+    def _create_full_query(self, ver: ApiVersion) -> str:
         a = super()._join_mult(self.provider_agency_id)
         p = super()._join_mult(self.provider_id)
         q = super()._create_qs(self.updated_before, self.updated_after)
         return f"/registration/provider/{a}/{p}{q}"
 
-    def _create_short_query(self) -> str:
+    def _create_short_query(self, ver: ApiVersion) -> str:
         q = super()._create_qs(self.updated_before, self.updated_after)
         p = (
             f"/{super()._join_mult(self.provider_id)}"
@@ -215,7 +181,7 @@ class RegistrationByContextQuery(
     def _get_decoder(self) -> Decoder:  # type: ignore[type-arg]
         return _by_ctx_decoder
 
-    def _create_full_query(self) -> str:
+    def _create_full_query(self, ver: ApiVersion) -> str:
         o = f"/{self.context.value}"
         a = super()._join_mult(self.agency_id)
         r = super()._join_mult(self.resource_id)
@@ -224,7 +190,7 @@ class RegistrationByContextQuery(
         q = super()._create_qs(self.updated_before, self.updated_after)
         return f"/registration{o}{q}"
 
-    def _create_short_query(self) -> str:
+    def _create_short_query(self, ver: ApiVersion) -> str:
         v = (
             f"/{super()._join_mult(self.version)}"
             if self.version != REST_ALL
@@ -252,8 +218,6 @@ class RegistrationByContextQuery(
 _by_id_decoder = msgspec.json.Decoder(RegistrationByIdQuery)
 _by_ctx_decoder = msgspec.json.Decoder(RegistrationByContextQuery)
 _by_prov_decoder = msgspec.json.Decoder(RegistrationByProviderQuery)
-_encoder = msgspec.json.Encoder()
-
 
 __all__ = [
     "RegistrationByIdQuery",
