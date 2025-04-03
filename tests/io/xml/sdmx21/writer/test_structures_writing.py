@@ -26,7 +26,7 @@ from pysdmx.model import (
     UserDefinedOperator,
     UserDefinedOperatorScheme,
 )
-from pysdmx.model.__base import Annotation
+from pysdmx.model.__base import Annotation, Organisation
 from pysdmx.model.dataflow import (
     Component,
     Components,
@@ -106,8 +106,12 @@ def complete_header():
     return Header(
         id="ID",
         prepared=datetime.strptime("2021-01-01", "%Y-%m-%d"),
-        sender="ZZZ",
-        receiver="Not_Supplied",
+        sender=Organisation(
+            id="ZZZ",
+        ),
+        receiver=Organisation(
+            id="Not_Supplied",
+        ),
         source="PySDMX",
     )
 
@@ -117,8 +121,12 @@ def read_write_header():
     return Header(
         id="DF1605144905",
         prepared=datetime.strptime("2021-03-05T14:11:16", "%Y-%m-%dT%H:%M:%S"),
-        sender="Unknown",
-        receiver="Not_Supplied",
+        sender=Organisation(
+            id="Unknown",
+        ),
+        receiver=Organisation(
+            id="Not_Supplied",
+        ),
     )
 
 
@@ -127,8 +135,12 @@ def bis_header():
     return Header(
         id="test",
         prepared=datetime.strptime("2021-04-20T10:29:14", "%Y-%m-%dT%H:%M:%S"),
-        sender="Unknown",
-        receiver="Not_supplied",
+        sender=Organisation(
+            id="Unknown",
+        ),
+        receiver=Organisation(
+            id="Not_supplied",
+        ),
     )
 
 
