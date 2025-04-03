@@ -41,7 +41,7 @@ Reading the metadata
 First of all, we need to extract the metadat with ``reader.sdmx.read_sdmx``.
 The ``read_sdmx`` function reads the metadata from the input file and returns the metadata.
 
-input_str is the string of the metadata file and read_format is the format of the metadata file.
+data_path is the path to the metadata file, but we can algo use a string with the metadata in the correct format.
 
 
 .. code-block:: python
@@ -51,7 +51,7 @@ input_str is the string of the metadata file and read_format is the format of th
     from pysdmx.model import RulesetScheme, UserDefinedOperatorScheme, TransformationScheme
 
     data_path = "[metadata_file_path]"
-    result = read_sdmx(input_str, validate=True).structures
+    result = read_sdmx(data_path, validate=True).structures
 
 
 Getting the metadata
