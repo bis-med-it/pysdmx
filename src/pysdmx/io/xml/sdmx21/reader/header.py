@@ -10,7 +10,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     DATASET_ACTION,
     DATASET_ID,
     DIM_OBS,
-    DIMENSIONATOBSERVATION,
     GENERIC,
     HEADER,
     HEADER_ID,
@@ -88,7 +87,7 @@ def __parse_structure(structure: Dict[str, Any]) -> Union[str, None]:
         )
         namespace = (
             f"{match.group(1)}={match.group(2)}:{match.group(3)}({match.group(4)}):"  # type: ignore[union-attr]
-            f"{structure.get(DIMENSIONATOBSERVATION)}"
+            f"{structure.get(DIM_OBS)}"
         )
         return namespace
     else:

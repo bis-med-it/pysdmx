@@ -20,7 +20,7 @@ from msgspec import Struct
 
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.model import AgencyScheme
-from pysdmx.model.__base import ItemScheme
+from pysdmx.model.__base import ItemScheme, Organisation
 from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
@@ -34,8 +34,8 @@ class Header(Struct, kw_only=True):
     id: str = str(uuid.uuid4())
     test: bool = False
     prepared: datetime = datetime.now(timezone.utc)
-    sender: str = "ZZZ"
-    receiver: Optional[str] = None
+    sender: Organisation = Organisation(id="ZZZ")
+    receiver: Optional[Organisation] = None
     source: Optional[str] = None
     dataset_action: Optional[ActionType] = None
     structure: Optional[Dict[str, str]] = None

@@ -10,11 +10,15 @@ from xml.sax.saxutils import escape
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
 from pysdmx.io.xml.sdmx21.__tokens import (
-    ID,
-    NAME_LOW,
+    ANNOTATIONS_LOW,
+    CONTACTS_LOW,
+    DESC_LOW,
+    DFWS_LOW,
     RULESETS,
     TRANSFORMATIONS,
     UDOS,
+    URI_LOW,
+    URN_LOW,
 )
 from pysdmx.model import Organisation
 from pysdmx.model.dataset import Dataset
@@ -178,27 +182,35 @@ def __item(
     name = None
     org_id = None
 
-    if sender_receiver is None:
-        return ""
     if isinstance(sender_receiver, Organisation):
         org_id = sender_receiver.id
         name = sender_receiver.name
-    elif isinstance(sender_receiver, dict):
-        org_id = sender_receiver.get(ID)
-        name = sender_receiver.get(NAME_LOW)
 
-        expected_keys = {ID, NAME_LOW}
-        unexpected_keys = set(sender_receiver.keys()) - expected_keys
+        unexpected_keys = {
+            URI_LOW,
+            URN_LOW,
+            DESC_LOW,
+            CONTACTS_LOW,
+            DFWS_LOW,
+            ANNOTATIONS_LOW,
+        }
 
-        if unexpected_keys:
+        unexpected_with_values = {
+            key
+            for key in unexpected_keys
+            if hasattr(sender_receiver, key)
+            and getattr(sender_receiver, key) not in (None, (), [], {})
+        }
+
+        if unexpected_with_values:
             warnings.warn(
                 f"The following attributes will be lost: "
-                f"{', '.join(unexpected_keys)}",
+                f"{', '.join(unexpected_with_values)}",
                 UserWarning,
                 stacklevel=2,
             )
     else:
-        return f"{nl}{child2}<{ABBR_MSG}:{element} id={sender_receiver!r}/>"
+        return ""
 
     message = f"{nl}{child2}<{ABBR_MSG}:{element} id={org_id!r}"
     if name is not None:
