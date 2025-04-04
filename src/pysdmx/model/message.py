@@ -19,7 +19,12 @@ from typing import Any, Dict, List, Optional, Sequence, Type, Union
 from msgspec import Struct
 
 from pysdmx.errors import Invalid, NotFound
-from pysdmx.model import AgencyScheme
+from pysdmx.model import (
+    AgencyScheme,
+    RulesetScheme,
+    TransformationScheme,
+    UserDefinedOperatorScheme,
+)
 from pysdmx.model.__base import ItemScheme
 from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
@@ -182,3 +187,15 @@ class Message(Struct, frozen=True):
             f"No Dataset with Short URN {short_urn} found in data.",
             "Could not find the requested Dataset.",
         )
+
+    def get_transformation_schemes(self) -> List[TransformationScheme]:
+        """Returns the TransformationSchemes."""
+        return self.__get_elements(TransformationScheme)
+
+    def get_udo_schemes(self) -> List[UserDefinedOperatorScheme]:
+        """Returns the UserDefinedOperatorSchemes."""
+        return self.__get_elements(UserDefinedOperatorScheme)
+
+    def get_ruleset_schemes(self) -> List[RulesetScheme]:
+        """Returns the RulesetSchemes."""
+        return self.__get_elements(RulesetScheme)

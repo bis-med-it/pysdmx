@@ -1,7 +1,12 @@
 import pytest
 
 from pysdmx.errors import Invalid, NotFound
-from pysdmx.model import AgencyScheme
+from pysdmx.model import (
+    AgencyScheme,
+    RulesetScheme,
+    TransformationScheme,
+    UserDefinedOperatorScheme,
+)
 from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Components, Dataflow, DataStructureDefinition
@@ -152,3 +157,36 @@ def test_invalid_initialization_content_key():
     with pytest.raises(Invalid) as exc_info:
         Message([Dataset(structure="DataStructure=ds1:ds1(1.0)")])
     assert exc_message in str(exc_info.value.title)
+
+
+def test_get_transformation_scheme():
+    transformation = TransformationScheme(
+        id="id",
+        name="name",
+        description="description",
+        vtl_version="2.0",
+    )
+    message = Message([transformation])
+    assert message.get_transformation_schemes() == [transformation]
+
+
+def test_get_udo_scheme():
+    udo_scheme = UserDefinedOperatorScheme(
+        id="id",
+        name="name",
+        description="description",
+        vtl_version="2.0",
+    )
+    message = Message([udo_scheme])
+    assert message.get_udo_schemes() == [udo_scheme]
+
+
+def test_get_ruleset_scheme():
+    ruleset_scheme = RulesetScheme(
+        id="id",
+        name="name",
+        description="description",
+        vtl_version="2.0",
+    )
+    message = Message([ruleset_scheme])
+    assert message.get_ruleset_schemes() == [ruleset_scheme]

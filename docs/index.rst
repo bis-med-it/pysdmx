@@ -49,7 +49,6 @@ Your opinionated Python SDMX library.
    :caption: Toolkit
 
    howto/toolkit/general
-   howto/toolkit/vtl_toolkit
 
 
 

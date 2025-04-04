@@ -1,7 +1,7 @@
 .. _toolkit:
 
 VTL Toolkit
-===========
+-----------
 
 The toolkit module is a set of functions that help to generate VTL script from metadata.
 The purpose of this module is to provide a set of functions that can be used to validate the metadata from a transformation scheme,
@@ -9,7 +9,7 @@ ruleset scheme, and user defined operator scheme and generate the VTL script fro
 
 
 Generate VTL script
--------------------
+^^^^^^^^^^^^^^^^^^^
 
 In this tutorial, we learn how generate VTL script step by step using metadata stored in a
 XML file with a Transformation Scheme structure.
@@ -33,10 +33,10 @@ User Defined Operator Schemes
 
 
 Step-by-step Solution
----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 Reading the metadata
-^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""
 
 First of all, we need to extract the metadata with ``pysdmx.io.read_sdmx``.
 The ``read_sdmx`` function reads the metadata from the input file and returns the metadata.
@@ -50,25 +50,27 @@ data_path is the path to the metadata file, but we can algo use a string with th
     from pysdmx.model import RulesetScheme, UserDefinedOperatorScheme, TransformationScheme
 
     data_path = "[metadata_file_path]"
-    result = read_sdmx(data_path, validate=True).structures
+    structures_msg = read_sdmx(input_str, validate=True)
 
 
 Getting the metadata
-^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""
 
-Now we have the metadata, we can extract the Transformation Scheme.
+Now we have the metadata, we can extract the Transformation Schemes with ``structures_msg.get_transformation_schemes()``, this will get a list of Transformation Schemes.
+Then with the list of Transformation Schemes, we can get the first one with ``transformation_schemes[0]``, but we can get any of the Transformation Schemes in the list or
+even iterate over the list to get all of them.
+
 As the Transformation Scheme contains the references for Ruleset Scheme and User Defined Operator Scheme, there is no need to extract them separately.
 
 
 .. code-block:: python
 
-        for scheme in result:
-            if isinstance(scheme, TransformationScheme):
-                transformation_scheme = scheme
+       transformation_schemes = structures_msg.get_transformation_schemes()
+       transformation_scheme = transformation_schemes[0]
 
 
 Validating the metadata
-^^^^^^^^^^^^^^^^^^^^^^^
+"""""""""""""""""""""""
 
 Now we have the transformation, we can validate it with ``toolkit.vtl.model_validations.model_validations`` module.
 This validation step ensures that both the structure and content of your metadata are correct before generating the final VTL script.
@@ -91,10 +93,8 @@ This validation step ensures that both the structure and content of your metadat
     model_validations(transformation_scheme)
 
 
-
-
 Generating the VTL script
-^^^^^^^^^^^^^^^^^^^^^^^^^
+"""""""""""""""""""""""""
 
 Now we can generate the VTL script using the metadata with ``toolkit.vtl.generate_vtl_script.generate_vtl_script``.
 
@@ -117,7 +117,7 @@ We can only generate the VTL script from a Transformation Scheme.
 
 
 How to use the VTL script
--------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Now that the VTL script has been generated,
 you are ready to run it. In the following resources,
@@ -133,7 +133,7 @@ Useful information:
 - `VTL User manual <https://sdmx.org/wp-content/uploads/VTL-2.1-User-Manual.pdf>`_.
 
 Summary
--------
+^^^^^^^
 
 In this tutorial, we learned how to generate a VTL script step by step using metadata stored in a
 XML file with a Transformation Scheme structure.
