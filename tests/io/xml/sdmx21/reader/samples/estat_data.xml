@@ -9,7 +9,7 @@
         <m:Test>false</m:Test>
         <m:Prepared>2024-12-20T10:54:02.827Z</m:Prepared>
         <m:Sender id="ESTAT"/>
-        <m:Structure namespace="" dimensionAtObservation="TIME_PERIOD" structureID="STR1">
+        <m:Structure namespace="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=ESTAT:NRG_BAL_S(46.0):ObsLevelDim:TIME_PERIOD" dimensionAtObservation="TIME_PERIOD" structureID="STR1">
             <c:StructureUsage>
                 <Ref id="NRG_BAL_S" agencyID="ESTAT" version="1.0"/>
             </c:StructureUsage>
