@@ -178,7 +178,7 @@ def test_get_udo_scheme():
         vtl_version="2.0",
     )
     message = Message([udo_scheme])
-    assert message.get_udo_schemes() == [udo_scheme]
+    assert message.get_user_defined_operator_schemes() == [udo_scheme]
 
 
 def test_get_ruleset_scheme():

@@ -192,7 +192,9 @@ class Message(Struct, frozen=True):
         """Returns the TransformationSchemes."""
         return self.__get_elements(TransformationScheme)
 
-    def get_udo_schemes(self) -> List[UserDefinedOperatorScheme]:
+    def get_user_defined_operator_schemes(
+        self,
+    ) -> List[UserDefinedOperatorScheme]:
         """Returns the UserDefinedOperatorSchemes."""
         return self.__get_elements(UserDefinedOperatorScheme)
 

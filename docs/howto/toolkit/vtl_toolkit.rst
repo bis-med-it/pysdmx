@@ -3,7 +3,7 @@
 VTL Toolkit
 -----------
 
-The toolkit module is a set of functions that help to generate VTL script from metadata.
+The VTL toolkit module is a set of functions that help to generate VTL script from metadata.
 The purpose of this module is to provide a set of functions that can be used to validate the metadata from a transformation scheme,
 ruleset scheme, and user defined operator scheme and generate the VTL script from the transformation scheme.
 
@@ -41,7 +41,7 @@ Reading the metadata
 First of all, we need to extract the metadata with ``pysdmx.io.read_sdmx``.
 The ``read_sdmx`` function reads the metadata from the input file and returns the metadata.
 
-data_path is the path to the metadata file, but we can algo use a string with the metadata in the correct format.
+data_path is the path to the metadata file, but we can also use a string with the metadata in the correct format.
 
 
 .. code-block:: python
@@ -139,4 +139,4 @@ In this tutorial, we learned how to generate a VTL script step by step using met
 XML file with a Transformation Scheme structure.
 We read the metadata from the XML file, validated the metadata, and generated the VTL script.
 
-With the script, we can later execute it in real data.
+With the script, we can later execute it with real data.
