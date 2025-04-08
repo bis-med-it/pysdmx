@@ -39,10 +39,16 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     PRIM_MEASURE,
     REF,
     ROLE,
+    RULE,
+    RULE_SCHEME,
     TELEPHONE,
     TEXT_FORMAT,
     TEXT_TYPE,
     TIME_DIM,
+    TRANS_SCHEME,
+    TRANSFORMATION,
+    UDO,
+    UDO_SCHEME,
     URI,
     URN,
     VERSION,
@@ -67,6 +73,13 @@ from pysdmx.model import (
     DataType,
     Facets,
     Hierarchy,
+    Ruleset,
+    RulesetScheme,
+    Transformation,
+    TransformationScheme,
+    UserDefinedOperator,
+    UserDefinedOperatorScheme,
+    VtlScheme,
 )
 from pysdmx.model.__base import (
     Agency,
@@ -88,6 +101,7 @@ from pysdmx.model.dataflow import (
 from pysdmx.model.message import Header
 from pysdmx.util import (
     ItemReference,
+    Reference,
     parse_item_urn,
     parse_short_urn,
 )
@@ -113,6 +127,9 @@ STR_TYPES = Union[
     ConceptScheme,
     DataStructureDefinition,
     Dataflow,
+    RulesetScheme,
+    UserDefinedOperatorScheme,
+    TransformationScheme,
 ]
 
 STR_DICT_TYPE_LIST = {
@@ -121,6 +138,9 @@ STR_DICT_TYPE_LIST = {
     ConceptScheme: "Concepts",
     DataStructureDefinition: "DataStructures",
     Dataflow: "Dataflows",
+    RulesetScheme: "Rulesets",
+    UserDefinedOperatorScheme: "UserDefinedOperators",
+    TransformationScheme: "Transformations",
 }
 
 
@@ -532,10 +552,12 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
     if scheme == DSD:
         components = __write_components(item_scheme, add_indent(indent))
 
-    if scheme not in [DSD, DFW]:
+    if scheme not in [DSD, DFW, RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME]:
         data["Attributes"] += (
             f" isPartial={str(item_scheme.is_final).lower()!r}"
         )
+    if scheme in [RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME]:
+        data["Attributes"] += f" {_write_vtl(item_scheme, indent)}"
 
     outfile = ""
 
@@ -551,10 +573,13 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
     if scheme == DFW:
         outfile += __write_structure(item_scheme.structure, add_indent(indent))
 
-    if scheme not in [DSD, DFW]:
+    if scheme not in [DSD, DFW, RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME]:
         for item in item_scheme.items:
             outfile += __write_item(item, add_indent(indent))
-
+    if scheme in [RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME]:
+        for item in item_scheme.items:
+            outfile += _write_vtl(item, add_indent(indent))
+        outfile += _write_vtl_references(item_scheme, add_indent(indent))
     outfile += f"{indent}</{label}>"
 
     return outfile
@@ -651,6 +676,121 @@ def __write_structures(content: Dict[str, Any], prettyprint: bool) -> str:
 
     # Replace &amp; with & in the outfile
     outfile = outfile.replace("& ", "&amp; ")
+
+    return outfile
+
+
+def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
+    """Writes the VTL attribute to the XML file for a single item.
+
+    This function writes an item or an item scheme to the XML file,
+    following the standard format.
+
+    Args:
+        item_or_scheme: The item or item scheme to be written
+            Item: The item to be written
+            ItemScheme: The item scheme to be written
+        indent: The current indentation level
+    """
+    outfile = ""
+
+    if isinstance(item_or_scheme, Item):
+        label = ""
+        nameable = __write_nameable(item_or_scheme, add_indent(indent))
+        attrib = nameable["Attributes"].replace("'", '"')
+        data = __export_intern_data(nameable)
+
+        if isinstance(item_or_scheme, Ruleset):
+            label = f"{ABBR_STR}:{RULE}"
+            data += f"{add_indent(indent)}<{ABBR_STR}:RulesetDefinition>"
+            data += (
+                f"{__escape_xml(item_or_scheme.ruleset_definition)}"
+                f"</{ABBR_STR}:RulesetDefinition>"
+            )
+            attrib += (
+                f" rulesetScope={item_or_scheme.ruleset_scope!r} "
+                f"rulesetType={item_or_scheme.ruleset_type!r}"
+            )
+
+        if isinstance(item_or_scheme, Transformation):
+            label = f"{ABBR_STR}:{TRANSFORMATION}"
+            data += f"{add_indent(indent)}<{ABBR_STR}:Expression>"
+            data += (
+                f"{__escape_xml(item_or_scheme.expression)}"
+                f"</{ABBR_STR}:Expression>"
+            )
+            data += f"{add_indent(indent)}<{ABBR_STR}:Result>"
+            data += f"{item_or_scheme.result}</{ABBR_STR}:Result>"
+            attrib += f" isPersistent={item_or_scheme.is_persistent!r}"
+
+        if isinstance(item_or_scheme, UserDefinedOperator):
+            label = f"{ABBR_STR}:{UDO}"
+            data += f"{add_indent(indent)}<{ABBR_STR}:OperatorDefinition>"
+            data += (
+                f"{__escape_xml(item_or_scheme.operator_definition)}"
+                f"</{ABBR_STR}:OperatorDefinition>"
+            )
+
+        outfile += f"{indent}<{label}{attrib}>"
+        outfile += data
+        outfile += f"{indent}</{label}>"
+
+    if isinstance(item_or_scheme, VtlScheme):
+        outfile += f" vtlVersion={item_or_scheme.vtl_version!r}"
+
+    outfile = outfile.replace("'", '"')
+
+    return outfile
+
+
+def _write_vtl_references(scheme: ItemScheme, indent: str) -> str:
+    """Writes references to VTL elements to the XML file."""
+
+    def process_references(
+        references: Union[Any, Sequence[Any]], element_name: str
+    ) -> str:
+        """Process the references to VTL elements."""
+        outreference = []
+        if not isinstance(references, (list, tuple)):
+            references = [references]
+
+        for ref in references:
+            if isinstance(ref, Reference):
+                outreference.append(
+                    f"{indent}<{ABBR_STR}:{element_name}>"
+                    f"{add_indent(indent)}<{REF} "
+                    f"{PACKAGE}={TRANSFORMATION.lower()!r} "
+                    f"{AGENCY_ID}={ref.agency!r} "
+                    f"{ID}={ref.id!r} "
+                    f"{VERSION}={ref.version!r} "
+                    f"{CLASS}={ref.sdmx_type!r}/>"
+                    f"{indent}</{ABBR_STR}:{element_name}>"
+                )
+            if isinstance(ref, ItemScheme):
+                ref_to_use = parse_short_urn(ref.short_urn)
+                outreference.append(
+                    f"{indent}<{ABBR_STR}:{element_name}>"
+                    f"{add_indent(indent)}<{REF} "
+                    f"{PACKAGE}={TRANSFORMATION.lower()!r} "
+                    f"{AGENCY_ID}={ref_to_use.agency!r} "
+                    f"{ID}={ref_to_use.id!r} "
+                    f"{VERSION}={ref_to_use.version!r} "
+                    f"{CLASS}={ref_to_use.sdmx_type!r}/>"
+                    f"{indent}</{ABBR_STR}:{element_name}>"
+                )
+
+        return "".join(outreference)
+
+    outfile = ""
+    if isinstance(scheme, TransformationScheme):
+        outfile += process_references(scheme.ruleset_schemes, "RulesetScheme")
+        outfile += process_references(
+            scheme.user_defined_operator_schemes, "UserDefinedOperatorScheme"
+        )
+    if isinstance(scheme, UserDefinedOperatorScheme):
+        outfile += process_references(scheme.ruleset_schemes, "RulesetScheme")
+
+    outfile = outfile.replace("'", '"')
 
     return outfile
 

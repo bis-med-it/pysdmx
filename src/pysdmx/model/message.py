@@ -19,8 +19,13 @@ from typing import Any, Dict, List, Optional, Sequence, Type, Union
 from msgspec import Struct
 
 from pysdmx.errors import Invalid, NotFound
-from pysdmx.model import AgencyScheme
-from pysdmx.model.__base import ItemScheme
+from pysdmx.model import (
+    AgencyScheme,
+    RulesetScheme,
+    TransformationScheme,
+    UserDefinedOperatorScheme,
+)
+from pysdmx.model.__base import ItemScheme, Organisation
 from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
@@ -32,10 +37,10 @@ class Header(Struct, kw_only=True):
     """Header for the SDMX messages."""
 
     id: str = str(uuid.uuid4())
-    test: bool = True
+    test: bool = False
     prepared: datetime = datetime.now(timezone.utc)
-    sender: str = "ZZZ"
-    receiver: Optional[str] = None
+    sender: Organisation = Organisation(id="ZZZ")
+    receiver: Optional[Organisation] = None
     source: Optional[str] = None
     dataset_action: Optional[ActionType] = None
     structure: Optional[Dict[str, str]] = None
@@ -54,6 +59,7 @@ class Message(Struct, frozen=True):
               contents of a SDMX Submission Message.
     """
 
+    header: Optional[Header] = None
     structures: Optional[
         Sequence[
             Union[
@@ -182,3 +188,17 @@ class Message(Struct, frozen=True):
             f"No Dataset with Short URN {short_urn} found in data.",
             "Could not find the requested Dataset.",
         )
+
+    def get_transformation_schemes(self) -> List[TransformationScheme]:
+        """Returns the TransformationSchemes."""
+        return self.__get_elements(TransformationScheme)
+
+    def get_user_defined_operator_schemes(
+        self,
+    ) -> List[UserDefinedOperatorScheme]:
+        """Returns the UserDefinedOperatorSchemes."""
+        return self.__get_elements(UserDefinedOperatorScheme)
+
+    def get_ruleset_schemes(self) -> List[RulesetScheme]:
+        """Returns the RulesetSchemes."""
+        return self.__get_elements(RulesetScheme)

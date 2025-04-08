@@ -46,6 +46,27 @@ def test_url_details(
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
+def test_short_url_details(
+    provider: str,
+    res: str,
+    version: str,
+    api_version: ApiVersion,
+):
+    d = RefMetaDetail.ALL_STUBS
+    expected = (
+        f"/metadata/metadataset/{provider}/{res}/{version}"
+        f"?detail={d.value}"
+    )
+
+    q = RefMetaByMetadatasetQuery(provider, res, version, d)
+    url = q.get_url(api_version, True)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+)
 def test_url_omit_default_details(
     provider: str,
     res: str,

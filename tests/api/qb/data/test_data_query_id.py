@@ -48,7 +48,12 @@ def test_url_multiple_resources_before_2_0_0(
 
 
 @pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
 )
 def test_url_multiple_resources_since_2_0_0(
     context: DataContext,
@@ -59,6 +64,26 @@ def test_url_multiple_resources_since_2_0_0(
     expected = (
         f"/data/{context.value}/{agency}/{','.join(mult_res)}/*/*"
         f"?attributes=dsd&measures=all&includeHistory=false"
+    )
+
+    q = DataQuery(context, agency, mult_res)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+def test_url_multiple_resources_since_2_2_0(
+    context: DataContext,
+    agency: str,
+    mult_res: List[str],
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/data/{context.value}/{agency}/{','.join(mult_res)}/*/*"
+        f"?attributes=dsd&measures=all&includeHistory=false&offset=0"
     )
 
     q = DataQuery(context, agency, mult_res)
@@ -98,7 +123,11 @@ def test_url_default_resource_before_2_0_0(
 
 @pytest.mark.parametrize(
     "api_version",
-    (v for v in ApiVersion if v >= ApiVersion.V2_0_0),
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
 )
 def test_url_default_resource_since_2_0_0(
     context: DataContext, agency, api_version: ApiVersion
@@ -106,6 +135,24 @@ def test_url_default_resource_since_2_0_0(
     expected = (
         f"/data/{context.value}/{agency}/*/*/*"
         "?attributes=dsd&measures=all&includeHistory=false"
+    )
+
+    q = DataQuery(context, agency)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version",
+    (v for v in ApiVersion if v >= ApiVersion.V2_2_0),
+)
+def test_url_default_resource_since_2_2_0(
+    context: DataContext, agency, api_version: ApiVersion
+):
+    expected = (
+        f"/data/{context.value}/{agency}/*/*/*"
+        "?attributes=dsd&measures=all&includeHistory=false&offset=0"
     )
 
     q = DataQuery(context, agency)
@@ -131,7 +178,12 @@ def test_url_single_resource_before_2_0_0(
 
 
 @pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
 )
 def test_url_single_resource_since_2_0_0(
     context: DataContext, agency: str, res: str, api_version: ApiVersion
@@ -139,6 +191,23 @@ def test_url_single_resource_since_2_0_0(
     expected = (
         f"/data/{context.value}/{agency}/{res}/*/*"
         "?attributes=dsd&measures=all&includeHistory=false"
+    )
+
+    q = DataQuery(context, agency, res)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+def test_url_single_resource_since_2_2_0(
+    context: DataContext, agency: str, res: str, api_version: ApiVersion
+):
+    expected = (
+        f"/data/{context.value}/{agency}/{res}/*/*"
+        "?attributes=dsd&measures=all&includeHistory=false&offset=0"
     )
 
     q = DataQuery(context, agency, res)

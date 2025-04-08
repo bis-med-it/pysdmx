@@ -2,8 +2,8 @@ name: Publish documentation
 
 on:
   # Runs on pushes targeting the main branch
-  release:
-    types: [published]
+  push:
+    branches: [main]
 
   # Allows running this workflow manually from the Actions tab
   workflow_dispatch:
@@ -35,7 +35,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v3
       - name: Install dependencies
-        run: poetry install
+        run: poetry install --all-extras
       - name: Build with Sphinx
         run: |
           poetry run sphinx-build docs _site
