@@ -589,7 +589,9 @@ def test_message_full(samples_folder):
     assert result.sender.id == "Unknown"
     assert result.sender.name == "Unknown"
     assert result.receiver.id == "Not_supplied"
-    assert result.structure == "DataStructure=BIS:BIS_DER(1.0):AllDimensions"
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
 
 
 def test_message_full_with_langs(samples_folder):
@@ -601,7 +603,9 @@ def test_message_full_with_langs(samples_folder):
     assert result.sender.id == "Unknown"
     assert result.sender.name == "Unknown"
     assert result.receiver.id == "Not_supplied"
-    assert result.structure == "DataStructure=BIS:BIS_DER(1.0):AllDimensions"
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
 
 
 def test_message_full_no_namespace(samples_folder):
@@ -609,7 +613,9 @@ def test_message_full_no_namespace(samples_folder):
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.DATA_SDMX_ML_2_1_GEN
     result = read_sdmx(input_str, validate=True).header
-    assert result.structure == "DataStructure=BIS:BIS_DER(1.0):AllDimensions"
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
 
 
 def test_message_full_warning(samples_folder, recwarn):
@@ -617,5 +623,7 @@ def test_message_full_warning(samples_folder, recwarn):
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.DATA_SDMX_ML_2_1_STR
     result = read_sdmx(input_str, validate=True).header
-    assert result.structure == "DataStructure=BIS:BIS_DER(1.0):AllDimensions"
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
     assert len(recwarn) == 1

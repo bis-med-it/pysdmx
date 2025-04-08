@@ -235,11 +235,7 @@ def __reference(
     child3 = "\t\t\t" if prettyprint else ""
     child4 = "\t\t\t\t" if prettyprint else ""
     namespace = ""
-    if dimension is None:
-        structure, dimension = urn_structure.rsplit(":", 1)
-        reference = parse_short_urn(structure)
-    else:
-        reference = parse_short_urn(urn_structure)
+    reference = parse_short_urn(urn_structure)
     if add_namespace_structure:
         namespace = (
             f"{URN_DS_BASE}={reference.agency}:{reference.id}"
@@ -317,19 +313,10 @@ def __write_header(
         header.dataset_action.value if header.dataset_action else None
     )
     if header.structure is not None:
-        if isinstance(header.structure, dict):
-            for short_urn, dim_at_obs in header.structure.items():
-                references_str += __reference(
-                    short_urn,
-                    dim_at_obs,
-                    nl,
-                    prettyprint,
-                    add_namespace_structure,
-                )
-        else:
+        for short_urn, dim_at_obs in header.structure.items():
             references_str += __reference(
-                header.structure,
-                None,
+                short_urn,
+                dim_at_obs,
                 nl,
                 prettyprint,
                 add_namespace_structure,

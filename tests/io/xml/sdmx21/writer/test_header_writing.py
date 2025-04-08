@@ -24,7 +24,7 @@ def header():
         ),
         source=None,
         dataset_action=None,
-        structure="DataStructure=MD:TEST(1.0):AllDimensions",
+        structure={"DataStructure=MD:TEST(1.0)": "AllDimensions"},
         dataset_id=None,
     )
 
@@ -48,7 +48,7 @@ def header_no_name():
         receiver=None,
         source=None,
         dataset_action=None,
-        structure="DataStructure=MD:TEST(1.0):AllDimensions",
+        structure={"DataStructure=MD:TEST(1.0)": "AllDimensions"},
         dataset_id=None,
     )
 
@@ -69,7 +69,7 @@ def header_warning():
         ),
         source=None,
         dataset_action=None,
-        structure="DataStructure=MD:TEST(1.0):AllDimensions",
+        structure={"DataStructure=MD:TEST(1.0)": "AllDimensions"},
         dataset_id=None,
     )
 

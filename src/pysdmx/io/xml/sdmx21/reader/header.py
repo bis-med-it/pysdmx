@@ -32,7 +32,7 @@ from pysdmx.model.message import Header
 
 
 def __parse_sender_receiver(
-    sender_receiver: Dict[str, Any],
+    sender_receiver: Union[Dict[str, Any], None],
 ) -> Union[Organisation, None]:
     """Parses the sender or receiver of the SDMX message."""
     if sender_receiver is None:
@@ -76,8 +76,11 @@ def __parse_sender_receiver(
         return organisation
 
 
-def __parse_structure(structure: Dict[str, Any]) -> Union[str, None]:
+def __parse_structure(
+    structure: Union[Dict[str, Any], None],
+) -> Union[Dict[str, str], None]:
     """Parses the structure of the SDMX header."""
+    structure_dict: Dict[str, str]
     if structure is None:
         return None
     elif structure.get(NAMESPACE) is not None:
@@ -85,18 +88,20 @@ def __parse_structure(structure: Dict[str, Any]) -> Union[str, None]:
             r"([^.]+)=([^:]+):([^(]+)\(([^)]+)\)",
             structure.get(NAMESPACE),  # type: ignore[arg-type]
         )
-        namespace = (
-            f"{match.group(1)}={match.group(2)}:{match.group(3)}({match.group(4)}):"  # type: ignore[union-attr]
-            f"{structure.get(DIM_OBS)}"
-        )
-        return namespace
+        structure_dict = {
+            f"{match.group(1)}={match.group(2)}:"  # type: ignore[dict-item,union-attr]
+            f"{match.group(3)}({match.group(4)})": structure.get(DIM_OBS)  # type: ignore[union-attr]
+        }
     else:
         reference = structure.get(STRUCTURE).get(REF)  # type: ignore[union-attr]
-        return (
-            f"{reference.get(CLASS)}={reference.get(AGENCY_ID)}:"
-            f"{reference.get(ID)}({reference.get(VERSION)}):"
-            f"{structure.get(DIM_OBS)}"
-        )
+        structure_dict = {
+            f"{reference.get(CLASS)}={reference.get(AGENCY_ID)}:"  # type: ignore[dict-item]
+            f"{reference.get(ID)}({reference.get(VERSION)})": structure.get(
+                DIM_OBS
+            )
+        }
+
+    return structure_dict
 
 
 def __parse_header(header: Dict[str, Any]) -> Header:
@@ -113,11 +118,11 @@ def __parse_header(header: Dict[str, Any]) -> Header:
         "id": header.get(HEADER_ID),
         "test": header.get(TEST),
         "prepared": header.get(PREPARED),
-        "sender": __parse_sender_receiver(header.get(SENDER)),  # type: ignore[arg-type]
-        "receiver": __parse_sender_receiver(header.get(RECEIVER)),  # type: ignore[arg-type]
+        "sender": __parse_sender_receiver(header.get(SENDER)),
+        "receiver": __parse_sender_receiver(header.get(RECEIVER)),
         "source": header.get(SOURCE),
         "dataset_action": header.get(DATASET_ACTION),
-        "structure": __parse_structure(header.get(STRUCTURE)),  # type: ignore[arg-type]
+        "structure": __parse_structure(header.get(STRUCTURE)),
         "dataset_id": header.get(DATASET_ID),
     }
 
