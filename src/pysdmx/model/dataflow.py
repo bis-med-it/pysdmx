@@ -35,6 +35,12 @@ class Role(str, Enum):
     ATTRIBUTE = "A"
     """The component provides descriptive information about the data."""
 
+    def __str__(self) -> str:
+        """Return the role as a string."""
+        return self.name.capitalize()
+
+    __repr__ = __str__
+
 
 class ArrayBoundaries(Struct, frozen=True):
     """The minimum and maximum number of items in the SDMX array."""
@@ -190,12 +196,11 @@ class Component(Struct, frozen=True, omit_defaults=True):
         out = []
         for k in self.__annotations__:
             v = self.__getattribute__(k)
-            if v:
-                if k == "concept":
-                    out.append(f"{k}=({str(v)})")
-                else:
-                    out.append(f"{k}={str(v)}")
-        return ", ".join(out)
+            if v is not None and v:
+                out.append(f"{k}={v!r}")
+        return self.__class__.__name__ + "(" + ", ".join(out) + ")"
+
+    __repr__ = __str__
 
 
 class Components(UserList[Component]):
@@ -313,6 +318,14 @@ class Components(UserList[Component]):
                     f"There is already a component with ID: {fld.id}",
                 )
 
+    def __str__(self) -> str:
+        """Returns a human-friendly description."""
+        out = []
+        for c in self.data:
+            out.append(str(c))
+        out_str = ",\n".join(out)
+        return out_str
+
 
 class DataflowInfo(Struct, frozen=True, omit_defaults=True):
     """Extended information about a dataflow.
@@ -407,9 +420,17 @@ class Schema(Struct, frozen=True, omit_defaults=True):
         out = []
         for k in self.__annotations__:
             v = self.__getattribute__(k)
-            if v:
-                out.append(f"{k}={v}")
-        return ", ".join(out)
+            if isinstance(v, list) and len(v) > 0:
+                item_type = v[0].__class__.__name__
+                item_type = "artefacts" if item_type == "str" else item_type
+                out.append(f"{k}=[{len(v)} {item_type}]")
+            elif k == "components" and len(v) > 0:
+                out.append(f"{k}=[{len(v)} components]")
+            else:
+                out.append(f"{k}={str(v)!r}")
+        return self.__class__.__name__ + "(" + ", ".join(out) + ")"
+
+    __repr__ = __str__
 
     @property
     def short_urn(self) -> str:
