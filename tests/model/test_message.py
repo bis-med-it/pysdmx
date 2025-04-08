@@ -15,14 +15,14 @@ from pysdmx.model.message import Message
 
 
 def test_initialization():
-    message = Message({}, {})
+    message = Message({}, {}, {})
     assert message.structures == {}
     assert message.data == {}
 
 
 def test_get_agency_scheme():
     org1 = AgencyScheme(id="orgs1", agency="org1")
-    message = Message([org1])
+    message = Message(structures=[org1])
     assert message.get_agency_schemes() == [org1]
 
     assert (
@@ -32,7 +32,7 @@ def test_get_agency_scheme():
 
 def test_get_codelists():
     cl1 = Codelist(id="cl1", agency="cl1")
-    message = Message([cl1])
+    message = Message(structures=[cl1])
     assert message.get_codelists() == [cl1]
 
     assert message.get_codelist("Codelist=cl1:cl1(1.0)") == cl1
@@ -40,7 +40,7 @@ def test_get_codelists():
 
 def test_get_concepts():
     cs1 = ConceptScheme(id="cs1", agency="cs1")
-    message = Message([cs1])
+    message = Message(structures=[cs1])
     assert message.get_concept_schemes() == [cs1]
 
     assert message.get_concept_scheme("ConceptScheme=cs1:cs1(1.0)") == cs1
@@ -51,7 +51,7 @@ def test_get_data_structure_definitions():
         id="dsd1", agency="dsd1", components=Components([])
     )
 
-    message = Message([dsd1])
+    message = Message(structures=[dsd1])
     assert message.get_data_structure_definitions() == [dsd1]
     assert (
         message.get_data_structure_definition("DataStructure=dsd1:dsd1(1.0)")
@@ -62,7 +62,7 @@ def test_get_data_structure_definitions():
 def test_get_dataflows():
     df1 = Dataflow(id="df1", agency="df1")
 
-    message = Message([df1])
+    message = Message(structures=[df1])
     assert message.get_dataflows() == [df1]
 
     assert message.get_dataflow("Dataflow=df1:df1(1.0)") == df1
@@ -70,7 +70,7 @@ def test_get_dataflows():
 
 def test_get_datasets():
     ds = Dataset(structure="DataStructure=ds1:ds1(1.0)")
-    message = Message(None, [ds])
+    message = Message(None, None, [ds])
 
     assert message.get_datasets() == [ds]
     assert message.get_dataset("DataStructure=ds1:ds1(1.0)") == ds
@@ -79,7 +79,7 @@ def test_get_datasets():
 def test_wrong_initialization_data_message():
     exc_message = "Invalid data type: str"
     with pytest.raises(Invalid) as exc_info:
-        Message({}, {"DataStructure=ds1:ds1(1.0)": "invalid"})
+        Message(data={"DataStructure=ds1:ds1(1.0)": "invalid"})
     assert exc_message in str(exc_info.value.title)
 
 
@@ -117,7 +117,7 @@ def test_empty_get_elements():
 
 
 def test_empty_get_element_by_short_urn():
-    message = Message([])
+    message = Message(structures=[])
     with pytest.raises(NotFound) as exc_info:
         message.get_organisation_scheme("AgencyScheme=org1:orgs1(1.0)")
 
@@ -143,7 +143,7 @@ def test_none_get_element_by_short_urn():
 
 
 def test_invalid_get_element_by_short_urn():
-    message = Message([])
+    message = Message(structures=[])
 
     e_m = "No AgencyScheme with Short URN"
 
@@ -155,7 +155,7 @@ def test_invalid_get_element_by_short_urn():
 def test_invalid_initialization_content_key():
     exc_message = "Invalid structure: Dataset"
     with pytest.raises(Invalid) as exc_info:
-        Message([Dataset(structure="DataStructure=ds1:ds1(1.0)")])
+        Message({}, [Dataset(structure="DataStructure=ds1:ds1(1.0)")])
     assert exc_message in str(exc_info.value.title)
 
 
@@ -166,7 +166,7 @@ def test_get_transformation_scheme():
         description="description",
         vtl_version="2.0",
     )
-    message = Message([transformation])
+    message = Message(structures=[transformation])
     assert message.get_transformation_schemes() == [transformation]
 
 
@@ -177,7 +177,7 @@ def test_get_udo_scheme():
         description="description",
         vtl_version="2.0",
     )
-    message = Message([udo_scheme])
+    message = Message(structures=[udo_scheme])
     assert message.get_user_defined_operator_schemes() == [udo_scheme]
 
 
@@ -188,5 +188,5 @@ def test_get_ruleset_scheme():
         description="description",
         vtl_version="2.0",
     )
-    message = Message([ruleset_scheme])
+    message = Message(structures=[ruleset_scheme])
     assert message.get_ruleset_schemes() == [ruleset_scheme]

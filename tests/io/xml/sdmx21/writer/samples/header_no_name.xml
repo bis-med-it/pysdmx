@@ -1,0 +1,1 @@
+<mes:Header><mes:ID>ID</mes:ID><mes:Test>true</mes:Test><mes:Prepared>2021-01-01 00:00:00</mes:Prepared><mes:Sender id="ZZZ"/><mes:Structure structureID="TEST" dimensionAtObservation="AllDimensions"><com:Structure><Ref agencyID="MD" id="TEST" version="1.0" class="DataStructure"/></com:Structure></mes:Structure></mes:Header>

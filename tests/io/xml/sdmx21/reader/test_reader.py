@@ -16,7 +16,12 @@ from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
 from pysdmx.io.xml.sdmx21.reader.structure_specific import read as read_str_spe
 from pysdmx.io.xml.sdmx21.reader.submission import read as read_sub
 from pysdmx.io.xml.sdmx21.writer.structure_specific import write
-from pysdmx.model import AgencyScheme, Codelist, ConceptScheme, Contact
+from pysdmx.model import (
+    AgencyScheme,
+    Codelist,
+    ConceptScheme,
+    Contact,
+)
 from pysdmx.model.submission import SubmissionResult
 from pysdmx.model.vtl import Ruleset, Transformation, UserDefinedOperator
 
@@ -565,3 +570,60 @@ def test_wrong_flavour_generic(error_str):
 def test_wrong_flavour_structure_specific(error_str):
     with pytest.raises(Invalid):
         read_str_spe(error_str, validate=True)
+
+
+def test_structure_no_header(samples_folder):
+    data_path = samples_folder / "structure_no_header.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    header = read_sdmx(input_str, validate=False).header
+    assert header is None
+
+
+def test_message_full(samples_folder):
+    data_path = samples_folder / "message_full.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+    result = read_sdmx(input_str, validate=True).header
+
+    assert result.sender.id == "Unknown"
+    assert result.sender.name == "Unknown"
+    assert result.receiver.id == "Not_supplied"
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
+
+
+def test_message_full_with_langs(samples_folder):
+    data_path = samples_folder / "message_full_with_langs.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+    result = read_sdmx(input_str, validate=True).header
+
+    assert result.sender.id == "Unknown"
+    assert result.sender.name == "Unknown"
+    assert result.receiver.id == "Not_supplied"
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
+
+
+def test_message_full_no_namespace(samples_folder):
+    data_path = samples_folder / "message_full_no_namespace.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_GEN
+    result = read_sdmx(input_str, validate=True).header
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
+
+
+def test_message_full_warning(samples_folder, recwarn):
+    data_path = samples_folder / "message_full_warning.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+    result = read_sdmx(input_str, validate=True).header
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
+    assert len(recwarn) == 1

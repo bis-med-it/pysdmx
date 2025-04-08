@@ -21,6 +21,7 @@ from pysdmx.model import (
     Component,
     Components,
     Concept,
+    Organisation,
     Role,
     Schema,
 )
@@ -33,8 +34,12 @@ def header():
     return Header(
         id="ID",
         prepared=datetime.strptime("2021-01-01", "%Y-%m-%d"),
-        sender="SENDER",
-        receiver="RECEIVER",
+        sender=Organisation(
+            id="SENDER",
+        ),
+        receiver=Organisation(
+            id="RECEIVER",
+        ),
         source="PySDMX",
     )
 

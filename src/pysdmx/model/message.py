@@ -25,7 +25,7 @@ from pysdmx.model import (
     TransformationScheme,
     UserDefinedOperatorScheme,
 )
-from pysdmx.model.__base import ItemScheme
+from pysdmx.model.__base import ItemScheme, Organisation
 from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
@@ -37,10 +37,10 @@ class Header(Struct, kw_only=True):
     """Header for the SDMX messages."""
 
     id: str = str(uuid.uuid4())
-    test: bool = True
+    test: bool = False
     prepared: datetime = datetime.now(timezone.utc)
-    sender: str = "ZZZ"
-    receiver: Optional[str] = None
+    sender: Organisation = Organisation(id="ZZZ")
+    receiver: Optional[Organisation] = None
     source: Optional[str] = None
     dataset_action: Optional[ActionType] = None
     structure: Optional[Dict[str, str]] = None
@@ -59,6 +59,7 @@ class Message(Struct, frozen=True):
               contents of a SDMX Submission Message.
     """
 
+    header: Optional[Header] = None
     structures: Optional[
         Sequence[
             Union[
