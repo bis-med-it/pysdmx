@@ -150,8 +150,7 @@ def test_item_scheme_read(item_scheme_path):
     codelist_sdmx = [cl for cl in codelists if cl.id == "CL_UNIT_MULT"][0]
     assert codelist_sdmx.id == "CL_UNIT_MULT"
     assert (
-        codelist_sdmx.name == "code list for the "
-        "Unit Multiplier (UNIT_MULT)"
+        codelist_sdmx.name == "code list for the Unit Multiplier (UNIT_MULT)"
     )
     assert codelist_sdmx.items[0].id == "0"
     assert codelist_sdmx.items[0].name == "Units"
@@ -627,3 +626,12 @@ def test_message_full_warning(samples_folder, recwarn):
         "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
     }
     assert len(recwarn) == 1
+
+def test_message_str_usage_urn(samples_folder):
+    data_path = samples_folder / "message_str_usage_urn.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_GEN
+    result = read_sdmx(input_str, validate=True).header
+    assert result.structure == {
+        "Dataflow=ESTAT:NAMA_10_GDP(1.0)": "TIME_PERIOD"
+    }
