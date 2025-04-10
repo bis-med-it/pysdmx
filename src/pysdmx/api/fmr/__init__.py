@@ -74,7 +74,6 @@ class __BaseRegistryClient:
         self,
         api_endpoint: str,
         fmt: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
-        pem: Optional[str] = None,
     ):
         """Instantiate a new client against the target endpoint."""
         if api_endpoint.endswith("/"):
@@ -297,7 +296,7 @@ class RegistryClient(__BaseRegistryClient):
                 by an unknown certificate authority, you can pass
                 a pem file for this authority using this parameter.
         """
-        super().__init__(api_endpoint, format, pem)
+        super().__init__(api_endpoint, format)
         self.__service = RestService(
             self.api_endpoint,
             API_VERSION,
@@ -748,7 +747,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
                 by an unknown certificate authority, you can pass
                 a pem file for this authority using this parameter.
         """
-        super().__init__(api_endpoint, format, pem)
+        super().__init__(api_endpoint, format)
         self.__service = AsyncRestService(
             self.api_endpoint,
             API_VERSION,
