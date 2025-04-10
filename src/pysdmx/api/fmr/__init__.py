@@ -285,6 +285,7 @@ class RegistryClient(__BaseRegistryClient):
         api_endpoint: str,
         format: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
         pem: Optional[str] = None,
+        timeout: float = 10.0,
     ):
         """Instantiate a new client against the target endpoint.
 
@@ -295,6 +296,9 @@ class RegistryClient(__BaseRegistryClient):
             pem: In case the service exposed a certificate created
                 by an unknown certificate authority, you can pass
                 a pem file for this authority using this parameter.
+            timeout: The maximum number of seconds to wait before
+                considering that a request timed out. Defaults to
+                10 seconds.
         """
         super().__init__(api_endpoint, format)
         self.__service = RestService(
@@ -312,7 +316,7 @@ class RegistryClient(__BaseRegistryClient):
                 else RefMetaFormat.FUSION_JSON
             ),
             pem=pem,
-            timeout=10.0,
+            timeout=timeout,
         )
 
     def __fetch(
@@ -736,6 +740,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         api_endpoint: str,
         format: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
         pem: Optional[str] = None,
+        timeout: float = 10.0,
     ):
         """Instantiate a new client against the target endpoint.
 
@@ -746,6 +751,9 @@ class AsyncRegistryClient(__BaseRegistryClient):
             pem: In case the service exposed a certificate created
                 by an unknown certificate authority, you can pass
                 a pem file for this authority using this parameter.
+            timeout: The maximum number of seconds to wait before
+                considering that a request timed out. Defaults to
+                10 seconds.
         """
         super().__init__(api_endpoint, format)
         self.__service = AsyncRestService(
@@ -763,7 +771,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
                 else RefMetaFormat.FUSION_JSON
             ),
             pem=pem,
-            timeout=10.0,
+            timeout=timeout,
         )
 
     async def __fetch(
