@@ -30,6 +30,8 @@ def check_orgs(
             == Format.STRUCTURE_SDMX_JSON_2_0_0.value
         )
 
+    assert mock.calls[0].request.extensions["timeout"]["read"] == 10.0
+
     assert len(agencies) == 2
     for agency in agencies:
         assert isinstance(agency, Organisation)
@@ -66,6 +68,7 @@ def check_org_details(mock, fmr: RegistryClient, query, body):
 
     agencies = fmr.get_agencies("BIS")
 
+    assert mock.calls[0].request.extensions["timeout"]["read"] == 20.0
     for agency in agencies:
         if agency.id == "BIS.DST":
             assert agency.description is None

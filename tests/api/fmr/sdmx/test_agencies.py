@@ -12,6 +12,15 @@ def fmr() -> RegistryClient:
 
 
 @pytest.fixture
+def fmr20() -> RegistryClient:
+    return RegistryClient(
+        "https://registry.sdmx.org/sdmx/v2",
+        StructureFormat.SDMX_JSON_2_0_0,
+        timeout=20.0,
+    )
+
+
+@pytest.fixture
 def async_fmr() -> AsyncRegistryClient:
     return AsyncRegistryClient(
         "https://registry.sdmx.org/sdmx/v2", StructureFormat.SDMX_JSON_2_0_0
@@ -48,9 +57,9 @@ async def test_orgs_have_core_info(respx_mock, async_fmr, query, body):
     await checks.check_org_core_info(respx_mock, async_fmr, query, body)
 
 
-def test_detailed_orgs(respx_mock, fmr, query, body):
+def test_detailed_orgs(respx_mock, fmr20, query, body):
     """Agencies may have contact information."""
-    checks.check_org_details(respx_mock, fmr, query, body)
+    checks.check_org_details(respx_mock, fmr20, query, body)
 
 
 def test_empty_orgs(respx_mock, fmr, query, empty):
