@@ -7,7 +7,9 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCY_ID,
     DATASET_ACTION,
     DATASET_ID,
+    DFW,
     DIM_OBS,
+    DSD,
     GENERIC,
     HEADER,
     HEADER_ID,
@@ -68,7 +70,7 @@ def __parse_sender_receiver(
             stacklevel=2,
         )
 
-    id_ = sender_receiver.get(ID, "org_id")
+    id_ = sender_receiver.get(ID, "ZZZ")
 
     organisation = Organisation(
         id=id_,
@@ -89,13 +91,13 @@ def __parse_structure(
 
     if STRUCTURE in structure:
         structure_info = structure[STRUCTURE]
-        sdmx_type = "DataStructure"
+        sdmx_type = DSD
     elif STR_USAGE in structure:
         structure_info = structure[STR_USAGE]
-        sdmx_type = "Dataflow"
+        sdmx_type = DFW
     else:
         structure_info = structure[PROV_AGREMENT]
-        sdmx_type = "ProvisionAgreement"
+        sdmx_type = PROV_AGREMENT
 
     if REF in structure_info:
         reference = structure_info[REF]

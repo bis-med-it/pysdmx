@@ -75,6 +75,46 @@ def header_warning():
 
 
 @pytest.fixture
+def header_structure_usage():
+    return Header(
+        id="ID",
+        test="true",
+        prepared="2021-01-01T00:00:00",
+        sender=Organisation(
+            id="ZZZ",
+        ),
+        receiver=Organisation(
+            id="ZZZ",
+            name="unknown",
+        ),
+        source=None,
+        dataset_action=None,
+        structure={"Dataflow=MD:TEST(1.0)": "AllDimensions"},
+        dataset_id=None,
+    )
+
+
+@pytest.fixture
+def header_provision_agrement():
+    return Header(
+        id="ID",
+        test="true",
+        prepared="2021-01-01T00:00:00",
+        sender=Organisation(
+            id="ZZZ",
+        ),
+        receiver=Organisation(
+            id="ZZZ",
+            name="unknown",
+        ),
+        source=None,
+        dataset_action=None,
+        structure={"ProvisionAgrement=MD:TEST(1.0)": "AllDimensions"},
+        dataset_id=None,
+    )
+
+
+@pytest.fixture
 def samples_folder():
     return Path(__file__).parent / "samples"
 
@@ -110,3 +150,21 @@ def test_write_header_warning(header_warning, samples_folder, recwarn):
         expected = f.read()
     assert header == expected
     assert len(recwarn) == 1
+
+
+def test_write_header_structure_usage(header_structure_usage, samples_folder):
+    file_path = samples_folder / "header_structure_usage.xml"
+    header = write_header_aux(header_structure_usage, True, False, True)
+    with open(file_path, "r") as f:
+        expected = f.read()
+    assert header == expected
+
+
+def test_write_header_provision_agreement(
+    header_provision_agrement, samples_folder
+):
+    file_path = samples_folder / "header_provision_agrement.xml"
+    header = write_header_aux(header_provision_agrement, True, False, True)
+    with open(file_path, "r") as f:
+        expected = f.read()
+    assert header == expected
