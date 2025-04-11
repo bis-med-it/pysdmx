@@ -13,8 +13,13 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     ANNOTATIONS_LOW,
     CONTACTS_LOW,
     DESC_LOW,
+    DFW,
     DFWS_LOW,
+    DSD,
+    PROV_AGREMENT,
     RULESETS,
+    STR_USAGE,
+    STRUCTURE,
     TRANSFORMATIONS,
     UDOS,
     URI_LOW,
@@ -236,6 +241,12 @@ def __reference(
     child4 = "\t\t\t\t" if prettyprint else ""
     namespace = ""
     reference = parse_short_urn(urn_structure)
+    if reference.sdmx_type == DSD:
+        structure_type = STRUCTURE
+    elif reference.sdmx_type == DFW:
+        structure_type = STR_USAGE
+    else:
+        structure_type = PROV_AGREMENT
     if add_namespace_structure:
         namespace = (
             f"{URN_DS_BASE}={reference.agency}:{reference.id}"
@@ -250,13 +261,13 @@ def __reference(
         f"{namespace}"
         f"dimensionAtObservation={dimension!r}>"
         # Then the common structure
-        f"{nl}{child3}<{ABBR_COM}:Structure>"
+        f"{nl}{child3}<{ABBR_COM}:{structure_type}>"
         # Then the reference
         f"{nl}{child4}<Ref agencyID={reference.agency!r} "
         f"id={reference.id!r} version={reference.version!r} "
         f"class={reference.sdmx_type!r}/>"
         # Close the common structure
-        f"{nl}{child3}</{ABBR_COM}:Structure>"
+        f"{nl}{child3}</{ABBR_COM}:{structure_type}>"
         # Close the message structure
         f"{nl}{child2}</{ABBR_MSG}:Structure>"
     )

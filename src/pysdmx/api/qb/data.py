@@ -35,7 +35,6 @@ class DataContext(Enum):
 
 
 class _CoreDataQuery(CoreQuery, frozen=True, omit_defaults=True):
-
     def _validate_context(
         self, context: DataContext, api_version: ApiVersion
     ) -> None:
