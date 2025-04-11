@@ -1,0 +1,15 @@
+
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>true</mes:Test>
+		<mes:Prepared>2021-01-01 00:00:00</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Receiver id="ZZZ">
+			<com:Name>unknown</com:Name>
+		</mes:Receiver>
+		<mes:Structure structureID="TEST" dimensionAtObservation="AllDimensions">
+			<com:ProvisionAgrement>
+				<Ref agencyID="MD" id="TEST" version="1.0" class="ProvisionAgrement"/>
+			</com:ProvisionAgrement>
+		</mes:Structure>
+	</mes:Header>
