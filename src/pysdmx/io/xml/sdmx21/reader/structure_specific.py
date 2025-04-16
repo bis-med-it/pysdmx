@@ -1,4 +1,4 @@
-"""SDMX 2.1 XML StructureSpecificData reader module."""
+"""SDMX XML StructureSpecificData reader module."""
 
 import itertools
 from typing import Any, Dict, Sequence
@@ -102,7 +102,7 @@ def __parse_structure_specific_data(
 
 
 def read(input_str: str, validate: bool = True) -> Sequence[PandasDataset]:
-    """Reads an SDMX-ML 2.1 Generic file and returns a Sequence of Datasets.
+    """Reads an SDMX-ML 2.1 or 3.0 and returns a Sequence of Datasets.
 
     Args:
         input_str: SDMX-ML data to read.
@@ -111,7 +111,7 @@ def read(input_str: str, validate: bool = True) -> Sequence[PandasDataset]:
     dict_info = parse_xml(input_str, validate=validate)
     if STR_SPE not in dict_info:
         raise Invalid(
-            "This SDMX document is not an SDMX-ML 2.1 StructureSpecificData."
+            "This SDMX document is not an SDMX-ML StructureSpecificData."
         )
     dataset_info, str_info = get_data_objects(dict_info[STR_SPE])
     datasets = []

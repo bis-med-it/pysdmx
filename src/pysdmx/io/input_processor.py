@@ -53,7 +53,10 @@ def __get_sdmx_ml_flavour(input_str: str) -> Tuple[str, Format]:
     if ":generic" in flavour_check:
         return input_str, Format.DATA_SDMX_ML_2_1_GEN
     if ":structurespecificdata" in flavour_check:
-        return input_str, Format.DATA_SDMX_ML_2_1_STR
+        if "v3_0" in flavour_check:
+            return input_str, Format.DATA_SDMX_ML_3_0
+        else:
+            return input_str, Format.DATA_SDMX_ML_2_1_STR
     if ":structure" in flavour_check:
         return input_str, Format.STRUCTURE_SDMX_ML_2_1
     if ":registryinterface" in flavour_check:
