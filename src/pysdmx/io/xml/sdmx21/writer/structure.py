@@ -553,9 +553,9 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
         components = __write_components(item_scheme, add_indent(indent))
 
     if scheme not in [DSD, DFW, RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME]:
-        data[
-            "Attributes"
-        ] += f" isPartial={str(item_scheme.is_final).lower()!r}"
+        data["Attributes"] += (
+            f" isPartial={str(item_scheme.is_final).lower()!r}"
+        )
     if scheme in [RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME]:
         data["Attributes"] += f" {_write_vtl(item_scheme, indent)}"
 

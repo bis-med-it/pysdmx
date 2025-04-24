@@ -30,6 +30,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     CON,
     CON_ID,
     CON_LOW,
+    CON_ROLE,
     CONCEPTS,
     CONTACT,
     CORE_REP,
@@ -541,6 +542,9 @@ class StructureParser(Struct):
 
         if ANNOTATIONS in comp:
             del comp[ANNOTATIONS]
+
+        if CON_ROLE in comp:
+            del comp[CON_ROLE]
 
         return Component(**comp)
 
