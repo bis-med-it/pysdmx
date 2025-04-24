@@ -1,7 +1,8 @@
 import pytest
 
 from pysdmx.errors import Invalid
-from pysdmx.util import ItemReference, parse_item_urn
+from pysdmx.model import ItemReference
+from pysdmx.util import parse_item_urn
 
 
 def test_no_match():

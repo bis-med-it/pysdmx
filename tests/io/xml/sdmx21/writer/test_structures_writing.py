@@ -26,7 +26,12 @@ from pysdmx.model import (
     UserDefinedOperator,
     UserDefinedOperatorScheme,
 )
-from pysdmx.model.__base import Annotation, Organisation
+from pysdmx.model.__base import (
+    Annotation,
+    ItemReference,
+    Organisation,
+    Reference,
+)
 from pysdmx.model.dataflow import (
     Component,
     Components,
@@ -36,7 +41,6 @@ from pysdmx.model.dataflow import (
 )
 from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import Header
-from pysdmx.util import ItemReference, Reference
 
 TEST_CS_URN = (
     "urn:sdmx:org.sdmx.infomodel.conceptscheme."

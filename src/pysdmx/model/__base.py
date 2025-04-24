@@ -306,3 +306,48 @@ class DataflowRef(Struct, frozen=True, omit_defaults=True, tag=True):
     def __str__(self) -> str:
         """A string representating the dataflow's reference."""
         return f"Dataflow={self.agency}:{self.id}({self.version})"
+
+
+class Reference(Struct, frozen=True):
+    """The coordinates of an SDMX maintainable artefact.
+
+    Attributes:
+        sdmx_type: The type of SDMX artefact (``codelist``, etc.)
+        agency: The maintainer of the artefact (e.g. ``BIS``, ``SDMX``, etc.)
+        id: The artefact ID (e.g. ``CL_FREQ``)
+        version: The artefact version (e.g. ``1.0.0``)
+    """
+
+    sdmx_type: str
+    agency: str
+    id: str
+    version: str
+
+    def __str__(self) -> str:
+        """Returns a string representation of the object."""
+        return f"{self.sdmx_type}={self.agency}:{self.id}({self.version})"
+
+
+class ItemReference(Struct, frozen=True, tag=True):
+    """The coordinates of an SDMX non-nested item.
+
+    Attributes:
+        sdmx_type: The type of SDMX artefact (``concept``, etc.)
+        agency: The maintainer of the artefact (e.g. ``BIS``, etc.)
+        id: The maintainable ID (e.g. ``CL_FREQ``)
+        version: The artefact version (e.g. ``1.0.0``)
+        item_id: The item ID (e.g. ``A``)
+    """
+
+    sdmx_type: str
+    agency: str
+    id: str
+    version: str
+    item_id: str
+
+    def __str__(self) -> str:
+        """Returns a string representation of the object."""
+        return (
+            f"{self.sdmx_type}={self.agency}:{self.id}"
+            f"({self.version}).{self.item_id}"
+        )
