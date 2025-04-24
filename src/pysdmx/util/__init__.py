@@ -3,59 +3,11 @@
 import re
 from typing import Any, Sequence
 
-from msgspec import Struct
-
 from pysdmx.errors import Invalid, NotFound
-from pysdmx.model import Agency
+from pysdmx.model import Agency, ItemReference, Reference
 from pysdmx.util._date_pattern_map import convert_dpm
 
 NF = "Not found"
-
-
-class Reference(Struct, frozen=True):
-    """The coordinates of an SDMX maintainable artefact.
-
-    Attributes:
-        sdmx_type: The type of SDMX artefact (``codelist``, etc.)
-        agency: The maintainer of the artefact (e.g. ``BIS``, ``SDMX``, etc.)
-        id: The artefact ID (e.g. ``CL_FREQ``)
-        version: The artefact version (e.g. ``1.0.0``)
-    """
-
-    sdmx_type: str
-    agency: str
-    id: str
-    version: str
-
-    def __str__(self) -> str:
-        """Returns a string representation of the object."""
-        return f"{self.sdmx_type}={self.agency}:{self.id}({self.version})"
-
-
-class ItemReference(Struct, frozen=True, tag=True):
-    """The coordinates of an SDMX non-nested item.
-
-    Attributes:
-        sdmx_type: The type of SDMX artefact (``concept``, etc.)
-        agency: The maintainer of the artefact (e.g. ``BIS``, etc.)
-        id: The maintainable ID (e.g. ``CL_FREQ``)
-        version: The artefact version (e.g. ``1.0.0``)
-        item_id: The item ID (e.g. ``A``)
-    """
-
-    sdmx_type: str
-    agency: str
-    id: str
-    version: str
-    item_id: str
-
-    def __str__(self) -> str:
-        """Returns a string representation of the object."""
-        return (
-            f"{self.sdmx_type}={self.agency}:{self.id}"
-            f"({self.version}).{self.item_id}"
-        )
-
 
 maintainable_urn_pattern = re.compile(r"^.*\.(.*)=(.*):(.*)\((.*)\)$")
 item_urn_pattern = re.compile(r"^.*\.(.*)=(.*):(.*)\((.*)\)\.(.*)$")
@@ -143,6 +95,6 @@ __all__ = [
     "parse_item_urn",
     "parse_urn",
     "parse_short_urn",
-    "Reference",
     "ItemReference",
+    "Reference",
 ]
