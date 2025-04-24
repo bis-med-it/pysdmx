@@ -30,6 +30,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     CON,
     CON_ID,
     CON_LOW,
+    CON_ROLE,
     CONCEPTS,
     CONTACT,
     CORE_REP,
@@ -106,7 +107,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VALID_TO,
     VALID_TO_LOW,
     VERSION,
-    CON_ROLE,
 )
 from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.io.xml.utils import add_list
