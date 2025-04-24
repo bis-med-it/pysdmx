@@ -534,6 +534,9 @@ class StructureParser(Struct):
         if ANNOTATIONS in comp:
             del comp[ANNOTATIONS]
 
+        if "ConceptRole" in comp:
+            del comp["ConceptRole"]
+
         return Component(**comp)
 
     def __format_component_lists(
