@@ -106,6 +106,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VALID_TO,
     VALID_TO_LOW,
     VERSION,
+    CON_ROLE,
 )
 from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.io.xml.utils import add_list
@@ -534,8 +535,8 @@ class StructureParser(Struct):
         if ANNOTATIONS in comp:
             del comp[ANNOTATIONS]
 
-        if "ConceptRole" in comp:
-            del comp["ConceptRole"]
+        if CON_ROLE in comp:
+            del comp[CON_ROLE]
 
         return Component(**comp)
 
