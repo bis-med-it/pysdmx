@@ -119,7 +119,15 @@ from pysdmx.model import (
     DataType,
     Facets,
 )
-from pysdmx.model.__base import Agency, Annotation, Contact, Item, ItemScheme
+from pysdmx.model.__base import (
+    Agency,
+    Annotation,
+    Contact,
+    Item,
+    ItemReference,
+    ItemScheme,
+    Reference,
+)
 from pysdmx.model.dataflow import (
     Component,
     Components,
@@ -135,7 +143,7 @@ from pysdmx.model.vtl import (
     UserDefinedOperator,
     UserDefinedOperatorScheme,
 )
-from pysdmx.util import ItemReference, Reference, find_by_urn, parse_urn
+from pysdmx.util import find_by_urn, parse_urn
 
 STRUCTURES_MAPPING = {
     CL: Codelist,
