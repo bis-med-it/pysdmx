@@ -87,9 +87,11 @@ from pysdmx.model.__base import (
     Contact,
     IdentifiableArtefact,
     Item,
+    ItemReference,
     ItemScheme,
     MaintainableArtefact,
     NameableArtefact,
+    Reference,
     VersionableArtefact,
 )
 from pysdmx.model.dataflow import (
@@ -100,8 +102,6 @@ from pysdmx.model.dataflow import (
 )
 from pysdmx.model.message import Header
 from pysdmx.util import (
-    ItemReference,
-    Reference,
     parse_item_urn,
     parse_short_urn,
 )
@@ -553,9 +553,9 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
         components = __write_components(item_scheme, add_indent(indent))
 
     if scheme not in [DSD, DFW, RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME]:
-        data["Attributes"] += (
-            f" isPartial={str(item_scheme.is_final).lower()!r}"
-        )
+        data[
+            "Attributes"
+        ] += f" isPartial={str(item_scheme.is_final).lower()!r}"
     if scheme in [RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME]:
         data["Attributes"] += f" {_write_vtl(item_scheme, indent)}"
 

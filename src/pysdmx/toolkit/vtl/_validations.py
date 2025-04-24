@@ -11,6 +11,7 @@ from vtlengine.AST import (
 
 from pysdmx.errors import Invalid
 from pysdmx.io.xml.sdmx21.__tokens import RULE_SCHEME, UDO_SCHEME
+from pysdmx.model import Reference
 from pysdmx.model.vtl import (
     Ruleset,
     RulesetScheme,
@@ -19,7 +20,6 @@ from pysdmx.model.vtl import (
     UserDefinedOperator,
     UserDefinedOperatorScheme,
 )
-from pysdmx.util import Reference
 
 
 def _ruleset_validation(ruleset: Ruleset) -> None:
