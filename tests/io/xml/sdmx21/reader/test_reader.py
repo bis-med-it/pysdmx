@@ -647,3 +647,16 @@ def test_datastructure_concept_role(samples_folder):
     components = dsd.components
     assert len(components) == 2
     assert components[0].id == "FREQ"
+
+
+# Make test fail if a warning is raised
+@pytest.mark.filterwarnings("error")
+def test_header_xmlns(samples_folder):
+    data_path = samples_folder / "header_xmlns.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_GEN
+    result = read_sdmx(input_str, validate=True).header
+    assert result.sender.id == "Disseminate_Final_DMZ"
+    assert result.structure == {
+        "Dataflow=OECD.SDD.STES:DSD_STES@DF_CLI(4.1)": "TIME_PERIOD"
+    }
