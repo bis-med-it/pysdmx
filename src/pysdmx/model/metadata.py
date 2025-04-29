@@ -54,6 +54,7 @@ class MetadataReport(Struct, frozen=True, omit_defaults=True):
         targets: The URN(s) of SDMX artefact(s) to which the report relates.
         attributes: The list of metadata attributes included in the report.
             Attributes may contain other attributes.
+        version: The version of the metadata report.
     """
 
     id: str
@@ -61,6 +62,7 @@ class MetadataReport(Struct, frozen=True, omit_defaults=True):
     metadataflow: str
     targets: Sequence[str]
     attributes: Sequence[MetadataAttribute]
+    version: str = "1.0"
 
     def __iter__(self) -> Iterator[MetadataAttribute]:
         """Return an iterator over the list of report attributes."""
