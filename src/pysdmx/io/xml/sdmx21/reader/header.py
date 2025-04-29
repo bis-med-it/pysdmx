@@ -62,6 +62,7 @@ def __parse_sender_receiver(
 
     expected_keys = {NAME, ID}
     unexpected_keys = set(sender_receiver.keys()) - expected_keys
+    unexpected_keys = {x for x in unexpected_keys if "xml" not in x.lower()}
     if unexpected_keys:
         warnings.warn(
             f"The following attributes will be lost: "
