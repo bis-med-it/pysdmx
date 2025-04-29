@@ -29,9 +29,9 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VERSION,
 )
 from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
-from pysdmx.model import Organisation
+from pysdmx.model import Organisation, Reference
 from pysdmx.model.message import Header
-from pysdmx.util import Reference, parse_urn
+from pysdmx.util import parse_urn
 
 
 def __parse_sender_receiver(
@@ -62,6 +62,7 @@ def __parse_sender_receiver(
 
     expected_keys = {NAME, ID}
     unexpected_keys = set(sender_receiver.keys()) - expected_keys
+    unexpected_keys = {x for x in unexpected_keys if "xml" not in x.lower()}
     if unexpected_keys:
         warnings.warn(
             f"The following attributes will be lost: "

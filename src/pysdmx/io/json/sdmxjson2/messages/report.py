@@ -20,7 +20,9 @@ class JsonMetadataMessage(Struct, frozen=True):
 
     def __create_report(self, r: MetadataReport) -> MetadataReport:
         attrs = merge_attributes(r.attributes)
-        return MetadataReport(r.id, r.name, r.metadataflow, r.targets, attrs)
+        return MetadataReport(
+            r.id, r.name, r.metadataflow, r.targets, attrs, r.version
+        )
 
     def to_model(self, fetch_all: bool = False) -> Sequence[MetadataReport]:
         """Returns the requested metadata report(s)."""

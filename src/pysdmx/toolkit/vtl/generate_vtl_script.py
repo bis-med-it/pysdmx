@@ -3,13 +3,13 @@
 from typing import Sequence, Union
 
 from pysdmx.model import (
+    Reference,
     RulesetScheme,
     Transformation,
     TransformationScheme,
     UserDefinedOperatorScheme,
 )
 from pysdmx.toolkit.vtl.model_validations import model_validations
-from pysdmx.util import Reference
 
 
 def _process_ruleset_scheme(

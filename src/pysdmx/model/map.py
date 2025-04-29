@@ -7,7 +7,7 @@ from typing import Any, Iterator, Literal, Optional, Sequence, Tuple, Union
 from msgspec import Struct
 
 from pysdmx.model.__base import MaintainableArtefact
-from pysdmx.util import convert_dpm
+from pysdmx.util._date_pattern_map import convert_dpm
 
 
 class DatePatternMap(Struct, frozen=True, omit_defaults=True, tag=True):
