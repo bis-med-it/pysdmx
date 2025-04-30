@@ -17,7 +17,7 @@ NAMESPACES_21 = {
     "http://schemas.xmlsoap.org/soap/envelope/": None,
 }
 
-XML_OPTIONS = {
+XML_OPTIONS_21 = {
     "process_namespaces": True,
     "namespaces": NAMESPACES_21,
     "dict_constructor": dict,
@@ -62,7 +62,7 @@ def parse_xml(
     """
     if validate:
         validate_doc(input_str)
-    if "v3_0" in input_str:
+    if SCHEMA_ROOT_30 in input_str:
         dict_info = xmltodict.parse(
             input_str,
             **XML_OPTIONS_30,  # type: ignore[arg-type]
@@ -70,7 +70,7 @@ def parse_xml(
     else:
         dict_info = xmltodict.parse(
             input_str,
-            **XML_OPTIONS,  # type: ignore[arg-type]
+            **XML_OPTIONS_21,  # type: ignore[arg-type]
         )
 
     del input_str

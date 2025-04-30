@@ -110,8 +110,10 @@ def __parse_structure(
             id=structure_id,
             version=version,
         )
-    else:
+    elif URN in structure_info:
         ref_obj = parse_urn(structure_info[URN])
+    else:
+        ref_obj = parse_urn(structure_info)
     return {str(ref_obj): dim_at_obs}
 
 

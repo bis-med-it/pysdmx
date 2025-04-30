@@ -12,6 +12,7 @@ from httpx import get as httpx_get
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
+from pysdmx.io.xml.sdmx21.reader.__parse_xml import SCHEMA_ROOT_30
 
 
 def __remove_bom(input_string: str) -> str:
@@ -53,7 +54,7 @@ def __get_sdmx_ml_flavour(input_str: str) -> Tuple[str, Format]:
     if ":generic" in flavour_check:
         return input_str, Format.DATA_SDMX_ML_2_1_GEN
     if ":structurespecificdata" in flavour_check:
-        if "v3_0" in flavour_check:
+        if SCHEMA_ROOT_30 in flavour_check:
             return input_str, Format.DATA_SDMX_ML_3_0
         else:
             return input_str, Format.DATA_SDMX_ML_2_1_STR

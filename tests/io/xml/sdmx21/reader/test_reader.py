@@ -627,6 +627,7 @@ def test_message_full_warning(samples_folder, recwarn):
     }
     assert len(recwarn) == 1
 
+
 def test_message_str_usage_urn(samples_folder):
     data_path = samples_folder / "message_str_usage_urn.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -635,3 +636,38 @@ def test_message_str_usage_urn(samples_folder):
     assert result.structure == {
         "Dataflow=ESTAT:NAMA_10_GDP(1.0)": "TIME_PERIOD"
     }
+
+
+def test_dataflow_30(samples_folder):
+    data_path = samples_folder / "dataflow_3.0.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_3_0
+    result = read_sdmx(input_str, validate=True)
+    header = result.header
+    assert header.structure == {
+        "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)": "AllDimensions"
+    }
+    assert result.data is not None
+    data = result.data[0].data
+    num_rows = len(data)
+    num_columns = data.shape[1]
+    assert num_rows == 1000
+    assert num_columns == 20
+    print(result)
+
+
+def test_dataflow_30_groups_series(samples_folder):
+    data_path = samples_folder / "dataflow_3.0_groups_series.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_3_0
+    result = read_sdmx(input_str, validate=True)
+    header = result.header
+    assert header.structure == {
+        "DataStructure=BIS:BIS_CBS(1.0)": "TIME_PERIOD"
+    }
+    assert result.data is not None
+    data = result.data[0].data
+    num_rows = len(data)
+    num_columns = data.shape[1]
+    assert num_rows == 132
+    assert num_columns == 19

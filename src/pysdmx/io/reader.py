@@ -16,7 +16,7 @@ from pysdmx.model.submission import SubmissionResult
 from pysdmx.util import parse_short_urn
 
 
-def read_sdmx(
+def read_sdmx(  # noqa: C901
     sdmx_document: Union[str, Path, BytesIO],
     validate: bool = True,
 ) -> Message:

@@ -56,8 +56,11 @@ def __get_ids_from_structure(element: Dict[str, Any]) -> Any:
         id_ = element[REF][ID]
         version = element[REF][VERSION]
         return agency_id, id_, version
-    else:
+    elif URN in element:
         urn = parse_urn(element[URN])
+        return urn.agency, urn.id, urn.version
+    else:
+        urn = parse_urn(element)  # type: ignore[arg-type]
         return urn.agency, urn.id, urn.version
 
 
