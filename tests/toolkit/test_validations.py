@@ -1,6 +1,7 @@
 import pytest
 
 from pysdmx.errors import Invalid
+from pysdmx.model import Reference
 from pysdmx.model.vtl import (
     Ruleset,
     RulesetScheme,
@@ -17,7 +18,6 @@ from pysdmx.toolkit.vtl._validations import (
     _user_defined_operator_scheme_validations,
     _user_defined_operator_validation,
 )
-from pysdmx.util import Reference
 
 
 @pytest.fixture

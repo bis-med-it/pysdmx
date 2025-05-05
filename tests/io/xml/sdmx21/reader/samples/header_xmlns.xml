@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<message:GenericData
+        xmlns:generic="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic"
+        xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+        xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+>
+    <message:Header>
+        <message:ID>IREF010097</message:ID>
+        <message:Test>false</message:Test>
+        <message:Prepared>2025-04-25T12:38:53</message:Prepared>
+        <message:Sender id="Disseminate_Final_DMZ"/>
+        <message:Structure structureID="OECD_SDD_STES_DSD_STES_at_DF_CLI_4_1" dimensionAtObservation="TIME_PERIOD">
+            <common:StructureUsage>
+                <Ref agencyID="OECD.SDD.STES" id="DSD_STES@DF_CLI" version="4.1"/>
+            </common:StructureUsage>
+        </message:Structure>
+        <message:DataSetAction>Information</message:DataSetAction>
+        <message:DataSetID>DSD_STES</message:DataSetID>
+    </message:Header>
+    <message:DataSet action="Information" structureRef="OECD_SDD_STES_DSD_STES_at_DF_CLI_4_1">
+        <generic:Series>
+            <generic:SeriesKey>
+                <generic:Value id="REF_AREA" value="AUS"/>
+                <generic:Value id="FREQ" value="M"/>
+                <generic:Value id="MEASURE" value="LI"/>
+                <generic:Value id="UNIT_MEASURE" value="IX"/>
+                <generic:Value id="ACTIVITY" value="_Z"/>
+                <generic:Value id="ADJUSTMENT" value="AA"/>
+                <generic:Value id="TRANSFORMATION" value="IX"/>
+                <generic:Value id="TIME_HORIZ" value="_Z"/>
+                <generic:Value id="METHODOLOGY" value="H"/>
+            </generic:SeriesKey>
+            <generic:Attributes>
+                <generic:Value id="UNIT_MULT" value="0"/>
+                <generic:Value id="DECIMALS" value="2"/>
+            </generic:Attributes>
+            <generic:Obs>
+                <generic:ObsDimension id="TIME_PERIOD" value="1966-02"/>
+                <generic:ObsValue value="98.38093"/>
+                <generic:Attributes>
+                    <generic:Value id="OBS_STATUS" value="A"/>
+                </generic:Attributes>
+            </generic:Obs>
+            <generic:Obs>
+                <generic:ObsDimension id="TIME_PERIOD" value="1966-03"/>
+                <generic:ObsValue value="98.58248"/>
+                <generic:Attributes>
+                    <generic:Value id="OBS_STATUS" value="A"/>
+                </generic:Attributes>
+            </generic:Obs>
+        </generic:Series>
+    </message:DataSet>
+</message:GenericData>
