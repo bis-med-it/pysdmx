@@ -1,7 +1,7 @@
 """Collection of utility functions."""
 
 import re
-from typing import Any, Sequence
+from typing import Any, Sequence, Union
 
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.model import Agency, ItemReference, Reference
@@ -14,7 +14,7 @@ item_urn_pattern = re.compile(r"^.*\.(.*)=(.*):(.*)\((.*)\)\.(.*)$")
 short_urn_pattern = re.compile(r"^(.*)=(.*):(.*)\((.*)\)$")
 
 
-def parse_urn(urn: str) -> Reference:
+def parse_urn(urn: str) -> Union[ItemReference, Reference]:
     """Parses an SDMX urn and returns the details."""
     try:
         return parse_maintainable_urn(urn)
