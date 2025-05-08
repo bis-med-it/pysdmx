@@ -15,7 +15,21 @@ short_urn_pattern = re.compile(r"^(.*)=(.*):(.*)\((.*)\)$")
 
 
 def parse_urn(urn: str) -> Reference:
-    """Parses an SDMX urn and returns an object with the details."""
+    """Parses an SDMX urn and returns the details."""
+    try:
+        return parse_maintainable_urn(urn)
+    except Invalid:
+        try:
+            return parse_item_urn(urn)
+        except Invalid:
+            try:
+                return parse_short_urn(urn)
+            except Invalid:
+                raise Invalid(NF, "{urn} does not match any known pattern")
+
+
+def parse_maintainable_urn(urn: str) -> Reference:
+    """Parses an SDMX maintainable urn and returns the details."""
     m = re.match(maintainable_urn_pattern, urn)
     if m:
         return Reference(
@@ -29,7 +43,7 @@ def parse_urn(urn: str) -> Reference:
 
 
 def parse_item_urn(urn: str) -> ItemReference:
-    """Parses an SDMX item urn and returns an object with the details."""
+    """Parses an SDMX item urn and returns the details."""
     m = re.match(item_urn_pattern, urn)
     if m:
         return ItemReference(
@@ -44,7 +58,7 @@ def parse_item_urn(urn: str) -> ItemReference:
 
 
 def parse_short_urn(urn: str) -> Reference:
-    """Parses an SDMX short urn and returns an object with the details."""
+    """Parses an SDMX short urn and returns the details."""
     m = re.match(short_urn_pattern, urn)
     if m:
         return Reference(
@@ -93,6 +107,7 @@ __all__ = [
     "convert_dpm",
     "find_by_urn",
     "parse_item_urn",
+    "parse_maintainable_urn",
     "parse_urn",
     "parse_short_urn",
     "ItemReference",
