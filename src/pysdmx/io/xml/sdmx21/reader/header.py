@@ -32,7 +32,7 @@ from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.model import Organisation, Reference
 from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import Header
-from pysdmx.util import parse_urn
+from pysdmx.util import parse_maintainable_urn
 
 
 def __parse_sender_receiver(
@@ -113,7 +113,7 @@ def __parse_structure(
             version=version,
         )
     else:
-        ref_obj = parse_urn(structure_info[URN])
+        ref_obj = parse_maintainable_urn(structure_info[URN])
     return {str(ref_obj): dim_at_obs}
 
 
