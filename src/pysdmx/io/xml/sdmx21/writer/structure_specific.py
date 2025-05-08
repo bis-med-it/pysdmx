@@ -14,7 +14,7 @@ from pysdmx.io.xml.__write_data_aux import (
     check_content_dataset,
     check_dimension_at_observation,
 )
-from pysdmx.io.xml.write_structure_specific_aux import (
+from pysdmx.io.xml.__write_structure_specific_aux import (
     __write_data_structure_specific,
 )
 from pysdmx.model.message import Header

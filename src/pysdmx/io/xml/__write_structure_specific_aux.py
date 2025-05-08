@@ -1,7 +1,7 @@
 # mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 3.0 Structure Specific auxiliary functions."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
@@ -16,7 +16,7 @@ from pysdmx.io.xml.__write_data_aux import (
     get_codes,
     writing_validation,
 )
-from pysdmx.io.xml.sdmx21.writer.config import CHUNKSIZE
+from pysdmx.io.xml.config import CHUNKSIZE
 from pysdmx.util import parse_short_urn
 
 
@@ -53,16 +53,18 @@ def __write_data_structure_specific(
     datasets: Dict[str, PandasDataset],
     dim_mapping: Dict[str, str],
     prettyprint: bool = True,
+    references_30: Optional[bool] = False,
 ) -> str:
-    """Write data to SDMX-ML 2.1 Structure-Specific format.
+    """Write data to SDMX-ML Structure-Specific format.
 
     Args:
         datasets: dict. Datasets to be written.
         dim_mapping: dict. URN-DimensionAtObservation mapping.
         prettyprint: bool. Prettyprint or not.
+        references_30: bool. Whether to use SDMX 3.0 references.
 
     Returns:
-        The data in SDMX-ML 2.1 Structure-Specific format, as string.
+        The data in SDMX-ML Structure-Specific format, as string.
     """
     outfile = ""
 
@@ -73,6 +75,7 @@ def __write_data_structure_specific(
             prettyprint=prettyprint,
             count=i + 1,
             dim=dim_mapping[short_urn],
+            references_30=references_30,
         )
 
     return outfile
@@ -83,17 +86,19 @@ def __write_data_single_dataset(
     prettyprint: bool = True,
     count: int = 1,
     dim: str = ALL_DIM,
+    references_30: Optional[bool] = False,
 ) -> str:
-    """Write data to SDMX-ML 2.1 Structure-Specific format.
+    """Write data to SDMX-ML Structure-Specific format.
 
     Args:
         dataset: PandasDataset. Dataset to be written.
         prettyprint: bool. Prettyprint or not.
         count: int. Count for namespace.
         dim: str. Dimension to be written.
+        references_30: bool. Whether to use SDMX 3.0 references.
 
     Returns:
-        The data in SDMX-ML 2.1 Structure-Specific format, as string.
+        The data in SDMX-ML Structure-Specific format, as string.
     """
 
     def __remove_optional_attributes_empty_data(str_to_check: str) -> str:
@@ -115,13 +120,15 @@ def __write_data_single_dataset(
     attached_attributes_str = ""
     for k, v in dataset.attributes.items():
         attached_attributes_str += f"{k}={str(v)!r} "
-
+    datascope = ""
+    if not references_30:
+        datascope = f'ss:dataScope="{sdmx_type}" '
     # Datasets
     outfile += (
         f"{nl}{child1}<{ABBR_MSG}:DataSet {attached_attributes_str}"
         f"ss:structureRef={id_structure!r} "
         f'xsi:type="ns{count}:DataSetType" '
-        f'ss:dataScope="{sdmx_type}" '
+        f"{datascope}"
         f'action="{dataset.action.value}">{nl}'
     )
     data = ""

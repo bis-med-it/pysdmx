@@ -16,6 +16,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     DFW,
     DFWS_LOW,
     DSD,
+    PROV_AGREEMENT,
     PROV_AGREMENT,
     RULESETS,
     STR_USAGE,
@@ -276,13 +277,20 @@ def __reference(
         structure_type = STR_USAGE
         urn_type = URN_DFW
     else:
-        structure_type = PROV_AGREMENT
+        structure_type = PROV_AGREEMENT if references_30 else PROV_AGREMENT
         urn_type = URN_PROVISION
     if add_namespace_structure:
-        namespace = (
-            f"{URN_DS_BASE}={reference.agency}:{reference.id}"
-            f"({reference.version})"
-        )
+        if references_30:
+            namespace = (
+                f"{urn_type}={reference.agency}:{reference.id}"
+                f"({reference.version})"
+            )
+        else:
+            namespace = (
+                f"{URN_DS_BASE}={reference.agency}:{reference.id}"
+                f"({reference.version})"
+            )
+
         namespace = f"namespace={namespace!r} "
     if references_30:
         reference_str = (

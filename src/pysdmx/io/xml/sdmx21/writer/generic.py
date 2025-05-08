@@ -23,7 +23,7 @@ from pysdmx.io.xml.__write_data_aux import (
     get_codes,
     writing_validation,
 )
-from pysdmx.io.xml.sdmx21.writer.config import CHUNKSIZE
+from pysdmx.io.xml.config import CHUNKSIZE
 from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
 

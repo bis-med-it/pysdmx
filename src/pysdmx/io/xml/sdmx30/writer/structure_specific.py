@@ -14,10 +14,16 @@ from pysdmx.io.xml.__write_data_aux import (
     check_content_dataset,
     check_dimension_at_observation,
 )
-from pysdmx.io.xml.write_structure_specific_aux import (
+from pysdmx.io.xml.__write_structure_specific_aux import (
     __write_data_structure_specific,
 )
+from pysdmx.io.xml.sdmx21.__tokens import (
+    DSD_LOW,
+    PROV_AGREEMENT,
+    REGISTRY_LOW,
+)
 from pysdmx.model.message import Header
+from pysdmx.util import parse_short_urn
 
 
 def write(
@@ -58,9 +64,14 @@ def write(
     header.structure = dim_mapping
     add_namespace_structure = True
     for i, (short_urn, dimension) in enumerate(header.structure.items()):
+        reference = parse_short_urn(short_urn)
+        if reference.sdmx_type == PROV_AGREEMENT:
+            pre_urn = REGISTRY_LOW
+        else:
+            pre_urn = DSD_LOW
         ss_namespaces += (
             f'xmlns:ns{i + 1}="urn:sdmx:org.sdmx'
-            f".infomodel.datastructure.{short_urn}"
+            f".infomodel.{pre_urn}.{short_urn}"
             f':ObsLevelDim:{dimension}" '
         )
 
@@ -79,6 +90,7 @@ def write(
         datasets=content,
         dim_mapping=dim_mapping,
         prettyprint=prettyprint,
+        references_30=True,
     )
 
     outfile += get_end_message(type_, prettyprint)
