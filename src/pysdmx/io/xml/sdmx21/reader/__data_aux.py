@@ -9,6 +9,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     DIM_OBS,
     HEADER,
     ID,
+    PROV_AGREEMENT,
     REF,
     STR_ID,
     STR_REF,
@@ -87,6 +88,9 @@ def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
     elif STR_USAGE in structure:
         structure_type = "Dataflow"
         tuple_ids = __get_ids_from_structure(structure[STR_USAGE])
+    elif PROV_AGREEMENT in structure:
+        structure_type = "ProvisionAgreement"
+        tuple_ids = __get_ids_from_structure(structure[PROV_AGREEMENT])
     else:
         raise NotImplemented(
             "Unsupported", "ProvisionAgrement not implemented"

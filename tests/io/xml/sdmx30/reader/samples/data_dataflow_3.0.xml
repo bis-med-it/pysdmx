@@ -2,7 +2,7 @@
 <message:StructureSpecificData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message"
                                xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/data/structurespecific"
-                               xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_DER(1.0):ObsLevelDim:AllDimensions"
+                               xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:BIS_DER(1.0):ObsLevelDim:AllDimensions"
                                xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common"
                                xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
     <message:Header>
@@ -12,7 +12,7 @@
         <message:Sender id="Unknown"/>
         <message:Receiver id="Not_supplied"/>
         <message:Structure structureID="BIS_WEBSTATS_DER_DATAFLOW_1_0"
-                           namespace="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0):ObsLevelDim:TIME_PERIOD"
+                           namespace="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0):ObsLevelDim:AllDimensions"
                            dimensionAtObservation="AllDimensions">
                 <common:StructureUsage>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)</common:StructureUsage>
         </message:Structure>

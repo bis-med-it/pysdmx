@@ -27,8 +27,6 @@
     </message:Header>
     <message:DataSet DECIMALS="3" UNIT_MULT="6" UNIT_MEASURE="USD" xsi:type="ns1:DataSetType"
                      ss:structureRef="BIS_BIS_CBS_1_0">
-        <Group xsi:type="ns1:Sibling" L_MEASURE="S" L_REP_CTY="5A" CBS_BANK_TYPE="4B" CBS_BASIS="F" L_POSITION="C"
-               L_INSTR="A" REM_MATURITY="A" CURR_TYPE_BOOK="TO1" L_CP_SECTOR="A" L_CP_COUNTRY="5J" AVAILABILITY="K"/>
         <Series FREQ="Q" L_MEASURE="S" L_REP_CTY="5A" CBS_BANK_TYPE="4B" CBS_BASIS="F" L_POSITION="C" L_INSTR="A"
                 REM_MATURITY="A" CURR_TYPE_BOOK="TO1" L_CP_SECTOR="A" L_CP_COUNTRY="5J" COLLECTION="E"
                 ORG_VISIBILITY="E">
