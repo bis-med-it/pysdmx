@@ -29,7 +29,9 @@ def parse_urn(urn: str) -> Union[ItemReference, Reference]:
                 try:
                     return parse_short_item_urn(urn)
                 except Invalid:
-                    raise Invalid(NF, "{urn} does not match any known pattern")
+                    raise Invalid(
+                        NF, "{urn} does not match any known pattern"
+                    ) from None
 
 
 def parse_maintainable_urn(urn: str) -> Reference:
@@ -75,7 +77,7 @@ def parse_short_urn(urn: str) -> Reference:
         raise Invalid(NF, f"{urn} does not match {short_urn_pattern}.")
 
 
-def parse_short_item_urn(urn: str) -> Reference:
+def parse_short_item_urn(urn: str) -> ItemReference:
     """Parses an SDMX short item urn and returns the details."""
     m = re.match(short_item_urn_pattern, urn)
     if m:
