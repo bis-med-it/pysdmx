@@ -1,7 +1,7 @@
 """Module for writing SDMX-ML 2.1 Error messages."""
 
 from pysdmx.io.format import Format
-from pysdmx.io.xml.sdmx21.writer.__write_aux import __namespaces_from_type
+from pysdmx.io.xml.__write_aux import __namespaces_from_type
 
 
 def write() -> None:

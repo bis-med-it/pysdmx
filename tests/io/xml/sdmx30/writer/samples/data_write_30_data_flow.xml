@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:StructureSpecificData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/data/structurespecific" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD:TEST(1.0):ObsLevelDim:AllDimensions" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="SENDER"/>
+		<mes:Receiver id="RECEIVER"/>
+		<mes:Structure structureID="TEST" namespace="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow==MD:TEST(1.0)" dimensionAtObservation="AllDimensions">
+			<com:StructureUsage>
+				urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD:TEST(1.0)
+			</com:StructureUsage>
+		</mes:Structure>
+		<mes:Source>PySDMX</mes:Source>
+	</mes:Header>
+	<mes:DataSet ds_att1="value1" ds_att2="10" ss:structureRef="TEST" xsi:type="ns1:DataSetType" action="Information">
+		<Obs DIM1="1" />
+		<Obs DIM1="2" />
+		<Obs DIM1="3" />
+	</mes:DataSet>
+</mes:StructureSpecificData>
