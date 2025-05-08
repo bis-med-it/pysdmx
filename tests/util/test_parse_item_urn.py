@@ -21,3 +21,19 @@ def test_match():
     assert m.id == "CL_FREQ"
     assert m.version == "1.0"
     assert m.item_id == "A"
+
+
+def test_match_nested():
+    cl = (
+        "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category="
+        "TEST:TESTCS(1.42).TOP.SUB"
+    )
+
+    m = parse_item_urn(cl)
+
+    assert isinstance(m, ItemReference)
+    assert m.sdmx_type == "Category"
+    assert m.agency == "TEST"
+    assert m.id == "TESTCS"
+    assert m.version == "1.42"
+    assert m.item_id == "TOP.SUB"
