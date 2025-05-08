@@ -35,7 +35,7 @@ def test_match_item():
     assert m.item_id == "A"
 
 
-def test_match_short():
+def test_match_short_maintainable():
     cl = "Codelist=SDMX:CL_FREQ(1.0)"
 
     m = parse_urn(cl)
@@ -45,3 +45,16 @@ def test_match_short():
     assert m.agency == "SDMX"
     assert m.id == "CL_FREQ"
     assert m.version == "1.0"
+
+
+def test_match_short_item():
+    cl = "Code=SDMX:CL_FREQ(1.0).A"
+
+    m = parse_urn(cl)
+
+    assert isinstance(m, ItemReference)
+    assert m.sdmx_type == "Code"
+    assert m.agency == "SDMX"
+    assert m.id == "CL_FREQ"
+    assert m.version == "1.0"
+    assert m.item_id == "A"

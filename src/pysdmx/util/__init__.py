@@ -12,6 +12,7 @@ NF = "Not found"
 maintainable_urn_pattern = re.compile(r"^.*\.(.*)=(.*):(.*)\((.*)\)$")
 item_urn_pattern = re.compile(r"^.*\.(.*)=(.*):(.*)\((.*)\)\.(.*)$")
 short_urn_pattern = re.compile(r"^(.*)=(.*):(.*)\((.*)\)$")
+short_item_urn_pattern = re.compile(r"^(.*)=(.*):(.*)\((.*)\)\.(.*)$")
 
 
 def parse_urn(urn: str) -> Union[ItemReference, Reference]:
@@ -25,7 +26,10 @@ def parse_urn(urn: str) -> Union[ItemReference, Reference]:
             try:
                 return parse_short_urn(urn)
             except Invalid:
-                raise Invalid(NF, "{urn} does not match any known pattern")
+                try:
+                    return parse_short_item_urn(urn)
+                except Invalid:
+                    raise Invalid(NF, "{urn} does not match any known pattern")
 
 
 def parse_maintainable_urn(urn: str) -> Reference:
@@ -71,6 +75,21 @@ def parse_short_urn(urn: str) -> Reference:
         raise Invalid(NF, f"{urn} does not match {short_urn_pattern}.")
 
 
+def parse_short_item_urn(urn: str) -> Reference:
+    """Parses an SDMX short item urn and returns the details."""
+    m = re.match(short_item_urn_pattern, urn)
+    if m:
+        return ItemReference(
+            sdmx_type=m.group(1),
+            agency=m.group(2),
+            id=m.group(3),
+            version=m.group(4),
+            item_id=m.group(5),
+        )
+    else:
+        raise Invalid(NF, f"{urn} does not match {short_item_urn_pattern}.")
+
+
 def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:
     """Returns the maintainable artefact matching the supplied urn."""
     r = parse_urn(urn)
@@ -110,6 +129,7 @@ __all__ = [
     "parse_maintainable_urn",
     "parse_urn",
     "parse_short_urn",
+    "parse_short_item_urn",
     "ItemReference",
     "Reference",
 ]
