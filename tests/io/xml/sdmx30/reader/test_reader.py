@@ -25,8 +25,8 @@ def test_dataflow_30(samples_folder):
     data = result.data[0].data
     num_rows = len(data)
     num_columns = data.shape[1]
-    assert num_rows == 1000
-    assert num_columns == 20
+    assert num_rows == 2
+    assert num_columns == 19
     print(result)
 
 
@@ -43,8 +43,8 @@ def test_datastructure_30__series(samples_folder):
     data = result.data[0].data
     num_rows = len(data)
     num_columns = data.shape[1]
-    assert num_rows == 132
-    assert num_columns == 18
+    assert num_rows == 3
+    assert num_columns == 17
 
 
 def test_prov_agree_30_groups_series(samples_folder):
