@@ -1,6 +1,6 @@
 from msgspec import Struct
 
-from pysdmx.model import Agency, AgencyScheme
+from pysdmx.model import Agency, AgencyScheme as AS
 
 
 class GdsAgency(Struct, frozen=True):
@@ -25,17 +25,17 @@ class GdsAgency(Struct, frozen=True):
         return Agency(id=oid, name=self.name, description=d, contacts=None)
 
 
-class GdsAgencyScheme(Struct, frozen=True):
+class AgencyScheme(Struct, frozen=True):
     """Gds-JSON payload for an agency scheme."""
 
     code: str
     descriptions: Sequence[str] = ()
     items: Sequence[GdsAgency] = ()
 
-    def to_model(self) -> AgencyScheme:
-        """Converts a GdsAgencyScheme to a list of Organisations."""
+    def to_model(self) -> AS:
+        """Converts a GdsAS to a list of Organisations."""
         agencies = [o.to_model(self.code) for o in self.items]
-        return AgencyScheme(
+        return AS(
             description=(
                 self.descriptions[0].value if self.descriptions else None
             ),
@@ -47,7 +47,7 @@ class GdsAgencyScheme(Struct, frozen=True):
 class GdsAgencyMessage(Struct, frozen=True):
     """Gds-JSON payload for /agency queries."""
 
-    AgencyScheme: Sequence[GdsAgencyScheme]
+    AgencyScheme: Sequence[AgencyScheme]
 
     def to_model(self) -> Sequence[AS]:
         """Returns the requested agency schemes."""
