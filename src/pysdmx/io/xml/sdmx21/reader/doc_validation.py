@@ -3,10 +3,13 @@
 from io import BytesIO
 
 from lxml import etree
-from sdmxschemas import SDMX_ML_21_MESSAGE_PATH as SCHEMA_PATH
+from sdmxschemas import SDMX_ML_21_MESSAGE_PATH as SCHEMA_PATH_21
+from sdmxschemas import SDMX_ML_30_MESSAGE_PATH as SCHEMA_PATH_30
 
 from pysdmx.errors import Invalid
 from pysdmx.io.xml.__allowed_lxml_errors import ALLOWED_ERRORS_CONTENT
+
+SCHEMA_ROOT_30 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_0/"
 
 
 def validate_doc(input_str: str) -> None:
@@ -19,7 +22,12 @@ def validate_doc(input_str: str) -> None:
         Invalid: If the SDMX-ML data does not validate against the schema.
     """
     parser = etree.ETCompatXMLParser()
-    xmlschema_doc = etree.parse(SCHEMA_PATH)
+    check = input_str[:1000].lower()
+    if SCHEMA_ROOT_30 in check:
+        xmlschema_doc = etree.parse(SCHEMA_PATH_30)
+    else:
+        xmlschema_doc = etree.parse(SCHEMA_PATH_21)
+
     xmlschema = etree.XMLSchema(xmlschema_doc)
 
     bytes_infile = BytesIO(bytes(input_str, "UTF_8"))
