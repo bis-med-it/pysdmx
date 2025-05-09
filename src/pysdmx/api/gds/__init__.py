@@ -3,6 +3,9 @@ from pysdmx.io.format import StructureFormat
 from typing import Any, Optional
 
 GDS_BASE_ENDPOINT = "https://gds.sdmx.io/"
+ALLOWED_FORMATS = (
+    StructureFormat.SDMX_JSON_2_0_0
+)
 
 class __BaseRegistryClient:
     def __init__(
@@ -15,13 +18,9 @@ class __BaseRegistryClient:
         if api_endpoint.endswith("/"):
             api_endpoint = api_endpoint[0:-1]
         self.api_endpoint = api_endpoint
-        if fmt not in (
-            StructureFormat.SDMX_JSON_2_0_0,
-            StructureFormat.FUSION_JSON,
-        ):
+        if fmt not in ALLOWED_FORMATS:
             raise NotImplemented(
                 "Unsupported format",
-                "Only SDMX-JSON v2.0.0 and Fusion-JSON are supported.",
                 {"requested_format": fmt.value},
             )
         self.format = fmt
