@@ -1,11 +1,19 @@
+from msgspec.json import decode
+
+from pysdmx.errors import NotImplemented
 from pysdmx.io.format import StructureFormat
+from pysdmx.io.json.sdmxjson2.reader import deserializers as sdmx_2_0_readers
 
 from typing import Any, Optional
+
 
 GDS_BASE_ENDPOINT = "https://gds.sdmx.io/"
 ALLOWED_FORMATS = (
     StructureFormat.SDMX_JSON_2_0_0
 )
+READERS = {
+    StructureFormat.SDMX_JSON_2_0_0: sdmx_2_0_readers,
+}
 
 class __BaseRegistryClient:
     def __init__(
@@ -21,13 +29,11 @@ class __BaseRegistryClient:
         if fmt not in ALLOWED_FORMATS:
             raise NotImplemented(
                 "Unsupported format",
+                f"only {', '.join([f.value for f in ALLOWED_FORMATS])} are supported",
                 {"requested_format": fmt.value},
             )
         self.format = fmt
-        if fmt == StructureFormat.FUSION_JSON:
-            self.deser = fusion_readers
-        else:
-            self.deser = sdmx_readers
+        self.reader = READERS[fmt]
 
     def _out(self, response: bytes, typ: Deserializer, *params: Any) -> Any:
         return decode(response, type=typ).to_model(*params)
