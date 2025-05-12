@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+import xmltodict
 
 import pysdmx
 from pysdmx.io.pd import PandasDataset
@@ -19,6 +20,25 @@ from pysdmx.model import (
     Schema,
 )
 from pysdmx.model.message import Header
+
+SCHEMA_ROOT = "http://www.sdmx.org/resources/sdmxml/schemas/v3_0/"
+NAMESPACES_30 = {
+    SCHEMA_ROOT + "message": None,
+    SCHEMA_ROOT + "common": None,
+    SCHEMA_ROOT + "structure": None,
+    "http://www.w3.org/2001/XMLSchema-instance": "xsi",
+    "http://www.w3.org/XML/1998/namespace": None,
+    SCHEMA_ROOT + "data/structurespecific": None,
+    SCHEMA_ROOT + "registry": None,
+    "http://schemas.xmlsoap.org/soap/envelope/": None,
+}
+
+XML_OPTIONS = {
+    "process_namespaces": True,
+    "namespaces": NAMESPACES_30,
+    "dict_constructor": dict,
+    "attr_prefix": "",
+}
 
 
 @pytest.fixture
@@ -243,7 +263,25 @@ def test_data_write_data_structure_30_no_header(
         prettyprint=True,
     )
     assert result is not None
-    assert result.count("Header") == 2
+
+    dict_info = xmltodict.parse(
+        result,
+        **XML_OPTIONS,
+    )
+    header = dict_info.get("StructureSpecificData").get("Header")
+    print(header)
+
+    assert header is not None
+    assert header.get("Test") == "false"
+    assert header.get("Sender").get("id") == "ZZZ"
+    assert header.get("Structure") == {
+        "Structure": "urn:sdmx:org.sdmx.infomodel."
+        "datastructure.DataStructure=MD:TEST(1.0)",
+        "dimensionAtObservation": "AllDimensions",
+        "namespace": "urn:sdmx:org.sdmx.infomodel."
+        "datastructure.DataStructure==MD:TEST(1.0)",
+        "structureID": "TEST",
+    }
 
 
 def test_data_write_30_chunksize(
