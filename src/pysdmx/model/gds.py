@@ -1,3 +1,13 @@
+"""Models for GDS data.
+
+This module defines classes for representing GDS-specific data,
+such as agencies, in the SDMX data model.
+
+Exports:
+    GdsAgency: Represents a GDS agency with attributes
+               like ID, name, URL, and description.
+"""
+
 from typing import Optional
 
 from msgspec import Struct
@@ -7,6 +17,7 @@ from pysdmx.model import Agency
 
 class GdsAgency(Struct, frozen=True):
     """Represents a GDS agency.
+
     Attributes:
         agencyId: The ID of the agency.
         name: The name of the agency.
@@ -22,5 +33,6 @@ class GdsAgency(Struct, frozen=True):
     def to_model(self, owner: Optional[str] = None) -> Agency:
         """Converts a GdsOrg to a standard Organisation."""
         d = self.description
-        oid = f"{owner}.{self.agencyId}" if owner and owner != "SDMX" else self.agencyId
+        oid = f"{owner}.{self.agencyId}" if (owner and
+                 owner != "SDMX") else self.agencyId
         return Agency(id=oid, name=self.name, description=d, contacts=None)

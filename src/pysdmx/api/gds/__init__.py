@@ -1,3 +1,12 @@
+"""API client for interacting with the GDS (Global Data Structure) service.
+
+This module provides classes and utilities to interact with the GDS service,
+allowing retrieval of metadata such as agency information in SDMX-JSON format.
+
+Exports: RegistryClient: A synchronous client for retrieving metadata from
+the GDS.
+"""
+
 from typing import Any, Optional, Sequence
 
 from msgspec.json import decode
@@ -50,7 +59,8 @@ class __BaseRegistryClient:
         if fmt not in ALLOWED_STR_FORMATS:
             raise NotImplemented(
                 "Unsupported format",
-                f"only {', '.join([f.value for f in ALLOWED_STR_FORMATS])} are supported",
+                f"only {', '.join([f.value for f in ALLOWED_STR_FORMATS])}"
+                          f" are supported",
                 {"requested_format": fmt.value},
             )
         self.format = fmt

@@ -17,12 +17,18 @@ class JsonAgency(Struct, frozen=True):
 
     def to_model(self) -> Agency:
         """Converts the payload to a Gds Agency."""
-        return GdsAgency(agencyId=self.agencyID, name=self.name, url=self.url, description=self.description)
+        return GdsAgency(
+            agencyId=self.agencyID,
+            name=self.name,
+            url=self.url,
+            description=self.description
+        )
 
     def to_sdmx_model(self, owner: Optional[str] = None) -> Agency:
         """Converts a Gds Agency to a standard Organisation."""
         d = self.description
-        oid = f"{owner}.{self.agencyID}" if owner and owner != "SDMX" else self.agencyID
+        oid = f"{owner}.{self.agencyID}" if (owner and
+                 owner != "SDMX") else self.agencyID
         return Agency(id=oid, name=self.name, description=d, contacts=None)
 
 
