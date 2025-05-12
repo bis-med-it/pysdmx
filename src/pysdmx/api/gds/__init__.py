@@ -4,29 +4,31 @@ from pysdmx.api.qb import (
     ApiVersion,
     RestService,
 )
-from pysdmx.io.format import RefMetaFormat, SchemaFormat, StructureFormat
-from pysdmx.io.json.sdmxjson2.reader import deserializers as sdmx2_readers
+from pysdmx.api.qb.gds import GdsQuery, GdsType
+from pysdmx.io.format import RefMetaFormat, SchemaFormat, StructureFormat, GdsFormat
+from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.io.serde import Deserializer
 from pysdmx.errors import NotImplemented
 
-from typing import Any, Optional
+from pysdmx.model.gds import GdsAgency
 
+from typing import Any, Optional, Sequence
 
 API_VERSION = ApiVersion.V2_0_0
 
 GDS_BASE_ENDPOINT = "https://gds.sdmx.io/"
 
-ALLOWED_STR_FORMATS = (
-    StructureFormat.SDMX_JSON_2_0_0
-)
+ALLOWED_STR_FORMATS = [
+    GdsFormat.SDMX_JSON_2_0_0
+]
 READERS = {
-    StructureFormat.SDMX_JSON_2_0_0: sdmx2_readers,
+    GdsFormat.SDMX_JSON_2_0_0: gds_readers,
 }
 RFM_FORMATS = {
-    StructureFormat.SDMX_JSON_2_0_0: RefMetaFormat.SDMX_JSON_2_0_0
+    GdsFormat.SDMX_JSON_2_0_0: RefMetaFormat.SDMX_JSON_2_0_0
 }
 SCH_FORMATS = {
-    StructureFormat.SDMX_JSON_2_0_0: SchemaFormat.SDMX_JSON_2_0_0_STRUCTURE
+    GdsFormat.SDMX_JSON_2_0_0: SchemaFormat.SDMX_JSON_2_0_0_STRUCTURE
 }
 
 
@@ -53,6 +55,9 @@ class __BaseRegistryClient:
     def _out(self, response: bytes, typ: Deserializer, *params: Any) -> Any:
         return decode(response, type=typ).to_model(*params)
 
+    def _agencies_q(self, agency: str) -> GdsQuery:
+        return GdsQuery(artefact_type=GdsType.GDS_AGENCY, agency_id=agency)
+
 
 class RegistryClient(__BaseRegistryClient):
     """A client to be used to retrieve metadata from the GDS.
@@ -62,10 +67,10 @@ class RegistryClient(__BaseRegistryClient):
 
     def __init__(
         self,
-        api_endpoint: str,
-        format: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
-        pem: Optional[str] = None,
-    ):
+            api_endpoint: str,
+            format: GdsFormat = GdsFormat.SDMX_JSON_2_0_0,
+            pem: Optional[str] = None,
+    ) -> None:
         """Instantiate a new client against the target endpoint.
 
         Args:
@@ -86,3 +91,25 @@ class RegistryClient(__BaseRegistryClient):
             pem=pem,
             timeout=10.0,
         )
+
+    def __fetch(
+        self,
+        query: GdsQuery,
+    ) -> bytes:
+        """Fetch the requested metadata from the GDS service."""
+        return self.__service.gds(query)
+
+    def get_agencies(self, agency: str) -> Sequence[GdsAgency]:
+        """Get the list of **sub-agencies** for the supplied agency.
+
+        Args:
+            agency: The agency maintaining the agency scheme from
+                which sub-agencies must be returned.
+
+        Returns:
+            The requested list of agencies.
+        """
+        query = super()._agencies_q(agency)
+        out = self.__fetch(query)
+        schemes = super()._out(out, self.reader.agencies)
+        return schemes
