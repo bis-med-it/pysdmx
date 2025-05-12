@@ -209,7 +209,7 @@ class RestService(_CoreRestService):
     def __fetch(self, query: str, format: str) -> bytes:
         with httpx.Client(verify=self._ssl_context) as client:
             try:
-                url = f"{self._api_endpoint}{query}/"
+                url = f"{self._api_endpoint}{query}"
                 h = self._headers.copy()
                 h["Accept"] = format
                 r = client.get(url, headers=h, timeout=self._timeout)
