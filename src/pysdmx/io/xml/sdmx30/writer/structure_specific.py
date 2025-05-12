@@ -65,10 +65,9 @@ def write(
     add_namespace_structure = True
     for i, (short_urn, dimension) in enumerate(header.structure.items()):
         reference = parse_short_urn(short_urn)
-        if reference.sdmx_type == PROV_AGREEMENT:
-            pre_urn = REGISTRY_LOW
-        else:
-            pre_urn = DSD_LOW
+        pre_urn = (
+            REGISTRY_LOW if reference.sdmx_type == PROV_AGREEMENT else DSD_LOW
+        )
         ss_namespaces += (
             f'xmlns:ns{i + 1}="urn:sdmx:org.sdmx'
             f".infomodel.{pre_urn}.{short_urn}"

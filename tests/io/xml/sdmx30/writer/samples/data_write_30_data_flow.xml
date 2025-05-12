@@ -14,8 +14,8 @@
 		<mes:Source>PySDMX</mes:Source>
 	</mes:Header>
 	<mes:DataSet ds_att1="value1" ds_att2="10" ss:structureRef="TEST" xsi:type="ns1:DataSetType" action="Information">
-		<Obs DIM1="1" />
-		<Obs DIM1="2" />
-		<Obs DIM1="3" />
+		<Obs DIM1="1" M1="10" />
+		<Obs DIM1="2" M1="11" />
+		<Obs DIM1="3" M1="12" />
 	</mes:DataSet>
 </mes:StructureSpecificData>

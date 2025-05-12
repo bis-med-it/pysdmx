@@ -42,6 +42,7 @@ def prov_agree():
         data=pd.DataFrame(
             {
                 "DIM1": [1, 2, 3],
+                "M1": [10, 11, 12],
             }
         ),
         structure=Schema(
@@ -69,6 +70,12 @@ def prov_agree():
                         concept=Concept(id="ds_att2"),
                         required=True,
                     ),
+                    Component(
+                        id="M1",
+                        role=Role.MEASURE,
+                        concept=Concept(id="M1"),
+                        required=True,
+                    ),
                 ]
             ),
         ),
@@ -83,6 +90,7 @@ def data_flow():
         data=pd.DataFrame(
             {
                 "DIM1": [1, 2, 3],
+                "M1": [10, 11, 12],
             }
         ),
         structure=Schema(
@@ -110,6 +118,12 @@ def data_flow():
                         concept=Concept(id="ds_att2"),
                         required=True,
                     ),
+                    Component(
+                        id="M1",
+                        role=Role.MEASURE,
+                        concept=Concept(id="M1"),
+                        required=True,
+                    ),
                 ]
             ),
         ),
@@ -124,6 +138,7 @@ def data_structure():
         data=pd.DataFrame(
             {
                 "DIM1": [1, 2, 3],
+                "M1": [10, 11, 12],
             }
         ),
         structure=Schema(
@@ -137,6 +152,12 @@ def data_structure():
                         id="DIM1",
                         role=Role.DIMENSION,
                         concept=Concept(id="DIM1"),
+                        required=True,
+                    ),
+                    Component(
+                        id="M1",
+                        role=Role.MEASURE,
+                        concept=Concept(id="M1"),
                         required=True,
                     ),
                 ]
@@ -223,7 +244,6 @@ def test_data_write_data_structure_30_no_header(
     )
     assert result is not None
     assert result.count("Header") == 2
-    print(result)
 
 
 def test_data_write_30_chunksize(

@@ -117,7 +117,7 @@ def __parse_structure(
     return {str(ref_obj): dim_at_obs}
 
 
-def __parse_source(source: Union[Dict[str, Any], None]) -> Union[str, None]:
+def __parse_source(source: Optional[Dict[str, Any]]) -> Optional[str]:
     """Parses the source of the SDMX message."""
     if source is None:
         return None
@@ -128,8 +128,8 @@ def __parse_source(source: Union[Dict[str, Any], None]) -> Union[str, None]:
 
 
 def __parse_dataset_action(
-    dataset_action: Union[Dict[str, Any], None],
-) -> Union[ActionType, None]:
+    dataset_action: Optional[Dict[str, Any]],
+) -> Optional[ActionType]:
     """Parses the dataset action of the SDMX message."""
     if dataset_action is None:
         return None

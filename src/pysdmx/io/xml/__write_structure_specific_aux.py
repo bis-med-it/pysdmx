@@ -1,7 +1,7 @@
 # mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 3.0 Structure Specific auxiliary functions."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 import pandas as pd
 
@@ -53,7 +53,7 @@ def __write_data_structure_specific(
     datasets: Dict[str, PandasDataset],
     dim_mapping: Dict[str, str],
     prettyprint: bool = True,
-    references_30: Optional[bool] = False,
+    references_30: bool = False,
 ) -> str:
     """Write data to SDMX-ML Structure-Specific format.
 
@@ -86,7 +86,7 @@ def __write_data_single_dataset(
     prettyprint: bool = True,
     count: int = 1,
     dim: str = ALL_DIM,
-    references_30: Optional[bool] = False,
+    references_30: bool = False,
 ) -> str:
     """Write data to SDMX-ML Structure-Specific format.
 

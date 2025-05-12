@@ -73,7 +73,6 @@ BASE_URL_30 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_0"
 NAMESPACES_30 = {
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
     ABBR_MSG: f"{BASE_URL_30}/message",
-    ABBR_GEN: f"{BASE_URL_30}/data/generic",
     ABBR_COM: f"{BASE_URL_30}/common",
     ABBR_STR: f"{BASE_URL_30}/structure",
     ABBR_SPE: f"{BASE_URL_30}/data/structurespecific",
@@ -263,7 +262,7 @@ def __reference(
     nl: str,
     prettyprint: bool,
     add_namespace_structure: bool,
-    references_30: Optional[bool] = False,
+    references_30: bool = False,
 ) -> str:
     child2 = "\t\t" if prettyprint else ""
     child3 = "\t\t\t" if prettyprint else ""
@@ -326,7 +325,7 @@ def __write_header(
     prettyprint: bool,
     add_namespace_structure: bool = False,
     data_message: bool = True,
-    references_30: Optional[bool] = False,
+    references_30: bool = False,
 ) -> str:
     """Writes the Header part of the message.
 
