@@ -1,7 +1,9 @@
 """Collection of SDMX-JSON schemas for organisations."""
 
 from typing import Optional, Sequence
+
 from msgspec import Struct
+
 from pysdmx.model import Agency, AgencyScheme
 from pysdmx.model.gds import GdsAgency
 

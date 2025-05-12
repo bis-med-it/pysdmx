@@ -1,13 +1,12 @@
+from typing import Optional
+
 from msgspec import Struct
 
 from pysdmx.model import Agency
 
-from typing import Optional
-
 
 class GdsAgency(Struct, frozen=True):
-    """
-    Represents a GDS agency.
+    """Represents a GDS agency.
     Attributes:
         agencyId: The ID of the agency.
         name: The name of the agency.

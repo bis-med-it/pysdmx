@@ -1,3 +1,5 @@
+from typing import Any, Optional, Sequence
+
 from msgspec.json import decode
 
 from pysdmx.api.qb import (
@@ -5,14 +7,16 @@ from pysdmx.api.qb import (
     RestService,
 )
 from pysdmx.api.qb.gds import GdsQuery, GdsType
-from pysdmx.io.format import RefMetaFormat, SchemaFormat, StructureFormat, GdsFormat
+from pysdmx.errors import NotImplemented
+from pysdmx.io.format import (
+    GdsFormat,
+    RefMetaFormat,
+    SchemaFormat,
+    StructureFormat,
+)
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.io.serde import Deserializer
-from pysdmx.errors import NotImplemented
-
 from pysdmx.model.gds import GdsAgency
-
-from typing import Any, Optional, Sequence
 
 API_VERSION = ApiVersion.V2_0_0
 
