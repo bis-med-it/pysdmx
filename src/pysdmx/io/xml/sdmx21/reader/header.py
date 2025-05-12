@@ -101,6 +101,8 @@ def __parse_structure(
         structure_info = structure[PROV_AGREEMENT]
         sdmx_type = PROV_AGREEMENT
     else:
+        # Provision Agrement is a typo in the SDMX 2.1 schema,
+        # and it is later solved in SDMX 3.0
         structure_info = structure[PROV_AGREMENT]
         sdmx_type = PROV_AGREMENT
 
