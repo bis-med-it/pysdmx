@@ -7,6 +7,7 @@ import httpx
 from pysdmx import errors
 from pysdmx.api.qb.availability import AvailabilityFormat, AvailabilityQuery
 from pysdmx.api.qb.data import DataFormat, DataQuery
+from pysdmx.api.qb.gds import GdsQuery
 from pysdmx.api.qb.refmeta import (
     RefMetaByMetadataflowQuery,
     RefMetaByMetadatasetQuery,
@@ -22,6 +23,7 @@ from pysdmx.api.qb.registration import (
 from pysdmx.api.qb.schema import SchemaFormat, SchemaQuery
 from pysdmx.api.qb.structure import StructureFormat, StructureQuery
 from pysdmx.api.qb.util import ApiVersion
+from pysdmx.io.format import GdsFormat
 
 
 class _CoreRestService:
@@ -32,6 +34,7 @@ class _CoreRestService:
         api_endpoint: str,
         api_version: ApiVersion,
         data_format: DataFormat,
+        gds_format: GdsFormat,
         structure_format: StructureFormat,
         schema_format: SchemaFormat,
         refmeta_format: RefMetaFormat,
@@ -47,6 +50,7 @@ class _CoreRestService:
 
         self._api_version = api_version
         self._data_format = data_format
+        self._gds_format = gds_format
         self._structure_format = structure_format
         self._schema_format = schema_format
         self._refmeta_format = refmeta_format
@@ -122,6 +126,7 @@ class RestService(_CoreRestService):
         api_endpoint: str,
         api_version: ApiVersion,
         data_format: DataFormat = DataFormat.SDMX_JSON_2_0_0,
+        gds_format: GdsFormat = GdsFormat.SDMX_JSON_2_0_0,
         structure_format: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
         schema_format: SchemaFormat = SchemaFormat.SDMX_JSON_2_0_0_STRUCTURE,
         refmeta_format: RefMetaFormat = RefMetaFormat.SDMX_JSON_2_0_0,
@@ -135,6 +140,7 @@ class RestService(_CoreRestService):
             api_endpoint,
             api_version,
             data_format,
+            gds_format,
             structure_format,
             schema_format,
             refmeta_format,
@@ -160,6 +166,12 @@ class RestService(_CoreRestService):
         """Execute a schema query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._schema_format.value
+        return self.__fetch(q, f)
+
+    def gds(self, query: GdsQuery) -> bytes:
+        """Execute a GDS query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._gds_format.value
         return self.__fetch(q, f)
 
     def availability(self, query: AvailabilityQuery) -> bytes:
@@ -197,7 +209,7 @@ class RestService(_CoreRestService):
     def __fetch(self, query: str, format: str) -> bytes:
         with httpx.Client(verify=self._ssl_context) as client:
             try:
-                url = f"{self._api_endpoint}{query}"
+                url = f"{self._api_endpoint}{query}/"
                 h = self._headers.copy()
                 h["Accept"] = format
                 r = client.get(url, headers=h, timeout=self._timeout)
