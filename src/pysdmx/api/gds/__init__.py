@@ -25,7 +25,7 @@ from pysdmx.io.format import (
 )
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.io.serde import Deserializer
-from pysdmx.model.gds import GdsAgency
+from pysdmx.model.gds import GdsAgency, GdsService
 
 API_VERSION = ApiVersion.V2_0_0
 
@@ -71,6 +71,14 @@ class __BaseRegistryClient:
 
     def _agencies_q(self, agency: str) -> GdsQuery:
         return GdsQuery(artefact_type=GdsType.GDS_AGENCY, agency_id=agency)
+
+    def _services_q(self, agency: str, resource: str = "*", version: str = "*") -> GdsQuery:
+        return GdsQuery(
+            artefact_type=GdsType.GDS_SERVICE,
+            agency_id=agency,
+            resource_id=resource,
+            version=version
+        )
 
 
 class RegistryClient(__BaseRegistryClient):
@@ -124,4 +132,20 @@ class RegistryClient(__BaseRegistryClient):
         query = super()._agencies_q(agency)
         out = self.__fetch(query)
         schemes = super()._out(out, self.reader.agencies)
+        return schemes
+
+    def get_services(self, agency: str, resource: str = "*", version: str = "*") -> Sequence[GdsService]:
+        """Get the list of services for the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the service.
+            resource: The resource ID(s) to query. Defaults to '*'.
+            version: The version(s) to query. Defaults to '*'.
+
+        Returns:
+            A list of GdsService objects.
+        """
+        query = super()._services_q(agency, resource, version)
+        response = self.__fetch(query)
+        schemes = super()._out(response, self.reader.services)
         return schemes
