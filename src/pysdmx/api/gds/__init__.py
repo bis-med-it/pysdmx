@@ -16,6 +16,7 @@ from pysdmx.api.qb import (
     RestService,
 )
 from pysdmx.api.qb.gds import GdsQuery, GdsType
+from pysdmx.api.qb.util import REST_ALL
 from pysdmx.errors import NotImplemented
 from pysdmx.io.format import (
     GdsFormat,
@@ -74,8 +75,8 @@ class __BaseGdsClient:
 
     def _catalogs_q(self,
                     agency: str,
-                    resource: str = "*",
-                    version: str = "*",
+                    resource: str = REST_ALL,
+                    version: str = REST_ALL,
                     resource_type: Optional[str] = None,
                     message_format: Optional[str] = None,
                     api_version: Optional[str] = None,
@@ -94,12 +95,18 @@ class __BaseGdsClient:
             references=references,
         )
 
-    def _services_q(self, agency: str, resource: str = "*", version: str = "*") -> GdsQuery:
+    def _services_q(self, agency: str, resource: str = REST_ALL, version: str = REST_ALL) -> GdsQuery:
         return GdsQuery(
             artefact_type=GdsType.GDS_SERVICE,
             agency_id=agency,
             resource_id=resource,
             version=version
+        )
+
+    def _sdmx_api_q(self, id: str = REST_ALL) -> GdsQuery:
+        return GdsQuery(
+            artefact_type=GdsType.GDS_SDMX_API,
+            agency_id=id
         )
 
 
@@ -159,8 +166,8 @@ class GdsClient(__BaseGdsClient):
     def get_catalogs(
             self,
             agency: str,
-            resource: str = "*",
-            version: str = "*",
+            resource: str = REST_ALL,
+            version: str = REST_ALL,
             resource_type: Optional[str] = None,
             message_format: Optional[str] = None,
             api_version: Optional[str] = None,
@@ -196,7 +203,7 @@ class GdsClient(__BaseGdsClient):
         catalogs = super()._out(response, self.reader.catalogs)
         return catalogs
 
-    def get_services(self, agency: str, resource: str = "*", version: str = "*") -> Sequence[GdsService]:
+    def get_services(self, agency: str, resource: str = REST_ALL, version: str = REST_ALL) -> Sequence[GdsService]:
         """Get the list of services for the supplied parameters.
 
         Args:
@@ -211,3 +218,10 @@ class GdsClient(__BaseGdsClient):
         response = self.__fetch(query)
         schemes = super()._out(response, self.reader.services)
         return schemes
+
+
+    def get_sdmx_api(self, id: str = REST_ALL):
+        query = super()._sdmx_api_q(id)
+        response = self.__fetch(query)
+        sdmx_apis = super()._out(response, self.reader.sdmxapi)
+        return sdmx_apis
