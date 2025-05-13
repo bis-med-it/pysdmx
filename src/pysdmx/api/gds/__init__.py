@@ -45,7 +45,7 @@ SCH_FORMATS = {
 }
 
 
-class __BaseRegistryClient:
+class __BaseGdsClient:
     def __init__(
         self,
         api_endpoint: str = GDS_BASE_ENDPOINT,
@@ -103,7 +103,7 @@ class __BaseRegistryClient:
         )
 
 
-class RegistryClient(__BaseRegistryClient):
+class GdsClient(__BaseGdsClient):
     """A client to be used to retrieve metadata from the GDS.
 
     With this client, metadata will be retrieved in a synchronous fashion.
