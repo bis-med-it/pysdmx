@@ -17,10 +17,14 @@ from pysdmx.io.json.gds.messages.catalog import (
 from pysdmx.io.json.gds.messages.services import (
     JsonServiceMessage,
 )
+from pysdmx.io.json.gds.messages.sdmxapi import (
+    JsonSdmxApiMessage,
+)
 
 
 __all__ = [
     "JsonAgencyMessage",
     "JsonCatalogMessage",
     "JsonServiceMessage",
+    "JsonSdmxApiMessage",
 ]

@@ -41,3 +41,4 @@ class GdsDeserializers:
     agencies: Deserializer
     catalogs: Deserializer
     services: Deserializer
+    sdmxapi: Deserializer
