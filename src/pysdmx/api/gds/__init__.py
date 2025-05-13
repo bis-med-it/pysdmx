@@ -221,6 +221,11 @@ class GdsClient(__BaseGdsClient):
         return catalogs
 
     def get_sdmx_api(self, id: str = REST_ALL) -> Sequence[GdsSdmxApi]:
+        """Get the list of SDMX API versions.
+
+        Args:
+            id: The ID of the SDMX API version to query. Defaults to '*'.
+        """
         query = super()._sdmx_api_q(id)
         response = self.__fetch(query)
         sdmx_apis = super()._out(response, self.reader.sdmx_api)

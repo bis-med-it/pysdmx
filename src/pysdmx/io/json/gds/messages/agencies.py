@@ -1,4 +1,4 @@
-"""Collection of SDMX-JSON schemas for organisations."""
+"""Collection of SDMX-JSON schemas for GDS agencies."""
 
 from typing import Optional, Sequence
 

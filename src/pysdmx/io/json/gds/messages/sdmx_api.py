@@ -1,3 +1,5 @@
+"""Collection of SDMX-JSON schemas for GDS sdmx_api obj."""
+
 from typing import Sequence
 
 from msgspec import Struct
