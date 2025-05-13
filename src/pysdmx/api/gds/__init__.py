@@ -99,9 +99,7 @@ class RegistryClient(__BaseRegistryClient):
         self.__service = RestService(
             self.api_endpoint,
             API_VERSION,
-            structure_format=format,
-            schema_format=SCH_FORMATS[format],
-            refmeta_format=RFM_FORMATS[format],
+            gds_format=format,
             pem=pem,
             timeout=10.0,
         )
