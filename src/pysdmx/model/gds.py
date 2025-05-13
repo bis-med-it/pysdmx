@@ -12,8 +12,6 @@ from typing import List, Optional
 
 from msgspec import Struct
 
-from pysdmx.model import Agency
-
 
 class GdsEndpoint(Struct, frozen=True):
     """Represents a GDS endpoint.
