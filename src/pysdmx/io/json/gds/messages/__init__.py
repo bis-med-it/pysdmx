@@ -11,7 +11,12 @@ Exports:
 from pysdmx.io.json.gds.messages.org import (
     JsonAgencyMessage,
 )
+from pysdmx.io.json.gds.messages.services import (
+    JsonServiceMessage,
+)
+
 
 __all__ = [
     "JsonAgencyMessage",
+    "JsonServiceMessage",
 ]

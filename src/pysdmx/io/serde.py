@@ -32,3 +32,12 @@ class Deserializers:
     mapping: Deserializer
     code_map: Deserializer
     transformation_scheme: Deserializer
+
+
+@dataclass
+class GdsDeserializers:
+    """Collection of Gds deserializers for a format."""
+
+    agencies: Deserializer
+    catalogs: Deserializer
+    services: Deserializer
