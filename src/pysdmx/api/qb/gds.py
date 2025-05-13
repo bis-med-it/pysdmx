@@ -20,6 +20,7 @@ class GdsType(Enum):
     GDS_AGENCY = "agency"
     GDS_CATALOG = "catalog"
     GDS_SERVICE = "service"
+    GDS_SDMX_API = "sdmxapi"
     ALL = REST_ALL
     LATEST = REST_LATEST
 
@@ -27,6 +28,7 @@ _V2_0_RESOURCES = {
     GdsType.GDS_AGENCY,
     GdsType.GDS_CATALOG,
     GdsType.GDS_SERVICE,
+    GdsType.GDS_SDMX_API,
 }
 
 _API_RESOURCES = {
