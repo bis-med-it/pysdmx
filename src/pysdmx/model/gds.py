@@ -66,16 +66,6 @@ class GdsAgency(Struct, frozen=True):
     url: str
     description: str = ""
 
-    def to_model(self, owner: Optional[str] = None) -> Agency:
-        """Converts a GdsOrg to a standard Organisation."""
-        d = self.description
-        oid = (
-            f"{owner}.{self.agencyId}"
-            if (owner and owner != "SDMX")
-            else self.agencyId
-        )
-        return Agency(id=oid, name=self.name, description=d, contacts=None)
-
 
 class GdsCatalog(Struct, frozen=True):
     """Represents a GDS catalog.

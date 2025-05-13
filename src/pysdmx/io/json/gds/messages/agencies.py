@@ -4,7 +4,6 @@ from typing import Sequence
 
 from msgspec import Struct
 
-from pysdmx.model import AgencyScheme
 from pysdmx.model.gds import GdsAgency
 
 
@@ -37,6 +36,6 @@ class JsonAgencyMessage(Struct, frozen=True):
 
     structures: JsonStructures
 
-    def to_model(self) -> Sequence[AgencyScheme]:
+    def to_model(self) -> Sequence[GdsAgency]:
         """Returns a list with the requested agencies."""
         return [a.to_model() for a in self.structures.agencies]
