@@ -8,7 +8,7 @@ Exports:
                like ID, name, URL, and description.
 """
 
-from typing import Optional, List
+from typing import List, Optional
 
 from msgspec import Struct
 

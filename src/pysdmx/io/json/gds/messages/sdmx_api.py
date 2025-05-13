@@ -1,6 +1,9 @@
 from typing import Sequence
+
 from msgspec import Struct
+
 from pysdmx.model.gds import GdsSdmxApi
+
 
 class JsonStructures(Struct, frozen=True):
     """Intermediate structure for 'structures' field."""

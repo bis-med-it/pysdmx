@@ -1,5 +1,7 @@
 from typing import List
+
 from msgspec import Struct
+
 from pysdmx.model.gds import GdsUrnResolver, ResolverResult
 
 

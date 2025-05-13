@@ -1,5 +1,7 @@
 from typing import Sequence
+
 from msgspec import Struct
+
 from pysdmx.model.gds import GdsService
 
 

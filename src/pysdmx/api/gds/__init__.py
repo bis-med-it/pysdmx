@@ -26,7 +26,13 @@ from pysdmx.io.format import (
 )
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.io.serde import Deserializer
-from pysdmx.model.gds import GdsAgency, GdsService, GdsCatalog, GdsUrnResolver, GdsSdmxApi
+from pysdmx.model.gds import (
+    GdsAgency,
+    GdsCatalog,
+    GdsSdmxApi,
+    GdsService,
+    GdsUrnResolver,
+)
 
 API_VERSION = ApiVersion.V2_0_0
 

@@ -1,7 +1,7 @@
 """Build SDMX-REST structure queries."""
 
 from enum import Enum
-from typing import Sequence, Union, Optional
+from typing import Optional, Sequence, Union
 
 import msgspec
 
