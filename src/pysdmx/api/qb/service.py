@@ -210,8 +210,6 @@ class RestService(_CoreRestService):
         with httpx.Client(verify=self._ssl_context) as client:
             try:
                 url = f"{self._api_endpoint}{query}"
-                if not params:
-                    url += "/"
                 h = self._headers.copy()
                 h["Accept"] = format
                 r = client.get(url, headers=h, timeout=self._timeout)
