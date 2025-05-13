@@ -1,7 +1,7 @@
 """Build SDMX-REST structure queries."""
 
 from enum import Enum
-from typing import Sequence, Union
+from typing import Sequence, Union, Optional
 
 import msgspec
 
@@ -18,12 +18,14 @@ class GdsType(Enum):
     """The type of GDS metadata to be returned."""
 
     GDS_AGENCY = "agency"
+    GDS_CATALOG = "catalog"
     GDS_SERVICE = "service"
     ALL = REST_ALL
     LATEST = REST_LATEST
 
 _V2_0_RESOURCES = {
     GdsType.GDS_AGENCY,
+    GdsType.GDS_CATALOG,
     GdsType.GDS_SERVICE,
 }
 
@@ -49,6 +51,11 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     agency_id: Union[str, Sequence[str]] = REST_ALL
     resource_id: Union[str, Sequence[str]] = REST_ALL
     version: Union[str, Sequence[str]] = REST_LATEST
+    resource_type: Optional[str] = None
+    message_format: Optional[str] = None
+    api_version: Optional[str] = None
+    detail: Optional[str] = None
+    references: Optional[str] = None
 
     def validate(self) -> None:
         """Validate the query."""
@@ -57,13 +64,30 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         except msgspec.DecodeError as err:
             raise Invalid("Invalid Structure Query", str(err)) from err
 
-    def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
+    def _get_base_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
         """The URL for the query in the selected SDMX-REST API version."""
         self.__validate_query(version)
         if omit_defaults:
             return self.__create_short_query(version)
         else:
             return self.__create_full_query(version)
+
+    def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
+        """The URL for the query in the selected SDMX-REST API version."""
+        base_url = self._get_base_url(version, omit_defaults)
+        params = []
+        if self.resource_type:
+            params.append(f"resource_type={self.resource_type}")
+        if self.message_format:
+            params.append(f"message_format={self.message_format}")
+        if self.api_version:
+            params.append(f"api_version={self.api_version}")
+        if self.detail:
+            params.append(f"detail={self.detail}")
+        if self.references:
+            params.append(f"references={self.references}")
+        query_string = f"/?{'&'.join(params)}" if params else ""
+        return f"{base_url}{query_string}"
 
     def __validate_query(self, version: ApiVersion) -> None:
         self.validate()
