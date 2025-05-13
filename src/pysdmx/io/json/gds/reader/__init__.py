@@ -6,6 +6,7 @@ from pysdmx.io.serde import GdsDeserializers
 deserializers = GdsDeserializers(
     agencies=msg.JsonAgencyMessage,
     catalogs=msg.JsonCatalogMessage,
-    services=msg.JsonServiceMessage,
     sdmx_api=msg.JsonSdmxApiMessage,
+    services=msg.JsonServiceMessage,
+    urn_resolver=msg.JsonUrnResolverMessage,
 )
