@@ -115,3 +115,14 @@ class GdsCatalog(Struct, frozen=True):
     urn: str
     endpoints: Optional[List[GdsEndpoint]] = None
     serviceRefs: Optional[List[GdsServiceReference]] = None
+
+
+class GdsSdmxApi(Struct, frozen=True):
+    """Represents an SDMX API version.
+
+    Attributes:
+        release: The release version of the SDMX API.
+        description: A description of the release.
+    """
+    release: str
+    description: str
