@@ -26,7 +26,7 @@ from pysdmx.io.format import (
 )
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.io.serde import Deserializer
-from pysdmx.model.gds import GdsAgency, GdsService, GdsCatalog
+from pysdmx.model.gds import GdsAgency, GdsService, GdsCatalog, GdsUrnResolver, GdsSdmxApi
 
 API_VERSION = ApiVersion.V2_0_0
 
@@ -95,6 +95,12 @@ class __BaseGdsClient:
             references=references,
         )
 
+    def _sdmx_api_q(self, id: str = REST_ALL) -> GdsQuery:
+        return GdsQuery(
+            artefact_type=GdsType.GDS_SDMX_API,
+            agency_id=id
+        )
+
     def _services_q(self, agency: str, resource: str = REST_ALL, version: str = REST_ALL) -> GdsQuery:
         return GdsQuery(
             artefact_type=GdsType.GDS_SERVICE,
@@ -103,10 +109,10 @@ class __BaseGdsClient:
             version=version
         )
 
-    def _sdmx_api_q(self, id: str = REST_ALL) -> GdsQuery:
+    def _urn_resolver_q(self, urn: str) -> GdsQuery:
         return GdsQuery(
-            artefact_type=GdsType.GDS_SDMX_API,
-            agency_id=id
+            artefact_type=GdsType.GDS_URN_RESOLVER,
+            agency_id=urn
         )
 
 
@@ -203,6 +209,12 @@ class GdsClient(__BaseGdsClient):
         catalogs = super()._out(response, self.reader.catalogs)
         return catalogs
 
+    def get_sdmx_api(self, id: str = REST_ALL) -> Sequence[GdsSdmxApi]:
+        query = super()._sdmx_api_q(id)
+        response = self.__fetch(query)
+        sdmx_apis = super()._out(response, self.reader.sdmx_api)
+        return sdmx_apis
+
     def get_services(self, agency: str, resource: str = REST_ALL, version: str = REST_ALL) -> Sequence[GdsService]:
         """Get the list of services for the supplied parameters.
 
@@ -219,9 +231,16 @@ class GdsClient(__BaseGdsClient):
         schemes = super()._out(response, self.reader.services)
         return schemes
 
+    def get_urn_resolver(self, urn: str) -> GdsUrnResolver:
+        """Resolve a URN to its corresponding resource.
 
-    def get_sdmx_api(self, id: str = REST_ALL):
-        query = super()._sdmx_api_q(id)
+        Args:
+            urn: The URN to resolve.
+
+        Returns:
+            A GdsUrnResolver object with the resolved information.
+        """
+        query = super()._urn_resolver_q(urn)
         response = self.__fetch(query)
-        sdmx_apis = super()._out(response, self.reader.sdmx_api)
-        return sdmx_apis
+        urn_resolver = super()._out(response, self.reader.urn_resolver)
+        return urn_resolver
