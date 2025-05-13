@@ -1,10 +1,10 @@
 """Collection of SDMX-JSON schemas for GDS agencies."""
 
-from typing import Optional, Sequence
+from typing import Sequence
 
 from msgspec import Struct
 
-from pysdmx.model import Agency, AgencyScheme
+from pysdmx.model import AgencyScheme
 from pysdmx.model.gds import GdsAgency
 
 
@@ -16,7 +16,7 @@ class JsonAgency(Struct, frozen=True):
     url: str
     description: str = ""
 
-    def to_model(self) -> Agency:
+    def to_model(self) -> GdsAgency:
         """Converts the payload to a Gds Agency."""
         return GdsAgency(
             agencyId=self.agencyID,

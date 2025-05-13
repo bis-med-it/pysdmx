@@ -34,7 +34,6 @@ class _CoreRestService:
         api_endpoint: str,
         api_version: ApiVersion,
         data_format: DataFormat,
-        gds_format: GdsFormat,
         structure_format: StructureFormat,
         schema_format: SchemaFormat,
         refmeta_format: RefMetaFormat,
@@ -50,7 +49,6 @@ class _CoreRestService:
 
         self._api_version = api_version
         self._data_format = data_format
-        self._gds_format = gds_format
         self._structure_format = structure_format
         self._schema_format = schema_format
         self._refmeta_format = refmeta_format
@@ -140,7 +138,6 @@ class RestService(_CoreRestService):
             api_endpoint,
             api_version,
             data_format,
-            gds_format,
             structure_format,
             schema_format,
             refmeta_format,
@@ -149,6 +146,7 @@ class RestService(_CoreRestService):
             pem,
             timeout,
         )
+        self._gds_format = gds_format
 
     def data(self, query: DataQuery) -> bytes:
         """Execute a data query against the service."""

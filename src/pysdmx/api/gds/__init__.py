@@ -22,7 +22,6 @@ from pysdmx.io.format import (
     GdsFormat,
     RefMetaFormat,
     SchemaFormat,
-    StructureFormat,
 )
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.io.serde import Deserializer
@@ -52,7 +51,7 @@ class __BaseGdsClient:
     def __init__(
         self,
         api_endpoint: str = GDS_BASE_ENDPOINT,
-        fmt: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
+        fmt: GdsFormat = GdsFormat.SDMX_JSON_2_0_0,
         pem: Optional[str] = None,
     ):
         """Instantiate a new client against the target endpoint."""
