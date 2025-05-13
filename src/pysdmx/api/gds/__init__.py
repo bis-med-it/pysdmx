@@ -107,7 +107,12 @@ class __BaseGdsClient:
             agency_id=id
         )
 
-    def _services_q(self, agency: str, resource: str = REST_ALL, version: str = REST_ALL) -> GdsQuery:
+    def _services_q(
+            self,
+            agency: str,
+            resource: str = REST_ALL,
+            version: str = REST_ALL
+    ) -> GdsQuery:
         return GdsQuery(
             artefact_type=GdsType.GDS_SERVICE,
             agency_id=agency,
@@ -221,7 +226,12 @@ class GdsClient(__BaseGdsClient):
         sdmx_apis = super()._out(response, self.reader.sdmx_api)
         return sdmx_apis
 
-    def get_services(self, agency: str, resource: str = REST_ALL, version: str = REST_ALL) -> Sequence[GdsService]:
+    def get_services(
+            self,
+            agency: str,
+            resource: str = REST_ALL,
+            version: str = REST_ALL
+    ) -> Sequence[GdsService]:
         """Get the list of services for the supplied parameters.
 
         Args:

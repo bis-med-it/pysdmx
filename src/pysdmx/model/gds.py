@@ -34,6 +34,7 @@ class GdsEndpoint(Struct, frozen=True):
 
 class GdsServiceReference(Struct, frozen=True):
     """Represents a GDS service reference.
+
     Attributes:
         id: The ID of the service reference.
         name: The name of the service reference.

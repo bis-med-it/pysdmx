@@ -1,3 +1,6 @@
+"""
+"""
+
 from typing import List
 
 from msgspec import Struct

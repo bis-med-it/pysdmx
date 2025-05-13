@@ -8,11 +8,11 @@ Exports:
     JsonAgencyMessage: Represents the SDMX-JSON payload for agency queries.
 """
 
+from pysdmx.io.json.gds.messages.agencies import (
+    JsonAgencyMessage,
+)
 from pysdmx.io.json.gds.messages.catalog import (
     JsonCatalogMessage,
-)
-from pysdmx.io.json.gds.messages.org import (
-    JsonAgencyMessage,
 )
 from pysdmx.io.json.gds.messages.sdmx_api import (
     JsonSdmxApiMessage,
