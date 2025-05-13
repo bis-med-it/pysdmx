@@ -72,6 +72,27 @@ class GdsAgency(Struct, frozen=True):
         return Agency(id=oid, name=self.name, description=d, contacts=None)
 
 
+class GdsCatalog(Struct, frozen=True):
+    """Represents a GDS catalog.
+
+    Attributes:
+        agencyID: The ID of the agency.
+        id: The ID of the catalog.
+        name: The name of the catalog.
+        urn: The URN of the catalog.
+        version: The version of the catalog.
+        endpoints: List of GDS endpoints available at the catalog.
+    """
+
+    agencyID: str
+    id: str
+    version: str
+    name: str
+    urn: str
+    endpoints: Optional[List[GdsEndpoint]] = None
+    serviceRefs: Optional[List[GdsServiceReference]] = None
+
+
 class GdsService(Struct, frozen=True):
     """Represents a GDS catalog.
 
@@ -96,27 +117,6 @@ class GdsService(Struct, frozen=True):
     authentication: Optional[str] = None
 
 
-class GdsCatalog(Struct, frozen=True):
-    """Represents a GDS catalog.
-
-    Attributes:
-        agencyID: The ID of the agency.
-        id: The ID of the catalog.
-        name: The name of the catalog.
-        urn: The URN of the catalog.
-        version: The version of the catalog.
-        endpoints: List of GDS endpoints available at the catalog.
-    """
-
-    agencyID: str
-    id: str
-    version: str
-    name: str
-    urn: str
-    endpoints: Optional[List[GdsEndpoint]] = None
-    serviceRefs: Optional[List[GdsServiceReference]] = None
-
-
 class GdsSdmxApi(Struct, frozen=True):
     """Represents an SDMX API version.
 
@@ -126,3 +126,33 @@ class GdsSdmxApi(Struct, frozen=True):
     """
     release: str
     description: str
+
+
+class ResolverResult(Struct, frozen=True):
+    """Represents a single resolver result.
+
+    Attributes:
+        api_version: The API version of the resolver result.
+        query: The query URL for the resource.
+        query_response_status_code: The HTTP response code for the query.
+    """
+    api_version: str
+    query: str
+    query_response_status_code: int
+
+
+class GdsUrnResolver(Struct, frozen=True):
+    """Represents the response for a URN resolver query.
+
+    Attributes:
+        agency_id: The agency maintaining the resource.
+        resource_id: The ID of the resource.
+        version: The version of the resource.
+        sdmx_type: The type of SDMX resource.
+        resolver_results: A list of resolver results.
+    """
+    agency_id: str
+    resource_id: str
+    version: str
+    sdmx_type: str
+    resolver_results: List[ResolverResult]
