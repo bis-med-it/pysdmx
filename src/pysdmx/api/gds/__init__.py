@@ -25,7 +25,7 @@ from pysdmx.io.format import (
 )
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.io.serde import Deserializer
-from pysdmx.model.gds import GdsAgency, GdsService
+from pysdmx.model.gds import GdsAgency, GdsService, GdsCatalog
 
 API_VERSION = ApiVersion.V2_0_0
 
@@ -71,6 +71,28 @@ class __BaseRegistryClient:
 
     def _agencies_q(self, agency: str) -> GdsQuery:
         return GdsQuery(artefact_type=GdsType.GDS_AGENCY, agency_id=agency)
+
+    def _catalogs_q(self,
+                    agency: str,
+                    resource: str = "*",
+                    version: str = "*",
+                    resource_type: Optional[str] = None,
+                    message_format: Optional[str] = None,
+                    api_version: Optional[str] = None,
+                    detail: Optional[str] = None,
+                    references: Optional[str] = None,
+                    ) -> GdsQuery:
+        return GdsQuery(
+            artefact_type=GdsType.GDS_CATALOG,
+            agency_id=agency,
+            resource_id=resource,
+            version=version,
+            resource_type=resource_type,
+            message_format=message_format,
+            api_version=api_version,
+            detail=detail,
+            references=references,
+        )
 
     def _services_q(self, agency: str, resource: str = "*", version: str = "*") -> GdsQuery:
         return GdsQuery(
@@ -133,6 +155,46 @@ class RegistryClient(__BaseRegistryClient):
         out = self.__fetch(query)
         schemes = super()._out(out, self.reader.agencies)
         return schemes
+
+    def get_catalogs(
+            self,
+            agency: str,
+            resource: str = "*",
+            version: str = "*",
+            resource_type: Optional[str] = None,
+            message_format: Optional[str] = None,
+            api_version: Optional[str] = None,
+            detail: Optional[str] = None,
+            references: Optional[str] = None,
+    ) -> Sequence[GdsCatalog]:
+        """Get the list of catalogs for the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the catalog.
+            resource: The resource ID(s) to query. Defaults to '*'.
+            version: The version(s) to query. Defaults to '*'.
+            resource_type: The type of resource (e.g., 'data', 'metadata').
+            message_format: The message format(s) (e.g., 'json', 'csv').
+            api_version: The API version(s) (e.g., '2.0.0').
+            detail: The level of detail ('full', 'raw').
+            references: The references to include ('none', 'children').
+
+        Returns:
+            A list of GdsCatalog objects.
+        """
+        query = super()._catalogs_q(
+            agency,
+            resource,
+            version,
+            resource_type,
+            message_format,
+            api_version,
+            detail,
+            references
+        )
+        response = self.__fetch(query)
+        catalogs = super()._out(response, self.reader.catalogs)
+        return catalogs
 
     def get_services(self, agency: str, resource: str = "*", version: str = "*") -> Sequence[GdsService]:
         """Get the list of services for the supplied parameters.
