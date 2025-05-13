@@ -206,11 +206,9 @@ class RestService(_CoreRestService):
         f = self._registry_format.value
         return self.__fetch(q, f)
 
-    def __fetch(self,
-                query: str,
-                format: str,
-                params: Optional[bool] = False
-                ) -> bytes:
+    def __fetch(
+        self, query: str, format: str, params: Optional[bool] = False
+    ) -> bytes:
         with httpx.Client(verify=self._ssl_context) as client:
             try:
                 url = f"{self._api_endpoint}{query}"

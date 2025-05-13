@@ -25,6 +25,7 @@ class GdsType(Enum):
     ALL = REST_ALL
     LATEST = REST_LATEST
 
+
 _V2_0_RESOURCES = {
     GdsType.GDS_AGENCY,
     GdsType.GDS_CATALOG,
@@ -80,9 +81,7 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             raise Invalid("Invalid Structure Query", str(err)) from err
 
     def _get_base_url(
-            self,
-            version: ApiVersion,
-            omit_defaults: bool = False
+        self, version: ApiVersion, omit_defaults: bool = False
     ) -> str:
         """The URL for the query in the selected SDMX-REST API version."""
         self.__validate_query(version)

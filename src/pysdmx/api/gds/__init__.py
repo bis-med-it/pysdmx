@@ -38,15 +38,11 @@ API_VERSION = ApiVersion.V2_0_0
 
 GDS_BASE_ENDPOINT = "https://gds.sdmx.io/"
 
-ALLOWED_STR_FORMATS = [
-    GdsFormat.SDMX_JSON_2_0_0
-]
+ALLOWED_STR_FORMATS = [GdsFormat.SDMX_JSON_2_0_0]
 READERS = {
     GdsFormat.SDMX_JSON_2_0_0: gds_readers,
 }
-RFM_FORMATS = {
-    GdsFormat.SDMX_JSON_2_0_0: RefMetaFormat.SDMX_JSON_2_0_0
-}
+RFM_FORMATS = {GdsFormat.SDMX_JSON_2_0_0: RefMetaFormat.SDMX_JSON_2_0_0}
 SCH_FORMATS = {
     GdsFormat.SDMX_JSON_2_0_0: SchemaFormat.SDMX_JSON_2_0_0_STRUCTURE
 }
@@ -67,7 +63,7 @@ class __BaseGdsClient:
             raise NotImplemented(
                 "Unsupported format",
                 f"only {', '.join([f.value for f in ALLOWED_STR_FORMATS])}"
-                          f" are supported",
+                f" are supported",
                 {"requested_format": fmt.value},
             )
         self.format = fmt
@@ -79,16 +75,17 @@ class __BaseGdsClient:
     def _agencies_q(self, agency: str) -> GdsQuery:
         return GdsQuery(artefact_type=GdsType.GDS_AGENCY, agency_id=agency)
 
-    def _catalogs_q(self,
-                    agency: str,
-                    resource: str = REST_ALL,
-                    version: str = REST_ALL,
-                    resource_type: Optional[str] = None,
-                    message_format: Optional[str] = None,
-                    api_version: Optional[str] = None,
-                    detail: Optional[str] = None,
-                    references: Optional[str] = None,
-                    ) -> GdsQuery:
+    def _catalogs_q(
+        self,
+        agency: str,
+        resource: str = REST_ALL,
+        version: str = REST_ALL,
+        resource_type: Optional[str] = None,
+        message_format: Optional[str] = None,
+        api_version: Optional[str] = None,
+        detail: Optional[str] = None,
+        references: Optional[str] = None,
+    ) -> GdsQuery:
         return GdsQuery(
             artefact_type=GdsType.GDS_CATALOG,
             agency_id=agency,
@@ -102,29 +99,20 @@ class __BaseGdsClient:
         )
 
     def _sdmx_api_q(self, id: str = REST_ALL) -> GdsQuery:
-        return GdsQuery(
-            artefact_type=GdsType.GDS_SDMX_API,
-            agency_id=id
-        )
+        return GdsQuery(artefact_type=GdsType.GDS_SDMX_API, agency_id=id)
 
     def _services_q(
-            self,
-            agency: str,
-            resource: str = REST_ALL,
-            version: str = REST_ALL
+        self, agency: str, resource: str = REST_ALL, version: str = REST_ALL
     ) -> GdsQuery:
         return GdsQuery(
             artefact_type=GdsType.GDS_SERVICE,
             agency_id=agency,
             resource_id=resource,
-            version=version
+            version=version,
         )
 
     def _urn_resolver_q(self, urn: str) -> GdsQuery:
-        return GdsQuery(
-            artefact_type=GdsType.GDS_URN_RESOLVER,
-            agency_id=urn
-        )
+        return GdsQuery(artefact_type=GdsType.GDS_URN_RESOLVER, agency_id=urn)
 
 
 class GdsClient(__BaseGdsClient):
@@ -135,9 +123,9 @@ class GdsClient(__BaseGdsClient):
 
     def __init__(
         self,
-            api_endpoint: str,
-            format: GdsFormat = GdsFormat.SDMX_JSON_2_0_0,
-            pem: Optional[str] = None,
+        api_endpoint: str,
+        format: GdsFormat = GdsFormat.SDMX_JSON_2_0_0,
+        pem: Optional[str] = None,
     ) -> None:
         """Instantiate a new client against the target endpoint.
 
@@ -181,15 +169,15 @@ class GdsClient(__BaseGdsClient):
         return schemes
 
     def get_catalogs(
-            self,
-            agency: str,
-            resource: str = REST_ALL,
-            version: str = REST_ALL,
-            resource_type: Optional[str] = None,
-            message_format: Optional[str] = None,
-            api_version: Optional[str] = None,
-            detail: Optional[str] = None,
-            references: Optional[str] = None,
+        self,
+        agency: str,
+        resource: str = REST_ALL,
+        version: str = REST_ALL,
+        resource_type: Optional[str] = None,
+        message_format: Optional[str] = None,
+        api_version: Optional[str] = None,
+        detail: Optional[str] = None,
+        references: Optional[str] = None,
     ) -> Sequence[GdsCatalog]:
         """Get the list of catalogs for the supplied parameters.
 
@@ -214,7 +202,7 @@ class GdsClient(__BaseGdsClient):
             message_format,
             api_version,
             detail,
-            references
+            references,
         )
         response = self.__fetch(query)
         catalogs = super()._out(response, self.reader.catalogs)
@@ -232,10 +220,7 @@ class GdsClient(__BaseGdsClient):
         return sdmx_apis
 
     def get_services(
-            self,
-            agency: str,
-            resource: str = REST_ALL,
-            version: str = REST_ALL
+        self, agency: str, resource: str = REST_ALL, version: str = REST_ALL
     ) -> Sequence[GdsService]:
         """Get the list of services for the supplied parameters.
 

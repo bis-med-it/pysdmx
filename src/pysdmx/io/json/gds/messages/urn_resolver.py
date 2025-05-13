@@ -9,6 +9,7 @@ from pysdmx.model.gds import GdsUrnResolver, ResolverResult
 
 class JsonUrnResolverMessage(Struct, frozen=True):
     """SDMX-JSON payload for /urn_resolver queries."""
+
     agency_id: str
     resource_id: str
     version: str

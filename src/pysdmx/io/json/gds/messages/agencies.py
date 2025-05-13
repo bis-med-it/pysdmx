@@ -10,6 +10,7 @@ from pysdmx.model.gds import GdsAgency
 
 class JsonAgency(Struct, frozen=True):
     """SDMX-JSON payload for an agency scheme."""
+
     agencyID: str
     name: str
     url: str
@@ -21,24 +22,29 @@ class JsonAgency(Struct, frozen=True):
             agencyId=self.agencyID,
             name=self.name,
             url=self.url,
-            description=self.description
+            description=self.description,
         )
 
     def to_sdmx_model(self, owner: Optional[str] = None) -> Agency:
         """Converts a Gds Agency to a standard Organisation."""
         d = self.description
-        oid = f"{owner}.{self.agencyID}" if (owner and
-                 owner != "SDMX") else self.agencyID
+        oid = (
+            f"{owner}.{self.agencyID}"
+            if (owner and owner != "SDMX")
+            else self.agencyID
+        )
         return Agency(id=oid, name=self.name, description=d, contacts=None)
 
 
 class JsonStructures(Struct, frozen=True):
     """Intermediate structure for 'structures' field."""
+
     agencies: Sequence[JsonAgency]
 
 
 class JsonAgencyMessage(Struct, frozen=True):
     """SDMX-JSON payload for /agency queries."""
+
     structures: JsonStructures
 
     def to_model(self) -> Sequence[AgencyScheme]:

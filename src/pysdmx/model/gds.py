@@ -25,6 +25,7 @@ class GdsEndpoint(Struct, frozen=True):
         message_formats: List of message formats supported by the endpoint.
         rest_resources: List of REST resources available at the endpoint.
     """
+
     api_version: str
     url: str
     comments: str
@@ -68,8 +69,11 @@ class GdsAgency(Struct, frozen=True):
     def to_model(self, owner: Optional[str] = None) -> Agency:
         """Converts a GdsOrg to a standard Organisation."""
         d = self.description
-        oid = f"{owner}.{self.agencyId}" if (owner and
-                 owner != "SDMX") else self.agencyId
+        oid = (
+            f"{owner}.{self.agencyId}"
+            if (owner and owner != "SDMX")
+            else self.agencyId
+        )
         return Agency(id=oid, name=self.name, description=d, contacts=None)
 
 
@@ -125,6 +129,7 @@ class GdsSdmxApi(Struct, frozen=True):
         release: The release version of the SDMX API.
         description: A description of the release.
     """
+
     release: str
     description: str
 
@@ -137,6 +142,7 @@ class ResolverResult(Struct, frozen=True):
         query: The query URL for the resource.
         query_response_status_code: The HTTP response code for the query.
     """
+
     api_version: str
     query: str
     query_response_status_code: int
@@ -152,6 +158,7 @@ class GdsUrnResolver(Struct, frozen=True):
         sdmx_type: The type of SDMX resource.
         resolver_results: A list of resolver results.
     """
+
     agency_id: str
     resource_id: str
     version: str
