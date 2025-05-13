@@ -7,5 +7,5 @@ deserializers = GdsDeserializers(
     agencies=msg.JsonAgencyMessage,
     catalogs=msg.JsonCatalogMessage,
     services=msg.JsonServiceMessage,
-    sdmxapi=msg.JsonSdmxApiMessage,
+    sdmx_api=msg.JsonSdmxApiMessage,
 )

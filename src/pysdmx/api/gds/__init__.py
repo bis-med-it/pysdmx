@@ -223,5 +223,5 @@ class GdsClient(__BaseGdsClient):
     def get_sdmx_api(self, id: str = REST_ALL):
         query = super()._sdmx_api_q(id)
         response = self.__fetch(query)
-        sdmx_apis = super()._out(response, self.reader.sdmxapi)
+        sdmx_apis = super()._out(response, self.reader.sdmx_api)
         return sdmx_apis
