@@ -38,8 +38,8 @@ class Deserializers:
 class GdsDeserializers:
     """Collection of Gds deserializers for a format."""
 
-    agencies: Deserializer
-    catalogs: Deserializer
-    sdmx_api: Deserializer
-    services: Deserializer
-    urn_resolver: Deserializer
+    agencies: Any
+    catalogs: Any
+    sdmx_api: Any
+    services: Any
+    urn_resolver: Any
