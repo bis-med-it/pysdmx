@@ -25,16 +25,6 @@ class JsonAgency(Struct, frozen=True):
             description=self.description,
         )
 
-    def to_sdmx_model(self, owner: Optional[str] = None) -> Agency:
-        """Converts a Gds Agency to a standard Organisation."""
-        d = self.description
-        oid = (
-            f"{owner}.{self.agencyID}"
-            if (owner and owner != "SDMX")
-            else self.agencyID
-        )
-        return Agency(id=oid, name=self.name, description=d, contacts=None)
-
 
 class JsonStructures(Struct, frozen=True):
     """Intermediate structure for 'structures' field."""
