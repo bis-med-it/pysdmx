@@ -57,6 +57,17 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     detail: Optional[str] = None
     references: Optional[str] = None
 
+    @property
+    def use_params(self):
+        """Check if the query has any parameters."""
+        return (
+            self.resource_type is not None
+            or self.message_format is not None
+            or self.api_version is not None
+            or self.detail is not None
+            or self.references is not None
+        )
+
     def validate(self) -> None:
         """Validate the query."""
         try:

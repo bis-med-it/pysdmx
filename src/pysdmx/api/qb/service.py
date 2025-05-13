@@ -172,7 +172,7 @@ class RestService(_CoreRestService):
         """Execute a GDS query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._gds_format.value
-        return self.__fetch(q, f)
+        return self.__fetch(q, f, query.use_params)
 
     def availability(self, query: AvailabilityQuery) -> bytes:
         """Execute an availability query against the service."""
@@ -206,10 +206,12 @@ class RestService(_CoreRestService):
         f = self._registry_format.value
         return self.__fetch(q, f)
 
-    def __fetch(self, query: str, format: str) -> bytes:
+    def __fetch(self, query: str, format: str, params: Optional[bool] = False) -> bytes:
         with httpx.Client(verify=self._ssl_context) as client:
             try:
                 url = f"{self._api_endpoint}{query}"
+                if not params:
+                    url += "/"
                 h = self._headers.copy()
                 h["Accept"] = format
                 r = client.get(url, headers=h, timeout=self._timeout)
