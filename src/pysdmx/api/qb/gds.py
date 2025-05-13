@@ -18,11 +18,13 @@ class GdsType(Enum):
     """The type of GDS metadata to be returned."""
 
     GDS_AGENCY = "agency"
+    GDS_SERVICE = "service"
     ALL = REST_ALL
     LATEST = REST_LATEST
 
 _V2_0_RESOURCES = {
     GdsType.GDS_AGENCY,
+    GdsType.GDS_SERVICE,
 }
 
 _API_RESOURCES = {
