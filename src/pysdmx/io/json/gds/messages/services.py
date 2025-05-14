@@ -1,4 +1,4 @@
-"""Collection of SDMX-JSON schemas for GDS services."""
+"""Collection of GDS-JSON schemas for GDS services."""
 
 from typing import Sequence
 

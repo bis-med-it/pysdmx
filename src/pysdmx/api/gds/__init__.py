@@ -108,8 +108,6 @@ class GdsClient(__BaseGdsClient):
 
         Args:
             api_endpoint: The endpoint of the targeted service.
-            format: The format the service should use to serialize
-                the metadata to be returned. Defaults to SDMX-JSON.
             api_version: version of the api to execute the query.
             pem: In case the service exposed a certificate created
                 by an unknown certificate authority, you can pass
@@ -131,7 +129,7 @@ class GdsClient(__BaseGdsClient):
         return self.__service.gds(query)
 
     def get_agencies(self, agency: str) -> Sequence[GdsAgency]:
-        """Get the list of **sub-agencies** for the supplied agency.
+        """Get the list of agencies for the supplied name.
 
         Args:
             agency: The agency maintaining the agency scheme from

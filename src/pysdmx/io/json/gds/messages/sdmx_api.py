@@ -1,4 +1,4 @@
-"""Collection of SDMX-JSON schemas for GDS sdmx_api obj."""
+"""Collection of GDS-JSON schemas for GDS sdmx_api obj."""
 
 from typing import Sequence
 

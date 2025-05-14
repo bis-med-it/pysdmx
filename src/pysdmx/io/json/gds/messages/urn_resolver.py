@@ -1,4 +1,4 @@
-"""Collection of SDMX-JSON schemas for GDS urn_resolver."""
+"""Collection of GDS-JSON schemas for GDS urn_resolver."""
 
 from typing import List
 

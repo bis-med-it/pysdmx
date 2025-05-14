@@ -1,11 +1,11 @@
-"""Module for SDMX-JSON GDS message schemas.
+"""Module for GDS-JSON GDS message schemas.
 
-This module provides classes and structures for handling SDMX-JSON
-messages related to GDS (Global Data Structure) metadata, such as
+This module provides classes and structures for handling GDS-JSON
+messages related to GDS (Global Discovery Service) metadata, such as
 agency information.
 
 Exports:
-    JsonAgencyMessage: Represents the SDMX-JSON payload for agency queries.
+    JsonAgencyMessage: Represents the GDS-JSON payload for agency queries.
 """
 
 from pysdmx.io.json.gds.messages.agencies import (

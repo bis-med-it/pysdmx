@@ -36,7 +36,7 @@ class Deserializers:
 
 @dataclass
 class GdsDeserializers:
-    """Collection of Gds deserializers for a format."""
+    """Collection of GDS deserializers for a format."""
 
     agencies: Any
     catalogs: Any
