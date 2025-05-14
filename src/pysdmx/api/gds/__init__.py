@@ -17,12 +17,6 @@ from pysdmx.api.qb import (
 )
 from pysdmx.api.qb.gds import GdsQuery, GdsType
 from pysdmx.api.qb.util import REST_ALL
-from pysdmx.errors import NotImplemented
-from pysdmx.io.format import (
-    GdsFormat,
-    RefMetaFormat,
-    SchemaFormat,
-)
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.io.serde import Deserializer
 from pysdmx.model.gds import (
@@ -37,36 +31,20 @@ API_VERSION = ApiVersion.V2_0_0
 
 GDS_BASE_ENDPOINT = "https://gds.sdmx.io/"
 
-ALLOWED_STR_FORMATS = [GdsFormat.SDMX_JSON_2_0_0]
-READERS = {
-    GdsFormat.SDMX_JSON_2_0_0: gds_readers,
-}
-RFM_FORMATS = {GdsFormat.SDMX_JSON_2_0_0: RefMetaFormat.SDMX_JSON_2_0_0}
-SCH_FORMATS = {
-    GdsFormat.SDMX_JSON_2_0_0: SchemaFormat.SDMX_JSON_2_0_0_STRUCTURE
-}
+READERS = gds_readers
 
 
 class __BaseGdsClient:
     def __init__(
         self,
         api_endpoint: str = GDS_BASE_ENDPOINT,
-        fmt: GdsFormat = GdsFormat.SDMX_JSON_2_0_0,
         pem: Optional[str] = None,
     ):
         """Instantiate a new client against the target endpoint."""
         if api_endpoint.endswith("/"):
             api_endpoint = api_endpoint[0:-1]
         self.api_endpoint = api_endpoint
-        if fmt not in ALLOWED_STR_FORMATS:
-            raise NotImplemented(
-                "Unsupported format",
-                f"only {', '.join([f.value for f in ALLOWED_STR_FORMATS])}"
-                f" are supported",
-                {"requested_format": fmt.value},
-            )
-        self.format = fmt
-        self.reader = READERS[fmt]
+        self.reader = READERS
 
     def _out(self, response: bytes, typ: Deserializer, *params: Any) -> Any:
         return decode(response, type=typ).to_model(*params)
@@ -123,7 +101,6 @@ class GdsClient(__BaseGdsClient):
     def __init__(
         self,
         api_endpoint: str,
-        format: GdsFormat = GdsFormat.SDMX_JSON_2_0_0,
         api_version: ApiVersion = API_VERSION,
         pem: Optional[str] = None,
     ) -> None:
@@ -138,11 +115,10 @@ class GdsClient(__BaseGdsClient):
                 by an unknown certificate authority, you can pass
                 a pem file for this authority using this parameter.
         """
-        super().__init__(api_endpoint, format, pem)
+        super().__init__(api_endpoint, pem)
         self.__service = RestService(
             self.api_endpoint,
             api_version=api_version,
-            gds_format=format,
             pem=pem,
             timeout=10.0,
         )

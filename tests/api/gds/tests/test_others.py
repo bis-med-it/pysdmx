@@ -5,8 +5,7 @@ from pysdmx.api.gds import GDS_BASE_ENDPOINT, GdsClient
 from pysdmx.api.qb import ApiVersion, StructureType
 from pysdmx.api.qb.gds import GdsQuery, GdsType
 from pysdmx.api.qb.util import REST_ALL, REST_LATEST
-from pysdmx.errors import Invalid, NotImplemented
-from pysdmx.io.format import GdsFormat, StructureFormat
+from pysdmx.errors import Invalid
 from tests.api.gds import BASE_SAMPLES_PATH
 from tests.api.gds.checks import agency_checks, service_checks
 
@@ -23,14 +22,14 @@ NON_EXISTING_AGENCY = "non_existing_agency"
 @pytest.fixture
 def gds_without_slash() -> GdsClient:
     return GdsClient(
-        str(GDS_BASE_ENDPOINT)[:-1], GdsFormat.SDMX_JSON_2_0_0
+        str(GDS_BASE_ENDPOINT)[:-1]
     )
 
 
 @pytest.fixture
 def gds_1_4_0() -> GdsClient:
     return GdsClient(
-        str(GDS_BASE_ENDPOINT), GdsFormat.SDMX_JSON_2_0_0, ApiVersion.V1_4_0
+        str(GDS_BASE_ENDPOINT), ApiVersion.V1_4_0
     )
 
 
@@ -111,11 +110,3 @@ def test_invalid_artefact_type():
             atyp=StructureType.AGENCY_SCHEME,
             version=ApiVersion.V2_0_0
         )
-
-
-def test_invalid_gds_format():
-    invalid_format = StructureFormat.SDMX_JSON_2_0_0
-    with pytest.raises(NotImplemented,
-                       match="Unsupported format: "
-                             "only application/json are supported"):
-        GdsClient(GDS_BASE_ENDPOINT, invalid_format)

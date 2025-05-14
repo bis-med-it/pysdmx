@@ -3,7 +3,6 @@ import pytest
 import tests.api.gds.checks.catalog_checks as checks
 from pysdmx.api.gds import GDS_BASE_ENDPOINT, GdsClient
 from pysdmx.api.qb.util import REST_ALL
-from pysdmx.io.format import GdsFormat
 from tests.api.gds import BASE_SAMPLES_PATH
 
 ENDPOINT = "catalog"
@@ -24,7 +23,7 @@ params = {
 @pytest.fixture
 def gds() -> GdsClient:
     return GdsClient(
-        GDS_BASE_ENDPOINT, GdsFormat.SDMX_JSON_2_0_0
+        GDS_BASE_ENDPOINT
     )
 
 

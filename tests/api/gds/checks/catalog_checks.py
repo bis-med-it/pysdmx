@@ -21,7 +21,7 @@ def check(
     assert len(mock.calls) == 1
 
     assert (
-        mock.calls[0].request.headers["Accept"] == Format.GDS_JSON_2_0_0.value
+        mock.calls[0].request.headers["Accept"] == Format.GDS_JSON.value
     )
 
     assert len(result) == 1
