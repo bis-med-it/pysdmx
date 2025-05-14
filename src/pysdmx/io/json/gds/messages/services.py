@@ -1,10 +1,10 @@
 """Collection of GDS-JSON schemas for GDS services."""
 
-from typing import Sequence, Optional, List
+from typing import List, Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.model.gds import GdsService, GdsEndpoint
+from pysdmx.model.gds import GdsEndpoint, GdsService
 
 
 class JsonService(Struct, frozen=True):

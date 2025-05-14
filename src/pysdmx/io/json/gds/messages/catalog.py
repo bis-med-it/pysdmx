@@ -1,6 +1,6 @@
 """Collection of GDS-JSON schemas for GDS catalogs."""
 
-from typing import Sequence, Optional, List
+from typing import List, Optional, Sequence
 
 from msgspec import Struct
 
