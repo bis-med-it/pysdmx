@@ -53,13 +53,13 @@ class GdsAgency(Struct, frozen=True):
     """Represents a GDS agency.
 
     Attributes:
-        agencyId: The ID of the agency.
+        agency_id: The ID of the agency.
         name: The name of the agency.
         url: The URL of the agency.
         description: An optional description of the agency.
     """
 
-    agencyId: str
+    agency_id: str
     name: str
     url: str
     description: str = ""
@@ -69,7 +69,7 @@ class GdsCatalog(Struct, frozen=True):
     """Represents a GDS catalog.
 
     Attributes:
-        agencyID: The ID of the agency.
+        agency_id: The ID of the agency.
         id: The ID of the catalog.
         name: The name of the catalog.
         urn: The URN of the catalog.
@@ -77,7 +77,7 @@ class GdsCatalog(Struct, frozen=True):
         endpoints: List of GDS endpoints available at the catalog.
     """
 
-    agencyID: str
+    agency_id: str
     id: str
     version: str
     name: str
@@ -90,7 +90,7 @@ class GdsService(Struct, frozen=True):
     """Represents a GDS catalog.
 
     Attributes:
-        agencyID: The ID of the agency.
+        agency_id: The ID of the agency.
         id: The ID of the service.
         name: The name of the service.
         urn: The URN of the service.
@@ -100,7 +100,7 @@ class GdsService(Struct, frozen=True):
         authentication: Optional authentication method for the service.
     """
 
-    agencyID: str
+    agency_id: str
     id: str
     name: str
     urn: str

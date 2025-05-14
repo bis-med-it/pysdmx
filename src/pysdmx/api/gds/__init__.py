@@ -100,7 +100,7 @@ class GdsClient(__BaseGdsClient):
 
     def __init__(
         self,
-        api_endpoint: str,
+        api_endpoint: str = GDS_BASE_ENDPOINT,
         api_version: ApiVersion = API_VERSION,
         pem: Optional[str] = None,
     ) -> None:

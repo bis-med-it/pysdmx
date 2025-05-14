@@ -14,7 +14,7 @@ class JsonStructures(Struct, frozen=True):
 
 
 class JsonSdmxApiMessage(Struct, frozen=True):
-    """SDMX-JSON payload for /sdmxapi queries."""
+    """GDS-JSON payload for /sdmxapi queries."""
 
     structures: JsonStructures
 
