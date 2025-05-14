@@ -6,6 +6,7 @@ from typing import Literal, Optional, Sequence
 from msgspec import Struct
 
 from pysdmx.io.json.fusion.messages.core import FusionString
+from pysdmx.model import DataflowRef
 from pysdmx.model.vtl import (
     CustomType,
     CustomTypeScheme,
@@ -283,6 +284,7 @@ class FusionVtlMapping(Struct, frozen=True):
     id: str
     alias: str
     mapped: str
+    flowref: DataflowRef
     names: Sequence[FusionString] = ()
     descriptions: Sequence[FusionString] = ()
     toVtlMethod: Optional[str] = None
@@ -319,7 +321,7 @@ class FusionVtlMapping(Struct, frozen=True):
                 description=(
                     self.descriptions[0].value if self.descriptions else None
                 ),
-                dataflow=self.mapped,
+                dataflow=self.flowref,
                 dataflow_alias=self.alias,
                 from_vtl_mapping_method=(
                     FromVtlMapping(self.fromVtlSuperSpace, self.fromVtlMethod)

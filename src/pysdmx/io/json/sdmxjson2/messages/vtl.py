@@ -5,6 +5,7 @@ from typing import Literal, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx.model import DataflowRef
 from pysdmx.model.vtl import (
     CustomType,
     CustomTypeScheme,
@@ -286,7 +287,7 @@ class JsonVtlMapping(Struct, frozen=True):
     alias: str
     concept: Optional[str] = None
     codelist: Optional[str] = None
-    dataflow: Optional[str] = None
+    dataflow: Optional[DataflowRef] = None
     genericDataflow: Optional[str] = None
     description: Optional[str] = None
     toVtlMapping: Optional[JsonToVtlMapping] = None

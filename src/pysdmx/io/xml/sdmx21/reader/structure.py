@@ -107,6 +107,9 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VALID_TO,
     VALID_TO_LOW,
     VERSION,
+    VTL_MAPPING_SCHEME,
+    VTLMAPPING,
+    VTLMAPPINGS,
 )
 from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.io.xml.utils import add_list
@@ -123,6 +126,7 @@ from pysdmx.model.__base import (
     Agency,
     Annotation,
     Contact,
+    DataflowRef,
     Item,
     ItemReference,
     ItemScheme,
@@ -142,6 +146,8 @@ from pysdmx.model.vtl import (
     TransformationScheme,
     UserDefinedOperator,
     UserDefinedOperatorScheme,
+    VtlDataflowMapping,
+    VtlMappingScheme,
 )
 from pysdmx.util import find_by_urn, parse_urn
 
@@ -154,6 +160,7 @@ STRUCTURES_MAPPING = {
     RULE_SCHEME: RulesetScheme,
     UDO_SCHEME: UserDefinedOperatorScheme,
     TRANS_SCHEME: TransformationScheme,
+    VTL_MAPPING_SCHEME: VtlMappingScheme,
 }
 ITEMS_CLASSES = {
     AGENCY: Agency,
@@ -162,6 +169,7 @@ ITEMS_CLASSES = {
     RULE: Ruleset,
     UDO: UserDefinedOperator,
     TRANSFORMATION: Transformation,
+    VTLMAPPING: VtlDataflowMapping,
 }
 
 COMP_TYPES = [DIM, ATT, PRIM_MEASURE, GROUP_DIM]
@@ -515,6 +523,21 @@ class StructureParser(Struct):
 
         return json_elem
 
+    @staticmethod
+    def __format_dataflow(
+        json_rep: Dict[str, Any], json_obj: Dict[str, Any]
+    ) -> None:
+        json_obj["dataflow_alias"] = json_obj.pop("alias")
+        dataflow_ref = {
+            "agency": json_rep[REF][AGENCY_ID],
+            "id": json_rep[REF][ID],
+            "version": json_rep[REF][VERSION],
+            "name": json_rep[REF][CLASS],
+        }
+        json_rep.pop(REF)
+        json_obj.pop(DFW)
+        json_obj["dataflow"] = DataflowRef(**dataflow_ref)
+
     def __format_component(
         self, comp: Dict[str, Any], role: Role
     ) -> Component:
@@ -629,6 +652,8 @@ class StructureParser(Struct):
 
         if "Parent" in item_json_info:
             del item_json_info["Parent"]
+        if DFW in item_json_info:
+            self.__format_dataflow(item_json_info[DFW], item_json_info)
 
         item_json_info = self.__format_vtl(item_json_info)
 
@@ -801,6 +826,14 @@ class StructureParser(Struct):
                     TRANSFORMATION,
                 ),
                 "transformations",
+            ),
+            VTLMAPPINGS: process_structure(
+                VTLMAPPINGS,
+                lambda data: self.__format_scheme(
+                    data,
+                    VTL_MAPPING_SCHEME,
+                    VTLMAPPING,
+                ),
             ),
         }
         return [

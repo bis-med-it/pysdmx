@@ -34,7 +34,13 @@
                         }
                     ],
                     "alias": "OBS_CONF",
-                    "mapped": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).CONF_STATUS"
+                    "mapped": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).CONF_STATUS",
+                    "flowref": {
+                                "agency": "TEST_AGENCY",
+                                "id": "TEST_FLOW",
+                                "version": "1.0",
+                                "name": "Test flow name"
+                    }
                 }
             ]
         }

@@ -6,7 +6,8 @@ from typing import Literal, Optional, Sequence, Union
 from msgspec import Struct
 
 from pysdmx.errors import Invalid
-from pysdmx.model.__base import Item, ItemScheme, Reference
+from pysdmx.model import Dataflow
+from pysdmx.model.__base import DataflowRef, Item, ItemScheme, Reference
 
 
 class Transformation(Item, frozen=True, omit_defaults=True):
@@ -77,11 +78,13 @@ class FromVtlMapping(Struct, frozen=True, omit_defaults=True):
     method: Optional[str] = None
 
 
-class VtlDataflowMapping(VtlMapping, frozen=True, omit_defaults=True):
+class VtlDataflowMapping(
+    VtlMapping, frozen=True, omit_defaults=True, kw_only=True
+):
     """Single mapping with a dataflow."""
 
-    dataflow: str = ""
-    dataflow_alias: str = ""
+    dataflow: Union[Dataflow, DataflowRef]
+    dataflow_alias: str
     to_vtl_mapping_method: Optional[ToVtlMapping] = None
     from_vtl_mapping_method: Optional[FromVtlMapping] = None
 
