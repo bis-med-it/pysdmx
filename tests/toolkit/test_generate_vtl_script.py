@@ -1,6 +1,7 @@
 import pytest
 
 from pysdmx.model import (
+    Reference,
     Ruleset,
     RulesetScheme,
     Transformation,
@@ -9,7 +10,6 @@ from pysdmx.model import (
     UserDefinedOperatorScheme,
 )
 from pysdmx.toolkit.vtl.generate_vtl_script import generate_vtl_script
-from pysdmx.util import Reference
 
 
 @pytest.fixture

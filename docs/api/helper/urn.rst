@@ -11,8 +11,9 @@ maintained by ``SDMX`` will have the following unique URN:
 
 ``pysdmx`` offers helper methods to:
 
-- Parse URNs of maintainable artefacts (``parse_urn``).
+- Parse URNs of maintainable artefacts (``parse_maintainable_urn``).
 - Parse URNs of items (``parse_item_urn``).
+- Parse URNs of any type (``parse_urn``).
 - Find the artefact identified by the supplied URN in a collection of
   artefacts (``find_by_urn``).
 
@@ -20,6 +21,8 @@ Functions
 ---------
 
 .. autofunction:: pysdmx.util.parse_urn
+
+.. autofunction:: pysdmx.util.parse_maintainable_urn
 
 .. autofunction:: pysdmx.util.parse_item_urn
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+  <mes:Structures>
+    <str:Transformations>
+      <str:TransformationScheme urn="urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=SDMX:TEST(1.0)" vtlVersion="2.1" isExternalReference="false" agencyID="SDMX" id="TEST" isFinal="false" validFrom="2024-12-03T00:00:00" version="1.0" validTo="2024-12-07T00:00:00">
+        <com:Name xml:lang="en">TEST</com:Name>
+        <com:Description xml:lang="en">TEST Transformation Scheme</com:Description>
+        <str:Transformation urn="urn:sdmx:org.sdmx.infomodel.transformation.Transformation=SDMX:TEST(1.0).test_rule" isPersistent="false" id="test_rule">
+          <com:Name xml:lang="en">TEST_RULE_NAME</com:Name>
+          <com:Description xml:lang="en">TEST_RULE_DESC</com:Description>
+          <str:Expression>DS_1 + 1</str:Expression>
+          <str:Result>DS_r</str:Result>
+        </str:Transformation>
+      </str:TransformationScheme>
+    </str:Transformations></mes:Structures></mes:Structure>

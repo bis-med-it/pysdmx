@@ -1,18 +1,19 @@
 import pytest
 
 from pysdmx.errors import Invalid
-from pysdmx.util import Reference, parse_urn
+from pysdmx.model import Reference
+from pysdmx.util import parse_maintainable_urn
 
 
 def test_no_match():
     with pytest.raises(Invalid):
-        parse_urn("test")
+        parse_maintainable_urn("test")
 
 
 def test_match():
     cl = "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_FREQ(1.0)"
 
-    m = parse_urn(cl)
+    m = parse_maintainable_urn(cl)
 
     assert isinstance(m, Reference)
     assert m.sdmx_type == "Codelist"

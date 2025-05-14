@@ -51,7 +51,12 @@ def test_url_updated_after_before_2_0_0(
 
 
 @pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
 )
 def test_url_updated_after_since_2_0_0(
     updated_after: datetime,
@@ -61,6 +66,26 @@ def test_url_updated_after_since_2_0_0(
     expected = (
         f"/data/*/*/*/*/*?updatedAfter={expected}"
         "&attributes=dsd&measures=all&includeHistory=false"
+    )
+
+    q = DataQuery(updated_after=updated_after)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version",
+    (v for v in ApiVersion if v >= ApiVersion.V2_2_0),
+)
+def test_url_updated_after_since_2_2_0(
+    updated_after: datetime,
+    expected: str,
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/data/*/*/*/*/*?updatedAfter={expected}"
+        "&attributes=dsd&measures=all&includeHistory=false&offset=0"
     )
 
     q = DataQuery(updated_after=updated_after)

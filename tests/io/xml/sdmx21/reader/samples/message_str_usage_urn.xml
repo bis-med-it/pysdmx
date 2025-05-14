@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<m:GenericData xmlns:m="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+               xmlns:c="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+               xmlns:g="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic"
+>
+    <m:Header>
+        <m:ID>077385ED79CF4E9FBD6DC277AF079902</m:ID>
+        <m:Test>false</m:Test>
+        <m:Prepared>2025-04-08T09:11:50.525Z</m:Prepared>
+        <m:Sender id="ESTAT"/>
+        <m:Structure dimensionAtObservation="TIME_PERIOD" structureID="STR1">
+            <c:StructureUsage>
+                <Ref id="NAMA_10_GDP" agencyID="ESTAT" version="1.0"/>
+            </c:StructureUsage>
+        </m:Structure>
+        <m:DataSetID>NAMA_10_GDP</m:DataSetID>
+        <m:Extracted>2025-04-08T09:11:50.525Z</m:Extracted>
+    </m:Header>
+    <m:DataSet structureRef="STR1">
+        <g:Series>
+            <g:SeriesKey>
+                <g:Value id="geo" value="BE"/>
+                <g:Value id="na_item" value="B1GQ"/>
+                <g:Value id="unit" value="CLV05_MEUR"/>
+                <g:Value id="freq" value="A"/>
+            </g:SeriesKey>
+            <g:Obs>
+                <g:ObsDimension value="2016"/>
+                <g:ObsValue value="357198.7"/>
+            </g:Obs>
+            <g:Obs>
+                <g:ObsDimension value="2017"/>
+                <g:ObsValue value="362465.5"/>
+            </g:Obs>
+            <g:Obs>
+                <g:ObsDimension value="2018"/>
+                <g:ObsValue value="369272.5"/>
+            </g:Obs>
+            <g:Obs>
+                <g:ObsDimension value="2019"/>
+                <g:ObsValue value="378293.4"/>
+            </g:Obs>
+            <g:Obs>
+                <g:ObsDimension value="2020"/>
+                <g:ObsValue value="360161.9"/>
+            </g:Obs>
+        </g:Series>
+    </m:DataSet>
+</m:GenericData>

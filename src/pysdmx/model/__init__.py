@@ -14,8 +14,10 @@ from pysdmx.model.__base import (
     DataConsumer,
     DataflowRef,
     DataProvider,
+    ItemReference,
     MetadataProvider,
     Organisation,
+    Reference,
 )
 from pysdmx.model.category import Categorisation, Category, CategoryScheme
 from pysdmx.model.code import (
@@ -168,7 +170,7 @@ __all__ = [
     "Hierarchy",
     "HierarchyAssociation",
     "ImplicitComponentMap",
-    "StructureMap",
+    "ItemReference",
     "MetadataAttribute",
     "MetadataProvider",
     "MetadataProviderScheme",
@@ -181,11 +183,13 @@ __all__ = [
     "Organisation",
     "ProvisionAgreement",
     "RepresentationMap",
+    "Reference",
     "Role",
     "Ruleset",
     "RulesetScheme",
     "Schema",
     "SeriesInfo",
+    "StructureMap",
     "ToVtlMapping",
     "Transformation",
     "TransformationScheme",
