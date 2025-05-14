@@ -1,4 +1,4 @@
-"""Build SDMX-REST structure queries."""
+"""Build GDS-REST structure queries."""
 
 from enum import Enum
 from typing import Optional, Sequence, Union
@@ -34,15 +34,6 @@ _RESOURCES = {
     GdsType.GDS_URN_RESOLVER,
 }
 
-_API_RESOURCES = {
-    "V1.3.0": _RESOURCES,
-    "V1.4.0": _RESOURCES,
-    "V1.5.0": _RESOURCES,
-    "V2.0.0": _RESOURCES,
-    "V2.1.0": _RESOURCES,
-    "LATEST": _RESOURCES,
-}
-
 
 class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     """A query for base GDS metadata.
@@ -73,12 +64,12 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             raise Invalid("Invalid Structure Query", str(err)) from err
 
     def _get_base_url(self, version: ApiVersion) -> str:
-        """The URL for the query in the selected SDMX-REST API version."""
+        """The URL for the query in the selected GDS-REST API version."""
         self.__validate_query(version)
         return self.__create_query(version)
 
     def get_url(self, version: ApiVersion) -> str:
-        """The URL for the query in the selected SDMX-REST API version."""
+        """The URL for the query in the selected GDS-REST API version."""
         base_url = self._get_base_url(version)
         params = []
         if self.resource_type:
@@ -107,10 +98,10 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     def __check_artefact_type(
         self, atyp: GdsType, version: ApiVersion
     ) -> None:
-        if atyp not in _API_RESOURCES[version.name.replace("_", ".")]:
+        if atyp not in _RESOURCES:
             raise Invalid(
                 "Validation Error",
-                f"{atyp} is not valid for SDMX-REST {version.name}.",
+                f"{atyp} is not valid for GDS-REST {version.name}.",
             )
 
     def __to_type_kw(self, val: GdsType) -> str:
