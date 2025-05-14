@@ -1,6 +1,7 @@
-import pytest
 from pathlib import Path
+
 import httpx
+import pytest
 from msgspec._core import DecodeError
 
 from pysdmx.api.gds import GDS_BASE_ENDPOINT, GdsClient
@@ -109,7 +110,7 @@ def generic_test(
 
 
 @pytest.mark.parametrize(
-    "endpoint,value,params,resource,version,body",
+    ("endpoint", "value", "params", "resource", "version", "body"),
     [
         ("agency", "BIS", {}, None, None, "agency_bis.json"),
         ("agency", "ESTAT", {}, None, None, "agency_estat.json"),
@@ -205,7 +206,7 @@ def test_generic(
 
 
 @pytest.mark.parametrize(
-    "endpoint,value,params,resource,version,body",
+    ("endpoint", "value", "params", "resource", "version", "body"),
     [
         ("agency", "BIS", {}, None, None, "agency_bis.json"),
     ],
@@ -237,7 +238,7 @@ def test_gds_without_slash(
 
 
 @pytest.mark.parametrize(
-    "endpoint,value,params,resource,version,body",
+    ("endpoint", "value", "params", "resource", "version", "body"),
     [
         ("agency", "BIS", {}, None, None, "agency_bis.json"),
     ],
@@ -269,7 +270,7 @@ def test_gds_downgraded_version(
 
 
 @pytest.mark.parametrize(
-    "endpoint,value,params,resource,version,body",
+    ("endpoint", "value", "params", "resource", "version", "body"),
     [
         (
             "agency",
@@ -308,7 +309,8 @@ def test_invalid_query():
 
 def test_invalid_artefact_type():
     query = GdsQuery(artefact_type=GdsType.GDS_AGENCY)
-    # Using name mangling to internally change the hidden method name and access to test it
+    # Using name mangling to internally change the
+    # hidden method name and access to test it
     with pytest.raises(Invalid):
         query._GdsQuery__check_artefact_type(
             atyp=StructureType.AGENCY_SCHEME, version=ApiVersion.V2_0_0
