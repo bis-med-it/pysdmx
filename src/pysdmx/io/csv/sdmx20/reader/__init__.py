@@ -4,7 +4,6 @@ from io import StringIO
 from typing import Sequence
 
 import pandas as pd
-from pandas._libs.missing import NAType
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
@@ -112,8 +111,8 @@ def read(input_str: str) -> Sequence[PandasDataset]:
         # Split the other columns to remove mode, label, or text
         sequence = 3
         for x in df_csv.columns[sequence:]:
-            df_csv[id_column] = df_csv[id_column].map(
-                lambda x: x.split(": ")[0] if not isinstance(x, NAType) else x
+            df_csv[x.split(":")[0]] = df_csv[x].map(
+                lambda x: x.split(": ", 2)[0], na_action="ignore"
             )
             # Delete the original columns
             del df_csv[x]
