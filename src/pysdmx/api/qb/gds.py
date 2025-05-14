@@ -26,7 +26,7 @@ class GdsType(Enum):
     LATEST = REST_LATEST
 
 
-_V2_0_RESOURCES = {
+_RESOURCES = {
     GdsType.GDS_AGENCY,
     GdsType.GDS_CATALOG,
     GdsType.GDS_SDMX_API,
@@ -35,9 +35,12 @@ _V2_0_RESOURCES = {
 }
 
 _API_RESOURCES = {
-    "V2.0.0": _V2_0_RESOURCES,
-    "V2.1.0": _V2_0_RESOURCES,
-    "LATEST": _V2_0_RESOURCES,
+    "V1.3.0": _RESOURCES,
+    "V1.4.0": _RESOURCES,
+    "V1.5.0": _RESOURCES,
+    "V2.0.0": _RESOURCES,
+    "V2.1.0": _RESOURCES,
+    "LATEST": _RESOURCES,
 }
 
 
@@ -81,18 +84,15 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             raise Invalid("Invalid Structure Query", str(err)) from err
 
     def _get_base_url(
-        self, version: ApiVersion, omit_defaults: bool = False
+        self, version: ApiVersion
     ) -> str:
         """The URL for the query in the selected SDMX-REST API version."""
         self.__validate_query(version)
-        if omit_defaults:
-            return self.__create_short_query(version)
-        else:
-            return self.__create_full_query(version)
+        return self.__create_query(version)
 
-    def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
+    def get_url(self, version: ApiVersion) -> str:
         """The URL for the query in the selected SDMX-REST API version."""
-        base_url = self._get_base_url(version, omit_defaults)
+        base_url = self._get_base_url(version)
         params = []
         if self.resource_type:
             params.append(f"resource_type={self.resource_type}")
@@ -126,18 +126,10 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
                 f"{atyp} is not valid for SDMX-REST {version.name}.",
             )
 
-    def __to_type_kw(self, val: GdsType, ver: ApiVersion) -> str:
-        if val == GdsType.ALL and ver < ApiVersion.V2_0_0:
-            out = ""
-        else:
-            out = val.value
-        return out
+    def __to_type_kw(self, val: GdsType) -> str:
+        return val.value
 
     def __to_kw(self, val: str, ver: ApiVersion) -> str:
-        if val == "*" and ver < ApiVersion.V2_0_0:
-            val = "all"
-        elif val == "~" and ver < ApiVersion.V2_0_0:
-            val = "latest"
         return val
 
     def __to_kws(
@@ -148,15 +140,8 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         sep = "+" if ver < ApiVersion.V2_0_0 else ","
         return sep.join(mapped)
 
-    def __create_full_query(self, ver: ApiVersion) -> str:
-        t = self.__to_type_kw(self.artefact_type, ver)
-        a = self.__to_kws(self.agency_id, ver)
-        r = self.__to_kws(self.resource_id, ver)
-        v = self.__to_kws(self.version, ver)
-        return f"{t}/{a}/{r}/{v}"
-
-    def __create_short_query(self, ver: ApiVersion) -> str:
-        t = self.__to_type_kw(self.artefact_type, ver)
+    def __create_query(self, ver: ApiVersion) -> str:
+        t = self.__to_type_kw(self.artefact_type)
         a = self.__to_kws(self.agency_id, ver)
         r = self.__to_kws(self.resource_id, ver)
         v = self.__to_kws(self.version, ver)

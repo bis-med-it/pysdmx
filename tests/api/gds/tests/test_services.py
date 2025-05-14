@@ -32,5 +32,5 @@ def body():
 
 
 def test_returns_services(respx_mock, gds, query, body):
-    """get_agencies() should return a collection of organizations."""
+    """get_services() should return a collection of GDS services."""
     checks.check(respx_mock, gds, query, body, VALUE)

@@ -168,7 +168,7 @@ class RestService(_CoreRestService):
 
     def gds(self, query: GdsQuery) -> bytes:
         """Execute a GDS query against the service."""
-        q = query.get_url(self._api_version, True)
+        q = query.get_url(self._api_version)
         f = self._gds_format.value
         return self.__fetch(q, f, query.use_params)
 

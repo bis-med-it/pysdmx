@@ -1,12 +1,13 @@
 import httpx
 
 from pysdmx.api.gds import GdsClient
+from pysdmx.api.qb.util import REST_ALL
 from pysdmx.io.format import Format
 from pysdmx.model.gds import GdsService
 
 
 def check(
-    mock, gds: GdsClient, query, body, value
+    mock, gds: GdsClient, query, body, value, resource: str = REST_ALL, version: str = REST_ALL
 ):
     """get_services() should return a collection of services."""
     mock.get(query).mock(
@@ -16,7 +17,7 @@ def check(
         )
     )
 
-    result = gds.get_services(value)
+    result = gds.get_services(value, resource, version)
 
     assert len(mock.calls) == 1
 

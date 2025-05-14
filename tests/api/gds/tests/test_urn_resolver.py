@@ -29,5 +29,5 @@ def body():
 
 
 def test_returns_urn_resolver(respx_mock, gds, query, body):
-    """get_agencies() should return a collection of organizations."""
+    """get_urn() should return the resolution of the URN."""
     checks.check(respx_mock, gds, query, body, VALUE)

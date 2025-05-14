@@ -124,6 +124,7 @@ class GdsClient(__BaseGdsClient):
         self,
         api_endpoint: str,
         format: GdsFormat = GdsFormat.SDMX_JSON_2_0_0,
+        api_version: ApiVersion = API_VERSION,
         pem: Optional[str] = None,
     ) -> None:
         """Instantiate a new client against the target endpoint.
@@ -139,7 +140,7 @@ class GdsClient(__BaseGdsClient):
         super().__init__(api_endpoint, format, pem)
         self.__service = RestService(
             self.api_endpoint,
-            API_VERSION,
+            api_version=api_version,
             gds_format=format,
             pem=pem,
             timeout=10.0,

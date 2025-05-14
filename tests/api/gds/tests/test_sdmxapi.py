@@ -29,5 +29,5 @@ def body():
 
 
 def test_returns_sdmx_api(respx_mock, gds, query, body):
-    """get_agencies() should return a collection of organizations."""
+    """get_sdmxapi() should return a collection of SDMX available APIs."""
     checks.check(respx_mock, gds, query, body, VALUE)
