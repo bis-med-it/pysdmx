@@ -663,7 +663,7 @@ def test_header_xmlns(samples_folder):
 
 
 def test_vtl_data_flow_mapping_reader(samples_folder):
-    data_path = samples_folder / "vtl_dataflow_mapping.XML"
+    data_path = samples_folder / "vtl_dataflow_mapping.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1
     result = read_sdmx(input_str, validate=True)
