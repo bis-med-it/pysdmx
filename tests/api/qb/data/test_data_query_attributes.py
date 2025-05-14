@@ -40,7 +40,12 @@ def test_invalid_value(res: str, api_version: ApiVersion):
 
 
 @pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
 )
 @pytest.mark.parametrize("attr", attributes)
 def test_url_attr(
@@ -58,7 +63,30 @@ def test_url_attr(
 
 
 @pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+@pytest.mark.parametrize("attr", attributes)
+def test_url_attr_since_2_2_0(
+    attr: str,
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/data/*/*/*/*/*?attributes={attr}&measures=all"
+        "&includeHistory=false&offset=0"
+    )
+    q = DataQuery(attributes=attr)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
 )
 def test_url_multi_attributes(
     mult_attrs: List[str],
@@ -67,6 +95,23 @@ def test_url_multi_attributes(
     expected = (
         f"/data/*/*/*/*/*?attributes={','.join(mult_attrs)}&measures=all"
         "&includeHistory=false"
+    )
+    q = DataQuery(attributes=mult_attrs)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+def test_url_multi_attributes_since_2_2_0(
+    mult_attrs: List[str],
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/data/*/*/*/*/*?attributes={','.join(mult_attrs)}&measures=all"
+        "&includeHistory=false&offset=0"
     )
     q = DataQuery(attributes=mult_attrs)
     url = q.get_url(api_version)

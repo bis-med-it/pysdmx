@@ -16,7 +16,12 @@ from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
 from pysdmx.io.xml.sdmx21.reader.structure_specific import read as read_str_spe
 from pysdmx.io.xml.sdmx21.reader.submission import read as read_sub
 from pysdmx.io.xml.sdmx21.writer.structure_specific import write
-from pysdmx.model import AgencyScheme, Codelist, ConceptScheme, Contact
+from pysdmx.model import (
+    AgencyScheme,
+    Codelist,
+    ConceptScheme,
+    Contact,
+)
 from pysdmx.model.submission import SubmissionResult
 from pysdmx.model.vtl import Ruleset, Transformation, UserDefinedOperator
 
@@ -145,8 +150,7 @@ def test_item_scheme_read(item_scheme_path):
     codelist_sdmx = [cl for cl in codelists if cl.id == "CL_UNIT_MULT"][0]
     assert codelist_sdmx.id == "CL_UNIT_MULT"
     assert (
-        codelist_sdmx.name == "code list for the "
-        "Unit Multiplier (UNIT_MULT)"
+        codelist_sdmx.name == "code list for the Unit Multiplier (UNIT_MULT)"
     )
     assert codelist_sdmx.items[0].id == "0"
     assert codelist_sdmx.items[0].name == "Units"
@@ -565,3 +569,94 @@ def test_wrong_flavour_generic(error_str):
 def test_wrong_flavour_structure_specific(error_str):
     with pytest.raises(Invalid):
         read_str_spe(error_str, validate=True)
+
+
+def test_structure_no_header(samples_folder):
+    data_path = samples_folder / "structure_no_header.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    header = read_sdmx(input_str, validate=False).header
+    assert header is None
+
+
+def test_message_full(samples_folder):
+    data_path = samples_folder / "message_full.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+    result = read_sdmx(input_str, validate=True).header
+
+    assert result.sender.id == "Unknown"
+    assert result.sender.name == "Unknown"
+    assert result.receiver.id == "Not_supplied"
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
+
+
+def test_message_full_with_langs(samples_folder):
+    data_path = samples_folder / "message_full_with_langs.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+    result = read_sdmx(input_str, validate=True).header
+
+    assert result.sender.id == "Unknown"
+    assert result.sender.name == "Unknown"
+    assert result.receiver.id == "Not_supplied"
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
+
+
+def test_message_full_no_namespace(samples_folder):
+    data_path = samples_folder / "message_full_no_namespace.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_GEN
+    result = read_sdmx(input_str, validate=True).header
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
+
+
+def test_message_full_warning(samples_folder, recwarn):
+    data_path = samples_folder / "message_full_warning.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+    result = read_sdmx(input_str, validate=True).header
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
+    assert len(recwarn) == 1
+
+
+def test_message_str_usage_urn(samples_folder):
+    data_path = samples_folder / "message_str_usage_urn.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_GEN
+    result = read_sdmx(input_str, validate=True).header
+    assert result.structure == {
+        "Dataflow=ESTAT:NAMA_10_GDP(1.0)": "TIME_PERIOD"
+    }
+
+
+def test_datastructure_concept_role(samples_folder):
+    data_path = samples_folder / "datastructure_concept_role.xml"
+    result = read_sdmx(data_path)
+    dsd = result.get_data_structure_definition(
+        "DataStructure=BIS:BIS_DER(1.0)"
+    )
+    components = dsd.components
+    assert len(components) == 2
+    assert components[0].id == "FREQ"
+
+
+# Make test fail if a warning is raised
+@pytest.mark.filterwarnings("error")
+def test_header_xmlns(samples_folder):
+    data_path = samples_folder / "header_xmlns.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_GEN
+    result = read_sdmx(input_str, validate=True).header
+    assert result.sender.id == "Disseminate_Final_DMZ"
+    assert result.structure == {
+        "Dataflow=OECD.SDD.STES:DSD_STES@DF_CLI(4.1)": "TIME_PERIOD"
+    }

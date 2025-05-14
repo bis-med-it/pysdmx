@@ -41,7 +41,12 @@ def test_url_latest_version_before_2_0_0(
 
 
 @pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
 )
 def test_url_latest_version_since_2_0_0(
     context: SchemaContext,
@@ -50,6 +55,24 @@ def test_url_latest_version_since_2_0_0(
     api_version: ApiVersion,
 ):
     expected = f"/schema/{context.value}/{agency}/{res}/~"
+
+    q = SchemaQuery(context, agency, res)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version",
+    (v for v in ApiVersion if v >= ApiVersion.V2_2_0),
+)
+def test_url_latest_version_since_2_2_0(
+    context: SchemaContext,
+    agency: str,
+    res: str,
+    api_version: ApiVersion,
+):
+    expected = f"/schema/{context.value}/{agency}/{res}/~?deletion=false"
 
     q = SchemaQuery(context, agency, res)
     url = q.get_url(api_version)

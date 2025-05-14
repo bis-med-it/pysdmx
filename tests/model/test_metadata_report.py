@@ -41,7 +41,25 @@ def attributes():
     ]
 
 
-def test_full_initialization(id, name, structure, targets, attributes):
+@pytest.fixture
+def version():
+    return "1.0.42"
+
+
+def test_full_initialization(
+    id, name, structure, targets, attributes, version
+):
+    report = MetadataReport(id, name, structure, targets, attributes, version)
+
+    assert report.id == id
+    assert report.name == name
+    assert report.metadataflow == structure
+    assert report.targets == targets
+    assert report.attributes == attributes
+    assert report.version == version
+
+
+def test_default_version(id, name, structure, targets, attributes):
     report = MetadataReport(id, name, structure, targets, attributes)
 
     assert report.id == id
@@ -49,6 +67,7 @@ def test_full_initialization(id, name, structure, targets, attributes):
     assert report.metadataflow == structure
     assert report.targets == targets
     assert report.attributes == attributes
+    assert report.version == "1.0"
 
 
 def test_immutable(id, name, structure, targets, attributes):

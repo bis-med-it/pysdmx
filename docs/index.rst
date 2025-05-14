@@ -44,6 +44,14 @@ Your opinionated Python SDMX library.
    api/rest
    api/helper
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Toolkit
+
+   howto/toolkit/general
+
+
+
 Indices and tables
 ==================
 

@@ -6,8 +6,7 @@ from typing import Literal, Optional, Sequence, Union
 from msgspec import Struct
 
 from pysdmx.errors import Invalid
-from pysdmx.model.__base import Item, ItemScheme
-from pysdmx.util import Reference
+from pysdmx.model.__base import Item, ItemScheme, Reference
 
 
 class Transformation(Item, frozen=True, omit_defaults=True):

@@ -33,6 +33,7 @@ def check_report(
     assert isinstance(report, MetadataReport)
     assert report.id == "DTI_BIS_MACRO"
     assert report.name == "Technical metadata for BIS.MACRO:BIS_MACRO"
+    assert report.version == "1.0.42"
     assert report.metadataflow == (
         "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow="
         "BIS.MEDIT:DTI(1.0)"

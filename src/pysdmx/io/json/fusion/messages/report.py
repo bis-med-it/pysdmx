@@ -20,6 +20,7 @@ class FusionMetadataReport(Struct, frozen=True):
     metadataflow: str
     targets: Sequence[str]
     attributes: Sequence[MetadataAttribute]
+    version: str
 
 
 class FusionMetadataSets(Struct, frozen=True):
@@ -36,7 +37,7 @@ class FusionMetadataMessage(Struct, frozen=True):
     def __create_report(self, r: FusionMetadataReport) -> MetadataReport:
         attrs = merge_attributes(r.attributes)
         return MetadataReport(
-            r.id, r.names[0].value, r.metadataflow, r.targets, attrs
+            r.id, r.names[0].value, r.metadataflow, r.targets, attrs, r.version
         )
 
     def to_model(self, fetch_all: bool = False) -> Sequence[MetadataReport]:

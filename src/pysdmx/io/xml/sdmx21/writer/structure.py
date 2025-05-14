@@ -87,9 +87,11 @@ from pysdmx.model.__base import (
     Contact,
     IdentifiableArtefact,
     Item,
+    ItemReference,
     ItemScheme,
     MaintainableArtefact,
     NameableArtefact,
+    Reference,
     VersionableArtefact,
 )
 from pysdmx.model.dataflow import (
@@ -100,8 +102,6 @@ from pysdmx.model.dataflow import (
 )
 from pysdmx.model.message import Header
 from pysdmx.util import (
-    ItemReference,
-    Reference,
     parse_item_urn,
     parse_short_urn,
 )
