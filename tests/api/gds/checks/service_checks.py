@@ -7,7 +7,12 @@ from pysdmx.model.gds import GdsService
 
 
 def check(
-    mock, gds: GdsClient, query, body, value, resource: str = REST_ALL, version: str = REST_ALL
+        mock,
+        gds: GdsClient,
+        query, body,
+        value,
+        resource: str = REST_ALL,
+        version: str = REST_ALL
 ):
     """get_services() should return a collection of services."""
     mock.get(query).mock(

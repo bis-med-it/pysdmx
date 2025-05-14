@@ -1,7 +1,7 @@
 import pytest
 
 import tests.api.gds.checks.service_checks as checks
-from pysdmx.api.gds import GdsClient, GDS_BASE_ENDPOINT
+from pysdmx.api.gds import GDS_BASE_ENDPOINT, GdsClient
 from pysdmx.api.qb.util import REST_ALL
 from pysdmx.io.format import GdsFormat
 from tests.api.gds import BASE_SAMPLES_PATH

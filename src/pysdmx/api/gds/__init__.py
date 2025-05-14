@@ -133,6 +133,7 @@ class GdsClient(__BaseGdsClient):
             api_endpoint: The endpoint of the targeted service.
             format: The format the service should use to serialize
                 the metadata to be returned. Defaults to SDMX-JSON.
+            api_version: version of the api to execute the query.
             pem: In case the service exposed a certificate created
                 by an unknown certificate authority, you can pass
                 a pem file for this authority using this parameter.

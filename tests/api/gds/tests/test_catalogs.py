@@ -1,7 +1,7 @@
 import pytest
 
 import tests.api.gds.checks.catalog_checks as checks
-from pysdmx.api.gds import GdsClient, GDS_BASE_ENDPOINT
+from pysdmx.api.gds import GDS_BASE_ENDPOINT, GdsClient
 from pysdmx.api.qb.util import REST_ALL
 from pysdmx.io.format import GdsFormat
 from tests.api.gds import BASE_SAMPLES_PATH
@@ -30,7 +30,8 @@ def gds() -> GdsClient:
 
 @pytest.fixture
 def query(gds: GdsClient) -> str:
-    base_query = f"{gds.api_endpoint}/{ENDPOINT}/{VALUE}/{RESOURCE_ID}/{VERSION}/?"
+    base_query = (f"{gds.api_endpoint}/{ENDPOINT}/"
+                  f"{VALUE}/{RESOURCE_ID}/{VERSION}/?")
     query_params = "&".join(f"{key}={value}" for key, value in params.items())
     return f"{base_query}{query_params}"
 

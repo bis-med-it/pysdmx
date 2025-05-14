@@ -1,14 +1,14 @@
 import pytest
+from msgspec import DecodeError
 
+from pysdmx.api.gds import GDS_BASE_ENDPOINT, GdsClient
+from pysdmx.api.qb import ApiVersion, StructureType
 from pysdmx.api.qb.gds import GdsQuery, GdsType
 from pysdmx.api.qb.util import REST_ALL, REST_LATEST
-from tests.api.gds.checks import agency_checks, service_checks
-from msgspec import DecodeError
-from pysdmx.api.gds import GdsClient, GDS_BASE_ENDPOINT
-from pysdmx.api.qb import ApiVersion, StructureType
-from pysdmx.errors import NotImplemented, Invalid
+from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import GdsFormat, StructureFormat
 from tests.api.gds import BASE_SAMPLES_PATH
+from tests.api.gds.checks import agency_checks, service_checks
 
 AGENCY_ENDPOINT = "agency"
 AGENCY_SAMPLES_PATH = BASE_SAMPLES_PATH / AGENCY_ENDPOINT
@@ -41,7 +41,8 @@ def query(gds_without_slash: GdsClient) -> str:
 
 @pytest.fixture
 def non_ext_agc_query(gds_without_slash: GdsClient) -> str:
-    return f"{gds_without_slash.api_endpoint}/{AGENCY_ENDPOINT}/{NON_EXISTING_AGENCY}"
+    return (f"{gds_without_slash.api_endpoint}/{AGENCY_ENDPOINT}/"
+            f"{NON_EXISTING_AGENCY}")
 
 
 @pytest.fixture
@@ -71,13 +72,30 @@ def test_query_with_slash(respx_mock, gds_without_slash, query, body):
     agency_checks.check(respx_mock, gds_without_slash, query, body, VALUE)
 
 
-def test_non_existing_agency(respx_mock, gds_without_slash, non_ext_agc_query, invalid_body):
+def test_non_existing_agency(
+        respx_mock, gds_without_slash, non_ext_agc_query, invalid_body
+):
     with pytest.raises(DecodeError):
-        agency_checks.check(respx_mock, gds_without_slash, non_ext_agc_query, invalid_body, NON_EXISTING_AGENCY)
+        agency_checks.check(
+            respx_mock,
+            gds_without_slash,
+            non_ext_agc_query,
+            invalid_body,
+            NON_EXISTING_AGENCY
+        )
 
 
-def test_downgraded_version(respx_mock, gds_1_4_0, service_query, service_body):
-    service_checks.check(respx_mock, gds_1_4_0, service_query, service_body, VALUE, version=VERSION)
+def test_downgraded_version(
+        respx_mock, gds_1_4_0, service_query, service_body
+):
+    service_checks.check(
+        respx_mock,
+        gds_1_4_0,
+        service_query,
+        service_body,
+        VALUE,
+        version=VERSION
+    )
 
 
 def test_invalid_query():
@@ -89,10 +107,15 @@ def test_invalid_query():
 def test_invalid_artefact_type():
     query = GdsQuery(artefact_type=GdsType.GDS_AGENCY)
     with pytest.raises(Invalid):
-        query._GdsQuery__check_artefact_type(atyp=StructureType.AGENCY_SCHEME, version=ApiVersion.V2_0_0)
+        query._GdsQuery__check_artefact_type(
+            atyp=StructureType.AGENCY_SCHEME,
+            version=ApiVersion.V2_0_0
+        )
 
 
 def test_invalid_gds_format():
     invalid_format = StructureFormat.SDMX_JSON_2_0_0
-    with pytest.raises(NotImplemented, match="Unsupported format: only application/json are supported"):
+    with pytest.raises(NotImplemented,
+                       match="Unsupported format: "
+                             "only application/json are supported"):
         GdsClient(GDS_BASE_ENDPOINT, invalid_format)

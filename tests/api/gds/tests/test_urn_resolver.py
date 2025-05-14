@@ -1,13 +1,14 @@
 import pytest
 
 import tests.api.gds.checks.urn_checks as checks
-from pysdmx.api.gds import GdsClient, GDS_BASE_ENDPOINT
+from pysdmx.api.gds import GDS_BASE_ENDPOINT, GdsClient
 from pysdmx.io.format import GdsFormat
 from tests.api.gds import BASE_SAMPLES_PATH
 
 ENDPOINT = "urn_resolver"
 SAMPLES_PATH = BASE_SAMPLES_PATH / ENDPOINT
-VALUE = "urn:sdmx:org.sdmx.infomodel.categoryscheme.CategoryScheme=BIS:BISWEB_CATSCHEME(1.0)"
+VALUE = ("urn:sdmx:org.sdmx.infomodel.categoryscheme."
+         "CategoryScheme=BIS:BISWEB_CATSCHEME(1.0)")
 
 
 @pytest.fixture
