@@ -128,24 +128,24 @@ class GdsClient(__BaseGdsClient):
         """Fetch the requested metadata from the GDS service."""
         return self.__service.gds(query)
 
-    def get_agencies(self, agency: str) -> Sequence[GdsAgency]:
+    def get_agencies(self, ref: str) -> Sequence[GdsAgency]:
         """Get the list of agencies for the supplied name.
 
         Args:
-            agency: The agency maintaining the agency scheme from
+            ref: The agency maintaining the agency scheme from
                 which sub-agencies must be returned.
 
         Returns:
             The requested list of agencies.
         """
-        query = super()._agencies_q(agency)
+        query = super()._agencies_q(ref)
         out = self.__fetch(query)
         schemes = super()._out(out, self.reader.agencies)
         return schemes
 
     def get_catalogs(
         self,
-        agency: str,
+        ref: str,
         resource: str = REST_ALL,
         version: str = REST_ALL,
         resource_type: Optional[str] = None,
@@ -157,7 +157,7 @@ class GdsClient(__BaseGdsClient):
         """Get the list of catalogs for the supplied parameters.
 
         Args:
-            agency: The agency maintaining the catalog.
+            ref: The agency maintaining the catalog.
             resource: The resource ID(s) to query. Defaults to '*'.
             version: The version(s) to query. Defaults to '*'.
             resource_type: The type of resource (e.g., 'data', 'metadata').
@@ -170,7 +170,7 @@ class GdsClient(__BaseGdsClient):
             A list of GdsCatalog objects.
         """
         query = super()._catalogs_q(
-            agency,
+            ref,
             resource,
             version,
             resource_type,
@@ -183,45 +183,45 @@ class GdsClient(__BaseGdsClient):
         catalogs = super()._out(response, self.reader.catalogs)
         return catalogs
 
-    def get_sdmx_api(self, id: str = REST_ALL) -> Sequence[GdsSdmxApi]:
+    def get_sdmx_api(self, ref: str = REST_ALL) -> Sequence[GdsSdmxApi]:
         """Get the list of SDMX API versions.
 
         Args:
-            id: The ID of the SDMX API version to query. Defaults to '*'.
+            ref: The ID of the SDMX API version to query. Defaults to '*'.
         """
-        query = super()._sdmx_api_q(id)
+        query = super()._sdmx_api_q(ref)
         response = self.__fetch(query)
         sdmx_apis = super()._out(response, self.reader.sdmx_api)
         return sdmx_apis
 
     def get_services(
-        self, agency: str, resource: str = REST_ALL, version: str = REST_ALL
+        self, ref: str, resource: str = REST_ALL, version: str = REST_ALL
     ) -> Sequence[GdsService]:
         """Get the list of services for the supplied parameters.
 
         Args:
-            agency: The agency maintaining the service.
+            ref: The agency maintaining the service.
             resource: The resource ID(s) to query. Defaults to '*'.
             version: The version(s) to query. Defaults to '*'.
 
         Returns:
             A list of GdsService objects.
         """
-        query = super()._services_q(agency, resource, version)
+        query = super()._services_q(ref, resource, version)
         response = self.__fetch(query)
         schemes = super()._out(response, self.reader.services)
         return schemes
 
-    def get_urn_resolver(self, urn: str) -> GdsUrnResolver:
+    def get_urn_resolver(self, ref: str) -> GdsUrnResolver:
         """Resolve a URN to its corresponding resource.
 
         Args:
-            urn: The URN to resolve.
+            ref: The URN to resolve.
 
         Returns:
             A GdsUrnResolver object with the resolved information.
         """
-        query = super()._urn_resolver_q(urn)
+        query = super()._urn_resolver_q(ref)
         response = self.__fetch(query)
         urn_resolver = super()._out(response, self.reader.urn_resolver)
         return urn_resolver
