@@ -1,4 +1,4 @@
-"""Collection of readers for SDMX-JSON messages."""
+"""Collection of readers for GDS-JSON messages."""
 
 from pysdmx.io.json.gds import messages as msg
 from pysdmx.io.serde import GdsDeserializers

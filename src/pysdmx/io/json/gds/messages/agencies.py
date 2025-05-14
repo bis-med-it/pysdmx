@@ -1,4 +1,4 @@
-"""Collection of SDMX-JSON schemas for GDS agencies."""
+"""Collection of GDS-JSON schemas for GDS agencies."""
 
 from typing import Sequence
 
@@ -8,7 +8,7 @@ from pysdmx.model.gds import GdsAgency
 
 
 class JsonAgency(Struct, frozen=True):
-    """SDMX-JSON payload for an agency scheme."""
+    """GDS-JSON payload for an agency scheme."""
 
     agencyID: str
     name: str
@@ -32,7 +32,7 @@ class JsonStructures(Struct, frozen=True):
 
 
 class JsonAgencyMessage(Struct, frozen=True):
-    """SDMX-JSON payload for /agency queries."""
+    """GDS-JSON payload for /agency queries."""
 
     structures: JsonStructures
 
