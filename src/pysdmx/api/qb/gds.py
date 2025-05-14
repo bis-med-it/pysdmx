@@ -72,9 +72,7 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         except msgspec.DecodeError as err:
             raise Invalid("Invalid Structure Query", str(err)) from err
 
-    def _get_base_url(
-        self, version: ApiVersion
-    ) -> str:
+    def _get_base_url(self, version: ApiVersion) -> str:
         """The URL for the query in the selected SDMX-REST API version."""
         self.__validate_query(version)
         return self.__create_query(version)
