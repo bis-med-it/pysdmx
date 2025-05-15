@@ -3,6 +3,7 @@ from pathlib import Path
 import httpx
 import pytest
 from msgspec._core import DecodeError
+from msgspec.json import decode
 
 from pysdmx.api.gds import GDS_BASE_ENDPOINT, GdsClient
 from pysdmx.api.qb import StructureType
@@ -10,6 +11,7 @@ from pysdmx.api.qb.gds import GdsQuery, GdsType
 from pysdmx.api.qb.util import REST_ALL, REST_LATEST, ApiVersion
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
+from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.model.gds import (
     GdsAgency,
     GdsCatalog,
@@ -17,10 +19,6 @@ from pysdmx.model.gds import (
     GdsService,
     GdsUrnResolver,
 )
-
-from pysdmx.io.json.gds.reader import deserializers as gds_readers
-from msgspec.json import decode
-
 
 # Mapping of endpoints to their expected classes
 ENDPOINTS = {
@@ -107,7 +105,16 @@ def query(gds: GdsClient, endpoint, value, params, resource, version):
 
 
 def generic_test(
-    mock, gds, query, body, value, resource, version, params, expected_class, references
+        mock,
+        gds,
+        query,
+        body,
+        value,
+        resource,
+        version,
+        params,
+        expected_class,
+        references
 ):
     """Generic function to test endpoints."""
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
@@ -218,7 +225,16 @@ def generic_test(
     indirect=["body"],
 )
 def test_generic(
-    respx_mock, gds, query, body, endpoint, value, params, resource, version, expected_class, references
+        respx_mock,
+        gds, query,
+        body,
+        endpoint,
+        value,
+        params,
+        resource,
+        version,
+        expected_class,
+        references
 ):
     """Generic test for all endpoints."""
     generic_test(
@@ -318,7 +334,14 @@ def test_gds_downgraded_version(
     indirect=["body"],
 )
 def test_non_existing_entty(
-    respx_mock, gds, query, body, endpoint, value, params, resource, version, expected_class
+        respx_mock,
+        gds, query,
+        body, endpoint,
+        value,
+        params,
+        resource,
+        version,
+        expected_class
 ):
     with pytest.raises(DecodeError):
         generic_test(
