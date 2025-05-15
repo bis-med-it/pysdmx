@@ -17,7 +17,7 @@ from pysdmx.model.gds import (
     GdsCatalog,
     GdsSdmxApi,
     GdsService,
-    GdsUrnResolver,
+    GdsUrnResolver, GdsEndpoint, GdsServiceReference, ResolverResult,
 )
 
 # Mapping of endpoints to their expected classes
@@ -250,6 +250,28 @@ def test_generic(
         expected_class,
         references,
     )
+
+
+@pytest.mark.parametrize(
+    "cls, kwargs, expected",
+    [
+        (GdsAgency, {"agency_id": "BIS", "name": "Bank", "url": "https://bis.org"}, {"description": None}),
+        (GdsCatalog, {"agency_id": "BIS", "id": "CAT1", "version": "1.0", "name": "Catalog", "urn": "urn:catalog"}, {"endpoints": None, "serviceRefs": None}),
+        (GdsEndpoint, {"api_version": "1.0", "url": "https://endpoint", "comments": "Test", "message_formats": ["json"], "rest_resources": ["resource1"]}, {}),
+        (GdsServiceReference, {"id": "REF1", "name": "Reference", "urn": "urn:ref", "service": "Service"}, {"description": None}),
+        (GdsService, {"agency_id": "BIS", "id": "SERVICE1", "name": "Service", "urn": "urn:service", "version": "1.0", "base": "https://service", "endpoints": []}, {"authentication": None}),
+        (GdsSdmxApi, {"release": "2.0.0", "description": "SDMX API"}, {}),
+        (ResolverResult, {"api_version": "1.0", "query": "https://query", "query_response_status_code": 200}, {}),
+        (GdsUrnResolver, {"agency_id": "BIS", "resource_id": "RES1", "version": "1.0", "sdmx_type": "CategoryScheme", "resolver_results": []}, {}),
+    ],
+)
+def test_instantiation(cls, kwargs, expected):
+    """Test instantiation of Gds model classes."""
+    instance = cls(**kwargs)
+    for key, value in kwargs.items():
+        assert getattr(instance, key) == value
+    for key, value in expected.items():
+        assert getattr(instance, key) == value
 
 
 @pytest.mark.parametrize(
