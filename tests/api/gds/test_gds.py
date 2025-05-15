@@ -15,12 +15,9 @@ from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.model.gds import (
     GdsAgency,
     GdsCatalog,
-    GdsEndpoint,
     GdsSdmxApi,
     GdsService,
-    GdsServiceReference,
     GdsUrnResolver,
-    ResolverResult,
 )
 
 # Mapping of endpoints to their expected classes

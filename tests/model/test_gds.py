@@ -28,7 +28,7 @@ def test_str_gds_agency():
         agency_id="BIS",
         name="BIS",
         url="bis.org",
-        description="Bank for International Settlements"
+        description="Bank for International Settlements",
     )
 
     expected_str = read_expected_str("agency")
@@ -71,7 +71,12 @@ def test_str_gds_sdmxapi():
     """Test the __str__ method of GdsSdmxApi."""
     sdmxapi = GdsSdmxApi(
         release="1.5.0",
-        description="Version 1.5.0 of the SDMX REST API specification (released: 09/2020) - see the [release notes](https://github.com/sdmx-twg/sdmx-rest/releases/tag/v1.5.0) and the [official documentation](https://github.com/sdmx-twg/sdmx-rest/tree/v1.5.0/v2_1/ws/rest/docs)."
+        description="Version 1.5.0 of the SDMX REST API "
+        "specification (released: 09/2020) - see the "
+        "[release notes](https://github.com/sdmx-twg/"
+        "sdmx-rest/releases/tag/v1.5.0) and the [official "
+        "documentation](https://github.com/sdmx-twg/"
+        "sdmx-rest/tree/v1.5.0/v2_1/ws/rest/docs).",
     )
 
     expected_str = read_expected_str("sdmxapi")
@@ -101,7 +106,13 @@ def test_str_gds_service():
                 url="/v2",
                 comments="",
                 message_formats=[],
-                rest_resources=["structure", "data", "schema", "availability", "metadata"],
+                rest_resources=[
+                    "structure",
+                    "data",
+                    "schema",
+                    "availability",
+                    "metadata",
+                ],
             ),
         ],
     )
@@ -122,7 +133,7 @@ def test_str_gds_urn_resolver():
             ResolverResult(
                 api_version="1.4.0",
                 query="https://stats.bis.org/api/v1/categoryscheme/BIS/BISWEB_CATSCHEME/1.0?detail=allstubs",
-                query_response_status_code=200
+                query_response_status_code=200,
             )
         ],
     )
@@ -134,11 +145,7 @@ def test_str_gds_urn_resolver():
 
 def test_instantiation_gds_agency():
     """Test instantiation of GdsAgency."""
-    instance = GdsAgency(
-        agency_id="BIS",
-        name="Bank",
-        url="https://bis.org"
-    )
+    instance = GdsAgency(agency_id="BIS", name="Bank", url="https://bis.org")
     assert instance.agency_id == "BIS"
     assert instance.name == "Bank"
     assert instance.url == "https://bis.org"
@@ -152,7 +159,7 @@ def test_instantiation_gds_catalog():
         id="CAT1",
         version="1.0",
         name="Catalog",
-        urn="urn:catalog"
+        urn="urn:catalog",
     )
     assert instance.agency_id == "BIS"
     assert instance.id == "CAT1"
@@ -170,7 +177,7 @@ def test_instantiation_gds_endpoint():
         url="https://endpoint",
         comments="Test",
         message_formats=["json"],
-        rest_resources=["resource1"]
+        rest_resources=["resource1"],
     )
     assert instance.api_version == "1.0"
     assert instance.url == "https://endpoint"
@@ -182,10 +189,7 @@ def test_instantiation_gds_endpoint():
 def test_instantiation_gds_service_reference():
     """Test instantiation of GdsServiceReference."""
     instance = GdsServiceReference(
-        id="REF1",
-        name="Reference",
-        urn="urn:ref",
-        service="Service"
+        id="REF1", name="Reference", urn="urn:ref", service="Service"
     )
     assert instance.id == "REF1"
     assert instance.name == "Reference"
@@ -203,7 +207,7 @@ def test_instantiation_gds_service():
         urn="urn:service",
         version="1.0",
         base="https://service",
-        endpoints=[]
+        endpoints=[],
     )
     assert instance.agency_id == "BIS"
     assert instance.id == "SERVICE1"
@@ -217,10 +221,7 @@ def test_instantiation_gds_service():
 
 def test_instantiation_gds_sdmxapi():
     """Test instantiation of GdsSdmxApi."""
-    instance = GdsSdmxApi(
-        release="2.0.0",
-        description="SDMX API"
-    )
+    instance = GdsSdmxApi(release="2.0.0", description="SDMX API")
     assert instance.release == "2.0.0"
     assert instance.description == "SDMX API"
 
@@ -230,7 +231,7 @@ def test_instantiation_resolver_result():
     instance = ResolverResult(
         api_version="1.0",
         query="https://query",
-        query_response_status_code=200
+        query_response_status_code=200,
     )
     assert instance.api_version == "1.0"
     assert instance.query == "https://query"
@@ -244,7 +245,7 @@ def test_instantiation_gds_urn_resolver():
         resource_id="RES1",
         version="1.0",
         sdmx_type="CategoryScheme",
-        resolver_results=[]
+        resolver_results=[],
     )
     assert instance.agency_id == "BIS"
     assert instance.resource_id == "RES1"
