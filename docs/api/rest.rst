@@ -24,5 +24,6 @@ API Reference
    query/availability
    query/data
    query/refmeta
+   query/registration
    query/schema
    query/structure
