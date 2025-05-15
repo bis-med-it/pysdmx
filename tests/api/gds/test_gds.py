@@ -105,16 +105,16 @@ def query(gds: GdsClient, endpoint, value, params, resource, version):
 
 
 def generic_test(
-        mock,
-        gds,
-        query,
-        body,
-        value,
-        resource,
-        version,
-        params,
-        expected_class,
-        references
+    mock,
+    gds,
+    query,
+    body,
+    value,
+    resource,
+    version,
+    params,
+    expected_class,
+    references,
 ):
     """Generic function to test endpoints."""
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
@@ -225,16 +225,17 @@ def generic_test(
     indirect=["body"],
 )
 def test_generic(
-        respx_mock,
-        gds, query,
-        body,
-        endpoint,
-        value,
-        params,
-        resource,
-        version,
-        expected_class,
-        references
+    respx_mock,
+    gds,
+    query,
+    body,
+    endpoint,
+    value,
+    params,
+    resource,
+    version,
+    expected_class,
+    references,
 ):
     """Generic test for all endpoints."""
     generic_test(
@@ -247,7 +248,7 @@ def test_generic(
         version,
         params,
         expected_class,
-        references
+        references,
     )
 
 
@@ -269,7 +270,7 @@ def test_gds_without_slash(
     resource,
     version,
     expected_class,
-    references
+    references,
 ):
     generic_test(
         respx_mock,
@@ -281,7 +282,7 @@ def test_gds_without_slash(
         version,
         params,
         expected_class,
-        references
+        references,
     )
 
 
@@ -303,7 +304,7 @@ def test_gds_downgraded_version(
     resource,
     version,
     expected_class,
-    references
+    references,
 ):
     generic_test(
         respx_mock,
@@ -315,7 +316,7 @@ def test_gds_downgraded_version(
         version,
         params,
         expected_class,
-        references
+        references,
     )
 
 
@@ -334,14 +335,16 @@ def test_gds_downgraded_version(
     indirect=["body"],
 )
 def test_non_existing_entty(
-        respx_mock,
-        gds, query,
-        body, endpoint,
-        value,
-        params,
-        resource,
-        version,
-        expected_class
+    respx_mock,
+    gds,
+    query,
+    body,
+    endpoint,
+    value,
+    params,
+    resource,
+    version,
+    expected_class,
 ):
     with pytest.raises(DecodeError):
         generic_test(
@@ -354,7 +357,7 @@ def test_non_existing_entty(
             version,
             params,
             expected_class,
-            None
+            None,
         )
 
 
