@@ -179,8 +179,8 @@ def repr_test(
     if expected_class == GdsUrnResolver:
         assert result.__str__() == references.__str__()
     else:
-        for item in result:
-            assert isinstance(item, expected_class)
+        for i, item in enumerate(result):
+            assert item.__str__() == references[i].__str__()
 
 
 @pytest.mark.parametrize(
@@ -294,29 +294,12 @@ def test_generic(
     [
         ("agency", REST_ALL, {}, None, None, "agency_all.json"),
         (
-                "catalog",
-                "BIS",
-                {
-                    "resource_type": "data",
-                    "message_format": "json",
-                    "api_version": "2.0.0",
-                    "detail": "full",
-                    "references": "none",
-                },
-                REST_ALL,
-                REST_ALL,
-                "catalog_bis_full.json",
-        ),
-        (
-                "catalog",
-                "BIS",
-                {
-                    "detail": "raw",
-                    "references": "children",
-                },
-                REST_ALL,
-                REST_ALL,
-                "catalog_bis_raw.json",
+            "catalog",
+            REST_ALL,
+            {},
+            REST_ALL,
+            REST_ALL,
+            "catalog_all_no_params.json",
         ),
         ("sdmxapi", REST_ALL, {}, None, None, "sdmxapi_all.json"),
         ("service", "BIS", {}, REST_ALL, REST_ALL, "service_bis.json"),
