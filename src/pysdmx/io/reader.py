@@ -46,27 +46,35 @@ def read_sdmx(
     """
     input_str, read_format = process_string_to_read(sdmx_document)
 
+    header = None
     result_data: Sequence[Dataset] = []
     result_structures: Sequence[
         Union[ItemScheme, Dataflow, DataStructureDefinition]
     ] = []
     result_submission: Sequence[SubmissionResult] = []
     if read_format == Format.STRUCTURE_SDMX_ML_2_1:
+        from pysdmx.io.xml.sdmx21.reader.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.structure import (
             read as read_structure,
         )
 
+        header = read_header(input_str, validate=validate)
         # SDMX-ML 2.1 Structure
         result_structures = read_structure(input_str, validate=validate)
     elif read_format == Format.DATA_SDMX_ML_2_1_GEN:
         from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
+        from pysdmx.io.xml.sdmx21.reader.header import read as read_header
 
+        header = read_header(input_str, validate=validate)
         # SDMX-ML 2.1 Generic Data
         result_data = read_generic(input_str, validate=validate)
     elif read_format == Format.DATA_SDMX_ML_2_1_STR:
+        from pysdmx.io.xml.sdmx21.reader.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.structure_specific import (
             read as read_str_spe,
         )
+
+        header = read_header(input_str, validate=validate)
 
         # SDMX-ML 2.1 Structure Specific Data
         result_data = read_str_spe(input_str, validate=validate)
@@ -103,12 +111,12 @@ def read_sdmx(
     ):
         # TODO: Add here the Schema download for Datasets, based on structure
         # TODO: Ensure we have changed the signature of the data readers
-        return Message(data=result_data)
+        return Message(header=header, data=result_data)
     elif read_format == Format.REGISTRY_SDMX_ML_2_1:
-        return Message(submission=result_submission)
+        return Message(header=header, submission=result_submission)
 
     # TODO: Ensure we have changed the signature of the structure readers
-    return Message(structures=result_structures)
+    return Message(header=header, structures=result_structures)
 
 
 def __assign_structure_to_dataset(

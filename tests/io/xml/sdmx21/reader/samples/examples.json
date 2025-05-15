@@ -1,0 +1,45 @@
+{
+  "ruleset_scheme": {
+    "urn": "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=MD:TEST_RULESET_SCHEME(1.0)",
+    "id": "TEST_RULESET_SCHEME",
+    "name": "Testing Ruleset Scheme",
+    "version": "1.0",
+    "agency": "MD",
+    "vtl_version": "2.0",
+    "items": [
+      {
+        "id": "TEST_DATAPOINT_RULESET",
+        "uri": null,
+        "urn": "urn:sdmx:org.sdmx.infomodel.transformation.Ruleset=MD:TEST_RULESET_SCHEME(1.0).TEST_DATAPOINT_RULESET",
+        "name": "Testing Datapoint Ruleset",
+        "description": null,
+        "ruleset_definition": "define datapoint ruleset signValidation (variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM as IAI,                 FUNCTIONAL_CAT as FC, INSTR_ASSET as IA, OBS_VALUE as O) is      sign1c: when AE = \"C\" and IAI = \"G\" then O > 0 errorcode \"sign1c\" errorlevel 1;     end datapoint ruleset;",
+        "ruleset_scope": "variable",
+        "ruleset_type": "datapoint",
+        "annotations": []
+      }
+    ]
+  },
+  "udo_scheme": {
+    "urn": "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=MD:TEST_UDO_SCHEME(1.0)",
+    "id": "TEST_UDO_SCHEME",
+    "name": "Testing UDO Scheme",
+    "version": "1.0",
+    "agency": "MD",
+    "vtl_version": "2.0",
+    "items": [
+      {
+        "id": "TEST_UDO",
+        "uri": null,
+        "urn": "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=MD:TEST_UDO_SCHEME(1.0).TEST_UDO",
+        "name": "UDO Testing",
+        "description": null,
+        "operator_definition": "define operator filter_ds (ds1 dataset, great_cons string default \"1\", less_cons number default 4.0)   returns dataset is     ds1[filter Me_1 > great_cons and Me_2 < less_cons] end operator;",
+        "annotations": []
+      }
+    ],
+    "ruleset_schemes": {
+      "transformation": "MD:TEST_RULESET_SCHEME(1.0)"
+    }
+  }
+}

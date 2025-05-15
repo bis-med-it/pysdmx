@@ -1,7 +1,7 @@
 """Parsers for reading metadata."""
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -30,6 +30,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     CON,
     CON_ID,
     CON_LOW,
+    CON_ROLE,
     CONCEPTS,
     CONTACT,
     CORE_REP,
@@ -74,6 +75,9 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     REF,
     REQUIRED,
     ROLE,
+    RULE,
+    RULE_SCHEME,
+    RULESETS,
     SER_URL,
     SER_URL_LOW,
     STR_URL,
@@ -91,6 +95,9 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     TRANSFORMATION,
     TRANSFORMATIONS,
     TYPE,
+    UDO,
+    UDO_SCHEME,
+    UDOS,
     URI,
     URIS,
     URL,
@@ -112,7 +119,15 @@ from pysdmx.model import (
     DataType,
     Facets,
 )
-from pysdmx.model.__base import Agency, Annotation, Contact, Item, ItemScheme
+from pysdmx.model.__base import (
+    Agency,
+    Annotation,
+    Contact,
+    Item,
+    ItemReference,
+    ItemScheme,
+    Reference,
+)
 from pysdmx.model.dataflow import (
     Component,
     Components,
@@ -120,8 +135,15 @@ from pysdmx.model.dataflow import (
     DataStructureDefinition,
     Role,
 )
-from pysdmx.model.vtl import Transformation, TransformationScheme
-from pysdmx.util import ItemReference, Reference, find_by_urn, parse_urn
+from pysdmx.model.vtl import (
+    Ruleset,
+    RulesetScheme,
+    Transformation,
+    TransformationScheme,
+    UserDefinedOperator,
+    UserDefinedOperatorScheme,
+)
+from pysdmx.util import find_by_urn, parse_urn
 
 STRUCTURES_MAPPING = {
     CL: Codelist,
@@ -129,12 +151,16 @@ STRUCTURES_MAPPING = {
     CS: ConceptScheme,
     DFWS: Dataflow,
     DSDS: DataStructureDefinition,
+    RULE_SCHEME: RulesetScheme,
+    UDO_SCHEME: UserDefinedOperatorScheme,
     TRANS_SCHEME: TransformationScheme,
 }
 ITEMS_CLASSES = {
     AGENCY: Agency,
     CODE: Code,
     CON: Concept,
+    RULE: Ruleset,
+    UDO: UserDefinedOperator,
     TRANSFORMATION: Transformation,
 }
 
@@ -193,6 +219,9 @@ class StructureParser(Struct):
     concepts: Dict[str, Any] = {}
     datastructures: Dict[str, Any] = {}
     dataflows: Dict[str, Any] = {}
+    rulesets: Dict[str, Any] = {}
+    udos: Dict[str, Any] = {}
+    transformations: Dict[str, Any] = {}
 
     def __format_contact(self, json_contact: Dict[str, Any]) -> Contact:
         """Creates a Contact object from a json_contact.
@@ -436,6 +465,56 @@ class StructureParser(Struct):
 
         return att_level
 
+    def __format_vtl_references(
+        self, json_elem: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Formats the references in the VTL element."""
+
+        def extract_references(
+            scheme: str, new_key: str, object_list: Dict[str, Any]
+        ) -> None:
+            if scheme in json_elem:
+                references = []
+                scheme_entries = (
+                    json_elem[scheme]
+                    if isinstance(json_elem[scheme], list)
+                    else [json_elem[scheme]]
+                )
+                for entry in scheme_entries:
+                    ref = entry[REF]
+
+                    ref_id = ref[ID]
+                    matching_object = next(
+                        (
+                            obj
+                            for obj in object_list.values()
+                            if getattr(obj, ID, None) == ref_id
+                        ),
+                        None,
+                    )
+
+                    if matching_object:
+                        references.append(matching_object)
+                    else:
+                        references.append(
+                            Reference(
+                                sdmx_type=ref[CLASS],
+                                agency=ref[AGENCY_ID],
+                                id=ref_id,
+                                version=ref[VERSION],
+                            )
+                        )
+
+                json_elem[new_key] = references
+                json_elem.pop(scheme)
+
+        extract_references(RULE_SCHEME, "ruleset_schemes", self.rulesets)
+        extract_references(
+            UDO_SCHEME, "user_defined_operator_schemes", self.udos
+        )
+
+        return json_elem
+
     def __format_component(
         self, comp: Dict[str, Any], role: Role
     ) -> Component:
@@ -463,6 +542,9 @@ class StructureParser(Struct):
 
         if ANNOTATIONS in comp:
             del comp[ANNOTATIONS]
+
+        if CON_ROLE in comp:
+            del comp[CON_ROLE]
 
         return Component(**comp)
 
@@ -514,6 +596,16 @@ class StructureParser(Struct):
             json_vtl["result"] = json_vtl.pop("Result")
         if "vtlVersion" in json_vtl:
             json_vtl["vtl_version"] = json_vtl.pop("vtlVersion")
+        if "rulesetScope" in json_vtl:
+            json_vtl["ruleset_scope"] = json_vtl.pop("rulesetScope")
+        if "rulesetType" in json_vtl:
+            json_vtl["ruleset_type"] = json_vtl.pop("rulesetType")
+        if "RulesetDefinition" in json_vtl:
+            json_vtl["ruleset_definition"] = json_vtl.pop("RulesetDefinition")
+        if "OperatorDefinition" in json_vtl:
+            json_vtl["operator_definition"] = json_vtl.pop(
+                "OperatorDefinition"
+            )
         return json_vtl
 
     def __format_item(
@@ -572,6 +664,7 @@ class StructureParser(Struct):
             element = self.__format_agency(element)
             element = self.__format_validity(element)
             element = self.__format_vtl(element)
+            element = self.__format_vtl_references(element)
             if "xmlns" in element:
                 del element["xmlns"]
             # Dynamic creation with specific class
@@ -616,7 +709,6 @@ class StructureParser(Struct):
 
             if "xmlns" in element:
                 del element["xmlns"]
-
             if IS_EXTERNAL_REF in element:
                 element[IS_EXTERNAL_REF_LOW] = element.pop(IS_EXTERNAL_REF)
                 element[IS_EXTERNAL_REF_LOW] = (
@@ -649,45 +741,74 @@ class StructureParser(Struct):
     def format_structures(
         self, json_meta: Dict[str, Any]
     ) -> Sequence[Union[ItemScheme, DataStructureDefinition, Dataflow]]:
-        """Formats the structures in json format.
+        """Formats the structures in JSON format.
 
         Args:
-            json_meta: The structures in json format
+            json_meta: The structures in JSON format.
 
         Returns:
-            A dictionary with the structures formatted
+            A list with the formatted structures.
         """
-        # Reset dict to store metadata
-        structures = {}
 
-        if ORGS in json_meta:
-            structures[ORGS] = self.__format_orgs(json_meta[ORGS])
-            self.agencies = structures[ORGS]
-        if CLS in json_meta:
-            structures[CLS] = self.__format_scheme(json_meta[CLS], CL, CODE)
-            self.codelists = structures[CLS]
-        if CONCEPTS in json_meta:
-            structures[CONCEPTS] = self.__format_scheme(
-                json_meta[CONCEPTS], CS, CON
-            )
-            self.concepts = structures[CONCEPTS]
-        if DSDS in json_meta:
-            structures[DSDS] = self.__format_schema(json_meta[DSDS], DSDS, DSD)
-            self.datastructures = structures[DSDS]
-        if DFWS in json_meta:
-            structures[DFWS] = self.__format_schema(json_meta[DFWS], DFWS, DFW)
+        def process_structure(
+            key: str,
+            formatter: Callable[[Dict[str, Any]], Dict[Any, Any]],
+            attr: Optional[str] = None,
+        ) -> Dict[Any, Any]:
+            """Helper function to process and store formatted structures."""
+            if key in json_meta:
+                formatted = formatter(json_meta[key])
+                if attr:
+                    setattr(self, attr, formatted)
+                return formatted
+            return {}
 
-        if TRANSFORMATIONS in json_meta:
-            structures[TRANSFORMATIONS] = self.__format_scheme(
-                json_meta[TRANSFORMATIONS], TRANS_SCHEME, TRANSFORMATION
-            )
-        # Reset global variables
-        result = []
-        for value in structures.values():
-            for compound in value.values():
-                result.append(compound)
-
-        return result
+        structures = {
+            ORGS: process_structure(ORGS, self.__format_orgs, "agencies"),
+            CLS: process_structure(
+                CLS,
+                lambda data: self.__format_scheme(data, CL, CODE),
+                "codelists",
+            ),
+            CONCEPTS: process_structure(
+                CONCEPTS,
+                lambda data: self.__format_scheme(data, CS, CON),
+                "concepts",
+            ),
+            DSDS: process_structure(
+                DSDS,
+                lambda data: self.__format_schema(data, DSDS, DSD),
+                "datastructures",
+            ),
+            DFWS: process_structure(
+                DFWS, lambda data: self.__format_schema(data, DFWS, DFW)
+            ),
+            RULESETS: process_structure(
+                RULESETS,
+                lambda data: self.__format_scheme(data, RULE_SCHEME, RULE),
+                "rulesets",
+            ),
+            UDOS: process_structure(
+                UDOS,
+                lambda data: self.__format_scheme(data, UDO_SCHEME, UDO),
+                "udos",
+            ),
+            TRANSFORMATIONS: process_structure(
+                TRANSFORMATIONS,
+                lambda data: self.__format_scheme(
+                    data,
+                    TRANS_SCHEME,
+                    TRANSFORMATION,
+                ),
+                "transformations",
+            ),
+        }
+        return [
+            compound
+            for value in structures.values()
+            if value
+            for compound in value.values()
+        ]
 
 
 def read(

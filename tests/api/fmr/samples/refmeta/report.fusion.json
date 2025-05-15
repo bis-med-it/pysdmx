@@ -15,7 +15,7 @@
         "metadatasets": [
             {
                 "id": "DTI_BIS_MACRO",
-                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS.MEDIT:DTI_BIS_MACRO(1.0)",
+                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS.MEDIT:DTI_BIS_MACRO(1.0.42)",
                 "names": [
                     {
                         "locale": "en",
@@ -23,7 +23,7 @@
                     }
                 ],
                 "agencyId": "BIS.MEDIT",
-                "version": "1.0",
+                "version": "1.0.42",
                 "isFinal": false,
                 "metadataflow": "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=BIS.MEDIT:DTI(1.0)",
                 "targets": [
@@ -32,28 +32,28 @@
                 "attributes": [
                     {
                         "id": "idea_partition_details",
-                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0).idea_partition_details",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0.42).idea_partition_details",
                         "attributes": [
                             {
                                 "id": "idea_partition_name",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0).idea_partition_name",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0.42).idea_partition_name",
                                 "value": "dt"
                             },
                             {
                                 "id": "idea_partition_pattern",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0).idea_partition_pattern",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0.42).idea_partition_pattern",
                                 "value": "\\d{4}-(0\\d|1[012])"
                             },
                             {
                                 "id": "idea_partition_type",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0).idea_partition_type",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0.42).idea_partition_type",
                                 "value": "string"
                             }
                         ]
                     },
                     {
                         "id": "record_format",
-                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0).record_format",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0.42).record_format",
                         "value": "A"
                     }
                 ]

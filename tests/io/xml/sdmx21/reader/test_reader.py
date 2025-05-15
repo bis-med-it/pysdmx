@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from pathlib import Path
 
@@ -8,15 +9,21 @@ from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
+from pysdmx.io.xml.sdmx21.__tokens import OBS_DIM, OBS_VALUE_ID
 from pysdmx.io.xml.sdmx21.reader.error import read as read_error
 from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
 from pysdmx.io.xml.sdmx21.reader.structure_specific import read as read_str_spe
 from pysdmx.io.xml.sdmx21.reader.submission import read as read_sub
 from pysdmx.io.xml.sdmx21.writer.structure_specific import write
-from pysdmx.model import AgencyScheme, Codelist, ConceptScheme, Contact
+from pysdmx.model import (
+    AgencyScheme,
+    Codelist,
+    ConceptScheme,
+    Contact,
+)
 from pysdmx.model.submission import SubmissionResult
-from pysdmx.model.vtl import Transformation
+from pysdmx.model.vtl import Ruleset, Transformation, UserDefinedOperator
 
 # Test parsing SDMX Registry Interface Submission Response
 
@@ -59,6 +66,26 @@ def samples_folder():
 @pytest.fixture
 def error_304_path():
     return Path(__file__).parent / "samples" / "error_304.xml"
+
+
+@pytest.fixture
+def scheme_examples_json():
+    with open(
+        Path(__file__).parent / "samples" / "examples.json",
+        "r",
+        encoding="utf-8",
+    ) as file:
+        return json.load(file)
+
+
+@pytest.fixture
+def full_structure_example():
+    with open(
+        Path(__file__).parent / "samples" / "full_structure_example.vtl",
+        "r",
+        encoding="utf-8",
+    ) as file:
+        return file.read()
 
 
 @pytest.fixture
@@ -123,8 +150,7 @@ def test_item_scheme_read(item_scheme_path):
     codelist_sdmx = [cl for cl in codelists if cl.id == "CL_UNIT_MULT"][0]
     assert codelist_sdmx.id == "CL_UNIT_MULT"
     assert (
-        codelist_sdmx.name == "code list for the "
-        "Unit Multiplier (UNIT_MULT)"
+        codelist_sdmx.name == "code list for the Unit Multiplier (UNIT_MULT)"
     )
     assert codelist_sdmx.items[0].id == "0"
     assert codelist_sdmx.items[0].name == "Units"
@@ -218,6 +244,9 @@ def test_reading_validation(samples_folder, filename):
     assert dataset.short_urn == "DataStructure=BIS:BIS_DER(1.0)"
     data = dataset.data
     assert data.shape == (1000, 20)
+    assert "TIME_PERIOD" in data.columns
+    assert OBS_DIM not in data.columns
+    assert OBS_VALUE_ID in data.columns
 
 
 @pytest.mark.parametrize(
@@ -235,6 +264,9 @@ def test_reading_validation_read_sdmx(samples_folder, filename):
     assert result is not None
     data = result[0].data
     assert data.shape == (1000, 20)
+    assert "TIME_PERIOD" in data.columns
+    assert OBS_DIM not in data.columns
+    assert OBS_VALUE_ID in data.columns
 
 
 # Test reading of dataflow SDMX file
@@ -437,6 +469,66 @@ def test_vtl_transformation_scheme(samples_folder):
     assert transformation.full_expression == "DS_r <- DS_1 + 1;"
 
 
+def test_vtl_ruleset_scheme(samples_folder, scheme_examples_json):
+    data_path = samples_folder / "ruleset_scheme.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+
+    assert result is not None
+    assert len(result) == 1
+
+    ruleset_scheme = result[0]
+    expected_ruleset_scheme = scheme_examples_json["ruleset_scheme"]
+    assert ruleset_scheme.id == expected_ruleset_scheme["id"]
+    assert ruleset_scheme.name == expected_ruleset_scheme["name"]
+
+    assert len(ruleset_scheme.items) == 1
+    ruleset = ruleset_scheme.items[0]
+    expected_ruleset = expected_ruleset_scheme["items"][0]
+    assert isinstance(ruleset, Ruleset)
+    assert ruleset.id == expected_ruleset["id"]
+    assert ruleset.name == expected_ruleset["name"]
+    assert ruleset.ruleset_scope == expected_ruleset["ruleset_scope"]
+    assert ruleset.ruleset_type == expected_ruleset["ruleset_type"]
+    assert ruleset.ruleset_definition == expected_ruleset["ruleset_definition"]
+
+
+def test_vtl_udo_scheme(samples_folder, scheme_examples_json):
+    data_path = samples_folder / "udo_scheme.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+
+    assert result is not None
+    assert len(result) == 1
+
+    udo_scheme = result[0]
+    expected_udo_scheme = scheme_examples_json["udo_scheme"]
+    assert udo_scheme.id == expected_udo_scheme["id"]
+    assert udo_scheme.name == expected_udo_scheme["name"]
+
+    assert len(udo_scheme.items) == 1
+    udo = udo_scheme.items[0]
+    expected_udo = expected_udo_scheme["items"][0]
+    assert isinstance(udo, UserDefinedOperator)
+    assert udo.id == expected_udo["id"]
+    assert udo.name == expected_udo["name"]
+    assert udo.operator_definition == expected_udo["operator_definition"]
+
+
+def test_vtl_full_scheme(samples_folder, full_structure_example):
+    data_path = samples_folder / "full_vtl_structure.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+
+    assert (
+        str(result).strip()
+        == str(full_structure_example).replace("\n", "").strip()
+    )
+
+
 def test_estat_metadata(estat_metadata_path):
     input_str, sdmx_format = process_string_to_read(estat_metadata_path)
     assert sdmx_format == Format.STRUCTURE_SDMX_ML_2_1
@@ -477,3 +569,94 @@ def test_wrong_flavour_generic(error_str):
 def test_wrong_flavour_structure_specific(error_str):
     with pytest.raises(Invalid):
         read_str_spe(error_str, validate=True)
+
+
+def test_structure_no_header(samples_folder):
+    data_path = samples_folder / "structure_no_header.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    header = read_sdmx(input_str, validate=False).header
+    assert header is None
+
+
+def test_message_full(samples_folder):
+    data_path = samples_folder / "message_full.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+    result = read_sdmx(input_str, validate=True).header
+
+    assert result.sender.id == "Unknown"
+    assert result.sender.name == "Unknown"
+    assert result.receiver.id == "Not_supplied"
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
+
+
+def test_message_full_with_langs(samples_folder):
+    data_path = samples_folder / "message_full_with_langs.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+    result = read_sdmx(input_str, validate=True).header
+
+    assert result.sender.id == "Unknown"
+    assert result.sender.name == "Unknown"
+    assert result.receiver.id == "Not_supplied"
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
+
+
+def test_message_full_no_namespace(samples_folder):
+    data_path = samples_folder / "message_full_no_namespace.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_GEN
+    result = read_sdmx(input_str, validate=True).header
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
+
+
+def test_message_full_warning(samples_folder, recwarn):
+    data_path = samples_folder / "message_full_warning.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+    result = read_sdmx(input_str, validate=True).header
+    assert result.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
+    assert len(recwarn) == 1
+
+
+def test_message_str_usage_urn(samples_folder):
+    data_path = samples_folder / "message_str_usage_urn.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_GEN
+    result = read_sdmx(input_str, validate=True).header
+    assert result.structure == {
+        "Dataflow=ESTAT:NAMA_10_GDP(1.0)": "TIME_PERIOD"
+    }
+
+
+def test_datastructure_concept_role(samples_folder):
+    data_path = samples_folder / "datastructure_concept_role.xml"
+    result = read_sdmx(data_path)
+    dsd = result.get_data_structure_definition(
+        "DataStructure=BIS:BIS_DER(1.0)"
+    )
+    components = dsd.components
+    assert len(components) == 2
+    assert components[0].id == "FREQ"
+
+
+# Make test fail if a warning is raised
+@pytest.mark.filterwarnings("error")
+def test_header_xmlns(samples_folder):
+    data_path = samples_folder / "header_xmlns.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_GEN
+    result = read_sdmx(input_str, validate=True).header
+    assert result.sender.id == "Disseminate_Final_DMZ"
+    assert result.structure == {
+        "Dataflow=OECD.SDD.STES:DSD_STES@DF_CLI(4.1)": "TIME_PERIOD"
+    }

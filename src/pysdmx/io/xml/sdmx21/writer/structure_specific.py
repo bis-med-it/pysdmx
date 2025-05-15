@@ -114,6 +114,7 @@ def __write_data_single_dataset(
     outfile = ""
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
+    sdmx_type = parse_short_urn(structure_urn).id
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
@@ -127,8 +128,8 @@ def __write_data_single_dataset(
         f"{nl}{child1}<{ABBR_MSG}:DataSet {attached_attributes_str}"
         f"ss:structureRef={id_structure!r} "
         f'xsi:type="ns{count}:DataSetType" '
-        f'ss:dataScope="DataStructure" '
-        f'action="Replace">{nl}'
+        f'ss:dataScope="{sdmx_type}" '
+        f'action="{dataset.action.value}">{nl}'
     )
     data = ""
     if dim == ALL_DIM:
@@ -296,10 +297,14 @@ def write(
     # Generating the initial tag with namespaces
     outfile = create_namespaces(type_, ss_namespaces, prettyprint)
     # Generating the header
-    outfile += __write_header(header, prettyprint, add_namespace_structure)
+    outfile += __write_header(
+        header, prettyprint, add_namespace_structure, data_message=True
+    )
     # Writing the content
     outfile += __write_data_structure_specific(
-        content, dim_mapping, prettyprint
+        datasets=content,
+        dim_mapping=dim_mapping,
+        prettyprint=prettyprint,
     )
 
     outfile += get_end_message(type_, prettyprint)

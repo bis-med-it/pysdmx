@@ -19,7 +19,7 @@
                         "rel": "self",
                         "type": "metadataset",
                         "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
-                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS.MEDIT:DTI_BIS_MACRO(1.0)"
+                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS.MEDIT:DTI_BIS_MACRO(1.0.42)"
                     }
                 ],
                 "id": "DTI_BIS_MACRO",
@@ -27,7 +27,7 @@
                 "names": {
                     "en": "Technical metadata for BIS.MACRO:BIS_MACRO"
                 },
-                "version": "1.0",
+                "version": "1.0.42",
                 "agencyID": "BIS.MEDIT",
                 "isExternalReference": false,
                 "isFinal": false,
@@ -42,7 +42,7 @@
                                 "rel": "self",
                                 "type": "metadataattribute",
                                 "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0).idea_partition_name"
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0.42).idea_partition_name"
                             }
                         ],
                         "id": "idea_partition_details",
@@ -53,7 +53,7 @@
                                         "rel": "self",
                                         "type": "metadataattribute",
                                         "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
-                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0).idea_partition_name"
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0.42).idea_partition_name"
                                     }
                                 ],
                                 "id": "idea_partition_name",
@@ -65,7 +65,7 @@
                                         "rel": "self",
                                         "type": "metadataattribute",
                                         "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
-                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0).idea_partition_pattern"
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0.42).idea_partition_pattern"
                                     }
                                 ],
                                 "id": "idea_partition_pattern",
@@ -77,7 +77,7 @@
                                         "rel": "self",
                                         "type": "metadataattribute",
                                         "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
-                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0).idea_partition_type"
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0.42).idea_partition_type"
                                     }
                                 ],
                                 "id": "idea_partition_type",
@@ -91,7 +91,7 @@
                                 "rel": "self",
                                 "type": "metadataattribute",
                                 "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0).record_format"
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=BIS.MEDIT:DTI_BIS_MACRO(1.0.42).record_format"
                             }
                         ],
                         "id": "record_format",

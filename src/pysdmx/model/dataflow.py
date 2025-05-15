@@ -18,11 +18,11 @@ from pysdmx.errors import Invalid
 from pysdmx.model.__base import (
     Agency,
     DataProvider,
+    ItemReference,
     MaintainableArtefact,
 )
 from pysdmx.model.code import Codelist, Hierarchy
 from pysdmx.model.concept import Concept, DataType, Facets
-from pysdmx.util import ItemReference
 
 
 class Role(str, Enum):
@@ -488,9 +488,11 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
         """Generates a Schema class from the DataStructureDefinition."""
         return Schema(
             context="datastructure",
-            agency=self.agency.id
-            if isinstance(self.agency, Agency)
-            else self.agency,
+            agency=(
+                self.agency.id
+                if isinstance(self.agency, Agency)
+                else self.agency
+            ),
             id=self.id,
             components=self.components,
             version=self.version,

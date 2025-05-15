@@ -1,7 +1,7 @@
 """Collection of SDMX-JSON schemas for VTL artefacts."""
 
 from datetime import datetime
-from typing import Optional, Sequence
+from typing import Literal, Optional, Sequence
 
 from msgspec import Struct
 
@@ -205,8 +205,8 @@ class JsonRuleset(Struct, frozen=True):
     id: str
     name: str
     rulesetDefinition: str
-    rulesetType: str
-    rulesetScope: str
+    rulesetType: Literal["datapoint", "hierarchical"]
+    rulesetScope: Literal["variable", "valuedomain"]
     description: Optional[str] = None
 
     def to_model(self) -> Ruleset:

@@ -1,7 +1,5 @@
 """Parsing configuration for SDMX-ML 2.1 messages."""
 
-from typing import Any, Dict, List
-
 # Common
 HEADER = "Header"
 DATASET = "DataSet"
@@ -16,24 +14,36 @@ CLASS = "class"
 PACKAGE = "package"
 
 # Structure Specific
-STRSPE = "StructureSpecificData"
+STR_SPE = "StructureSpecificData"
 GENERIC = "GenericData"
-SERIESKEY = "SeriesKey"
+SERIES_KEY = "SeriesKey"
 ATTRIBUTES = "Attributes"
 VALUE = "Value"
 OBS_DIM = "ObsDimension"
-OBSVALUE = "ObsValue"
-OBSKEY = "ObsKey"
+OBS_VALUE_XML_TAG = "ObsValue"
+OBS_VALUE_ID = "OBS_VALUE"
+OBS_KEY = "ObsKey"
 # Header
-STRREF = "structureRef"
+STR_REF = "structureRef"
 STRUCTURE = "Structure"
 STR_USAGE = "StructureUsage"
-STRID = "structureID"
-STRTYPE = "structure_type"
+PROV_AGREMENT = "ProvisionAgrement"
+STR_ID = "structureID"
+STR_TYPE = "structure_type"
 DIM_OBS = "dimensionAtObservation"
 ALL_DIM = "AllDimensions"
 REF = "Ref"
 DATASET_ID = "DataSetID"
+DATASET_ACTION = "DataSetAction"
+TEST = "Test"
+PREPARED = "Prepared"
+SENDER = "Sender"
+RECEIVER = "Receiver"
+SOURCE = "Source"
+HEADER_ID = "ID"
+NAMESPACE = "namespace"
+NAMES = "names"
+
 
 # SDMX Error handling
 ERROR = "Error"
@@ -51,16 +61,12 @@ ACTION = "action"
 STATUS_MSG = "StatusMessage"
 STATUS = "status"
 
-# SOAP API handling
-FAULT = "Fault"
-FAULTCODE = "faultcode"
-FAULTSTRING = "faultstring"
-
-
 # Structures
 # Common
 NAME = "Name"
+NAME_LOW = "name"
 DESC = "Description"
+DESC_LOW = "description"
 LANG = "lang"
 XML_TEXT = "#text"
 STR_URL = "structureURL"
@@ -70,6 +76,7 @@ SER_URL_LOW = "service_url"
 
 # General
 ANNOTATIONS = "Annotations"
+ANNOTATIONS_LOW = "annotations"
 STRUCTURES = "Structures"
 ORGS = "OrganisationSchemes"
 AGENCIES = "AgencyScheme"
@@ -124,9 +131,6 @@ GROUP_DIM_LOW = "group_dimension_descriptor"
 GROUP_DIM = "GroupDimension"
 DIM_REF = "DimensionReference"
 
-# Dataflows
-DF = "Dataflow"
-
 # Constraints
 CON_CONS = "ContentConstraint"
 CONS_ATT = "ConstraintAttachment"
@@ -152,6 +156,7 @@ TYPE = "type"
 TEXT = "text"
 URL = "url"
 URN = "URN"
+URN_LOW = "urn"
 
 # Representation
 CORE_REP = "CoreRepresentation"
@@ -175,9 +180,11 @@ TEXT_TYPE_LOW = "text_type"
 
 # Contact
 CONTACT = "Contact"
+CONTACTS_LOW = "contacts"
 DEPARTMENT = "Department"
 ROLE = "Role"
 URI = "URI"
+URI_LOW = "uri"
 EMAIL = "Email"
 X400 = "X400"
 TELEPHONE = "Telephone"
@@ -194,7 +201,7 @@ REL_TO = "relatedTo"
 NO_REL = "NoSpecifiedRelationship"
 
 # To exclude from attached_attributes
-exc_attributes = [STRREF, "action", "dataScope", "xsi:type", SERIES, OBS]
+EXCLUDED_ATTRIBUTES = [STR_REF, "action", "dataScope", "xsi:type", SERIES, OBS]
 
 # Content types
 DATASTRUCTURES_CM = "DataStructures"
@@ -216,21 +223,23 @@ IS_FINAL_LOW = "is_final"
 IS_PARTIAL = "isPartial"
 IS_PARTIAL_LOW = "is_partial"
 
-
 # Contact
 URIS = "uris"
 EMAILS = "emails"
 TELEPHONES = "telephones"
 FAXES = "faxes"
 
-# Errors
-missing_rep: Dict[str, List[Any]] = {"CON": [], "CS": [], "CL": []}
-dsd_id: str = ""
-
 # Structure types
 CLS = "Codelists"
 DFW = "Dataflow"
 DFWS = "Dataflows"
+DFWS_LOW = "dataflows"
+RULESETS = "Rulesets"
+RULE_SCHEME = "RulesetScheme"
+RULE = "Ruleset"
+UDOS = "UserDefinedOperators"
+UDO_SCHEME = "UserDefinedOperatorScheme"
+UDO = "UserDefinedOperator"
 TRANSFORMATIONS = "Transformations"
 TRANS_SCHEME = "TransformationScheme"
 TRANSFORMATION = "Transformation"

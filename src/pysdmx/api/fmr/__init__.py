@@ -74,7 +74,6 @@ class __BaseRegistryClient:
         self,
         api_endpoint: str,
         fmt: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
-        pem: Optional[str] = None,
     ):
         """Instantiate a new client against the target endpoint."""
         if api_endpoint.endswith("/"):
@@ -286,6 +285,7 @@ class RegistryClient(__BaseRegistryClient):
         api_endpoint: str,
         format: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
         pem: Optional[str] = None,
+        timeout: float = 10.0,
     ):
         """Instantiate a new client against the target endpoint.
 
@@ -296,8 +296,11 @@ class RegistryClient(__BaseRegistryClient):
             pem: In case the service exposed a certificate created
                 by an unknown certificate authority, you can pass
                 a pem file for this authority using this parameter.
+            timeout: The maximum number of seconds to wait before
+                considering that a request timed out. Defaults to
+                10 seconds.
         """
-        super().__init__(api_endpoint, format, pem)
+        super().__init__(api_endpoint, format)
         self.__service = RestService(
             self.api_endpoint,
             API_VERSION,
@@ -313,7 +316,7 @@ class RegistryClient(__BaseRegistryClient):
                 else RefMetaFormat.FUSION_JSON
             ),
             pem=pem,
-            timeout=10.0,
+            timeout=timeout,
         )
 
     def __fetch(
@@ -358,7 +361,8 @@ class RegistryClient(__BaseRegistryClient):
         """
         query = super()._agencies_q(agency)
         out = self.__fetch(query)
-        return super()._out(out, self.deser.agencies)
+        schemes = super()._out(out, self.deser.agencies)
+        return schemes[0].items
 
     def get_providers(
         self,
@@ -378,7 +382,8 @@ class RegistryClient(__BaseRegistryClient):
         """
         query = super()._providers_q(agency, with_flows)
         out = self.__fetch(query)
-        return super()._out(out, self.deser.providers)
+        schemes = super()._out(out, self.deser.providers)
+        return schemes[0].items
 
     def get_categories(
         self,
@@ -735,6 +740,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         api_endpoint: str,
         format: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
         pem: Optional[str] = None,
+        timeout: float = 10.0,
     ):
         """Instantiate a new client against the target endpoint.
 
@@ -745,8 +751,11 @@ class AsyncRegistryClient(__BaseRegistryClient):
             pem: In case the service exposed a certificate created
                 by an unknown certificate authority, you can pass
                 a pem file for this authority using this parameter.
+            timeout: The maximum number of seconds to wait before
+                considering that a request timed out. Defaults to
+                10 seconds.
         """
-        super().__init__(api_endpoint, format, pem)
+        super().__init__(api_endpoint, format)
         self.__service = AsyncRestService(
             self.api_endpoint,
             API_VERSION,
@@ -762,7 +771,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
                 else RefMetaFormat.FUSION_JSON
             ),
             pem=pem,
-            timeout=10.0,
+            timeout=timeout,
         )
 
     async def __fetch(
@@ -810,7 +819,8 @@ class AsyncRegistryClient(__BaseRegistryClient):
         """
         query = super()._agencies_q(agency)
         out = await self.__fetch(query)
-        return super()._out(out, self.deser.agencies)
+        schemes = super()._out(out, self.deser.agencies)
+        return schemes[0].items
 
     async def get_providers(
         self, agency: str, with_flows: bool = False
@@ -828,7 +838,8 @@ class AsyncRegistryClient(__BaseRegistryClient):
         """
         query = super()._providers_q(agency, with_flows)
         out = await self.__fetch(query)
-        return super()._out(out, self.deser.providers)
+        schemes = super()._out(out, self.deser.providers)
+        return schemes[0].items
 
     async def get_categories(
         self,

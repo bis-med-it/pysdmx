@@ -57,7 +57,12 @@ def test_url_non_df_context_before_2_0_0(
 
 
 @pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
 )
 @pytest.mark.parametrize("context", DataContext)
 def test_url_context_since_2_0_0(
@@ -67,6 +72,25 @@ def test_url_context_since_2_0_0(
     expected = (
         f"/data/{context.value}/*/*/*/*?attributes=dsd&measures=all"
         "&includeHistory=false"
+    )
+
+    q = DataQuery(context)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+@pytest.mark.parametrize("context", DataContext)
+def test_url_context_since_2_2_0(
+    context: DataContext,
+    api_version: ApiVersion,
+):
+    expected = (
+        f"/data/{context.value}/*/*/*/*?attributes=dsd&measures=all"
+        "&includeHistory=false&offset=0"
     )
 
     q = DataQuery(context)

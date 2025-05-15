@@ -1,7 +1,8 @@
 """Build SDMX-REST structure queries."""
 
+from datetime import datetime
 from enum import Enum
-from typing import Sequence, Union
+from typing import Optional, Sequence, Union
 
 import msgspec
 
@@ -9,10 +10,13 @@ from pysdmx.api.qb.util import (
     REST_ALL,
     REST_LATEST,
     ApiVersion,
+    CoreQuery,
     check_multiple_items,
 )
 from pysdmx.errors import Invalid
 from pysdmx.io.format import StructureFormat
+from pysdmx.model import ItemReference, Reference
+from pysdmx.util import parse_urn
 
 
 class StructureDetail(Enum):
@@ -141,6 +145,28 @@ class StructureType(Enum):
     METADATA_PROVISION_AGREEMENT = "metadataprovisionagreement"
     ALL = REST_ALL
 
+    @classmethod
+    def from_type(
+        cls, sdmx_type: str, is_item: bool = False
+    ) -> "StructureType":
+        """Create a StructureType from an sdmx type string."""
+        sdmx_type = sdmx_type.lower()
+        if sdmx_type == "code":
+            return StructureType.CODELIST
+        elif sdmx_type == "reportingcategory":
+            return StructureType.REPORTING_TAXONOMY
+        elif sdmx_type == "hierarchicalcode":
+            return StructureType.HIERARCHY
+        else:
+            val = f"{sdmx_type}scheme" if is_item else sdmx_type
+            try:
+                return StructureType(val)
+            except ValueError as ve:
+                raise Invalid(
+                    "Unknow type",
+                    f"The supplied artefact type is unknown: {val}",
+                ) from ve
+
 
 ITEM_SCHEMES = {
     StructureType.CATEGORY_SCHEME,
@@ -245,11 +271,12 @@ _API_RESOURCES = {
     "V1.5.0": _V1_5_RESOURCES,
     "V2.0.0": _V2_0_RESOURCES,
     "V2.1.0": _V2_0_RESOURCES,
+    "V2.2.0": _V2_0_RESOURCES,
     "LATEST": _V2_0_RESOURCES,
 }
 
 
-class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
+class StructureQuery(CoreQuery, frozen=True, omit_defaults=True):
     """A query for structural metadata.
 
     Attributes:
@@ -261,6 +288,8 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         item_id: The id(s) of the item(s) to be returned.
         detail: The desired amount of information to be returned.
         references: The additional artefact(s) to include in the response.
+        as_of: Retrieve the artefact as it was at the specified point
+            in time (aka time travel).
     """
 
     artefact_type: StructureType = StructureType.ALL
@@ -270,35 +299,54 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     item_id: Union[str, Sequence[str]] = REST_ALL
     detail: StructureDetail = StructureDetail.FULL
     references: StructureReference = StructureReference.NONE
+    as_of: Optional[datetime] = None
 
-    def validate(self) -> None:
-        """Validate the query."""
-        try:
-            decoder.decode(encoder.encode(self))
-        except msgspec.DecodeError as err:
-            raise Invalid("Invalid Structure Query", str(err)) from err
+    @staticmethod
+    def from_ref(
+        ref: Union[ItemReference, Reference, str],
+    ) -> "StructureQuery":
+        """Create a StructureQuery out of the supplied reference.
 
-    def get_url(self, version: ApiVersion, omit_defaults: bool = False) -> str:
-        """The URL for the query in the selected SDMX-REST API version."""
-        self.__validate_query(version)
-        if omit_defaults:
-            return self.__create_short_query(version)
-        else:
-            return self.__create_full_query(version)
+        Args:
+            ref: Either a reference object (Reference for maintainable
+                artefacts, or ItemReference for items), or an SDMX urn.
 
-    def __validate_query(self, version: ApiVersion) -> None:
+        Returns:
+            A StructureQuery to retrieve the supplied reference.
+
+        Raises:
+            Invalid: If reference is a string and it is not an SDMX urn,
+                or if the type cannot be translated into a StructureType.
+        """
+        if isinstance(ref, str):
+            ref = parse_urn(ref)
+        item = ref.item_id if isinstance(ref, ItemReference) else REST_ALL
+        atype = StructureType.from_type(
+            ref.sdmx_type, isinstance(ref, ItemReference)
+        )
+        return StructureQuery(atype, ref.agency, ref.id, ref.version, item)
+
+    def _validate_query(self, version: ApiVersion) -> None:
         self.validate()
         self.__check_multiple_items(version)
         self.__check_artefact_type(self.artefact_type, version)
         self.__check_item(version)
         self.__check_detail(version)
         self.__check_references(version)
+        self.__check_as_of(version)
 
     def __check_multiple_items(self, version: ApiVersion) -> None:
         check_multiple_items(self.agency_id, version)
         check_multiple_items(self.resource_id, version)
         check_multiple_items(self.version, version)
         check_multiple_items(self.item_id, version)
+
+    def __check_as_of(self, version: ApiVersion) -> None:
+        if self.as_of and version < ApiVersion.V2_2_0:
+            raise Invalid(
+                "Validation Error",
+                f"as_of not supported in {version.value}.",
+            )
 
     def __check_artefact_type(
         self, atyp: StructureType, version: ApiVersion
@@ -362,22 +410,15 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             out = val.value
         return out
 
-    def __to_kw(self, val: str, ver: ApiVersion) -> str:
-        if val == "*" and ver < ApiVersion.V2_0_0:
-            val = "all"
-        elif val == "~" and ver < ApiVersion.V2_0_0:
-            val = "latest"
-        return val
-
     def __to_kws(
         self, vals: Union[str, Sequence[str]], ver: ApiVersion
     ) -> str:
         vals = [vals] if isinstance(vals, str) else vals
-        mapped = [self.__to_kw(v, ver) for v in vals]
+        mapped = [self._to_kw(v, ver) for v in vals]
         sep = "+" if ver < ApiVersion.V2_0_0 else ","
         return sep.join(mapped)
 
-    def __create_full_query(self, ver: ApiVersion) -> str:
+    def _create_full_query(self, ver: ApiVersion) -> str:
         u = "/"
         u += "structure/" if ver >= ApiVersion.V2_0_0 else ""
         t = self.__to_type_kw(self.artefact_type, ver)
@@ -389,9 +430,11 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         ck = [self.__is_item_allowed(self.artefact_type, ver)]
         u += f"/{i}" if all(ck) else ""
         u += f"?detail={self.detail.value}&references={self.references.value}"
+        if self.as_of:
+            u += f'&asOf={self.as_of.isoformat("T", "seconds")}'
         return u
 
-    def __create_short_query(self, ver: ApiVersion) -> str:
+    def _create_short_query(self, ver: ApiVersion) -> str:
         u = "/structure" if ver >= ApiVersion.V2_0_0 else ""
         t = self.__to_type_kw(self.artefact_type, ver)
         a = self.__to_kws(self.agency_id, ver)
@@ -418,6 +461,7 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             "?"
             if self.detail != StructureDetail.FULL
             or self.references != StructureReference.NONE
+            or self.as_of
             else ""
         )
         u += (
@@ -436,11 +480,27 @@ class StructureQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             if self.references != StructureReference.NONE
             else ""
         )
+        u += (
+            "&"
+            if self.as_of
+            and (
+                self.detail != StructureDetail.FULL
+                or self.references != StructureReference.NONE
+            )
+            else ""
+        )
+        u += (
+            f'asOf={self.as_of.isoformat("T", "seconds")}'
+            if self.as_of
+            else ""
+        )
         return u
 
+    def _get_decoder(self) -> msgspec.json.Decoder:  # type: ignore[type-arg]
+        return _decoder
 
-decoder = msgspec.json.Decoder(StructureQuery)
-encoder = msgspec.json.Encoder()
+
+_decoder = msgspec.json.Decoder(StructureQuery)
 
 
 __all__ = [

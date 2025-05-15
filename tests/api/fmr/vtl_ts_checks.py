@@ -128,11 +128,26 @@ def __check_user_defined_operator_scheme(ts: TransformationScheme):
         assert isinstance(udo, UserDefinedOperator)
         if udo.id == "SUM":
             assert udo.name == "Sum"
-            assert udo.operator_definition == "sum"
+            assert (
+                udo.operator_definition
+                == "define operator filter_ds (ds1 dataset, "
+                'great_cons string default "1", '
+                "less_cons number default 4.0) "
+                "returns dataset is ds1[filter Me_1 > "
+                "great_cons and Me_2 < less_cons] end operator;"
+            )
+
         else:
             assert udo.id == "AVG"
             assert udo.name == "Average"
-            assert udo.operator_definition == "avg"
+            assert (
+                udo.operator_definition
+                == "define operator filter_ds (ds1 dataset, "
+                'great_cons string default "1", '
+                "less_cons number default 4.0) "
+                "returns dataset is ds1[filter Me_1 > "
+                "great_cons and Me_2 < less_cons] end operator;"
+            )
 
 
 def __check_name_personalisation_scheme(ts: TransformationScheme):
@@ -189,9 +204,15 @@ def __check_ruleset_scheme(ts: TransformationScheme):
         assert rule.name == "Datapoint Ruleset UNIQUE_SOMETHING"
         assert (
             rule.ruleset_definition
-            == "Here we should have a real VTL program instead..."
+            == "define datapoint ruleset signValidation "
+            "(variable ACCOUNTING_ENTRY as AE, "
+            "INT_ACC_ITEM as IAI,FUNCTIONAL_CAT as FC,"
+            " INSTR_ASSET as IA, OBS_VALUE as O) "
+            'is sign1c: when AE = "C" and IAI = "G" '
+            'then O > 0 errorcode "sign1c" errorlevel 1 '
+            "end datapoint ruleset;"
         )
-        assert rule.ruleset_scope == "valuedomain"
+        assert rule.ruleset_scope == "variable"
         assert rule.ruleset_type == "datapoint"
 
 
