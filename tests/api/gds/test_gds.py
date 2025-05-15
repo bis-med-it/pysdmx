@@ -148,16 +148,16 @@ def generic_test(
 
 
 def repr_test(
-        mock,
-        gds,
-        query,
-        body,
-        value,
-        params,
-        resource,
-        version,
-        expected_class,
-        references,
+    mock,
+    gds,
+    query,
+    body,
+    value,
+    params,
+    resource,
+    version,
+    expected_class,
+    references,
 ):
     """Generic function to test GDS model __str__ method."""
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
