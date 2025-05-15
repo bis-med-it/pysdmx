@@ -315,7 +315,9 @@ def __write_header(
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
     if isinstance(header.prepared, str):
-        prepared = datetime.strptime(header.prepared, "%Y-%m-%dT%H:%M:%S")
+        prepared = datetime.strptime(
+            header.prepared, "%Y-%m-%dT%H:%M:%S"
+        ).strftime("%Y-%m-%dT%H:%M:%S")
     else:
         prepared = header.prepared.strftime("%Y-%m-%dT%H:%M:%S")
     test = str(header.test).lower()
