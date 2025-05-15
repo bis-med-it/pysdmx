@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import httpx
+import msgspec
 import pytest
 from msgspec._core import DecodeError
 
@@ -18,6 +19,10 @@ from pysdmx.model.gds import (
     GdsUrnResolver,
 )
 
+from pysdmx.io.json.gds.reader import deserializers as gds_readers
+from msgspec.json import decode
+
+
 # Mapping of endpoints to their expected classes
 ENDPOINTS = {
     "agency": GdsAgency,
@@ -25,6 +30,14 @@ ENDPOINTS = {
     "sdmxapi": GdsSdmxApi,
     "service": GdsService,
     "urn_resolver": GdsUrnResolver,
+}
+
+DECODERS = {
+    GdsAgency: gds_readers.agencies,
+    GdsCatalog: gds_readers.catalogs,
+    GdsSdmxApi: gds_readers.sdmx_api,
+    GdsService: gds_readers.services,
+    GdsUrnResolver: gds_readers.urn_resolver,
 }
 
 METHOD_MAP = {
@@ -63,6 +76,20 @@ def body(endpoint, request):
 
 
 @pytest.fixture
+def expected_class(endpoint):
+    """Fixture to map the endpoint to its expected class."""
+    return ENDPOINTS[endpoint]
+
+
+@pytest.fixture
+def references(body, expected_class):
+    """Fixture to decode the body content to the expected objects."""
+    decoder = DECODERS[expected_class]
+    schemes = decode(body, type=decoder).to_model()
+    return schemes
+
+
+@pytest.fixture
 def query(gds: GdsClient, endpoint, value, params, resource, version):
     """Construct a query URL similar to the GDS query logic."""
     v = f"/{version}" if version and version != REST_LATEST else ""
@@ -81,7 +108,7 @@ def query(gds: GdsClient, endpoint, value, params, resource, version):
 
 
 def generic_test(
-    mock, gds, query, body, value, resource, version, params, expected_class
+    mock, gds, query, body, value, resource, version, params, expected_class, references
 ):
     """Generic function to test endpoints."""
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
@@ -107,6 +134,8 @@ def generic_test(
     else:
         for item in result:
             assert isinstance(item, expected_class)
+
+    assert result == references
 
 
 @pytest.mark.parametrize(
@@ -188,10 +217,9 @@ def generic_test(
     indirect=["body"],
 )
 def test_generic(
-    respx_mock, gds, query, body, endpoint, value, params, resource, version
+    respx_mock, gds, query, body, endpoint, value, params, resource, version, expected_class, references
 ):
     """Generic test for all endpoints."""
-    expected_class = ENDPOINTS[endpoint]
     generic_test(
         respx_mock,
         gds,
@@ -202,6 +230,7 @@ def test_generic(
         version,
         params,
         expected_class,
+        references
     )
 
 
@@ -222,8 +251,9 @@ def test_gds_without_slash(
     params,
     resource,
     version,
+    expected_class,
+    references
 ):
-    expected_class = ENDPOINTS[endpoint]
     generic_test(
         respx_mock,
         gds_without_slash,
@@ -234,6 +264,7 @@ def test_gds_without_slash(
         version,
         params,
         expected_class,
+        references
     )
 
 
@@ -254,8 +285,9 @@ def test_gds_downgraded_version(
     params,
     resource,
     version,
+    expected_class,
+    references
 ):
-    expected_class = ENDPOINTS[endpoint]
     generic_test(
         respx_mock,
         gds_1_4_0,
@@ -266,6 +298,7 @@ def test_gds_downgraded_version(
         version,
         params,
         expected_class,
+        references
     )
 
 
@@ -284,9 +317,8 @@ def test_gds_downgraded_version(
     indirect=["body"],
 )
 def test_non_existing_entty(
-    respx_mock, gds, query, body, endpoint, value, params, resource, version
+    respx_mock, gds, query, body, endpoint, value, params, resource, version, expected_class
 ):
-    expected_class = ENDPOINTS[endpoint]
     with pytest.raises(DecodeError):
         generic_test(
             respx_mock,
@@ -298,6 +330,7 @@ def test_non_existing_entty(
             version,
             params,
             expected_class,
+            None
         )
 
 
