@@ -149,6 +149,7 @@ class StructureType(Enum):
     def from_type(
         cls, sdmx_type: str, is_item: bool = False
     ) -> "StructureType":
+        """Create a StructureType from an sdmx type string."""
         sdmx_type = sdmx_type.lower()
         if sdmx_type == "code":
             return StructureType.CODELIST
