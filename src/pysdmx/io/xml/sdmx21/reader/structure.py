@@ -10,6 +10,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCIES,
     AGENCY,
     AGENCY_ID,
+    ALIAS_LOW,
     ANNOTATION,
     ANNOTATION_TEXT,
     ANNOTATION_TITLE,
@@ -38,6 +39,8 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     DEPARTMENT,
     DESC,
     DFW,
+    DFW_ALIAS_LOW,
+    DFW_LOW,
     DFWS,
     DIM,
     DIM_LIST,
@@ -107,6 +110,9 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VALID_TO,
     VALID_TO_LOW,
     VERSION,
+    VTL_MAPPING_SCHEME,
+    VTLMAPPING,
+    VTLMAPPINGS,
 )
 from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.io.xml.utils import add_list
@@ -123,6 +129,7 @@ from pysdmx.model.__base import (
     Agency,
     Annotation,
     Contact,
+    DataflowRef,
     Item,
     ItemReference,
     ItemScheme,
@@ -142,6 +149,8 @@ from pysdmx.model.vtl import (
     TransformationScheme,
     UserDefinedOperator,
     UserDefinedOperatorScheme,
+    VtlDataflowMapping,
+    VtlMappingScheme,
 )
 from pysdmx.util import find_by_urn, parse_urn
 
@@ -154,6 +163,7 @@ STRUCTURES_MAPPING = {
     RULE_SCHEME: RulesetScheme,
     UDO_SCHEME: UserDefinedOperatorScheme,
     TRANS_SCHEME: TransformationScheme,
+    VTL_MAPPING_SCHEME: VtlMappingScheme,
 }
 ITEMS_CLASSES = {
     AGENCY: Agency,
@@ -162,6 +172,7 @@ ITEMS_CLASSES = {
     RULE: Ruleset,
     UDO: UserDefinedOperator,
     TRANSFORMATION: Transformation,
+    VTLMAPPING: VtlDataflowMapping,
 }
 
 COMP_TYPES = [DIM, ATT, PRIM_MEASURE, GROUP_DIM]
@@ -515,6 +526,23 @@ class StructureParser(Struct):
 
         return json_elem
 
+    def __format_dataflow(
+        self, json_rep: Dict[str, Any], json_obj: Dict[str, Any]
+    ) -> None:
+        json_obj[DFW_ALIAS_LOW] = json_obj.pop(ALIAS_LOW)
+        dataflow_ref = {
+            "agency": json_rep[REF][AGENCY_ID],
+            "id": json_rep[REF][ID],
+            "version": json_rep[REF][VERSION],
+        }
+        json_obj[DFW_LOW] = DataflowRef(**dataflow_ref)
+        json_rep.pop(REF)
+        json_obj.pop(DFW)
+        if self.dataflows:
+            for dataflow in self.dataflows.values():
+                if dataflow.id == dataflow_ref[ID]:
+                    json_obj[DFW_LOW] = dataflow
+
     def __format_component(
         self, comp: Dict[str, Any], role: Role
     ) -> Component:
@@ -629,6 +657,8 @@ class StructureParser(Struct):
 
         if "Parent" in item_json_info:
             del item_json_info["Parent"]
+        if DFW in item_json_info:
+            self.__format_dataflow(item_json_info[DFW], item_json_info)
 
         item_json_info = self.__format_vtl(item_json_info)
 
@@ -781,7 +811,9 @@ class StructureParser(Struct):
                 "datastructures",
             ),
             DFWS: process_structure(
-                DFWS, lambda data: self.__format_schema(data, DFWS, DFW)
+                DFWS,
+                lambda data: self.__format_schema(data, DFWS, DFW),
+                "dataflows",
             ),
             RULESETS: process_structure(
                 RULESETS,
@@ -801,6 +833,14 @@ class StructureParser(Struct):
                     TRANSFORMATION,
                 ),
                 "transformations",
+            ),
+            VTLMAPPINGS: process_structure(
+                VTLMAPPINGS,
+                lambda data: self.__format_scheme(
+                    data,
+                    VTL_MAPPING_SCHEME,
+                    VTLMAPPING,
+                ),
             ),
         }
         return [
