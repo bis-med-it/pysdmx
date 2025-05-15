@@ -140,8 +140,8 @@ class GdsClient(__BaseGdsClient):
         """
         query = super()._agencies_q(ref)
         out = self.__fetch(query)
-        schemes = super()._out(out, self.reader.agencies)
-        return schemes
+        agencies = super()._out(out, self.reader.agencies)
+        return agencies
 
     def get_catalogs(
         self,
@@ -180,8 +180,8 @@ class GdsClient(__BaseGdsClient):
             references,
         )
         response = self.__fetch(query)
-        schemes = super()._out(response, self.reader.catalogs)
-        return schemes
+        catalogs = super()._out(response, self.reader.catalogs)
+        return catalogs
 
     def get_sdmx_api(self, ref: str = REST_ALL) -> Sequence[GdsSdmxApi]:
         """Get the list of SDMX API versions.
@@ -191,8 +191,8 @@ class GdsClient(__BaseGdsClient):
         """
         query = super()._sdmx_api_q(ref)
         response = self.__fetch(query)
-        schemes = super()._out(response, self.reader.sdmx_api)
-        return schemes
+        sdmx_api = super()._out(response, self.reader.sdmx_api)
+        return sdmx_api
 
     def get_services(
         self, ref: str, resource: str = REST_ALL, version: str = REST_ALL
@@ -209,8 +209,8 @@ class GdsClient(__BaseGdsClient):
         """
         query = super()._services_q(ref, resource, version)
         response = self.__fetch(query)
-        schemes = super()._out(response, self.reader.services)
-        return schemes
+        services = super()._out(response, self.reader.services)
+        return services
 
     def get_urn_resolver(self, ref: str) -> GdsUrnResolver:
         """Resolve a URN to its corresponding resource.
@@ -223,5 +223,5 @@ class GdsClient(__BaseGdsClient):
         """
         query = super()._urn_resolver_q(ref)
         response = self.__fetch(query)
-        schemes = super()._out(response, self.reader.urn_resolver)
-        return schemes
+        urn_resolution = super()._out(response, self.reader.urn_resolver)
+        return urn_resolution
