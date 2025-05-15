@@ -139,7 +139,7 @@ def test_from_maintainable_urn(urn, expected_type):
     assert q.agency_id != REST_ALL
     assert q.resource_id != REST_ALL
     assert q.version != REST_LATEST
-    assert q.item_id is None
+    assert q.item_id == REST_ALL
 
 
 item_urns = [

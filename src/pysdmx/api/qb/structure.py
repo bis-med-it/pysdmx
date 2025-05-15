@@ -320,7 +320,7 @@ class StructureQuery(CoreQuery, frozen=True, omit_defaults=True):
         """
         if isinstance(ref, str):
             ref = parse_urn(ref)
-        item = ref.item_id if isinstance(ref, ItemReference) else None
+        item = ref.item_id if isinstance(ref, ItemReference) else REST_ALL
         atype = StructureType.from_type(
             ref.sdmx_type, isinstance(ref, ItemReference)
         )
