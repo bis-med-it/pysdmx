@@ -15,6 +15,8 @@ from pysdmx.api.qb.util import (
 )
 from pysdmx.errors import Invalid
 from pysdmx.io.format import StructureFormat
+from pysdmx.model import ItemReference, Reference
+from pysdmx.util import parse_urn
 
 
 class StructureDetail(Enum):
@@ -142,6 +144,28 @@ class StructureType(Enum):
     METADATA_PROVIDER_SCHEME = "metadataproviderscheme"
     METADATA_PROVISION_AGREEMENT = "metadataprovisionagreement"
     ALL = REST_ALL
+
+    @classmethod
+    def from_type(
+        cls, sdmx_type: str, is_item: bool = False
+    ) -> "StructureType":
+        """Create a StructureType from an sdmx type string."""
+        sdmx_type = sdmx_type.lower()
+        if sdmx_type == "code":
+            return StructureType.CODELIST
+        elif sdmx_type == "reportingcategory":
+            return StructureType.REPORTING_TAXONOMY
+        elif sdmx_type == "hierarchicalcode":
+            return StructureType.HIERARCHY
+        else:
+            val = f"{sdmx_type}scheme" if is_item else sdmx_type
+            try:
+                return StructureType(val)
+            except ValueError as ve:
+                raise Invalid(
+                    "Unknow type",
+                    f"The supplied artefact type is unknown: {val}",
+                ) from ve
 
 
 ITEM_SCHEMES = {
@@ -276,6 +300,31 @@ class StructureQuery(CoreQuery, frozen=True, omit_defaults=True):
     detail: StructureDetail = StructureDetail.FULL
     references: StructureReference = StructureReference.NONE
     as_of: Optional[datetime] = None
+
+    @staticmethod
+    def from_ref(
+        ref: Union[ItemReference, Reference, str],
+    ) -> "StructureQuery":
+        """Create a StructureQuery out of the supplied reference.
+
+        Args:
+            ref: Either a reference object (Reference for maintainable
+                artefacts, or ItemReference for items), or an SDMX urn.
+
+        Returns:
+            A StructureQuery to retrieve the supplied reference.
+
+        Raises:
+            Invalid: If reference is a string and it is not an SDMX urn,
+                or if the type cannot be translated into a StructureType.
+        """
+        if isinstance(ref, str):
+            ref = parse_urn(ref)
+        item = ref.item_id if isinstance(ref, ItemReference) else REST_ALL
+        atype = StructureType.from_type(
+            ref.sdmx_type, isinstance(ref, ItemReference)
+        )
+        return StructureQuery(atype, ref.agency, ref.id, ref.version, item)
 
     def _validate_query(self, version: ApiVersion) -> None:
         self.validate()
