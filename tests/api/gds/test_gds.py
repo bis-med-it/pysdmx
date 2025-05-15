@@ -327,7 +327,7 @@ def test_string_repr(
     expected_class,
     references,
 ):
-    """Generic test for all endpoints."""
+    """String repr test for all GDS models."""
     repr_test(
         respx_mock,
         gds,
