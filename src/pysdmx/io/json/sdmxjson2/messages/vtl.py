@@ -5,7 +5,7 @@ from typing import Literal, Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.model import DataflowRef
+from pysdmx.model.__base import DataflowRef
 from pysdmx.model.vtl import (
     CustomType,
     CustomTypeScheme,

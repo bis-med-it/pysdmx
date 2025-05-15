@@ -6,8 +6,8 @@ from typing import Literal, Optional, Sequence, Union
 from msgspec import Struct
 
 from pysdmx.errors import Invalid
-from pysdmx.model import Dataflow
 from pysdmx.model.__base import DataflowRef, Item, ItemScheme, Reference
+from pysdmx.model.dataflow import Dataflow
 
 
 class Transformation(Item, frozen=True, omit_defaults=True):
