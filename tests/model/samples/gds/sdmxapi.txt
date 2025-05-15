@@ -1,0 +1,1 @@
+release=1.5.0, description=Version 1.5.0 of the SDMX REST API specification (released: 09/2020) - see the [release notes](https://github.com/sdmx-twg/sdmx-rest/releases/tag/v1.5.0) and the [official documentation](https://github.com/sdmx-twg/sdmx-rest/tree/v1.5.0/v2_1/ws/rest/docs).
