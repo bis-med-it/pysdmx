@@ -99,17 +99,21 @@ class RefMetaByMetadatasetQuery(
                 or if the artefact type is not MetadataSet.
         """
         if isinstance(ref, str):
-            ref = parse_urn(ref)
-        if ref.sdmx_type != "MetadataSet":
+            ref = parse_urn(ref)  # type: ignore[assignment]
+        if ref.sdmx_type != "MetadataSet":  # type: ignore[union-attr]
             raise Invalid(
                 "Unexpected artefact type",
                 (
                     "Only references of type MetadataSet can be converted"
                     "into a RefMetaByMetadatasetQuery"
                 ),
-                {"received_type": ref.sdmx_type},
+                {"received_type": ref.sdmx_type},  # type: ignore[union-attr]
             )
-        return RefMetaByMetadatasetQuery(ref.agency, ref.id, ref.version)
+        return RefMetaByMetadatasetQuery(
+            ref.agency,  # type: ignore[union-attr]
+            ref.id,  # type: ignore[union-attr]
+            ref.version,  # type: ignore[union-attr]
+        )
 
     def _validate_query(self, version: ApiVersion) -> None:
         super().validate()
