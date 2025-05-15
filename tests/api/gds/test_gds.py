@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import httpx
-import msgspec
 import pytest
 from msgspec._core import DecodeError
 
@@ -131,9 +130,11 @@ def generic_test(
 
     if expected_class == GdsUrnResolver:
         assert isinstance(result, expected_class)
+        assert result.__str__() == references.__str__()
     else:
-        for item in result:
+        for i, item in enumerate(result):
             assert isinstance(item, expected_class)
+            assert item.__str__() == references[i].__str__()
 
     assert result == references
 
