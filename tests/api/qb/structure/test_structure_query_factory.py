@@ -159,6 +159,14 @@ item_urns = [
         f"{__base_urn}codelist.HierarchicalCode=ESTAT:TEST(1.0).thUA",
         StructureType.HIERARCHY,
     ),
+    (
+        f"{__base_urn}.base.Agency=SDMX:AGENCIES(1.0).ILO",
+        StructureType.AGENCY_SCHEME,
+    ),
+    (
+        f"{__base_urn}.base.DataProvider=ESTAT:DATA_PROVIDERS(1.0).OECD",
+        StructureType.DATA_PROVIDER_SCHEME,
+    ),
 ]
 
 
