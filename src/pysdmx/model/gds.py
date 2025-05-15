@@ -13,7 +13,20 @@ from typing import List, Optional
 from msgspec import Struct
 
 
-class GdsEndpoint(Struct, frozen=True):
+class GdsBase(Struct, frozen=True):
+    """Base class for all GDS models with a custom __str__ method."""
+
+    def __str__(self) -> str:
+        """Returns a human-friendly description."""
+        out = []
+        for k in self.__annotations__:
+            v = self.__getattribute__(k)
+            if v:
+                out.append(f"{k}={v}")
+        return ", ".join(out)
+
+
+class GdsEndpoint(GdsBase, frozen=True):
     """Represents a GDS endpoint.
 
     Attributes:
@@ -31,7 +44,7 @@ class GdsEndpoint(Struct, frozen=True):
     rest_resources: List[str]
 
 
-class GdsServiceReference(Struct, frozen=True):
+class GdsServiceReference(GdsBase, frozen=True):
     """Represents a GDS service reference.
 
     Attributes:
@@ -49,7 +62,7 @@ class GdsServiceReference(Struct, frozen=True):
     description: Optional[str] = None
 
 
-class GdsAgency(Struct, frozen=True):
+class GdsAgency(GdsBase, frozen=True):
     """Represents a GDS agency.
 
     Attributes:
@@ -65,7 +78,7 @@ class GdsAgency(Struct, frozen=True):
     description: str = ""
 
 
-class GdsCatalog(Struct, frozen=True):
+class GdsCatalog(GdsBase, frozen=True):
     """Represents a GDS catalog.
 
     Attributes:
@@ -86,7 +99,7 @@ class GdsCatalog(Struct, frozen=True):
     serviceRefs: Optional[List[GdsServiceReference]] = None
 
 
-class GdsService(Struct, frozen=True):
+class GdsService(GdsBase, frozen=True):
     """Represents a GDS catalog.
 
     Attributes:
@@ -110,7 +123,7 @@ class GdsService(Struct, frozen=True):
     authentication: Optional[str] = None
 
 
-class GdsSdmxApi(Struct, frozen=True):
+class GdsSdmxApi(GdsBase, frozen=True):
     """Represents an SDMX API version.
 
     Attributes:
@@ -122,7 +135,7 @@ class GdsSdmxApi(Struct, frozen=True):
     description: str
 
 
-class ResolverResult(Struct, frozen=True):
+class ResolverResult(GdsBase, frozen=True):
     """Represents a single resolver result.
 
     Attributes:
@@ -136,7 +149,7 @@ class ResolverResult(Struct, frozen=True):
     query_response_status_code: int
 
 
-class GdsUrnResolver(Struct, frozen=True):
+class GdsUrnResolver(GdsBase, frozen=True):
     """Represents the response for a URN resolver query.
 
     Attributes:
