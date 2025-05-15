@@ -130,7 +130,7 @@ maintainable_urns = [
 ]
 
 
-@pytest.mark.parametrize("urn,expected_type", maintainable_urns)
+@pytest.mark.parametrize(("urn", "expected_type"), maintainable_urns)
 def test_from_maintainable_urn(urn, expected_type):
     q = StructureQuery.from_ref(urn)
 
@@ -170,7 +170,7 @@ item_urns = [
 ]
 
 
-@pytest.mark.parametrize("urn,expected_type", item_urns)
+@pytest.mark.parametrize(("urn", "expected_type"), item_urns)
 def test_from_item_urn(urn, expected_type):
     q = StructureQuery.from_ref(urn)
 

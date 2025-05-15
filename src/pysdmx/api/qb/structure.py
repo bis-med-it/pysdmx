@@ -15,7 +15,7 @@ from pysdmx.api.qb.util import (
 )
 from pysdmx.errors import Invalid
 from pysdmx.io.format import StructureFormat
-from pysdmx.model import Reference, ItemReference
+from pysdmx.model import ItemReference, Reference
 from pysdmx.util import parse_urn
 
 
