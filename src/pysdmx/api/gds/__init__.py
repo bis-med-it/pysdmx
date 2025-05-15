@@ -1,9 +1,9 @@
-"""API client for interacting with the GDS (Global Data Structure) service.
+"""API client for interacting with the GDS (Global Discovery Service) service.
 
 This module provides classes and utilities to interact with the GDS service,
 allowing retrieval of metadata such as agency information in SDMX-JSON format.
 
-Exports: RegistryClient: A synchronous client for retrieving metadata from
+Exports: GdsClient: A synchronous client for retrieving metadata from
 the GDS.
 """
 
