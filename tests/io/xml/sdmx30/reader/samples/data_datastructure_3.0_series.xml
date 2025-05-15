@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:StructureSpecificData xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/data/structurespecific"
+                               xmlns:footer="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message/footer"
+                               xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0):ObsLevelDim:TIME_PERIOD"
+                               xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message"
+                               xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common"
+                               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                               xmlns:xml="http://www.w3.org/XML/1998/namespace"
+                               xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0):ObsLevelDim:TIME_PERIOD https://registry.sdmx.io/ws/public/sdmxapi/rest/schema/datastructure/BIS/BIS_CBS/1.0?format=sdmx-3.0">
+    <message:Header>
+        <message:ID>IDREF1a99247b-ab9a-4c58-a3ec-64abfb88d2b5</message:ID>
+        <message:Test>false</message:Test>
+        <message:Prepared>2025-04-28T09:45:36Z</message:Prepared>
+        <message:Sender id="UNKNOWN"/>
+        <message:Receiver id="guest"/>
+        <message:Structure structureID="BIS_BIS_CBS_1_0"
+                           namespace="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0):ObsLevelDim:TIME_PERIOD"
+                           dimensionAtObservation="TIME_PERIOD">
+                <common:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)</common:Structure>
+        </message:Structure>
+        <message:DataSetAction>Information</message:DataSetAction>
+        <message:DataSetID>d45f3974-85cb-4953-87a4-a8579dd6ebf6</message:DataSetID>
+        <message:Extracted>2025-04-28T09:45:36</message:Extracted>
+        <message:ReportingBegin>1983-10-01T00:00:00</message:ReportingBegin>
+        <message:ReportingEnd>2024-07-01T23:59:59</message:ReportingEnd>
+        <message:Source xml:lang="en">sdmx.io FMR sandbox</message:Source>
+    </message:Header>
+    <message:DataSet DECIMALS="3" UNIT_MULT="6" UNIT_MEASURE="USD" xsi:type="ns1:DataSetType"
+                     ss:structureRef="BIS_BIS_CBS_1_0">
+        <Series FREQ="Q" L_MEASURE="S" L_REP_CTY="5A" CBS_BANK_TYPE="4B" CBS_BASIS="F" L_POSITION="C" L_INSTR="A"
+                REM_MATURITY="A" CURR_TYPE_BOOK="TO1" L_CP_SECTOR="A" L_CP_COUNTRY="5J" COLLECTION="E"
+                ORG_VISIBILITY="E">
+            <Obs TIME_PERIOD="1983-Q4" OBS_VALUE="561783.0" OBS_STATUS="A" OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1984-Q2" OBS_VALUE="576310.0" OBS_STATUS="A" OBS_CONF="F"/>
+            <Obs TIME_PERIOD="1984-Q4" OBS_VALUE="683104.0" OBS_STATUS="A" OBS_CONF="F"/>
+        </Series>
+    </message:DataSet>
+</message:StructureSpecificData>
