@@ -228,8 +228,8 @@ def __check_vtl_mapping_scheme(ts: TransformationScheme):
         assert isinstance(vm, VtlDataflowMapping)
         assert vm.id == "VTLM1"
         assert vm.name == "VTL Mapping #1"
-        assert vm.dataflow.agency == "TEST_AGENCY"
-        assert vm.dataflow.id == "TEST_FLOW"
+        assert vm.dataflow.agency == "TEST"
+        assert vm.dataflow.id == "TEST_DETAIL"
         assert vm.dataflow.version == "1.0"
         assert vm.dataflow_alias == "TEST_DETAIL_VTL"
         assert vm.to_vtl_mapping_method is not None

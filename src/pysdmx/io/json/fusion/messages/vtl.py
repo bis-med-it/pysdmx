@@ -28,6 +28,7 @@ from pysdmx.model.vtl import (
 from pysdmx.model.vtl import (
     TransformationScheme as TS,
 )
+from pysdmx.util import parse_urn
 
 
 class FusionCustomType(Struct, frozen=True):
@@ -284,7 +285,6 @@ class FusionVtlMapping(Struct, frozen=True):
     id: str
     alias: str
     mapped: str
-    flowref: DataflowRef
     names: Sequence[FusionString] = ()
     descriptions: Sequence[FusionString] = ()
     toVtlMethod: Optional[str] = None
@@ -315,13 +315,19 @@ class FusionVtlMapping(Struct, frozen=True):
                 concept_alias=self.alias,
             )
         else:
+            reference = parse_urn(self.mapped)
+            dataflow = DataflowRef(
+                id=reference.id,
+                agency=reference.agency,
+                version=reference.version,
+            )
             return VtlDataflowMapping(
                 self.id,
                 name=self.names[0].value,
                 description=(
                     self.descriptions[0].value if self.descriptions else None
                 ),
-                dataflow=self.flowref,
+                dataflow=dataflow,
                 dataflow_alias=self.alias,
                 from_vtl_mapping_method=(
                     FromVtlMapping(self.fromVtlSuperSpace, self.fromVtlMethod)

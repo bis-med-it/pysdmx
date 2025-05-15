@@ -34,13 +34,7 @@
                         }
                     ],
                     "alias": "TEST_DETAIL_VTL",
-                    "mapped": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_FREQ(1.0)",
-                    "flowref": {
-                                "agency": "TEST_AGENCY",
-                                "id": "TEST_FLOW",
-                                "version": "1.0",
-                                "name": "Test flow name"
-                    }
+                    "mapped": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_FREQ(1.0)"
                 }
             ]
         }

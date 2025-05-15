@@ -10,6 +10,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCIES,
     AGENCY,
     AGENCY_ID,
+    ALIAS_LOW,
     ANNOTATION,
     ANNOTATION_TEXT,
     ANNOTATION_TITLE,
@@ -38,6 +39,8 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     DEPARTMENT,
     DESC,
     DFW,
+    DFW_ALIAS_LOW,
+    DFW_LOW,
     DFWS,
     DIM,
     DIM_LIST,
@@ -523,20 +526,22 @@ class StructureParser(Struct):
 
         return json_elem
 
-    @staticmethod
     def __format_dataflow(
-        json_rep: Dict[str, Any], json_obj: Dict[str, Any]
+        self, json_rep: Dict[str, Any], json_obj: Dict[str, Any]
     ) -> None:
-        json_obj["dataflow_alias"] = json_obj.pop("alias")
+        json_obj[DFW_ALIAS_LOW] = json_obj.pop(ALIAS_LOW)
         dataflow_ref = {
             "agency": json_rep[REF][AGENCY_ID],
             "id": json_rep[REF][ID],
             "version": json_rep[REF][VERSION],
-            "name": json_rep[REF][CLASS],
         }
+        json_obj[DFW_LOW] = DataflowRef(**dataflow_ref)
         json_rep.pop(REF)
         json_obj.pop(DFW)
-        json_obj["dataflow"] = DataflowRef(**dataflow_ref)
+        if self.dataflows:
+            for dataflow in self.dataflows.values():
+                if dataflow.id == dataflow_ref[ID]:
+                    json_obj[DFW_LOW] = dataflow
 
     def __format_component(
         self, comp: Dict[str, Any], role: Role
@@ -806,7 +811,9 @@ class StructureParser(Struct):
                 "datastructures",
             ),
             DFWS: process_structure(
-                DFWS, lambda data: self.__format_schema(data, DFWS, DFW)
+                DFWS,
+                lambda data: self.__format_schema(data, DFWS, DFW),
+                "dataflows",
             ),
             RULESETS: process_structure(
                 RULESETS,

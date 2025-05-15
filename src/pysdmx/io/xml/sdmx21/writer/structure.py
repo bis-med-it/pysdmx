@@ -756,7 +756,7 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
             data += (
                 f"{indent}\t\t<{REF} package='datastructure' "
                 f"agencyID={reference.agency!r} id={reference.id!r} "
-                f"version={reference.version!r} class={reference.name!r} />"
+                f"version={reference.version!r} class={DFW!r} />"
                 f"{add_indent(indent)}</{ABBR_STR}:Dataflow>"
             )
             attrib += f" alias={item_or_scheme.dataflow_alias!r}"

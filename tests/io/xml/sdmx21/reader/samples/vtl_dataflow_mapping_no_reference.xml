@@ -12,12 +12,12 @@
     </mes:Header>
     <mes:Structures>
          <str:Dataflows>
-            <str:Dataflow isExternalReference="false" agencyID="FR1" id="LEGAL_POP_CUBE" isFinal="false"
+            <str:Dataflow isExternalReference="false" agencyID="MD" id="TEST" isFinal="false"
                           version="1.0">
                 <com:Name xml:lang="en">OTC derivatives turnover</com:Name>
                 <com:Description xml:lang="en">OTC derivatives and FX spot - turnover</com:Description>
                 <str:Structure>
-                    <Ref package="datastructure" agencyID="FR1" id="LEGAL_POP" version="1.0" class="DataStructure"/>
+                    <Ref package="datastructure" agencyID="MD" id="TEST" version="1.0" class="DataStructure"/>
                 </str:Structure>
             </str:Dataflow>
         </str:Dataflows>

@@ -35,12 +35,6 @@
                     ],
                     "alias": "TEST_DETAIL_VTL",
                     "mapped": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_DETAIL(1.0)",
-                    "flowref": {
-                                "agency": "TEST_AGENCY",
-                                "id": "TEST_FLOW",
-                                "version": "1.0",
-                                "name": "Test flow name"
-                    },
                     "toVtlMethod": "to_test",
                     "toVtlSubSpace": [
                         "ID"
