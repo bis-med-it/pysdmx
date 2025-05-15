@@ -140,13 +140,47 @@ def generic_test(
 
     if expected_class == GdsUrnResolver:
         assert isinstance(result, expected_class)
-        assert result.__str__() == references.__str__()
     else:
-        for i, item in enumerate(result):
+        for item in result:
             assert isinstance(item, expected_class)
-            assert item.__str__() == references[i].__str__()
 
     assert result == references
+
+
+def repr_test(
+        mock,
+        gds,
+        query,
+        body,
+        value,
+        params,
+        resource,
+        version,
+        expected_class,
+        references,
+):
+    """Generic function to test GDS model __str__ method."""
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    get_params = {"ref": value}
+    if resource:
+        get_params["resource"] = resource
+    if version:
+        get_params["version"] = version
+    get_params = {**get_params, **params}
+
+    # Get and execute the get_{class} method
+    method = METHOD_MAP.get(expected_class)
+    result = method(gds, **get_params)
+
+    # Common validations
+    assert len(mock.calls) == 1
+
+    if expected_class == GdsUrnResolver:
+        assert result.__str__() == references.__str__()
+    else:
+        for item in result:
+            assert isinstance(item, expected_class)
 
 
 @pytest.mark.parametrize(
@@ -250,6 +284,76 @@ def test_generic(
         resource,
         version,
         params,
+        expected_class,
+        references,
+    )
+
+
+@pytest.mark.parametrize(
+    ("endpoint", "value", "params", "resource", "version", "body"),
+    [
+        ("agency", REST_ALL, {}, None, None, "agency_all.json"),
+        (
+                "catalog",
+                "BIS",
+                {
+                    "resource_type": "data",
+                    "message_format": "json",
+                    "api_version": "2.0.0",
+                    "detail": "full",
+                    "references": "none",
+                },
+                REST_ALL,
+                REST_ALL,
+                "catalog_bis_full.json",
+        ),
+        (
+                "catalog",
+                "BIS",
+                {
+                    "detail": "raw",
+                    "references": "children",
+                },
+                REST_ALL,
+                REST_ALL,
+                "catalog_bis_raw.json",
+        ),
+        ("sdmxapi", REST_ALL, {}, None, None, "sdmxapi_all.json"),
+        ("service", "BIS", {}, REST_ALL, REST_ALL, "service_bis.json"),
+        (
+            "urn_resolver",
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme.CategoryScheme=BIS:BISWEB_CATSCHEME(1.0)",
+            {},
+            None,
+            None,
+            "urn_resolver.json",
+        ),
+    ],
+    indirect=["body"],
+)
+def test_string_repr(
+    respx_mock,
+    gds,
+    query,
+    body,
+    endpoint,
+    value,
+    params,
+    resource,
+    version,
+    expected_class,
+    references,
+):
+    """Generic test for all endpoints."""
+    repr_test(
+        respx_mock,
+        gds,
+        query,
+        body,
+        value,
+        params,
+        resource,
+        version,
         expected_class,
         references,
     )
