@@ -75,7 +75,7 @@ class GdsAgency(GdsBase, frozen=True):
     agency_id: str
     name: str
     url: str
-    description: str = ""
+    description: Optional[str] = None
 
 
 class GdsCatalog(GdsBase, frozen=True):
