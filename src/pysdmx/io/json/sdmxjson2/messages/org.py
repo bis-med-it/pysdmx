@@ -6,7 +6,10 @@ from typing import Dict, Optional, Sequence, Set
 
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
+from pysdmx.io.json.sdmxjson2.messages.core import (
+    JsonAnnotation,
+    ItemSchemeType,
+)
 from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
 from pysdmx.model import (
     Agency,
@@ -18,18 +21,10 @@ from pysdmx.model import (
 from pysdmx.util import parse_item_urn, parse_urn
 
 
-class JsonDataProviderScheme(Struct, frozen=True):
+class JsonDataProviderScheme(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for a data provider scheme."""
 
-    agencyID: str
-    name: str
     dataProviders: Sequence[DataProvider] = ()
-    description: Optional[str] = None
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
-    isPartial: bool = False
 
     def __get_df_ref(self, ref: str) -> DataflowRef:
         a = parse_urn(ref)
@@ -51,23 +46,23 @@ class JsonDataProviderScheme(Struct, frozen=True):
                     name=p.name,
                     description=p.description,
                     contacts=p.contacts,
-                    dataflows=list(paprs[f"{self.agencyID}:{p.id}"]),
+                    dataflows=list(paprs[f"{self.agency}:{p.id}"]),
                 )
                 for p in self.dataProviders
             ]
-            return DataProviderScheme(
-                agency=self.agencyID,
-                name=self.name,
-                description=self.description,
-                items=provs,
-            )
         else:
-            return DataProviderScheme(
-                agency=self.agencyID,
-                name=self.name,
-                description=self.description,
-                items=self.dataProviders,
-            )
+            provs = self.dataProviders
+        return DataProviderScheme(
+            agency=self.agency,
+            name=self.name,
+            description=self.description,
+            items=provs,
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
+            is_partial=self.isPartial,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
+        )
 
 
 class JsonDataProviderSchemes(Struct, frozen=True):
@@ -94,17 +89,10 @@ class JsonProviderMessage(Struct, frozen=True):
         return self.data.to_model()
 
 
-class JsonAgencyScheme(Struct, frozen=True):
+class JsonAgencyScheme(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for an agency scheme."""
 
-    agencyID: str
     agencies: Sequence[Agency] = ()
-    description: Optional[str] = None
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
-    isPartial: bool = False
 
     def __add_owner(self, owner: str, a: Agency) -> Agency:
         oid = f"{owner}.{a.id}" if owner != "SDMX" else a.id
@@ -114,9 +102,16 @@ class JsonAgencyScheme(Struct, frozen=True):
 
     def to_model(self) -> AgencyScheme:
         """Returns the requested list of agencies."""
-        agencies = [self.__add_owner(self.agencyID, a) for a in self.agencies]
+        agencies = [self.__add_owner(self.agency, a) for a in self.agencies]
         return AgencyScheme(
-            description=self.description, agency=self.agencyID, items=agencies
+            description=self.description,
+            agency=self.agency,
+            items=agencies,
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
+            is_partial=self.isPartial,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
         )
 
 
