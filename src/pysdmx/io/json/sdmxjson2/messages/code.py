@@ -74,7 +74,7 @@ class JsonCodelist(ItemSchemeType, frozen=True):
             description=self.description,
             version=self.version,
             items=[i.to_model() for i in self.codes],
-            annotations=self.annotations,
+            annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
             valid_from=self.validFrom,
@@ -96,7 +96,7 @@ class JsonValuelist(ItemSchemeType, frozen=True):
             description=self.description,
             version=self.version,
             items=[i.to_model() for i in self.valueItems],
-            annotations=self.annotations,
+            annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
             valid_from=self.validFrom,
@@ -186,6 +186,11 @@ class JsonHierarchy(ItemSchemeType, frozen=True):
             agency=self.agency,
             description=self.description,
             version=self.version,
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
+            is_partial=self.isPartial,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
             codes=[i.to_model(codelists) for i in self.hierarchicalCodes],
         )
 
@@ -236,6 +241,10 @@ class JsonHierarchyAssociation(MaintainableType, frozen=True):
             context_ref=self.contextObject,
             description=self.description,
             version=self.version,
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
             operator=lnk[0].urn if lnk else None,
         )
 
