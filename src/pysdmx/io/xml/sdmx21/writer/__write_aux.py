@@ -315,7 +315,9 @@ def __write_header(
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
-    prepared = header.prepared.strftime("%Y-%m-%dT%H:%M:%S")
+    prepared = header.prepared.isoformat(timespec="seconds").replace(
+        "+00:00", "Z"
+    )
     test = str(header.test).lower()
     references_str = ""
     action_value = (

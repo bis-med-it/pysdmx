@@ -138,12 +138,9 @@ def __parse_dataset_action(
         return ActionType(dataset_action)
 
 
-def __parse_prepared(prepared: Optional[Dict[datetime, Any]]) -> datetime:
+def __parse_prepared(prepared: str) -> datetime:
     """Parses the prepared date of the SDMX message."""
-    try:
-        return datetime.strptime(prepared, "%Y-%m-%dT%H:%M:%S")  # type: ignore[arg-type]
-    except ValueError:
-        return datetime.now()
+    return datetime.fromisoformat(prepared.replace("Z", "+00:00"))
 
 
 def __parse_header(header: Dict[str, Any]) -> Header:
@@ -159,7 +156,7 @@ def __parse_header(header: Dict[str, Any]) -> Header:
     dict_header = {
         "id": header.get(HEADER_ID),
         "test": header.get(TEST),
-        "prepared": __parse_prepared(header.get(PREPARED)),
+        "prepared": __parse_prepared(header.get(PREPARED)),  # type: ignore[arg-type]
         "sender": __parse_sender_receiver(header.get(SENDER)),
         "receiver": __parse_sender_receiver(header.get(RECEIVER)),
         "source": __parse_source(header.get(SOURCE)),
