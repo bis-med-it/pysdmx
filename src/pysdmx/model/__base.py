@@ -21,19 +21,19 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
         title: The title of the annotation.
         type: The type of the annotation.
         url: The URL of the annotation.
-        value: The value of the annotation.
+        text: The value of the annotation.
     """
 
     id: Optional[str] = None
     title: Optional[str] = None
-    type: Optional[str] = None
+    text: Optional[str] = None
     url: Optional[str] = None
-    value: Optional[str] = None
+    type: Optional[str] = None
 
     @property
-    def text(self) -> Optional[str]:
-        """Alias to value."""
-        return self.value
+    def value(self) -> Optional[str]:
+        """Alias to text."""
+        return self.text
 
     def __post_init__(self) -> None:
         """Additional validation checks for Annotation."""

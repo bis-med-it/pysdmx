@@ -35,7 +35,7 @@ class JsonAnnotation(msgspec.Struct, frozen=True):
             title=self.title,
             type=self.type,
             url=url,
-            value=self.value,
+            text=self.value,
         )
 
 
