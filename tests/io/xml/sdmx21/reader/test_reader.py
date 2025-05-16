@@ -660,3 +660,45 @@ def test_header_xmlns(samples_folder):
     assert result.structure == {
         "Dataflow=OECD.SDD.STES:DSD_STES@DF_CLI(4.1)": "TIME_PERIOD"
     }
+
+
+def test_vtl_data_flow_mapping_reader(samples_folder):
+    data_path = samples_folder / "vtl_dataflow_mapping.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+    assert result is not None
+    assert result[0].agency == "FR1"
+    assert result[0].id == "LEGAL_POP_CUBE"
+    assert len(result[1].items) == 1
+    items = result[1].items
+    assert items[0].id == "VTLM2"
+    assert items[0].dataflow_alias == "LEGAL_POP"
+
+
+def test_vtl_data_flow_mapping_reader_no_dataflow(samples_folder):
+    data_path = samples_folder / "vtl_dataflow_mapping_no_dataflow.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+    assert result is not None
+    assert result[0].agency == "FR1"
+    assert result[0].id == "VTLMS1"
+    assert len(result[0].items) == 1
+    items = result[0].items
+    assert items[0].id == "VTLM2"
+    assert items[0].dataflow_alias == "LEGAL_POP"
+
+
+def test_vtl_data_flow_mapping_reader_no_reference(samples_folder):
+    data_path = samples_folder / "vtl_dataflow_mapping_no_reference.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+    assert result is not None
+    assert result[0].agency == "MD"
+    assert result[0].id == "TEST"
+    assert len(result[1].items) == 1
+    items = result[1].items
+    assert items[0].id == "VTLM2"
+    assert items[0].dataflow_alias == "LEGAL_POP"

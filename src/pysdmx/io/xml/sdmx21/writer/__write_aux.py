@@ -24,6 +24,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     UDOS,
     URI_LOW,
     URN_LOW,
+    VTLMAPPINGS,
 )
 from pysdmx.model import Organisation
 from pysdmx.model.dataset import Dataset
@@ -133,6 +134,7 @@ MSG_CONTENT_PKG = OrderedDict(
         (RULESETS, "Rulesets"),
         (TRANSFORMATIONS, "Transformations"),
         (UDOS, "UserDefinedOperators"),
+        (VTLMAPPINGS, "VtlMappings"),
     ]
 )
 
