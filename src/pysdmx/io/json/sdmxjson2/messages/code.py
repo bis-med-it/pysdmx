@@ -4,8 +4,6 @@ from datetime import datetime
 from datetime import timezone as tz
 from typing import Optional, Sequence, Tuple
 
-import dateutil
-import dateutil.parser
 from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.core import (
@@ -71,37 +69,21 @@ class JsonCodelist(ItemSchemeType, frozen=True):
         return Codelist(
             id=self.id,
             name=self.name,
-            agency=self.agencyID,
+            agency=self.agency,
             description=self.description,
             version=self.version,
             items=[i.to_model() for i in self.codes],
             annotations=self.annotations,
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
-            valid_from=(
-                dateutil.parser.parse(self.validFrom)
-                if self.validFrom
-                else None
-            ),
-            valid_to=(
-                dateutil.parser.parse(self.validTo) if self.validTo else None
-            ),
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
         )
 
 
-class JsonValuelist(Struct, frozen=True, rename={"agency": "agencyID"}):
+class JsonValuelist(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for a valuelist."""
 
-    id: str
-    name: str
-    agency: str
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
-    isPartial: bool = False
     valueItems: Sequence[JsonCode] = ()
 
     def to_model(self) -> Codelist:
@@ -113,6 +95,11 @@ class JsonValuelist(Struct, frozen=True, rename={"agency": "agencyID"}):
             description=self.description,
             version=self.version,
             items=[i.to_model() for i in self.valueItems],
+            annotations=self.annotations,
+            is_external_reference=self.isExternalReference,
+            is_partial=self.isPartial,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
             sdmx_type="valuelist",
         )
 
@@ -178,18 +165,9 @@ class JsonHierarchicalCode(Struct, frozen=True):
         )
 
 
-class JsonHierarchy(Struct, frozen=True, rename={"agency": "agencyID"}):
+class JsonHierarchy(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for a hierarchy."""
 
-    id: str
-    name: str
-    agency: str
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
     hierarchicalCodes: Sequence[JsonHierarchicalCode] = ()
 
     def to_model(self, codelists: Sequence[Codelist]) -> Hierarchy:
