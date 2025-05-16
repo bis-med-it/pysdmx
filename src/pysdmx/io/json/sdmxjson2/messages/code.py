@@ -149,14 +149,21 @@ class JsonHierarchicalCode(Struct, frozen=True):
 
     def to_model(self, codelists: Sequence[Codelist]) -> HierarchicalCode:
         """Converts a JsonHierarchicalCode to a hierachical code."""
-        code = self.__find_code(codelists, self.code)
+        if codelists:
+            code = self.__find_code(codelists, self.code)
+            name = code.name
+            description = code.description
+        else:
+            code = self.code
+            name = None
+            description = None
         codes = [c.to_model(codelists) for c in self.hierarchicalCodes]
         vf = self.validFrom.replace(tzinfo=tz.utc) if self.validFrom else None
         vt = self.validTo.replace(tzinfo=tz.utc) if self.validTo else None
         return HierarchicalCode(
             code.id,
-            code.name,
-            code.description,
+            name,
+            description,
             code.valid_from,
             code.valid_to,
             vf,
