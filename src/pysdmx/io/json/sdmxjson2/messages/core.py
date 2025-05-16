@@ -13,8 +13,13 @@ from pysdmx.util import find_by_urn
 class JsonLink(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for link objects."""
 
-    urn: str
+    href: Optional[str] = None
+    urn: Optional[str] = None
     rel: Optional[str] = None
+    uri: Optional[str] = None
+    type: Optional[str] = None
+    title: Optional[str] = None
+    hreflang: Optional[str] = None
 
 
 class JsonAnnotation(msgspec.Struct, frozen=True):
@@ -29,7 +34,13 @@ class JsonAnnotation(msgspec.Struct, frozen=True):
     def to_model(self) -> Annotation:
         """Converts a JsonAnnotation to a standard Annotation."""
         m = [lnk for lnk in self.links if lnk.rel == "self"]
-        url = m[0].urn if len(m) == 1 else None
+        lnk = m[0] if len(m) == 1 else None
+        if lnk and lnk.href:
+            url = lnk.href
+        elif lnk and lnk.uri:
+            url = lnk.uri
+        else:
+            url = None
         return Annotation(
             id=self.id,
             title=self.title,
