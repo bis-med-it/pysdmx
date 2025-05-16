@@ -138,10 +138,7 @@ def __assign_structure_to_dataset(
         else:
             try:
                 dataflow = structure_msg.get_dataflow(short_urn)
-                dsd = structure_msg.get_data_structure_definition(
-                    dataflow.structure if dataflow.structure else ""
-                )
-                dataset.structure = dsd.to_schema()
+                dataset.structure = dataflow.to_schema()
             except NotFound:
                 continue
 
@@ -175,19 +172,21 @@ def get_datasets(
     if not data_msg.data:
         raise Invalid("No data found in the data message")
 
+    datasets = data_msg.data
+
     if structure is None:
-        return data_msg.data
+        return datasets
     structure_msg = read_sdmx(structure, validate=validate)
     if structure_msg.structures is None:
         raise Invalid("No structure found in the structure message")
 
-    __assign_structure_to_dataset(data_msg.data, structure_msg)
+    __assign_structure_to_dataset(datasets, structure_msg)
 
     # Check if any dataset does not have a structure
-    for dataset in data_msg.data:
+    for dataset in datasets:
         if not isinstance(dataset.structure, Schema):
             raise Invalid(
                 f"Missing DataStructure for dataset {dataset.short_urn}"
             )
 
-    return data_msg.data
+    return datasets

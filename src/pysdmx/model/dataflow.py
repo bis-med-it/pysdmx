@@ -10,16 +10,18 @@ as part of the response.
 from collections import Counter, UserList
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Iterable, Literal, Optional, Sequence, Union
+from typing import Any, Iterable, List, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
 from pysdmx.errors import Invalid
 from pysdmx.model.__base import (
     Agency,
+    DataflowRef,
     DataProvider,
     ItemReference,
     MaintainableArtefact,
+    Reference,
 )
 from pysdmx.model.code import Codelist, Hierarchy
 from pysdmx.model.concept import Concept, DataType, Facets
@@ -313,6 +315,22 @@ class Components(UserList[Component]):
                     f"There is already a component with ID: {fld.id}",
                 )
 
+    def mandatory(self) -> Sequence[Component]:
+        """Return the list of mandatory components.
+
+        Returns:
+            The list of mandatory components
+        """
+        return [c for c in self.data if c.required]
+
+    def optional(self) -> Sequence[Component]:
+        """Return the list of optional components.
+
+        Returns:
+            The list of optional components
+        """
+        return [c for c in self.data if not c.required]
+
 
 class DataflowInfo(Struct, frozen=True, omit_defaults=True):
     """Extended information about a dataflow.
@@ -423,7 +441,9 @@ class Schema(Struct, frozen=True, omit_defaults=True):
         return f"{sdmx_type}={self.agency}:{self.id}({self.version})"
 
 
-class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
+class DataStructureDefinition(
+    MaintainableArtefact, frozen=True, kw_only=True, tag=True
+):
     """A collection of metadata concepts.
 
     Attributes:
@@ -446,7 +466,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
 
     components: Components
 
-    def __extract_artefacts(self) -> Sequence[str]:
+    def __extract_artefacts(self) -> List[str]:
         """Extract the artefacts used to generate the schema."""
         out = []
         for c in self.components:
@@ -488,11 +508,42 @@ class Dataflow(
     MaintainableArtefact,
     frozen=True,
     omit_defaults=True,
+    kw_only=True,
     tag=True,
 ):
     """A flow of data that providers will provide."""
 
-    structure: Optional[str] = None
+    structure: Union[DataStructureDefinition, Reference]
+
+    def to_schema(self) -> Schema:
+        """Generates a Schema class from the Dataflow."""
+        if self.structure is None:
+            raise Invalid(
+                "No DataStructureDefinition found",
+                "The dataflow lacks of structures "
+                "defined as DataStructureDefinition, therefore "
+                "it is not possible to generate a Schema.",
+            )
+        if isinstance(self.structure, Reference):
+            raise Invalid(
+                "No DataStructureDefinition found",
+                "The dataflow lacks of structures "
+                "defined as DataStructureDefinition, therefore "
+                "it is not possible to generate a Schema.",
+            )
+
+        return Schema(
+            context="dataflow",
+            agency=(
+                self.agency.id
+                if isinstance(self.agency, Agency)
+                else self.agency
+            ),
+            id=self.id,
+            components=self.structure.components,
+            version=self.version,
+            artefacts=[self.short_urn, self.structure.short_urn],
+        )
 
 
 class ProvisionAgreement(
@@ -500,5 +551,5 @@ class ProvisionAgreement(
 ):
     """Link between a data provider and dataflow."""
 
-    dataflow: str
+    dataflow: Union[Dataflow, DataflowRef]
     provider: str

@@ -222,7 +222,7 @@ def test_get_datasets_dataflow_children(data_dataflow, dataflow_children):
 def test_get_datasets_wrong_dataflow(
     data_wrong_dataflow, dataflow_no_children
 ):
-    with pytest.raises(Invalid, match="Missing DataStructure for dataset "):
+    with pytest.raises(Invalid, match="No DataStructureDefinition found"):
         get_datasets(data_wrong_dataflow, dataflow_no_children)
 
 
@@ -232,5 +232,5 @@ def test_get_datasets_wrong_dsd(data_wrong_dsd, dataflow_children):
 
 
 def test_get_datasets_no_children(data_dataflow, dataflow_no_children):
-    with pytest.raises(Invalid, match="Missing DataStructure for dataset "):
+    with pytest.raises(Invalid, match="No DataStructureDefinition found"):
         get_datasets(data_dataflow, dataflow_no_children)

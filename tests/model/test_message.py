@@ -3,6 +3,7 @@ import pytest
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.model import (
     AgencyScheme,
+    Reference,
     RulesetScheme,
     TransformationScheme,
     UserDefinedOperatorScheme,
@@ -60,7 +61,11 @@ def test_get_data_structure_definitions():
 
 
 def test_get_dataflows():
-    df1 = Dataflow(id="df1", agency="df1")
+    df1 = Dataflow(
+        id="df1",
+        agency="df1",
+        structure=Reference("DataStructure", "MD", "DSD1", "1.0"),
+    )
 
     message = Message(structures=[df1])
     assert message.get_dataflows() == [df1]

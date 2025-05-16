@@ -307,8 +307,17 @@ class DataflowRef(Struct, frozen=True, omit_defaults=True, tag=True):
         """A string representating the dataflow's reference."""
         return f"Dataflow={self.agency}:{self.id}({self.version})"
 
+    @classmethod
+    def from_reference(cls, reference: "Reference") -> "DataflowRef":
+        """Creates a DataflowRef from a Reference object."""
+        return cls(
+            agency=reference.agency,
+            id=reference.id,
+            version=reference.version,
+        )
 
-class Reference(Struct, frozen=True):
+
+class Reference(Struct, frozen=True, tag=True):
     """The coordinates of an SDMX maintainable artefact.
 
     Attributes:

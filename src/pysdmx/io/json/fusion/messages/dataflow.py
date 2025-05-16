@@ -15,6 +15,7 @@ from pysdmx.model import (
 from pysdmx.model import (
     Dataflow as DF,
 )
+from pysdmx.util import parse_maintainable_urn
 
 
 class FusionDataflow(Struct, frozen=True, rename={"agency": "agencyId"}):
@@ -37,7 +38,7 @@ class FusionDataflow(Struct, frozen=True, rename={"agency": "agencyId"}):
                 self.descriptions[0].value if self.descriptions else None
             ),
             version=self.version,
-            structure=self.dataStructureRef,
+            structure=parse_maintainable_urn(self.dataStructureRef),
         )
 
 
