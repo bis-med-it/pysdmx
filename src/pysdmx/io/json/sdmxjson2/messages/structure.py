@@ -5,6 +5,7 @@ from typing import Dict, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx.io.json.sdmxjson2.messages.agency import JsonAgencyScheme
 from pysdmx.io.json.sdmxjson2.messages.category import (
     JsonCategorisation,
     JsonCategoryScheme,
@@ -23,11 +24,8 @@ from pysdmx.io.json.sdmxjson2.messages.map import (
     JsonRepresentationMap,
     JsonStructureMap,
 )
-from pysdmx.io.json.sdmxjson2.messages.org import (
-    JsonAgencyScheme,
-    JsonDataProviderScheme,
-)
 from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
+from pysdmx.io.json.sdmxjson2.messages.provider import JsonDataProviderScheme
 from pysdmx.model import Organisation
 
 
