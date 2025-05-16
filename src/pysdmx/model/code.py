@@ -17,7 +17,7 @@ representation of hierarchical relationships to hierarchies only.
 """
 
 from datetime import datetime
-from typing import Iterator, Literal, Optional, Sequence
+from typing import Iterator, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -287,7 +287,7 @@ class HierarchyAssociation(
 ):
     """Links a hierarchy to a component withing the context of a dataflow."""
 
-    hierarchy: Optional[Hierarchy] = None
+    hierarchy: Optional[Union[Hierarchy, str]] = None
     component_ref: str = ""
     context_ref: str = ""
     operator: Optional[str] = None

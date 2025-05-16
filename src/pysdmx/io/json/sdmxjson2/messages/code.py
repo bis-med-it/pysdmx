@@ -10,6 +10,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     JsonLink,
     ItemSchemeType,
+    MaintainableType,
     NameableType,
 )
 from pysdmx.model import (
@@ -201,33 +202,25 @@ class JsonHierarchies(Struct, frozen=True):
         return self.hierarchies[0].to_model(cls)
 
 
-class JsonHierarchyAssociation(
-    Struct, frozen=True, rename={"agency": "agencyID"}
-):
+class JsonHierarchyAssociation(MaintainableType, frozen=True):
     """SDMX-JSON payload for a hierarchy association."""
 
-    id: str
-    name: str
-    agency: str
-    linkedHierarchy: str
-    linkedObject: str
-    contextObject: str
+    linkedHierarchy: str = ""
+    linkedObject: str = ""
+    contextObject: str = ""
     links: Sequence[JsonLink] = ()
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
 
     def to_model(
         self,
         hierarchies: Sequence[JsonHierarchy],
         codelists: Sequence[JsonCodelist],
     ) -> HierarchyAssociation:
-        """Converts a FusionHierarchyAssocation to a standard association."""
-        cls = [cl.to_model() for cl in codelists]
-        m = find_by_urn(hierarchies, self.linkedHierarchy).to_model(cls)
+        """Converts a JsonHierarchyAssocation to a standard association."""
+        if hierarchies:
+            cls = [cl.to_model() for cl in codelists]
+            m = find_by_urn(hierarchies, self.linkedHierarchy).to_model(cls)
+        else:
+            m = self.linkedHierarchy
         lnk = list(
             filter(
                 lambda i: hasattr(i, "rel") and i.rel == "UserDefinedOperator",
