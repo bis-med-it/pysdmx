@@ -11,6 +11,7 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
 
     It is used to convey extra information to describe any
     SDMX construct.
+
     This information may be in the form of a URL reference and/or
     a multilingual text (represented by the association to
     InternationalString).
@@ -18,16 +19,21 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
     Attributes:
         id: The identifier of the annotation.
         title: The title of the annotation.
-        text: The text of the annotation.
-        url: The URL of the annotation.
         type: The type of the annotation.
+        url: The URL of the annotation.
+        value: The value of the annotation.
     """
 
     id: Optional[str] = None
     title: Optional[str] = None
-    text: Optional[str] = None
-    url: Optional[str] = None
     type: Optional[str] = None
+    url: Optional[str] = None
+    value: Optional[str] = None
+
+    @property
+    def text(self):
+        """Alias to value."""
+        return self.value
 
     def __post_init__(self) -> None:
         """Additional validation checks for Annotation."""
