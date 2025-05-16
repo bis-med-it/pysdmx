@@ -155,7 +155,8 @@ class JsonHierarchicalCode(Struct, frozen=True):
             name = code.name
             description = code.description
         else:
-            code = Code(self.code)
+            r = parse_item_urn(self.code)
+            code = Code(r.item_id)
             name = None
             description = None
         codes = [c.to_model(codelists) for c in self.hierarchicalCodes]
