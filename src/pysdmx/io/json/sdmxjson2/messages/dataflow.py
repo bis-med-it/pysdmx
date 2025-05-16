@@ -6,7 +6,7 @@ from typing import List, Optional, Sequence
 from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
-from pysdmx.io.json.sdmxjson2.messages.org import JsonDataProviderScheme
+from pysdmx.io.json.sdmxjson2.messages.provider import JsonDataProviderScheme
 from pysdmx.model import (
     Agency,
     Components,

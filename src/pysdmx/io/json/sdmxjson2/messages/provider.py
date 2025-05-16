@@ -1,23 +1,13 @@
 """Collection of SDMX-JSON schemas for organisations."""
 
 from collections import defaultdict
-from datetime import datetime
-from typing import Dict, Optional, Sequence, Set
+from typing import Dict, Sequence, Set
 
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import (
-    JsonAnnotation,
-    ItemSchemeType,
-)
+from pysdmx.io.json.sdmxjson2.messages.core import ItemSchemeType
 from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
-from pysdmx.model import (
-    Agency,
-    AgencyScheme,
-    DataflowRef,
-    DataProvider,
-    DataProviderScheme,
-)
+from pysdmx.model import DataflowRef, DataProvider, DataProviderScheme
 from pysdmx.util import parse_item_urn, parse_urn
 
 
@@ -86,50 +76,4 @@ class JsonProviderMessage(Struct, frozen=True):
 
     def to_model(self) -> Sequence[DataProviderScheme]:
         """Returns the requested list of data provider schemes."""
-        return self.data.to_model()
-
-
-class JsonAgencyScheme(ItemSchemeType, frozen=True):
-    """SDMX-JSON payload for an agency scheme."""
-
-    agencies: Sequence[Agency] = ()
-
-    def __add_owner(self, owner: str, a: Agency) -> Agency:
-        oid = f"{owner}.{a.id}" if owner != "SDMX" else a.id
-        return Agency(
-            id=oid, name=a.name, description=a.description, contacts=a.contacts
-        )
-
-    def to_model(self) -> AgencyScheme:
-        """Returns the requested list of agencies."""
-        agencies = [self.__add_owner(self.agency, a) for a in self.agencies]
-        return AgencyScheme(
-            description=self.description,
-            agency=self.agency,
-            items=agencies,
-            annotations=[a.to_model() for a in self.annotations],
-            is_external_reference=self.isExternalReference,
-            is_partial=self.isPartial,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
-        )
-
-
-class JsonAgencySchemes(Struct, frozen=True):
-    """SDMX-JSON payload for the list of agency schemes."""
-
-    agencySchemes: Sequence[JsonAgencyScheme]
-
-    def to_model(self) -> Sequence[AgencyScheme]:
-        """Returns the requested agency schemes."""
-        return [a.to_model() for a in self.agencySchemes]
-
-
-class JsonAgencyMessage(Struct, frozen=True):
-    """SDMX-JSON payload for /agencyscheme queries."""
-
-    data: JsonAgencySchemes
-
-    def to_model(self) -> Sequence[AgencyScheme]:
-        """Returns the requested agency schemes."""
         return self.data.to_model()
