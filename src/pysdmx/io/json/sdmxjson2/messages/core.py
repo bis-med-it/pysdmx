@@ -20,6 +20,35 @@ class JsonAnnotation(msgspec.Struct, frozen=True):
     text: Optional[str] = None
 
 
+class NameableType(msgspec.Struct, frozen=True):
+    """An abstract base type used for all nameable artefacts."""
+
+    id: str
+    name: str
+    description: Optional[str] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
+
+
+class MaintainableType(msgspec.Struct, frozen=True):
+    """An abstract base type used for all maintainable artefacts."""
+
+    agencyID: str
+    id: str
+    name: str
+    version: str = "1.0"
+    isExternalReference: bool = False
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    description: Optional[str] = None
+    annotations: Optional[Sequence[JsonAnnotation]] = None
+
+
+class ItemSchemeType(MaintainableType, frozen=True):
+    """An abstract base type used for all item schemes."""
+
+    isPartial: bool = False
+
+
 class JsonTextFormat(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for TextFormat."""
 
