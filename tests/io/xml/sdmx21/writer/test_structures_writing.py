@@ -25,9 +25,12 @@ from pysdmx.model import (
     TransformationScheme,
     UserDefinedOperator,
     UserDefinedOperatorScheme,
+    VtlDataflowMapping,
+    VtlMappingScheme,
 )
 from pysdmx.model.__base import (
     Annotation,
+    DataflowRef,
     ItemReference,
     Organisation,
     Reference,
@@ -576,6 +579,70 @@ def dataflow():
     )
 
 
+@pytest.fixture
+def vtlmapping_scheme():
+    return VtlMappingScheme(
+        id="VTLMS1",
+        uri=None,
+        urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=FR1:VTLMS1(1.0)",
+        name="VTL Mapping Scheme #1",
+        description=None,
+        version="1.0",
+        valid_from=None,
+        valid_to=None,
+        is_final=False,
+        is_external_reference=False,
+        service_url=None,
+        structure_url=None,
+        agency="FR1",
+        items=[
+            VtlDataflowMapping(
+                id="VTLM1",
+                uri=None,
+                urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlDataflowMapping=FR1:VTLMS1(1.0).VTLM1",
+                name="VTL Mapping #1",
+                description=None,
+                annotations=(),
+                dataflow=DataflowRef(
+                    agency="FR1",
+                    id="BPE_DETAIL",
+                    version="1.0",
+                    name="Dataflow",
+                ),
+                dataflow_alias="BPE_DETAIL_VTL",
+                to_vtl_mapping_method=None,
+                from_vtl_mapping_method=None,
+            ),
+            VtlDataflowMapping(
+                id="VTLM2",
+                uri=None,
+                urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlDataflowMapping=FR1:VTLMS1(1.0).VTLM2",
+                name="VTL Mapping #2",
+                description=None,
+                annotations=(),
+                dataflow=DataflowRef(
+                    agency="FR1",
+                    id="LEGAL_POP_CUBE",
+                    version="1.0",
+                    name="Dataflow",
+                ),
+                dataflow_alias="LEGAL_POP",
+                to_vtl_mapping_method=None,
+                from_vtl_mapping_method=None,
+            ),
+        ],
+        is_partial=False,
+        annotations=(),
+    )
+
+
+@pytest.fixture
+def vtlmapping_sample():
+    base_path = Path(__file__).parent / "samples" / "vtl_mapping_scheme.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
 def test_codelist(codelist_sample, complete_header, codelist):
     content = [codelist]
     result = write(
@@ -831,3 +898,17 @@ def test_writer_full_scheme_structure_with_object(
         prettyprint=True,
     )
     assert structure == full_structure_sample
+
+
+def test_writer_vtlmapping_scheme(
+    complete_header,
+    vtlmapping_scheme,
+    vtlmapping_sample,
+):
+    content = [vtlmapping_scheme]
+    structure = write(
+        content,
+        header=complete_header,
+        prettyprint=True,
+    )
+    assert structure == vtlmapping_sample
