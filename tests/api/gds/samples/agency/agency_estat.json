@@ -1,0 +1,12 @@
+{
+  "structures": {
+    "agencies": [
+      {
+        "agencyID": "ESTAT",
+        "name": "EUROSTAT",
+        "description": "Eurostat",
+        "url": "eurostat.europa.eu"
+      }
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+agency_id=BIS, name=BIS, url=bis.org, description=Bank for International Settlements

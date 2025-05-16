@@ -1,0 +1,69 @@
+{
+  "structures": {
+    "services": [
+      {
+        "agencyID": "BIS",
+        "id": "BIS_DATA",
+        "name": "BIS Data Portal API",
+        "urn": "urn:sdmx:org.sdmx.infomodel.discovery.Service=BIS:BIS_DATA(1.0)",
+        "version": "1.0",
+        "base": "https://stats.bis.org/api",
+        "authentication": null,
+        "endpoints": [
+          {
+            "api_version": "1.4.0",
+            "url": "/v1",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.genericdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=2.1",
+              "application/vnd.sdmx.structure+xml;version=2.1",
+              "application/vnd.sdmx.structure+json;version=1.0.0",
+              "application/vnd.sdmx.structure+edi;version=1.0",
+              "application/vnd.sdmx.data+edi",
+              "application/vnd.sdmx.data+csv;version=1.0.0",
+              "application/vnd.sdmx.data+json;version=1.0.0"
+            ],
+            "rest_resources": [
+              "structure",
+              "data",
+              "schema",
+              "availability"
+            ]
+          },
+          {
+            "api_version": "2.0.0",
+            "url": "/v2",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.data+xml;version=3.0.0",
+              "application/vnd.sdmx.data+json;version=2.0.0",
+              "application/vnd.sdmx.data+csv;version=2.0.0",
+              "application/vnd.sdmx.metadata+xml;version=3.0.0",
+              "application/vnd.sdmx.metadata+xml;version=2.0.0",
+              "application/vnd.sdmx.genericdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=3.0",
+              "application/vnd.sdmx.structure+xml;version=2.1",
+              "application/vnd.sdmx.structure+json;version=1.0.0",
+              "application/vnd.sdmx.structure+edi;version=1.0",
+              "application/vnd.sdmx.data+edi",
+              "application/vnd.sdmx.data+csv;version=1.0.0",
+              "application/vnd.sdmx.data+json;version=1.0.0",
+              "application/vnd.sdmx.data+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+json;version=2.0.0"
+            ],
+            "rest_resources": [
+              "structure",
+              "data",
+              "schema",
+              "availability",
+              "metadata"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
