@@ -171,12 +171,16 @@ class JsonUserDefinedOperatorScheme(ItemSchemeType, frozen=True):
         )
 
 
-class JsonRuleset(NameableType, frozen=True):
+class JsonRuleset(Struct, frozen=True):
     """SDMX-JSON payload for rulesets."""
 
-    rulesetDefinition: str = ""
-    rulesetType: Literal["datapoint", "hierarchical"] = ""
-    rulesetScope: Literal["variable", "valuedomain"] = ""
+    id: str
+    name: str
+    rulesetDefinition: str
+    rulesetType: Literal["datapoint", "hierarchical"]
+    rulesetScope: Literal["variable", "valuedomain"]
+    description: Optional[str] = None
+    annotations: Sequence[JsonAnnotation] = ()
 
     def to_model(self) -> Ruleset:
         """Converts deserialized class to pysdmx model class."""
