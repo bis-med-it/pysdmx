@@ -69,4 +69,4 @@ def test_tostr(fid, typ):
 
     s = str(f1)
 
-    assert s == f"id={fid}, dtype=DataType.STRING"
+    assert s == f"Concept(id={fid!r}, dtype=String)"

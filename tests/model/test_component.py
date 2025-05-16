@@ -141,9 +141,9 @@ def test_tostr(fid, req, role, concept, typ):
     s = str(f1)
 
     assert s == (
-        f"id={fid}, required=True, role=Role.DIMENSION, concept="
-        f"(id={concept.id}, name={concept.name}), "
-        "local_dtype=DataType.STRING"
+        "Component(id='FREQ', required=True, role=Dimension, concept="
+        "Concept(id='TEST', name='A test concept')"
+        ", local_dtype=String)"
     )
 
 
