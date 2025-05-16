@@ -171,10 +171,12 @@ class Hierarchy(
             assume that the operator property references a VTL operator
             representing a sum. This can then be used for validation purposes,
             to check that A = B + C.
+        is_partial: Whether the hierarchy is partial.
     """
 
     codes: Sequence[HierarchicalCode] = ()
     operator: Optional[str] = None
+    is_partial: bool = True
 
     def __iter__(self) -> Iterator[HierarchicalCode]:
         """Return an iterator over the list of codes."""
