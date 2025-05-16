@@ -85,7 +85,6 @@ class AnnotableArtefact(Struct, frozen=True, omit_defaults=True, repr_omit_defau
                     continue
             processed_output.append(f"{attr}: {value!r}")
 
-        a = self.__repr__()
         return f"{', '.join(processed_output)}"
 
 
