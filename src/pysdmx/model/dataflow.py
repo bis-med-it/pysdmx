@@ -483,6 +483,7 @@ class DataStructureDefinition(
         result = list({a for a in out if a})
         return result
 
+    # TODO: Move to separate function?
     def to_schema(self) -> Schema:
         """Generates a Schema class from the DataStructureDefinition."""
         return Schema(
@@ -515,19 +516,20 @@ class Dataflow(
 
     structure: Union[DataStructureDefinition, Reference]
 
+    # TODO: Move to separate function?
     def to_schema(self) -> Schema:
         """Generates a Schema class from the Dataflow."""
         if self.structure is None:
             raise Invalid(
                 "No DataStructureDefinition found",
-                "The dataflow lacks of structures "
+                "The dataflow lacks of a structure "
                 "defined as DataStructureDefinition, therefore "
                 "it is not possible to generate a Schema.",
             )
         if isinstance(self.structure, Reference):
             raise Invalid(
                 "No DataStructureDefinition found",
-                "The dataflow lacks of structures "
+                "The dataflow lacks of a structure "
                 "defined as DataStructureDefinition, therefore "
                 "it is not possible to generate a Schema.",
             )
@@ -553,3 +555,46 @@ class ProvisionAgreement(
 
     dataflow: Union[Dataflow, DataflowRef]
     provider: str
+
+    # TODO: Move to separate function?
+    def to_schema(self) -> Schema:
+        """Generates a Schema class from the Provision Agreement."""
+        if isinstance(self.dataflow, DataflowRef):
+            raise Invalid(
+                "No Dataflow found",
+                "The provision agreement lacks of a defined Dataflow,"
+                " therefore it is not possible to generate a Schema.",
+            )
+        dataflow = self.dataflow
+
+        if dataflow.structure is None:
+            raise Invalid(
+                "No DataStructureDefinition found",
+                "The referenced dataflow lacks of a structure "
+                "defined as DataStructureDefinition, therefore "
+                "it is not possible to generate a Schema.",
+            )
+        if isinstance(dataflow.structure, Reference):
+            raise Invalid(
+                "No DataStructureDefinition found",
+                "The referenced dataflow lacks of a structure "
+                "defined as DataStructureDefinition, therefore "
+                "it is not possible to generate a Schema.",
+            )
+
+        return Schema(
+            context="provisionagreement",
+            agency=(
+                self.agency.id
+                if isinstance(self.agency, Agency)
+                else self.agency
+            ),
+            id=self.id,
+            components=dataflow.structure.components,
+            version=self.version,
+            artefacts=[
+                self.short_urn,
+                dataflow.short_urn,
+                dataflow.structure.short_urn,
+            ],
+        )
