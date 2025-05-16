@@ -29,10 +29,12 @@ class NameableType(msgspec.Struct, frozen=True):
     annotations: Optional[Sequence[JsonAnnotation]] = None
 
 
-class MaintainableType(msgspec.Struct, frozen=True):
+class MaintainableType(
+    msgspec.Struct, frozen=True, rename={"agency": "agencyID"}
+):
     """An abstract base type used for all maintainable artefacts."""
 
-    agencyID: str
+    agency: str
     id: str
     name: str
     version: str = "1.0"
