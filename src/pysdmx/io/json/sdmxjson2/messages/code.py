@@ -4,9 +4,16 @@ from datetime import datetime
 from datetime import timezone as tz
 from typing import Optional, Sequence, Tuple
 
+import dateutil
+import dateutil.parser
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation, JsonLink
+from pysdmx.io.json.sdmxjson2.messages.core import (
+    JsonAnnotation,
+    JsonLink,
+    ItemSchemeType,
+    NameableType,
+)
 from pysdmx.model import (
     Code,
     Codelist,
@@ -17,13 +24,9 @@ from pysdmx.model import (
 from pysdmx.util import find_by_urn, parse_item_urn
 
 
-class JsonCode(Struct, frozen=True):
+class JsonCode(NameableType, frozen=True):
     """SDMX-JSON payload for codes."""
 
-    id: str
-    name: Optional[str] = None
-    description: Optional[str] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
     parent: Optional[str] = None
 
     def __handle_date(self, datestr: str) -> datetime:
@@ -58,19 +61,9 @@ class JsonCode(Struct, frozen=True):
         )
 
 
-class JsonCodelist(Struct, frozen=True, rename={"agency": "agencyID"}):
+class JsonCodelist(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for a codelist."""
 
-    id: str
-    name: str
-    agency: str
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
-    isPartial: bool = False
     codes: Sequence[JsonCode] = ()
 
     def to_model(self) -> Codelist:
@@ -78,10 +71,21 @@ class JsonCodelist(Struct, frozen=True, rename={"agency": "agencyID"}):
         return Codelist(
             id=self.id,
             name=self.name,
-            agency=self.agency,
+            agency=self.agencyID,
             description=self.description,
             version=self.version,
             items=[i.to_model() for i in self.codes],
+            annotations=self.annotations,
+            is_external_reference=self.isExternalReference,
+            is_partial=self.isPartial,
+            valid_from=(
+                dateutil.parser.parse(self.validFrom)
+                if self.validFrom
+                else None
+            ),
+            valid_to=(
+                dateutil.parser.parse(self.validTo) if self.validTo else None
+            ),
         )
 
 
