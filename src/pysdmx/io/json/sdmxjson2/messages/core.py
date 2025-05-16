@@ -28,7 +28,7 @@ class JsonAnnotation(msgspec.Struct, frozen=True):
 
     def to_model(self) -> Annotation:
         """Converts a JsonAnnotation to a standard Annotation."""
-        m = [l for l in self.links if l.rel == "self"]
+        m = [lnk for lnk in self.links if lnk.rel == "self"]
         url = m[0] if len(m) == 1 else None
         return Annotation(
             id=self.id,
