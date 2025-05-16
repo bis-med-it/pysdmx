@@ -5,6 +5,11 @@ from typing import Literal, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx.io.json.sdmxjson2.messages.core import (
+    ItemSchemeType,
+    JsonAnnotation,
+    NameableType,
+)
 from pysdmx.model.__base import DataflowRef
 from pysdmx.model.vtl import (
     CustomType,
@@ -28,17 +33,14 @@ from pysdmx.model.vtl import (
 from pysdmx.util import parse_urn
 
 
-class JsonCustomType(Struct, frozen=True):
+class JsonCustomType(NameableType, frozen=True):
     """SDMX-JSON payload for custom types."""
 
-    id: str
-    name: str
-    vtlScalarType: str
-    dataType: str
+    vtlScalarType: str = ""
+    dataType: str = ""
     vtlLiteralFormat: Optional[str] = None
     outputFormat: Optional[str] = None
     nullValue: Optional[str] = None
-    description: Optional[str] = None
 
     def to_model(self) -> CustomType:
         """Converts deserialized class to pysdmx model class."""
@@ -51,23 +53,15 @@ class JsonCustomType(Struct, frozen=True):
             output_format=self.outputFormat,
             vtl_literal_format=self.vtlLiteralFormat,
             vtl_scalar_type=self.vtlScalarType,
+            annotations=[a.to_model() for a in self.annotations],
         )
 
 
-class JsonCustomTypeScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
+class JsonCustomTypeScheme(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for custom type schemes."""
 
-    id: str
-    name: str
-    agency: str
-    vtlVersion: str
+    vtlVersion: str = ""
     customTypes: Sequence[JsonCustomType] = ()
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    isPartial: bool = False
 
     def to_model(self) -> CustomTypeScheme:
         """Converts deserialized class to pysdmx model class."""
@@ -84,18 +78,16 @@ class JsonCustomTypeScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
             items=items,
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
+            annotations=[a.to_model() for a in self.annotations],
         )
 
 
-class JsonNamePersonalisation(Struct, frozen=True):
+class JsonNamePersonalisation(NameableType, frozen=True):
     """SDMX-JSON payload for name personalisations."""
 
-    id: str
-    name: str
-    vtlDefaultName: str
-    personalisedName: str
-    vtlArtefact: str
-    description: Optional[str] = None
+    vtlDefaultName: str = ""
+    personalisedName: str = ""
+    vtlArtefact: str = ""
 
     def to_model(self) -> NamePersonalisation:
         """Converts deserialized class to pysdmx model class."""
@@ -106,25 +98,15 @@ class JsonNamePersonalisation(Struct, frozen=True):
             vtl_default_name=self.vtlDefaultName,
             personalised_name=self.personalisedName,
             vtl_artefact=self.vtlArtefact,
+            annotations=[a.to_model() for a in self.annotations],
         )
 
 
-class JsonNamePersonalisationScheme(
-    Struct, frozen=True, rename={"agency": "agencyID"}
-):
+class JsonNamePersonalisationScheme(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for name personalisation schemes."""
 
-    id: str
-    name: str
-    agency: str
-    vtlVersion: str
+    vtlVersion: str = ""
     namePersonalisations: Sequence[JsonNamePersonalisation] = ()
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    isPartial: bool = False
 
     def to_model(self) -> NamePersonalisationScheme:
         """Converts deserialized class to pysdmx model class."""
@@ -141,16 +123,14 @@ class JsonNamePersonalisationScheme(
             items=items,
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
+            annotations=[a.to_model() for a in self.annotations],
         )
 
 
-class JsonUserDefinedOperator(Struct, frozen=True):
+class JsonUserDefinedOperator(NameableType, frozen=True):
     """SDMX-JSON payload for user defined operator."""
 
-    id: str
-    name: str
-    operatorDefinition: str
-    description: Optional[str] = None
+    operatorDefinition: str = ""
 
     def to_model(self) -> UserDefinedOperator:
         """Converts deserialized class to pysdmx model class."""
@@ -159,27 +139,17 @@ class JsonUserDefinedOperator(Struct, frozen=True):
             name=self.name,
             description=self.description,
             operator_definition=self.operatorDefinition,
+            annotations=[a.to_model() for a in self.annotations],
         )
 
 
-class JsonUserDefinedOperatorScheme(
-    Struct, frozen=True, rename={"agency": "agencyID"}
-):
+class JsonUserDefinedOperatorScheme(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for user defined operator schemes."""
 
-    id: str
-    name: str
-    agency: str
-    vtlVersion: str
+    vtlVersion: str = ""
     userDefinedOperators: Sequence[JsonUserDefinedOperator] = ()
     vtlMappingScheme: Optional[str] = None
     rulesetSchemes: Sequence[str] = ()
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    isPartial: bool = False
 
     def to_model(self) -> UserDefinedOperatorScheme:
         """Converts deserialized class to pysdmx model class."""
@@ -198,18 +168,16 @@ class JsonUserDefinedOperatorScheme(
             vtl_version=self.vtlVersion,
             vtl_mapping_scheme=self.vtlMappingScheme,
             ruleset_schemes=self.rulesetSchemes,
+            annotations=[a.to_model() for a in self.annotations],
         )
 
 
-class JsonRuleset(Struct, frozen=True):
+class JsonRuleset(NameableType, frozen=True):
     """SDMX-JSON payload for rulesets."""
 
-    id: str
-    name: str
-    rulesetDefinition: str
-    rulesetType: Literal["datapoint", "hierarchical"]
-    rulesetScope: Literal["variable", "valuedomain"]
-    description: Optional[str] = None
+    rulesetDefinition: str = ""
+    rulesetType: Literal["datapoint", "hierarchical"] = ""
+    rulesetScope: Literal["variable", "valuedomain"] = ""
 
     def to_model(self) -> Ruleset:
         """Converts deserialized class to pysdmx model class."""
@@ -220,24 +188,16 @@ class JsonRuleset(Struct, frozen=True):
             ruleset_definition=self.rulesetDefinition,
             ruleset_type=self.rulesetType,
             ruleset_scope=self.rulesetScope,
+            annotations=[a.to_model() for a in self.annotations],
         )
 
 
-class JsonRulesetScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
+class JsonRulesetScheme(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for ruleset schemes."""
 
-    id: str
-    name: str
-    agency: str
-    vtlVersion: str
+    vtlVersion: str = ""
     rulesets: Sequence[JsonRuleset] = ()
     vtlMappingScheme: Optional[str] = None
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    isPartial: bool = False
 
     def to_model(self) -> RulesetScheme:
         """Converts deserialized class to pysdmx model class."""
@@ -255,6 +215,7 @@ class JsonRulesetScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
             vtl_mapping_scheme=self.vtlMappingScheme,
+            annotations=[a.to_model() for a in self.annotations],
         )
 
 
@@ -280,17 +241,14 @@ class JsonFromVtlMapping(Struct, frozen=True):
         return FromVtlMapping(self.fromVtlSuperSpace, self.type)
 
 
-class JsonVtlMapping(Struct, frozen=True):
+class JsonVtlMapping(NameableType, frozen=True):
     """SDMX-JSON payload for VTL mappings."""
 
-    id: str
-    name: str
-    alias: str
+    alias: str = ""
     concept: Optional[str] = None
     codelist: Optional[str] = None
     dataflow: Optional[str] = None
     genericDataflow: Optional[str] = None
-    description: Optional[str] = None
     toVtlMapping: Optional[JsonToVtlMapping] = None
     fromVtlMapping: Optional[JsonFromVtlMapping] = None
 
@@ -337,23 +295,15 @@ class JsonVtlMapping(Struct, frozen=True):
                 to_vtl_mapping_method=(
                     self.toVtlMapping.to_model() if self.toVtlMapping else None
                 ),
+                annotations=[a.to_model() for a in self.annotations],
             )
 
 
-class JsonVtlMappingScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
+class JsonVtlMappingScheme(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for VTL mapping schemes."""
 
-    id: str
-    name: str
-    agency: str
     vtlMappings: Sequence[JsonVtlMapping] = ()
     vtlMappingScheme: Optional[str] = None
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    isPartial: bool = False
 
     def to_model(self) -> VtlMappingScheme:
         """Converts deserialized class to pysdmx model class."""
@@ -369,6 +319,7 @@ class JsonVtlMappingScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
             agency=self.agency,
             items=items,
             is_partial=self.isPartial,
+            annotations=[a.to_model() for a in self.annotations],
         )
 
 
@@ -381,6 +332,7 @@ class JsonTransformation(Struct, frozen=True):
     result: str
     isPersistent: bool
     description: Optional[str] = None
+    annotations: Sequence[JsonAnnotation] = ()
 
     def to_model(self) -> Transformation:
         """Converts deserialized class to pysdmx model class."""
@@ -391,30 +343,20 @@ class JsonTransformation(Struct, frozen=True):
             expression=self.expression,
             is_persistent=self.isPersistent,
             result=self.result,
+            annotations=[a.to_model() for a in self.annotations],
         )
 
 
-class JsonTransformationScheme(
-    Struct, frozen=True, rename={"agency": "agencyID"}
-):
+class JsonTransformationScheme(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for VTL transformation schemes."""
 
-    id: str
-    name: str
-    agency: str
-    vtlVersion: str
-    transformations: Sequence[JsonTransformation]
+    vtlVersion: str = ""
+    transformations: Sequence[JsonTransformation] = ()
     vtlMappingScheme: Optional[str] = None
     namePersonalisationScheme: Optional[str] = None
     customTypeScheme: Optional[str] = None
     rulesetSchemes: Sequence[str] = ()
     userDefinedOperatorSchemes: Sequence[str] = ()
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    isPartial: bool = False
 
     def to_model(
         self,
@@ -448,6 +390,7 @@ class JsonTransformationScheme(
             name_personalisation_scheme=nps[0] if nps else None,
             ruleset_schemes=rss,
             user_defined_operator_schemes=dos,
+            annotations=[a.to_model() for a in self.annotations],
         )
 
 
