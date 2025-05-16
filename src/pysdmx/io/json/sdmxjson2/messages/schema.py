@@ -69,4 +69,11 @@ class JsonSchemaMessage(
                 f"{h.agency}:{h.id}({h.version})"  # type: ignore[union-attr]
             )
         comps = Components(comp_dict.values())
-        return Schema(context, agency, id_, comps, version, urns)
+        return Schema(
+            context,
+            agency,
+            id_,
+            comps,
+            version,
+            urns,  # type: ignore[arg-type]
+        )
