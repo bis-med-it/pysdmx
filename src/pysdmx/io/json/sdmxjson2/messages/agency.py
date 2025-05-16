@@ -19,12 +19,13 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True):
         self, owner: str, a: Agency, dfowners: Dict[str, Set[DataflowRef]]
     ) -> Agency:
         oid = f"{owner}.{a.id}" if owner != "SDMX" else a.id
+        flows = dfowners[oid] if dfowners else ()
         return Agency(
             id=oid,
             name=a.name,
             description=a.description,
             contacts=a.contacts,
-            dataflows=dfowners[oid],
+            dataflows=flows,
         )
 
     def to_model(self, dataflows: Sequence[JsonDataflow]) -> AgencyScheme:
