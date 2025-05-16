@@ -31,7 +31,7 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
     value: Optional[str] = None
 
     @property
-    def text(self):
+    def text(self) -> Optional[str]:
         """Alias to value."""
         return self.value
 
