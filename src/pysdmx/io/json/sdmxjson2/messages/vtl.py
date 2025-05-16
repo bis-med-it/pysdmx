@@ -1,6 +1,5 @@
 """Collection of SDMX-JSON schemas for VTL artefacts."""
 
-from datetime import datetime
 from typing import Literal, Optional, Sequence
 
 from msgspec import Struct
