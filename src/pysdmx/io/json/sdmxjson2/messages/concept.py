@@ -6,8 +6,8 @@ from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist
 from pysdmx.io.json.sdmxjson2.messages.core import (
-    JsonRepresentation,
     ItemSchemeType,
+    JsonRepresentation,
     NameableType,
 )
 from pysdmx.model import Codelist, Concept, ConceptScheme, DataType

@@ -1,13 +1,11 @@
 """Collection of SDMX-JSON schemas for categories and category schemes."""
 
 from collections import defaultdict
-from datetime import datetime
-from typing import Dict, Optional, Sequence
+from typing import Dict, Sequence
 
 from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.core import (
-    JsonAnnotation,
     ItemSchemeType,
     MaintainableType,
     NameableType,
