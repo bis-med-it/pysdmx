@@ -29,6 +29,7 @@ class JsonAnnotation(msgspec.Struct, frozen=True):
     title: Optional[str] = None
     type: Optional[str] = None
     value: Optional[str] = None
+    text: Optional[str] = None
     links: Sequence[JsonLink] = ()
 
     def to_model(self) -> Annotation:
@@ -46,7 +47,7 @@ class JsonAnnotation(msgspec.Struct, frozen=True):
             title=self.title,
             type=self.type,
             url=url,
-            text=self.value,
+            text=self.value if self.value else self.text,
         )
 
 

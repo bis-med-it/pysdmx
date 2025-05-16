@@ -57,6 +57,7 @@ class JsonCode(NameableType, frozen=True):
             description=self.description,
             valid_from=vf,
             valid_to=vt,
+            annotations=[a.to_model() for a in self.annotations],
         )
 
 
