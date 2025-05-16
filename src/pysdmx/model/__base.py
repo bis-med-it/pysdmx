@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -56,7 +56,13 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
         return ", ".join(out)
 
 
-class AnnotableArtefact(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True, kw_only=True):
+class AnnotableArtefact(
+    Struct,
+    frozen=True,
+    omit_defaults=True,
+    repr_omit_defaults=True,
+    kw_only=True
+):
     """Annotable Artefact class.
 
     Superclass of all SDMX artefacts.
@@ -68,12 +74,12 @@ class AnnotableArtefact(Struct, frozen=True, omit_defaults=True, repr_omit_defau
 
     annotations: Sequence[Annotation] = ()
 
-    # TODO: check if this is what is needed and if it is, implement in all Struct inheritance classes
+    # TODO: check if this is what is needed and if it is,
+    #  implement in all Struct inheritance classes
     def __str__(self) -> str:
         """Custom string representation without the class name."""
         processed_output = []
-        a = self.__rich_repr__()
-        for attr, value in self.__rich_repr__():
+        for attr, value, *_ in self.__rich_repr__():
             # str is taken as a Sequence, so we need to check it's not a str
             if isinstance(value, Sequence) and not isinstance(value, str):
                 # Handle non-empty lists
