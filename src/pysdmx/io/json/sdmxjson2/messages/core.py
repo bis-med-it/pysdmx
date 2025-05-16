@@ -6,8 +6,15 @@ from typing import Optional, Sequence, Union
 import msgspec
 
 from pysdmx.errors import NotFound
-from pysdmx.model import ArrayBoundaries, Codelist, Facets
+from pysdmx.model import Annotation, ArrayBoundaries, Codelist, Facets
 from pysdmx.util import find_by_urn
+
+
+class JsonLink(msgspec.Struct, frozen=True):
+    """SDMX-JSON payload for link objects."""
+
+    urn: str
+    rel: Optional[str] = None
 
 
 class JsonAnnotation(msgspec.Struct, frozen=True):
@@ -17,7 +24,19 @@ class JsonAnnotation(msgspec.Struct, frozen=True):
     title: Optional[str] = None
     type: Optional[str] = None
     value: Optional[str] = None
-    text: Optional[str] = None
+    links: Sequence[JsonLink] = ()
+
+    def to_model(self) -> Annotation:
+        """Converts a JsonAnnotation to a standard Annotation."""
+        m = [l for l in self.links if l.rel == "self"]
+        url = m[0] if len(m) == 1 else None
+        return Annotation(
+            id=self.id,
+            title=self.title,
+            type=self.type,
+            url=url,
+            value=self.value,
+        )
 
 
 class NameableType(msgspec.Struct, frozen=True):
@@ -26,7 +45,7 @@ class NameableType(msgspec.Struct, frozen=True):
     id: str
     name: str
     description: Optional[str] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
+    annotations: Sequence[JsonAnnotation] = ()
 
 
 class MaintainableType(
@@ -42,7 +61,7 @@ class MaintainableType(
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
     description: Optional[str] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
+    annotations: Sequence[JsonAnnotation] = ()
 
 
 class ItemSchemeType(MaintainableType, frozen=True):
@@ -139,13 +158,6 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
             return ArrayBoundaries(m, self.maxOccurs)
         else:
             return None
-
-
-class JsonLink(msgspec.Struct, frozen=True):
-    """SDMX-JSON payload for link objects."""
-
-    urn: str
-    rel: Optional[str] = None
 
 
 class JsonHeader(msgspec.Struct, frozen=True):
