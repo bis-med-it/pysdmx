@@ -7,9 +7,9 @@ from typing import Optional, Sequence, Tuple
 from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.core import (
+    ItemSchemeType,
     JsonAnnotation,
     JsonLink,
-    ItemSchemeType,
     MaintainableType,
     NameableType,
 )
