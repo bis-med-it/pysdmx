@@ -56,7 +56,7 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
         return ", ".join(out)
 
 
-class AnnotableArtefact(Struct, frozen=True, omit_defaults=True, kw_only=True):
+class AnnotableArtefact(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True, kw_only=True):
     """Annotable Artefact class.
 
     Superclass of all SDMX artefacts.
@@ -68,27 +68,25 @@ class AnnotableArtefact(Struct, frozen=True, omit_defaults=True, kw_only=True):
 
     annotations: Sequence[Annotation] = ()
 
-    @classmethod
-    def __all_annotations(cls) -> Dict[str, Any]:
-        class_attributes = {}
-        for c in cls.__mro__:
-            if "__annotations__" in c.__dict__:
-                class_attributes.update(c.__annotations__)
-        return dict(reversed(list(class_attributes.items())))
-
+    # TODO: check if this is what is needed and if it is, implement in all Struct inheritance classes
     def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        out = []
-        for k in self.__all_annotations():
-            v = self.__getattribute__(k)
-            if isinstance(v, list) and len(v) > 0:
-                item_type = v[0].__class__.__name__
-                out.append(f"{k}=[{len(v)} {item_type}s]")
-            elif v is not None and v:
-                out.append(f"{k}={v!r}")
-        return self.__class__.__name__ + "(" + ", ".join(out) + ")"
+        """Custom string representation without the class name."""
+        processed_output = []
+        a = self.__rich_repr__()
+        for attr, value in self.__rich_repr__():
+            # str is taken as a Sequence, so we need to check it's not a str
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                # Handle non-empty lists
+                if value:
+                    class_name = value[0].__class__.__name__
+                    value = f"[{len(value)} {class_name}]"
+                else:
+                    # Skipping empty lists
+                    continue
+            processed_output.append(f"{attr}: {value!r}")
 
-    __repr__ = __str__
+        a = self.__repr__()
+        return f"{', '.join(processed_output)}"
 
 
 class IdentifiableArtefact(AnnotableArtefact, frozen=True, omit_defaults=True):
