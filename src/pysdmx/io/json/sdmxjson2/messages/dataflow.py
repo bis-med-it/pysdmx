@@ -14,6 +14,7 @@ from pysdmx.model import (
     DataflowInfo,
     DataProvider,
 )
+from pysdmx.util import parse_maintainable_urn
 
 
 class JsonDataflow(Struct, frozen=True, rename={"agency": "agencyID"}):
@@ -38,7 +39,7 @@ class JsonDataflow(Struct, frozen=True, rename={"agency": "agencyID"}):
             name=self.name,
             description=self.description,
             version=self.version,
-            structure=self.structure,
+            structure=parse_maintainable_urn(self.structure),
         )
 
 

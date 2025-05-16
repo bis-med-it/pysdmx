@@ -46,8 +46,7 @@ from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import Header
 
 TEST_CS_URN = (
-    "urn:sdmx:org.sdmx.infomodel.conceptscheme."
-    "ConceptScheme=BIS:CS_FREQ(1.0)"
+    "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS:CS_FREQ(1.0)"
 )
 
 
@@ -568,7 +567,7 @@ def dataflow():
         is_final=True,
         name="OTC derivatives turnover",
         service_url=None,
-        structure="DataStructure=BIS:BIS_DER(1.0)",
+        structure=Reference("DataStructure", "BIS", "BIS_DER", "1.0"),
         structure_url=None,
         uri=None,
         urn="urn:sdmx:org.sdmx.infomodel.datastructure."

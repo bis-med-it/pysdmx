@@ -21,6 +21,7 @@ from msgspec import Struct
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.model import (
     AgencyScheme,
+    ProvisionAgreement,
     RulesetScheme,
     TransformationScheme,
     UserDefinedOperatorScheme,
@@ -66,6 +67,7 @@ class Message(Struct, frozen=True):
                 ItemScheme,
                 DataStructureDefinition,
                 Dataflow,
+                ProvisionAgreement,
             ]
         ]
     ] = None
@@ -80,7 +82,7 @@ class Message(Struct, frozen=True):
                     obj_, (ItemScheme, DataStructureDefinition, Dataflow)
                 ):
                     raise Invalid(
-                        f"Invalid structure: " f"{type(obj_).__name__} ",
+                        f"Invalid structure: {type(obj_).__name__} ",
                         "Check the docs on structures.",
                     )
         if self.data is not None:
@@ -107,7 +109,14 @@ class Message(Struct, frozen=True):
 
     def __get_single_structure(
         self,
-        type_: Type[Union[ItemScheme, DataStructureDefinition, Dataflow]],
+        type_: Type[
+            Union[
+                ItemScheme,
+                DataStructureDefinition,
+                Dataflow,
+                ProvisionAgreement,
+            ]
+        ],
         short_urn: str,
     ) -> Any:
         """Returns a specific element from content."""
@@ -147,6 +156,10 @@ class Message(Struct, frozen=True):
         """Returns the Dataflows."""
         return self.__get_elements(Dataflow)
 
+    def get_provision_agreements(self) -> List[ProvisionAgreement]:
+        """Returns the Provision Agreements."""
+        return self.__get_elements(ProvisionAgreement)
+
     def get_organisation_scheme(self, short_urn: str) -> AgencyScheme:
         """Returns a specific OrganisationScheme."""
         return self.__get_single_structure(AgencyScheme, short_urn)
@@ -168,6 +181,10 @@ class Message(Struct, frozen=True):
     def get_dataflow(self, short_urn: str) -> Dataflow:
         """Returns a specific Dataflow."""
         return self.__get_single_structure(Dataflow, short_urn)
+
+    def get_provision_agreement(self, short_urn: str) -> ProvisionAgreement:
+        """Returns a specific ProvisionAgreement."""
+        return self.__get_single_structure(ProvisionAgreement, short_urn)
 
     def get_datasets(self) -> Sequence[Dataset]:
         """Returns the Datasets."""

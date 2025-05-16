@@ -752,11 +752,16 @@ class StructureParser(Struct):
 
             if item == DFW:
                 ref_data = element[STRUCTURE][REF]
-                reference_str = (
-                    f"{ref_data[CLASS]}={ref_data[AGENCY_ID]}"
-                    f":{ref_data[ID]}({ref_data[VERSION]})"
+                reference = Reference(
+                    sdmx_type="DataStructure",
+                    agency=ref_data[AGENCY_ID],
+                    id=ref_data[ID],
+                    version=ref_data[VERSION],
                 )
-                element[STRUCTURE] = reference_str
+                if str(reference) in self.datastructures:
+                    element[STRUCTURE] = self.datastructures[str(reference)]
+                else:
+                    element[STRUCTURE] = reference
 
             structure = {key.lower(): value for key, value in element.items()}
             if schema == DSDS:

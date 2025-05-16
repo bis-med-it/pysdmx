@@ -5,7 +5,9 @@ from typing import Optional, Sequence
 from msgspec import Struct
 
 from pysdmx.io.json.fusion.messages.core import FusionString
+from pysdmx.model import DataflowRef
 from pysdmx.model import ProvisionAgreement as PA
+from pysdmx.util import parse_maintainable_urn
 
 
 class FusionProvisionAgreement(
@@ -31,7 +33,9 @@ class FusionProvisionAgreement(
             description=description,
             version=self.version,
             provider=self.dataproviderRef,
-            dataflow=self.structureUsage,
+            dataflow=DataflowRef.from_reference(
+                parse_maintainable_urn(self.structureUsage)
+            ),
         )
 
 

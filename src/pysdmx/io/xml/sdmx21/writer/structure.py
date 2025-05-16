@@ -163,9 +163,7 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
         if annotation.id is None:
             outfile += f"{child2}<{ABBR_COM}:Annotation>"
         else:
-            outfile += (
-                f"{child2}<{ABBR_COM}:Annotation " f"id={annotation.id!r}>"
-            )
+            outfile += f"{child2}<{ABBR_COM}:Annotation id={annotation.id!r}>"
         outfile = outfile.replace("'", '"')
 
         for attr, label in ANNOTATION_WRITER.items():
@@ -179,9 +177,7 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
                 else:
                     head_tag = f"{ABBR_COM}:{label}"
 
-                outfile += (
-                    f"{child3}<{head_tag}>" f"{value}" f"</{ABBR_COM}:{label}>"
-                )
+                outfile += f"{child3}<{head_tag}>{value}</{ABBR_COM}:{label}>"
 
         outfile += f"{child2}</{ABBR_COM}:Annotation>"
     outfile += f"{child1}</{ABBR_COM}:Annotations>"
@@ -395,8 +391,7 @@ def __write_attribute_relation(
             related_role = ROLE_MAPPING[role]
             outfile += f"{add_indent(indent)}<{ABBR_STR}:{related_role}>"
             outfile += (
-                f"{add_indent(add_indent(indent))}"
-                f"<{REF} {ID}={comp_name!r}/>"
+                f"{add_indent(add_indent(indent))}<{REF} {ID}={comp_name!r}/>"
             )
             outfile += f"{add_indent(indent)}</{ABBR_STR}:{related_role}>"
     outfile += f"{indent}</{ABBR_STR}:{ATT_REL}>"
@@ -530,9 +525,8 @@ def __write_enumeration(codes: Union[Codelist, Hierarchy], indent: str) -> str:
     return outfile
 
 
-def __write_structure(item: str, indent: str) -> str:
+def __write_structure(ref: Reference, indent: str) -> str:
     """Writes the dataflow structure to the XML file."""
-    ref = parse_short_urn(item)
     outfile = f"{indent}<{ABBR_STR}:Structure>"
     outfile += (
         f"{add_indent(indent)}<{REF} "

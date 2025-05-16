@@ -122,6 +122,7 @@ def read_sdmx(
 def __assign_structure_to_dataset(
     datasets: Sequence[Dataset], structure_msg: Message
 ) -> None:
+    all_found = True
     for dataset in datasets:
         short_urn: str = (
             dataset.structure.short_urn
@@ -129,21 +130,29 @@ def __assign_structure_to_dataset(
             else dataset.structure
         )
         sdmx_type = parse_short_urn(short_urn).sdmx_type
-        if sdmx_type == "DataStructure":
+        if sdmx_type.lower() == "datastructure":
             try:
                 dsd = structure_msg.get_data_structure_definition(short_urn)
                 dataset.structure = dsd.to_schema()
             except NotFound:
-                continue
-        else:
+                all_found = False
+        elif sdmx_type.lower() == "dataflow":
             try:
                 dataflow = structure_msg.get_dataflow(short_urn)
-                dsd = structure_msg.get_data_structure_definition(
-                    dataflow.structure if dataflow.structure else ""
-                )
-                dataset.structure = dsd.to_schema()
+                dataset.structure = dataflow.to_schema()
             except NotFound:
-                continue
+                all_found = False
+        else:
+            try:
+                pa = structure_msg.get_provision_agreement(short_urn)
+                dataset.structure = pa.to_schema()
+            except NotFound:
+                all_found = False
+
+        if not all_found:
+            raise Invalid(
+                f"Missing DataStructure for dataset {dataset.short_urn}"
+            )
 
 
 def get_datasets(
@@ -175,19 +184,14 @@ def get_datasets(
     if not data_msg.data:
         raise Invalid("No data found in the data message")
 
+    datasets = data_msg.data
+
     if structure is None:
-        return data_msg.data
+        return datasets
     structure_msg = read_sdmx(structure, validate=validate)
     if structure_msg.structures is None:
         raise Invalid("No structure found in the structure message")
 
-    __assign_structure_to_dataset(data_msg.data, structure_msg)
+    __assign_structure_to_dataset(datasets, structure_msg)
 
-    # Check if any dataset does not have a structure
-    for dataset in data_msg.data:
-        if not isinstance(dataset.structure, Schema):
-            raise Invalid(
-                f"Missing DataStructure for dataset {dataset.short_urn}"
-            )
-
-    return data_msg.data
+    return datasets

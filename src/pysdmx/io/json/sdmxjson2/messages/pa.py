@@ -6,7 +6,8 @@ from typing import Optional, Sequence
 from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
-from pysdmx.model import ProvisionAgreement
+from pysdmx.model import DataflowRef, ProvisionAgreement
+from pysdmx.util import parse_maintainable_urn
 
 
 class JsonProvisionAgreement(
@@ -36,7 +37,9 @@ class JsonProvisionAgreement(
             version=self.version,
             valid_from=self.validFrom,
             valid_to=self.validTo,
-            dataflow=self.dataflow,
+            dataflow=DataflowRef.from_reference(
+                parse_maintainable_urn(self.dataflow)
+            ),
             provider=self.dataProvider,
         )
 

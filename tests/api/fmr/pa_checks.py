@@ -2,7 +2,8 @@ import httpx
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
 from pysdmx.io.format import Format
-from pysdmx.model import ProvisionAgreement
+from pysdmx.model import DataflowRef, ProvisionAgreement
+from pysdmx.util import parse_short_urn
 
 
 def check_provision_agreements(
@@ -35,7 +36,12 @@ def check_provision_agreements(
     assert cat.agency == "BIS.CBS"
     assert cat.description is None
     assert cat.version == "1.0"
-    assert "Dataflow=BIS.CBS:CBS(1.0" in cat.dataflow
+    assert (
+        DataflowRef.from_reference(
+            parse_short_urn("Dataflow=BIS.CBS:CBS(1.0)")
+        )
+        == cat.dataflow
+    )
     assert "DataProvider=BIS:DATA_PROVIDERS(1.0).5B0" in cat.provider
 
 
@@ -58,5 +64,7 @@ async def check_provision_agreements_async(
     assert cat.agency == "BIS.CBS"
     assert cat.description is None
     assert cat.version == "1.0"
-    assert "Dataflow=BIS.CBS:CBS(1.0" in cat.dataflow
+    assert DataflowRef.from_reference(
+        parse_short_urn("Dataflow=BIS.CBS:CBS(1.0)")
+    )
     assert "DataProvider=BIS:DATA_PROVIDERS(1.0).5B0" in cat.provider
