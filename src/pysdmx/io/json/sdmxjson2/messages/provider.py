@@ -41,7 +41,7 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True):
                 for p in self.dataProviders
             ]
         else:
-            provs = self.dataProviders
+            provs = self.dataProviders  # type: ignore[assignment]
         return DataProviderScheme(
             agency=self.agency,
             name=self.name,

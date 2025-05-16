@@ -19,7 +19,7 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True):
         self, owner: str, a: Agency, dfowners: Dict[str, Set[DataflowRef]]
     ) -> Agency:
         oid = f"{owner}.{a.id}" if owner != "SDMX" else a.id
-        flows = dfowners[oid] if dfowners else ()
+        flows = list(dfowners[oid]) if dfowners else []
         return Agency(
             id=oid,
             name=a.name,
@@ -30,19 +30,14 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True):
 
     def to_model(self, dataflows: Sequence[JsonDataflow]) -> AgencyScheme:
         """Returns the requested list of agencies."""
+        dfowners: Dict[str, Set[DataflowRef]] = defaultdict(set)
         if dataflows:
-            dfowners: Dict[str, Set[DataflowRef]] = defaultdict(set)
             for df in dataflows:
                 dfref = DataflowRef(df.agency, df.id, df.version, df.name)
                 dfowners[df.agency].add(dfref)
-            agencies = [
-                self.__add_owner(self.agency, a, dfowners)
-                for a in self.agencies
-            ]
-        else:
-            agencies = [
-                self.__add_owner(self.agency, a, ()) for a in self.agencies
-            ]
+        agencies = [
+            self.__add_owner(self.agency, a, dfowners) for a in self.agencies
+        ]
         return AgencyScheme(
             description=self.description,
             agency=self.agency,
