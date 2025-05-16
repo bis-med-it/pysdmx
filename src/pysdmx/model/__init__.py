@@ -10,6 +10,7 @@ import msgspec
 
 from pysdmx.model.__base import (
     Agency,
+    Annotation,
     Contact,
     DataConsumer,
     DataflowRef,
@@ -140,6 +141,7 @@ def decoders(type: Type, obj: Any) -> Any:  # type: ignore[type-arg]
 __all__ = [
     "Agency",
     "AgencyScheme",
+    "Annotation",
     "ArrayBoundaries",
     "Categorisation",
     "Category",
