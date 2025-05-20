@@ -1,0 +1,346 @@
+{
+    "meta": {
+        "id": "IREF693248",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2023-08-17T10:48:43Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0"
+        }
+    },
+    "data": {
+        "dataflows": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "dataflow",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:MDD(1.0)"
+                    },
+                    {
+                        "rel": "metadata",
+                        "href": "https://mms-med-fmr-dev.apps.ocp-dev.opz.bisinfo.org/sdmx/v2/metadata/metadataset/BIS.MEDIT/DTI_MDD/1.0",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS.MEDIT:DTI_MDD(1.0)"
+                    }
+                ],
+                "id": "MDD",
+                "name": "MDD Name",
+                "names": {
+                    "en": "MDD Name"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isFinal": false,
+                "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:MDD(1.0)"
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "dataflow",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:SRC(1.0)"
+                    },
+                    {
+                        "rel": "metadata",
+                        "href": "https://mms-med-fmr-dev.apps.ocp-dev.opz.bisinfo.org/sdmx/v2/metadata/metadataset/BIS.MEDIT/DTI_SRC/1.0",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS.MEDIT:DTI_SRC(1.0)"
+                    }
+                ],
+                "id": "SRC",
+                "name": "SRC Name",
+                "names": {
+                    "en": "SRC Name"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isFinal": false,
+                "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:SRC(1.0)"
+            }
+        ],
+        "structureMaps": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "structuremap",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.structuremapping.StructureMap=BIS:SRC_2_MDD(1.0)"
+                    }
+                ],
+                "id": "SRC_2_MDD",
+                "name": "Map SRC data to MDD",
+                "names": {
+                    "en": "Map SRC data to MDD"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isFinal": false,
+                "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:SRC(1.0)",
+                "target": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:MDD(1.0)",
+                "datePatternMaps": [
+                    {
+                        "id": "my_id",
+                        "sourcePattern": "MM/dd/yyyy",
+                        "locale": "en",
+                        "mappedComponents": [
+                            {
+                                "source": "ACTIVITY_DATE",
+                                "target": "TIME_PERIOD"
+                            }
+                        ],
+                        "targetFrequencyID": "M"
+                    },
+                    {
+                        "id": "your_id",
+                        "sourcePattern": "ddMMyy",
+                        "locale": "es",
+                        "mappedComponents": [
+                            {
+                                "source": "VOLUME_MONTH",
+                                "target": "TIME_PERIOD"
+                            }
+                        ],
+                        "frequencyDimension": "CONTRACT_CODE"
+                    }
+                ],
+                "componentMaps": [
+                    {
+                        "source": [
+                            "CONTRACT"
+                        ],
+                        "target": [
+                            "CONTRACT"
+                        ],
+                        "representationMap": "urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=BIS:CONTRACT(1.0)"
+                    },
+                    {
+                        "source": [
+                            "OPTION_TYPE"
+                        ],
+                        "target": [
+                            "OPTION_TYPE"
+                        ]
+                    },
+                    {
+                        "source": [
+                            "OI"
+                        ],
+                        "target": [
+                            "OI"
+                        ]
+                    },
+                    {
+                        "source": [
+                            "VOL_MTD"
+                        ],
+                        "target": [
+                            "TO"
+                        ]
+                    },
+                    {
+                        "source": [
+                            "VOL_YTD"
+                        ],
+                        "target": [
+                            "TO_YTD"
+                        ]
+                    }
+                ],
+                "fixedValueMaps": [
+                    {
+                        "target": "OBS_STATUS",
+                        "values": [
+                            "A"
+                        ]
+                    },
+                    {
+                        "target": "FREQ",
+                        "values": [
+                            "M"
+                        ]
+                    },
+                    {
+                        "source": "CONF_STATUS",
+                        "values": [
+                            "C"
+                        ]
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "structuremap",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.structuremapping.StructureMap=BIS:SRC_2_MDD(1.0)"
+                    }
+                ],
+                "id": "SRC_2_MDD",
+                "name": "Map SRC data to MDD",
+                "names": {
+                    "en": "Map SRC data to MDD"
+                },
+                "version": "1.1",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isFinal": false,
+                "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:SRC(1.0)",
+                "target": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:MDD(1.0)",
+                "datePatternMaps": [
+                    {
+                        "id": "my_id",
+                        "sourcePattern": "MM/dd/yyyy",
+                        "locale": "en",
+                        "mappedComponents": [
+                            {
+                                "source": "ACTIVITY_DATE",
+                                "target": "TIME_PERIOD"
+                            }
+                        ],
+                        "targetFrequencyID": "M"
+                    },
+                    {
+                        "id": "your_id",
+                        "sourcePattern": "ddMMyy",
+                        "locale": "es",
+                        "mappedComponents": [
+                            {
+                                "source": "VOLUME_MONTH",
+                                "target": "TIME_PERIOD"
+                            }
+                        ],
+                        "frequencyDimension": "CONTRACT_CODE"
+                    }
+                ],
+                "componentMaps": [
+                    {
+                        "source": [
+                            "CONTRACT"
+                        ],
+                        "target": [
+                            "CONTRACT"
+                        ],
+                        "representationMap": "urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=BIS:CONTRACT(1.0)"
+                    },
+                    {
+                        "source": [
+                            "OPTION_TYPE"
+                        ],
+                        "target": [
+                            "OPTION_TYPE"
+                        ]
+                    },
+                    {
+                        "source": [
+                            "OI"
+                        ],
+                        "target": [
+                            "OI"
+                        ]
+                    },
+                    {
+                        "source": [
+                            "VOL_MTD"
+                        ],
+                        "target": [
+                            "TO"
+                        ]
+                    },
+                    {
+                        "source": [
+                            "VOL_YTD"
+                        ],
+                        "target": [
+                            "TO_YTD"
+                        ]
+                    }
+                ],
+                "fixedValueMaps": [
+                    {
+                        "target": "OBS_STATUS",
+                        "values": [
+                            "A"
+                        ]
+                    },
+                    {
+                        "target": "FREQ",
+                        "values": [
+                            "M"
+                        ]
+                    },
+                    {
+                        "source": "CONF_STATUS",
+                        "values": [
+                            "N"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "representationMaps": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "representationmap",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=BIS:CONTRACT(1.0)"
+                    }
+                ],
+                "id": "CONTRACT",
+                "name": "Internal map of contract",
+                "names": {
+                    "en": "Internal map of contract"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isFinal": false,
+                "source": [
+                    {
+                        "codelist": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CONTRACTS(1.0)"
+                    }
+                ],
+                "target": [
+                    {
+                        "codelist": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CONTRACTS(1.0)"
+                    }
+                ],
+                "representationMappings": [
+                    {
+                        "validFrom": "2008-01-01",
+                        "validTo": "2011-01-01T10:00:42",
+                        "sourceValues": [
+                            {
+                                "value": "PROD TYPE"
+                            }
+                        ],
+                        "targetValues": [
+                            "_T"
+                        ]
+                    },
+                    {
+                        "sourceValues": [
+                            {
+                                "isRegEx": true,
+                                "value": "^([A-Z0-9]+)$"
+                            }
+                        ],
+                        "targetValues": [
+                            "\\1"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
