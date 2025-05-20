@@ -1,12 +1,10 @@
 """Collection of SDMX-JSON schemas for provision agreements."""
 
-from datetime import datetime
-from typing import Optional, Sequence
+from typing import Sequence
 
 from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.core import (
-    JsonAnnotation,
     MaintainableType,
 )
 from pysdmx.model import ProvisionAgreement
