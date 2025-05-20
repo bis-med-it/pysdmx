@@ -83,7 +83,7 @@ def test_tostr_id(id):
 
     s = str(o)
 
-    assert s == f"id={id}"
+    assert s == f"Organisation(id={id!r})"
 
 
 def test_tostr_name(id, name):
@@ -91,7 +91,7 @@ def test_tostr_name(id, name):
 
     s = str(o)
 
-    assert s == f"id={id}, name={name}"
+    assert s == f"Organisation(id={id!r}, name={name!r})"
 
 
 def test_equal_has_same_hash(id):
