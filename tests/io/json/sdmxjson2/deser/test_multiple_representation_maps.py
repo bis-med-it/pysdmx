@@ -13,7 +13,7 @@ def body():
         return f.read()
 
 
-def test_annotation_with_uri(body):
+def test_multiple_representation_maps(body):
     res = msgspec.json.Decoder(JsonRepresentationMapsMessage).decode(body)
     maps = res.to_model()
 

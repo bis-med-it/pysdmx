@@ -13,7 +13,7 @@ def body():
         return f.read()
 
 
-def test_annotation_with_uri(body):
+def test_agencies_with_flows(body):
     res = msgspec.json.Decoder(JsonAgencyMessage).decode(body)
     schemes = res.to_model()
 
