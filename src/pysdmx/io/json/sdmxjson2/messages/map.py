@@ -149,17 +149,16 @@ class JsonComponentMap(Struct, frozen=True):
     ) -> Union[ComponentMap, MultiComponentMap, ImplicitComponentMap]:
         """Returns the requested map."""
         if self.representationMap:
-            rm = find_by_urn(rms, self.representationMap)
-            if len(self.source) == 1 and len(self.target) == 1:
-                return ComponentMap(
-                    self.source[0],
-                    self.target[0],
-                    rm.to_model(),
-                )
+            mult = len(self.source) > 1 or len(self.target) > 1
+            if rms:
+                rm = find_by_urn(rms, self.representationMap)
+                rm = rm.to_model(mult)
             else:
-                return MultiComponentMap(
-                    self.source, self.target, rm.to_model(True)
-                )
+                rm = self.representationMap
+            if mult:
+                return MultiComponentMap(self.source, self.target, rm)
+            else:
+                return ComponentMap(self.source[0], self.target[0], rm)
         else:
             return ImplicitComponentMap(self.source[0], self.target[0])
 
