@@ -269,12 +269,15 @@ class JsonRepresentationMaps(Struct, frozen=True):
 
     representationMaps: Sequence[JsonRepresentationMap]
 
-    def to_model(self) -> Sequence[ValueMap]:
+    def to_model(
+        self,
+    ) -> Sequence[Union[MultiRepresentationMap, RepresentationMap]]:
         """Returns the requested mapping definition."""
-        m = self.representationMaps[0]
-        multi = bool(len(m.source) > 1 or len(m.target) > 1)
-        out = m.to_model(multi)
-        return out  # type: ignore[return-value]
+        maps = []
+        for m in self.representationMaps:
+            multi = bool(len(m.source) > 1 or len(m.target) > 1)
+            maps.append(m.to_model(multi))
+        return maps
 
 
 class JsonRepresentationMapMessage(Struct, frozen=True):
@@ -282,6 +285,18 @@ class JsonRepresentationMapMessage(Struct, frozen=True):
 
     data: JsonRepresentationMaps
 
-    def to_model(self) -> Sequence[ValueMap]:
+    def to_model(self) -> Union[MultiRepresentationMap, RepresentationMap]:
         """Returns the requested representation map."""
+        return self.data.to_model()[0]
+
+
+class JsonRepresentationMapsMessage(Struct, frozen=True):
+    """SDMX-JSON payload for /representationmap queries."""
+
+    data: JsonRepresentationMaps
+
+    def to_model(
+        self,
+    ) -> Sequence[Union[MultiRepresentationMap, RepresentationMap]]:
+        """Returns the requested representation maps."""
         return self.data.to_model()
