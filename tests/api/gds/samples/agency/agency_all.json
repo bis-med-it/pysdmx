@@ -1,0 +1,48 @@
+{
+  "structures": {
+    "agencies": [
+      {
+        "agencyID": "BIS",
+        "name": "BIS",
+        "description": "Bank for International Settlements",
+        "url": "bis.org"
+      },
+      {
+        "agencyID": "ESTAT",
+        "name": "EUROSTAT",
+        "description": "Eurostat",
+        "url": "eurostat.europa.eu"
+      },
+      {
+        "agencyID": "ECB",
+        "name": "ECB",
+        "description": "European Central Bank",
+        "url": "ecb.europa.eu"
+      },
+      {
+        "agencyID": "IMF",
+        "name": "IMF",
+        "description": "International Monetary Fund",
+        "url": "http://imf.org/en/Home"
+      },
+      {
+        "agencyID": "ILO",
+        "name": "ILO",
+        "description": "International Labour Organization",
+        "url": "http://ilo.org"
+      },
+      {
+        "agencyID": "OECD",
+        "name": "OECD",
+        "description": "",
+        "url": "http://oecd.org"
+      },
+      {
+        "agencyID": "SDMX",
+        "name": "SDMX",
+        "description": "",
+        "url": "https://sdmx.org"
+      }
+    ]
+  }
+}

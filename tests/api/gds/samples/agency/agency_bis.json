@@ -1,0 +1,12 @@
+{
+  "structures": {
+    "agencies": [
+      {
+        "agencyID": "BIS",
+        "name": "BIS",
+        "description": "Bank for International Settlements",
+        "url": "bis.org"
+      }
+    ]
+  }
+}

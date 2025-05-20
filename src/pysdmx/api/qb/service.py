@@ -7,6 +7,7 @@ import httpx
 from pysdmx import errors
 from pysdmx.api.qb.availability import AvailabilityFormat, AvailabilityQuery
 from pysdmx.api.qb.data import DataFormat, DataQuery
+from pysdmx.api.qb.gds import GdsQuery
 from pysdmx.api.qb.refmeta import (
     RefMetaByMetadataflowQuery,
     RefMetaByMetadatasetQuery,
@@ -22,6 +23,7 @@ from pysdmx.api.qb.registration import (
 from pysdmx.api.qb.schema import SchemaFormat, SchemaQuery
 from pysdmx.api.qb.structure import StructureFormat, StructureQuery
 from pysdmx.api.qb.util import ApiVersion
+from pysdmx.io.format import GDS_FORMAT
 
 
 class _CoreRestService:
@@ -160,6 +162,12 @@ class RestService(_CoreRestService):
         """Execute a schema query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._schema_format.value
+        return self.__fetch(q, f)
+
+    def gds(self, query: GdsQuery) -> bytes:
+        """Execute a GDS query against the service."""
+        q = query.get_url(self._api_version)
+        f = GDS_FORMAT
         return self.__fetch(q, f)
 
     def availability(self, query: AvailabilityQuery) -> bytes:

@@ -1,0 +1,26 @@
+{
+  "structures": {
+    "sdmxApis": [
+      {
+        "release": "1.5.0",
+        "description": "Version 1.5.0 of the SDMX REST API specification (released: 09/2020) - see the [release notes](https://github.com/sdmx-twg/sdmx-rest/releases/tag/v1.5.0) and the [official documentation](https://github.com/sdmx-twg/sdmx-rest/tree/v1.5.0/v2_1/ws/rest/docs)."
+      },
+      {
+        "release": "2.0.0",
+        "description": "Version 2.0.0 of the SDMX REST API specification (released: 10/2021 with SDMX 3.0) - see the [release notes](https://github.com/sdmx-twg/sdmx-rest/releases/tag/v2.0.0) and the [official documentation](https://github.com/sdmx-twg/sdmx-rest/tree/v2.0.0/doc)."
+      },
+      {
+        "release": "1.4.0",
+        "description": "Version 1.5.0 of the SDMX REST API specification (released: 06/2019) - see the [release notes](https://github.com/sdmx-twg/sdmx-rest/releases/tag/v1.4.0) and the [official documentation](https://github.com/sdmx-twg/sdmx-rest/tree/v1.4.0/v2_1/ws/rest/docs)."
+      },
+      {
+        "release": "2.1.0",
+        "description": "Version 2.1.0 of the SDMX REST API specification (released: 01/2024) - see the [release notes](https://github.com/sdmx-twg/sdmx-rest/releases/tag/v2.1.0) and the [official documentation](https://github.com/sdmx-twg/sdmx-rest/tree/v2.1.0/doc)."
+      },
+      {
+        "release": "2.2.0",
+        "description": "Version 2.2.0 of the SDMX REST API specification (released: 02/2025) - see the [release notes](https://github.com/sdmx-twg/sdmx-rest/releases/tag/v2.2.0) and the [official documentation](https://github.com/sdmx-twg/sdmx-rest/tree/v2.2.0/doc)."
+      }
+    ]
+  }
+}
