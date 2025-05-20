@@ -302,7 +302,6 @@ class JsonDataStructure(MaintainableType, frozen=True):
     """SDMX-JSON payload for a DSD."""
 
     dataStructureComponents: Optional[JsonComponents] = None
-    metadata: Optional[str] = None
 
     def to_model(
         self,
