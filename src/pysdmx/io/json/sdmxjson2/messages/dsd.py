@@ -1,6 +1,5 @@
 """Collection of SDMX-JSON schemas for SDMX-REST schema queries."""
 
-from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple
 
 from msgspec import Struct
@@ -20,6 +19,7 @@ from pysdmx.model import (
     Codelist,
     Component,
     Components,
+    Concept,
     DataStructureDefinition,
     DataType,
     Facets,
@@ -113,7 +113,13 @@ class JsonDimension(Struct, frozen=True):
         cons: Dict[str, Sequence[str]],
     ) -> Component:
         """Returns a component."""
-        c = _find_concept(cs, self.conceptIdentity)
+        c = (
+            _find_concept(cs, self.conceptIdentity).to_model(cls)
+            if cs
+            else parse_item_urn(self.conceptIdentity)
+        )
+        name = c.name if isinstance(c, Concept) else None
+        desc = c.description if isinstance(c, Concept) else None
         dt, facets, codes, ab = _get_representation(
             self.id, self.localRepresentation, cls, cons
         )
@@ -121,11 +127,11 @@ class JsonDimension(Struct, frozen=True):
             id=self.id,
             required=True,
             role=Role.DIMENSION,
-            concept=c.to_model(cls),
+            concept=c,
             local_dtype=dt,
             local_facets=facets,
-            name=c.name,
-            description=c.description,
+            name=name,
+            description=desc,
             local_codes=codes,
             array_def=ab,
         )
@@ -150,7 +156,13 @@ class JsonAttribute(Struct, frozen=True):
         groups: Sequence[JsonGroup],
     ) -> Component:
         """Returns a component."""
-        c = _find_concept(cs, self.conceptIdentity)
+        c = (
+            _find_concept(cs, self.conceptIdentity).to_model(cls)
+            if cs
+            else parse_item_urn(self.conceptIdentity)
+        )
+        name = c.name if isinstance(c, Concept) else None
+        desc = c.description if isinstance(c, Concept) else None
         dt, facets, codes, ab = _get_representation(
             self.id, self.localRepresentation, cls, cons
         )
@@ -163,11 +175,11 @@ class JsonAttribute(Struct, frozen=True):
             id=self.id,
             required=req,
             role=Role.ATTRIBUTE,
-            concept=c.to_model(cls),
+            concept=c,
             local_dtype=dt,
             local_facets=facets,
-            name=c.name,
-            description=c.description,
+            name=name,
+            description=desc,
             local_codes=codes,
             attachment_level=lvl,
             array_def=ab,
@@ -190,7 +202,13 @@ class JsonMeasure(Struct, frozen=True):
         cons: Dict[str, Sequence[str]],
     ) -> Component:
         """Returns a component."""
-        c = _find_concept(cs, self.conceptIdentity)
+        c = (
+            _find_concept(cs, self.conceptIdentity).to_model(cls)
+            if cs
+            else parse_item_urn(self.conceptIdentity)
+        )
+        name = c.name if isinstance(c, Concept) else None
+        desc = c.description if isinstance(c, Concept) else None
         dt, facets, codes, ab = _get_representation(
             self.id, self.localRepresentation, cls, cons
         )
@@ -199,11 +217,11 @@ class JsonMeasure(Struct, frozen=True):
             id=self.id,
             required=req,
             role=Role.MEASURE,
-            concept=c.to_model(cls),
+            concept=c,
             local_dtype=dt,
             local_facets=facets,
-            name=c.name,
-            description=c.description,
+            name=name,
+            description=desc,
             local_codes=codes,
             array_def=ab,
         )
@@ -222,7 +240,7 @@ class JsonAttributes(Struct, frozen=True):
         groups: Sequence[JsonGroup],
     ) -> List[Component]:
         """Returns the list of attributes."""
-        return [d.to_model(cs, cls, cons, groups) for d in self.attributes]
+        return [a.to_model(cs, cls, cons, groups) for a in self.attributes]
 
 
 class JsonDimensions(Struct, frozen=True):
@@ -238,11 +256,11 @@ class JsonDimensions(Struct, frozen=True):
         cons: Dict[str, Sequence[str]],
     ) -> List[Component]:
         """Returns the list of dimensions."""
-        c = []
-        c.extend([d.to_model(cs, cls, cons) for d in self.dimensions])
+        dims = []
+        dims.extend([d.to_model(cs, cls, cons) for d in self.dimensions])
         if self.timeDimension:
-            c.append(self.timeDimension.to_model(cs, cls, cons))
-        return c
+            dims.append(self.timeDimension.to_model(cs, cls, cons))
+        return dims
 
 
 class JsonMeasures(Struct, frozen=True):
