@@ -205,20 +205,11 @@ class JsonDatePatternMap(Struct, frozen=True):
         )
 
 
-class JsonStructureMap(Struct, frozen=True):
+class JsonStructureMap(MaintainableType, frozen=True):
     """SDMX-JSON payload for a structure map."""
 
-    id: str
-    name: str
-    version: str
-    agencyID: str
-    source: str
-    target: str
-    description: Optional[str] = None
-    isExternalReference: bool = False
-    validFrom: Optional[dt] = None
-    validTo: Optional[dt] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
+    source: str = ""
+    target: str = ""
     datePatternMaps: Sequence[JsonDatePatternMap] = ()
     componentMaps: Sequence[JsonComponentMap] = ()
     fixedValueMaps: Sequence[JsonFixedValueMap] = ()
@@ -234,12 +225,16 @@ class JsonStructureMap(Struct, frozen=True):
         return StructureMap(
             id=self.id,
             name=self.name,
-            agency=self.agencyID,
+            agency=self.agency,
             source=self.source,
             target=self.target,
             maps=m1 + m2 + m3,
             description=self.description,
             version=self.version,
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
         )
 
 
