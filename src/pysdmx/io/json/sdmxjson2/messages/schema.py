@@ -27,7 +27,8 @@ class JsonSchemas(
 
     def to_model(self) -> Components:
         """Returns the requested schema."""
-        return self.dataStructures[0].dataStructureComponents.to_model(
+        comps = self.dataStructures[0].dataStructureComponents
+        return comps.to_model(  # type: ignore[union-attr]
             self.conceptSchemes,
             self.codelists,
             self.valuelists,

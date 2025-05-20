@@ -4,11 +4,11 @@ from typing import Dict, List, Optional, Sequence, Tuple
 
 from msgspec import Struct
 
+from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist, JsonValuelist
 from pysdmx.io.json.sdmxjson2.messages.concept import (
     JsonConcept,
     JsonConceptScheme,
 )
-from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist, JsonValuelist
 from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
 from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonRepresentation,
@@ -293,7 +293,7 @@ class JsonComponents(Struct, frozen=True):
         vls: Sequence[JsonValuelist],
         constraints: Sequence[JsonDataConstraint],
     ) -> Components:
-        """Returns the schema for this DSD."""
+        """Returns the components for this DSD."""
         enums = [cl.to_model() for cl in cls]
         enums.extend([vl.to_model() for vl in vls])
         comps = []
@@ -328,6 +328,13 @@ class JsonDataStructure(MaintainableType, frozen=True):
         vls: Sequence[JsonValuelist],
         constraints: Sequence[JsonDataConstraint],
     ) -> DataStructureDefinition:
+        """Map to pysdmx model class."""
+        c = self.dataStructureComponents.to_model(  # type: ignore[union-attr]
+            cs,
+            cls,
+            vls,
+            constraints,
+        )
         return DataStructureDefinition(
             id=self.id,
             name=self.name,
@@ -338,9 +345,7 @@ class JsonDataStructure(MaintainableType, frozen=True):
             is_external_reference=self.isExternalReference,
             valid_from=self.validFrom,
             valid_to=self.validTo,
-            components=self.dataStructureComponents.to_model(
-                cs, cls, vls, constraints
-            ),
+            components=c,
         )
 
 
