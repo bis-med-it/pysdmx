@@ -6,7 +6,10 @@ from typing import Any, Dict, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
+from pysdmx.io.json.sdmxjson2.messages.core import (
+    JsonAnnotation,
+    MaintainableType,
+)
 from pysdmx.model import (
     ComponentMap,
     DataType,
@@ -70,25 +73,12 @@ class JsonRepresentationMapping(Struct, frozen=True):
             )
 
 
-class JsonRepresentationMap(
-    Struct,
-    frozen=True,
-    rename={"agency": "agencyID"},
-):
+class JsonRepresentationMap(MaintainableType, frozen=True):
     """SDMX-JSON payload for a representation map."""
 
-    id: str
-    name: str
-    agency: str
-    version: str
-    source: Sequence[Dict[str, str]]
-    target: Sequence[Dict[str, str]]
-    representationMappings: Sequence[JsonRepresentationMapping]
-    description: Optional[str] = None
-    isExternalReference: bool = False
-    validFrom: Optional[dt] = None
-    validTo: Optional[dt] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
+    source: Sequence[Dict[str, str]] = ()
+    target: Sequence[Dict[str, str]] = ()
+    representationMappings: Sequence[JsonRepresentationMapping] = ()
 
     def __parse_st(self, item: Dict[str, str]) -> Union[DataType, str]:
         if "dataType" in item:
