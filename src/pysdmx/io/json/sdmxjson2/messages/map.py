@@ -185,9 +185,6 @@ class JsonDatePatternMap(Struct, frozen=True):
     frequencyDimension: Optional[str] = None
     mappedFrequencies: Optional[Sequence[str]] = None
     annotations: Optional[Sequence[JsonAnnotation]] = None
-    resolvePeriod: Optional[
-        Literal["startOfPeriod", "endOfPeriod", "midPeriod"]
-    ]
 
     def to_model(self) -> DatePatternMap:
         """Returns the requested date mapper."""
