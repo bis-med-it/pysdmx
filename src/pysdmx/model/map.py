@@ -319,7 +319,7 @@ class ComponentMap(Struct, frozen=True, omit_defaults=True, tag=True):
 
     source: str
     target: str
-    values: RepresentationMap
+    values: Union[RepresentationMap, str]
 
 
 class StructureMap(MaintainableArtefact, frozen=True, omit_defaults=True):
