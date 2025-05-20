@@ -364,3 +364,13 @@ class JsonDataStructures(Struct, frozen=True):
             )
             for dsd in self.dataStructures
         ]
+
+
+class JsonDataStructuresMessage(Struct, frozen=True):
+    """SDMX-JSON payload for /datastructure queries."""
+
+    data: JsonDataStructures
+
+    def to_model(self) -> Sequence[DataStructureDefinition]:
+        """Returns the requested data structures."""
+        return self.data.to_model()

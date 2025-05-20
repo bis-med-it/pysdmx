@@ -15,6 +15,7 @@ from pysdmx.io.json.sdmxjson2.messages.dataflow import (
     JsonDataflowMessage,
     JsonDataflowsMessage,
 )
+from pysdmx.io.json.sdmxjson2.messages.dsd import JsonDataStructuresMessage
 from pysdmx.io.json.sdmxjson2.messages.map import (
     JsonMappingMessage,
     JsonRepresentationMapMessage,
@@ -39,6 +40,7 @@ __all__ = [
     "JsonConceptSchemeMessage",
     "JsonDataflowMessage",
     "JsonDataflowsMessage",
+    "JsonDataStructuresMessage",
     "JsonProviderMessage",
     "JsonPAMessage",
     "JsonSchemaMessage",
