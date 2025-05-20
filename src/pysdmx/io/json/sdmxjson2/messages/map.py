@@ -249,9 +249,11 @@ class JsonStructureMaps(Struct, frozen=True):
     structureMaps: Sequence[JsonStructureMap]
     representationMaps: Sequence[JsonRepresentationMap] = ()
 
-    def to_model(self) -> StructureMap:
+    def to_model(self) -> Sequence[StructureMap]:
         """Returns the requested mapping definition."""
-        return self.structureMaps[0].to_model(self.representationMaps)
+        return [
+            sm.to_model(self.representationMaps) for sm in self.structureMaps
+        ]
 
 
 class JsonMappingMessage(Struct, frozen=True):
@@ -260,6 +262,16 @@ class JsonMappingMessage(Struct, frozen=True):
     data: JsonStructureMaps
 
     def to_model(self) -> StructureMap:
+        """Returns the requested mapping definition."""
+        return self.data.to_model()[0]
+
+
+class JsonStructureMapsMessage(Struct, frozen=True):
+    """SDMX-JSON payload for generic /structuremap queries."""
+
+    data: JsonStructureMaps
+
+    def to_model(self) -> Sequence[StructureMap]:
         """Returns the requested mapping definition."""
         return self.data.to_model()
 
