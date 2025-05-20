@@ -5,26 +5,18 @@ from typing import Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
+from pysdmx.io.json.sdmxjson2.messages.core import (
+    JsonAnnotation,
+    MaintainableType,
+)
 from pysdmx.model import ProvisionAgreement
 
 
-class JsonProvisionAgreement(
-    Struct, frozen=True, rename={"agency": "agencyID"}
-):
+class JsonProvisionAgreement(MaintainableType, frozen=True):
     """SDMX-JSON payload for a provision agreement."""
 
-    id: str
-    name: str
-    agency: str
-    dataflow: str
-    dataProvider: str
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
+    dataflow: str = ""
+    dataProvider: str = ""
 
     def to_model(self) -> ProvisionAgreement:
         """Converts a FusionPA to a standard provision agreement."""
@@ -38,6 +30,8 @@ class JsonProvisionAgreement(
             valid_to=self.validTo,
             dataflow=self.dataflow,
             provider=self.dataProvider,
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
         )
 
 
