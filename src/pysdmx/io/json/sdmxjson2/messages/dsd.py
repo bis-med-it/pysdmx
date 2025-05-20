@@ -9,16 +9,18 @@ from pysdmx.io.json.sdmxjson2.messages.concept import (
     JsonConcept,
     JsonConceptScheme,
 )
+from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist, JsonValuelist
 from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
 from pysdmx.io.json.sdmxjson2.messages.core import (
-    JsonAnnotation,
     JsonRepresentation,
+    MaintainableType,
 )
 from pysdmx.model import (
     ArrayBoundaries,
     Codelist,
     Component,
     Components,
+    DataStructureDefinition,
     DataType,
     Facets,
     Role,
@@ -269,23 +271,26 @@ class JsonComponents(Struct, frozen=True):
     def to_model(
         self,
         cs: Sequence[JsonConceptScheme],
-        cls: Sequence[Codelist],
+        cls: Sequence[JsonCodelist],
+        vls: Sequence[JsonValuelist],
         constraints: Sequence[JsonDataConstraint],
     ) -> Components:
         """Returns the schema for this DSD."""
+        enums = [cl.to_model() for cl in cls]
+        enums.extend([vl.to_model() for vl in vls])
         comps = []
         if constraints and constraints[0].cubeRegions:
             cons = constraints[0].cubeRegions[0].to_map()
         else:
             cons = {}
-        comps.extend(self.dimensionList.to_model(cs, cls, cons))
+        comps.extend(self.dimensionList.to_model(cs, enums, cons))
         if self.measureList:
-            comps.extend(self.measureList.to_model(cs, cls, cons))
+            comps.extend(self.measureList.to_model(cs, enums, cons))
         if self.attributeList:
             comps.extend(
                 self.attributeList.to_model(
                     cs,
-                    cls,
+                    enums,
                     cons,
                     self.groups,
                 )
@@ -293,17 +298,52 @@ class JsonComponents(Struct, frozen=True):
         return Components(comps)
 
 
-class JsonDataStructure(Struct, frozen=True, rename={"agency": "agencyID"}):
+class JsonDataStructure(MaintainableType, frozen=True):
     """SDMX-JSON payload for a DSD."""
 
-    id: str
-    name: str
-    agency: str
-    dataStructureComponents: JsonComponents
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
+    dataStructureComponents: Optional[JsonComponents] = None
     metadata: Optional[str] = None
+
+    def to_model(
+        self,
+        cs: Sequence[JsonConceptScheme],
+        cls: Sequence[JsonCodelist],
+        vls: Sequence[JsonValuelist],
+        constraints: Sequence[JsonDataConstraint],
+    ) -> DataStructureDefinition:
+        return DataStructureDefinition(
+            id=self.id,
+            name=self.name,
+            agency=self.agency,
+            description=self.description,
+            version=self.version,
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
+            components=self.dataStructureComponents.to_model(
+                cs, cls, vls, constraints
+            ),
+        )
+
+
+class JsonDataStructures(Struct, frozen=True):
+    """SDMX-JSON payload for data structures."""
+
+    dataStructures: Sequence[JsonDataStructure]
+    conceptSchemes: Sequence[JsonConceptScheme] = ()
+    valuelists: Sequence[JsonValuelist] = ()
+    codelists: Sequence[JsonCodelist] = ()
+    contentConstraints: Sequence[JsonDataConstraint] = ()
+
+    def to_model(self) -> Sequence[DataStructureDefinition]:
+        """Returns the requested dsds."""
+        return [
+            dsd.to_model(
+                self.conceptSchemes,
+                self.codelists,
+                self.valuelists,
+                self.contentConstraints,
+            )
+            for dsd in self.dataStructures
+        ]
