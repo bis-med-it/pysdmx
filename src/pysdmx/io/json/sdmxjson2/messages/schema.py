@@ -27,10 +27,11 @@ class JsonSchemas(
 
     def to_model(self) -> Components:
         """Returns the requested schema."""
-        cls = [cl.to_model() for cl in self.codelists]
-        cls.extend([vl.to_model() for vl in self.valuelists])
         return self.dataStructures[0].dataStructureComponents.to_model(
-            self.conceptSchemes, cls, self.contentConstraints
+            self.conceptSchemes,
+            self.codelists,
+            self.valuelists,
+            self.contentConstraints,
         )
 
 
