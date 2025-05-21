@@ -466,7 +466,7 @@ def test_vtl_transformation_scheme(samples_folder):
     transformation = transformation_scheme.items[0]
     assert isinstance(transformation, Transformation)
     assert transformation.id == "test_rule"
-    assert transformation.full_expression == "DS_r <- DS_1 + 1;"
+    assert transformation.full_expression == "DS_r := DS_1 + 1;"
 
 
 def test_vtl_ruleset_scheme(samples_folder, scheme_examples_json):
