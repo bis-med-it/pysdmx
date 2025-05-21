@@ -4,7 +4,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import Optional, Sequence, Union
 
-from pysdmx.errors import Invalid, NotFound
+from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.model import Schema

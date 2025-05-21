@@ -1,4 +1,3 @@
-from typing import Literal
 
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.model import Reference
@@ -10,7 +9,7 @@ from pysdmx.util import parse_urn
 def __generate_schema_from_dsd(
     dsd: DataStructureDefinition,
     schema_reference: Reference,
-    context: Literal["datastructure", "dataflow", "provisionagreement"],
+    context: str,
 ) -> Schema:
     """Generates a Schema from a DataStructureDefinition.
 
@@ -23,12 +22,12 @@ def __generate_schema_from_dsd(
             "dataflow" or "provisionagreement".
     """
     return Schema(
-        context=context,
+        context=context,  # type: ignore[arg-type]
         id=schema_reference.id,
         version=schema_reference.version,
         agency=schema_reference.agency,
         components=dsd.components,
-        artefacts=dsd.extract_artefacts(),
+        artefacts=dsd._extract_artefacts(),
     )
 
 
@@ -71,7 +70,7 @@ def schema_generator(message: Message, dataset_ref: Reference) -> Schema:
         )
     elif context == "provisionagreement":
         raise NotImplementedError(
-            "ProvisionAgreement schema generation is not implemented yet."
+            "ProvisionAgreement schema generation is not supported yet."
         )
     else:
         raise Invalid(
