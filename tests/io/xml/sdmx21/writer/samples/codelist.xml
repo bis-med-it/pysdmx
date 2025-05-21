@@ -36,6 +36,7 @@
 					<com:Name xml:lang="en">Quarterly</com:Name>
 				</str:Code>
 				<str:Code id="W">
+					<com:Name xml:lang="en">Weekly</com:Name>
 				</str:Code>
 			</str:Codelist>
 		</str:Codelists>

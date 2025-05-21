@@ -3,6 +3,7 @@
 from collections import OrderedDict
 from typing import Any, Dict, Optional, Sequence, Union
 
+from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCIES,
@@ -218,8 +219,8 @@ def __write_nameable(
     attrs = ["Name", "Description"]
 
     for attr in attrs:
-        if getattr(nameable, attr.lower(), None) is not None:
-            value = getattr(nameable, attr.lower())
+        value = getattr(nameable, attr.lower(), None)
+        if value is not None:
             value = __escape_xml(str(value))
             outfile[attr] = [
                 (
@@ -229,6 +230,10 @@ def __write_nameable(
                     f"</{ABBR_COM}:{attr}>"
                 )
             ]
+        elif attr == "Name":
+            raise Invalid(
+                "Name is required for NameableArtefact" f" id= {nameable.id}"
+            )
 
     return outfile
 
