@@ -186,7 +186,7 @@ def test_get_datasets_valid_descendants(
         ".TITLE_TS"
     ) in dataset.structure.artefacts
     assert (
-        "urn:sdmx:org.sdmx.infomodel.codelist." "Codelist=BIS:CL_DECIMALS(1.0)"
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DECIMALS(1.0)"
     ) in dataset.structure.artefacts
 
 
@@ -222,15 +222,18 @@ def test_get_datasets_dataflow_children(data_dataflow, dataflow_children):
 def test_get_datasets_wrong_dataflow(
     data_wrong_dataflow, dataflow_no_children
 ):
-    with pytest.raises(Invalid, match="Missing DataStructure for dataset "):
+    with pytest.raises(
+        Invalid,
+        match="Missing Dataflow",
+    ):
         get_datasets(data_wrong_dataflow, dataflow_no_children)
 
 
 def test_get_datasets_wrong_dsd(data_wrong_dsd, dataflow_children):
-    with pytest.raises(Invalid, match="Missing DataStructure for dataset "):
+    with pytest.raises(Invalid, match="Missing DataStructure "):
         get_datasets(data_wrong_dsd, dataflow_children)
 
 
 def test_get_datasets_no_children(data_dataflow, dataflow_no_children):
-    with pytest.raises(Invalid, match="Missing DataStructure for dataset "):
+    with pytest.raises(Invalid, match="Not found referenced DataStructure"):
         get_datasets(data_dataflow, dataflow_no_children)

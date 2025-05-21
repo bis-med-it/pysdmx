@@ -446,7 +446,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
 
     components: Components
 
-    def __extract_artefacts(self) -> Sequence[str]:
+    def extract_artefacts(self) -> Sequence[str]:
         """Extract the artefacts used to generate the schema."""
         out = []
         for c in self.components:
@@ -462,21 +462,6 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
                 out.append(urn_header + str(c.concept))
         result = list({a for a in out if a})
         return result
-
-    def to_schema(self) -> Schema:
-        """Generates a Schema class from the DataStructureDefinition."""
-        return Schema(
-            context="datastructure",
-            agency=(
-                self.agency.id
-                if isinstance(self.agency, Agency)
-                else self.agency
-            ),
-            id=self.id,
-            components=self.components,
-            version=self.version,
-            artefacts=self.__extract_artefacts(),
-        )
 
     @property
     def short_urn(self) -> str:

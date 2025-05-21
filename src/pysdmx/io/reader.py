@@ -14,6 +14,7 @@ from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Message
 from pysdmx.model.submission import SubmissionResult
 from pysdmx.util import parse_short_urn
+from pysdmx.util._model_utils import schema_generator
 
 
 def read_sdmx(
@@ -128,22 +129,8 @@ def __assign_structure_to_dataset(
             if isinstance(dataset.structure, Schema)
             else dataset.structure
         )
-        sdmx_type = parse_short_urn(short_urn).sdmx_type
-        if sdmx_type == "DataStructure":
-            try:
-                dsd = structure_msg.get_data_structure_definition(short_urn)
-                dataset.structure = dsd.to_schema()
-            except NotFound:
-                continue
-        else:
-            try:
-                dataflow = structure_msg.get_dataflow(short_urn)
-                dsd = structure_msg.get_data_structure_definition(
-                    dataflow.structure if dataflow.structure else ""
-                )
-                dataset.structure = dsd.to_schema()
-            except NotFound:
-                continue
+        dataset_ref = parse_short_urn(short_urn)
+        dataset.structure = schema_generator(structure_msg, dataset_ref)
 
 
 def get_datasets(
@@ -182,12 +169,5 @@ def get_datasets(
         raise Invalid("No structure found in the structure message")
 
     __assign_structure_to_dataset(data_msg.data, structure_msg)
-
-    # Check if any dataset does not have a structure
-    for dataset in data_msg.data:
-        if not isinstance(dataset.structure, Schema):
-            raise Invalid(
-                f"Missing DataStructure for dataset {dataset.short_urn}"
-            )
 
     return data_msg.data
