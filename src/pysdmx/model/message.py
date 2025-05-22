@@ -29,7 +29,11 @@ from pysdmx.model.dataflow import (
     ProvisionAgreement,
 )
 from pysdmx.model.dataset import ActionType, Dataset
-from pysdmx.model.map import RepresentationMap, StructureMap
+from pysdmx.model.map import (
+    MultiRepresentationMap,
+    RepresentationMap,
+    StructureMap,
+)
 from pysdmx.model.organisation import AgencyScheme, DataProviderScheme
 from pysdmx.model.submission import SubmissionResult
 from pysdmx.model.vtl import (
@@ -238,9 +242,14 @@ class Message(Struct, frozen=True):
         """Returns the Codelists."""
         return self.__get_elements(StructureMap)
 
-    def get_representation_maps(self) -> List[RepresentationMap]:
+    def get_representation_maps(
+        self,
+    ) -> List[Union[MultiRepresentationMap, RepresentationMap]]:
         """Returns the Codelists."""
-        return self.__get_elements(RepresentationMap)
+        out = []
+        out.extend(self.__get_elements(RepresentationMap))
+        out.extend(self.__get_elements(MultiRepresentationMap))
+        return out
 
     def get_categorisations(self) -> List[Categorisation]:
         """Returns the Codelists."""
