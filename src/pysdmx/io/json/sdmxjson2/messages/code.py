@@ -180,8 +180,9 @@ class JsonHierarchy(ItemSchemeType, frozen=True):
 
     hierarchicalCodes: Sequence[JsonHierarchicalCode] = ()
 
-    def to_model(self, codelists: Sequence[Codelist]) -> Hierarchy:
+    def to_model(self, codelists: Sequence[JsonCodelist]) -> Hierarchy:
         """Converts a JsonHierarchy to a standard hierarchy."""
+        cls = [cl.to_model() for cl in codelists]
         return Hierarchy(
             id=self.id,
             name=self.name,
@@ -193,7 +194,7 @@ class JsonHierarchy(ItemSchemeType, frozen=True):
             is_partial=self.isPartial,
             valid_from=self.validFrom,
             valid_to=self.validTo,
-            codes=[i.to_model(codelists) for i in self.hierarchicalCodes],
+            codes=[i.to_model(cls) for i in self.hierarchicalCodes],
         )
 
 
@@ -203,10 +204,9 @@ class JsonHierarchies(Struct, frozen=True):
     codelists: Sequence[JsonCodelist] = ()
     hierarchies: Sequence[JsonHierarchy] = ()
 
-    def to_model(self) -> Hierarchy:
+    def to_model(self) -> Sequence[Hierarchy]:
         """Returns the requested hierarchy."""
-        cls = [cl.to_model() for cl in self.codelists]
-        return self.hierarchies[0].to_model(cls)
+        return [h.to_model(self.codelists) for h in self.hierarchies]
 
 
 class JsonHierarchyAssociation(MaintainableType, frozen=True):
@@ -224,8 +224,9 @@ class JsonHierarchyAssociation(MaintainableType, frozen=True):
     ) -> HierarchyAssociation:
         """Converts a JsonHierarchyAssocation to a standard association."""
         if hierarchies:
-            cls = [cl.to_model() for cl in codelists]
-            m = find_by_urn(hierarchies, self.linkedHierarchy).to_model(cls)
+            m = find_by_urn(hierarchies, self.linkedHierarchy).to_model(
+                codelists
+            )
         else:
             m = self.linkedHierarchy
         lnk = list(
@@ -257,6 +258,16 @@ class JsonHierarchyMessage(Struct, frozen=True):
     data: JsonHierarchies
 
     def to_model(self) -> Hierarchy:
+        """Returns the requested hierarchy."""
+        return self.data.to_model()[0]
+
+
+class JsonHierarchiesMessage(Struct, frozen=True):
+    """SDMX-JSON payload for /hierarchy queries."""
+
+    data: JsonHierarchies
+
+    def to_model(self) -> Sequence[Hierarchy]:
         """Returns the requested hierarchy."""
         return self.data.to_model()
 
