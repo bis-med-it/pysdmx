@@ -80,6 +80,7 @@ class JsonCategoryScheme(
             version=self.version,
             items=[c.to_model() for c in self.categories],
             is_external_reference=self.isExternalReference,
+            is_partial=self.isPartial,
             valid_from=self.validFrom,
             valid_to=self.validTo,
             annotations=[a.to_model() for a in self.annotations],
