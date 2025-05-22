@@ -43,7 +43,7 @@ def schema_generator(message: Message, dataset_ref: Reference) -> Schema:
             version=dataset_ref.version,
             agency=dataset_ref.agency,
             components=dsd.components,
-            artefacts=dsd._extract_artefacts(),
+            artefacts=dsd.to_schema().artefacts,
         )
     elif context == "provisionagreement":
         raise NotImplementedError(

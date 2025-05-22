@@ -446,7 +446,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
 
     components: Components
 
-    def _extract_artefacts(self) -> Sequence[str]:
+    def __extract_artefacts(self) -> Sequence[str]:
         """Extract the artefacts used to generate the schema."""
         out = []
         for c in self.components:
@@ -475,7 +475,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
             id=self.id,
             components=self.components,
             version=self.version,
-            artefacts=self._extract_artefacts(),
+            artefacts=self.__extract_artefacts(),
         )
 
     @property
