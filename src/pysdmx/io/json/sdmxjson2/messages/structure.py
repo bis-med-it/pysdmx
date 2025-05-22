@@ -1,7 +1,7 @@
 """Collection of SDMX-JSON schemas for generic structure messages."""
 
 from datetime import datetime
-from typing import Dict, Optional, Sequence
+from typing import Optional, Sequence
 
 from msgspec import Struct
 
@@ -26,6 +26,14 @@ from pysdmx.io.json.sdmxjson2.messages.map import (
 )
 from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
 from pysdmx.io.json.sdmxjson2.messages.provider import JsonDataProviderScheme
+from pysdmx.io.json.sdmxjson2.messages.vtl import (
+    JsonCustomTypeScheme,
+    JsonVtlMappingScheme,
+    JsonNamePersonalisationScheme,
+    JsonRulesetScheme,
+    JsonTransformationScheme,
+    JsonUserDefinedOperatorScheme,
+)
 from pysdmx.model import Organisation
 
 
@@ -36,30 +44,34 @@ class Header(Struct, frozen=True):
     prepared: datetime
     sender: Organisation
     test: bool = False
-    content_languages: Sequence[str] = ()
+    contentLanguages: Sequence[str] = ()
     name: Optional[str] = None
-    names: Optional[Dict[str, str]] = None
     receivers: Optional[Organisation] = None
 
 
 class Structures(Struct, frozen=True):
     """The allowed strutures."""
 
-    data_structures: Sequence[JsonDataStructure] = ()
-    category_schemes: Sequence[JsonCategoryScheme] = ()
-    concept_schemes: Sequence[JsonConceptScheme] = ()
+    dataStructures: Sequence[JsonDataStructure] = ()
+    categorySchemes: Sequence[JsonCategoryScheme] = ()
+    conceptSchemes: Sequence[JsonConceptScheme] = ()
     codelists: Sequence[JsonCodelist] = ()
-    value_lists: Sequence[JsonValuelist] = ()
+    valueLists: Sequence[JsonValuelist] = ()
     hierarchies: Sequence[JsonHierarchy] = ()
-    hierarchy_associations: Sequence[JsonHierarchyAssociation] = ()
-    agency_schemes: Sequence[JsonAgencyScheme] = ()
-    data_provider_schemes: Sequence[JsonDataProviderScheme] = ()
+    hierarchyAssociations: Sequence[JsonHierarchyAssociation] = ()
+    agencySchemes: Sequence[JsonAgencyScheme] = ()
+    dataProviderSchemes: Sequence[JsonDataProviderScheme] = ()
     dataflows: Sequence[JsonDataflow] = ()
-    provision_agreements: Sequence[JsonProvisionAgreement] = ()
-    structure_maps: Sequence[JsonStructureMap] = ()
-    representation_maps: Sequence[JsonRepresentationMap] = ()
+    provisionAgreements: Sequence[JsonProvisionAgreement] = ()
+    structureMaps: Sequence[JsonStructureMap] = ()
+    representationMaps: Sequence[JsonRepresentationMap] = ()
     categorisations: Sequence[JsonCategorisation] = ()
-    dataConstraints: Sequence[JsonDataConstraint] = ()
+    customTypeSchemes: Sequence[JsonCustomTypeScheme] = ()
+    vtlMappingSchemes: Sequence[JsonVtlMappingScheme] = ()
+    namePersonalisationSchemes: Sequence[JsonNamePersonalisationScheme] = ()
+    rulesetSchemes: Sequence[JsonRulesetScheme] = ()
+    transformationSchemes: Sequence[JsonTransformationScheme] = ()
+    userDefinedOperatorSchemes: Sequence[JsonUserDefinedOperatorScheme] = ()
 
 
 class StructureMessage(Struct, frozen=True):
