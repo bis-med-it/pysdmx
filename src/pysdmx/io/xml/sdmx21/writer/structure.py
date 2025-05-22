@@ -745,7 +745,10 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
             )
             data += f"{add_indent(indent)}<{ABBR_STR}:Result>"
             data += f"{item_or_scheme.result}</{ABBR_STR}:Result>"
-            attrib += f" isPersistent={item_or_scheme.is_persistent!r}"
+            attrib += (
+                f" isPersistent="
+                f"{str(item_or_scheme.is_persistent).lower()!r}"
+            )
 
         if isinstance(item_or_scheme, UserDefinedOperator):
             label = f"{ABBR_STR}:{UDO}"

@@ -304,7 +304,7 @@ def transformation_scheme_structure():
                 expression="sum(             BIS_LOC_STATS"
                 "              group by REP_COUNTRY,"
                 "COUNT_SECTOR,REF_DATE)",
-                is_persistent="false",
+                is_persistent=False,
                 result="aggr.agg1",
                 annotations=(),
             )
@@ -356,7 +356,7 @@ def transformation_scheme_structure_with_object(udo_scheme_structure):
                 expression="sum(             BIS_LOC_STATS"
                 "              group by REP_COUNTRY,"
                 "COUNT_SECTOR,REF_DATE)",
-                is_persistent="false",
+                is_persistent=False,
                 result="aggr.agg1",
                 annotations=(),
             )
