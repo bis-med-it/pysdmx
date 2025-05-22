@@ -492,7 +492,7 @@ class Dataflow(
 ):
     """A flow of data that providers will provide."""
 
-    structure: Optional[str] = None
+    structure: Optional[Union[DataStructureDefinition, str]] = None
 
 
 class ProvisionAgreement(
