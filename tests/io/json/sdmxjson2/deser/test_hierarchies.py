@@ -13,7 +13,7 @@ def body():
         return f.read()
 
 
-def test_ha_deser(body):
+def test_hierarchies_deser(body):
     res = msgspec.json.Decoder(JsonHierarchiesMessage).decode(body)
     hierarchies = res.to_model()
 
