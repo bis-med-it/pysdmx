@@ -34,3 +34,7 @@ def test_reader(body):
     assert len(msg.get_vtl_mapping_schemes()) == 2
     assert len(msg.get_ruleset_schemes()) == 1
     assert len(msg.get_transformation_schemes()) == 1
+    assert len(msg.get_value_lists()) == 0
+    assert len(msg.get_hierarchy_associations()) == 0
+    assert len(msg.get_custom_type_schemes()) == 0
+    assert len(msg.get_name_personalisation_schemes()) == 0
