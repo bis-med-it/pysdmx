@@ -320,6 +320,7 @@ class JsonDataStructure(MaintainableType, frozen=True):
     """SDMX-JSON payload for a DSD."""
 
     dataStructureComponents: Optional[JsonComponents] = None
+    evolvingStructure: bool = False
 
     def to_model(
         self,
@@ -346,6 +347,7 @@ class JsonDataStructure(MaintainableType, frozen=True):
             valid_from=self.validFrom,
             valid_to=self.validTo,
             components=c,
+            evolving_structure=self.evolvingStructure,
         )
 
 

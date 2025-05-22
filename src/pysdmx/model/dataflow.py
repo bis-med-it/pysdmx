@@ -442,9 +442,12 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
         valid_from: The date from which the data structure is valid.
         valid_to: The date until which the data structure is valid.
         version: The version of the data structure.
+        evolving_structure: Whether new dimensions may be added under a
+            minor version update.
     """
 
     components: Components
+    evolving_structure: bool = False
 
     def __extract_artefacts(self) -> Sequence[str]:
         """Extract the artefacts used to generate the schema."""
