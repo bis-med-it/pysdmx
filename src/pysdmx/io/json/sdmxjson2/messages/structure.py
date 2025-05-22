@@ -17,7 +17,6 @@ from pysdmx.io.json.sdmxjson2.messages.code import (
     JsonValuelist,
 )
 from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptScheme
-from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
 from pysdmx.io.json.sdmxjson2.messages.dsd import JsonDataStructure
 from pysdmx.io.json.sdmxjson2.messages.map import (
@@ -28,11 +27,11 @@ from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
 from pysdmx.io.json.sdmxjson2.messages.provider import JsonDataProviderScheme
 from pysdmx.io.json.sdmxjson2.messages.vtl import (
     JsonCustomTypeScheme,
-    JsonVtlMappingScheme,
     JsonNamePersonalisationScheme,
     JsonRulesetScheme,
     JsonTransformationScheme,
     JsonUserDefinedOperatorScheme,
+    JsonVtlMappingScheme,
 )
 from pysdmx.model import Organisation
 
