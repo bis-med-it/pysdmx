@@ -29,6 +29,7 @@ from pysdmx.io.json.sdmxjson2.messages.pa import (
 from pysdmx.io.json.sdmxjson2.messages.provider import JsonProviderMessage
 from pysdmx.io.json.sdmxjson2.messages.report import JsonMetadataMessage
 from pysdmx.io.json.sdmxjson2.messages.schema import JsonSchemaMessage
+from pysdmx.io.json.sdmxjson2.messages.structure import JsonStructureMessage
 from pysdmx.io.json.sdmxjson2.messages.vtl import (
     JsonVtlTransformationsMessage as JsonTransfoMsg,
 )
@@ -53,5 +54,6 @@ __all__ = [
     "JsonRepresentationMapMessage",
     "JsonRepresentationMapsMessage",
     "JsonStructureMapsMessage",
+    "JsonStructureMessage",
     "JsonTransfoMsg",
 ]
