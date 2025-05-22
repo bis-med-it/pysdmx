@@ -37,7 +37,7 @@ from pysdmx.io.json.sdmxjson2.messages.vtl import (
 from pysdmx.model import Organisation
 
 
-class Header(Struct, frozen=True):
+class JsonHeader(Struct, frozen=True):
     """The message header."""
 
     id: str
@@ -49,7 +49,7 @@ class Header(Struct, frozen=True):
     receivers: Optional[Organisation] = None
 
 
-class Structures(Struct, frozen=True):
+class JsonStructures(Struct, frozen=True):
     """The allowed strutures."""
 
     dataStructures: Sequence[JsonDataStructure] = ()
@@ -74,8 +74,8 @@ class Structures(Struct, frozen=True):
     userDefinedOperatorSchemes: Sequence[JsonUserDefinedOperatorScheme] = ()
 
 
-class StructureMessage(Struct, frozen=True):
+class JsonStructureMessage(Struct, frozen=True):
     """A generic SDMX-JSON 2.0 Structure message."""
 
-    meta: Header
-    data: Structures
+    meta: JsonHeader
+    data: JsonStructures
