@@ -33,31 +33,7 @@ from pysdmx.io.json.sdmxjson2.messages.vtl import (
     JsonUserDefinedOperatorScheme,
     JsonVtlMappingScheme,
 )
-from pysdmx.model import (
-    AgencyScheme,
-    Categorisation,
-    CategoryScheme,
-    Codelist,
-    ConceptScheme,
-    CustomTypeScheme,
-    DataConsumerScheme,
-    Dataflow,
-    DataflowInfo,
-    DataProviderScheme,
-    DataStructureDefinition,
-    Hierarchy,
-    HierarchyAssociation,
-    MultiRepresentationMap,
-    NamePersonalisationScheme,
-    Organisation,
-    ProvisionAgreement,
-    RepresentationMap,
-    RulesetScheme,
-    StructureMap,
-    TransformationScheme,
-    UserDefinedOperatorScheme,
-    VtlMappingScheme,
-)
+from pysdmx.model import Organisation
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.message import Header, Message
 
