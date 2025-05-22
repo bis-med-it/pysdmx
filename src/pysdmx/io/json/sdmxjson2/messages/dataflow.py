@@ -1,6 +1,6 @@
 """Collection of SDMX-JSON schemas for dataflow queries."""
 
-from typing import List, Sequence
+from typing import List, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -15,6 +15,7 @@ from pysdmx.model import (
     Dataflow,
     DataflowInfo,
     DataProvider,
+    DataStructureDefinition,
 )
 from pysdmx.util import parse_urn
 
@@ -32,7 +33,7 @@ class JsonDataflow(MaintainableType, frozen=True):
         codelists: Sequence[JsonCodelist] = (),
     ) -> Dataflow:
         """Converts a FusionDataflow to a standard dataflow."""
-        dsd = None
+        dsd: Optional[Union[DataStructureDefinition, str]] = None
         if len(dsds) > 0:
             ref = parse_urn(self.structure)
             m = [
@@ -42,7 +43,7 @@ class JsonDataflow(MaintainableType, frozen=True):
                 and d.id == ref.id
                 and d.version == ref.version
             ]
-            if len(m == 1):
+            if len(m) == 1:
                 dsd = m[0].to_model(concepts, codelists, valuelists, ())
         dsd = dsd if dsd is not None else self.structure
         return Dataflow(
