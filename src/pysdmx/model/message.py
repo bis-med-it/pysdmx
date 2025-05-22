@@ -25,7 +25,7 @@ from pysdmx.model import (
     TransformationScheme,
     UserDefinedOperatorScheme,
 )
-from pysdmx.model.__base import ItemScheme, Organisation
+from pysdmx.model.__base import ItemScheme, MaintainableArtefact, Organisation
 from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
@@ -60,15 +60,7 @@ class Message(Struct, frozen=True):
     """
 
     header: Optional[Header] = None
-    structures: Optional[
-        Sequence[
-            Union[
-                ItemScheme,
-                DataStructureDefinition,
-                Dataflow,
-            ]
-        ]
-    ] = None
+    structures: Optional[Sequence[MaintainableArtefact]] = None
     data: Optional[Sequence[Dataset]] = None
     submission: Optional[Sequence[SubmissionResult]] = None
 

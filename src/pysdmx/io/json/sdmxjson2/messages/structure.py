@@ -58,6 +58,7 @@ from pysdmx.model import (
     UserDefinedOperatorScheme,
     VtlMappingScheme,
 )
+from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.message import Header, Message
 
 
@@ -74,7 +75,12 @@ class JsonHeader(Struct, frozen=True):
 
     def to_model(self) -> Header:
         """Map to pysdmx header class."""
-        return Header(self.id, self.test, self.prepared, self.sender)
+        return Header(
+            id=self.id,
+            test=self.test,
+            prepared=self.prepared,
+            sender=self.sender,
+        )
 
 
 class JsonStructures(Struct, frozen=True):
@@ -101,32 +107,9 @@ class JsonStructures(Struct, frozen=True):
     transformationSchemes: Sequence[JsonTransformationScheme] = ()
     userDefinedOperatorSchemes: Sequence[JsonUserDefinedOperatorScheme] = ()
 
-    def to_model(self) -> Sequence[
-        AgencyScheme,
-        Categorisation,
-        CategoryScheme,
-        CustomTypeScheme,
-        Codelist,
-        ConceptScheme,
-        DataConsumerScheme,
-        Dataflow,
-        DataflowInfo,
-        DataProviderScheme,
-        DataStructureDefinition,
-        Hierarchy,
-        HierarchyAssociation,
-        MultiRepresentationMap,
-        NamePersonalisationScheme,
-        ProvisionAgreement,
-        RepresentationMap,
-        RulesetScheme,
-        StructureMap,
-        TransformationScheme,
-        UserDefinedOperatorScheme,
-        VtlMappingScheme,
-    ]:
+    def to_model(self) -> Sequence[MaintainableArtefact]:
         """Map to pysdmx artefacts."""
-        structures = []
+        structures = []  # type: ignore[var-annotated]
         structures.extend(
             i.to_model(
                 self.conceptSchemes, self.codelists, self.valueLists, ()
@@ -164,9 +147,6 @@ class JsonStructures(Struct, frozen=True):
         structures.extend(
             i.to_model(self.representationMaps) for i in self.structureMaps
         )
-        for rm in self.representationMaps:
-            multi = bool(len(rm.source) > 1 or len(rm.target) > 1)
-            structures.append(rm.to_model(multi))
         structures.extend(i.to_model() for i in self.categorisations)
         structures.extend(i.to_model() for i in self.customTypeSchemes)
         structures.extend(i.to_model() for i in self.vtlMappingSchemes)
@@ -187,6 +167,9 @@ class JsonStructures(Struct, frozen=True):
         structures.extend(
             i.to_model() for i in self.userDefinedOperatorSchemes
         )
+        for rm in self.representationMaps:
+            multi = bool(len(rm.source) > 1 or len(rm.target) > 1)
+            structures.append(rm.to_model(multi))
         return structures
 
 
