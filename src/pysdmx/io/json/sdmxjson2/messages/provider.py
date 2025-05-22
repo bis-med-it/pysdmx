@@ -37,14 +37,23 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True):
                     description=p.description,
                     contacts=p.contacts,
                     dataflows=list(paprs[f"{self.agency}:{p.id}"]),
+                    annotations=[a.to_model() for a in self.annotations],
                 )
                 for p in self.dataProviders
             ]
         else:
-            provs = self.dataProviders  # type: ignore[assignment]
+            provs = [
+                DataProvider(
+                    id=p.id,
+                    name=p.name,
+                    description=p.description,
+                    contacts=p.contacts,
+                    annotations=[a.to_model() for a in self.annotations],
+                )
+                for p in self.dataProviders
+            ]
         return DataProviderScheme(
             agency=self.agency,
-            name=self.name,
             description=self.description,
             items=provs,
             annotations=[a.to_model() for a in self.annotations],
