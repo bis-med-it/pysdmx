@@ -7,8 +7,8 @@ from pysdmx.io.json.sdmxjson2.messages.category import (
 )
 from pysdmx.io.json.sdmxjson2.messages.code import (
     JsonCodelistMessage,
-    JsonHierarchyAssociationMessage,
     JsonHierarchiesMessage,
+    JsonHierarchyAssociationMessage,
     JsonHierarchyMessage,
 )
 from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptSchemeMessage
