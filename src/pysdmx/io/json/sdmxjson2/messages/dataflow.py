@@ -1,11 +1,13 @@
 """Collection of SDMX-JSON schemas for dataflow queries."""
 
-from datetime import datetime
-from typing import List, Optional, Sequence
+from typing import List, Sequence
 
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
+from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist, JsonValuelist
+from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptScheme
+from pysdmx.io.json.sdmxjson2.messages.core import MaintainableType
+from pysdmx.io.json.sdmxjson2.messages.dsd import JsonDataStructure
 from pysdmx.io.json.sdmxjson2.messages.provider import JsonDataProviderScheme
 from pysdmx.model import (
     Agency,
@@ -14,31 +16,46 @@ from pysdmx.model import (
     DataflowInfo,
     DataProvider,
 )
+from pysdmx.util import parse_urn
 
 
-class JsonDataflow(Struct, frozen=True, rename={"agency": "agencyID"}):
+class JsonDataflow(MaintainableType, frozen=True):
     """SDMX-JSON payload for a dataflow."""
 
-    id: str
-    name: str
-    agency: str
-    structure: str
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
+    structure: str = ""
 
-    def to_model(self) -> Dataflow:
+    def to_model(
+        self,
+        dsds: Sequence[JsonDataStructure] = (),
+        concepts: Sequence[JsonConceptScheme] = (),
+        valuelists: Sequence[JsonValuelist] = (),
+        codelists: Sequence[JsonCodelist] = (),
+    ) -> Dataflow:
         """Converts a FusionDataflow to a standard dataflow."""
+        dsd = None
+        if len(dsds) > 0:
+            ref = parse_urn(self.structure)
+            m = [
+                d
+                for d in dsds
+                if d.agency == ref.agency
+                and d.id == ref.id
+                and d.version == ref.version
+            ]
+            if len(m == 1):
+                dsd = m[0].to_model(concepts, codelists, valuelists, ())
+        dsd = dsd if dsd is not None else self.structure
         return Dataflow(
             id=self.id,
             agency=self.agency,
             name=self.name,
             description=self.description,
             version=self.version,
-            structure=self.structure,
+            structure=dsd,
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
         )
 
 
@@ -47,6 +64,10 @@ class JsonDataflows(Struct, frozen=True):
 
     dataflows: Sequence[JsonDataflow]
     dataProviderSchemes: Sequence[JsonDataProviderScheme] = ()
+    dataStructures: Sequence[JsonDataStructure] = ()
+    conceptSchemes: Sequence[JsonConceptScheme] = ()
+    valuelists: Sequence[JsonValuelist] = ()
+    codelists: Sequence[JsonCodelist] = ()
 
     def __filter(
         self, df: JsonDataflow, agency: str, id_: str, version: str
@@ -82,9 +103,17 @@ class JsonDataflows(Struct, frozen=True):
             dsd_ref=df.structure,
         )
 
-    def to_simple_model(self) -> Sequence[Dataflow]:
+    def to_generic_model(self) -> Sequence[Dataflow]:
         """Returns the requested dataflows."""
-        return [df.to_model() for df in self.dataflows]
+        return [
+            df.to_model(
+                self.dataStructures,
+                self.conceptSchemes,
+                self.valuelists,
+                self.codelists,
+            )
+            for df in self.dataflows
+        ]
 
 
 class JsonDataflowMessage(Struct, frozen=True):
@@ -106,4 +135,4 @@ class JsonDataflowsMessage(Struct, frozen=True):
 
     def to_model(self) -> Sequence[Dataflow]:
         """Returns the requested dataflows."""
-        return self.data.to_simple_model()
+        return self.data.to_generic_model()
