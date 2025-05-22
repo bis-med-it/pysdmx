@@ -26,6 +26,7 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True):
             description=a.description,
             contacts=a.contacts,
             dataflows=flows,
+            annotations=[a.to_model() for a in self.annotations],
         )
 
     def to_model(self, dataflows: Sequence[JsonDataflow]) -> AgencyScheme:
