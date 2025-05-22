@@ -138,12 +138,10 @@ def __assign_structure_to_dataset(
         else:
             try:
                 dataflow = structure_msg.get_dataflow(short_urn)
-                if isinstance(dataflow.structure, DataStructureDefinition):
-                    dsd = dataflow.structure
-                else:
-                    dsd = structure_msg.get_data_structure_definition(
-                        dataflow.structure if dataflow.structure else ""
-                    )
+                dsdref = dataflow.structure if dataflow.structure else ""
+                dsd = structure_msg.get_data_structure_definition(
+                    dsdref,  # type: ignore[arg-type]
+                )
                 dataset.structure = dsd.to_schema()
             except NotFound:
                 continue
