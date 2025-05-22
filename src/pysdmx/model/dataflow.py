@@ -463,6 +463,21 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
         result = list({a for a in out if a})
         return result
 
+    def to_schema(self) -> Schema:
+        """Generates a Schema class from the DataStructureDefinition."""
+        return Schema(
+            context="datastructure",
+            agency=(
+                self.agency.id
+                if isinstance(self.agency, Agency)
+                else self.agency
+            ),
+            id=self.id,
+            components=self.components,
+            version=self.version,
+            artefacts=self._extract_artefacts(),
+        )
+
     @property
     def short_urn(self) -> str:
         """Returns a short URN for the data structure."""
