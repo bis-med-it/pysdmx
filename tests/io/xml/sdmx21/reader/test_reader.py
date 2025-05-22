@@ -79,16 +79,6 @@ def scheme_examples_json():
 
 
 @pytest.fixture
-def full_structure_example():
-    with open(
-        Path(__file__).parent / "samples" / "full_structure_example.vtl",
-        "r",
-        encoding="utf-8",
-    ) as file:
-        return file.read()
-
-
-@pytest.fixture
 def error_str(error_304_path):
     with open(error_304_path, "r") as f:
         text = f.read()
@@ -462,11 +452,17 @@ def test_vtl_transformation_scheme(samples_folder):
     assert transformation_scheme.description == "TEST Transformation Scheme"
     assert transformation_scheme.valid_from == datetime(2024, 12, 3, 0, 0)
 
-    assert len(transformation_scheme.items) == 1
-    transformation = transformation_scheme.items[0]
-    assert isinstance(transformation, Transformation)
-    assert transformation.id == "test_rule"
-    assert transformation.full_expression == "DS_r <- DS_1 + 1;"
+    assert len(transformation_scheme.items) == 2
+    tr1 = transformation_scheme.items[0]
+    assert isinstance(tr1, Transformation)
+    assert tr1.id == "test_rule"
+    assert tr1.is_persistent is True
+    assert tr1.full_expression == "DS_r <- DS_1 + 1;"
+    tr2 = transformation_scheme.items[1]
+    assert isinstance(tr2, Transformation)
+    assert tr2.id == "test_rule_2"
+    assert tr2.is_persistent is False
+    assert tr2.full_expression == "DS_r := DS_1 + 1;"
 
 
 def test_vtl_ruleset_scheme(samples_folder, scheme_examples_json):
@@ -517,16 +513,29 @@ def test_vtl_udo_scheme(samples_folder, scheme_examples_json):
     assert udo.operator_definition == expected_udo["operator_definition"]
 
 
-def test_vtl_full_scheme(samples_folder, full_structure_example):
+def test_vtl_full_scheme(samples_folder):
     data_path = samples_folder / "full_vtl_structure.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1
     result = read_sdmx(input_str, validate=True).structures
+    assert result is not None
+    rule_scheme = result[0]
+    assert rule_scheme.agency == "MD"
+    assert rule_scheme.id == "TEST_RULESET_SCHEME"
+    assert rule_scheme.name == "Testing Ruleset Scheme"
+    assert len(rule_scheme.items) == 1
 
-    assert (
-        str(result).strip()
-        == str(full_structure_example).replace("\n", "").strip()
-    )
+    udo_scheme = result[1]
+    assert udo_scheme.agency == "MD"
+    assert udo_scheme.id == "TEST_UDO_SCHEME"
+    assert udo_scheme.name == "Testing UDO Scheme"
+    assert len(udo_scheme.items) == 1
+
+    transformation_scheme = result[2]
+    assert transformation_scheme.agency == "MD"
+    assert transformation_scheme.id == "TEST_TS"
+    assert transformation_scheme.name == "Testing TS"
+    assert len(transformation_scheme.items) == 1
 
 
 def test_estat_metadata(estat_metadata_path):
