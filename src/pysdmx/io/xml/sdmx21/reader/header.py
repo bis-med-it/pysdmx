@@ -1,6 +1,7 @@
 """SDMX 2.1 XML Header reader module."""
 
 import warnings
+from datetime import datetime
 from typing import Any, Dict, Optional, Union
 
 from pysdmx.io.xml.sdmx21.__tokens import (
@@ -30,8 +31,9 @@ from pysdmx.io.xml.sdmx21.__tokens import (
 )
 from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.model import Organisation, Reference
+from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import Header
-from pysdmx.util import parse_urn
+from pysdmx.util import parse_maintainable_urn
 
 
 def __parse_sender_receiver(
@@ -112,8 +114,33 @@ def __parse_structure(
             version=version,
         )
     else:
-        ref_obj = parse_urn(structure_info[URN])
+        ref_obj = parse_maintainable_urn(structure_info[URN])
     return {str(ref_obj): dim_at_obs}
+
+
+def __parse_source(source: Optional[Dict[str, Any]]) -> Optional[str]:
+    """Parses the source of the SDMX message."""
+    if source is None:
+        return None
+    elif isinstance(source, dict):
+        return source["#text"]
+    else:
+        return source
+
+
+def __parse_dataset_action(
+    dataset_action: Optional[Dict[str, Any]],
+) -> Optional[ActionType]:
+    """Parses the dataset action of the SDMX message."""
+    if dataset_action is None:
+        return None
+    else:
+        return ActionType(dataset_action)
+
+
+def __parse_prepared(prepared: str) -> datetime:
+    """Parses the prepared date of the SDMX message."""
+    return datetime.fromisoformat(prepared.replace("Z", "+00:00"))
 
 
 def __parse_header(header: Dict[str, Any]) -> Header:
@@ -129,11 +156,11 @@ def __parse_header(header: Dict[str, Any]) -> Header:
     dict_header = {
         "id": header.get(HEADER_ID),
         "test": header.get(TEST),
-        "prepared": header.get(PREPARED),
+        "prepared": __parse_prepared(header.get(PREPARED)),  # type: ignore[arg-type]
         "sender": __parse_sender_receiver(header.get(SENDER)),
         "receiver": __parse_sender_receiver(header.get(RECEIVER)),
-        "source": header.get(SOURCE),
-        "dataset_action": header.get(DATASET_ACTION),
+        "source": __parse_source(header.get(SOURCE)),
+        "dataset_action": __parse_dataset_action(header.get(DATASET_ACTION)),
         "structure": __parse_structure(header.get(STRUCTURE)),
         "dataset_id": header.get(DATASET_ID),
     }
