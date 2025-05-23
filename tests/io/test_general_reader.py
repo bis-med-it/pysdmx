@@ -168,6 +168,7 @@ def test_get_datasets_valid(data_path, structures_path):
     assert dataset.data is not None
     assert len(dataset.data) == 1000
     assert len(dataset.structure.artefacts) == 26
+    assert dataset.short_urn == "DataStructure=BIS:BIS_DER(1.0)"
 
 
 def test_get_datasets_valid_descendants(
@@ -186,7 +187,7 @@ def test_get_datasets_valid_descendants(
         ".TITLE_TS"
     ) in dataset.structure.artefacts
     assert (
-        "urn:sdmx:org.sdmx.infomodel.codelist." "Codelist=BIS:CL_DECIMALS(1.0)"
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DECIMALS(1.0)"
     ) in dataset.structure.artefacts
 
 
@@ -214,23 +215,31 @@ def test_get_datasets_csv_v1(data_csv_v1_path):
 def test_get_datasets_dataflow_children(data_dataflow, dataflow_children):
     result = get_datasets(data_dataflow, dataflow_children)
     assert len(result) == 1
-    assert result[0].data is not None
-    assert isinstance(result[0].structure, Schema)
-    assert len(result[0].data) == 1000
+    dataset = result[0]
+    assert dataset.data is not None
+    assert isinstance(dataset.structure, Schema)
+    assert len(dataset.data) == 1000
+    assert (
+        dataset.structure.short_urn
+        == "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"
+    )
 
 
 def test_get_datasets_wrong_dataflow(
     data_wrong_dataflow, dataflow_no_children
 ):
-    with pytest.raises(Invalid, match="Missing DataStructure for dataset "):
+    with pytest.raises(
+        Invalid,
+        match="Missing Dataflow",
+    ):
         get_datasets(data_wrong_dataflow, dataflow_no_children)
 
 
 def test_get_datasets_wrong_dsd(data_wrong_dsd, dataflow_children):
-    with pytest.raises(Invalid, match="Missing DataStructure for dataset "):
+    with pytest.raises(Invalid, match="Missing DataStructure "):
         get_datasets(data_wrong_dsd, dataflow_children)
 
 
 def test_get_datasets_no_children(data_dataflow, dataflow_no_children):
-    with pytest.raises(Invalid, match="Missing DataStructure for dataset "):
+    with pytest.raises(Invalid, match="Not found referenced DataStructure"):
         get_datasets(data_dataflow, dataflow_no_children)
