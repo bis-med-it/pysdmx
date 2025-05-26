@@ -15,7 +15,7 @@
                            namespace="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:WRONG_DATAFLOW(1.0):ObsLevelDim:TIME_PERIOD"
                            dimensionAtObservation="AllDimensions">
             <common:StructureUsage>
-                <Ref agencyID="BIS" id="WEBSTATS_DER_DATAFLOW" version="1.0"/>
+                <Ref agencyID="BIS" id="WRONG_DATAFLOW" version="1.0"/>
             </common:StructureUsage>
         </message:Structure>
         <message:DataSetAction>Information</message:DataSetAction>
