@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -14,7 +15,7 @@ def header():
     return Header(
         id="ID",
         test="true",
-        prepared="2021-01-01T00:00:00",
+        prepared=datetime.strptime("2021-01-01", "%Y-%m-%d"),
         sender=Organisation(
             id="ZZZ",
             name="unknown",
@@ -34,7 +35,7 @@ def header_no_name():
     return Header(
         id="ID",
         test="true",
-        prepared="2021-01-01T00:00:00",
+        prepared=datetime.strptime("2021-01-01", "%Y-%m-%d"),
         sender=Organisation(
             id="ZZZ",
             uri=None,
@@ -58,7 +59,7 @@ def header_warning():
     return Header(
         id="ID",
         test="true",
-        prepared="2021-01-01T00:00:00",
+        prepared=datetime.strptime("2021-01-01", "%Y-%m-%d"),
         sender=Organisation(
             id="ZZZ",
         ),
@@ -79,7 +80,7 @@ def header_structure_usage():
     return Header(
         id="ID",
         test="true",
-        prepared="2021-01-01T00:00:00",
+        prepared=datetime.strptime("2021-01-01", "%Y-%m-%d"),
         sender=Organisation(
             id="ZZZ",
         ),
@@ -99,7 +100,7 @@ def header_provision_agrement():
     return Header(
         id="ID",
         test="true",
-        prepared="2021-01-01T00:00:00",
+        prepared=datetime.strptime("2021-01-01", "%Y-%m-%d"),
         sender=Organisation(
             id="ZZZ",
         ),

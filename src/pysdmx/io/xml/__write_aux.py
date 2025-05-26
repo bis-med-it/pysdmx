@@ -3,7 +3,6 @@
 
 import warnings
 from collections import OrderedDict
-from datetime import datetime
 from typing import Optional, Union
 from xml.sax.saxutils import escape
 
@@ -25,6 +24,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     UDOS,
     URI_LOW,
     URN_LOW,
+    VTLMAPPINGS,
 )
 from pysdmx.model import Organisation
 from pysdmx.model.dataset import Dataset
@@ -160,6 +160,7 @@ MSG_CONTENT_PKG = OrderedDict(
         (RULESETS, "Rulesets"),
         (TRANSFORMATIONS, "Transformations"),
         (UDOS, "UserDefinedOperators"),
+        (VTLMAPPINGS, "VtlMappings"),
     ]
 )
 
@@ -363,10 +364,9 @@ def __write_header(
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
-    if isinstance(header.prepared, str):
-        prepared = datetime.strptime(header.prepared, "%Y-%m-%dT%H:%M:%S")
-    else:
-        prepared = header.prepared.strftime("%Y-%m-%dT%H:%M:%S")
+    prepared = header.prepared.isoformat(timespec="seconds").replace(
+        "+00:00", "Z"
+    )
     test = str(header.test).lower()
     references_str = ""
     action_value = (

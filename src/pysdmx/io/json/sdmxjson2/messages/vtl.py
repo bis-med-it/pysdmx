@@ -5,6 +5,7 @@ from typing import Literal, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx.model.__base import DataflowRef
 from pysdmx.model.vtl import (
     CustomType,
     CustomTypeScheme,
@@ -24,6 +25,7 @@ from pysdmx.model.vtl import (
     VtlMapping,
     VtlMappingScheme,
 )
+from pysdmx.util import parse_urn
 
 
 class JsonCustomType(Struct, frozen=True):
@@ -311,13 +313,21 @@ class JsonVtlMapping(Struct, frozen=True):
                 concept_alias=self.alias,
             )
         else:
+            reference = (
+                parse_urn(self.dataflow)
+                if self.dataflow
+                else parse_urn(self.genericDataflow)  # type: ignore[arg-type]
+            )
+            dataflow = DataflowRef(
+                id=reference.id,
+                agency=reference.agency,
+                version=reference.version,
+            )
             return VtlDataflowMapping(
                 self.id,
                 name=self.name,
                 description=self.description,
-                dataflow=(
-                    self.dataflow if self.dataflow else self.genericDataflow  # type: ignore[arg-type]
-                ),
+                dataflow=dataflow,
                 dataflow_alias=self.alias,
                 from_vtl_mapping_method=(
                     self.fromVtlMapping.to_model()

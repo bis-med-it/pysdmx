@@ -3,6 +3,7 @@
 from collections import OrderedDict
 from typing import Any, Dict, Optional, Sequence, Union
 
+from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.xml.__write_aux import (
     ABBR_COM,
@@ -64,6 +65,8 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     URI,
     URN,
     VERSION,
+    VTL_MAPPING_SCHEME,
+    VTLMAPPING,
 )
 from pysdmx.model import (
     AgencyScheme,
@@ -79,6 +82,8 @@ from pysdmx.model import (
     TransformationScheme,
     UserDefinedOperator,
     UserDefinedOperatorScheme,
+    VtlDataflowMapping,
+    VtlMappingScheme,
     VtlScheme,
 )
 from pysdmx.model.__base import (
@@ -141,6 +146,7 @@ STR_DICT_TYPE_LIST = {
     RulesetScheme: "Rulesets",
     UserDefinedOperatorScheme: "UserDefinedOperators",
     TransformationScheme: "Transformations",
+    VtlMappingScheme: "VtlMappings",
 }
 
 
@@ -213,8 +219,8 @@ def __write_nameable(
     attrs = ["Name", "Description"]
 
     for attr in attrs:
-        if getattr(nameable, attr.lower(), None) is not None:
-            value = getattr(nameable, attr.lower())
+        value = getattr(nameable, attr.lower(), None)
+        if value is not None:
             value = __escape_xml(str(value))
             outfile[attr] = [
                 (
@@ -224,6 +230,10 @@ def __write_nameable(
                     f"</{ABBR_COM}:{attr}>"
                 )
             ]
+        elif attr == "Name":
+            raise Invalid(
+                "Name is required for NameableArtefact" f" id= {nameable.id}"
+            )
 
     return outfile
 
@@ -552,11 +562,18 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
     if scheme == DSD:
         components = __write_components(item_scheme, add_indent(indent))
 
-    if scheme not in [DSD, DFW, RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME]:
+    if scheme not in [
+        DSD,
+        DFW,
+        RULE_SCHEME,
+        UDO_SCHEME,
+        TRANS_SCHEME,
+        VTL_MAPPING_SCHEME,
+    ]:
         data["Attributes"] += (
             f" isPartial={str(item_scheme.is_final).lower()!r}"
         )
-    if scheme in [RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME]:
+    if scheme in [RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME, VTL_MAPPING_SCHEME]:
         data["Attributes"] += f" {_write_vtl(item_scheme, indent)}"
 
     outfile = ""
@@ -573,10 +590,17 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
     if scheme == DFW:
         outfile += __write_structure(item_scheme.structure, add_indent(indent))
 
-    if scheme not in [DSD, DFW, RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME]:
+    if scheme not in [
+        DSD,
+        DFW,
+        RULE_SCHEME,
+        UDO_SCHEME,
+        TRANS_SCHEME,
+        VTL_MAPPING_SCHEME,
+    ]:
         for item in item_scheme.items:
             outfile += __write_item(item, add_indent(indent))
-    if scheme in [RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME]:
+    if scheme in [RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME, VTL_MAPPING_SCHEME]:
         for item in item_scheme.items:
             outfile += _write_vtl(item, add_indent(indent))
         outfile += _write_vtl_references(item_scheme, add_indent(indent))
@@ -721,7 +745,10 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
             )
             data += f"{add_indent(indent)}<{ABBR_STR}:Result>"
             data += f"{item_or_scheme.result}</{ABBR_STR}:Result>"
-            attrib += f" isPersistent={item_or_scheme.is_persistent!r}"
+            attrib += (
+                f" isPersistent="
+                f"{str(item_or_scheme.is_persistent).lower()!r}"
+            )
 
         if isinstance(item_or_scheme, UserDefinedOperator):
             label = f"{ABBR_STR}:{UDO}"
@@ -730,6 +757,17 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
                 f"{__escape_xml(item_or_scheme.operator_definition)}"
                 f"</{ABBR_STR}:OperatorDefinition>"
             )
+        if isinstance(item_or_scheme, VtlDataflowMapping):
+            label = f"{ABBR_STR}:{VTLMAPPING}"
+            data += f"{add_indent(indent)}<{ABBR_STR}:Dataflow>"
+            reference = item_or_scheme.dataflow
+            data += (
+                f"{indent}\t\t<{REF} package='datastructure' "
+                f"agencyID={reference.agency!r} id={reference.id!r} "
+                f"version={reference.version!r} class={DFW!r} />"
+                f"{add_indent(indent)}</{ABBR_STR}:Dataflow>"
+            )
+            attrib += f" alias={item_or_scheme.dataflow_alias!r}"
 
         outfile += f"{indent}<{label}{attrib}>"
         outfile += data

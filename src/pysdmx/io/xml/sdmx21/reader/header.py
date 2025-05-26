@@ -1,6 +1,7 @@
 """SDMX 2.1 XML Header reader module."""
 
 import warnings
+from datetime import datetime
 from typing import Any, Dict, Optional, Union
 
 from pysdmx.io.xml.sdmx21.__tokens import (
@@ -137,6 +138,11 @@ def __parse_dataset_action(
         return ActionType(dataset_action)
 
 
+def __parse_prepared(prepared: str) -> datetime:
+    """Parses the prepared date of the SDMX message."""
+    return datetime.fromisoformat(prepared.replace("Z", "+00:00"))
+
+
 def __parse_header(header: Dict[str, Any]) -> Header:
     """Parses the header of the SDMX message.
 
@@ -150,7 +156,7 @@ def __parse_header(header: Dict[str, Any]) -> Header:
     dict_header = {
         "id": header.get(HEADER_ID),
         "test": header.get(TEST),
-        "prepared": header.get(PREPARED),
+        "prepared": __parse_prepared(header.get(PREPARED)),  # type: ignore[arg-type]
         "sender": __parse_sender_receiver(header.get(SENDER)),
         "receiver": __parse_sender_receiver(header.get(RECEIVER)),
         "source": __parse_source(header.get(SOURCE)),

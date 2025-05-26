@@ -11,6 +11,8 @@ from pysdmx.api.qb.structure import _API_RESOURCES, StructureType
 from pysdmx.api.qb.util import REST_ALL, REST_LATEST, ApiVersion, CoreQuery
 from pysdmx.errors import Invalid
 from pysdmx.io.format import RefMetaFormat
+from pysdmx.model import Reference
+from pysdmx.util import parse_urn
 
 
 class RefMetaDetail(Enum):
@@ -81,6 +83,37 @@ class RefMetaByMetadatasetQuery(
     version: Union[str, Sequence[str]] = REST_LATEST
     detail: RefMetaDetail = RefMetaDetail.FULL
     as_of: Optional[datetime] = None
+
+    @staticmethod
+    def from_ref(ref: Union[Reference, str]) -> "RefMetaByMetadatasetQuery":
+        """Create a RefMetaByMetadatasetQuery out of the supplied reference.
+
+        Args:
+            ref: Either a reference object or an SDMX urn.
+
+        Returns:
+            A RefMetaByMetadatasetQuery to retrieve the supplied reference.
+
+        Raises:
+            Invalid: If reference is a string and it is not an SDMX urn,
+                or if the artefact type is not MetadataSet.
+        """
+        if isinstance(ref, str):
+            ref = parse_urn(ref)  # type: ignore[assignment]
+        if ref.sdmx_type != "MetadataSet":  # type: ignore[union-attr]
+            raise Invalid(
+                "Unexpected artefact type",
+                (
+                    "Only references of type MetadataSet can be converted"
+                    "into a RefMetaByMetadatasetQuery"
+                ),
+                {"received_type": ref.sdmx_type},  # type: ignore[union-attr]
+            )
+        return RefMetaByMetadatasetQuery(
+            ref.agency,  # type: ignore[union-attr]
+            ref.id,  # type: ignore[union-attr]
+            ref.version,  # type: ignore[union-attr]
+        )
 
     def _validate_query(self, version: ApiVersion) -> None:
         super().validate()
