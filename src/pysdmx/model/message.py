@@ -34,6 +34,7 @@ from pysdmx.model.map import (
     RepresentationMap,
     StructureMap,
 )
+from pysdmx.model.metadata import MetadataReport
 from pysdmx.model.organisation import AgencyScheme, DataProviderScheme
 from pysdmx.model.submission import SubmissionResult
 from pysdmx.model.vtl import (
@@ -234,6 +235,25 @@ class StructureMessage(Struct, frozen=True):
     ) -> List[NamePersonalisationScheme]:
         """Returns the Codelists."""
         return self.__get_elements(NamePersonalisationScheme)
+
+
+class MetadataMessage(Struct, frozen=True):
+    """Message class holds the content of an SDMX Reference Metadata Message.
+
+    Attributes:
+        header: The header of the SDMX message.
+        reports: Sequence of metadata reports.
+    """
+
+    header: Optional[Header] = None
+    reports: Optional[Sequence[MetadataReport]] = None
+
+    def get_reports(self) -> Sequence[MetadataReport]:
+        """Returns the metadata reports."""
+        if self.reports is not None:
+            return self.reports
+        else:
+            raise NotFound("No metadata reports werefound in the message.")
 
 
 class Message(StructureMessage, frozen=True):
