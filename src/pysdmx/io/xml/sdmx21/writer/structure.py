@@ -826,7 +826,7 @@ def _write_vtl_references(scheme: ItemScheme, indent: str) -> str:
 
 
 def write(
-    structures: Sequence[STR_TYPES],
+    content: Sequence[STR_TYPES],
     output_path: str = "",
     prettyprint: bool = True,
     header: Optional[Header] = None,
@@ -834,7 +834,7 @@ def write(
     """This function writes a SDMX-ML file from the Message Content.
 
     Args:
-        structures: The content to be written
+        content: The content to be written
         output_path: The path to save the file
         prettyprint: Prettyprint or not
         header: The header to be used (generated if None)
@@ -843,7 +843,7 @@ def write(
         The XML string if output_path is empty, None otherwise
     """
     type_ = Format.STRUCTURE_SDMX_ML_2_1
-    elements = {structure.short_urn: structure for structure in structures}
+    elements = {structure.short_urn: structure for structure in content}
     if header is None:
         header = Header()
 

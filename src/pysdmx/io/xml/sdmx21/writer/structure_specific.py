@@ -251,7 +251,7 @@ def __series_processing(
 
 
 def write(
-    datasets: Sequence[PandasDataset],
+    content: Sequence[PandasDataset],
     output_path: str = "",
     prettyprint: bool = True,
     header: Optional[Header] = None,
@@ -260,7 +260,7 @@ def write(
     """Write data to SDMX-ML 2.1 Structure Specific format.
 
     Args:
-        datasets: The datasets to be written.
+        content: The datasets to be written.
         output_path: The path to save the file.
         prettyprint: Prettyprint or not.
         header: The header to be used (generated if None).
@@ -275,8 +275,8 @@ def write(
 
     # Checking if we have datasets,
     # we need to ensure we can write them correctly
-    check_content_dataset(datasets)
-    content = {dataset.short_urn: dataset for dataset in datasets}
+    check_content_dataset(content)
+    content = {dataset.short_urn: dataset for dataset in content}
 
     if header is None:
         header = Header()
