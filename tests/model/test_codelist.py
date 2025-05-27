@@ -167,6 +167,5 @@ def test_tostr(id, name, agency, version, codes):
     s = str(cl)
 
     assert s == (
-        "Codelist(id='id', name='name', version='1.42.0', agency='5B0', "
-        "sdmx_type='codelist', items=[2 Codes])"
+        "id: 'id', name: 'name', version: '1.42.0', agency: '5B0', items: '2 codes'"
     )
