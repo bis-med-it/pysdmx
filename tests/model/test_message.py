@@ -190,3 +190,19 @@ def test_get_ruleset_scheme():
     )
     message = Message(structures=[ruleset_scheme])
     assert message.get_ruleset_schemes() == [ruleset_scheme]
+
+def test_message_str_with_structures():
+    agency_scheme = AgencyScheme(id="agency1", agency="agency1")
+    codelist = Codelist(id="codelist1", agency="agency1")
+    message = Message(structures=[agency_scheme, codelist])
+    assert str(message) == "Message(1 AgencyScheme, 1 Codelist)"
+
+
+def test_message_str_with_data():
+    dataset = Dataset(structure="DataStructure=ds1:ds1(1.0)")
+    message = Message(data=[dataset])
+    assert str(message) == "Message(1 Dataset)"
+
+def test_message_str_without_data():
+    message = Message()
+    assert str(message) == "Message()"
