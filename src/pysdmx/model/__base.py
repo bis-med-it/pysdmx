@@ -74,16 +74,23 @@ class AnnotableArtefact(
 
     annotations: Sequence[Annotation] = ()
 
+    # TODO: check if this is what is needed and if it is,
+    #  implement in all Struct inheritance classes
     def __str__(self) -> str:
         """Custom string representation without the class name."""
         processed_output = []
-        for item in self.__rich_repr__():
-            attr, value = item[0], item[1]
-
+        for attr, value, *_ in self.__rich_repr__():
+            # str is taken as a Sequence, so we need to check it's not a str
             if isinstance(value, Sequence) and not isinstance(value, str):
-                class_name = value[0].__class__.__name__
-                value = f"{len(value)} {class_name.lower()}s"
+                # Handle non-empty lists
+                if value:
+                    class_name = value[0].__class__.__name__
+                    value = f"{len(value)} {class_name.lower()}s"
+                else:
+                    # Skipping empty lists
+                    continue
             processed_output.append(f"{attr}: {value!r}")
+
         return f"{', '.join(processed_output)}"
 
 
