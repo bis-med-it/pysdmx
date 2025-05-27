@@ -60,22 +60,17 @@ class Header(Struct, kw_only=True):
     dataset_id: Optional[str] = None
 
 
-class Message(Struct, frozen=True):
-    """Message class holds the content of SDMX Message.
+class StructureMessage(Struct, frozen=True):
+    """Message class holds the content of an SDMX Structure Message.
 
     Attributes:
-        structures: Sequence of structure objects (ItemScheme, Schema).
-           They represent the contents of a Structure Message.
-        data: Sequence of Dataset objects. They represent the contents of a
-           SDMX Data Message in any format.
-        submission: Sequence of SubmissionResult objects. They represent the
-              contents of a SDMX Submission Message.
+        header: The header of the SDMX message.
+        structures: Sequence of structure objects. They represent the
+            contents of a Structure Message.
     """
 
     header: Optional[Header] = None
     structures: Optional[Sequence[MaintainableArtefact]] = None
-    data: Optional[Sequence[Dataset]] = None
-    submission: Optional[Sequence[SubmissionResult]] = None
 
     def __post_init__(self) -> None:
         """Checks if the content is valid."""
@@ -85,15 +80,6 @@ class Message(Struct, frozen=True):
                     raise Invalid(
                         f"Invalid structure: {type(obj_).__name__} ",
                         "Check the docs on structures.",
-                    )
-        if self.data is not None:
-            for data_value in self.data:
-                if not isinstance(data_value, Dataset):
-                    raise Invalid(
-                        f"Invalid data type: "
-                        f"{type(data_value).__name__} "
-                        f"for Data Message, requires a Dataset object.",
-                        "Check the docs for the proper structure on data.",
                     )
 
     def __get_elements(self, type_: Type[Any]) -> List[Any]:
@@ -180,26 +166,6 @@ class Message(Struct, frozen=True):
         """Returns a specific Dataflow."""
         return self.__get_single_structure(Dataflow, short_urn)
 
-    def get_datasets(self) -> Sequence[Dataset]:
-        """Returns the Datasets."""
-        if self.data is not None:
-            return self.data
-        raise NotFound(
-            "No Datasets found in data.",
-            "Could not find any Datasets in content.",
-        )
-
-    def get_dataset(self, short_urn: str) -> Dataset:
-        """Returns a specific Dataset."""
-        if self.data is not None:
-            for dataset in self.data:
-                if dataset.short_urn == short_urn:
-                    return dataset
-        raise NotFound(
-            f"No Dataset with Short URN {short_urn} found in data.",
-            "Could not find the requested Dataset.",
-        )
-
     def get_transformation_schemes(self) -> List[TransformationScheme]:
         """Returns the TransformationSchemes."""
         return self.__get_elements(TransformationScheme)
@@ -268,3 +234,52 @@ class Message(Struct, frozen=True):
     ) -> List[NamePersonalisationScheme]:
         """Returns the Codelists."""
         return self.__get_elements(NamePersonalisationScheme)
+
+
+class Message(StructureMessage, frozen=True):
+    """Message class holds the content of SDMX Message.
+
+    Attributes:
+        header: The header of the SDMX message.
+        structures: Sequence of structure objects.
+        data: Sequence of Dataset objects. They represent the contents of a
+           SDMX Data Message in any format.
+        submission: Sequence of SubmissionResult objects. They represent the
+              contents of a SDMX Submission Message.
+    """
+
+    data: Optional[Sequence[Dataset]] = None
+    submission: Optional[Sequence[SubmissionResult]] = None
+
+    def __post_init__(self) -> None:
+        """Checks if the content is valid."""
+        super().__post_init__()
+        if self.data is not None:
+            for data_value in self.data:
+                if not isinstance(data_value, Dataset):
+                    raise Invalid(
+                        f"Invalid data type: "
+                        f"{type(data_value).__name__} "
+                        f"for Data Message, requires a Dataset object.",
+                        "Check the docs for the proper structure on data.",
+                    )
+
+    def get_datasets(self) -> Sequence[Dataset]:
+        """Returns the Datasets."""
+        if self.data is not None:
+            return self.data
+        raise NotFound(
+            "No Datasets found in data.",
+            "Could not find any Datasets in content.",
+        )
+
+    def get_dataset(self, short_urn: str) -> Dataset:
+        """Returns a specific Dataset."""
+        if self.data is not None:
+            for dataset in self.data:
+                if dataset.short_urn == short_urn:
+                    return dataset
+        raise NotFound(
+            f"No Dataset with Short URN {short_urn} found in data.",
+            "Could not find the requested Dataset.",
+        )

@@ -35,7 +35,7 @@ from pysdmx.io.json.sdmxjson2.messages.vtl import (
 )
 from pysdmx.model import Organisation
 from pysdmx.model.__base import MaintainableArtefact
-from pysdmx.model.message import Header, Message
+from pysdmx.model.message import Header, StructureMessage
 
 
 class JsonHeader(Struct, frozen=True):
@@ -155,8 +155,8 @@ class JsonStructureMessage(Struct, frozen=True):
     meta: JsonHeader
     data: JsonStructures
 
-    def to_model(self) -> Message:
+    def to_model(self) -> StructureMessage:
         """Map to pysdmx message class."""
         header = self.meta.to_model()
         structures = self.data.to_model()
-        return Message(header, structures)
+        return StructureMessage(header, structures)
