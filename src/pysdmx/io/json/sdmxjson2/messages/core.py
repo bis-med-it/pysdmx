@@ -111,6 +111,7 @@ class JsonTextFormat(msgspec.Struct, frozen=True):
 
 
 def get_facets(input: JsonTextFormat) -> Facets:
+    """Create Facets out of a JsonTextFormat."""
     return Facets(
         min_length=input.minLength,
         max_length=input.maxLength,

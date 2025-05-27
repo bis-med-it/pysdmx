@@ -5,10 +5,10 @@ from typing import Any, Optional, Sequence
 from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.core import (
-    get_facets,
     IdentifiableType,
     ItemSchemeType,
     JsonTextFormat,
+    get_facets,
 )
 from pysdmx.model.dataset import ActionType
 from pysdmx.model.metadata import (
@@ -26,6 +26,7 @@ class JsonMetadataAttribute(IdentifiableType, frozen=True, omit_defaults=True):
     format: Optional[JsonTextFormat] = None
 
     def to_model(self) -> MetadataAttribute:
+        """Converts a JsonMetadataAttribute to a standard attribute."""
         attrs = [a.to_model() for a in self.attributes]
         attrs = merge_attributes(attrs)
         return MetadataAttribute(
