@@ -1,7 +1,7 @@
 import pytest
 
 from pysdmx.errors import PysdmxError
-from pysdmx.model.__base import AnnotableArtefact, Annotation
+from pysdmx.model.__base import Annotation
 
 
 @pytest.fixture
