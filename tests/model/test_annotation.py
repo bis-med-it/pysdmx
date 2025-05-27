@@ -1,7 +1,7 @@
 import pytest
 
 from pysdmx.errors import PysdmxError
-from pysdmx.model.__base import Annotation
+from pysdmx.model.__base import AnnotableArtefact, Annotation
 
 
 @pytest.fixture
@@ -75,6 +75,10 @@ def test_tostr_all(id, title, text, url, type):
     s = str(a)
 
     assert s == f"id={id}, title={title}, text={text}, url={url}, type={type}"
+
+def test_annotable_artefact_str_empty():
+    artefact = AnnotableArtefact(annotations=[])
+    assert str(artefact) == ""
 
 
 def test_empty_annotation_not_allowed():
