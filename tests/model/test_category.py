@@ -82,7 +82,7 @@ def test_tostr_id(id):
 
     s = str(c)
 
-    assert s == f"id: {id!r}"
+    assert s == f"id: {id}"
 
 
 def test_tostr_name(id, name):
@@ -90,4 +90,4 @@ def test_tostr_name(id, name):
 
     s = str(c)
 
-    assert s == f"id: {id!r}, name: {name!r}"
+    assert s == f"id: {id}, name: {name}"
