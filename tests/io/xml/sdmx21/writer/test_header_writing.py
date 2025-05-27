@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from pysdmx.io.xml.sdmx21.writer.__write_aux import (
+from pysdmx.io.xml.__write_aux import (
     __write_header as write_header_aux,
 )
 from pysdmx.model import Organisation

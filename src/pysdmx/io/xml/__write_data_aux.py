@@ -4,7 +4,7 @@ import pandas as pd
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.sdmx21.writer.__write_aux import ALL_DIM
+from pysdmx.io.xml.__write_aux import ALL_DIM
 from pysdmx.model import Role, Schema
 
 
