@@ -394,8 +394,7 @@ def test_udo_invalid_children_number():
     )
     with pytest.raises(
         Invalid,
-        match="A single OperatorDefinition is valid in "
-        "a UserDefinedOperator",
+        match="A single OperatorDefinition is valid in a UserDefinedOperator",
     ):
         _user_defined_operator_validation(udo)
 
@@ -481,7 +480,7 @@ def test_transformation_invalid_children_number():
         id="id",
         name="name",
         description="description",
-        expression="DS_1 + 1;DS_r := DS_2 + 1",
+        expression="DS_1 + 1;DS_r2 := DS_2 + 1",
         result="DS_r",
         is_persistent=True,
     )
@@ -541,8 +540,7 @@ def test_empty_items_transformation_scheme(
     )
     with pytest.raises(
         Invalid,
-        match="TransformationScheme must contain at least "
-        "one Transformation",
+        match="TransformationScheme must contain at least one Transformation",
     ):
         _transformation_scheme_validations(ts)
 
