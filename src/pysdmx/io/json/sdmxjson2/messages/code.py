@@ -6,7 +6,13 @@ from typing import Optional, Sequence, Tuple
 
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation, JsonLink
+from pysdmx.io.json.sdmxjson2.messages.core import (
+    ItemSchemeType,
+    JsonAnnotation,
+    JsonLink,
+    MaintainableType,
+    NameableType,
+)
 from pysdmx.model import (
     Code,
     Codelist,
@@ -17,13 +23,9 @@ from pysdmx.model import (
 from pysdmx.util import find_by_urn, parse_item_urn
 
 
-class JsonCode(Struct, frozen=True):
+class JsonCode(NameableType, frozen=True):
     """SDMX-JSON payload for codes."""
 
-    id: str
-    name: Optional[str] = None
-    description: Optional[str] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
     parent: Optional[str] = None
 
     def __handle_date(self, datestr: str) -> datetime:
@@ -55,22 +57,13 @@ class JsonCode(Struct, frozen=True):
             description=self.description,
             valid_from=vf,
             valid_to=vt,
+            annotations=[a.to_model() for a in self.annotations],
         )
 
 
-class JsonCodelist(Struct, frozen=True, rename={"agency": "agencyID"}):
+class JsonCodelist(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for a codelist."""
 
-    id: str
-    name: str
-    agency: str
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
-    isPartial: bool = False
     codes: Sequence[JsonCode] = ()
 
     def to_model(self) -> Codelist:
@@ -82,22 +75,17 @@ class JsonCodelist(Struct, frozen=True, rename={"agency": "agencyID"}):
             description=self.description,
             version=self.version,
             items=[i.to_model() for i in self.codes],
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
+            is_partial=self.isPartial,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
         )
 
 
-class JsonValuelist(Struct, frozen=True, rename={"agency": "agencyID"}):
+class JsonValuelist(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for a valuelist."""
 
-    id: str
-    name: str
-    agency: str
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
-    isPartial: bool = False
     valueItems: Sequence[JsonCode] = ()
 
     def to_model(self) -> Codelist:
@@ -109,6 +97,11 @@ class JsonValuelist(Struct, frozen=True, rename={"agency": "agencyID"}):
             description=self.description,
             version=self.version,
             items=[i.to_model() for i in self.valueItems],
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
+            is_partial=self.isPartial,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
             sdmx_type="valuelist",
         )
 
@@ -158,14 +151,22 @@ class JsonHierarchicalCode(Struct, frozen=True):
 
     def to_model(self, codelists: Sequence[Codelist]) -> HierarchicalCode:
         """Converts a JsonHierarchicalCode to a hierachical code."""
-        code = self.__find_code(codelists, self.code)
+        if codelists:
+            code = self.__find_code(codelists, self.code)
+            name = code.name
+            description = code.description
+        else:
+            r = parse_item_urn(self.code)
+            code = Code(r.item_id)
+            name = None
+            description = None
         codes = [c.to_model(codelists) for c in self.hierarchicalCodes]
         vf = self.validFrom.replace(tzinfo=tz.utc) if self.validFrom else None
         vt = self.validTo.replace(tzinfo=tz.utc) if self.validTo else None
         return HierarchicalCode(
             code.id,
-            code.name,
-            code.description,
+            name,
+            description,
             code.valid_from,
             code.valid_to,
             vf,
@@ -174,29 +175,26 @@ class JsonHierarchicalCode(Struct, frozen=True):
         )
 
 
-class JsonHierarchy(Struct, frozen=True, rename={"agency": "agencyID"}):
+class JsonHierarchy(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for a hierarchy."""
 
-    id: str
-    name: str
-    agency: str
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
     hierarchicalCodes: Sequence[JsonHierarchicalCode] = ()
 
-    def to_model(self, codelists: Sequence[Codelist]) -> Hierarchy:
+    def to_model(self, codelists: Sequence[JsonCodelist]) -> Hierarchy:
         """Converts a JsonHierarchy to a standard hierarchy."""
+        cls = [cl.to_model() for cl in codelists]
         return Hierarchy(
             id=self.id,
             name=self.name,
             agency=self.agency,
             description=self.description,
             version=self.version,
-            codes=[i.to_model(codelists) for i in self.hierarchicalCodes],
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
+            is_partial=self.isPartial,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
+            codes=[i.to_model(cls) for i in self.hierarchicalCodes],
         )
 
 
@@ -206,39 +204,31 @@ class JsonHierarchies(Struct, frozen=True):
     codelists: Sequence[JsonCodelist] = ()
     hierarchies: Sequence[JsonHierarchy] = ()
 
-    def to_model(self) -> Hierarchy:
+    def to_model(self) -> Sequence[Hierarchy]:
         """Returns the requested hierarchy."""
-        cls = [cl.to_model() for cl in self.codelists]
-        return self.hierarchies[0].to_model(cls)
+        return [h.to_model(self.codelists) for h in self.hierarchies]
 
 
-class JsonHierarchyAssociation(
-    Struct, frozen=True, rename={"agency": "agencyID"}
-):
+class JsonHierarchyAssociation(MaintainableType, frozen=True):
     """SDMX-JSON payload for a hierarchy association."""
 
-    id: str
-    name: str
-    agency: str
-    linkedHierarchy: str
-    linkedObject: str
-    contextObject: str
+    linkedHierarchy: str = ""
+    linkedObject: str = ""
+    contextObject: str = ""
     links: Sequence[JsonLink] = ()
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
 
     def to_model(
         self,
         hierarchies: Sequence[JsonHierarchy],
         codelists: Sequence[JsonCodelist],
     ) -> HierarchyAssociation:
-        """Converts a FusionHierarchyAssocation to a standard association."""
-        cls = [cl.to_model() for cl in codelists]
-        m = find_by_urn(hierarchies, self.linkedHierarchy).to_model(cls)
+        """Converts a JsonHierarchyAssocation to a standard association."""
+        if hierarchies:
+            m = find_by_urn(hierarchies, self.linkedHierarchy).to_model(
+                codelists
+            )
+        else:
+            m = self.linkedHierarchy
         lnk = list(
             filter(
                 lambda i: hasattr(i, "rel") and i.rel == "UserDefinedOperator",
@@ -254,6 +244,10 @@ class JsonHierarchyAssociation(
             context_ref=self.contextObject,
             description=self.description,
             version=self.version,
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
             operator=lnk[0].urn if lnk else None,
         )
 
@@ -264,6 +258,16 @@ class JsonHierarchyMessage(Struct, frozen=True):
     data: JsonHierarchies
 
     def to_model(self) -> Hierarchy:
+        """Returns the requested hierarchy."""
+        return self.data.to_model()[0]
+
+
+class JsonHierarchiesMessage(Struct, frozen=True):
+    """SDMX-JSON payload for /hierarchy queries."""
+
+    data: JsonHierarchies
+
+    def to_model(self) -> Sequence[Hierarchy]:
         """Returns the requested hierarchy."""
         return self.data.to_model()
 

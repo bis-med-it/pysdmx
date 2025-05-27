@@ -45,6 +45,7 @@ def test_full_instantiation(id, title, text, url, type):
     assert a.text == text
     assert a.url == url
     assert a.type == type
+    assert a.value == text
 
 
 def test_equal(id, title, text):

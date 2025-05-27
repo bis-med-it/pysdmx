@@ -123,6 +123,59 @@ def check_hcode_details(mock, fmr: RegistryClient, query, body):
             assert not hc.codes
 
 
+def check_hcode_details_no_cl(mock, fmr: RegistryClient, query, body):
+    """Hierarchical codes may have extended information."""
+    mock.get(query).mock(
+        return_value=httpx.Response(
+            200,
+            content=body,
+        )
+    )
+
+    h = fmr.get_hierarchy("TEST", "HCL_ELEMENT")
+
+    for hc in h:
+        assert hc.description is None
+        if hc.id == "M0":
+            assert len(hc.codes) == 6
+            for c in hc.codes:
+                assert c.id in ["M1", "M2", "M3", "M4", "M5", "M6"]
+                assert c.name is None
+                if c.id == "M1":
+                    assert len(c.codes) == 6
+                    assert c.valid_from is None
+                    assert c.rel_valid_from == datetime(
+                        1973,
+                        1,
+                        1,
+                        tzinfo=timezone.utc,
+                    )
+                    for chld in c.codes:
+                        if chld.id == "Li":
+                            assert chld.rel_valid_from == datetime(
+                                1920, 1, 1, tzinfo=timezone.utc
+                            )
+                            assert chld.rel_valid_to == datetime(
+                                2020, 12, 31, 23, 59, 59, tzinfo=timezone.utc
+                            )
+                            pass
+                else:
+                    assert not c.codes
+        elif hc.id == "D0":
+            assert not hc.codes
+        elif hc.id == "N0":
+            assert len(hc.codes) == 2
+            c1 = hc.codes[0]
+            c2 = hc.codes[1]
+            assert c1.id == "N1"
+            assert not c1.codes
+            assert c2.id == "N2"
+            assert not c2.codes
+        else:
+            assert hc.id == "U0"
+            assert not hc.codes
+
+
 def __check_core_info(codes: Sequence[HierarchicalCode]):
     for code in codes:
         assert code.id is not None

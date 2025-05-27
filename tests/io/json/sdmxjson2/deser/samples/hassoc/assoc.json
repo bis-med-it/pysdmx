@@ -1,0 +1,46 @@
+{
+    "meta": {
+        "id": "IREF810806",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2024-02-09T12:18:03Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0"
+        }
+    },
+    "data": {
+        "hierarchyAssociations": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "hierarchyassociation",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchyAssociation=TEST:HA_TEST(1.0)"
+                    },
+                    {
+                        "rel": "UserDefinedOperator",
+                        "href": "https://mms-med-fmr-dev.apps.dev.ocp.bisinfo.org/sdmx/v2/structure/userdefinedoperatorscheme/SDMX/OPS/1.0/SUM",
+                        "type": "sdmx_artefact",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=SDMX:OPS(1.0).SUM"
+                    }
+                ],
+                "id": "HA_TEST",
+                "name": "Test Hierarchy Association",
+                "names": {
+                    "en": "Test Hierarchy Association"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "linkedHierarchy": "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS:H_OPTION_TYPE(1.0)",
+                "linkedObject": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:TEST(1.0).OPTION_TYPE",
+                "contextObject": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF_TEST(1.0)"
+            }
+        ]
+    }
+}

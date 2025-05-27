@@ -27,7 +27,7 @@ def schema_generator(message: Message, dataset_ref: Reference) -> Schema:
             raise Invalid(
                 f"Dataflow {dataset_ref} does not have a structure defined.",
             )
-        dsd_ref = parse_urn(dataflow.structure)
+        dsd_ref = parse_urn(dataflow.structure)  # type: ignore[arg-type]
         try:
             dsd = message.get_data_structure_definition(str(dsd_ref))
         except NotFound:

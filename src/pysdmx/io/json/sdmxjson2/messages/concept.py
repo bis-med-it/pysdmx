@@ -1,14 +1,14 @@
 """Collection of SDMX-JSON schemas for concepts."""
 
-from datetime import datetime
 from typing import Optional, Sequence
 
 from msgspec import Struct
 
 from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist
 from pysdmx.io.json.sdmxjson2.messages.core import (
-    JsonAnnotation,
+    ItemSchemeType,
     JsonRepresentation,
+    NameableType,
 )
 from pysdmx.model import Codelist, Concept, ConceptScheme, DataType
 
@@ -21,14 +21,10 @@ class IsoConceptReference(Struct, frozen=True):
     conceptID: str
 
 
-class JsonConcept(Struct, frozen=True):
+class JsonConcept(NameableType, frozen=True):
     """SDMX-JSON payload for concepts."""
 
-    id: str
     coreRepresentation: Optional[JsonRepresentation] = None
-    name: Optional[str] = None
-    description: Optional[str] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
     parent: Optional[str] = None
     isoConceptReference: Optional[IsoConceptReference] = None
 
@@ -61,19 +57,9 @@ class JsonConcept(Struct, frozen=True):
         )
 
 
-class JsonConceptScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
+class JsonConceptScheme(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for a concept scheme."""
 
-    id: str
-    name: str
-    agency: str
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
-    isPartial: bool = False
     concepts: Sequence[JsonConcept] = ()
 
     def to_model(self, codelists: Sequence[JsonCodelist]) -> ConceptScheme:
@@ -86,6 +72,11 @@ class JsonConceptScheme(Struct, frozen=True, rename={"agency": "agencyID"}):
             description=self.description,
             version=self.version,
             items=[c.to_model(cls) for c in self.concepts],
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
+            is_partial=self.isPartial,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
         )
 
 
