@@ -61,7 +61,7 @@ class AnnotableArtefact(
     frozen=True,
     omit_defaults=True,
     repr_omit_defaults=True,
-    kw_only=True
+    kw_only=True,
 ):
     """Annotable Artefact class.
 
