@@ -2,7 +2,7 @@ import msgspec
 import pytest
 
 from pysdmx.io.json.sdmxjson2.messages import JsonStructureMessage
-from pysdmx.model.message import Message
+from pysdmx.model.message import StructureMessage
 
 
 @pytest.fixture
@@ -17,7 +17,7 @@ def test_reader(body):
     res = msgspec.json.Decoder(JsonStructureMessage).decode(body)
     msg = res.to_model()
 
-    assert isinstance(msg, Message)
+    assert isinstance(msg, StructureMessage)
 
     assert len(msg.get_agency_schemes()) == 5
     assert len(msg.get_categorisations()) == 6
