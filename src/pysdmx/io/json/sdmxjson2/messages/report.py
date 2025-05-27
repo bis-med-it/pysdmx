@@ -1,10 +1,15 @@
 """Collection of SDMX-JSON schemas for reference metadata queries."""
 
-from typing import Optional, Sequence
+from typing import Any, Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import ItemSchemeType
+from pysdmx.io.json.sdmxjson2.messages.core import (
+    get_facets,
+    IdentifiableType,
+    ItemSchemeType,
+    JsonTextFormat,
+)
 from pysdmx.model.dataset import ActionType
 from pysdmx.model.metadata import (
     MetadataAttribute,
@@ -13,12 +18,31 @@ from pysdmx.model.metadata import (
 )
 
 
+class JsonMetadataAttribute(IdentifiableType, frozen=True, omit_defaults=True):
+    """SDMX-JSON payload for a metadata attribute."""
+
+    value: Optional[Any] = None
+    attributes: Sequence["JsonMetadataAttribute"] = ()
+    format: Optional[JsonTextFormat] = None
+
+    def to_model(self) -> MetadataAttribute:
+        attrs = [a.to_model() for a in self.attributes]
+        attrs = merge_attributes(attrs)
+        return MetadataAttribute(
+            id=self.id,
+            value=self.value,
+            attributes=attrs,
+            annotations=[a.to_model() for a in self.annotations],
+            format=get_facets(self.format) if self.format else None,
+        )
+
+
 class JsonMetadataReport(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for a metadata report."""
 
     metadataflow: str = ""
     targets: Sequence[str] = ()
-    attributes: Sequence[MetadataAttribute] = ()
+    attributes: Sequence[JsonMetadataAttribute] = ()
     metadataProvisionAgreement: Optional[str] = None
     publicationPeriod: Optional[str] = None
     publicationYear: Optional[str] = None
@@ -28,7 +52,8 @@ class JsonMetadataReport(ItemSchemeType, frozen=True):
 
     def to_model(self) -> MetadataReport:
         """Converts a JsonMetadataReport to a standard report."""
-        attrs = merge_attributes(self.attributes)
+        attrs = [a.to_model() for a in self.attributes]
+        attrs = merge_attributes(attrs)
         return MetadataReport(
             annotations=[a.to_model() for a in self.annotations],
             id=self.id,
