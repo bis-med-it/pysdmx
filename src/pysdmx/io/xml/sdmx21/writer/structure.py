@@ -6,8 +6,8 @@ from typing import Any, Dict, Optional, Sequence, Union
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.xml.sdmx21.__tokens import (
-    AGENCIES,
     AGENCY_ID,
+    AGENCY_SCHEME,
     AS_STATUS,
     ATT,
     ATT_REL,
@@ -635,7 +635,7 @@ def __write_metadata_element(
                 DSD
                 if issubclass(element.__class__, DataStructureDefinition)
                 else (
-                    AGENCIES
+                    AGENCY_SCHEME
                     if element.id == "AGENCIES"
                     else type(element).__name__
                 )

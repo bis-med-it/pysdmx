@@ -17,7 +17,7 @@ from pysdmx.util import parse_short_urn
 from pysdmx.util._model_utils import schema_generator
 
 
-def read_sdmx(
+def read_sdmx(  # noqa: C901
     sdmx_document: Union[str, Path, BytesIO],
     validate: bool = True,
 ) -> Message:
@@ -61,6 +61,15 @@ def read_sdmx(
 
         header = read_header(input_str, validate=validate)
         # SDMX-ML 2.1 Structure
+        result_structures = read_structure(input_str, validate=validate)
+    elif read_format == Format.STRUCTURE_SDMX_ML_3_0:
+        from pysdmx.io.xml.sdmx21.reader.header import read as read_header
+        from pysdmx.io.xml.sdmx21.reader.structure import (
+            read as read_structure,
+        )
+
+        header = read_header(input_str, validate=validate)
+        # SDMX-ML 3.0 Structure
         result_structures = read_structure(input_str, validate=validate)
     elif read_format == Format.DATA_SDMX_ML_2_1_GEN:
         from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic

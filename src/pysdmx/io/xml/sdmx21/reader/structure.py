@@ -10,6 +10,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCIES,
     AGENCY,
     AGENCY_ID,
+    AGENCY_SCHEME,
     ALIAS_LOW,
     ANNOTATION,
     ANNOTATION_TEXT,
@@ -32,6 +33,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     CON_ID,
     CON_LOW,
     CON_ROLE,
+    CON_SCHEMES,
     CONCEPTS,
     CONTACT,
     CORE_REP,
@@ -70,6 +72,8 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     LOCAL_REP,
     MANDATORY,
     ME_LIST,
+    ME_REL,
+    MEASURE,
     NAME,
     ORGS,
     PAR_ID,
@@ -105,6 +109,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     URIS,
     URL,
     URN,
+    USAGE,
     VALID_FROM,
     VALID_FROM_LOW,
     VALID_TO,
@@ -156,7 +161,7 @@ from pysdmx.util import find_by_urn, parse_urn
 
 STRUCTURES_MAPPING = {
     CL: Codelist,
-    AGENCIES: AgencyScheme,
+    AGENCY_SCHEME: AgencyScheme,
     CS: ConceptScheme,
     DFWS: Dataflow,
     DSDS: DataStructureDefinition,
@@ -175,12 +180,13 @@ ITEMS_CLASSES = {
     VTLMAPPING: VtlDataflowMapping,
 }
 
-COMP_TYPES = [DIM, ATT, PRIM_MEASURE, GROUP_DIM]
+COMP_TYPES = [DIM, ATT, PRIM_MEASURE, MEASURE, GROUP_DIM]
 
 ROLE_MAPPING = {
     DIM: Role.DIMENSION,
     ATT: Role.ATTRIBUTE,
     PRIM_MEASURE: Role.MEASURE,
+    MEASURE: Role.MEASURE,
 }
 
 FACETS_MAPPING = {
@@ -383,7 +389,7 @@ class StructureParser(Struct):
         for e in json_list:
             ag_sch = self.__format_scheme(
                 e,
-                AGENCIES,
+                AGENCY_SCHEME,
                 AGENCY,
             )
             orgs = {**orgs, **ag_sch}
@@ -397,20 +403,27 @@ class StructureParser(Struct):
             self.__format_facets(json_rep[TEXT_FORMAT], json_obj)
 
         if ENUM in json_rep and len(self.codelists) > 0:
-            ref = json_rep[ENUM].get(REF, json_rep[ENUM])
+            enum = json_rep[ENUM]
+            if isinstance(enum, str):
+                ref = parse_urn(enum)
+            else:
+                ref = enum.get(REF, enum)
 
-            if "URN" in ref:
+            if isinstance(ref, dict) and "URN" in ref:
                 codelist = find_by_urn(
                     list(self.codelists.values()), ref["URN"]
                 ).codes
 
+            elif isinstance(ref, Reference):
+                short_urn = str(ref)
+                codelist = self.codelists[short_urn]
             else:
                 short_urn = str(
                     Reference(
-                        sdmx_type=ref[CLASS],
-                        agency=ref[AGENCY_ID],
-                        id=ref[ID],
-                        version=ref[VERSION],
+                        sdmx_type=ref[CLASS],  # type: ignore[index]
+                        agency=ref[AGENCY_ID],  # type: ignore[index]
+                        id=ref[ID],  # type: ignore[index]
+                        version=ref[VERSION],  # type: ignore[index]
                     )
                 )
                 codelist = self.codelists[short_urn]
@@ -436,25 +449,38 @@ class StructureParser(Struct):
 
     def __format_con_id(self, concept_ref: Dict[str, Any]) -> Dict[str, Any]:
         rep = {}
-        item_reference = ItemReference(
-            sdmx_type=concept_ref[CLASS],
-            agency=concept_ref[AGENCY_ID],
-            id=concept_ref[PAR_ID],
-            version=concept_ref[PAR_VER],
-            item_id=concept_ref[ID],
-        )
-        scheme_reference = Reference(
-            sdmx_type=CS,
-            agency=concept_ref[AGENCY_ID],
-            id=concept_ref[PAR_ID],
-            version=concept_ref[PAR_VER],
-        )
+        if isinstance(concept_ref, str):
+            item_reference = parse_urn(concept_ref)
+            scheme_reference = Reference(
+                sdmx_type=CS,
+                agency=item_reference.agency,
+                id=item_reference.id,
+                version=item_reference.version,
+            )
+        else:
+            item_reference = ItemReference(
+                sdmx_type=concept_ref[CLASS],
+                agency=concept_ref[AGENCY_ID],
+                id=concept_ref[PAR_ID],
+                version=concept_ref[PAR_VER],
+                item_id=concept_ref[ID],
+            )
+            scheme_reference = Reference(
+                sdmx_type=CS,
+                agency=concept_ref[AGENCY_ID],
+                id=concept_ref[PAR_ID],
+                version=concept_ref[PAR_VER],
+            )
 
         concept_scheme = self.concepts.get(str(scheme_reference))
         if concept_scheme is None:
             return {CON: item_reference}
         for con in concept_scheme.concepts:
-            if con.id == concept_ref[ID]:
+            if isinstance(concept_ref, str):
+                if con.id == item_reference.item_id:
+                    rep[CON] = con
+                    break
+            elif con.id == concept_ref[ID]:
                 rep[CON] = con
                 break
         if CON not in rep:
@@ -465,12 +491,16 @@ class StructureParser(Struct):
     def __format_relationship(json_rel: Dict[str, Any]) -> Optional[str]:
         att_level = None
 
-        for scheme in [DIM, PRIM_MEASURE]:
+        for scheme in [DIM, PRIM_MEASURE, MEASURE]:
             if scheme in json_rel:
                 if scheme == DIM:
                     dims = add_list(json_rel[DIM])
-                    dims = [dim[REF][ID] for dim in dims]
+                    if dims and isinstance(dims[0], dict):
+                        dims = [dim[REF][ID] for dim in dims]
                     att_level = ",".join(dims)
+                elif scheme == MEASURE:
+                    measures = add_list(json_rel[MEASURE])
+                    att_level = ",".join(measures)
                 else:
                     att_level = "O"
 
@@ -551,7 +581,10 @@ class StructureParser(Struct):
 
         self.__format_local_rep(comp) if LOCAL_REP in comp else None
 
-        concept_id = self.__format_con_id(comp[CON_ID][REF])
+        if REF in comp[CON_ID]:
+            concept_id = self.__format_con_id(comp[CON_ID][REF])
+        else:
+            concept_id = self.__format_con_id(comp[CON_ID])
         comp[CON_LOW] = concept_id.pop(CON)
         del comp[CON_ID]
 
@@ -560,10 +593,15 @@ class StructureParser(Struct):
             comp[ATT_LVL] = self.__format_relationship(comp[ATT_REL])
             del comp[ATT_REL]
 
-        if AS_STATUS in comp:
-            if comp[AS_STATUS] != MANDATORY:
+        if ME_REL in comp:
+            comp[ATT_LVL] = self.__format_relationship(comp[ME_REL])
+            del comp[ME_REL]
+
+        if AS_STATUS in comp or USAGE in comp:
+            status_key = AS_STATUS if AS_STATUS in comp else USAGE
+            if comp[status_key] != MANDATORY:
                 comp[REQUIRED] = False
-            del comp[AS_STATUS]
+            del comp[status_key]
 
         if "position" in comp:
             del comp["position"]
@@ -753,11 +791,18 @@ class StructureParser(Struct):
                 )
 
             if item == DFW:
-                ref_data = element[STRUCTURE][REF]
-                reference_str = (
-                    f"{ref_data[CLASS]}={ref_data[AGENCY_ID]}"
-                    f":{ref_data[ID]}({ref_data[VERSION]})"
-                )
+                if isinstance(element[STRUCTURE], str):
+                    ref_data = parse_urn(element[STRUCTURE])
+                    reference_str = (
+                        f"{ref_data.sdmx_type}={ref_data.agency}:"
+                        f"{ref_data.id}({ref_data.version})"
+                    )
+                else:
+                    ref_data = element[STRUCTURE][REF]
+                    reference_str = (
+                        f"{ref_data[CLASS]}={ref_data[AGENCY_ID]}"  # type: ignore[index]
+                        f":{ref_data[ID]}({ref_data[VERSION]})"  # type: ignore[index]
+                    )
                 element[STRUCTURE] = reference_str
 
             structure = {key.lower(): value for key, value in element.items()}
@@ -797,10 +842,18 @@ class StructureParser(Struct):
 
         structures = {
             ORGS: process_structure(ORGS, self.__format_orgs, "agencies"),
+            AGENCIES: process_structure(
+                AGENCIES, self.__format_orgs, "agencies"
+            ),
             CLS: process_structure(
                 CLS,
                 lambda data: self.__format_scheme(data, CL, CODE),
                 "codelists",
+            ),
+            CON_SCHEMES: process_structure(
+                CON_SCHEMES,
+                lambda data: self.__format_scheme(data, CS, CON),
+                "concepts",
             ),
             CONCEPTS: process_structure(
                 CONCEPTS,
