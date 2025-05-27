@@ -51,6 +51,13 @@ class JsonAnnotation(msgspec.Struct, frozen=True):
         )
 
 
+class IdentifiableType(msgspec.Struct, frozen=True):
+    """An abstract base type used for all nameable artefacts."""
+
+    id: str
+    annotations: Sequence[JsonAnnotation] = ()
+
+
 class NameableType(msgspec.Struct, frozen=True):
     """An abstract base type used for all nameable artefacts."""
 
@@ -103,6 +110,22 @@ class JsonTextFormat(msgspec.Struct, frozen=True):
     interval: Optional[int] = None
 
 
+def get_facets(input: JsonTextFormat) -> Facets:
+    return Facets(
+        min_length=input.minLength,
+        max_length=input.maxLength,
+        is_sequence=input.isSequence,
+        min_value=input.minValue,
+        max_value=input.maxValue,
+        start_value=input.startValue,
+        end_value=input.endValue,
+        decimals=input.decimals,
+        pattern=input.pattern,
+        start_time=input.startTime,
+        end_time=input.endTime,
+    )
+
+
 class JsonRepresentation(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for core representation."""
 
@@ -128,19 +151,7 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
             or fmt.startTime
             or fmt.endTime
         ):
-            return Facets(
-                min_length=fmt.minLength,
-                max_length=fmt.maxLength,
-                is_sequence=fmt.isSequence,
-                min_value=fmt.minValue,
-                max_value=fmt.maxValue,
-                start_value=fmt.startValue,
-                end_value=fmt.endValue,
-                decimals=fmt.decimals,
-                pattern=fmt.pattern,
-                start_time=fmt.startTime,
-                end_time=fmt.endTime,
-            )
+            return get_facets(fmt)
         else:
             return None
 
