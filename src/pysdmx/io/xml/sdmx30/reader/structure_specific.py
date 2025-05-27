@@ -8,12 +8,12 @@ from pysdmx.io.xml.__data_aux import (
     get_data_objects,
 )
 from pysdmx.io.xml.__parse_xml import parse_xml
+from pysdmx.io.xml.__ss_aux_reader import (
+    _parse_structure_specific_data,
+)
 from pysdmx.io.xml.sdmx21.__tokens import (
     STR_REF,
     STR_SPE,
-)
-from pysdmx.io.xml.__ss_aux_reader import (
-    _parse_structure_specific_data,
 )
 
 
