@@ -12,7 +12,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     get_facets,
 )
 from pysdmx.model.dataset import ActionType
-from pysdmx.model.message import Header, MetadataMessage
+from pysdmx.model.message import MetadataMessage
 from pysdmx.model.metadata import (
     MetadataAttribute,
     MetadataReport,
