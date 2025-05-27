@@ -85,7 +85,7 @@ class AnnotableArtefact(
                 # Handle non-empty lists
                 if value:
                     class_name = value[0].__class__.__name__
-                    value = f"[{len(value)} {class_name}]"
+                    value = f"{len(value)} {class_name.lower()}s"
                 else:
                     # Skipping empty lists
                     continue
