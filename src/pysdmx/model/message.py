@@ -80,7 +80,7 @@ class Message(Struct, frozen=True):
                     obj_, (ItemScheme, DataStructureDefinition, Dataflow)
                 ):
                     raise Invalid(
-                        f"Invalid structure: " f"{type(obj_).__name__} ",
+                        f"Invalid structure: {type(obj_).__name__} ",
                         "Check the docs on structures.",
                     )
         if self.data is not None:

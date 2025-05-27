@@ -617,7 +617,9 @@ class StructureParser(Struct):
     @staticmethod
     def __format_vtl(json_vtl: Dict[str, Any]) -> Dict[str, Any]:
         if "isPersistent" in json_vtl:
-            json_vtl["is_persistent"] = json_vtl.pop("isPersistent")
+            json_vtl["is_persistent"] = (
+                json_vtl.pop("isPersistent").lower() == "true"
+            )
         if "Expression" in json_vtl:
             json_vtl["expression"] = json_vtl.pop("Expression")
         if "Result" in json_vtl:
