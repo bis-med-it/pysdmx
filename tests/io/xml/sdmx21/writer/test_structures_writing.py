@@ -176,9 +176,26 @@ def codelist():
             Code(id="A", name="Annual"),
             Code(id="M", name="Monthly"),
             Code(id="Q", name="Quarterly"),
-            Code(id="W"),
+            Code(id="W", name="Weekly"),
         ],
         agency="BIS",
+        version="1.0",
+        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
+        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
+    )
+
+
+@pytest.fixture
+def noname_codelist():
+    return Codelist(
+        id="Test_Cod",
+        items=[
+            Code(id="A", name="Annual"),
+            Code(id="M", name="Monthly"),
+            Code(id="Q", name="Quarterly"),
+            Code(id="W", name="Weekly"),
+        ],
+        agency="MD",
         version="1.0",
         valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
         valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
@@ -912,3 +929,12 @@ def test_writer_vtlmapping_scheme(
         prettyprint=True,
     )
     assert structure == vtlmapping_sample
+
+
+def test_writer_raise_nameable_error(noname_codelist, complete_header):
+    content = [noname_codelist]
+    with pytest.raises(Invalid, match="Name is required for NameableArtefact"):
+        write(
+            content,
+            header=complete_header,
+        )
