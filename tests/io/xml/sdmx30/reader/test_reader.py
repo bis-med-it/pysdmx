@@ -2,9 +2,11 @@ from pathlib import Path
 
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
+from pysdmx.io.xml.sdmx30.reader.structure_specific import read as read_str_spe
 
 
 @pytest.fixture
@@ -62,3 +64,14 @@ def test_prov_agree_30_groups_series(samples_folder):
     num_columns = data.shape[1]
     assert num_rows == 2
     assert num_columns == 2
+
+
+def test_data_no_structure_specific(samples_folder):
+    data_path = samples_folder / "dataflow_no_structure_specific.xml"
+    with open(data_path, "r") as f:
+        text = f.read()
+    with pytest.raises(
+        Invalid,
+        match="This SDMX document is not an SDMX-ML StructureSpecificData.",
+    ):
+        read_str_spe(text, validate=False)
