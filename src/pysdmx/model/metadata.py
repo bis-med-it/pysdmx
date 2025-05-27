@@ -13,6 +13,9 @@ from typing import Any, Dict, Iterator, List, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx.model.__base import MaintainableArtefact
+from pysdmx.model.dataset import ActionType
+
 
 class MetadataAttribute(Struct, frozen=True, omit_defaults=True):
     """An entry in a metadata report.
@@ -39,30 +42,37 @@ class MetadataAttribute(Struct, frozen=True, omit_defaults=True):
         return f"{self.id}: {self.value}"
 
 
-class MetadataReport(Struct, frozen=True, omit_defaults=True):
+class MetadataReport(MaintainableArtefact, frozen=True, omit_defaults=True):
     """An organized collection of metadata.
 
     A metadata report is iterable and it is also possible to directly
     retrieve an attribute using its ID.
 
     Attributes:
-        id: The identifier of the report (e.g. DTI_MACRO).
-        name: The name of the report (e.g. "Configuration metadata for
-            the MACRO dataflow").
         metadataflow: The URN of the dataflow for which the report
             belongs.
         targets: The URN(s) of SDMX artefact(s) to which the report relates.
         attributes: The list of metadata attributes included in the report.
             Attributes may contain other attributes.
-        version: The version of the metadata report.
+        metadataProvisionAgreement: reference to a metadata provision
+            agreement
+        publicationPeriod: The reporting period to which the metadata report
+            relates
+        publicationYear: The year when the report was published
+        reportingBegin: The oldest period to which the report relates.
+        reportingEnd: The most recent period to which the report relates.
+        action: The action to be performed by the receiver.
     """
 
-    id: str
-    name: str
-    metadataflow: str
-    targets: Sequence[str]
-    attributes: Sequence[MetadataAttribute]
-    version: str = "1.0"
+    metadataflow: str = ""
+    targets: Sequence[str] = ()
+    attributes: Sequence[MetadataAttribute] = ()
+    metadataProvisionAgreement: Optional[str] = None
+    publicationPeriod: Optional[str] = None
+    publicationYear: Optional[str] = None
+    reportingBegin: Optional[str] = None
+    reportingEnd: Optional[str] = None
+    action: Optional[ActionType] = None
 
     def __iter__(self) -> Iterator[MetadataAttribute]:
         """Return an iterator over the list of report attributes."""
