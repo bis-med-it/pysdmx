@@ -6,7 +6,14 @@ from typing import Optional, Sequence, Union
 import msgspec
 
 from pysdmx.errors import NotFound
-from pysdmx.model import Annotation, ArrayBoundaries, Codelist, Facets
+from pysdmx.model import (
+    Annotation,
+    ArrayBoundaries,
+    Codelist,
+    Facets,
+    Organisation,
+)
+from pysdmx.model.message import Header
 from pysdmx.util import find_by_urn
 
 
@@ -187,4 +194,20 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
 class JsonHeader(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for message header."""
 
+    id: str
+    prepared: datetime
+    sender: Organisation
+    test: bool = False
+    contentLanguages: Sequence[str] = ()
+    name: Optional[str] = None
+    receivers: Optional[Organisation] = None
     links: Sequence[JsonLink] = ()
+
+    def to_model(self) -> Header:
+        """Map to pysdmx header class."""
+        return Header(
+            id=self.id,
+            test=self.test,
+            prepared=self.prepared,
+            sender=self.sender,
+        )
