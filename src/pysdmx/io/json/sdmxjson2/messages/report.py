@@ -7,10 +7,12 @@ from msgspec import Struct
 from pysdmx.io.json.sdmxjson2.messages.core import (
     IdentifiableType,
     ItemSchemeType,
+    JsonHeader,
     JsonTextFormat,
     get_facets,
 )
 from pysdmx.model.dataset import ActionType
+from pysdmx.model.message import Header, MetadataMessage
 from pysdmx.model.metadata import (
     MetadataAttribute,
     MetadataReport,
@@ -90,12 +92,11 @@ class JsonMetadataSets(Struct, frozen=True):
 class JsonMetadataMessage(Struct, frozen=True):
     """SDMX-JSON payload for /metadata queries."""
 
+    meta: JsonHeader
     data: JsonMetadataSets
 
-    def to_model(self, fetch_all: bool = False) -> Sequence[MetadataReport]:
+    def to_model(self) -> MetadataMessage:
         """Returns the requested metadata report(s)."""
+        header = self.meta.to_model()
         reports = self.data.to_model()
-        if fetch_all:
-            return reports
-        else:
-            return [reports[0]]
+        return MetadataMessage(header, reports)
