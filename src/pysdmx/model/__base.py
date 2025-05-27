@@ -81,7 +81,7 @@ class AnnotableArtefact(
         processed_output = []
         for item in self.__rich_repr__():
             if not isinstance(item, tuple) or len(item) < 2:
-                continue # not a valid tuple
+                continue
             attr, value = item[0], item[1]
 
             # str is taken as a Sequence, so we need to check it's not a str
@@ -90,10 +90,10 @@ class AnnotableArtefact(
                 if value:
                     class_name = value[0].__class__.__name__
                     value = f"{len(value)} {class_name.lower()}s"
-                    processed_output.append(f"{attr}: {value}")
-                continue
-            processed_output.append(f"{attr}: {value!r}")
+                else:
+                    continue
 
+            processed_output.append(f"{attr}: {value}")
         return f"{', '.join(processed_output)}"
 
 
