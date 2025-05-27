@@ -168,5 +168,5 @@ def test_tostr(id, name, agency, version, codes):
 
     assert s == (
         "id: 'id', name: 'name', version: '1.42.0', "
-        "agency: '5B0', items: '2 codes'"
+        "agency: '5B0', items: 2 codes"
     )

@@ -79,16 +79,19 @@ class AnnotableArtefact(
     def __str__(self) -> str:
         """Custom string representation without the class name."""
         processed_output = []
-        for attr, value, *_ in self.__rich_repr__():
+        for item in self.__rich_repr__():
+            if not isinstance(item, tuple) or len(item) < 2:
+                continue # not a valid tuple
+            attr, value = item[0], item[1]
+
             # str is taken as a Sequence, so we need to check it's not a str
             if isinstance(value, Sequence) and not isinstance(value, str):
                 # Handle non-empty lists
                 if value:
                     class_name = value[0].__class__.__name__
                     value = f"{len(value)} {class_name.lower()}s"
-                else:
-                    # Skipping empty lists
-                    continue
+                    processed_output.append(f"{attr}: {value}")
+                continue
             processed_output.append(f"{attr}: {value!r}")
 
         return f"{', '.join(processed_output)}"
