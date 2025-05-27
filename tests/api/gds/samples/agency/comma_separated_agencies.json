@@ -1,0 +1,18 @@
+{
+  "structures": {
+    "agencies": [
+      {
+        "agencyID": "BIS",
+        "name": "BIS",
+        "description": "Bank for International Settlements",
+        "url": "bis.org"
+      },
+      {
+        "agencyID": "ESTAT",
+        "name": "EUROSTAT",
+        "description": "Eurostat",
+        "url": "eurostat.europa.eu"
+      }
+    ]
+  }
+}

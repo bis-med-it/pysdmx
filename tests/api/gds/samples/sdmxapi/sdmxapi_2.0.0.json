@@ -1,0 +1,10 @@
+{
+  "structures": {
+    "sdmxApis": [
+      {
+        "release": "2.0.0",
+        "description": "Version 2.0.0 of the SDMX REST API specification (released: 10/2021 with SDMX 3.0) - see the [release notes](https://github.com/sdmx-twg/sdmx-rest/releases/tag/v2.0.0) and the [official documentation](https://github.com/sdmx-twg/sdmx-rest/tree/v2.0.0/doc)."
+      }
+    ]
+  }
+}
