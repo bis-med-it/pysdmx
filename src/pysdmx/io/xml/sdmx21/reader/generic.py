@@ -6,6 +6,11 @@ import pandas as pd
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
+from pysdmx.io.xml.__data_aux import (
+    __process_df,
+    get_data_objects,
+)
+from pysdmx.io.xml.__parse_xml import parse_xml
 from pysdmx.io.xml.sdmx21.__tokens import (
     ATTRIBUTES,
     GENERIC,
@@ -20,11 +25,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     STR_REF,
     VALUE,
 )
-from pysdmx.io.xml.sdmx21.reader.__data_aux import (
-    __process_df,
-    get_data_objects,
-)
-from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model.dataset import ActionType
 

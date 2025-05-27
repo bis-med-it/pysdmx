@@ -4,6 +4,7 @@ import warnings
 from datetime import datetime
 from typing import Any, Dict, Optional, Union
 
+from pysdmx.io.xml.__parse_xml import parse_xml
 from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCY_ID,
     DATASET_ACTION,
@@ -17,6 +18,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     ID,
     NAME,
     PREPARED,
+    PROV_AGREEMENT,
     PROV_AGREMENT,
     RECEIVER,
     REF,
@@ -29,7 +31,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     URN,
     VERSION,
 )
-from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.model import Organisation, Reference
 from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import Header
@@ -98,7 +99,12 @@ def __parse_structure(
     elif STR_USAGE in structure:
         structure_info = structure[STR_USAGE]
         sdmx_type = DFW
+    elif PROV_AGREEMENT in structure:
+        structure_info = structure[PROV_AGREEMENT]
+        sdmx_type = PROV_AGREEMENT
     else:
+        # Provision Agrement is a typo in the SDMX 2.1 schema,
+        # and it is later solved in SDMX 3.0
         structure_info = structure[PROV_AGREMENT]
         sdmx_type = PROV_AGREMENT
 
@@ -113,8 +119,10 @@ def __parse_structure(
             id=structure_id,
             version=version,
         )
-    else:
+    elif URN in structure_info:
         ref_obj = parse_maintainable_urn(structure_info[URN])
+    else:
+        ref_obj = parse_maintainable_urn(structure_info)
     return {str(ref_obj): dim_at_obs}
 
 

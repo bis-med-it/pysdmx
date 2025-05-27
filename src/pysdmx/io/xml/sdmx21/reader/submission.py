@@ -3,6 +3,7 @@
 from typing import Any, Dict, Sequence
 
 from pysdmx.errors import Invalid
+from pysdmx.io.xml.__parse_xml import parse_xml
 from pysdmx.io.xml.sdmx21.__tokens import (
     ACTION,
     MAINTAINABLE_OBJECT,
@@ -14,7 +15,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     SUBMITTED_STRUCTURE,
     URN,
 )
-from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.model.submission import SubmissionResult
 from pysdmx.util import parse_urn
 

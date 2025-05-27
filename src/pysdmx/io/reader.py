@@ -17,7 +17,7 @@ from pysdmx.util import parse_short_urn
 from pysdmx.util._model_utils import schema_generator
 
 
-def read_sdmx(
+def read_sdmx(  # noqa: C901
     sdmx_document: Union[str, Path, BytesIO],
     validate: bool = True,
 ) -> Message:
@@ -54,7 +54,7 @@ def read_sdmx(
     ] = []
     result_submission: Sequence[SubmissionResult] = []
     if read_format == Format.STRUCTURE_SDMX_ML_2_1:
-        from pysdmx.io.xml.sdmx21.reader.header import read as read_header
+        from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.structure import (
             read as read_structure,
         )
@@ -63,14 +63,14 @@ def read_sdmx(
         # SDMX-ML 2.1 Structure
         result_structures = read_structure(input_str, validate=validate)
     elif read_format == Format.DATA_SDMX_ML_2_1_GEN:
+        from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
-        from pysdmx.io.xml.sdmx21.reader.header import read as read_header
 
         header = read_header(input_str, validate=validate)
         # SDMX-ML 2.1 Generic Data
         result_data = read_generic(input_str, validate=validate)
     elif read_format == Format.DATA_SDMX_ML_2_1_STR:
-        from pysdmx.io.xml.sdmx21.reader.header import read as read_header
+        from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.structure_specific import (
             read as read_str_spe,
         )
@@ -89,6 +89,16 @@ def read_sdmx(
 
         # SDMX-ML 2.1 Error
         read_error(input_str, validate=validate)
+    elif read_format == Format.DATA_SDMX_ML_3_0:
+        from pysdmx.io.xml.header import read as read_header
+        from pysdmx.io.xml.sdmx30.reader.structure_specific import (
+            read as read_str_spe,
+        )
+
+        header = read_header(input_str, validate=validate)
+
+        # SDMX-ML 3.0 Structure Specific Data
+        result_data = read_str_spe(input_str, validate=validate)
     elif read_format == Format.DATA_SDMX_CSV_1_0_0:
         from pysdmx.io.csv.sdmx10.reader import read as read_csv_v1
 
@@ -109,6 +119,7 @@ def read_sdmx(
         Format.DATA_SDMX_CSV_2_0_0,
         Format.DATA_SDMX_ML_2_1_GEN,
         Format.DATA_SDMX_ML_2_1_STR,
+        Format.DATA_SDMX_ML_3_0,
     ):
         # TODO: Add here the Schema download for Datasets, based on structure
         # TODO: Ensure we have changed the signature of the data readers
