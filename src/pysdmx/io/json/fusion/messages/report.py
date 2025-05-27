@@ -16,6 +16,7 @@ class FusionMetadataReport(Struct, frozen=True):
     """Fusion-JSON payload for a metadata report."""
 
     id: str
+    agencyId: str
     names: Sequence[FusionString]
     metadataflow: str
     targets: Sequence[str]
@@ -37,7 +38,13 @@ class FusionMetadataMessage(Struct, frozen=True):
     def __create_report(self, r: FusionMetadataReport) -> MetadataReport:
         attrs = merge_attributes(r.attributes)
         return MetadataReport(
-            r.id, r.names[0].value, r.metadataflow, r.targets, attrs, r.version
+            id=r.id,
+            name=r.names[0].value,
+            agency=r.agencyId,
+            metadataflow=r.metadataflow,
+            targets=r.targets,
+            attributes=attrs,
+            version=r.version,
         )
 
     def to_model(self, fetch_all: bool = False) -> Sequence[MetadataReport]:
