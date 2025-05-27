@@ -13,7 +13,8 @@ from typing import Any, Dict, Iterator, List, Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.model.__base import MaintainableArtefact
+from pysdmx.model.__base import Annotation, MaintainableArtefact
+from pysdmx.model.concept import Facets
 from pysdmx.model.dataset import ActionType
 
 
@@ -32,6 +33,8 @@ class MetadataAttribute(Struct, frozen=True, omit_defaults=True):
     id: str
     value: Optional[Any] = None
     attributes: Sequence["MetadataAttribute"] = ()
+    annotations: Sequence[Annotation] = ()
+    format: Optional[Facets] = None
 
     def __iter__(self) -> Iterator["MetadataAttribute"]:
         """Return an iterator over the list of attributes."""
