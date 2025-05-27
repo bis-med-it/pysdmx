@@ -12,7 +12,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     STR_REF,
     STR_SPE,
 )
-from pysdmx.io.xml.structure_specific_reader_aux import (
+from pysdmx.io.xml.__ss_aux_reader import (
     _parse_structure_specific_data,
 )
 
