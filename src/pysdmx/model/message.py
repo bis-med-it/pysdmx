@@ -250,7 +250,7 @@ class MetadataMessage(Struct, frozen=True):
 
     def get_reports(self) -> Sequence[MetadataReport]:
         """Returns the metadata reports."""
-        if self.reports is not None:
+        if self.reports:
             return self.reports
         else:
             raise NotFound("No metadata reports werefound in the message.")
