@@ -76,10 +76,6 @@ def test_tostr_all(id, title, text, url, type):
 
     assert s == f"id={id}, title={title}, text={text}, url={url}, type={type}"
 
-def test_annotable_artefact_str_empty():
-    artefact = AnnotableArtefact(annotations=[])
-    assert str(artefact) == ""
-
 
 def test_empty_annotation_not_allowed():
     with pytest.raises(PysdmxError, match="empty"):

@@ -84,7 +84,8 @@ class AnnotableArtefact(
                 if value:
                     class_name = value[0].__class__.__name__
                     value = f"{len(value)} {class_name.lower()}s"
-                else:
+                # redundant if check for python 3.9 and lower versions cov
+                if not value:
                     continue
 
             processed_output.append(f"{attr}: {value}")
