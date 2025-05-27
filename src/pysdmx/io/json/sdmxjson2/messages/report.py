@@ -28,7 +28,7 @@ class JsonMetadataAttribute(IdentifiableType, frozen=True, omit_defaults=True):
     def to_model(self) -> MetadataAttribute:
         """Converts a JsonMetadataAttribute to a standard attribute."""
         attrs = [a.to_model() for a in self.attributes]
-        attrs = merge_attributes(attrs)
+        attrs = merge_attributes(attrs)  # type: ignore[assignment]
         return MetadataAttribute(
             id=self.id,
             value=self.value,
@@ -54,7 +54,7 @@ class JsonMetadataReport(ItemSchemeType, frozen=True):
     def to_model(self) -> MetadataReport:
         """Converts a JsonMetadataReport to a standard report."""
         attrs = [a.to_model() for a in self.attributes]
-        attrs = merge_attributes(attrs)
+        attrs = merge_attributes(attrs)  # type: ignore[assignment]
         return MetadataReport(
             annotations=[a.to_model() for a in self.annotations],
             id=self.id,
