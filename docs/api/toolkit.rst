@@ -3,9 +3,11 @@
 Toolkit
 =======
 
-The pysdmx toolkit package provides a collection of utility functions designed to simplify the integration of pysdmx
-with other languages or tools, such as VTL (Validation and Transformation Language),
-or SDMX-based tools like the FMR (Fusion Metadata Registry).
+The toolkit module offers a collection of utility functions designed to simplify
+the integration of pysdmx with other standards, such as VTL, or SDMX-based tools like the FMR.
+
+The toolkit functions does not follow any particular
+version of the SDMX standard.
 
 .. toctree::
    :maxdepth: 1

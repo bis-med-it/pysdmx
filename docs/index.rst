@@ -46,10 +46,11 @@ Your opinionated Python SDMX library.
    api/toolkit
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Toolkit
 
    howto/toolkit/general
+   howto/toolkit/vtl_toolkit
 
 
 
