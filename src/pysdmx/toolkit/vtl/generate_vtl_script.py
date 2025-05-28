@@ -2,6 +2,8 @@
 
 from typing import Sequence, Union
 
+from vtlengine import prettify
+
 from pysdmx.model import (
     Reference,
     RulesetScheme,
@@ -48,7 +50,9 @@ def _process_transformation(transformations: Sequence[Transformation]) -> str:
 
 
 def generate_vtl_script(
-    transformation_scheme: TransformationScheme, model_validation: bool = True
+    transformation_scheme: TransformationScheme,
+    model_validation: bool = True,
+    prettyprint: bool = False,
 ) -> str:
     """Generates the full VTL Transformation Scheme script.
 
@@ -57,8 +61,10 @@ def generate_vtl_script(
         model_validation: A boolean value to check if the model
                         object is valid.
                         if True, the model object is validated.
+        prettyprint: A boolean value to check if the generated script
+                     should be formatted.
 
-    returns:
+    Returns:
         A string containing the full VTL Transformation Scheme script.
 
     """
@@ -74,5 +80,8 @@ def generate_vtl_script(
         transformation_scheme.user_defined_operator_schemes
     )
     vtl_script += _process_transformation(transformation_scheme.items)
+
+    if prettyprint:
+        return prettify(vtl_script)
 
     return vtl_script
