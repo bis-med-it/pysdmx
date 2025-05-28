@@ -33,7 +33,7 @@ def read(
     """
     dict_info = parse_xml(input_str, validate)
     if STRUCTURE not in dict_info:
-        raise Invalid("This SDMX document is not SDMX-ML 2.1 Structure.")
+        raise Invalid("This SDMX document is not SDMX-ML 3.0 Structure.")
     return StructureParser().format_structures(
         dict_info[STRUCTURE][STRUCTURES]
     )

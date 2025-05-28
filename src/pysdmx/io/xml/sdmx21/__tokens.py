@@ -12,6 +12,7 @@ REQUIRED = "required"
 POSITION = "position"
 CLASS = "class"
 PACKAGE = "package"
+LINK = "Link"
 
 # Structure Specific
 STR_SPE = "StructureSpecificData"
@@ -205,6 +206,7 @@ PAR_ID = "maintainableParentID"
 PAR_VER = "maintainableParentVersion"
 REL_TO = "relatedTo"
 NO_REL = "NoSpecifiedRelationship"
+METADATA = "Metadata"
 
 # To exclude from attached_attributes
 EXCLUDED_ATTRIBUTES = [STR_REF, "action", "dataScope", "xsi:type", SERIES, OBS]
