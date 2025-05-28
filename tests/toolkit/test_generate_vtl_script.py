@@ -37,16 +37,6 @@ def generate_vtl_script_sample_with_reference():
 
 
 @pytest.fixture
-def generate_vtl_script_prettified():
-    with open(
-        Path(__file__).parent / "samples/prettified.vtl",
-        "r",
-        encoding="utf-8",
-    ) as f:
-        return f.read()
-
-
-@pytest.fixture
 def valid_ruleset():
     return Ruleset(
         id="id",
