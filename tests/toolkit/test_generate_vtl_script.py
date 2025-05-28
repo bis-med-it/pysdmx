@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from pysdmx.model import (
@@ -9,13 +11,14 @@ from pysdmx.model import (
     UserDefinedOperator,
     UserDefinedOperatorScheme,
 )
-from pysdmx.toolkit.vtl.generate_vtl_script import generate_vtl_script
+from pysdmx.toolkit.vtl import generate_vtl_script
 
 
 @pytest.fixture
 def generate_vtl_script_sample():
     with open(
-        "tests/toolkit/samples/generate_vtl_script_sample_objects.vtl",
+        Path(__file__).parent
+        / "samples/generate_vtl_script_sample_objects.vtl",
         "r",
         encoding="utf-8",
     ) as f:
@@ -25,7 +28,18 @@ def generate_vtl_script_sample():
 @pytest.fixture
 def generate_vtl_script_sample_with_reference():
     with open(
-        "tests/toolkit/samples/generate_vtl_script_sample_references.vtl",
+        Path(__file__).parent
+        / "samples/generate_vtl_script_sample_references.vtl",
+        "r",
+        encoding="utf-8",
+    ) as f:
+        return f.read()
+
+
+@pytest.fixture
+def generate_vtl_script_prettified():
+    with open(
+        Path(__file__).parent / "samples/prettified.vtl",
         "r",
         encoding="utf-8",
     ) as f:
@@ -215,6 +229,26 @@ def test_generate_vtl_script_with_reference(
 ):
     vtl_script = generate_vtl_script(valid_ts_with_reference)
     assert vtl_script.strip() == generate_vtl_script_sample.strip()
+
+
+def test_generate_vtl_script_prettify():
+    ts = TransformationScheme(
+        id="TS1",
+        agency="MD",
+        version="1.0",
+        vtl_version="2.1",
+        items=[
+            Transformation(
+                id="T1",
+                result="DS_r",
+                is_persistent=True,
+                expression="DS_1 + 1",
+            )
+        ],
+    )
+    vtl_script = generate_vtl_script(ts, prettyprint=True)
+    reference = "DS_r <-\n\tDS_1 + 1;\n"
+    assert vtl_script == reference
 
 
 def test_generate_vtl_script_with_only_reference(
