@@ -1,4 +1,4 @@
-.. _toolkit:
+.. _vtl_toolkit:
 
 VTL Toolkit
 -----------

@@ -25,10 +25,61 @@ from pysdmx.toolkit.vtl._validations import (
 
 
 def model_validations(model_obj: Union[VtlScheme, Item]) -> None:
-    """Validation checks for VTL models.
+    """Validation checks for VTL objects.
+
+    This method performs validation checks on VTLScheme objects ,
+    such as TransformationScheme, RulesetScheme,
+    UserDefinedOperatorScheme, etc. or its items,
+    like Ruleset, Transformation, UserDefinedOperator, etc.
+
+    It raises an Invalid exception if the model object is not valid.
+
+    The model validation checks on items:
+
+    * Ruleset validation
+
+        * A single RulesetDefinition (define ...) is valid in a Ruleset
+
+        * Ruleset type matches the definition (hierarchical or datapoint)
+
+        * Ruleset scope matches the signature (variable or valuedomain)
+
+    * User Defined Operator validation
+
+        * A single OperatorDefinition (define operator ...)
+          is valid in a User Defined Operator
+
+    * Transformation validation
+
+        * Checks if the transformation is valid
+
+        * Checks a single assignment is present in the expression
+
+    The model validation checks on VTLScheme:
+
+    * RulesetScheme validation
+
+        * Checks if it contains at least one Ruleset
+
+        * Checks if all items in the scheme are Ruleset
+
+    * UserDefinedOperatorScheme validation
+
+        * Checks if it contains at least one UserDefinedOperator
+
+        * Checks if all items in the scheme are UserDefinedOperator
+
+    * TransformationScheme validation
+
+        * Checks if it contains at least one Transformation
+
+        * Checks if all items in the scheme are Transformation
+
+        * Checks the referenced RulesetSchemes (if any)
+          and UserDefinedOperatorSchemes (if any)
 
     Args:
-        model_obj: A vtlscheme or Item object.
+        model_obj: A VTLScheme or Item object.
     raises:
         Invalid: Invalid model object if the model object is not valid.
     """
