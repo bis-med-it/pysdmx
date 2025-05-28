@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 import xmltodict
 
-from pysdmx.io.xml.sdmx21.reader.doc_validation import validate_doc
+from pysdmx.io.xml.doc_validation import validate_doc
 
 SCHEMA_ROOT = "http://www.sdmx.org/resources/sdmxml/schemas/v2_1/"
 NAMESPACES_21 = {

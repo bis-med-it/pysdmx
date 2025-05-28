@@ -392,7 +392,7 @@ def test_ser_no_obs(samples_folder, filename):
     ],
 )
 def test_chunks(samples_folder, filename):
-    pysdmx.io.xml.sdmx21.reader.__data_aux.READING_CHUNKSIZE = 100
+    pysdmx.io.xml.__data_aux.READING_CHUNKSIZE = 100
     data_path = samples_folder / filename
     input_str, read_format = process_string_to_read(data_path)
     if "gen" in filename:

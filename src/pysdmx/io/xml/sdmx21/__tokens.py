@@ -125,6 +125,7 @@ MANDATORY = "Mandatory"
 CONDITIONAL = "Conditional"
 USAGE = "usage"
 ME_REL = "MeasureRelationship"
+OBSERVATION = "Observation"
 # Measure
 ME_LIST = "MeasureList"
 ME_LIST_LOW = "measure_list"

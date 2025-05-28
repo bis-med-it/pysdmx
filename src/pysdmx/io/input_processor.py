@@ -12,7 +12,7 @@ from httpx import get as httpx_get
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
-from pysdmx.io.xml.sdmx21.reader.__parse_xml import SCHEMA_ROOT_30
+from pysdmx.io.xml.__parse_xml import SCHEMA_ROOT_30
 
 
 def __remove_bom(input_string: str) -> str:
