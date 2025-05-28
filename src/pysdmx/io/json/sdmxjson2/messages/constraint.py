@@ -1,11 +1,10 @@
 """Collection of SDMX-JSON schemas for content constraints."""
 
-from datetime import datetime
 from typing import Dict, Literal, Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
+from pysdmx.io.json.sdmxjson2.messages.core import MaintainableType
 
 
 class JsonValue(Struct, frozen=True):
@@ -46,19 +45,9 @@ class JsonConstraintAttachment(Struct, frozen=True):
     queryableDataSources: Optional[Sequence[str]] = None
 
 
-class JsonDataConstraint(Struct, frozen=True, rename={"agency": "agencyID"}):
+class JsonDataConstraint(MaintainableType, frozen=True):
     """SDMX-JSON payload for a content constraint."""
 
-    id: str
-    name: str
-    agency: str
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
-    isPartial: bool = False
     role: Optional[Literal["Allowed", "Actual"]] = None
     constraintAttachment: Optional[JsonConstraintAttachment] = None
     cubeRegions: Optional[Sequence[JsonCubeRegion]] = None

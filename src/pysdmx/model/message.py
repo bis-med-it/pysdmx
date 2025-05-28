@@ -19,18 +19,31 @@ from typing import Any, Dict, List, Optional, Sequence, Type, Union
 from msgspec import Struct
 
 from pysdmx.errors import Invalid, NotFound
-from pysdmx.model import (
-    AgencyScheme,
+from pysdmx.model.__base import ItemScheme, MaintainableArtefact, Organisation
+from pysdmx.model.category import Categorisation, CategoryScheme
+from pysdmx.model.code import Codelist, Hierarchy, HierarchyAssociation
+from pysdmx.model.concept import ConceptScheme
+from pysdmx.model.dataflow import (
+    Dataflow,
+    DataStructureDefinition,
+    ProvisionAgreement,
+)
+from pysdmx.model.dataset import ActionType, Dataset
+from pysdmx.model.map import (
+    MultiRepresentationMap,
+    RepresentationMap,
+    StructureMap,
+)
+from pysdmx.model.organisation import AgencyScheme, DataProviderScheme
+from pysdmx.model.submission import SubmissionResult
+from pysdmx.model.vtl import (
+    CustomTypeScheme,
+    NamePersonalisationScheme,
     RulesetScheme,
     TransformationScheme,
     UserDefinedOperatorScheme,
+    VtlMappingScheme,
 )
-from pysdmx.model.__base import ItemScheme, Organisation
-from pysdmx.model.code import Codelist
-from pysdmx.model.concept import ConceptScheme
-from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
-from pysdmx.model.dataset import ActionType, Dataset
-from pysdmx.model.submission import SubmissionResult
 
 
 class Header(Struct, kw_only=True):
@@ -47,50 +60,26 @@ class Header(Struct, kw_only=True):
     dataset_id: Optional[str] = None
 
 
-class Message(Struct, frozen=True):
-    """Message class holds the content of SDMX Message.
+class StructureMessage(Struct, frozen=True):
+    """Message class holds the content of an SDMX Structure Message.
 
     Attributes:
-        structures: Sequence of structure objects (ItemScheme, Schema).
-           They represent the contents of a Structure Message.
-        data: Sequence of Dataset objects. They represent the contents of a
-           SDMX Data Message in any format.
-        submission: Sequence of SubmissionResult objects. They represent the
-              contents of a SDMX Submission Message.
+        header: The header of the SDMX message.
+        structures: Sequence of structure objects. They represent the
+            contents of a Structure Message.
     """
 
     header: Optional[Header] = None
-    structures: Optional[
-        Sequence[
-            Union[
-                ItemScheme,
-                DataStructureDefinition,
-                Dataflow,
-            ]
-        ]
-    ] = None
-    data: Optional[Sequence[Dataset]] = None
-    submission: Optional[Sequence[SubmissionResult]] = None
+    structures: Optional[Sequence[MaintainableArtefact]] = None
 
     def __post_init__(self) -> None:
         """Checks if the content is valid."""
         if self.structures is not None:
             for obj_ in self.structures:
-                if not isinstance(
-                    obj_, (ItemScheme, DataStructureDefinition, Dataflow)
-                ):
+                if not isinstance(obj_, (MaintainableArtefact)):
                     raise Invalid(
                         f"Invalid structure: {type(obj_).__name__} ",
                         "Check the docs on structures.",
-                    )
-        if self.data is not None:
-            for data_value in self.data:
-                if not isinstance(data_value, Dataset):
-                    raise Invalid(
-                        f"Invalid data type: "
-                        f"{type(data_value).__name__} "
-                        f"for Data Message, requires a Dataset object.",
-                        "Check the docs for the proper structure on data.",
                     )
 
     def __get_elements(self, type_: Type[Any]) -> List[Any]:
@@ -104,6 +93,14 @@ class Message(Struct, frozen=True):
             if isinstance(element, type_):
                 structures.append(element)
         return structures
+
+    def __get_enumerations(
+        self, type_: Type[Any], is_vl: bool = False
+    ) -> List[Any]:
+        """Returns a list of elements of a specific type."""
+        enums = self.__get_elements(type_)
+        t = "valuelist" if is_vl else "codelist"
+        return [e for e in enums if e.sdmx_type == t]
 
     def __get_single_structure(
         self,
@@ -131,7 +128,7 @@ class Message(Struct, frozen=True):
 
     def get_codelists(self) -> List[Codelist]:
         """Returns the Codelists."""
-        return self.__get_elements(Codelist)
+        return self.__get_enumerations(Codelist, False)
 
     def get_concept_schemes(self) -> List[ConceptScheme]:
         """Returns the Concept Schemes."""
@@ -169,6 +166,104 @@ class Message(Struct, frozen=True):
         """Returns a specific Dataflow."""
         return self.__get_single_structure(Dataflow, short_urn)
 
+    def get_transformation_schemes(self) -> List[TransformationScheme]:
+        """Returns the TransformationSchemes."""
+        return self.__get_elements(TransformationScheme)
+
+    def get_user_defined_operator_schemes(
+        self,
+    ) -> List[UserDefinedOperatorScheme]:
+        """Returns the UserDefinedOperatorSchemes."""
+        return self.__get_elements(UserDefinedOperatorScheme)
+
+    def get_ruleset_schemes(self) -> List[RulesetScheme]:
+        """Returns the RulesetSchemes."""
+        return self.__get_elements(RulesetScheme)
+
+    def get_category_schemes(self) -> List[CategoryScheme]:
+        """Returns the Codelists."""
+        return self.__get_elements(CategoryScheme)
+
+    def get_value_lists(self) -> List[Codelist]:
+        """Returns the Codelists."""
+        return self.__get_enumerations(Codelist, True)
+
+    def get_hierarchies(self) -> List[Hierarchy]:
+        """Returns the Codelists."""
+        return self.__get_elements(Hierarchy)
+
+    def get_hierarchy_associations(self) -> List[HierarchyAssociation]:
+        """Returns the Codelists."""
+        return self.__get_elements(HierarchyAssociation)
+
+    def get_data_provider_schemes(self) -> List[DataProviderScheme]:
+        """Returns the Codelists."""
+        return self.__get_elements(DataProviderScheme)
+
+    def get_provision_agreements(self) -> List[ProvisionAgreement]:
+        """Returns the Codelists."""
+        return self.__get_elements(ProvisionAgreement)
+
+    def get_structure_maps(self) -> List[StructureMap]:
+        """Returns the Codelists."""
+        return self.__get_elements(StructureMap)
+
+    def get_representation_maps(
+        self,
+    ) -> List[Union[MultiRepresentationMap, RepresentationMap]]:
+        """Returns the Codelists."""
+        out = []
+        out.extend(self.__get_elements(RepresentationMap))
+        out.extend(self.__get_elements(MultiRepresentationMap))
+        return out
+
+    def get_categorisations(self) -> List[Categorisation]:
+        """Returns the Codelists."""
+        return self.__get_elements(Categorisation)
+
+    def get_custom_type_schemes(self) -> List[CustomTypeScheme]:
+        """Returns the Codelists."""
+        return self.__get_elements(CustomTypeScheme)
+
+    def get_vtl_mapping_schemes(self) -> List[VtlMappingScheme]:
+        """Returns the Codelists."""
+        return self.__get_elements(VtlMappingScheme)
+
+    def get_name_personalisation_schemes(
+        self,
+    ) -> List[NamePersonalisationScheme]:
+        """Returns the Codelists."""
+        return self.__get_elements(NamePersonalisationScheme)
+
+
+class Message(StructureMessage, frozen=True):
+    """Message class holds the content of SDMX Message.
+
+    Attributes:
+        header: The header of the SDMX message.
+        structures: Sequence of structure objects.
+        data: Sequence of Dataset objects. They represent the contents of a
+           SDMX Data Message in any format.
+        submission: Sequence of SubmissionResult objects. They represent the
+              contents of a SDMX Submission Message.
+    """
+
+    data: Optional[Sequence[Dataset]] = None
+    submission: Optional[Sequence[SubmissionResult]] = None
+
+    def __post_init__(self) -> None:
+        """Checks if the content is valid."""
+        super().__post_init__()
+        if self.data is not None:
+            for data_value in self.data:
+                if not isinstance(data_value, Dataset):
+                    raise Invalid(
+                        f"Invalid data type: "
+                        f"{type(data_value).__name__} "
+                        f"for Data Message, requires a Dataset object.",
+                        "Check the docs for the proper structure on data.",
+                    )
+
     def get_datasets(self) -> Sequence[Dataset]:
         """Returns the Datasets."""
         if self.data is not None:
@@ -188,17 +283,3 @@ class Message(Struct, frozen=True):
             f"No Dataset with Short URN {short_urn} found in data.",
             "Could not find the requested Dataset.",
         )
-
-    def get_transformation_schemes(self) -> List[TransformationScheme]:
-        """Returns the TransformationSchemes."""
-        return self.__get_elements(TransformationScheme)
-
-    def get_user_defined_operator_schemes(
-        self,
-    ) -> List[UserDefinedOperatorScheme]:
-        """Returns the UserDefinedOperatorSchemes."""
-        return self.__get_elements(UserDefinedOperatorScheme)
-
-    def get_ruleset_schemes(self) -> List[RulesetScheme]:
-        """Returns the RulesetSchemes."""
-        return self.__get_elements(RulesetScheme)

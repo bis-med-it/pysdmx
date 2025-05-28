@@ -7,8 +7,8 @@ from pysdmx.util import find_by_urn
 
 @pytest.fixture
 def codelists():
-    cl1 = JsonCodelist("CL_FREQ", "Freq", "BIS")
-    cl2 = JsonCodelist("CL_AREA", "Area", "BIS")
+    cl1 = JsonCodelist(id="CL_FREQ", name="Freq", agency="BIS")
+    cl2 = JsonCodelist(id="CL_AREA", name="Area", agency="BIS")
     return [cl1, cl2]
 
 
