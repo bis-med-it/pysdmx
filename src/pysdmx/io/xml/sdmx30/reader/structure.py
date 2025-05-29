@@ -4,7 +4,7 @@ from typing import Sequence, Union
 
 from pysdmx.errors import Invalid
 from pysdmx.io.xml.__parse_xml import parse_xml
-from pysdmx.io.xml.__s_aux_reader import StructureParser
+from pysdmx.io.xml.__structure_aux_reader import StructureParser
 from pysdmx.io.xml.sdmx21.__tokens import (
     STRUCTURE,
     STRUCTURES,
@@ -22,10 +22,10 @@ def read(
     input_str: str,
     validate: bool = True,
 ) -> Sequence[Union[ItemScheme, DataStructureDefinition, Dataflow]]:
-    """Reads an SDMX-ML 2.1 Structure data and returns the structures.
+    """Reads an SDMX-ML 3.0 Structure data and returns the structures.
 
     Args:
-        input_str: SDMX-ML data to read.
+        input_str: SDMX-ML structure message to read.
         validate: If True, the XML data will be validated against the XSD.
 
     Returns:

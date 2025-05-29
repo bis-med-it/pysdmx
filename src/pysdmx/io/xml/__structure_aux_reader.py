@@ -230,7 +230,7 @@ def _extract_text(element: Any) -> str:
 
 
 class StructureParser(Struct):
-    """StructureParser class for SDMX-ML 2.1."""
+    """StructureParser class for SDMX-ML."""
 
     agencies: Dict[str, Any] = {}
     codelists: Dict[str, Any] = {}
@@ -807,16 +807,16 @@ class StructureParser(Struct):
 
             if item == DFW:
                 if isinstance(element[STRUCTURE], str):
-                    ref_data = parse_urn(element[STRUCTURE])
+                    ref_obj = parse_urn(element[STRUCTURE])
                     reference_str = (
-                        f"{ref_data.sdmx_type}={ref_data.agency}:"
-                        f"{ref_data.id}({ref_data.version})"
+                        f"{ref_obj.sdmx_type}={ref_obj.agency}:"
+                        f"{ref_obj.id}({ref_obj.version})"
                     )
                 else:
                     ref_data = element[STRUCTURE][REF]
                     reference_str = (
-                        f"{ref_data[CLASS]}={ref_data[AGENCY_ID]}"  # type: ignore[index]
-                        f":{ref_data[ID]}({ref_data[VERSION]})"  # type: ignore[index]
+                        f"{ref_data[CLASS]}={ref_data[AGENCY_ID]}"
+                        f":{ref_data[ID]}({ref_data[VERSION]})"
                     )
                 element[STRUCTURE] = reference_str
 
