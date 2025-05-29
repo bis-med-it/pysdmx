@@ -530,7 +530,10 @@ class StructureParser(Struct):
             UDO_SCHEME, "user_defined_operator_schemes", self.udos
         )
         extract_references(
-            VTL_MAPPING_SCHEME, "vtl_mapping_scheme", self.vtl_mappings
+            VTL_MAPPING_SCHEME,
+            "vtl_mapping_scheme",
+            self.vtl_mappings,
+            as_list=False,
         )
 
         return json_elem
