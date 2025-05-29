@@ -10,7 +10,6 @@ from pysdmx.model import (
     TransformationScheme,
     UserDefinedOperatorScheme,
 )
-from pysdmx.toolkit.vtl.validation import model_validations
 
 
 def _process_ruleset_scheme(
@@ -50,7 +49,7 @@ def _process_transformation(transformations: Sequence[Transformation]) -> str:
 
 def generate_vtl_script(
     transformation_scheme: TransformationScheme,
-    model_validation: bool = True,
+    model_validation: bool = False,
     prettyprint: bool = False,
 ) -> str:
     """Generates the VTL script from a TransformationScheme.
@@ -59,10 +58,14 @@ def generate_vtl_script(
     RulesetSchemes and UserDefinedOperatorSchemes to generate the VTL script
     as string
 
+    The model_validation feature checks if the model object is valid by
+    parsing the VTL code inside the definitions.
+
     The prettyprint feature formats the VTL script in a user-friendly way.
 
     .. important::
-        The prettyprint feature requires the pysdmx[vtl] extra.
+        The prettyprint and model_validation features require
+        the pysdmx[vtl] extra.
 
     Args:
         transformation_scheme: A TransformationScheme object.
@@ -77,6 +80,9 @@ def generate_vtl_script(
 
     """
     if model_validation:
+        __check_vtl_extra()
+        from pysdmx.toolkit.vtl.validation import model_validations
+
         model_validations(transformation_scheme)
 
     vtl_script = ""

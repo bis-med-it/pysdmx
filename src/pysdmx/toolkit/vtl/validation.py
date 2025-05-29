@@ -14,14 +14,6 @@ from pysdmx.model import (
     VtlScheme,
 )
 from pysdmx.model.__base import Item
-from pysdmx.toolkit.vtl._validations import (
-    _ruleset_scheme_validations,
-    _ruleset_validation,
-    _transformation_scheme_validations,
-    _transformation_validations,
-    _user_defined_operator_scheme_validations,
-    _user_defined_operator_validation,
-)
 
 
 def model_validations(model_obj: Union[VtlScheme, Item]) -> None:
@@ -83,19 +75,44 @@ def model_validations(model_obj: Union[VtlScheme, Item]) -> None:
     raises:
         Invalid: Invalid model object if the model object is not valid.
     """
+    # We add here the check for vtl extra and add the local imports to
+    # prevent unhandled ImportError
     __check_vtl_extra()
 
     if isinstance(model_obj, Ruleset):
+        from pysdmx.toolkit.vtl._validations import (
+            _ruleset_validation,
+        )
+
         _ruleset_validation(model_obj)
     elif isinstance(model_obj, RulesetScheme):
+        from pysdmx.toolkit.vtl._validations import (
+            _ruleset_scheme_validations,
+        )
+
         _ruleset_scheme_validations(model_obj)
     elif isinstance(model_obj, UserDefinedOperator):
+        from pysdmx.toolkit.vtl._validations import (
+            _user_defined_operator_validation,
+        )
+
         _user_defined_operator_validation(model_obj)
     elif isinstance(model_obj, UserDefinedOperatorScheme):
+        from pysdmx.toolkit.vtl._validations import (
+            _user_defined_operator_scheme_validations,
+        )
+
         _user_defined_operator_scheme_validations(model_obj)
     elif isinstance(model_obj, Transformation):
+        from pysdmx.toolkit.vtl._validations import (
+            _transformation_validations,
+        )
+
         _transformation_validations(model_obj)
     elif isinstance(model_obj, TransformationScheme):
+        from pysdmx.toolkit.vtl._validations import (
+            _transformation_scheme_validations,
+        )
         _transformation_scheme_validations(model_obj)
     else:
         raise Invalid("Invalid model object")
