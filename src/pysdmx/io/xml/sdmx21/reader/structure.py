@@ -162,8 +162,8 @@ STRUCTURES_MAPPING = {
     DSDS: DataStructureDefinition,
     RULE_SCHEME: RulesetScheme,
     UDO_SCHEME: UserDefinedOperatorScheme,
-    TRANS_SCHEME: TransformationScheme,
     VTL_MAPPING_SCHEME: VtlMappingScheme,
+    TRANS_SCHEME: TransformationScheme,
 }
 ITEMS_CLASSES = {
     AGENCY: Agency,
@@ -171,8 +171,8 @@ ITEMS_CLASSES = {
     CON: Concept,
     RULE: Ruleset,
     UDO: UserDefinedOperator,
-    TRANSFORMATION: Transformation,
     VTLMAPPING: VtlDataflowMapping,
+    TRANSFORMATION: Transformation,
 }
 
 COMP_TYPES = [DIM, ATT, PRIM_MEASURE, GROUP_DIM]
@@ -225,14 +225,15 @@ def _extract_text(element: Any) -> str:
 class StructureParser(Struct):
     """StructureParser class for SDMX-ML 2.1."""
 
-    agencies: Dict[str, Any] = {}
-    codelists: Dict[str, Any] = {}
-    concepts: Dict[str, Any] = {}
-    datastructures: Dict[str, Any] = {}
-    dataflows: Dict[str, Any] = {}
-    rulesets: Dict[str, Any] = {}
-    udos: Dict[str, Any] = {}
-    transformations: Dict[str, Any] = {}
+    agencies: Dict[str, AgencyScheme] = {}
+    codelists: Dict[str, Codelist] = {}
+    concepts: Dict[str, ConceptScheme] = {}
+    datastructures: Dict[str, DataStructureDefinition] = {}
+    dataflows: Dict[str, Dataflow] = {}
+    rulesets: Dict[str, RulesetScheme] = {}
+    udos: Dict[str, UserDefinedOperatorScheme] = {}
+    vtl_mappings: Dict[str, VtlMappingScheme] = {}
+    transformations: Dict[str, TransformationScheme] = {}
 
     def __format_contact(self, json_contact: Dict[str, Any]) -> Contact:
         """Creates a Contact object from a json_contact.
@@ -482,7 +483,10 @@ class StructureParser(Struct):
         """Formats the references in the VTL element."""
 
         def extract_references(
-            scheme: str, new_key: str, object_list: Dict[str, Any]
+            scheme: str,
+            new_key: str,
+            object_list: Dict[str, Any],
+            as_list: bool = True,
         ) -> None:
             if scheme in json_elem:
                 references = []
@@ -515,13 +519,18 @@ class StructureParser(Struct):
                                 version=ref[VERSION],
                             )
                         )
-
-                json_elem[new_key] = references
+                if not as_list:
+                    json_elem[new_key] = references[0]
+                else:
+                    json_elem[new_key] = references
                 json_elem.pop(scheme)
 
         extract_references(RULE_SCHEME, "ruleset_schemes", self.rulesets)
         extract_references(
             UDO_SCHEME, "user_defined_operator_schemes", self.udos
+        )
+        extract_references(
+            VTL_MAPPING_SCHEME, "vtl_mapping_scheme", self.vtl_mappings
         )
 
         return json_elem
@@ -827,6 +836,15 @@ class StructureParser(Struct):
                 lambda data: self.__format_scheme(data, UDO_SCHEME, UDO),
                 "udos",
             ),
+            VTLMAPPINGS: process_structure(
+                VTLMAPPINGS,
+                lambda data: self.__format_scheme(
+                    data,
+                    VTL_MAPPING_SCHEME,
+                    VTLMAPPING,
+                ),
+                "vtl_mappings",
+            ),
             TRANSFORMATIONS: process_structure(
                 TRANSFORMATIONS,
                 lambda data: self.__format_scheme(
@@ -835,14 +853,6 @@ class StructureParser(Struct):
                     TRANSFORMATION,
                 ),
                 "transformations",
-            ),
-            VTLMAPPINGS: process_structure(
-                VTLMAPPINGS,
-                lambda data: self.__format_scheme(
-                    data,
-                    VTL_MAPPING_SCHEME,
-                    VTLMAPPING,
-                ),
             ),
         }
         return [
