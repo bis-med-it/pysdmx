@@ -141,9 +141,13 @@ class VtlScheme(ItemScheme, frozen=True, omit_defaults=True):
 class CustomTypeScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of custom specifications for VTL basic scalar types."""
 
+    items: Sequence[CustomType] = ()
+
 
 class NamePersonalisationScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of name personalisations."""
+
+    items: Sequence[NamePersonalisation] = ()
 
 
 class RulesetScheme(VtlScheme, frozen=True, omit_defaults=True):
