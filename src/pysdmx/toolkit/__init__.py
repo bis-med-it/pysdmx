@@ -1,1 +1,1 @@
-"""VTL toolkit for PySDMX."""
+"""Toolkit for PySDMX."""

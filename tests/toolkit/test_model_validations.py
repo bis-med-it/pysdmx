@@ -9,7 +9,7 @@ from pysdmx.model import (
     UserDefinedOperator,
     UserDefinedOperatorScheme,
 )
-from pysdmx.toolkit.vtl.model_validations import model_validations
+from pysdmx.toolkit.vtl.validation import model_validations
 
 
 @pytest.fixture

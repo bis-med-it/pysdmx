@@ -118,8 +118,10 @@ The following extras are available:
    * - ``xml``
      - Read and Write SDMX-ML messages, on pysdmx.io.xml.
    * - ``data``
-     - Handle SDMX datasets as Pandas data frames, it is required also for reading and writing SDMX-CSV files as of today.
+     - Read and write SDMX-CSV and handle SDMX datasets as Pandas Dataframes.
    * - ``dc``
      - Only required to use the pysdmx.api.dc module when generating queries based on dates.
+   * - ``vtl``
+     - Validate SDMX-VTL model classes, prettify and run VTL scripts using vtlengine library.
    * - ``all``
      - Install all extras.
