@@ -10,7 +10,7 @@ from pysdmx.model import (
     TransformationScheme,
     UserDefinedOperatorScheme,
 )
-from pysdmx.toolkit.vtl.model_validations import model_validations
+from pysdmx.toolkit.vtl.validation import model_validations
 
 
 def _process_ruleset_scheme(

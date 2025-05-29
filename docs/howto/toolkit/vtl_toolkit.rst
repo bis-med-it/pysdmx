@@ -83,7 +83,7 @@ For more information, please check :ref:`vtl-validation`
 
 .. code-block:: python
 
-    from pysdmx.toolkit.vtl.model_validations import model_validations
+    from pysdmx.toolkit.vtl import model_validations
 
     # validate the metadata
     model_validations(transformation_scheme)
@@ -104,7 +104,7 @@ We can only generate the VTL script from a Transformation Scheme.
 
 .. code-block:: python
 
-    from pysdmx.toolkit.vtl.generate_vtl_script import generate_vtl_script
+    from pysdmx.toolkit.vtl import generate_vtl_script
 
     # generate the VTL script
     vtl_script = generate_vtl_script(transformation_scheme, model_validation=True)
