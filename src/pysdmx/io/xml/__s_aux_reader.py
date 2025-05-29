@@ -5,8 +5,6 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.errors import Invalid
-from pysdmx.io.xml.__parse_xml import parse_xml
 from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCIES,
     AGENCY,
@@ -67,14 +65,17 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     IS_FINAL_LOW,
     IS_PARTIAL,
     IS_PARTIAL_LOW,
+    LINK,
     LOCAL_CODES_LOW,
     LOCAL_DTYPE,
     LOCAL_FACETS_LOW,
     LOCAL_REP,
     MANDATORY,
+    MANDATORY_LOW,
     ME_LIST,
     ME_REL,
     MEASURE,
+    METADATA,
     NAME,
     OBSERVATION,
     ORGS,
@@ -92,7 +93,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     STR_URL,
     STR_URL_LOW,
     STRUCTURE,
-    STRUCTURES,
     TELEPHONE,
     TELEPHONES,
     TEXT,
@@ -119,7 +119,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VERSION,
     VTL_MAPPING_SCHEME,
     VTLMAPPING,
-    VTLMAPPINGS, LINK, METADATA,
+    VTLMAPPINGS,
 )
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (
@@ -416,8 +416,9 @@ class StructureParser(Struct):
                 ).codes
 
             elif isinstance(ref, Reference):
-                short_urn = str(ref)
-                codelist = self.codelists[short_urn]
+                codelist = find_by_urn(
+                    list(self.codelists.values()), str(ref)
+                ).codes
             else:
                 short_urn = str(
                     Reference(
@@ -600,7 +601,10 @@ class StructureParser(Struct):
 
         if AS_STATUS in comp or USAGE in comp:
             status_key = AS_STATUS if AS_STATUS in comp else USAGE
-            if comp[status_key] != MANDATORY:
+            if (
+                comp[status_key] != MANDATORY
+                and comp[status_key] != MANDATORY_LOW
+            ):
                 comp[REQUIRED] = False
             del comp[status_key]
 
@@ -751,7 +755,7 @@ class StructureParser(Struct):
 
         return elements
 
-    def __format_schema(
+    def __format_schema(  # noqa: C901
         self, json_element: Dict[str, Any], schema: str, item: str
     ) -> Dict[str, Any]:
         """Formats the structures in json format.
@@ -915,24 +919,3 @@ class StructureParser(Struct):
             if value
             for compound in value.values()
         ]
-
-
-def read(
-    input_str: str,
-    validate: bool = True,
-) -> Sequence[Union[ItemScheme, DataStructureDefinition, Dataflow]]:
-    """Reads an SDMX-ML 2.1 Structure data and returns the structures.
-
-    Args:
-        input_str: SDMX-ML data to read.
-        validate: If True, the XML data will be validated against the XSD.
-
-    Returns:
-        dict: Dictionary with the parsed structures.
-    """
-    dict_info = parse_xml(input_str, validate)
-    if STRUCTURE not in dict_info:
-        raise Invalid("This SDMX document is not SDMX-ML 2.1 Structure.")
-    return StructureParser().format_structures(
-        dict_info[STRUCTURE][STRUCTURES]
-    )
