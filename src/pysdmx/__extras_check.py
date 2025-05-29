@@ -50,7 +50,8 @@ def __check_vtl_extra() -> None:
     except ImportError:
         raise ImportError(
             ERROR_MESSAGE.format(
-                extra_name="vtlengine",
-                extra_desc="validations for VTL engine",
+                extra_name="vtl",
+                extra_desc="VTL Scripts, SDMX-VTL model validations"
+                " and prettify",
             )
         ) from None
