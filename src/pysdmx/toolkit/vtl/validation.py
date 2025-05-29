@@ -113,6 +113,7 @@ def model_validations(model_obj: Union[VtlScheme, Item]) -> None:
         from pysdmx.toolkit.vtl._validations import (
             _transformation_scheme_validations,
         )
+
         _transformation_scheme_validations(model_obj)
     else:
         raise Invalid("Invalid model object")
