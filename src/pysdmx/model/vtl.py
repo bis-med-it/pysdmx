@@ -164,7 +164,7 @@ class VtlMappingScheme(ItemScheme, frozen=True, omit_defaults=True):
 class UserDefinedOperatorScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of user-defined operators."""
 
-    vtl_mapping_scheme: Optional[VtlMappingScheme, Reference] = None
+    vtl_mapping_scheme: Optional[Union[VtlMappingScheme, Reference]] = None
     ruleset_schemes: Sequence[Union[RulesetScheme, Reference]] = ()
     items: Sequence[UserDefinedOperator] = ()
 
@@ -199,11 +199,11 @@ class TransformationScheme(VtlScheme, frozen=True, omit_defaults=True):
           The user-defined operator schemes.
     """
 
-    vtl_mapping_scheme: Optional[VtlMappingScheme, Reference] = None
+    vtl_mapping_scheme: Optional[Union[VtlMappingScheme, Reference]] = None
     name_personalisation_scheme: Optional[
-        NamePersonalisationScheme, Reference
+        Union[NamePersonalisationScheme, Reference]
     ] = None
-    custom_type_scheme: Optional[CustomTypeScheme, Reference] = None
+    custom_type_scheme: Optional[Union[CustomTypeScheme, Reference]] = None
     ruleset_schemes: Sequence[Union[RulesetScheme, Reference]] = ()
     user_defined_operator_schemes: Sequence[
         Union[UserDefinedOperatorScheme, Reference]
