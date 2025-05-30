@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common">
+  <message:Header>
+    <message:ID>12345</message:ID>
+    <message:Test>true</message:Test>
+    <message:Prepared>2025-05-26T11:58:47Z</message:Prepared>
+    <message:Sender id="Unknown"/>
+    <message:Receiver id="not_supplied"/>
+  </message:Header>
+  <message:Structures>
+    <str:DataStructures>
+      <str:DataStructure urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:DS(1.0)" isExternalReference="false" agencyID="MD" id="DS" version="1.0">
+        <com:Name xml:lang="en">DS Test</com:Name>
+        <str:DataStructureComponents>
+          <str:DimensionList urn="urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=MD:DML(1.0).DimensionDescriptor" id="DimensionDescriptor">
+            <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=MD:DM(1.0).FREQ" id="FREQ" position="1">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:STANDALONE_CONCEPT_SCHEME(1.0).FREQ</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=MD:CL_FREQ(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:TimeDimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=MD:TD(1.0).TIME_PERIOD" id="TIME_PERIOD">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:STANDALONE_CONCEPT_SCHEME(1.0).TIME_PERIOD</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="ObservationalTimePeriod"/>
+              </str:LocalRepresentation>
+            </str:TimeDimension>
+          </str:DimensionList>
+        </str:DataStructureComponents>
+        <str:Metadata>urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataStructure=MD:METADATA(1.0)</str:Metadata>
+      </str:DataStructure>
+    </str:DataStructures></message:Structures></message:Structure>

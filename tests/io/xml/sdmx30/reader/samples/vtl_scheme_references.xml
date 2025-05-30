@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common">
+  <message:Header>
+    <message:ID>12345</message:ID>
+    <message:Test>true</message:Test>
+    <message:Prepared>2025-05-26T11:58:47Z</message:Prepared>
+    <message:Sender id="Unknown"/>
+    <message:Receiver id="not_supplied"/>
+  </message:Header>
+  <message:Structures>
+    <str:TransformationSchemes>
+      <str:TransformationScheme urn="urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=SDMX:TEST(1.0)" vtlVersion="2.1" isExternalReference="false" agencyID="SDMX" id="TEST" validFrom="2024-12-03T00:00:00" version="1.0" validTo="2024-12-07T00:00:00" isPartial ="true">
+        <com:Name xml:lang="en">TEST</com:Name>
+        <com:Description xml:lang="en">TEST</com:Description>
+        <str:Transformation urn="urn:sdmx:org.sdmx.infomodel.transformation.Transformation=SDMX:TEST(1.0).test_trans" isPersistent="true" id="test_trans">
+          <com:Name xml:lang="en">TEST</com:Name>
+          <com:Description xml:lang="en">TEST</com:Description>
+          <str:Expression>DS_1 + 1</str:Expression>
+          <str:Result>DS_r</str:Result>
+        </str:Transformation>
+        <str:RulesetScheme>urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=MD:TEST_RULESET_SCHEME(1.0)</str:RulesetScheme>
+        <str:UserDefinedOperatorScheme>urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=MD:TEST_UDO_SCHEME(1.0)</str:UserDefinedOperatorScheme>
+      </str:TransformationScheme>
+    </str:TransformationSchemes>
+    <str:UserDefinedOperatorSchemes>
+      <str:UserDefinedOperatorScheme urn="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=MD:TEST_UDO_SCHEME(1.0)" vtlVersion="2.0" isExternalReference="false" agencyID="MD" id="TEST_UDO_SCHEME" version="1.0">
+        <com:Name xml:lang="en">Testing UDO Scheme</com:Name>
+        <str:UserDefinedOperator urn="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=MD:TEST_UDO_SCHEME(1.0).TEST_UDO" id="TEST_UDO">
+          <com:Name xml:lang="en">UDO Testing</com:Name>
+          <str:OperatorDefinition>define operator filter_ds (ds1 dataset, great_cons string default "1", less_cons number default 4.0)   returns dataset is     ds1[filter Me_1 > great_cons and Me_2 &lt; less_cons] end operator;</str:OperatorDefinition>
+        </str:UserDefinedOperator>
+        <str:RulesetScheme>urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=MD:TEST_RULESET_SCHEME(1.0)</str:RulesetScheme>
+      </str:UserDefinedOperatorScheme>
+    </str:UserDefinedOperatorSchemes>
+    <str:RulesetSchemes>
+      <str:RulesetScheme urn="urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=MD:TEST_RULESET_SCHEME(1.0)" vtlVersion="1.0" isExternalReference="false" agencyID="MD" id="TEST_RULESET_SCHEME" version="1.0">
+        <com:Name xml:lang="en">Testing Ruleset Scheme</com:Name>
+        <str:Ruleset urn="urn:sdmx:org.sdmx.infomodel.transformation.Ruleset=MD:TEST_RULESET_SCHEME(1.0).TEST_DATAPOINT_RULESET" rulesetScope="variable" id="TEST_DATAPOINT_RULESET" rulesetType="datapoint">
+          <com:Name xml:lang="en">Testing Datapoint Ruleset</com:Name>
+          <str:RulesetDefinition>define datapoint ruleset signValidation (variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM as IAI,                 FUNCTIONAL_CAT as FC, INSTR_ASSET as IA, OBS_VALUE as O) is      sign1c: when AE = "C" and IAI = "G" then O > 0 errorcode "sign1c" errorlevel 1;     end datapoint ruleset;</str:RulesetDefinition>
+        </str:Ruleset>
+      </str:RulesetScheme>
+    </str:RulesetSchemes>
+  </message:Structures></message:Structure>
