@@ -700,7 +700,7 @@ class StructureParser(Struct):
         _format_lower_key("rulesetType", json_vtl)
         _format_lower_key("RulesetDefinition", json_vtl)
         # User Defined Operator Handling
-        _format_lower_key("OperationDefinition", json_vtl)
+        _format_lower_key("OperatorDefinition", json_vtl)
         # Dataflow Mapping
         if "ToVtlMapping" in json_vtl:
             to_vtl = json_vtl.pop("ToVtlMapping")
