@@ -36,6 +36,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     CONTACT,
     CORE_REP,
     CS,
+    CUSTOM_TYPE_SCHEME,
     DEPARTMENT,
     DESC,
     DFW,
@@ -71,6 +72,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     MANDATORY,
     ME_LIST,
     NAME,
+    NAME_PER_SCHEME,
     ORGS,
     PAR_ID,
     PAR_VER,
@@ -143,6 +145,8 @@ from pysdmx.model.dataflow import (
     Role,
 )
 from pysdmx.model.vtl import (
+    CustomTypeScheme,
+    NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
     Transformation,
@@ -233,6 +237,8 @@ class StructureParser(Struct):
     rulesets: Dict[str, RulesetScheme] = {}
     udos: Dict[str, UserDefinedOperatorScheme] = {}
     vtl_mappings: Dict[str, VtlMappingScheme] = {}
+    name_personalisations: Dict[str, NamePersonalisationScheme] = {}
+    custom_types: Dict[str, CustomTypeScheme] = {}
     transformations: Dict[str, TransformationScheme] = {}
 
     def __format_contact(self, json_contact: Dict[str, Any]) -> Contact:
@@ -535,7 +541,18 @@ class StructureParser(Struct):
             self.vtl_mappings,
             as_list=False,
         )
-
+        extract_references(
+            NAME_PER_SCHEME,
+            "name_personalisation_scheme",
+            self.name_personalisations,
+            as_list=False,
+        )
+        extract_references(
+            CUSTOM_TYPE_SCHEME,
+            "custom_type_scheme",
+            self.custom_types,
+            as_list=False,
+        )
         return json_elem
 
     def __format_dataflow(
