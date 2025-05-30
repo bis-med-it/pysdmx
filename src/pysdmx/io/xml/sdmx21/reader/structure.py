@@ -23,6 +23,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     ATT_LVL,
     ATT_REL,
     CL,
+    CL_LOW,
     CLASS,
     CLS,
     CODE,
@@ -112,6 +113,8 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VALID_TO,
     VALID_TO_LOW,
     VERSION,
+    VTL_CL_MAPP,
+    VTL_CON_MAPP,
     VTL_MAPPING_SCHEME,
     VTLMAPPING,
     VTLMAPPINGS,
@@ -126,6 +129,8 @@ from pysdmx.model import (
     ConceptScheme,
     DataType,
     Facets,
+    VtlCodelistMapping,
+    VtlConceptMapping,
 )
 from pysdmx.model.__base import (
     Agency,
@@ -146,9 +151,11 @@ from pysdmx.model.dataflow import (
 )
 from pysdmx.model.vtl import (
     CustomTypeScheme,
+    FromVtlMapping,
     NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
+    ToVtlMapping,
     Transformation,
     TransformationScheme,
     UserDefinedOperator,
@@ -176,6 +183,8 @@ ITEMS_CLASSES = {
     RULE: Ruleset,
     UDO: UserDefinedOperator,
     VTLMAPPING: VtlDataflowMapping,
+    VTL_CL_MAPP: VtlCodelistMapping,
+    VTL_CON_MAPP: VtlConceptMapping,
     TRANSFORMATION: Transformation,
 }
 
@@ -643,8 +652,11 @@ class StructureParser(Struct):
 
         return element
 
-    @staticmethod
-    def __format_vtl(json_vtl: Dict[str, Any]) -> Dict[str, Any]:
+    def __format_vtl(self, json_vtl: Dict[str, Any]) -> Dict[str, Any]:
+        # VTL Scheme Handling
+        if "vtlVersion" in json_vtl:
+            json_vtl["vtl_version"] = json_vtl.pop("vtlVersion")
+        # Transformation Scheme Handling
         if "isPersistent" in json_vtl:
             json_vtl["is_persistent"] = (
                 json_vtl.pop("isPersistent").lower() == "true"
@@ -653,18 +665,59 @@ class StructureParser(Struct):
             json_vtl["expression"] = json_vtl.pop("Expression")
         if "Result" in json_vtl:
             json_vtl["result"] = json_vtl.pop("Result")
-        if "vtlVersion" in json_vtl:
-            json_vtl["vtl_version"] = json_vtl.pop("vtlVersion")
+        # Ruleset Handling
         if "rulesetScope" in json_vtl:
             json_vtl["ruleset_scope"] = json_vtl.pop("rulesetScope")
         if "rulesetType" in json_vtl:
             json_vtl["ruleset_type"] = json_vtl.pop("rulesetType")
         if "RulesetDefinition" in json_vtl:
             json_vtl["ruleset_definition"] = json_vtl.pop("RulesetDefinition")
+        # User Defined Operator Handling
         if "OperatorDefinition" in json_vtl:
             json_vtl["operator_definition"] = json_vtl.pop(
                 "OperatorDefinition"
             )
+        # Dataflow Mapping
+        if "ToVtlMapping" in json_vtl:
+            to_vtl = json_vtl.pop("ToVtlMapping")
+            to_vtl["to_vtl_sub_space"] = add_list(
+                to_vtl["ToVtlSubSpace"]["Key"]
+            )
+            del to_vtl["ToVtlSubSpace"]
+            json_vtl["to_vtl_mapping_method"] = ToVtlMapping(**to_vtl)
+        if "FromVtlMapping" in json_vtl:
+            from_vtl = json_vtl.pop("FromVtlMapping")
+            from_vtl["from_vtl_sub_space"] = add_list(
+                from_vtl["FromVtlSuperSpace"]["Key"]
+            )
+            del from_vtl["FromVtlSuperSpace"]
+            json_vtl["from_vtl_mapping_method"] = FromVtlMapping(**from_vtl)
+        # Codelist Mapping
+        if CL in json_vtl:
+            cl_ref = json_vtl[CL][REF]
+            ref = Reference(
+                sdmx_type=CL,
+                agency=cl_ref[AGENCY_ID],
+                id=cl_ref[ID],
+                version=cl_ref[VERSION],
+            )
+            json_vtl[CL_LOW] = self.codelists.get(str(ref), ref)
+            del json_vtl[CL]
+            json_vtl["codelist_alias"] = json_vtl.pop("alias")
+        # Concept mapping
+        if CON in json_vtl:
+            con_ref = json_vtl[CON][REF]
+            ref = ItemReference(
+                sdmx_type=CON,
+                agency=con_ref[AGENCY_ID],
+                id=con_ref[PAR_ID],
+                version=con_ref[PAR_VER],
+                item_id=con_ref[ID],
+            )
+            json_vtl[CON_LOW] = self.concepts.get(str(ref), ref)
+            del json_vtl[CON]
+            json_vtl["concept_alias"] = json_vtl.pop("alias")
+
         return json_vtl
 
     def __format_item(
@@ -692,6 +745,11 @@ class StructureParser(Struct):
             self.__format_dataflow(item_json_info[DFW], item_json_info)
 
         item_json_info = self.__format_vtl(item_json_info)
+
+        if CL_LOW in item_json_info and item_name_class == VTLMAPPING:
+            item_name_class = VTL_CL_MAPP
+        elif CON_LOW in item_json_info and item_name_class == VTLMAPPING:
+            item_name_class = VTL_CON_MAPP
 
         return ITEMS_CLASSES[item_name_class](**item_json_info)
 

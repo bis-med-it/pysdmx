@@ -6,7 +6,14 @@ from typing import Literal, Optional, Sequence, Union
 from msgspec import Struct
 
 from pysdmx.errors import Invalid
-from pysdmx.model.__base import DataflowRef, Item, ItemScheme, Reference
+from pysdmx.model import Codelist, Concept
+from pysdmx.model.__base import (
+    DataflowRef,
+    Item,
+    ItemScheme,
+    Reference,
+    ItemReference,
+)
 from pysdmx.model.dataflow import Dataflow
 
 
@@ -92,14 +99,14 @@ class VtlDataflowMapping(
 class VtlCodelistMapping(VtlMapping, frozen=True, omit_defaults=True):
     """Single mapping with a codelist."""
 
-    codelist: str = ""
+    codelist: Union[str, Codelist, Reference] = ""
     codelist_alias: str = ""
 
 
 class VtlConceptMapping(VtlMapping, frozen=True, omit_defaults=True):
     """Single mapping with a concept."""
 
-    concept: str = ""
+    concept: Union[str, Concept, ItemReference] = ""
     concept_alias: str = ""
 
 
