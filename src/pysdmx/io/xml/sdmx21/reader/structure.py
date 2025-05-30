@@ -686,29 +686,21 @@ class StructureParser(Struct):
 
     def __format_vtl(self, json_vtl: Dict[str, Any]) -> Dict[str, Any]:
         # VTL Scheme Handling
-        if "vtlVersion" in json_vtl:
-            json_vtl["vtl_version"] = json_vtl.pop("vtlVersion")
+        _format_lower_key("vtlVersion", json_vtl)
         # Transformation Scheme Handling
         if "isPersistent" in json_vtl:
             json_vtl["is_persistent"] = (
                 json_vtl.pop("isPersistent").lower() == "true"
             )
-        if "Expression" in json_vtl:
-            json_vtl["expression"] = json_vtl.pop("Expression")
-        if "Result" in json_vtl:
-            json_vtl["result"] = json_vtl.pop("Result")
+        _format_lower_key("Expression", json_vtl)
+        _format_lower_key("Result", json_vtl)
+
         # Ruleset Handling
-        if "rulesetScope" in json_vtl:
-            json_vtl["ruleset_scope"] = json_vtl.pop("rulesetScope")
-        if "rulesetType" in json_vtl:
-            json_vtl["ruleset_type"] = json_vtl.pop("rulesetType")
-        if "RulesetDefinition" in json_vtl:
-            json_vtl["ruleset_definition"] = json_vtl.pop("RulesetDefinition")
+        _format_lower_key("rulesetScope", json_vtl)
+        _format_lower_key("rulesetType", json_vtl)
+        _format_lower_key("RulesetDefinition", json_vtl)
         # User Defined Operator Handling
-        if "OperatorDefinition" in json_vtl:
-            json_vtl["operator_definition"] = json_vtl.pop(
-                "OperatorDefinition"
-            )
+        _format_lower_key("OperationDefinition", json_vtl)
         # Dataflow Mapping
         if "ToVtlMapping" in json_vtl:
             to_vtl = json_vtl.pop("ToVtlMapping")
@@ -750,24 +742,16 @@ class StructureParser(Struct):
             del json_vtl[CON]
             json_vtl["concept_alias"] = json_vtl.pop("alias")
         # Custom type
-        if "VtlScalarType" in json_vtl:
-            json_vtl["vtl_scalar_type"] = json_vtl.pop("VtlScalarType")
-        if "DataType" in json_vtl:
-            json_vtl["data_type"] = json_vtl.pop("DataType")
-        if "NullValue" in json_vtl:
-            json_vtl["null_value"] = json_vtl.pop("NullValue")
-        if "OutputFormat" in json_vtl:
-            json_vtl["output_format"] = json_vtl.pop("OutputFormat")
-        if "VtlLiteralFormat" in json_vtl:
-            json_vtl["vtl_literal_format"] = json_vtl.pop("VtlLiteralFormat")
+        _format_lower_key("VtlScalarType", json_vtl)
+        _format_lower_key("DataType", json_vtl)
+        _format_lower_key("NullValue", json_vtl)
+        _format_lower_key("OutputFormat", json_vtl)
+        _format_lower_key("VtlLiteralFormat", json_vtl)
 
         # Name Personalisation
-        if "PersonalisedName" in json_vtl:
-            json_vtl["personalised_name"] = json_vtl.pop("PersonalisedName")
-        if "vtlArtefact" in json_vtl:
-            json_vtl["vtl_artefact"] = json_vtl.pop("vtlArtefact")
-        if "VtlDefaultName" in json_vtl:
-            json_vtl["vtl_default_name"] = json_vtl.pop("VtlDefaultName")
+        _format_lower_key("PersonalisedName", json_vtl)
+        _format_lower_key("vtlArtefact", json_vtl)
+        _format_lower_key("VtlDefaultName", json_vtl)
 
         return json_vtl
 
