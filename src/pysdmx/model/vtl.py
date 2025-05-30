@@ -10,9 +10,9 @@ from pysdmx.model import Codelist, Concept
 from pysdmx.model.__base import (
     DataflowRef,
     Item,
+    ItemReference,
     ItemScheme,
     Reference,
-    ItemReference,
 )
 from pysdmx.model.dataflow import Dataflow
 
@@ -157,22 +157,26 @@ class NamePersonalisationScheme(VtlScheme, frozen=True, omit_defaults=True):
     items: Sequence[NamePersonalisation] = ()
 
 
+class VtlMappingScheme(ItemScheme, frozen=True, omit_defaults=True):
+    """A collection of VTL mappings."""
+
+
 class RulesetScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of rulesets."""
 
-    vtl_mapping_scheme: Optional[str] = None
+    vtl_mapping_scheme: Optional[Union[str, VtlMappingScheme, Reference]] = (
+        None
+    )
     items: Sequence[Ruleset] = ()
-
-
-class VtlMappingScheme(ItemScheme, frozen=True, omit_defaults=True):
-    """A collection of VTL mappings."""
 
 
 class UserDefinedOperatorScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of user-defined operators."""
 
-    vtl_mapping_scheme: Optional[Union[VtlMappingScheme, Reference]] = None
-    ruleset_schemes: Sequence[Union[RulesetScheme, Reference]] = ()
+    vtl_mapping_scheme: Optional[Union[str, VtlMappingScheme, Reference]] = (
+        None
+    )
+    ruleset_schemes: Sequence[Union[str, RulesetScheme, Reference]] = ()
     items: Sequence[UserDefinedOperator] = ()
 
 

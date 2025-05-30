@@ -731,14 +731,14 @@ class StructureParser(Struct):
         # Concept mapping
         if CON in json_vtl:
             con_ref = json_vtl[CON][REF]
-            ref = ItemReference(
+            item_ref = ItemReference(
                 sdmx_type=CON,
                 agency=con_ref[AGENCY_ID],
                 id=con_ref[PAR_ID],
                 version=con_ref[PAR_VER],
                 item_id=con_ref[ID],
             )
-            json_vtl[CON_LOW] = self.concepts.get(str(ref), ref)
+            json_vtl[CON_LOW] = self.concepts.get(str(item_ref), item_ref)
             del json_vtl[CON]
             json_vtl["concept_alias"] = json_vtl.pop("alias")
         # Custom type
