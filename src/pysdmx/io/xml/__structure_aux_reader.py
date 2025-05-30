@@ -87,6 +87,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     ROLE,
     RULE,
     RULE_SCHEME,
+    RULE_SCHEMES,
     RULESETS,
     SER_URL,
     SER_URL_LOW,
@@ -101,11 +102,13 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     TIME_DIM,
     TITLE,
     TRANS_SCHEME,
+    TRANS_SCHEMES,
     TRANSFORMATION,
     TRANSFORMATIONS,
     TYPE,
     UDO,
     UDO_SCHEME,
+    UDO_SCHEMES,
     UDOS,
     URI,
     URIS,
@@ -525,9 +528,20 @@ class StructureParser(Struct):
                     else [json_elem[scheme]]
                 )
                 for entry in scheme_entries:
-                    ref = entry[REF]
+                    if isinstance(entry, str):
+                        entry_ref = parse_urn(entry)
+                        ref_id = entry_ref.id
+                        reference = entry_ref
+                    else:
+                        ref = entry[REF]
+                        ref_id = ref[ID]
+                        reference = Reference(
+                            sdmx_type=ref[CLASS],
+                            agency=ref[AGENCY_ID],
+                            id=ref_id,
+                            version=ref[VERSION],
+                        )
 
-                    ref_id = ref[ID]
                     matching_object = next(
                         (
                             obj
@@ -540,14 +554,7 @@ class StructureParser(Struct):
                     if matching_object:
                         references.append(matching_object)
                     else:
-                        references.append(
-                            Reference(
-                                sdmx_type=ref[CLASS],
-                                agency=ref[AGENCY_ID],
-                                id=ref_id,
-                                version=ref[VERSION],
-                            )
-                        )
+                        references.append(reference)
 
                 json_elem[new_key] = references
                 json_elem.pop(scheme)
@@ -890,13 +897,32 @@ class StructureParser(Struct):
                 lambda data: self.__format_scheme(data, RULE_SCHEME, RULE),
                 "rulesets",
             ),
+            RULE_SCHEMES: process_structure(
+                RULE_SCHEMES,
+                lambda data: self.__format_scheme(data, RULE_SCHEME, RULE),
+                "rulesets",
+            ),
             UDOS: process_structure(
                 UDOS,
                 lambda data: self.__format_scheme(data, UDO_SCHEME, UDO),
                 "udos",
             ),
+            UDO_SCHEMES: process_structure(
+                UDO_SCHEMES,
+                lambda data: self.__format_scheme(data, UDO_SCHEME, UDO),
+                "udos",
+            ),
             TRANSFORMATIONS: process_structure(
                 TRANSFORMATIONS,
+                lambda data: self.__format_scheme(
+                    data,
+                    TRANS_SCHEME,
+                    TRANSFORMATION,
+                ),
+                "transformations",
+            ),
+            TRANS_SCHEMES: process_structure(
+                TRANS_SCHEMES,
                 lambda data: self.__format_scheme(
                     data,
                     TRANS_SCHEME,

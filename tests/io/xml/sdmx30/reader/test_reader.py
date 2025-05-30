@@ -14,6 +14,7 @@ from pysdmx.model import (
     Codelist,
     Contact,
     ItemReference,
+    Reference,
 )
 from pysdmx.model.dataflow import DataStructureDefinition
 
@@ -207,3 +208,129 @@ def test_data_structure_no_structure(samples_folder):
         Invalid, match="This SDMX document is not SDMX-ML 3.0 Structure."
     ):
         read_structure(f, validate=False)
+
+
+def test_transformation_scheme_read(samples_folder):
+    data_path = samples_folder / "transformation_scheme.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    transformation_scheme = result[0]
+    assert transformation_scheme.id == "TEST"
+    assert transformation_scheme.name == "TEST"
+    assert transformation_scheme.description == "TEST"
+    assert (
+        transformation_scheme.short_urn
+        == "TransformationScheme=SDMX:TEST(1.0)"
+    )
+    tranformations = transformation_scheme.items
+    assert len(tranformations) == 2
+    assert tranformations[0].id == "test_trans"
+    assert tranformations[0].is_persistent is True
+    assert tranformations[0].full_expression == "DS_r <- DS_1 + 1;"
+    assert tranformations[1].id == "test_trans2"
+    assert tranformations[1].is_persistent is False
+    assert tranformations[1].full_expression == "DS_r := DS_1 + 1;"
+    ruleset_schemes = transformation_scheme.ruleset_schemes
+    assert ruleset_schemes[0] == Reference(
+        sdmx_type="RulesetScheme",
+        agency="MD",
+        id="TEST_RULE_SCHEME",
+        version="1.0",
+    )
+    udo_schemes = transformation_scheme.user_defined_operator_schemes
+    assert udo_schemes[0] == Reference(
+        sdmx_type="UserDefinedOperatorScheme",
+        agency="MD",
+        id="TEST_UDO_SCHEME",
+        version="1.0",
+    )
+
+
+def test_ruleset_scheme_read(samples_folder):
+    data_path = samples_folder / "ruleset_scheme.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    ruleset_scheme = result[0]
+    assert ruleset_scheme.id == "TEST_RULESET_SCHEME"
+    assert ruleset_scheme.name == "Testing Ruleset Scheme"
+    assert (
+        ruleset_scheme.short_urn == "RulesetScheme=MD:TEST_RULESET_SCHEME(1.0)"
+    )
+    rulesets = ruleset_scheme.items
+    assert len(rulesets) == 1
+    assert rulesets[0].id == "TEST_DATAPOINT_RULESET"
+    assert rulesets[0].name == "Testing Datapoint Ruleset"
+    assert rulesets[0].ruleset_scope == "variable"
+    assert rulesets[0].ruleset_type == "datapoint"
+
+
+def test_udo_scheme_read(samples_folder):
+    data_path = samples_folder / "udo_scheme.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    udo_scheme = result[0]
+    assert udo_scheme.id == "TEST_UDO_SCHEME"
+    assert udo_scheme.name == "Testing UDO Scheme"
+    assert (
+        udo_scheme.short_urn
+        == "UserDefinedOperatorScheme=MD:TEST_UDO_SCHEME(1.0)"
+    )
+    udos = udo_scheme.items
+    assert len(udos) == 1
+    assert udos[0].id == "TEST_UDO"
+    assert udos[0].name == "UDO Testing"
+    ruleset_schemes = udo_scheme.ruleset_schemes
+    assert len(ruleset_schemes) == 1
+    assert ruleset_schemes[0] == Reference(
+        sdmx_type="RulesetScheme",
+        agency="MD",
+        id="TEST_RULESET_SCHEME",
+        version="1.0",
+    )
+
+
+def test_vtl_scheme_references_read(samples_folder):
+    data_path = samples_folder / "vtl_scheme_references.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    udo_scheme = result[1]
+    assert udo_scheme.id == "TEST_UDO_SCHEME"
+    assert udo_scheme.name == "Testing UDO Scheme"
+    udo_rule_schemes = udo_scheme.ruleset_schemes
+    assert len(udo_rule_schemes) == 1
+    assert udo_rule_schemes[0].id == "TEST_RULESET_SCHEME"
+    assert udo_rule_schemes[0].agency == "MD"
+    assert udo_rule_schemes[0].version == "1.0"
+    assert (
+        udo_rule_schemes[0].short_urn
+        == "RulesetScheme=MD:TEST_RULESET_SCHEME(1.0)"
+    )
+    transformation_scheme = result[2]
+    assert transformation_scheme.id == "TEST"
+    assert transformation_scheme.name == "TEST"
+    trans_rule_schemes = transformation_scheme.ruleset_schemes
+    assert len(trans_rule_schemes) == 1
+    assert trans_rule_schemes[0].id == "TEST_RULESET_SCHEME"
+    assert trans_rule_schemes[0].agency == "MD"
+    assert trans_rule_schemes[0].version == "1.0"
+    assert (
+        trans_rule_schemes[0].short_urn
+        == "RulesetScheme=MD:TEST_RULESET_SCHEME(1.0)"
+    )
+    trans_udo_schemes = transformation_scheme.user_defined_operator_schemes
+    assert len(trans_udo_schemes) == 1
+    assert trans_udo_schemes[0].id == "TEST_UDO_SCHEME"
+    assert trans_udo_schemes[0].agency == "MD"
+    assert trans_udo_schemes[0].version == "1.0"
+    assert (
+        trans_udo_schemes[0].short_urn
+        == "UserDefinedOperatorScheme=MD:TEST_UDO_SCHEME(1.0)"
+    )
