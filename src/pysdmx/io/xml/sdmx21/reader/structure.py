@@ -37,7 +37,9 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     CONTACT,
     CORE_REP,
     CS,
+    CUSTOM_TYPE,
     CUSTOM_TYPE_SCHEME,
+    CUSTOM_TYPES,
     DEPARTMENT,
     DESC,
     DFW,
@@ -73,7 +75,9 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     MANDATORY,
     ME_LIST,
     NAME,
+    NAME_PER,
     NAME_PER_SCHEME,
+    NAME_PERS,
     ORGS,
     PAR_ID,
     PAR_VER,
@@ -150,8 +154,10 @@ from pysdmx.model.dataflow import (
     Role,
 )
 from pysdmx.model.vtl import (
+    CustomType,
     CustomTypeScheme,
     FromVtlMapping,
+    NamePersonalisation,
     NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
@@ -174,6 +180,8 @@ STRUCTURES_MAPPING = {
     RULE_SCHEME: RulesetScheme,
     UDO_SCHEME: UserDefinedOperatorScheme,
     VTL_MAPPING_SCHEME: VtlMappingScheme,
+    NAME_PER_SCHEME: NamePersonalisationScheme,
+    CUSTOM_TYPE_SCHEME: CustomTypeScheme,
     TRANS_SCHEME: TransformationScheme,
 }
 ITEMS_CLASSES = {
@@ -185,6 +193,8 @@ ITEMS_CLASSES = {
     VTLMAPPING: VtlDataflowMapping,
     VTL_CL_MAPP: VtlCodelistMapping,
     VTL_CON_MAPP: VtlConceptMapping,
+    NAME_PER: NamePersonalisation,
+    CUSTOM_TYPE: CustomType,
     TRANSFORMATION: Transformation,
 }
 
@@ -233,6 +243,28 @@ def _extract_text(element: Any) -> str:
     if isinstance(element, dict) and "#text" in element:
         element = element["#text"]
     return element
+
+
+def _format_lower_key(key: str, json_info: Dict[str, Any]) -> None:
+    """Formats the key to lower case with underscores and returns it.
+
+    Args:
+        key: The key to be formatted
+        json_info: The JSON information to be updated
+
+    Returns:
+        The formatted key in lower case
+
+    """
+    # Replaces the capital letters in the key with lower case,
+    # adding an underscore before it if is not the first letter
+
+    if key not in json_info:
+        return
+    formatted_key = key[0].lower() + "".join(
+        "_" + c.lower() if c.isupper() else c for c in key[1:]
+    )
+    json_info[formatted_key] = json_info.pop(key)
 
 
 class StructureParser(Struct):
@@ -717,6 +749,25 @@ class StructureParser(Struct):
             json_vtl[CON_LOW] = self.concepts.get(str(ref), ref)
             del json_vtl[CON]
             json_vtl["concept_alias"] = json_vtl.pop("alias")
+        # Custom type
+        if "VtlScalarType" in json_vtl:
+            json_vtl["vtl_scalar_type"] = json_vtl.pop("VtlScalarType")
+        if "DataType" in json_vtl:
+            json_vtl["data_type"] = json_vtl.pop("DataType")
+        if "NullValue" in json_vtl:
+            json_vtl["null_value"] = json_vtl.pop("NullValue")
+        if "OutputFormat" in json_vtl:
+            json_vtl["output_format"] = json_vtl.pop("OutputFormat")
+        if "VtlLiteralFormat" in json_vtl:
+            json_vtl["vtl_literal_format"] = json_vtl.pop("VtlLiteralFormat")
+
+        # Name Personalisation
+        if "PersonalisedName" in json_vtl:
+            json_vtl["personalised_name"] = json_vtl.pop("PersonalisedName")
+        if "vtlArtefact" in json_vtl:
+            json_vtl["vtl_artefact"] = json_vtl.pop("vtlArtefact")
+        if "VtlDefaultName" in json_vtl:
+            json_vtl["vtl_default_name"] = json_vtl.pop("VtlDefaultName")
 
         return json_vtl
 
@@ -922,6 +973,20 @@ class StructureParser(Struct):
                     VTLMAPPING,
                 ),
                 "vtl_mappings",
+            ),
+            NAME_PERS: process_structure(
+                NAME_PERS,
+                lambda data: self.__format_scheme(
+                    data, NAME_PER_SCHEME, NAME_PER
+                ),
+                "name_personalisations",
+            ),
+            CUSTOM_TYPES: process_structure(
+                CUSTOM_TYPES,
+                lambda data: self.__format_scheme(
+                    data, CUSTOM_TYPE_SCHEME, CUSTOM_TYPE
+                ),
+                "custom_types",
             ),
             TRANSFORMATIONS: process_structure(
                 TRANSFORMATIONS,
