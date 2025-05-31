@@ -20,6 +20,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     CORE_REP,
     CS,
     CUSTOM_TYPE,
+    CUSTOM_TYPE_SCHEME,
     DEPARTMENT,
     DFW,
     DIM,
@@ -34,6 +35,8 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     MANDATORY,
     MEASURE,
     NAME,
+    NAME_PER,
+    NAME_PER_SCHEME,
     PACKAGE,
     PAR_ID,
     PAR_VER,
@@ -56,9 +59,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VERSION,
     VTL_MAPPING_SCHEME,
     VTLMAPPING,
-    CUSTOM_TYPE_SCHEME,
-    NAME_PER_SCHEME,
-    NAME_PER,
 )
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_COM,
@@ -82,6 +82,7 @@ from pysdmx.model import (
     DataType,
     Facets,
     Hierarchy,
+    NamePersonalisation,
     NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
@@ -94,7 +95,6 @@ from pysdmx.model import (
     VtlDataflowMapping,
     VtlMappingScheme,
     VtlScheme,
-    NamePersonalisation,
 )
 from pysdmx.model.__base import (
     Agency,
@@ -119,6 +119,7 @@ from pysdmx.model.message import Header
 from pysdmx.util import (
     parse_item_urn,
     parse_short_urn,
+    parse_urn,
 )
 
 ANNOTATION_WRITER = OrderedDict(
@@ -726,7 +727,7 @@ def __write_structures(content: Dict[str, Any], prettyprint: bool) -> str:
     return outfile
 
 
-def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
+def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:  # noqa: C901
     """Writes the VTL attribute to the XML file for a single item.
 
     This function writes an item or an item scheme to the XML file,
@@ -824,11 +825,18 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
         if isinstance(item_or_scheme, VtlCodelistMapping):
             label = f"{ABBR_STR}:{VTLMAPPING}"
             data += f"{add_indent(indent)}<{ABBR_STR}:Codelist>"
-            reference = item_or_scheme.codelist
+            ref_codelist = (
+                item_or_scheme.codelist
+                if isinstance(item_or_scheme.codelist, Reference)
+                else parse_urn(item_or_scheme.codelist)
+                if isinstance(item_or_scheme.codelist, str)
+                else parse_short_urn(item_or_scheme.codelist.short_urn)
+            )
+
             data += (
                 f"{indent}\t\t<{REF} package='codelist' "
-                f"agencyID={reference.agency!r} id={reference.id!r} "
-                f"version={reference.version!r} class={CL!r} />"
+                f"agencyID={ref_codelist.agency!r} id={ref_codelist.id!r} "
+                f"version={ref_codelist.version!r} class={CL!r} />"
                 f"{add_indent(indent)}</{ABBR_STR}:Codelist>"
             )
             attrib += f" alias={item_or_scheme.codelist_alias!r}"
@@ -840,14 +848,17 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
             #  when the Concept object is referenced
             label = f"{ABBR_STR}:{VTLMAPPING}"
             data += f"{add_indent(indent)}<{ABBR_STR}:Concept>"
-            reference = item_or_scheme.concept
+            if isinstance(item_or_scheme.concept, str):
+                ref_concept = parse_item_urn(item_or_scheme.concept)
+            else:
+                ref_concept = item_or_scheme.concept
             data += (
                 f"{indent}\t\t"
-                f"<{REF} maintainableParentID={reference.id!r} "
+                f"<{REF} maintainableParentID={ref_concept.id!r} "
                 f"package='conceptscheme' "
-                f"agencyID={reference.agency!r} "
-                f"id={reference.item_id!r} "
-                f"maintainableParentVersion={reference.version!r} "
+                f"agencyID={ref_concept.agency!r} "
+                f"id={ref_concept.item_id!r} "
+                f"maintainableParentVersion={ref_concept.version!r} "
                 f"class={CON!r} />"
                 f"{add_indent(indent)}</{ABBR_STR}:Concept>"
             )

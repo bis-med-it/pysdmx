@@ -11,10 +11,12 @@ from pysdmx.io.format import Format
 from pysdmx.io.xml.sdmx21.__tokens import (
     ANNOTATIONS_LOW,
     CONTACTS_LOW,
+    CUSTOM_TYPES,
     DESC_LOW,
     DFW,
     DFWS_LOW,
     DSD,
+    NAME_PERS,
     PROV_AGREMENT,
     RULESETS,
     STR_USAGE,
@@ -24,8 +26,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     URI_LOW,
     URN_LOW,
     VTLMAPPINGS,
-    CUSTOM_TYPES,
-    NAME_PERS,
 )
 from pysdmx.model import Organisation
 from pysdmx.model.dataset import Dataset

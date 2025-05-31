@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from pysdmx.errors import Invalid, NotImplemented
+from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.sdmx21.__tokens import CON
@@ -18,9 +19,13 @@ from pysdmx.model import (
     Codelist,
     Concept,
     ConceptScheme,
+    CustomTypeScheme,
     Facets,
+    FromVtlMapping,
+    NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
+    ToVtlMapping,
     Transformation,
     TransformationScheme,
     UserDefinedOperator,
@@ -46,8 +51,7 @@ from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import Header
 
 TEST_CS_URN = (
-    "urn:sdmx:org.sdmx.infomodel.conceptscheme."
-    "ConceptScheme=BIS:CS_FREQ(1.0)"
+    "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS:CS_FREQ(1.0)"
 )
 
 
@@ -75,6 +79,13 @@ def empty_sample():
 @pytest.fixture
 def read_write_sample():
     base_path = Path(__file__).parent / "samples" / "read_write_sample.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def vtl_complete():
+    base_path = Path(__file__).parent / "samples" / "vtl_complete.xml"
     with open(base_path, "r") as f:
         return f.read()
 
@@ -938,3 +949,45 @@ def test_writer_raise_nameable_error(noname_codelist, complete_header):
             content,
             header=complete_header,
         )
+
+
+def test_read_write_vtl_complete(vtl_complete):
+    msg = read_sdmx(vtl_complete, validate=True)
+    ts = msg.get_transformation_schemes()[0]
+    result = write(
+        [
+            ts,
+            ts.user_defined_operator_schemes[0],
+            ts.ruleset_schemes[0],
+            ts.vtl_mapping_scheme,
+            ts.custom_type_scheme,
+            ts.name_personalisation_scheme,
+        ],
+        prettyprint=True,
+    )
+    msg_2 = read_sdmx(result, validate=True)
+    assert len(msg_2.get_transformation_schemes()) == 1
+    ts_2 = msg_2.get_transformation_schemes()[0]
+    assert ts_2.ruleset_schemes[0] == ts.ruleset_schemes[0]
+    assert (
+        ts_2.user_defined_operator_schemes[0]
+        == ts.user_defined_operator_schemes[0]
+    )
+    assert isinstance(ts_2.vtl_mapping_scheme, VtlMappingScheme)
+    assert ts_2.vtl_mapping_scheme == ts.vtl_mapping_scheme
+    dataflow_mapping = ts_2.vtl_mapping_scheme.items[0]
+    assert isinstance(dataflow_mapping, VtlDataflowMapping)
+    from_vtl = dataflow_mapping.from_vtl_mapping_method
+    assert isinstance(from_vtl, FromVtlMapping)
+    assert len(from_vtl.from_vtl_sub_space) == 3
+    assert from_vtl.from_vtl_sub_space[0] == "FREQ"
+    to_vtl = dataflow_mapping.to_vtl_mapping_method
+    assert isinstance(to_vtl, ToVtlMapping)
+    assert len(to_vtl.to_vtl_sub_space) == 2
+    assert to_vtl.to_vtl_sub_space[0] == "FREQ"
+    assert isinstance(ts_2.custom_type_scheme, CustomTypeScheme)
+    assert ts_2.custom_type_scheme == ts.custom_type_scheme
+    assert isinstance(
+        ts_2.name_personalisation_scheme, NamePersonalisationScheme
+    )
+    assert ts_2.name_personalisation_scheme == ts.name_personalisation_scheme
