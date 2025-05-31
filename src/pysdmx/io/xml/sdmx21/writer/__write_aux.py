@@ -109,7 +109,7 @@ def create_namespaces(
     outfile = f'<?xml version="1.0" encoding="UTF-8"?>{nl}'
 
     outfile += f"<{ABBR_MSG}:{MESSAGE_TYPE_MAPPING[type_]} "
-    outfile += f'xmlns:xsi={NAMESPACES["xsi"]!r} '
+    outfile += f"xmlns:xsi={NAMESPACES['xsi']!r} "
     outfile += f"xmlns:{ABBR_MSG}={NAMESPACES[ABBR_MSG]!r} "
     outfile += __namespaces_from_type(type_)
     outfile += (
@@ -130,10 +130,10 @@ MSG_CONTENT_PKG = OrderedDict(
         (CONCEPTS, "Concepts"),
         (DSDS, "DataStructures"),
         (CONSTRAINTS, "ContentConstraints"),
+        (VTLMAPPINGS, "VtlMappings"),
         (RULESETS, "Rulesets"),
         (TRANSFORMATIONS, "Transformations"),
         (UDOS, "UserDefinedOperators"),
-        (VTLMAPPINGS, "VtlMappings"),
     ]
 )
 
@@ -308,9 +308,7 @@ def __write_header(
             return ""
         child2 = "\t\t" if prettyprint else ""
         return (
-            f"{nl}{child2}<{ABBR_MSG}:{element}>"
-            f"{value}"
-            f"</{ABBR_MSG}:{element}>"
+            f"{nl}{child2}<{ABBR_MSG}:{element}>{value}</{ABBR_MSG}:{element}>"
         )
 
     nl = "\n" if prettyprint else ""

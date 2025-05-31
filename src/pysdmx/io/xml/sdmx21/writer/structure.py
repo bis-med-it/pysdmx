@@ -164,9 +164,7 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
         if annotation.id is None:
             outfile += f"{child2}<{ABBR_COM}:Annotation>"
         else:
-            outfile += (
-                f"{child2}<{ABBR_COM}:Annotation " f"id={annotation.id!r}>"
-            )
+            outfile += f"{child2}<{ABBR_COM}:Annotation id={annotation.id!r}>"
         outfile = outfile.replace("'", '"')
 
         for attr, label in ANNOTATION_WRITER.items():
@@ -180,9 +178,7 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
                 else:
                     head_tag = f"{ABBR_COM}:{label}"
 
-                outfile += (
-                    f"{child3}<{head_tag}>" f"{value}" f"</{ABBR_COM}:{label}>"
-                )
+                outfile += f"{child3}<{head_tag}>{value}</{ABBR_COM}:{label}>"
 
         outfile += f"{child2}</{ABBR_COM}:Annotation>"
     outfile += f"{child1}</{ABBR_COM}:Annotations>"
@@ -232,7 +228,7 @@ def __write_nameable(
             ]
         elif attr == "Name":
             raise Invalid(
-                "Name is required for NameableArtefact" f" id= {nameable.id}"
+                f"Name is required for NameableArtefact id= {nameable.id}"
             )
 
     return outfile
@@ -400,8 +396,7 @@ def __write_attribute_relation(
             related_role = ROLE_MAPPING[role]
             outfile += f"{add_indent(indent)}<{ABBR_STR}:{related_role}>"
             outfile += (
-                f"{add_indent(add_indent(indent))}"
-                f"<{REF} {ID}={comp_name!r}/>"
+                f"{add_indent(add_indent(indent))}<{REF} {ID}={comp_name!r}/>"
             )
             outfile += f"{add_indent(indent)}</{ABBR_STR}:{related_role}>"
     outfile += f"{indent}</{ABBR_STR}:{ATT_REL}>"
@@ -746,8 +741,7 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
             data += f"{add_indent(indent)}<{ABBR_STR}:Result>"
             data += f"{item_or_scheme.result}</{ABBR_STR}:Result>"
             attrib += (
-                f" isPersistent="
-                f"{str(item_or_scheme.is_persistent).lower()!r}"
+                f" isPersistent={str(item_or_scheme.is_persistent).lower()!r}"
             )
 
         if isinstance(item_or_scheme, UserDefinedOperator):
@@ -821,13 +815,28 @@ def _write_vtl_references(scheme: ItemScheme, indent: str) -> str:
 
     outfile = ""
     if isinstance(scheme, TransformationScheme):
+        outfile += process_references(
+            scheme.vtl_mapping_scheme, "VtlMappingScheme"
+        )
+        outfile += process_references(
+            scheme.name_personalisation_scheme, "NamePersonalisationScheme"
+        )
+        outfile += process_references(
+            scheme.custom_type_scheme, "CustomTypeScheme"
+        )
         outfile += process_references(scheme.ruleset_schemes, "RulesetScheme")
         outfile += process_references(
             scheme.user_defined_operator_schemes, "UserDefinedOperatorScheme"
         )
     if isinstance(scheme, UserDefinedOperatorScheme):
+        outfile += process_references(
+            scheme.vtl_mapping_scheme, "VtlMappingScheme"
+        )
         outfile += process_references(scheme.ruleset_schemes, "RulesetScheme")
-
+    if isinstance(scheme, RulesetScheme):
+        outfile += process_references(
+            scheme.vtl_mapping_scheme, "VtlMappingScheme"
+        )
     outfile = outfile.replace("'", '"')
 
     return outfile
