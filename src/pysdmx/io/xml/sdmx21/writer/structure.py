@@ -848,10 +848,11 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:  # 
             #  when the Concept object is referenced
             label = f"{ABBR_STR}:{VTLMAPPING}"
             data += f"{add_indent(indent)}<{ABBR_STR}:Concept>"
-            if isinstance(item_or_scheme.concept, str):
-                ref_concept = parse_item_urn(item_or_scheme.concept)
-            else:
-                ref_concept = item_or_scheme.concept
+            ref_concept = (
+                parse_item_urn(item_or_scheme.concept)
+                if isinstance(item_or_scheme.concept, str)
+                else item_or_scheme.concept
+            )
             data += (
                 f"{indent}\t\t"
                 f"<{REF} maintainableParentID={ref_concept.id!r} "
