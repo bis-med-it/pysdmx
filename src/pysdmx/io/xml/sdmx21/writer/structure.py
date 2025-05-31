@@ -19,6 +19,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     CONDITIONAL,
     CORE_REP,
     CS,
+    CUSTOM_TYPE,
     DEPARTMENT,
     DFW,
     DIM,
@@ -55,6 +56,9 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VERSION,
     VTL_MAPPING_SCHEME,
     VTLMAPPING,
+    CUSTOM_TYPE_SCHEME,
+    NAME_PER_SCHEME,
+    NAME_PER,
 )
 from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     ABBR_COM,
@@ -73,9 +77,12 @@ from pysdmx.model import (
     Codelist,
     Concept,
     ConceptScheme,
+    CustomType,
+    CustomTypeScheme,
     DataType,
     Facets,
     Hierarchy,
+    NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
     Transformation,
@@ -87,6 +94,7 @@ from pysdmx.model import (
     VtlDataflowMapping,
     VtlMappingScheme,
     VtlScheme,
+    NamePersonalisation,
 )
 from pysdmx.model.__base import (
     Agency,
@@ -134,6 +142,9 @@ STR_TYPES = Union[
     ConceptScheme,
     DataStructureDefinition,
     Dataflow,
+    CustomTypeScheme,
+    VtlMappingScheme,
+    NamePersonalisationScheme,
     RulesetScheme,
     UserDefinedOperatorScheme,
     TransformationScheme,
@@ -145,10 +156,12 @@ STR_DICT_TYPE_LIST = {
     ConceptScheme: "Concepts",
     DataStructureDefinition: "DataStructures",
     Dataflow: "Dataflows",
+    CustomTypeScheme: "CustomTypes",
+    VtlMappingScheme: "VtlMappings",
+    NamePersonalisationScheme: "NamePersonalisations",
     RulesetScheme: "Rulesets",
     UserDefinedOperatorScheme: "UserDefinedOperators",
     TransformationScheme: "Transformations",
-    VtlMappingScheme: "VtlMappings",
 }
 
 
@@ -562,15 +575,18 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
     if scheme not in [
         DSD,
         DFW,
+    ]:
+        data["Attributes"] += (
+            f" isPartial={str(item_scheme.is_partial).lower()!r}"
+        )
+    if scheme in [
         RULE_SCHEME,
         UDO_SCHEME,
         TRANS_SCHEME,
         VTL_MAPPING_SCHEME,
+        CUSTOM_TYPE_SCHEME,
+        NAME_PER_SCHEME,
     ]:
-        data["Attributes"] += (
-            f" isPartial={str(item_scheme.is_final).lower()!r}"
-        )
-    if scheme in [RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME, VTL_MAPPING_SCHEME]:
         data["Attributes"] += f" {_write_vtl(item_scheme, indent)}"
 
     outfile = ""
@@ -594,10 +610,19 @@ def __write_scheme(item_scheme: Any, indent: str, scheme: str) -> str:
         UDO_SCHEME,
         TRANS_SCHEME,
         VTL_MAPPING_SCHEME,
+        CUSTOM_TYPE_SCHEME,
+        NAME_PER_SCHEME,
     ]:
         for item in item_scheme.items:
             outfile += __write_item(item, add_indent(indent))
-    if scheme in [RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME, VTL_MAPPING_SCHEME]:
+    if scheme in [
+        RULE_SCHEME,
+        UDO_SCHEME,
+        TRANS_SCHEME,
+        VTL_MAPPING_SCHEME,
+        CUSTOM_TYPE_SCHEME,
+        NAME_PER_SCHEME,
+    ]:
         for item in item_scheme.items:
             outfile += _write_vtl(item, add_indent(indent))
         outfile += _write_vtl_references(item_scheme, add_indent(indent))
@@ -827,6 +852,60 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
                 f"{add_indent(indent)}</{ABBR_STR}:Concept>"
             )
             attrib += f" alias={item_or_scheme.concept_alias!r}"
+
+        if isinstance(item_or_scheme, CustomType):
+            label = f"{ABBR_STR}:{CUSTOM_TYPE}"
+            data += (
+                f"{add_indent(indent)}<{ABBR_STR}:VtlScalarType>"
+                f"{item_or_scheme.vtl_scalar_type}"
+                f"</{ABBR_STR}:VtlScalarType>"
+            )
+            data += (
+                f"{add_indent(indent)}<{ABBR_STR}:DataType>"
+                f"{item_or_scheme.data_type}"
+                f"</{ABBR_STR}:DataType>"
+            )
+            data += (
+                (
+                    f"{add_indent(indent)}<{ABBR_STR}:VtlLiteralFormat>"
+                    f"{item_or_scheme.vtl_literal_format}"
+                    f"</{ABBR_STR}:VtlLiteralFormat>"
+                )
+                if item_or_scheme.vtl_literal_format is not None
+                else ""
+            )
+            data += (
+                (
+                    f"{add_indent(indent)}<{ABBR_STR}:OutputFormat>"
+                    f"{item_or_scheme.output_format}"
+                    f"</{ABBR_STR}:OutputFormat>"
+                )
+                if item_or_scheme.output_format is not None
+                else ""
+            )
+            data += (
+                (
+                    f"{add_indent(indent)}<{ABBR_STR}:NullValue>"
+                    f"{item_or_scheme.null_value}"
+                    f"</{ABBR_STR}:NullValue>"
+                )
+                if item_or_scheme.null_value is not None
+                else ""
+            )
+
+        if isinstance(item_or_scheme, NamePersonalisation):
+            label = f"{ABBR_STR}:{NAME_PER}"
+            attrib += f" vtlArtefact={item_or_scheme.vtl_artefact!r} "
+            data += (
+                f"{add_indent(indent)}<{ABBR_STR}:VtlDefaultName>"
+                f"{item_or_scheme.vtl_default_name}"
+                f"</{ABBR_STR}:VtlDefaultName>"
+            )
+            data += (
+                f"{add_indent(indent)}<{ABBR_STR}:PersonalisedName>"
+                f"{item_or_scheme.personalised_name}"
+                f"</{ABBR_STR}:PersonalisedName>"
+            )
 
         outfile += f"{indent}<{label}{attrib}>"
         outfile += data
