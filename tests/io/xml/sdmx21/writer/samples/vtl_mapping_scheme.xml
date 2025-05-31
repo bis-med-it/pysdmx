@@ -10,7 +10,7 @@
 	</mes:Header>
 	<mes:Structures>
 		<str:VtlMappings>
-			<str:VtlMappingScheme id="VTLMS1" urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=FR1:VTLMS1(1.0)" version="1.0" isExternalReference="false" isFinal="false" agencyID="FR1" >
+			<str:VtlMappingScheme id="VTLMS1" urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=FR1:VTLMS1(1.0)" version="1.0" isExternalReference="false" isFinal="false" agencyID="FR1" isPartial="false" >
 				<com:Name xml:lang="en">VTL Mapping Scheme #1</com:Name>
 				<str:VtlMapping id="VTLM1" urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlDataflowMapping=FR1:VTLMS1(1.0).VTLM1" alias="BPE_DETAIL_VTL">
 					<com:Name xml:lang="en">VTL Mapping #1</com:Name>

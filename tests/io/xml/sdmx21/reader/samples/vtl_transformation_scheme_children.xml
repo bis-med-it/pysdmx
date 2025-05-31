@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xml="http://www.w3.org/XML/1998/namespace"
+               xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+               xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+               xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+    <mes:Header>
+        <mes:ID>IREF276847</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2025-05-30T17:54:42Z</mes:Prepared>
+        <mes:Sender id="Unknown"/>
+        <mes:Receiver id="not_supplied"/>
+    </mes:Header>
+    <mes:Structures>
+        <str:CustomTypes>
+            <str:CustomTypeScheme urn="urn:sdmx:org.sdmx.infomodel.transformation.CustomTypeScheme=MD:CTS1(1.0)"
+                                  vtlVersion="2.0" isExternalReference="false" agencyID="MD" id="CTS1" isFinal="false"
+                                  version="1.0">
+                <com:Name xml:lang="en">Test Custom Type Scheme</com:Name>
+                <str:CustomType urn="urn:sdmx:org.sdmx.infomodel.transformation.CustomType=MD:CTS1(1.0).CT1" id="CT1">
+                    <com:Name xml:lang="en">Test Custom Type</com:Name>
+                    <str:VtlScalarType>Test_scalar_type</str:VtlScalarType>
+                    <str:DataType>Test_data_type</str:DataType>
+                    <str:VtlLiteralFormat>Test_literal_format</str:VtlLiteralFormat>
+                    <str:OutputFormat>Test_output_format</str:OutputFormat>
+                    <str:NullValue>Test_null_value</str:NullValue>
+                </str:CustomType>
+            </str:CustomTypeScheme>
+        </str:CustomTypes>
+        <str:VtlMappings>
+            <str:VtlMappingScheme urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=MD:VMS1(1.0)"
+                                  isExternalReference="false" agencyID="MD" id="VMS1" isFinal="false" version="1.0">
+                <com:Name xml:lang="en">Test VTL Mapping Scheme</com:Name>
+                <str:VtlMapping
+                        urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlDataflowMapping=MD:VMS1(1.0).VMDataflow"
+                        alias="DS_1" id="VMDataflow">
+                    <com:Name xml:lang="en">Test VTL Mapping</com:Name>
+                    <str:Dataflow>
+                        <Ref package="datastructure" agencyID="BIS" id="WS_CBS_PUB" version="1.0" class="Dataflow"/>
+                    </str:Dataflow>
+                    <str:ToVtlMapping method="Basic">
+                        <str:ToVtlSubSpace>
+                            <str:Key>FREQ</str:Key>
+                            <str:Key>L_MEASURE</str:Key>
+                        </str:ToVtlSubSpace>
+                    </str:ToVtlMapping>
+                    <str:FromVtlMapping method="Basic">
+                        <str:FromVtlSuperSpace>
+                            <str:Key>FREQ</str:Key>
+                            <str:Key>L_MEASURE</str:Key>
+                            <str:Key>L_REP_CTY</str:Key>
+                        </str:FromVtlSuperSpace>
+                    </str:FromVtlMapping>
+                </str:VtlMapping>
+                <str:VtlMapping
+                        urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlCodelistMapping=MD:VMS1(1.0).VMCodelist"
+                        alias="CL1" id="VMCodelist">
+                    <com:Name xml:lang="en">Test VTL Mapping Codelist</com:Name>
+                    <str:Codelist>
+                        <Ref package="codelist" agencyID="MD" id="TEST_CL" version="1.0" class="Codelist"/>
+                    </str:Codelist>
+                </str:VtlMapping>
+                <str:VtlMapping
+                        urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlConceptMapping=MD:VMS1(1.0).VMConcept"
+                        alias="C1" id="VMConcept">
+                    <com:Name xml:lang="en">Test VTL Mapping Concept</com:Name>
+                    <str:Concept>
+                        <Ref maintainableParentID="TEST_CS" package="conceptscheme"
+                             maintainableParentVersion="1.0" agencyID="MD" id="FREQ" class="Concept"/>
+                    </str:Concept>
+                </str:VtlMapping>
+            </str:VtlMappingScheme>
+        </str:VtlMappings>
+        <str:NamePersonalisations>
+            <str:NamePersonalisationScheme
+                    urn="urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisationScheme=MD:NPS1(1.0)"
+                    vtlVersion="2.0" isExternalReference="false" agencyID="MD" id="NPS1" isFinal="false" version="1.0">
+                <com:Name xml:lang="en">Test Name Personalisation Scheme</com:Name>
+                <str:NamePersonalisation
+                        urn="urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisation=MD:NPS1(1.0).NP1"
+                        vtlArtefact="TEST_VTL_ARTEFACT" id="NP1">
+                    <com:Name xml:lang="en">Test Name Personalisation</com:Name>
+                    <str:VtlDefaultName>TEST_DEFAULT</str:VtlDefaultName>
+                    <str:PersonalisedName>TEST_PERSONALISED</str:PersonalisedName>
+                </str:NamePersonalisation>
+            </str:NamePersonalisationScheme>
+        </str:NamePersonalisations>
+        <str:Rulesets>
+            <str:RulesetScheme urn="urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=MD:TEST-RS(1.0)"
+                               vtlVersion="2.1" isExternalReference="false" agencyID="MD" id="TEST-RS" isFinal="false"
+                               version="1.0">
+                <com:Name xml:lang="en">Testing Ruleset Scheme</com:Name>
+                <str:Ruleset urn="urn:sdmx:org.sdmx.infomodel.transformation.Ruleset=MD:TEST-RS(1.0).R1"
+                             rulesetScope="variable" id="R1" rulesetType="hierarchical">
+                    <com:Name xml:lang="en">Testing Ruleset 1</com:Name>
+                    <str:RulesetDefinition>define hierarchical ruleset accountingEntry (variable rule ACCOUNTING_ENTRY)
+                        is B = C - D errorcode "Balance(credit-debit)" errorlevel 4; N = A - L errorcode
+                        "Net(assets-liabilities)" errorlevel 4 end hierarchical ruleset;
+                    </str:RulesetDefinition>
+                </str:Ruleset>
+                <str:VtlMappingScheme>
+                    <Ref package="transformation" agencyID="MD" id="VMS1" version="1.0" class="VtlMappingScheme"/>
+                </str:VtlMappingScheme>
+            </str:RulesetScheme>
+        </str:Rulesets>
+        <str:Transformations>
+            <str:TransformationScheme urn="urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=MD:TS1(1.0)"
+                                      vtlVersion="2.1" isExternalReference="false" agencyID="MD" id="TS1"
+                                      isFinal="false" version="1.0">
+                <com:Name xml:lang="en">Test Transformation Scheme Extra Objects</com:Name>
+                <str:Transformation urn="urn:sdmx:org.sdmx.infomodel.transformation.Transformation=MD:TS1(1.0).T1"
+                                    isPersistent="true" id="T1">
+                    <com:Name xml:lang="en">Test Transformation</com:Name>
+                    <str:Expression>DS_1 + 1</str:Expression>
+                    <str:Result>DS_r</str:Result>
+                </str:Transformation>
+                <str:VtlMappingScheme>
+                    <Ref package="transformation" agencyID="MD" id="VMS1" version="1.0" class="VtlMappingScheme"/>
+                </str:VtlMappingScheme>
+                <str:NamePersonalisationScheme>
+                    <Ref package="transformation" agencyID="MD" id="NPS1" version="1.0"
+                         class="NamePersonalisationScheme"/>
+                </str:NamePersonalisationScheme>
+                <str:CustomTypeScheme>
+                    <Ref package="transformation" agencyID="MD" id="CTS1" version="1.0" class="CustomTypeScheme"/>
+                </str:CustomTypeScheme>
+                <str:RulesetScheme>
+                    <Ref package="transformation" agencyID="MD" id="TEST-RS" version="1.0" class="RulesetScheme"/>
+                </str:RulesetScheme>
+                <str:UserDefinedOperatorScheme>
+                    <Ref package="transformation" agencyID="MD" id="TEST-UDS" version="1.0"
+                         class="UserDefinedOperatorScheme"/>
+                </str:UserDefinedOperatorScheme>
+            </str:TransformationScheme>
+        </str:Transformations>
+        <str:UserDefinedOperators>
+            <str:UserDefinedOperatorScheme
+                    urn="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=MD:TEST-UDS(1.0)"
+                    vtlVersion="2.1" isExternalReference="false" agencyID="MD" id="TEST-UDS" isFinal="false"
+                    version="1.0">
+                <com:Name xml:lang="en">Testing User Defined Operator Scheme</com:Name>
+                <str:UserDefinedOperator
+                        urn="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=MD:TEST-UDS(1.0).UDO1"
+                        id="UDO1">
+                    <com:Name xml:lang="en">Testing User Defined Operator</com:Name>
+                    <str:OperatorDefinition>define operator suma (ds1 dataset, ds2 dataset) returns dataset is ds1 + ds2
+                        end operator;
+                    </str:OperatorDefinition>
+                </str:UserDefinedOperator>
+                <str:VtlMappingScheme>
+                    <Ref package="transformation" agencyID="MD" id="VMS1" version="1.0" class="VtlMappingScheme"/>
+                </str:VtlMappingScheme>
+                <str:RulesetScheme>
+                    <Ref package="transformation" agencyID="MD" id="TEST-RS" version="1.0" class="RulesetScheme"/>
+                </str:RulesetScheme>
+            </str:UserDefinedOperatorScheme>
+        </str:UserDefinedOperators>
+    </mes:Structures>
+</mes:Structure>

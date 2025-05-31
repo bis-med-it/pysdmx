@@ -6,7 +6,14 @@ from typing import Literal, Optional, Sequence, Union
 from msgspec import Struct
 
 from pysdmx.errors import Invalid
-from pysdmx.model.__base import DataflowRef, Item, ItemScheme, Reference
+from pysdmx.model import Codelist, Concept
+from pysdmx.model.__base import (
+    DataflowRef,
+    Item,
+    ItemReference,
+    ItemScheme,
+    Reference,
+)
 from pysdmx.model.dataflow import Dataflow
 
 
@@ -92,14 +99,14 @@ class VtlDataflowMapping(
 class VtlCodelistMapping(VtlMapping, frozen=True, omit_defaults=True):
     """Single mapping with a codelist."""
 
-    codelist: str = ""
+    codelist: Union[str, Codelist, Reference] = ""
     codelist_alias: str = ""
 
 
 class VtlConceptMapping(VtlMapping, frozen=True, omit_defaults=True):
     """Single mapping with a concept."""
 
-    concept: str = ""
+    concept: Union[str, Concept, ItemReference] = ""
     concept_alias: str = ""
 
 
@@ -141,28 +148,36 @@ class VtlScheme(ItemScheme, frozen=True, omit_defaults=True):
 class CustomTypeScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of custom specifications for VTL basic scalar types."""
 
+    items: Sequence[CustomType] = ()
+
 
 class NamePersonalisationScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of name personalisations."""
+
+    items: Sequence[NamePersonalisation] = ()
+
+
+class VtlMappingScheme(ItemScheme, frozen=True, omit_defaults=True):
+    """A collection of VTL mappings."""
 
 
 class RulesetScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of rulesets."""
 
-    vtl_mapping_scheme: Optional[str] = None
+    vtl_mapping_scheme: Optional[Union[str, VtlMappingScheme, Reference]] = (
+        None
+    )
     items: Sequence[Ruleset] = ()
 
 
 class UserDefinedOperatorScheme(VtlScheme, frozen=True, omit_defaults=True):
     """A collection of user-defined operators."""
 
-    vtl_mapping_scheme: Optional[str] = None
-    ruleset_schemes: Sequence[Union[str, Reference]] = ()
+    vtl_mapping_scheme: Optional[Union[str, VtlMappingScheme, Reference]] = (
+        None
+    )
+    ruleset_schemes: Sequence[Union[str, RulesetScheme, Reference]] = ()
     items: Sequence[UserDefinedOperator] = ()
-
-
-class VtlMappingScheme(ItemScheme, frozen=True, omit_defaults=True):
-    """A collection of VTL mappings."""
 
 
 class TransformationScheme(VtlScheme, frozen=True, omit_defaults=True):
@@ -195,9 +210,11 @@ class TransformationScheme(VtlScheme, frozen=True, omit_defaults=True):
           The user-defined operator schemes.
     """
 
-    vtl_mapping_scheme: Optional[VtlMappingScheme] = None
-    name_personalisation_scheme: Optional[NamePersonalisationScheme] = None
-    custom_type_scheme: Optional[CustomTypeScheme] = None
+    vtl_mapping_scheme: Optional[Union[VtlMappingScheme, Reference]] = None
+    name_personalisation_scheme: Optional[
+        Union[NamePersonalisationScheme, Reference]
+    ] = None
+    custom_type_scheme: Optional[Union[CustomTypeScheme, Reference]] = None
     ruleset_schemes: Sequence[Union[RulesetScheme, Reference]] = ()
     user_defined_operator_schemes: Sequence[
         Union[UserDefinedOperatorScheme, Reference]
