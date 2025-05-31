@@ -82,6 +82,8 @@ from pysdmx.model import (
     TransformationScheme,
     UserDefinedOperator,
     UserDefinedOperatorScheme,
+    VtlCodelistMapping,
+    VtlConceptMapping,
     VtlDataflowMapping,
     VtlMappingScheme,
     VtlScheme,
@@ -753,6 +755,7 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
             )
         if isinstance(item_or_scheme, VtlDataflowMapping):
             label = f"{ABBR_STR}:{VTLMAPPING}"
+            attrib += f" alias={item_or_scheme.dataflow_alias!r}"
             data += f"{add_indent(indent)}<{ABBR_STR}:Dataflow>"
             reference = item_or_scheme.dataflow
             data += (
@@ -761,7 +764,69 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
                 f"version={reference.version!r} class={DFW!r} />"
                 f"{add_indent(indent)}</{ABBR_STR}:Dataflow>"
             )
-            attrib += f" alias={item_or_scheme.dataflow_alias!r}"
+            if item_or_scheme.to_vtl_mapping_method is not None:
+                to_vtl = item_or_scheme.to_vtl_mapping_method
+                data += (
+                    f"{add_indent(indent)}<{ABBR_STR}:ToVtlMapping "
+                    f"method={to_vtl.method!r}>"
+                )
+                indent_2 = add_indent(add_indent(indent))
+                data += f"{indent_2}<{ABBR_STR}:ToVtlSubSpace>"
+                for key in to_vtl.to_vtl_sub_space:
+                    data += (
+                        f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
+                        f"</{ABBR_STR}:Key>"
+                    )
+                data += f"{indent_2}</{ABBR_STR}:ToVtlSubSpace>"
+                data += f"{add_indent(indent)}</{ABBR_STR}:ToVtlMapping>"
+
+            if item_or_scheme.from_vtl_mapping_method is not None:
+                from_vtl = item_or_scheme.from_vtl_mapping_method
+                data += (
+                    f"{add_indent(indent)}<{ABBR_STR}:FromVtlMapping "
+                    f"method={from_vtl.method!r}>"
+                )
+                indent_2 = add_indent(add_indent(indent))
+                data += f"{indent_2}<{ABBR_STR}:FromVtlSuperSpace>"
+                for key in from_vtl.from_vtl_sub_space:
+                    data += (
+                        f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
+                        f"</{ABBR_STR}:Key>"
+                    )
+                data += f"{indent_2}</{ABBR_STR}:FromVtlSuperSpace>"
+                data += f"{add_indent(indent)}</{ABBR_STR}:FromVtlMapping>"
+
+        if isinstance(item_or_scheme, VtlCodelistMapping):
+            label = f"{ABBR_STR}:{VTLMAPPING}"
+            data += f"{add_indent(indent)}<{ABBR_STR}:Codelist>"
+            reference = item_or_scheme.codelist
+            data += (
+                f"{indent}\t\t<{REF} package='codelist' "
+                f"agencyID={reference.agency!r} id={reference.id!r} "
+                f"version={reference.version!r} class={CL!r} />"
+                f"{add_indent(indent)}</{ABBR_STR}:Codelist>"
+            )
+            attrib += f" alias={item_or_scheme.codelist_alias!r}"
+
+        if isinstance(item_or_scheme, VtlConceptMapping) and not isinstance(
+            item_or_scheme.concept, Concept
+        ):
+            # TODO: Add handling for VtlConceptMapping
+            #  when the Concept object is referenced
+            label = f"{ABBR_STR}:{VTLMAPPING}"
+            data += f"{add_indent(indent)}<{ABBR_STR}:Concept>"
+            reference = item_or_scheme.concept
+            data += (
+                f"{indent}\t\t"
+                f"<{REF} maintainableParentID={reference.id!r} "
+                f"package='conceptscheme' "
+                f"agencyID={reference.agency!r} "
+                f"id={reference.item_id!r} "
+                f"maintainableParentVersion={reference.version!r} "
+                f"class={CON!r} />"
+                f"{add_indent(indent)}</{ABBR_STR}:Concept>"
+            )
+            attrib += f" alias={item_or_scheme.concept_alias!r}"
 
         outfile += f"{indent}<{label}{attrib}>"
         outfile += data
