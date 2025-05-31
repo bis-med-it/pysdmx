@@ -912,8 +912,7 @@ class StructureParser(Struct):
             """Helper function to process and store formatted structures."""
             if key in json_meta:
                 formatted = formatter(json_meta[key])
-                if attr:
-                    setattr(self, attr, formatted)
+                setattr(self, attr, formatted) if attr else None
                 return formatted
             return {}
 
@@ -939,6 +938,15 @@ class StructureParser(Struct):
                 lambda data: self.__format_schema(data, DFWS, DFW),
                 "dataflows",
             ),
+            VTLMAPPINGS: process_structure(
+                VTLMAPPINGS,
+                lambda data: self.__format_scheme(
+                    data,
+                    VTL_MAPPING_SCHEME,
+                    VTLMAPPING,
+                ),
+                "vtl_mappings",
+            ),
             RULESETS: process_structure(
                 RULESETS,
                 lambda data: self.__format_scheme(data, RULE_SCHEME, RULE),
@@ -948,15 +956,6 @@ class StructureParser(Struct):
                 UDOS,
                 lambda data: self.__format_scheme(data, UDO_SCHEME, UDO),
                 "udos",
-            ),
-            VTLMAPPINGS: process_structure(
-                VTLMAPPINGS,
-                lambda data: self.__format_scheme(
-                    data,
-                    VTL_MAPPING_SCHEME,
-                    VTLMAPPING,
-                ),
-                "vtl_mappings",
             ),
             NAME_PERS: process_structure(
                 NAME_PERS,
