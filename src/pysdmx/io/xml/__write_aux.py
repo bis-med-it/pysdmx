@@ -36,6 +36,7 @@ MESSAGE_TYPE_MAPPING = {
     Format.STRUCTURE_SDMX_ML_2_1: "Structure",
     Format.ERROR_SDMX_ML_2_1: "Error",
     Format.REGISTRY_SDMX_ML_2_1: "RegistryInterface",
+    Format.STRUCTURE_SDMX_ML_3_0: "Structure",
 }
 
 ABBR_MSG = "mes"
@@ -55,15 +56,25 @@ DATAFLOWS = "Dataflows"
 CONSTRAINTS = "Constraints"
 ALL_DIM = "AllDimensions"
 
-BASE_URL = "http://www.sdmx.org/resources/sdmxml/schemas/v2_1"
+BASE_URL_21 = "http://www.sdmx.org/resources/sdmxml/schemas/v2_1"
 
-NAMESPACES = {
+NAMESPACES_21 = {
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
-    ABBR_MSG: f"{BASE_URL}/message",
-    ABBR_GEN: f"{BASE_URL}/data/generic",
-    ABBR_COM: f"{BASE_URL}/common",
-    ABBR_STR: f"{BASE_URL}/structure",
-    ABBR_SPE: f"{BASE_URL}/data/structurespecific",
+    ABBR_MSG: f"{BASE_URL_21}/message",
+    ABBR_GEN: f"{BASE_URL_21}/data/generic",
+    ABBR_COM: f"{BASE_URL_21}/common",
+    ABBR_STR: f"{BASE_URL_21}/structure",
+    ABBR_SPE: f"{BASE_URL_21}/data/structurespecific",
+}
+
+BASE_URL_30 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_0"
+
+NAMESPACES_30 = {
+    "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    ABBR_MSG: f"{BASE_URL_30}/message",
+    ABBR_COM: f"{BASE_URL_30}/common",
+    ABBR_STR: f"{BASE_URL_30}/structure",
+    ABBR_SPE: f"{BASE_URL_30}/data/structurespecific",
 }
 
 URN_DS_BASE = "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure="
@@ -82,11 +93,13 @@ def __namespaces_from_type(type_: Format) -> str:
         NotImplemented: If the MessageType is not implemented
     """
     if type_ == Format.STRUCTURE_SDMX_ML_2_1:
-        return f"xmlns:{ABBR_STR}={NAMESPACES[ABBR_STR]!r} "
+        return f"xmlns:{ABBR_STR}={NAMESPACES_21[ABBR_STR]!r} "
     elif type_ == Format.DATA_SDMX_ML_2_1_STR:
-        return f"xmlns:{ABBR_SPE}={NAMESPACES[ABBR_SPE]!r} "
+        return f"xmlns:{ABBR_SPE}={NAMESPACES_21[ABBR_SPE]!r} "
     elif type_ == Format.DATA_SDMX_ML_2_1_GEN:
-        return f"xmlns:{ABBR_GEN}={NAMESPACES[ABBR_GEN]!r} "
+        return f"xmlns:{ABBR_GEN}={NAMESPACES_21[ABBR_GEN]!r} "
+    elif type_ == Format.STRUCTURE_SDMX_ML_3_0:
+        return f"xmlns:{ABBR_STR}={NAMESPACES_30[ABBR_STR]!r} "
     else:
         raise NotImplemented(f"{type_} not implemented")
 
@@ -109,20 +122,31 @@ def create_namespaces(
     outfile = f'<?xml version="1.0" encoding="UTF-8"?>{nl}'
 
     outfile += f"<{ABBR_MSG}:{MESSAGE_TYPE_MAPPING[type_]} "
-    outfile += f'xmlns:xsi={NAMESPACES["xsi"]!r} '
-    outfile += f"xmlns:{ABBR_MSG}={NAMESPACES[ABBR_MSG]!r} "
-    outfile += __namespaces_from_type(type_)
-    outfile += (
-        f"xmlns:{ABBR_COM}={NAMESPACES[ABBR_COM]!r} "
-        f"{ss_namespaces}"
-        f'xsi:schemaLocation="{NAMESPACES[ABBR_MSG]} '
-        f'https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">'
-    )
+    if type_ == Format.STRUCTURE_SDMX_ML_3_0:
+        outfile += f'xmlns:xsi={NAMESPACES_30["xsi"]!r} '
+        outfile += f"xmlns:{ABBR_MSG}={NAMESPACES_30[ABBR_MSG]!r} "
+        outfile += __namespaces_from_type(type_)
+        outfile += (
+            f"xmlns:{ABBR_COM}={NAMESPACES_30[ABBR_COM]!r} "
+            f"{ss_namespaces}"
+            f'xsi:schemaLocation="{NAMESPACES_30[ABBR_MSG]} '
+            f'https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">'
+        )
+    else:
+        outfile += f'xmlns:xsi={NAMESPACES_21["xsi"]!r} '
+        outfile += f"xmlns:{ABBR_MSG}={NAMESPACES_21[ABBR_MSG]!r} "
+        outfile += __namespaces_from_type(type_)
+        outfile += (
+            f"xmlns:{ABBR_COM}={NAMESPACES_21[ABBR_COM]!r} "
+            f"{ss_namespaces}"
+            f'xsi:schemaLocation="{NAMESPACES_21[ABBR_MSG]} '
+            f'https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">'
+        )
 
     return outfile.replace("'", '"')
 
 
-MSG_CONTENT_PKG = OrderedDict(
+MSG_CONTENT_PKG_21 = OrderedDict(
     [
         (ORGS, "OrganisationSchemes"),
         (DATAFLOWS, "Dataflows"),
@@ -133,6 +157,22 @@ MSG_CONTENT_PKG = OrderedDict(
         (RULESETS, "Rulesets"),
         (TRANSFORMATIONS, "Transformations"),
         (UDOS, "UserDefinedOperators"),
+        (VTLMAPPINGS, "VtlMappings"),
+    ]
+)
+
+
+MSG_CONTENT_PKG_30 = OrderedDict(
+    [
+        (ORGS, "AgencySchemes"),
+        (DATAFLOWS, "Dataflows"),
+        (CODELISTS, "Codelists"),
+        (CONCEPTS, "ConceptSchemes"),
+        (DSDS, "DataStructures"),
+        (CONSTRAINTS, "ContentConstraints"),
+        (RULESETS, "RulesetSchemes"),
+        (TRANSFORMATIONS, "TransformationSchemes"),
+        (UDOS, "UserDefinedOperatorSchemes"),
         (VTLMAPPINGS, "VtlMappings"),
     ]
 )
