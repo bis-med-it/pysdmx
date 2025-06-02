@@ -5,7 +5,7 @@ import pytest
 from msgspec._core import DecodeError
 from msgspec.json import decode
 
-from pysdmx.api.gds import GDS_BASE_ENDPOINT, GdsClient
+from pysdmx.api.gds import GDS_BASE_ENDPOINT, GdsClient, AsyncGdsClient
 from pysdmx.api.qb import StructureType
 from pysdmx.api.qb.gds import GdsQuery, GdsType
 from pysdmx.api.qb.util import REST_ALL, REST_LATEST, ApiVersion
@@ -45,12 +45,25 @@ METHOD_MAP = {
     GdsUrnResolver: GdsClient.get_urn_resolver,
 }
 
+ASYNC_METHOD_MAP = {
+    GdsAgency: AsyncGdsClient.get_agencies,
+    GdsCatalog: AsyncGdsClient.get_catalogs,
+    GdsSdmxApi: AsyncGdsClient.get_sdmx_api,
+    GdsService: AsyncGdsClient.get_services,
+    GdsUrnResolver: AsyncGdsClient.get_urn_resolver,
+}
+
 BASE_SAMPLES_PATH = Path("tests/api/gds/samples")
 
 
 @pytest.fixture
 def gds() -> GdsClient:
     return GdsClient(GDS_BASE_ENDPOINT)
+
+
+@pytest.fixture
+def async_gds_client() -> AsyncGdsClient:
+    return AsyncGdsClient(GDS_BASE_ENDPOINT)
 
 
 @pytest.fixture
@@ -144,9 +157,47 @@ def generic_test(
     assert result == references
 
 
-@pytest.mark.parametrize(
-    ("endpoint", "value", "params", "resource", "version", "body"),
-    [
+async def generic_async_test(
+    mock,
+    gds,
+    query,
+    body,
+    value,
+    resource,
+    version,
+    params,
+    expected_class,
+    references,
+):
+    """Generic function to test async endpoints."""
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    get_params = {"ref": value}
+    if resource:
+        get_params["resource"] = resource
+    if version:
+        get_params["version"] = version
+    get_params = {**get_params, **params}
+
+    # Get and execute the get_{class} method
+    method = ASYNC_METHOD_MAP.get(expected_class)
+    result = await method(gds, **get_params)
+
+    # Common validations
+    assert len(mock.calls) == 1
+
+    assert mock.calls[0].request.headers["Accept"] == Format.GDS_JSON.value
+
+    if expected_class == GdsUrnResolver:
+        assert isinstance(result, expected_class)
+    else:
+        for item in result:
+            assert isinstance(item, expected_class)
+
+    assert result == references
+
+
+GENERIC_PARAMS = [
         ("agency", "BIS", {}, None, None, "agency_bis.json"),
         ("agency", "ESTAT", {}, None, None, "agency_estat.json"),
         (
@@ -219,7 +270,11 @@ def generic_test(
             None,
             "urn_resolver.json",
         ),
-    ],
+    ]
+
+@pytest.mark.parametrize(
+    ("endpoint", "value", "params", "resource", "version", "body"),
+    GENERIC_PARAMS,
     indirect=["body"],
 )
 def test_generic(
@@ -239,6 +294,40 @@ def test_generic(
     generic_test(
         respx_mock,
         gds,
+        query,
+        body,
+        value,
+        resource,
+        version,
+        params,
+        expected_class,
+        references,
+    )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("endpoint", "value", "params", "resource", "version", "body"),
+    GENERIC_PARAMS,
+    indirect=["body"],
+)
+async def test_async_generic(
+    respx_mock,
+    async_gds_client,
+    query,
+    body,
+    endpoint,
+    value,
+    params,
+    resource,
+    version,
+    expected_class,
+    references,
+):
+    """Generic test for all endpoints using async client."""
+    await generic_async_test(
+        respx_mock,
+        async_gds_client,
         query,
         body,
         value,

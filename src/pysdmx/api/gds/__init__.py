@@ -264,9 +264,9 @@ class AsyncGdsClient(__BaseGdsClient):
         Returns:
             The requested list of agencies.
         """
-        query = super()._agencies_q(ref)
+        query = super(AsyncGdsClient, self)._agencies_q(ref)
         out = await self.__fetch(query)
-        agencies = super()._out(out, self.reader.agencies)
+        agencies = super(AsyncGdsClient, self)._out(out, self.reader.agencies)
         return agencies
 
     async def get_catalogs(
