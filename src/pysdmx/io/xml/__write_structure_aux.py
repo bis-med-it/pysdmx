@@ -425,7 +425,7 @@ def __write_attribute_relation(
     measure_relationship = ""
     outfile = f"{indent}<{ABBR_STR}:{ATT_REL}>"
     att_rel = item.attachment_level
-    if att_rel is None or att_rel == "D":
+    if att_rel is None or (att_rel == "D" and not references_30):
         outfile += f"{add_indent(indent)}<{ABBR_STR}:None/>"
     else:
         # Check if it is a list of Dimensions or it is related to the
@@ -450,7 +450,7 @@ def __write_attribute_relation(
                     f"{indent}</{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
                 )
 
-            elif att_rel == "F":
+            elif att_rel == "D":
                 outfile += f"{add_indent(indent)}<{ABBR_STR}:Dataflow/>"
 
             else:
