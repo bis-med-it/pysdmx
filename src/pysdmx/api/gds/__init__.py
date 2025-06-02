@@ -13,7 +13,8 @@ from msgspec.json import decode
 
 from pysdmx.api.qb import (
     ApiVersion,
-    RestService, AsyncRestService,
+    AsyncRestService,
+    RestService,
 )
 from pysdmx.api.qb.gds import GdsQuery, GdsType
 from pysdmx.api.qb.util import REST_ALL
@@ -280,7 +281,7 @@ class AsyncGdsClient(__BaseGdsClient):
         detail: Optional[str] = None,
         references: Optional[str] = None,
     ) -> Sequence[GdsCatalog]:
-        """Get the list of catalogs for the supplied parameters asynchronously."""
+        """Get the list of catalogs for the supplied params asynchronously."""
         query = super()._catalogs_q(
             ref,
             resource,
@@ -305,7 +306,7 @@ class AsyncGdsClient(__BaseGdsClient):
     async def get_services(
         self, ref: str, resource: str = REST_ALL, version: str = REST_ALL
     ) -> Sequence[GdsService]:
-        """Get the list of services for the supplied parameters asynchronously."""
+        """Get a list of services for the supplied params asynchronously."""
         query = super()._services_q(ref, resource, version)
         response = await self.__fetch(query)
         services = super()._out(response, self.reader.services)

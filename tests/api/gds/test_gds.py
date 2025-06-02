@@ -5,7 +5,7 @@ import pytest
 from msgspec._core import DecodeError
 from msgspec.json import decode
 
-from pysdmx.api.gds import GDS_BASE_ENDPOINT, GdsClient, AsyncGdsClient
+from pysdmx.api.gds import GDS_BASE_ENDPOINT, AsyncGdsClient, GdsClient
 from pysdmx.api.qb import StructureType
 from pysdmx.api.qb.gds import GdsQuery, GdsType
 from pysdmx.api.qb.util import REST_ALL, REST_LATEST, ApiVersion
