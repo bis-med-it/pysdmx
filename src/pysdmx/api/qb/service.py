@@ -283,6 +283,13 @@ class AsyncRestService(_CoreRestService):
         out = await self.__fetch(q, f)
         return out
 
+    async def gds(self, query: GdsQuery) -> bytes:
+        """Execute a GDS query against the service."""
+        q = query.get_url(self._api_version)
+        f = GDS_FORMAT
+        out = await self.__fetch(q, f)
+        return out
+
     async def availability(self, query: AvailabilityQuery) -> bytes:
         """Execute an availability query against the service."""
         q = query.get_url(self._api_version, True)

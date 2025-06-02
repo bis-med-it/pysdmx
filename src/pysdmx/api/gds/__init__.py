@@ -13,7 +13,7 @@ from msgspec.json import decode
 
 from pysdmx.api.qb import (
     ApiVersion,
-    RestService,
+    RestService, AsyncRestService,
 )
 from pysdmx.api.qb.gds import GdsQuery, GdsType
 from pysdmx.api.qb.util import REST_ALL
@@ -223,5 +223,97 @@ class GdsClient(__BaseGdsClient):
         """
         query = super()._urn_resolver_q(ref)
         response = self.__fetch(query)
+        urn_resolution = super()._out(response, self.reader.urn_resolver)
+        return urn_resolution
+
+
+class AsyncGdsClient(__BaseGdsClient):
+    """A client to be used to retrieve metadata from the GDS asynchronously."""
+
+    def __init__(
+        self,
+        api_endpoint: str = GDS_BASE_ENDPOINT,
+        api_version: ApiVersion = API_VERSION,
+        pem: Optional[str] = None,
+    ) -> None:
+        """Instantiate a new client against the target endpoint.
+
+        Args:
+            api_endpoint: The endpoint of the targeted service.
+            api_version: Version of the API to execute the query.
+            pem: PEM file for unknown certificate authorities.
+        """
+        super().__init__(api_endpoint, pem)
+        self.__service = AsyncRestService(
+            self.api_endpoint,
+            api_version=api_version,
+            pem=pem,
+            timeout=10.0,
+        )
+
+    async def __fetch(self, query: GdsQuery) -> bytes:
+        """Fetch the requested metadata from the GDS service asynchronously."""
+        return await self.__service.gds(query)
+
+    async def get_agencies(self, ref: str) -> Sequence[GdsAgency]:
+        """Get the list of agencies for the supplied name asynchronously.
+
+        Args:
+            ref: The agency maintaining the agency scheme.
+
+        Returns:
+            The requested list of agencies.
+        """
+        query = super()._agencies_q(ref)
+        out = await self.__fetch(query)
+        agencies = super()._out(out, self.reader.agencies)
+        return agencies
+
+    async def get_catalogs(
+        self,
+        ref: str,
+        resource: str = REST_ALL,
+        version: str = REST_ALL,
+        resource_type: Optional[str] = None,
+        message_format: Optional[str] = None,
+        api_version: Optional[str] = None,
+        detail: Optional[str] = None,
+        references: Optional[str] = None,
+    ) -> Sequence[GdsCatalog]:
+        """Get the list of catalogs for the supplied parameters asynchronously."""
+        query = super()._catalogs_q(
+            ref,
+            resource,
+            version,
+            resource_type,
+            message_format,
+            api_version,
+            detail,
+            references,
+        )
+        response = await self.__fetch(query)
+        catalogs = super()._out(response, self.reader.catalogs)
+        return catalogs
+
+    async def get_sdmx_api(self, ref: str = REST_ALL) -> Sequence[GdsSdmxApi]:
+        """Get the list of SDMX API versions asynchronously."""
+        query = super()._sdmx_api_q(ref)
+        response = await self.__fetch(query)
+        sdmx_api = super()._out(response, self.reader.sdmx_api)
+        return sdmx_api
+
+    async def get_services(
+        self, ref: str, resource: str = REST_ALL, version: str = REST_ALL
+    ) -> Sequence[GdsService]:
+        """Get the list of services for the supplied parameters asynchronously."""
+        query = super()._services_q(ref, resource, version)
+        response = await self.__fetch(query)
+        services = super()._out(response, self.reader.services)
+        return services
+
+    async def get_urn_resolver(self, ref: str) -> GdsUrnResolver:
+        """Resolve a URN to its corresponding resource asynchronously."""
+        query = super()._urn_resolver_q(ref)
+        response = await self.__fetch(query)
         urn_resolution = super()._out(response, self.reader.urn_resolver)
         return urn_resolution
