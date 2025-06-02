@@ -40,8 +40,11 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     ID,
     LOCAL_REP,
     MANDATORY,
+    MANDATORY_LOW,
     MEASURE,
+    MEASURE_RELATIONSHIP,
     NAME,
+    OPTIONAL_LOW,
     PACKAGE,
     PAR_ID,
     PAR_VER,
@@ -61,6 +64,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     UDO_SCHEME,
     URI,
     URN,
+    USAGE,
     VERSION,
     VTL_MAPPING_SCHEME,
     VTLMAPPING,
@@ -353,7 +357,9 @@ def __write_item(item: Item, indent: str) -> str:
     return outfile
 
 
-def __write_components(item: DataStructureDefinition, indent: str) -> str:
+def __write_components(
+    item: DataStructureDefinition, indent: str, references_30: bool = False
+) -> str:
     """Writes the components to the XML file."""
     outfile = f"{indent}<{ABBR_STR}:{DSD_COMPS}>"
 
@@ -380,7 +386,11 @@ def __write_components(item: DataStructureDefinition, indent: str) -> str:
             outfile += f"{add_indent(indent)}<{ABBR_STR}:{role_name}List>"
             for comp in comps:
                 outfile += __write_component(
-                    comp, position, add_indent(add_indent(indent)), components
+                    comp,
+                    position,
+                    add_indent(add_indent(indent)),
+                    components,
+                    references_30,
                 )
                 position += 1
             outfile += f"{add_indent(indent)}</{ABBR_STR}:{role_name}List>"
@@ -389,9 +399,30 @@ def __write_components(item: DataStructureDefinition, indent: str) -> str:
     return outfile
 
 
+def __comps_to_relate(
+    att_rel: str, component_info: Dict[str, Any], references_30: bool = False
+) -> list[str]:
+    if "," in att_rel:
+        comps_to_relate = att_rel.split(",")
+    elif att_rel == "O":
+        if references_30:
+            comps_to_relate = []
+            for measure in component_info[PRIM_MEASURE]:
+                comps_to_relate.append(measure)
+        else:
+            comps_to_relate = [component_info[PRIM_MEASURE][0].id]
+    else:
+        comps_to_relate = [att_rel]
+    return comps_to_relate
+
+
 def __write_attribute_relation(
-    item: Component, indent: str, component_info: Dict[str, Any]
+    item: Component,
+    indent: str,
+    component_info: Dict[str, Any],
+    references_30: bool = False,
 ) -> str:
+    measure_relationship = ""
     outfile = f"{indent}<{ABBR_STR}:{ATT_REL}>"
     att_rel = item.attachment_level
     if att_rel is None or att_rel == "D":
@@ -399,45 +430,83 @@ def __write_attribute_relation(
     else:
         # Check if it is a list of Dimensions or it is related to the
         # primary measure
-        if "," in att_rel:
-            comps_to_relate = att_rel.split(",")
-        elif att_rel == "O":
-            comps_to_relate = [component_info[PRIM_MEASURE][0].id]
-        else:
-            comps_to_relate = [att_rel]
-
+        comps_to_relate = __comps_to_relate(
+            att_rel, component_info, references_30
+        )
         dim_names = [comp.id for comp in component_info[DIM]]
 
-        for comp_name in comps_to_relate:
-            role = Role.DIMENSION if comp_name in dim_names else Role.MEASURE
-            related_role = ROLE_MAPPING[role]
-            outfile += f"{add_indent(indent)}<{ABBR_STR}:{related_role}>"
-            outfile += (
-                f"{add_indent(add_indent(indent))}"
-                f"<{REF} {ID}={comp_name!r}/>"
-            )
-            outfile += f"{add_indent(indent)}</{ABBR_STR}:{related_role}>"
+        if references_30:
+            if att_rel == "O":
+                outfile += f"{add_indent(indent)}<{ABBR_STR}:Observation/>"
+                measure_relationship += (
+                    f"{indent}<{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
+                )
+                for comp_name in comps_to_relate:
+                    measure_relationship += (
+                        f"{add_indent(indent)}<{ABBR_STR}:{MEASURE}>"
+                        f"{comp_name.id}</{ABBR_STR}:{MEASURE}>"  # type: ignore[attr-defined]
+                    )
+                measure_relationship += (
+                    f"{indent}</{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
+                )
+
+            elif att_rel == "F":
+                outfile += f"{add_indent(indent)}<{ABBR_STR}:Dataflow/>"
+
+            else:
+                for comp_name in comps_to_relate:
+                    outfile += (
+                        f"{add_indent(indent)}<{ABBR_STR}:{DIM}>"
+                        f"{comp_name}</{ABBR_STR}:{DIM}>"
+                    )
+
+        else:
+            for comp_name in comps_to_relate:
+                role = (
+                    Role.DIMENSION if comp_name in dim_names else Role.MEASURE
+                )
+                related_role = ROLE_MAPPING[role]
+                outfile += f"{add_indent(indent)}<{ABBR_STR}:{related_role}>"
+                outfile += (
+                    f"{add_indent(add_indent(indent))}"
+                    f"<{REF} {ID}={comp_name!r}/>"
+                )
+                outfile += f"{add_indent(indent)}</{ABBR_STR}:{related_role}>"
+
     outfile += f"{indent}</{ABBR_STR}:{ATT_REL}>"
+    if measure_relationship:
+        outfile += measure_relationship
 
     return outfile
 
 
 def __write_component(
-    item: Component, position: int, indent: str, component_info: Dict[str, Any]
+    item: Component,
+    position: int,
+    indent: str,
+    component_info: Dict[str, Any],
+    references_30: bool = False,
 ) -> str:
     """Writes the component to the XML file."""
     role_name = ROLE_MAPPING[item.role]
     if role_name == DIM and item.id == "TIME_PERIOD":
         role_name = TIME_DIM
+    if references_30 and role_name == PRIM_MEASURE:
+        role_name = MEASURE
+
     head = f"{indent}<{ABBR_STR}:{role_name} "
 
     attributes = ""
     attribute_relation = ""
     if item.role == Role.ATTRIBUTE:
-        status = MANDATORY if item.required else CONDITIONAL
-        attributes += f"{AS_STATUS}={status!r} "
+        if references_30:
+            status = MANDATORY_LOW if item.required else OPTIONAL_LOW
+            attributes += f"{USAGE}={status!r} "
+        else:
+            status = MANDATORY if item.required else CONDITIONAL
+            attributes += f"{AS_STATUS}={status!r} "
         attribute_relation = __write_attribute_relation(
-            item, add_indent(indent), component_info
+            item, add_indent(indent), component_info, references_30
         )
 
     attributes += f"{ID}={item.id!r}"
@@ -450,9 +519,11 @@ def __write_component(
     attributes += ">"
 
     concept_identity = __write_concept_identity(
-        item.concept, add_indent(indent)
+        item.concept, add_indent(indent), references_30
     )
-    representation = __write_representation(item, add_indent(indent))
+    representation = __write_representation(
+        item, add_indent(indent), references_30
+    )
 
     outfile = head
     outfile += attributes
@@ -467,7 +538,9 @@ def __write_component(
 
 
 def __write_concept_identity(
-    identity: Union[Concept, ItemReference], indent: str
+    identity: Union[Concept, ItemReference],
+    indent: str,
+    references_30: bool = False,
 ) -> str:
     if isinstance(identity, ItemReference):
         ref = identity
@@ -475,25 +548,36 @@ def __write_concept_identity(
         ref = parse_item_urn(identity.urn)  # type: ignore[arg-type]
 
     outfile = f"{indent}<{ABBR_STR}:{CON_ID}>"
-    outfile += f"{add_indent(indent)}<{REF} "
-    outfile += f"{AGENCY_ID}={ref.agency!r} "
-    outfile += f"{CLASS}={CON!r} "
-    outfile += f"{ID}={ref.item_id!r} "
-    outfile += f"{PAR_ID}={ref.id!r} "
-    outfile += f"{PAR_VER}={ref.version!r} "
-    outfile += f"{PACKAGE}={CS.lower()!r}/>"
-    outfile += f"{indent}</{ABBR_STR}:{CON_ID}>"
+    if references_30:
+        outfile += (
+            f"urn:sdmx:org.sdmx.infomodel.conceptscheme.{ref.sdmx_type}={ref.agency}:"
+            f"{ref.id}({ref.version}).{ref.item_id}"
+            f"</{ABBR_STR}:{CON_ID}>"
+        )
+    else:
+        outfile += f"{add_indent(indent)}<{REF} "
+        outfile += f"{AGENCY_ID}={ref.agency!r} "
+        outfile += f"{CLASS}={CON!r} "
+        outfile += f"{ID}={ref.item_id!r} "
+        outfile += f"{PAR_ID}={ref.id!r} "
+        outfile += f"{PAR_VER}={ref.version!r} "
+        outfile += f"{PACKAGE}={CS.lower()!r}/>"
+        outfile += f"{indent}</{ABBR_STR}:{CON_ID}>"
 
     outfile = outfile.replace("'", '"')
     return outfile
 
 
-def __write_representation(item: Component, indent: str) -> str:
+def __write_representation(
+    item: Component, indent: str, references_30: bool = False
+) -> str:
     representation = ""
     local_representation = ""
 
     if item.local_codes is not None:
-        local_representation += __write_enumeration(item.local_codes, indent)
+        local_representation += __write_enumeration(
+            item.local_codes, indent, references_30
+        )
 
     if item.local_facets is not None or item.local_dtype is not None:
         type_ = ENUM_FORMAT if item.local_codes is not None else TEXT_FORMAT
@@ -531,18 +615,25 @@ def __write_text_format(
     return outfile
 
 
-def __write_enumeration(codes: Union[Codelist, Hierarchy], indent: str) -> str:
+def __write_enumeration(
+    codes: Union[Codelist, Hierarchy], indent: str, references_30: bool = False
+) -> str:
     """Writes the enumeration to the XML file."""
     ref = parse_short_urn(codes.short_urn)
-
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{ENUM}>"
-    outfile += f"{add_indent(add_indent(indent))}<{REF} "
-    outfile += f"{AGENCY_ID}={ref.agency!r} "
-    outfile += f"{CLASS}={CL!r} "
-    outfile += f"{ID}={ref.id!r} "
-    outfile += f"{PACKAGE}={CL_LOW!r} "
-    outfile += f"{VERSION}={ref.version!r}/>"
-    outfile += f"{add_indent(indent)}</{ABBR_STR}:{ENUM}>"
+    if references_30:
+        outfile += (
+            f"urn:sdmx:org.sdmx.infomodel.codelist.{ref.sdmx_type}={ref.agency}:{ref.id}({ref.version})"
+            f"</{ABBR_STR}:{ENUM}>"
+        )
+    else:
+        outfile += f"{add_indent(add_indent(indent))}<{REF} "
+        outfile += f"{AGENCY_ID}={ref.agency!r} "
+        outfile += f"{CLASS}={CL!r} "
+        outfile += f"{ID}={ref.id!r} "
+        outfile += f"{PACKAGE}={CL_LOW!r} "
+        outfile += f"{VERSION}={ref.version!r}/>"
+        outfile += f"{add_indent(indent)}</{ABBR_STR}:{ENUM}>"
 
     outfile = outfile.replace("'", '"')
     return outfile
@@ -575,7 +666,9 @@ def __write_scheme(
     data = __write_maintainable(item_scheme, indent, references_30)
 
     if scheme == DSD:
-        components = __write_components(item_scheme, add_indent(indent))
+        components = __write_components(
+            item_scheme, add_indent(indent), references_30
+        )
 
     if scheme not in [
         DSD,
@@ -586,7 +679,7 @@ def __write_scheme(
         VTL_MAPPING_SCHEME,
     ]:
         data["Attributes"] += (
-            f" isPartial={str(item_scheme.is_final).lower()!r}"
+            f" isPartial={str(item_scheme.is_partial).lower()!r}"
         )
     if scheme in [RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME, VTL_MAPPING_SCHEME]:
         data["Attributes"] += f" {_write_vtl(item_scheme, indent)}"
