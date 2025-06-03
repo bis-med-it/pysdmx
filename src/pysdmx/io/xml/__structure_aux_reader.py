@@ -607,11 +607,11 @@ class StructureParser(Struct):
                     else:
                         references.append(reference)
 
-                    if not as_list:
-                        json_elem[new_key] = references[0]
-                    else:
-                        json_elem[new_key] = references
-                    json_elem.pop(scheme)
+                if not as_list:
+                    json_elem[new_key] = references[0]
+                else:
+                    json_elem[new_key] = references
+                json_elem.pop(scheme)
 
         extract_references(RULE_SCHEME, "ruleset_schemes", self.rulesets)
         extract_references(
