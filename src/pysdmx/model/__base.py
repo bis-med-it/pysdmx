@@ -91,6 +91,16 @@ class AnnotableArtefact(
             processed_output.append(f"{attr}: {value}")
         return f"{', '.join(processed_output)}"
 
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # Omit empty sequences
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
+
 
 class IdentifiableArtefact(AnnotableArtefact, frozen=True, omit_defaults=True):
     """Identifiable Artefact class.

@@ -181,3 +181,26 @@ def test_tostr_empty_items(id, name, agency, version):
     assert s == (
         "id: id, name: name, version: 1.42.0, agency: 5B0"
     )
+
+def test_repr(id, name, agency, version, codes):
+    cl = Codelist(
+        id=id, name=name, agency=agency, items=codes, version=version
+    )
+
+    r = repr(cl)
+
+    assert r == (
+        "Codelist(id='id', name='name', version='1.42.0', agency='5B0', items=[Code(id='child1', name='Child 1'), Code(id='child2', name='Child 2')])"
+    )
+
+def test_repr_empty_items(id, name, agency, version):
+    codes = []
+    cl = Codelist(
+        id=id, name=name, agency=agency, items=codes, version=version
+    )
+
+    r = repr(cl)
+
+    assert r == (
+        "Codelist(id='id', name='name', version='1.42.0', agency='5B0')"
+    )
