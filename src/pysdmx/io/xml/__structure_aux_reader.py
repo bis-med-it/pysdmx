@@ -40,6 +40,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     CS,
     CUSTOM_TYPE,
     CUSTOM_TYPE_SCHEME,
+    CUSTOM_TYPE_SCHEMES,
     CUSTOM_TYPES,
     DEPARTMENT,
     DESC,
@@ -83,6 +84,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     NAME,
     NAME_PER,
     NAME_PER_SCHEME,
+    NAME_PER_SCHEMES,
     NAME_PERS,
     OBSERVATION,
     ORGS,
@@ -131,7 +133,8 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VTL_CON_MAPP,
     VTL_MAPPING_SCHEME,
     VTLMAPPING,
-    VTLMAPPINGS, VTLMAPPING_SCHEMES, NAME_PER_SCHEMES, CUSTOM_TYPE_SCHEMES,
+    VTLMAPPING_SCHEMES,
+    VTLMAPPINGS,
 )
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (
