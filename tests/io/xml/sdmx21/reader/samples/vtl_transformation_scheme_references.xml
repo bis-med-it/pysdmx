@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xml="http://www.w3.org/XML/1998/namespace"
+               xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+               xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+               xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+    <mes:Header>
+        <mes:ID>IREF277048</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2025-05-30T17:55:01Z</mes:Prepared>
+        <mes:Sender id="Unknown"/>
+        <mes:Receiver id="not_supplied"/>
+    </mes:Header>
+    <mes:Structures>
+        <str:Transformations>
+            <str:TransformationScheme urn="urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=MD:TS1(1.0)"
+                                      vtlVersion="2.1" isExternalReference="false" agencyID="MD" id="TS1"
+                                      isFinal="false" version="1.0">
+                <com:Name xml:lang="en">Test Transformation Scheme Extra Objects</com:Name>
+                <str:Transformation urn="urn:sdmx:org.sdmx.infomodel.transformation.Transformation=MD:TS1(1.0).T1"
+                                    isPersistent="true" id="T1">
+                    <com:Name xml:lang="en">Test Transformation</com:Name>
+                    <str:Expression>DS_1 + 1</str:Expression>
+                    <str:Result>DS_r</str:Result>
+                </str:Transformation>
+                <str:VtlMappingScheme>
+                    <Ref package="transformation" agencyID="MD" id="VMS1" version="1.0" class="VtlMappingScheme"/>
+                </str:VtlMappingScheme>
+                <str:NamePersonalisationScheme>
+                    <Ref package="transformation" agencyID="MD" id="NPS1" version="1.0"
+                         class="NamePersonalisationScheme"/>
+                </str:NamePersonalisationScheme>
+                <str:CustomTypeScheme>
+                    <Ref package="transformation" agencyID="MD" id="CTS1" version="1.0" class="CustomTypeScheme"/>
+                </str:CustomTypeScheme>
+                <str:RulesetScheme>
+                    <Ref package="transformation" agencyID="MD" id="TEST-RS" version="1.0" class="RulesetScheme"/>
+                </str:RulesetScheme>
+                <str:UserDefinedOperatorScheme>
+                    <Ref package="transformation" agencyID="MD" id="TEST-UDS" version="1.0"
+                         class="UserDefinedOperatorScheme"/>
+                </str:UserDefinedOperatorScheme>
+            </str:TransformationScheme>
+        </str:Transformations>
+    </mes:Structures>
+</mes:Structure>

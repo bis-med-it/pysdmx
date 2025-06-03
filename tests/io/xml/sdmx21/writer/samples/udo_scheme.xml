@@ -10,7 +10,7 @@
 	</mes:Header>
 	<mes:Structures>
 		<str:UserDefinedOperators>
-			<str:UserDefinedOperatorScheme id="TEST_UDO_SCHEME" urn="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=MD:TEST_UDO_SCHEME(1.0)" version="1.0" isExternalReference="false" isFinal="false" agencyID="MD"  vtlVersion="2.0">
+			<str:UserDefinedOperatorScheme id="TEST_UDO_SCHEME" urn="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=MD:TEST_UDO_SCHEME(1.0)" version="1.0" isExternalReference="false" isFinal="false" agencyID="MD" isPartial="false"  vtlVersion="2.0">
 				<com:Name xml:lang="en">Testing UDO Scheme</com:Name>
 				<str:UserDefinedOperator id="TEST_UDO" urn="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=MD:TEST_UDO_SCHEME(1.0).TEST_UDO">
 					<com:Name xml:lang="en">UDO Testing</com:Name>
