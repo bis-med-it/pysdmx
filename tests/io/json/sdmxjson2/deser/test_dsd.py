@@ -14,7 +14,6 @@ def body():
 
 
 def test_dsd_only(body):
-
     res = msgspec.json.Decoder(JsonDataStructuresMessage).decode(body)
     dsds = res.to_model()
 

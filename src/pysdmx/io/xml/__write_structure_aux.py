@@ -28,6 +28,8 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     CONDITIONAL,
     CORE_REP,
     CS,
+    CUSTOM_TYPE,
+    CUSTOM_TYPE_SCHEME,
     DEPARTMENT,
     DFW,
     DIM,
@@ -44,6 +46,8 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     MEASURE,
     MEASURE_RELATIONSHIP,
     NAME,
+    NAME_PER,
+    NAME_PER_SCHEME,
     OPTIONAL_LOW,
     PACKAGE,
     PAR_ID,
@@ -74,15 +78,21 @@ from pysdmx.model import (
     Codelist,
     Concept,
     ConceptScheme,
+    CustomType,
+    CustomTypeScheme,
     DataType,
     Facets,
     Hierarchy,
+    NamePersonalisation,
+    NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
     Transformation,
     TransformationScheme,
     UserDefinedOperator,
     UserDefinedOperatorScheme,
+    VtlCodelistMapping,
+    VtlConceptMapping,
     VtlDataflowMapping,
     VtlMappingScheme,
     VtlScheme,
@@ -109,6 +119,7 @@ from pysdmx.model.dataflow import (
 from pysdmx.util import (
     parse_item_urn,
     parse_short_urn,
+    parse_urn,
 )
 
 ANNOTATION_WRITER = OrderedDict(
@@ -132,6 +143,9 @@ STR_TYPES = Union[
     ConceptScheme,
     DataStructureDefinition,
     Dataflow,
+    CustomTypeScheme,
+    VtlMappingScheme,
+    NamePersonalisationScheme,
     RulesetScheme,
     UserDefinedOperatorScheme,
     TransformationScheme,
@@ -143,10 +157,12 @@ STR_DICT_TYPE_LIST_21 = {
     ConceptScheme: "Concepts",
     DataStructureDefinition: "DataStructures",
     Dataflow: "Dataflows",
+    CustomTypeScheme: "CustomTypes",
+    VtlMappingScheme: "VtlMappings",
+    NamePersonalisationScheme: "NamePersonalisations",
     RulesetScheme: "Rulesets",
     UserDefinedOperatorScheme: "UserDefinedOperators",
     TransformationScheme: "Transformations",
-    VtlMappingScheme: "VtlMappings",
 }
 
 
@@ -177,9 +193,7 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
         if annotation.id is None:
             outfile += f"{child2}<{ABBR_COM}:Annotation>"
         else:
-            outfile += (
-                f"{child2}<{ABBR_COM}:Annotation " f"id={annotation.id!r}>"
-            )
+            outfile += f"{child2}<{ABBR_COM}:Annotation id={annotation.id!r}>"
         outfile = outfile.replace("'", '"')
 
         for attr, label in ANNOTATION_WRITER.items():
@@ -193,9 +207,7 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
                 else:
                     head_tag = f"{ABBR_COM}:{label}"
 
-                outfile += (
-                    f"{child3}<{head_tag}>" f"{value}" f"</{ABBR_COM}:{label}>"
-                )
+                outfile += f"{child3}<{head_tag}>{value}</{ABBR_COM}:{label}>"
 
         outfile += f"{child2}</{ABBR_COM}:Annotation>"
     outfile += f"{child1}</{ABBR_COM}:Annotations>"
@@ -245,7 +257,7 @@ def __write_nameable(
             ]
         elif attr == "Name":
             raise Invalid(
-                "Name is required for NameableArtefact" f" id= {nameable.id}"
+                f"Name is required for NameableArtefact id= {nameable.id}"
             )
 
     return outfile
@@ -673,15 +685,18 @@ def __write_scheme(
     if scheme not in [
         DSD,
         DFW,
-        RULE_SCHEME,
-        UDO_SCHEME,
-        TRANS_SCHEME,
-        VTL_MAPPING_SCHEME,
     ]:
         data["Attributes"] += (
             f" isPartial={str(item_scheme.is_partial).lower()!r}"
         )
-    if scheme in [RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME, VTL_MAPPING_SCHEME]:
+    if scheme in [
+        RULE_SCHEME,
+        UDO_SCHEME,
+        TRANS_SCHEME,
+        VTL_MAPPING_SCHEME,
+        CUSTOM_TYPE_SCHEME,
+        NAME_PER_SCHEME,
+    ]:
         data["Attributes"] += f" {_write_vtl(item_scheme, indent)}"
 
     outfile = ""
@@ -705,10 +720,19 @@ def __write_scheme(
         UDO_SCHEME,
         TRANS_SCHEME,
         VTL_MAPPING_SCHEME,
+        CUSTOM_TYPE_SCHEME,
+        NAME_PER_SCHEME,
     ]:
         for item in item_scheme.items:
             outfile += __write_item(item, add_indent(indent))
-    if scheme in [RULE_SCHEME, UDO_SCHEME, TRANS_SCHEME, VTL_MAPPING_SCHEME]:
+    if scheme in [
+        RULE_SCHEME,
+        UDO_SCHEME,
+        TRANS_SCHEME,
+        VTL_MAPPING_SCHEME,
+        CUSTOM_TYPE_SCHEME,
+        NAME_PER_SCHEME,
+    ]:
         for item in item_scheme.items:
             outfile += _write_vtl(item, add_indent(indent))
         outfile += _write_vtl_references(item_scheme, add_indent(indent))
@@ -825,7 +849,7 @@ def __write_structures(
     return outfile
 
 
-def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
+def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:  # noqa: C901
     """Writes the VTL attribute to the XML file for a single item.
 
     This function writes an item or an item scheme to the XML file,
@@ -867,8 +891,7 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
             data += f"{add_indent(indent)}<{ABBR_STR}:Result>"
             data += f"{item_or_scheme.result}</{ABBR_STR}:Result>"
             attrib += (
-                f" isPersistent="
-                f"{str(item_or_scheme.is_persistent).lower()!r}"
+                f" isPersistent={str(item_or_scheme.is_persistent).lower()!r}"
             )
 
         if isinstance(item_or_scheme, UserDefinedOperator):
@@ -880,6 +903,7 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
             )
         if isinstance(item_or_scheme, VtlDataflowMapping):
             label = f"{ABBR_STR}:{VTLMAPPING}"
+            attrib += f" alias={item_or_scheme.dataflow_alias!r}"
             data += f"{add_indent(indent)}<{ABBR_STR}:Dataflow>"
             reference = item_or_scheme.dataflow
             data += (
@@ -888,7 +912,134 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:
                 f"version={reference.version!r} class={DFW!r} />"
                 f"{add_indent(indent)}</{ABBR_STR}:Dataflow>"
             )
-            attrib += f" alias={item_or_scheme.dataflow_alias!r}"
+            if item_or_scheme.to_vtl_mapping_method is not None:
+                to_vtl = item_or_scheme.to_vtl_mapping_method
+                data += (
+                    f"{add_indent(indent)}<{ABBR_STR}:ToVtlMapping "
+                    f"method={to_vtl.method!r}>"
+                )
+                indent_2 = add_indent(add_indent(indent))
+                data += f"{indent_2}<{ABBR_STR}:ToVtlSubSpace>"
+                for key in to_vtl.to_vtl_sub_space:
+                    data += (
+                        f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
+                        f"</{ABBR_STR}:Key>"
+                    )
+                data += f"{indent_2}</{ABBR_STR}:ToVtlSubSpace>"
+                data += f"{add_indent(indent)}</{ABBR_STR}:ToVtlMapping>"
+
+            if item_or_scheme.from_vtl_mapping_method is not None:
+                from_vtl = item_or_scheme.from_vtl_mapping_method
+                data += (
+                    f"{add_indent(indent)}<{ABBR_STR}:FromVtlMapping "
+                    f"method={from_vtl.method!r}>"
+                )
+                indent_2 = add_indent(add_indent(indent))
+                data += f"{indent_2}<{ABBR_STR}:FromVtlSuperSpace>"
+                for key in from_vtl.from_vtl_sub_space:
+                    data += (
+                        f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
+                        f"</{ABBR_STR}:Key>"
+                    )
+                data += f"{indent_2}</{ABBR_STR}:FromVtlSuperSpace>"
+                data += f"{add_indent(indent)}</{ABBR_STR}:FromVtlMapping>"
+
+        if isinstance(item_or_scheme, VtlCodelistMapping):
+            label = f"{ABBR_STR}:{VTLMAPPING}"
+            data += f"{add_indent(indent)}<{ABBR_STR}:Codelist>"
+            ref_codelist = (
+                item_or_scheme.codelist
+                if isinstance(item_or_scheme.codelist, Reference)
+                else parse_urn(item_or_scheme.codelist)
+                if isinstance(item_or_scheme.codelist, str)
+                else parse_short_urn(item_or_scheme.codelist.short_urn)
+            )
+
+            data += (
+                f"{indent}\t\t<{REF} package='codelist' "
+                f"agencyID={ref_codelist.agency!r} id={ref_codelist.id!r} "
+                f"version={ref_codelist.version!r} class={CL!r} />"
+                f"{add_indent(indent)}</{ABBR_STR}:Codelist>"
+            )
+            attrib += f" alias={item_or_scheme.codelist_alias!r}"
+
+        if isinstance(item_or_scheme, VtlConceptMapping) and not isinstance(
+            item_or_scheme.concept, Concept
+        ):
+            # TODO: Add handling for VtlConceptMapping
+            #  when the Concept object is referenced
+            label = f"{ABBR_STR}:{VTLMAPPING}"
+            data += f"{add_indent(indent)}<{ABBR_STR}:Concept>"
+            ref_concept = (
+                parse_item_urn(item_or_scheme.concept)
+                if isinstance(item_or_scheme.concept, str)
+                else item_or_scheme.concept
+            )
+            data += (
+                f"{indent}\t\t"
+                f"<{REF} maintainableParentID={ref_concept.id!r} "
+                f"package='conceptscheme' "
+                f"agencyID={ref_concept.agency!r} "
+                f"id={ref_concept.item_id!r} "
+                f"maintainableParentVersion={ref_concept.version!r} "
+                f"class={CON!r} />"
+                f"{add_indent(indent)}</{ABBR_STR}:Concept>"
+            )
+            attrib += f" alias={item_or_scheme.concept_alias!r}"
+
+        if isinstance(item_or_scheme, CustomType):
+            label = f"{ABBR_STR}:{CUSTOM_TYPE}"
+            data += (
+                f"{add_indent(indent)}<{ABBR_STR}:VtlScalarType>"
+                f"{item_or_scheme.vtl_scalar_type}"
+                f"</{ABBR_STR}:VtlScalarType>"
+            )
+            data += (
+                f"{add_indent(indent)}<{ABBR_STR}:DataType>"
+                f"{item_or_scheme.data_type}"
+                f"</{ABBR_STR}:DataType>"
+            )
+            data += (
+                (
+                    f"{add_indent(indent)}<{ABBR_STR}:VtlLiteralFormat>"
+                    f"{item_or_scheme.vtl_literal_format}"
+                    f"</{ABBR_STR}:VtlLiteralFormat>"
+                )
+                if item_or_scheme.vtl_literal_format is not None
+                else ""
+            )
+            data += (
+                (
+                    f"{add_indent(indent)}<{ABBR_STR}:OutputFormat>"
+                    f"{item_or_scheme.output_format}"
+                    f"</{ABBR_STR}:OutputFormat>"
+                )
+                if item_or_scheme.output_format is not None
+                else ""
+            )
+            data += (
+                (
+                    f"{add_indent(indent)}<{ABBR_STR}:NullValue>"
+                    f"{item_or_scheme.null_value}"
+                    f"</{ABBR_STR}:NullValue>"
+                )
+                if item_or_scheme.null_value is not None
+                else ""
+            )
+
+        if isinstance(item_or_scheme, NamePersonalisation):
+            label = f"{ABBR_STR}:{NAME_PER}"
+            attrib += f" vtlArtefact={item_or_scheme.vtl_artefact!r} "
+            data += (
+                f"{add_indent(indent)}<{ABBR_STR}:VtlDefaultName>"
+                f"{item_or_scheme.vtl_default_name}"
+                f"</{ABBR_STR}:VtlDefaultName>"
+            )
+            data += (
+                f"{add_indent(indent)}<{ABBR_STR}:PersonalisedName>"
+                f"{item_or_scheme.personalised_name}"
+                f"</{ABBR_STR}:PersonalisedName>"
+            )
 
         outfile += f"{indent}<{label}{attrib}>"
         outfile += data
@@ -942,13 +1093,28 @@ def _write_vtl_references(scheme: ItemScheme, indent: str) -> str:
 
     outfile = ""
     if isinstance(scheme, TransformationScheme):
+        outfile += process_references(
+            scheme.vtl_mapping_scheme, "VtlMappingScheme"
+        )
+        outfile += process_references(
+            scheme.name_personalisation_scheme, "NamePersonalisationScheme"
+        )
+        outfile += process_references(
+            scheme.custom_type_scheme, "CustomTypeScheme"
+        )
         outfile += process_references(scheme.ruleset_schemes, "RulesetScheme")
         outfile += process_references(
             scheme.user_defined_operator_schemes, "UserDefinedOperatorScheme"
         )
     if isinstance(scheme, UserDefinedOperatorScheme):
+        outfile += process_references(
+            scheme.vtl_mapping_scheme, "VtlMappingScheme"
+        )
         outfile += process_references(scheme.ruleset_schemes, "RulesetScheme")
-
+    if isinstance(scheme, RulesetScheme):
+        outfile += process_references(
+            scheme.vtl_mapping_scheme, "VtlMappingScheme"
+        )
     outfile = outfile.replace("'", '"')
 
     return outfile

@@ -440,7 +440,9 @@ class StructureMap(MaintainableArtefact, frozen=True, omit_defaults=True):
         """Return the number of mapping rules in the structure map."""
         return len(self.maps)
 
-    def __getitem__(self, id_: str) -> Optional[
+    def __getitem__(
+        self, id_: str
+    ) -> Optional[
         Sequence[
             Union[
                 ComponentMap,
