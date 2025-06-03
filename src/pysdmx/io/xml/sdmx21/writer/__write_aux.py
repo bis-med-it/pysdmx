@@ -11,10 +11,12 @@ from pysdmx.io.format import Format
 from pysdmx.io.xml.sdmx21.__tokens import (
     ANNOTATIONS_LOW,
     CONTACTS_LOW,
+    CUSTOM_TYPES,
     DESC_LOW,
     DFW,
     DFWS_LOW,
     DSD,
+    NAME_PERS,
     PROV_AGREMENT,
     RULESETS,
     STR_USAGE,
@@ -109,7 +111,7 @@ def create_namespaces(
     outfile = f'<?xml version="1.0" encoding="UTF-8"?>{nl}'
 
     outfile += f"<{ABBR_MSG}:{MESSAGE_TYPE_MAPPING[type_]} "
-    outfile += f'xmlns:xsi={NAMESPACES["xsi"]!r} '
+    outfile += f"xmlns:xsi={NAMESPACES['xsi']!r} "
     outfile += f"xmlns:{ABBR_MSG}={NAMESPACES[ABBR_MSG]!r} "
     outfile += __namespaces_from_type(type_)
     outfile += (
@@ -130,10 +132,12 @@ MSG_CONTENT_PKG = OrderedDict(
         (CONCEPTS, "Concepts"),
         (DSDS, "DataStructures"),
         (CONSTRAINTS, "ContentConstraints"),
+        (CUSTOM_TYPES, "CustomTypes"),
+        (VTLMAPPINGS, "VtlMappings"),
+        (NAME_PERS, "NamePersonalisations"),
         (RULESETS, "Rulesets"),
         (TRANSFORMATIONS, "Transformations"),
         (UDOS, "UserDefinedOperators"),
-        (VTLMAPPINGS, "VtlMappings"),
     ]
 )
 
@@ -308,9 +312,7 @@ def __write_header(
             return ""
         child2 = "\t\t" if prettyprint else ""
         return (
-            f"{nl}{child2}<{ABBR_MSG}:{element}>"
-            f"{value}"
-            f"</{ABBR_MSG}:{element}>"
+            f"{nl}{child2}<{ABBR_MSG}:{element}>{value}</{ABBR_MSG}:{element}>"
         )
 
     nl = "\n" if prettyprint else ""

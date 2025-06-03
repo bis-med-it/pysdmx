@@ -10,7 +10,7 @@
 	</mes:Header>
 	<mes:Structures>
 		<str:Transformations>
-			<str:TransformationScheme id="TEST_TS" urn="urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=MD:TEST_TS(1.0)" version="1.0" isExternalReference="false" isFinal="false" agencyID="MD"  vtlVersion="2.0">
+			<str:TransformationScheme id="TEST_TS" urn="urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=MD:TEST_TS(1.0)" version="1.0" isExternalReference="false" isFinal="false" agencyID="MD" isPartial="false"  vtlVersion="2.0">
 				<com:Name xml:lang="en">Testing TS</com:Name>
 				<str:Transformation id="TEST_Tr" urn="urn:sdmx:org.sdmx.infomodel.transformation.Transformation=MD:TEST_TS(1.0).TEST_Tr" isPersistent="false">
 					<com:Name xml:lang="en">Testing Transformation</com:Name>

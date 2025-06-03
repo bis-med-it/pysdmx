@@ -98,6 +98,16 @@ def read_sdmx(  # noqa: C901
 
         # SDMX-ML 2.1 Error
         read_error(input_str, validate=validate)
+    elif read_format == Format.DATA_SDMX_ML_3_0:
+        from pysdmx.io.xml.header import read as read_header
+        from pysdmx.io.xml.sdmx30.reader.structure_specific import (
+            read as read_str_spe,
+        )
+
+        header = read_header(input_str, validate=validate)
+
+        # SDMX-ML 3.0 Structure Specific Data
+        result_data = read_str_spe(input_str, validate=validate)
     elif read_format == Format.DATA_SDMX_CSV_1_0_0:
         from pysdmx.io.csv.sdmx10.reader import read as read_csv_v1
 
@@ -118,6 +128,7 @@ def read_sdmx(  # noqa: C901
         Format.DATA_SDMX_CSV_2_0_0,
         Format.DATA_SDMX_ML_2_1_GEN,
         Format.DATA_SDMX_ML_2_1_STR,
+        Format.DATA_SDMX_ML_3_0,
     ):
         # TODO: Add here the Schema download for Datasets, based on structure
         # TODO: Ensure we have changed the signature of the data readers

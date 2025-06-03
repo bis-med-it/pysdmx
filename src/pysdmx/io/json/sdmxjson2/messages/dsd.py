@@ -1,24 +1,26 @@
 """Collection of SDMX-JSON schemas for SDMX-REST schema queries."""
 
-from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple
 
 from msgspec import Struct
 
+from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist, JsonValuelist
 from pysdmx.io.json.sdmxjson2.messages.concept import (
     JsonConcept,
     JsonConceptScheme,
 )
 from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
 from pysdmx.io.json.sdmxjson2.messages.core import (
-    JsonAnnotation,
     JsonRepresentation,
+    MaintainableType,
 )
 from pysdmx.model import (
     ArrayBoundaries,
     Codelist,
     Component,
     Components,
+    Concept,
+    DataStructureDefinition,
     DataType,
     Facets,
     Role,
@@ -111,7 +113,13 @@ class JsonDimension(Struct, frozen=True):
         cons: Dict[str, Sequence[str]],
     ) -> Component:
         """Returns a component."""
-        c = _find_concept(cs, self.conceptIdentity)
+        c = (
+            _find_concept(cs, self.conceptIdentity).to_model(cls)
+            if cs
+            else parse_item_urn(self.conceptIdentity)
+        )
+        name = c.name if isinstance(c, Concept) else None
+        desc = c.description if isinstance(c, Concept) else None
         dt, facets, codes, ab = _get_representation(
             self.id, self.localRepresentation, cls, cons
         )
@@ -119,11 +127,11 @@ class JsonDimension(Struct, frozen=True):
             id=self.id,
             required=True,
             role=Role.DIMENSION,
-            concept=c.to_model(cls),
+            concept=c,
             local_dtype=dt,
             local_facets=facets,
-            name=c.name,
-            description=c.description,
+            name=name,
+            description=desc,
             local_codes=codes,
             array_def=ab,
         )
@@ -148,7 +156,13 @@ class JsonAttribute(Struct, frozen=True):
         groups: Sequence[JsonGroup],
     ) -> Component:
         """Returns a component."""
-        c = _find_concept(cs, self.conceptIdentity)
+        c = (
+            _find_concept(cs, self.conceptIdentity).to_model(cls)
+            if cs
+            else parse_item_urn(self.conceptIdentity)
+        )
+        name = c.name if isinstance(c, Concept) else None
+        desc = c.description if isinstance(c, Concept) else None
         dt, facets, codes, ab = _get_representation(
             self.id, self.localRepresentation, cls, cons
         )
@@ -161,11 +175,11 @@ class JsonAttribute(Struct, frozen=True):
             id=self.id,
             required=req,
             role=Role.ATTRIBUTE,
-            concept=c.to_model(cls),
+            concept=c,
             local_dtype=dt,
             local_facets=facets,
-            name=c.name,
-            description=c.description,
+            name=name,
+            description=desc,
             local_codes=codes,
             attachment_level=lvl,
             array_def=ab,
@@ -188,7 +202,13 @@ class JsonMeasure(Struct, frozen=True):
         cons: Dict[str, Sequence[str]],
     ) -> Component:
         """Returns a component."""
-        c = _find_concept(cs, self.conceptIdentity)
+        c = (
+            _find_concept(cs, self.conceptIdentity).to_model(cls)
+            if cs
+            else parse_item_urn(self.conceptIdentity)
+        )
+        name = c.name if isinstance(c, Concept) else None
+        desc = c.description if isinstance(c, Concept) else None
         dt, facets, codes, ab = _get_representation(
             self.id, self.localRepresentation, cls, cons
         )
@@ -197,11 +217,11 @@ class JsonMeasure(Struct, frozen=True):
             id=self.id,
             required=req,
             role=Role.MEASURE,
-            concept=c.to_model(cls),
+            concept=c,
             local_dtype=dt,
             local_facets=facets,
-            name=c.name,
-            description=c.description,
+            name=name,
+            description=desc,
             local_codes=codes,
             array_def=ab,
         )
@@ -220,7 +240,7 @@ class JsonAttributes(Struct, frozen=True):
         groups: Sequence[JsonGroup],
     ) -> List[Component]:
         """Returns the list of attributes."""
-        return [d.to_model(cs, cls, cons, groups) for d in self.attributes]
+        return [a.to_model(cs, cls, cons, groups) for a in self.attributes]
 
 
 class JsonDimensions(Struct, frozen=True):
@@ -236,11 +256,11 @@ class JsonDimensions(Struct, frozen=True):
         cons: Dict[str, Sequence[str]],
     ) -> List[Component]:
         """Returns the list of dimensions."""
-        c = []
-        c.extend([d.to_model(cs, cls, cons) for d in self.dimensions])
+        dims = []
+        dims.extend([d.to_model(cs, cls, cons) for d in self.dimensions])
         if self.timeDimension:
-            c.append(self.timeDimension.to_model(cs, cls, cons))
-        return c
+            dims.append(self.timeDimension.to_model(cs, cls, cons))
+        return dims
 
 
 class JsonMeasures(Struct, frozen=True):
@@ -269,23 +289,26 @@ class JsonComponents(Struct, frozen=True):
     def to_model(
         self,
         cs: Sequence[JsonConceptScheme],
-        cls: Sequence[Codelist],
+        cls: Sequence[JsonCodelist],
+        vls: Sequence[JsonValuelist],
         constraints: Sequence[JsonDataConstraint],
     ) -> Components:
-        """Returns the schema for this DSD."""
+        """Returns the components for this DSD."""
+        enums = [cl.to_model() for cl in cls]
+        enums.extend([vl.to_model() for vl in vls])
         comps = []
         if constraints and constraints[0].cubeRegions:
             cons = constraints[0].cubeRegions[0].to_map()
         else:
             cons = {}
-        comps.extend(self.dimensionList.to_model(cs, cls, cons))
+        comps.extend(self.dimensionList.to_model(cs, enums, cons))
         if self.measureList:
-            comps.extend(self.measureList.to_model(cs, cls, cons))
+            comps.extend(self.measureList.to_model(cs, enums, cons))
         if self.attributeList:
             comps.extend(
                 self.attributeList.to_model(
                     cs,
-                    cls,
+                    enums,
                     cons,
                     self.groups,
                 )
@@ -293,17 +316,68 @@ class JsonComponents(Struct, frozen=True):
         return Components(comps)
 
 
-class JsonDataStructure(Struct, frozen=True, rename={"agency": "agencyID"}):
+class JsonDataStructure(MaintainableType, frozen=True):
     """SDMX-JSON payload for a DSD."""
 
-    id: str
-    name: str
-    agency: str
-    dataStructureComponents: JsonComponents
-    description: Optional[str] = None
-    version: str = "1.0"
-    isExternalReference: bool = False
-    validFrom: Optional[datetime] = None
-    validTo: Optional[datetime] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
-    metadata: Optional[str] = None
+    dataStructureComponents: Optional[JsonComponents] = None
+    evolvingStructure: bool = False
+
+    def to_model(
+        self,
+        cs: Sequence[JsonConceptScheme],
+        cls: Sequence[JsonCodelist],
+        vls: Sequence[JsonValuelist],
+        constraints: Sequence[JsonDataConstraint],
+    ) -> DataStructureDefinition:
+        """Map to pysdmx model class."""
+        c = self.dataStructureComponents.to_model(  # type: ignore[union-attr]
+            cs,
+            cls,
+            vls,
+            constraints,
+        )
+        return DataStructureDefinition(
+            id=self.id,
+            name=self.name,
+            agency=self.agency,
+            description=self.description,
+            version=self.version,
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
+            components=c,
+            evolving_structure=self.evolvingStructure,
+        )
+
+
+class JsonDataStructures(Struct, frozen=True):
+    """SDMX-JSON payload for data structures."""
+
+    dataStructures: Sequence[JsonDataStructure]
+    conceptSchemes: Sequence[JsonConceptScheme] = ()
+    valuelists: Sequence[JsonValuelist] = ()
+    codelists: Sequence[JsonCodelist] = ()
+    contentConstraints: Sequence[JsonDataConstraint] = ()
+
+    def to_model(self) -> Sequence[DataStructureDefinition]:
+        """Returns the requested dsds."""
+        return [
+            dsd.to_model(
+                self.conceptSchemes,
+                self.codelists,
+                self.valuelists,
+                self.contentConstraints,
+            )
+            for dsd in self.dataStructures
+        ]
+
+
+class JsonDataStructuresMessage(Struct, frozen=True):
+    """SDMX-JSON payload for /datastructure queries."""
+
+    data: JsonDataStructures
+
+    def to_model(self) -> Sequence[DataStructureDefinition]:
+        """Returns the requested data structures."""
+        return self.data.to_model()
