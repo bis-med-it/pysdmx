@@ -172,10 +172,12 @@ STR_DICT_TYPE_LIST_30 = {
     ConceptScheme: "ConceptSchemes",
     DataStructureDefinition: "DataStructures",
     Dataflow: "Dataflows",
+    CustomTypeScheme: "CustomTypeSchemes",
+    VtlMappingScheme: "VtlMappingSchemes",
+    NamePersonalisationScheme: "NamePersonalisationSchemes",
     RulesetScheme: "RulesetSchemes",
     UserDefinedOperatorScheme: "UserDefinedOperatorSchemes",
     TransformationScheme: "TransformationSchemes",
-    VtlMappingScheme: "VtlMappings",
 }
 
 
@@ -341,7 +343,7 @@ def __write_contact(contact: Contact, indent: str) -> str:
     return outfile
 
 
-def __write_item(item: Item, indent: str) -> str:
+def __write_item(item: Item, indent: str, references_30: bool = False) -> str:
     """Writes the item to the XML file."""
     head = f"{ABBR_STR}:" + type(item).__name__
 
@@ -359,7 +361,9 @@ def __write_item(item: Item, indent: str) -> str:
     ):
         outfile += f"{add_indent(indent)}<{ABBR_STR}:{CORE_REP}>"
         if item.codes is not None:
-            outfile += __write_enumeration(item.codes, add_indent(indent))
+            outfile += __write_enumeration(
+                item.codes, add_indent(indent), references_30
+            )
         if item.facets is not None or item.dtype is not None:
             outfile += __write_text_format(
                 item.dtype, item.facets, TEXT_FORMAT, add_indent(indent)
@@ -651,19 +655,27 @@ def __write_enumeration(
     return outfile
 
 
-def __write_structure(item: str, indent: str) -> str:
+def __write_structure(
+    item: str, indent: str, references_30: bool = False
+) -> str:
     """Writes the dataflow structure to the XML file."""
     ref = parse_short_urn(item)
     outfile = f"{indent}<{ABBR_STR}:Structure>"
-    outfile += (
-        f"{add_indent(indent)}<{REF} "
-        f'{PACKAGE}="datastructure" '
-        f"{AGENCY_ID}={ref.agency!r} "
-        f"{ID}={ref.id!r} "
-        f"{VERSION}={ref.version!r} "
-        f"{CLASS}={DSD!r}/>"
-    )
-    outfile += f"{indent}</{ABBR_STR}:Structure>"
+    if references_30:
+        outfile += (
+            f"urn:sdmx:org.sdmx.infomodel.datastructure.{DSD}={ref.agency}:{ref.id}({ref.version})"
+            f"</{ABBR_STR}:Structure>"
+        )
+    else:
+        outfile += (
+            f"{add_indent(indent)}<{REF} "
+            f'{PACKAGE}="datastructure" '
+            f"{AGENCY_ID}={ref.agency!r} "
+            f"{ID}={ref.id!r} "
+            f"{VERSION}={ref.version!r} "
+            f"{CLASS}={DSD!r}/>"
+        )
+        outfile += f"{indent}</{ABBR_STR}:Structure>"
 
     outfile = outfile.replace("'", '"')
     return outfile
@@ -697,7 +709,9 @@ def __write_scheme(
         CUSTOM_TYPE_SCHEME,
         NAME_PER_SCHEME,
     ]:
-        data["Attributes"] += f" {_write_vtl(item_scheme, indent)}"
+        data["Attributes"] += (
+            f" {_write_vtl(item_scheme, indent, references_30)}"
+        )
 
     outfile = ""
 
@@ -711,7 +725,9 @@ def __write_scheme(
     outfile += components
 
     if scheme == DFW:
-        outfile += __write_structure(item_scheme.structure, add_indent(indent))
+        outfile += __write_structure(
+            item_scheme.structure, add_indent(indent), references_30
+        )
 
     if scheme not in [
         DSD,
@@ -734,8 +750,10 @@ def __write_scheme(
         NAME_PER_SCHEME,
     ]:
         for item in item_scheme.items:
-            outfile += _write_vtl(item, add_indent(indent))
-        outfile += _write_vtl_references(item_scheme, add_indent(indent))
+            outfile += _write_vtl(item, add_indent(indent), references_30)
+        outfile += _write_vtl_references(
+            item_scheme, add_indent(indent), references_30
+        )
     outfile += f"{indent}</{label}>"
 
     return outfile
@@ -849,7 +867,11 @@ def __write_structures(
     return outfile
 
 
-def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:  # noqa: C901
+def _write_vtl(  # noqa: C901
+    item_or_scheme: Union[Item, ItemScheme],
+    indent: str,
+    references_30: bool = False,
+) -> str:  # noqa: C901
     """Writes the VTL attribute to the XML file for a single item.
 
     This function writes an item or an item scheme to the XML file,
@@ -860,6 +882,7 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:  # 
             Item: The item to be written
             ItemScheme: The item scheme to be written
         indent: The current indentation level
+        references_30: Whether to use SDMX 3.0 references
     """
     outfile = ""
 
@@ -906,12 +929,18 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:  # 
             attrib += f" alias={item_or_scheme.dataflow_alias!r}"
             data += f"{add_indent(indent)}<{ABBR_STR}:Dataflow>"
             reference = item_or_scheme.dataflow
-            data += (
-                f"{indent}\t\t<{REF} package='datastructure' "
-                f"agencyID={reference.agency!r} id={reference.id!r} "
-                f"version={reference.version!r} class={DFW!r} />"
-                f"{add_indent(indent)}</{ABBR_STR}:Dataflow>"
-            )
+            if references_30:
+                data += (
+                    f"urn:sdmx:org.sdmx.infomodel.datastructure.{DFW}={reference.agency}:{reference.id}"
+                    f"({reference.version})</{ABBR_STR}:Dataflow>"
+                )
+            else:
+                data += (
+                    f"{indent}\t\t<{REF} package='datastructure' "
+                    f"agencyID={reference.agency!r} id={reference.id!r} "
+                    f"version={reference.version!r} class={DFW!r} />"
+                    f"{add_indent(indent)}</{ABBR_STR}:Dataflow>"
+                )
             if item_or_scheme.to_vtl_mapping_method is not None:
                 to_vtl = item_or_scheme.to_vtl_mapping_method
                 data += (
@@ -954,13 +983,18 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:  # 
                 if isinstance(item_or_scheme.codelist, str)
                 else parse_short_urn(item_or_scheme.codelist.short_urn)
             )
-
-            data += (
-                f"{indent}\t\t<{REF} package='codelist' "
-                f"agencyID={ref_codelist.agency!r} id={ref_codelist.id!r} "
-                f"version={ref_codelist.version!r} class={CL!r} />"
-                f"{add_indent(indent)}</{ABBR_STR}:Codelist>"
-            )
+            if references_30:
+                data += (
+                    f"urn:sdmx:org.sdmx.infomodel.codelist.Codelist={ref_codelist.agency}:{ref_codelist.id}"
+                    f"({ref_codelist.version})</{ABBR_STR}:Codelist>"
+                )
+            else:
+                data += (
+                    f"{indent}\t\t<{REF} package='codelist' "
+                    f"agencyID={ref_codelist.agency!r} id={ref_codelist.id!r} "
+                    f"version={ref_codelist.version!r} class={CL!r} />"
+                    f"{add_indent(indent)}</{ABBR_STR}:Codelist>"
+                )
             attrib += f" alias={item_or_scheme.codelist_alias!r}"
 
         if isinstance(item_or_scheme, VtlConceptMapping) and not isinstance(
@@ -975,16 +1009,22 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:  # 
                 if isinstance(item_or_scheme.concept, str)
                 else item_or_scheme.concept
             )
-            data += (
-                f"{indent}\t\t"
-                f"<{REF} maintainableParentID={ref_concept.id!r} "
-                f"package='conceptscheme' "
-                f"agencyID={ref_concept.agency!r} "
-                f"id={ref_concept.item_id!r} "
-                f"maintainableParentVersion={ref_concept.version!r} "
-                f"class={CON!r} />"
-                f"{add_indent(indent)}</{ABBR_STR}:Concept>"
-            )
+            if references_30:
+                data += (
+                    f"urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept={ref_concept.agency}:{ref_concept.id}"
+                    f"({ref_concept.version}).{ref_concept.item_id}</{ABBR_STR}:Concept>"
+                )
+            else:
+                data += (
+                    f"{indent}\t\t"
+                    f"<{REF} maintainableParentID={ref_concept.id!r} "
+                    f"package='conceptscheme' "
+                    f"agencyID={ref_concept.agency!r} "
+                    f"id={ref_concept.item_id!r} "
+                    f"maintainableParentVersion={ref_concept.version!r} "
+                    f"class={CON!r} />"
+                    f"{add_indent(indent)}</{ABBR_STR}:Concept>"
+                )
             attrib += f" alias={item_or_scheme.concept_alias!r}"
 
         if isinstance(item_or_scheme, CustomType):
@@ -1053,7 +1093,9 @@ def _write_vtl(item_or_scheme: Union[Item, ItemScheme], indent: str) -> str:  # 
     return outfile
 
 
-def _write_vtl_references(scheme: ItemScheme, indent: str) -> str:
+def _write_vtl_references(  # noqa: C901
+    scheme: ItemScheme, indent: str, references_30: bool = False
+) -> str:
     """Writes references to VTL elements to the XML file."""
 
     def process_references(
@@ -1066,28 +1108,40 @@ def _write_vtl_references(scheme: ItemScheme, indent: str) -> str:
 
         for ref in references:
             if isinstance(ref, Reference):
-                outreference.append(
-                    f"{indent}<{ABBR_STR}:{element_name}>"
-                    f"{add_indent(indent)}<{REF} "
-                    f"{PACKAGE}={TRANSFORMATION.lower()!r} "
-                    f"{AGENCY_ID}={ref.agency!r} "
-                    f"{ID}={ref.id!r} "
-                    f"{VERSION}={ref.version!r} "
-                    f"{CLASS}={ref.sdmx_type!r}/>"
-                    f"{indent}</{ABBR_STR}:{element_name}>"
-                )
+                outreference.append(f"{indent}<{ABBR_STR}:{element_name}>")
+                if references_30:
+                    outreference.append(
+                        f"urn:sdmx:org.sdmx.infomodel.{TRANSFORMATION.lower()}.{element_name}={ref.agency}:{ref.id}"
+                        f"({ref.version})</{ABBR_STR}:{element_name}>"
+                    )
+                else:
+                    outreference.append(
+                        f"{add_indent(indent)}<{REF} "
+                        f"{PACKAGE}={TRANSFORMATION.lower()!r} "
+                        f"{AGENCY_ID}={ref.agency!r} "
+                        f"{ID}={ref.id!r} "
+                        f"{VERSION}={ref.version!r} "
+                        f"{CLASS}={ref.sdmx_type!r}/>"
+                        f"{indent}</{ABBR_STR}:{element_name}>"
+                    )
             if isinstance(ref, ItemScheme):
                 ref_to_use = parse_short_urn(ref.short_urn)
-                outreference.append(
-                    f"{indent}<{ABBR_STR}:{element_name}>"
-                    f"{add_indent(indent)}<{REF} "
-                    f"{PACKAGE}={TRANSFORMATION.lower()!r} "
-                    f"{AGENCY_ID}={ref_to_use.agency!r} "
-                    f"{ID}={ref_to_use.id!r} "
-                    f"{VERSION}={ref_to_use.version!r} "
-                    f"{CLASS}={ref_to_use.sdmx_type!r}/>"
-                    f"{indent}</{ABBR_STR}:{element_name}>"
-                )
+                outreference.append(f"{indent}<{ABBR_STR}:{element_name}>")
+                if references_30:
+                    outreference.append(
+                        f"urn:sdmx:org.sdmx.infomodel.{TRANSFORMATION.lower()}.{element_name}={ref_to_use.agency}:"
+                        f"{ref_to_use.id}({ref_to_use.version})</{ABBR_STR}:{element_name}>"
+                    )
+                else:
+                    outreference.append(
+                        f"{add_indent(indent)}<{REF} "
+                        f"{PACKAGE}={TRANSFORMATION.lower()!r} "
+                        f"{AGENCY_ID}={ref_to_use.agency!r} "
+                        f"{ID}={ref_to_use.id!r} "
+                        f"{VERSION}={ref_to_use.version!r} "
+                        f"{CLASS}={ref_to_use.sdmx_type!r}/>"
+                        f"{indent}</{ABBR_STR}:{element_name}>"
+                    )
 
         return "".join(outreference)
 
