@@ -33,7 +33,7 @@ from pysdmx.model.dataset import ActionType, Dataset
 from pysdmx.model.submission import SubmissionResult
 
 
-class Header(Struct, kw_only=True):
+class Header(Struct, repr_omit_defaults=True, kw_only=True):
     """Header for the SDMX messages."""
 
     id: str = str(uuid.uuid4())
@@ -46,8 +46,35 @@ class Header(Struct, kw_only=True):
     structure: Optional[Dict[str, str]] = None
     dataset_id: Optional[str] = None
 
+    def __str__(self) -> str:
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # str is taken as a Sequence, so we need to check it's not a str
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                # Handle non-empty lists
+                if value:
+                    class_name = value[0].__class__.__name__
+                    value = f"{len(value)} {class_name.lower()}s"
+                # redundant if check for python 3.9 and lower versions cov
+                if not value:
+                    continue
 
-class Message(Struct, frozen=True):
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # Omit empty sequences
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
+
+
+class Message(Struct, frozen=True, repr_omit_defaults=True):
     """Message class holds the content of SDMX Message.
 
     Attributes:
@@ -94,47 +121,38 @@ class Message(Struct, frozen=True):
                     )
 
     def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        # Get the number of each type of structure or datasets
-        out_str = ""
-        if self.structures is not None:
-            structures_count = {
-                "AgencyScheme": len(
-                    [x for x in self.structures if isinstance(x, AgencyScheme)]
-                ),
-                "Codelist": len(
-                    [x for x in self.structures if isinstance(x, Codelist)]
-                ),
-                "ConceptScheme": len(
-                    [
-                        x
-                        for x in self.structures
-                        if isinstance(x, ConceptScheme)
-                    ]
-                ),
-                "DataStructureDefinition": len(
-                    [
-                        x
-                        for x in self.structures
-                        if isinstance(x, DataStructureDefinition)
-                    ]
-                ),
-                "Dataflow": len(
-                    [x for x in self.structures if isinstance(x, Dataflow)]
-                ),
-            }
-            for k, v in structures_count.items():
-                if v > 0:
-                    end_word = k + "s" if v > 1 else k
-                    out_str += f"{v} {end_word}, "
-            out_str = out_str[:-2] if len(out_str) > 3 else out_str
-            return f"Message({out_str})"
+        """Custom string representation with detailed structure counts."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            if attr in ["data", "structures"] and value:
+                # Count occurrences of each class in structures
+                class_counts = {}
+                for obj in value:
+                    class_name = obj.__class__.__name__
+                    class_counts[class_name] = class_counts.get(class_name, 0) + 1
 
-        elif self.data is not None:
-            end_word = "Datasets" if len(self.data) > 1 else "Dataset"
-            return f"Message({len(self.data)} {end_word})"
-        else:
-            return "Message()"
+                # Format the counts
+                value = ", ".join(
+                    f"{count} {class_name.lower()}" for class_name, count in class_counts.items()
+                )
+
+            # Handle sequences and omit empty ones
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                if not value:
+                    continue
+
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # Omit empty sequences
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
     def __get_elements(self, type_: Type[Any]) -> List[Any]:
         """Returns a list of elements of a specific type."""

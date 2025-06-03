@@ -6,7 +6,7 @@ from msgspec import Struct
 from pysdmx.errors import Invalid
 
 
-class Annotation(Struct, frozen=True, omit_defaults=True):
+class Annotation(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     """Annotation class.
 
     It is used to convey extra information to describe any
@@ -47,13 +47,31 @@ class Annotation(Struct, frozen=True, omit_defaults=True):
             )
 
     def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        out = []
-        for k in self.__annotations__:
-            v = self.__getattribute__(k)
-            if v:
-                out.append(f"{k}={str(v)}")
-        return ", ".join(out)
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # str is taken as a Sequence, so we need to check it's not a str
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                # Handle non-empty lists
+                if value:
+                    class_name = value[0].__class__.__name__
+                    value = f"{len(value)} {class_name.lower()}s"
+                # redundant if check for python 3.9 and lower versions cov
+                if not value:
+                    continue
+
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # Omit empty sequences
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
 class AnnotableArtefact(
@@ -159,7 +177,7 @@ class Item(NameableArtefact, frozen=True, omit_defaults=True):
     """
 
 
-class Contact(Struct, frozen=True, omit_defaults=True):
+class Contact(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     """Contact details such as the name of a contact and his email address.
 
     Attributes:
@@ -187,6 +205,33 @@ class Contact(Struct, frozen=True, omit_defaults=True):
     faxes: Optional[Sequence[str]] = None
     uris: Optional[Sequence[str]] = None
     emails: Optional[Sequence[str]] = None
+
+    def __str__(self) -> str:
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # str is taken as a Sequence, so we need to check it's not a str
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                # Handle non-empty lists
+                if value:
+                    class_name = value[0].__class__.__name__
+                    value = f"{len(value)} {class_name.lower()}s"
+                # redundant if check for python 3.9 and lower versions cov
+                if not value:
+                    continue
+
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # Omit empty sequences
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
 class Organisation(Item, frozen=True, omit_defaults=True):
@@ -288,7 +333,7 @@ class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
     is_partial: bool = False
 
 
-class DataflowRef(Struct, frozen=True, omit_defaults=True, tag=True):
+class DataflowRef(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True, tag=True):
     """A unique reference to a dataflow.
 
     Attributes:
@@ -320,11 +365,34 @@ class DataflowRef(Struct, frozen=True, omit_defaults=True, tag=True):
         )
 
     def __str__(self) -> str:
-        """A string representating the dataflow's reference."""
-        return f"Dataflow={self.agency}:{self.id}({self.version})"
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # str is taken as a Sequence, so we need to check it's not a str
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                # Handle non-empty lists
+                if value:
+                    class_name = value[0].__class__.__name__
+                    value = f"{len(value)} {class_name.lower()}s"
+                # redundant if check for python 3.9 and lower versions cov
+                if not value:
+                    continue
+
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # Omit empty sequences
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
-class Reference(Struct, frozen=True):
+class Reference(Struct, frozen=True, repr_omit_defaults=True):
     """The coordinates of an SDMX maintainable artefact.
 
     Attributes:
@@ -340,11 +408,34 @@ class Reference(Struct, frozen=True):
     version: str
 
     def __str__(self) -> str:
-        """Returns a string representation of the object."""
-        return f"{self.sdmx_type}={self.agency}:{self.id}({self.version})"
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # str is taken as a Sequence, so we need to check it's not a str
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                # Handle non-empty lists
+                if value:
+                    class_name = value[0].__class__.__name__
+                    value = f"{len(value)} {class_name.lower()}s"
+                # redundant if check for python 3.9 and lower versions cov
+                if not value:
+                    continue
+
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # Omit empty sequences
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
-class ItemReference(Struct, frozen=True, tag=True):
+class ItemReference(Struct, frozen=True, repr_omit_defaults=True, tag=True):
     """The coordinates of an SDMX non-nested item.
 
     Attributes:
@@ -362,8 +453,28 @@ class ItemReference(Struct, frozen=True, tag=True):
     item_id: str
 
     def __str__(self) -> str:
-        """Returns a string representation of the object."""
-        return (
-            f"{self.sdmx_type}={self.agency}:{self.id}"
-            f"({self.version}).{self.item_id}"
-        )
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # str is taken as a Sequence, so we need to check it's not a str
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                # Handle non-empty lists
+                if value:
+                    class_name = value[0].__class__.__name__
+                    value = f"{len(value)} {class_name.lower()}s"
+                # redundant if check for python 3.9 and lower versions cov
+                if not value:
+                    continue
+
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # Omit empty sequences
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
