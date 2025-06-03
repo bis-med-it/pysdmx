@@ -27,6 +27,7 @@ def validate_doc(input_str: str) -> None:
         xmlschema_doc = etree.parse(SCHEMA_PATH_30)
     else:
         xmlschema_doc = etree.parse(SCHEMA_PATH_21)
+
     xmlschema = etree.XMLSchema(xmlschema_doc)
 
     bytes_infile = BytesIO(bytes(input_str, "UTF_8"))
