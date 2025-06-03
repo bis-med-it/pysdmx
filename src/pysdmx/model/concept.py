@@ -56,7 +56,7 @@ class DataType(str, Enum):
     MONTH_DAY = "MonthDay"
     """A month day in the ISO 8601 calendar (e.g. ``--12-31``)."""
     NUMERIC = "Numeric"
-    """A numerical value (integer or decimal)."""
+    """The simple numeric character set of 0-9, treated as a string."""
     PERIOD = "ObservationalTimePeriod"
     """A reporting period. The format varies with the frequency."""
     SHORT = "Short"
