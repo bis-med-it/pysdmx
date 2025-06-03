@@ -110,6 +110,8 @@ class Facets(Struct, frozen=True, omit_defaults=True):
     """Indicates the ending point of a sequence."""
     is_sequence: bool = False
     """Whether the values are intended to be ordered."""
+    is_multilingual: bool = False
+    """Whether the text can be in multiple languages."""
 
     def __str__(self) -> str:
         """Returns a human-friendly description."""
