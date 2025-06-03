@@ -3,7 +3,7 @@
 from pysdmx.model import Component, DataType
 
 
-def __get_pd_type(dt: DataType, required: bool) -> str:
+def __get_pd_type(dt: DataType, required: bool) -> str:  # noqa: C901
     if dt == DataType.SHORT:
         return "int16" if required else "Int16"
     elif dt == DataType.INTEGER:
