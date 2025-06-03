@@ -9,6 +9,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     DIM_OBS,
     HEADER,
     ID,
+    PROV_AGREEMENT,
     REF,
     STR_ID,
     STR_REF,
@@ -56,8 +57,11 @@ def __get_ids_from_structure(element: Dict[str, Any]) -> Any:
         id_ = element[REF][ID]
         version = element[REF][VERSION]
         return agency_id, id_, version
-    else:
+    elif URN in element:
         urn = parse_urn(element[URN])
+        return urn.agency, urn.id, urn.version
+    else:
+        urn = parse_urn(element)  # type: ignore[arg-type]
         return urn.agency, urn.id, urn.version
 
 
@@ -84,6 +88,9 @@ def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
     elif STR_USAGE in structure:
         structure_type = "Dataflow"
         tuple_ids = __get_ids_from_structure(structure[STR_USAGE])
+    elif PROV_AGREEMENT in structure:
+        structure_type = "ProvisionAgreement"
+        tuple_ids = __get_ids_from_structure(structure[PROV_AGREEMENT])
     else:
         raise NotImplemented(
             "Unsupported", "ProvisionAgrement not implemented"

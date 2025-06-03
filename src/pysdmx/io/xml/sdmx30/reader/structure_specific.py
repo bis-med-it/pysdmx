@@ -1,4 +1,4 @@
-"""SDMX XML 2.1 StructureSpecificData reader module."""
+"""SDMX XML 3.0 StructureSpecificData reader module."""
 
 from typing import Sequence
 
@@ -18,7 +18,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
 
 
 def read(input_str: str, validate: bool = True) -> Sequence[PandasDataset]:
-    """Reads an SDMX-ML 2.1 and returns a Sequence of Datasets.
+    """Reads an SDMX-ML 3.0 and returns a Sequence of Datasets.
 
     Args:
         input_str: SDMX-ML data to read.
