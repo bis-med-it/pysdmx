@@ -54,5 +54,6 @@ def test_tostr_id(dsi, agency):
     d = DataflowRef(id=dsi, agency=agency)
 
     s = str(d)
+    expected_str = f"agency: {agency}, id: {dsi}"
 
-    assert s == f"Dataflow={agency}:{dsi}({d.version})"
+    assert s == expected_str

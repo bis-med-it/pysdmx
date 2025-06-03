@@ -207,8 +207,9 @@ def test_tostr_basic(id, comps, agency):
     ds = DataflowInfo(id, comps, agency)
 
     s = str(ds)
+    expected_str = f"agency: {agency}, components: {comps}, id: {id}"
 
-    assert s == f"id={id}, components={comps}, agency={agency}, version=1.0"
+    assert s == expected_str
 
 
 def test_tostr_more(
@@ -235,12 +236,12 @@ def test_tostr_more(
     )
 
     s = str(ds)
-
-    assert s == (
+    expected_str = (
         f"id={id}, components={comps}, agency={agency}, "
-        f"name={name}, version=1.0, providers={providers}, obs_count={obs}, "
-        f"start_period={start}, end_period={end}, last_updated={upd}"
+        f"name={name}, version=1.0, providers={providers}, obs_count={obs}"
     )
+
+    assert s == expected_str
 
 
 def test_serialization(

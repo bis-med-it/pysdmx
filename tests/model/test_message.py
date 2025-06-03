@@ -12,6 +12,7 @@ from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Components, Dataflow, DataStructureDefinition
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Message
+from tests.api.qb.data.test_data_query_updated_after import expected
 
 
 def test_initialization():
@@ -195,14 +196,41 @@ def test_message_str_with_structures():
     agency_scheme = AgencyScheme(id="agency1", agency="agency1")
     codelist = Codelist(id="codelist1", agency="agency1")
     message = Message(structures=[agency_scheme, codelist])
-    assert str(message) == "Message(1 AgencyScheme, 1 Codelist)"
+
+    s = str(message)
+    expected_str = "structures: 1 agencyscheme, 1 codelist"
+
+    assert s == expected_str
 
 
 def test_message_str_with_data():
     dataset = Dataset(structure="DataStructure=ds1:ds1(1.0)")
     message = Message(data=[dataset])
-    assert str(message) == "Message(1 Dataset)"
+
+    s = str(message)
+    expected_str = "data: 1 dataset"
+
+    assert s == expected_str
 
 def test_message_str_without_data():
     message = Message()
-    assert str(message) == "Message()"
+
+    s = str(message)
+    expected_str = ""
+
+    assert s == expected_str
+
+
+def test_message_str_all():
+    agency_scheme = AgencyScheme(id="agency1", agency="agency1")
+    codelist = Codelist(id="codelist1", agency="agency1")
+    dataset = Dataset(structure="DataStructure=ds1:ds1(1.0)")
+    message = Message(structures=[agency_scheme, codelist], data=[dataset])
+
+    s = str(message)
+    expected_str = (
+        "structures: 1 agencyscheme, 1 codelist, "
+        "data: 1 dataset"
+    )
+
+    assert s == expected_str

@@ -139,12 +139,12 @@ def test_tostr(fid, req, role, concept, typ):
     f1 = Component(fid, req, role, concept, typ)
 
     s = str(f1)
-
-    assert s == (
-        "Component(id='FREQ', required=True, role=Dimension, concept="
-        "Concept(id='TEST', name='A test concept')"
-        ", local_dtype=String)"
+    expected_str = (
+        f"id: {fid}, required: {req}, role: {role}, concept: {concept}, "
+        f"local_dtype: String"
     )
+
+    assert s == expected_str
 
 
 def test_dtype_property_local():

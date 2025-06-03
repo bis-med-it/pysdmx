@@ -68,5 +68,16 @@ def test_tostr(fid, typ):
     f1 = Concept(id=fid, dtype=typ)
 
     s = str(f1)
+    expected_str = f"id: {fid}, dtype: String"
 
-    assert s == f"id: {fid}, dtype: String"
+    assert s == expected_str
+
+
+def test_tostr_with_name(fid, typ):
+    name = "Frequency"
+    f1 = Concept(id=fid, dtype=typ, name=name)
+
+    s = str(f1)
+    expected_str = f"id: {fid}, name: {name}, dtype: String"
+
+    assert s == expected_str

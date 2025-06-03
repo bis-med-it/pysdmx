@@ -74,13 +74,23 @@ def test_tostr_id(id):
     c = Code(id=id)
 
     s = str(c)
+    expected_str = f"id: {id}"
 
-    assert s == f"id: {id}"
+    assert s == expected_str
 
 
 def test_tostr_name(id, name):
     c = Code(id=id, name=name)
 
     s = str(c)
+    expected_str = f"id: {id}, name: {name}"
 
-    assert s == f"id: {id}, name: {name}"
+    assert s == expected_str
+
+def test_torepr_id(id):
+    c = Code(id=id)
+
+    s = repr(c)
+    expected_str = f"Code(id={id!r})"
+
+    assert s == expected_str

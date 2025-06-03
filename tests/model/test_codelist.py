@@ -5,6 +5,7 @@ import msgspec
 import pytest
 
 from pysdmx.model.code import Code, Codelist
+from tests.api.qb.data.test_data_query_updated_after import expected
 
 
 @pytest.fixture
@@ -165,10 +166,9 @@ def test_tostr(id, name, agency, version, codes):
     )
 
     s = str(cl)
+    expected_str = "id: id, name: name, version: 1.42.0, agency: 5B0, items: 2 codes"
 
-    assert s == (
-        "id: id, name: name, version: 1.42.0, agency: 5B0, items: 2 codes"
-    )
+    assert s == expected_str
 
 def test_tostr_empty_items(id, name, agency, version):
     codes = []
@@ -177,10 +177,9 @@ def test_tostr_empty_items(id, name, agency, version):
     )
 
     s = str(cl)
+    expected_str = "id: id, name: name, version: 1.42.0, agency: 5B0"
 
-    assert s == (
-        "id: id, name: name, version: 1.42.0, agency: 5B0"
-    )
+    assert s == expected_str
 
 def test_repr(id, name, agency, version, codes):
     cl = Codelist(
@@ -188,10 +187,10 @@ def test_repr(id, name, agency, version, codes):
     )
 
     r = repr(cl)
+    expected_str = "Codelist(id='id', name='name', version='1.42.0', agency='5B0', items=[Code(id='child1', name='Child 1'), Code(id='child2', name='Child 2')])"
 
-    assert r == (
-        "Codelist(id='id', name='name', version='1.42.0', agency='5B0', items=[Code(id='child1', name='Child 1'), Code(id='child2', name='Child 2')])"
-    )
+    assert r == expected_str
+
 
 def test_repr_empty_items(id, name, agency, version):
     codes = []
@@ -200,7 +199,7 @@ def test_repr_empty_items(id, name, agency, version):
     )
 
     r = repr(cl)
+    expected_str = "Codelist(id='id', name='name', version='1.42.0', agency='5B0')"
 
-    assert r == (
-        "Codelist(id='id', name='name', version='1.42.0', agency='5B0')"
-    )
+    assert r == expected_str
+
