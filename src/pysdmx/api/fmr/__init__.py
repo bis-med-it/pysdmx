@@ -642,7 +642,7 @@ class RegistryClient(__BaseRegistryClient):
         """
         query = super()._report_q(provider, id, version)
         out = self.__fetch(query)
-        return super()._out(out, self.deser.report)[0]
+        return super()._out(out, self.deser.report).reports[0]
 
     def get_reports(
         self,
@@ -667,7 +667,7 @@ class RegistryClient(__BaseRegistryClient):
         """
         query = super()._reports_q(artefact_type, agency, id, version)
         out = self.__fetch(query)
-        return super()._out(out, self.deser.report, True)
+        return super()._out(out, self.deser.report).reports
 
     def get_mapping(
         self,
@@ -1104,7 +1104,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         """
         query = super()._report_q(provider, id, version)
         out = await self.__fetch(query)
-        return super()._out(out, self.deser.report)[0]
+        return super()._out(out, self.deser.report).reports[0]
 
     async def get_reports(
         self,
@@ -1129,7 +1129,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         """
         query = super()._reports_q(artefact_type, agency, id, version)
         out = await self.__fetch(query)
-        return super()._out(out, self.deser.report, True)
+        return super()._out(out, self.deser.report).reports
 
     async def get_mapping(
         self,
