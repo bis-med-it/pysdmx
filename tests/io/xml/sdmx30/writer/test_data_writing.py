@@ -279,7 +279,7 @@ def test_data_write_data_structure_30_no_header(
         "datastructure.DataStructure=MD:TEST(1.0)",
         "dimensionAtObservation": "AllDimensions",
         "namespace": "urn:sdmx:org.sdmx.infomodel."
-        "datastructure.DataStructure==MD:TEST(1.0)",
+        "datastructure.DataStructure=MD:TEST(1.0)",
         "structureID": "TEST",
     }
 

@@ -286,19 +286,19 @@ def __reference(
     if add_namespace_structure:
         if references_30:
             namespace = (
-                f"{urn_type}={reference.agency}:{reference.id}"
+                f"{urn_type}{reference.agency}:{reference.id}"
                 f"({reference.version})"
             )
         else:
             namespace = (
-                f"{URN_DS_BASE}={reference.agency}:{reference.id}"
+                f"{URN_DS_BASE}{reference.agency}:{reference.id}"
                 f"({reference.version})"
             )
 
         namespace = f"namespace={namespace!r} "
     if references_30:
         reference_str = (
-            f"{nl}{child4}{urn_type}{reference.agency}:"
+            f"{urn_type}{reference.agency}:"
             f"{reference.id}({reference.version})"
         )
     else:
@@ -308,6 +308,18 @@ def __reference(
             f"id={reference.id!r} version={reference.version!r} "
             f"class={reference.sdmx_type!r}/>"
         )
+    if references_30:
+        common_structure = (
+            f"{nl}{child3}<{ABBR_COM}:{structure_type}>"
+            f"{reference_str}"
+            f"</{ABBR_COM}:{structure_type}>"
+        )
+    else:
+        common_structure = (
+            f"{nl}{child3}<{ABBR_COM}:{structure_type}>"
+            f"{reference_str}"
+            f"{nl}{child3}</{ABBR_COM}:{structure_type}>"
+        )
 
     return (
         # First the message structure
@@ -316,10 +328,7 @@ def __reference(
         f"{namespace}"
         f"dimensionAtObservation={dimension!r}>"
         # Then the common structure
-        f"{nl}{child3}<{ABBR_COM}:{structure_type}>"
-        f"{reference_str}"
-        # Close the common structure
-        f"{nl}{child3}</{ABBR_COM}:{structure_type}>"
+        f"{common_structure}"
         # Close the message structure
         f"{nl}{child2}</{ABBR_MSG}:Structure>"
     )

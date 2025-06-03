@@ -6,10 +6,8 @@
 		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
 		<mes:Sender id="SENDER"/>
 		<mes:Receiver id="RECEIVER"/>
-		<mes:Structure structureID="TEST" namespace="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow==MD:TEST(1.0)" dimensionAtObservation="AllDimensions">
-			<com:StructureUsage>
-				urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD:TEST(1.0)
-			</com:StructureUsage>
+		<mes:Structure structureID="TEST" namespace="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD:TEST(1.0)" dimensionAtObservation="AllDimensions">
+			<com:StructureUsage>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD:TEST(1.0)</com:StructureUsage>
 		</mes:Structure>
 		<mes:Source>PySDMX</mes:Source>
 	</mes:Header>
