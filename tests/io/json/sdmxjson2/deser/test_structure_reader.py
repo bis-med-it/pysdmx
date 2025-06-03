@@ -13,7 +13,7 @@ def body():
         return f.read()
 
 
-def test_reader(body):
+def test_structure_reader(body):
     res = msgspec.json.Decoder(JsonStructureMessage).decode(body)
     msg = res.to_model()
 
