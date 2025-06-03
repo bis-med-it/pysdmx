@@ -1,7 +1,6 @@
 """Collection of SDMX-JSON schemas for generic structure messages."""
 
-from datetime import datetime
-from typing import Optional, Sequence
+from typing import Sequence
 
 from msgspec import Struct
 
@@ -17,6 +16,7 @@ from pysdmx.io.json.sdmxjson2.messages.code import (
     JsonValuelist,
 )
 from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptScheme
+from pysdmx.io.json.sdmxjson2.messages.core import JsonHeader
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
 from pysdmx.io.json.sdmxjson2.messages.dsd import JsonDataStructure
 from pysdmx.io.json.sdmxjson2.messages.map import (
@@ -33,30 +33,8 @@ from pysdmx.io.json.sdmxjson2.messages.vtl import (
     JsonUserDefinedOperatorScheme,
     JsonVtlMappingScheme,
 )
-from pysdmx.model import Organisation
 from pysdmx.model.__base import MaintainableArtefact
-from pysdmx.model.message import Header, StructureMessage
-
-
-class JsonHeader(Struct, frozen=True):
-    """The message header."""
-
-    id: str
-    prepared: datetime
-    sender: Organisation
-    test: bool = False
-    contentLanguages: Sequence[str] = ()
-    name: Optional[str] = None
-    receivers: Optional[Organisation] = None
-
-    def to_model(self) -> Header:
-        """Map to pysdmx header class."""
-        return Header(
-            id=self.id,
-            test=self.test,
-            prepared=self.prepared,
-            sender=self.sender,
-        )
+from pysdmx.model.message import StructureMessage
 
 
 class JsonStructures(Struct, frozen=True):

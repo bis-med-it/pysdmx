@@ -6,7 +6,14 @@ from typing import Optional, Sequence, Union
 import msgspec
 
 from pysdmx.errors import NotFound
-from pysdmx.model import Annotation, ArrayBoundaries, Codelist, Facets
+from pysdmx.model import (
+    Annotation,
+    ArrayBoundaries,
+    Codelist,
+    Facets,
+    Organisation,
+)
+from pysdmx.model.message import Header
 from pysdmx.util import find_by_urn
 
 
@@ -49,6 +56,13 @@ class JsonAnnotation(msgspec.Struct, frozen=True):
             url=url,
             text=self.value if self.value else self.text,
         )
+
+
+class IdentifiableType(msgspec.Struct, frozen=True):
+    """An abstract base type used for all nameable artefacts."""
+
+    id: str
+    annotations: Sequence[JsonAnnotation] = ()
 
 
 class NameableType(msgspec.Struct, frozen=True):
@@ -103,6 +117,23 @@ class JsonTextFormat(msgspec.Struct, frozen=True):
     interval: Optional[int] = None
 
 
+def get_facets(input: JsonTextFormat) -> Facets:
+    """Create Facets out of a JsonTextFormat."""
+    return Facets(
+        min_length=input.minLength,
+        max_length=input.maxLength,
+        is_sequence=input.isSequence,
+        min_value=input.minValue,
+        max_value=input.maxValue,
+        start_value=input.startValue,
+        end_value=input.endValue,
+        decimals=input.decimals,
+        pattern=input.pattern,
+        start_time=input.startTime,
+        end_time=input.endTime,
+    )
+
+
 class JsonRepresentation(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for core representation."""
 
@@ -129,20 +160,7 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
             or fmt.endTime
             or fmt.isMultilingual
         ):
-            return Facets(
-                min_length=fmt.minLength,
-                max_length=fmt.maxLength,
-                is_sequence=fmt.isSequence,
-                min_value=fmt.minValue,
-                max_value=fmt.maxValue,
-                start_value=fmt.startValue,
-                end_value=fmt.endValue,
-                decimals=fmt.decimals,
-                pattern=fmt.pattern,
-                start_time=fmt.startTime,
-                end_time=fmt.endTime,
-                is_multilingual=fmt.isMultilingual,
-            )
+            return get_facets(fmt)
         else:
             return None
 
@@ -177,4 +195,20 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
 class JsonHeader(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for message header."""
 
+    id: str
+    prepared: datetime
+    sender: Organisation
+    test: bool = False
+    contentLanguages: Sequence[str] = ()
+    name: Optional[str] = None
+    receivers: Optional[Organisation] = None
     links: Sequence[JsonLink] = ()
+
+    def to_model(self) -> Header:
+        """Map to pysdmx header class."""
+        return Header(
+            id=self.id,
+            test=self.test,
+            prepared=self.prepared,
+            sender=self.sender,
+        )
