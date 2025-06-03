@@ -6,8 +6,20 @@ from typing import Optional, Sequence, Union
 import msgspec
 
 from pysdmx.errors import NotFound
-from pysdmx.model import ArrayBoundaries, Codelist, Facets
+from pysdmx.model import Annotation, ArrayBoundaries, Codelist, Facets
 from pysdmx.util import find_by_urn
+
+
+class JsonLink(msgspec.Struct, frozen=True):
+    """SDMX-JSON payload for link objects."""
+
+    href: Optional[str] = None
+    urn: Optional[str] = None
+    rel: Optional[str] = None
+    uri: Optional[str] = None
+    type: Optional[str] = None
+    title: Optional[str] = None
+    hreflang: Optional[str] = None
 
 
 class JsonAnnotation(msgspec.Struct, frozen=True):
@@ -18,6 +30,56 @@ class JsonAnnotation(msgspec.Struct, frozen=True):
     type: Optional[str] = None
     value: Optional[str] = None
     text: Optional[str] = None
+    links: Sequence[JsonLink] = ()
+
+    def to_model(self) -> Annotation:
+        """Converts a JsonAnnotation to a standard Annotation."""
+        m = [lnk for lnk in self.links if lnk.rel == "self"]
+        lnk = m[0] if len(m) == 1 else None
+        if lnk and lnk.href:
+            url = lnk.href
+        elif lnk and lnk.uri:
+            url = lnk.uri
+        else:
+            url = None
+        return Annotation(
+            id=self.id,
+            title=self.title,
+            type=self.type,
+            url=url,
+            text=self.value if self.value else self.text,
+        )
+
+
+class NameableType(msgspec.Struct, frozen=True):
+    """An abstract base type used for all nameable artefacts."""
+
+    id: str
+    name: str
+    description: Optional[str] = None
+    annotations: Sequence[JsonAnnotation] = ()
+
+
+class MaintainableType(
+    msgspec.Struct, frozen=True, rename={"agency": "agencyID"}
+):
+    """An abstract base type used for all maintainable artefacts."""
+
+    agency: str
+    id: str
+    name: str
+    version: str = "1.0"
+    isExternalReference: bool = False
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    description: Optional[str] = None
+    annotations: Sequence[JsonAnnotation] = ()
+
+
+class ItemSchemeType(MaintainableType, frozen=True):
+    """An abstract base type used for all item schemes."""
+
+    isPartial: bool = False
 
 
 class JsonTextFormat(msgspec.Struct, frozen=True):
@@ -108,13 +170,6 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
             return ArrayBoundaries(m, self.maxOccurs)
         else:
             return None
-
-
-class JsonLink(msgspec.Struct, frozen=True):
-    """SDMX-JSON payload for link objects."""
-
-    urn: str
-    rel: Optional[str] = None
 
 
 class JsonHeader(msgspec.Struct, frozen=True):

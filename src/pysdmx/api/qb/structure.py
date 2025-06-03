@@ -272,6 +272,7 @@ _API_RESOURCES = {
     "V2.0.0": _V2_0_RESOURCES,
     "V2.1.0": _V2_0_RESOURCES,
     "V2.2.0": _V2_0_RESOURCES,
+    "V2.2.1": _V2_0_RESOURCES,
     "LATEST": _V2_0_RESOURCES,
 }
 
