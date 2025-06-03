@@ -8,7 +8,6 @@ import msgspec
 from pysdmx.api.qb.util import (
     REST_ALL,
     REST_LATEST,
-    ApiVersion,
     check_multiple_items,
 )
 from pysdmx.errors import Invalid
@@ -63,12 +62,12 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         except msgspec.DecodeError as err:
             raise Invalid("Invalid Structure Query", str(err)) from err
 
-    def _get_base_url(self, version: ApiVersion) -> str:
+    def _get_base_url(self, version) -> str:
         """The URL for the query in the selected GDS-REST API version."""
         self.__validate_query(version)
         return self.__create_query(version)
 
-    def get_url(self, version: ApiVersion) -> str:
+    def get_url(self, version) -> str:
         """The URL for the query in the selected GDS-REST API version."""
         base_url = self._get_base_url(version)
         params = []
@@ -85,18 +84,18 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         query_string = f"/?{'&'.join(params)}" if params else ""
         return f"{base_url}{query_string}"
 
-    def __validate_query(self, version: ApiVersion) -> None:
+    def __validate_query(self, version) -> None:
         self.validate()
         self.__check_multiple_items(version)
         self.__check_artefact_type(self.artefact_type, version)
 
-    def __check_multiple_items(self, version: ApiVersion) -> None:
+    def __check_multiple_items(self, version) -> None:
         check_multiple_items(self.agency_id, version)
         check_multiple_items(self.resource_id, version)
         check_multiple_items(self.version, version)
 
     def __check_artefact_type(
-        self, atyp: GdsType, version: ApiVersion
+        self, atyp: GdsType, version
     ) -> None:
         if atyp not in _RESOURCES:
             raise Invalid(
@@ -107,18 +106,18 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     def __to_type_kw(self, val: GdsType) -> str:
         return val.value
 
-    def __to_kw(self, val: str, ver: ApiVersion) -> str:
+    def __to_kw(self, val: str, ver) -> str:
         return val
 
     def __to_kws(
-        self, vals: Union[str, Sequence[str]], ver: ApiVersion
+        self, vals: Union[str, Sequence[str]], ver
     ) -> str:
         vals = [vals] if isinstance(vals, str) else vals
         mapped = [self.__to_kw(v, ver) for v in vals]
-        sep = "+" if ver < ApiVersion.V2_0_0 else ","
+        sep = ","
         return sep.join(mapped)
 
-    def __create_query(self, ver: ApiVersion) -> str:
+    def __create_query(self, ver) -> str:
         t = self.__to_type_kw(self.artefact_type)
         a = self.__to_kws(self.agency_id, ver)
         r = self.__to_kws(self.resource_id, ver)
@@ -136,6 +135,5 @@ encoder = msgspec.json.Encoder()
 
 
 __all__ = [
-    "ApiVersion",
     "GdsQuery",
 ]
