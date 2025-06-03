@@ -131,6 +131,7 @@ def get_facets(input: JsonTextFormat) -> Facets:
         pattern=input.pattern,
         start_time=input.startTime,
         end_time=input.endTime,
+        is_multilingual=input.isMultilingual,
     )
 
 
@@ -158,6 +159,7 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
             or fmt.pattern
             or fmt.startTime
             or fmt.endTime
+            or fmt.isMultilingual
         ):
             return get_facets(fmt)
         else:

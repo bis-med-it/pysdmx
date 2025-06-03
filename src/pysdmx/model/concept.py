@@ -24,9 +24,9 @@ class DataType(str, Enum):
     """The expected data type for a concept."""
 
     ALPHA = "Alpha"
-    """Alphabetical characters."""
+    """The alphabetic character set of A-Z, a-z.."""
     ALPHA_NUM = "AlphaNumeric"
-    """Alphabetical and numerical characters."""
+    """The character set of A-Z, a-z and 0-9."""
     BIG_INTEGER = "BigInteger"
     """Immutable arbitrary-precision signed integer."""
     BOOLEAN = "Boolean"
@@ -41,8 +41,12 @@ class DataType(str, Enum):
     """Immutable arbitrary-precision signed decimal number."""
     DOUBLE = "Double"
     """A decimal number (8 bytes)."""
+    DURATION = "Duration"
+    """An ISO 8601 duration."""
     FLOAT = "Float"
     """A decimal number (4 bytes)."""
+    GREGORIAN_TIME_PERIOD = "GregorianTimePeriod"
+    """This is the union of YEAR, YEAR_MONTH, and DATE."""
     INTEGER = "Integer"
     """A whole number (4 bytes)."""
     LONG = "Long"
@@ -52,7 +56,7 @@ class DataType(str, Enum):
     MONTH_DAY = "MonthDay"
     """A month day in the ISO 8601 calendar (e.g. ``--12-31``)."""
     NUMERIC = "Numeric"
-    """A numerical value (integer or decimal)."""
+    """The simple numeric character set of 0-9, treated as a string."""
     PERIOD = "ObservationalTimePeriod"
     """A reporting period. The format varies with the frequency."""
     SHORT = "Short"
@@ -63,6 +67,8 @@ class DataType(str, Enum):
     """An ISO 8601 time (e.g. ``12:50:42``)."""
     URI = "URI"
     """A uniform resource identifier, such as a URL."""
+    XHTML = "XHTML"
+    """XHTML (or HTML) markup."""
     YEAR = "GregorianYear"
     """An ISO 8601 year (e.g. ``2000``)."""
     YEAR_MONTH = "GregorianYearMonth"
@@ -104,6 +110,8 @@ class Facets(Struct, frozen=True, omit_defaults=True):
     """Indicates the ending point of a sequence."""
     is_sequence: bool = False
     """Whether the values are intended to be ordered."""
+    is_multilingual: bool = False
+    """Whether the text can be in multiple languages."""
 
     def __str__(self) -> str:
         """Returns a human-friendly description."""
