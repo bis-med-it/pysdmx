@@ -1,0 +1,514 @@
+{
+    "meta": {
+        "id": "IREF858139",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2023-08-16T11:36:58Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0"
+        }
+    },
+    "data": {
+        "hierarchies": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "hierarchy",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=TEST:HCL_ELEMENT(1.0)"
+                    }
+                ],
+                "id": "HCL_ELEMENT",
+                "name": "Main",
+                "names": {
+                    "en": "Main"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "isPartial": false,
+                "leveled": false,
+                "hierarchicalCodes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "hierarchicalcode",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33"
+                            }
+                        ],
+                        "id": "Ze33",
+                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M0",
+                        "hierarchicalCodes": [
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1"
+                                    }
+                                ],
+                                "id": "M1",
+                                "validFrom": "1973-01-01T00:00:00",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M1",
+                                "hierarchicalCodes": [
+                                    {
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "hierarchicalcode",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Li"
+                                            }
+                                        ],
+                                        "id": "M0_Li",
+                                        "validFrom": "1920-01-01T00:00:00",
+                                        "validTo": "2020-12-31T23:59:59",
+                                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Li"
+                                    },
+                                    {
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "hierarchicalcode",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Na"
+                                            }
+                                        ],
+                                        "id": "M0_Na",
+                                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Na"
+                                    },
+                                    {
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "hierarchicalcode",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_K"
+                                            }
+                                        ],
+                                        "id": "M0_K",
+                                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).K"
+                                    },
+                                    {
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "hierarchicalcode",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Rb"
+                                            }
+                                        ],
+                                        "id": "M0_Rb",
+                                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Rb"
+                                    },
+                                    {
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "hierarchicalcode",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Cs"
+                                            }
+                                        ],
+                                        "id": "M0_Cs",
+                                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Cs"
+                                    },
+                                    {
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "hierarchicalcode",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Fr"
+                                            }
+                                        ],
+                                        "id": "M0_Fr",
+                                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Fr"
+                                    }
+                                ]
+                            },
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M2"
+                                    }
+                                ],
+                                "id": "M2",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M2"
+                            },
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M3"
+                                    }
+                                ],
+                                "id": "M3",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M3"
+                            },
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M4"
+                                    }
+                                ],
+                                "id": "M4",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M4"
+                            },
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M5"
+                                    }
+                                ],
+                                "id": "M5",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M5"
+                            },
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M6"
+                                    }
+                                ],
+                                "id": "M6",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M6"
+                            }
+                        ]
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "hierarchicalcode",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).OJ55"
+                            }
+                        ],
+                        "id": "OJ55",
+                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).D0"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "hierarchicalcode",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Wtoa"
+                            }
+                        ],
+                        "id": "Wtoa",
+                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).N0",
+                        "hierarchicalCodes": [
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Wtoa.N1"
+                                    }
+                                ],
+                                "id": "N1",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).N1"
+                            },
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Wtoa.N2"
+                                    }
+                                ],
+                                "id": "N2",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).N2"
+                            }
+                        ]
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "hierarchicalcode",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).hhH5"
+                            }
+                        ],
+                        "id": "hhH5",
+                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).U0"
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "hierarchy",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=TEST:HCL_ELEMENT(1.0)"
+                    }
+                ],
+                "id": "HCL_ELEMENT",
+                "name": "Main",
+                "names": {
+                    "en": "Main"
+                },
+                "version": "1.42",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "isPartial": false,
+                "leveled": false,
+                "hierarchicalCodes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "hierarchicalcode",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33"
+                            }
+                        ],
+                        "id": "Ze33",
+                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M0",
+                        "hierarchicalCodes": [
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1"
+                                    }
+                                ],
+                                "id": "M1",
+                                "validFrom": "1973-01-01T00:00:00",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M1",
+                                "hierarchicalCodes": [
+                                    {
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "hierarchicalcode",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Li"
+                                            }
+                                        ],
+                                        "id": "M0_Li",
+                                        "validFrom": "1920-01-01T00:00:00",
+                                        "validTo": "2020-12-31T23:59:59",
+                                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Li"
+                                    },
+                                    {
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "hierarchicalcode",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Na"
+                                            }
+                                        ],
+                                        "id": "M0_Na",
+                                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Na"
+                                    },
+                                    {
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "hierarchicalcode",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_K"
+                                            }
+                                        ],
+                                        "id": "M0_K",
+                                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).K"
+                                    },
+                                    {
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "hierarchicalcode",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Rb"
+                                            }
+                                        ],
+                                        "id": "M0_Rb",
+                                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Rb"
+                                    },
+                                    {
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "hierarchicalcode",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Cs"
+                                            }
+                                        ],
+                                        "id": "M0_Cs",
+                                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Cs"
+                                    },
+                                    {
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "hierarchicalcode",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M1.M0_Fr"
+                                            }
+                                        ],
+                                        "id": "M0_Fr",
+                                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_PERIODIC_TABLE(1.0).Fr"
+                                    }
+                                ]
+                            },
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M2"
+                                    }
+                                ],
+                                "id": "M2",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M2"
+                            },
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M3"
+                                    }
+                                ],
+                                "id": "M3",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M3"
+                            },
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M4"
+                                    }
+                                ],
+                                "id": "M4",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M4"
+                            },
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M5"
+                                    }
+                                ],
+                                "id": "M5",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M5"
+                            },
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Ze33.M6"
+                                    }
+                                ],
+                                "id": "M6",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).M6"
+                            }
+                        ]
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "hierarchicalcode",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).OJ55"
+                            }
+                        ],
+                        "id": "OJ55",
+                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).D0"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "hierarchicalcode",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Wtoa"
+                            }
+                        ],
+                        "id": "Wtoa",
+                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).N0",
+                        "hierarchicalCodes": [
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Wtoa.N1"
+                                    }
+                                ],
+                                "id": "N1",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).N1"
+                            },
+                            {
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "hierarchicalcode",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).Wtoa.N2"
+                                    }
+                                ],
+                                "id": "N2",
+                                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).N2"
+                            }
+                        ]
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "hierarchicalcode",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=TEST:HCL_ELEMENT(1.0).hhH5"
+                            }
+                        ],
+                        "id": "hhH5",
+                        "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_ELEMENT_TYPE(1.0).U0"
+                    }
+                ]
+            }
+        ]
+    }
+}
