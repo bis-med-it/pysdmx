@@ -21,6 +21,18 @@ from pysdmx.model import (
     Codelist,
     ConceptScheme,
     Contact,
+    CustomTypeScheme,
+    FromVtlMapping,
+    ItemReference,
+    NamePersonalisationScheme,
+    Reference,
+    RulesetScheme,
+    ToVtlMapping,
+    UserDefinedOperatorScheme,
+    VtlCodelistMapping,
+    VtlConceptMapping,
+    VtlDataflowMapping,
+    VtlMappingScheme,
 )
 from pysdmx.model.submission import SubmissionResult
 from pysdmx.model.vtl import Ruleset, Transformation, UserDefinedOperator
@@ -711,3 +723,119 @@ def test_vtl_data_flow_mapping_reader_no_reference(samples_folder):
     items = result[1].items
     assert items[0].id == "VTLM2"
     assert items[0].dataflow_alias == "LEGAL_POP"
+
+
+def test_transformation_scheme_references(samples_folder):
+    data_path = samples_folder / "vtl_transformation_scheme_references.xml"
+    msg = read_sdmx(data_path, validate=True)
+    ts = msg.get_transformation_schemes()[0]
+    # UDO Reference
+    assert len(ts.user_defined_operator_schemes) == 1
+    udo_scheme = ts.user_defined_operator_schemes[0]
+    assert str(udo_scheme) == "UserDefinedOperatorScheme=MD:TEST-UDS(1.0)"
+    # Ruleset Reference
+    assert len(ts.ruleset_schemes) == 1
+    ruleset_scheme = ts.ruleset_schemes[0]
+    assert str(ruleset_scheme) == "RulesetScheme=MD:TEST-RS(1.0)"
+    # VTL Mapping Scheme Reference
+    assert ts.vtl_mapping_scheme is not None
+    assert str(ts.vtl_mapping_scheme) == "VtlMappingScheme=MD:VMS1(1.0)"
+    # Custom Type Scheme Reference
+    assert ts.custom_type_scheme is not None
+    assert str(ts.custom_type_scheme) == "CustomTypeScheme=MD:CTS1(1.0)"
+    # Name Personalisation Scheme Reference
+    assert ts.name_personalisation_scheme is not None
+    assert (
+        str(ts.name_personalisation_scheme)
+        == "NamePersonalisationScheme=MD:NPS1(1.0)"
+    )
+
+
+def test_transformation_scheme_children(samples_folder):
+    data_path = samples_folder / "vtl_transformation_scheme_children.xml"
+
+    msg = read_sdmx(data_path, validate=True)
+    assert len(msg.structures) == 6
+
+    ts = msg.get_transformation_schemes()[0]
+    # Custom Type Scheme
+    assert isinstance(ts.custom_type_scheme, CustomTypeScheme)
+    assert ts.custom_type_scheme.short_urn == "CustomTypeScheme=MD:CTS1(1.0)"
+    custom_type = ts.custom_type_scheme.items[0]
+    assert custom_type.id == "CT1"
+    assert custom_type.vtl_scalar_type == "Test_scalar_type"
+    assert custom_type.data_type == "Test_data_type"
+    assert custom_type.vtl_literal_format == "Test_literal_format"
+    assert custom_type.null_value == "Test_null_value"
+
+    # Name Personalisation Scheme
+    assert isinstance(
+        ts.name_personalisation_scheme, NamePersonalisationScheme
+    )
+    assert (
+        ts.name_personalisation_scheme.short_urn
+        == "NamePersonalisationScheme=MD:NPS1(1.0)"
+    )
+    name_personalisation = ts.name_personalisation_scheme.items[0]
+    assert name_personalisation.id == "NP1"
+    assert name_personalisation.vtl_artefact == "TEST_VTL_ARTEFACT"
+    assert name_personalisation.vtl_default_name == "TEST_DEFAULT"
+    assert name_personalisation.personalised_name == "TEST_PERSONALISED"
+
+    # VTL Mapping Scheme
+    assert isinstance(ts.vtl_mapping_scheme, VtlMappingScheme)
+    assert ts.vtl_mapping_scheme.short_urn == "VtlMappingScheme=MD:VMS1(1.0)"
+    assert len(ts.vtl_mapping_scheme.items) == 3
+    # VTL Dataflow Mapping
+    vtl_dataflow_mapping = ts.vtl_mapping_scheme.items[0]
+    assert isinstance(vtl_dataflow_mapping, VtlDataflowMapping)
+    assert vtl_dataflow_mapping.id == "VMDataflow"
+    assert vtl_dataflow_mapping.dataflow_alias == "DS_1"
+    from_vtl = vtl_dataflow_mapping.from_vtl_mapping_method
+    assert isinstance(from_vtl, FromVtlMapping)
+    assert from_vtl.method == "Basic"
+    assert len(from_vtl.from_vtl_sub_space) == 3
+    assert from_vtl.from_vtl_sub_space[0] == "FREQ"
+    to_vtl = vtl_dataflow_mapping.to_vtl_mapping_method
+    assert isinstance(to_vtl, ToVtlMapping)
+    assert to_vtl.method == "Basic"
+    assert len(to_vtl.to_vtl_sub_space) == 2
+    assert to_vtl.to_vtl_sub_space[0] == "FREQ"
+    # VTL Codelist Mapping
+    vtl_codelist_mapping = ts.vtl_mapping_scheme.items[1]
+    assert isinstance(vtl_codelist_mapping, VtlCodelistMapping)
+    assert isinstance(vtl_codelist_mapping.codelist, Reference)
+    assert str(vtl_codelist_mapping.codelist) == "Codelist=MD:TEST_CL(1.0)"
+    assert vtl_codelist_mapping.codelist_alias == "CL1"
+    # VTL Concept Mapping
+    vtl_concept_mapping = ts.vtl_mapping_scheme.items[2]
+    assert isinstance(vtl_concept_mapping, VtlConceptMapping)
+    assert isinstance(vtl_concept_mapping.concept, ItemReference)
+    assert str(vtl_concept_mapping.concept) == "Concept=MD:TEST_CS(1.0).FREQ"
+
+    # Ruleset Scheme
+    assert len(ts.ruleset_schemes) == 1
+    ruleset_scheme = ts.ruleset_schemes[0]
+    assert isinstance(ruleset_scheme, RulesetScheme)
+    assert ruleset_scheme.short_urn == "RulesetScheme=MD:TEST-RS(1.0)"
+    assert isinstance(ruleset_scheme.vtl_mapping_scheme, VtlMappingScheme)
+    assert (
+        str(ruleset_scheme.vtl_mapping_scheme.short_urn)
+        == "VtlMappingScheme=MD:VMS1(1.0)"
+    )
+
+    # User Defined Operator Scheme
+    assert len(ts.user_defined_operator_schemes) == 1
+    udo_scheme = ts.user_defined_operator_schemes[0]
+    assert isinstance(udo_scheme, UserDefinedOperatorScheme)
+    assert udo_scheme.short_urn == "UserDefinedOperatorScheme=MD:TEST-UDS(1.0)"
+    assert isinstance(udo_scheme.vtl_mapping_scheme, VtlMappingScheme)
+    assert len(udo_scheme.ruleset_schemes) == 1
+    assert isinstance(udo_scheme.ruleset_schemes[0], RulesetScheme)
+    assert udo_scheme.ruleset_schemes[0].short_urn == (
+        "RulesetScheme=" "MD:TEST-RS(1.0)"
+    )
+    assert isinstance(udo_scheme.vtl_mapping_scheme, VtlMappingScheme)
+    assert udo_scheme.vtl_mapping_scheme.short_urn == (
+        "VtlMappingScheme=" "MD:VMS1(1.0)"
+    )
