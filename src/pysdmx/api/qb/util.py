@@ -24,6 +24,7 @@ class ApiVersion(IntEnum):
     V2_0_0 = 8
     V2_1_0 = 9
     V2_2_0 = 10
+    V2_2_1 = 11
 
 
 MULT_SEP = re.compile(r"\+")

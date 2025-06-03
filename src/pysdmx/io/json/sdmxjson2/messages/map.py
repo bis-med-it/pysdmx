@@ -6,7 +6,10 @@ from typing import Any, Dict, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
+from pysdmx.io.json.sdmxjson2.messages.core import (
+    JsonAnnotation,
+    MaintainableType,
+)
 from pysdmx.model import (
     ComponentMap,
     DataType,
@@ -70,25 +73,12 @@ class JsonRepresentationMapping(Struct, frozen=True):
             )
 
 
-class JsonRepresentationMap(
-    Struct,
-    frozen=True,
-    rename={"agency": "agencyID"},
-):
+class JsonRepresentationMap(MaintainableType, frozen=True):
     """SDMX-JSON payload for a representation map."""
 
-    id: str
-    name: str
-    agency: str
-    version: str
-    source: Sequence[Dict[str, str]]
-    target: Sequence[Dict[str, str]]
-    representationMappings: Sequence[JsonRepresentationMapping]
-    description: Optional[str] = None
-    isExternalReference: bool = False
-    validFrom: Optional[dt] = None
-    validTo: Optional[dt] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
+    source: Sequence[Dict[str, str]] = ()
+    target: Sequence[Dict[str, str]] = ()
+    representationMappings: Sequence[JsonRepresentationMapping] = ()
 
     def __parse_st(self, item: Dict[str, str]) -> Union[DataType, str]:
         if "dataType" in item:
@@ -159,17 +149,16 @@ class JsonComponentMap(Struct, frozen=True):
     ) -> Union[ComponentMap, MultiComponentMap, ImplicitComponentMap]:
         """Returns the requested map."""
         if self.representationMap:
-            rm = find_by_urn(rms, self.representationMap)
-            if len(self.source) == 1 and len(self.target) == 1:
-                return ComponentMap(
-                    self.source[0],
-                    self.target[0],
-                    rm.to_model(),
-                )
+            mult = len(self.source) > 1 or len(self.target) > 1
+            if rms:
+                rm = find_by_urn(rms, self.representationMap)
+                rm = rm.to_model(mult)
             else:
-                return MultiComponentMap(
-                    self.source, self.target, rm.to_model(True)
-                )
+                rm = self.representationMap
+            if mult:
+                return MultiComponentMap(self.source, self.target, rm)
+            else:
+                return ComponentMap(self.source[0], self.target[0], rm)
         else:
             return ImplicitComponentMap(self.source[0], self.target[0])
 
@@ -212,23 +201,15 @@ class JsonDatePatternMap(Struct, frozen=True):
             self.id,
             self.locale,
             typ,  # type: ignore[arg-type]
+            self.resolvePeriod,
         )
 
 
-class JsonStructureMap(Struct, frozen=True):
+class JsonStructureMap(MaintainableType, frozen=True):
     """SDMX-JSON payload for a structure map."""
 
-    id: str
-    name: str
-    version: str
-    agencyID: str
-    source: str
-    target: str
-    description: Optional[str] = None
-    isExternalReference: bool = False
-    validFrom: Optional[dt] = None
-    validTo: Optional[dt] = None
-    annotations: Optional[Sequence[JsonAnnotation]] = None
+    source: str = ""
+    target: str = ""
     datePatternMaps: Sequence[JsonDatePatternMap] = ()
     componentMaps: Sequence[JsonComponentMap] = ()
     fixedValueMaps: Sequence[JsonFixedValueMap] = ()
@@ -244,12 +225,16 @@ class JsonStructureMap(Struct, frozen=True):
         return StructureMap(
             id=self.id,
             name=self.name,
-            agency=self.agencyID,
+            agency=self.agency,
             source=self.source,
             target=self.target,
             maps=m1 + m2 + m3,
             description=self.description,
             version=self.version,
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
         )
 
 
@@ -259,9 +244,11 @@ class JsonStructureMaps(Struct, frozen=True):
     structureMaps: Sequence[JsonStructureMap]
     representationMaps: Sequence[JsonRepresentationMap] = ()
 
-    def to_model(self) -> StructureMap:
+    def to_model(self) -> Sequence[StructureMap]:
         """Returns the requested mapping definition."""
-        return self.structureMaps[0].to_model(self.representationMaps)
+        return [
+            sm.to_model(self.representationMaps) for sm in self.structureMaps
+        ]
 
 
 class JsonMappingMessage(Struct, frozen=True):
@@ -271,6 +258,16 @@ class JsonMappingMessage(Struct, frozen=True):
 
     def to_model(self) -> StructureMap:
         """Returns the requested mapping definition."""
+        return self.data.to_model()[0]
+
+
+class JsonStructureMapsMessage(Struct, frozen=True):
+    """SDMX-JSON payload for generic /structuremap queries."""
+
+    data: JsonStructureMaps
+
+    def to_model(self) -> Sequence[StructureMap]:
+        """Returns the requested mapping definition."""
         return self.data.to_model()
 
 
@@ -279,12 +276,15 @@ class JsonRepresentationMaps(Struct, frozen=True):
 
     representationMaps: Sequence[JsonRepresentationMap]
 
-    def to_model(self) -> Sequence[ValueMap]:
+    def to_model(
+        self,
+    ) -> Sequence[Union[MultiRepresentationMap, RepresentationMap]]:
         """Returns the requested mapping definition."""
-        m = self.representationMaps[0]
-        multi = bool(len(m.source) > 1 or len(m.target) > 1)
-        out = m.to_model(multi)
-        return out  # type: ignore[return-value]
+        maps = []
+        for m in self.representationMaps:
+            multi = bool(len(m.source) > 1 or len(m.target) > 1)
+            maps.append(m.to_model(multi))
+        return maps
 
 
 class JsonRepresentationMapMessage(Struct, frozen=True):
@@ -292,6 +292,18 @@ class JsonRepresentationMapMessage(Struct, frozen=True):
 
     data: JsonRepresentationMaps
 
-    def to_model(self) -> Sequence[ValueMap]:
+    def to_model(self) -> Union[MultiRepresentationMap, RepresentationMap]:
         """Returns the requested representation map."""
+        return self.data.to_model()[0]
+
+
+class JsonRepresentationMapsMessage(Struct, frozen=True):
+    """SDMX-JSON payload for /representationmap queries."""
+
+    data: JsonRepresentationMaps
+
+    def to_model(
+        self,
+    ) -> Sequence[Union[MultiRepresentationMap, RepresentationMap]]:
+        """Returns the requested representation maps."""
         return self.data.to_model()

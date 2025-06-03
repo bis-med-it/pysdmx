@@ -6,6 +6,7 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 from msgspec import Struct
 
 from pysdmx.errors import Invalid
+from pysdmx.io.xml.__parse_xml import parse_xml
 from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCIES,
     AGENCY,
@@ -123,7 +124,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VTLMAPPING,
     VTLMAPPINGS,
 )
-from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (
     AgencyScheme,
