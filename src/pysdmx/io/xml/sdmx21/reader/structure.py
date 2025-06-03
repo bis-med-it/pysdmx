@@ -23,6 +23,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     ATT_LVL,
     ATT_REL,
     CL,
+    CL_LOW,
     CLASS,
     CLS,
     CODE,
@@ -36,6 +37,9 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     CONTACT,
     CORE_REP,
     CS,
+    CUSTOM_TYPE,
+    CUSTOM_TYPE_SCHEME,
+    CUSTOM_TYPES,
     DEPARTMENT,
     DESC,
     DFW,
@@ -71,6 +75,9 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     MANDATORY,
     ME_LIST,
     NAME,
+    NAME_PER,
+    NAME_PER_SCHEME,
+    NAME_PERS,
     ORGS,
     PAR_ID,
     PAR_VER,
@@ -110,6 +117,8 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VALID_TO,
     VALID_TO_LOW,
     VERSION,
+    VTL_CL_MAPP,
+    VTL_CON_MAPP,
     VTL_MAPPING_SCHEME,
     VTLMAPPING,
     VTLMAPPINGS,
@@ -124,6 +133,8 @@ from pysdmx.model import (
     ConceptScheme,
     DataType,
     Facets,
+    VtlCodelistMapping,
+    VtlConceptMapping,
 )
 from pysdmx.model.__base import (
     Agency,
@@ -143,8 +154,14 @@ from pysdmx.model.dataflow import (
     Role,
 )
 from pysdmx.model.vtl import (
+    CustomType,
+    CustomTypeScheme,
+    FromVtlMapping,
+    NamePersonalisation,
+    NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
+    ToVtlMapping,
     Transformation,
     TransformationScheme,
     UserDefinedOperator,
@@ -162,8 +179,10 @@ STRUCTURES_MAPPING = {
     DSDS: DataStructureDefinition,
     RULE_SCHEME: RulesetScheme,
     UDO_SCHEME: UserDefinedOperatorScheme,
-    TRANS_SCHEME: TransformationScheme,
     VTL_MAPPING_SCHEME: VtlMappingScheme,
+    NAME_PER_SCHEME: NamePersonalisationScheme,
+    CUSTOM_TYPE_SCHEME: CustomTypeScheme,
+    TRANS_SCHEME: TransformationScheme,
 }
 ITEMS_CLASSES = {
     AGENCY: Agency,
@@ -171,8 +190,12 @@ ITEMS_CLASSES = {
     CON: Concept,
     RULE: Ruleset,
     UDO: UserDefinedOperator,
-    TRANSFORMATION: Transformation,
     VTLMAPPING: VtlDataflowMapping,
+    VTL_CL_MAPP: VtlCodelistMapping,
+    VTL_CON_MAPP: VtlConceptMapping,
+    NAME_PER: NamePersonalisation,
+    CUSTOM_TYPE: CustomType,
+    TRANSFORMATION: Transformation,
 }
 
 COMP_TYPES = [DIM, ATT, PRIM_MEASURE, GROUP_DIM]
@@ -222,17 +245,42 @@ def _extract_text(element: Any) -> str:
     return element
 
 
+def _format_lower_key(key: str, json_info: Dict[str, Any]) -> None:
+    """Formats the key to lower case with underscores and returns it.
+
+    Args:
+        key: The key to be formatted
+        json_info: The JSON information to be updated
+
+    Returns:
+        The formatted key in lower case
+
+    """
+    # Replaces the capital letters in the key with lower case,
+    # adding an underscore before it if is not the first letter
+
+    if key not in json_info:
+        return
+    formatted_key = key[0].lower() + "".join(
+        "_" + c.lower() if c.isupper() else c for c in key[1:]
+    )
+    json_info[formatted_key] = json_info.pop(key)
+
+
 class StructureParser(Struct):
     """StructureParser class for SDMX-ML 2.1."""
 
-    agencies: Dict[str, Any] = {}
-    codelists: Dict[str, Any] = {}
-    concepts: Dict[str, Any] = {}
-    datastructures: Dict[str, Any] = {}
-    dataflows: Dict[str, Any] = {}
-    rulesets: Dict[str, Any] = {}
-    udos: Dict[str, Any] = {}
-    transformations: Dict[str, Any] = {}
+    agencies: Dict[str, AgencyScheme] = {}
+    codelists: Dict[str, Codelist] = {}
+    concepts: Dict[str, ConceptScheme] = {}
+    datastructures: Dict[str, DataStructureDefinition] = {}
+    dataflows: Dict[str, Dataflow] = {}
+    rulesets: Dict[str, RulesetScheme] = {}
+    udos: Dict[str, UserDefinedOperatorScheme] = {}
+    vtl_mappings: Dict[str, VtlMappingScheme] = {}
+    name_personalisations: Dict[str, NamePersonalisationScheme] = {}
+    custom_types: Dict[str, CustomTypeScheme] = {}
+    transformations: Dict[str, TransformationScheme] = {}
 
     def __format_contact(self, json_contact: Dict[str, Any]) -> Contact:
         """Creates a Contact object from a json_contact.
@@ -482,7 +530,10 @@ class StructureParser(Struct):
         """Formats the references in the VTL element."""
 
         def extract_references(
-            scheme: str, new_key: str, object_list: Dict[str, Any]
+            scheme: str,
+            new_key: str,
+            object_list: Dict[str, Any],
+            as_list: bool = True,
         ) -> None:
             if scheme in json_elem:
                 references = []
@@ -515,15 +566,34 @@ class StructureParser(Struct):
                                 version=ref[VERSION],
                             )
                         )
-
-                json_elem[new_key] = references
+                if not as_list:
+                    json_elem[new_key] = references[0]
+                else:
+                    json_elem[new_key] = references
                 json_elem.pop(scheme)
 
         extract_references(RULE_SCHEME, "ruleset_schemes", self.rulesets)
         extract_references(
             UDO_SCHEME, "user_defined_operator_schemes", self.udos
         )
-
+        extract_references(
+            VTL_MAPPING_SCHEME,
+            "vtl_mapping_scheme",
+            self.vtl_mappings,
+            as_list=False,
+        )
+        extract_references(
+            NAME_PER_SCHEME,
+            "name_personalisation_scheme",
+            self.name_personalisations,
+            as_list=False,
+        )
+        extract_references(
+            CUSTOM_TYPE_SCHEME,
+            "custom_type_scheme",
+            self.custom_types,
+            as_list=False,
+        )
         return json_elem
 
     def __format_dataflow(
@@ -614,28 +684,75 @@ class StructureParser(Struct):
 
         return element
 
-    @staticmethod
-    def __format_vtl(json_vtl: Dict[str, Any]) -> Dict[str, Any]:
+    def __format_vtl(self, json_vtl: Dict[str, Any]) -> Dict[str, Any]:
+        # VTL Scheme Handling
+        _format_lower_key("vtlVersion", json_vtl)
+        # Transformation Scheme Handling
         if "isPersistent" in json_vtl:
             json_vtl["is_persistent"] = (
                 json_vtl.pop("isPersistent").lower() == "true"
             )
-        if "Expression" in json_vtl:
-            json_vtl["expression"] = json_vtl.pop("Expression")
-        if "Result" in json_vtl:
-            json_vtl["result"] = json_vtl.pop("Result")
-        if "vtlVersion" in json_vtl:
-            json_vtl["vtl_version"] = json_vtl.pop("vtlVersion")
-        if "rulesetScope" in json_vtl:
-            json_vtl["ruleset_scope"] = json_vtl.pop("rulesetScope")
-        if "rulesetType" in json_vtl:
-            json_vtl["ruleset_type"] = json_vtl.pop("rulesetType")
-        if "RulesetDefinition" in json_vtl:
-            json_vtl["ruleset_definition"] = json_vtl.pop("RulesetDefinition")
-        if "OperatorDefinition" in json_vtl:
-            json_vtl["operator_definition"] = json_vtl.pop(
-                "OperatorDefinition"
+        _format_lower_key("Expression", json_vtl)
+        _format_lower_key("Result", json_vtl)
+
+        # Ruleset Handling
+        _format_lower_key("rulesetScope", json_vtl)
+        _format_lower_key("rulesetType", json_vtl)
+        _format_lower_key("RulesetDefinition", json_vtl)
+        # User Defined Operator Handling
+        _format_lower_key("OperatorDefinition", json_vtl)
+        # Dataflow Mapping
+        if "ToVtlMapping" in json_vtl:
+            to_vtl = json_vtl.pop("ToVtlMapping")
+            to_vtl["to_vtl_sub_space"] = add_list(
+                to_vtl["ToVtlSubSpace"]["Key"]
             )
+            del to_vtl["ToVtlSubSpace"]
+            json_vtl["to_vtl_mapping_method"] = ToVtlMapping(**to_vtl)
+        if "FromVtlMapping" in json_vtl:
+            from_vtl = json_vtl.pop("FromVtlMapping")
+            from_vtl["from_vtl_sub_space"] = add_list(
+                from_vtl["FromVtlSuperSpace"]["Key"]
+            )
+            del from_vtl["FromVtlSuperSpace"]
+            json_vtl["from_vtl_mapping_method"] = FromVtlMapping(**from_vtl)
+        # Codelist Mapping
+        if CL in json_vtl:
+            cl_ref = json_vtl[CL][REF]
+            ref = Reference(
+                sdmx_type=CL,
+                agency=cl_ref[AGENCY_ID],
+                id=cl_ref[ID],
+                version=cl_ref[VERSION],
+            )
+            json_vtl[CL_LOW] = self.codelists.get(str(ref), ref)
+            del json_vtl[CL]
+            json_vtl["codelist_alias"] = json_vtl.pop("alias")
+        # Concept mapping
+        if CON in json_vtl:
+            con_ref = json_vtl[CON][REF]
+            item_ref = ItemReference(
+                sdmx_type=CON,
+                agency=con_ref[AGENCY_ID],
+                id=con_ref[PAR_ID],
+                version=con_ref[PAR_VER],
+                item_id=con_ref[ID],
+            )
+            json_vtl[CON_LOW] = self.concepts.get(str(item_ref), item_ref)
+            del json_vtl[CON]
+            json_vtl["concept_alias"] = json_vtl.pop("alias")
+        # Custom type
+        _format_lower_key("VtlScalarType", json_vtl)
+        _format_lower_key("DataType", json_vtl)
+        _format_lower_key("NullValue", json_vtl)
+        _format_lower_key("OutputFormat", json_vtl)
+        _format_lower_key("VtlLiteralFormat", json_vtl)
+
+        # Name Personalisation
+        _format_lower_key("PersonalisedName", json_vtl)
+        _format_lower_key("vtlArtefact", json_vtl)
+        _format_lower_key("VtlDefaultName", json_vtl)
+
         return json_vtl
 
     def __format_item(
@@ -663,6 +780,11 @@ class StructureParser(Struct):
             self.__format_dataflow(item_json_info[DFW], item_json_info)
 
         item_json_info = self.__format_vtl(item_json_info)
+
+        if CL_LOW in item_json_info and item_name_class == VTLMAPPING:
+            item_name_class = VTL_CL_MAPP
+        elif CON_LOW in item_json_info and item_name_class == VTLMAPPING:
+            item_name_class = VTL_CON_MAPP
 
         return ITEMS_CLASSES[item_name_class](**item_json_info)
 
@@ -790,8 +912,7 @@ class StructureParser(Struct):
             """Helper function to process and store formatted structures."""
             if key in json_meta:
                 formatted = formatter(json_meta[key])
-                if attr:
-                    setattr(self, attr, formatted)
+                setattr(self, attr, formatted) if attr else None
                 return formatted
             return {}
 
@@ -817,6 +938,15 @@ class StructureParser(Struct):
                 lambda data: self.__format_schema(data, DFWS, DFW),
                 "dataflows",
             ),
+            VTLMAPPINGS: process_structure(
+                VTLMAPPINGS,
+                lambda data: self.__format_scheme(
+                    data,
+                    VTL_MAPPING_SCHEME,
+                    VTLMAPPING,
+                ),
+                "vtl_mappings",
+            ),
             RULESETS: process_structure(
                 RULESETS,
                 lambda data: self.__format_scheme(data, RULE_SCHEME, RULE),
@@ -827,6 +957,20 @@ class StructureParser(Struct):
                 lambda data: self.__format_scheme(data, UDO_SCHEME, UDO),
                 "udos",
             ),
+            NAME_PERS: process_structure(
+                NAME_PERS,
+                lambda data: self.__format_scheme(
+                    data, NAME_PER_SCHEME, NAME_PER
+                ),
+                "name_personalisations",
+            ),
+            CUSTOM_TYPES: process_structure(
+                CUSTOM_TYPES,
+                lambda data: self.__format_scheme(
+                    data, CUSTOM_TYPE_SCHEME, CUSTOM_TYPE
+                ),
+                "custom_types",
+            ),
             TRANSFORMATIONS: process_structure(
                 TRANSFORMATIONS,
                 lambda data: self.__format_scheme(
@@ -835,14 +979,6 @@ class StructureParser(Struct):
                     TRANSFORMATION,
                 ),
                 "transformations",
-            ),
-            VTLMAPPINGS: process_structure(
-                VTLMAPPINGS,
-                lambda data: self.__format_scheme(
-                    data,
-                    VTL_MAPPING_SCHEME,
-                    VTLMAPPING,
-                ),
             ),
         }
         return [
