@@ -131,7 +131,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VTL_CON_MAPP,
     VTL_MAPPING_SCHEME,
     VTLMAPPING,
-    VTLMAPPINGS,
+    VTLMAPPINGS, VTLMAPPING_SCHEMES, NAME_PER_SCHEMES, CUSTOM_TYPE_SCHEMES,
 )
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (
@@ -641,13 +641,22 @@ class StructureParser(Struct):
         self, json_rep: Dict[str, Any], json_obj: Dict[str, Any]
     ) -> None:
         json_obj[DFW_ALIAS_LOW] = json_obj.pop(ALIAS_LOW)
-        dataflow_ref = {
-            "agency": json_rep[REF][AGENCY_ID],
-            "id": json_rep[REF][ID],
-            "version": json_rep[REF][VERSION],
-        }
+        if isinstance(json_rep, str):
+            ref_aux = parse_urn(json_rep)
+            dataflow_ref = {
+                "agency": ref_aux.agency,
+                "id": ref_aux.id,
+                "version": ref_aux.version,
+            }
+        else:
+            dataflow_ref = {
+                "agency": json_rep[REF][AGENCY_ID],
+                "id": json_rep[REF][ID],
+                "version": json_rep[REF][VERSION],
+            }
         json_obj[DFW_LOW] = DataflowRef(**dataflow_ref)
-        json_rep.pop(REF)
+        if REF in json_rep:
+            json_rep.pop(REF)
         json_obj.pop(DFW)
         if self.dataflows:
             for dataflow in self.dataflows.values():
@@ -1023,6 +1032,15 @@ class StructureParser(Struct):
                 ),
                 "vtl_mappings",
             ),
+            VTLMAPPING_SCHEMES: process_structure(
+                VTLMAPPING_SCHEMES,
+                lambda data: self.__format_scheme(
+                    data,
+                    VTL_MAPPING_SCHEME,
+                    VTLMAPPING,
+                ),
+                "vtl_mappings",
+            ),
             RULESETS: process_structure(
                 RULESETS,
                 lambda data: self.__format_scheme(data, RULE_SCHEME, RULE),
@@ -1050,8 +1068,22 @@ class StructureParser(Struct):
                 ),
                 "name_personalisations",
             ),
+            NAME_PER_SCHEMES: process_structure(
+                NAME_PER_SCHEMES,
+                lambda data: self.__format_scheme(
+                    data, NAME_PER_SCHEME, NAME_PER
+                ),
+                "name_personalisations",
+            ),
             CUSTOM_TYPES: process_structure(
                 CUSTOM_TYPES,
+                lambda data: self.__format_scheme(
+                    data, CUSTOM_TYPE_SCHEME, CUSTOM_TYPE
+                ),
+                "custom_types",
+            ),
+            CUSTOM_TYPE_SCHEMES: process_structure(
+                CUSTOM_TYPE_SCHEMES,
                 lambda data: self.__format_scheme(
                     data, CUSTOM_TYPE_SCHEME, CUSTOM_TYPE
                 ),
