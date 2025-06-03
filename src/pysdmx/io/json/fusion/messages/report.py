@@ -13,11 +13,11 @@ from pysdmx.model.metadata import (
 )
 
 
-class FusionMetadataReport(Struct, frozen=True):
+class FusionMetadataReport(Struct, frozen=True, rename={"agency": "agencyId"}):
     """Fusion-JSON payload for a metadata report."""
 
     id: str
-    agencyId: str
+    agency: str
     names: Sequence[FusionString]
     metadataflow: str
     targets: Sequence[str]
@@ -41,7 +41,7 @@ class FusionMetadataMessage(Struct, frozen=True):
         return MetadataReport(
             id=r.id,
             name=r.names[0].value,
-            agency=r.agencyId,
+            agency=r.agency,
             metadataflow=r.metadataflow,
             targets=r.targets,
             attributes=attrs,
