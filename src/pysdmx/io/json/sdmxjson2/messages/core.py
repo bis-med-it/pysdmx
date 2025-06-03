@@ -127,6 +127,7 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
             or fmt.pattern
             or fmt.startTime
             or fmt.endTime
+            or fmt.isMultilingual
         ):
             return Facets(
                 min_length=fmt.minLength,
@@ -140,6 +141,7 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
                 pattern=fmt.pattern,
                 start_time=fmt.startTime,
                 end_time=fmt.endTime,
+                is_multilingual=fmt.isMultilingual,
             )
         else:
             return None
