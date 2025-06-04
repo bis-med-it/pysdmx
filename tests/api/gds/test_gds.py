@@ -8,7 +8,7 @@ from msgspec.json import decode
 from pysdmx.api.gds import GDS_BASE_ENDPOINT, AsyncGdsClient, GdsClient
 from pysdmx.api.qb import StructureType
 from pysdmx.api.qb.gds import GdsQuery, GdsType
-from pysdmx.api.qb.util import REST_ALL
+from pysdmx.api.qb.util import REST_ALL, REST_LATEST
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
@@ -117,7 +117,8 @@ def query(gds: GdsClient, endpoint, value, params, resource):
         query_params = "&".join(
             f"{k}={v}" for k, v in params.items() if k != "version"
         )
-        return f"{base_query}/?{query_params}" if query_params else base_query
+        final_query = f"{base_query}/?{query_params}" if query_params else base_query
+        return final_query
 
     return base_query
 
@@ -225,6 +226,20 @@ GENERIC_PARAMS = [
             "catalog",
             "BIS",
             {
+                "version": "1.0",
+                "resource_type": "data",
+                "message_format": "json",
+                "api_version": "2.0.0",
+                "detail": "full",
+                "references": "none",
+            },
+            REST_ALL,
+            "catalog_bis_1_0.json",
+        ),
+        (
+            "catalog",
+            "BIS",
+            {
                 "version": REST_ALL,
                 "detail": "raw",
                 "references": "children",
@@ -235,7 +250,9 @@ GENERIC_PARAMS = [
         (
             "catalog",
             "BIS",
-            {},
+            {
+                "version": REST_LATEST,
+            },
             REST_ALL,
             "catalog_bis_latest_no_params.json",
         ),
@@ -253,7 +270,18 @@ GENERIC_PARAMS = [
         (
             "service",
             "BIS",
-            {},
+            {
+                "version": "1.0",
+            },
+            REST_ALL,
+            "service_bis_1_0.json",
+        ),
+        (
+            "service",
+            "BIS",
+            {
+                "version": REST_LATEST,
+            },
             REST_ALL,
             "service_bis_latest.json",
         ),
