@@ -325,168 +325,70 @@ class AsyncRestService(_CoreRestService):
                 self._map_error(e)
 
 
-class GdsRestService:
-    """Synchronous connector to GDS-REST services.
+class _CoreGdsRestService:
+    """Base class for GDS-REST services."""
 
-    Args:
-        api_endpoint: The entry point (URL) of the GDS-REST service.
-        pem: In case the service uses SSL/TLS with self-signed certificate,
-            this attribute should be used to pass the pem file with the
-            list of trusted certificate authorities.
-        timeout: The maximum number of seconds to wait before considering
-            that a request timed out. Defaults to 5 seconds.
-    """
-
-    def __init__(
-        self,
-        api_endpoint: str,
-        pem: Optional[str] = None,
-        timeout: Optional[float] = 5.0,
-    ):
-        """Instantiate a connector to a GDS-REST service."""
-        self._api_endpoint = api_endpoint
+    def __init__(self, api_endpoint: str, pem: str = None, timeout: float = 5.0):
+        self._api_endpoint = api_endpoint.rstrip("/")
         self._ssl_context = (
-            httpx.create_ssl_context(
-                verify=pem,
-            )
-            if pem
-            else httpx.create_ssl_context()
+            httpx.create_ssl_context(verify=pem) if pem else httpx.create_ssl_context()
         )
-        self._headers = {
-            "Accept-Encoding": "gzip, deflate",
-        }
+        self._headers = {"Accept-Encoding": "gzip, deflate"}
         self._timeout = timeout
 
-    def _map_error(
-        self, e: Union[httpx.RequestError, httpx.HTTPStatusError]
-    ) -> NoReturn:
+    def _map_error(self, e: Union[httpx.RequestError, httpx.HTTPStatusError]) -> NoReturn:
         q = e.request.url
         if isinstance(e, httpx.HTTPStatusError):
             s = e.response.status_code
             t = e.response.text
             if s == 404:
-                msg = (
-                    "The requested resource(s) could not be found in the "
-                    f"targeted service. The query was `{q}`"
-                )
+                msg = f"The requested resource(s) could not be found. Query: `{q}`"
                 raise errors.NotFound("Not found", msg) from e
             elif s < 500:
-                msg = (
-                    f"The query returned a {s} error code. The query "
-                    f"was `{q}`. The error message was: `{t}`."
-                )
+                msg = f"Client error {s}. Query: `{q}`. Error: `{t}`."
                 raise errors.Invalid(f"Client error {s}", msg) from e
             else:
-                msg = (
-                    f"The service returned a {s} error code. The query "
-                    f"was `{q}`. The error message was: `{t}`."
-                )
+                msg = f"Service error {s}. Query: `{q}`. Error: `{t}`."
                 raise errors.InternalError(f"Service error {s}", msg) from e
         else:
-            msg = (
-                f"There was an issue connecting to the targeted service. "
-                f"The query was `{q}`. The error message was: `{e}`."
-            )
+            msg = f"Connection error. Query: `{q}`. Error: `{e}`."
             raise errors.Unavailable("Connection error", msg) from e
 
-    def gds(self, query: GdsQuery) -> bytes:
+    def gds(self, query) -> bytes:
         """Execute a GDS query against the service."""
         q = query.get_url()
-        f = GDS_FORMAT
-        return self.__fetch(q, f)
+        return self._fetch(q, GDS_FORMAT)
 
-    def __fetch(self, query: str, format_: str) -> bytes:
+    def _fetch(self, query: str, format_: str) -> bytes:
+        """Abstract method to be implemented by subclasses."""
+        raise NotImplementedError("Subclasses must implement `_fetch`.")
+
+
+class GdsRestService(_CoreGdsRestService):
+    """Synchronous GDS-REST service."""
+
+    def _fetch(self, query: str, format_: str) -> bytes:
         with httpx.Client(verify=self._ssl_context) as client:
             try:
                 url = f"{self._api_endpoint}{query}"
-                h = self._headers.copy()
-                h["Accept"] = format_
-                r = client.get(url, headers=h, timeout=self._timeout)
-                r.raise_for_status()
-                return r.content
+                headers = {**self._headers, "Accept": format_}
+                response = client.get(url, headers=headers, timeout=self._timeout)
+                response.raise_for_status()
+                return response.content
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 self._map_error(e)
 
 
-class GdsAsyncRestService:
-    """Asynchronous connector to GDS-REST services.
+class GdsAsyncRestService(_CoreGdsRestService):
+    """Asynchronous GDS-REST service."""
 
-    Args:
-        api_endpoint: The entry point (URL) of the GDS-REST service.
-        pem: In case the service uses SSL/TLS with self-signed certificate,
-            this attribute should be used to pass the pem file with the
-            list of trusted certicate authorities.
-        timeout: The maximum number of seconds to wait before considering
-            that a request timed out. Defaults to 5 seconds.
-    """
-
-    def __init__(
-        self,
-        api_endpoint: str,
-        pem: Optional[str] = None,
-        timeout: Optional[float] = 5.0,
-    ):
-        """Instantiate a connector to a GDS-REST service."""
-        self._api_endpoint = api_endpoint
-        self._ssl_context = (
-            httpx.create_ssl_context(
-                verify=pem,
-            )
-            if pem
-            else httpx.create_ssl_context()
-        )
-        self._headers = {
-            "Accept-Encoding": "gzip, deflate",
-        }
-        self._timeout = timeout
-
-    def _map_error(
-        self, e: Union[httpx.RequestError, httpx.HTTPStatusError]
-    ) -> NoReturn:
-        q = e.request.url
-        if isinstance(e, httpx.HTTPStatusError):
-            s = e.response.status_code
-            t = e.response.text
-            if s == 404:
-                msg = (
-                    "The requested resource(s) could not be found in the "
-                    f"targeted service. The query was `{q}`"
-                )
-                raise errors.NotFound("Not found", msg) from e
-            elif s < 500:
-                msg = (
-                    f"The query returned a {s} error code. The query "
-                    f"was `{q}`. The error message was: `{t}`."
-                )
-                raise errors.Invalid(f"Client error {s}", msg) from e
-            else:
-                msg = (
-                    f"The service returned a {s} error code. The query "
-                    f"was `{q}`. The error message was: `{t}`."
-                )
-                raise errors.InternalError(f"Service error {s}", msg) from e
-        else:
-            msg = (
-                f"There was an issue connecting to the targeted service. "
-                f"The query was `{q}`. The error message was: `{e}`."
-            )
-            raise errors.Unavailable("Connection error", msg) from e
-
-    async def gds(self, query: GdsQuery) -> bytes:
-        """Execute a GDS query against the service."""
-        q = query.get_url()
-        f = GDS_FORMAT
-        out = await self.__fetch(q, f)
-        return out
-
-    async def __fetch(self, query: str, format_: str) -> bytes:
+    async def _fetch(self, query: str, format_: str) -> bytes:
         async with httpx.AsyncClient(verify=self._ssl_context) as client:
             try:
                 url = f"{self._api_endpoint}{query}"
-                h = self._headers.copy()
-                h["Accept"] = format_
-                r = await client.get(url, headers=h, timeout=self._timeout)
-                r.raise_for_status()
-                return r.content
+                headers = {**self._headers, "Accept": format_}
+                response = await client.get(url, headers=headers, timeout=self._timeout)
+                response.raise_for_status()
+                return response.content
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 self._map_error(e)
