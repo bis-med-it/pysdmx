@@ -109,8 +109,10 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         t = self.__to_type_kw(self.artefact_type)
         a = self.__to_kws(self.agency_id)
         r = self.__to_kws(self.resource_id)
+        v = self.__to_kws(self.version) if self.version else REST_ALL
 
-        ru = f"/{r}" if self.resource_id != REST_ALL else ""
+        vu = f"/{v}" if v != REST_ALL else ""
+        ru = f"/{r}{vu}" if vu or self.resource_id != REST_ALL else ""
         au = f"/{a}{ru}" if ru or self.agency_id != REST_ALL else ""
 
         return f"/{t}{au}"
