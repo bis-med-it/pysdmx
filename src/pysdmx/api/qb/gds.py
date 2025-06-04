@@ -8,8 +8,6 @@ import msgspec
 from pysdmx.api.qb.util import (
     REST_ALL,
     REST_LATEST,
-    ApiVersion,
-    check_multiple_items,
 )
 from pysdmx.errors import Invalid
 
@@ -33,8 +31,6 @@ _RESOURCES = {
     GdsType.GDS_SERVICE,
     GdsType.GDS_URN_RESOLVER,
 }
-
-LATEST_VERSION = max(ApiVersion)
 
 
 class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
@@ -87,12 +83,7 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
 
     def __validate_query(self) -> None:
         self.validate()
-        self.__check_multiple_items()
         self.__check_artefact_type(self.artefact_type)
-
-    def __check_multiple_items(self) -> None:
-        check_multiple_items(self.agency_id, LATEST_VERSION)
-        check_multiple_items(self.resource_id, LATEST_VERSION)
 
     def __check_artefact_type(self, atyp: GdsType) -> None:
         if atyp not in _RESOURCES:
