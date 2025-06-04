@@ -115,7 +115,7 @@ def query(gds: GdsClient, endpoint, value, params, resource):
     # Add query parameters for catalog endpoint
     if endpoint == "catalog":
         query_params = "&".join(
-            f"{key}={value}" for key, value in params.items() if key != "version"
+            f"{k}={v}" for k, v in params.items() if k != "version"
         )
         return f"{base_query}/?{query_params}" if query_params else base_query
 

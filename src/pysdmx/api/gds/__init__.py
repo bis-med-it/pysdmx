@@ -17,7 +17,7 @@ from pysdmx.api.qb import (
     RestService,
 )
 from pysdmx.api.qb.gds import GdsQuery, GdsType
-from pysdmx.api.qb.util import REST_ALL, REST_LATEST
+from pysdmx.api.qb.util import REST_ALL
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.io.serde import Deserializer
 from pysdmx.model.gds import (
@@ -79,7 +79,9 @@ class __BaseGdsClient:
     def _sdmx_api_q(self, id: str = REST_ALL) -> GdsQuery:
         return GdsQuery(artefact_type=GdsType.GDS_SDMX_API, agency_id=id)
 
-    def _services_q(self, agency: str, resource: str = REST_ALL, version: str = REST_ALL) -> GdsQuery:
+    def _services_q(
+        self, agency: str, resource: str = REST_ALL, version: str = REST_ALL
+    ) -> GdsQuery:
         return GdsQuery(
             artefact_type=GdsType.GDS_SERVICE,
             agency_id=agency,
@@ -202,6 +204,7 @@ class GdsClient(__BaseGdsClient):
         Args:
             service: The agency maintaining the service.
             resource: The resource ID(s) to query. Defaults to '*'.
+            version: The version(s) of the resource. Defaults to '*'.
 
         Returns:
             A list of GdsService objects.
