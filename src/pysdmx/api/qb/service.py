@@ -7,6 +7,7 @@ import httpx
 from pysdmx import errors
 from pysdmx.api.qb.availability import AvailabilityFormat, AvailabilityQuery
 from pysdmx.api.qb.data import DataFormat, DataQuery
+from pysdmx.api.qb.gds import GdsQuery
 from pysdmx.api.qb.refmeta import (
     RefMetaByMetadataflowQuery,
     RefMetaByMetadatasetQuery,
@@ -328,7 +329,7 @@ class _CoreGdsRestService:
     """Base class for GDS-REST services."""
 
     def __init__(
-        self, api_endpoint: str, pem: str = None, timeout: float = 5.0
+        self, api_endpoint: str, pem: Optional[str] = None, timeout: float = 5.0
     ):
         self._api_endpoint = api_endpoint.rstrip("/")
         self._ssl_context = (
@@ -377,7 +378,7 @@ class GdsRestService(_CoreGdsRestService):
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 self._map_error(e)
 
-    def gds(self, query) -> bytes:
+    def gds(self, query: GdsQuery) -> bytes:
         """Execute a GDS query against the service."""
         q = query.get_url()
         return self._fetch(q, GDS_FORMAT)
@@ -399,7 +400,7 @@ class GdsAsyncRestService(_CoreGdsRestService):
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 self._map_error(e)
 
-    def gds(self, query) -> bytes:
+    async def gds(self, query: GdsQuery) -> bytes:
         """Execute a GDS query against the service."""
         q = query.get_url()
-        return self._fetch(q, GDS_FORMAT)
+        return await self._fetch(q, GDS_FORMAT)
