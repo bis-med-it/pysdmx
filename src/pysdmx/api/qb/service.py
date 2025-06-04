@@ -164,12 +164,6 @@ class RestService(_CoreRestService):
         f = self._schema_format.value
         return self.__fetch(q, f)
 
-    def gds(self, query: GdsQuery) -> bytes:
-        """Execute a GDS query against the service."""
-        q = query.get_url()
-        f = GDS_FORMAT
-        return self.__fetch(q, f)
-
     def availability(self, query: AvailabilityQuery) -> bytes:
         """Execute an availability query against the service."""
         q = query.get_url(self._api_version, True)
@@ -280,13 +274,6 @@ class AsyncRestService(_CoreRestService):
         """Execute a schema query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._schema_format.value
-        out = await self.__fetch(q, f)
-        return out
-
-    async def gds(self, query: GdsQuery) -> bytes:
-        """Execute a GDS query against the service."""
-        q = query.get_url()
-        f = GDS_FORMAT
         out = await self.__fetch(q, f)
         return out
 
