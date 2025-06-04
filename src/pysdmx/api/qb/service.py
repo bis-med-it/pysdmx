@@ -166,7 +166,7 @@ class RestService(_CoreRestService):
 
     def gds(self, query: GdsQuery) -> bytes:
         """Execute a GDS query against the service."""
-        q = query.get_url(self._api_version)
+        q = query.get_url()
         f = GDS_FORMAT
         return self.__fetch(q, f)
 
@@ -285,7 +285,7 @@ class AsyncRestService(_CoreRestService):
 
     async def gds(self, query: GdsQuery) -> bytes:
         """Execute a GDS query against the service."""
-        q = query.get_url(self._api_version)
+        q = query.get_url()
         f = GDS_FORMAT
         out = await self.__fetch(q, f)
         return out

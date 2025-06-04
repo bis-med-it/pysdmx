@@ -42,13 +42,11 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         agency_id: The agency (or agencies) maintaining the artefact(s)
             to be returned.
         resource_id: The id(s) of the artefact(s) to be returned.
-        version: The version(s) of the artefact(s) to be returned.
     """
 
     artefact_type: GdsType
     agency_id: Union[str, Sequence[str]] = REST_ALL
     resource_id: Union[str, Sequence[str]] = REST_ALL
-    version: Union[str, Sequence[str]] = REST_LATEST
     resource_type: Optional[str] = None
     message_format: Optional[str] = None
     api_version: Optional[str] = None
@@ -62,14 +60,14 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         except msgspec.DecodeError as err:
             raise Invalid("Invalid Structure Query", str(err)) from err
 
-    def _get_base_url(self, version) -> str:
-        """The URL for the query in the selected GDS-REST API version."""
-        self.__validate_query(version)
-        return self.__create_query(version)
+    def _get_base_url(self) -> str:
+        """The URL for the query in the GDS-REST API."""
+        self.__validate_query()
+        return self.__create_query()
 
-    def get_url(self, version) -> str:
-        """The URL for the query in the selected GDS-REST API version."""
-        base_url = self._get_base_url(version)
+    def get_url(self) -> str:
+        """The URL for the query in the GDS-REST API."""
+        base_url = self._get_base_url()
         params = []
         if self.resource_type:
             params.append(f"resource_type={self.resource_type}")
@@ -84,47 +82,44 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         query_string = f"/?{'&'.join(params)}" if params else ""
         return f"{base_url}{query_string}"
 
-    def __validate_query(self, version) -> None:
+    def __validate_query(self) -> None:
         self.validate()
-        self.__check_multiple_items(version)
-        self.__check_artefact_type(self.artefact_type, version)
+        self.__check_multiple_items()
+        self.__check_artefact_type(self.artefact_type)
 
-    def __check_multiple_items(self, version) -> None:
-        check_multiple_items(self.agency_id, version)
-        check_multiple_items(self.resource_id, version)
-        check_multiple_items(self.version, version)
+    def __check_multiple_items(self) -> None:
+        check_multiple_items(self.agency_id, REST_LATEST)
+        check_multiple_items(self.resource_id, REST_LATEST)
 
     def __check_artefact_type(
-        self, atyp: GdsType, version
+        self, atyp: GdsType
     ) -> None:
         if atyp not in _RESOURCES:
             raise Invalid(
                 "Validation Error",
-                f"{atyp} is not valid for GDS-REST {version.name}.",
+                f"{atyp} is not valid for GDS-REST.",
             )
 
     def __to_type_kw(self, val: GdsType) -> str:
         return val.value
 
-    def __to_kw(self, val: str, ver) -> str:
+    def __to_kw(self, val: str) -> str:
         return val
 
     def __to_kws(
-        self, vals: Union[str, Sequence[str]], ver
+        self, vals: Union[str, Sequence[str]]
     ) -> str:
         vals = [vals] if isinstance(vals, str) else vals
-        mapped = [self.__to_kw(v, ver) for v in vals]
+        mapped = [self.__to_kw(v) for v in vals]
         sep = ","
         return sep.join(mapped)
 
-    def __create_query(self, ver) -> str:
+    def __create_query(self) -> str:
         t = self.__to_type_kw(self.artefact_type)
-        a = self.__to_kws(self.agency_id, ver)
-        r = self.__to_kws(self.resource_id, ver)
-        v = self.__to_kws(self.version, ver)
+        a = self.__to_kws(self.agency_id)
+        r = self.__to_kws(self.resource_id)
 
-        vu = f"/{v}" if self.version != REST_LATEST else ""
-        ru = f"/{r}{vu}" if vu or self.resource_id != REST_ALL else ""
+        ru = f"/{r}" if self.resource_id != REST_ALL else ""
         au = f"/{a}{ru}" if ru or self.agency_id != REST_ALL else ""
 
         return f"/{t}{au}"
