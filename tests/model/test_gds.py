@@ -14,14 +14,6 @@ from pysdmx.model.gds import (
 BASE_SAMPLES_PATH = Path("tests/model/samples/gds")
 
 
-def read_expected_str(name):
-    """Fixture to load the expected string from the corresponding .txt file."""
-    file_name = f"{name}.txt"
-    file_path = BASE_SAMPLES_PATH / file_name
-    with open(file_path, "r", encoding="utf-8") as f:
-        return f.read().strip()
-
-
 def test_str_gds_agency():
     """Test the __str__ method of GdsAgency."""
     agency = GdsAgency(
@@ -31,7 +23,12 @@ def test_str_gds_agency():
         description="Bank for International Settlements",
     )
 
-    expected_str = read_expected_str("agency")
+    expected_str = (
+        "agency_id: BIS, "
+        "name: BIS, "
+        "url: bis.org, "
+        "description: Bank for International Settlements"
+    )
 
     assert str(agency) == expected_str
 
@@ -62,7 +59,15 @@ def test_str_gds_catalog():
         ],
     )
 
-    expected_str = read_expected_str("catalog")
+    expected_str = (
+        "agency_id: BIS, "
+        "id: BIS_PUBS, "
+        "version: 1.0, "
+        "name: BIS Service Ref, "
+        "urn: urn:sdmx:org.sdmx.infomodel.discovery.Catalog="
+        "BIS:BIS_PUBS(1.0), "
+        "endpoints: 2 gdsendpoints"
+    )
 
     assert str(catalog) == expected_str
 
@@ -79,7 +84,16 @@ def test_str_gds_sdmxapi():
         "sdmx-rest/tree/v1.5.0/v2_1/ws/rest/docs).",
     )
 
-    expected_str = read_expected_str("sdmxapi")
+    expected_str = (
+        "release: 1.5.0, "
+        "description: Version 1.5.0 of the SDMX REST API "
+        "specification (released: 09/2020) - see the "
+        "[release notes](https://github.com/sdmx-twg"
+        "/sdmx-rest/releases/tag/v1.5.0) and the "
+        "[official documentation]"
+        "(https://github.com/sdmx-twg/sdmx-rest"
+        "/tree/v1.5.0/v2_1/ws/rest/docs)."
+    )
 
     assert str(sdmxapi) == expected_str
 
@@ -117,7 +131,16 @@ def test_str_gds_service():
         ],
     )
 
-    expected_str = read_expected_str("service")
+    expected_str = (
+        "agency_id: BIS, "
+        "id: BIS_DATA, "
+        "name: BIS Data Portal API, "
+        "urn: urn:sdmx:org.sdmx.infomodel.discovery.Service="
+        "BIS:BIS_DATA(1.0), "
+        "version: 1.0, "
+        "base: https://stats.bis.org/api, "
+        "endpoints: 2 gdsendpoints"
+    )
 
     assert str(service) == expected_str
 
@@ -138,9 +161,220 @@ def test_str_gds_urn_resolver():
         ],
     )
 
-    expected_str = read_expected_str("urn_resolver")
+    expected_str = (
+        "agency_id: BIS, "
+        "resource_id: BISWEB_CATSCHEME, "
+        "version: 1.0, sdmx_type: CategoryScheme, "
+        "resolver_results: 1 resolverresults"
+    )
 
     assert str(urn_resolution) == expected_str
+
+
+def test_str_gds_catalog_empty_endpoints():
+    """Test the __str__ method of GdsCatalog with empty endpoints."""
+    catalog = GdsCatalog(
+        agency_id="BIS",
+        id="CAT1",
+        version="1.0",
+        name="Catalog",
+        urn="urn",
+        endpoints=[],  # Empty list
+    )
+
+    expected_str = (
+        "agency_id: BIS, id: CAT1, version: 1.0, name: Catalog, urn: urn"
+    )
+
+    assert str(catalog) == expected_str
+
+
+def test_repr_gds_agency():
+    """Test the __repr__ method of GdsAgency."""
+    agency = GdsAgency(
+        agency_id="BIS",
+        name="BIS",
+        url="bis.org",
+        description="Bank for International Settlements",
+    )
+
+    expected_repr = (
+        "GdsAgency(agency_id='BIS', name='BIS', url='bis.org', "
+        "description='Bank for International Settlements')"
+    )
+
+    assert repr(agency) == expected_repr
+
+
+def test_repr_gds_catalog():
+    """Test the __repr__ method of GdsCatalog."""
+    catalog = GdsCatalog(
+        agency_id="BIS",
+        id="BIS_PUBS",
+        version="1.0",
+        name="BIS Service Ref",
+        urn="urn:sdmx:org.sdmx.infomodel.discovery.Catalog=BIS:BIS_PUBS(1.0)",
+        endpoints=[
+            GdsEndpoint(
+                api_version="1.4.0",
+                url="https://stats.bis.org/api/v1",
+                comments="",
+                message_formats=[],
+                rest_resources=["structure", "data", "schema", "availability"],
+            ),
+            GdsEndpoint(
+                api_version="2.0.0",
+                url="https://stats.bis.org/api/v2",
+                comments="",
+                message_formats=[],
+                rest_resources=["structure"],
+            ),
+        ],
+    )
+
+    expected_repr = (
+        "GdsCatalog("
+        "agency_id='BIS', "
+        "id='BIS_PUBS', "
+        "version='1.0', "
+        "name='BIS Service Ref', "
+        "urn='urn:sdmx:org.sdmx.infomodel."
+        "discovery.Catalog=BIS:BIS_PUBS(1.0)', "
+        "endpoints=["
+        "GdsEndpoint("
+        "api_version='1.4.0', "
+        "url='https://stats.bis.org/api/v1', "
+        "comments='', "
+        "rest_resources="
+        "['structure', 'data', 'schema', 'availability']"
+        "), "
+        "GdsEndpoint("
+        "api_version='2.0.0', "
+        "url='https://stats.bis.org/api/v2', "
+        "comments='', "
+        "rest_resources=['structure']"
+        ")])"
+    )
+
+    assert repr(catalog) == expected_repr
+
+
+def test_repr_gds_service():
+    """Test the __repr__ method of GdsService."""
+    service = GdsService(
+        agency_id="BIS",
+        id="BIS_DATA",
+        name="BIS Data Portal API",
+        urn="urn:sdmx:org.sdmx.infomodel.discovery.Service=BIS:BIS_DATA(1.0)",
+        version="1.0",
+        base="https://stats.bis.org/api",
+        endpoints=[
+            GdsEndpoint(
+                api_version="1.4.0",
+                url="/v1",
+                comments="",
+                message_formats=[],
+                rest_resources=["structure", "data", "schema", "availability"],
+            ),
+            GdsEndpoint(
+                api_version="2.0.0",
+                url="/v2",
+                comments="",
+                message_formats=[],
+                rest_resources=[
+                    "structure",
+                    "data",
+                    "schema",
+                    "availability",
+                    "metadata",
+                ],
+            ),
+        ],
+    )
+
+    expected_repr = (
+        "GdsService("
+        "agency_id='BIS', "
+        "id='BIS_DATA', "
+        "name='BIS Data Portal API', "
+        "urn='urn:sdmx:org.sdmx.infomodel."
+        "discovery.Service=BIS:BIS_DATA(1.0)', "
+        "version='1.0', "
+        "base='https://stats.bis.org/api', "
+        "endpoints=["
+        "GdsEndpoint("
+        "api_version='1.4.0', "
+        "url='/v1', "
+        "comments='', "
+        "rest_resources="
+        "['structure', 'data', 'schema', 'availability']"
+        "), "
+        "GdsEndpoint("
+        "api_version='2.0.0', "
+        "url='/v2', "
+        "comments='', "
+        "rest_resources="
+        "['structure', 'data', 'schema', "
+        "'availability', 'metadata']"
+        ")])"
+    )
+
+    assert repr(service) == expected_repr
+
+
+def test_repr_gds_sdmxapi():
+    """Test the __repr__ method of GdsSdmxApi."""
+    sdmxapi = GdsSdmxApi(
+        release="1.5.0",
+        description="Version 1.5.0 of the SDMX REST API "
+        "specification (released: 09/2020) - see the "
+        "[release notes](https://github.com/sdmx-twg/"
+        "sdmx-rest/releases/tag/v1.5.0) and the [official "
+        "documentation](https://github.com/sdmx-twg/"
+        "sdmx-rest/tree/v1.5.0/v2_1/ws/rest/docs).",
+    )
+
+    expected_repr = (
+        "GdsSdmxApi(release='1.5.0', "
+        "description='Version 1.5.0 of the SDMX REST API "
+        "specification (released: 09/2020) - see the ["
+        "release notes](https://github.com/sdmx-twg/"
+        "sdmx-rest/releases/tag/v1.5.0) and the ["
+        "official documentation](https://github.com/sdmx-twg/"
+        "sdmx-rest/tree/v1.5.0/v2_1/ws/rest/docs).')"
+    )
+
+    assert repr(sdmxapi) == expected_repr
+
+
+def test_repr_gds_urn_resolver():
+    """Test the __repr__ method of GdsUrnResolver."""
+    urn_resolution = GdsUrnResolver(
+        agency_id="BIS",
+        resource_id="BISWEB_CATSCHEME",
+        version="1.0",
+        sdmx_type="CategoryScheme",
+        resolver_results=[
+            ResolverResult(
+                api_version="1.4.0",
+                query="https://stats.bis.org/api/v1/categoryscheme/BIS"
+                "/BISWEB_CATSCHEME/1.0?detail=allstubs",
+                query_response_status_code=200,
+            )
+        ],
+    )
+
+    expected_repr = (
+        "GdsUrnResolver(agency_id='BIS', "
+        "resource_id='BISWEB_CATSCHEME', version='1.0', "
+        "sdmx_type='CategoryScheme', resolver_results=["
+        "ResolverResult(api_version='1.4.0', "
+        "query='https://stats.bis.org/api/v1/categoryscheme/"
+        "BIS/BISWEB_CATSCHEME/1.0?detail=allstubs', "
+        "query_response_status_code=200)])"
+    )
+
+    assert repr(urn_resolution) == expected_repr
 
 
 def test_instantiation_gds_agency():
