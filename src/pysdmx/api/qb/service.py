@@ -329,7 +329,10 @@ class _CoreGdsRestService:
     """Base class for GDS-REST services."""
 
     def __init__(
-        self, api_endpoint: str, pem: Optional[str] = None, timeout: float = 5.0
+        self,
+        api_endpoint: str,
+        pem: Optional[str] = None,
+        timeout: float = 5.0,
     ):
         self._api_endpoint = api_endpoint.rstrip("/")
         self._ssl_context = (
@@ -348,8 +351,10 @@ class _CoreGdsRestService:
             s = e.response.status_code
             t = e.response.text
             if s == 404:
-                msg = (f"The requested resource(s) could "
-                       f"not be found. Query: `{q}`")
+                msg = (
+                    f"The requested resource(s) could "
+                    f"not be found. Query: `{q}`"
+                )
                 raise errors.NotFound("Not found", msg) from e
             elif s < 500:
                 msg = f"Client error {s}. Query: `{q}`. Error: `{t}`."
