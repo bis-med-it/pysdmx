@@ -117,7 +117,8 @@ def query(gds: GdsClient, endpoint, value, params, resource):
         query_params = "&".join(
             f"{k}={v}" for k, v in params.items() if k != "version"
         )
-        final_query = f"{base_query}/?{query_params}" if query_params else base_query
+        final_query = f"{base_query}/?{query_params}" if (
+            query_params) else base_query
         return final_query
 
     return base_query
