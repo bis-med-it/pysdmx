@@ -357,7 +357,6 @@ class GdsRestService:
         timeout: Optional[float] = 5.0,
     ):
         """Instantiate a connector to a GDS-REST service."""
-
         self._api_endpoint = api_endpoint
         self._ssl_context = (
             httpx.create_ssl_context(
@@ -441,7 +440,6 @@ class GdsAsyncRestService:
         timeout: Optional[float] = 5.0,
     ):
         """Instantiate a connector to a GDS-REST service."""
-
         self._api_endpoint = api_endpoint
         self._ssl_context = (
             httpx.create_ssl_context(
