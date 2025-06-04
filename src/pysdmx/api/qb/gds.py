@@ -8,7 +8,8 @@ import msgspec
 from pysdmx.api.qb.util import (
     REST_ALL,
     REST_LATEST,
-    check_multiple_items, ApiVersion,
+    ApiVersion,
+    check_multiple_items,
 )
 from pysdmx.errors import Invalid
 
