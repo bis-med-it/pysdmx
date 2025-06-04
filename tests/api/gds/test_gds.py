@@ -2,14 +2,16 @@ from pathlib import Path
 
 import httpx
 import pytest
+import respx
 from msgspec._core import DecodeError
 from msgspec.json import decode
 
 from pysdmx.api.gds import GDS_BASE_ENDPOINT, AsyncGdsClient, GdsClient
 from pysdmx.api.qb import StructureType
 from pysdmx.api.qb.gds import GdsQuery, GdsType
+from pysdmx.api.qb.service import GdsRestService, GdsAsyncRestService
 from pysdmx.api.qb.util import REST_ALL, REST_LATEST
-from pysdmx.errors import Invalid
+from pysdmx.errors import Invalid, NotFound, InternalError, Unavailable
 from pysdmx.io.format import Format
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.model.gds import (
@@ -77,6 +79,16 @@ def async_gds_client() -> AsyncGdsClient:
 @pytest.fixture
 def gds_without_slash() -> GdsClient:
     return GdsClient(str(GDS_BASE_ENDPOINT)[:-1])
+
+
+@pytest.fixture
+def gds_service():
+    return GdsRestService(GDS_BASE_ENDPOINT)
+
+
+@pytest.fixture
+def gds_async_service():
+    return GdsAsyncRestService(GDS_BASE_ENDPOINT)
 
 
 @pytest.fixture
@@ -442,3 +454,72 @@ def test_invalid_artefact_type():
         query._GdsQuery__check_artefact_type(
             atyp=StructureType.AGENCY_SCHEME
         )
+
+
+SERVICE_PARAMS = [
+(httpx.RequestError("Connection Error"), Unavailable, "Connection error"),
+        (
+            httpx.HTTPStatusError(
+                "Not Found",
+                request=httpx.Request("GET", "https://gds.sdmx.io/agency"),
+                response=httpx.Response(404),
+            ),
+            NotFound,
+            "The requested resource(s) could not be found",
+        ),
+        (
+            httpx.HTTPStatusError(
+                "Client Error",
+                request=httpx.Request("GET", "https://gds.sdmx.io/agency"),
+                response=httpx.Response(400, text="Bad Request"),
+            ),
+            Invalid,
+            "Client error 400",
+        ),
+        (
+            httpx.HTTPStatusError(
+                "Server Error",
+                request=httpx.Request("GET", "https://gds.sdmx.io/agency"),
+                response=httpx.Response(500, text="Internal Server Error"),
+            ),
+            InternalError,
+            "Service error 500",
+        ),
+]
+
+
+@respx.mock
+@pytest.mark.parametrize(
+    "exception, expected_exception, expected_message",
+    SERVICE_PARAMS
+)
+def test_fetch_exceptions(
+    gds_service, exception, expected_exception, expected_message
+):
+    """Test that exceptions in _fetch are correctly mapped."""
+    url = "https://gds.sdmx.io/agency"
+    respx.get(url).mock(side_effect=exception)
+
+    with pytest.raises(expected_exception) as excinfo:
+        gds_service._fetch("/agency", "application/json")
+
+    assert expected_message in str(excinfo.value)
+
+
+@respx.mock
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "exception, expected_exception, expected_message",
+    SERVICE_PARAMS
+)
+async def test_async_fetch_exceptions(
+    gds_async_service, exception, expected_exception, expected_message
+):
+    """Test that exceptions in async _fetch are correctly mapped."""
+    url = "https://gds.sdmx.io/agency"
+    respx.get(url).mock(side_effect=exception)
+
+    with pytest.raises(expected_exception) as excinfo:
+        await gds_async_service._fetch("/agency", "application/json")
+
+    assert expected_message in str(excinfo.value)

@@ -354,15 +354,6 @@ class _CoreGdsRestService:
             msg = f"Connection error. Query: `{q}`. Error: `{e}`."
             raise errors.Unavailable("Connection error", msg) from e
 
-    def gds(self, query) -> bytes:
-        """Execute a GDS query against the service."""
-        q = query.get_url()
-        return self._fetch(q, GDS_FORMAT)
-
-    def _fetch(self, query: str, format_: str) -> bytes:
-        """Abstract method to be implemented by subclasses."""
-        raise NotImplementedError("Subclasses must implement `_fetch`.")
-
 
 class GdsRestService(_CoreGdsRestService):
     """Synchronous GDS-REST service."""
@@ -378,6 +369,11 @@ class GdsRestService(_CoreGdsRestService):
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 self._map_error(e)
 
+    def gds(self, query) -> bytes:
+        """Execute a GDS query against the service."""
+        q = query.get_url()
+        return self._fetch(q, GDS_FORMAT)
+
 
 class GdsAsyncRestService(_CoreGdsRestService):
     """Asynchronous GDS-REST service."""
@@ -392,3 +388,8 @@ class GdsAsyncRestService(_CoreGdsRestService):
                 return response.content
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 self._map_error(e)
+
+    def gds(self, query) -> bytes:
+        """Execute a GDS query against the service."""
+        q = query.get_url()
+        return self._fetch(q, GDS_FORMAT)
