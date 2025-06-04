@@ -105,14 +105,17 @@ def references(body, expected_class):
 @pytest.fixture
 def query(gds: GdsClient, endpoint, value, params, resource):
     """Construct a query URL similar to the GDS query logic."""
-    r = f"/{resource}" if resource and resource != REST_ALL else ""
+    version = params.get("version")
+
+    v = f"/{version}" if version and version != REST_ALL else ""
+    r = f"/{resource}{v}" if v or resource and resource != REST_ALL else ""
     a = f"/{value}{r}" if r or value and value != REST_ALL else ""
     base_query = f"{gds.api_endpoint}/{endpoint}{a}"
 
     # Add query parameters for catalog endpoint
     if endpoint == "catalog":
         query_params = "&".join(
-            f"{key}={value}" for key, value in params.items()
+            f"{key}={value}" for key, value in params.items() if key != "version"
         )
         return f"{base_query}/?{query_params}" if query_params else base_query
 
@@ -208,6 +211,7 @@ GENERIC_PARAMS = [
             "catalog",
             "BIS",
             {
+                "version": REST_ALL,
                 "resource_type": "data",
                 "message_format": "json",
                 "api_version": "2.0.0",
@@ -221,6 +225,7 @@ GENERIC_PARAMS = [
             "catalog",
             "BIS",
             {
+                "version": REST_ALL,
                 "detail": "raw",
                 "references": "children",
             },
