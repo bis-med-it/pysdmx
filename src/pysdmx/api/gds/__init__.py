@@ -17,7 +17,7 @@ from pysdmx.api.qb import (
     RestService,
 )
 from pysdmx.api.qb.gds import GdsQuery, GdsType
-from pysdmx.api.qb.util import REST_ALL
+from pysdmx.api.qb.util import REST_ALL, REST_LATEST
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.io.serde import Deserializer
 from pysdmx.model.gds import (
@@ -28,7 +28,7 @@ from pysdmx.model.gds import (
     GdsUrnResolver,
 )
 
-API_VERSION = ApiVersion.V2_0_0
+API_VERSION = max(ApiVersion)
 
 GDS_BASE_ENDPOINT = "https://gds.sdmx.io/"
 
@@ -57,6 +57,7 @@ class __BaseGdsClient:
         self,
         agency: str,
         resource: str = REST_ALL,
+        version: str = REST_ALL,
         resource_type: Optional[str] = None,
         message_format: Optional[str] = None,
         api_version: Optional[str] = None,
@@ -67,6 +68,7 @@ class __BaseGdsClient:
             artefact_type=GdsType.GDS_CATALOG,
             agency_id=agency,
             resource_id=resource,
+            version=version,
             resource_type=resource_type,
             message_format=message_format,
             api_version=api_version,
@@ -77,11 +79,12 @@ class __BaseGdsClient:
     def _sdmx_api_q(self, id: str = REST_ALL) -> GdsQuery:
         return GdsQuery(artefact_type=GdsType.GDS_SDMX_API, agency_id=id)
 
-    def _services_q(self, agency: str, resource: str = REST_ALL) -> GdsQuery:
+    def _services_q(self, agency: str, resource: str = REST_ALL, version: str = REST_ALL) -> GdsQuery:
         return GdsQuery(
             artefact_type=GdsType.GDS_SERVICE,
             agency_id=agency,
             resource_id=resource,
+            version=version,
         )
 
     def _urn_resolver_q(self, urn: str) -> GdsQuery:
@@ -97,14 +100,12 @@ class GdsClient(__BaseGdsClient):
     def __init__(
         self,
         api_endpoint: str = GDS_BASE_ENDPOINT,
-        api_version: ApiVersion = API_VERSION,
         pem: Optional[str] = None,
     ) -> None:
         """Instantiate a new client against the target endpoint.
 
         Args:
             api_endpoint: The endpoint of the targeted service.
-            api_version: version of the api to execute the query.
             pem: In case the service exposed a certificate created
                 by an unknown certificate authority, you can pass
                 a pem file for this authority using this parameter.
@@ -112,7 +113,7 @@ class GdsClient(__BaseGdsClient):
         super().__init__(api_endpoint, pem)
         self.__service = RestService(
             self.api_endpoint,
-            api_version=api_version,
+            api_version=API_VERSION,
             pem=pem,
             timeout=10.0,
         )
@@ -143,6 +144,7 @@ class GdsClient(__BaseGdsClient):
         self,
         catalog: str,
         resource: str = REST_ALL,
+        version: str = REST_ALL,
         resource_type: Optional[str] = None,
         message_format: Optional[str] = None,
         api_version: Optional[str] = None,
@@ -154,6 +156,7 @@ class GdsClient(__BaseGdsClient):
         Args:
             catalog: The agency maintaining the catalog.
             resource: The resource ID(s) to query. Defaults to '*'.
+            version: The version(s) of the resource. Defaults to '*'.
             resource_type: The type of resource (e.g., 'data', 'metadata').
             message_format: The message format(s) (e.g., 'json', 'csv').
             api_version: The API version(s) (e.g., '2.0.0').
@@ -166,6 +169,7 @@ class GdsClient(__BaseGdsClient):
         query = super()._catalogs_q(
             catalog,
             resource,
+            version,
             resource_type,
             message_format,
             api_version,
@@ -191,7 +195,7 @@ class GdsClient(__BaseGdsClient):
         return sdmx_api
 
     def get_services(
-        self, service: str, resource: str = REST_ALL
+        self, service: str, resource: str = REST_ALL, version: str = REST_ALL
     ) -> Sequence[GdsService]:
         """Get the list of services for the supplied parameters.
 
@@ -202,7 +206,7 @@ class GdsClient(__BaseGdsClient):
         Returns:
             A list of GdsService objects.
         """
-        query = super()._services_q(service, resource)
+        query = super()._services_q(service, resource, version)
         response = self.__fetch(query)
         services = super()._out(response, self.reader.services)
         return services
@@ -228,20 +232,18 @@ class AsyncGdsClient(__BaseGdsClient):
     def __init__(
         self,
         api_endpoint: str = GDS_BASE_ENDPOINT,
-        api_version: ApiVersion = API_VERSION,
         pem: Optional[str] = None,
     ) -> None:
         """Instantiate a new client against the target endpoint.
 
         Args:
             api_endpoint: The endpoint of the targeted service.
-            api_version: Version of the API to execute the query.
             pem: PEM file for unknown certificate authorities.
         """
         super().__init__(api_endpoint, pem)
         self.__service = AsyncRestService(
             self.api_endpoint,
-            api_version=api_version,
+            api_version=API_VERSION,
             pem=pem,
             timeout=10.0,
         )
@@ -268,6 +270,7 @@ class AsyncGdsClient(__BaseGdsClient):
         self,
         catalog: str,
         resource: str = REST_ALL,
+        version: str = REST_ALL,
         resource_type: Optional[str] = None,
         message_format: Optional[str] = None,
         api_version: Optional[str] = None,
@@ -278,6 +281,7 @@ class AsyncGdsClient(__BaseGdsClient):
         query = super()._catalogs_q(
             catalog,
             resource,
+            version,
             resource_type,
             message_format,
             api_version,
@@ -298,10 +302,10 @@ class AsyncGdsClient(__BaseGdsClient):
         return sdmx_api
 
     async def get_services(
-        self, service: str, resource: str = REST_ALL
+        self, service: str, resource: str = REST_ALL, version: str = REST_ALL
     ) -> Sequence[GdsService]:
         """Get a list of services for the supplied params asynchronously."""
-        query = super()._services_q(service, resource)
+        query = super()._services_q(service, resource, version)
         response = await self.__fetch(query)
         services = super()._out(response, self.reader.services)
         return services

@@ -46,6 +46,7 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     artefact_type: GdsType
     agency_id: Union[str, Sequence[str]] = REST_ALL
     resource_id: Union[str, Sequence[str]] = REST_ALL
+    version: Optional[str] = None
     resource_type: Optional[str] = None
     message_format: Optional[str] = None
     api_version: Optional[str] = None
