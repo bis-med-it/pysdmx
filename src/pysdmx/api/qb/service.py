@@ -492,7 +492,6 @@ class GdsAsyncRestService:
         out = await self.__fetch(q, f)
         return out
 
-
     async def __fetch(self, query: str, format_: str) -> bytes:
         async with httpx.AsyncClient(verify=self._ssl_context) as client:
             try:
