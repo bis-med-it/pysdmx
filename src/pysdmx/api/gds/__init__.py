@@ -11,12 +11,8 @@ from typing import Any, Optional, Sequence
 
 from msgspec.json import decode
 
-from pysdmx.api.qb import (
-    ApiVersion,
-    AsyncRestService,
-    RestService,
-)
 from pysdmx.api.qb.gds import GdsQuery, GdsType
+from pysdmx.api.qb.service import GdsAsyncRestService, GdsRestService
 from pysdmx.api.qb.util import REST_ALL
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.io.serde import Deserializer
@@ -27,8 +23,6 @@ from pysdmx.model.gds import (
     GdsService,
     GdsUrnResolver,
 )
-
-API_VERSION = max(ApiVersion)
 
 GDS_BASE_ENDPOINT = "https://gds.sdmx.io/"
 
@@ -113,9 +107,8 @@ class GdsClient(__BaseGdsClient):
                 a pem file for this authority using this parameter.
         """
         super().__init__(api_endpoint, pem)
-        self.__service = RestService(
+        self.__service = GdsRestService(
             self.api_endpoint,
-            api_version=API_VERSION,
             pem=pem,
             timeout=10.0,
         )
@@ -244,9 +237,8 @@ class AsyncGdsClient(__BaseGdsClient):
             pem: PEM file for unknown certificate authorities.
         """
         super().__init__(api_endpoint, pem)
-        self.__service = AsyncRestService(
+        self.__service = GdsAsyncRestService(
             self.api_endpoint,
-            api_version=API_VERSION,
             pem=pem,
             timeout=10.0,
         )
