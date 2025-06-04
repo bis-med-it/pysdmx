@@ -29,6 +29,14 @@ ENDPOINTS = {
     "urn_resolver": GdsUrnResolver,
 }
 
+REFERENCES = {
+    GdsAgency: "agency",
+    GdsCatalog: "catalog",
+    GdsSdmxApi: "api_version",
+    GdsService: "service",
+    GdsUrnResolver: "urn",
+}
+
 DECODERS = {
     GdsAgency: gds_readers.agencies,
     GdsCatalog: gds_readers.catalogs,
@@ -100,10 +108,9 @@ def references(body, expected_class):
 
 
 @pytest.fixture
-def query(gds: GdsClient, endpoint, value, params, resource, version):
+def query(gds: GdsClient, endpoint, value, params, resource):
     """Construct a query URL similar to the GDS query logic."""
-    v = f"/{version}" if version and version != REST_LATEST else ""
-    r = f"/{resource}{v}" if v or resource and resource != REST_ALL else ""
+    r = f"/{resource}" if resource and resource != REST_ALL else ""
     a = f"/{value}{r}" if r or value and value != REST_ALL else ""
     base_query = f"{gds.api_endpoint}/{endpoint}{a}"
 
@@ -124,7 +131,6 @@ def generic_test(
     body,
     value,
     resource,
-    version,
     params,
     expected_class,
     references,
@@ -132,11 +138,9 @@ def generic_test(
     """Generic function to test endpoints."""
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
-    get_params = {"ref": value}
+    get_params = {REFERENCES.get(expected_class): value}
     if resource:
         get_params["resource"] = resource
-    if version:
-        get_params["version"] = version
     get_params = {**get_params, **params}
 
     # Get and execute the get_{class} method
@@ -164,7 +168,6 @@ async def generic_async_test(
     body,
     value,
     resource,
-    version,
     params,
     expected_class,
     references,
@@ -172,11 +175,9 @@ async def generic_async_test(
     """Generic function to test async endpoints."""
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
 
-    get_params = {"ref": value}
+    get_params = {REFERENCES.get(expected_class): value}
     if resource:
         get_params["resource"] = resource
-    if version:
-        get_params["version"] = version
     get_params = {**get_params, **params}
 
     # Get and execute the get_{class} method
@@ -198,17 +199,16 @@ async def generic_async_test(
 
 
 GENERIC_PARAMS = [
-        ("agency", "BIS", {}, None, None, "agency_bis.json"),
-        ("agency", "ESTAT", {}, None, None, "agency_estat.json"),
+        ("agency", "BIS", {}, None, "agency_bis.json"),
+        ("agency", "ESTAT", {}, None, "agency_estat.json"),
         (
             "agency",
             "BIS_ESTAT",
             {},
             None,
-            None,
             "comma_separated_agencies.json",
         ),
-        ("agency", REST_ALL, {}, None, None, "agency_all.json"),
+        ("agency", REST_ALL, {}, None, "agency_all.json"),
         (
             "catalog",
             "BIS",
@@ -220,7 +220,6 @@ GENERIC_PARAMS = [
                 "references": "none",
             },
             REST_ALL,
-            REST_ALL,
             "catalog_bis_full.json",
         ),
         (
@@ -231,14 +230,12 @@ GENERIC_PARAMS = [
                 "references": "children",
             },
             REST_ALL,
-            REST_ALL,
             "catalog_bis_raw.json",
         ),
         (
             "catalog",
             "BIS",
             {},
-            REST_ALL,
             REST_ALL,
             "catalog_bis_latest_no_params.json",
         ),
@@ -247,19 +244,17 @@ GENERIC_PARAMS = [
             REST_ALL,
             {},
             REST_ALL,
-            REST_ALL,
             "catalog_all_no_params.json",
         ),
-        ("sdmxapi", "1.4.0", {}, None, None, "sdmxapi_1.4.0.json"),
-        ("sdmxapi", "2.0.0", {}, None, None, "sdmxapi_2.0.0.json"),
-        ("sdmxapi", REST_ALL, {}, None, None, "sdmxapi_all.json"),
-        ("service", "BIS", {}, REST_ALL, REST_ALL, "service_bis.json"),
+        ("sdmxapi", "1.4.0", {}, None, "sdmxapi_1.4.0.json"),
+        ("sdmxapi", "2.0.0", {}, None, "sdmxapi_2.0.0.json"),
+        ("sdmxapi", REST_ALL, {}, None, "sdmxapi_all.json"),
+        ("service", "BIS", {}, REST_ALL, "service_bis.json"),
         (
             "service",
             "BIS",
             {},
             REST_ALL,
-            REST_LATEST,
             "service_bis_latest.json",
         ),
         (
@@ -267,13 +262,12 @@ GENERIC_PARAMS = [
             "urn:sdmx:org.sdmx.infomodel.categoryscheme.CategoryScheme=BIS:BISWEB_CATSCHEME(1.0)",
             {},
             None,
-            None,
             "urn_resolver.json",
         ),
     ]
 
 @pytest.mark.parametrize(
-    ("endpoint", "value", "params", "resource", "version", "body"),
+    ("endpoint", "value", "params", "resource", "body"),
     GENERIC_PARAMS,
     indirect=["body"],
 )
@@ -286,7 +280,6 @@ def test_generic(
     value,
     params,
     resource,
-    version,
     expected_class,
     references,
 ):
@@ -298,7 +291,6 @@ def test_generic(
         body,
         value,
         resource,
-        version,
         params,
         expected_class,
         references,
@@ -307,7 +299,7 @@ def test_generic(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    ("endpoint", "value", "params", "resource", "version", "body"),
+    ("endpoint", "value", "params", "resource", "body"),
     GENERIC_PARAMS,
     indirect=["body"],
 )
@@ -320,7 +312,6 @@ async def test_async_generic(
     value,
     params,
     resource,
-    version,
     expected_class,
     references,
 ):
@@ -332,7 +323,6 @@ async def test_async_generic(
         body,
         value,
         resource,
-        version,
         params,
         expected_class,
         references,
@@ -340,9 +330,9 @@ async def test_async_generic(
 
 
 @pytest.mark.parametrize(
-    ("endpoint", "value", "params", "resource", "version", "body"),
+    ("endpoint", "value", "params", "resource", "body"),
     [
-        ("agency", "BIS", {}, None, None, "agency_bis.json"),
+        ("agency", "BIS", {}, None, "agency_bis.json"),
     ],
     indirect=["body"],
 )
@@ -355,7 +345,6 @@ def test_gds_without_slash(
     value,
     params,
     resource,
-    version,
     expected_class,
     references,
 ):
@@ -366,7 +355,6 @@ def test_gds_without_slash(
         body,
         value,
         resource,
-        version,
         params,
         expected_class,
         references,
@@ -374,9 +362,9 @@ def test_gds_without_slash(
 
 
 @pytest.mark.parametrize(
-    ("endpoint", "value", "params", "resource", "version", "body"),
+    ("endpoint", "value", "params", "resource", "body"),
     [
-        ("agency", "BIS", {}, None, None, "agency_bis.json"),
+        ("agency", "BIS", {}, None, "agency_bis.json"),
     ],
     indirect=["body"],
 )
@@ -389,7 +377,6 @@ def test_gds_downgraded_version(
     value,
     params,
     resource,
-    version,
     expected_class,
     references,
 ):
@@ -400,7 +387,6 @@ def test_gds_downgraded_version(
         body,
         value,
         resource,
-        version,
         params,
         expected_class,
         references,
@@ -408,13 +394,12 @@ def test_gds_downgraded_version(
 
 
 @pytest.mark.parametrize(
-    ("endpoint", "value", "params", "resource", "version", "body"),
+    ("endpoint", "value", "params", "resource", "body"),
     [
         (
             "agency",
             "non_existing_agency",
             {},
-            None,
             None,
             "non_existing_agency.json",
         )
@@ -430,7 +415,6 @@ def test_non_existing_entty(
     value,
     params,
     resource,
-    version,
     expected_class,
 ):
     with pytest.raises(DecodeError):
@@ -441,7 +425,6 @@ def test_non_existing_entty(
             body,
             value,
             resource,
-            version,
             params,
             expected_class,
             None,
@@ -451,7 +434,7 @@ def test_non_existing_entty(
 def test_invalid_query():
     query = GdsQuery(artefact_type=StructureType.AGENCY_SCHEME)
     with pytest.raises(Invalid):
-        query._get_base_url(version=REST_LATEST)
+        query._get_base_url()
 
 
 def test_invalid_artefact_type():
@@ -460,5 +443,5 @@ def test_invalid_artefact_type():
     # hidden method name and access to test it
     with pytest.raises(Invalid):
         query._GdsQuery__check_artefact_type(
-            atyp=StructureType.AGENCY_SCHEME, version=ApiVersion.V2_0_0
+            atyp=StructureType.AGENCY_SCHEME
         )
