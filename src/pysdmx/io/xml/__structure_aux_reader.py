@@ -784,26 +784,45 @@ class StructureParser(Struct):
             json_vtl["from_vtl_mapping_method"] = FromVtlMapping(**from_vtl)
         # Codelist Mapping
         if CL in json_vtl:
-            cl_ref = json_vtl[CL][REF]
-            ref = Reference(
-                sdmx_type=CL,
-                agency=cl_ref[AGENCY_ID],
-                id=cl_ref[ID],
-                version=cl_ref[VERSION],
-            )
+            if isinstance(json_vtl[CL], str):
+                cl_ref_aux = parse_urn(json_vtl[CL])
+                ref = Reference(
+                    sdmx_type=CL,
+                    agency=cl_ref_aux.agency,
+                    id=cl_ref_aux.id,
+                    version=cl_ref_aux.version,
+                )
+            else:
+                cl_ref = json_vtl[CL][REF]
+                ref = Reference(
+                    sdmx_type=CL,
+                    agency=cl_ref[AGENCY_ID],
+                    id=cl_ref[ID],
+                    version=cl_ref[VERSION],
+                )
             json_vtl[CL_LOW] = self.codelists.get(str(ref), ref)
             del json_vtl[CL]
             json_vtl["codelist_alias"] = json_vtl.pop("alias")
         # Concept mapping
         if CON in json_vtl:
-            con_ref = json_vtl[CON][REF]
-            item_ref = ItemReference(
-                sdmx_type=CON,
-                agency=con_ref[AGENCY_ID],
-                id=con_ref[PAR_ID],
-                version=con_ref[PAR_VER],
-                item_id=con_ref[ID],
-            )
+            if isinstance(json_vtl[CON], str):
+                con_ref_aux = parse_urn(json_vtl[CON])
+                item_ref = ItemReference(
+                    sdmx_type=CON,
+                    agency=con_ref_aux.agency,
+                    id=con_ref_aux.id,
+                    version=con_ref_aux.version,
+                    item_id=con_ref_aux.item_id,  # type: ignore[union-attr]
+                )
+            else:
+                con_ref = json_vtl[CON][REF]
+                item_ref = ItemReference(
+                    sdmx_type=CON,
+                    agency=con_ref[AGENCY_ID],
+                    id=con_ref[PAR_ID],
+                    version=con_ref[PAR_VER],
+                    item_id=con_ref[ID],
+                )
             json_vtl[CON_LOW] = self.concepts.get(str(item_ref), item_ref)
             del json_vtl[CON]
             json_vtl["concept_alias"] = json_vtl.pop("alias")

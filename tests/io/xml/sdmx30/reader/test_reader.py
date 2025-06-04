@@ -15,8 +15,17 @@ from pysdmx.model import (
     Code,
     Codelist,
     Contact,
+    CustomType,
+    CustomTypeScheme,
     ItemReference,
+    NamePersonalisation,
+    NamePersonalisationScheme,
     Reference,
+    RulesetScheme,
+    TransformationScheme,
+    UserDefinedOperatorScheme,
+    VtlDataflowMapping,
+    VtlMappingScheme,
 )
 from pysdmx.model.dataflow import DataStructureDefinition
 
@@ -41,7 +50,6 @@ def test_dataflow_30(samples_folder):
     num_columns = data.shape[1]
     assert num_rows == 2
     assert num_columns == 19
-    print(result)
 
 
 def test_datastructure_30__series(samples_folder):
@@ -398,4 +406,104 @@ def test_vtl_scheme_references_read(samples_folder):
     assert (
         trans_udo_schemes[0].short_urn
         == "UserDefinedOperatorScheme=MD:TEST_UDO_SCHEME(1.0)"
+    )
+
+
+def test_vtl_mapping_read(samples_folder):
+    data_path = samples_folder / "vtlmapping.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    assert len(result) == 3
+    # Vtl Mapping Scheme
+    assert isinstance(result[0], VtlMappingScheme)
+    vtl_mapping_scheme = result[0]
+    assert vtl_mapping_scheme.id == "VTLMS1"
+    assert vtl_mapping_scheme.name == "Test Vtl Mapping Scheme"
+    assert vtl_mapping_scheme.short_urn == "VtlMappingScheme=MD:VTLMS1(1.0)"
+    assert isinstance(vtl_mapping_scheme.items[0], VtlDataflowMapping)
+    vtl_dataflow = vtl_mapping_scheme.items[0]
+    assert vtl_dataflow.id == "VTLM1"
+    assert vtl_dataflow.name == "Test Vtl Mapping"
+    # Name Personalisation Scheme
+    assert isinstance(result[1], NamePersonalisationScheme)
+    name_personalisation_scheme = result[1]
+    assert name_personalisation_scheme.id == "NPS1"
+    assert (
+        name_personalisation_scheme.name == "Test Name Personalisation Scheme"
+    )
+    assert (
+        name_personalisation_scheme.short_urn
+        == "NamePersonalisationScheme=MD:NPS1(1.0)"
+    )
+    assert isinstance(
+        name_personalisation_scheme.items[0], NamePersonalisation
+    )
+    name_personalisation = name_personalisation_scheme.items[0]
+    assert name_personalisation.id == "NP1"
+    assert name_personalisation.name == "Test Name Personalisation"
+    assert name_personalisation.vtl_artefact == "TEST_VTL_ARTEFACT"
+    assert name_personalisation.vtl_default_name == "TEST_DEFAULT"
+    # Custom Type Scheme
+    assert isinstance(result[2], CustomTypeScheme)
+    custom_type_scheme = result[2]
+    assert custom_type_scheme.id == "CTS1"
+    assert custom_type_scheme.name == "Test Custom Type Scheme"
+    assert custom_type_scheme.short_urn == "CustomTypeScheme=MD:CTS1(1.0)"
+    assert isinstance(custom_type_scheme.items[0], CustomType)
+    custom_type = custom_type_scheme.items[0]
+    assert custom_type.id == "CT1"
+    assert custom_type.name == "Test Custom Type"
+    assert custom_type.null_value == "Test_literal_format"
+    assert custom_type.output_format == "Test_null_value"
+    assert custom_type.vtl_literal_format == "Test_output_format"
+    assert custom_type.vtl_scalar_type == "Test_scalar_type"
+
+
+def test_vtl_complete_read(samples_folder):
+    data_path = samples_folder / "vtl_complete.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    assert len(result) == 6
+
+    assert isinstance(result[1], RulesetScheme)
+    ruleset_scheme = result[1]
+    rule_vtl_mapping = ruleset_scheme.vtl_mapping_scheme
+    assert rule_vtl_mapping.id == "VMS1"
+    assert rule_vtl_mapping.name == "Test VTL Mapping Scheme"
+    assert rule_vtl_mapping.short_urn == "VtlMappingScheme=MD:VMS1(1.0)"
+
+    assert isinstance(result[2], UserDefinedOperatorScheme)
+    udo_scheme = result[2]
+    udo_vtl_mapping = udo_scheme.vtl_mapping_scheme
+    assert udo_vtl_mapping.id == "VMS1"
+    assert udo_vtl_mapping.name == "Test VTL Mapping Scheme"
+    assert udo_vtl_mapping.short_urn == "VtlMappingScheme=MD:VMS1(1.0)"
+
+    assert isinstance(result[5], TransformationScheme)
+    transformation_scheme = result[5]
+    trans_custom_Scheme = transformation_scheme.custom_type_scheme
+    assert trans_custom_Scheme.id == "CTS1"
+    assert trans_custom_Scheme.name == "Test Custom Type Scheme"
+    assert trans_custom_Scheme.short_urn == "CustomTypeScheme=MD:CTS1(1.0)"
+    trans_name_personalisation_scheme = (
+        transformation_scheme.name_personalisation_scheme
+    )
+    assert trans_name_personalisation_scheme.id == "NPS1"
+    assert (
+        trans_name_personalisation_scheme.name
+        == "Test Name Personalisation Scheme"
+    )
+    assert (
+        trans_name_personalisation_scheme.short_urn
+        == "NamePersonalisationScheme=MD:NPS1(1.0)"
+    )
+    trans_vtl_mapping_scheme = transformation_scheme.vtl_mapping_scheme
+    assert trans_vtl_mapping_scheme.id == "VMS1"
+    assert trans_vtl_mapping_scheme.name == "Test VTL Mapping Scheme"
+    assert (
+        trans_vtl_mapping_scheme.short_urn == "VtlMappingScheme=MD:VMS1(1.0)"
     )
