@@ -113,6 +113,8 @@ def __write_data_single_dataset(
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
     sdmx_type = parse_short_urn(structure_urn).id
+    # Remove nan values from DataFrame
+    dataset.data = dataset.data.fillna("").astype(str).replace("nan", "")
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
