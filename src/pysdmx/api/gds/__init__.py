@@ -57,7 +57,6 @@ class __BaseGdsClient:
         self,
         agency: str,
         resource: str = REST_ALL,
-        version: str = REST_ALL,
         resource_type: Optional[str] = None,
         message_format: Optional[str] = None,
         api_version: Optional[str] = None,
@@ -68,7 +67,6 @@ class __BaseGdsClient:
             artefact_type=GdsType.GDS_CATALOG,
             agency_id=agency,
             resource_id=resource,
-            version=version,
             resource_type=resource_type,
             message_format=message_format,
             api_version=api_version,
@@ -80,13 +78,12 @@ class __BaseGdsClient:
         return GdsQuery(artefact_type=GdsType.GDS_SDMX_API, agency_id=id)
 
     def _services_q(
-        self, agency: str, resource: str = REST_ALL, version: str = REST_ALL
+        self, agency: str, resource: str = REST_ALL
     ) -> GdsQuery:
         return GdsQuery(
             artefact_type=GdsType.GDS_SERVICE,
             agency_id=agency,
             resource_id=resource,
-            version=version,
         )
 
     def _urn_resolver_q(self, urn: str) -> GdsQuery:
@@ -148,7 +145,6 @@ class GdsClient(__BaseGdsClient):
         self,
         catalog: str,
         resource: str = REST_ALL,
-        version: str = REST_ALL,
         resource_type: Optional[str] = None,
         message_format: Optional[str] = None,
         api_version: Optional[str] = None,
@@ -160,7 +156,6 @@ class GdsClient(__BaseGdsClient):
         Args:
             catalog: The agency maintaining the catalog.
             resource: The resource ID(s) to query. Defaults to '*'.
-            version: The version(s) to query. Defaults to '*'.
             resource_type: The type of resource (e.g., 'data', 'metadata').
             message_format: The message format(s) (e.g., 'json', 'csv').
             api_version: The API version(s) (e.g., '2.0.0').
@@ -173,7 +168,6 @@ class GdsClient(__BaseGdsClient):
         query = super()._catalogs_q(
             catalog,
             resource,
-            version,
             resource_type,
             message_format,
             api_version,
@@ -196,19 +190,18 @@ class GdsClient(__BaseGdsClient):
         return sdmx_api
 
     def get_services(
-        self, service: str, resource: str = REST_ALL, version: str = REST_ALL
+        self, service: str, resource: str = REST_ALL
     ) -> Sequence[GdsService]:
         """Get the list of services for the supplied parameters.
 
         Args:
             service: The agency maintaining the service.
             resource: The resource ID(s) to query. Defaults to '*'.
-            version: The version(s) to query. Defaults to '*'.
 
         Returns:
             A list of GdsService objects.
         """
-        query = super()._services_q(service, resource, version)
+        query = super()._services_q(service, resource)
         response = self.__fetch(query)
         services = super()._out(response, self.reader.services)
         return services
@@ -274,7 +267,6 @@ class AsyncGdsClient(__BaseGdsClient):
         self,
         catalog: str,
         resource: str = REST_ALL,
-        version: str = REST_ALL,
         resource_type: Optional[str] = None,
         message_format: Optional[str] = None,
         api_version: Optional[str] = None,
@@ -285,7 +277,6 @@ class AsyncGdsClient(__BaseGdsClient):
         query = super()._catalogs_q(
             catalog,
             resource,
-            version,
             resource_type,
             message_format,
             api_version,
@@ -304,10 +295,10 @@ class AsyncGdsClient(__BaseGdsClient):
         return sdmx_api
 
     async def get_services(
-        self, service: str, resource: str = REST_ALL, version: str = REST_ALL
+        self, service: str, resource: str = REST_ALL
     ) -> Sequence[GdsService]:
         """Get a list of services for the supplied params asynchronously."""
-        query = super()._services_q(service, resource, version)
+        query = super()._services_q(service, resource)
         response = await self.__fetch(query)
         services = super()._out(response, self.reader.services)
         return services
