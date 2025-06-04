@@ -133,6 +133,7 @@ def test_reading_col_action(data_path_action):
     assert len(df) == 1000
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
+    assert "ACTION" not in df.columns
 
 
 def test_reading_more_structures(data_path_structures):
