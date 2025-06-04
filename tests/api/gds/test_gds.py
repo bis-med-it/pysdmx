@@ -486,7 +486,9 @@ def test_client_error(respx_mock, gds_service):
     with pytest.raises(Invalid) as e:
         gds_service._fetch("/resource", "application/json")
     assert e.value.title == "Client error 400"
-    assert "Client error 400. Query: `https://gds.sdmx.io/resource`. Error: `Bad Request`." in e.value.description
+    assert ("Client error 400. Query: "
+            "`https://gds.sdmx.io/resource`. "
+            "Error: `Bad Request`.") in e.value.description
 
 
 def test_service_error(respx_mock, gds_service):
@@ -502,16 +504,21 @@ def test_service_error(respx_mock, gds_service):
     with pytest.raises(InternalError) as e:
         gds_service._fetch("/resource", "application/json")
     assert e.value.title == "Service error 500"
-    assert "Service error 500. Query: `https://gds.sdmx.io/resource`. Error: `Internal Server Error`." in e.value.description
+    assert ("Service error 500. Query: "
+            "`https://gds.sdmx.io/resource`. "
+            "Error: `Internal Server Error`.") in e.value.description
 
 
 @pytest.mark.asyncio
 async def test_async_connection_error(respx_mock, gds_async_service):
     """Test connection error (httpx.RequestError) in async fetch."""
     url = "https://gds.sdmx.io/resource"
-    respx_mock.get(url).mock(side_effect=httpx.RequestError("Connection failed"))
+    respx_mock.get(url).mock(
+        side_effect=httpx.RequestError("Connection failed")
+    )
 
     with pytest.raises(Unavailable) as e:
         await gds_async_service._fetch("/resource", "application/json")
     assert e.value.title == "Connection error"
-    assert "Connection error. Query: `https://gds.sdmx.io/resource`." in e.value.description
+    assert ("Connection error. Query: "
+            "`https://gds.sdmx.io/resource`.") in e.value.description
