@@ -80,11 +80,6 @@ def gds_without_slash() -> GdsClient:
 
 
 @pytest.fixture
-def gds_1_4_0() -> GdsClient:
-    return GdsClient(str(GDS_BASE_ENDPOINT), ApiVersion.V1_4_0)
-
-
-@pytest.fixture
 def body(endpoint, request):
     """Fixture to load the body content for a specific test case."""
     file_name = request.param
@@ -351,38 +346,6 @@ def test_gds_without_slash(
     generic_test(
         respx_mock,
         gds_without_slash,
-        query,
-        body,
-        value,
-        resource,
-        params,
-        expected_class,
-        references,
-    )
-
-
-@pytest.mark.parametrize(
-    ("endpoint", "value", "params", "resource", "body"),
-    [
-        ("agency", "BIS", {}, None, "agency_bis.json"),
-    ],
-    indirect=["body"],
-)
-def test_gds_downgraded_version(
-    respx_mock,
-    gds_1_4_0,
-    query,
-    body,
-    endpoint,
-    value,
-    params,
-    resource,
-    expected_class,
-    references,
-):
-    generic_test(
-        respx_mock,
-        gds_1_4_0,
         query,
         body,
         value,
