@@ -2,7 +2,6 @@ from pathlib import Path
 
 import httpx
 import pytest
-import respx
 from msgspec._core import DecodeError
 from msgspec.json import decode
 
@@ -456,70 +455,63 @@ def test_invalid_artefact_type():
         )
 
 
-SERVICE_PARAMS = [
-(httpx.RequestError("Connection Error"), Unavailable, "Connection error"),
-        (
-            httpx.HTTPStatusError(
-                "Not Found",
-                request=httpx.Request("GET", "https://gds.sdmx.io/agency"),
-                response=httpx.Response(404),
-            ),
-            NotFound,
-            "The requested resource(s) could not be found",
-        ),
-        (
-            httpx.HTTPStatusError(
-                "Client Error",
-                request=httpx.Request("GET", "https://gds.sdmx.io/agency"),
-                response=httpx.Response(400, text="Bad Request"),
-            ),
-            Invalid,
-            "Client error 400",
-        ),
-        (
-            httpx.HTTPStatusError(
-                "Server Error",
-                request=httpx.Request("GET", "https://gds.sdmx.io/agency"),
-                response=httpx.Response(500, text="Internal Server Error"),
-            ),
-            InternalError,
-            "Service error 500",
-        ),
-]
-
-
-@respx.mock
-@pytest.mark.parametrize(
-    ("exception", "expected_exception", "expected_message"),
-    SERVICE_PARAMS,
-)
-def test_fetch_exceptions(
-    gds_service, exception, expected_exception, expected_message
-):
-    """Test that exceptions in _fetch are correctly mapped."""
+def test_not_found(respx_mock, gds_service):
+    """Test 404 Not Found error."""
     url = "https://gds.sdmx.io/agency"
-    respx.get(url).mock(side_effect=exception)
+    respx_mock.get(url).mock(
+        return_value=httpx.Response(
+            404,
+            content=b"Resource not found",
+        )
+    )
 
-    with pytest.raises(expected_exception) as excinfo:
+    with pytest.raises(NotFound) as e:
         gds_service._fetch("/agency", "application/json")
+    assert e.value.title == "Not found"
+    assert ("The requested resource(s) "
+            "could not be found") in e.value.description
+    assert url in e.value.description
 
-    assert expected_message in str(excinfo.value)
+
+def test_client_error(respx_mock, gds_service):
+    """Test 400 Client Error."""
+    url = "https://gds.sdmx.io/resource"
+    respx_mock.get(url).mock(
+        return_value=httpx.Response(
+            400,
+            content=b"Bad Request",
+        )
+    )
+
+    with pytest.raises(Invalid) as e:
+        gds_service._fetch("/resource", "application/json")
+    assert e.value.title == "Client error 400"
+    assert "Client error 400. Query: `https://gds.sdmx.io/resource`. Error: `Bad Request`." in e.value.description
 
 
-@respx.mock
+def test_service_error(respx_mock, gds_service):
+    """Test 500 Internal Server Error."""
+    url = "https://gds.sdmx.io/resource"
+    respx_mock.get(url).mock(
+        return_value=httpx.Response(
+            500,
+            content=b"Internal Server Error",
+        )
+    )
+
+    with pytest.raises(InternalError) as e:
+        gds_service._fetch("/resource", "application/json")
+    assert e.value.title == "Service error 500"
+    assert "Service error 500. Query: `https://gds.sdmx.io/resource`. Error: `Internal Server Error`." in e.value.description
+
+
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    ("exception", "expected_exception", "expected_message"),
-    SERVICE_PARAMS,
-)
-async def test_async_fetch_exceptions(
-    gds_async_service, exception, expected_exception, expected_message
-):
-    """Test that exceptions in async _fetch are correctly mapped."""
-    url = "https://gds.sdmx.io/agency"
-    respx.get(url).mock(side_effect=exception)
+async def test_async_connection_error(respx_mock, gds_async_service):
+    """Test connection error (httpx.RequestError) in async fetch."""
+    url = "https://gds.sdmx.io/resource"
+    respx_mock.get(url).mock(side_effect=httpx.RequestError("Connection failed"))
 
-    with pytest.raises(expected_exception) as excinfo:
-        await gds_async_service._fetch("/agency", "application/json")
-
-    assert expected_message in str(excinfo.value)
+    with pytest.raises(Unavailable) as e:
+        await gds_async_service._fetch("/resource", "application/json")
+    assert e.value.title == "Connection error"
+    assert "Connection error. Query: `https://gds.sdmx.io/resource`." in e.value.description
