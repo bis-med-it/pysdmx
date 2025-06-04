@@ -338,6 +338,8 @@ class StructureParser(Struct):
         Returns:
             annotations formatted
         """
+        if LINK in item_elem:
+            del item_elem[LINK]
         if ANNOTATIONS not in item_elem:
             return item_elem
         annotations = []
@@ -674,6 +676,8 @@ class StructureParser(Struct):
 
         self.__format_local_rep(comp) if LOCAL_REP in comp else None
 
+        if LINK in comp:
+            del comp[LINK]
         if REF in comp[CON_ID]:
             concept_id = self.__format_con_id(comp[CON_ID][REF])
         else:
@@ -706,9 +710,6 @@ class StructureParser(Struct):
 
         if CON_ROLE in comp:
             del comp[CON_ROLE]
-
-        if LINK in comp:
-            del comp[LINK]
 
         return Component(**comp)
 
@@ -863,8 +864,6 @@ class StructureParser(Struct):
             del item_json_info["Parent"]
         if DFW in item_json_info:
             self.__format_dataflow(item_json_info[DFW], item_json_info)
-        if LINK in item_json_info:
-            del item_json_info[LINK]
 
         item_json_info = self.__format_vtl(item_json_info)
 
@@ -908,8 +907,6 @@ class StructureParser(Struct):
             element = self.__format_vtl_references(element)
             if "xmlns" in element:
                 del element["xmlns"]
-            if LINK in element:
-                del element[LINK]
             # Dynamic creation with specific class
             result: ItemScheme = STRUCTURES_MAPPING[scheme](**element)
             elements[result.short_urn] = result
@@ -942,8 +939,6 @@ class StructureParser(Struct):
                     id=element[ID],
                     version=element[VERSION],
                 ).__str__()
-            if LINK in element:
-                del element[LINK]
             if METADATA in element:
                 del element[METADATA]
             element = self.__format_annotations(element)
