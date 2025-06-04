@@ -11,20 +11,26 @@ from pysdmx.io.format import Format
 from pysdmx.io.xml.sdmx21.__tokens import (
     ANNOTATIONS_LOW,
     CONTACTS_LOW,
+    CUSTOM_TYPE_SCHEMES,
     CUSTOM_TYPES,
     DESC_LOW,
     DFW,
     DFWS_LOW,
     DSD,
+    NAME_PER_SCHEMES,
     NAME_PERS,
     PROV_AGREMENT,
+    RULE_SCHEMES,
     RULESETS,
     STR_USAGE,
     STRUCTURE,
+    TRANS_SCEHEMES,
     TRANSFORMATIONS,
+    UDO_SCHEMES,
     UDOS,
     URI_LOW,
     URN_LOW,
+    VTLMAPPING_SCHEMES,
     VTLMAPPINGS,
 )
 from pysdmx.model import Organisation
@@ -50,9 +56,11 @@ ABBR_SPE = "ss"
 ANNOTATIONS = "Annotations"
 STRUCTURES = "Structures"
 ORGS = "OrganisationSchemes"
+AGC = "AgencySchemes"
 AGENCIES = "AgencyScheme"
 CODELISTS = "Codelists"
 CONCEPTS = "Concepts"
+CONCEPTS_SCHEMES = "ConceptSchemes"
 DSDS = "DataStructures"
 DATAFLOWS = "Dataflows"
 CONSTRAINTS = "Constraints"
@@ -162,23 +170,24 @@ MSG_CONTENT_PKG_21 = OrderedDict(
         (RULESETS, "Rulesets"),
         (TRANSFORMATIONS, "Transformations"),
         (UDOS, "UserDefinedOperators"),
-        (VTLMAPPINGS, "VtlMappings"),
     ]
 )
 
 
 MSG_CONTENT_PKG_30 = OrderedDict(
     [
-        (ORGS, "AgencySchemes"),
+        (AGC, "AgencySchemes"),
         (DATAFLOWS, "Dataflows"),
         (CODELISTS, "Codelists"),
-        (CONCEPTS, "ConceptSchemes"),
+        (CONCEPTS_SCHEMES, "ConceptSchemes"),
         (DSDS, "DataStructures"),
         (CONSTRAINTS, "ContentConstraints"),
-        (RULESETS, "RulesetSchemes"),
-        (TRANSFORMATIONS, "TransformationSchemes"),
-        (UDOS, "UserDefinedOperatorSchemes"),
-        (VTLMAPPINGS, "VtlMappings"),
+        (CUSTOM_TYPE_SCHEMES, "CustomTypeSchemes"),
+        (VTLMAPPING_SCHEMES, "VtlMappingSchemes"),
+        (NAME_PER_SCHEMES, "NamePersonalisationSchemes"),
+        (RULE_SCHEMES, "RulesetSchemes"),
+        (TRANS_SCEHEMES, "TransformationSchemes"),
+        (UDO_SCHEMES, "UserDefinedOperatorSchemes"),
     ]
 )
 

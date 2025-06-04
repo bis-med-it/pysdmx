@@ -740,7 +740,7 @@ def __write_scheme(
         NAME_PER_SCHEME,
     ]:
         for item in item_scheme.items:
-            outfile += __write_item(item, add_indent(indent))
+            outfile += __write_item(item, add_indent(indent), references_30)
     if scheme in [
         RULE_SCHEME,
         UDO_SCHEME,

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Receiver id="Not_Supplied"/>
+		<mes:Source>PySDMX</mes:Source>
+	</mes:Header>
+	<mes:Structures>
+		<str:NamePersonalisationSchemes>
+			<str:NamePersonalisationScheme id="NPS1" urn="urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisationScheme=MD:NPS1(1.0)" version="1.0" isExternalReference="false" agencyID="MD" isPartial="false"  vtlVersion="2.0">
+				<com:Name xml:lang="en">Test Name Personalisation Scheme</com:Name>
+				<str:NamePersonalisation id="NP1" urn="urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisation=MD:NPS1(1.0).NP1" vtlArtefact="TEST_VTL_ARTEFACT" >
+					<com:Name xml:lang="en">Test Name Personalisation</com:Name>
+					<str:VtlDefaultName>TEST_DEFAULT</str:VtlDefaultName>
+					<str:PersonalisedName>TEST_PERSONALISED</str:PersonalisedName>
+				</str:NamePersonalisation>
+			</str:NamePersonalisationScheme>
+		</str:NamePersonalisationSchemes>
+	</mes:Structures>
+</mes:Structure>
