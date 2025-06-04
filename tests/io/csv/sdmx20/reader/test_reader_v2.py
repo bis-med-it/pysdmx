@@ -160,6 +160,7 @@ def test_reading_two_actions(data_path_two_actions):
     datasets = read(infile)
     assert datasets[0].short_urn == "DataStructure=TEST:TEST_MD(1.0)"
     assert len(datasets[0].data) == 2
+    assert "ACTION" not in datasets[0].data.columns
 
 
 def test_reading_three_actions(data_path_three_actions):
