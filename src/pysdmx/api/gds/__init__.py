@@ -77,9 +77,7 @@ class __BaseGdsClient:
     def _sdmx_api_q(self, id: str = REST_ALL) -> GdsQuery:
         return GdsQuery(artefact_type=GdsType.GDS_SDMX_API, agency_id=id)
 
-    def _services_q(
-        self, agency: str, resource: str = REST_ALL
-    ) -> GdsQuery:
+    def _services_q(self, agency: str, resource: str = REST_ALL) -> GdsQuery:
         return GdsQuery(
             artefact_type=GdsType.GDS_SERVICE,
             agency_id=agency,
@@ -178,11 +176,14 @@ class GdsClient(__BaseGdsClient):
         catalogs = super()._out(response, self.reader.catalogs)
         return catalogs
 
-    def get_sdmx_api(self, api_version: str = REST_ALL) -> Sequence[GdsSdmxApi]:
+    def get_sdmx_api(
+        self, api_version: str = REST_ALL
+    ) -> Sequence[GdsSdmxApi]:
         """Get the list of SDMX API versions.
 
         Args:
-            api_version: The ID of the SDMX API version to query. Defaults to '*'.
+            api_version: The ID of the SDMX API version
+            to query. Defaults to '*'.
         """
         query = super()._sdmx_api_q(api_version)
         response = self.__fetch(query)
@@ -287,7 +288,9 @@ class AsyncGdsClient(__BaseGdsClient):
         catalogs = super()._out(response, self.reader.catalogs)
         return catalogs
 
-    async def get_sdmx_api(self, api_version: str = REST_ALL) -> Sequence[GdsSdmxApi]:
+    async def get_sdmx_api(
+        self, api_version: str = REST_ALL
+    ) -> Sequence[GdsSdmxApi]:
         """Get the list of SDMX API versions asynchronously."""
         query = super()._sdmx_api_q(api_version)
         response = await self.__fetch(query)

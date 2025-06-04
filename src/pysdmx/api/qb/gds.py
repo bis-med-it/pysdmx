@@ -91,9 +91,7 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         check_multiple_items(self.agency_id, REST_LATEST)
         check_multiple_items(self.resource_id, REST_LATEST)
 
-    def __check_artefact_type(
-        self, atyp: GdsType
-    ) -> None:
+    def __check_artefact_type(self, atyp: GdsType) -> None:
         if atyp not in _RESOURCES:
             raise Invalid(
                 "Validation Error",
@@ -106,9 +104,7 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     def __to_kw(self, val: str) -> str:
         return val
 
-    def __to_kws(
-        self, vals: Union[str, Sequence[str]]
-    ) -> str:
+    def __to_kws(self, vals: Union[str, Sequence[str]]) -> str:
         vals = [vals] if isinstance(vals, str) else vals
         mapped = [self.__to_kw(v) for v in vals]
         sep = ","

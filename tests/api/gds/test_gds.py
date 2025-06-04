@@ -8,7 +8,7 @@ from msgspec.json import decode
 from pysdmx.api.gds import GDS_BASE_ENDPOINT, AsyncGdsClient, GdsClient
 from pysdmx.api.qb import StructureType
 from pysdmx.api.qb.gds import GdsQuery, GdsType
-from pysdmx.api.qb.util import REST_ALL, REST_LATEST, ApiVersion
+from pysdmx.api.qb.util import REST_ALL
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
