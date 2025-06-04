@@ -9,9 +9,9 @@ from msgspec.json import decode
 from pysdmx.api.gds import GDS_BASE_ENDPOINT, AsyncGdsClient, GdsClient
 from pysdmx.api.qb import StructureType
 from pysdmx.api.qb.gds import GdsQuery, GdsType
-from pysdmx.api.qb.service import GdsRestService, GdsAsyncRestService
+from pysdmx.api.qb.service import GdsAsyncRestService, GdsRestService
 from pysdmx.api.qb.util import REST_ALL, REST_LATEST
-from pysdmx.errors import Invalid, NotFound, InternalError, Unavailable
+from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 from pysdmx.io.format import Format
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.model.gds import (
@@ -490,8 +490,8 @@ SERVICE_PARAMS = [
 
 @respx.mock
 @pytest.mark.parametrize(
-    "exception, expected_exception, expected_message",
-    SERVICE_PARAMS
+    ("exception", "expected_exception", "expected_message"),
+    SERVICE_PARAMS,
 )
 def test_fetch_exceptions(
     gds_service, exception, expected_exception, expected_message
@@ -509,8 +509,8 @@ def test_fetch_exceptions(
 @respx.mock
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "exception, expected_exception, expected_message",
-    SERVICE_PARAMS
+    ("exception", "expected_exception", "expected_message"),
+    SERVICE_PARAMS,
 )
 async def test_async_fetch_exceptions(
     gds_async_service, exception, expected_exception, expected_message

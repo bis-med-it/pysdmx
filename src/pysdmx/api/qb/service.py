@@ -7,7 +7,6 @@ import httpx
 from pysdmx import errors
 from pysdmx.api.qb.availability import AvailabilityFormat, AvailabilityQuery
 from pysdmx.api.qb.data import DataFormat, DataQuery
-from pysdmx.api.qb.gds import GdsQuery
 from pysdmx.api.qb.refmeta import (
     RefMetaByMetadataflowQuery,
     RefMetaByMetadatasetQuery,
@@ -328,21 +327,28 @@ class AsyncRestService(_CoreRestService):
 class _CoreGdsRestService:
     """Base class for GDS-REST services."""
 
-    def __init__(self, api_endpoint: str, pem: str = None, timeout: float = 5.0):
+    def __init__(
+        self, api_endpoint: str, pem: str = None, timeout: float = 5.0
+    ):
         self._api_endpoint = api_endpoint.rstrip("/")
         self._ssl_context = (
-            httpx.create_ssl_context(verify=pem) if pem else httpx.create_ssl_context()
+            httpx.create_ssl_context(verify=pem)
+            if pem
+            else httpx.create_ssl_context()
         )
         self._headers = {"Accept-Encoding": "gzip, deflate"}
         self._timeout = timeout
 
-    def _map_error(self, e: Union[httpx.RequestError, httpx.HTTPStatusError]) -> NoReturn:
+    def _map_error(
+        self, e: Union[httpx.RequestError, httpx.HTTPStatusError]
+    ) -> NoReturn:
         q = e.request.url
         if isinstance(e, httpx.HTTPStatusError):
             s = e.response.status_code
             t = e.response.text
             if s == 404:
-                msg = f"The requested resource(s) could not be found. Query: `{q}`"
+                msg = (f"The requested resource(s) could "
+                       f"not be found. Query: `{q}`")
                 raise errors.NotFound("Not found", msg) from e
             elif s < 500:
                 msg = f"Client error {s}. Query: `{q}`. Error: `{t}`."
@@ -363,7 +369,9 @@ class GdsRestService(_CoreGdsRestService):
             try:
                 url = f"{self._api_endpoint}{query}"
                 headers = {**self._headers, "Accept": format_}
-                response = client.get(url, headers=headers, timeout=self._timeout)
+                response = client.get(
+                    url, headers=headers, timeout=self._timeout
+                )
                 response.raise_for_status()
                 return response.content
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
@@ -383,7 +391,9 @@ class GdsAsyncRestService(_CoreGdsRestService):
             try:
                 url = f"{self._api_endpoint}{query}"
                 headers = {**self._headers, "Accept": format_}
-                response = await client.get(url, headers=headers, timeout=self._timeout)
+                response = await client.get(
+                    url, headers=headers, timeout=self._timeout
+                )
                 response.raise_for_status()
                 return response.content
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
