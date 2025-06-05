@@ -4,7 +4,7 @@ from typing import List, Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.model.gds import GdsCatalog, GdsEndpoint, GdsServiceReference, GdsService
+from pysdmx.model.gds import GdsCatalog, GdsEndpoint, GdsServiceReference, GdsService, GdsAgency
 
 
 class JsonCatalog(Struct, frozen=True):
@@ -15,9 +15,9 @@ class JsonCatalog(Struct, frozen=True):
     version: str
     name: str
     urn: str
-    agency: Optional[str] = None
+    agencies: Optional[List[GdsAgency]] = None
     endpoints: Optional[List[GdsEndpoint]] = None
-    services = Optional[List[GdsService]] = None
+    services: Optional[List[GdsService]] = None
     serviceRefs: Optional[List[GdsServiceReference]] = None
 
     def to_model(self) -> GdsCatalog:
@@ -30,7 +30,7 @@ class JsonCatalog(Struct, frozen=True):
                 if not any(s.short_urn == urn for s in services):
                     services.append(ref)
 
-        agency = self.agency if self.agency else self.agencyID
+        agency = next((a for a in self.agencies if a.agency_id == self.agencyID), self.agencyID)
 
         return GdsCatalog(
             agency=agency,
