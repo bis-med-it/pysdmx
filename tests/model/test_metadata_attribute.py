@@ -71,4 +71,4 @@ def test_tostr(id, value):
 
     s = str(attr)
 
-    assert s == f"{id}: {value}"
+    assert s == f"id: {id}, value: {value}"

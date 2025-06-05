@@ -24,8 +24,4 @@ def test_full_instantiation(action, short_urn, status):
     assert submission_result.action == action
     assert submission_result.short_urn == short_urn
     assert submission_result.status == status
-    assert str(submission_result) == (
-        f"<Submission Result - Action: {action} "
-        f"- Short URN: {short_urn} "
-        f"- Status: {status}>"
-    )
+    assert str(submission_result) == 'action: Append, short_urn: Codelist=BIS:BIS_DER(1.0), status: Success'

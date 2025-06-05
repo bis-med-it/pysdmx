@@ -125,11 +125,8 @@ def test_tostr(context, agency, id, components, artefacts):
 
     s = str(o)
 
-    assert s == (
-        f"Schema(context='dataflow', agency='BIS', id='5B0', "
-        f"components=[5 components], version='1.0', artefacts=[2 artefacts], "
-        f"generated={str(o.generated)!r})"
-    )
+    assert s == ('context: dataflow, agency: BIS, id: 5B0, components: 5 components, '
+ 'artefacts: 2 strs')
 
 
 def test_serialization(context, agency, id, components, version, artefacts):
