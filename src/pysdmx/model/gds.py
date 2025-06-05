@@ -139,8 +139,9 @@ class GdsCatalog(GdsBase, frozen=True):
         name: The name of the catalog.
         urn: The URN of the catalog.
         version: The version of the catalog.
-        services: Optional list of GdsServiceReference
-        associated with the catalog.
+        services: Optional list of GdsService or GdsServiceReference,
+        depending on the references parameter, that are associated with the
+        catalog.
         endpoints: List of GDS endpoints available at the catalog.
     """
 
