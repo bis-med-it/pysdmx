@@ -152,11 +152,6 @@ class GdsCatalog(GdsBase, frozen=True):
     services: Optional[List[Union[GdsService, GdsServiceReference]]] = None
     endpoints: Optional[List[GdsEndpoint]] = None
 
-    @property
-    def short_urn(self) -> str:
-        """Returns a short URN for the Catalog."""
-        return parse_maintainable_urn(self.urn).__str__()
-
 
 class GdsSdmxApi(GdsBase, frozen=True):
     """Represents an SDMX API version.

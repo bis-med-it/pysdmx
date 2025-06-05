@@ -4,6 +4,8 @@ from typing import List, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx.io.json.gds.messages.agencies import JsonAgency
+from pysdmx.io.json.gds.messages.services import JsonService
 from pysdmx.model.gds import GdsCatalog, GdsEndpoint, GdsServiceReference, GdsService, GdsAgency
 
 
@@ -15,22 +17,19 @@ class JsonCatalog(Struct, frozen=True):
     version: str
     name: str
     urn: str
-    agencies: Optional[List[GdsAgency]] = None
     endpoints: Optional[List[GdsEndpoint]] = None
-    services: Optional[List[GdsService]] = None
     serviceRefs: Optional[List[GdsServiceReference]] = None
 
-    def to_model(self) -> GdsCatalog:
+    def to_model(self, agencies: List[GdsAgency], services: List[GdsService]) -> GdsCatalog:
         """Converts the payload to a GDS Catalog."""
-        services = self.services if self.services else None
-        if self.serviceRefs:
-            services = []
-            for ref in self.serviceRefs:
-                urn = ref.short_urn
-                if not any(s.short_urn == urn for s in services):
-                    services.append(ref)
+        agency = next((a for a in agencies if a.agency_id == self.agencyID), self.agencyID)
 
-        agency = next((a for a in self.agencies or [] if a.agency_id == self.agencyID), self.agencyID)
+        catalog_services = services or []
+        if self.serviceRefs:
+            catalog_services.extend(
+                ref for ref in self.serviceRefs
+                if ref.short_urn not in {s.short_urn for s in catalog_services}
+            )
 
         return GdsCatalog(
             agency=agency,
@@ -39,7 +38,7 @@ class JsonCatalog(Struct, frozen=True):
             name=self.name,
             urn=self.urn,
             endpoints=self.endpoints,
-            services=services,
+            services=catalog_services,
         )
 
 
@@ -47,6 +46,8 @@ class JsonStructures(Struct, frozen=True):
     """Intermediate structure for 'structures' field."""
 
     catalogs: Sequence[JsonCatalog]
+    agencies: Optional[Sequence[JsonAgency]] = None
+    services: Optional[Sequence[JsonService]] = None
 
 
 class JsonCatalogMessage(Struct, frozen=True):
@@ -56,4 +57,10 @@ class JsonCatalogMessage(Struct, frozen=True):
 
     def to_model(self) -> Sequence[GdsCatalog]:
         """Returns a list of GdsCatalog objects."""
-        return [c.to_model() for c in self.structures.catalogs]
+        agencies = [a.to_model() for a in (self.structures.agencies or [])]
+        services = [s.to_model() for s in (self.structures.services or [])]
+
+        return [
+            c.to_model(agencies=agencies, services=services)
+            for c in self.structures.catalogs
+        ]
