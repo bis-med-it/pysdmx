@@ -8,9 +8,11 @@ Exports:
                like ID, name, URL, and description.
 """
 
-from typing import List, Optional, Sequence
+from typing import List, Optional, Sequence, Union
 
 from msgspec import Struct
+
+from pysdmx.util import parse_maintainable_urn
 
 
 class GdsBase(Struct, repr_omit_defaults=True, frozen=True):
@@ -77,6 +79,11 @@ class GdsServiceReference(GdsBase, frozen=True):
     service: str
     description: Optional[str] = None
 
+    @property
+    def short_urn(self) -> str:
+        """Returns a short URN for the ServiceReference."""
+        return parse_maintainable_urn(self.urn).__str__()
+
 
 class GdsAgency(GdsBase, frozen=True):
     """Represents a GDS agency.
@@ -92,27 +99,6 @@ class GdsAgency(GdsBase, frozen=True):
     name: str
     url: str
     description: Optional[str] = None
-
-
-class GdsCatalog(GdsBase, frozen=True):
-    """Represents a GDS catalog.
-
-    Attributes:
-        agency_id: The ID of the agency.
-        id: The ID of the catalog.
-        name: The name of the catalog.
-        urn: The URN of the catalog.
-        version: The version of the catalog.
-        endpoints: List of GDS endpoints available at the catalog.
-    """
-
-    agency_id: str
-    id: str
-    version: str
-    name: str
-    urn: str
-    endpoints: Optional[List[GdsEndpoint]] = None
-    serviceRefs: Optional[List[GdsServiceReference]] = None
 
 
 class GdsService(GdsBase, frozen=True):
@@ -137,6 +123,39 @@ class GdsService(GdsBase, frozen=True):
     base: str
     endpoints: List[GdsEndpoint]
     authentication: Optional[str] = None
+
+    @property
+    def short_urn(self) -> str:
+        """Returns a short URN for the Service."""
+        return parse_maintainable_urn(self.urn).__str__()
+
+
+class GdsCatalog(GdsBase, frozen=True):
+    """Represents a GDS catalog.
+
+    Attributes:
+        agency_id: The ID of the agency.
+        id: The ID of the catalog.
+        name: The name of the catalog.
+        urn: The URN of the catalog.
+        version: The version of the catalog.
+        agency: Optional GdsAgency associated with the catalog.
+        services: Optional list of GdsServiceReference associated with the catalog.
+        endpoints: List of GDS endpoints available at the catalog.
+    """
+
+    agency: Union[str, GdsAgency]
+    id: str
+    version: str
+    name: str
+    urn: str
+    services: Optional[List[Union[GdsService, GdsServiceReference]]] = None
+    endpoints: Optional[List[GdsEndpoint]] = None
+
+    @property
+    def short_urn(self) -> str:
+        """Returns a short URN for the Catalog."""
+        return parse_maintainable_urn(self.urn).__str__()
 
 
 class GdsSdmxApi(GdsBase, frozen=True):

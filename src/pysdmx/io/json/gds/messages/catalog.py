@@ -4,7 +4,7 @@ from typing import List, Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.model.gds import GdsCatalog, GdsEndpoint, GdsServiceReference
+from pysdmx.model.gds import GdsCatalog, GdsEndpoint, GdsServiceReference, GdsService
 
 
 class JsonCatalog(Struct, frozen=True):
@@ -15,19 +15,31 @@ class JsonCatalog(Struct, frozen=True):
     version: str
     name: str
     urn: str
+    agency: Optional[str] = None
     endpoints: Optional[List[GdsEndpoint]] = None
+    services = Optional[List[GdsService]] = None
     serviceRefs: Optional[List[GdsServiceReference]] = None
 
     def to_model(self) -> GdsCatalog:
         """Converts the payload to a GDS Catalog."""
+        services = self.services if self.services else None
+        if self.serviceRefs:
+            services = []
+            for ref in self.serviceRefs:
+                urn = ref.urn
+                if not any(s.urn == urn for s in services):
+                    services.append(ref)
+
+        agency = self.agency if self.agency else self.agencyID
+
         return GdsCatalog(
-            agency_id=self.agencyID,
+            agency=agency,
             id=self.id,
             version=self.version,
             name=self.name,
             urn=self.urn,
             endpoints=self.endpoints,
-            serviceRefs=self.serviceRefs,
+            services=services,
         )
 
 
