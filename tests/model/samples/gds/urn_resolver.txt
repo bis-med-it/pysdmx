@@ -1,1 +1,0 @@
-agency_id=BIS, resource_id=BISWEB_CATSCHEME, version=1.0, sdmx_type=CategoryScheme, resolver_results=[ResolverResult(api_version='1.4.0', query='https://stats.bis.org/api/v1/categoryscheme/BIS/BISWEB_CATSCHEME/1.0?detail=allstubs', query_response_status_code=200)]

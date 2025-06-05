@@ -11,8 +11,6 @@ from pysdmx.model.gds import (
     ResolverResult,
 )
 
-BASE_SAMPLES_PATH = Path("tests/model/samples/gds")
-
 
 def test_str_gds_agency():
     """Test the __str__ method of GdsAgency."""
@@ -36,7 +34,7 @@ def test_str_gds_agency():
 def test_str_gds_catalog():
     """Test the __str__ method of GdsCatalog."""
     catalog = GdsCatalog(
-        agency_id="BIS",
+        agency="BIS",
         id="BIS_PUBS",
         version="1.0",
         name="BIS Service Ref",
@@ -60,7 +58,7 @@ def test_str_gds_catalog():
     )
 
     expected_str = (
-        "agency_id: BIS, "
+        "agency: BIS, "
         "id: BIS_PUBS, "
         "version: 1.0, "
         "name: BIS Service Ref, "
@@ -174,7 +172,7 @@ def test_str_gds_urn_resolver():
 def test_str_gds_catalog_empty_endpoints():
     """Test the __str__ method of GdsCatalog with empty endpoints."""
     catalog = GdsCatalog(
-        agency_id="BIS",
+        agency="BIS",
         id="CAT1",
         version="1.0",
         name="Catalog",
@@ -183,7 +181,7 @@ def test_str_gds_catalog_empty_endpoints():
     )
 
     expected_str = (
-        "agency_id: BIS, id: CAT1, version: 1.0, name: Catalog, urn: urn"
+        "agency: BIS, id: CAT1, version: 1.0, name: Catalog, urn: urn"
     )
 
     assert str(catalog) == expected_str
@@ -209,7 +207,7 @@ def test_repr_gds_agency():
 def test_repr_gds_catalog():
     """Test the __repr__ method of GdsCatalog."""
     catalog = GdsCatalog(
-        agency_id="BIS",
+        agency="BIS",
         id="BIS_PUBS",
         version="1.0",
         name="BIS Service Ref",
@@ -234,7 +232,7 @@ def test_repr_gds_catalog():
 
     expected_repr = (
         "GdsCatalog("
-        "agency_id='BIS', "
+        "agency='BIS', "
         "id='BIS_PUBS', "
         "version='1.0', "
         "name='BIS Service Ref', "
@@ -389,19 +387,19 @@ def test_instantiation_gds_agency():
 def test_instantiation_gds_catalog():
     """Test instantiation of GdsCatalog."""
     instance = GdsCatalog(
-        agency_id="BIS",
+        agency="BIS",
         id="CAT1",
         version="1.0",
         name="Catalog",
         urn="urn:catalog",
     )
-    assert instance.agency_id == "BIS"
+    assert instance.agency == "BIS"
     assert instance.id == "CAT1"
     assert instance.version == "1.0"
     assert instance.name == "Catalog"
     assert instance.urn == "urn:catalog"
     assert instance.endpoints is None
-    assert instance.serviceRefs is None
+    assert instance.services is None
 
 
 def test_instantiation_gds_endpoint():
