@@ -136,15 +136,15 @@ def query(gds: GdsClient, endpoint, value, params, resource):
 
 
 def generic_test(
-    mock,
-    gds,
-    query,
-    body,
-    value,
-    resource,
-    params,
-    expected_class,
-    references,
+        mock,
+        gds,
+        query,
+        body,
+        value,
+        resource,
+        params,
+        expected_class,
+        references,
 ):
     """Generic function to test endpoints."""
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
@@ -173,15 +173,15 @@ def generic_test(
 
 
 async def generic_async_test(
-    mock,
-    gds,
-    query,
-    body,
-    value,
-    resource,
-    params,
-    expected_class,
-    references,
+        mock,
+        gds,
+        query,
+        body,
+        value,
+        resource,
+        params,
+        expected_class,
+        references,
 ):
     """Generic function to test async endpoints."""
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
@@ -210,101 +210,112 @@ async def generic_async_test(
 
 
 GENERIC_PARAMS = [
-        ("agency", "BIS", {}, None, "agency_bis.json"),
-        ("agency", "ESTAT", {}, None, "agency_estat.json"),
-        (
-            "agency",
-            "BIS_ESTAT",
-            {},
-            None,
-            "comma_separated_agencies.json",
-        ),
-        ("agency", REST_ALL, {}, None, "agency_all.json"),
-        (
-            "catalog",
-            "BIS",
-            {
-                "version": REST_ALL,
-                "resource_type": "data",
-                "message_format": "json",
-                "api_version": "2.0.0",
-                "detail": "full",
-                "references": "none",
-            },
-            REST_ALL,
-            "catalog_bis_full.json",
-        ),
-        (
-            "catalog",
-            "BIS",
-            {
-                "version": "1.0",
-                "resource_type": "data",
-                "message_format": "json",
-                "api_version": "2.0.0",
-                "detail": "full",
-                "references": "none",
-            },
-            REST_ALL,
-            "catalog_bis_1_0.json",
-        ),
-        (
-            "catalog",
-            "BIS",
-            {
-                "version": REST_ALL,
-                "detail": "raw",
-                "references": "children",
-            },
-            REST_ALL,
-            "catalog_bis_raw.json",
-        ),
-        (
-            "catalog",
-            "BIS",
-            {
-                "version": REST_LATEST,
-            },
-            REST_ALL,
-            "catalog_bis_latest_no_params.json",
-        ),
-        (
-            "catalog",
-            REST_ALL,
-            {},
-            REST_ALL,
-            "catalog_all_no_params.json",
-        ),
-        ("sdmxapi", "1.4.0", {}, None, "sdmxapi_1.4.0.json"),
-        ("sdmxapi", "2.0.0", {}, None, "sdmxapi_2.0.0.json"),
-        ("sdmxapi", REST_ALL, {}, None, "sdmxapi_all.json"),
-        ("service", "BIS", {}, REST_ALL, "service_bis.json"),
-        (
-            "service",
-            "BIS",
-            {
-                "version": "1.0",
-            },
-            REST_ALL,
-            "service_bis_1_0.json",
-        ),
-        (
-            "service",
-            "BIS",
-            {
-                "version": REST_LATEST,
-            },
-            REST_ALL,
-            "service_bis_latest.json",
-        ),
-        (
-            "urn_resolver",
-            "urn:sdmx:org.sdmx.infomodel.categoryscheme.CategoryScheme=BIS:BISWEB_CATSCHEME(1.0)",
-            {},
-            None,
-            "urn_resolver.json",
-        ),
-    ]
+    ("agency", "BIS", {}, None, "agency_bis.json"),
+    ("agency", "ESTAT", {}, None, "agency_estat.json"),
+    (
+        "agency",
+        "BIS_ESTAT",
+        {},
+        None,
+        "comma_separated_agencies.json",
+    ),
+    ("agency", REST_ALL, {}, None, "agency_all.json"),
+    (
+        "catalog",
+        "BIS",
+        {
+            "version": REST_ALL,
+            "resource_type": "data",
+            "message_format": "json",
+            "api_version": "2.0.0",
+            "detail": "full",
+            "references": "none",
+        },
+        REST_ALL,
+        "catalog_bis_full.json",
+    ),
+    (
+        "catalog",
+        "BIS",
+        {
+            "version": "1.0",
+            "resource_type": "data",
+            "message_format": "json",
+            "api_version": "2.0.0",
+            "detail": "full",
+            "references": "none",
+        },
+        REST_ALL,
+        "catalog_bis_1_0.json",
+    ),
+    (
+        "catalog",
+        "BIS",
+        {
+            "version": REST_ALL,
+            "detail": "raw",
+        },
+        REST_ALL,
+        "catalog_bis_raw.json",
+    ),
+    (
+        "catalog",
+        "BIS",
+        {
+            "version": REST_ALL,
+            "detail": "raw",
+            "references": "children",
+        },
+        REST_ALL,
+        "catalog_bis_children.json",
+    ),
+    (
+        "catalog",
+        "BIS",
+        {
+            "version": REST_LATEST,
+        },
+        REST_ALL,
+        "catalog_bis_latest_no_params.json",
+    ),
+    (
+        "catalog",
+        REST_ALL,
+        {},
+        REST_ALL,
+        "catalog_all_no_params.json",
+    ),
+    ("sdmxapi", "1.4.0", {}, None, "sdmxapi_1.4.0.json"),
+    ("sdmxapi", "2.0.0", {}, None, "sdmxapi_2.0.0.json"),
+    ("sdmxapi", REST_ALL, {}, None, "sdmxapi_all.json"),
+    ("service", "BIS", {}, REST_ALL, "service_bis.json"),
+    (
+        "service",
+        "BIS",
+        {
+            "version": "1.0",
+        },
+        REST_ALL,
+        "service_bis_1_0.json",
+    ),
+    (
+        "service",
+        "BIS",
+        {
+            "version": REST_LATEST,
+        },
+        REST_ALL,
+        "service_bis_latest.json",
+    ),
+    (
+        "urn_resolver",
+        "urn:sdmx:org.sdmx.infomodel.categoryscheme.CategoryScheme=BIS:BISWEB_CATSCHEME(1.0)",
+        {},
+        None,
+        "urn_resolver.json",
+    ),
+]
+
 
 @pytest.mark.parametrize(
     ("endpoint", "value", "params", "resource", "body"),
@@ -312,16 +323,16 @@ GENERIC_PARAMS = [
     indirect=["body"],
 )
 def test_generic(
-    respx_mock,
-    gds,
-    query,
-    body,
-    endpoint,
-    value,
-    params,
-    resource,
-    expected_class,
-    references,
+        respx_mock,
+        gds,
+        query,
+        body,
+        endpoint,
+        value,
+        params,
+        resource,
+        expected_class,
+        references,
 ):
     """Generic test for all endpoints."""
     generic_test(
@@ -344,16 +355,16 @@ def test_generic(
     indirect=["body"],
 )
 async def test_async_generic(
-    respx_mock,
-    async_gds_client,
-    query,
-    body,
-    endpoint,
-    value,
-    params,
-    resource,
-    expected_class,
-    references,
+        respx_mock,
+        async_gds_client,
+        query,
+        body,
+        endpoint,
+        value,
+        params,
+        resource,
+        expected_class,
+        references,
 ):
     """Generic test for all endpoints using async client."""
     await generic_async_test(
@@ -377,16 +388,16 @@ async def test_async_generic(
     indirect=["body"],
 )
 def test_gds_without_slash(
-    respx_mock,
-    gds_without_slash,
-    query,
-    body,
-    endpoint,
-    value,
-    params,
-    resource,
-    expected_class,
-    references,
+        respx_mock,
+        gds_without_slash,
+        query,
+        body,
+        endpoint,
+        value,
+        params,
+        resource,
+        expected_class,
+        references,
 ):
     generic_test(
         respx_mock,
@@ -405,25 +416,25 @@ def test_gds_without_slash(
     ("endpoint", "value", "params", "resource", "body"),
     [
         (
-            "agency",
-            "non_existing_agency",
-            {},
-            None,
-            "non_existing_agency.json",
+                "agency",
+                "non_existing_agency",
+                {},
+                None,
+                "non_existing_agency.json",
         )
     ],
     indirect=["body"],
 )
 def test_non_existing_entty(
-    respx_mock,
-    gds,
-    query,
-    body,
-    endpoint,
-    value,
-    params,
-    resource,
-    expected_class,
+        respx_mock,
+        gds,
+        query,
+        body,
+        endpoint,
+        value,
+        params,
+        resource,
+        expected_class,
 ):
     with pytest.raises(DecodeError):
         generic_test(
