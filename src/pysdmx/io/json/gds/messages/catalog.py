@@ -26,8 +26,8 @@ class JsonCatalog(Struct, frozen=True):
         if self.serviceRefs:
             services = []
             for ref in self.serviceRefs:
-                urn = ref.urn
-                if not any(s.urn == urn for s in services):
+                urn = ref.short_urn
+                if not any(s.short_urn == urn for s in services):
                     services.append(ref)
 
         agency = self.agency if self.agency else self.agencyID
