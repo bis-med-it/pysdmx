@@ -30,7 +30,7 @@ class JsonCatalog(Struct, frozen=True):
                 if not any(s.short_urn == urn for s in services):
                     services.append(ref)
 
-        agency = next((a for a in self.agencies if a.agency_id == self.agencyID), self.agencyID)
+        agency = next((a for a in self.agencies or [] if a.agency_id == self.agencyID), self.agencyID)
 
         return GdsCatalog(
             agency=agency,

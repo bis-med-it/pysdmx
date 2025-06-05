@@ -82,7 +82,7 @@ class GdsServiceReference(GdsBase, frozen=True):
     @property
     def short_urn(self) -> str:
         """Returns a short URN for the ServiceReference."""
-        return parse_maintainable_urn(self.urn).__str__()
+        return parse_maintainable_urn(self.service).__str__()
 
 
 class GdsAgency(GdsBase, frozen=True):
