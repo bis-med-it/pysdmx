@@ -1,4 +1,3 @@
-from pathlib import Path
 
 from pysdmx.model.gds import (
     GdsAgency,

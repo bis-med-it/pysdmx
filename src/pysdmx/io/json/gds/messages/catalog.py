@@ -1,12 +1,18 @@
 """Collection of GDS-JSON schemas for GDS catalogs."""
 
-from typing import List, Optional, Sequence
+from typing import Any, List, Optional, Sequence
 
 from msgspec import Struct
 
 from pysdmx.io.json.gds.messages.agencies import JsonAgency
 from pysdmx.io.json.gds.messages.services import JsonService
-from pysdmx.model.gds import GdsCatalog, GdsEndpoint, GdsServiceReference, GdsService, GdsAgency
+from pysdmx.model.gds import (
+    GdsAgency,
+    GdsCatalog,
+    GdsEndpoint,
+    GdsService,
+    GdsServiceReference,
+)
 
 
 class JsonCatalog(Struct, frozen=True):
@@ -20,14 +26,21 @@ class JsonCatalog(Struct, frozen=True):
     endpoints: Optional[List[GdsEndpoint]] = None
     serviceRefs: Optional[List[GdsServiceReference]] = None
 
-    def to_model(self, agencies: List[GdsAgency], services: List[GdsService]) -> GdsCatalog:
+    def to_model(
+        self, agencies: List[GdsAgency], services: List[GdsService]
+    ) -> GdsCatalog:
         """Converts the payload to a GDS Catalog."""
-        agency = next((a for a in agencies if a.agency_id == self.agencyID), self.agencyID)
+        agency = next(
+            (a for a in agencies if a.agency_id == self.agencyID),
+            self.agencyID,
+        )
 
-        catalog_services = services or []
+        catalog_services: Any = services
         if self.serviceRefs:
+            catalog_services = catalog_services or []
             catalog_services.extend(
-                ref for ref in self.serviceRefs
+                ref
+                for ref in self.serviceRefs
                 if ref.short_urn not in {s.short_urn for s in catalog_services}
             )
 
@@ -47,7 +60,7 @@ class JsonStructures(Struct, frozen=True):
 
     catalogs: Sequence[JsonCatalog]
     agencies: Optional[Sequence[JsonAgency]] = None
-    services: Optional[Sequence[JsonService]] = None
+    services: Optional[List[JsonService]] = None
 
 
 class JsonCatalogMessage(Struct, frozen=True):
