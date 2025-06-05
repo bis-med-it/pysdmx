@@ -267,7 +267,18 @@ GENERIC_PARAMS = [
             "references": "children",
         },
         REST_ALL,
-        "catalog_bis_children.json",
+        "catalog_bis_raw_children.json",
+    ),
+(
+        "catalog",
+        "BIS",
+        {
+            "version": REST_ALL,
+            "detail": "full",
+            "references": "children",
+        },
+        REST_ALL,
+        "catalog_bis_full_children.json",
     ),
     (
         "catalog",
