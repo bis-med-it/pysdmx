@@ -339,12 +339,7 @@ class Components(UserList[Component]):
 
     def __str__(self) -> str:
         """Custom string representation without the class name."""
-        processed_output = []
-        for attr, value in self.__dict__.items():
-            if isinstance(value, Components):
-                value = f"{len(value)} components"
-            processed_output.append(f"{attr}: {value}")
-        return f"{', '.join(processed_output)}"
+        return f"data: {len(self)} components"
 
     def __repr__(self) -> str:
         """Custom __repr__ that omits empty sequences."""

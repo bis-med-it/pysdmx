@@ -100,3 +100,17 @@ def test_tostr(id, name, obs, start):
     assert s == (
         f"id: {id}, name: {name}, obs_count: {obs}, " f"start_period: {start}"
     )
+
+
+def test_repr(id, name, obs, start, end, upd, active):
+    i = SeriesInfo(id, name, obs, start, end, upd, active)
+
+    r = repr(i)
+
+    expected_repr = (
+        f"SeriesInfo(id={id!r}, name={name!r}, "
+        f"obs_count={obs!r}, start_period={start!r}, "
+        f"end_period={end!r}, last_updated={upd!r})"
+    )
+
+    assert r == expected_repr

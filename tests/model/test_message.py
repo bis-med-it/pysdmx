@@ -223,17 +223,28 @@ def test_message_str_without_data():
 
     assert s == expected_str
 
-
-def test_message_str_all():
+def test_message_str():
     agency_scheme = AgencyScheme(id="agency1", agency="agency1")
     codelist = Codelist(id="codelist1", agency="agency1")
-    dataset = Dataset(structure="DataStructure=ds1:ds1(1.0)")
-    message = Message(structures=[agency_scheme, codelist], data=[dataset])
+    message = Message(structures=[agency_scheme, codelist], data=[])
 
     s = str(message)
-    expected_str = "structures: 1 agencyscheme, 1 codelist, " "data: 1 dataset"
+    expected_str = "structures: 1 agencyscheme, 1 codelist"
 
     assert s == expected_str
+
+
+def test_message_repr():
+    agency_scheme = AgencyScheme(id="agency1", agency="agency1")
+    codelist = Codelist(id="codelist1", agency="agency1")
+    message = Message(structures=[agency_scheme, codelist], data=[])
+
+    r = repr(message)
+    expected_repr = (
+        "Message(structures=[AgencyScheme(id='agency1', agency='agency1'), "
+        "Codelist(id='codelist1', agency='agency1')])"
+    )
+    assert r == expected_repr
 
 
 def test_header_str():

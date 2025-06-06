@@ -41,12 +41,10 @@ class MetadataAttribute(Struct, frozen=True, omit_defaults=True):
             # str is taken as a Sequence, so we need to check it's not a str
             if isinstance(value, Sequence) and not isinstance(value, str):
                 # Handle non-empty lists
-                if value:
-                    class_name = value[0].__class__.__name__
-                    value = f"{len(value)} {class_name.lower()}s"
-                # redundant if check for python 3.9 and lower versions cov
                 if not value:
                     continue
+                class_name = value[0].__class__.__name__
+                value = f"{len(value)} {class_name.lower()}s"
 
             processed_output.append(f"{attr}: {value}")
         return f"{', '.join(processed_output)}"
@@ -129,12 +127,10 @@ class MetadataReport(Struct, frozen=True, omit_defaults=True):
             # str is taken as a Sequence, so we need to check it's not a str
             if isinstance(value, Sequence) and not isinstance(value, str):
                 # Handle non-empty lists
-                if value:
-                    class_name = value[0].__class__.__name__
-                    value = f"{len(value)} {class_name.lower()}s"
-                # redundant if check for python 3.9 and lower versions cov
                 if not value:
                     continue
+                class_name = value[0].__class__.__name__
+                value = f"{len(value)} {class_name.lower()}s"
 
             processed_output.append(f"{attr}: {value}")
         return f"{', '.join(processed_output)}"

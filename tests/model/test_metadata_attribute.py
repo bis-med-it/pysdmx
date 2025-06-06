@@ -66,9 +66,27 @@ def test_iterable(id, value, child):
     assert out == [child.id]
 
 
-def test_tostr(id, value):
-    attr = MetadataAttribute(id, value)
+def test_tostr(id, value, child):
+    children = [child]
+    attr = MetadataAttribute(id, value, children)
 
     s = str(attr)
 
-    assert s == f"id: {id}, value: {value}"
+    assert s == f"id: {id}, value: {value}, attributes: 1 metadataattributes"
+
+
+def test_tostr_empty():
+    attr = MetadataAttribute("empty")
+
+    s = str(attr)
+
+    assert s == "id: empty, value: None"
+
+
+def test_repr(id, value):
+
+    attr = MetadataAttribute(id, value)
+
+    r = repr(attr)
+
+    assert r == f"MetadataAttribute(id={repr(id)}, value={repr(value)})"

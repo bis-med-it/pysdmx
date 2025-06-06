@@ -213,3 +213,48 @@ def test_get_attributes(components):
     assert len(attrs) == 1
     for attr in attrs:
         assert attr.id in expected
+
+
+def test_tostr(components):
+    expected_str = "data: 5 components"
+    assert str(components) == expected_str
+
+
+def test_torepr(components):
+    expected_repr = (
+        "Components("
+        "data=["
+        "Component("
+        "id='FREQ', "
+        "required=True, "
+        "role=Dimension, "
+        "concept=String"
+        "), "
+        "Component("
+        "id='INDICATOR', "
+        "required=True, "
+        "role=Dimension, "
+        "concept=String"
+        "), "
+        "Component("
+        "id='PERIOD', "
+        "required=True, "
+        "role=Dimension, "
+        "concept=ObservationalTimePeriod"
+        "), "
+        "Component("
+        "id='VALUE', "
+        "required=False, "
+        "role=Measure, "
+        "concept=Integer"
+        "), "
+        "Component("
+        "id='CONF', "
+        "required=True, "
+        "role=Attribute, "
+        "concept=String, "
+        "attachment_level='O'"
+        ")])"
+    )
+
+    assert repr(components) == expected_repr

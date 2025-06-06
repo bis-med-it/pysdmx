@@ -113,3 +113,53 @@ def test_serialization(id, name, structure, targets, attributes):
     ser = msgspec.msgpack.Encoder().encode(rep)
     out = msgspec.msgpack.Decoder(MetadataReport).decode(ser)
     assert out == rep
+
+
+def test_tostr(id, name, structure, targets, attributes):
+    report = MetadataReport(id, name, structure, targets, attributes)
+
+    s = str(report)
+    expected_str = (
+        f"id: {id}, name: {name}, metadataflow: {structure}, "
+        f"targets: 1 strs, attributes: 2 metadataattributes, version: 1.0"
+    )
+
+    assert s == expected_str
+
+
+def test_tostr_empty(id, name, structure, targets):
+    report = MetadataReport(id, name, structure, targets, [])
+
+    s = str(report)
+    expected_str = (
+        f"id: {id}, name: {name}, metadataflow: {structure}, "
+        f"targets: 1 strs, version: 1.0"
+    )
+
+    assert s == expected_str
+
+
+def test_repr(id, name, structure, targets, attributes):
+    report = MetadataReport(id, name, structure, targets, attributes)
+
+    r = repr(report)
+    expected_repr = (
+        f"MetadataReport(id={id!r}, name={name!r}, "
+        f"metadataflow={structure!r}, targets={targets!r}, "
+        f"attributes={attributes!r}, version='1.0')"
+    )
+
+    assert r == expected_repr
+
+
+def test_repr_empty(id, name, structure, targets):
+    report = MetadataReport(id, name, structure, targets, [])
+
+    r = repr(report)
+    expected_repr = (
+        f"MetadataReport(id={id!r}, name={name!r}, "
+        f"metadataflow={structure!r}, targets={targets!r}, "
+        f"version='1.0')"
+    )
+
+    assert r == expected_repr

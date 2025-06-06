@@ -60,7 +60,6 @@ def test_contact_str():
     email = "Fname.Lname@test.org"
     unit = "Statistics"
     phone = "+42 123 45 67"
-    fax = "+42 123 45 68"
     url = "https://test.org"
 
     c = Contact(
@@ -70,7 +69,7 @@ def test_contact_str():
         role=role,
         emails=[email],
         telephones=[phone],
-        faxes=[fax],
+        faxes=[],
         uris=[url],
     )
 
@@ -81,7 +80,6 @@ def test_contact_str():
         "department: Statistics, "
         "role: Statistician, "
         "telephones: 1 strs, "
-        "faxes: 1 strs, "
         "uris: 1 strs, "
         "emails: 1 strs"
     )
@@ -95,7 +93,6 @@ def test_contact_repr():
     email = "Fname.Lname@test.org"
     unit = "Statistics"
     phone = "+42 123 45 67"
-    fax = "+42 123 45 68"
     url = "https://test.org"
 
     c = Contact(
@@ -105,7 +102,7 @@ def test_contact_repr():
         role=role,
         emails=[email],
         telephones=[phone],
-        faxes=[fax],
+        faxes=[],
         uris=[url],
     )
 
@@ -117,7 +114,6 @@ def test_contact_repr():
         "department='Statistics', "
         "role='Statistician', "
         "telephones=['+42 123 45 67'], "
-        "faxes=['+42 123 45 68'], "
         "uris=['https://test.org'], "
         "emails=['Fname.Lname@test.org'])"
     )
