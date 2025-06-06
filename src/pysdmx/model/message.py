@@ -106,7 +106,7 @@ class Message(Struct, frozen=True, repr_omit_defaults=True):
         for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
             if attr in ["data", "structures"] and value:
                 # Count occurrences of each class in structures
-                class_counts = {}
+                class_counts: Dict[str, int] = {}
                 for obj in value:
                     class_name = obj.__class__.__name__
                     class_counts[class_name] = (
