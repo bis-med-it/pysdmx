@@ -8,7 +8,7 @@ def __get_pd_type(dt: DataType, required: bool) -> str:  # noqa: C901
         return "int16" if required else "Int16"
     elif dt == DataType.INTEGER:
         return "int32" if required else "Int32"
-    elif dt == DataType.LONG:
+    elif dt == DataType.LONG or dt == DataType.COUNT:
         return "int64" if required else "Int64"
     elif dt == DataType.BIG_INTEGER or dt == DataType.DECIMAL:
         return "object"
