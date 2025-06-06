@@ -14,6 +14,7 @@ from pysdmx.model import (
     AgencyScheme,
     Code,
     Codelist,
+    ConceptScheme,
     Contact,
     CustomType,
     CustomTypeScheme,
@@ -132,21 +133,36 @@ def test_code_list_read(samples_folder):
     assert read_format == Format.STRUCTURE_SDMX_ML_3_0
     result = read_structure(input_str, validate=True)
     assert result is not None
-    assert len(result) == 2
+    assert len(result) == 1
 
     assert isinstance(result[0], Codelist)
     codelist = result[0]
-    assert codelist.id == "CODELIST1"
-    assert codelist.name == "Code list for Frequency (FREQ)"
-    assert codelist.short_urn == "Codelist=MD:CODELIST1(1.0)"
+    assert codelist.id == "CL_AGE"
+    assert codelist.name == "Age"
+    assert codelist.short_urn == "Codelist=SDMX:CL_AGE(1.0)"
     assert codelist.version == "1.0"
 
-    assert len(codelist.items) == 2
+    assert len(codelist.items) == 5
     assert isinstance(codelist.items[0], Code)
-    assert codelist.items[0].id == "A"
-    assert codelist.items[0].name == "Annual"
-    assert codelist.items[1].id == "B"
-    assert codelist.items[1].name == "Daily - business week (not supported)"
+    assert codelist.items[0].id == "Y"
+    assert codelist.items[0].name == "Year(s)"
+    assert codelist.items[1].id == "M"
+    assert codelist.items[1].name == "Month(s)"
+
+
+def test_value_list_read(samples_folder):
+    data_path = samples_folder / "valuelist.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    assert len(result) == 1
+    assert isinstance(result[0], Codelist)
+    codelist = result[0]
+    assert codelist.id == "VL_CURRENCY_SYMBOL"
+    assert codelist.name == "Currency Symbol"
+    assert codelist.short_urn == "Codelist=EXAMPLE:VL_CURRENCY_SYMBOL(1.0)"
+    assert codelist.sdmx_type == "valuelist"
 
 
 def test_dataflow_structure_read(samples_folder):
@@ -156,14 +172,17 @@ def test_dataflow_structure_read(samples_folder):
     result = read_structure(input_str, validate=True)
     assert result is not None
     dataflow = result[0]
-    assert dataflow.id == "DATAFLOW"
-    assert dataflow.name == "DATAFLOW Test"
-    assert dataflow.description == "DATAFLOW Test"
-    assert dataflow.short_urn == "Dataflow=MD:DATAFLOW(1.0)"
-    assert dataflow.structure == "DataStructure=MD:DS(1.0)"
+    assert dataflow.id == "EXR"
+    assert dataflow.name == "ECB Exchange Rates"
     assert (
-        dataflow.urn == "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "Dataflow=MD:DATAFLOW(1.0)"
+        dataflow.description == "ECB Exchange Rates - example of "
+        "a 'non-country-specific' data source"
+    )
+    assert dataflow.short_urn == "Dataflow=ECB:EXR(1.0)"
+    assert dataflow.structure == "DataStructure=ECB:EXR(1.0)"
+    assert (
+        dataflow.urn
+        == "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=ECB:EXR(1.0)"
     )
 
 
@@ -224,6 +243,20 @@ def test_concepts_read(samples_folder):
     assert concept_scheme.name == "Default Scheme"
     concepts = concept_scheme.items
     assert len(concepts) == 2
+
+
+def test_concept_scheme_read(samples_folder):
+    data_path = samples_folder / "conceptscheme.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    assert isinstance(result[0], ConceptScheme)
+    concept_scheme = result[0]
+    assert concept_scheme.id == "ECB_CONCEPTS"
+    assert concept_scheme.name == "ECB concepts"
+    assert concept_scheme.short_urn == "ConceptScheme=ECB:ECB_CONCEPTS(1.0)"
+    assert len(concept_scheme.items) == 342
 
 
 def test_concepts_codelist_read(samples_folder):
@@ -461,6 +494,24 @@ def test_vtl_mapping_read(samples_folder):
     assert custom_type.vtl_scalar_type == "Test_scalar_type"
 
 
+def test_vtl_mapping_no_sub_space_read(samples_folder):
+    data_path = samples_folder / "vtlmapping_no_sub_space.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    vtl_mapping_Scheme = result[0]
+    assert len(vtl_mapping_Scheme.items) == 2
+    items = vtl_mapping_Scheme.items
+    assert isinstance(items[0], VtlDataflowMapping)
+    item1 = items[0]
+    assert item1.name == "VTL Mapping #1"
+    assert len(item1.from_vtl_mapping_method.from_vtl_sub_space) == 0
+    item2 = items[1]
+    assert item2.name == "VTL Mapping #2"
+    assert len(item2.to_vtl_mapping_method.to_vtl_sub_space) == 0
+    assert result is not None
+
+
 def test_vtl_complete_read(samples_folder):
     data_path = samples_folder / "vtl_complete.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -507,3 +558,15 @@ def test_vtl_complete_read(samples_folder):
     assert (
         trans_vtl_mapping_scheme.short_urn == "VtlMappingScheme=MD:VMS1(1.0)"
     )
+
+
+def test_vtl_sample_no_code(samples_folder):
+    data_path = samples_folder / "VTL_Sample_1.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    assert len(result) == 12
+    assert isinstance(result[0], Codelist)
+    codelist = result[0]
+    assert len(codelist.items) == 0

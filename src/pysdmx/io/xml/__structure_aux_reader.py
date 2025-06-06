@@ -128,6 +128,9 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VALID_FROM_LOW,
     VALID_TO,
     VALID_TO_LOW,
+    VALUE_ITEM,
+    VALUE_LIST,
+    VALUE_LISTS,
     VERSION,
     VTL_CL_MAPP,
     VTL_CON_MAPP,
@@ -185,6 +188,7 @@ from pysdmx.util import find_by_urn, parse_urn
 
 STRUCTURES_MAPPING = {
     CL: Codelist,
+    VALUE_LIST: Codelist,
     AGENCY_SCHEME: AgencyScheme,
     CS: ConceptScheme,
     DFWS: Dataflow,
@@ -199,6 +203,7 @@ STRUCTURES_MAPPING = {
 ITEMS_CLASSES = {
     AGENCY: Agency,
     CODE: Code,
+    VALUE_ITEM: Code,
     CON: Concept,
     RULE: Ruleset,
     UDO: UserDefinedOperator,
@@ -771,17 +776,19 @@ class StructureParser(Struct):
         # Dataflow Mapping
         if "ToVtlMapping" in json_vtl:
             to_vtl = json_vtl.pop("ToVtlMapping")
-            to_vtl["to_vtl_sub_space"] = add_list(
-                to_vtl["ToVtlSubSpace"]["Key"]
-            )
-            del to_vtl["ToVtlSubSpace"]
+            if "ToVtlSubSpace" in to_vtl:
+                to_vtl["to_vtl_sub_space"] = add_list(
+                    to_vtl["ToVtlSubSpace"]["Key"]
+                )
+                del to_vtl["ToVtlSubSpace"]
             json_vtl["to_vtl_mapping_method"] = ToVtlMapping(**to_vtl)
         if "FromVtlMapping" in json_vtl:
             from_vtl = json_vtl.pop("FromVtlMapping")
-            from_vtl["from_vtl_sub_space"] = add_list(
-                from_vtl["FromVtlSuperSpace"]["Key"]
-            )
-            del from_vtl["FromVtlSuperSpace"]
+            if "FromVtlSuperSpace" in from_vtl:
+                from_vtl["from_vtl_sub_space"] = add_list(
+                    from_vtl["FromVtlSuperSpace"]["Key"]
+                )
+                del from_vtl["FromVtlSuperSpace"]
             json_vtl["from_vtl_mapping_method"] = FromVtlMapping(**from_vtl)
         # Codelist Mapping
         if CL in json_vtl:
@@ -894,12 +901,13 @@ class StructureParser(Struct):
                 element[IS_FINAL_LOW] = element.pop(IS_FINAL) == "true"
             if IS_PARTIAL in element:
                 element[IS_PARTIAL_LOW] = element.pop(IS_PARTIAL) == "true"
-            element[item] = add_list(element[item])
             items = []
-            for item_elem in element[item]:
-                # Dynamic
-                items.append(self.__format_item(item_elem, item))
-            del element[item]
+            if item in element:
+                element[item] = add_list(element[item])
+                for item_elem in element[item]:
+                    # Dynamic
+                    items.append(self.__format_item(item_elem, item))
+                del element[item]
             element["items"] = items
             element = self.__format_agency(element)
             element = self.__format_validity(element)
@@ -908,6 +916,8 @@ class StructureParser(Struct):
             if "xmlns" in element:
                 del element["xmlns"]
             # Dynamic creation with specific class
+            if scheme == VALUE_LIST:
+                element["sdmx_type"] = "valuelist"
             result: ItemScheme = STRUCTURES_MAPPING[scheme](**element)
             elements[result.short_urn] = result
 
@@ -1019,6 +1029,12 @@ class StructureParser(Struct):
                 CLS,
                 lambda data: self.__format_scheme(data, CL, CODE),
                 "codelists",
+            ),
+            VALUE_LISTS: process_structure(
+                VALUE_LISTS,
+                lambda data: self.__format_scheme(
+                    data, VALUE_LIST, VALUE_ITEM
+                ),
             ),
             CON_SCHEMES: process_structure(
                 CON_SCHEMES,
