@@ -11,21 +11,27 @@ from pysdmx.io.format import Format
 from pysdmx.io.xml.sdmx21.__tokens import (
     ANNOTATIONS_LOW,
     CONTACTS_LOW,
+    CUSTOM_TYPE_SCHEMES,
     CUSTOM_TYPES,
     DESC_LOW,
     DFW,
     DFWS_LOW,
     DSD,
+    NAME_PER_SCHEMES,
     NAME_PERS,
     PROV_AGREEMENT,
     PROV_AGREMENT,
+    RULE_SCHEMES,
     RULESETS,
     STR_USAGE,
     STRUCTURE,
+    TRANS_SCEHEMES,
     TRANSFORMATIONS,
+    UDO_SCHEMES,
     UDOS,
     URI_LOW,
     URN_LOW,
+    VTLMAPPING_SCHEMES,
     VTLMAPPINGS,
 )
 from pysdmx.model import Organisation
@@ -40,6 +46,7 @@ MESSAGE_TYPE_MAPPING = {
     Format.ERROR_SDMX_ML_2_1: "Error",
     Format.REGISTRY_SDMX_ML_2_1: "RegistryInterface",
     Format.DATA_SDMX_ML_3_0: "StructureSpecificData",
+    Format.STRUCTURE_SDMX_ML_3_0: "Structure",
 }
 
 ABBR_MSG = "mes"
@@ -51,9 +58,11 @@ ABBR_SPE = "ss"
 ANNOTATIONS = "Annotations"
 STRUCTURES = "Structures"
 ORGS = "OrganisationSchemes"
+AGC = "AgencySchemes"
 AGENCIES = "AgencyScheme"
 CODELISTS = "Codelists"
 CONCEPTS = "Concepts"
+CONCEPTS_SCHEMES = "ConceptSchemes"
 DSDS = "DataStructures"
 DATAFLOWS = "Dataflows"
 CONSTRAINTS = "Constraints"
@@ -105,6 +114,8 @@ def __namespaces_from_type(type_: Format) -> str:
         return f"xmlns:{ABBR_GEN}={NAMESPACES_21[ABBR_GEN]!r} "
     elif type_ == Format.DATA_SDMX_ML_3_0:
         return f"xmlns:{ABBR_SPE}={NAMESPACES_30[ABBR_SPE]!r} "
+    elif type_ == Format.STRUCTURE_SDMX_ML_3_0:
+        return f"xmlns:{ABBR_STR}={NAMESPACES_30[ABBR_STR]!r} "
     else:
         raise NotImplemented(f"{type_} not implemented")
 
@@ -127,7 +138,10 @@ def create_namespaces(
     outfile = f'<?xml version="1.0" encoding="UTF-8"?>{nl}'
 
     outfile += f"<{ABBR_MSG}:{MESSAGE_TYPE_MAPPING[type_]} "
-    if type_ == Format.DATA_SDMX_ML_3_0:
+    if (
+        type_ == Format.DATA_SDMX_ML_3_0
+        or type_ == Format.STRUCTURE_SDMX_ML_3_0
+    ):
         outfile += f'xmlns:xsi={NAMESPACES_30["xsi"]!r} '
         outfile += f"xmlns:{ABBR_MSG}={NAMESPACES_30[ABBR_MSG]!r} "
         outfile += __namespaces_from_type(type_)
@@ -151,7 +165,7 @@ def create_namespaces(
     return outfile.replace("'", '"')
 
 
-MSG_CONTENT_PKG = OrderedDict(
+MSG_CONTENT_PKG_21 = OrderedDict(
     [
         (ORGS, "OrganisationSchemes"),
         (DATAFLOWS, "Dataflows"),
@@ -165,6 +179,24 @@ MSG_CONTENT_PKG = OrderedDict(
         (RULESETS, "Rulesets"),
         (TRANSFORMATIONS, "Transformations"),
         (UDOS, "UserDefinedOperators"),
+    ]
+)
+
+
+MSG_CONTENT_PKG_30 = OrderedDict(
+    [
+        (AGC, "AgencySchemes"),
+        (DATAFLOWS, "Dataflows"),
+        (CODELISTS, "Codelists"),
+        (CONCEPTS_SCHEMES, "ConceptSchemes"),
+        (DSDS, "DataStructures"),
+        (CONSTRAINTS, "ContentConstraints"),
+        (CUSTOM_TYPE_SCHEMES, "CustomTypeSchemes"),
+        (VTLMAPPING_SCHEMES, "VtlMappingSchemes"),
+        (NAME_PER_SCHEMES, "NamePersonalisationSchemes"),
+        (RULE_SCHEMES, "RulesetSchemes"),
+        (TRANS_SCEHEMES, "TransformationSchemes"),
+        (UDO_SCHEMES, "UserDefinedOperatorSchemes"),
     ]
 )
 
@@ -370,7 +402,9 @@ def __write_header(
             return ""
         child2 = "\t\t" if prettyprint else ""
         return (
-            f"{nl}{child2}<{ABBR_MSG}:{element}>{value}</{ABBR_MSG}:{element}>"
+            f"{nl}{child2}<{ABBR_MSG}:{element}>"
+            f"{value}"
+            f"</{ABBR_MSG}:{element}>"
         )
 
     nl = "\n" if prettyprint else ""
