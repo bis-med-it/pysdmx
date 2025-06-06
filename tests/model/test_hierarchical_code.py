@@ -108,12 +108,17 @@ def test_tostr_name(id, name):
 
 
 def test_tostr_full(id, name, desc, vf, vt, child_codes):
-    hc = HierarchicalCode(id=id, name=name, description=desc, valid_from=vf, valid_to=vt, codes=child_codes)
+    hc = HierarchicalCode(
+        id=id,
+        name=name,
+        description=desc,
+        valid_from=vf,
+        valid_to=vt,
+        codes=child_codes,
+    )
 
     s = str(hc)
-    expected_str = (
-        f"id: {id}, name: {name}, description: {desc}, valid_from: {vf}, codes: 2 hierarchicalcodes"
-    )
+    expected_str = f"id: {id}, name: {name}, description: {desc}, valid_from: {vf}, codes: 2 hierarchicalcodes"
 
     assert s == expected_str
 

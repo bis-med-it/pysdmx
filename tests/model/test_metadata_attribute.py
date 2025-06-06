@@ -84,7 +84,6 @@ def test_tostr_empty():
 
 
 def test_repr(id, value):
-
     attr = MetadataAttribute(id, value)
 
     r = repr(attr)

@@ -67,12 +67,12 @@ def test_regex(source, target):
 
 
 def test_multivaluemap_str(source):
-    vm = MultiValueMap(source=source, target=[], valid_from=datetime.now(timezone.utc))
+    vm = MultiValueMap(
+        source=source, target=[], valid_from=datetime.now(timezone.utc)
+    )
 
     s = str(vm)
-    expected_str = (
-        f"source: 2 strs, valid_from: {vm.valid_from}"
-    )
+    expected_str = f"source: 2 strs, valid_from: {vm.valid_from}"
     assert s == expected_str
 
 
@@ -80,7 +80,5 @@ def test_multivaluemap_repr(source):
     vm = MultiValueMap(source=source, target=[])
 
     r = repr(vm)
-    expected_repr = (
-        f"MultiValueMap(source={repr(vm.source)})"
-    )
+    expected_repr = f"MultiValueMap(source={repr(vm.source)})"
     assert r == expected_repr

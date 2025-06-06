@@ -1,7 +1,5 @@
 """A module to represent a Submission Result."""
 
-from typing import Sequence
-
 from msgspec import Struct
 
 

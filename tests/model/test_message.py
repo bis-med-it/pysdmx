@@ -13,7 +13,7 @@ from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Components, Dataflow, DataStructureDefinition
 from pysdmx.model.dataset import Dataset
-from pysdmx.model.message import Message, Header
+from pysdmx.model.message import Header, Message
 
 
 def test_initialization():
@@ -76,10 +76,14 @@ def test_get_datasets():
 
     assert message.get_datasets() == [ds]
     assert message.get_dataset("DataStructure=ds1:ds1(1.0)") == ds
-    assert (str(message.get_dataset("DataStructure=ds1:ds1(1.0)")) ==
-            "structure: DataStructure=ds1:ds1(1.0)")
-    assert (repr(message.get_dataset("DataStructure=ds1:ds1(1.0)")) ==
-            "Dataset(structure='DataStructure=ds1:ds1(1.0)')")
+    assert (
+        str(message.get_dataset("DataStructure=ds1:ds1(1.0)"))
+        == "structure: DataStructure=ds1:ds1(1.0)"
+    )
+    assert (
+        repr(message.get_dataset("DataStructure=ds1:ds1(1.0)"))
+        == "Dataset(structure='DataStructure=ds1:ds1(1.0)')"
+    )
 
 
 def test_wrong_initialization_data_message():
@@ -226,6 +230,7 @@ def test_message_str_without_data():
     expected_str = ""
 
     assert s == expected_str
+
 
 def test_message_str():
     agency_scheme = AgencyScheme(id="agency1", agency="agency1")
