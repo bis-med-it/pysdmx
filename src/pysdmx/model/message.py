@@ -129,17 +129,23 @@ class Message(Struct, frozen=True, repr_omit_defaults=True):
                 class_counts = {}
                 for obj in value:
                     class_name = obj.__class__.__name__
-                    class_counts[class_name] = class_counts.get(class_name, 0) + 1
+                    class_counts[class_name] = (
+                        class_counts.get(class_name, 0) + 1
+                    )
 
                 # Format the counts
                 value = ", ".join(
-                    f"{count} {class_name.lower()}" for class_name, count in class_counts.items()
+                    f"{count} {class_name.lower()}"
+                    for class_name, count in class_counts.items()
                 )
 
             # Handle sequences and omit empty ones
-            if isinstance(value, Sequence) and not isinstance(value, str):
-                if not value:
-                    continue
+            if (
+                isinstance(value, Sequence)
+                and not isinstance(value, str)
+                and not value
+            ):
+                continue
 
             processed_output.append(f"{attr}: {value}")
         return f"{', '.join(processed_output)}"

@@ -6,7 +6,9 @@ from msgspec import Struct
 from pysdmx.errors import Invalid
 
 
-class Annotation(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
+class Annotation(
+    Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True
+):
     """Annotation class.
 
     It is used to convey extra information to describe any
@@ -177,7 +179,9 @@ class Item(NameableArtefact, frozen=True, omit_defaults=True):
     """
 
 
-class Contact(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
+class Contact(
+    Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True
+):
     """Contact details such as the name of a contact and his email address.
 
     Attributes:
@@ -333,7 +337,9 @@ class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
     is_partial: bool = False
 
 
-class DataflowRef(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True, tag=True):
+class DataflowRef(
+    Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True, tag=True
+):
     """A unique reference to a dataflow.
 
     Attributes:

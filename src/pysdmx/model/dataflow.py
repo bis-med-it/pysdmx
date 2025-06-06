@@ -76,7 +76,9 @@ class ArrayBoundaries(Struct, frozen=True, repr_omit_defaults=True):
         return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
-class Component(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
+class Component(
+    Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True
+):
     """A component of a dataset (aka **variable**), such the frequency.
 
     Concepts are used to **describe the relevant characteristics** of a
@@ -380,7 +382,10 @@ class Components(UserList[Component]):
             attrs.append(f"{attr}={repr(value)}")
         return f"{self.__class__.__name__}({', '.join(attrs)})"
 
-class DataflowInfo(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
+
+class DataflowInfo(
+    Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True
+):
     """Extended information about a dataflow.
 
     The information includes:

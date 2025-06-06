@@ -16,6 +16,7 @@ class StrMap(
     omit_defaults=True,
     repr_omit_defaults=True,
 ):
+    """Base class for mapping definitions."""
 
     def __str__(self) -> str:
         """Custom string representation without the class name."""

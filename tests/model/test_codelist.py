@@ -190,7 +190,16 @@ def test_repr(id, name, agency, version, codes):
     )
 
     r = repr(cl)
-    expected_str = "Codelist(id='id', name='name', version='1.42.0', agency='5B0', items=[Code(id='child1', name='Child 1'), Code(id='child2', name='Child 2')])"
+    expected_str = (
+        "Codelist("
+        "id='id', "
+        "name='name', "
+        "version='1.42.0', "
+        "agency='5B0', "
+        "items=["
+        "Code(id='child1', name='Child 1'), "
+        "Code(id='child2', name='Child 2')])"
+    )
 
     assert r == expected_str
 

@@ -139,8 +139,11 @@ def test_torepr_full(id, name, desc, vf, vt, child_codes):
 
     r = repr(hc)
     expected_repr = (
-        f"HierarchicalCode(id='{id}', name='{name}', description='{desc}', "
-        f"valid_from={vf!r}, codes=[HierarchicalCode(id='child1', name='Child 1'), "
+        f"HierarchicalCode(id='{id}', "
+        f"name='{name}', "
+        f"description='{desc}', "
+        f"valid_from={vf!r}, "
+        f"codes=[HierarchicalCode(id='child1', name='Child 1'), "
         f"HierarchicalCode(id='child2', name='Child 2')])"
     )
 

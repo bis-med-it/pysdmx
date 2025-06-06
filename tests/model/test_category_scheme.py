@@ -168,7 +168,8 @@ def category_scheme(categories):
         id="STAT_SUBJECT_MATTER",
         name="SDMX Statistical Subject-Matter Domains",
         agency="SDMX",
-        description="The SDMX Content Guidelines for Statistical Subject-Matter Domains",
+        description="The SDMX Content Guidelines for "
+        "Statistical Subject-Matter Domains",
         version="1.0",
         items=categories,
     )
@@ -177,8 +178,10 @@ def category_scheme(categories):
 def test_categoryscheme_str(category_scheme):
     s = str(category_scheme)
     expected_str = (
-        "id: STAT_SUBJECT_MATTER, name: SDMX Statistical Subject-Matter Domains, "
-        "description: The SDMX Content Guidelines for Statistical Subject-Matter Domains, "
+        "id: STAT_SUBJECT_MATTER, "
+        "name: SDMX Statistical Subject-Matter Domains, "
+        "description: The SDMX Content Guidelines "
+        "for Statistical Subject-Matter Domains, "
         "version: 1.0, agency: SDMX, items: 2 categorys"
     )
     assert s == expected_str
@@ -189,11 +192,14 @@ def test_categoryscheme_repr(category_scheme):
     expected_repr = (
         "CategoryScheme(id='STAT_SUBJECT_MATTER', "
         "name='SDMX Statistical Subject-Matter Domains', "
-        "description='The SDMX Content Guidelines for Statistical Subject-Matter Domains', "
+        "description='The SDMX Content Guidelines for "
+        "Statistical Subject-Matter Domains', "
         "version='1.0', agency='SDMX', "
         "items=["
-        "Category(id='child1', name='Child 1', dataflows=[DataflowRef(agency='BIS', id='DF4')]), "
-        "Category(id='child2', name='Child 2', categories=[Category(id='child21', name='Child 2.1', "
+        "Category(id='child1', name='Child 1', "
+        "dataflows=[DataflowRef(agency='BIS', id='DF4')]), "
+        "Category(id='child2', name='Child 2', "
+        "categories=[Category(id='child21', name='Child 2.1', "
         "categories=["
         "Category(id='child211', name='Child 2.1.1', "
         "dataflows=[DataflowRef(agency='BIS', id='DF1'), "

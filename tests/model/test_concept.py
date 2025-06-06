@@ -121,6 +121,13 @@ def test_torepr_full(fid, name, desc, typ, facets):
     c = Concept(id=fid, name=name, description=desc, dtype=typ, facets=facets)
 
     s = repr(c)
-    expected_str = f"Concept(id={fid!r}, name={name!r}, description={desc!r}, dtype={typ!r}, facets={facets!r})"
+    expected_str = (
+        f"Concept("
+        f"id={fid!r}, "
+        f"name={name!r}, "
+        f"description={desc!r}, "
+        f"dtype={typ!r}, "
+        f"facets={facets!r})"
+    )
 
     assert s == expected_str

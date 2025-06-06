@@ -75,5 +75,9 @@ def test_dataflowref_repr():
     )
 
     r = repr(dataflow_ref)
-    expected_repr = "DataflowRef(agency='SDMX', id='EXR', version='1.0', name='Exchange Rates')"
+    expected_repr = (
+        "DataflowRef("
+        "agency='SDMX', id='EXR', "
+        "version='1.0', name='Exchange Rates')"
+    )
     assert r == expected_repr

@@ -95,7 +95,9 @@ class Codelist(ItemScheme, frozen=True, omit_defaults=True, tag=True):
         return bool(self.__getitem__(id_))
 
 
-class HierarchicalCode(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
+class HierarchicalCode(
+    Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True
+):
     """A code, as used in a hierarchy.
 
     Hierachical codes may contain other codes.
