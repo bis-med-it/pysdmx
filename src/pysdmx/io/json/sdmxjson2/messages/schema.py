@@ -27,10 +27,12 @@ class JsonSchemas(
 
     def to_model(self) -> Components:
         """Returns the requested schema."""
-        cls = [cl.to_model() for cl in self.codelists]
-        cls.extend([vl.to_model() for vl in self.valuelists])
-        return self.dataStructures[0].dataStructureComponents.to_model(
-            self.conceptSchemes, cls, self.contentConstraints
+        comps = self.dataStructures[0].dataStructureComponents
+        return comps.to_model(  # type: ignore[union-attr]
+            self.conceptSchemes,
+            self.codelists,
+            self.valuelists,
+            self.contentConstraints,
         )
 
 
@@ -69,4 +71,11 @@ class JsonSchemaMessage(
                 f"{h.agency}:{h.id}({h.version})"  # type: ignore[union-attr]
             )
         comps = Components(comp_dict.values())
-        return Schema(context, agency, id_, comps, version, urns)
+        return Schema(
+            context,
+            agency,
+            id_,
+            comps,
+            version,
+            urns,  # type: ignore[arg-type]
+        )

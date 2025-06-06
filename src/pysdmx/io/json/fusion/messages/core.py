@@ -48,6 +48,7 @@ class FusionTextFormat(msgspec.Struct, frozen=True):
     startTime: Optional[datetime] = None
     endTime: Optional[datetime] = None
     isSequence: bool = False
+    isMultilingual: bool = False
 
 
 class FusionRepresentation(msgspec.Struct, frozen=True):
@@ -112,6 +113,7 @@ class FusionRepresentation(msgspec.Struct, frozen=True):
                 pattern=self.textFormat.pattern,
                 start_time=self.textFormat.startTime,
                 end_time=self.textFormat.endTime,
+                is_multilingual=self.textFormat.isMultilingual,
             )
         else:
             return None

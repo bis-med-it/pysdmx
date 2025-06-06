@@ -17,7 +17,7 @@ representation of hierarchical relationships to hierarchies only.
 """
 
 from datetime import datetime
-from typing import Iterator, Literal, Optional, Sequence
+from typing import Iterator, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -193,10 +193,12 @@ class Hierarchy(
             assume that the operator property references a VTL operator
             representing a sum. This can then be used for validation purposes,
             to check that A = B + C.
+        is_partial: Whether the hierarchy is partial.
     """
 
     codes: Sequence[HierarchicalCode] = ()
     operator: Optional[str] = None
+    is_partial: bool = True
 
     def __iter__(self) -> Iterator[HierarchicalCode]:
         """Return an iterator over the list of codes."""
@@ -309,7 +311,7 @@ class HierarchyAssociation(
 ):
     """Links a hierarchy to a component withing the context of a dataflow."""
 
-    hierarchy: Optional[Hierarchy] = None
+    hierarchy: Optional[Union[Hierarchy, str]] = None
     component_ref: str = ""
     context_ref: str = ""
     operator: Optional[str] = None
