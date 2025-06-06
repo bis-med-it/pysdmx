@@ -2,7 +2,7 @@
 
 from datetime import date, datetime
 from enum import Enum
-from typing import Any, Dict, Optional, Union, Sequence
+from typing import Any, Dict, Optional, Sequence, Union
 
 from msgspec import Struct
 

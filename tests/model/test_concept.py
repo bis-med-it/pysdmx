@@ -9,8 +9,23 @@ def fid():
 
 
 @pytest.fixture
+def name():
+    return "Frequency"
+
+
+@pytest.fixture
+def desc():
+    return "The frequency of the data"
+
+
+@pytest.fixture
 def typ():
     return DataType.STRING
+
+
+@pytest.fixture
+def facets():
+    return Facets(min_length=1, max_length=10)
 
 
 def test_defaults(fid):
@@ -64,20 +79,48 @@ def test_not_equal(fid, typ):
     assert f1 != f2
 
 
-def test_tostr(fid, typ):
-    f1 = Concept(id=fid, dtype=typ)
+def test_tostr_id(fid):
+    c = Concept(id=fid)
 
-    s = str(f1)
-    expected_str = f"id: {fid}, dtype: String"
+    s = str(c)
+    expected_str = f"id: {fid}"
 
     assert s == expected_str
 
 
-def test_tostr_with_name(fid, typ):
-    name = "Frequency"
-    f1 = Concept(id=fid, dtype=typ, name=name)
+def test_tostr_name(fid, name):
+    c = Concept(id=fid, name=name)
 
-    s = str(f1)
-    expected_str = f"id: {fid}, name: {name}, dtype: String"
+    s = str(c)
+    expected_str = f"id: {fid}, name: {name}"
+
+    assert s == expected_str
+
+
+def test_tostr_full(fid, name, desc, typ):
+    c = Concept(id=fid, name=name, description=desc, dtype=typ)
+
+    s = str(c)
+    expected_str = f"id: {fid}, name: {name}, description: {desc}, dtype: {typ}"
+
+    assert s == expected_str
+
+
+def test_torepr_id(fid):
+    c = Concept(id=fid)
+
+    s = repr(c)
+    expected_str = f"Concept(id={fid!r})"
+
+    assert s == expected_str
+
+
+def test_torepr_full(fid, name, desc, typ, facets):
+    c = Concept(id=fid, name=name, description=desc, dtype=typ, facets=facets)
+
+    s = repr(c)
+    expected_str = (
+        f"Concept(id={fid!r}, name={name!r}, description={desc!r}, dtype={typ!r}, facets={facets!r})"
+    )
 
     assert s == expected_str

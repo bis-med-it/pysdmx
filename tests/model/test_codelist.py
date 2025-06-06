@@ -5,7 +5,6 @@ import msgspec
 import pytest
 
 from pysdmx.model.code import Code, Codelist
-from tests.api.qb.data.test_data_query_updated_after import expected
 
 
 @pytest.fixture

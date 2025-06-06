@@ -125,3 +125,55 @@ def test_serialization(id, name, agency, desc, version, concepts):
     out = msgspec.msgpack.Decoder(ConceptScheme).decode(ser)
 
     assert out == cs
+
+
+def test_conceptscheme_str(id, name, agency, desc, version, concepts):
+    concept_scheme = ConceptScheme(
+        id=id,
+        name=name,
+        agency=agency,
+        description=desc,
+        version=version,
+        items=concepts,
+    )
+
+    s = str(concept_scheme)
+    expected_str = (
+        "id: id, "
+        "name: name, "
+        "description: description, "
+        "version: 1.42.0, "
+        "agency: 5B0, "
+        "items: 2 concepts"
+    )
+    assert s == expected_str
+
+
+def test_conceptscheme_repr(id, name, agency, desc, version, concepts):
+    concept_scheme = ConceptScheme(
+        id=id,
+        name=name,
+        agency=agency,
+        description=desc,
+        version=version,
+        items=concepts,
+    )
+
+    r = repr(concept_scheme)
+    expected_repr = (
+        "ConceptScheme("
+        "id='id', "
+        "name='name', "
+        "description='description', "
+        "version='1.42.0', "
+        "agency='5B0', "
+        "items=["
+        "Concept("
+        "id='child1', "
+        "name='Test', "
+        "description='desc', "
+        "dtype=Alpha, "
+        "facets=Facets(min_length=1, max_length=3)), "
+        "Concept(id='child2')])"
+    )
+    assert r == expected_repr

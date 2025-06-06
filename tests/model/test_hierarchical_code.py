@@ -31,6 +31,14 @@ def vt():
     return None
 
 
+@pytest.fixture
+def child_codes():
+    return [
+        HierarchicalCode(id="child1", name="Child 1"),
+        HierarchicalCode(id="child2", name="Child 2"),
+    ]
+
+
 def test_default(id):
     c = HierarchicalCode(id)
 
@@ -82,16 +90,51 @@ def test_iterable(id, name):
 
 
 def test_tostr_id(id):
-    c = HierarchicalCode(id)
+    hc = HierarchicalCode(id=id)
 
-    s = str(c)
+    s = str(hc)
+    expected_str = f"id: {id}"
 
-    assert s == f'id: {id}'
+    assert s == expected_str
 
 
 def test_tostr_name(id, name):
-    c = HierarchicalCode(id, name)
+    hc = HierarchicalCode(id=id, name=name)
 
-    s = str(c)
+    s = str(hc)
+    expected_str = f"id: {id}, name: {name}"
 
-    assert s == f"id: {id}, name: {name}"
+    assert s == expected_str
+
+
+def test_tostr_full(id, name, desc, vf):
+    hc = HierarchicalCode(id=id, name=name, description=desc, valid_from=vf)
+
+    s = str(hc)
+    expected_str = f"id: {id}, name: {name}, description: {desc}, valid_from: {vf}"
+
+    assert s == expected_str
+
+
+def test_torepr_id(id):
+    hc = HierarchicalCode(id=id)
+
+    r = repr(hc)
+    expected_repr = f"HierarchicalCode(id='{id}')"
+
+    assert r == expected_repr
+
+
+def test_torepr_full(id, name, desc, vf, vt, child_codes):
+    hc = HierarchicalCode(
+        id=id, name=name, description=desc, valid_from=vf, valid_to=vt, codes=child_codes
+    )
+
+    r = repr(hc)
+    expected_repr = (
+        f"HierarchicalCode(id='{id}', name='{name}', description='{desc}', "
+        f"valid_from={vf!r}, codes=[HierarchicalCode(id='child1', name='Child 1'), "
+        f"HierarchicalCode(id='child2', name='Child 2')])"
+    )
+
+    assert r == expected_repr

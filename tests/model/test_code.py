@@ -87,10 +87,32 @@ def test_tostr_name(id, name):
 
     assert s == expected_str
 
+
+def test_tostr_full(id, name, desc, vf, vt):
+    c = Code(id=id, name=name, description=desc, valid_from=vf, valid_to=vt)
+
+    s = str(c)
+    expected_str = f"id: {id}, name: {name}, description: {desc}, valid_from: {vf}"
+
+    assert s == expected_str
+
+
 def test_torepr_id(id):
     c = Code(id=id)
 
     s = repr(c)
     expected_str = f"Code(id={id!r})"
+
+    assert s == expected_str
+
+
+def test_torepr_full(id, name, desc, vf, vt):
+    c = Code(id=id, name=name, description=desc, valid_from=vf, valid_to=vt)
+
+    s = repr(c)
+    expected_str = (
+        f"Code(id={id!r}, name={name!r}, description={desc!r}, "
+        f"valid_from={vf!r})"
+    )
 
     assert s == expected_str

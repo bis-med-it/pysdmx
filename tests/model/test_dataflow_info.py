@@ -203,47 +203,6 @@ def test_not_equal(id, comps, name, agency, upd):
     assert ds1 != ds2
 
 
-def test_tostr_basic(id, comps, agency):
-    ds = DataflowInfo(id, comps, agency)
-
-    s = str(ds)
-    expected_str = f"agency: {agency}, components: {comps}, id: {id}"
-
-    assert s == expected_str
-
-
-def test_tostr_more(
-    id,
-    comps,
-    name,
-    agency,
-    providers,
-    obs,
-    start,
-    end,
-    upd,
-):
-    ds = DataflowInfo(
-        id,
-        comps,
-        agency,
-        name=name,
-        providers=providers,
-        obs_count=obs,
-        start_period=start,
-        end_period=end,
-        last_updated=upd,
-    )
-
-    s = str(ds)
-    expected_str = (
-        f"id={id}, components={comps}, agency={agency}, "
-        f"name={name}, version=1.0, providers={providers}, obs_count={obs}"
-    )
-
-    assert s == expected_str
-
-
 def test_serialization(
     id,
     comps,
@@ -278,3 +237,116 @@ def test_serialization(
     ser = msgspec.msgpack.Encoder(enc_hook=encoders).encode(ds)
     out = msgspec.msgpack.Decoder(DataflowInfo, dec_hook=decoders).decode(ser)
     assert out == ds
+
+
+def test_tostr_basic(id, comps, agency):
+    ds = DataflowInfo(id, comps, agency)
+
+    s = str(ds)
+    expected_str = f"id: {id}, components: 5 components, agency: {agency}"
+
+    assert s == expected_str
+
+
+def test_tostr_more(
+    id,
+    comps,
+    name,
+    agency,
+    providers,
+    obs,
+    start,
+    end,
+    upd,
+):
+    ds = DataflowInfo(
+        id,
+        comps,
+        agency,
+        name=name,
+        providers=providers,
+        obs_count=obs,
+        start_period=start,
+        end_period=end
+    )
+
+    s = str(ds)
+    expected_str = (
+        f"id: {id}, components: 5 components, agency: {agency}, "
+        f"name: {name}, providers: 2 dataproviders, "
+        f"obs_count: {obs}, start_period: {start}, end_period: {end}"
+    )
+
+    assert s == expected_str
+
+
+def test_dataflowinfo_repr(
+    id,
+    comps,
+    name,
+    agency,
+    providers,
+    obs,
+    start,
+    end,
+    upd,
+):
+    ds = DataflowInfo(
+        id,
+        comps,
+        agency,
+        name=name,
+        providers=providers,
+        obs_count=obs,
+        start_period=start,
+        end_period=end
+    )
+
+    r = repr(ds)
+    expected_repr = (
+        "DataflowInfo("
+        "id='EXR', "
+        "components=Components("
+        "data=["
+        "Component("
+        "id='FREQ', "
+        "required=True, "
+        "role=Dimension, "
+        "concept=Concept(id='FREQ', dtype=String), "
+        "local_dtype=Alpha, "
+        "local_facets=Facets(min_length=1, max_length=3)), "
+        "Component("
+        "id='INDICATOR', "
+        "required=True, "
+        "role=Dimension, "
+        "concept=Concept(id='IND'), "
+        "local_dtype=String), "
+        "Component("
+        "id='PERIOD', "
+        "required=True, "
+        "role=Dimension, "
+        "concept=Concept(id='PERIOD'), "
+        "local_dtype=ObservationalTimePeriod), "
+        "Component("
+        "id='VALUE', "
+        "required=False, "
+        "role=Measure, "
+        "concept=Concept(id='VALUE'), "
+        "local_dtype=Integer), "
+        "Component("
+        "id='CONF', "
+        "required=True, "
+        "role=Attribute, "
+        "concept=Concept(id='CONF'), "
+        "local_dtype=String, "
+        "attachment_level='O', "
+        "array_def=ArrayBoundaries(min_size=1, max_size=3))]), "
+        "agency=Agency(id='BIS'), "
+        "name='EXR name', "
+        "providers=[DataProvider(id='5B0'), "
+        "DataProvider(id='4F0')], "
+        "obs_count=20110617, "
+        "start_period='2000', "
+        "end_period='2042')"
+    )
+    assert r == expected_repr

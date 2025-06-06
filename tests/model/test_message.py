@@ -12,7 +12,6 @@ from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Components, Dataflow, DataStructureDefinition
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Message
-from tests.api.qb.data.test_data_query_updated_after import expected
 
 
 def test_initialization():
