@@ -133,6 +133,7 @@ def test_reading_col_action(data_path_action):
     assert len(df) == 1000
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
+    assert "ACTION" not in df.columns
 
 
 def test_reading_more_structures(data_path_structures):
@@ -159,6 +160,7 @@ def test_reading_two_actions(data_path_two_actions):
     datasets = read(infile)
     assert datasets[0].short_urn == "DataStructure=TEST:TEST_MD(1.0)"
     assert len(datasets[0].data) == 2
+    assert "ACTION" not in datasets[0].data.columns
 
 
 def test_reading_three_actions(data_path_three_actions):
