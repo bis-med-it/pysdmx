@@ -1,5 +1,8 @@
+from pathlib import Path
+
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.model import (
     Reference,
     Ruleset,
@@ -9,13 +12,14 @@ from pysdmx.model import (
     UserDefinedOperator,
     UserDefinedOperatorScheme,
 )
-from pysdmx.toolkit.vtl.generate_vtl_script import generate_vtl_script
+from pysdmx.toolkit.vtl import generate_vtl_script
 
 
 @pytest.fixture
 def generate_vtl_script_sample():
     with open(
-        "tests/toolkit/samples/generate_vtl_script_sample_objects.vtl",
+        Path(__file__).parent
+        / "samples/generate_vtl_script_sample_objects.vtl",
         "r",
         encoding="utf-8",
     ) as f:
@@ -25,7 +29,8 @@ def generate_vtl_script_sample():
 @pytest.fixture
 def generate_vtl_script_sample_with_reference():
     with open(
-        "tests/toolkit/samples/generate_vtl_script_sample_references.vtl",
+        Path(__file__).parent
+        / "samples/generate_vtl_script_sample_references.vtl",
         "r",
         encoding="utf-8",
     ) as f:
@@ -213,15 +218,63 @@ def test_generate_vtl_script_model_validation(
 def test_generate_vtl_script_with_reference(
     valid_ts_with_reference, generate_vtl_script_sample
 ):
-    vtl_script = generate_vtl_script(valid_ts_with_reference)
+    vtl_script = generate_vtl_script(
+        valid_ts_with_reference, model_validation=True
+    )
     assert vtl_script.strip() == generate_vtl_script_sample.strip()
+
+
+def test_generate_invalid_vtl():
+    ts = TransformationScheme(
+        agency="MD",
+        id="TS1",
+        version="1.0",
+        items=[
+            Transformation(
+                id="id",
+                name="name",
+                description="description",
+                expression="DS_1 @ 1",
+                result="DS_r",
+                is_persistent=True,
+            )
+        ],
+        vtl_version="2.1",
+    )
+    with pytest.raises(
+        Invalid,
+        match="Invalid transformation definition: Not valid VTL Syntax",
+    ):
+        generate_vtl_script(ts, model_validation=True)
+
+
+def test_generate_vtl_script_prettify():
+    ts = TransformationScheme(
+        id="TS1",
+        agency="MD",
+        version="1.0",
+        vtl_version="2.1",
+        items=[
+            Transformation(
+                id="T1",
+                result="DS_r",
+                is_persistent=True,
+                expression="DS_1 + 1",
+            )
+        ],
+    )
+    vtl_script = generate_vtl_script(ts, prettyprint=True)
+    reference = "DS_r <-\n\tDS_1 + 1;\n"
+    assert vtl_script == reference
 
 
 def test_generate_vtl_script_with_only_reference(
     valid_ts_with_only_references,
     generate_vtl_script_sample_with_reference,
 ):
-    vtl_script = generate_vtl_script(valid_ts_with_only_references)
+    vtl_script = generate_vtl_script(
+        valid_ts_with_only_references, model_validation=True
+    )
     assert (
         vtl_script.strip() == generate_vtl_script_sample_with_reference.strip()
     )

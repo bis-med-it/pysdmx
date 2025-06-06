@@ -19,6 +19,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     DSD,
     NAME_PER_SCHEMES,
     NAME_PERS,
+    PROV_AGREEMENT,
     PROV_AGREMENT,
     RULE_SCHEMES,
     RULESETS,
@@ -44,6 +45,7 @@ MESSAGE_TYPE_MAPPING = {
     Format.STRUCTURE_SDMX_ML_2_1: "Structure",
     Format.ERROR_SDMX_ML_2_1: "Error",
     Format.REGISTRY_SDMX_ML_2_1: "RegistryInterface",
+    Format.DATA_SDMX_ML_3_0: "StructureSpecificData",
     Format.STRUCTURE_SDMX_ML_3_0: "Structure",
 }
 
@@ -88,6 +90,8 @@ NAMESPACES_30 = {
 }
 
 URN_DS_BASE = "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure="
+URN_PROVISION = "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement="
+URN_DFW = "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow="
 
 
 def __namespaces_from_type(type_: Format) -> str:
@@ -108,6 +112,8 @@ def __namespaces_from_type(type_: Format) -> str:
         return f"xmlns:{ABBR_SPE}={NAMESPACES_21[ABBR_SPE]!r} "
     elif type_ == Format.DATA_SDMX_ML_2_1_GEN:
         return f"xmlns:{ABBR_GEN}={NAMESPACES_21[ABBR_GEN]!r} "
+    elif type_ == Format.DATA_SDMX_ML_3_0:
+        return f"xmlns:{ABBR_SPE}={NAMESPACES_30[ABBR_SPE]!r} "
     elif type_ == Format.STRUCTURE_SDMX_ML_3_0:
         return f"xmlns:{ABBR_STR}={NAMESPACES_30[ABBR_STR]!r} "
     else:
@@ -132,7 +138,10 @@ def create_namespaces(
     outfile = f'<?xml version="1.0" encoding="UTF-8"?>{nl}'
 
     outfile += f"<{ABBR_MSG}:{MESSAGE_TYPE_MAPPING[type_]} "
-    if type_ == Format.STRUCTURE_SDMX_ML_3_0:
+    if (
+        type_ == Format.DATA_SDMX_ML_3_0
+        or type_ == Format.STRUCTURE_SDMX_ML_3_0
+    ):
         outfile += f'xmlns:xsi={NAMESPACES_30["xsi"]!r} '
         outfile += f"xmlns:{ABBR_MSG}={NAMESPACES_30[ABBR_MSG]!r} "
         outfile += __namespaces_from_type(type_)
@@ -290,6 +299,7 @@ def __reference(
     nl: str,
     prettyprint: bool,
     add_namespace_structure: bool,
+    references_30: bool = False,
 ) -> str:
     child2 = "\t\t" if prettyprint else ""
     child3 = "\t\t\t" if prettyprint else ""
@@ -298,16 +308,50 @@ def __reference(
     reference = parse_short_urn(urn_structure)
     if reference.sdmx_type == DSD:
         structure_type = STRUCTURE
+        urn_type = URN_DS_BASE
     elif reference.sdmx_type == DFW:
         structure_type = STR_USAGE
+        urn_type = URN_DFW
     else:
-        structure_type = PROV_AGREMENT
+        structure_type = PROV_AGREEMENT if references_30 else PROV_AGREMENT
+        urn_type = URN_PROVISION
     if add_namespace_structure:
-        namespace = (
-            f"{URN_DS_BASE}={reference.agency}:{reference.id}"
-            f"({reference.version})"
-        )
+        if references_30:
+            namespace = (
+                f"{urn_type}{reference.agency}:{reference.id}"
+                f"({reference.version})"
+            )
+        else:
+            namespace = (
+                f"{URN_DS_BASE}{reference.agency}:{reference.id}"
+                f"({reference.version})"
+            )
+
         namespace = f"namespace={namespace!r} "
+    if references_30:
+        reference_str = (
+            f"{urn_type}{reference.agency}:"
+            f"{reference.id}({reference.version})"
+        )
+    else:
+        # Then the reference
+        reference_str = (
+            f"{nl}{child4}<Ref agencyID={reference.agency!r} "
+            f"id={reference.id!r} version={reference.version!r} "
+            f"class={reference.sdmx_type!r}/>"
+        )
+    if references_30:
+        common_structure = (
+            f"{nl}{child3}<{ABBR_COM}:{structure_type}>"
+            f"{reference_str}"
+            f"</{ABBR_COM}:{structure_type}>"
+        )
+    else:
+        common_structure = (
+            f"{nl}{child3}<{ABBR_COM}:{structure_type}>"
+            f"{reference_str}"
+            f"{nl}{child3}</{ABBR_COM}:{structure_type}>"
+        )
 
     return (
         # First the message structure
@@ -316,13 +360,7 @@ def __reference(
         f"{namespace}"
         f"dimensionAtObservation={dimension!r}>"
         # Then the common structure
-        f"{nl}{child3}<{ABBR_COM}:{structure_type}>"
-        # Then the reference
-        f"{nl}{child4}<Ref agencyID={reference.agency!r} "
-        f"id={reference.id!r} version={reference.version!r} "
-        f"class={reference.sdmx_type!r}/>"
-        # Close the common structure
-        f"{nl}{child3}</{ABBR_COM}:{structure_type}>"
+        f"{common_structure}"
         # Close the message structure
         f"{nl}{child2}</{ABBR_MSG}:Structure>"
     )
@@ -333,6 +371,7 @@ def __write_header(
     prettyprint: bool,
     add_namespace_structure: bool = False,
     data_message: bool = True,
+    references_30: bool = False,
 ) -> str:
     """Writes the Header part of the message.
 
@@ -341,6 +380,7 @@ def __write_header(
         prettyprint: Prettyprint or not
         add_namespace_structure: Add the namespace for the structure
         data_message: If the message is a data message
+        references_30: If the references are for SDMX 3.0
 
     Returns:
         The XML string
@@ -385,6 +425,7 @@ def __write_header(
                 nl,
                 prettyprint,
                 add_namespace_structure,
+                references_30,
             )
     if not data_message and (
         header.dataset_id or header.dataset_action or header.structure
