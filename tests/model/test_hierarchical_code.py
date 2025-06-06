@@ -99,7 +99,7 @@ def test_tostr_id(id):
 
 
 def test_tostr_name(id, name):
-    hc = HierarchicalCode(id=id, name=name)
+    hc = HierarchicalCode(id=id, name=name, codes=[])
 
     s = str(hc)
     expected_str = f"id: {id}, name: {name}"
@@ -107,12 +107,12 @@ def test_tostr_name(id, name):
     assert s == expected_str
 
 
-def test_tostr_full(id, name, desc, vf):
-    hc = HierarchicalCode(id=id, name=name, description=desc, valid_from=vf)
+def test_tostr_full(id, name, desc, vf, vt, child_codes):
+    hc = HierarchicalCode(id=id, name=name, description=desc, valid_from=vf, valid_to=vt, codes=child_codes)
 
     s = str(hc)
     expected_str = (
-        f"id: {id}, name: {name}, description: {desc}, valid_from: {vf}"
+        f"id: {id}, name: {name}, description: {desc}, valid_from: {vf}, codes: 2 hierarchicalcodes"
     )
 
     assert s == expected_str
@@ -145,6 +145,27 @@ def test_torepr_full(id, name, desc, vf, vt, child_codes):
         f"valid_from={vf!r}, "
         f"codes=[HierarchicalCode(id='child1', name='Child 1'), "
         f"HierarchicalCode(id='child2', name='Child 2')])"
+    )
+
+    assert r == expected_repr
+
+
+def test_torepr_empty(id, name, desc, vf, vt):
+    hc = HierarchicalCode(
+        id=id,
+        name=name,
+        description=desc,
+        valid_from=vf,
+        valid_to=vt,
+        codes=[],
+    )
+
+    r = repr(hc)
+    expected_repr = (
+        f"HierarchicalCode(id='{id}', "
+        f"name='{name}', "
+        f"description='{desc}', "
+        f"valid_from={vf!r})"
     )
 
     assert r == expected_repr

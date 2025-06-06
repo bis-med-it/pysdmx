@@ -76,6 +76,10 @@ def test_get_datasets():
 
     assert message.get_datasets() == [ds]
     assert message.get_dataset("DataStructure=ds1:ds1(1.0)") == ds
+    assert (str(message.get_dataset("DataStructure=ds1:ds1(1.0)")) ==
+            "structure: DataStructure=ds1:ds1(1.0)")
+    assert (repr(message.get_dataset("DataStructure=ds1:ds1(1.0)")) ==
+            "Dataset(structure='DataStructure=ds1:ds1(1.0)')")
 
 
 def test_wrong_initialization_data_message():
