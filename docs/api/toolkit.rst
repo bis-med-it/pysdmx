@@ -13,3 +13,4 @@ version of the SDMX standard.
    :maxdepth: 1
 
    toolkit/vtl
+   toolkit/pandas

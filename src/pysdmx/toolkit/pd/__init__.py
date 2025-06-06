@@ -1,4 +1,4 @@
-"""Infer the Pandas data type for a component."""
+"""Utility functions to leverage the SDMX information model in Pandas."""
 
 from pysdmx.model import Component, DataType
 
@@ -35,7 +35,27 @@ def __get_pd_type(dt: DataType, required: bool) -> str:  # noqa: C901
 
 
 def to_pandas(comp: Component) -> str:
-    """Get the Pandas data type of the supplied component."""
+    """Determine the appropriate Pandas data type for the given component.
+
+    For enumerated components, returns 'category' as the Pandas data type.
+    For non-enumerated components, maps the SDMX data type to the corresponding
+    Pandas data type, taking into account whether the component is required.
+
+    Args:
+        comp:
+            The SDMX component for which to determine the Pandas data type.
+
+    Returns:
+        The string representation of the corresponding Pandas data type.
+            Possible return values include:
+
+        - 'category' (for enumerated components)
+        - Numeric types ('int16', 'Int16', 'float32', 'Float32', etc.)
+        - 'object' (for complex numeric types and time periods)
+        - Datetime types ('datetime64[ns]', 'datetime64[Y]', etc.)
+        - 'string' (default for unhandled types)
+        - 'bool' or 'boolean' (for boolean values)
+    """
     if comp.enumeration:
         return "category"
     else:
