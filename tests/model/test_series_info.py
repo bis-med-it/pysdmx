@@ -98,6 +98,5 @@ def test_tostr(id, name, obs, start):
     s = str(i)
 
     assert s == (
-        f"id: {id}, name: {name}, obs_count: {obs}, "
-        f"start_period: {start}"
+        f"id: {id}, name: {name}, obs_count: {obs}, " f"start_period: {start}"
     )

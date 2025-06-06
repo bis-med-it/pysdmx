@@ -111,7 +111,9 @@ def test_tostr_full(id, name, desc, vf):
     hc = HierarchicalCode(id=id, name=name, description=desc, valid_from=vf)
 
     s = str(hc)
-    expected_str = f"id: {id}, name: {name}, description: {desc}, valid_from: {vf}"
+    expected_str = (
+        f"id: {id}, name: {name}, description: {desc}, valid_from: {vf}"
+    )
 
     assert s == expected_str
 
@@ -127,7 +129,12 @@ def test_torepr_id(id):
 
 def test_torepr_full(id, name, desc, vf, vt, child_codes):
     hc = HierarchicalCode(
-        id=id, name=name, description=desc, valid_from=vf, valid_to=vt, codes=child_codes
+        id=id,
+        name=name,
+        description=desc,
+        valid_from=vf,
+        valid_to=vt,
+        codes=child_codes,
     )
 
     r = repr(hc)

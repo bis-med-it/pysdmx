@@ -74,7 +74,9 @@ def test_tostr_all(id, title, text, url, type):
     a = Annotation(id=id, title=title, text=text, url=url, type=type)
 
     s = str(a)
-    expected_str = f"id: {id}, title: {title}, text: {text}, url: {url}, type: {type}"
+    expected_str = (
+        f"id: {id}, title: {title}, text: {text}, url: {url}, type: {type}"
+    )
 
     assert s == expected_str
 

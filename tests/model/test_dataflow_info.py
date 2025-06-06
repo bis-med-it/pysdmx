@@ -267,7 +267,7 @@ def test_tostr_more(
         providers=providers,
         obs_count=obs,
         start_period=start,
-        end_period=end
+        end_period=end,
     )
 
     s = str(ds)
@@ -299,7 +299,7 @@ def test_dataflowinfo_repr(
         providers=providers,
         obs_count=obs,
         start_period=start,
-        end_period=end
+        end_period=end,
     )
 
     r = repr(ds)

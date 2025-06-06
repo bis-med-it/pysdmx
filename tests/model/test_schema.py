@@ -125,8 +125,10 @@ def test_tostr(context, agency, id, components, artefacts):
 
     s = str(o)
 
-    assert s == ('context: dataflow, agency: BIS, id: 5B0, components: 5 components, '
- 'artefacts: 2 strs')
+    assert s == (
+        "context: dataflow, agency: BIS, id: 5B0, components: 5 components, "
+        "artefacts: 2 strs"
+    )
 
 
 def test_serialization(context, agency, id, components, version, artefacts):

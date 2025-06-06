@@ -24,4 +24,7 @@ def test_full_instantiation(action, short_urn, status):
     assert submission_result.action == action
     assert submission_result.short_urn == short_urn
     assert submission_result.status == status
-    assert str(submission_result) == f'action: {action}, short_urn: {short_urn}, status: {status}'
+    assert (
+        str(submission_result)
+        == f"action: {action}, short_urn: {short_urn}, status: {status}"
+    )

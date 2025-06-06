@@ -92,7 +92,9 @@ def test_tostr_full(id, name, desc, vf, vt):
     c = Code(id=id, name=name, description=desc, valid_from=vf, valid_to=vt)
 
     s = str(c)
-    expected_str = f"id: {id}, name: {name}, description: {desc}, valid_from: {vf}"
+    expected_str = (
+        f"id: {id}, name: {name}, description: {desc}, valid_from: {vf}"
+    )
 
     assert s == expected_str
 

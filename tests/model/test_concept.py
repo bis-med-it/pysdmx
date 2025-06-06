@@ -101,7 +101,9 @@ def test_tostr_full(fid, name, desc, typ):
     c = Concept(id=fid, name=name, description=desc, dtype=typ)
 
     s = str(c)
-    expected_str = f"id: {fid}, name: {name}, description: {desc}, dtype: {typ}"
+    expected_str = (
+        f"id: {fid}, name: {name}, description: {desc}, dtype: {typ}"
+    )
 
     assert s == expected_str
 
@@ -119,8 +121,6 @@ def test_torepr_full(fid, name, desc, typ, facets):
     c = Concept(id=fid, name=name, description=desc, dtype=typ, facets=facets)
 
     s = repr(c)
-    expected_str = (
-        f"Concept(id={fid!r}, name={name!r}, description={desc!r}, dtype={typ!r}, facets={facets!r})"
-    )
+    expected_str = f"Concept(id={fid!r}, name={name!r}, description={desc!r}, dtype={typ!r}, facets={facets!r})"
 
     assert s == expected_str

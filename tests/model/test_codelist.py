@@ -165,9 +165,12 @@ def test_tostr(id, name, agency, version, codes):
     )
 
     s = str(cl)
-    expected_str = "id: id, name: name, version: 1.42.0, agency: 5B0, items: 2 codes"
+    expected_str = (
+        "id: id, name: name, version: 1.42.0, agency: 5B0, items: 2 codes"
+    )
 
     assert s == expected_str
+
 
 def test_tostr_empty_items(id, name, agency, version):
     codes = []
@@ -179,6 +182,7 @@ def test_tostr_empty_items(id, name, agency, version):
     expected_str = "id: id, name: name, version: 1.42.0, agency: 5B0"
 
     assert s == expected_str
+
 
 def test_repr(id, name, agency, version, codes):
     cl = Codelist(
@@ -198,7 +202,8 @@ def test_repr_empty_items(id, name, agency, version):
     )
 
     r = repr(cl)
-    expected_str = "Codelist(id='id', name='name', version='1.42.0', agency='5B0')"
+    expected_str = (
+        "Codelist(id='id', name='name', version='1.42.0', agency='5B0')"
+    )
 
     assert r == expected_str
-

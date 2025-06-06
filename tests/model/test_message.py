@@ -191,6 +191,7 @@ def test_get_ruleset_scheme():
     message = Message(structures=[ruleset_scheme])
     assert message.get_ruleset_schemes() == [ruleset_scheme]
 
+
 def test_message_str_with_structures():
     agency_scheme = AgencyScheme(id="agency1", agency="agency1")
     codelist = Codelist(id="codelist1", agency="agency1")
@@ -211,6 +212,7 @@ def test_message_str_with_data():
 
     assert s == expected_str
 
+
 def test_message_str_without_data():
     message = Message()
 
@@ -227,9 +229,6 @@ def test_message_str_all():
     message = Message(structures=[agency_scheme, codelist], data=[dataset])
 
     s = str(message)
-    expected_str = (
-        "structures: 1 agencyscheme, 1 codelist, "
-        "data: 1 dataset"
-    )
+    expected_str = "structures: 1 agencyscheme, 1 codelist, " "data: 1 dataset"
 
     assert s == expected_str
