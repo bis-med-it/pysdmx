@@ -1,0 +1,22 @@
+{
+  "structures": {
+    "catalogs": [
+      {
+        "agencyID": "BIS",
+        "id": "BIS_PUBS",
+        "version": "1.0",
+        "name": "BIS Service Ref",
+        "urn": "urn:sdmx:org.sdmx.infomodel.discovery.Catalog=BIS:BIS_PUBS(1.0)",
+        "serviceRefs": [
+          {
+            "id": "BIS_PUB",
+            "name": "BIS Service",
+            "urn": "urn:sdmx:org.sdmx.infomodel.discovery.ServiceRef=BIS:BIS_PUB",
+            "description": null,
+            "service": "urn:sdmx:org.sdmx.infomodel.discovery.Service=BIS:BIS_DATA(1.0)"
+          }
+        ]
+      }
+    ]
+  }
+}

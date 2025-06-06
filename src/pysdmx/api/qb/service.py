@@ -1,4 +1,4 @@
-"""Connector to SDMX-REST services."""
+"""Connector to SDMX-REST and GDS-REST services."""
 
 from typing import NoReturn, Optional, Union
 
@@ -7,6 +7,7 @@ import httpx
 from pysdmx import errors
 from pysdmx.api.qb.availability import AvailabilityFormat, AvailabilityQuery
 from pysdmx.api.qb.data import DataFormat, DataQuery
+from pysdmx.api.qb.gds import GdsQuery
 from pysdmx.api.qb.refmeta import (
     RefMetaByMetadataflowQuery,
     RefMetaByMetadatasetQuery,
@@ -22,6 +23,7 @@ from pysdmx.api.qb.registration import (
 from pysdmx.api.qb.schema import SchemaFormat, SchemaQuery
 from pysdmx.api.qb.structure import StructureFormat, StructureQuery
 from pysdmx.api.qb.util import ApiVersion
+from pysdmx.io.format import GDS_FORMAT
 
 
 class _CoreRestService:
@@ -100,7 +102,7 @@ class _CoreRestService:
 class RestService(_CoreRestService):
     """Synchronous connector to SDMX-REST services.
 
-    Attributes:
+    Args:
         api_endpoint: The entry point (URL) of the SDMX-REST service.
         api_version: The most recent version of the SDMX-REST specification
             supported by the service.
@@ -210,7 +212,7 @@ class RestService(_CoreRestService):
 class AsyncRestService(_CoreRestService):
     """Asynchronous connector to SDMX-REST services.
 
-    Attributes:
+    Args:
         api_endpoint: The entry point (URL) of the SDMX-REST service.
         api_version: The most recent version of the SDMX-REST specification
             supported by the service.
@@ -321,3 +323,89 @@ class AsyncRestService(_CoreRestService):
                 return r.content
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 self._map_error(e)
+
+
+class _CoreGdsRestService:
+    """Base class for GDS-REST services."""
+
+    def __init__(
+        self,
+        api_endpoint: str,
+        pem: Optional[str] = None,
+        timeout: float = 5.0,
+    ):
+        self._api_endpoint = api_endpoint.rstrip("/")
+        self._ssl_context = (
+            httpx.create_ssl_context(verify=pem)
+            if pem
+            else httpx.create_ssl_context()
+        )
+        self._headers = {"Accept-Encoding": "gzip, deflate"}
+        self._timeout = timeout
+
+    def _map_error(
+        self, e: Union[httpx.RequestError, httpx.HTTPStatusError]
+    ) -> NoReturn:
+        q = e.request.url
+        if isinstance(e, httpx.HTTPStatusError):
+            s = e.response.status_code
+            t = e.response.text
+            if s == 404:
+                msg = (
+                    f"The requested resource(s) could "
+                    f"not be found. Query: `{q}`"
+                )
+                raise errors.NotFound("Not found", msg) from e
+            elif s < 500:
+                msg = f"Client error {s}. Query: `{q}`. Error: `{t}`."
+                raise errors.Invalid(f"Client error {s}", msg) from e
+            else:
+                msg = f"Service error {s}. Query: `{q}`. Error: `{t}`."
+                raise errors.InternalError(f"Service error {s}", msg) from e
+        else:
+            msg = f"Connection error. Query: `{q}`. Error: `{e}`."
+            raise errors.Unavailable("Connection error", msg) from e
+
+
+class GdsRestService(_CoreGdsRestService):
+    """Synchronous GDS-REST service."""
+
+    def _fetch(self, query: str, format_: str) -> bytes:
+        with httpx.Client(verify=self._ssl_context) as client:
+            try:
+                url = f"{self._api_endpoint}{query}"
+                headers = {**self._headers, "Accept": format_}
+                response = client.get(
+                    url, headers=headers, timeout=self._timeout
+                )
+                response.raise_for_status()
+                return response.content
+            except (httpx.RequestError, httpx.HTTPStatusError) as e:
+                self._map_error(e)
+
+    def gds(self, query: GdsQuery) -> bytes:
+        """Execute a GDS query against the service."""
+        q = query.get_url()
+        return self._fetch(q, GDS_FORMAT)
+
+
+class GdsAsyncRestService(_CoreGdsRestService):
+    """Asynchronous GDS-REST service."""
+
+    async def _fetch(self, query: str, format_: str) -> bytes:
+        async with httpx.AsyncClient(verify=self._ssl_context) as client:
+            try:
+                url = f"{self._api_endpoint}{query}"
+                headers = {**self._headers, "Accept": format_}
+                response = await client.get(
+                    url, headers=headers, timeout=self._timeout
+                )
+                response.raise_for_status()
+                return response.content
+            except (httpx.RequestError, httpx.HTTPStatusError) as e:
+                self._map_error(e)
+
+    async def gds(self, query: GdsQuery) -> bytes:
+        """Execute a GDS query against the service."""
+        q = query.get_url()
+        return await self._fetch(q, GDS_FORMAT)
