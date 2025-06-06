@@ -76,7 +76,7 @@ def test_tostr(id, value, child):
 
 
 def test_tostr_empty():
-    attr = MetadataAttribute("empty")
+    attr = MetadataAttribute("empty", attributes=[])
 
     s = str(attr)
 
@@ -84,7 +84,7 @@ def test_tostr_empty():
 
 
 def test_repr(id, value):
-    attr = MetadataAttribute(id, value)
+    attr = MetadataAttribute(id, value, attributes=[])
 
     r = repr(attr)
 
