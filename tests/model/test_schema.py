@@ -131,6 +131,16 @@ def test_tostr(context, agency, id, components, artefacts):
     )
 
 
+def test_tostr_empty(context, agency, id, components, artefacts):
+    o = Schema(context, agency, id, components, artefacts=[])
+
+    s = str(o)
+
+    assert s == (
+        "context: dataflow, agency: BIS, id: 5B0, components: 5 components"
+    )
+
+
 def test_torepr(context, agency, id, components, artefacts):
     o = Schema(context, agency, id, components, artefacts=artefacts)
 
@@ -177,6 +187,54 @@ def test_torepr(context, agency, id, components, artefacts):
         "attachment_level='O', "
         "array_def=ArrayBoundaries(min_size=1, max_size=3))]), "
         "artefacts=['urn1', 'urn2'])"
+    )
+
+
+def test_torepr_empty(context, agency, id, components):
+    o = Schema(context, agency, id, components, artefacts=[])
+
+    s = repr(o)
+
+    assert s == (
+        "Schema("
+        "context='dataflow', "
+        "agency='BIS', "
+        "id='5B0', "
+        "components=Components("
+        "data=["
+        "Component("
+        "id='FREQ', "
+        "required=True, "
+        "role=Dimension, "
+        "concept=Concept(id='FREQ', dtype=String), "
+        "local_dtype=Alpha, "
+        "local_facets=Facets(min_length=1, max_length=3)), "
+        "Component("
+        "id='INDICATOR', "
+        "required=True, "
+        "role=Dimension, "
+        "concept=Concept(id='IND'), "
+        "local_dtype=String), "
+        "Component("
+        "id='PERIOD', "
+        "required=True, "
+        "role=Dimension, "
+        "concept=Concept(id='PERIOD'), "
+        "local_dtype=ObservationalTimePeriod), "
+        "Component("
+        "id='VALUE', "
+        "required=False, "
+        "role=Measure, "
+        "concept=Concept(id='VALUE'), "
+        "local_dtype=Integer), "
+        "Component("
+        "id='CONF', "
+        "required=True, "
+        "role=Attribute, "
+        "concept=Concept(id='CONF'), "
+        "local_dtype=String, "
+        "attachment_level='O', "
+        "array_def=ArrayBoundaries(min_size=1, max_size=3))]))"
     )
 
 

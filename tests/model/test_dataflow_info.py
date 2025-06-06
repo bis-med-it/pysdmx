@@ -239,6 +239,11 @@ def test_serialization(
     assert out == ds
 
 
+def test_array_boundaries_str():
+    ab = ArrayBoundaries(1, 3)
+    assert str(ab) == "min_size: 1, max_size: 3"
+
+
 def test_tostr_basic(id, comps, agency):
     ds = DataflowInfo(id, comps, agency)
 
@@ -264,7 +269,7 @@ def test_tostr_more(
         comps,
         agency,
         name=name,
-        providers=providers,
+        providers=[],
         obs_count=obs,
         start_period=start,
         end_period=end,
@@ -273,7 +278,7 @@ def test_tostr_more(
     s = str(ds)
     expected_str = (
         f"id: {id}, components: 5 components, agency: {agency}, "
-        f"name: {name}, providers: 2 dataproviders, "
+        f"name: {name}, "
         f"obs_count: {obs}, start_period: {start}, end_period: {end}"
     )
 
@@ -296,7 +301,7 @@ def test_dataflowinfo_repr(
         comps,
         agency,
         name=name,
-        providers=providers,
+        providers=[],
         obs_count=obs,
         start_period=start,
         end_period=end,
@@ -343,8 +348,6 @@ def test_dataflowinfo_repr(
         "array_def=ArrayBoundaries(min_size=1, max_size=3))]), "
         "agency=Agency(id='BIS'), "
         "name='EXR name', "
-        "providers=[DataProvider(id='5B0'), "
-        "DataProvider(id='4F0')], "
         "obs_count=20110617, "
         "start_period='2000', "
         "end_period='2042')"
