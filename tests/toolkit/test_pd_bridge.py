@@ -1,7 +1,7 @@
 import pytest
 
 from pysdmx.model import Code, Codelist, Component, Concept, DataType, Role
-from pysdmx.util.bridges.pd import to_pandas
+from pysdmx.toolkit.pd import to_pandas
 
 
 @pytest.mark.parametrize(
