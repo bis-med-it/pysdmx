@@ -80,7 +80,7 @@ def test_tostr_empty():
 
     s = str(attr)
 
-    assert s == "id: empty, value: None"
+    assert s == "id: empty"
 
 
 def test_repr(id, value):

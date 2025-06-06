@@ -18,7 +18,7 @@ from pysdmx.model.concept import Facets
 from pysdmx.model.dataset import ActionType
 
 
-class MetadataAttribute(Struct, frozen=True, omit_defaults=True):
+class MetadataAttribute(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     """An entry in a metadata report.
 
     An attribute is iterable, as it may contain other attributes.
