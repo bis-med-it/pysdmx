@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright SDMX 2020 - www.sdmx.org -->
+<mes:Structure xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" 
+  xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message"
+  xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message ../../schemas/SDMXMessage.xsd">
+  <mes:Header>
+    <mes:ID>VTL_SAMPLE1</mes:ID>
+    <mes:Test>false</mes:Test>
+    <mes:Prepared>2020-06-05T12:00:00.000Z</mes:Prepared>
+    <mes:Sender id="SDMX" />
+    <mes:Receiver id="SDMX" />
+  </mes:Header>
+  <mes:Structures>
+    <str:Dataflows>
+      <str:Dataflow agencyID="SDMX" id="DF11" version="1.0">
+        <com:Name xml:lang="en">Dataflow #1.1</com:Name>
+        <str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=SDMX:DS11(1.0)</str:Structure>
+      </str:Dataflow>
+      <str:Dataflow agencyID="SDMX" id="DF1R1" version="1.0">
+        <com:Name xml:lang="en">Dataflow for Result #1.1</com:Name>
+        <str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=SDMX:DS1R1(1.0)</str:Structure>
+      </str:Dataflow>
+    </str:Dataflows>
+    <str:Codelists>
+      <str:Codelist agencyID="SDMX" id="CL_SECTOR" version="1.0">
+        <com:Name xml:lang="en">Sector code list</com:Name>
+        <!-- Sectors are not included to keep the sample smaller -->
+      </str:Codelist>
+      <str:Codelist agencyID="SDMX" id="CL_AREA" version="1.0">
+        <!-- All EU countries would be added to cater for the 'EU' code, but were removed for keeping the samples smaller; hence the isPartial flag -->
+        <com:Name xml:lang="en">Area codelist</com:Name>
+        <str:Code id="EU">
+          <com:Name xml:lang="en">European Union</com:Name>
+        </str:Code>
+        <str:Code id="BENELUX">
+          <com:Name xml:lang="en">The Benelux Union</com:Name>
+        </str:Code>
+        <str:Code id="BE">
+          <com:Name xml:lang="en">Belgium</com:Name>
+        </str:Code>
+        <str:Code id="LU">
+          <com:Name xml:lang="en">Luxembourg</com:Name>
+        </str:Code>
+        <str:Code id="NE">
+          <com:Name xml:lang="en">The Netherlands</com:Name>
+        </str:Code>
+        <str:Code id="AT">
+          <com:Name xml:lang="en">Austria</com:Name>
+        </str:Code>
+        <str:Code id="BG">
+          <com:Name xml:lang="en">Bulgaria</com:Name>
+        </str:Code>
+        <str:Code id="SE">
+          <com:Name xml:lang="en">Sweden</com:Name>
+        </str:Code>
+        <str:Code id="SI">
+          <com:Name xml:lang="en">Slovenia</com:Name>
+        </str:Code>
+        <str:Code id="SK">
+          <com:Name xml:lang="en">Slovakia</com:Name>
+        </str:Code>
+        <!-- All EU countries would be added to cater for the 'EU' code, but were not for keeping the samples smaller. -->
+      </str:Codelist>
+    </str:Codelists>
+    <str:ConceptSchemes>
+      <str:ConceptScheme agencyID="SDMX" id="CS11" version="1.0">
+        <com:Name xml:lang="en">Concepts for Measures #1.1</com:Name>
+        <str:Concept id="CREDIT">
+          <com:Name xml:lang="en">Credit</com:Name>
+        </str:Concept>
+        <str:Concept id="DEBIT">
+          <com:Name xml:lang="en">Debit</com:Name>
+        </str:Concept>
+        <str:Concept id="BALANCE">
+          <com:Name xml:lang="en">Balance</com:Name>
+        </str:Concept>
+      </str:ConceptScheme>
+      <str:ConceptScheme agencyID="SDMX" id="CONCEPTS" version="1.0">
+        <com:Name xml:lang="en">Concepts for DSDs #1.1</com:Name>
+        <str:Concept id="SECTOR">
+          <com:Name xml:lang="en">Sector</com:Name>
+        </str:Concept>
+        <str:Concept id="COUNTRY">
+          <com:Name xml:lang="en">Country</com:Name>
+        </str:Concept>
+        <str:Concept id="TIME_PERIOD">
+          <com:Name xml:lang="en">Time Period</com:Name>
+        </str:Concept>
+        <str:Concept id="MEASURE_DIMENSION">
+          <com:Name xml:lang="en">Measure Dimension</com:Name>
+        </str:Concept>
+        <str:Concept id="OBS_VALUE">
+          <com:Name xml:lang="en">Observation Value</com:Name>
+        </str:Concept>
+        <str:Concept id="SEVERITY">
+          <com:Name xml:lang="en">Severity</com:Name>
+        </str:Concept>
+        <str:Concept id="ERRORCODE">
+          <com:Name xml:lang="en">Error Code</com:Name>
+        </str:Concept>
+        <str:Concept id="RULEID">
+          <com:Name xml:lang="en">Rule Identifier</com:Name>
+        </str:Concept>
+      </str:ConceptScheme>
+    </str:ConceptSchemes>
+    <str:DataStructures>
+      <str:DataStructure agencyID="SDMX" id="DS11" version="1.0">
+        <com:Name xml:lang="en">Data Structure #1.1</com:Name>
+        <str:DataStructureComponents>
+          <str:DimensionList>
+            <str:Dimension id="SECTOR">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).SECTOR</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_SECTOR(1.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension id="COUNTRY">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).COUNTRY</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_AREA(1.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:TimeDimension id="TIME_PERIOD">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).TIME_PERIOD</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="ObservationalTimePeriod"/>
+              </str:LocalRepresentation>
+            </str:TimeDimension>
+          </str:DimensionList>
+          <str:MeasureList>
+            <str:Measure id="OBS_VALUE">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).OBS_VALUE</str:ConceptIdentity>
+            </str:Measure>
+          </str:MeasureList>
+        </str:DataStructureComponents>
+      </str:DataStructure>
+      <str:DataStructure agencyID="SDMX" id="DS1R1" version="1.0">
+        <com:Name xml:lang="en">Data Structure for Results #1.1</com:Name>
+        <str:DataStructureComponents>
+          <str:DimensionList>
+            <str:Dimension id="SECTOR">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).SECTOR</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_SECTOR(1.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension id="COUNTRY">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).COUNTRY</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_AREA(1.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension id="RULEID">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).RULEID</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="String"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+           <str:TimeDimension id="TIME_PERIOD">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).TIME_PERIOD</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="ObservationalTimePeriod"/>
+              </str:LocalRepresentation>
+            </str:TimeDimension>            
+          </str:DimensionList>
+          <str:AttributeList>
+            <str:Attribute id="ERRORCODE">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).ERRORCODE</str:ConceptIdentity>
+              <str:LocalRepresentation minOccurs="0" maxOccurs="1">
+                <str:TextFormat textType="String"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Observation />
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="SEVERITY">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).SEVERITY</str:ConceptIdentity>
+              <str:LocalRepresentation minOccurs="0" maxOccurs="1">
+                <str:TextFormat textType="Integer" minValue="0" maxValue="10" />
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+				<str:Observation />
+              </str:AttributeRelationship>
+            </str:Attribute>
+          </str:AttributeList>
+          <str:MeasureList>
+            <str:Measure id="OBS_VALUE">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).OBS_VALUE</str:ConceptIdentity>
+            </str:Measure>
+          </str:MeasureList>
+        </str:DataStructureComponents>
+      </str:DataStructure>
+    </str:DataStructures>
+    <str:VtlMappingSchemes>
+      <str:VtlMappingScheme agencyID="SDMX" id="VTLMS1" version="1.0">
+        <com:Name xml:lang="en">VTL Mapping Scheme #1</com:Name>
+        <str:VtlMapping alias="DF1R1" id="VTLM1">
+          <com:Name xml:lang="en">VTL Mapping #1</com:Name>
+          <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=SDMX:DF1R1(1.0)</str:Dataflow>
+          <str:FromVtlMapping method="M2A" />
+        </str:VtlMapping>
+        <str:VtlMapping alias="DF11" id="VTLM2">
+          <com:Name xml:lang="en">VTL Mapping #2</com:Name>
+          <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=SDMX:DF11(1.0)</str:Dataflow>
+          <str:ToVtlMapping method="Basic" />
+        </str:VtlMapping>
+        <str:VtlMapping alias="INDICATOR" id="VTLM3">
+          <com:Name xml:lang="en">Variable INDICATOR mapping</com:Name>
+          <str:Concept>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).MEASURE_DIMENSION</str:Concept>
+        </str:VtlMapping>
+        <str:VtlMapping alias="VALUE" id="VTLM4">
+          <com:Name xml:lang="en">Variable VALUE mapping</com:Name>
+          <str:Concept>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).OBS_VALUE</str:Concept>
+        </str:VtlMapping>
+        <str:VtlMapping alias="TIME" id="VTLM5">
+          <com:Name xml:lang="en">Variable TIME mapping</com:Name>
+          <str:Concept>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).TIME_PERIOD</str:Concept>
+        </str:VtlMapping>
+        <str:VtlMapping alias="GEO" id="VTLM6">
+          <com:Name xml:lang="en">Variable GEO mapping</com:Name>
+          <str:Concept>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS(1.0).COUNTRY</str:Concept>
+        </str:VtlMapping>
+      </str:VtlMappingScheme>
+    </str:VtlMappingSchemes>
+    <str:NamePersonalisationSchemes>
+      <str:NamePersonalisationScheme vtlVersion="2.0" agencyID="SDMX" id="NPS1">
+        <com:Name xml:lang="en">Name Peronalisation Scheme #1</com:Name>
+        <str:NamePersonalisation vtlArtefact="variable" id="NP1">
+          <com:Name xml:lang="en">Name Personalisation #1</com:Name>
+          <str:VtlDefaultName>ERRORLEVEL</str:VtlDefaultName>
+          <str:PersonalisedName>SEVERITY</str:PersonalisedName>
+        </str:NamePersonalisation>
+      </str:NamePersonalisationScheme>
+    </str:NamePersonalisationSchemes>
+    <str:RulesetSchemes>
+      <str:RulesetScheme vtlVersion="2.0" agencyID="SDMX" id="RS1" version="1.0">
+        <com:Name xml:lang="en">Ruleset Scheme #1</com:Name>
+        <str:Ruleset id="DPR1" rulesetType="datapoint" rulesetScope="valuedomain">
+          <com:Name xml:lang="en">DataPoint Ruleset #1</com:Name>
+          <str:RulesetDefinition>
+            define datapoint ruleset DPR1 ( variable INDICATOR as A, VALUE as B ) is  
+              rule1: when A = "CREDIT" or A = "DEBIT" then B &gt;= 0 errorcode "Negative value" errorlevel 10;
+              rule2: when A = "CREDIT" or A = "DEBIT" then B &lt; 999999999999 errorcode "Value too large" errorlevel 8
+            end datapoint ruleset
+          </str:RulesetDefinition>
+        </str:Ruleset>
+        <str:Ruleset id="HR1" rulesetScope="valuedomain" rulesetType="hierarchical">
+          <com:Name xml:lang="en">Hierarchical Ruleset #1</com:Name>
+          <str:RulesetDefinition>
+            define hierarchical ruleset HR1 (variable condition TIME as T rule GEO )
+              EU = AT [ T &gt;= 1995-01-01 ]
+                + BE [ T &gt;= 1958-01-01 ]
+                + BG [ T &gt;= 2007-01-01 ] 	
+                + SE [ T &gt;= 1995-01-01 ] 
+                + SI [ T &gt;= 2004-01-01 ]
+                + SK [ T &gt;= 2004-01-01 ]; /* All EU countries would be added under the 'EU' code, but were not for keeping the samples smaller. */
+              BENELUX = BE [ T &gt;= 1948-01-01 ]
+                + NE [ T &gt;= 1948-01-01 ]
+                + LU [ T &gt;= 1948-01-01 ]
+            end hierarchical ruleset
+          </str:RulesetDefinition>
+        </str:Ruleset>
+        <str:VtlMappingScheme>urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=SDMX:VTLMS1(1.0)</str:VtlMappingScheme>
+      </str:RulesetScheme>
+    </str:RulesetSchemes>
+    <str:TransformationSchemes>
+      <str:TransformationScheme agencyID="SDMX" id="TS1" version="1.0" vtlVersion="2.0">
+        <com:Name xml:lang="en">Transformation Scheme #1 – SDMX/VTL release sample</com:Name>
+        <str:Transformation id="TS_A" isPersistent="false">
+          <com:Name xml:lang="en">Transformation A</com:Name>
+          <com:Description xml:lang="en">Checks the dataflow DF11 according to the datapoint ruleset DPR1.  DF11 is mapped from SDMX to VTL through the default basic method, therefore its structure remains the same in VTL. All the original input measures are maintained in the output (i.e. OBS_VALUE), moreover the check operation generates the additional identifier RULEID (the id of the applied validation rule of the ruleset) and the additional measures BOOL_VAR (the Boolean outcome of the check, with values TRUE or FALSE), ERRORCODE (text string), ERRORLEVEL (assumed numeric from 0 to 10). Because of the name personalisation from ERRORLEVEL to SEVERITY declared in the associated NamePersonalisationScheme, SEVERITY is assigned instead than the VTL standard nameERRORLEVEL. The resulting VTL dataset TEMP11  is not persistent and it is assumed that it does not need a mapping towards SDMX. 
+          </com:Description>
+          <str:Expression>check_datapoint (DF11, DPR1 all_measures)</str:Expression>
+          <str:Result>TEMP11</str:Result>
+        </str:Transformation>
+        <str:Transformation id="TS_B" isPersistent="true">
+          <com:Name xml:lang="en">Transformation B</com:Name>
+          <com:Description xml:lang="en">Filters the TEMP11 observations having SEVERITY &gt;=5, drops the measure BOOL_VAR and calculates creates a the persistent result DF1R1. Due to the mapping method M2A from VTL to SDMX declared for DF1R1 in the associated MappingScheme, the  VTL measure OBS_VALUE is mapped to OBS_VALUE in SDMX while ERRORCODE and SEVERITY become SDMX data attribute.</com:Description>
+          <str:Expression>TEMP11 [filter SEVERITY &gt;= 5][drop BOOL_VAR]</str:Expression>
+          <str:Result>DF1R1</str:Result>
+        </str:Transformation>
+        <str:VtlMappingScheme>urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=SDMX:VTLMS1(1.0)</str:VtlMappingScheme>
+        <str:NamePersonalisationScheme>urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisationScheme=SDMX:NPS1(1.0)</str:NamePersonalisationScheme>
+        <str:RulesetScheme>urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=SDMX:RS1(1.0)</str:RulesetScheme>
+      </str:TransformationScheme>
+    </str:TransformationSchemes>
+  </mes:Structures>
+</mes:Structure>

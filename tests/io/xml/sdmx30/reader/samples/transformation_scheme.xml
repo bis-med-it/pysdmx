@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common">
+  <message:Header>
+    <message:ID>12345</message:ID>
+    <message:Test>true</message:Test>
+    <message:Prepared>2025-05-26T11:58:47Z</message:Prepared>
+    <message:Sender id="Unknown"/>
+    <message:Receiver id="not_supplied"/>
+  </message:Header>
+  <message:Structures>
+    <str:TransformationSchemes>
+      <str:TransformationScheme urn="urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=SDMX:TEST(1.0)" vtlVersion="2.1" isExternalReference="false" agencyID="SDMX" id="TEST" validFrom="2024-12-03T00:00:00" version="1.0" validTo="2024-12-07T00:00:00" isPartial ="true">
+        <com:Name xml:lang="en">TEST</com:Name>
+        <com:Description xml:lang="en">TEST</com:Description>
+        <str:Transformation urn="urn:sdmx:org.sdmx.infomodel.transformation.Transformation=SDMX:TEST(1.0).test_trans" isPersistent="true" id="test_trans">
+          <com:Name xml:lang="en">TEST</com:Name>
+          <com:Description xml:lang="en">TEST</com:Description>
+          <str:Expression>DS_1 + 1</str:Expression>
+          <str:Result>DS_r</str:Result>
+        </str:Transformation>
+        <str:Transformation urn="urn:sdmx:org.sdmx.infomodel.transformation.Transformation=SDMX:TEST(1.0).test_trans2" isPersistent="false" id="test_trans2">
+          <com:Name xml:lang="en">TEST2</com:Name>
+          <com:Description xml:lang="en">TEST2</com:Description>
+          <str:Expression>DS_1 + 1</str:Expression>
+          <str:Result>DS_r</str:Result>
+        </str:Transformation>
+        <str:RulesetScheme>urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=MD:TEST_RULE_SCHEME(1.0)</str:RulesetScheme>
+        <str:UserDefinedOperatorScheme>urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=MD:TEST_UDO_SCHEME(1.0)</str:UserDefinedOperatorScheme>
+      </str:TransformationScheme>
+    </str:TransformationSchemes>
+  </message:Structures></message:Structure>

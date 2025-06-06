@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common">
+  <message:Header>
+    <message:ID>12345</message:ID>
+    <message:Test>true</message:Test>
+    <message:Prepared>2025-05-26T11:58:47Z</message:Prepared>
+    <message:Sender id="Unknown"/>
+    <message:Receiver id="not_supplied"/>
+  </message:Header>
+  <message:Structures>
+    <str:ConceptSchemes>
+      <str:ConceptScheme urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=MD:STANDALONE_CONCEPT_SCHEME(1.0)" isExternalReference="false" agencyID="MD" id="STANDALONE_CONCEPT_SCHEME" version="1.0">
+        <com:Name xml:lang="en">Default Scheme</com:Name>
+        <str:Concept urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:STANDALONE_CONCEPT_SCHEME(1.0).TIME_FORMAT" id="TIME_FORMAT">
+          <com:Name xml:lang="en">Time Format</com:Name>
+        </str:Concept>
+        <str:Concept urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:STANDALONE_CONCEPT_SCHEME(1.0).SUBMISSION_CHANNEL" id="SUBMISSION_CHANNEL">
+          <com:Name xml:lang="en">Submission channel</com:Name>
+          <str:CoreRepresentation>
+            <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_SUB_CHANNEL(1.0)</str:Enumeration>
+            <str:EnumerationFormat textType="String"/>
+          </str:CoreRepresentation>
+        </str:Concept>
+      </str:ConceptScheme>
+    </str:ConceptSchemes>
+</message:Structures></message:Structure>

@@ -62,6 +62,15 @@ def read_sdmx(  # noqa: C901
         header = read_header(input_str, validate=validate)
         # SDMX-ML 2.1 Structure
         result_structures = read_structure(input_str, validate=validate)
+    elif read_format == Format.STRUCTURE_SDMX_ML_3_0:
+        from pysdmx.io.xml.header import read as read_header
+        from pysdmx.io.xml.sdmx30.reader.structure import (
+            read as read_structure,
+        )
+
+        header = read_header(input_str, validate=validate)
+        # SDMX-ML 3.0 Structure
+        result_structures = read_structure(input_str, validate=validate)
     elif read_format == Format.DATA_SDMX_ML_2_1_GEN:
         from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic

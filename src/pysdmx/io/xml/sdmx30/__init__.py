@@ -1,1 +1,1 @@
-"""SDMX 3.0 XML writer."""
+"""SDMX 3.0 XML reader and writer."""
