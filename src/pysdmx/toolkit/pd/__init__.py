@@ -35,7 +35,7 @@ def __get_pd_type(dt: DataType, required: bool) -> str:  # noqa: C901
 
 
 def to_pandas(comp: Component) -> str:
-    """Get the Pandas data type for the component."""
+    """Get the Pandas data type of the supplied component."""
     if comp.enumeration:
         return "category"
     else:
