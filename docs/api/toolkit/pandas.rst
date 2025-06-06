@@ -7,4 +7,4 @@ in Pandas data frames.
 Mapping SDMX data types to Pandas
 ---------------------------------
 
-.. autofunction:: pysdmx.toolkit.pd.to_pandas
+.. autofunction:: pysdmx.toolkit.pd.to_pandas_type

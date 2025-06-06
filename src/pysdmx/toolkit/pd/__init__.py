@@ -47,7 +47,7 @@ def to_pandas_type(comp: Component) -> str:
 
     Returns:
         The string representation of the corresponding Pandas data type.
-            Possible return values include:
+        Possible return values include:
 
         - 'category' (for enumerated components)
         - Numeric types ('int16', 'Int16', 'float32', 'Float32', etc.)
