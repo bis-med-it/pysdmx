@@ -7,7 +7,7 @@ import pandas as pd
 
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.sdmx21.writer.__write_aux import (
+from pysdmx.io.xml.__write_aux import (
     ABBR_GEN,
     ABBR_MSG,
     ALL_DIM,
@@ -17,13 +17,13 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     get_end_message,
     get_structure,
 )
-from pysdmx.io.xml.sdmx21.writer.__write_data_aux import (
+from pysdmx.io.xml.__write_data_aux import (
     check_content_dataset,
     check_dimension_at_observation,
     get_codes,
     writing_validation,
 )
-from pysdmx.io.xml.sdmx21.writer.config import CHUNKSIZE
+from pysdmx.io.xml.config import CHUNKSIZE
 from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
 
@@ -159,6 +159,7 @@ def __write_data_single_dataset(
     outfile = ""
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
+    dataset.data = dataset.data.fillna("").astype(str).replace("nan", "")
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""

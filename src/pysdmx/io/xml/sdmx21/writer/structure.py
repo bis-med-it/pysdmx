@@ -5,6 +5,18 @@ from typing import Any, Dict, Optional, Sequence, Union
 
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
+from pysdmx.io.xml.__write_aux import (
+    ABBR_COM,
+    ABBR_MSG,
+    ABBR_STR,
+    MSG_CONTENT_PKG,
+    __escape_xml,
+    __to_lower_camel_case,
+    __write_header,
+    add_indent,
+    create_namespaces,
+    get_end_message,
+)
 from pysdmx.io.xml.sdmx21.__tokens import (
     AGENCY_ID,
     AGENCY_SCHEME,
@@ -59,18 +71,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VERSION,
     VTL_MAPPING_SCHEME,
     VTLMAPPING,
-)
-from pysdmx.io.xml.sdmx21.writer.__write_aux import (
-    ABBR_COM,
-    ABBR_MSG,
-    ABBR_STR,
-    MSG_CONTENT_PKG,
-    __escape_xml,
-    __to_lower_camel_case,
-    __write_header,
-    add_indent,
-    create_namespaces,
-    get_end_message,
 )
 from pysdmx.model import (
     AgencyScheme,
