@@ -287,7 +287,8 @@ def test_header_repr():
     r = repr(h)
     expected_repr = (
         "Header(id='12345', test=True, "
-        "prepared=datetime.datetime(2023, 1, 1, 0, 0, tzinfo=datetime.timezone.utc), "
+        "prepared=datetime.datetime(2023, 1, 1, 0, 0, "
+        "tzinfo=datetime.timezone.utc), "
         "sender=None, source='Test Source')"
     )
     assert r == expected_repr

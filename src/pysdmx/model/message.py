@@ -67,6 +67,7 @@ class Header(Struct, repr_omit_defaults=True, kw_only=True):
             processed_output.append(f"{attr}: {value}")
         return f"{', '.join(processed_output)}"
 
+
 class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
     """Message class holds the content of an SDMX Structure Message.
 
