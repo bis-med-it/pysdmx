@@ -44,6 +44,7 @@ SOURCE = "Source"
 HEADER_ID = "ID"
 NAMESPACE = "namespace"
 NAMES = "names"
+REGISTRY_LOW = "registry"
 
 
 # SDMX Error handling
@@ -100,6 +101,7 @@ CS_LOW = "concept_scheme"
 CON = "Concept"
 CON_LOW = "concept"
 DSD = "DataStructure"
+DSD_LOW = "datastructure"
 
 # DSD components
 DSD_COMPS = "DataStructureComponents"

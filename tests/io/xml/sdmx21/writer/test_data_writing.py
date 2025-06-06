@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-import pysdmx.io.xml.sdmx21.writer.config
+import pysdmx.io.xml.config
 from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
