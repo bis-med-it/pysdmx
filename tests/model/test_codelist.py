@@ -157,3 +157,62 @@ def test_short_urn(id, name, agency, version, codes):
     )
 
     assert cl.short_urn == f"Codelist={agency}:{id}({version})"
+
+
+def test_tostr(id, name, agency, version, codes):
+    cl = Codelist(
+        id=id, name=name, agency=agency, items=codes, version=version
+    )
+
+    s = str(cl)
+    expected_str = (
+        "id: id, name: name, version: 1.42.0, agency: 5B0, items: 2 codes"
+    )
+
+    assert s == expected_str
+
+
+def test_tostr_empty_items(id, name, agency, version):
+    codes = []
+    cl = Codelist(
+        id=id, name=name, agency=agency, items=codes, version=version
+    )
+
+    s = str(cl)
+    expected_str = "id: id, name: name, version: 1.42.0, agency: 5B0"
+
+    assert s == expected_str
+
+
+def test_repr(id, name, agency, version, codes):
+    cl = Codelist(
+        id=id, name=name, agency=agency, items=codes, version=version
+    )
+
+    r = repr(cl)
+    expected_str = (
+        "Codelist("
+        "id='id', "
+        "name='name', "
+        "version='1.42.0', "
+        "agency='5B0', "
+        "items=["
+        "Code(id='child1', name='Child 1'), "
+        "Code(id='child2', name='Child 2')])"
+    )
+
+    assert r == expected_str
+
+
+def test_repr_empty_items(id, name, agency, version):
+    codes = []
+    cl = Codelist(
+        id=id, name=name, agency=agency, items=codes, version=version
+    )
+
+    r = repr(cl)
+    expected_str = (
+        "Codelist(id='id', name='name', version='1.42.0', agency='5B0')"
+    )
+
+    assert r == expected_str

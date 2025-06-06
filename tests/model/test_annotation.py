@@ -66,16 +66,41 @@ def test_tostr_id(id):
     a = Annotation(id)
 
     s = str(a)
+    expected_str = f"id: {id}"
 
-    assert s == f"id={id}"
+    assert s == expected_str
 
 
 def test_tostr_all(id, title, text, url, type):
     a = Annotation(id=id, title=title, text=text, url=url, type=type)
 
     s = str(a)
+    expected_str = (
+        f"id: {id}, title: {title}, text: {text}, url: {url}, type: {type}"
+    )
 
-    assert s == f"id={id}, title={title}, text={text}, url={url}, type={type}"
+    assert s == expected_str
+
+
+def test_torepr_id(id):
+    a = Annotation(id)
+
+    r = repr(a)
+    expected_str = f"Annotation(id='{id}')"
+
+    assert r == expected_str
+
+
+def test_torepr_all(id, title, text, url, type):
+    a = Annotation(id=id, title=title, text=text, url=url, type=type)
+
+    r = repr(a)
+    expected_str = (
+        f"Annotation(id='{id}', title='{title}', text='{text}', "
+        f"url='{url}', type='{type}')"
+    )
+
+    assert r == expected_str
 
 
 def test_empty_annotation_not_allowed():

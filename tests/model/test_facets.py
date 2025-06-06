@@ -49,4 +49,4 @@ def test_tostr():
 
     s = str(f1)
 
-    assert s == "min_length=2, max_length=3"
+    assert s == "min_length: 2, max_length: 3"

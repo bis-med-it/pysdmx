@@ -215,3 +215,54 @@ def test_serialization(id, name, agency, operator, desc, version, codes):
     out = msgspec.msgpack.Decoder(Hierarchy).decode(ser)
 
     assert out == h
+
+
+def test_hierarchy_str(id, name, agency, operator, desc, version, codes):
+    hierarchy = Hierarchy(
+        id=id,
+        name=name,
+        agency=agency,
+        description=desc,
+        version=version,
+        codes=codes,
+        operator=operator,
+    )
+
+    s = str(hierarchy)
+    expected_str = (
+        f"id: {id}, name: {name}, description: {desc}, version: {version}, "
+        f"agency: {agency}, codes: 2 hierarchicalcodes, operator: {operator}"
+    )
+    assert s == expected_str
+
+
+def test_hierarchy_repr(id, name, agency, operator, desc, version, codes):
+    hierarchy = Hierarchy(
+        id=id,
+        name=name,
+        agency=agency,
+        description=desc,
+        version=version,
+        codes=codes,
+        operator=operator,
+    )
+
+    r = repr(hierarchy)
+    expected_repr = (
+        "Hierarchy("
+        "id='id', "
+        "name='name', "
+        "description='description', "
+        "version='1.42.0', "
+        "agency='5B0', "
+        "codes=["
+        "HierarchicalCode(id='child1', name='Child 1'), "
+        "HierarchicalCode(id='child2', name='Child 2', "
+        "codes=["
+        "HierarchicalCode(id='child21', name='Child 2.1', "
+        "codes=["
+        "HierarchicalCode(id='child211', name='Child 2.1.1')])])"
+        "], "
+        "operator='urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=SDMX:OPS(1.0).SUM')"
+    )
+    assert r == expected_repr
