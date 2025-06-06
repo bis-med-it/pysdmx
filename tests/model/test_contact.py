@@ -51,3 +51,74 @@ def test_immutable():
     contact = Contact(name="someone")
     with pytest.raises(AttributeError):
         contact.name = "somebody"
+
+
+def test_contact_str():
+    name = "Fname Lname"
+    role = "Statistician"
+    id = "fl000042"
+    email = "Fname.Lname@test.org"
+    unit = "Statistics"
+    phone = "+42 123 45 67"
+    fax = "+42 123 45 68"
+    url = "https://test.org"
+
+    c = Contact(
+        id=id,
+        name=name,
+        department=unit,
+        role=role,
+        emails=[email],
+        telephones=[phone],
+        faxes=[fax],
+        uris=[url],
+    )
+
+    s = str(c)
+    expected_str = (
+        "id: fl000042, "
+        "name: Fname Lname, "
+        "department: Statistics, "
+        "role: Statistician, "
+        "telephones: 1 strs, "
+        "faxes: 1 strs, "
+        "uris: 1 strs, "
+        "emails: 1 strs"
+    )
+    assert s == expected_str
+
+
+def test_contact_repr():
+    name = "Fname Lname"
+    role = "Statistician"
+    id = "fl000042"
+    email = "Fname.Lname@test.org"
+    unit = "Statistics"
+    phone = "+42 123 45 67"
+    fax = "+42 123 45 68"
+    url = "https://test.org"
+
+    c = Contact(
+        id=id,
+        name=name,
+        department=unit,
+        role=role,
+        emails=[email],
+        telephones=[phone],
+        faxes=[fax],
+        uris=[url],
+    )
+
+    r = repr(c)
+    expected_repr = (
+        "Contact("
+        "id='fl000042', "
+        "name='Fname Lname', "
+        "department='Statistics', "
+        "role='Statistician', "
+        "telephones=['+42 123 45 67'], "
+        "faxes=['+42 123 45 68'], "
+        "uris=['https://test.org'], "
+        "emails=['Fname.Lname@test.org'])"
+    )
+    assert r == expected_repr

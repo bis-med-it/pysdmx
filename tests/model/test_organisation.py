@@ -86,12 +86,20 @@ def test_tostr_id(id):
     assert s == f"id: {id}"
 
 
-def test_tostr_name(id, name):
+def test_tostr_full(id, name):
     o = Organisation(id=id, name=name)
 
     s = str(o)
 
     assert s == f"id: {id}, name: {name}"
+
+
+def test_organisation_repr(id, name):
+    o = Organisation(id=id, name=name)
+
+    r = repr(o)
+    expected_repr = f"Organisation(id={id!r}, name={name!r})"
+    assert r == expected_repr
 
 
 def test_equal_has_same_hash(id):

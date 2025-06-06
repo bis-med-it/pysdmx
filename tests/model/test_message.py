@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 import pytest
 
 from pysdmx.errors import Invalid, NotFound
@@ -11,7 +13,7 @@ from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Components, Dataflow, DataStructureDefinition
 from pysdmx.model.dataset import Dataset
-from pysdmx.model.message import Message
+from pysdmx.model.message import Message, Header
 
 
 def test_initialization():
@@ -232,3 +234,40 @@ def test_message_str_all():
     expected_str = "structures: 1 agencyscheme, 1 codelist, " "data: 1 dataset"
 
     assert s == expected_str
+
+
+def test_header_str():
+    h = Header(
+        id="12345",
+        test=True,
+        prepared=datetime(2023, 1, 1, tzinfo=timezone.utc),
+        sender=None,
+        receiver=None,
+        source="Test Source",
+    )
+
+    s = str(h)
+    expected_str = (
+        "id: 12345, test: True, prepared: 2023-01-01 00:00:00+00:00, "
+        "sender: None, source: Test Source"
+    )
+    assert s == expected_str
+
+
+def test_header_repr():
+    h = Header(
+        id="12345",
+        test=True,
+        prepared=datetime(2023, 1, 1, tzinfo=timezone.utc),
+        sender=None,
+        receiver=None,
+        source="Test Source",
+    )
+
+    r = repr(h)
+    expected_repr = (
+        "Header(id='12345', test=True, "
+        "prepared=datetime.datetime(2023, 1, 1, 0, 0, tzinfo=datetime.timezone.utc), "
+        "sender=None, source='Test Source')"
+    )
+    assert r == expected_repr
