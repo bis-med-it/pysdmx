@@ -1,7 +1,7 @@
 import pytest
 
 from pysdmx.model import Code, Codelist, Component, Concept, DataType, Role
-from pysdmx.toolkit.pd import to_pandas
+from pysdmx.toolkit.pd import to_pandas_type
 
 
 @pytest.mark.parametrize(
@@ -22,7 +22,7 @@ from pysdmx.toolkit.pd import to_pandas
 def test_whole_numbers(dt: DataType, required: bool, expected: str):
     comp = Component("TEST", required, Role.ATTRIBUTE, Concept("TEST"), dt)
 
-    received = to_pandas(comp)
+    received = to_pandas_type(comp)
 
     assert received == expected
 
@@ -41,7 +41,7 @@ def test_whole_numbers(dt: DataType, required: bool, expected: str):
 def test_decimal_numbers(dt: DataType, required: bool, expected: str):
     comp = Component("TEST", required, Role.ATTRIBUTE, Concept("TEST"), dt)
 
-    received = to_pandas(comp)
+    received = to_pandas_type(comp)
 
     assert received == expected
 
@@ -66,7 +66,7 @@ def test_decimal_numbers(dt: DataType, required: bool, expected: str):
 def test_dates(dt: DataType, required: bool, expected: str):
     comp = Component("TEST", required, Role.ATTRIBUTE, Concept("TEST"), dt)
 
-    received = to_pandas(comp)
+    received = to_pandas_type(comp)
 
     assert received == expected
 
@@ -81,7 +81,7 @@ def test_dates(dt: DataType, required: bool, expected: str):
 def test_booleans(dt: DataType, required: bool, expected: str):
     comp = Component("TEST", required, Role.ATTRIBUTE, Concept("TEST"), dt)
 
-    received = to_pandas(comp)
+    received = to_pandas_type(comp)
 
     assert received == expected
 
@@ -114,7 +114,7 @@ def test_booleans(dt: DataType, required: bool, expected: str):
 def test_strings(dt: DataType):
     comp = Component("TEST", True, Role.ATTRIBUTE, Concept("TEST"), dt)
 
-    received = to_pandas(comp)
+    received = to_pandas_type(comp)
 
     assert received == "string"
 
@@ -131,6 +131,6 @@ def test_enumeration():
         ),
     )
 
-    received = to_pandas(comp)
+    received = to_pandas_type(comp)
 
     assert received == "category"

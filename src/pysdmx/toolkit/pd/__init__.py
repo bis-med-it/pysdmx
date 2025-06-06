@@ -34,7 +34,7 @@ def __get_pd_type(dt: DataType, required: bool) -> str:  # noqa: C901
         return "string"
 
 
-def to_pandas(comp: Component) -> str:
+def to_pandas_type(comp: Component) -> str:
     """Determine the appropriate Pandas data type for the given component.
 
     For enumerated components, returns 'category' as the Pandas data type.
