@@ -102,6 +102,27 @@ def codelist():
 
 
 @pytest.fixture
+def valuelist():
+    return Codelist(
+        id="VL_CURRENCY_SYMBOL",
+        name="Currency Symbol",
+        description="Enumerated list of currencies identified by symbol",
+        agency="EXAMPLE",
+        version="1.0",
+        urn="urn:sdmx:org.sdmx.infomodel.codelist.ValueList=SDMX:VL_CURRENCY_SYMBOL(1.0)",
+        sdmx_type="valuelist",
+        items=[
+            Code(id="$", name="USD", description="US Dollar"),
+            Code(id="£", name="GBP", description="UK Pound"),
+            Code(id="€", name="EUR", description="Euro"),
+            Code(id="¥", name="CNY", description="China Yuan Renminbi"),
+            Code(id="﷼", name="IRR", description="Iran Rial"),
+            Code(id="¥", name="JPY", description="Japan Yen"),
+        ],
+    )
+
+
+@pytest.fixture
 def concept():
     return ConceptScheme(
         id="FREQ",
@@ -646,6 +667,13 @@ def codelist_sample():
 
 
 @pytest.fixture
+def valuelist_sample():
+    base_path = Path(__file__).parent / "samples" / "valuelist.xml"
+    with open(base_path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+@pytest.fixture
 def concept_sample():
     base_path = Path(__file__).parent / "samples" / "concept.xml"
     with open(base_path, "r") as f:
@@ -743,6 +771,16 @@ def test_codelist(complete_header, codelist, codelist_sample):
         prettyprint=True,
     )
     assert result == codelist_sample
+
+
+def test_valuelist(complete_header, valuelist, valuelist_sample):
+    content = [valuelist]
+    result = write(
+        content,
+        header=complete_header,
+        prettyprint=True,
+    )
+    assert result == valuelist_sample
 
 
 def test_concept(complete_header, concept, concept_sample):

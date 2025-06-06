@@ -69,6 +69,10 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     URI,
     URN,
     USAGE,
+    VALUE_ITEM,
+    VALUE_LIST,
+    VALUE_LIST_LOW,
+    VALUE_LISTS,
     VERSION,
     VTL_MAPPING_SCHEME,
     VTLMAPPING,
@@ -343,9 +347,12 @@ def __write_contact(contact: Contact, indent: str) -> str:
     return outfile
 
 
-def __write_item(item: Item, indent: str, references_30: bool = False) -> str:
+def __write_item(
+    item: Item, indent: str, scheme: str, references_30: bool = False
+) -> str:
     """Writes the item to the XML file."""
-    head = f"{ABBR_STR}:" + type(item).__name__
+    item_name = VALUE_ITEM if scheme == VALUE_LIST else type(item).__name__
+    head = f"{ABBR_STR}:" + item_name
 
     data = __write_nameable(item, add_indent(indent))
     attributes = data["Attributes"].replace("'", '"')
@@ -685,6 +692,8 @@ def __write_scheme(
     item_scheme: Any, indent: str, scheme: str, references_30: bool = False
 ) -> str:
     """Writes the scheme to the XML file."""
+    if getattr(item_scheme, "sdmx_type", None) == "valuelist":
+        scheme = VALUE_LIST
     label = f"{ABBR_STR}:{scheme}"
     components = ""
     data = __write_maintainable(item_scheme, indent, references_30)
@@ -740,7 +749,9 @@ def __write_scheme(
         NAME_PER_SCHEME,
     ]:
         for item in item_scheme.items:
-            outfile += __write_item(item, add_indent(indent), references_30)
+            outfile += __write_item(
+                item, add_indent(indent), scheme, references_30
+            )
     if scheme in [
         RULE_SCHEME,
         UDO_SCHEME,
@@ -757,6 +768,20 @@ def __write_scheme(
     outfile += f"{indent}</{label}>"
 
     return outfile
+
+
+def __check_sdmx_type(
+    package: Dict[str, Any], key: str, msg_content: Dict[str, Any]
+) -> str:
+    first_value = next(iter(package[key].values()), None)
+
+    if (
+        first_value is not None
+        and getattr(first_value, "sdmx_type", None) == VALUE_LIST_LOW
+    ):
+        return VALUE_LISTS
+    else:
+        return msg_content[key]
 
 
 def __write_metadata_element(
@@ -785,7 +810,8 @@ def __write_metadata_element(
     msg_content = MSG_CONTENT_PKG_30 if references_30 else MSG_CONTENT_PKG_21
 
     if key in package:
-        outfile += f"{base_indent}<{ABBR_STR}:{msg_content[key]}>"
+        scheme = __check_sdmx_type(package, key, msg_content)
+        outfile += f"{base_indent}<{ABBR_STR}:{scheme}>"
         for element in package[key].values():
             item = (
                 DSD
@@ -799,7 +825,8 @@ def __write_metadata_element(
             outfile += __write_scheme(
                 element, add_indent(base_indent), item, references_30
             )
-        outfile += f"{base_indent}</{ABBR_STR}:{msg_content[key]}>"
+
+        outfile += f"{base_indent}</{ABBR_STR}:{scheme}>"
 
     return outfile
 
