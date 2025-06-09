@@ -44,6 +44,8 @@ Your opinionated Python SDMX library.
    api/rest
    api/helper
    api/toolkit
+   api/io
+
 
 .. toctree::
    :maxdepth: 1
