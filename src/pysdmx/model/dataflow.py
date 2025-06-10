@@ -39,7 +39,9 @@ class Role(str, Enum):
         """Return the role as a string."""
         return self.name.capitalize()
 
-    __repr__ = __str__
+    def __repr__(self) -> str:
+        """Role String representation."""
+        return f"{self.__class__.__name__}.{self.value}"
 
 
 class ArrayBoundaries(Struct, frozen=True, repr_omit_defaults=True):
