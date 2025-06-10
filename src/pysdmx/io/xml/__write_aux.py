@@ -25,7 +25,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     RULESETS,
     STR_USAGE,
     STRUCTURE,
-    TRANS_SCEHEMES,
+    TRANS_SCHEMES,
     TRANSFORMATIONS,
     UDO_SCHEMES,
     UDOS,
@@ -142,7 +142,7 @@ def create_namespaces(
         type_ == Format.DATA_SDMX_ML_3_0
         or type_ == Format.STRUCTURE_SDMX_ML_3_0
     ):
-        outfile += f'xmlns:xsi={NAMESPACES_30["xsi"]!r} '
+        outfile += f"xmlns:xsi={NAMESPACES_30['xsi']!r} "
         outfile += f"xmlns:{ABBR_MSG}={NAMESPACES_30[ABBR_MSG]!r} "
         outfile += __namespaces_from_type(type_)
         outfile += (
@@ -152,7 +152,7 @@ def create_namespaces(
             f'https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">'
         )
     else:
-        outfile += f'xmlns:xsi={NAMESPACES_21["xsi"]!r} '
+        outfile += f"xmlns:xsi={NAMESPACES_21['xsi']!r} "
         outfile += f"xmlns:{ABBR_MSG}={NAMESPACES_21[ABBR_MSG]!r} "
         outfile += __namespaces_from_type(type_)
         outfile += (
@@ -195,7 +195,7 @@ MSG_CONTENT_PKG_30 = OrderedDict(
         (VTLMAPPING_SCHEMES, "VtlMappingSchemes"),
         (NAME_PER_SCHEMES, "NamePersonalisationSchemes"),
         (RULE_SCHEMES, "RulesetSchemes"),
-        (TRANS_SCEHEMES, "TransformationSchemes"),
+        (TRANS_SCHEMES, "TransformationSchemes"),
         (UDO_SCHEMES, "UserDefinedOperatorSchemes"),
     ]
 )
@@ -330,8 +330,7 @@ def __reference(
         namespace = f"namespace={namespace!r} "
     if references_30:
         reference_str = (
-            f"{urn_type}{reference.agency}:"
-            f"{reference.id}({reference.version})"
+            f"{urn_type}{reference.agency}:{reference.id}({reference.version})"
         )
     else:
         # Then the reference
@@ -402,9 +401,7 @@ def __write_header(
             return ""
         child2 = "\t\t" if prettyprint else ""
         return (
-            f"{nl}{child2}<{ABBR_MSG}:{element}>"
-            f"{value}"
-            f"</{ABBR_MSG}:{element}>"
+            f"{nl}{child2}<{ABBR_MSG}:{element}>{value}</{ABBR_MSG}:{element}>"
         )
 
     nl = "\n" if prettyprint else ""

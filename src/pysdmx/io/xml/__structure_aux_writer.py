@@ -816,11 +816,7 @@ def __write_metadata_element(
             item = (
                 DSD
                 if issubclass(element.__class__, DataStructureDefinition)
-                else (
-                    AGENCIES
-                    if element.id == "AGENCIES"
-                    else type(element).__name__
-                )
+                else element.__class__.__name__
             )
             outfile += __write_scheme(
                 element, add_indent(base_indent), item, references_30
