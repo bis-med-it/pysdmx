@@ -102,25 +102,17 @@ class GdsAgency(GdsBase, frozen=True):
     description: Optional[str] = None
 
 
-class GdsService(GdsBase, frozen=True):
-    """Represents a GDS catalog.
+class GdsService(MaintainableArtefact, frozen=True, kw_only=True):
+    """Represents a GDS service.
 
     Attributes:
         agency: The AgencyID of the service's owner.
-        id: The ID of the service.
-        name: The name of the service.
-        urn: The URN of the service.
-        version: The version of the service.
         base: The base URL of the service.
         endpoints: List of GDS endpoints available at the service.
         authentication: Optional authentication method for the service.
     """
 
-    agency: str
-    id: str
-    name: str
-    urn: str
-    version: str
+    agency: Union[str, GdsAgency]
     base: str
     endpoints: List[GdsEndpoint]
     authentication: Optional[str] = None
