@@ -2,10 +2,6 @@
 
 This module defines classes for representing GDS-specific data,
 such as agencies, in the SDMX data model.
-
-Exports:
-    GdsAgency: Represents a GDS agency with attributes
-               like ID, name, URL, and description.
 """
 
 from typing import List, Optional, Sequence, Union
@@ -86,22 +82,6 @@ class GdsServiceReference(GdsBase, frozen=True):
         return parse_maintainable_urn(self.service).__str__()
 
 
-class GdsAgency(GdsBase, frozen=True):
-    """Represents a GDS agency.
-
-    Attributes:
-        id: The ID of the agency.
-        name: The name of the agency.
-        url: The URL of the agency.
-        description: An optional description of the agency.
-    """
-
-    id: str
-    name: str
-    url: str
-    description: Optional[str] = None
-
-
 class GdsService(GdsBase, MaintainableArtefact, frozen=True, kw_only=True):
     """Represents a GDS service.
 
@@ -112,7 +92,6 @@ class GdsService(GdsBase, MaintainableArtefact, frozen=True, kw_only=True):
         authentication: Optional authentication method for the service.
     """
 
-    agency: Union[str, GdsAgency]  # type: ignore[assignment]
     base: str
     endpoints: List[GdsEndpoint]
     authentication: Optional[str] = None
@@ -132,7 +111,6 @@ class GdsCatalog(GdsBase, MaintainableArtefact, frozen=True, kw_only=True):
         endpoints: List of GDS endpoints available at the catalog.
     """
 
-    agency: Union[str, GdsAgency]  # type: ignore[assignment]
     services: Optional[List[Union[GdsService, GdsServiceReference]]] = None
     endpoints: Optional[List[GdsEndpoint]] = None
 

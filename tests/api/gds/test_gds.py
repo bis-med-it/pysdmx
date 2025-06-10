@@ -13,8 +13,8 @@ from pysdmx.api.qb.util import REST_ALL, REST_LATEST
 from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 from pysdmx.io.format import Format
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
+from pysdmx.model import Agency
 from pysdmx.model.gds import (
-    GdsAgency,
     GdsCatalog,
     GdsSdmxApi,
     GdsService,
@@ -23,7 +23,7 @@ from pysdmx.model.gds import (
 
 # Mapping of endpoints to their expected classes
 ENDPOINTS = {
-    "agency": GdsAgency,
+    "agency": Agency,
     "catalog": GdsCatalog,
     "sdmxapi": GdsSdmxApi,
     "service": GdsService,
@@ -31,7 +31,7 @@ ENDPOINTS = {
 }
 
 REFERENCES = {
-    GdsAgency: "agency",
+    Agency: "agency",
     GdsCatalog: "catalog",
     GdsSdmxApi: "api_version",
     GdsService: "service",
@@ -39,7 +39,7 @@ REFERENCES = {
 }
 
 DECODERS = {
-    GdsAgency: gds_readers.agencies,
+    Agency: gds_readers.agencies,
     GdsCatalog: gds_readers.catalogs,
     GdsSdmxApi: gds_readers.sdmx_api,
     GdsService: gds_readers.services,
@@ -47,7 +47,7 @@ DECODERS = {
 }
 
 METHOD_MAP = {
-    GdsAgency: GdsClient.get_agencies,
+    Agency: GdsClient.get_agencies,
     GdsCatalog: GdsClient.get_catalogs,
     GdsSdmxApi: GdsClient.get_sdmx_apis,
     GdsService: GdsClient.get_services,
@@ -55,7 +55,7 @@ METHOD_MAP = {
 }
 
 ASYNC_METHOD_MAP = {
-    GdsAgency: AsyncGdsClient.get_agencies,
+    Agency: AsyncGdsClient.get_agencies,
     GdsCatalog: AsyncGdsClient.get_catalogs,
     GdsSdmxApi: AsyncGdsClient.get_sdmx_apis,
     GdsService: AsyncGdsClient.get_services,

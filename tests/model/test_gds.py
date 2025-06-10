@@ -1,5 +1,5 @@
+from pysdmx.model import Agency
 from pysdmx.model.gds import (
-    GdsAgency,
     GdsCatalog,
     GdsEndpoint,
     GdsSdmxApi,
@@ -8,25 +8,6 @@ from pysdmx.model.gds import (
     GdsUrnResolver,
     ResolverResult,
 )
-
-
-def test_str_gds_agency():
-    """Test the __str__ method of GdsAgency."""
-    agency = GdsAgency(
-        id="BIS",
-        name="BIS",
-        url="bis.org",
-        description="Bank for International Settlements",
-    )
-
-    expected_str = (
-        "id: BIS, "
-        "name: BIS, "
-        "url: bis.org, "
-        "description: Bank for International Settlements"
-    )
-
-    assert str(agency) == expected_str
 
 
 def test_str_gds_catalog():
@@ -180,23 +161,6 @@ def test_str_gds_catalog_empty_endpoints():
     assert str(catalog) == expected_str
 
 
-def test_repr_gds_agency():
-    """Test the __repr__ method of GdsAgency."""
-    agency = GdsAgency(
-        id="BIS",
-        name="BIS",
-        url="bis.org",
-        description="Bank for International Settlements",
-    )
-
-    expected_repr = (
-        "GdsAgency(id='BIS', name='BIS', url='bis.org', "
-        "description='Bank for International Settlements')"
-    )
-
-    assert repr(agency) == expected_repr
-
-
 def test_repr_gds_catalog():
     """Test the __repr__ method of GdsCatalog."""
     catalog = GdsCatalog(
@@ -343,11 +307,11 @@ def test_repr_gds_urn_resolver():
 
 
 def test_instantiation_gds_agency():
-    """Test instantiation of GdsAgency."""
-    instance = GdsAgency(id="BIS", name="Bank", url="https://bis.org")
+    """Test instantiation of Agency in GDS."""
+    instance = Agency(id="BIS", name="Bank", uri="https://bis.org")
     assert instance.id == "BIS"
     assert instance.name == "Bank"
-    assert instance.url == "https://bis.org"
+    assert instance.uri == "https://bis.org"
     assert instance.description is None
 
 

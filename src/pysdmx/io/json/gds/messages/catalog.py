@@ -6,8 +6,8 @@ from msgspec import Struct
 
 from pysdmx.io.json.gds.messages.agencies import JsonAgency
 from pysdmx.io.json.gds.messages.services import JsonService
+from pysdmx.model import Agency
 from pysdmx.model.gds import (
-    GdsAgency,
     GdsCatalog,
     GdsEndpoint,
     GdsService,
@@ -27,7 +27,7 @@ class JsonCatalog(Struct, frozen=True):
     serviceRefs: Optional[List[GdsServiceReference]] = None
 
     def to_model(
-        self, agencies: List[GdsAgency], services: List[GdsService]
+        self, agencies: List[Agency], services: List[GdsService]
     ) -> GdsCatalog:
         """Converts the payload to a GDS Catalog."""
         agency = next(
