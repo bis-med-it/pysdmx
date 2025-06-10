@@ -22,6 +22,7 @@ from pysdmx.io.json.gds.messages.services import (
 )
 from pysdmx.io.json.gds.messages.urn_resolver import (
     JsonUrnResolverMessage,
+    JsonUrnResolverResult,
 )
 
 __all__ = [
@@ -30,4 +31,5 @@ __all__ = [
     "JsonSdmxApiMessage",
     "JsonServiceMessage",
     "JsonUrnResolverMessage",
+    "JsonUrnResolverResult",
 ]

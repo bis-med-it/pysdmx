@@ -1,7 +1,7 @@
 """Build GDS-REST structure queries."""
 
 from enum import Enum
-from typing import Optional, Sequence, Union
+from typing import Literal, Optional, Sequence, Union
 
 import msgspec
 
@@ -75,11 +75,11 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
     agency: Union[str, Sequence[str]] = REST_ALL
     resource_id: Union[str, Sequence[str]] = REST_ALL
     version: Optional[str] = None
-    resource_type: Optional[str] = None
-    message_format: Optional[str] = None
+    resource_type: Optional[Literal["data", "metadata"]] = None
+    message_format: Optional[Literal["json", "csv", "xml"]] = None
     api_version: Optional[str] = None
-    detail: Optional[str] = None
-    references: Optional[str] = None
+    detail: Optional[Literal["full", "raw"]] = None
+    references: Optional[Literal["none", "children"]] = None
 
     def validate(self) -> None:
         """Validate the query."""
@@ -138,6 +138,9 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         a = self.__to_kws(self.agency)
         r = self.__to_kws(self.resource_id)
         v = self.__to_kws(self.version) if self.version else REST_ALL
+
+        if t in ("sdmxapi", "agency", "urn_resolver"):
+            return f"/{t}/{r}"
 
         vu = f"/{v}" if v != REST_ALL else ""
         ru = f"/{r}{vu}" if vu or self.resource_id != REST_ALL else ""

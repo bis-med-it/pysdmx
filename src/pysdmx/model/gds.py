@@ -112,15 +112,10 @@ class GdsService(MaintainableArtefact, frozen=True, kw_only=True):
         authentication: Optional authentication method for the service.
     """
 
-    agency: Union[str, GdsAgency]
+    agency: Union[str, GdsAgency]  # type: ignore[assignment]
     base: str
     endpoints: List[GdsEndpoint]
     authentication: Optional[str] = None
-
-    @property
-    def short_urn(self) -> str:
-        """Returns a short URN for the Service."""
-        return parse_maintainable_urn(self.urn).__str__()
 
 
 class GdsCatalog(MaintainableArtefact, frozen=True, kw_only=True):
@@ -137,7 +132,7 @@ class GdsCatalog(MaintainableArtefact, frozen=True, kw_only=True):
         endpoints: List of GDS endpoints available at the catalog.
     """
 
-    agency: Union[str, GdsAgency]
+    agency: Union[str, GdsAgency]  # type: ignore[assignment]
     services: Optional[List[Union[GdsService, GdsServiceReference]]] = None
     endpoints: Optional[List[GdsEndpoint]] = None
 
@@ -154,7 +149,9 @@ class GdsSdmxApi(GdsBase, frozen=True):
     description: str
 
 
-class ResolverResult(GdsBase, frozen=True):
+class ResolverResult(
+    GdsBase, frozen=True, rename={"query_response_status_code": "status_code"}
+):
     """Represents a single resolver result.
 
     Attributes:

@@ -49,7 +49,7 @@ DECODERS = {
 METHOD_MAP = {
     GdsAgency: GdsClient.get_agencies,
     GdsCatalog: GdsClient.get_catalogs,
-    GdsSdmxApi: GdsClient.get_sdmx_api,
+    GdsSdmxApi: GdsClient.get_sdmx_apis,
     GdsService: GdsClient.get_services,
     GdsUrnResolver: GdsClient.get_urn_resolver,
 }
@@ -57,12 +57,12 @@ METHOD_MAP = {
 ASYNC_METHOD_MAP = {
     GdsAgency: AsyncGdsClient.get_agencies,
     GdsCatalog: AsyncGdsClient.get_catalogs,
-    GdsSdmxApi: AsyncGdsClient.get_sdmx_api,
+    GdsSdmxApi: AsyncGdsClient.get_sdmx_apis,
     GdsService: AsyncGdsClient.get_services,
     GdsUrnResolver: AsyncGdsClient.get_urn_resolver,
 }
 
-BASE_SAMPLES_PATH = Path("tests/api/gds/samples")
+BASE_SAMPLES_PATH = Path(__file__).parent / "samples"
 
 
 @pytest.fixture
@@ -128,23 +128,24 @@ def query(gds: GdsClient, endpoint, value, params, resource):
         query_params = "&".join(
             f"{k}={v}" for k, v in params.items() if k != "version"
         )
-        final_query = f"{base_query}/?{query_params}" if (
-            query_params) else base_query
+        final_query = (
+            f"{base_query}/?{query_params}" if (query_params) else base_query
+        )
         return final_query
 
     return base_query
 
 
 def generic_test(
-        mock,
-        gds,
-        query,
-        body,
-        value,
-        resource,
-        params,
-        expected_class,
-        references,
+    mock,
+    gds,
+    query,
+    body,
+    value,
+    resource,
+    params,
+    expected_class,
+    references,
 ):
     """Generic function to test endpoints."""
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
@@ -173,15 +174,15 @@ def generic_test(
 
 
 async def generic_async_test(
-        mock,
-        gds,
-        query,
-        body,
-        value,
-        resource,
-        params,
-        expected_class,
-        references,
+    mock,
+    gds,
+    query,
+    body,
+    value,
+    resource,
+    params,
+    expected_class,
+    references,
 ):
     """Generic function to test async endpoints."""
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
@@ -269,7 +270,7 @@ GENERIC_PARAMS = [
         REST_ALL,
         "catalog_bis_raw_children.json",
     ),
-(
+    (
         "catalog",
         "BIS",
         {
@@ -334,16 +335,16 @@ GENERIC_PARAMS = [
     indirect=["body"],
 )
 def test_generic(
-        respx_mock,
-        gds,
-        query,
-        body,
-        endpoint,
-        value,
-        params,
-        resource,
-        expected_class,
-        references,
+    respx_mock,
+    gds,
+    query,
+    body,
+    endpoint,
+    value,
+    params,
+    resource,
+    expected_class,
+    references,
 ):
     """Generic test for all endpoints."""
     generic_test(
@@ -366,16 +367,16 @@ def test_generic(
     indirect=["body"],
 )
 async def test_async_generic(
-        respx_mock,
-        async_gds_client,
-        query,
-        body,
-        endpoint,
-        value,
-        params,
-        resource,
-        expected_class,
-        references,
+    respx_mock,
+    async_gds_client,
+    query,
+    body,
+    endpoint,
+    value,
+    params,
+    resource,
+    expected_class,
+    references,
 ):
     """Generic test for all endpoints using async client."""
     await generic_async_test(
@@ -399,16 +400,16 @@ async def test_async_generic(
     indirect=["body"],
 )
 def test_gds_without_slash(
-        respx_mock,
-        gds_without_slash,
-        query,
-        body,
-        endpoint,
-        value,
-        params,
-        resource,
-        expected_class,
-        references,
+    respx_mock,
+    gds_without_slash,
+    query,
+    body,
+    endpoint,
+    value,
+    params,
+    resource,
+    expected_class,
+    references,
 ):
     generic_test(
         respx_mock,
@@ -427,25 +428,25 @@ def test_gds_without_slash(
     ("endpoint", "value", "params", "resource", "body"),
     [
         (
-                "agency",
-                "non_existing_agency",
-                {},
-                None,
-                "non_existing_agency.json",
+            "agency",
+            "non_existing_agency",
+            {},
+            None,
+            "non_existing_agency.json",
         )
     ],
     indirect=["body"],
 )
 def test_non_existing_entty(
-        respx_mock,
-        gds,
-        query,
-        body,
-        endpoint,
-        value,
-        params,
-        resource,
-        expected_class,
+    respx_mock,
+    gds,
+    query,
+    body,
+    endpoint,
+    value,
+    params,
+    resource,
+    expected_class,
 ):
     with pytest.raises(DecodeError):
         generic_test(
@@ -472,9 +473,7 @@ def test_invalid_artefact_type():
     # Using name mangling to internally change the
     # hidden method name and access to test it
     with pytest.raises(Invalid):
-        query._GdsQuery__check_artefact_type(
-            atyp=StructureType.AGENCY_SCHEME
-        )
+        query._GdsQuery__check_artefact_type(atyp=StructureType.AGENCY_SCHEME)
 
 
 def test_not_found(respx_mock, gds_service):
@@ -490,8 +489,9 @@ def test_not_found(respx_mock, gds_service):
     with pytest.raises(NotFound) as e:
         gds_service._fetch("/agency", "application/json")
     assert e.value.title == "Not found"
-    assert ("The requested resource(s) "
-            "could not be found") in e.value.description
+    assert (
+        "The requested resource(s) could not be found"
+    ) in e.value.description
     assert url in e.value.description
 
 
@@ -508,9 +508,11 @@ def test_client_error(respx_mock, gds_service):
     with pytest.raises(Invalid) as e:
         gds_service._fetch("/resource", "application/json")
     assert e.value.title == "Client error 400"
-    assert ("Client error 400. Query: "
-            "`https://gds.sdmx.io/resource`. "
-            "Error: `Bad Request`.") in e.value.description
+    assert (
+        "Client error 400. Query: "
+        "`https://gds.sdmx.io/resource`. "
+        "Error: `Bad Request`."
+    ) in e.value.description
 
 
 def test_service_error(respx_mock, gds_service):
@@ -526,9 +528,11 @@ def test_service_error(respx_mock, gds_service):
     with pytest.raises(InternalError) as e:
         gds_service._fetch("/resource", "application/json")
     assert e.value.title == "Service error 500"
-    assert ("Service error 500. Query: "
-            "`https://gds.sdmx.io/resource`. "
-            "Error: `Internal Server Error`.") in e.value.description
+    assert (
+        "Service error 500. Query: "
+        "`https://gds.sdmx.io/resource`. "
+        "Error: `Internal Server Error`."
+    ) in e.value.description
 
 
 @pytest.mark.asyncio
@@ -542,5 +546,6 @@ async def test_async_connection_error(respx_mock, gds_async_service):
     with pytest.raises(Unavailable) as e:
         await gds_async_service._fetch("/resource", "application/json")
     assert e.value.title == "Connection error"
-    assert ("Connection error. Query: "
-            "`https://gds.sdmx.io/resource`.") in e.value.description
+    assert (
+        "Connection error. Query: " "`https://gds.sdmx.io/resource`."
+    ) in e.value.description
