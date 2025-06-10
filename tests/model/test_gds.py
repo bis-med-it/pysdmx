@@ -97,7 +97,7 @@ def test_str_gds_sdmxapi():
 def test_str_gds_service():
     """Test the __str__ method of GdsService."""
     service = GdsService(
-        agency_id="BIS",
+        agency="BIS",
         id="BIS_DATA",
         name="BIS Data Portal API",
         urn="urn:sdmx:org.sdmx.infomodel.discovery.Service=BIS:BIS_DATA(1.0)",
@@ -258,7 +258,7 @@ def test_repr_gds_catalog():
 def test_repr_gds_service():
     """Test the __repr__ method of GdsService."""
     service = GdsService(
-        agency_id="BIS",
+        agency="BIS",
         id="BIS_DATA",
         name="BIS Data Portal API",
         urn="urn:sdmx:org.sdmx.infomodel.discovery.Service=BIS:BIS_DATA(1.0)",
@@ -431,7 +431,7 @@ def test_instantiation_gds_service_reference():
 def test_instantiation_gds_service():
     """Test instantiation of GdsService."""
     instance = GdsService(
-        agency_id="BIS",
+        agency="BIS",
         id="SERVICE1",
         name="Service",
         urn="urn:service",
@@ -439,7 +439,7 @@ def test_instantiation_gds_service():
         base="https://service",
         endpoints=[],
     )
-    assert instance.agency_id == "BIS"
+    assert instance.agency == "BIS"
     assert instance.id == "SERVICE1"
     assert instance.name == "Service"
     assert instance.urn == "urn:service"

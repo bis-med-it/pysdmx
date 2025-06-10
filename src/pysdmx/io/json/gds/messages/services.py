@@ -22,7 +22,7 @@ class JsonService(Struct, frozen=True):
     def to_model(self) -> GdsService:
         """Converts the payload to a GDS Service."""
         return GdsService(
-            agency_id=self.agencyID,
+            agency=self.agencyID,
             id=self.id,
             name=self.name,
             urn=self.urn,

@@ -106,7 +106,7 @@ class GdsService(GdsBase, frozen=True):
     """Represents a GDS catalog.
 
     Attributes:
-        agency_id: The ID of the agency.
+        agency: The AgencyID of the service's owner.
         id: The ID of the service.
         name: The name of the service.
         urn: The URN of the service.
@@ -116,7 +116,7 @@ class GdsService(GdsBase, frozen=True):
         authentication: Optional authentication method for the service.
     """
 
-    agency_id: str
+    agency: str
     id: str
     name: str
     urn: str
