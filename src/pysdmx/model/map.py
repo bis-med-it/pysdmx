@@ -10,7 +10,7 @@ from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.util._date_pattern_map import convert_dpm
 
 
-class StrMap(
+class _BaseMap(
     Struct,
     frozen=True,
     omit_defaults=True,
@@ -46,7 +46,7 @@ class StrMap(
         return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
-class DatePatternMap(StrMap, frozen=True, omit_defaults=True, tag=True):
+class DatePatternMap(_BaseMap, frozen=True, omit_defaults=True, tag=True):
     """A mapping based on a date pattern.
 
     Examples:
@@ -98,7 +98,7 @@ class DatePatternMap(StrMap, frozen=True, omit_defaults=True, tag=True):
         return convert_dpm(self.pattern)
 
 
-class FixedValueMap(StrMap, frozen=True, omit_defaults=True, tag=True):
+class FixedValueMap(_BaseMap, frozen=True, omit_defaults=True, tag=True):
     """Set a component to a fixed value.
 
     Examples:
@@ -122,7 +122,9 @@ class FixedValueMap(StrMap, frozen=True, omit_defaults=True, tag=True):
     located_in: Literal["source", "target"] = "target"
 
 
-class ImplicitComponentMap(StrMap, frozen=True, omit_defaults=True, tag=True):
+class ImplicitComponentMap(
+    _BaseMap, frozen=True, omit_defaults=True, tag=True
+):
     """A mapping where the value in the source is copied to the target.
 
     Examples:
@@ -144,7 +146,7 @@ class ImplicitComponentMap(StrMap, frozen=True, omit_defaults=True, tag=True):
     target: str
 
 
-class MultiValueMap(StrMap, frozen=True, omit_defaults=True, kw_only=True):
+class MultiValueMap(_BaseMap, frozen=True, omit_defaults=True, kw_only=True):
     """Provides the values for a mapping between one or more components.
 
     Examples:
@@ -199,7 +201,7 @@ class MultiValueMap(StrMap, frozen=True, omit_defaults=True, kw_only=True):
         return tuple(out)
 
 
-class ValueMap(StrMap, frozen=True, omit_defaults=True, kw_only=True):
+class ValueMap(_BaseMap, frozen=True, omit_defaults=True, kw_only=True):
     """Maps the values of two components together.
 
     Examples:
@@ -273,7 +275,7 @@ class MultiRepresentationMap(
         return len(self.maps)
 
 
-class MultiComponentMap(StrMap, frozen=True, omit_defaults=True, tag=True):
+class MultiComponentMap(_BaseMap, frozen=True, omit_defaults=True, tag=True):
     """Maps one or more source components to one or more target components.
 
     Examples:
@@ -334,7 +336,7 @@ class RepresentationMap(MaintainableArtefact, frozen=True, omit_defaults=True):
         return len(self.maps)
 
 
-class ComponentMap(StrMap, frozen=True, omit_defaults=True, tag=True):
+class ComponentMap(_BaseMap, frozen=True, omit_defaults=True, tag=True):
     """Maps a source component to a target component.
 
     Examples:
