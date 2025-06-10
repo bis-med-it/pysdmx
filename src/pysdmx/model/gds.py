@@ -184,14 +184,14 @@ class GdsUrnResolver(GdsBase, frozen=True):
     """Represents the response for a URN resolver query.
 
     Attributes:
-        agency_id: The agency maintaining the resource.
+        agency: The agency maintaining the resource.
         resource_id: The ID of the resource.
         version: The version of the resource.
         sdmx_type: The type of SDMX resource.
         resolver_results: A list of resolver results.
     """
 
-    agency_id: str
+    agency: str
     resource_id: str
     version: str
     sdmx_type: str

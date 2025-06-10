@@ -145,7 +145,7 @@ def test_str_gds_service():
 def test_str_gds_urn_resolver():
     """Test the __str__ method of GdsUrnResolver."""
     urn_resolution = GdsUrnResolver(
-        agency_id="BIS",
+        agency="BIS",
         resource_id="BISWEB_CATSCHEME",
         version="1.0",
         sdmx_type="CategoryScheme",
@@ -347,7 +347,7 @@ def test_repr_gds_sdmxapi():
 def test_repr_gds_urn_resolver():
     """Test the __repr__ method of GdsUrnResolver."""
     urn_resolution = GdsUrnResolver(
-        agency_id="BIS",
+        agency="BIS",
         resource_id="BISWEB_CATSCHEME",
         version="1.0",
         sdmx_type="CategoryScheme",
@@ -472,13 +472,13 @@ def test_instantiation_resolver_result():
 def test_instantiation_gds_urn_resolver():
     """Test instantiation of GdsUrnResolver."""
     instance = GdsUrnResolver(
-        agency_id="BIS",
+        agency="BIS",
         resource_id="RES1",
         version="1.0",
         sdmx_type="CategoryScheme",
         resolver_results=[],
     )
-    assert instance.agency_id == "BIS"
+    assert instance.agency == "BIS"
     assert instance.resource_id == "RES1"
     assert instance.version == "1.0"
     assert instance.sdmx_type == "CategoryScheme"

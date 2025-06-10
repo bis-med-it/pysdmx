@@ -19,7 +19,7 @@ class JsonUrnResolverMessage(Struct, frozen=True):
     def to_model(self) -> GdsUrnResolver:
         """Returns a GdsUrnResolver object."""
         return GdsUrnResolver(
-            agency_id=self.agency_id,
+            agency=self.agency_id,
             resource_id=self.resource_id,
             version=self.version,
             sdmx_type=self.sdmx_type,
