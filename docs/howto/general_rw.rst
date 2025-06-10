@@ -1,26 +1,13 @@
-.. _data-rw:
+.. _general-rw:
 
-Reading and writing SDMX
-========================
+General Reading and writing SDMX
+================================
 
 .. note::
 
         This tutorial shows how to read and write SDMX files ``pysdmx``.
 
-    - :ref:`data-rw`.
-
-.. warning::
-    To read and write data, you must use the extra "data". You may need to install it using the following command:
-
-    .. code-block:: bash
-
-        pip install pysdmx[data]
-
-    For SDMX-ML format, you need to install the extra "xml" as well:
-
-    .. code-block:: bash
-
-        pip install pysdmx[data,xml]
+    - :ref:`general-rw`.
 
 .. _general-reader-tutorial:
 
@@ -46,7 +33,7 @@ A typical example to read data or metadata from a file, a string or a buffer, us
 
 .. code-block:: python
 
-   from pysdmx.io import read_sdmx
+   from pysdmx.io.reader import read_sdmx
 
     # Read file from the same folder as this code
     file_path = Path(__file__).parent / "sample.xml"
@@ -59,7 +46,8 @@ A typical example to read data or metadata from a file, a string or a buffer, us
 
 By default, the read_sdmx function will automatically detect the format of the file and use the appropriate reader.
 
-once the file is read, yo can acces the structure and data of the message:
+once the file is read, yo can access the structure and data of the message:
+
 .. code-block:: python
 
    # Access the structure of the message

@@ -31,7 +31,8 @@ Your opinionated Python SDMX library.
    :maxdepth: 2
    :caption: Handling SDMX datasets
 
-   howto/data_rw
+   howto/general_rw
+   howto/structure_rw
    howto/vtl
 
 
