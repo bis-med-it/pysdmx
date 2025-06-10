@@ -172,7 +172,7 @@ def test_conceptscheme_repr(id, name, agency, desc, version, concepts):
         "id='child1', "
         "name='Test', "
         "description='desc', "
-        "dtype=Alpha, "
+        "dtype=DataType.ALPHA, "
         "facets=Facets(min_length=1, max_length=3)), "
         "Concept(id='child2')])"
     )

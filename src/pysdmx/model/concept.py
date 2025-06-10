@@ -100,7 +100,7 @@ class DataType(str, Enum):
 
     def __repr__(self) -> str:
         """Data Type String representation."""
-        return f"{self.__class__.__name__}.{self.value}"
+        return f"{self.__class__.__name__}.{self._name_}"
 
 
 class Facets(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):

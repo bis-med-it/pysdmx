@@ -26,7 +26,7 @@ class ActionType(Enum):
 
     def __repr__(self) -> str:
         """Action String representation."""
-        return f"{self.__class__.__name__}.{self.value}"
+        return f"{self.__class__.__name__}.{self._name_}"
 
 
 class SeriesInfo(Struct, frozen=True, repr_omit_defaults=True):
