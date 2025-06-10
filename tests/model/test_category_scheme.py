@@ -182,7 +182,7 @@ def test_categoryscheme_str(category_scheme):
         "name: SDMX Statistical Subject-Matter Domains, "
         "description: The SDMX Content Guidelines "
         "for Statistical Subject-Matter Domains, "
-        "version: 1.0, agency: SDMX, items: 2 categorys"
+        "version: 1.0, agency: SDMX, items: 2 categories"
     )
     assert s == expected_str
 
