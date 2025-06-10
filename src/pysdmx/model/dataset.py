@@ -20,6 +20,14 @@ class ActionType(Enum):
     Delete = "Delete"
     Information = "Information"
 
+    def __str__(self) -> str:
+        """Return the action as a string."""
+        return self.name.capitalize()
+
+    def __repr__(self) -> str:
+        """Action String representation."""
+        return f"{self.__class__.__name__}.{self.value}"
+
 
 class SeriesInfo(Struct, frozen=True, repr_omit_defaults=True):
     """A group of related data, such as a time series, or a case series.
