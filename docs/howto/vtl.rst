@@ -29,8 +29,7 @@ SDMX files. The following code snippet demonstrates the process:
 
 .. code-block:: python
 
-    from pysdmx.io import get_datasets, read_sdmx
-    from pysdmx.toolkit.vtl import generate_vtl_script
+
     from pathlib import Path
 
     # Path to the structures file in SDMX-ML 2.1 (same directory as this script)
@@ -44,6 +43,7 @@ and extract the data:
 
 .. code-block:: python
 
+    from pysdmx.io import get_datasets
     # With the data and metadata path we extract de datasets
     datasets = get_datasets(path_to_data, path_to_metadata)
 
@@ -55,6 +55,8 @@ and get the transformation and mapping schemes.
 
 .. code-block:: python
 
+    from pysdmx.io import read_sdmx
+    from pathlib import Path
     # Path to the transformation file
     path_to_structure = Path(__file__).parent / "structure.xml"
 
@@ -79,6 +81,7 @@ and the `prettyprint` parameter to format the script for better readability.
 .. code-block:: python
 
 
+    from pysdmx.toolkit.vtl import generate_vtl_script
     # Create the VTL script from the Transformation Scheme
     vtl_script = generate_vtl_script(trans_scheme, model_validation=True, prettyprint=True)
 

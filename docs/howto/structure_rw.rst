@@ -74,7 +74,7 @@ We have the following writers available:
 
 - Structure 3.0 -> `pysdmx.io.xml.sdmx30.writer.structure`
 
-To write structures, we need to input a series of data structure objects like `Dataflow`, `DataStructureDefinition`, etc.
+To write structures, we need to input a series of structure objects like `Dataflow`, `DataStructureDefinition`, etc.
 we can write a output path to save the structure into a file with `output_path` parameter,
 also we can prettify the output with `prettyprint` parameter set to `True`.
 
@@ -99,11 +99,13 @@ We can also save the output to a file by providing the `output_path` parameter:
 
 .. code-block:: python
 
-   # Write the structure to a file for SDMX-ML 2.1
-   write_sdmx21(data_structure_21, output_path="structure_21.xml")
+    from pysdmx.io.xml.sdmx21.writer.structure import write as write_sdmx21
+    from pysdmx.io.xml.sdmx30.writer.structure import write as write_sdmx30
+    # Write the structure to a file for SDMX-ML 2.1
+    write_sdmx21(data_structure_21, output_path="structure_21.xml")
 
-   # Write the structure to a file for SDMX-ML 3.0
-   write_sdmx30(data_structure_30, output_path="structure_30.xml")
+    # Write the structure to a file for SDMX-ML 3.0
+    write_sdmx30(data_structure_30, output_path="structure_30.xml")
 
 
 This will create files `structure_21.xml` and `structure_30.xml` in the current directory containing the SDMX-ML structures.

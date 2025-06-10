@@ -3,7 +3,7 @@
 SDMX CSV
 =========
 In this package, we have the possibility to read and write SDMX CSV format.
-This format is only used for data, not for structure.
+This format is only used for data, not for Metadata.
 The SDMX CSV readers and writers are compatible with SDMX-CSV 1.0 and 2.0 standards.
 
 
