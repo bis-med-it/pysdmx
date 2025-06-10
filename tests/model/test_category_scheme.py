@@ -175,6 +175,19 @@ def category_scheme(categories):
     )
 
 
+@pytest.fixture
+def category_scheme_no_items(categories):
+    return CategoryScheme(
+        id="STAT_SUBJECT_MATTER",
+        name="SDMX Statistical Subject-Matter Domains",
+        agency="SDMX",
+        description="The SDMX Content Guidelines for "
+        "Statistical Subject-Matter Domains",
+        version="1.0",
+        items=[],
+    )
+
+
 def test_categoryscheme_str(category_scheme):
     s = str(category_scheme)
     expected_str = (
@@ -183,6 +196,18 @@ def test_categoryscheme_str(category_scheme):
         "description: The SDMX Content Guidelines "
         "for Statistical Subject-Matter Domains, "
         "version: 1.0, agency: SDMX, items: 2 categories"
+    )
+    assert s == expected_str
+
+
+def test_categoryscheme_no_items_str(category_scheme_no_items):
+    s = str(category_scheme_no_items)
+    expected_str = (
+        "id: STAT_SUBJECT_MATTER, "
+        "name: SDMX Statistical Subject-Matter Domains, "
+        "description: The SDMX Content Guidelines "
+        "for Statistical Subject-Matter Domains, "
+        "version: 1.0, agency: SDMX"
     )
     assert s == expected_str
 
