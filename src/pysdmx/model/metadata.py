@@ -145,6 +145,8 @@ class MetadataReport(MaintainableArtefact, frozen=True, omit_defaults=True):
                 if not value:
                     continue
                 class_name = value[0].__class__.__name__
+                if class_name == "MetadataAttribute":
+                    class_name = "Metadata Attribute"
                 value = f"{len(value)} {class_name.lower()}s"
 
             processed_output.append(f"{attr}: {value}")

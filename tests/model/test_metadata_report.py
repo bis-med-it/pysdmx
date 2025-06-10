@@ -168,31 +168,29 @@ def test_serialization(id, name, structure, targets, attributes, agency):
 
 def test_tostr(id, name, structure, targets, attributes):
     report = MetadataReport(
-        id, name, structure, targets, attributes, agency="BIS"
+        id=id,
+        name=name,
+        targets=targets,
+        attributes=attributes,
+        agency="BIS",
     )
 
     s = str(report)
-    expected_str = ("id: id, "
-                    "uri: name, "
-                    "urn: urn:sdmx:org.sdmx.infomodel."
-                    "metadatastructure.Metadataflow=BIS.MEDIT:DTI(1.0), "
-                    "name: 1 strs, "
-                    "description: 2 metadataattributes, "
-                    "agency: BIS")
+    expected_str = (
+        "id: id, name: name, agency: BIS, targets: 1 strs, "
+        "attributes: 2 metadata attributes"
+    )
 
     assert s == expected_str
 
 
 def test_tostr_empty(id, name, structure, targets):
-    report = MetadataReport(id, name, structure, targets, [], agency="BIS")
+    report = MetadataReport(
+        id, name=name, targets=targets, attributes=[], agency="BIS"
+    )
 
     s = str(report)
-    expected_str = ("id: id, "
-                    "uri: name, "
-                    "urn: urn:sdmx:org.sdmx.infomodel."
-                    "metadatastructure.Metadataflow=BIS.MEDIT:DTI(1.0), "
-                    "name: 1 strs, "
-                    "agency: BIS")
+    expected_str = "id: id, name: name, agency: BIS, targets: 1 strs"
 
     assert s == expected_str
 
@@ -203,30 +201,32 @@ def test_repr(id, name, structure, targets, attributes):
     )
 
     r = repr(report)
-    expected_repr = ("MetadataReport("
-                     "id='id', "
-                     "uri='name', "
-                     "urn='urn:sdmx:org.sdmx.infomodel."
-                     "metadatastructure.Metadataflow=BIS.MEDIT:DTI(1.0)', "
-                     "name=["
-                     "'urn:sdmx:org.sdmx.infomodel.datastructure."
-                     "Dataflow=BIS.CBS:CBS(1.0)'], "
-                     "description=["
-                     "MetadataAttribute("
-                     "id='child1', "
-                     "value='Child 1'), "
-                     "MetadataAttribute("
-                     "id='child2', "
-                     "value='Child 2', "
-                     "attributes=["
-                     "MetadataAttribute("
-                     "id='child21', "
-                     "value='Child 2.1', "
-                     "attributes=["
-                     "MetadataAttribute("
-                     "id='child211', "
-                     "value='Child 2.1.1')])])], "
-                     "agency='BIS')")
+    expected_repr = (
+        "MetadataReport("
+        "id='id', "
+        "uri='name', "
+        "urn='urn:sdmx:org.sdmx.infomodel."
+        "metadatastructure.Metadataflow=BIS.MEDIT:DTI(1.0)', "
+        "name=["
+        "'urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=BIS.CBS:CBS(1.0)'], "
+        "description=["
+        "MetadataAttribute("
+        "id='child1', "
+        "value='Child 1'), "
+        "MetadataAttribute("
+        "id='child2', "
+        "value='Child 2', "
+        "attributes=["
+        "MetadataAttribute("
+        "id='child21', "
+        "value='Child 2.1', "
+        "attributes=["
+        "MetadataAttribute("
+        "id='child211', "
+        "value='Child 2.1.1')])])], "
+        "agency='BIS')"
+    )
 
     assert r == expected_repr
 
@@ -235,14 +235,16 @@ def test_repr_empty(id, name, structure, targets):
     report = MetadataReport(id, name, structure, targets, [], agency="BIS")
 
     r = repr(report)
-    expected_repr = ("MetadataReport("
-                     "id='id', "
-                     "uri='name', "
-                     "urn='urn:sdmx:org.sdmx.infomodel."
-                     "metadatastructure.Metadataflow=BIS.MEDIT:DTI(1.0)', "
-                     "name=["
-                     "'urn:sdmx:org.sdmx.infomodel.datastructure."
-                     "Dataflow=BIS.CBS:CBS(1.0)'], "
-                     "agency='BIS')")
+    expected_repr = (
+        "MetadataReport("
+        "id='id', "
+        "uri='name', "
+        "urn='urn:sdmx:org.sdmx.infomodel."
+        "metadatastructure.Metadataflow=BIS.MEDIT:DTI(1.0)', "
+        "name=["
+        "'urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=BIS.CBS:CBS(1.0)'], "
+        "agency='BIS')"
+    )
 
     assert r == expected_repr
