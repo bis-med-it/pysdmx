@@ -474,12 +474,10 @@ class StructureParser(Struct):
             if isinstance(ref, dict) and "URN" in ref:
                 codelist = find_by_urn(
                     list(self.codelists.values()), ref["URN"]
-                ).codes
+                )
 
             elif isinstance(ref, Reference):
-                codelist = find_by_urn(
-                    list(self.codelists.values()), str(ref)
-                ).codes
+                codelist = find_by_urn(list(self.codelists.values()), str(ref))
             else:
                 short_urn = str(
                     Reference(
@@ -692,7 +690,9 @@ class StructureParser(Struct):
 
         # Attribute Handling
         if ATT_REL in comp:
-            comp[ATT_LVL] = self.__format_relationship(comp[ATT_REL])
+            comp[ATT_LVL] = self.__format_relationship(
+                comp[ATT_REL],
+            )
             del comp[ATT_REL]
 
         if ME_REL in comp:
@@ -733,7 +733,10 @@ class StructureParser(Struct):
         element[role_name] = add_list(element[role_name])
 
         for comp in element[role_name]:
-            formatted_comp = self.__format_component(comp, role)
+            formatted_comp = self.__format_component(
+                comp,
+                role,
+            )
             comp_list.append(formatted_comp)
 
         return comp_list

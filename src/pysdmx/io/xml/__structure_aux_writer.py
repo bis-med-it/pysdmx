@@ -269,12 +269,13 @@ def __write_nameable(
 
 
 def __write_versionable(
-    versionable: VersionableArtefact, indent: str
+    versionable: VersionableArtefact, indent: str, references_30: bool = False
 ) -> Dict[str, Any]:
     """Writes the VersionableArtefact to the XML file."""
     outfile = __write_nameable(versionable, add_indent(indent))
 
-    outfile["Attributes"] += f" version={versionable.version!r}"
+    if not (references_30 and isinstance(versionable, AgencyScheme)):
+        outfile["Attributes"] += f" version={versionable.version!r}"
 
     if versionable.valid_from is not None:
         valid_from_str = versionable.valid_from.strftime("%Y-%m-%dT%H:%M:%S")
@@ -293,7 +294,7 @@ def __write_maintainable(
     references_30: bool = False,
 ) -> Dict[str, Any]:
     """Writes the MaintainableArtefact to the XML file."""
-    outfile = __write_versionable(maintainable, indent)
+    outfile = __write_versionable(maintainable, indent, references_30)
 
     outfile["Attributes"] += (
         f" isExternalReference="
@@ -448,7 +449,10 @@ def __write_attribute_relation(
     outfile = f"{indent}<{ABBR_STR}:{ATT_REL}>"
     att_rel = item.attachment_level
     if att_rel is None or (att_rel == "D" and not references_30):
-        outfile += f"{add_indent(indent)}<{ABBR_STR}:None/>"
+        if references_30:
+            outfile += f"{add_indent(indent)}<{ABBR_STR}:Observation/>"
+        else:
+            outfile += f"{add_indent(indent)}<{ABBR_STR}:None/>"
     else:
         # Check if it is a list of Dimensions or it is related to the
         # primary measure
@@ -532,11 +536,20 @@ def __write_component(
         )
 
     attributes += f"{ID}={item.id!r}"
-    if item.role == Role.DIMENSION:
+    if item.role == Role.DIMENSION and not (
+        role_name == TIME_DIM and references_30
+    ):
         attributes += f" {POSITION}={str(position)!r}"
 
     if item.urn is not None:
-        attributes += f" {URN.lower()}={item.urn!r}"
+        urn = item.urn
+        if item.role == Role.MEASURE:
+            # Handling URN to ensure roundtrip between SDMX 2.1 and 3.0
+            if references_30:
+                urn = urn.replace(".PrimaryMeasure", ".Measure")
+            else:
+                urn = urn.replace(".Measure", ".PrimaryMeasure")
+        attributes += f" {URN.lower()}={urn!r}"
 
     attributes += ">"
 

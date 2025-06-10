@@ -10,7 +10,7 @@
 	</mes:Header>
 	<mes:Structures>
 		<str:AgencySchemes>
-			<str:AgencyScheme id="AGENCIES" urn="urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)" version="1.0" isExternalReference="false" agencyID="SDMX" isPartial="false">
+			<str:AgencyScheme id="AGENCIES" urn="urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)" isExternalReference="false" agencyID="SDMX" isPartial="false">
 				<com:Name xml:lang="en">SDMX Agency Scheme</com:Name>
 				<str:Agency id="BIS">
 					<com:Name xml:lang="en">Bank for International Settlements</com:Name>

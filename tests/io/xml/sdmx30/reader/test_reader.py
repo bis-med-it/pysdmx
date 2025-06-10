@@ -270,7 +270,7 @@ def test_concepts_codelist_read(samples_folder):
     concepts = result[2].items
     assert len(concepts) == 1
     concept = concepts[0]
-    assert concept.codes[0] == codelist.items[0]
+    assert concept.codes.items[0] == codelist.items[0]
 
 
 def test_dsd_cod_concept_ref_read(samples_folder):
@@ -287,7 +287,7 @@ def test_dsd_cod_concept_ref_read(samples_folder):
     dimensions = dsd.components.dimensions
     dimension = dimensions[0]
     assert dimension.concept == concept
-    assert dimension.enumeration[0].urn == code.urn
+    assert dimension.enumeration.items[0].urn == code.urn
 
 
 def test_data_structure_metadata(samples_folder):

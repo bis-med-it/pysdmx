@@ -20,7 +20,7 @@
 								<str:TextFormat minLength="1" maxLength="1" textType="String"/>
 							</str:LocalRepresentation>
 						</str:Dimension>
-						<str:TimeDimension id="TIME_PERIOD" position="2" urn="urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=MD:TD(1.0).TIME_PERIOD">
+						<str:TimeDimension id="TIME_PERIOD" urn="urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=MD:TD(1.0).TIME_PERIOD">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:STANDALONE_CONCEPT_SCHEME(1.0).TIME_PERIOD</str:ConceptIdentity>
 							<str:LocalRepresentation>
 								<str:TextFormat textType="ObservationalTimePeriod"/>
