@@ -118,8 +118,10 @@ def test_tostr_full(id, name, desc, vf, vt, child_codes):
     )
 
     s = str(hc)
-    expected_str = (f"id: {id}, name: {name}, description: {desc}, "
-                    f"valid_from: {vf}, codes: 2 hierarchicalcodes")
+    expected_str = (
+        f"id: {id}, name: {name}, description: {desc}, "
+        f"valid_from: {vf}, codes: 2 hierarchicalcodes"
+    )
 
     assert s == expected_str
 

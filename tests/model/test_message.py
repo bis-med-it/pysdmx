@@ -5,10 +5,10 @@ import pytest
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.model import (
     AgencyScheme,
+    Organisation,
     RulesetScheme,
     TransformationScheme,
     UserDefinedOperatorScheme,
-    Organisation,
 )
 from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
