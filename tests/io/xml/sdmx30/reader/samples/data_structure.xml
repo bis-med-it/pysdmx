@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common">
+  <message:Header>
+    <message:ID>12345</message:ID>
+    <message:Test>true</message:Test>
+    <message:Prepared>2025-05-26T11:58:47Z</message:Prepared>
+    <message:Sender id="Unknown"/>
+    <message:Receiver id="not_supplied"/>
+  </message:Header>
+  <message:Structures>
+    <str:DataStructures>
+      <str:DataStructure urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:DS(1.0)" isExternalReference="false" agencyID="MD" id="DS" version="1.0">
+        <com:Name xml:lang="en">DS Test</com:Name>
+        <str:DataStructureComponents>
+          <str:DimensionList urn="urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=MD:DML(1.0).DimensionDescriptor" id="DimensionDescriptor">
+            <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=MD:DM(1.0).FREQ" id="FREQ" position="1">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:STANDALONE_CONCEPT_SCHEME(1.0).FREQ</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=MD:CL_FREQ(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:TimeDimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=MD:TD(1.0).TIME_PERIOD" id="TIME_PERIOD">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:STANDALONE_CONCEPT_SCHEME(1.0).TIME_PERIOD</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="ObservationalTimePeriod"/>
+              </str:LocalRepresentation>
+            </str:TimeDimension>
+          </str:DimensionList>
+          <str:AttributeList urn="urn:sdmx:org.sdmx.infomodel.datastructure.AttributeDescriptor=MD:AL(1.0).AttributeDescriptor" id="AttributeDescriptor">
+            <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:ATT1(1.0).TIME_FORMAT" usage="optional" id="TIME_FORMAT">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:STANDALONE_CONCEPT_SCHEME(1.0).TIME_FORMAT</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=MD:CL_TIME_FORMAT(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="3" textType="String" maxLength="3"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dimension>FREQ</str:Dimension>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=MD:ATT2(1.0).OBS_STATUS" usage="mandatory" id="OBS_STATUS">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:STANDALONE_CONCEPT_SCHEME(1.0).OBS_STATUS</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=MD:CL_OBS_STATUS(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Observation/>
+              </str:AttributeRelationship>
+              <str:MeasureRelationship>
+                <str:Measure>OBS_VALUE</str:Measure>
+              </str:MeasureRelationship>
+            </str:Attribute>
+            <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=MD:ATT3(1.0).DECIMALS" usage="mandatory" id="DECIMALS">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:STANDALONE_CONCEPT_SCHEME(1.0).DECIMALS</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=MD:CL_DECIMALS(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="BigInteger" maxLength="2"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dataflow/>
+              </str:AttributeRelationship>
+            </str:Attribute>
+          </str:AttributeList>
+          <str:MeasureList urn="urn:sdmx:org.sdmx.infomodel.datastructure.MeasureDescriptor=MD:ML(1.0).MeasureDescriptor" id="MeasureDescriptor">
+            <str:Measure urn="urn:sdmx:org.sdmx.infomodel.datastructure.Measure=MD:M1(1.0).OBS_VALUE" usage="optional" id="OBS_VALUE">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:STANDALONE_CONCEPT_SCHEME(1.0).OBS_VALUE</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat minLength="1" textType="String" maxLength="15"/>
+              </str:LocalRepresentation>
+            </str:Measure>
+            <str:Measure urn="urn:sdmx:org.sdmx.infomodel.datastructure.Measure=MD:M2(1.0).OBS_VALUE1" usage="optional" id="OBS_VALUE1">
+              <com:Link url="" rel="" type="" urn=""/>
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:STANDALONE_CONCEPT_SCHEME(1.0).OBS_VALUE1</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat minLength="1" textType="String" maxLength="15"/>
+              </str:LocalRepresentation>
+            </str:Measure>
+          </str:MeasureList>
+        </str:DataStructureComponents>
+      </str:DataStructure>
+    </str:DataStructures></message:Structures></message:Structure>

@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common">
+  <message:Header>
+    <message:ID>IREF607293</message:ID>
+    <message:Test>false</message:Test>
+    <message:Prepared>2025-05-26T11:58:47Z</message:Prepared>
+    <message:Sender id="Unknown"/>
+    <message:Receiver id="not_supplied"/>
+  </message:Header>
+  <message:Structures>
+    <str:AgencySchemes>
+      <str:AgencyScheme urn="urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)" isExternalReference="false" agencyID="SDMX" id="AGENCIES">
+        <com:Link url="" rel="" type="" urn=""/>
+        <com:Name xml:lang="en">SDMX Agency Scheme</com:Name>
+        <str:Agency urn="urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).SDMX" id="SDMX">
+          <com:Link url="" rel="" type="" urn=""/>
+          <com:Name xml:lang="en">SDMX</com:Name>
+        </str:Agency>
+      </str:AgencyScheme>
+    </str:AgencySchemes>
+    <str:Dataflows>
+      <str:Dataflow urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:WS_CBS_PUB(1.0)" isExternalReference="false" agencyID="BIS" id="WS_CBS_PUB" version="1.0">
+        <com:Link url="" rel="" type="" urn=""/>
+        <com:Name xml:lang="en">BIS consolidated banking</com:Name>
+        <str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)</str:Structure>
+      </str:Dataflow>
+    </str:Dataflows>
+    <str:DataStructures>
+      <str:DataStructure urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)" isExternalReference="false" agencyID="BIS" id="BIS_CBS" version="1.0">
+        <com:Link url="" rel="" type="" urn=""/>
+        <com:Name xml:lang="en">Consolidated Banking Statistics</com:Name>
+        <str:DataStructureComponents>
+          <str:DimensionList urn="urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=BIS:BIS_CBS(1.0).DimensionDescriptor" id="DimensionDescriptor">
+            <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).FREQ" id="FREQ" position="1">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).FREQ</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+          </str:DimensionList>
+        </str:DataStructureComponents>
+      </str:DataStructure>
+    </str:DataStructures></message:Structures></message:Structure>
