@@ -1,4 +1,3 @@
-
 from pysdmx.model.gds import (
     GdsAgency,
     GdsCatalog,
@@ -153,7 +152,7 @@ def test_str_gds_urn_resolver():
             ResolverResult(
                 api_version="1.4.0",
                 query="https://stats.bis.org/api/v1/categoryscheme/BIS/BISWEB_CATSCHEME/1.0?detail=allstubs",
-                query_response_status_code=200,
+                status_code=200,
             )
         ],
     )
@@ -356,7 +355,7 @@ def test_repr_gds_urn_resolver():
                 api_version="1.4.0",
                 query="https://stats.bis.org/api/v1/categoryscheme/BIS"
                 "/BISWEB_CATSCHEME/1.0?detail=allstubs",
-                query_response_status_code=200,
+                status_code=200,
             )
         ],
     )
@@ -462,11 +461,11 @@ def test_instantiation_resolver_result():
     instance = ResolverResult(
         api_version="1.0",
         query="https://query",
-        query_response_status_code=200,
+        status_code=200,
     )
     assert instance.api_version == "1.0"
     assert instance.query == "https://query"
-    assert instance.query_response_status_code == 200
+    assert instance.status_code == 200
 
 
 def test_instantiation_gds_urn_resolver():

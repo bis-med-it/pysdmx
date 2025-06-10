@@ -172,12 +172,12 @@ class ResolverResult(GdsBase, frozen=True):
     Attributes:
         api_version: The API version of the resolver result.
         query: The query URL for the resource.
-        query_response_status_code: The HTTP response code for the query.
+        status_code: The HTTP response code for the query.
     """
 
     api_version: str
     query: str
-    query_response_status_code: int
+    status_code: int
 
 
 class GdsUrnResolver(GdsBase, frozen=True):
