@@ -26,11 +26,6 @@ List of formats and versions supported by the general reader:
     - Structure Specific Data
     - Structure
 
-- **SDMX-JSON**
-
-  - Fusion JSON
-  - SDMX-JSON
-
 - **SDMX-CSV**
 
   - SDMX-CSV 1.0

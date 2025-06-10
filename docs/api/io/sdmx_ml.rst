@@ -41,8 +41,8 @@ DataFrame with the data or a structure object with the structure of the message.
 Writing
 -------
 
-As for writing, we can choose between SDMX-ML 2.1 and 3.0 formats
-we also have different readers according to the type of structure we are going to write.
+As for reading, we can choose between SDMX-ML 2.1 and 3.0 formats
+we also have different writers according to the type of structure we are going to write.
 To write data we need to input a pandas Dataframe and to write a structure
 we need a series of data structure objects like `Dataflow`, `DataStructureDefinition`, etc.
 

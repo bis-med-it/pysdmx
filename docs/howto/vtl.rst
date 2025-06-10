@@ -1,18 +1,11 @@
 .. _vtl:
 
-Using VTL for Validation
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. important::
-    A seamless integration of ``pysdmx`` and ``vtlengine`` will modify this
-    tutorial. The current version is a placeholder for the upcoming changes
-    showing the use of both libraries separated.
-    For the latest updates on VTL usage, please check
-    `issue #158 <https://github.com/bis-med-it/pysdmx/issues/158>`_.
+VTL Script Run Tutorial
+^^^^^^^^^^^^^^^^^^^^^^^
 
 In this tutorial, we shall examine the utilization of ``pysdmx``
-for reading **data** and **metadata** to generate and operate on
-datapoints using ``vtlengine``.
+for reading **data** and **metadata** to generate a dataset and VTL script
+and ``vtlengine`` for executing the VTL script.
 
 Numerous types of operations can be performed; however, this
 tutorial will focus exclusively on the fundamental ones.
@@ -21,159 +14,87 @@ tutorial will focus exclusively on the fundamental ones.
    :local:
    :depth: 2
 
-Required Metadata
------------------
-
-For the present scenario, the required metadata is contingent
-upon the desired operations. For reference please check
-`sdmx to vtl documentation <https://sdmx.org/wp-content/uploads/SDMX_3-0-0_SECTION_2_FINAL-1_0.pdf#%5B%7B%22num%22%3A295%2C%22gen%22%3A0[…]e%22%3A%22XYZ%22%7D%2C87%2C736%2C0%5D>`_
-
 Step-by-Step Solution
 ---------------------
 
 ``pysdmx`` facilitates the reading of data and metadata from an SDMX
 file or service. For the purpose of this tutorial, we shall employ the XML files
-``structures.xml`` (data structure) and ``data.csv`` (data).
+``metadata.xml`` (data structure), ``data.xml`` (data) and ``structure.xml`` (Transformation and VTLMapping).
 
-Reading the Data
-~~~~~~~~~~~~~~~~
+Reading and Extracting Data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The initial step involves reading the data structure and data from the
 SDMX files. The following code snippet demonstrates the process:
 
 .. code-block:: python
 
+    from pysdmx.io import get_datasets, read_sdmx
+    from pysdmx.toolkit.vtl import generate_vtl_script
     from pathlib import Path
 
     # Path to the structures file in SDMX-ML 2.1 (same directory as this script)
-    path_to_structures = Path(__file__).parent / "structures.xml"
+    path_to_metadata = Path(__file__).parent / "metadata.xml"
 
     # Path to the data file
-    path_to_data = Path(__file__).parent / "data.csv"
+    path_to_data = Path(__file__).parent / "data.xml"
 
-    # Get Structures SDMX Message
-    structures_msg = read_sdmx(path_to_structures)
-
-    # Get Data message
-    data_msg = read_sdmx(path_to_data)
-
-
-Extracting the Data and Data Structure
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-After reading the data and metadata, the next step is to extract the
-data and data structure from the SDMX messages. The following code snippet demonstrates
-the process using the Short URN ``SDMX_TYPE=AGENCY_ID:ID(VERSION)``
+Now we have the paths to the files, we can read the data structure and data
+and extract the data:
 
 .. code-block:: python
 
-    # Extract the data structure and data for DS_1
-    data_structure_1 = structures_msg.get_data_structure_definition("DataStructure=MD:DS_1(1.0)")
-    data_1 = data_msg.get_data("DataStructure=MD:DS_1(1.0)")
+    # With the data and metadata path we extract de datasets
+    datasets = get_datasets(path_to_data, path_to_metadata)
 
-    # Extract the data structure and data for DS_2
-    data_structure_2 = structures_msg.get_data_structure_definition("DataStructure=BIS:DS_2(1.0)")
-    data_2 = data_msg.get_data("DataStructure=BIS:DS_2(1.0)")
+Creating VTL Script
+~~~~~~~~~~~~~~~~~~~
 
-
-
-To construct the datapoint, the metadata must be converted to the VTL
-format using the ``to_vtl_json`` upcoming **DataStructureDefinition** method:
+To create a ``VTL Script``, first we need to read the ``structure.xml`` file
+and get the transformation and mapping schemes.
 
 .. code-block:: python
 
-    from pysdmx.model.dataflow import Component, DataStructureDefinition, Role
-    from pysdmx.model.__utils import VTL_DTYPES_MAPPING, VTL_ROLE_MAPPING
+    # Path to the transformation file
+    path_to_structure = Path(__file__).parent / "structure.xml"
 
-    def to_vtl_json(
-        dsd: DataStructureDefinition, path: Optional[str] = None
-    ) -> Optional[Dict[str, Any]]:
-        """Formats the DataStructureDefinition as a VTL DataStructure."""
+    # Read the transformation file with read_sdmx
+    message = read_sdmx(path_to_structure)
 
-        dataset_name = dsd.id
-        components = []
-        NAME = "name"
-        ROLE = "role"
-        TYPE = "type"
-        NULLABLE = "nullable"
+    # Get the Transformation Schemes
+    schemes = message.get_transformation_schemes()
+    # Get the first Transformation scheme, assuming the first scheme is the one we want
+    trans_scheme = schemes[0]
+    # Get the VTL Mapping Scheme
+    mapping = message.get_vtl_mapping_schemes()
+    # Get the VTL Dataflow Mapping from the items, assuming the first item is the one we want
+    dataflow_mapping = vtl[0].items[0]
 
-        _components: List[Component] = []
-        _components.extend(dsd.components.dimensions)
-        _components.extend(dsd.components.measures)
-        _components.extend(dsd.components.attributes)
 
-        for c in _components:
-            _type = VTL_DTYPES_MAPPING[c.dtype]
-            _nullability = c.role != Role.DIMENSION
-            _role = VTL_ROLE_MAPPING[c.role]
-
-            component = {
-                NAME: c.id,
-                ROLE: _role,
-                TYPE: _type,
-                NULLABLE: _nullability,
-            }
-
-            components.append(component)
-
-        result = {
-            "datasets": [{"name": dataset_name, "DataStructure": components}]
-        }
-        if path is not None:
-            with open(path, "w") as fp:
-                json.dump(result, fp)
-            return None
-
-        return result
-
-    vtl_data_structure_1 = to_vtl_json(data_structure_1)
-    vtl_data_structure_2 = to_vtl_json(data_structure_2)
-
-Preparing the Dictionary
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-To create the datapoint, a dictionary containing the required data and
-structures must first be prepared. The arguments `data_structures` and
-`datapoints` support the following types:
-
-- `Dict[str, Any]`
-- `Path`
-- `List[Union[Dict[str, Any], Path]]`
-
-The example below uses dictionaries for simplicity:
+Now we have the transformation scheme and the VTL mapping scheme,
+we can create the VTL script from the Transformation Scheme.
+We can also use the `model_validation` parameter to validate the model
+and the `prettyprint` parameter to format the script for better readability.
 
 .. code-block:: python
 
-    vtl_data_structures = {
-        "DS_1": vtl_data_structure_1,
-        "DS_2": vtl_data_structure_2,
-    }
 
-    datapoints = {
-        "DS_1": data_1,
-        "DS_2": data_2,
-    }
+    # Create the VTL script from the Transformation Scheme
+    vtl_script = generate_vtl_script(trans_scheme, model_validation=True, prettyprint=True)
 
-Defining the Expression and Execution
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Next, define the expression to be executed and utilize the ``run``
-method of ``vtlengine`` to perform the operation. The following example
-demonstrates the addition of the datapoints `DS_1` and `DS_2`, with the
-result assigned to a new datapoint `DS_r`:
-
-For reference please check
-`vtlengine run documentation <https://docs.vtlengine.meaningfuldata.eu/api.html#vtlengine.run>`_
+Running the VTL Script
+~~~~~~~~~~~~~~~~~~~~~~
+Now that we have the VTL script, we can run it using the
+``vtlengine`` library.
 
 .. code-block:: python
 
     import vtlengine
 
-    expression = "DS_r <- DS_1 + DS_2;"
+    # Run the VTL script with the datasets and the dataflow mapping
+    vtlengine.run_sdmx(vtl_script, datasets=datasets, mappings=dataflow_mapping)
 
-    run_result = run(
-        script=expression,
-        data_structures=vtl_data_structures,
-        datapoints=datapoints,
-        return_only_persistent=True,
-    )
+
+For more information on how to use the ``vtlengine``, please refer to the
+`vtlengine run documentation <https://docs.vtlengine.meaningfuldata.eu/walkthrough.html>`_

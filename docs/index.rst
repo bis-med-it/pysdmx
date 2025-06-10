@@ -29,7 +29,7 @@ Your opinionated Python SDMX library.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Handling SDMX datasets
+   :caption: SDMX Tutorials
 
    howto/general_rw
    howto/structure_rw
