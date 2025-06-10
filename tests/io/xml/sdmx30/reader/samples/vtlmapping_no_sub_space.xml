@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common">
+  <message:Header>
+    <message:ID>IREF607293</message:ID>
+    <message:Test>false</message:Test>
+    <message:Prepared>2025-05-26T11:58:47Z</message:Prepared>
+    <message:Sender id="Unknown"/>
+    <message:Receiver id="not_supplied"/>
+  </message:Header>
+  <message:Structures>
+        <str:VtlMappingSchemes>
+			<str:VtlMappingScheme id="VTLMS1" urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=MD:VTLMS1(1.0)" version="1.0" isExternalReference="false" agencyID="MD" isPartial="false" >
+				<com:Name xml:lang="en">Test Vtl Mapping Scheme</com:Name>
+				<str:VtlMapping alias="DF1R1" id="VTLM1">
+                    <com:Name xml:lang="en">VTL Mapping #1</com:Name>
+                    <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=SDMX:DF1R1(1.0)</str:Dataflow>
+                    <str:FromVtlMapping method="M2A" />
+                </str:VtlMapping>
+                <str:VtlMapping alias="DF11" id="VTLM2">
+                     <com:Name xml:lang="en">VTL Mapping #2</com:Name>
+                    <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=SDMX:DF11(1.0)</str:Dataflow>
+                    <str:ToVtlMapping method="Basic" />
+                </str:VtlMapping>
+			</str:VtlMappingScheme>
+		</str:VtlMappingSchemes>
+  </message:Structures></message:Structure>
