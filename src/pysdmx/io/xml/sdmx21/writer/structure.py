@@ -18,8 +18,8 @@ from pysdmx.io.xml.__write_aux import (
     get_end_message,
 )
 from pysdmx.io.xml.sdmx21.__tokens import (
-    AGENCIES,
     AGENCY_ID,
+    AGENCY_SCHEME,
     AS_STATUS,
     ATT,
     ATT_REL,
@@ -659,7 +659,7 @@ def __write_metadata_element(
                 DSD
                 if issubclass(element.__class__, DataStructureDefinition)
                 else (
-                    AGENCIES
+                    AGENCY_SCHEME
                     if element.id == "AGENCIES"
                     else type(element).__name__
                 )

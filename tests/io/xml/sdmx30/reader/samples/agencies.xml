@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common">
+  <message:Header>
+    <message:ID>12345</message:ID>
+    <message:Test>true</message:Test>
+    <message:Prepared>2025-05-26T11:58:47Z</message:Prepared>
+    <message:Sender id="Unknown"/>
+    <message:Receiver id="not_supplied"/>
+  </message:Header>
+  <message:Structures>
+    <str:AgencySchemes>
+      <str:AgencyScheme urn="urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=MD:AGENCIES(1.0)" isExternalReference="false" agencyID="MD" id="AGENCIES">
+        <com:Name xml:lang="en">MD Agency Scheme</com:Name>
+        <str:Agency urn="urn:sdmx:org.sdmx.infomodel.base.Agency=MD:AGENCIES(1.0).AG" id="AG">
+          <com:Name xml:lang="en">AGENCY</com:Name>
+          <com:Description xml:lang="en">AGENCY</com:Description>
+          <str:Contact>
+            <com:Name xml:lang="en">CONTACT</com:Name>
+            <str:Department xml:lang="en">DEPARTMENT</str:Department>
+            <str:Role xml:lang="en">ROLE</str:Role>
+            <str:URI>http://ag.md.org</str:URI>
+            <str:Email>ag.test@md.org</str:Email>
+          </str:Contact>
+        </str:Agency>
+      </str:AgencyScheme>
+    </str:AgencySchemes>
+</message:Structures></message:Structure>
