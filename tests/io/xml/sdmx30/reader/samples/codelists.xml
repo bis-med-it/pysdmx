@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message ../../schemas/SDMXMessage.xsd">
+    <mes:Header>
+        <mes:ID>IREF257793</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2021-03-08T17:49:35Z</mes:Prepared>
+        <mes:Sender id="Unknown" />
+        <mes:Receiver id="not_supplied" /></mes:Header>
+    <mes:Structures>
+        <str:Codelists>
+            <str:Codelist urn="urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_AGE(1.0)" structureURL="https://registry.sdmx.org/FusionRegistry/ws/rest/codelist/SDMX/CL_AGE/1.0" isExternalReference="false" agencyID="SDMX" id="CL_AGE" version="1.0">
+                <com:Name xml:lang="en">Age</com:Name>
+                <com:Description xml:lang="en">This code list provides a set of building blocks to be used for creating simple or complex code identifiers relating to the concept of "age" as defined in the Cross-Domain Concepts and the Metadata Common Vocabulary, i.e. the length of time that a person has lived or a thing has existed. This code list was formally adopted on 7 February 2014. More information about and supporting material for this code list and SDMX code lists in general (e.g. list of generic codes for expressing general concepts like "Total", "Unknown", etc.; syntaxes for the creation of further codes; general guidelines for the creation of SDMX code lists) can be found at this address: https://sdmx.org/?page_id=4345.</com:Description>
+                <str:Code urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_AGE(1.0).Y" id="Y">
+                    <com:Name xml:lang="en">Year(s)</com:Name>
+                </str:Code>
+                <str:Code urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_AGE(1.0).M" id="M">
+                    <com:Name xml:lang="en">Month(s)</com:Name>
+                </str:Code>
+                <str:Code urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_AGE(1.0).W" id="W">
+                    <com:Name xml:lang="en">Week(s)</com:Name>
+                </str:Code>
+                <str:Code urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_AGE(1.0).D" id="D">
+                    <com:Name xml:lang="en">Day(s)</com:Name>
+                </str:Code>
+                <str:Code urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=SDMX:CL_AGE(1.0).H" id="H">
+                    <com:Name xml:lang="en">Hour(s)</com:Name>
+                </str:Code>
+            </str:Codelist>
+        </str:Codelists>
+    </mes:Structures>
+</mes:Structure>
