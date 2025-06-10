@@ -134,7 +134,7 @@ class GdsCatalog(GdsBase, frozen=True):
     """Represents a GDS catalog.
 
     Attributes:
-        agency: AgencyID or GdsAgency associated with the catalog.
+        agency: The AgencyID of the catalog's owner.
         id: The ID of the catalog.
         name: The name of the catalog.
         urn: The URN of the catalog.
