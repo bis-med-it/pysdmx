@@ -127,7 +127,7 @@ def test_tostr(context, agency, id, components, artefacts):
 
     assert s == (
         "context: dataflow, agency: BIS, id: 5B0, components: 5 components, "
-        "artefacts: 2 strs"
+        "artefacts: 2 artefacts"
     )
 
 

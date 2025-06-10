@@ -467,6 +467,9 @@ class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
                 if not value:
                     continue
                 class_name = value[0].__class__.__name__
+                # If the value is a list of artefacts, we can summarize it
+                if attr == "artefacts":
+                    class_name = "Artefact"
                 value = f"{len(value)} {class_name.lower()}s"
 
             processed_output.append(f"{attr}: {value}")
