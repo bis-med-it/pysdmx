@@ -7,7 +7,7 @@ Exports: GdsClient: A synchronous client for retrieving metadata from
 the GDS.
 """
 
-from typing import Any, Optional, Sequence
+from typing import Any, Optional, Sequence, Literal
 
 from msgspec.json import decode
 
@@ -16,6 +16,7 @@ from pysdmx.api.qb.service import GdsAsyncRestService, GdsRestService
 from pysdmx.api.qb.util import REST_ALL
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.io.serde import Deserializer
+from pysdmx.model import Agency
 from pysdmx.model.gds import (
     GdsAgency,
     GdsCatalog,
@@ -45,7 +46,7 @@ class __BaseGdsClient:
         return decode(response, type=typ).to_model(*params)
 
     def _agencies_q(self, agency: str) -> GdsQuery:
-        return GdsQuery(artefact_type=GdsType.GDS_AGENCY, agency_id=agency)
+        return GdsQuery(artefact_type=GdsType.GDS_AGENCY, agency=agency)
 
     def _catalogs_q(
         self,
@@ -60,7 +61,7 @@ class __BaseGdsClient:
     ) -> GdsQuery:
         return GdsQuery(
             artefact_type=GdsType.GDS_CATALOG,
-            agency_id=agency,
+            agency=agency,
             resource_id=resource,
             version=version,
             resource_type=resource_type,
@@ -71,20 +72,20 @@ class __BaseGdsClient:
         )
 
     def _sdmx_api_q(self, id: str = REST_ALL) -> GdsQuery:
-        return GdsQuery(artefact_type=GdsType.GDS_SDMX_API, agency_id=id)
+        return GdsQuery(artefact_type=GdsType.GDS_SDMX_API, agency=id)
 
     def _services_q(
         self, agency: str, resource: str = REST_ALL, version: str = REST_ALL
     ) -> GdsQuery:
         return GdsQuery(
             artefact_type=GdsType.GDS_SERVICE,
-            agency_id=agency,
+            agency=agency,
             resource_id=resource,
             version=version,
         )
 
     def _urn_resolver_q(self, urn: str) -> GdsQuery:
-        return GdsQuery(artefact_type=GdsType.GDS_URN_RESOLVER, agency_id=urn)
+        return GdsQuery(artefact_type=GdsType.GDS_URN_RESOLVER, agency=urn)
 
 
 class GdsClient(__BaseGdsClient):
@@ -120,7 +121,7 @@ class GdsClient(__BaseGdsClient):
         """Fetch the requested metadata from the GDS service."""
         return self.__service.gds(query)
 
-    def get_agencies(self, agency: str) -> Sequence[GdsAgency]:
+    def get_agencies(self, agency: str) -> Sequence[Agency]:
         """Get the list of agencies for the supplied name.
 
         Args:
@@ -141,10 +142,10 @@ class GdsClient(__BaseGdsClient):
         resource: str = REST_ALL,
         version: str = REST_ALL,
         resource_type: Optional[str] = None,
-        message_format: Optional[str] = None,
+        message_format: Optional[Literal["json", "csv", "xml"]] = None,
         api_version: Optional[str] = None,
-        detail: Optional[str] = None,
-        references: Optional[str] = None,
+        detail: Optional[Literal["full", "raw"]] = None,
+        references: Optional[Literal["none", "children"]] = None,
     ) -> Sequence[GdsCatalog]:
         """Get the list of catalogs for the supplied parameters.
 
@@ -153,10 +154,33 @@ class GdsClient(__BaseGdsClient):
             resource: The resource ID(s) to query. Defaults to '*'.
             version: The version(s) of the resource. Defaults to '*'.
             resource_type: The type of resource (e.g., 'data', 'metadata').
-            message_format: The message format(s) (e.g., 'json', 'csv').
-            api_version: The API version(s) (e.g., '2.0.0').
-            detail: The level of detail ('full', 'raw').
-            references: The references to include ('none', 'children').
+            message_format: Filters the endpoints has a specific format in
+              message_formats.
+              Multiple values separated by commas are possible.
+              By default, (if None) it returns everything.
+
+                - Option json: endpoints with "json" in the message_formats.
+                - Option xml: endpoints with "xml" in the message_formats.
+                - Option csv: endpoints with "csv" in the message_formats.
+
+            api_version: Filters the endpoints that is in a
+              specific SDMX API version.
+              Multiple values separated by commas are possible.
+              By default (if nothing is sent) it returns everything.
+
+            detail: The amount of information to be returned.
+                Option full: All available information for all artefacts
+                  should be returned.
+                Option raw: Any nested service will be referenced.
+
+            references: Instructs the web service to return
+              (or not) the artefacts referenced by the
+              artefact to be returned.
+
+                Option none: No referenced artefacts will be returned.
+                Option children: Returns the artefacts
+                  referenced by the artefact to be returned.
+
 
         Returns:
             A list of GdsCatalog objects.
@@ -247,7 +271,7 @@ class AsyncGdsClient(__BaseGdsClient):
         """Fetch the requested metadata from the GDS service asynchronously."""
         return await self.__service.gds(query)
 
-    async def get_agencies(self, agency: str) -> Sequence[GdsAgency]:
+    async def get_agencies(self, agency: str) -> Sequence[Agency]:
         """Get the list of agencies for the supplied name asynchronously.
 
         Args:

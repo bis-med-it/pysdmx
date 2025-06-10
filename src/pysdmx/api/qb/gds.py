@@ -38,13 +38,41 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
 
     Attributes:
         artefact_type: The type of GDS metadata to be returned.
-        agency_id: The agency (or agencies) maintaining the artefact(s)
+        agency: The agency (or agencies) maintaining the artefact(s)
             to be returned.
-        resource_id: The id(s) of the artefact(s) to be returned.
+        resource_id: The resource ID(s) to query. Defaults to '*'.
+        version: The version(s) of the resource. Defaults to '*'.
+        resource_type: The type of resource (e.g., 'data', 'metadata').
+        message_format: Filters the endpoints has a specific format in
+          message_formats.
+          Multiple values separated by commas are possible.
+          By default, (if None) it returns everything.
+
+            - Option json: endpoints with "json" in the message_formats.
+            - Option xml: endpoints with "xml" in the message_formats.
+            - Option csv: endpoints with "csv" in the message_formats.
+
+        api_version: Filters the endpoints that is in a
+          specific SDMX API version.
+          Multiple values separated by commas are possible.
+          By default (if nothing is sent) it returns everything.
+
+        detail: The amount of information to be returned.
+            Option full: All available information for all artefacts
+              should be returned.
+            Option raw: Any nested service will be referenced.
+
+        references: Instructs the web service to return
+          (or not) the artefacts referenced by the
+          artefact to be returned.
+
+            Option none: No referenced artefacts will be returned.
+            Option children: Returns the artefacts
+              referenced by the artefact to be returned.
     """
 
     artefact_type: GdsType
-    agency_id: Union[str, Sequence[str]] = REST_ALL
+    agency: Union[str, Sequence[str]] = REST_ALL
     resource_id: Union[str, Sequence[str]] = REST_ALL
     version: Optional[str] = None
     resource_type: Optional[str] = None
@@ -107,13 +135,13 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
 
     def __create_query(self) -> str:
         t = self.__to_type_kw(self.artefact_type)
-        a = self.__to_kws(self.agency_id)
+        a = self.__to_kws(self.agency)
         r = self.__to_kws(self.resource_id)
         v = self.__to_kws(self.version) if self.version else REST_ALL
 
         vu = f"/{v}" if v != REST_ALL else ""
         ru = f"/{r}{vu}" if vu or self.resource_id != REST_ALL else ""
-        au = f"/{a}{ru}" if ru or self.agency_id != REST_ALL else ""
+        au = f"/{a}{ru}" if ru or self.agency != REST_ALL else ""
 
         return f"/{t}{au}"
 
