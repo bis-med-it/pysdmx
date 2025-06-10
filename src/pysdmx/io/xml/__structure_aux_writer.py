@@ -15,7 +15,6 @@ from pysdmx.io.xml.__write_aux import (
     add_indent,
 )
 from pysdmx.io.xml.sdmx21.__tokens import (
-    AGENCIES,
     AGENCY_ID,
     AS_STATUS,
     ATT,
