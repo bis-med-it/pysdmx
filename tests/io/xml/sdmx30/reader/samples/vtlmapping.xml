@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common">
+  <message:Header>
+    <message:ID>IREF607293</message:ID>
+    <message:Test>false</message:Test>
+    <message:Prepared>2025-05-26T11:58:47Z</message:Prepared>
+    <message:Sender id="Unknown"/>
+    <message:Receiver id="not_supplied"/>
+  </message:Header>
+  <message:Structures>
+        <str:VtlMappingSchemes>
+			<str:VtlMappingScheme id="VTLMS1" urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=MD:VTLMS1(1.0)" version="1.0" isExternalReference="false" agencyID="MD" isPartial="false" >
+				<com:Name xml:lang="en">Test Vtl Mapping Scheme</com:Name>
+				<str:VtlMapping id="VTLM1" urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlDataflowMapping=MD:VTLMS1(1.0).VTLM1" alias="BPE_DETAIL_VTL">
+					<com:Name xml:lang="en">Test Vtl Mapping</com:Name>
+					<str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=FR1:BPE_DETAIL_CUBE(1.0)</str:Dataflow>
+				</str:VtlMapping>
+			</str:VtlMappingScheme>
+		</str:VtlMappingSchemes>
+	  	<str:CustomTypeSchemes>
+            <str:CustomTypeScheme urn="urn:sdmx:org.sdmx.infomodel.transformation.CustomTypeScheme=MD:CTS1(1.0)"
+                                  vtlVersion="2.0" isExternalReference="false" agencyID="MD" id="CTS1"
+                                  version="1.0">
+                <com:Name xml:lang="en">Test Custom Type Scheme</com:Name>
+                <str:CustomType urn="urn:sdmx:org.sdmx.infomodel.transformation.CustomType=MD:CTS1(1.0).CT1" id="CT1">
+                    <com:Name xml:lang="en">Test Custom Type</com:Name>
+                    <str:VtlScalarType>Test_scalar_type</str:VtlScalarType>
+                    <str:DataType>Test_data_type</str:DataType>
+                    <str:VtlLiteralFormat>Test_output_format</str:VtlLiteralFormat>
+                    <str:OutputFormat>Test_null_value</str:OutputFormat>
+                    <str:NullValue>Test_literal_format</str:NullValue>
+                </str:CustomType>
+            </str:CustomTypeScheme>
+        </str:CustomTypeSchemes>
+	  	<str:NamePersonalisationSchemes>
+            <str:NamePersonalisationScheme
+                    urn="urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisationScheme=MD:NPS1(1.0)"
+                    vtlVersion="2.0" isExternalReference="false" agencyID="MD" id="NPS1" version="1.0">
+                <com:Name xml:lang="en">Test Name Personalisation Scheme</com:Name>
+                <str:NamePersonalisation
+                        urn="urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisation=MD:NPS1(1.0).NP1"
+                        vtlArtefact="TEST_VTL_ARTEFACT" id="NP1">
+                    <com:Name xml:lang="en">Test Name Personalisation</com:Name>
+                    <str:VtlDefaultName>TEST_DEFAULT</str:VtlDefaultName>
+                    <str:PersonalisedName>TEST_PERSONALISED</str:PersonalisedName>
+                </str:NamePersonalisation>
+            </str:NamePersonalisationScheme>
+        </str:NamePersonalisationSchemes>
+  </message:Structures></message:Structure>
