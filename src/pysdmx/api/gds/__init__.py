@@ -7,7 +7,7 @@ Exports: GdsClient: A synchronous client for retrieving metadata from
 the GDS.
 """
 
-from typing import Any, Optional, Sequence, Literal
+from typing import Any, Literal, Optional, Sequence
 
 from msgspec.json import decode
 
@@ -16,7 +16,6 @@ from pysdmx.api.qb.service import GdsAsyncRestService, GdsRestService
 from pysdmx.api.qb.util import REST_ALL
 from pysdmx.io.json.gds.reader import deserializers as gds_readers
 from pysdmx.io.serde import Deserializer
-from pysdmx.model import Agency
 from pysdmx.model.gds import (
     GdsAgency,
     GdsCatalog,
@@ -121,7 +120,7 @@ class GdsClient(__BaseGdsClient):
         """Fetch the requested metadata from the GDS service."""
         return self.__service.gds(query)
 
-    def get_agencies(self, agency: str) -> Sequence[Agency]:
+    def get_agencies(self, agency: str) -> Sequence[GdsAgency]:
         """Get the list of agencies for the supplied name.
 
         Args:
@@ -271,7 +270,7 @@ class AsyncGdsClient(__BaseGdsClient):
         """Fetch the requested metadata from the GDS service asynchronously."""
         return await self.__service.gds(query)
 
-    async def get_agencies(self, agency: str) -> Sequence[Agency]:
+    async def get_agencies(self, agency: str) -> Sequence[GdsAgency]:
         """Get the list of agencies for the supplied name asynchronously.
 
         Args:
