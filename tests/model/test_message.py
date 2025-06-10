@@ -8,6 +8,7 @@ from pysdmx.model import (
     RulesetScheme,
     TransformationScheme,
     UserDefinedOperatorScheme,
+    Organisation,
 )
 from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
@@ -261,7 +262,7 @@ def test_header_str():
         id="12345",
         test=True,
         prepared=datetime(2023, 1, 1, tzinfo=timezone.utc),
-        sender=None,
+        sender=Organisation(id="TEST"),
         receiver=None,
         source="Test Source",
     )
@@ -269,7 +270,7 @@ def test_header_str():
     s = str(h)
     expected_str = (
         "id: 12345, test: True, prepared: 2023-01-01 00:00:00+00:00, "
-        "sender: None, source: Test Source"
+        "sender: id: TEST, source: Test Source"
     )
     assert s == expected_str
 
@@ -279,7 +280,7 @@ def test_header_repr():
         id="12345",
         test=True,
         prepared=datetime(2023, 1, 1, tzinfo=timezone.utc),
-        sender=None,
+        sender=Organisation(id="TEST"),
         receiver=None,
         source="Test Source",
     )
@@ -289,6 +290,6 @@ def test_header_repr():
         "Header(id='12345', test=True, "
         "prepared=datetime.datetime(2023, 1, 1, 0, 0, "
         "tzinfo=datetime.timezone.utc), "
-        "sender=None, source='Test Source')"
+        "sender=Organisation(id='TEST'), source='Test Source')"
     )
     assert r == expected_repr
