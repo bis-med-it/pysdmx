@@ -18,7 +18,7 @@ class JsonAgency(Struct, frozen=True):
     def to_model(self) -> GdsAgency:
         """Converts the payload to a GDS Agency."""
         return GdsAgency(
-            agency_id=self.agencyID,
+            id=self.agencyID,
             name=self.name,
             url=self.url,
             description=self.description,

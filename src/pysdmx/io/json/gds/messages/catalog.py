@@ -31,7 +31,7 @@ class JsonCatalog(Struct, frozen=True):
     ) -> GdsCatalog:
         """Converts the payload to a GDS Catalog."""
         agency = next(
-            (a for a in agencies if a.agency_id == self.agencyID),
+            (a for a in agencies if a.id == self.agencyID),
             self.agencyID,
         )
 

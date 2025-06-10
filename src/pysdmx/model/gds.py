@@ -90,19 +90,19 @@ class GdsAgency(GdsBase, frozen=True):
     """Represents a GDS agency.
 
     Attributes:
-        agency_id: The ID of the agency.
+        id: The ID of the agency.
         name: The name of the agency.
         url: The URL of the agency.
         description: An optional description of the agency.
     """
 
-    agency_id: str
+    id: str
     name: str
     url: str
     description: Optional[str] = None
 
 
-class GdsService(MaintainableArtefact, frozen=True, kw_only=True):
+class GdsService(GdsBase, MaintainableArtefact, frozen=True, kw_only=True):
     """Represents a GDS service.
 
     Attributes:
@@ -118,7 +118,7 @@ class GdsService(MaintainableArtefact, frozen=True, kw_only=True):
     authentication: Optional[str] = None
 
 
-class GdsCatalog(MaintainableArtefact, frozen=True, kw_only=True):
+class GdsCatalog(GdsBase, MaintainableArtefact, frozen=True, kw_only=True):
     """Represents a GDS catalog.
 
     Attributes:

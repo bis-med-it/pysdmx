@@ -13,14 +13,14 @@ from pysdmx.model.gds import (
 def test_str_gds_agency():
     """Test the __str__ method of GdsAgency."""
     agency = GdsAgency(
-        agency_id="BIS",
+        id="BIS",
         name="BIS",
         url="bis.org",
         description="Bank for International Settlements",
     )
 
     expected_str = (
-        "agency_id: BIS, "
+        "id: BIS, "
         "name: BIS, "
         "url: bis.org, "
         "description: Bank for International Settlements"
@@ -56,13 +56,10 @@ def test_str_gds_catalog():
     )
 
     expected_str = (
-        "agency: BIS, "
-        "id: BIS_PUBS, "
-        "version: 1.0, "
-        "name: BIS Service Ref, "
-        "urn: urn:sdmx:org.sdmx.infomodel.discovery.Catalog="
-        "BIS:BIS_PUBS(1.0), "
-        "endpoints: 2 gdsendpoints"
+        "id: BIS_PUBS, urn: "
+        "urn:sdmx:org.sdmx.infomodel.discovery.Catalog=BIS:BIS_PUBS(1.0), "
+        "name: BIS "
+        "Service Ref, version: 1.0, agency: BIS, endpoints: 2 gdsendpoints"
     )
 
     assert str(catalog) == expected_str
@@ -128,12 +125,10 @@ def test_str_gds_service():
     )
 
     expected_str = (
-        "agency_id: BIS, "
-        "id: BIS_DATA, "
-        "name: BIS Data Portal API, "
-        "urn: urn:sdmx:org.sdmx.infomodel.discovery.Service="
-        "BIS:BIS_DATA(1.0), "
-        "version: 1.0, "
+        "id: BIS_DATA, urn: "
+        "urn:sdmx:org.sdmx.infomodel.discovery.Service=BIS:BIS_DATA(1.0), "
+        "name: BIS "
+        "Data Portal API, version: 1.0, agency: BIS, "
         "base: https://stats.bis.org/api, "
         "endpoints: 2 gdsendpoints"
     )
@@ -158,7 +153,7 @@ def test_str_gds_urn_resolver():
     )
 
     expected_str = (
-        "agency_id: BIS, "
+        "agency: BIS, "
         "resource_id: BISWEB_CATSCHEME, "
         "version: 1.0, sdmx_type: CategoryScheme, "
         "resolver_results: 1 resolverresults"
@@ -179,7 +174,7 @@ def test_str_gds_catalog_empty_endpoints():
     )
 
     expected_str = (
-        "agency: BIS, id: CAT1, version: 1.0, name: Catalog, urn: urn"
+        "id: CAT1, urn: urn, name: Catalog, version: 1.0, agency: BIS"
     )
 
     assert str(catalog) == expected_str
@@ -188,14 +183,14 @@ def test_str_gds_catalog_empty_endpoints():
 def test_repr_gds_agency():
     """Test the __repr__ method of GdsAgency."""
     agency = GdsAgency(
-        agency_id="BIS",
+        id="BIS",
         name="BIS",
         url="bis.org",
         description="Bank for International Settlements",
     )
 
     expected_repr = (
-        "GdsAgency(agency_id='BIS', name='BIS', url='bis.org', "
+        "GdsAgency(id='BIS', name='BIS', url='bis.org', "
         "description='Bank for International Settlements')"
     )
 
@@ -229,27 +224,15 @@ def test_repr_gds_catalog():
     )
 
     expected_repr = (
-        "GdsCatalog("
-        "agency='BIS', "
-        "id='BIS_PUBS', "
-        "version='1.0', "
-        "name='BIS Service Ref', "
-        "urn='urn:sdmx:org.sdmx.infomodel."
-        "discovery.Catalog=BIS:BIS_PUBS(1.0)', "
-        "endpoints=["
-        "GdsEndpoint("
-        "api_version='1.4.0', "
-        "url='https://stats.bis.org/api/v1', "
-        "comments='', "
-        "rest_resources="
-        "['structure', 'data', 'schema', 'availability']"
-        "), "
-        "GdsEndpoint("
-        "api_version='2.0.0', "
-        "url='https://stats.bis.org/api/v2', "
-        "comments='', "
-        "rest_resources=['structure']"
-        ")])"
+        "GdsCatalog(id='BIS_PUBS', "
+        "urn='urn:sdmx:org.sdmx.infomodel.discovery."
+        "Catalog=BIS:BIS_PUBS(1.0)', "
+        "name='BIS Service Ref', version='1.0', agency='BIS', "
+        "endpoints=[GdsEndpoint(api_version='1.4.0', "
+        "url='https://stats.bis.org/api/v1', comments='', "
+        "rest_resources=['structure', 'data', 'schema', 'availability']), "
+        "GdsEndpoint(api_version='2.0.0', url='https://stats.bis.org/api/v2', "
+        "comments='', rest_resources=['structure'])])"
     )
 
     assert repr(catalog) == expected_repr
@@ -289,30 +272,16 @@ def test_repr_gds_service():
     )
 
     expected_repr = (
-        "GdsService("
-        "agency_id='BIS', "
-        "id='BIS_DATA', "
-        "name='BIS Data Portal API', "
-        "urn='urn:sdmx:org.sdmx.infomodel."
-        "discovery.Service=BIS:BIS_DATA(1.0)', "
-        "version='1.0', "
+        "GdsService(id='BIS_DATA', "
+        "urn='urn:sdmx:org.sdmx.infomodel.discovery."
+        "Service=BIS:BIS_DATA(1.0)', "
+        "name='BIS Data Portal API', version='1.0', agency='BIS', "
         "base='https://stats.bis.org/api', "
-        "endpoints=["
-        "GdsEndpoint("
-        "api_version='1.4.0', "
-        "url='/v1', "
-        "comments='', "
-        "rest_resources="
-        "['structure', 'data', 'schema', 'availability']"
-        "), "
-        "GdsEndpoint("
-        "api_version='2.0.0', "
-        "url='/v2', "
-        "comments='', "
-        "rest_resources="
-        "['structure', 'data', 'schema', "
-        "'availability', 'metadata']"
-        ")])"
+        "endpoints=[GdsEndpoint(api_version='1.4.0', url='/v1', comments='', "
+        "rest_resources=['structure', 'data', 'schema', 'availability']), "
+        "GdsEndpoint(api_version='2.0.0', url='/v2', comments='', "
+        "rest_resources=['structure', 'data', 'schema', 'availability', "
+        "'metadata'])])"
     )
 
     assert repr(service) == expected_repr
@@ -361,13 +330,13 @@ def test_repr_gds_urn_resolver():
     )
 
     expected_repr = (
-        "GdsUrnResolver(agency_id='BIS', "
+        "GdsUrnResolver(agency='BIS', "
         "resource_id='BISWEB_CATSCHEME', version='1.0', "
         "sdmx_type='CategoryScheme', resolver_results=["
         "ResolverResult(api_version='1.4.0', "
         "query='https://stats.bis.org/api/v1/categoryscheme/"
         "BIS/BISWEB_CATSCHEME/1.0?detail=allstubs', "
-        "query_response_status_code=200)])"
+        "status_code=200)])"
     )
 
     assert repr(urn_resolution) == expected_repr
@@ -375,8 +344,8 @@ def test_repr_gds_urn_resolver():
 
 def test_instantiation_gds_agency():
     """Test instantiation of GdsAgency."""
-    instance = GdsAgency(agency_id="BIS", name="Bank", url="https://bis.org")
-    assert instance.agency_id == "BIS"
+    instance = GdsAgency(id="BIS", name="Bank", url="https://bis.org")
+    assert instance.id == "BIS"
     assert instance.name == "Bank"
     assert instance.url == "https://bis.org"
     assert instance.description is None
