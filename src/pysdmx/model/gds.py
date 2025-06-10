@@ -12,6 +12,7 @@ from typing import List, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.util import parse_maintainable_urn
 
 
@@ -130,13 +131,12 @@ class GdsService(GdsBase, frozen=True):
         return parse_maintainable_urn(self.urn).__str__()
 
 
-class GdsCatalog(GdsBase, frozen=True):
+class GdsCatalog(MaintainableArtefact, frozen=True, kw_only=True):
     """Represents a GDS catalog.
 
     Attributes:
         agency: The AgencyID of the catalog's owner.
         id: The ID of the catalog.
-        name: The name of the catalog.
         urn: The URN of the catalog.
         version: The version of the catalog.
         services: Optional list of GdsService or GdsServiceReference,
@@ -146,10 +146,6 @@ class GdsCatalog(GdsBase, frozen=True):
     """
 
     agency: Union[str, GdsAgency]
-    id: str
-    version: str
-    name: str
-    urn: str
     services: Optional[List[Union[GdsService, GdsServiceReference]]] = None
     endpoints: Optional[List[GdsEndpoint]] = None
 

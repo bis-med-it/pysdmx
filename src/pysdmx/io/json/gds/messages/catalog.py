@@ -45,11 +45,11 @@ class JsonCatalog(Struct, frozen=True):
             )
 
         return GdsCatalog(
-            agency=agency,
             id=self.id,
             version=self.version,
             name=self.name,
             urn=self.urn,
+            agency=agency,
             endpoints=self.endpoints,
             services=catalog_services,
         )
