@@ -3,7 +3,6 @@
 Common data and structure writer for SDMX objects.
 """
 
-import inspect
 from typing import Any, Optional, Sequence
 
 from pysdmx.io.format import Format
@@ -59,17 +58,5 @@ def write(
         ),
     }
     args = {k: v for k, v in args.items() if v is not None}
-
-    # Extract the signature of the writer function
-    writer_signature = inspect.signature(writer)
-    expected_args = set(writer_signature.parameters.keys())
-
-    # Validate args against the writer's signature
-    invalid_args = set(args.keys()) - expected_args
-    if invalid_args:
-        raise ValueError(
-            f"Writer {writer.__name__} does not support "
-            f"the following kwargs: {invalid_args}"
-        )
 
     return writer(**args)
