@@ -8,9 +8,10 @@ from pysdmx.io.format import Format
 from pysdmx.model import Component, Components, Concept, Role, Schema
 from src.pysdmx.io.writer import write
 
-CSV_1_0_PATH = Path("csv") / "sdmx10" / "reader"
-CSV_2_0_PATH = Path("csv") / "sdmx20" / "reader"
-XML_2_1_PATH = Path("xml") / "sdmx21" / "reader"
+CSV_1_0_PATH = Path(__file__).parent / "csv" / "sdmx10" / "reader"
+CSV_2_0_PATH = Path(__file__).parent / "csv" / "sdmx20" / "reader"
+XML_2_1_PATH = Path(__file__).parent / "xml" / "sdmx21" / "reader"
+XML_STR_PATH = Path(__file__).parent
 
 DIMENSIONS = [
     "FREQ",
@@ -96,6 +97,7 @@ def output_path(extension, tmpdir):
             {"dimension_at_observation": {}},
         ),
         (Format.DATA_SDMX_ML_2_1_STR, XML_2_1_PATH, "str_all.xml", {}),
+        (Format.STRUCTURE_SDMX_ML_2_1, XML_STR_PATH, "datastructure.xml", {}),
     ],
 )
 def test_write(
@@ -114,8 +116,13 @@ def test_write(
 
     assert written_content is not None, "Written content should not be None."
     assert written_content.header == reference.header, "Headers do not match."
-    for actual, ref in zip(written_content.data, reference.data):
-        actual.data.equals(ref.data), "Data does not match reference."
+    if reference.data:
+        for actual, ref in zip(written_content.data, reference.data):
+            actual.data.equals(ref.data), "Data does not match reference."
+    else:
+        assert (
+            written_content.structures == reference.structures
+        ), "Structures do not match reference."
 
 
 def test_invalid_format():
