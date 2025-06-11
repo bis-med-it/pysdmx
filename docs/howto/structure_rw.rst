@@ -1,14 +1,7 @@
 .. _structure-rw:
 
-Structure Reading and writing SDMX
-==================================
-
-.. note::
-
-        This tutorial shows how to read and write SDMX Structure files ``pysdmx``.
-
-    - :ref:`structure-rw`.
-
+Reading and writing SDMX Structures
+===================================
 
 .. _structure-reader-tutorial:
 
@@ -17,66 +10,47 @@ Reading
 
 ``pysdmx`` allows to read SDMX Structures for SDMX-ML 2.1 and 3.0 formats.
 
-First of all, you need to ensure the SDMX-ML format you are reading.
-For this task, we have at our disposal `process_string_to_read` from `pysdmx.io.input_processor`,
-then we only need to select the necessary reader and read the string returned by the `process_string_to_read` function.
+Although we have specific readers for different formats, the use of the general
+reader is always recommended for all use cases.
+This reader also give us the option to validate the structure against the SDMX-ML schema
+with the parameter ``validate`` set to ``True`` if we set it to ``False`` the validation will not be performed.
 
-We have the following readers available for structures:
-
-- STRUCTURE_SDMX_ML_2_1 -> `pysdmx.io.xml.sdmx21.reader.structure`
-
-- STRUCTURE_SDMX_ML_3_0 -> `pysdmx.io.xml.sdmx30.reader.structure`
-
-This reader algo give us the option to validate the structure against the SDMX-ML schema
-with the parameter `validate` set to `True` if we set it to `False` the validation will not be performed.
+Tutorial for general reader : :ref:general-reader-tutorial:.
 
 .. code-block:: python
 
-   from pysdmx.io.input_processor import process_string_to_read
-   from pysdmx.io.xml.sdmx21.reader.structure import read as read_sdmx21
-   from pysdmx.io.xml.sdmx30.reader.structure import read as read_sdmx30
-
+   from pysdmx.io import read_sdmx
+   from pathlib import Path
     # Read file from the same folder as this code
     file_path = Path(__file__).parent / "structure.xml"
 
-    # Process the file to get the string and format
-    string_data, format = process_string_to_read(file_path)
+    message = read_sdmx(filepath, validate=True)
 
-    # Read the structure based on the format
-    # For SDMX-ML 2.1
-    message_21 = read_sdmx21(string_data, validate=True)
-    # For SDMX-ML 3.0
-    message_30 = read_sdmx30(string_data, validate=True)
-
-
-once the file is read, yo can access the structures:
+Once the file is read, you can access the structures:
 
 .. code-block:: python
 
    # Access the structure of the message_21
-   structures_21 = message_21.structures
+   structures = message.structures
 
-   # Access the structure of the message_30
-   structures_30 = message_30.structures
-
-The `structures` are returned as ``pysdmx`` objects, such as `DataStructureDefinition`, `ConceptScheme`, `Codelist`, etc.
+The `structures` are returned as ``pysdmx``:ref:`Model Objects <model>`
 
 
 .. _structure-writer-tutorial:
 
 Writing
 -------
-As for reading, we can choose between SDMX-ML 2.1 and 3.0 formats.
+We can choose between SDMX-ML 2.1 and 3.0 formats.
 We also have different writers according to the type of structure we are going to write.
 We have the following writers available:
 
-- Structure 2.1 -> `pysdmx.io.xml.sdmx21.writer.structure`
+- :meth:`SDMX-ML 3.0 Structure Specific <pysdmx.io.xml.sdmx30.reader.structure_specific.read>`
 
-- Structure 3.0 -> `pysdmx.io.xml.sdmx30.writer.structure`
+- :meth:`SDMX-ML 3.0 Structure <pysdmx.io.xml.sdmx30.reader.structure.read>`
 
-To write structures, we need to input a series of structure objects like `Dataflow`, `DataStructureDefinition`, etc.
-we can write a output path to save the structure into a file with `output_path` parameter,
-also we can prettify the output with `prettyprint` parameter set to `True`.
+To write structures, we need to input a series ``pysdmx``:ref:`Model Objects <model>`
+we can write a output path to save the structure into a file with ``output_path`` parameter,
+also we can prettify the output with ``prettyprint`` parameter set to ``True``.
 
 .. code-block:: python
 
@@ -95,7 +69,7 @@ also we can prettify the output with `prettyprint` parameter set to `True`.
 
 The `write_sdmx21` and `write_sdmx30` functions will return a string containing the SDMX-ML structure in the specified format.
 
-We can also save the output to a file by providing the `output_path` parameter:
+We can also save the output to a file by providing the ``output_path`` parameter:
 
 .. code-block:: python
 

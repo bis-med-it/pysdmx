@@ -16,3 +16,4 @@ as specific readers and writers for different SDMX versions and formats.
    io/general_writer
    io/sdmx_ml
    io/sdmx_csv
+   io/pandas_ds

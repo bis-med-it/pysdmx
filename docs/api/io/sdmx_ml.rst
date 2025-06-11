@@ -10,14 +10,8 @@ and also in different structure types depending of our needs.
 
 Reading
 -------
-To read a SDMX-ML, first we need to ensure the SDMX-ML format we are reading,
-for this task, we have at our disposal `process_string_to_read` from `pysdmx.io.input_processor`,
-which returns both the format of the file to read and a string containing the file.
-
-.. autofunction:: pysdmx.io.input_processor.process_string_to_read
-
-Once we know the format we want to read, we only have to select the
-necessary reader and read the string returned by the `process_string_to_read` function.
+Although the use of the general reader is always recommended,
+specific readers for SDMX-ML are also available.
 
 We have the following readers available:
 
@@ -50,8 +44,6 @@ Writing
 
 As for reading, we can choose between SDMX-ML 2.1 and 3.0 formats
 we also have different writers according to the type of structure we are going to write.
-To write data we need to input a pandas Dataframe and to write metadata
-we need a series of structure objects like `Dataflow`, `DataStructureDefinition`, etc.
 
 We have the following writers available:
 
@@ -72,8 +64,3 @@ We have the following writers available:
 .. autofunction:: pysdmx.io.xml.sdmx30.writer.structure_specific.write
 
 - Structure 3.0 -> pysdmx.io.xml.sdmx30.writer.structure
-
-Work in progress
-
-One we have the data or structure objects, we only need to input them on the correct writer.
-

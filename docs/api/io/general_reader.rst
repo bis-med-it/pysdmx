@@ -36,3 +36,9 @@ Reading Data and Metadata
 -------------------------
 
 .. autofunction:: pysdmx.io.read_sdmx
+
+
+Get Datasets
+------------
+
+.. autofunction:: pysdmx.io.get_datasets
