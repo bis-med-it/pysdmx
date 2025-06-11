@@ -25,7 +25,9 @@ def write(
     if format_ not in WRITERS:
         raise ValueError(f"No data writer for format: {format_}")
 
-    sdmx_objects = sdmx_objects if isinstance(sdmx_objects, Sequence) else [sdmx_objects]
+    sdmx_objects = (
+        sdmx_objects if isinstance(sdmx_objects, Sequence) else [sdmx_objects]
+    )
 
     module = __import__(WRITERS[format_], fromlist=["write"])
     writer = module.write
