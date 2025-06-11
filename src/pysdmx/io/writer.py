@@ -4,7 +4,7 @@ Common data and structure writer for SDMX objects.
 """
 
 import inspect
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 from pysdmx.io.format import Format
 
@@ -24,6 +24,8 @@ def write(
     """Write SDMX objects to a file in the specified format."""
     if format_ not in WRITERS:
         raise ValueError(f"No data writer for format: {format_}")
+
+    sdmx_objects = sdmx_objects if isinstance(sdmx_objects, Sequence) else [sdmx_objects]
 
     module = __import__(WRITERS[format_], fromlist=["write"])
     writer = module.write
