@@ -119,5 +119,7 @@ def test_write(
 
 
 def test_invalid_format():
-    with pytest.raises(ValueError, match="No data writer for format: invalid_format"):
+    with pytest.raises(
+        ValueError, match="No data writer for format: invalid_format"
+    ):
         write([], output_path="output.invalid", format_="invalid_format")
