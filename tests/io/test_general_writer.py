@@ -116,3 +116,8 @@ def test_write(
     assert written_content.header == reference.header, "Headers do not match."
     for actual, ref in zip(written_content.data, reference.data):
         actual.data.equals(ref.data), "Data does not match reference."
+
+
+def test_invalid_format():
+    with pytest.raises(ValueError, match="No data writer for format: invalid_format"):
+        write([], output_path="output.invalid", format_="invalid_format")
