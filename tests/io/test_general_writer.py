@@ -125,8 +125,8 @@ def test_write(
         ), "Structures do not match reference."
 
 
-def test_invalid_format():
+def test_invalid_format(tmpdir):
     with pytest.raises(
         ValueError, match="No data writer for format: invalid_format"
     ):
-        write([], output_path="output.invalid", format_="invalid_format")
+        write([], output_path=tmpdir / f"output.invalid", format_="invalid_format")
