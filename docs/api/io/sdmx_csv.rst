@@ -32,11 +32,11 @@ We also have different writers according to the version of the SDMX-CSV we are g
 
 We have the following writers available:
 
-- CSV 1.0 -> pysdmx.io.csv.sdmx10.writer
+- DATA_SDMX_CSV_1_0_0 -> pysdmx.io.csv.sdmx10.writer
 
 .. autofunction:: pysdmx.io.csv.sdmx10.writer.write
 
-- CSV 2.0 -> pysdmx.io.csv.sdmx20.writer
+- DATA_SDMX_CSV_2_0_0 -> pysdmx.io.csv.sdmx20.writer
 
 .. autofunction:: pysdmx.io.csv.sdmx20.writer.write
 

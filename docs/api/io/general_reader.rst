@@ -17,19 +17,19 @@ List of formats and versions supported by the general reader:
 
   - **SDMX-ML 2.1**
 
-    - Generic Data
-    - Structure Specific Data
-    - Structure
+    - :meth:`SDMX-ML 2.1 Generic <pysdmx.io.xml.sdmx21.reader.generic.read>`
+    - :meth:`SDMX-ML 2.1 Structure Specific <pysdmx.io.xml.sdmx21.reader.structure_specific.read>`
+    - :meth:`SDMX-ML 2.1 Structure <pysdmx.io.xml.sdmx21.reader.structure.read>`
 
   - **SDMX-ML 3.0**
 
-    - Structure Specific Data
-    - Structure
+    - :meth:`SDMX-ML 3.0 Structure Specific <pysdmx.io.xml.sdmx30.reader.structure_specific.read>`
+    - :meth:`SDMX-ML 3.0 Structure <pysdmx.io.xml.sdmx30.reader.structure.read>`
 
 - **SDMX-CSV**
 
-  - SDMX-CSV 1.0
-  - SDMX-CSV 2.0
+  - :meth:`SDMX-CSV 1.0 <pysdmx.io.csv.sdmx10.reader.read>`
+  - :meth:`SDMX-CSV 2.0 <pysdmx.io.csv.sdmx20.reader.read>`
 
 
 Reading Data and Metadata

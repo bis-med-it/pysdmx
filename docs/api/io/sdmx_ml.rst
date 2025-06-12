@@ -47,20 +47,20 @@ we also have different writers according to the type of structure we are going t
 
 We have the following writers available:
 
-- Generic data 2.1 -> pysdmx.io.xml.sdmx21.writer.generic
+- DATA_SDMX_ML_2_1_GEN -> pysdmx.io.xml.sdmx21.writer.generic
 
 .. autofunction:: pysdmx.io.xml.sdmx21.writer.generic.write
 
-- Structure specific data 2.1 -> pysdmx.io.xml.sdmx21.writer.structure_specific
+- DATA_SDMX_ML_2_1_STR -> pysdmx.io.xml.sdmx21.writer.structure_specific
 
 .. autofunction:: pysdmx.io.xml.sdmx21.writer.structure_specific.write
 
-- Structure 2.1 -> pysdmx.io.xml.sdmx21.writer.structure
+- STRUCTURE_SDMX_ML_2_1 -> pysdmx.io.xml.sdmx21.writer.structure
 
 .. autofunction:: pysdmx.io.xml.sdmx21.writer.structure.write
 
-- Structure specific data 3.0 -> pysdmx.io.xml.sdmx30.writer.structure_specific
+- DATA_SDMX_ML_3_0 -> pysdmx.io.xml.sdmx30.writer.structure_specific
 
 .. autofunction:: pysdmx.io.xml.sdmx30.writer.structure_specific.write
 
-- Structure 3.0 -> pysdmx.io.xml.sdmx30.writer.structure
+- STRUCTURE_SDMX_ML_3_0 -> pysdmx.io.xml.sdmx30.writer.structure
