@@ -638,10 +638,11 @@ def __write_text_format(
     """Writes the text format to the XML file."""
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{type_}"
     if facets is not None:
-        active_facets = facets.__str__().replace("=", '="').split(", ")
-        for facet in active_facets:
+        # Writing only facets not using default values
+        active_facets = facets.__rich_repr__()
+        for facet, value, *_ in active_facets:  # type: ignore[misc]
             facet = __to_lower_camel_case(facet)
-            outfile += f' {facet}"'
+            outfile += f' {facet}="{value}"'
     if dtype is not None:
         outfile += f" {TEXT_TYPE}={dtype.value!r}"
     outfile += "/>"
