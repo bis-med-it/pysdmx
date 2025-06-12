@@ -141,6 +141,7 @@ def test_code_list_read(samples_folder):
     assert codelist.name == "Age"
     assert codelist.short_urn == "Codelist=SDMX:CL_AGE(1.0)"
     assert codelist.version == "1.0"
+    assert codelist.is_final is True
 
     assert len(codelist.items) == 5
     assert isinstance(codelist.items[0], Code)
@@ -148,6 +149,24 @@ def test_code_list_read(samples_folder):
     assert codelist.items[0].name == "Year(s)"
     assert codelist.items[1].id == "M"
     assert codelist.items[1].name == "Month(s)"
+
+
+def test_codelist_read_draft(samples_folder):
+    data_path = samples_folder / "codelist_draft_version.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    assert len(result) == 1
+
+    assert isinstance(result[0], Codelist)
+    codelist: Codelist = result[0]
+    assert codelist.id == "CL_DRAFT"
+    assert codelist.name == "Draft Codelist"
+    assert codelist.short_urn == "Codelist=MD:CL_DRAFT(1.0.0-Draft)"
+    assert codelist.version == "1.0.0-Draft"
+    assert codelist.is_final is False
+    assert len(codelist.codes) == 0
 
 
 def test_value_list_read(samples_folder):

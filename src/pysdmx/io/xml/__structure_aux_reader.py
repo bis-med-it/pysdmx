@@ -299,6 +299,7 @@ class StructureParser(Struct):
     name_personalisations: Dict[str, NamePersonalisationScheme] = {}
     custom_types: Dict[str, CustomTypeScheme] = {}
     transformations: Dict[str, TransformationScheme] = {}
+    is_sdmx_30: bool = False
 
     def __format_contact(self, json_contact: Dict[str, Any]) -> Contact:
         """Creates a Contact object from a json_contact.
@@ -921,6 +922,13 @@ class StructureParser(Struct):
             # Dynamic creation with specific class
             if scheme == VALUE_LIST:
                 element["sdmx_type"] = "valuelist"
+            if self.is_sdmx_30:
+                # Default version value is 1.0, in SDMX-ML 3.0 we need to set
+                # is_final as True if the version does not have an EXTENSION
+                # (see Technical Notes SDMX 3.0)
+                element[IS_FINAL_LOW] = (
+                    "-" not in element[VERSION] if VERSION in element else True
+                )
             result: ItemScheme = STRUCTURES_MAPPING[scheme](**element)
             elements[result.short_urn] = result
 
