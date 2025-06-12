@@ -1003,6 +1003,15 @@ class StructureParser(Struct):
                     structure[COMPS] = Components(structure[COMPS])
                 else:
                     structure[COMPS] = Components([])
+            if self.is_sdmx_30:
+                # Default version value is 1.0, in SDMX-ML 3.0 we need to set
+                # is_final as True if the version does not have an EXTENSION
+                # (see Technical Notes SDMX 3.0)
+                structure[IS_FINAL_LOW] = (
+                    "-" not in structure[VERSION]
+                    if VERSION in structure
+                    else True
+                )
             schemas[short_urn] = STRUCTURES_MAPPING[schema](**structure)
 
         return schemas
