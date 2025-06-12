@@ -94,8 +94,16 @@ class DataType(str, Enum):
     YEAR_MONTH = "GregorianYearMonth"
     """An ISO 8601 year and month (e.g. ``2000-01``)."""
 
+    def __str__(self) -> str:
+        """Data Type String representation."""
+        return self.value
 
-class Facets(Struct, frozen=True, omit_defaults=True):
+    def __repr__(self) -> str:
+        """Data Type String representation."""
+        return f"{self.__class__.__name__}.{self._name_}"
+
+
+class Facets(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     """Additional information about the concept expected values.
 
     The facets that apply vary with the type. For example,
@@ -134,13 +142,18 @@ class Facets(Struct, frozen=True, omit_defaults=True):
     """Whether the text can be in multiple languages."""
 
     def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        out = []
-        for k in self.__annotations__:
-            v = self.__getattribute__(k)
-            if v:
-                out.append(f"{k}={v}")
-        return ", ".join(out)
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
 class Concept(Item, frozen=True, omit_defaults=True, tag=True):
