@@ -151,40 +151,36 @@ class GdsClient(__BaseGdsClient):
         """Get the list of catalogs for the supplied parameters.
 
         Args:
-            catalog: The agency maintaining the catalog.
-            resource: The resource ID(s) to query. Defaults to '*'.
-            version: The version(s) of the resource. Defaults to '*'.
-            resource_type: The type of resource (e.g., 'data', 'metadata').
-            message_format: Filters the endpoints has a specific format in
-              message_formats.
-              Multiple values separated by commas are possible.
-              By default, (if None) it returns everything.
+                catalog: The agency maintaining the catalog.
+                resource: The resource ID(s) to query. Defaults to '*'.
+                version: The version(s) of the resource. Defaults to '*'.
+                resource_type: Filters the endpoints that support
+                 the requested resource type (eg, 'data', 'metadata')
+        .
+                message_format: Filters the endpoints that support any
+                  of the requested message formats.
 
-                - Option json: endpoints with "json" in the message_formats.
-                - Option xml: endpoints with "xml" in the message_formats.
-                - Option csv: endpoints with "csv" in the message_formats.
+                api_version: Filters the endpoints that is in a
+                  specific SDMX API version.
+                  Multiple values separated by commas are possible.
+                  By default (if nothing is sent) it returns everything.
 
-            api_version: Filters the endpoints that is in a
-              specific SDMX API version.
-              Multiple values separated by commas are possible.
-              By default (if nothing is sent) it returns everything.
+                detail: The amount of information to be returned.
+                    Option full: All available information for all artefacts
+                      should be returned.
+                    Option raw: Any nested service will be referenced.
 
-            detail: The amount of information to be returned.
-                Option full: All available information for all artefacts
-                  should be returned.
-                Option raw: Any nested service will be referenced.
+                references: Instructs the web service to return
+                  (or not) the artefacts referenced by the
+                  artefact to be returned.
 
-            references: Instructs the web service to return
-              (or not) the artefacts referenced by the
-              artefact to be returned.
-
-                Option none: No referenced artefacts will be returned.
-                Option children: Returns the artefacts
-                  referenced by the artefact to be returned.
+                    Option none: No referenced artefacts will be returned.
+                    Option children: Returns the artefacts
+                      referenced by the artefact to be returned.
 
 
         Returns:
-            A list of GdsCatalog objects.
+                A list of GdsCatalog objects.
         """
         query = super()._catalogs_q(
             catalog,

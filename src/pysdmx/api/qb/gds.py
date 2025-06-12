@@ -42,15 +42,10 @@ class GdsQuery(msgspec.Struct, frozen=True, omit_defaults=True):
             to be returned.
         resource_id: The resource ID(s) to query. Defaults to '*'.
         version: The version(s) of the resource. Defaults to '*'.
-        resource_type: The type of resource (e.g., 'data', 'metadata').
-        message_format: Filters the endpoints has a specific format in
-          message_formats.
-          Multiple values separated by commas are possible.
-          By default, (if None) it returns everything.
-
-            - Option json: endpoints with "json" in the message_formats.
-            - Option xml: endpoints with "xml" in the message_formats.
-            - Option csv: endpoints with "csv" in the message_formats.
+        resource_type: Filters the endpoints that support
+          the requested resource type (eg, 'data', 'metadata').
+        message_format: Filters the endpoints that support any
+          of the requested message formats.
 
         api_version: Filters the endpoints that is in a
           specific SDMX API version.
