@@ -120,21 +120,74 @@ def test_not_equal(context, agency, id, components):
     assert org1 != org2
 
 
-def test_tostr(context, agency, id, components):
-    o = Schema(context, agency, id, components)
+def test_tostr(context, agency, id, components, artefacts):
+    o = Schema(context, agency, id, components, artefacts=artefacts)
 
     s = str(o)
 
-    exp = (
-        f"context={context}, "
-        f"agency={agency}, "
-        f"id={id}, "
-        f"components={str(components)}, "
-        f"version=1.0, "
-        f"generated="
+    assert s == (
+        "context: dataflow, agency: BIS, id: 5B0, components: 5 components, "
+        "artefacts: 2 artefacts"
     )
 
-    assert s.startswith(exp)
+
+def test_tostr_empty(context, agency, id, components, artefacts):
+    o = Schema(context, agency, id, components, artefacts=[])
+
+    s = str(o)
+
+    assert s == (
+        "context: dataflow, agency: BIS, id: 5B0, components: 5 components"
+    )
+
+
+def test_torepr(context, agency, id, components, artefacts):
+    o = Schema(context, agency, id, components, artefacts=artefacts)
+
+    s = repr(o)
+
+    assert s == (
+        "Schema(context='dataflow', agency='BIS', id='5B0', "
+        "components=Components(data=[Component(id='FREQ', required=True, "
+        "role=Role.DIMENSION, concept=Concept(id='FREQ', "
+        "dtype=DataType.STRING), "
+        "local_dtype=DataType.ALPHA, local_facets=Facets(min_length=1, "
+        "max_length=3)), Component(id='INDICATOR', required=True, "
+        "role=Role.DIMENSION, concept=Concept(id='IND'), "
+        "local_dtype=DataType.STRING), Component(id='PERIOD', required=True, "
+        "role=Role.DIMENSION, concept=Concept(id='PERIOD'), "
+        "local_dtype=DataType.PERIOD), Component(id='VALUE', required=False, "
+        "role=Role.MEASURE, concept=Concept(id='VALUE'), "
+        "local_dtype=DataType.INTEGER), Component(id='CONF', required=True, "
+        "role=Role.ATTRIBUTE, concept=Concept(id='CONF'), "
+        "local_dtype=DataType.STRING, attachment_level='O', "
+        "array_def=ArrayBoundaries(min_size=1, max_size=3))]), "
+        "artefacts=['urn1', 'urn2'])"
+    )
+
+
+def test_torepr_empty(context, agency, id, components):
+    o = Schema(context, agency, id, components, artefacts=[])
+
+    s = repr(o)
+
+    assert s == (
+        "Schema(context='dataflow', agency='BIS', id='5B0', "
+        "components=Components(data=[Component(id='FREQ', required=True, "
+        "role=Role.DIMENSION, concept=Concept(id='FREQ', "
+        "dtype=DataType.STRING), "
+        "local_dtype=DataType.ALPHA, local_facets=Facets(min_length=1, "
+        "max_length=3)), Component(id='INDICATOR', required=True, "
+        "role=Role.DIMENSION, concept=Concept(id='IND'), "
+        "local_dtype=DataType.STRING), Component(id='PERIOD', required=True, "
+        "role=Role.DIMENSION, concept=Concept(id='PERIOD'), "
+        "local_dtype=DataType.PERIOD), Component(id='VALUE', required=False, "
+        "role=Role.MEASURE, concept=Concept(id='VALUE'), "
+        "local_dtype=DataType.INTEGER), Component(id='CONF', required=True, "
+        "role=Role.ATTRIBUTE, concept=Concept(id='CONF'), "
+        "local_dtype=DataType.STRING, attachment_level='O', "
+        "array_def=ArrayBoundaries(min_size=1, max_size=3))]))"
+    )
 
 
 def test_serialization(context, agency, id, components, version, artefacts):
