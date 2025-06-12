@@ -18,6 +18,7 @@ from pysdmx.model import (
     Contact,
     CustomType,
     CustomTypeScheme,
+    Dataflow,
     ItemReference,
     NamePersonalisation,
     NamePersonalisationScheme,
@@ -167,6 +168,26 @@ def test_codelist_read_draft(samples_folder):
     assert codelist.version == "1.0.0-Draft"
     assert codelist.is_final is False
     assert len(codelist.codes) == 0
+
+
+def test_dataflow_read_final(samples_folder):
+    data_path = samples_folder / "dataflow_final_version.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    assert len(result) == 1
+
+    assert isinstance(result[0], Dataflow)
+    dataflow: Dataflow = result[0]
+    assert dataflow.id == "NAMAIN_IDC_N"
+    assert dataflow.agency == "SDMX"
+    assert dataflow.name == "NAMAIN_IDC_N df"
+    assert dataflow.short_urn == "Dataflow=SDMX:NAMAIN_IDC_N(1.0)"
+    assert dataflow.version == "1.0"
+    assert dataflow.is_final is True
+    assert dataflow.is_external_reference is False
+    assert "DataStructure=ESTAT:NA_MAIN(1.6)" in dataflow.structure
 
 
 def test_value_list_read(samples_folder):

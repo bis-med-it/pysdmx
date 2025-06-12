@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>IREF444600</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2025-06-10T08:34:25Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Receiver id="not_supplied"/>
+	</mes:Header>
+	<mes:Structures>
+		<str:Dataflows>
+			<str:Dataflow id="NAMAIN_IDC_N" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=SDMX:NAMAIN_IDC_N(1.0)" version="1.0" isExternalReference="false" agencyID="SDMX">
+				<com:Name xml:lang="en">NAMAIN_IDC_N df</com:Name>
+				<str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=ESTAT:NA_MAIN(1.6)</str:Structure>
+			</str:Dataflow>
+		</str:Dataflows>
+	</mes:Structures>
+</mes:Structure>
