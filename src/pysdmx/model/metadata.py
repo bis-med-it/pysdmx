@@ -18,7 +18,9 @@ from pysdmx.model.concept import Facets
 from pysdmx.model.dataset import ActionType
 
 
-class MetadataAttribute(Struct, frozen=True, omit_defaults=True):
+class MetadataAttribute(
+    Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True
+):
     """An entry in a metadata report.
 
     An attribute is iterable, as it may contain other attributes.
@@ -41,8 +43,29 @@ class MetadataAttribute(Struct, frozen=True, omit_defaults=True):
         yield from self.attributes
 
     def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        return f"{self.id}: {self.value}"
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # str is taken as a Sequence, so we need to check it's not a str
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                # Handle non-empty lists
+                if not value:
+                    continue
+                class_name = value[0].__class__.__name__
+                value = f"{len(value)} {class_name.lower()}s"
+
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # Omit empty sequences
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
 class MetadataReport(MaintainableArtefact, frozen=True, omit_defaults=True):
@@ -111,6 +134,33 @@ class MetadataReport(MaintainableArtefact, frozen=True, omit_defaults=True):
             if out:
                 return out[0]
         return None
+
+    def __str__(self) -> str:
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # str is taken as a Sequence, so we need to check it's not a str
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                # Handle non-empty lists
+                if not value:
+                    continue
+                class_name = value[0].__class__.__name__
+                if class_name == "MetadataAttribute":
+                    class_name = "Metadata Attribute"
+                value = f"{len(value)} {class_name.lower()}s"
+
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # Omit empty sequences
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
 def merge_attributes(
