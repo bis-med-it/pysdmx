@@ -1,8 +1,11 @@
+from datetime import datetime, timezone
+
 import pytest
 
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.model import (
     AgencyScheme,
+    Organisation,
     RulesetScheme,
     TransformationScheme,
     UserDefinedOperatorScheme,
@@ -11,7 +14,7 @@ from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Components, Dataflow, DataStructureDefinition
 from pysdmx.model.dataset import Dataset
-from pysdmx.model.message import Message
+from pysdmx.model.message import Header, Message
 
 
 def test_initialization():
@@ -74,6 +77,14 @@ def test_get_datasets():
 
     assert message.get_datasets() == [ds]
     assert message.get_dataset("DataStructure=ds1:ds1(1.0)") == ds
+    assert (
+        str(message.get_dataset("DataStructure=ds1:ds1(1.0)"))
+        == "structure: DataStructure=ds1:ds1(1.0)"
+    )
+    assert (
+        repr(message.get_dataset("DataStructure=ds1:ds1(1.0)"))
+        == "Dataset(structure='DataStructure=ds1:ds1(1.0)')"
+    )
 
 
 def test_wrong_initialization_data_message():
@@ -190,3 +201,95 @@ def test_get_ruleset_scheme():
     )
     message = Message(structures=[ruleset_scheme])
     assert message.get_ruleset_schemes() == [ruleset_scheme]
+
+
+def test_message_str_with_structures():
+    agency_scheme = AgencyScheme(id="agency1", agency="agency1")
+    codelist = Codelist(id="codelist1", agency="agency1")
+    message = Message(structures=[agency_scheme, codelist])
+
+    s = str(message)
+    expected_str = "structures: 1 agencyscheme, 1 codelist"
+
+    assert s == expected_str
+
+
+def test_message_str_with_data():
+    dataset = Dataset(structure="DataStructure=ds1:ds1(1.0)")
+    message = Message(data=[dataset])
+
+    s = str(message)
+    expected_str = "data: 1 dataset"
+
+    assert s == expected_str
+
+
+def test_message_str_without_data():
+    message = Message()
+
+    s = str(message)
+    expected_str = ""
+
+    assert s == expected_str
+
+
+def test_message_str():
+    agency_scheme = AgencyScheme(id="agency1", agency="agency1")
+    codelist = Codelist(id="codelist1", agency="agency1")
+    message = Message(structures=[agency_scheme, codelist], data=[])
+
+    s = str(message)
+    expected_str = "structures: 1 agencyscheme, 1 codelist"
+
+    assert s == expected_str
+
+
+def test_message_repr():
+    agency_scheme = AgencyScheme(id="agency1", agency="agency1")
+    codelist = Codelist(id="codelist1", agency="agency1")
+    message = Message(structures=[agency_scheme, codelist], data=[])
+
+    r = repr(message)
+    expected_repr = (
+        "Message(structures=[AgencyScheme(id='agency1', agency='agency1'), "
+        "Codelist(id='codelist1', agency='agency1')])"
+    )
+    assert r == expected_repr
+
+
+def test_header_str():
+    h = Header(
+        id="12345",
+        test=True,
+        prepared=datetime(2023, 1, 1, tzinfo=timezone.utc),
+        sender=Organisation(id="TEST"),
+        receiver=None,
+        source="Test Source",
+    )
+
+    s = str(h)
+    expected_str = (
+        "id: 12345, test: True, prepared: 2023-01-01 00:00:00+00:00, "
+        "sender: id: TEST, source: Test Source"
+    )
+    assert s == expected_str
+
+
+def test_header_repr():
+    h = Header(
+        id="12345",
+        test=True,
+        prepared=datetime(2023, 1, 1, tzinfo=timezone.utc),
+        sender=Organisation(id="TEST"),
+        receiver=None,
+        source="Test Source",
+    )
+
+    r = repr(h)
+    expected_repr = (
+        "Header(id='12345', test=True, "
+        "prepared=datetime.datetime(2023, 1, 1, 0, 0, "
+        "tzinfo=datetime.timezone.utc), "
+        "sender=Organisation(id='TEST'), source='Test Source')"
+    )
+    assert r == expected_repr

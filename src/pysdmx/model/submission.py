@@ -11,10 +11,15 @@ class SubmissionResult(Struct, frozen=True):
     status: str
 
     def __str__(self) -> str:
-        """Return a string representation of the SubmissionResult."""
-        return (
-            f"<Submission Result - "
-            f"Action: {self.action} - "
-            f"Short URN: {self.short_urn} - "
-            f"Status: {self.status}>"
-        )
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"

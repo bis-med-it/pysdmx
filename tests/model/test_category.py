@@ -20,6 +20,22 @@ def desc():
     return "Daily bilateral foreign exchange reference rates"
 
 
+@pytest.fixture
+def categories():
+    return [
+        Category(id="child1", name="Child 1"),
+        Category(id="child2", name="Child 2"),
+    ]
+
+
+@pytest.fixture
+def dataflows():
+    return [
+        DataflowRef(id="EXR", agency="BIS"),
+        DataflowRef(id="GDP", agency="IMF"),
+    ]
+
+
 def test_default(id):
     c = Category(id=id)
 
@@ -81,13 +97,68 @@ def test_tostr_id(id):
     c = Category(id=id)
 
     s = str(c)
+    expected_str = f"id: {id}"
 
-    assert s == f"id={id}"
+    assert s == expected_str
 
 
 def test_tostr_name(id, name):
     c = Category(id=id, name=name)
 
     s = str(c)
+    expected_str = f"id: {id}, name: {name}"
 
-    assert s == f"id={id}, name={name}"
+    assert s == expected_str
+
+
+def test_tostr_full(id, name, desc):
+    c = Category(id=id, name=name, description=desc)
+
+    s = str(c)
+    expected_str = f"id: {id}, name: {name}, description: {desc}"
+
+    assert s == expected_str
+
+
+def test_torepr_id(id):
+    c = Category(id=id)
+
+    s = repr(c)
+    expected_str = f"Category(id='{id}')"
+
+    assert s == expected_str
+
+
+def test_torepr_name(id, name):
+    c = Category(id=id, name=name)
+
+    s = repr(c)
+    expected_str = f"Category(id='{id}', name='{name}')"
+
+    assert s == expected_str
+
+
+def test_torepr_full(id, name, desc, categories, dataflows):
+    c = Category(
+        id=id,
+        name=name,
+        description=desc,
+        categories=categories,
+        dataflows=dataflows,
+    )
+
+    s = repr(c)
+    expected_str = (
+        f"Category(id='{id}', name='{name}', description='{desc}', "
+        f"categories=["
+        f"Category(id='child1', name='Child 1'), "
+        f"Category(id='child2', name='Child 2')"
+        f"], "
+        f"dataflows=["
+        f"DataflowRef(agency='BIS', id='EXR'), "
+        f"DataflowRef(agency='IMF', id='GDP')"
+        f"]"
+        f")"
+    )
+
+    assert s == expected_str
