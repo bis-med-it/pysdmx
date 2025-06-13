@@ -6,7 +6,7 @@ import pytest
 from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.model import Component, Components, Concept, Role, Schema
-from src.pysdmx.io.writer import write
+from pysdmx.io.writer import write
 
 CSV_1_0_PATH = Path(__file__).parent / "csv" / "sdmx10" / "reader"
 CSV_2_0_PATH = Path(__file__).parent / "csv" / "sdmx20" / "reader"
