@@ -135,6 +135,26 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
             flows.extend(self.__extract_flows(sub))
         return flows
 
+    def __str__(self) -> str:
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # str is taken as a Sequence, so we need to check it's not a str
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                # Handle empty lists
+                if not value:
+                    continue
+                class_name = value[0].__class__.__name__
+                class_name = (
+                    class_name.lower() + "s"
+                    if attr != "items"
+                    else "categories"
+                )
+                value = f"{len(value)} {class_name}"
+
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
 
 class Categorisation(
     MaintainableArtefact, frozen=True, omit_defaults=True, kw_only=True
