@@ -11,6 +11,7 @@ from pysdmx.model import Component, Components, Concept, Role, Schema
 CSV_1_0_PATH = Path(__file__).parent / "csv" / "sdmx10" / "reader"
 CSV_2_0_PATH = Path(__file__).parent / "csv" / "sdmx20" / "reader"
 XML_2_1_PATH = Path(__file__).parent / "xml" / "sdmx21" / "reader"
+XML_3_0_PATH = Path(__file__).parent / "xml" / "sdmx30" / "reader"
 XML_STR_PATH = Path(__file__).parent
 
 DIMENSIONS = [
@@ -97,6 +98,7 @@ def output_path(extension, tmpdir):
             {"dimension_at_observation": {}},
         ),
         (Format.DATA_SDMX_ML_2_1_STR, XML_2_1_PATH, "str_all.xml", {}),
+        (Format.DATA_SDMX_ML_3_0, XML_3_0_PATH, "data_dataflow_3.0.xml", {}),
         (Format.STRUCTURE_SDMX_ML_2_1, XML_STR_PATH, "datastructure.xml", {}),
     ],
 )
@@ -112,7 +114,6 @@ def test_write(
     assert output_path.exists(), f"Output file {output_path} was not created."
 
     written_content = read_sdmx(output_path)
-    os.remove(output_path)
 
     assert written_content is not None, "Written content should not be None."
     assert written_content.header == reference.header, "Headers do not match."

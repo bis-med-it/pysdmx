@@ -12,8 +12,10 @@ WRITERS = {
     Format.DATA_SDMX_CSV_2_0_0: "pysdmx.io.csv.sdmx20.writer",
     Format.DATA_SDMX_ML_2_1_GEN: "pysdmx.io.xml.sdmx21.writer.generic",
     Format.DATA_SDMX_ML_2_1_STR: "pysdmx.io.xml.sdmx21.writer."
-    "structure_specific",
+                                 "structure_specific",
     Format.STRUCTURE_SDMX_ML_2_1: "pysdmx.io.xml.sdmx21.writer.structure",
+    Format.DATA_SDMX_ML_3_0: "pysdmx.io.xml.sdmx30.writer."
+                             "structure_specific",
 }
 
 
