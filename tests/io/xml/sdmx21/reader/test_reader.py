@@ -164,7 +164,7 @@ def test_item_scheme_read(item_scheme_path):
     assert concept_scheme_sdmx.id == "CROSS_DOMAIN_CONCEPTS"
     assert concept_scheme_sdmx.name == "SDMX Cross Domain Concept Scheme"
     assert concept_scheme_sdmx.items[0].id == "COLL_METHOD"
-    assert concept_scheme_sdmx.items[2].codes[0].id == "C"
+    assert concept_scheme_sdmx.items[2].codes.codes[0].id == "C"
 
 
 def test_submission_result(submission_path):

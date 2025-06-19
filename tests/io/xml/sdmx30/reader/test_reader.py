@@ -18,6 +18,7 @@ from pysdmx.model import (
     Contact,
     CustomType,
     CustomTypeScheme,
+    Dataflow,
     ItemReference,
     NamePersonalisation,
     NamePersonalisationScheme,
@@ -141,6 +142,7 @@ def test_code_list_read(samples_folder):
     assert codelist.name == "Age"
     assert codelist.short_urn == "Codelist=SDMX:CL_AGE(1.0)"
     assert codelist.version == "1.0"
+    assert codelist.is_final is True
 
     assert len(codelist.items) == 5
     assert isinstance(codelist.items[0], Code)
@@ -148,6 +150,44 @@ def test_code_list_read(samples_folder):
     assert codelist.items[0].name == "Year(s)"
     assert codelist.items[1].id == "M"
     assert codelist.items[1].name == "Month(s)"
+
+
+def test_codelist_read_draft(samples_folder):
+    data_path = samples_folder / "codelist_draft_version.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    assert len(result) == 1
+
+    assert isinstance(result[0], Codelist)
+    codelist: Codelist = result[0]
+    assert codelist.id == "CL_DRAFT"
+    assert codelist.name == "Draft Codelist"
+    assert codelist.short_urn == "Codelist=MD:CL_DRAFT(1.0.0-Draft)"
+    assert codelist.version == "1.0.0-Draft"
+    assert codelist.is_final is False
+    assert len(codelist.codes) == 0
+
+
+def test_dataflow_read_final(samples_folder):
+    data_path = samples_folder / "dataflow_final_version.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    assert len(result) == 1
+
+    assert isinstance(result[0], Dataflow)
+    dataflow: Dataflow = result[0]
+    assert dataflow.id == "NAMAIN_IDC_N"
+    assert dataflow.agency == "SDMX"
+    assert dataflow.name == "NAMAIN_IDC_N df"
+    assert dataflow.short_urn == "Dataflow=SDMX:NAMAIN_IDC_N(1.0)"
+    assert dataflow.version == "1.0"
+    assert dataflow.is_final is True
+    assert dataflow.is_external_reference is False
+    assert "DataStructure=ESTAT:NA_MAIN(1.6)" in dataflow.structure
 
 
 def test_value_list_read(samples_folder):
@@ -270,7 +310,7 @@ def test_concepts_codelist_read(samples_folder):
     concepts = result[2].items
     assert len(concepts) == 1
     concept = concepts[0]
-    assert concept.codes[0] == codelist.items[0]
+    assert concept.codes.items[0] == codelist.items[0]
 
 
 def test_dsd_cod_concept_ref_read(samples_folder):
@@ -287,7 +327,7 @@ def test_dsd_cod_concept_ref_read(samples_folder):
     dimensions = dsd.components.dimensions
     dimension = dimensions[0]
     assert dimension.concept == concept
-    assert dimension.enumeration[0].urn == code.urn
+    assert dimension.enumeration.items[0].urn == code.urn
 
 
 def test_data_structure_metadata(samples_folder):
