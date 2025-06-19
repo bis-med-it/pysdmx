@@ -24,16 +24,16 @@ def read_sdmx(  # noqa: C901
     """Reads any SDMX message and returns a dictionary.
 
     Supported structures formats are:
-    - SDMX-ML 2.1 Structures
+      - SDMX-ML 2.1 Structures
 
     Supported webservices submissions are:
-    - SDMX-ML 2.1 RegistryInterface (Submission)
-    - SDMX-ML 2.1 Error (raises an exception with the error content)
+      - SDMX-ML 2.1 RegistryInterface (Submission)
+      - SDMX-ML 2.1 Error (raises an exception with the error content)
 
     Supported data formats are:
-    - SDMX-ML 2.1
-    - SDMX-CSV 1.0
-    - SDMX-CSV 2.0
+      - SDMX-ML 2.1
+      - SDMX-CSV 1.0
+      - SDMX-CSV 2.0
 
     Args:
         sdmx_document: Path to file (pathlib.Path), URL, or string.
