@@ -1,7 +1,7 @@
 """Module for writing metadata to XML files."""
 
 from collections import OrderedDict
-from typing import Any, Dict, Optional, Sequence, Union, List, Tuple
+from typing import Any, Dict, Optional, Sequence, Union
 
 from pysdmx.errors import Invalid
 from pysdmx.io.xml.__write_aux import (
@@ -32,12 +32,16 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     DEPARTMENT,
     DFW,
     DIM,
+    DIM_REF,
     DSD,
     DSD_COMPS,
     EMAIL,
     ENUM,
     ENUM_FORMAT,
     FAX,
+    GROUP,
+    GROUP_DIM,
+    GROUP_LOW,
     ID,
     LOCAL_REP,
     MANDATORY,
@@ -67,6 +71,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     UDO_SCHEME,
     URI,
     URN,
+    URN_LOW,
     USAGE,
     VALUE_ITEM,
     VALUE_LIST,
@@ -74,7 +79,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VALUE_LISTS,
     VERSION,
     VTL_MAPPING_SCHEME,
-    VTLMAPPING, GROUP_LOW, GROUP, URN_LOW, GROUP_DIM, DIM_REF,
+    VTLMAPPING,
 )
 from pysdmx.model import (
     AgencyScheme,
@@ -380,10 +385,17 @@ def __write_item(
     return outfile
 
 
-def __write_groups(groups: List[Dict[str, Any]], indent: str, references_30: bool = False) -> str:
+def __write_groups(
+    groups: list[Dict[str, Any]], indent: str, references_30: bool = False
+) -> str:
     out_file = ""
+    print(groups, type(groups))
     for group in groups:
-        out_file += f"{indent}<{ABBR_STR}:{GROUP} {URN_LOW}={group[URN_LOW]!r} {ID}={group[ID]!r}>"
+        print(group, type(group))
+        out_file += (
+            f"{indent}<{ABBR_STR}:{GROUP} {URN_LOW}={group[URN_LOW]!r}"
+            f" {ID}={group[ID]!r}>"
+        )
         for dimension in group["dimensions"]:
             if references_30:
                 out_file += (
@@ -406,7 +418,9 @@ def __write_groups(groups: List[Dict[str, Any]], indent: str, references_30: boo
                 )
 
         out_file += f"{indent}</{ABBR_STR}:{GROUP}>"
+        out_file = out_file.replace("'", '"')
     return out_file
+
 
 def __write_components(
     item: DataStructureDefinition, indent: str, references_30: bool = False
@@ -420,9 +434,8 @@ def __write_components(
         PRIM_MEASURE: [],
     }
     out_group = ""
-    groups = {}
-    if hasattr(item, GROUP_LOW):
-        groups = getattr(item, GROUP_LOW, {})
+    groups = getattr(item, GROUP_LOW, [])
+    if groups is not None and len(groups) > 0:
         out_group = __write_groups(groups, add_indent(indent), references_30)
 
     for comp in item.components:
@@ -458,11 +471,10 @@ def __write_components(
     return outfile
 
 
-def __find_matching_group_id(att_rel: str, groups: Dict[str, Any]) -> Optional[str]:
-    if "," in att_rel:
-        comps_to_relate = att_rel.split(",")
-    else :
-        comps_to_relate = [att_rel]
+def __find_matching_group_id(
+    att_rel: str, groups: list[Dict[str, Any]]
+) -> Optional[str]:
+    comps_to_relate = att_rel.split(",") if "," in att_rel else [att_rel]
     for group in groups:
         if set(comps_to_relate) == set(group["dimensions"]):
             return group[ID]
@@ -470,7 +482,9 @@ def __find_matching_group_id(att_rel: str, groups: Dict[str, Any]) -> Optional[s
 
 
 def __comps_to_relate(
-    att_rel: str, component_info: Dict[str, Any],groups: Dict[str, Any], references_30: bool = False
+    att_rel: str,
+    component_info: Dict[str, Any],
+    references_30: bool = False,
 ) -> list[str]:
     if "," in att_rel:
         comps_to_relate = att_rel.split(",")
@@ -486,11 +500,11 @@ def __comps_to_relate(
     return comps_to_relate
 
 
-def __write_attribute_relation(
+def __write_attribute_relation(  # noqa: C901
     item: Component,
     indent: str,
     component_info: Dict[str, Any],
-    groups: Dict[str, Any],
+    groups: list[Dict[str, Any]],
     references_30: bool = False,
 ) -> str:
     measure_relationship = ""
@@ -504,11 +518,11 @@ def __write_attribute_relation(
     else:
         # Check if it is a list of Dimensions or it is related to the
         # primary measure
-        group_id = __find_matching_group_id(att_rel, groups)
-        if group_id is not None:
-            print(f"Group {group_id} found for {att_rel}")
+        group_id = None
+        if groups is not None:
+            group_id = __find_matching_group_id(att_rel, groups)
         comps_to_relate = __comps_to_relate(
-            att_rel, component_info, groups, references_30
+            att_rel, component_info, references_30
         )
         dim_names = [comp.id for comp in component_info[DIM]]
 
@@ -531,8 +545,8 @@ def __write_attribute_relation(
                 outfile += f"{add_indent(indent)}<{ABBR_STR}:Dataflow/>"
             elif group_id is not None:
                 outfile += (
-                    f"{add_indent(indent)}<{ABBR_STR}:{GROUP_LOW}>"
-                    f"{group_id}</{ABBR_STR}:{GROUP_LOW}>"
+                    f"{add_indent(indent)}<{ABBR_STR}:{GROUP}>"
+                    f"{group_id}</{ABBR_STR}:{GROUP}>"
                 )
             else:
                 for comp_name in comps_to_relate:
@@ -545,21 +559,28 @@ def __write_attribute_relation(
             if group_id is not None:
                 outfile += (
                     f"{add_indent(indent)}<{ABBR_STR}:{GROUP}>"
-                    f"{add_indent(add_indent(indent))}<{REF} {ID}={group_id!r}/"
+                    f"{add_indent(add_indent(indent))}<{REF} "
+                    f"{ID}={group_id!r}/"
                     f"{add_indent(indent)}</{ABBR_STR}:{GROUP}>"
                 )
             else:
                 for comp_name in comps_to_relate:
                     role = (
-                        Role.DIMENSION if comp_name in dim_names else Role.MEASURE
+                        Role.DIMENSION
+                        if comp_name in dim_names
+                        else Role.MEASURE
                     )
                     related_role = ROLE_MAPPING[role]
-                    outfile += f"{add_indent(indent)}<{ABBR_STR}:{related_role}>"
+                    outfile += (
+                        f"{add_indent(indent)}<{ABBR_STR}:{related_role}>"
+                    )
                     outfile += (
                         f"{add_indent(add_indent(indent))}"
                         f"<{REF} {ID}={comp_name!r}/>"
                     )
-                    outfile += f"{add_indent(indent)}</{ABBR_STR}:{related_role}>"
+                    outfile += (
+                        f"{add_indent(indent)}</{ABBR_STR}:{related_role}>"
+                    )
 
     outfile += f"{indent}</{ABBR_STR}:{ATT_REL}>"
     if measure_relationship:
@@ -573,7 +594,7 @@ def __write_component(
     position: int,
     indent: str,
     component_info: Dict[str, Any],
-    groups: Dict[str, Any],
+    groups: list[Dict[str, Any]],
     references_30: bool = False,
 ) -> str:
     """Writes the component to the XML file."""
@@ -595,7 +616,7 @@ def __write_component(
             status = MANDATORY if item.required else CONDITIONAL
             attributes += f"{AS_STATUS}={status!r} "
         attribute_relation = __write_attribute_relation(
-            item, add_indent(indent), component_info,groups, references_30
+            item, add_indent(indent), component_info, groups, references_30
         )
 
     attributes += f"{ID}={item.id!r}"

@@ -91,6 +91,24 @@ def vtl_complete():
 
 
 @pytest.fixture
+def datastructure_group_read():
+    base_path = (
+        Path(__file__).parent / "samples" / "read_datastructure_group.xml"
+    )
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def datastructure_group_write():
+    base_path = (
+        Path(__file__).parent / "samples" / "write_datastructure_group.xml"
+    )
+    with open(base_path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+@pytest.fixture
 def bis_sample():
     base_path = Path(__file__).parent / "samples" / "bis_der.xml"
     with open(base_path, "r") as f:
@@ -991,3 +1009,16 @@ def test_read_write_vtl_complete(vtl_complete):
         ts_2.name_personalisation_scheme, NamePersonalisationScheme
     )
     assert ts_2.name_personalisation_scheme == ts.name_personalisation_scheme
+
+
+def test_read_write_datastructure_group(
+    datastructure_group_read, datastructure_group_write
+):
+    message = read_sdmx(datastructure_group_read, validate=True)
+
+    result = write(
+        structures=message.structures,
+        header=message.header,
+        prettyprint=True,
+    )
+    assert result == datastructure_group_write

@@ -22,6 +22,7 @@ from pysdmx.model import (
     ConceptScheme,
     Contact,
     CustomTypeScheme,
+    DataStructureDefinition,
     FromVtlMapping,
     ItemReference,
     NamePersonalisationScheme,
@@ -88,6 +89,11 @@ def scheme_examples_json():
         encoding="utf-8",
     ) as file:
         return json.load(file)
+
+
+@pytest.fixture
+def datastructure_group():
+    return Path(__file__).parent / "samples" / "datastructure_group.xml"
 
 
 @pytest.fixture
@@ -839,3 +845,25 @@ def test_transformation_scheme_children(samples_folder):
     assert udo_scheme.vtl_mapping_scheme.short_urn == (
         "VtlMappingScheme=" "MD:VMS1(1.0)"
     )
+
+
+def test_datastructure_group(datastructure_group):
+    input_str, read_format = process_string_to_read(datastructure_group)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+    dsd = result[20]
+    assert isinstance(dsd, DataStructureDefinition)
+    group = dsd.group
+    assert group[0]["id"] == "Sibling"
+    assert group[0]["dimensions"] == [
+        "L_MEASURE",
+        "L_REP_CTY",
+        "CBS_BANK_TYPE",
+        "CBS_BASIS",
+        "L_POSITION",
+        "L_INSTR",
+        "REM_MATURITY",
+        "CURR_TYPE_BOOK",
+        "L_CP_SECTOR",
+        "L_CP_COUNTRY",
+    ]

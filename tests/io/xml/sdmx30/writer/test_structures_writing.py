@@ -771,6 +771,24 @@ def write_datastructure_sample():
         return f.read()
 
 
+@pytest.fixture
+def datastructure_group_read():
+    base_path = (
+        Path(__file__).parent / "samples" / "read_datastructure_group.xml"
+    )
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def datastructure_group_write():
+    base_path = (
+        Path(__file__).parent / "samples" / "write_datastructure_group.xml"
+    )
+    with open(base_path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
 def test_codelist(complete_header, codelist, codelist_sample):
     content = [codelist]
     result = write(
@@ -934,3 +952,16 @@ def test_no_header_outpath(concept):
     )
     os.remove(output_path)
     assert result is None
+
+
+def test_read_write_datastructure_group(
+    datastructure_group_read, datastructure_group_write
+):
+    message = read_sdmx(datastructure_group_read, validate=True)
+
+    result = write(
+        structures=message.structures,
+        header=message.header,
+        prettyprint=True,
+    )
+    assert result == datastructure_group_write
