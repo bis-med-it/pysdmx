@@ -69,8 +69,6 @@ def _parse_structure_specific_data(
     dataset: Dict[str, Any], structure_info: Dict[str, Any]
 ) -> PandasDataset:
     attached_attributes = _get_at_att_str(dataset)
-    if GROUP in attached_attributes:
-        del attached_attributes[GROUP]
 
     df = pd.DataFrame()
 

@@ -50,7 +50,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     DFWS,
     DIM,
     DIM_LIST,
-    DIM_REF,
     DSD,
     DSD_COMPS,
     DSDS,
@@ -64,7 +63,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     FAXES,
     GROUP,
     GROUP_DIM,
-    GROUP_LOW,
     ID,
     IS_EXTERNAL_REF,
     IS_EXTERNAL_REF_LOW,
@@ -218,7 +216,6 @@ ITEMS_CLASSES = {
 }
 
 COMP_TYPES = [DIM, ATT, PRIM_MEASURE, MEASURE, GROUP_DIM]
-
 
 ROLE_MAPPING = {
     DIM: Role.DIMENSION,
@@ -554,28 +551,16 @@ class StructureParser(Struct):
         return rep
 
     @staticmethod
-    def __format_relationship(
-        json_rel: Dict[str, Any], element_info: Dict[str, Any]
-    ) -> Optional[str]:
+    def __format_relationship(json_rel: Dict[str, Any]) -> Optional[str]:
         att_level = None
 
-        for scheme in [DIM, PRIM_MEASURE, GROUP, MEASURE, DFW, OBSERVATION]:
+        for scheme in [DIM, PRIM_MEASURE, MEASURE, DFW, OBSERVATION]:
             if scheme in json_rel:
                 if scheme == DIM:
                     dims = add_list(json_rel[DIM])
                     if dims and isinstance(dims[0], dict):
                         dims = [dim[REF][ID] for dim in dims]
                     att_level = ",".join(dims)
-                elif scheme == GROUP:
-                    group_id = json_rel[GROUP]
-                    group_dimensions = next(
-                        (
-                            g
-                            for g in element_info[GROUP_LOW]
-                            if g[ID] == group_id
-                        ),
-                    )
-                    att_level = ",".join(group_dimensions["dimensions"])
                 elif scheme == DFW:
                     att_level = "D"
                 elif scheme == OBSERVATION:
@@ -689,7 +674,7 @@ class StructureParser(Struct):
                     json_obj[DFW_LOW] = dataflow
 
     def __format_component(
-        self, comp: Dict[str, Any], role: Role, element_info: Dict[str, Any]
+        self, comp: Dict[str, Any], role: Role
     ) -> Component:
         comp[ROLE.lower()] = role
         comp[REQUIRED] = True
@@ -704,11 +689,10 @@ class StructureParser(Struct):
             concept_id = self.__format_con_id(comp[CON_ID])
         comp[CON_LOW] = concept_id.pop(CON)
         del comp[CON_ID]
+
         # Attribute Handling
         if ATT_REL in comp:
-            comp[ATT_LVL] = self.__format_relationship(
-                comp[ATT_REL], element_info
-            )
+            comp[ATT_LVL] = self.__format_relationship(comp[ATT_REL])
             del comp[ATT_REL]
 
         if ME_REL in comp:
@@ -735,7 +719,7 @@ class StructureParser(Struct):
         return Component(**comp)
 
     def __format_component_lists(
-        self, element: Dict[str, Any], element_info: Dict[str, Any]
+        self, element: Dict[str, Any]
     ) -> List[Component]:
         comp_list = []
 
@@ -749,7 +733,7 @@ class StructureParser(Struct):
         element[role_name] = add_list(element[role_name])
 
         for comp in element[role_name]:
-            formatted_comp = self.__format_component(comp, role, element_info)
+            formatted_comp = self.__format_component(comp, role)
             comp_list.append(formatted_comp)
 
         return comp_list
@@ -759,11 +743,12 @@ class StructureParser(Struct):
             element[COMPS] = []
             comps = element[DSD_COMPS]
 
-            for comp_list in [DIM_LIST, ME_LIST, ATT_LIST]:
-                if comp_list in comps:
-                    fmt_comps = self.__format_component_lists(
-                        comps[comp_list], element
-                    )
+            for comp_list in [DIM_LIST, ME_LIST, GROUP, ATT_LIST]:
+                if comp_list == GROUP and comp_list in comps:
+                    del comps[GROUP]
+
+                elif comp_list in comps:
+                    fmt_comps = self.__format_component_lists(comps[comp_list])
                     element[COMPS].extend(fmt_comps)
 
             element[COMPS] = Components(element[COMPS])
@@ -896,27 +881,6 @@ class StructureParser(Struct):
 
         return ITEMS_CLASSES[item_name_class](**item_json_info)
 
-    @staticmethod
-    def __format_groups(element: Dict[str, Any]) -> Dict[str, Any]:
-        if DSD_COMPS in element:
-            dsd_comps = element[DSD_COMPS]
-            if GROUP in dsd_comps:
-                groups = (
-                    dsd_comps[GROUP]
-                    if isinstance(dsd_comps[GROUP], list)
-                    else [dsd_comps[GROUP]]
-                )
-                for group in groups:
-                    group["dimensions"] = [
-                        d[DIM_REF]
-                        if isinstance(d[DIM_REF], str)
-                        else d[DIM_REF][REF][ID]
-                        for d in group.pop(GROUP_DIM)
-                    ]
-                element[GROUP_LOW] = add_list(groups)
-                del element[DSD_COMPS][GROUP]
-        return element
-
     def __format_scheme(
         self, json_elem: Dict[str, Any], scheme: str, item: str
     ) -> Dict[str, ItemScheme]:
@@ -992,7 +956,6 @@ class StructureParser(Struct):
             element = self.__format_urls(element)
             element = self.__format_agency(element)
             element = self.__format_validity(element)
-            element = self.__format_groups(element)
             element = self.__format_components(element)
 
             if "xmlns" in element:

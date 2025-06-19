@@ -138,7 +138,6 @@ MEASURE = "Measure"
 PRIM_MEASURE = "PrimaryMeasure"
 # Group Dimension
 GROUP = "Group"
-GROUP_LOW = "group"
 GROUP_DIM_LOW = "group_dimension_descriptor"
 GROUP_DIM = "GroupDimension"
 DIM_REF = "DimensionReference"

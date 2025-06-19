@@ -10,7 +10,7 @@ as part of the response.
 from collections import Counter, UserList
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Iterable, List, Literal, Optional, Sequence, Union
+from typing import Any, Iterable, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -18,7 +18,6 @@ from pysdmx.errors import Invalid
 from pysdmx.model.__base import (
     Agency,
     DataProvider,
-    IdentifiableArtefact,
     ItemReference,
     MaintainableArtefact,
 )
@@ -223,14 +222,6 @@ class Component(
         for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
             attrs.append(f"{attr}={repr(value)}")
         return f"{self.__class__.__name__}({', '.join(attrs)})"
-
-
-class GroupDimension(
-    IdentifiableArtefact, frozen=True, omit_defaults=True, kw_only=True
-):
-    """A group dimension descriptor."""
-
-    dimensions: List[str]
 
 
 class Components(UserList[Component]):
@@ -530,7 +521,6 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
     """
 
     components: Components
-    group: Optional[list[GroupDimension]] = None
     evolving_structure: bool = False
 
     def __extract_artefacts(self) -> Sequence[str]:
