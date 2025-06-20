@@ -41,7 +41,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     FAX,
     GROUP,
     GROUP_DIM,
-    GROUP_LOW,
+    GROUPS_LOW,
     ID,
     LOCAL_REP,
     MANDATORY,
@@ -434,7 +434,7 @@ def __write_components(
         PRIM_MEASURE: [],
     }
     out_group = ""
-    groups = getattr(item, GROUP_LOW, [])
+    groups = getattr(item, GROUPS_LOW, [])
     if groups is not None and len(groups) > 0:
         out_group = __write_groups(groups, add_indent(indent), references_30)
 

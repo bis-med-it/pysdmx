@@ -64,7 +64,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     FAXES,
     GROUP,
     GROUP_DIM,
-    GROUP_LOW,
+    GROUPS_LOW,
     ID,
     IS_EXTERNAL_REF,
     IS_EXTERNAL_REF_LOW,
@@ -573,7 +573,7 @@ class StructureParser(Struct):
                     group_dimensions = next(
                         (
                             g
-                            for g in element_info[GROUP_LOW]
+                            for g in element_info[GROUPS_LOW]
                             if g[ID] == group_id
                         ),
                     )
@@ -915,7 +915,7 @@ class StructureParser(Struct):
                         else d[DIM_REF][REF][ID]
                         for d in group.pop(GROUP_DIM)
                     ]
-                element[GROUP_LOW] = add_list(groups)
+                element[GROUPS_LOW] = add_list(groups)
                 del element[DSD_COMPS][GROUP]
         return element
 

@@ -228,7 +228,7 @@ class Component(
 class GroupDimension(
     IdentifiableArtefact, frozen=True, omit_defaults=True, kw_only=True
 ):
-    """A group dimension descriptor."""
+    """A group of dimensions that can be used to identify a group."""
 
     dimensions: List[str]
 
@@ -465,6 +465,7 @@ class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     version: str = "1.0"
     artefacts: Sequence[str] = ()
     generated: datetime = datetime.now(timezone.utc)
+    groups: Optional[list[GroupDimension]] = None
 
     def __str__(self) -> str:
         """Custom string representation without the class name."""
@@ -530,7 +531,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
     """
 
     components: Components
-    group: Optional[list[GroupDimension]] = None
+    groups: Optional[list[GroupDimension]] = None
     evolving_structure: bool = False
 
     def __extract_artefacts(self) -> Sequence[str]:

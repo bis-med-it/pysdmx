@@ -25,6 +25,7 @@ from pysdmx.model import (
     Role,
     Schema,
 )
+from pysdmx.model.dataflow import GroupDimension
 from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import Header
 
@@ -111,6 +112,86 @@ def content():
             ),
         ),
         attributes={"ds_att1": "value1", "ds_att2": 10},
+    )
+    return {ds.structure.short_urn: ds}
+
+
+@pytest.fixture
+def ds_with_group():
+    ds = PandasDataset(
+        data=pd.DataFrame(
+            {
+                "DIM1": [1, 2, 3],
+                "DIM2": [4, 5, 6],
+                "ATT1": ["A", "B", "C"],
+                "ATT2": [7, 8, 9],
+                "ATT3": ["H", "I", "J"],
+                "M1": [10, 11, 12],
+            }
+        ),
+        structure=Schema(
+            context="datastructure",
+            id="TEST",
+            agency="MD",
+            version="1.0",
+            groups=[GroupDimension(id="ATT3", dimensions=["DIM2"])],
+            components=Components(
+                [
+                    Component(
+                        id="DIM1",
+                        role=Role.DIMENSION,
+                        concept=Concept(id="DIM1"),
+                        required=True,
+                    ),
+                    Component(
+                        id="DIM2",
+                        role=Role.DIMENSION,
+                        concept=Concept(id="DIM2"),
+                        required=True,
+                    ),
+                    Component(
+                        id="ATT1",
+                        role=Role.ATTRIBUTE,
+                        concept=Concept(id="ATT1"),
+                        required=True,
+                        attachment_level="DIM1",
+                    ),
+                    Component(
+                        id="ATT2",
+                        role=Role.ATTRIBUTE,
+                        concept=Concept(id="ATT2"),
+                        required=False,
+                        attachment_level="O",
+                    ),
+                    Component(
+                        id="ATT3",
+                        role=Role.ATTRIBUTE,
+                        concept=Concept(id="ATT3"),
+                        required=True,
+                        attachment_level="DIM2",
+                    ),
+                    Component(
+                        id="ds_att1",
+                        role=Role.ATTRIBUTE,
+                        concept=Concept(id="ds_att1"),
+                        required=True,
+                    ),
+                    Component(
+                        id="ds_att2",
+                        role=Role.ATTRIBUTE,
+                        concept=Concept(id="ds_att2"),
+                        required=False,
+                    ),
+                    Component(
+                        id="M1",
+                        role=Role.MEASURE,
+                        concept=Concept(id="M1"),
+                        required=True,
+                    ),
+                ]
+            ),
+        ),
+        attributes={"ds_att1": "value1", "ds_att2": "10"},
     )
     return {ds.structure.short_urn: ds}
 
@@ -394,3 +475,21 @@ def test_dataset_action_and_header_action_dataset_id(content, header):
     data_gen = read_sdmx(result_gen, validate=True)
     assert data_spe.data[0].action == ActionType.Append
     assert data_gen.data[0].action == ActionType.Append
+
+
+def test_write_data_with_groups(header, ds_with_group):
+    base_path = (
+        Path(__file__).parent / "samples" / "test_dataset_with_groups.xml"
+    )
+    with open(base_path, "r") as f:
+        sample = f.read()
+
+    ds_with_group = list(ds_with_group.values())
+    result = write_str_spec(
+        ds_with_group,
+        header=header,
+        prettyprint=True,
+        dimension_at_observation={"DataStructure=MD:TEST(1.0)": "DIM1"},
+    )
+
+    assert result == sample

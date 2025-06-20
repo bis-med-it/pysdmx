@@ -619,7 +619,7 @@ def test_datastructure_group(samples_folder):
     result = read_sdmx(input_str, validate=True).structures
     dsd = result[20]
     assert isinstance(dsd, DataStructureDefinition)
-    group = dsd.group
+    group = dsd.groups
     assert group[0]["id"] == "Sibling"
     assert group[0]["dimensions"] == [
         "L_MEASURE",

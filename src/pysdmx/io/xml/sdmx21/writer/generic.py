@@ -192,7 +192,7 @@ def __write_data_single_dataset(
             prettyprint=prettyprint,
         )
     else:
-        series_codes, obs_codes = get_codes(
+        series_codes, obs_codes, group_codes = get_codes(
             dimension_code=dim,
             structure=dataset.structure,  # type: ignore[arg-type]
             data=dataset.data,
