@@ -44,7 +44,7 @@ def to_pandas_type(comp: Component) -> str:
     Pandas data type, taking into account whether the component is required.
 
     Args:
-        comp:
+        comp (Component):
             The SDMX component for which to determine the Pandas data type.
 
     Returns:
@@ -67,16 +67,19 @@ def to_pandas_type(comp: Component) -> str:
 def to_pandas_schema(components: Iterable[Component]) -> Dict[str, str]:
     """Infer the schema of a Pandas Data Frame from a list of components.
 
-    The returned dictionary can then be passed as input to Pandas
-    DataFrame `astype` method.
+    This function generates a dictionary mapping component IDs to their
+    corresponding Pandas data types. The resulting dictionary can be used
+    as input to the Pandas `astype` method to cast DataFrame columns
+    to the desired types.
 
     Args:
-        components:
-            The list of SDMX components to be used to infer the schema
-                for the Pandas Data Frame.
+        components (Iterable[Component]):
+            A collection of SDMX components from which the schema for
+            the Pandas DataFrame will be inferred.
 
     Returns:
-        A dictionary with the component IDs (i.e. field) as keys and
-        their Pandas data type as values.
+        Dict[str, str]:
+            A dictionary where keys are the component IDs (field names)
+            and values are their corresponding Pandas data types.
     """
     return {c.id: to_pandas_type(c) for c in components}
