@@ -1,7 +1,15 @@
 import pytest
 
-from pysdmx.model import Code, Codelist, Component, Concept, DataType, Role
-from pysdmx.toolkit.pd import to_pandas_type
+from pysdmx.model import (
+    Code,
+    Codelist,
+    Component,
+    Components,
+    Concept,
+    DataType,
+    Role,
+)
+from pysdmx.toolkit.pd import to_pandas_schema, to_pandas_type
 
 
 @pytest.mark.parametrize(
@@ -134,3 +142,56 @@ def test_enumeration():
     received = to_pandas_type(comp)
 
     assert received == "category"
+
+
+def test_schema():
+    c1 = Component(
+        "FREQ",
+        True,
+        Role.DIMENSION,
+        Concept("FREQ"),
+        DataType.STRING,
+        local_codes=Codelist(
+            "CL_FREQ", agency="BIS", items=[Code("A"), Code("M")]
+        ),
+    )
+    c2 = Component(
+        "MIC", True, Role.DIMENSION, Concept("MIC"), DataType.STRING
+    )
+    c3 = Component(
+        "TIME_PERIOD",
+        True,
+        Role.DIMENSION,
+        Concept("TIME_PERIOD"),
+        DataType.PERIOD,
+    )
+    c4 = Component(
+        "OBS_VALUE",
+        True,
+        Role.MEASURE,
+        Concept("OBS_VALUE"),
+        DataType.DOUBLE,
+    )
+    c5 = Component(
+        "OBS_STATUS",
+        True,
+        Role.ATTRIBUTE,
+        Concept("OBS_STATUS"),
+        DataType.STRING,
+        local_codes=Codelist(
+            "CL_OBS_STATUS",
+            agency="BIS",
+            items=[Code("A"), Code("E"), Code("M")],
+        ),
+    )
+    exp = {
+        "FREQ": "category",
+        "MIC": "string",
+        "TIME_PERIOD": "string",
+        "OBS_VALUE": "float64",
+        "OBS_STATUS": "category",
+    }
+
+    schema = to_pandas_schema(Components([c1, c2, c3, c4, c5]))
+
+    assert schema == exp
