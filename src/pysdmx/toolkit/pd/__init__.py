@@ -1,5 +1,7 @@
 """Utility functions to leverage the SDMX information model in Pandas."""
 
+from typing import Dict, Iterable
+
 from pysdmx.model import Component, DataType
 
 
@@ -60,3 +62,21 @@ def to_pandas_type(comp: Component) -> str:
         return "category"
     else:
         return __get_pd_type(comp.dtype, comp.required)
+
+
+def to_pandas_schema(components: Iterable[Component]) -> Dict[str, str]:
+    """Infer the schema of a Pandas Data Frame from a list of components.
+
+    The returned dictionary can then be passed as input to Pandas
+    DataFrame `astype` method.
+
+    Args:
+        components:
+            The list of SDMX components to be used to infer the schema
+                for the Pandas Data Frame.
+
+    Returns:
+        A dictionary with the component IDs (i.e. field) as keys and
+        their Pandas data type as values.
+    """
+    return {c.id: to_pandas_type(c) for c in components}
