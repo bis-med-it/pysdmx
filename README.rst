@@ -13,7 +13,7 @@ What is pysdmx?
 ===============
 
 ``pysdmx`` is a **pragmatic** and **opinionated** SDMX library written in
-**Python**. It focuses on simplicity, providing a subset of SDMX functionalities
+**Python**. It focuses on **simplicity**, providing a subset of SDMX functionalities
 without requiring advanced knowledge of SDMX. ``pysdmx`` is developed as part of
 the `sdmx.io <http://sdmx.io/>`_ project under the **BIS Open Tech initiative**.
 
@@ -37,13 +37,14 @@ Metadata in action
 
 SDMX metadata are very useful for documenting statistical processes. For example,
 they can define the structure we expect for a data collection process and share
-it with the organizations providing data so that they know what to send. However,
-metadata can do so much more than that, i.e., they can be “active” and **drive
-various types of statistical processes**, such as generating the filesystem layout,
-creating the physical data model, validating data, mapping data, and configuring
-processes. To drive such processes, ``pysdmx`` supports retrieving metadata from an
-SDMX Registry or any service compliant with the SDMX-REST 2.x.x API. Use these
-metadata to power your own statistical processes!
+it with the organizations providing data so that they know what to send.
+
+However, metadata can do so much more than that, i.e., they can be “active” and
+**drive various types of statistical processes**, such as generating the filesystem
+layout, creating the physical data model, validating data, mapping data, and
+configuring processes. To drive such processes, ``pysdmx`` supports retrieving
+metadata from an SDMX Registry or any service compliant with the SDMX-REST 2.0.0 (or
+above) API. Use these metadata to power your own statistical processes!
 
 Reading and writing SDMX files
 ------------------------------
