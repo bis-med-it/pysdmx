@@ -551,8 +551,8 @@ class StructureParser(Struct):
         return rep
 
     @staticmethod
-    def __format_relationship(json_rel: Dict[str, Any]) -> Optional[str]:
-        att_level = None
+    def __format_relationship(json_rel: Dict[str, Any]) -> str:
+        att_level = "D"
 
         for scheme in [DIM, PRIM_MEASURE, MEASURE, DFW, OBSERVATION]:
             if scheme in json_rel:
