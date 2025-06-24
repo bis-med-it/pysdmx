@@ -12,10 +12,10 @@
 What is pysdmx?
 ===============
 
-``pysdmx`` is a pragmatic and **opinionated** SDMX library written in Python. It
-focuses on simplicity, providing a subset of SDMX functionalities without
-requiring advanced knowledge of SDMX. ``pysdmx`` is developed as part of the
-`sdmx.io <http://sdmx.io/>` project under the **BIS Open Tech initiative**.
+``pysdmx`` is a **pragmatic** and **opinionated** SDMX library written in
+**Python**. It focuses on simplicity, providing a subset of SDMX functionalities
+without requiring advanced knowledge of SDMX. ``pysdmx`` is developed as part of
+the `sdmx.io <http://sdmx.io/>`_ project under the **BIS Open Tech initiative**.
 
 What does it do?
 ================
@@ -30,7 +30,7 @@ SDMX information model in Python
 information model**, enabling a domain-driven development of SDMX processes in
 Python. The model classes support serialization in formats like JSON, YAML, or
 MessagePack. This functionality relies on the 
-`msgspec library <https://jcristharif.com/msgspec/>`.
+`msgspec library <https://jcristharif.com/msgspec/>`_.
 
 Metadata in action
 ------------------
@@ -38,8 +38,8 @@ Metadata in action
 SDMX metadata are very useful for documenting statistical processes. For example,
 they can define the structure we expect for a data collection process and share
 it with the organizations providing data so that they know what to send. However,
-metadata can do so much more than that, i.e., they can be “active” and drive various
-types of statistical processes, such as generating the filesystem layout,
+metadata can do so much more than that, i.e., they can be “active” and **drive
+various types of statistical processes**, such as generating the filesystem layout,
 creating the physical data model, validating data, mapping data, and configuring
 processes. To drive such processes, ``pysdmx`` supports retrieving metadata from an
 SDMX Registry or any service compliant with the SDMX-REST 2.x.x API. Use these
@@ -66,8 +66,8 @@ Integration with the ecosystem
 ------------------------------
 
 ``pysdmx`` integrates nicely with other standards, like the `Validation and
-Transformation Language (VTL) <https://sdmx.org/about-sdmx/about-vtl/>`,
-and major Python libraries like `Pandas <https://pandas.pydata.org/>`.
+Transformation Language (VTL) <https://sdmx.org/about-sdmx/about-vtl/>`_,
+and major Python libraries like `Pandas <https://pandas.pydata.org/>`_.
 Take a look at the ``pysdmx`` toolkit module to learn more.
 
 ``pysdmx`` is available on `PyPI <https://pypi.org/>`_ and can be
