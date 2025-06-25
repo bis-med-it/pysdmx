@@ -51,7 +51,7 @@ def write_sdmx(
     Args:
         sdmx_objects: Model objects to write, including PandasDataset,
             DataStructure, Dataflow, ConceptScheme, etc.
-        sdmx_format: The SDMX format to write to, e.g.,
+        sdmx_format: The pysdmx.io.Format to write to, e.g.,
             Format.DATA_SDMX_ML_3_0.
         output_path: The path to save the file. If empty, returns a string.
         **kwargs: see Kwargs below.
@@ -64,7 +64,7 @@ def write_sdmx(
             (only for SDMX-ML Data formats).
 
     Returns:
-        A serialised string if output_path is empty, otherwise None.
+        A serialised string if output_path is an empty string, otherwise None.
 
     Raises:
         Invalid: If the file is empty or the format is not supported.
