@@ -8,11 +8,20 @@ from pysdmx.io import read_sdmx
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_data_aux import writing_validation
 from pysdmx.io.xml.sdmx21.writer.structure import write
-from pysdmx.model import Component, Components, Concept, Role, Schema, DataStructureDefinition
+from pysdmx.model import (
+    Component,
+    Components,
+    Concept,
+    DataStructureDefinition,
+    Role,
+    Schema,
+)
+
 
 @pytest.fixture
 def samples_folder():
     return Path(__file__).parent / "samples"
+
 
 def test_structural_validation():
     dataset = PandasDataset(
@@ -261,6 +270,7 @@ def test_match_columns():
     )
     with pytest.raises(Invalid, match="Data columns must match components."):
         writing_validation(dataset)
+
 
 def test_attribute_relationship_roundtrip(samples_folder):
     # Read the SDMX-ML file with None attribute relationships

@@ -447,8 +447,9 @@ def __write_attribute_relation(
 ) -> str:
     measure_relationship = ""
     outfile = f"{indent}<{ABBR_STR}:{ATT_REL}>"
-    # At this point an attribute relation is always present due to the post_init check in Component
-    att_rel: str = item.attachment_level # type: ignore[assignment]
+    # At this point an attribute relation is always
+    # present due to the post_init check in Component
+    att_rel: str = item.attachment_level  # type: ignore[assignment]
     # Check if it is a list of Dimensions or it is related to the
     # primary measure
     comps_to_relate = __comps_to_relate(att_rel, component_info, references_30)

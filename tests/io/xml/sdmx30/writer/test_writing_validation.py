@@ -6,6 +6,7 @@ from pysdmx.io import read_sdmx
 from pysdmx.io.xml.sdmx30.writer.structure import write
 from pysdmx.model import DataStructureDefinition
 
+
 @pytest.fixture
 def samples_folder():
     """Fixture to provide the path to the samples folder."""
@@ -29,6 +30,7 @@ def test_roundtrip(samples_folder, filename, tmp_path):
     msg2 = read_sdmx(result)
 
     assert len(msg1.structures) == len(msg2.structures)
+
 
 def test_attribute_relationship_roundtrip(samples_folder):
     # Read the SDMX-ML file with None attribute relationships
