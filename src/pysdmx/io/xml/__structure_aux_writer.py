@@ -447,45 +447,41 @@ def __write_attribute_relation(
 ) -> str:
     measure_relationship = ""
     outfile = f"{indent}<{ABBR_STR}:{ATT_REL}>"
-    att_rel = item.attachment_level
-    if att_rel is None or (att_rel == "D" and not references_30):
-        if references_30:
+    # At this point an attribute relation is always present due to the post_init check in Component
+    att_rel: str = item.attachment_level # type: ignore[assignment]
+    # Check if it is a list of Dimensions or it is related to the
+    # primary measure
+    comps_to_relate = __comps_to_relate(att_rel, component_info, references_30)
+    dim_names = [comp.id for comp in component_info[DIM]]
+
+    if references_30:
+        if att_rel == "O":
             outfile += f"{add_indent(indent)}<{ABBR_STR}:Observation/>"
+            measure_relationship += (
+                f"{indent}<{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
+            )
+            for comp_name in comps_to_relate:
+                measure_relationship += (
+                    f"{add_indent(indent)}<{ABBR_STR}:{MEASURE}>"
+                    f"{comp_name.id}</{ABBR_STR}:{MEASURE}>"  # type: ignore[attr-defined]
+                )
+            measure_relationship += (
+                f"{indent}</{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
+            )
+
+        elif att_rel == "D":
+            outfile += f"{add_indent(indent)}<{ABBR_STR}:Dataflow/>"
+
         else:
-            outfile += f"{add_indent(indent)}<{ABBR_STR}:None/>"
+            for comp_name in comps_to_relate:
+                outfile += (
+                    f"{add_indent(indent)}<{ABBR_STR}:{DIM}>"
+                    f"{comp_name}</{ABBR_STR}:{DIM}>"
+                )
+
     else:
-        # Check if it is a list of Dimensions or it is related to the
-        # primary measure
-        comps_to_relate = __comps_to_relate(
-            att_rel, component_info, references_30
-        )
-        dim_names = [comp.id for comp in component_info[DIM]]
-
-        if references_30:
-            if att_rel == "O":
-                outfile += f"{add_indent(indent)}<{ABBR_STR}:Observation/>"
-                measure_relationship += (
-                    f"{indent}<{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
-                )
-                for comp_name in comps_to_relate:
-                    measure_relationship += (
-                        f"{add_indent(indent)}<{ABBR_STR}:{MEASURE}>"
-                        f"{comp_name.id}</{ABBR_STR}:{MEASURE}>"  # type: ignore[attr-defined]
-                    )
-                measure_relationship += (
-                    f"{indent}</{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
-                )
-
-            elif att_rel == "D":
-                outfile += f"{add_indent(indent)}<{ABBR_STR}:Dataflow/>"
-
-            else:
-                for comp_name in comps_to_relate:
-                    outfile += (
-                        f"{add_indent(indent)}<{ABBR_STR}:{DIM}>"
-                        f"{comp_name}</{ABBR_STR}:{DIM}>"
-                    )
-
+        if att_rel == "D":
+            outfile += f"{add_indent(indent)}<{ABBR_STR}:None/>"
         else:
             for comp_name in comps_to_relate:
                 role = (
