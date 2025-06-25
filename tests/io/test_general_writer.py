@@ -2,9 +2,10 @@ from pathlib import Path
 
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
-from pysdmx.io.writer import write
+from pysdmx.io.writer import write_sdmx
 from pysdmx.model import Component, Components, Concept, Role, Schema
 
 CSV_1_0_PATH = Path(__file__).parent / "csv" / "sdmx10" / "reader"
@@ -99,9 +100,15 @@ def output_path(extension, tmpdir):
         (Format.DATA_SDMX_ML_2_1_STR, XML_2_1_PATH, "str_all.xml", {}),
         (Format.DATA_SDMX_ML_3_0, XML_3_0_PATH, "data_dataflow_3.0.xml", {}),
         (Format.STRUCTURE_SDMX_ML_2_1, XML_STR_PATH, "datastructure.xml", {}),
+        (
+            Format.STRUCTURE_SDMX_ML_3_0,
+            XML_STR_PATH,
+            "datastructure_3.0.xml",
+            {},
+        ),
     ],
 )
-def test_write(
+def test_write_sdmx(
     format_, test_path, reference_file, params, reference, output_path
 ):
     data = reference.data if reference.data else reference.structures
@@ -109,7 +116,7 @@ def test_write(
         data[0].structure = GEN_STRUCTURE[0]
     params["header"] = reference.header
 
-    write(data, output_path=str(output_path), format_=format_, **params)
+    write_sdmx(data, format_, str(output_path), **params)
     assert output_path.exists(), f"Output file {output_path} was not created."
 
     written_content = read_sdmx(output_path)
@@ -127,10 +134,11 @@ def test_write(
 
 def test_invalid_format(tmpdir):
     with pytest.raises(
-        ValueError, match="No data writer for format: invalid_format"
+        Invalid,
+        match="No writer found for format",
     ):
-        write(
+        write_sdmx(
             sdmx_objects=[],
+            sdmx_format=Format.ERROR_SDMX_ML_2_1,
             output_path=tmpdir / "output.invalid",
-            format_="invalid_format",
         )

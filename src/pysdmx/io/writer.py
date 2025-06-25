@@ -5,6 +5,7 @@ Common data and structure writer for SDMX objects.
 
 from typing import Any, Optional, Sequence
 
+from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 
 WRITERS = {
@@ -16,25 +17,73 @@ WRITERS = {
     Format.STRUCTURE_SDMX_ML_2_1: "pysdmx.io.xml.sdmx21.writer.structure",
     Format.DATA_SDMX_ML_3_0: "pysdmx.io.xml.sdmx30.writer."
     "structure_specific",
+    Format.STRUCTURE_SDMX_ML_3_0: "pysdmx.io.xml.sdmx30.writer.structure",
 }
 
+STRUCTURE_WRITERS = (
+    Format.STRUCTURE_SDMX_ML_2_1,
+    Format.STRUCTURE_SDMX_ML_3_0,
+)
 
-def write(
-    sdmx_objects: Any, output_path: str, format_: Format, **kwargs: Any
+
+def write_sdmx(
+    sdmx_objects: Any,
+    sdmx_format: Format,
+    output_path: str = "",
+    **kwargs: Any,
 ) -> Optional[str]:
-    """Write SDMX objects to a file in the specified format."""
-    if format_ not in WRITERS:
-        raise ValueError(f"No data writer for format: {format_}")
+    """Reads any SDMX object (or list of them) to any SDMX format.
+
+    Supported structures formats are:
+    - SDMX-ML 2.1 Structures
+    - SDMX-ML 3.0 Structures
+
+    Supported data formats are:
+    - SDMX-ML 2.1 Structure Specific Data
+    - SDMX-ML 2.1 Generic Data
+    - SDMX-CSV 1.0
+    - SDMX-CSV 2.0
+
+    .. important::
+        For data formats, the pysdmx[data] extra is required.
+        For SDMX-ML formats, the pysdmx[xml] extra is required.
+
+    Args:
+        sdmx_objects: Model objects to write, including PandasDataset,
+            DataStructure, Dataflow, ConceptScheme, etc.
+        sdmx_format: The SDMX format to write to, e.g.,
+            Format.DATA_SDMX_ML_3_0.
+        output_path: The path to save the file. If empty, returns a string.
+        **kwargs: see Kwargs below.
+
+    Kwargs:
+        prettyprint: Whether to pretty-print the output (default: True)
+            (Only for SDMX-ML).
+        header: Optional header to include in the output. (only for SDMX-ML)
+        dimension_at_observation: Mapping for dimension at observation
+            (only for SDMX-ML Data formats).
+
+    Returns:
+        A serialised string if output_path is empty, otherwise None.
+
+    Raises:
+        Invalid: If the file is empty or the format is not supported.
+    """
+    if sdmx_format not in WRITERS:
+        raise Invalid(
+            f"No writer found for format: {sdmx_format}. "
+            f"Check the docs for supported formats."
+        )
 
     sdmx_objects = (
         sdmx_objects if isinstance(sdmx_objects, Sequence) else [sdmx_objects]
     )
 
-    module = __import__(WRITERS[format_], fromlist=["write"])
+    module = __import__(WRITERS[sdmx_format], fromlist=["write"])
     writer = module.write
 
-    is_structure = format_ == Format.STRUCTURE_SDMX_ML_2_1
-    is_xml = "xml" in WRITERS[format_]
+    is_structure = sdmx_format in STRUCTURE_WRITERS
+    is_xml = "xml" in WRITERS[sdmx_format]
     key = "structures" if is_structure else "datasets"
     value = sdmx_objects if isinstance(sdmx_objects, list) else [sdmx_objects]
 
