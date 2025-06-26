@@ -5,7 +5,6 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.errors import Invalid
 from pysdmx.io.xml.__tokens import (
     AGENCIES,
     AGENCY,
@@ -23,6 +22,7 @@ from pysdmx.io.xml.__tokens import (
     ATT_LIST,
     ATT_LVL,
     ATT_REL,
+    ATTACH_GROUP,
     CL,
     CL_LOW,
     CLASS,
@@ -552,22 +552,30 @@ class StructureParser(Struct):
         return rep
 
     @staticmethod
-    def __format_relationship(json_rel: Dict[str, Any]) -> str:
-        att_level = "D"
-
-        for scheme in [DIM, PRIM_MEASURE, MEASURE, DFW, OBSERVATION]:
-            if scheme in json_rel:
-                if scheme == DIM:
-                    dims = add_list(json_rel[DIM])
-                    if dims and isinstance(dims[0], dict):
-                        dims = [dim[REF][ID] for dim in dims]
-                    att_level = ",".join(dims)
-                elif scheme == DFW:
-                    att_level = "D"
-                elif scheme == OBSERVATION:
-                    att_level = "O"
-                else:
-                    att_level = "O"
+    def __get_attachment_level(attribute: Dict[str, Any]) -> str:
+        if DIM in attribute:
+            dims = add_list(attribute[DIM])
+            if dims and isinstance(dims[0], dict):
+                dims = [dim[REF][ID] for dim in dims]
+            att_level = ",".join(dims)
+            # AttachmentGroup can only appear as sequence of the Dimension,
+            # therefore we need to check first if a Dimension is present,
+            # then the AttachmentGroup
+            if ATTACH_GROUP in attribute:
+                raise NotImplementedError(
+                    "Attribute relationships with Dimension "
+                    "and AttachmentGroup is not supported."
+                )
+        elif GROUP in attribute:
+            raise NotImplementedError(
+                "Attribute relationships with Group is not supported."
+            )
+        elif OBSERVATION in attribute or PRIM_MEASURE in attribute:
+            att_level = "O"
+        else:
+            # For None (SDMX-2.1) or Dataflow (SDMX-3.0), attribute is
+            # related to Dataset/Dataflow
+            att_level = "D"
 
         return att_level
 
@@ -693,7 +701,7 @@ class StructureParser(Struct):
 
         # Attribute Handling
         if ATT_REL in comp:
-            comp[ATT_LVL] = self.__format_relationship(comp[ATT_REL])
+            comp[ATT_LVL] = self.__get_attachment_level(comp[ATT_REL])
             del comp[ATT_REL]
 
         if ME_REL in comp:

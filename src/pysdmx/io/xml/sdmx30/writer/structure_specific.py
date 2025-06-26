@@ -5,6 +5,11 @@ from typing import Dict, Optional, Sequence
 
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
+from pysdmx.io.xml.__tokens import (
+    DSD_LOW,
+    PROV_AGREEMENT,
+    REGISTRY_LOW,
+)
 from pysdmx.io.xml.__write_aux import (
     __write_header,
     create_namespaces,
@@ -16,11 +21,6 @@ from pysdmx.io.xml.__write_data_aux import (
 )
 from pysdmx.io.xml.__write_structure_specific_aux import (
     __write_data_structure_specific,
-)
-from pysdmx.io.xml.__tokens import (
-    DSD_LOW,
-    PROV_AGREEMENT,
-    REGISTRY_LOW,
 )
 from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
