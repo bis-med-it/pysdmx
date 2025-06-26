@@ -214,7 +214,7 @@ def test_schema():
             agency="BIS",
             items=[Code("A"), Code("E"), Code("M")],
         ),
-        attachment_level="D"
+        attachment_level="D",
     )
     exp = {
         "FREQ": "category",
