@@ -9,7 +9,7 @@ from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
-from pysdmx.io.xml.sdmx21.__tokens import OBS_DIM, OBS_VALUE_ID
+from pysdmx.io.xml.__tokens import OBS_DIM, OBS_VALUE_ID
 from pysdmx.io.xml.sdmx21.reader.error import read as read_error
 from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure

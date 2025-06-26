@@ -17,7 +17,7 @@ from pysdmx.io.xml.__write_aux import (
     create_namespaces,
     get_end_message,
 )
-from pysdmx.io.xml.sdmx21.__tokens import (
+from pysdmx.io.xml.__tokens import (
     AGENCY_ID,
     AGENCY_SCHEME,
     AS_STATUS,

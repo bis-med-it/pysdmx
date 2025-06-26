@@ -5,7 +5,8 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.io.xml.sdmx21.__tokens import (
+from pysdmx.errors import Invalid
+from pysdmx.io.xml.__tokens import (
     AGENCIES,
     AGENCY,
     AGENCY_ID,

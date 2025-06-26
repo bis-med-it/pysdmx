@@ -5,7 +5,7 @@ from typing import Sequence, Union
 from pysdmx.errors import Invalid
 from pysdmx.io.xml.__parse_xml import parse_xml
 from pysdmx.io.xml.__structure_aux_reader import StructureParser
-from pysdmx.io.xml.sdmx21.__tokens import (
+from pysdmx.io.xml.__tokens import (
     STRUCTURE,
     STRUCTURES,
 )
