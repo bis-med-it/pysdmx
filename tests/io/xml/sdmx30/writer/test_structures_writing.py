@@ -912,7 +912,8 @@ def test_write_custom_type_scheme(
 def test_datastructure_read_write(
     complete_header, full_datastructure_sample, write_datastructure_sample
 ):
-    # TODO: This test will be revised in #166, currently fails because of Group implementation
+    # TODO: This test will be revised in #166, currently fails
+    #  because of Group implementation
     with pytest.raises(NotImplementedError, match="Group"):
         read_sdmx(full_datastructure_sample, validate=True)
     # Read the SDMX-ML file
