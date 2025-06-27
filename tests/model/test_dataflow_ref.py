@@ -54,7 +54,7 @@ def test_tostr_id(dsi, agency):
     d = DataflowRef(id=dsi, agency=agency)
 
     s = str(d)
-    expected_str = f"agency: {agency}, id: {dsi}"
+    expected_str = f"Dataflow={agency}:{dsi}(1.0)"
 
     assert s == expected_str
 
@@ -65,7 +65,7 @@ def test_dataflowref_str():
     )
 
     s = str(dataflow_ref)
-    expected_str = "agency: SDMX, id: EXR, version: 1.0, name: Exchange Rates"
+    expected_str = "Dataflow=SDMX:EXR(1.0)"
     assert s == expected_str
 
 
