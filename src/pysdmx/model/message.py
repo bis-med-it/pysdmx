@@ -229,7 +229,7 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
         return self.__get_elements(RulesetScheme)
 
     def get_category_schemes(self) -> List[CategoryScheme]:
-        """Returns the Codelists."""
+        """Returns the CategorySchemes."""
         return self.__get_elements(CategoryScheme)
 
     def get_value_lists(self) -> List[Codelist]:
@@ -237,50 +237,50 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
         return self.__get_enumerations(Codelist, True)
 
     def get_hierarchies(self) -> List[Hierarchy]:
-        """Returns the Codelists."""
+        """Returns the HierarchyCodelists."""
         return self.__get_elements(Hierarchy)
 
     def get_hierarchy_associations(self) -> List[HierarchyAssociation]:
-        """Returns the Codelists."""
+        """Returns the HierarchyAssociations."""
         return self.__get_elements(HierarchyAssociation)
 
     def get_data_provider_schemes(self) -> List[DataProviderScheme]:
-        """Returns the Codelists."""
+        """Returns the DataProviderSchemes."""
         return self.__get_elements(DataProviderScheme)
 
     def get_provision_agreements(self) -> List[ProvisionAgreement]:
-        """Returns the Codelists."""
+        """Returns the ProvisionAgreements."""
         return self.__get_elements(ProvisionAgreement)
 
     def get_structure_maps(self) -> List[StructureMap]:
-        """Returns the Codelists."""
+        """Returns the StructureMaps"""
         return self.__get_elements(StructureMap)
 
     def get_representation_maps(
         self,
     ) -> List[Union[MultiRepresentationMap, RepresentationMap]]:
-        """Returns the Codelists."""
+        """Returns the RepresentationMaps"""
         out = []
         out.extend(self.__get_elements(RepresentationMap))
         out.extend(self.__get_elements(MultiRepresentationMap))
         return out
 
     def get_categorisations(self) -> List[Categorisation]:
-        """Returns the Codelists."""
+        """Returns the Categorisations."""
         return self.__get_elements(Categorisation)
 
     def get_custom_type_schemes(self) -> List[CustomTypeScheme]:
-        """Returns the Codelists."""
+        """Returns the CustomType Schemes."""
         return self.__get_elements(CustomTypeScheme)
 
     def get_vtl_mapping_schemes(self) -> List[VtlMappingScheme]:
-        """Returns the Codelists."""
+        """Returns the VTL Mapping Schemes."""
         return self.__get_elements(VtlMappingScheme)
 
     def get_name_personalisation_schemes(
         self,
     ) -> List[NamePersonalisationScheme]:
-        """Returns the Codelists."""
+        """Returns the NamePersonalisationSchemes."""
         return self.__get_elements(NamePersonalisationScheme)
 
 

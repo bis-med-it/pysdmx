@@ -8,8 +8,6 @@ SDMX Structures IO operations
 Reading
 -------
 
-
-
 .. code-block:: python
 
    from pysdmx.io import read_sdmx
@@ -23,10 +21,10 @@ Once the file is read, you can access the structures:
 
 .. code-block:: python
 
-   # Access the structure of the message_21
+   # Access the structures of the SDMX Structures message
    structures = message.structures
 
-The `structures` are returned as ``pysdmx``:ref:`Model Objects <model>`
+Check the :ref:`Message <message>` documentation for more information on how to access the structures.
 
 
 .. _structure-writer-tutorial:

@@ -1000,7 +1000,7 @@ def _write_vtl_references(scheme: ItemScheme, indent: str) -> str:
 
 
 def write(
-    structures: Sequence[STR_TYPES],
+    structures: Sequence[MaintainableArtefact],
     output_path: str = "",
     prettyprint: bool = True,
     header: Optional[Header] = None,
@@ -1021,7 +1021,7 @@ def write(
     if header is None:
         header = Header()
 
-    content: Dict[str, Dict[str, STR_TYPES]] = {}
+    content: Dict[str, Dict[str, MaintainableArtefact]] = {}
     for urn, element in elements.items():
         list_ = STR_DICT_TYPE_LIST[type(element)]
         if list_ not in content:

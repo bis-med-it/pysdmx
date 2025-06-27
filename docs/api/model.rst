@@ -67,6 +67,7 @@ API Reference
    model/dataset
    model/category
    model/map
+   model/message
    model/refmeta
    model/organisation
    model/vtl
