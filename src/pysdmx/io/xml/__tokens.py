@@ -142,6 +142,7 @@ MEASURE_RELATIONSHIP = "MeasureRelationship"
 GROUP = "Group"
 GROUP_DIM_LOW = "group_dimension_descriptor"
 GROUP_DIM = "GroupDimension"
+ATTACH_GROUP = "AttachmentGroup"
 DIM_REF = "DimensionReference"
 
 # Constraints

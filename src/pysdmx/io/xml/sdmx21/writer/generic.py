@@ -278,7 +278,7 @@ def __series_processing(
 ) -> str:
     def __generate_series_str() -> str:
         out_list: List[str] = []
-        data.groupby(by=series_codes + series_att_codes).apply(
+        data.groupby(by=series_codes + series_att_codes)[data.columns].apply(
             lambda x: __format_dict_ser(out_list, x)
         )
 

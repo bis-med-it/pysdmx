@@ -83,12 +83,14 @@ def prov_agree():
                         role=Role.ATTRIBUTE,
                         concept=Concept(id="ds_att1"),
                         required=True,
+                        attachment_level="D",
                     ),
                     Component(
                         id="ds_att2",
                         role=Role.ATTRIBUTE,
                         concept=Concept(id="ds_att2"),
                         required=True,
+                        attachment_level="D",
                     ),
                     Component(
                         id="M1",
@@ -131,12 +133,14 @@ def data_flow():
                         role=Role.ATTRIBUTE,
                         concept=Concept(id="ds_att1"),
                         required=True,
+                        attachment_level="D",
                     ),
                     Component(
                         id="ds_att2",
                         role=Role.ATTRIBUTE,
                         concept=Concept(id="ds_att2"),
                         required=True,
+                        attachment_level="D",
                     ),
                     Component(
                         id="M1",

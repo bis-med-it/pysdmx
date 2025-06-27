@@ -8,7 +8,7 @@ from xml.sax.saxutils import escape
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
-from pysdmx.io.xml.sdmx21.__tokens import (
+from pysdmx.io.xml.__tokens import (
     ANNOTATIONS_LOW,
     CONTACTS_LOW,
     CUSTOM_TYPE_SCHEMES,

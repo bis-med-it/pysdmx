@@ -28,7 +28,14 @@ from pysdmx.toolkit.pd import to_pandas_schema, to_pandas_type
     ],
 )
 def test_whole_numbers(dt: DataType, required: bool, expected: str):
-    comp = Component("TEST", required, Role.ATTRIBUTE, Concept("TEST"), dt)
+    comp = Component(
+        "TEST",
+        required,
+        Role.ATTRIBUTE,
+        Concept("TEST"),
+        dt,
+        attachment_level="D",
+    )
 
     received = to_pandas_type(comp)
 
@@ -47,7 +54,14 @@ def test_whole_numbers(dt: DataType, required: bool, expected: str):
     ],
 )
 def test_decimal_numbers(dt: DataType, required: bool, expected: str):
-    comp = Component("TEST", required, Role.ATTRIBUTE, Concept("TEST"), dt)
+    comp = Component(
+        "TEST",
+        required,
+        Role.ATTRIBUTE,
+        Concept("TEST"),
+        dt,
+        attachment_level="D",
+    )
 
     received = to_pandas_type(comp)
 
@@ -72,7 +86,14 @@ def test_decimal_numbers(dt: DataType, required: bool, expected: str):
     ],
 )
 def test_dates(dt: DataType, required: bool, expected: str):
-    comp = Component("TEST", required, Role.ATTRIBUTE, Concept("TEST"), dt)
+    comp = Component(
+        "TEST",
+        required,
+        Role.ATTRIBUTE,
+        Concept("TEST"),
+        dt,
+        attachment_level="D",
+    )
 
     received = to_pandas_type(comp)
 
@@ -87,7 +108,14 @@ def test_dates(dt: DataType, required: bool, expected: str):
     ],
 )
 def test_booleans(dt: DataType, required: bool, expected: str):
-    comp = Component("TEST", required, Role.ATTRIBUTE, Concept("TEST"), dt)
+    comp = Component(
+        "TEST",
+        required,
+        Role.ATTRIBUTE,
+        Concept("TEST"),
+        dt,
+        attachment_level="D",
+    )
 
     received = to_pandas_type(comp)
 
@@ -120,7 +148,9 @@ def test_booleans(dt: DataType, required: bool, expected: str):
     ],
 )
 def test_strings(dt: DataType):
-    comp = Component("TEST", True, Role.ATTRIBUTE, Concept("TEST"), dt)
+    comp = Component(
+        "TEST", True, Role.ATTRIBUTE, Concept("TEST"), dt, attachment_level="D"
+    )
 
     received = to_pandas_type(comp)
 
@@ -134,6 +164,7 @@ def test_enumeration():
         Role.ATTRIBUTE,
         Concept("TEST"),
         DataType.STRING,
+        attachment_level="D",
         local_codes=Codelist(
             "CL_FREQ", agency="BIS", items=[Code("A"), Code("M")]
         ),
@@ -183,6 +214,7 @@ def test_schema():
             agency="BIS",
             items=[Code("A"), Code("E"), Code("M")],
         ),
+        attachment_level="D",
     )
     exp = {
         "FREQ": "category",
