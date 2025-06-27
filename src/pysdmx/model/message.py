@@ -73,8 +73,8 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
 
     Attributes:
         header: The header of the SDMX message.
-        structures: Sequence of MaintainableArtefact objects. They represent the
-            contents of a Structure Message.
+        structures: Sequence of MaintainableArtefact objects.
+          They represent the contents of a Structure Message.
     """
 
     header: Optional[Header] = None

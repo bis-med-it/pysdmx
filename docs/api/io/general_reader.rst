@@ -11,6 +11,9 @@ Tutorial on :ref:`reading SDMX Structure messages <structure-io-tutorial>`.
 
 .. _io-formats-supported:
 
+Formats and Versions Supported
+------------------------------
+
 List of formats and versions supported by the general reader:
 
 - :ref:`SDMX-CSV<sdmx_csv>`
@@ -31,8 +34,6 @@ Read SDMX
 
 This method allows you to read any SDMX message, regardless of the format or version as long as it is supported.
 
-:ref:`IO Formats supported <io-formats-supported>`.
-
 .. autofunction:: pysdmx.io.read_sdmx
 
 .. _get-datasets:
@@ -42,7 +43,5 @@ Get Datasets
 
 This method allows you to retrieve Pandas Datasets from a Data message, and add the related metadata
 as a Schema object: :meth:`pysdmx.model.dataflow.Schema`.
-
-:ref:`IO Formats supported <io-formats-supported>`.
 
 .. autofunction:: pysdmx.io.get_datasets
