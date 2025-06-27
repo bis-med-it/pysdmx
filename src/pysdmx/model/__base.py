@@ -365,7 +365,6 @@ class DataflowRef(
         """Short_urn representation of the dataflow reference."""
         return f"Dataflow={self.agency}:{self.id}({self.version})"
 
-
     def __repr__(self) -> str:
         """Custom __repr__ that omits empty sequences."""
         attrs = []
