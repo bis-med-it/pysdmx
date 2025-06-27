@@ -11,7 +11,7 @@ from pysdmx.io.xml.__parse_xml import parse_xml
 from pysdmx.io.xml.__ss_aux_reader import (
     _parse_structure_specific_data,
 )
-from pysdmx.io.xml.sdmx21.__tokens import (
+from pysdmx.io.xml.__tokens import (
     STR_REF,
     STR_SPE,
 )

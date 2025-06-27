@@ -58,7 +58,7 @@ def test_unknown_component(components):
 
 def test_append_works(components):
     len1 = len(components)
-    nf = Component("ZZZ", False, Role.ATTRIBUTE, DataType.STRING)
+    nf = Component("ZZZ", False, Role.DIMENSION, DataType.STRING)
 
     components.append(nf)
 
@@ -83,7 +83,7 @@ def test_append_existing(components):
 
 def test_insert_works(components):
     idx = len(components)
-    nf = Component("ZZZ", False, Role.ATTRIBUTE, DataType.STRING)
+    nf = Component("ZZZ", False, Role.DIMENSION, DataType.STRING)
 
     components.insert(idx, nf)
 
@@ -112,7 +112,7 @@ def test_insert_existing(components):
 
 def test_setitem_works(components):
     idx = len(components)
-    nf = Component("ZZZ", False, Role.ATTRIBUTE, DataType.STRING)
+    nf = Component("ZZZ", False, Role.DIMENSION, DataType.STRING)
 
     components[idx - 1] = nf
 
@@ -141,8 +141,8 @@ def test_setitem_existing(components):
 
 def test_extend_works(components):
     len1 = len(components)
-    nf1 = Component("ZZZ", False, Role.ATTRIBUTE, DataType.STRING)
-    nf2 = Component("Z42", False, Role.ATTRIBUTE, DataType.STRING)
+    nf1 = Component("ZZZ", False, Role.DIMENSION, DataType.STRING)
+    nf2 = Component("Z42", False, Role.DIMENSION, DataType.STRING)
 
     components.extend([nf1, nf2])
 
@@ -150,7 +150,7 @@ def test_extend_works(components):
 
 
 def test_extend_invalid(components):
-    nf = Component("ZZZ", False, Role.ATTRIBUTE, DataType.STRING)
+    nf = Component("ZZZ", False, Role.DIMENSION, DataType.STRING)
 
     with pytest.raises(
         Invalid,
@@ -160,7 +160,7 @@ def test_extend_invalid(components):
 
 
 def test_extend_existing(components):
-    nf = Component("ZZZ", False, Role.ATTRIBUTE, DataType.STRING)
+    nf = Component("ZZZ", False, Role.DIMENSION, DataType.STRING)
 
     with pytest.raises(
         Invalid,

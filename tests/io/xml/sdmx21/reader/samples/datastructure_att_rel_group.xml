@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+               xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+               xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+               xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+    <mes:Header>
+        <mes:ID>ID</mes:ID>
+        <mes:Test>true</mes:Test>
+        <mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+        <mes:Sender id="ZZZ"/>
+        <mes:Receiver id="Not_Supplied"/>
+        <mes:Source>PySDMX</mes:Source>
+    </mes:Header>
+    <mes:Structures>
+        <str:DataStructures>
+            <str:DataStructure
+                    urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_DER(1.0)"
+                    isExternalReference="false" agencyID="BIS" id="BIS_DER"
+                    isFinal="false" version="1.0">
+                <com:Name xml:lang="en">BIS derivatives statistics</com:Name>
+                <com:Name xml:lang="es">Estadísticas de derivados del BIS
+                </com:Name>
+                <com:Description xml:lang="en"></com:Description>
+                <str:DataStructureComponents>
+                    <str:DimensionList
+                            urn="urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=BIS:BIS_DER(1.0).DimensionDescriptor"
+                            id="DimensionDescriptor">
+                        <str:Dimension
+                                urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).FREQ"
+                                id="FREQ" position="1">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME"
+                                     package="conceptscheme"
+                                     maintainableParentVersion="1.0"
+                                     agencyID="BIS" id="FREQ" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:LocalRepresentation>
+                                <str:Enumeration>
+                                    <Ref package="codelist" agencyID="BIS"
+                                         id="CL_FREQ" version="1.0"
+                                         class="Codelist"/>
+                                </str:Enumeration>
+                                <str:EnumerationFormat minLength="1"
+                                                       textType="String"
+                                                       maxLength="1"/>
+                            </str:LocalRepresentation>
+                            <str:ConceptRole>
+                                <Ref maintainableParentID="SDMX_CONCEPT_ROLES" maintainableParentVersion="1.0"
+                                     agencyID="SDMX" id="FREQ" package="conceptscheme" class="Concept"/>
+                            </str:ConceptRole>
+                        </str:Dimension>
+                    </str:DimensionList>
+                    <str:AttributeList
+                            urn="urn:sdmx:org.sdmx.infomodel.datastructure.AttributeDescriptor=BIS:BIS_DER(1.0).AttributeDescriptor"
+                            id="AttributeDescriptor">
+                        <str:Attribute
+                                urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).TEST"
+                                assignmentStatus="Conditional" id="TEST">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="CS_TEST" package="conceptscheme"
+                                     maintainableParentVersion="1.0" agencyID="MD" id="TEST" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:LocalRepresentation>
+                                <str:TextFormat textType="String" maxLength="1050"/>
+                            </str:LocalRepresentation>
+                            <str:AttributeRelationship>
+                                <str:None/>
+                            </str:AttributeRelationship>
+                        </str:Attribute>
+                        <str:Attribute
+                                urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).TEST2"
+                                assignmentStatus="Conditional" id="TEST2">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="CS_TEST2" package="conceptscheme"
+                                     maintainableParentVersion="1.0" agencyID="MD" id="TEST2" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:AttributeRelationship>
+                                <str:Group>
+                                    <Ref id="TEST_GROUP"/>
+                                </str:Group>
+                            </str:AttributeRelationship>
+                        </str:Attribute>
+                    </str:AttributeList>
+                    <str:MeasureList
+                            urn="urn:sdmx:org.sdmx.infomodel.datastructure.MeasureDescriptor=BIS:BIS_DER(1.0).MeasureDescriptor"
+                            id="MeasureDescriptor">
+                        <str:PrimaryMeasure
+                                urn="urn:sdmx:org.sdmx.infomodel.datastructure.PrimaryMeasure=BIS:BIS_DER(1.0).OBS_VALUE"
+                                id="OBS_VALUE">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME"
+                                     package="conceptscheme"
+                                     maintainableParentVersion="1.0"
+                                     agencyID="BIS" id="OBS_VALUE"
+                                     class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:LocalRepresentation>
+                                <str:TextFormat textType="BigInteger"
+                                                maxLength="15"/>
+                            </str:LocalRepresentation>
+                        </str:PrimaryMeasure>
+                    </str:MeasureList>
+                </str:DataStructureComponents>
+            </str:DataStructure>
+        </str:DataStructures>
+    </mes:Structures>
+</mes:Structure>
