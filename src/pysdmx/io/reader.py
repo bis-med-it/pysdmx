@@ -21,26 +21,11 @@ def read_sdmx(  # noqa: C901
     sdmx_document: Union[str, Path, BytesIO],
     validate: bool = True,
 ) -> Message:
-    """Reads any SDMX message and returns a dictionary.
-
-    Supported structures formats are:
-      - SDMX-ML 2.1 Structures
-
-    Supported webservices submissions are:
-      - SDMX-ML 2.1 RegistryInterface (Submission)
-      - SDMX-ML 2.1 Error (raises an exception with the error content)
-
-    Supported data formats are:
-      - SDMX-ML 2.1
-      - SDMX-CSV 1.0
-      - SDMX-CSV 2.0
+    """Reads any SDMX message and extracts its content.
 
     Args:
         sdmx_document: Path to file (pathlib.Path), URL, or string.
         validate: Validate the input file (only for SDMX-ML).
-
-    Returns:
-        A dictionary containing the parsed SDMX data or metadata.
 
     Raises:
         Invalid: If the file is empty or the format is not supported.

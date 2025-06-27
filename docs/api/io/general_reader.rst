@@ -24,6 +24,7 @@ List of formats and versions supported by the general reader:
     - :ref:`SDMX-ML 3.0 Structure Specific <sdmx_ml_30_spe_reader>`
     - :ref:`SDMX-ML 3.0 Structure <sdmx_ml_30_structure_reader>`
 
+.. _read-sdmx:
 
 Read SDMX
 ---------
@@ -34,6 +35,7 @@ This method allows you to read any SDMX message, regardless of the format or ver
 
 .. autofunction:: pysdmx.io.read_sdmx
 
+.. _get-datasets:
 
 Get Datasets
 ------------

@@ -11,8 +11,9 @@ data messages, and how to combine data with metadata for further processing.
 
 .. important::
 
-    To use the pysdmx.io data functionalities, you need to have the pysdmx[data] extra installed.
-    For SDMX-ML support, you also need the pysdmx[xml] extra installed.
+    To use the pysdmx.io data functionalities, you need to install the `pysdmx[data]` extra.
+
+    For SDMX-ML support, you also need to install the `pysdmx[xml]` extra.
 
     Check the :ref:`installation guide <installation>` for more information.
 

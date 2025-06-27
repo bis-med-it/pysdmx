@@ -73,7 +73,7 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
 
     Attributes:
         header: The header of the SDMX message.
-        structures: Sequence of structure objects. They represent the
+        structures: Sequence of MaintainableArtefact objects. They represent the
             contents of a Structure Message.
     """
 
@@ -308,7 +308,7 @@ class Message(StructureMessage, frozen=True):
 
     Attributes:
         header: The header of the SDMX message.
-        structures: Sequence of structure objects.
+        structures: Sequence of MaintainableArtefact objects.
         data: Sequence of Dataset objects. They represent the contents of a
            SDMX Data Message in any format.
         submission: Sequence of SubmissionResult objects. They represent the

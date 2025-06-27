@@ -15,7 +15,7 @@ On pysdmx, we support the validation against XSD schemas.
 
 .. important::
 
-    To use the SDMX-ML functionalities, you need to have the pysdmx[xml] extra installed.
+    To use the SDMX-ML functionalities, you need to install the `pysdmx[xml]` extra.
 
     Check the :ref:`installation guide <installation>` for more information.
 

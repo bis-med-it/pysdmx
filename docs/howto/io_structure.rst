@@ -8,6 +8,12 @@ SDMX Structures IO operations
 Reading
 -------
 
+In this tutorial, we learn how to read SDMX Structures messages using the
+``pysdmx.io`` module.
+
+``pysdmx`` provides the :ref:`read_sdmx <read-sdmx>` function, which allows reading SDMX Structures messages
+from various sources, such as files or URLs.
+
 .. code-block:: python
 
    from pysdmx.io import read_sdmx
@@ -24,7 +30,12 @@ Once the file is read, you can access the structures:
    # Access the structures of the SDMX Structures message
    structures = message.structures
 
-Check the :ref:`Message <message>` documentation for more information on how to access the structures.
+Check the :ref:`Message <message>` documentation for all the available methods.
+
+You may download directly the structures from the FMR or the SDMX API:
+
+- :ref:`FMR tutorial <fs>`
+- :ref:`SDMX-REST tutorial <sdmx-rest>`
 
 
 .. _structure-writer-tutorial:

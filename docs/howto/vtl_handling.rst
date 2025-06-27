@@ -15,10 +15,10 @@ and the ``vtlengine`` library to execute the VTL script.
 
 
 .. important::
-    To use the VTL functionalities, you need to have the pysdmx[vtl] extra installed.
+    To use the VTL functionalities, you need to install the `pysdmx[vtl]` extra.
 
-    It requires the pysdmx[data] extra to handle SDMX datasets as Pandas DataFrames,
-    and the pysdmx[xml] extra to read and write SDMX-ML messages.
+    This tutorial requires the `pysdmx[data]` extra to handle SDMX datasets as Pandas DataFrames,
+    and the `pysdmx[xml]` extra to read and write SDMX-ML messages.
 
     Check the :ref:`installation guide <installation>` for more information.
 
@@ -69,17 +69,12 @@ and extract the data:
 
 .. important::
 
-    The `get_datasets` function will read the SDMX-ML files and return a list of Pandas Datasets.
-    Each Dataset will have its related metadata attached to it.
+    Check the :ref:`Get Datasets method docs <get-datasets>` for more information on how to generate a PandasDataset
+    with both data and related structures.
 
-    The datasets are returned as a list of :class:`Pandas Dataset <pysdmx.io.pd.PandasDataset>`.
-    You can access the data using the `data` attribute of each Dataset.
+    This method is the recommended way to read SDMX data and structures, as it combines them in a
+    single Pandas Dataset, allowing you to work with the data and its structure seamlessly.
 
-    This method is critical for this tutorial, as the run_sdmx method requires the datasets to be passed as a parameter
-    and that the datasets have their related metadata attached to them.
-
-
-For more information on how to read data and metadata, see the :ref:`General reader <general-reader>`,
 
 Getting the Transformation Scheme and VTL Mapping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -145,6 +140,11 @@ Optionally, we can also create the Transformation Scheme and VTL Mapping objects
         ],
         vtl_mapping_scheme=mapping_scheme
     )
+
+You may download as well directly the structures from the FMR or the SDMX API:
+
+- :ref:`FMR tutorial <fs>`
+- :ref:`SDMX-REST tutorial <sdmx-rest>`
 
 At this point you may use the :ref:`VTL Toolkit Model validations <vtl-validation>` to validate the Transformation Scheme.
 

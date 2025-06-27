@@ -12,7 +12,7 @@ The SDMX CSV readers and writers are compatible with SDMX-CSV 1.0 and 2.0 standa
 
 .. important::
 
-    To use the SDMX-CSV functionalities, you need to have the pysdmx[data] extra installed.
+    To use the SDMX-CSV functionalities, you need to install the `pysdmx[data]` extra.
 
     Check the :ref:`installation guide <installation>` for more information.
 
