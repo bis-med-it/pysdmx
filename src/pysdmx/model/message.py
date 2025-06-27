@@ -253,13 +253,13 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
         return self.__get_elements(ProvisionAgreement)
 
     def get_structure_maps(self) -> List[StructureMap]:
-        """Returns the StructureMaps"""
+        """Returns the StructureMaps."""
         return self.__get_elements(StructureMap)
 
     def get_representation_maps(
         self,
     ) -> List[Union[MultiRepresentationMap, RepresentationMap]]:
-        """Returns the RepresentationMaps"""
+        """Returns the RepresentationMaps."""
         out = []
         out.extend(self.__get_elements(RepresentationMap))
         out.extend(self.__get_elements(MultiRepresentationMap))
