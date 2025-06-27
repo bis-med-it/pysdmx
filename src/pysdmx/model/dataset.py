@@ -69,13 +69,14 @@ class SeriesInfo(Struct, frozen=True, repr_omit_defaults=True):
 class Dataset(Struct, frozen=False, repr_omit_defaults=True, kw_only=True):
     """An organised collection of data.
 
-    It includes metadata such as the structure of the dataset, attributes, action type,
-    reporting periods and publication details.
+    It includes metadata such as the structure of the dataset, attributes,
+    action type, reporting periods and publication details.
 
     Args:
-        structure: The structure referenced from a dataset, which can be a string (short_urn) or a Schema object.
-        attributes: A dictionary of attributes with its values at dataset level.
-        action: The action type for the dataset, default is ActionType.Information.
+        structure: The structure referenced from a dataset,
+          which can be a string (short_urn) or a Schema object.
+        attributes: dictionary of attributes at dataset level, with its values.
+        action: The action type for the dataset, default is Information.
         reporting_begin: The start date for reporting, if applicable.
         reporting_end: The end date for reporting, if applicable.
         data_extraction_date: The date when the data was extracted.
