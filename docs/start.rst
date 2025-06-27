@@ -41,10 +41,9 @@ functionality and don't require additional installations.
 Metadata in action
 ^^^^^^^^^^^^^^^^^^
 
-SDMX metadata are very useful for documenting statistical processes. For
-example, we can define the structure we expect for a data collection process
-and share it with the organizations providing data so that they know what to
-send.
+SDMX metadata are very useful for documenting statistical processes. For example,
+they can define the structure we expect for a data collection process and share
+it with the organizations providing data so that they know what to send. 
 
 However, metadata can do so much more than that, i.e. they can be "active" and
 **drive various types of statistical processes**, such as:

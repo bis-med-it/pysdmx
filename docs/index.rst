@@ -41,6 +41,13 @@ Your opinionated Python SDMX library.
    howto/generate_ts
    howto/vtl_handling
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Toolkit
+
+   howto/toolkit/general
+   howto/toolkit/vtl_toolkit
+   howto/toolkit/pandas_toolkit
 
 .. toctree::
    :maxdepth: 1
@@ -52,15 +59,6 @@ Your opinionated Python SDMX library.
    api/helper
    api/toolkit
    api/io
-
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Toolkit
-
-   howto/toolkit/general
-   howto/toolkit/vtl_toolkit
-
 
 
 Indices and tables

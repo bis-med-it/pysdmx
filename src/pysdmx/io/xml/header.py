@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Any, Dict, Optional, Union
 
 from pysdmx.io.xml.__parse_xml import parse_xml
-from pysdmx.io.xml.sdmx21.__tokens import (
+from pysdmx.io.xml.__tokens import (
     AGENCY_ID,
     DATASET_ACTION,
     DATASET_ID,
