@@ -35,6 +35,12 @@ Step-by-Step Solution
 Using pysdmx we will read the Datasets, its Structures and the VTL objects. For the purpose of this tutorial, we shall employ the XML files
 ``structures.xml`` (data structure), ``data.xml`` (data) and ``vtl_ts.xml`` (Transformation and VTLMapping).
 
+Files used in the example can be found here:
+
+- :download:`data.xml <../_static/data.xml>`
+- :download:`structures.xml <../_static/structures.xml>`
+- :download:`vtl_ts.xml <../_static/vtl_ts.xml>`
+
 Reading Data and Structures messages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -86,13 +92,13 @@ we can read a file from a Fusion Registry URL or we can create the pysdmx Model 
     from pysdmx.io import read_sdmx
     from pathlib import Path
     # Path to the transformation file
-    path_to_structure = Path(__file__).parent / "vtl_ts.xml"
+    path_to_vtl_ts = Path(__file__).parent / "vtl_ts.xml"
 
     # Read the transformation file from the URL path
     message = read_sdmx("https://example.com/path/to/vtl_ts.xml")
 
     # Read the transformation file with read_sdmx
-    message = read_sdmx(path_to_structure)
+    message = read_sdmx(path_to_vtl_ts)
 
     # Get the Transformation Schemes
     ts = message.get_transformation_schemes()[0]

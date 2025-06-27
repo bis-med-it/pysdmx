@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace"
+               xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+               xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+               xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+               xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+    <mes:Header>
+        <mes:ID>IREF534795</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2021-03-05T14:11:16Z</mes:Prepared>
+        <mes:Sender id="Unknown"/>
+        <mes:Receiver id="not_supplied"/>
+    </mes:Header>
+    <mes:Structures>
+        <str:Dataflows>
+            <str:Dataflow isExternalReference="false" agencyID="MD" id="TEST_DF" isFinal="false"
+                          version="1.0">
+                <com:Name xml:lang="en">MD testing Dataflow</com:Name>
+                <str:Structure>
+                    <Ref package="datastructure" agencyID="MD" id="DSD_1" version="1.0" class="DataStructure"/>
+                </str:Structure>
+            </str:Dataflow>
+        </str:Dataflows>
+        <str:DataStructures>
+            <str:DataStructure urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:DSD_1(1.0)"
+                               isExternalReference="false" agencyID="MD" id="DSD_1" isFinal="false" version="1.0">
+                <com:Name xml:lang="en">BIS derivatives statistics</com:Name>
+                <str:DataStructureComponents>
+                    <str:DimensionList
+                            urn="urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=MD:DSD_1(1.0).DimensionDescriptor"
+                            id="DimensionDescriptor">
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=MD:DSD_1(1.0).DIM_1"
+                                       id="DIM_1" position="1">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="MD_CONCEPT_SCHEME" package="conceptscheme"
+                                     maintainableParentVersion="1.0" agencyID="MD" id="DIM_1" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=MD:DSD_1(1.0).DIM_2"
+                                       id="DIM_2" position="2">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="MD_CONCEPT_SCHEME" package="conceptscheme"
+                                     maintainableParentVersion="1.0" agencyID="MD" id="DIM_2" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                    </str:DimensionList>
+                    <str:MeasureList
+                            urn="urn:sdmx:org.sdmx.infomodel.datastructure.MeasureDescriptor=MD:DSD_1(1.0).MeasureDescriptor"
+                            id="MeasureDescriptor">
+                        <str:PrimaryMeasure
+                                urn="urn:sdmx:org.sdmx.infomodel.datastructure.PrimaryMeasure=MD:DSD_1(1.0).OBS_VALUE"
+                                id="OBS_VALUE">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="MD_CONCEPT_SCHEME" package="conceptscheme"
+                                     maintainableParentVersion="1.0" agencyID="MD" id="OBS_VALUE" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:PrimaryMeasure>
+                    </str:MeasureList>
+                </str:DataStructureComponents>
+            </str:DataStructure>
+        </str:DataStructures>
+    </mes:Structures>
+</mes:Structure>
