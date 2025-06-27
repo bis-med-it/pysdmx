@@ -930,10 +930,7 @@ def test_write_custom_type_scheme(
 def test_datastructure_read_write(
     complete_header, full_datastructure_sample, write_datastructure_sample
 ):
-    # Read the SDMX-ML file
     message = read_sdmx(full_datastructure_sample, validate=True)
-
-    # Write it back to SDMX-ML format
     result = write(
         structures=message.structures,
         header=complete_header,

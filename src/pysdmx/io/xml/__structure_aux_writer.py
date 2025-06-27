@@ -4,17 +4,7 @@ from collections import OrderedDict
 from typing import Any, Dict, Optional, Sequence, Union
 
 from pysdmx.errors import Invalid
-from pysdmx.io.xml.__write_aux import (
-    ABBR_COM,
-    ABBR_MSG,
-    ABBR_STR,
-    MSG_CONTENT_PKG_21,
-    MSG_CONTENT_PKG_30,
-    __escape_xml,
-    __to_lower_camel_case,
-    add_indent,
-)
-from pysdmx.io.xml.sdmx21.__tokens import (
+from pysdmx.io.xml.__tokens import (
     AGENCY_ID,
     AS_STATUS,
     ATT,
@@ -80,6 +70,16 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VERSION,
     VTL_MAPPING_SCHEME,
     VTLMAPPING,
+)
+from pysdmx.io.xml.__write_aux import (
+    ABBR_COM,
+    ABBR_MSG,
+    ABBR_STR,
+    MSG_CONTENT_PKG_21,
+    MSG_CONTENT_PKG_30,
+    __escape_xml,
+    __to_lower_camel_case,
+    add_indent,
 )
 from pysdmx.model import (
     AgencyScheme,
@@ -509,78 +509,68 @@ def __write_attribute_relation(  # noqa: C901
 ) -> str:
     measure_relationship = ""
     outfile = f"{indent}<{ABBR_STR}:{ATT_REL}>"
-    att_rel = item.attachment_level
-    if att_rel is None or (att_rel == "D" and not references_30):
-        if references_30:
+    # At this point an attribute relation is always
+    # present due to the post_init check in Component
+    att_rel: str = item.attachment_level  # type: ignore[assignment]
+    # Check if it is a list of Dimensions or it is related to the
+    # primary measure
+    group_id = None
+    if groups is not None:
+        group_id = __find_matching_group_id(att_rel, groups)
+    comps_to_relate = __comps_to_relate(att_rel, component_info, references_30)
+    dim_names = [comp.id for comp in component_info[DIM]]
+    if references_30:
+        if att_rel == "O":
             outfile += f"{add_indent(indent)}<{ABBR_STR}:Observation/>"
+            measure_relationship += (
+                f"{indent}<{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
+            )
+            for comp_name in comps_to_relate:
+                measure_relationship += (
+                    f"{add_indent(indent)}<{ABBR_STR}:{MEASURE}>"
+                    f"{comp_name.id}</{ABBR_STR}:{MEASURE}>"  # type: ignore[attr-defined]
+                )
+            measure_relationship += (
+                f"{indent}</{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
+            )
+
+        elif att_rel == "D":
+            outfile += f"{add_indent(indent)}<{ABBR_STR}:Dataflow/>"
+        elif group_id is not None:
+            outfile += (
+                f"{add_indent(indent)}<{ABBR_STR}:{GROUP}>"
+                f"{group_id}</{ABBR_STR}:{GROUP}>"
+            )
         else:
-            outfile += f"{add_indent(indent)}<{ABBR_STR}:None/>"
+            for comp_name in comps_to_relate:
+                outfile += (
+                    f"{add_indent(indent)}<{ABBR_STR}:{DIM}>"
+                    f"{comp_name}</{ABBR_STR}:{DIM}>"
+                )
+
     else:
-        # Check if it is a list of Dimensions or it is related to the
-        # primary measure
-        group_id = None
-        if groups is not None:
-            group_id = __find_matching_group_id(att_rel, groups)
-        comps_to_relate = __comps_to_relate(
-            att_rel, component_info, references_30
-        )
-        dim_names = [comp.id for comp in component_info[DIM]]
-
-        if references_30:
-            if att_rel == "O":
-                outfile += f"{add_indent(indent)}<{ABBR_STR}:Observation/>"
-                measure_relationship += (
-                    f"{indent}<{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
-                )
-                for comp_name in comps_to_relate:
-                    measure_relationship += (
-                        f"{add_indent(indent)}<{ABBR_STR}:{MEASURE}>"
-                        f"{comp_name.id}</{ABBR_STR}:{MEASURE}>"  # type: ignore[attr-defined]
-                    )
-                measure_relationship += (
-                    f"{indent}</{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
-                )
-
-            elif att_rel == "D":
-                outfile += f"{add_indent(indent)}<{ABBR_STR}:Dataflow/>"
-            elif group_id is not None:
-                outfile += (
-                    f"{add_indent(indent)}<{ABBR_STR}:{GROUP}>"
-                    f"{group_id}</{ABBR_STR}:{GROUP}>"
-                )
-            else:
-                for comp_name in comps_to_relate:
-                    outfile += (
-                        f"{add_indent(indent)}<{ABBR_STR}:{DIM}>"
-                        f"{comp_name}</{ABBR_STR}:{DIM}>"
-                    )
+        if group_id is not None:
+            outfile += (
+                f"{add_indent(indent)}<{ABBR_STR}:{GROUP}>"
+                f"{add_indent(add_indent(indent))}<{REF} "
+                f"{ID}={group_id!r}/"
+                f"{add_indent(indent)}</{ABBR_STR}:{GROUP}>"
+            )
+        elif att_rel == "D":
+            outfile += f"{add_indent(indent)}<{ABBR_STR}:None/>"
 
         else:
-            if group_id is not None:
-                outfile += (
-                    f"{add_indent(indent)}<{ABBR_STR}:{GROUP}>"
-                    f"{add_indent(add_indent(indent))}<{REF} "
-                    f"{ID}={group_id!r}/"
-                    f"{add_indent(indent)}</{ABBR_STR}:{GROUP}>"
+            for comp_name in comps_to_relate:
+                role = (
+                    Role.DIMENSION if comp_name in dim_names else Role.MEASURE
                 )
-            else:
-                for comp_name in comps_to_relate:
-                    role = (
-                        Role.DIMENSION
-                        if comp_name in dim_names
-                        else Role.MEASURE
-                    )
-                    related_role = ROLE_MAPPING[role]
-                    outfile += (
-                        f"{add_indent(indent)}<{ABBR_STR}:{related_role}>"
-                    )
-                    outfile += (
-                        f"{add_indent(add_indent(indent))}"
-                        f"<{REF} {ID}={comp_name!r}/>"
-                    )
-                    outfile += (
-                        f"{add_indent(indent)}</{ABBR_STR}:{related_role}>"
-                    )
+                related_role = ROLE_MAPPING[role]
+                outfile += f"{add_indent(indent)}<{ABBR_STR}:{related_role}>"
+                outfile += (
+                    f"{add_indent(add_indent(indent))}"
+                    f"<{REF} {ID}={comp_name!r}/>"
+                )
+                outfile += f"{add_indent(indent)}</{ABBR_STR}:{related_role}>"
 
     outfile += f"{indent}</{ABBR_STR}:{ATT_REL}>"
     if measure_relationship:

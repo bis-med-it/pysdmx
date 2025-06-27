@@ -145,6 +145,7 @@ GROUP_LOW = "group"
 GROUPS_LOW = "groups"
 GROUP_DIM_LOW = "group_dimension_descriptor"
 GROUP_DIM = "GroupDimension"
+ATTACH_GROUP = "AttachmentGroup"
 DIM_REF = "DimensionReference"
 
 # Constraints

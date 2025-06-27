@@ -95,12 +95,14 @@ def content():
                         role=Role.ATTRIBUTE,
                         concept=Concept(id="ds_att1"),
                         required=True,
+                        attachment_level="D",
                     ),
                     Component(
                         id="ds_att2",
                         role=Role.ATTRIBUTE,
                         concept=Concept(id="ds_att2"),
                         required=False,
+                        attachment_level="D",
                     ),
                     Component(
                         id="M1",
@@ -142,6 +144,7 @@ def ds_with_group():
                         role=Role.DIMENSION,
                         concept=Concept(id="DIM1"),
                         required=True,
+                        attachment_level=None,
                     ),
                     Component(
                         id="DIM2",
@@ -175,12 +178,14 @@ def ds_with_group():
                         role=Role.ATTRIBUTE,
                         concept=Concept(id="ds_att1"),
                         required=True,
+                        attachment_level="D",
                     ),
                     Component(
                         id="ds_att2",
                         role=Role.ATTRIBUTE,
                         concept=Concept(id="ds_att2"),
                         required=False,
+                        attachment_level="D",
                     ),
                     Component(
                         id="M1",

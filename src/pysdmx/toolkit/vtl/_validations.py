@@ -10,7 +10,7 @@ from vtlengine.AST import (
 )
 
 from pysdmx.errors import Invalid
-from pysdmx.io.xml.sdmx21.__tokens import RULE_SCHEME, UDO_SCHEME
+from pysdmx.io.xml.__tokens import RULE_SCHEME, UDO_SCHEME
 from pysdmx.model import Reference
 from pysdmx.model.vtl import (
     Ruleset,

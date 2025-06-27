@@ -9,7 +9,7 @@ from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
-from pysdmx.io.xml.sdmx21.__tokens import OBS_DIM, OBS_VALUE_ID
+from pysdmx.io.xml.__tokens import OBS_DIM, OBS_VALUE_ID
 from pysdmx.io.xml.sdmx21.reader.error import read as read_error
 from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
@@ -845,6 +845,14 @@ def test_transformation_scheme_children(samples_folder):
     assert udo_scheme.vtl_mapping_scheme.short_urn == (
         "VtlMappingScheme=" "MD:VMS1(1.0)"
     )
+
+
+def test_attribute_relationship_attachment_group(samples_folder):
+    data_path = samples_folder / "datastructure_att_rel_attachment_group.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    with pytest.raises(NotImplementedError, match="AttachmentGroup"):
+        read_sdmx(input_str, validate=True)
 
 
 def test_datastructure_group(datastructure_group):

@@ -6,6 +6,7 @@ from typing import Any, Dict, List
 import pandas as pd
 
 from pysdmx.io.pd import PandasDataset
+from pysdmx.io.xml.__tokens import SIBLING_TYPE
 from pysdmx.io.xml.__write_aux import (
     ABBR_MSG,
     ALL_DIM,
@@ -17,7 +18,6 @@ from pysdmx.io.xml.__write_data_aux import (
     writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
-from pysdmx.io.xml.sdmx21.__tokens import SIBLING_TYPE
 from pysdmx.util import parse_short_urn
 
 

@@ -5,7 +5,7 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.io.xml.sdmx21.__tokens import (
+from pysdmx.io.xml.__tokens import (
     AGENCIES,
     AGENCY,
     AGENCY_ID,
@@ -22,6 +22,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     ATT_LIST,
     ATT_LVL,
     ATT_REL,
+    ATTACH_GROUP,
     CL,
     CL_LOW,
     CLASS,
@@ -218,7 +219,6 @@ ITEMS_CLASSES = {
 }
 
 COMP_TYPES = [DIM, ATT, PRIM_MEASURE, MEASURE, GROUP_DIM]
-
 
 ROLE_MAPPING = {
     DIM: Role.DIMENSION,
@@ -553,37 +553,37 @@ class StructureParser(Struct):
         return rep
 
     @staticmethod
-    def __format_relationship(
-        json_rel: Dict[str, Any], element_info: Dict[str, Any]
-    ) -> Optional[str]:
-        att_level = None
-
-        for scheme in [DIM, PRIM_MEASURE, GROUP, MEASURE, DFW, OBSERVATION]:
-            if scheme in json_rel:
-                if scheme == DIM:
-                    dims = add_list(json_rel[DIM])
-                    if dims and isinstance(dims[0], dict):
-                        dims = [dim[REF][ID] for dim in dims]
-                    att_level = ",".join(dims)
-                elif scheme == GROUP:
-                    if REF in json_rel[GROUP]:
-                        group_id = json_rel[GROUP][REF][ID]
-                    else:
-                        group_id = json_rel[GROUP]
-                    group_dimensions = next(
-                        (
-                            g
-                            for g in element_info[GROUPS_LOW]
-                            if g[ID] == group_id
-                        ),
-                    )
-                    att_level = ",".join(group_dimensions["dimensions"])
-                elif scheme == DFW:
-                    att_level = "D"
-                elif scheme == OBSERVATION:
-                    att_level = "O"
-                else:
-                    att_level = "O"
+    def __get_attachment_level(
+        attribute: Dict[str, Any], element_info: Dict[str, Any]
+    ) -> str:
+        if DIM in attribute:
+            dims = add_list(attribute[DIM])
+            if dims and isinstance(dims[0], dict):
+                dims = [dim[REF][ID] for dim in dims]
+            att_level = ",".join(dims)
+            # AttachmentGroup can only appear as sequence of the Dimension,
+            # therefore we need to check first if a Dimension is present,
+            # then the AttachmentGroup
+            if ATTACH_GROUP in attribute:
+                raise NotImplementedError(
+                    "Attribute relationships with Dimension "
+                    "and AttachmentGroup is not supported."
+                )
+        elif GROUP in attribute:
+            if REF in attribute[GROUP]:
+                group_id = attribute[GROUP][REF][ID]
+            else:
+                group_id = attribute[GROUP]
+            group_dimensions = next(
+                (g for g in element_info[GROUPS_LOW] if g[ID] == group_id),
+            )
+            att_level = ",".join(group_dimensions["dimensions"])
+        elif OBSERVATION in attribute or PRIM_MEASURE in attribute:
+            att_level = "O"
+        else:
+            # For None (SDMX-2.1) or Dataflow (SDMX-3.0), attribute is
+            # related to Dataset/Dataflow
+            att_level = "D"
 
         return att_level
 
@@ -706,9 +706,10 @@ class StructureParser(Struct):
             concept_id = self.__format_con_id(comp[CON_ID])
         comp[CON_LOW] = concept_id.pop(CON)
         del comp[CON_ID]
+
         # Attribute Handling
         if ATT_REL in comp:
-            comp[ATT_LVL] = self.__format_relationship(
+            comp[ATT_LVL] = self.__get_attachment_level(
                 comp[ATT_REL], element_info
             )
             del comp[ATT_REL]
@@ -751,7 +752,11 @@ class StructureParser(Struct):
         element[role_name] = add_list(element[role_name])
 
         for comp in element[role_name]:
-            formatted_comp = self.__format_component(comp, role, element_info)
+            formatted_comp = self.__format_component(
+                comp,
+                role,
+                element_info,
+            )
             comp_list.append(formatted_comp)
 
         return comp_list

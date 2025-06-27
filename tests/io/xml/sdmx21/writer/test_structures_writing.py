@@ -9,7 +9,7 @@ from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
-from pysdmx.io.xml.sdmx21.__tokens import CON
+from pysdmx.io.xml.__tokens import CON
 from pysdmx.io.xml.sdmx21.reader.structure import read
 from pysdmx.io.xml.sdmx21.writer.error import write as write_err
 from pysdmx.io.xml.sdmx21.writer.structure import write
