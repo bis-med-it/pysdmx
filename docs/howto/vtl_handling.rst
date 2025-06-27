@@ -94,9 +94,6 @@ we can read a file from a Fusion Registry URL or we can create the pysdmx Model 
     # Path to the transformation file
     path_to_vtl_ts = Path(__file__).parent / "vtl_ts.xml"
 
-    # Read the transformation file from the URL path
-    message = read_sdmx("https://example.com/path/to/vtl_ts.xml")
-
     # Read the transformation file with read_sdmx
     message = read_sdmx(path_to_vtl_ts)
 
@@ -107,31 +104,46 @@ we can read a file from a Fusion Registry URL or we can create the pysdmx Model 
     # Get the VTL Dataflow Mapping from the items, assuming the first item is the one we want
     dataflow_mapping = mapping_scheme.items[0]
 
-    #Exmple of Transformation Scheme object
+Optionally, we can also create the Transformation Scheme and VTL Mapping objects directly in code.
+
+.. code-block:: python
+
+    # Mapping using VTLDataflowMapping object:
+    dataflow_mapping = VtlDataflowMapping(
+        dataflow=DataflowRef(agency="MD", id="TEST_DF", version="1.0"),
+        dataflow_alias="DS_1",
+        id="VTL_MAP_1",
+        name="VTL Mapping 1",
+    )
+    mapping_scheme = VtlMappingScheme(
+        id="VTL_MAP_SCHEME_1",
+        name="VTL Mapping Scheme 1",
+        version="1.0",
+        agency="MD",
+        items=[dataflow_mapping],
+    )
+
+    # Transformation Scheme object
     ts = TransformationScheme(
         id="TS1",
         version="1.0",
         agency="MD",
         vtl_version="2.1",
+        name="Transformation Scheme 1",
         items=[
             Transformation(
                 id="T1",
                 uri=None,
                 urn=None,
-                name=None,
+                name="Transformation 1",
                 description=None,
                 expression="DS_1 [calc Me_4 := OBS_VALUE]",
                 is_persistent=True,
                 result="DS_r",
                 annotations=(),
-                ),
-            ],
-    )
-    # Example of VTL Dataflow Mapping object
-    dataflow_mapping = VtlDataflowMapping(
-        dataflow="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD:TEST_DF(1.0)",
-        dataflow_alias="DS_1",
-        id="VTL_MAP_1",
+            ),
+        ],
+        vtl_mapping_scheme=mapping_scheme
     )
 
 At this point you may use the :ref:`VTL Toolkit Model validations <vtl-validation>` to validate the Transformation Scheme.
@@ -151,7 +163,8 @@ Now that we have the VTL script, we can run it using the
     # Run the VTL script with the datasets and the dataflow mapping
     run_sdmx(script=ts, datasets=datasets, mappings=dataflow_mapping)
 
-The `run_sdmx` method will execute the VTL script using the provided datasets and dataflow mapping.
+The `run_sdmx` method will execute the Transformation Scheme (VTL Script) using the provided
+datasets and dataflow mapping.
 
 Summary
 -------
