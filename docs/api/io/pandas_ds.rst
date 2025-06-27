@@ -1,4 +1,5 @@
 Pandas Dataset
 ==============
 
-.. automodule:: pysdmx.io.pd.PandasDataset
+.. autoclass:: pysdmx.io.pd.PandasDataset
+   :show-inheritance:

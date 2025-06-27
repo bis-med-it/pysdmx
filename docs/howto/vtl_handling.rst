@@ -1,7 +1,7 @@
 .. _vtl-handling:
 
 Validate data using VTL
-^^^^^^^^^^^^^^^^^^^^^^^
+=======================
 
 In this tutorial, we shall examine the utilization of ``pysdmx``
 for reading **data** and **metadata** to generate a dataset and VTL script
@@ -35,8 +35,8 @@ Step-by-Step Solution
 Using pysdmx we will read the Datasets, its Structures and the VTL objects. For the purpose of this tutorial, we shall employ the XML files
 ``structures.xml`` (data structure), ``data.xml`` (data) and ``vtl_ts.xml`` (Transformation and VTLMapping).
 
-Reading and Extracting Data
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Reading Data and Structures messages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The initial step involves reading the data structure and data from the
 SDMX files. The following code snippet demonstrates the process:
@@ -61,10 +61,22 @@ and extract the data:
     # With the data and metadata path we extract the datasets with their related structures
     datasets = get_datasets(path_to_data, path_to_structures)
 
+.. important::
+
+    The `get_datasets` function will read the SDMX-ML files and return a list of Pandas Datasets.
+    Each Dataset will have its related metadata attached to it.
+
+    The datasets are returned as a list of :class:`Pandas Dataset <pysdmx.io.pd.PandasDataset>`.
+    You can access the data using the `data` attribute of each Dataset.
+
+    This method is critical for this tutorial, as the run_sdmx method requires the datasets to be passed as a parameter
+    and that the datasets have their related metadata attached to them.
+
+
 For more information on how to read data and metadata, see the :ref:`General reader <general-reader>`,
 
 Getting the Transformation Scheme and VTL Mapping
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 For the next step, we have three options available.
 We can read the transformation scheme and VTL mapping from a file,
 we can read a file from a Fusion Registry URL or we can create the pysdmx Model objects.
@@ -119,7 +131,7 @@ we can read a file from a Fusion Registry URL or we can create the pysdmx Model 
 At this point you may use the :ref:`VTL Toolkit Model validations <vtl-validation>` to validate the Transformation Scheme.
 
 Running the VTL Script
-~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. _run_sdmx:
 

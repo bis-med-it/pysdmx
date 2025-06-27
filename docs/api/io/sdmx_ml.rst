@@ -13,6 +13,12 @@ On pysdmx, we support the validation against XSD schemas.
 
 `SDMX-ML 3.0 XSD Schema <https://github.com/sdmx-twg/sdmx-ml/tree/v3.0.0/schemas>`_
 
+.. important::
+
+    To use the SDMX-ML functionalities, you need to have the pysdmx[xml] extra installed.
+
+    Check the :ref:`installation guide <installation>` for more information.
+
 
 Reading
 -------

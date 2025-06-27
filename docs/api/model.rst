@@ -64,6 +64,7 @@ API Reference
    model/code
    model/concept
    model/dataflow
+   model/dataset
    model/category
    model/map
    model/refmeta

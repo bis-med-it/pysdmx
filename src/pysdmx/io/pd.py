@@ -10,17 +10,10 @@ import pandas as pd  # noqa: E402
 
 
 class PandasDataset(Dataset, frozen=False, kw_only=True):
-    """Class related to Dataset, using Pandas Dataframe.
-
-    It is based on SDMX Dataset and has Pandas Dataframe compatibility to
-    withhold data.
+    """A Dataset that is backed by a Pandas DataFrame.
 
     Args:
-        attributes: Attributes at dataset level.
-        data: Pandas Dataframe.
-        structure:
-          URN or Schema related to this Dataset
-          (DSD, Dataflow, ProvisionAgreement)
+        data: Pandas Dataframe to withhold data.
     """
 
     data: pd.DataFrame

@@ -10,6 +10,11 @@ The SDMX CSV readers and writers are compatible with SDMX-CSV 1.0 and 2.0 standa
 
 `SDMX-CSV 2.0 specification <https://github.com/sdmx-twg/sdmx-csv/blob/v2.0.0/data-message/docs/sdmx-csv-field-guide.md>`_
 
+.. important::
+
+    To use the SDMX-CSV functionalities, you need to have the pysdmx[data] extra installed.
+
+    Check the :ref:`installation guide <installation>` for more information.
 
 Reading
 -------
