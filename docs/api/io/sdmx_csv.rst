@@ -2,21 +2,27 @@
 
 SDMX CSV
 =========
-In this package, we have the possibility to read and write SDMX CSV format.
-This format is only used for data, not for Metadata.
-The SDMX CSV readers and writers are compatible with SDMX-CSV 1.0 and 2.0 standards.
+
+This format is only used for data, not for Structures.
+The SDMX CSV readers and writers are compatible with SDMX-CSV 1.0 and 2.0 standards on the Basic format.
+
+`SDMX-CSV 1.0 specification <https://github.com/sdmx-twg/sdmx-csv/blob/v1.0/data-message/docs/sdmx-csv-field-guide.md>`_
+
+`SDMX-CSV 2.0 specification <https://github.com/sdmx-twg/sdmx-csv/blob/v2.0.0/data-message/docs/sdmx-csv-field-guide.md>`_
 
 
 Reading
 -------
-Although the use of the general reader is always recommended,
-specific readers for SDMX-CSV are also available.
+Although the use of the :ref:`general reader<general-reader>` is always recommended,
+specific readers for SDMX-CSV are also available:
 
-We have the following readers available:
+.. _sdmx_csv_10_reader:
 
 - DATA_SDMX_CSV_1_0_0 -> pysdmx.io.csv.sdmx10.reader
 
 .. autofunction:: pysdmx.io.csv.sdmx10.reader.read
+
+.. _sdmx_csv_20_reader:
 
 - DATA_SDMX_CSV_2_0_0 -> pysdmx.io.csv.sdmx20.reader
 
@@ -27,14 +33,16 @@ We have the following readers available:
 Writing
 -------
 
-As for reading, we can choose between SDMX-CSV 1.0 and 2.0 formats.
-We also have different writers according to the version of the SDMX-CSV we are going to write.
+Although the use of the :ref:`general writer<general-writer>` is always recommended,
+specific readers for SDMX-CSV are also available:
 
-We have the following writers available:
+.. _sdmx_csv_10_writer:
 
 - DATA_SDMX_CSV_1_0_0 -> pysdmx.io.csv.sdmx10.writer
 
 .. autofunction:: pysdmx.io.csv.sdmx10.writer.write
+
+.. _sdmx_csv_20_writer:
 
 - DATA_SDMX_CSV_2_0_0 -> pysdmx.io.csv.sdmx20.writer
 

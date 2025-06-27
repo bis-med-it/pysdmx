@@ -31,15 +31,15 @@ Your opinionated Python SDMX library.
    :maxdepth: 2
    :caption: IO Tutorials
 
-   howto/general_rw
-   howto/structure_rw
+   howto/io_data
+   howto/io_structure
 
 .. toctree::
    :maxdepth: 2
    :caption: VTL Tutorials
 
-   howto/run_sdmx
-   howto/generate_sdmx
+   howto/generate_ts
+   howto/vtl_handling
 
 
 .. toctree::

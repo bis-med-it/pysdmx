@@ -3,42 +3,44 @@
 General Reader
 ==============
 
-This module offers a general reader for reading data and metadata,
-from a URL, String data or a datapath of a file. This reader supports
-several formats and versions as well as a great flexibility to introduce
-new versions or formats in the future
+The pysdmx general reader is a set of methods to read any SDMX message, regardless of the format or version.
 
-Tutorial for using the general reader can be found in:
-:ref:`general-reader-tutorial`.
+Tutorial on :ref:`reading SDMX Data messages <data-io-tutorial>`.
+
+Tutorial on :ref:`reading SDMX Structure messages <structure-io-tutorial>`.
+
+.. _io-formats-supported:
 
 List of formats and versions supported by the general reader:
 
-- **SDMX-ML**
+- :ref:`SDMX-CSV<sdmx_csv>`
+    - :ref:`SDMX-CSV 1.0 <sdmx_csv_10_reader>`
+    - :ref:`SDMX-CSV 2.0 <sdmx_csv_20_reader>`
 
-  - **SDMX-ML 2.1**
-
-    - :meth:`SDMX-ML 2.1 Generic <pysdmx.io.xml.sdmx21.reader.generic.read>`
-    - :meth:`SDMX-ML 2.1 Structure Specific <pysdmx.io.xml.sdmx21.reader.structure_specific.read>`
-    - :meth:`SDMX-ML 2.1 Structure <pysdmx.io.xml.sdmx21.reader.structure.read>`
-
-  - **SDMX-ML 3.0**
-
-    - :meth:`SDMX-ML 3.0 Structure Specific <pysdmx.io.xml.sdmx30.reader.structure_specific.read>`
-    - :meth:`SDMX-ML 3.0 Structure <pysdmx.io.xml.sdmx30.reader.structure.read>`
-
-- **SDMX-CSV**
-
-  - :meth:`SDMX-CSV 1.0 <pysdmx.io.csv.sdmx10.reader.read>`
-  - :meth:`SDMX-CSV 2.0 <pysdmx.io.csv.sdmx20.reader.read>`
+- :ref:`SDMX-ML<sdmx_ml>`
+    - :ref:`SDMX-ML 2.1 Generic <sdmx_ml_21_gen_reader>`
+    - :ref:`SDMX-ML 2.1 Structure Specific <sdmx_ml_21_spe_reader>`
+    - :ref:`SDMX-ML 2.1 Structure <sdmx_ml_21_structure_reader>`
+    - :ref:`SDMX-ML 3.0 Structure Specific <sdmx_ml_30_spe_reader>`
+    - :ref:`SDMX-ML 3.0 Structure <sdmx_ml_30_structure_reader>`
 
 
-Reading Data and Metadata
--------------------------
+Read SDMX
+---------
+
+This method allows you to read any SDMX message, regardless of the format or version as long as it is supported.
+
+:ref:`IO Formats supported <io-formats-supported>`.
 
 .. autofunction:: pysdmx.io.read_sdmx
 
 
 Get Datasets
 ------------
+
+This method allows you to retrieve Pandas Datasets from a Data message, and add the related metadata
+as a Schema object: :meth:`pysdmx.model.dataflow.Schema`.
+
+:ref:`IO Formats supported <io-formats-supported>`.
 
 .. autofunction:: pysdmx.io.get_datasets

@@ -1,15 +1,12 @@
-.. _generate_sdmx:
+.. _generate_ts:
 
-Generate VTL Objects from VTL Script
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Generate a TransformationScheme from VTL Script
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In this tutorial, we shall examine the utilization of ``vtlengine``
+In this tutorial, we shall examine the use of ``vtlengine``
 for the generation of VTL objects from a VTL script.
 
-Generate Objects
-----------------
-First of all, we need a VTL Script, we can get it from a File or
-from a string we create.
+Firstly, we generate a VTL Script as a String.
 
 .. code-block:: python
 
@@ -35,11 +32,9 @@ from a string we create.
     DS_r <- DS_1 + 1;
                     """
 
-
-Now we have the VTL script, we can generate the VTL objects from it.
-
-To do this, we need the ``script``, ``agency_id``, ``id`` and ``Version``
-of the generated :class:`Transformation Scheme <pysdmx.model.vtl.TransformationScheme>`
+Secondly, to generate a :class:`Transformation Scheme <pysdmx.model.vtl.TransformationScheme>` object,
+we use the `generate_sdmx <https://docs.vtlengine.meaningfuldata.eu/api.html#vtlengine.generate_sdmx>`_
+function from the ``vtlengine`` library. We will need to pass the ``script``, ``agency_id``, ``id`` and ``version``
 
 .. code-block:: python
 
@@ -48,8 +43,9 @@ of the generated :class:`Transformation Scheme <pysdmx.model.vtl.TransformationS
     # Generate a Transformation Scheme from the VTL script
     ts_scheme = generate_sdmx(script=vtl_script, agency_id="MD", id="TS1", version="1.0")
 
-Now we have the `ts_scheme` object, which is an instance of a :class:`Transformation Scheme <pysdmx.model.vtl.TransformationScheme>`
+    print(repr(ts_scheme))
 
+Finally, the generated `TransformationScheme` object can now be serialized in a SDMX message or may be used to
+perform further operations, like :ref:`running the TransformationScheme <run_sdmx>`.
 
-For more information on how to use the ``vtlengine``, please refer to the
-`vtlengine run documentation <https://docs.vtlengine.meaningfuldata.eu/walkthrough.html>`_
+Check the :ref:`VTL Toolkit <vtl_toolkit>` for more information on how to use the generated TransformationScheme.

@@ -1,9 +1,9 @@
 .. _structure-rw:
 
-Reading and writing SDMX Structures
-===================================
+SDMX Structures IO operations
+=============================
 
-.. _structure-reader-tutorial:
+.. _structure-io-tutorial:
 
 Reading
 -------
@@ -44,8 +44,7 @@ We can choose between SDMX-ML 2.1 and 3.0 formats.
 We also have different writers according to the type of structure we are going to write.
 We have the following writers available:
 
-- :meth:`SDMX-ML 3.0 Structure Specific <pysdmx.io.xml.sdmx30.reader.structure_specific.read>`
-
+- :meth:`SDMX-ML 2.1 Structure <pysdmx.io.xml.sdmx21.writer.structure.write>`
 - :meth:`SDMX-ML 3.0 Structure <pysdmx.io.xml.sdmx30.reader.structure.read>`
 
 To write structures, we need to input a series ``pysdmx``:ref:`Model Objects <model>`
@@ -54,18 +53,15 @@ also we can prettify the output with ``prettyprint`` parameter set to ``True``.
 
 .. code-block:: python
 
-   from pysdmx.io.xml.sdmx21.writer.structure import write as write_sdmx21
-   from pysdmx.io.xml.sdmx30.writer.structure import write as write_sdmx30
+    from pysdmx.io import write_sdmx
 
-   # Assuming you have a DataStructureDefinition object
-   data_structure_21 = ...  # Your DataStructureDefinition for SDMX-ML 2.1
-   data_structure_30 = ...  # Your DataStructureDefinition for SDMX-ML 3.0
+   dsd = DataStructureDefinition(...)
 
    # Write the structure to SDMX-ML 2.1 with prettyprint
-   xml_21 = write_sdmx21(data_structure_21, prettyprint=True)
+   xml_21 = write_sdmx21(dsd, prettyprint=True)
 
    # Write the structure to SDMX-ML 3.0 without prettyprint
-   xml_30 = write_sdmx30(data_structure_30)
+   xml_30 = write_sdmx30(dsd)
 
 The `write_sdmx21` and `write_sdmx30` functions will return a string containing the SDMX-ML structure in the specified format.
 
