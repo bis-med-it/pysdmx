@@ -568,6 +568,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
                 else self.agency
             ),
             id=self.id,
+            groups=self.groups,
             components=self.components,
             version=self.version,
             artefacts=self.__extract_artefacts(),
