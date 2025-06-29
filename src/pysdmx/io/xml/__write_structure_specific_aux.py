@@ -6,7 +6,6 @@ from typing import Any, Dict, List
 import pandas as pd
 
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.__tokens import SIBLING_TYPE
 from pysdmx.io.xml.__write_aux import (
     ABBR_MSG,
     ALL_DIM,
@@ -169,53 +168,38 @@ def __write_data_single_dataset(
 
 
 def __group_processing(
-    data: pd.DataFrame, group_codes: List[str], prettyprint: bool = True
+    data: pd.DataFrame,
+    group_codes: list[Dict[str, Any]],
+    prettyprint: bool = True,
 ) -> str:
-    def __generate_group_str() -> str:
-        """Generates the Group item."""
-        out_list: List[str] = []
-        data.groupby(by=group_codes).apply(
-            lambda x: __format_dict_group(out_list, x)
-        )
-
-        return "".join(out_list)
-
-    def __format_dict_group(
-        output_list: List[str],
-        obs: Any,
-    ) -> Any:
-        """Formats the series as key=value pairs."""
-        # Creating the observation dict,
-        # we always get the first element on Series
-        # as we are grouping by it
-        data_dict["Group"][0] = obs.to_dict(orient="records")
-        output_list.append(__format_group_str(data_dict["Group"][0]))
-        # We remove the data for series as it is no longer necessary
-        del data_dict["Group"][0]
-
-    def __format_group_str(data_info: Dict[Any, Any]) -> str:
+    def __format_group_str(data_info: Dict[Any, Any], group_id: str) -> str:
         """Formats the series as key=value pairs."""
         child2 = "\t\t" if prettyprint else ""
         nl = "\n" if prettyprint else ""
 
-        out_element = f"{child2}<Group xsi:type='ns1:{SIBLING_TYPE}' "
-        for k, v in data_info[0].items():
+        out_element = f"{child2}<Group xsi:type='ns1:{group_id}' "
+        for k, v in data_info.items():
             out_element += f"{k}={__escape_xml(str(v))!r} "
         out_element += f"/>{nl}"
 
         return out_element
 
-    # Getting each datapoint from data and creating dict
-    data = data.sort_values(group_codes, axis=0)[group_codes]
-    data_dict = {
-        "Group": data.drop_duplicates()
-        .reset_index(drop=True)
-        .to_dict(orient="records")
-    }
+    out_list: List[str] = []
 
-    out = __generate_group_str()
+    for group in group_codes:
+        group_keys = group["dimensions"] + [group["attribute"]]
 
-    return out
+        grouped_data = (
+            data[group_keys]
+            .drop_duplicates()
+            .reset_index(drop=True)
+            .to_dict(orient="records")
+        )
+
+        for record in grouped_data:
+            out_list.append(__format_group_str(record, group["group_id"]))
+
+    return "".join(out_list)
 
 
 def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:

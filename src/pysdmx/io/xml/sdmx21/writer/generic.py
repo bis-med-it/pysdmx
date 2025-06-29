@@ -204,6 +204,13 @@ def __write_data_single_dataset(
         series_codes = [x for x in series_codes if x not in series_att_codes]
         obs_codes = [x for x in obs_codes if x not in obs_att_codes]
 
+        if group_codes:
+            data += __group_processing(
+                data=dataset.data,
+                group_codes=group_codes,
+                prettyprint=prettyprint,
+            )
+
         data += __series_processing(
             data=dataset.data,
             series_codes=series_codes,
@@ -266,6 +273,63 @@ def __obs_processing(
     iterator = map(parser, data.to_dict(orient="records"))
 
     return "".join(iterator)
+
+
+def __group_processing(
+    data: pd.DataFrame,
+    group_codes: List[Dict[str, Any]],
+    prettyprint: bool = True,
+) -> str:
+    def __format_group_str(
+        data_info: Dict[Any, Any],
+        group_id: str,
+        dimensions: List[str],
+        attribute: str,
+    ) -> str:
+        """Formats a generic SDMX group using __value()."""
+        child2 = "\t\t" if prettyprint else ""
+        nl = "\n" if prettyprint else ""
+
+        out_element = f'{child2}<{ABBR_GEN}:Group type="{group_id}">{nl}'
+
+        # GroupKey block
+        out_element += f"{child2}\t<{ABBR_GEN}:GroupKey>{nl}"
+        for dim in dimensions:
+            out_element += (
+                f"{child2}\t\t{__value(dim, data_info.get(dim, ''))}{nl}"
+            )
+        out_element += f"{child2}\t</{ABBR_GEN}:GroupKey>{nl}"
+
+        # Attributes block
+        out_element += f"{child2}\t<{ABBR_GEN}:Attributes>{nl}"
+        out_element += f"{child2}\t\t{__value(
+            attribute, data_info.get(attribute, ''))}{nl}"
+        out_element += f"{child2}\t</{ABBR_GEN}:Attributes>{nl}"
+
+        out_element += f"{child2}</{ABBR_GEN}:Group>{nl}"
+        return out_element
+
+    out_list: List[str] = []
+
+    for group in group_codes:
+        group_id = group["group_id"]
+        dimensions = group["dimensions"]
+        attribute = group["attribute"]
+        group_keys = dimensions + [attribute]
+
+        grouped_data = (
+            data[group_keys]
+            .drop_duplicates()
+            .reset_index(drop=True)
+            .to_dict(orient="records")
+        )
+
+        for record in grouped_data:
+            out_list.append(
+                __format_group_str(record, group_id, dimensions, attribute)
+            )
+
+    return "".join(out_list)
 
 
 def __series_processing(

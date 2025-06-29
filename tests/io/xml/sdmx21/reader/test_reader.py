@@ -851,8 +851,8 @@ def test_attribute_relationship_attachment_group(samples_folder):
     data_path = samples_folder / "datastructure_att_rel_attachment_group.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1
-    with pytest.raises(NotImplementedError, match="AttachmentGroup"):
-        read_sdmx(input_str, validate=True)
+    result = read_sdmx(input_str, validate=True).structures
+    assert result is not None
 
 
 def test_datastructure_group(datastructure_group):

@@ -210,7 +210,7 @@ def ds_with_group():
             id="TEST",
             agency="MD",
             version="1.0",
-            groups=[GroupDimension(id="ATT3", dimensions=["DIM2"])],
+            groups=[GroupDimension(id="Group", dimensions=["DIM2"])],
             components=Components(
                 [
                     Component(

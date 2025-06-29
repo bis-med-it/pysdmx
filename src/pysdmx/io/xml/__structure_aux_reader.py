@@ -553,7 +553,7 @@ class StructureParser(Struct):
         return rep
 
     @staticmethod
-    def __get_attachment_level(
+    def __get_attachment_level(  # noqa: C901
         attribute: Dict[str, Any], element_info: Dict[str, Any]
     ) -> str:
         if DIM in attribute:
@@ -565,10 +565,17 @@ class StructureParser(Struct):
             # therefore we need to check first if a Dimension is present,
             # then the AttachmentGroup
             if ATTACH_GROUP in attribute:
-                raise NotImplementedError(
-                    "Attribute relationships with Dimension "
-                    "and AttachmentGroup is not supported."
-                )
+                att_grp = add_list(attribute[ATTACH_GROUP])
+                att_grp = [att[REF][ID] for att in att_grp]
+                for grp in att_grp:
+                    group_dims = next(
+                        (g for g in element_info[GROUPS_LOW] if g[ID] == grp),
+                        None,
+                    )
+
+                    att_level += "," + ",".join(
+                        group_dims["dimensions"],
+                    )
         elif GROUP in attribute:
             if REF in attribute[GROUP]:
                 group_id = attribute[GROUP][REF][ID]
@@ -576,6 +583,7 @@ class StructureParser(Struct):
                 group_id = attribute[GROUP]
             group_dimensions = next(
                 (g for g in element_info[GROUPS_LOW] if g[ID] == group_id),
+                None,
             )
             att_level = ",".join(group_dimensions["dimensions"])
         elif OBSERVATION in attribute or PRIM_MEASURE in attribute:
@@ -914,12 +922,17 @@ class StructureParser(Struct):
                     else [dsd_comps[GROUP]]
                 )
                 for group in groups:
+                    group_dimensions = group.pop(GROUP_DIM, [])
+                    if isinstance(group_dimensions, dict):
+                        group_dimensions = [group_dimensions]
+
                     group["dimensions"] = [
                         d[DIM_REF]
                         if isinstance(d[DIM_REF], str)
                         else d[DIM_REF][REF][ID]
-                        for d in group.pop(GROUP_DIM)
+                        for d in group_dimensions
                     ]
+
                 element[GROUPS_LOW] = add_list(groups)
                 del element[DSD_COMPS][GROUP]
         return element
