@@ -6,4 +6,4 @@ GDS Model
     in a structured way.
 
 .. automodule:: pysdmx.model.gds
-    :members: GdsSdmxApi, GdsAgency, GdsEndpoint, GdsServiceRef, GdsService, GdsCatalog, GdsUrnResolver, ResolverResult
+    :members: GdsSdmxApi, GdsCatalog, GdsEndpoint, GdsService, GdsServiceReference, GdsUrnResolver, ResolverResult
