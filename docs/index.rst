@@ -48,6 +48,7 @@ Your opinionated Python SDMX library.
 
    api/model
    api/fmr
+   api/gds
    api/rest
    api/helper
    api/toolkit

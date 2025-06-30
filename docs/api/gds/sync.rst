@@ -1,3 +1,5 @@
+.. _gds-sync:
+
 Synchronous client
 ==================
 
