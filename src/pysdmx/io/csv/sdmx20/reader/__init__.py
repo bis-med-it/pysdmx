@@ -34,6 +34,7 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
                     "Check the docs for the proper values on ACTION column.",
                 )
             action = ACTION_SDMX_CSV_MAPPER_READING[action_value]
+            del data["ACTION"]  # Remove ACTION column from DataFrame
         else:
             raise Invalid(
                 "Invalid value on ACTION column",

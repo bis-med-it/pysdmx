@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-import pysdmx.io.xml.sdmx21.writer.config
+import pysdmx.io.xml.config
 from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
@@ -94,12 +94,14 @@ def content():
                         role=Role.ATTRIBUTE,
                         concept=Concept(id="ds_att1"),
                         required=True,
+                        attachment_level="D",
                     ),
                     Component(
                         id="ds_att2",
                         role=Role.ATTRIBUTE,
                         concept=Concept(id="ds_att2"),
                         required=False,
+                        attachment_level="D",
                     ),
                     Component(
                         id="M1",

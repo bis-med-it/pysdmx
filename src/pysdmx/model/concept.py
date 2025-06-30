@@ -27,10 +27,14 @@ class DataType(str, Enum):
     """The alphabetic character set of A-Z, a-z.."""
     ALPHA_NUM = "AlphaNumeric"
     """The character set of A-Z, a-z and 0-9."""
+    BASIC_TIME_PERIOD = "BasicTimePeriod"
+    """The ISO standard periods."""
     BIG_INTEGER = "BigInteger"
     """Immutable arbitrary-precision signed integer."""
     BOOLEAN = "Boolean"
     """True or False."""
+    COUNT = "Count"
+    """A simple incrementing integer type."""
     DATE = "GregorianDay"
     """A ISO 8601 date (e.g. ``2011-06-17``)."""
     DATE_TIME = "DateTime"
@@ -59,8 +63,24 @@ class DataType(str, Enum):
     """The simple numeric character set of 0-9, treated as a string."""
     PERIOD = "ObservationalTimePeriod"
     """A reporting period. The format varies with the frequency."""
+    REP_DAY = "ReportingDay"
+    """The SDMX reporting period for daily frequency (e.g. 2025-D001)."""
+    REP_MONTH = "ReportingMonth"
+    """The SDMX reporting period for monthly frequency (e.g. 2025-M01)."""
+    REP_QUARTER = "ReportingQuarter"
+    """The SDMX reporting period for quarterly frequency (e.g. 2025-Q1)."""
+    REP_SEMESTER = "ReportingSemester"
+    """The SDMX reporting period for half-yearly frequency (e.g. 2025-S1)."""
+    REP_TRIMESTER = "ReportingTrimester"
+    """The SDMX reporting period for trimestrial frequency (e.g. 2025-T1)."""
+    REP_WEEK = "ReportingWeek"
+    """The SDMX reporting period for weekly frequency (e.g. 2025-W01)."""
+    REP_YEAR = "ReportingYear"
+    """The SDMX reporting period for yearly frequency (e.g. 2025-A1)."""
     SHORT = "Short"
     """A whole number (2 bytes)."""
+    STD_TIME_PERIOD = "StandardTimePeriod"
+    """The ISO standard periods and the SDMX reporting periods."""
     STRING = "String"
     """A string (as immutable sequence of Unicode code points)."""
     TIME = "Time"
@@ -74,8 +94,16 @@ class DataType(str, Enum):
     YEAR_MONTH = "GregorianYearMonth"
     """An ISO 8601 year and month (e.g. ``2000-01``)."""
 
+    def __str__(self) -> str:
+        """Data Type String representation."""
+        return self.value
 
-class Facets(Struct, frozen=True, omit_defaults=True):
+    def __repr__(self) -> str:
+        """Data Type String representation."""
+        return f"{self.__class__.__name__}.{self._name_}"
+
+
+class Facets(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     """Additional information about the concept expected values.
 
     The facets that apply vary with the type. For example,
@@ -114,13 +142,18 @@ class Facets(Struct, frozen=True, omit_defaults=True):
     """Whether the text can be in multiple languages."""
 
     def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        out = []
-        for k in self.__annotations__:
-            v = self.__getattribute__(k)
-            if v:
-                out.append(f"{k}={v}")
-        return ", ".join(out)
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
 class Concept(Item, frozen=True, omit_defaults=True, tag=True):

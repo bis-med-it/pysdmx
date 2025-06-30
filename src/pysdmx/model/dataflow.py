@@ -35,15 +35,39 @@ class Role(str, Enum):
     ATTRIBUTE = "A"
     """The component provides descriptive information about the data."""
 
+    def __str__(self) -> str:
+        """Return the role as a string."""
+        return self.name.capitalize()
 
-class ArrayBoundaries(Struct, frozen=True):
+    def __repr__(self) -> str:
+        """Role String representation."""
+        return f"{self.__class__.__name__}.{self._name_}"
+
+
+class ArrayBoundaries(Struct, frozen=True, repr_omit_defaults=True):
     """The minimum and maximum number of items in the SDMX array."""
 
     min_size: int = 0
     max_size: Optional[int] = None
 
+    def __str__(self) -> str:
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
 
-class Component(Struct, frozen=True, omit_defaults=True):
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
+
+
+class Component(
+    Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True
+):
     """A component of a dataset (aka **variable**), such the frequency.
 
     Concepts are used to **describe the relevant characteristics** of a
@@ -98,11 +122,12 @@ class Component(Struct, frozen=True, omit_defaults=True):
         description: Additional descriptive information about the component.
         local_codes: The expected local values for the component (e.g. currency
             codes).
-        attachment_level: The attachement level (if role = A only).
+        attachment_level: The attachment level (if role = A only).
             Attributes can be attached at different levels such as
             D (for dataset-level attributes), O (for observation-level
             attributes) or a combination of dimension IDs, separated by
             commas, for series- and group-level attributes).
+            A post_init check makes this attribute mandatory for attributes.
         array_def: Any additional constraints for array types.
     """
 
@@ -128,6 +153,12 @@ class Component(Struct, frozen=True, omit_defaults=True):
                     "The attachment_level field is "
                     "only allowed for attribute components"
                 ),
+            )
+        if self.role == Role.ATTRIBUTE and self.attachment_level is None:
+            raise Invalid(
+                "Validation Error",
+                "The attachment_level field is mandatory "
+                "for attribute components",
             )
 
     @property
@@ -186,16 +217,18 @@ class Component(Struct, frozen=True, omit_defaults=True):
             return None
 
     def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        out = []
-        for k in self.__annotations__:
-            v = self.__getattribute__(k)
-            if v:
-                if k == "concept":
-                    out.append(f"{k}=({str(v)})")
-                else:
-                    out.append(f"{k}={str(v)}")
-        return ", ".join(out)
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
 class Components(UserList[Component]):
@@ -313,8 +346,21 @@ class Components(UserList[Component]):
                     f"There is already a component with ID: {fld.id}",
                 )
 
+    def __str__(self) -> str:
+        """Custom string representation without the class name."""
+        return f"data: {len(self)} components"
 
-class DataflowInfo(Struct, frozen=True, omit_defaults=True):
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value in self.__dict__.items():
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
+
+
+class DataflowInfo(
+    Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True
+):
     """Extended information about a dataflow.
 
     The information includes:
@@ -355,16 +401,32 @@ class DataflowInfo(Struct, frozen=True, omit_defaults=True):
     dsd_ref: Optional[str] = None
 
     def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        out = []
-        for k in self.__annotations__:
-            v = self.__getattribute__(k)
-            if v:
-                out.append(f"{k}={v}")
-        return ", ".join(out)
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # str is taken as a Sequence, so we need to check it's not a str
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                # Handle non-empty lists
+                if not value:
+                    continue
+                class_name = value[0].__class__.__name__
+                value = f"{len(value)} {class_name.lower()}s"
+
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # Omit empty sequences
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
-class Schema(Struct, frozen=True, omit_defaults=True):
+class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     """The allowed content within a certain context.
 
     This is the equivalent to the result of a schema query in the
@@ -403,13 +465,32 @@ class Schema(Struct, frozen=True, omit_defaults=True):
     generated: datetime = datetime.now(timezone.utc)
 
     def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        out = []
-        for k in self.__annotations__:
-            v = self.__getattribute__(k)
-            if v:
-                out.append(f"{k}={v}")
-        return ", ".join(out)
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # str is taken as a Sequence, so we need to check it's not a str
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                # Handle non-empty lists
+                if not value:
+                    continue
+                class_name = value[0].__class__.__name__
+                # If the value is a list of artefacts, we can summarize it
+                if attr == "artefacts":
+                    class_name = "Artefact"
+                value = f"{len(value)} {class_name.lower()}s"
+
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # Omit empty sequences
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
     @property
     def short_urn(self) -> str:

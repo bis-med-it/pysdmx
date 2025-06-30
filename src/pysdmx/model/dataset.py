@@ -20,8 +20,16 @@ class ActionType(Enum):
     Delete = "Delete"
     Information = "Information"
 
+    def __str__(self) -> str:
+        """Return the action as a string."""
+        return self.name.capitalize()
 
-class SeriesInfo(Struct, frozen=True):
+    def __repr__(self) -> str:
+        """Action String representation."""
+        return f"{self.__class__.__name__}.{self._name_}"
+
+
+class SeriesInfo(Struct, frozen=True, repr_omit_defaults=True):
     """A group of related data, such as a time series, or a case series.
 
     Attributes:
@@ -44,16 +52,21 @@ class SeriesInfo(Struct, frozen=True):
     is_active: bool = True
 
     def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        out = []
-        for k in self.__annotations__:
-            v = self.__getattribute__(k)
-            if v:
-                out.append(f"{k}={v}")
-        return ", ".join(out)
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
-class Dataset(Struct, frozen=False, kw_only=True):
+class Dataset(Struct, frozen=False, repr_omit_defaults=True, kw_only=True):
     """Core Dataset class."""
 
     structure: Union[str, Schema]
@@ -79,3 +92,17 @@ class Dataset(Struct, frozen=False, kw_only=True):
             return self.structure
         else:
             return self.structure.short_urn
+
+    def __str__(self) -> str:
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"

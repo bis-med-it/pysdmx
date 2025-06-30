@@ -1,7 +1,15 @@
 import pytest
 
-from pysdmx.model import Code, Codelist, Component, Concept, DataType, Role
-from pysdmx.util.bridges.pd import to_pandas
+from pysdmx.model import (
+    Code,
+    Codelist,
+    Component,
+    Components,
+    Concept,
+    DataType,
+    Role,
+)
+from pysdmx.toolkit.pd import to_pandas_schema, to_pandas_type
 
 
 @pytest.mark.parametrize(
@@ -15,12 +23,21 @@ from pysdmx.util.bridges.pd import to_pandas
         (DataType.LONG, False, "Int64"),
         (DataType.BIG_INTEGER, True, "object"),
         (DataType.BIG_INTEGER, False, "object"),
+        (DataType.COUNT, True, "int64"),
+        (DataType.COUNT, False, "Int64"),
     ],
 )
 def test_whole_numbers(dt: DataType, required: bool, expected: str):
-    comp = Component("TEST", required, Role.ATTRIBUTE, Concept("TEST"), dt)
+    comp = Component(
+        "TEST",
+        required,
+        Role.ATTRIBUTE,
+        Concept("TEST"),
+        dt,
+        attachment_level="D",
+    )
 
-    received = to_pandas(comp)
+    received = to_pandas_type(comp)
 
     assert received == expected
 
@@ -37,9 +54,16 @@ def test_whole_numbers(dt: DataType, required: bool, expected: str):
     ],
 )
 def test_decimal_numbers(dt: DataType, required: bool, expected: str):
-    comp = Component("TEST", required, Role.ATTRIBUTE, Concept("TEST"), dt)
+    comp = Component(
+        "TEST",
+        required,
+        Role.ATTRIBUTE,
+        Concept("TEST"),
+        dt,
+        attachment_level="D",
+    )
 
-    received = to_pandas(comp)
+    received = to_pandas_type(comp)
 
     assert received == expected
 
@@ -62,9 +86,16 @@ def test_decimal_numbers(dt: DataType, required: bool, expected: str):
     ],
 )
 def test_dates(dt: DataType, required: bool, expected: str):
-    comp = Component("TEST", required, Role.ATTRIBUTE, Concept("TEST"), dt)
+    comp = Component(
+        "TEST",
+        required,
+        Role.ATTRIBUTE,
+        Concept("TEST"),
+        dt,
+        attachment_level="D",
+    )
 
-    received = to_pandas(comp)
+    received = to_pandas_type(comp)
 
     assert received == expected
 
@@ -77,9 +108,16 @@ def test_dates(dt: DataType, required: bool, expected: str):
     ],
 )
 def test_booleans(dt: DataType, required: bool, expected: str):
-    comp = Component("TEST", required, Role.ATTRIBUTE, Concept("TEST"), dt)
+    comp = Component(
+        "TEST",
+        required,
+        Role.ATTRIBUTE,
+        Concept("TEST"),
+        dt,
+        attachment_level="D",
+    )
 
-    received = to_pandas(comp)
+    received = to_pandas_type(comp)
 
     assert received == expected
 
@@ -89,11 +127,20 @@ def test_booleans(dt: DataType, required: bool, expected: str):
     [
         DataType.ALPHA,
         DataType.ALPHA_NUM,
+        DataType.BASIC_TIME_PERIOD,
         DataType.DAY,
         DataType.DURATION,
         DataType.MONTH_DAY,
         DataType.NUMERIC,
         DataType.PERIOD,
+        DataType.REP_DAY,
+        DataType.REP_MONTH,
+        DataType.REP_QUARTER,
+        DataType.REP_SEMESTER,
+        DataType.REP_TRIMESTER,
+        DataType.REP_WEEK,
+        DataType.REP_YEAR,
+        DataType.STD_TIME_PERIOD,
         DataType.STRING,
         DataType.TIME,
         DataType.URI,
@@ -101,9 +148,11 @@ def test_booleans(dt: DataType, required: bool, expected: str):
     ],
 )
 def test_strings(dt: DataType):
-    comp = Component("TEST", True, Role.ATTRIBUTE, Concept("TEST"), dt)
+    comp = Component(
+        "TEST", True, Role.ATTRIBUTE, Concept("TEST"), dt, attachment_level="D"
+    )
 
-    received = to_pandas(comp)
+    received = to_pandas_type(comp)
 
     assert received == "string"
 
@@ -115,11 +164,66 @@ def test_enumeration():
         Role.ATTRIBUTE,
         Concept("TEST"),
         DataType.STRING,
+        attachment_level="D",
         local_codes=Codelist(
             "CL_FREQ", agency="BIS", items=[Code("A"), Code("M")]
         ),
     )
 
-    received = to_pandas(comp)
+    received = to_pandas_type(comp)
 
     assert received == "category"
+
+
+def test_schema():
+    c1 = Component(
+        "FREQ",
+        True,
+        Role.DIMENSION,
+        Concept("FREQ"),
+        DataType.STRING,
+        local_codes=Codelist(
+            "CL_FREQ", agency="BIS", items=[Code("A"), Code("M")]
+        ),
+    )
+    c2 = Component(
+        "MIC", True, Role.DIMENSION, Concept("MIC"), DataType.STRING
+    )
+    c3 = Component(
+        "TIME_PERIOD",
+        True,
+        Role.DIMENSION,
+        Concept("TIME_PERIOD"),
+        DataType.PERIOD,
+    )
+    c4 = Component(
+        "OBS_VALUE",
+        True,
+        Role.MEASURE,
+        Concept("OBS_VALUE"),
+        DataType.DOUBLE,
+    )
+    c5 = Component(
+        "OBS_STATUS",
+        True,
+        Role.ATTRIBUTE,
+        Concept("OBS_STATUS"),
+        DataType.STRING,
+        local_codes=Codelist(
+            "CL_OBS_STATUS",
+            agency="BIS",
+            items=[Code("A"), Code("E"), Code("M")],
+        ),
+        attachment_level="D",
+    )
+    exp = {
+        "FREQ": "category",
+        "MIC": "string",
+        "TIME_PERIOD": "string",
+        "OBS_VALUE": "float64",
+        "OBS_STATUS": "category",
+    }
+
+    schema = to_pandas_schema(Components([c1, c2, c3, c4, c5]))
+
+    assert schema == exp

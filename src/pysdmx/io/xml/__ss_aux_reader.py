@@ -10,7 +10,7 @@ from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__data_aux import (
     __process_df,
 )
-from pysdmx.io.xml.sdmx21.__tokens import (
+from pysdmx.io.xml.__tokens import (
     EXCLUDED_ATTRIBUTES,
     GROUP,
     OBS,

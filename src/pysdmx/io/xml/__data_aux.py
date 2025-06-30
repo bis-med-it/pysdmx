@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import pandas as pd
 
 from pysdmx.errors import Invalid, NotImplemented
-from pysdmx.io.xml.sdmx21.__tokens import (
+from pysdmx.io.xml.__tokens import (
     AGENCY_ID,
     DATASET,
     DIM_OBS,

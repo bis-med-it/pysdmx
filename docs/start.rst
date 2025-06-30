@@ -41,10 +41,9 @@ functionality and don't require additional installations.
 Metadata in action
 ^^^^^^^^^^^^^^^^^^
 
-SDMX metadata are very useful for documenting statistical processes. For
-example, we can define the structure we expect for a data collection process
-and share it with the organizations providing data so that they know what to
-send.
+SDMX metadata are very useful for documenting statistical processes. For example,
+they can define the structure we expect for a data collection process and share
+it with the organizations providing data so that they know what to send. 
 
 However, metadata can do so much more than that, i.e. they can be "active" and
 **drive various types of statistical processes**, such as:
@@ -118,8 +117,10 @@ The following extras are available:
    * - ``xml``
      - Read and Write SDMX-ML messages, on pysdmx.io.xml.
    * - ``data``
-     - Handle SDMX datasets as Pandas data frames, it is required also for reading and writing SDMX-CSV files as of today.
+     - Read and write SDMX-CSV and handle SDMX datasets as Pandas Dataframes.
    * - ``dc``
      - Only required to use the pysdmx.api.dc module when generating queries based on dates.
+   * - ``vtl``
+     - Validate SDMX-VTL model classes, prettify and run VTL scripts using vtlengine library.
    * - ``all``
      - Install all extras.

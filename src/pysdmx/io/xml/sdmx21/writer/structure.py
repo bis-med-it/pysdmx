@@ -5,9 +5,9 @@ from typing import Any, Dict, Optional, Sequence, Union
 
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
-from pysdmx.io.xml.sdmx21.__tokens import (
-    AGENCIES,
+from pysdmx.io.xml.__tokens import (
     AGENCY_ID,
+    AGENCY_SCHEME,
     AS_STATUS,
     ATT,
     ATT_REL,
@@ -60,7 +60,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     VTL_MAPPING_SCHEME,
     VTLMAPPING,
 )
-from pysdmx.io.xml.sdmx21.writer.__write_aux import (
+from pysdmx.io.xml.__write_aux import (
     ABBR_COM,
     ABBR_MSG,
     ABBR_STR,
@@ -517,10 +517,11 @@ def __write_text_format(
     """Writes the text format to the XML file."""
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{type_}"
     if facets is not None:
-        active_facets = facets.__str__().replace("=", '="').split(", ")
-        for facet in active_facets:
+        # Writing only facets not using default values
+        active_facets = facets.__rich_repr__()
+        for facet, value, *_ in active_facets:  # type: ignore[misc]
             facet = __to_lower_camel_case(facet)
-            outfile += f' {facet}"'
+            outfile += f' {facet}="{value}"'
     if dtype is not None:
         outfile += f" {TEXT_TYPE}={dtype.value!r}"
     outfile += "/>"
@@ -658,7 +659,7 @@ def __write_metadata_element(
                 DSD
                 if issubclass(element.__class__, DataStructureDefinition)
                 else (
-                    AGENCIES
+                    AGENCY_SCHEME
                     if element.id == "AGENCIES"
                     else type(element).__name__
                 )

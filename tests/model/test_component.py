@@ -139,12 +139,12 @@ def test_tostr(fid, req, role, concept, typ):
     f1 = Component(fid, req, role, concept, typ)
 
     s = str(f1)
-
-    assert s == (
-        f"id={fid}, required=True, role=Role.DIMENSION, concept="
-        f"(id={concept.id}, name={concept.name}), "
-        "local_dtype=DataType.STRING"
+    expected_str = (
+        f"id: {fid}, required: {req}, role: {role}, concept: {concept}, "
+        f"local_dtype: String"
     )
+
+    assert s == expected_str
 
 
 def test_dtype_property_local():
@@ -251,4 +251,19 @@ def test_invalid_role_attachment_level(concept):
             concept=concept,
             role=Role.DIMENSION,
             attachment_level="X",
+        )
+
+
+def test_attachment_level_mandatory(concept):
+    with pytest.raises(
+        Invalid,
+        match="The attachment_level field is mandatory "
+        "for attribute components",
+    ):
+        Component(
+            "FREQ",
+            True,
+            concept=concept,
+            role=Role.ATTRIBUTE,
+            attachment_level=None,
         )
