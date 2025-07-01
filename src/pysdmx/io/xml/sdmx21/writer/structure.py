@@ -5,7 +5,6 @@ from typing import Dict, Optional, Sequence
 from pysdmx.io.format import Format
 from pysdmx.io.xml.__structure_aux_writer import (
     STR_DICT_TYPE_LIST_21,
-    STR_TYPES,
     __write_structures,
 )
 from pysdmx.io.xml.__write_aux import (
@@ -13,6 +12,7 @@ from pysdmx.io.xml.__write_aux import (
     create_namespaces,
     get_end_message,
 )
+from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.message import Header
 
 
