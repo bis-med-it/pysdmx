@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Receiver id="Not_Supplied"/>
+		<mes:Source>PySDMX</mes:Source>
+	</mes:Header>
+	<mes:Structures>
+		<str:VtlMappingSchemes>
+			<str:VtlMappingScheme id="VTLMS1" urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=FR1:VTLMS1(1.0)" version="1.0" isExternalReference="false" agencyID="FR1" isPartial="false" >
+				<com:Name xml:lang="en">VTL Mapping Scheme #1</com:Name>
+				<str:VtlMapping id="VTLM1" urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlDataflowMapping=FR1:VTLMS1(1.0).VTLM1" alias="BPE_DETAIL_VTL">
+					<com:Name xml:lang="en">VTL Mapping #1</com:Name>
+					<str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=FR1:BPE_DETAIL(1.0)</str:Dataflow>
+				</str:VtlMapping>
+				<str:VtlMapping id="VMCodelist" urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlCodelistMapping=MD:VMS1(1.0).VMCodelist" alias="CL1">
+					<com:Name xml:lang="en">Test VTL Mapping Codelist</com:Name>
+					<str:Codelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)</str:Codelist>
+				</str:VtlMapping>
+				<str:VtlMapping id="VMConcept" urn="urn:sdmx:org.sdmx.infomodel.transformation.VtlConceptMapping=MD:VMS1(1.0).VMConcept" alias="C1">
+					<com:Name xml:lang="en">Test VTL Mapping Concept</com:Name>
+					<str:Concept>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).FREQ</str:Concept>
+				</str:VtlMapping>
+			</str:VtlMappingScheme>
+		</str:VtlMappingSchemes>
+	</mes:Structures>
+</mes:Structure>
