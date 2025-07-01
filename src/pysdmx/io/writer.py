@@ -32,7 +32,7 @@ def write_sdmx(
     output_path: str = "",
     **kwargs: Any,
 ) -> Optional[str]:
-    """Reads any SDMX object (or list of them) to any SDMX format.
+    """Writes any SDMX object (or list of them) to any supported SDMX format.
 
     See the :ref:`formats available <io-writer-formats-supported>`
 
@@ -41,8 +41,9 @@ def write_sdmx(
         For SDMX-ML formats, the pysdmx[xml] extra is required.
 
     .. important::
-        To write SDMX-ML Generic or Series messages, the PandasDataset requires to have its structure
-        defined as a :class:`Schema <pysdmx.model.dataflow.Schema>`.
+        To write SDMX-ML Generic or Series messages, the PandasDataset
+        requires to have its structure defined as a
+        :class:`Schema <pysdmx.model.dataflow.Schema>`.
 
     Args:
         sdmx_objects: Model objects to write, including PandasDataset,
@@ -50,17 +51,20 @@ def write_sdmx(
         sdmx_format: The pysdmx.io.Format to write to, e.g.,
             Format.DATA_SDMX_ML_3_0.
         output_path: The path to save the file. If empty, returns a string.
+        **kwargs: Additional keyword arguments (see below).
 
     Keyword Args:
         prettyprint: Whether to pretty-print the output (default: True)
           (only for SDMX-ML).
-        header: Custom :class:`Header <pysdmx.model.message.Header>` to include in the SDMX Message.
-          (only for SDMX-ML)
+        header: Custom :class:`Header <pysdmx.model.message.Header>` to
+          include in the SDMX Message (only for SDMX-ML)
         dimension_at_observation: Mapping for dimension at observation
-          (only for SDMX-ML Data formats). This is a dictionary where the keys
-          are short URNs and the values are the dimension IDs that should
-          be used as the dimension at observation for that structure in the output. For example,
-          ``{"Dataflow=MD:TEST_MD(1.0)": "TIME_PERIOD"}``. Overrides the header.structure
+          (only for SDMX-ML Data formats). This is a dictionary where
+          the keys are short URNs and the values are the dimension IDs
+          that should be used as the dimension at observation for that
+          structure in the output. For example,
+          ``{"Dataflow=MD:TEST_MD(1.0)": "TIME_PERIOD"}``.
+          Overrides the header.structure
           (if a custom header is provided).
 
     Returns:
