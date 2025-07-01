@@ -196,7 +196,8 @@ class GdsClient(__BaseGdsClient):
         """Get the list of SDMX API versions.
 
         Args:
-            api_version: The SDMX_API to query. Defaults to '*'.
+            api_version: The version of the SDMX API to be returned.
+              Defaults to '*'.
         """
         query = super()._sdmx_api_q(api_version)
         response = self.__fetch(query)
