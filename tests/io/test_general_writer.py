@@ -1,10 +1,12 @@
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
+from pysdmx.io.pd import PandasDataset
 from pysdmx.io.writer import write_sdmx
 from pysdmx.model import Component, Components, Concept, Role, Schema
 
@@ -141,5 +143,31 @@ def test_invalid_format(tmpdir):
         write_sdmx(
             sdmx_objects=[],
             sdmx_format=Format.ERROR_SDMX_ML_2_1,
+            output_path=tmpdir / "output.invalid",
+        )
+
+
+def test_invalid_sdmx_object_data(tmpdir):
+    with pytest.raises(
+        Invalid,
+        match="Only PandasDataset can be written to data formats",
+    ):
+        write_sdmx(
+            sdmx_objects=GEN_STRUCTURE,
+            sdmx_format=Format.DATA_SDMX_CSV_1_0_0,
+            output_path=tmpdir / "output.invalid",
+        )
+
+
+def test_invalid_sdmx_object_structure(tmpdir):
+    with pytest.raises(
+        Invalid,
+        match="PandasDataset cannot be written to structure formats",
+    ):
+        write_sdmx(
+            sdmx_objects=PandasDataset(
+                structure="DataStructure=MD:TEST_DSD(1.0)", data=pd.DataFrame()
+            ),
+            sdmx_format=Format.STRUCTURE_SDMX_ML_2_1,
             output_path=tmpdir / "output.invalid",
         )
