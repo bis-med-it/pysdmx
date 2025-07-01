@@ -126,7 +126,7 @@ Additional arguments are available for SDMX-ML to:
 - Specify the dimension at observation level (using the `dimension_at_observation` argument). This is needed for Time Series
   data formats.
 
-A typical example to write data in Time Series with a custom header:
+A typical example to write data in Time Series with a custom header (pretty printed):
 
 .. code-block:: python
 
@@ -178,6 +178,6 @@ To convert SDMX Data messages between formats, you can combine the `get_datasets
 
 .. note::
 
-    The read_sdmx function can also be used here, but for SDMX-ML Time Series or Generic format,
+    The read_sdmx function can also be used here, but to write data on SDMX-ML Time Series or Generic format,
     it is more efficient to use get_datasets.
 
