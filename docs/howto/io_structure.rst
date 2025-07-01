@@ -45,3 +45,24 @@ Writing
 
 Work in progress.
 
+.. _structure-io-convert-tutorial:
+
+Convert between formats
+-----------------------
+
+To convert SDMX Structure messages between formats, you can combine the `read_sdmx` and `write_sdmx` functions:
+
+.. code-block:: python
+
+    from pysdmx.io import read_sdmx, write_sdmx
+    from pathlib import Path
+
+    # Read the SDMX-ML 2.1 Structure message (any supported format can be used)
+    datasets = read_sdmx("structures.xml")
+
+    # Write the structures to a different format, e.g., SDMX-ML 3.0
+    write_sdmx(
+        datasets=datasets,
+        sdmx_format=Format.STRUCTURE_SDMX_ML_3_0,
+        output_path="output.xml",
+    )
