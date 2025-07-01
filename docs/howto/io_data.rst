@@ -176,8 +176,3 @@ To convert SDMX Data messages between formats, you can combine the `get_datasets
         output_path=Path(__file__).parent / f"output.csv",
     )
 
-.. note::
-
-    The read_sdmx function can also be used here, but to write data on SDMX-ML Time Series or Generic format,
-    it is more efficient to use get_datasets.
-
