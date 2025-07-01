@@ -50,10 +50,9 @@ def __reading_generic_groups(dataset: Dict[str, Any]) -> pd.DataFrame:
         group[GROUP_KEY][VALUE] = add_list(group[GROUP_KEY][VALUE])
         for v in group[GROUP_KEY][VALUE]:
             keys[v[ID]] = v[VALUE.lower()]
-        if ATTRIBUTES in group:
-            group[ATTRIBUTES][VALUE] = add_list(group[ATTRIBUTES][VALUE])
-            for v in group[ATTRIBUTES][VALUE]:
-                keys[v[ID]] = v[VALUE.lower()]
+        group[ATTRIBUTES][VALUE] = add_list(group[ATTRIBUTES][VALUE])
+        for v in group[ATTRIBUTES][VALUE]:
+            keys[v[ID]] = v[VALUE.lower()]
 
         test_list.append(keys)
         test_list, df = __process_df(test_list, df)

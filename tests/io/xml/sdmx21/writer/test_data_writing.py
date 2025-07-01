@@ -482,15 +482,32 @@ def test_dataset_action_and_header_action_dataset_id(content, header):
     assert data_gen.data[0].action == ActionType.Append
 
 
-def test_write_data_with_groups(header, ds_with_group):
+def test_write_structure_specific_with_groups(header, ds_with_group):
     base_path = (
-        Path(__file__).parent / "samples" / "test_dataset_with_groups.xml"
+        Path(__file__).parent / "samples" / "test_structure_specific_with_groups.xml"
     )
     with open(base_path, "r") as f:
         sample = f.read()
 
     ds_with_group = list(ds_with_group.values())
     result = write_str_spec(
+        ds_with_group,
+        header=header,
+        prettyprint=True,
+        dimension_at_observation={"DataStructure=MD:TEST(1.0)": "DIM1"},
+    )
+
+    assert result == sample
+
+
+def test_write_generic_with_groups(header, ds_with_group):
+    base_path = (
+            Path(__file__).parent / "samples" / "test_generic_with_groups.xml"
+    )
+    with open(base_path, "r") as f:
+        sample = f.read()
+    ds_with_group = list(ds_with_group.values())
+    result = write_gen(
         ds_with_group,
         header=header,
         prettyprint=True,

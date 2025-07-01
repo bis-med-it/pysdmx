@@ -97,6 +97,11 @@ def datastructure_group():
 
 
 @pytest.fixture
+def generic_groups():
+    return Path(__file__).parent / "samples" / "generic_dataser_groups.xml"
+
+
+@pytest.fixture
 def error_str(error_304_path):
     with open(error_304_path, "r") as f:
         text = f.read()
@@ -875,3 +880,19 @@ def test_datastructure_group(datastructure_group):
         "L_CP_SECTOR",
         "L_CP_COUNTRY",
     ]
+
+
+def test_generic_dataset_groups(generic_groups):
+    input_str, read_format = process_string_to_read(generic_groups)
+    assert read_format == Format.DATA_SDMX_ML_2_1_GEN
+    result = read_sdmx(input_str, validate=True).data
+    assert result is not None
+    data = result[0].data
+    num_rows = len(data)
+    num_columns = data.shape[1]
+    assert num_rows > 0
+    assert num_columns > 0
+    expected_num_rows = 176
+    expected_num_columns = 19
+    assert num_rows == expected_num_rows
+    assert num_columns == expected_num_columns
