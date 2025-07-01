@@ -300,6 +300,7 @@ class StructureParser(Struct):
     name_personalisations: Dict[str, NamePersonalisationScheme] = {}
     custom_types: Dict[str, CustomTypeScheme] = {}
     transformations: Dict[str, TransformationScheme] = {}
+    is_sdmx_30: bool = False
 
     def __format_contact(self, json_contact: Dict[str, Any]) -> Contact:
         """Creates a Contact object from a json_contact.
@@ -475,12 +476,10 @@ class StructureParser(Struct):
             if isinstance(ref, dict) and "URN" in ref:
                 codelist = find_by_urn(
                     list(self.codelists.values()), ref["URN"]
-                ).codes
+                )
 
             elif isinstance(ref, Reference):
-                codelist = find_by_urn(
-                    list(self.codelists.values()), str(ref)
-                ).codes
+                codelist = find_by_urn(list(self.codelists.values()), str(ref))
             else:
                 short_urn = str(
                     Reference(
@@ -742,7 +741,10 @@ class StructureParser(Struct):
         element[role_name] = add_list(element[role_name])
 
         for comp in element[role_name]:
-            formatted_comp = self.__format_component(comp, role)
+            formatted_comp = self.__format_component(
+                comp,
+                role,
+            )
             comp_list.append(formatted_comp)
 
         return comp_list
@@ -890,6 +892,18 @@ class StructureParser(Struct):
 
         return ITEMS_CLASSES[item_name_class](**item_json_info)
 
+    def __format_is_final_30(
+        self, json_elem: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        if self.is_sdmx_30:
+            # Default version value is 1.0, in SDMX-ML 3.0 we need to set
+            # is_final as True if the version does not have an EXTENSION
+            # (see Technical Notes SDMX 3.0)
+            json_elem[IS_FINAL_LOW] = (
+                "-" not in json_elem[VERSION] if VERSION in json_elem else True
+            )
+        return json_elem
+
     def __format_scheme(
         self, json_elem: Dict[str, Any], scheme: str, item: str
     ) -> Dict[str, ItemScheme]:
@@ -927,6 +941,7 @@ class StructureParser(Struct):
             # Dynamic creation with specific class
             if scheme == VALUE_LIST:
                 element["sdmx_type"] = "valuelist"
+            element = self.__format_is_final_30(element)
             result: ItemScheme = STRUCTURES_MAPPING[scheme](**element)
             elements[result.short_urn] = result
 
@@ -1001,6 +1016,7 @@ class StructureParser(Struct):
                     structure[COMPS] = Components(structure[COMPS])
                 else:
                     structure[COMPS] = Components([])
+            structure = self.__format_is_final_30(structure)
             schemas[short_urn] = STRUCTURES_MAPPING[schema](**structure)
 
         return schemas
