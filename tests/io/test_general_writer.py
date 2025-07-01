@@ -53,6 +53,7 @@ GEN_STRUCTURE = (
                     else Role.MEASURE,
                     concept=Concept(id=id_),
                     required=True,
+                    attachment_level="O" if id_ in ATTRIBUTES else None,
                 )
                 for id_ in DIMENSIONS + ATTRIBUTES + MEASURES
             ]
@@ -103,7 +104,7 @@ def output_path(extension, tmpdir):
         (
             Format.STRUCTURE_SDMX_ML_3_0,
             XML_STR_PATH,
-            "datastructure_3.0.xml",
+            "datastructure3_0.xml",
             {},
         ),
     ],
