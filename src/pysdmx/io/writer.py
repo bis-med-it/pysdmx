@@ -34,15 +34,7 @@ def write_sdmx(
 ) -> Optional[str]:
     """Reads any SDMX object (or list of them) to any SDMX format.
 
-    Supported structures formats are:
-    - SDMX-ML 2.1 Structures
-    - SDMX-ML 3.0 Structures
-
-    Supported data formats are:
-    - SDMX-ML 2.1 Structure Specific Data
-    - SDMX-ML 2.1 Generic Data
-    - SDMX-CSV 1.0
-    - SDMX-CSV 2.0
+    See the :ref:`formats available <io-writer-formats-supported>`
 
     .. important::
         For data formats, the pysdmx[data] extra is required.
@@ -54,14 +46,13 @@ def write_sdmx(
         sdmx_format: The pysdmx.io.Format to write to, e.g.,
             Format.DATA_SDMX_ML_3_0.
         output_path: The path to save the file. If empty, returns a string.
-        **kwargs: see Kwargs below.
 
-    Kwargs:
+    Keyword Args:
         prettyprint: Whether to pretty-print the output (default: True)
-            (Only for SDMX-ML).
+          (only for SDMX-ML).
         header: Optional header to include in the output. (only for SDMX-ML)
         dimension_at_observation: Mapping for dimension at observation
-            (only for SDMX-ML Data formats).
+          (only for SDMX-ML Data formats).
 
     Returns:
         A serialised string if output_path is an empty string, otherwise None.

@@ -23,7 +23,7 @@ def read_sdmx(  # noqa: C901
 ) -> Message:
     """Reads any SDMX message and extracts its content.
 
-    Check the :ref:`formats supported <io-formats-supported>`
+    Check the :ref:`formats supported <io-reader-formats-supported>`
 
     Args:
         sdmx_document: Path to file
@@ -151,7 +151,7 @@ def get_datasets(
 
     This method reads a data message and an optional structure message,
     and returns a sequence of Datasets.
-    Check the :ref:`formats supported <io-formats-supported>`
+    Check the :ref:`formats supported <io-reader-formats-supported>`
 
     The resulting datasets will have their structure assigned,
     this is required for:

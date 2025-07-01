@@ -9,7 +9,7 @@ Tutorial on :ref:`reading SDMX Data messages <data-io-tutorial>`.
 
 Tutorial on :ref:`reading SDMX Structure messages <structure-io-tutorial>`.
 
-.. _io-formats-supported:
+.. _io-reader-formats-supported:
 
 Formats and Versions Supported
 ------------------------------

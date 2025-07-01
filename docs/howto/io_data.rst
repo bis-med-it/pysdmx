@@ -21,7 +21,7 @@ Reading
 -------
 The general reader allows to read SDMX data and metadata from various formats
 
-:ref:`IO Formats supported <io-formats-supported>`.
+:ref:`IO Formats supported <io-reader-formats-supported>`.
 
 It is recommended to use the general reader for all use cases,
 as it automatically detects the format of the file and uses the appropriate reader.
@@ -88,4 +88,96 @@ requires the data to be combined with the structures.
 Writing
 -------
 
-Work in progress.
+The general writer allows to write SDMX data to various formats
+
+:ref:`IO Formats supported <io-writer-formats-supported>`.
+
+It is recommended to use the :meth:`pysdmx.io.write_sdmx` for all use cases, despite we include specific writers for
+the supported formats.
+
+.. important::
+
+    To use the pysdmx.io data functionalities, you need to install the `pysdmx[data]` extra.
+
+    For SDMX-ML support, you also need to install the `pysdmx[xml]` extra.
+
+    Check the :ref:`installation guide <installation>` for more information.
+
+A typical example to write data from a Pandas Dataset to a file, using write_sdmx:
+
+.. code-block:: python
+
+    from pysdmx.io import write_sdmx
+    from pysdmx.io.pd import PandasDataset
+    from pathlib import Path
+
+    dataset = PandasDataset(...)
+
+    write_sdmx(
+        dataset,
+        output_path=Path(__file__).parent / "output.csv",
+        sdmx_format=Format.DATA_SDMX_CSV_2_0_0,
+    )
+
+Additional arguments are available for SDMX-ML to:
+
+- Pretty print the XML output (using the `prettyprint` argument).
+- Use a custom header (using the `header` argument).
+- Specify the dimension at observation level (using the `dimension_at_observation` argument). This is needed for Time Series
+  data formats.
+
+A typical example to write data in Time Series with a custom header:
+
+.. code-block:: python
+
+    from pysdmx.io import write_sdmx
+    from pysdmx.io.pd import PandasDataset
+    from pathlib import Path
+    from pysdmx.model import Organisation
+    from pysdmx.model.message import Header
+
+    dataset = PandasDataset(...)
+
+    header = Header(
+        id="TEST_MESSAGE",
+        test=True,
+        prepared=datetime.now(),
+        sender=Organisation(id="MD", name="MeaningfulData"),
+    )
+
+    write_sdmx(
+        dataset,
+        output_path=Path(__file__).parent / "output.xml",
+        sdmx_format=Format.DATA_SDMX_ML_3_0,
+        prettyprint=True,
+        header=header,
+        dimension_at_observation={"Dataflow=MD:TEST_DF(1.0)": "TIME_PERIOD"},
+    )
+
+
+
+Convert between formats
+-----------------------
+
+To convert SDMX Data messages between formats, you can combine the `get_datasets` and `write_sdmx` functions:
+
+.. code-block:: python
+
+    from pysdmx.io import get_datasets, write_sdmx
+    from pathlib import Path
+
+    # Read the data and structures SDMX-ML messages (any supported format can be used)
+    datasets = get_datasets("data.xml", "structures.xml")
+
+    # Write the data to SDMX-CSV 2.0
+    write_sdmx(
+        datasets=datasets,
+        sdmx_format=Format.DATA_SDMX_CSV_2_0_0,
+        output_path=Path(__file__).parent / f"output.csv",
+    )
+
+.. note::
+
+    The read_sdmx function can also be used here, but for SDMX-ML Time Series or Generic format,
+    it is more efficient to use get_datasets.
+

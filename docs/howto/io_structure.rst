@@ -1,9 +1,9 @@
-.. _structure-rw:
+.. _structure-io-tutorial:
 
 SDMX Structures IO operations
 =============================
 
-.. _structure-io-tutorial:
+.. _structure-io-reader-tutorial:
 
 Reading
 -------
@@ -38,7 +38,7 @@ You may download directly the structures from the FMR or the SDMX API:
 - :ref:`SDMX-REST tutorial <sdmx-rest>`
 
 
-.. _structure-writer-tutorial:
+.. _structure-io-writer-tutorial:
 
 Writing
 -------
