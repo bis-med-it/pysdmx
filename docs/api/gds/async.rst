@@ -14,6 +14,10 @@ in an asynchronous (i.e. non-blocking) fashion.
         print(gds_agencies)
     asyncio.run(main())
 
+.. important::
+    This client is designed to be used with Python's `asyncio` library.
+    Ensure you have an event loop running when using this client.
+
 The asynchronous client is recommended for asynchronous workflows based on `fastapi` or similar frameworks.
 
 .. code-block:: python
@@ -28,9 +32,6 @@ The asynchronous client is recommended for asynchronous workflows based on `fast
         agencies = await client.get_agencies(agency_id)
         return {"agencies": agencies}
 
-.. important::
-    This client is designed to be used with Python's `asyncio` library.
-    Ensure you have an event loop running when using this client.
 
 .. note::
     For more details over the connectors, check the :ref:`GDS Synchronous client <gds-sync>` documentation. The async client
