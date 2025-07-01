@@ -5,6 +5,7 @@ This is the client to be used for retrieving the GDS information
 in an asynchronous (i.e. non-blocking) fashion.
 
 .. code-block:: python
+
     import asyncio
     from pysdmx.api.gds import AsyncGdsClient
 
@@ -21,6 +22,7 @@ in an asynchronous (i.e. non-blocking) fashion.
 The asynchronous client is recommended for asynchronous workflows based on `fastapi` or similar frameworks.
 
 .. code-block:: python
+
     from fastapi import FastAPI
     from pysdmx.api.gds import AsyncGdsClient
 
@@ -31,7 +33,6 @@ The asynchronous client is recommended for asynchronous workflows based on `fast
         client = AsyncGdsClient()
         agencies = await client.get_agencies(agency_id)
         return {"agencies": agencies}
-
 
 .. note::
     For more details over the connectors, check the :ref:`GDS Synchronous client <gds-sync>` documentation. The async client
