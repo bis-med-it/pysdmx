@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Receiver id="Not_Supplied"/>
+		<mes:Source>PySDMX</mes:Source>
+	</mes:Header>
+	<mes:Structures>
+		<str:CustomTypeSchemes>
+			<str:CustomTypeScheme id="CTS1" urn="urn:sdmx:org.sdmx.infomodel.transformation.CustomTypeScheme=MD:CTS1(1.0)" version="1.0" isExternalReference="false" agencyID="MD" isPartial="false"  vtlVersion="2.0">
+				<com:Name xml:lang="en">Test Custom Type Scheme</com:Name>
+				<str:CustomType id="CT1" urn="urn:sdmx:org.sdmx.infomodel.transformation.CustomType=MD:CTS1(1.0).CT1">
+					<com:Name xml:lang="en">Test Custom Type</com:Name>
+					<str:VtlScalarType>Test_scalar_type</str:VtlScalarType>
+					<str:DataType>Test_data_type</str:DataType>
+					<str:VtlLiteralFormat>Test_output_format</str:VtlLiteralFormat>
+					<str:OutputFormat>Test_null_value</str:OutputFormat>
+					<str:NullValue>Test_literal_format</str:NullValue>
+				</str:CustomType>
+			</str:CustomTypeScheme>
+		</str:CustomTypeSchemes>
+	</mes:Structures>
+</mes:Structure>

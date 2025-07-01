@@ -5,7 +5,7 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.io.xml.sdmx21.__tokens import (
+from pysdmx.io.xml.__tokens import (
     AGENCIES,
     AGENCY,
     AGENCY_ID,
@@ -22,6 +22,7 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     ATT_LIST,
     ATT_LVL,
     ATT_REL,
+    ATTACH_GROUP,
     CL,
     CL_LOW,
     CLASS,
@@ -299,6 +300,7 @@ class StructureParser(Struct):
     name_personalisations: Dict[str, NamePersonalisationScheme] = {}
     custom_types: Dict[str, CustomTypeScheme] = {}
     transformations: Dict[str, TransformationScheme] = {}
+    is_sdmx_30: bool = False
 
     def __format_contact(self, json_contact: Dict[str, Any]) -> Contact:
         """Creates a Contact object from a json_contact.
@@ -474,12 +476,10 @@ class StructureParser(Struct):
             if isinstance(ref, dict) and "URN" in ref:
                 codelist = find_by_urn(
                     list(self.codelists.values()), ref["URN"]
-                ).codes
+                )
 
             elif isinstance(ref, Reference):
-                codelist = find_by_urn(
-                    list(self.codelists.values()), str(ref)
-                ).codes
+                codelist = find_by_urn(list(self.codelists.values()), str(ref))
             else:
                 short_urn = str(
                     Reference(
@@ -551,22 +551,30 @@ class StructureParser(Struct):
         return rep
 
     @staticmethod
-    def __format_relationship(json_rel: Dict[str, Any]) -> Optional[str]:
-        att_level = None
-
-        for scheme in [DIM, PRIM_MEASURE, MEASURE, DFW, OBSERVATION]:
-            if scheme in json_rel:
-                if scheme == DIM:
-                    dims = add_list(json_rel[DIM])
-                    if dims and isinstance(dims[0], dict):
-                        dims = [dim[REF][ID] for dim in dims]
-                    att_level = ",".join(dims)
-                elif scheme == DFW:
-                    att_level = "D"
-                elif scheme == OBSERVATION:
-                    att_level = "O"
-                else:
-                    att_level = "O"
+    def __get_attachment_level(attribute: Dict[str, Any]) -> str:
+        if DIM in attribute:
+            dims = add_list(attribute[DIM])
+            if dims and isinstance(dims[0], dict):
+                dims = [dim[REF][ID] for dim in dims]
+            att_level = ",".join(dims)
+            # AttachmentGroup can only appear as sequence of the Dimension,
+            # therefore we need to check first if a Dimension is present,
+            # then the AttachmentGroup
+            if ATTACH_GROUP in attribute:
+                raise NotImplementedError(
+                    "Attribute relationships with Dimension "
+                    "and AttachmentGroup is not supported."
+                )
+        elif GROUP in attribute:
+            raise NotImplementedError(
+                "Attribute relationships with Group is not supported."
+            )
+        elif OBSERVATION in attribute or PRIM_MEASURE in attribute:
+            att_level = "O"
+        else:
+            # For None (SDMX-2.1) or Dataflow (SDMX-3.0), attribute is
+            # related to Dataset/Dataflow
+            att_level = "D"
 
         return att_level
 
@@ -692,7 +700,7 @@ class StructureParser(Struct):
 
         # Attribute Handling
         if ATT_REL in comp:
-            comp[ATT_LVL] = self.__format_relationship(comp[ATT_REL])
+            comp[ATT_LVL] = self.__get_attachment_level(comp[ATT_REL])
             del comp[ATT_REL]
 
         if ME_REL in comp:
@@ -733,7 +741,10 @@ class StructureParser(Struct):
         element[role_name] = add_list(element[role_name])
 
         for comp in element[role_name]:
-            formatted_comp = self.__format_component(comp, role)
+            formatted_comp = self.__format_component(
+                comp,
+                role,
+            )
             comp_list.append(formatted_comp)
 
         return comp_list
@@ -881,6 +892,18 @@ class StructureParser(Struct):
 
         return ITEMS_CLASSES[item_name_class](**item_json_info)
 
+    def __format_is_final_30(
+        self, json_elem: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        if self.is_sdmx_30:
+            # Default version value is 1.0, in SDMX-ML 3.0 we need to set
+            # is_final as True if the version does not have an EXTENSION
+            # (see Technical Notes SDMX 3.0)
+            json_elem[IS_FINAL_LOW] = (
+                "-" not in json_elem[VERSION] if VERSION in json_elem else True
+            )
+        return json_elem
+
     def __format_scheme(
         self, json_elem: Dict[str, Any], scheme: str, item: str
     ) -> Dict[str, ItemScheme]:
@@ -918,6 +941,7 @@ class StructureParser(Struct):
             # Dynamic creation with specific class
             if scheme == VALUE_LIST:
                 element["sdmx_type"] = "valuelist"
+            element = self.__format_is_final_30(element)
             result: ItemScheme = STRUCTURES_MAPPING[scheme](**element)
             elements[result.short_urn] = result
 
@@ -992,6 +1016,7 @@ class StructureParser(Struct):
                     structure[COMPS] = Components(structure[COMPS])
                 else:
                     structure[COMPS] = Components([])
+            structure = self.__format_is_final_30(structure)
             schemas[short_urn] = STRUCTURES_MAPPING[schema](**structure)
 
         return schemas

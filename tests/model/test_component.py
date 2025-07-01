@@ -252,3 +252,18 @@ def test_invalid_role_attachment_level(concept):
             role=Role.DIMENSION,
             attachment_level="X",
         )
+
+
+def test_attachment_level_mandatory(concept):
+    with pytest.raises(
+        Invalid,
+        match="The attachment_level field is mandatory "
+        "for attribute components",
+    ):
+        Component(
+            "FREQ",
+            True,
+            concept=concept,
+            role=Role.ATTRIBUTE,
+            attachment_level=None,
+        )

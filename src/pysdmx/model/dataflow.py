@@ -122,11 +122,12 @@ class Component(
         description: Additional descriptive information about the component.
         local_codes: The expected local values for the component (e.g. currency
             codes).
-        attachment_level: The attachement level (if role = A only).
+        attachment_level: The attachment level (if role = A only).
             Attributes can be attached at different levels such as
             D (for dataset-level attributes), O (for observation-level
             attributes) or a combination of dimension IDs, separated by
             commas, for series- and group-level attributes).
+            A post_init check makes this attribute mandatory for attributes.
         array_def: Any additional constraints for array types.
     """
 
@@ -152,6 +153,12 @@ class Component(
                     "The attachment_level field is "
                     "only allowed for attribute components"
                 ),
+            )
+        if self.role == Role.ATTRIBUTE and self.attachment_level is None:
+            raise Invalid(
+                "Validation Error",
+                "The attachment_level field is mandatory "
+                "for attribute components",
             )
 
     @property
