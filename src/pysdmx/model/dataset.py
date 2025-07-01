@@ -10,9 +10,15 @@ from pysdmx.model import Schema
 
 
 class ActionType(Enum):
-    """ActionType enumeration.
+    """Enumeration that defines the Dataset Action.
 
-    Enumeration that withholds the Action type for writing purposes.
+    Arguments:
+        Append: Append data to an existing dataset.
+        Replace: Replace the existing dataset with new data.
+        Delete: Delete the data provided from the data source.
+        Information: Provide information about the dataset
+          without modifying it.
+
     """
 
     Append = "Append"
@@ -76,7 +82,8 @@ class Dataset(Struct, frozen=False, repr_omit_defaults=True, kw_only=True):
         structure: The structure referenced from a dataset,
           which can be a string (short_urn) or a Schema object.
         attributes: dictionary of attributes at dataset level, with its values.
-        action: The action type for the dataset, default is Information.
+        action: Defines the :class:`Action <pysdmx.model.dataset.ActionType>`
+          of the dataset, default is ActionType.Information.
         reporting_begin: The start date for reporting, if applicable.
         reporting_end: The end date for reporting, if applicable.
         data_extraction_date: The date when the data was extracted.

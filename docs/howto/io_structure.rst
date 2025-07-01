@@ -11,6 +11,12 @@ Reading
 In this tutorial, we learn how to read SDMX Structures messages using the
 ``pysdmx.io`` module.
 
+.. important::
+
+    For SDMX-ML support, you also to install the `pysdmx[xml]` extra.
+
+    Check the :ref:`installation guide <installation>` for more information.
+
 ``pysdmx`` provides the :ref:`read_sdmx <read-sdmx>` function, which allows reading SDMX Structures messages
 from various sources, such as files or URLs.
 
@@ -43,7 +49,62 @@ You may download directly the structures from the FMR or the SDMX API:
 Writing
 -------
 
-Work in progress.
+The general writer allows to write SDMX data to various formats
+
+:ref:`IO Formats supported <io-writer-formats-supported>`.
+
+It is recommended to use the :ref:`write_sdmx <write-sdmx>` method for all use cases,
+despite we include specific writers for the supported formats.
+
+.. important::
+
+    For SDMX-ML support, you also to install the `pysdmx[xml]` extra.
+
+    Check the :ref:`installation guide <installation>` for more information.
+
+A typical example to write structures:
+
+.. code-block:: python
+
+    from pysdmx.io import write_sdmx
+    from pysdmx.model import DataStructureDefinition
+    from pathlib import Path
+
+    dsd = DataStructureDefinition(...)
+
+    write_sdmx(
+        dsd,
+        output_path=Path(__file__).parent / "output.xml",
+        sdmx_format=Format.STRUCTURE_SDMX_ML_3_0,
+    )
+
+
+Additional arguments are available for SDMX-ML to:
+
+- Pretty print the XML output (using the `prettyprint` argument).
+- Use a custom :class:`Header <pysdmx.model.message.Header>` (using the `header` argument).
+
+.. code-block:: python
+
+    from pysdmx.io import write_sdmx
+    from pysdmx.model import DataStructureDefinition, Header
+    from pathlib import Path
+
+    dsd = DataStructureDefinition(...)
+        header = Header(
+        id="TEST_MESSAGE",
+        test=True,
+        prepared=datetime.now(),
+        sender=Organisation(id="MD", name="MeaningfulData"),
+    )
+
+    write_sdmx(
+        dsd,
+        output_path=Path(__file__).parent / "output.xml",
+        sdmx_format=Format.DATA_SDMX_ML_3_0,
+        prettyprint=True,
+        header=header,
+    )
 
 .. _structure-io-convert-tutorial:
 
@@ -57,12 +118,12 @@ To convert SDMX Structure messages between formats, you can combine the `read_sd
     from pysdmx.io import read_sdmx, write_sdmx
     from pathlib import Path
 
-    # Read the SDMX-ML 2.1 Structure message (any supported format can be used)
-    datasets = read_sdmx("structures.xml")
+    # Read the SDMX Structure message (any supported format can be used)
+    message = read_sdmx("structures.xml")
 
     # Write the structures to a different format, e.g., SDMX-ML 3.0
     write_sdmx(
-        datasets=datasets,
+        message.structures,
         sdmx_format=Format.STRUCTURE_SDMX_ML_3_0,
         output_path="output.xml",
     )

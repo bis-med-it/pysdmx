@@ -37,8 +37,13 @@ def write_sdmx(
     See the :ref:`formats available <io-writer-formats-supported>`
 
     .. important::
-        For data formats, the pysdmx[data] extra is required.
-        For SDMX-ML formats, the pysdmx[xml] extra is required.
+        To use the pysdmx.io data functionalities, you need to
+        install the `pysdmx[data]` extra.
+
+        For SDMX-ML support, you also need to install the `pysdmx[xml]` extra.
+
+        Check the :ref:`installation guide <installation>`
+        for more information.
 
     .. important::
         To write SDMX-ML Generic or Series messages, the PandasDataset

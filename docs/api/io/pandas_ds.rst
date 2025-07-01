@@ -1,3 +1,5 @@
+.. _pandas-ds:
+
 Pandas Dataset
 ==============
 

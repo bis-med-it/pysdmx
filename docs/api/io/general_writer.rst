@@ -32,6 +32,23 @@ List of formats and versions supported by the general writer:
 Write SDMX
 ----------
 
-This method allows you to write any SDMX message, regardless of the format or version as long as it is supported.
+Serializes any SDMX object to a file or returns it as a string.
+
+Examples of SDMX objects:
+
+- :ref:`PandasDataset <pandas-ds>`
+- MaintainableArtefacts (e.g. :class:`Codelist <pysdmx.model.code.Codelist>` ,
+  :class:`DataStructureDefinition <pysdmx.model.dataflow.DataStructureDefinition>`,
+  :class:`ConceptScheme <pysdmx.model.concept.ConceptScheme>`, etc.)
+
+.. warning::
+
+    Currently, the general writer is able to write one by one the objects, but it cannot access to the referenced objects
+    (i.e we do not write the children/descendants of an object, we generate its references only even if the
+    actual object is present). You may write the referenced objects by adding them as parameters to the
+    write_sdmx function, as if you were writing them individually in the same SDMX Message.
+
+    In a following release, we will add support for writing the referenced objects (if already present) or
+    download them automatically.
 
 .. autofunction:: pysdmx.io.write_sdmx

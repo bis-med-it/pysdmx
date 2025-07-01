@@ -1,3 +1,8 @@
+ActionType
+==========
+
+.. autoclass:: pysdmx.model.dataset.ActionType
+
 Dataset
 =======
 
