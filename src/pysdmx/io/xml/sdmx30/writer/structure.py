@@ -4,7 +4,7 @@ from typing import Dict, Optional, Sequence
 
 from pysdmx.io.format import Format
 from pysdmx.io.xml.__structure_aux_writer import (
-    STR_DICT_TYPE_LIST_21,
+    STR_DICT_TYPE_LIST_30,
     STR_TYPES,
     __write_structures,
 )
@@ -17,7 +17,7 @@ from pysdmx.model.message import Header
 
 
 def write(
-    structures: Sequence[MaintainableArtefact],
+    structures: Sequence[STR_TYPES],
     output_path: str = "",
     prettyprint: bool = True,
     header: Optional[Header] = None,
@@ -33,14 +33,14 @@ def write(
     Returns:
         The XML string if output_path is empty, None otherwise
     """
-    type_ = Format.STRUCTURE_SDMX_ML_2_1
+    type_ = Format.STRUCTURE_SDMX_ML_3_0
     elements = {structure.short_urn: structure for structure in structures}
     if header is None:
         header = Header()
 
-    content: Dict[str, Dict[str, MaintainableArtefact]] = {}
+    content: Dict[str, Dict[str, STR_TYPES]] = {}
     for urn, element in elements.items():
-        list_ = STR_DICT_TYPE_LIST_21[type(element)]
+        list_ = STR_DICT_TYPE_LIST_30[type(element)]
         if list_ not in content:
             content[list_] = {}
         content[list_][urn] = element
@@ -50,7 +50,7 @@ def write(
     # Generating the header
     outfile += __write_header(header, prettyprint, data_message=False)
     # Writing the content
-    outfile += __write_structures(content, prettyprint)
+    outfile += __write_structures(content, prettyprint, references_30=True)
 
     outfile += get_end_message(type_, prettyprint)
 
