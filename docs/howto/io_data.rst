@@ -103,6 +103,11 @@ the supported formats.
 
     Check the :ref:`installation guide <installation>` for more information.
 
+.. important::
+
+    To write SDMX-ML Generic or Series messages, the PandasDataset requires to have its structure
+    defined as a :class:`Schema object <pysdmx.model.dataflow.Schema>`.
+
 A typical example to write data from a Pandas Dataset to a file, using write_sdmx:
 
 .. code-block:: python
@@ -119,24 +124,35 @@ A typical example to write data from a Pandas Dataset to a file, using write_sdm
         sdmx_format=Format.DATA_SDMX_CSV_2_0_0,
     )
 
+
 Additional arguments are available for SDMX-ML to:
 
 - Pretty print the XML output (using the `prettyprint` argument).
-- Use a custom header (using the `header` argument).
+- Use a custom :class:`Header <pysdmx.model.message.Header>` (using the `header` argument).
 - Specify the dimension at observation level (using the `dimension_at_observation` argument). This is needed for Time Series
   data formats.
 
+
 A typical example to write data in Time Series with a custom header (pretty printed):
+
+.. note::
+
+    The dataset.structure defined as a Schema is needed for SDMX-ML Generic or Series messages.
+    We include here a simple example on how to create a Schema object from a DataStructureDefinition.
+    The DataStructureDefinition can be extracted from a SDMX Structures message, the FMR or created manually. See the
+    :ref:`Structures IO tutorial <structure-io-tutorial>` for more information.
 
 .. code-block:: python
 
     from pysdmx.io import write_sdmx
     from pysdmx.io.pd import PandasDataset
     from pathlib import Path
-    from pysdmx.model import Organisation
+    from pysdmx.model import Organisation, DataStructureDefinition
     from pysdmx.model.message import Header
 
-    dataset = PandasDataset(...)
+    dsd = DataStructureDefinition(...)
+
+    dataset = PandasDataset(..., structure=dsd.to_schema())
 
     header = Header(
         id="TEST_MESSAGE",

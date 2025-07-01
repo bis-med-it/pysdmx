@@ -40,6 +40,10 @@ def write_sdmx(
         For data formats, the pysdmx[data] extra is required.
         For SDMX-ML formats, the pysdmx[xml] extra is required.
 
+    .. important::
+        To write SDMX-ML Generic or Series messages, the PandasDataset requires to have its structure
+        defined as a :class:`Schema <pysdmx.model.dataflow.Schema>`.
+
     Args:
         sdmx_objects: Model objects to write, including PandasDataset,
             DataStructure, Dataflow, ConceptScheme, etc.
@@ -50,9 +54,14 @@ def write_sdmx(
     Keyword Args:
         prettyprint: Whether to pretty-print the output (default: True)
           (only for SDMX-ML).
-        header: Optional header to include in the output. (only for SDMX-ML)
+        header: Custom :class:`Header <pysdmx.model.message.Header>` to include in the SDMX Message.
+          (only for SDMX-ML)
         dimension_at_observation: Mapping for dimension at observation
-          (only for SDMX-ML Data formats).
+          (only for SDMX-ML Data formats). This is a dictionary where the keys
+          are short URNs and the values are the dimension IDs that should
+          be used as the dimension at observation for that structure in the output. For example,
+          ``{"Dataflow=MD:TEST_MD(1.0)": "TIME_PERIOD"}``. Overrides the header.structure
+          (if a custom header is provided).
 
     Returns:
         A serialised string if output_path is an empty string, otherwise None.

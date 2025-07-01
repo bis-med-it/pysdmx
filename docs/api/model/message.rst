@@ -1,5 +1,11 @@
 .. _message:
 
+Header
+=======
+
+.. autoclass:: pysdmx.model.message.Header
+    :members:
+
 Structure Message
 =================
 

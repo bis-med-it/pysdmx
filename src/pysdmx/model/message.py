@@ -48,7 +48,23 @@ from pysdmx.model.vtl import (
 
 
 class Header(Struct, repr_omit_defaults=True, kw_only=True):
-    """Header for the SDMX messages."""
+    """Header for the SDMX messages.
+
+    Represents the Header of an SDMX message, containing metadata about the
+    message such as the sender, receiver, and other relevant information.
+
+    Attributes:
+        id: Unique identifier for the message. (default: generated UUID)
+        test: Indicates if the message is a test message. (default: False)
+        prepared: Timestamp when the message was prepared. (default: current UTC time)
+        sender: Organisation that sent the message. (default: Organisation with id "ZZZ")
+        receiver: Optional Organisation that received the message. (default: None)
+        source: Optional source of the message. (default: None)
+        dataset_action: Optional action for the dataset (only for SDMX Data messages). (default: None)
+        structure: Dimension at observation mapping (dict with short URN as key and Dimension ID as value)
+          (only for SDMX Data Messages) (Overridden by dimension_at_observation argument in writers). (default: None)
+        dataset_id: DatasetID defined at SDMX-ML (only for SDMX-ML Data messages). (default: None)
+    """
 
     id: str = str(uuid.uuid4())
     test: bool = False
