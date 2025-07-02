@@ -7,7 +7,7 @@ from typing import Any, Optional, Sequence
 
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
-from pysdmx.io.pd import PandasDataset
+from pysdmx.model.dataset import Dataset
 
 WRITERS = {
     Format.DATA_SDMX_CSV_1_0_0: "pysdmx.io.csv.sdmx10.writer",
@@ -97,16 +97,16 @@ def write_sdmx(
     key = "structures" if is_structure else "datasets"
     value = sdmx_objects if isinstance(sdmx_objects, list) else [sdmx_objects]
 
-    if is_structure and any(isinstance(x, PandasDataset) for x in value):
+    if is_structure and any(isinstance(x, Dataset) for x in value):
         raise Invalid(
-            "PandasDataset cannot be written to structure formats. "
+            "Datasets cannot be written to structure formats. "
             "Use data formats instead."
         )
     elif not is_structure and not all(
-        isinstance(x, PandasDataset) for x in value
+        isinstance(x, Dataset) for x in value
     ):
         raise Invalid(
-            "Only PandasDataset can be written to data formats. "
+            "Only Datasets can be written to data formats. "
             "Use structure formats for other SDMX objects."
         )
 
