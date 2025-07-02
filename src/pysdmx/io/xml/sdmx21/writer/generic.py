@@ -302,8 +302,10 @@ def __group_processing(
 
         # Attributes block
         out_element += f"{child2}\t<{ABBR_GEN}:Attributes>{nl}"
-        out_element += f"{child2}\t\t{__value(
-            attribute, data_info.get(attribute, ''))}{nl}"
+        out_element += (
+            f"{child2}\t\t{__value(attribute, data_info.get(attribute, ''))}"
+            f"{nl}"
+        )
         out_element += f"{child2}\t</{ABBR_GEN}:Attributes>{nl}"
 
         out_element += f"{child2}</{ABBR_GEN}:Group>{nl}"
