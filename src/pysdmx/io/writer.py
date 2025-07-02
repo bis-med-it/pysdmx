@@ -102,9 +102,7 @@ def write_sdmx(
             "Datasets cannot be written to structure formats. "
             "Use data formats instead."
         )
-    elif not is_structure and not all(
-        isinstance(x, Dataset) for x in value
-    ):
+    elif not is_structure and not all(isinstance(x, Dataset) for x in value):
         raise Invalid(
             "Only Datasets can be written to data formats. "
             "Use structure formats for other SDMX objects."
