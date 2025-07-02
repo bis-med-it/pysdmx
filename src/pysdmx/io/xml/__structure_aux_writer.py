@@ -411,8 +411,9 @@ def __write_groups(
                     f"{add_indent(add_indent(indent))}"
                     f"<{ABBR_STR}:{DIM_REF}>"
                     f"{add_indent(add_indent(add_indent(indent)))}"
+                    f"<{REF} {ID}={dimension!r}/>"
                     f"{add_indent(add_indent(indent))}"
-                    f"{dimension}</{ABBR_STR}:{DIM_REF}>"
+                    f"</{ABBR_STR}:{DIM_REF}>"
                     f"{add_indent(add_indent(indent))}</{ABBR_STR}:{GROUP_DIM}>"
                 )
 

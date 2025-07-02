@@ -4093,53 +4093,53 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 					<str:Group urn="urn:sdmx:org.sdmx.infomodel.datastructure.GroupDimensionDescriptor=BIS:BIS_CBS(1.0).Sibling" id="Sibling">
 						<str:GroupDimension>
 							<str:DimensionReference>
-								
-							L_MEASURE</str:DimensionReference>
+								<Ref id="L_MEASURE"/>
+							</str:DimensionReference>
 							</str:GroupDimension>
 						<str:GroupDimension>
 							<str:DimensionReference>
-								
-							L_REP_CTY</str:DimensionReference>
+								<Ref id="L_REP_CTY"/>
+							</str:DimensionReference>
 							</str:GroupDimension>
 						<str:GroupDimension>
 							<str:DimensionReference>
-								
-							CBS_BANK_TYPE</str:DimensionReference>
+								<Ref id="CBS_BANK_TYPE"/>
+							</str:DimensionReference>
 							</str:GroupDimension>
 						<str:GroupDimension>
 							<str:DimensionReference>
-								
-							CBS_BASIS</str:DimensionReference>
+								<Ref id="CBS_BASIS"/>
+							</str:DimensionReference>
 							</str:GroupDimension>
 						<str:GroupDimension>
 							<str:DimensionReference>
-								
-							L_POSITION</str:DimensionReference>
+								<Ref id="L_POSITION"/>
+							</str:DimensionReference>
 							</str:GroupDimension>
 						<str:GroupDimension>
 							<str:DimensionReference>
-								
-							L_INSTR</str:DimensionReference>
+								<Ref id="L_INSTR"/>
+							</str:DimensionReference>
 							</str:GroupDimension>
 						<str:GroupDimension>
 							<str:DimensionReference>
-								
-							REM_MATURITY</str:DimensionReference>
+								<Ref id="REM_MATURITY"/>
+							</str:DimensionReference>
 							</str:GroupDimension>
 						<str:GroupDimension>
 							<str:DimensionReference>
-								
-							CURR_TYPE_BOOK</str:DimensionReference>
+								<Ref id="CURR_TYPE_BOOK"/>
+							</str:DimensionReference>
 							</str:GroupDimension>
 						<str:GroupDimension>
 							<str:DimensionReference>
-								
-							L_CP_SECTOR</str:DimensionReference>
+								<Ref id="L_CP_SECTOR"/>
+							</str:DimensionReference>
 							</str:GroupDimension>
 						<str:GroupDimension>
 							<str:DimensionReference>
-								
-							L_CP_COUNTRY</str:DimensionReference>
+								<Ref id="L_CP_COUNTRY"/>
+							</str:DimensionReference>
 							</str:GroupDimension>
 					</str:Group>
 					<str:AttributeList>
