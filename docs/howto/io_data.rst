@@ -187,8 +187,8 @@ To convert SDMX Data messages between formats, you can combine the `get_datasets
 
     # Write the data to SDMX-CSV 2.0
     write_sdmx(
-        datasets=datasets,
+        sdmx_objects=datasets,
         sdmx_format=Format.DATA_SDMX_CSV_2_0_0,
-        output_path=Path(__file__).parent / f"output.csv",
+        output_path="output.csv",
     )
 
