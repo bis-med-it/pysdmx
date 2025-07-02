@@ -3,10 +3,15 @@
 Generate a TransformationScheme from VTL Script
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In this tutorial, we shall examine the use of ``vtlengine``
-for the generation of VTL objects from a VTL script.
+In this tutorial, we will generate pysdmx VTL objects from a VTL script using the `vtlengine` library.
 
-Firstly, we generate a VTL Script as a String.
+.. important::
+
+    For this tutorial, you also need to install the `pysdmx[vtl]` extra.
+
+    Check the :ref:`installation guide <installation>` for more information.
+
+Firstly, we generate a VTL Script as a String, or read it from a file.
 
 .. code-block:: python
 
@@ -19,10 +24,10 @@ Firstly, we generate a VTL Script as a String.
     define datapoint ruleset signValidation
             (variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM as IAI,
                 FUNCTIONAL_CAT as FC, INSTR_ASSET as IA, OBS_VALUE as O)
-                is
+            is
                 sign1c: when AE = "C" and IAI = "G" then O > 0 errorcode
                 "sign1c" errorlevel 1
-                end datapoint ruleset;
+            end datapoint ruleset;
     define operator filter_ds
             (ds1 dataset, great_cons string default "1",
              less_cons number default 4.0)
@@ -30,7 +35,7 @@ Firstly, we generate a VTL Script as a String.
             is ds1[filter Me_1 > great_cons and Me_2 < less_cons]
             end operator;
     DS_r <- DS_1 + 1;
-                    """
+    """
 
 Secondly, to generate a :class:`Transformation Scheme <pysdmx.model.vtl.TransformationScheme>` object,
 we use the `generate_sdmx <https://docs.vtlengine.meaningfuldata.eu/api.html#vtlengine.generate_sdmx>`_

@@ -113,14 +113,15 @@ A typical example to write data from a Pandas Dataset to a file, using write_sdm
 .. code-block:: python
 
     from pysdmx.io import write_sdmx
+    from pysdmx.io.format import Format
     from pysdmx.io.pd import PandasDataset
-    from pathlib import Path
 
-    dataset = PandasDataset(...)
+    # Replace with actual structure and data
+    dataset = PandasDataset(structure=..., data=...)
 
     write_sdmx(
         dataset,
-        output_path=Path(__file__).parent / "output.csv",
+        output_path="output.csv",
         sdmx_format=Format.DATA_SDMX_CSV_2_0_0,
     )
 
@@ -144,15 +145,19 @@ A typical example to write data in Time Series with a custom header (pretty prin
 
 .. code-block:: python
 
+    from datetime import datetime
+
     from pysdmx.io import write_sdmx
+    from pysdmx.io.format import Format
     from pysdmx.io.pd import PandasDataset
-    from pathlib import Path
     from pysdmx.model import Organisation, DataStructureDefinition
     from pysdmx.model.message import Header
 
-    dsd = DataStructureDefinition(...)
+    dsd = DataStructureDefinition(id=...,
+                                  name=...,
+                                  components=...)
 
-    dataset = PandasDataset(..., structure=dsd.to_schema())
+    dataset = PandasDataset(data=..., structure=dsd.to_schema())
 
     header = Header(
         id="TEST_MESSAGE",
@@ -163,7 +168,7 @@ A typical example to write data in Time Series with a custom header (pretty prin
 
     write_sdmx(
         dataset,
-        output_path=Path(__file__).parent / "output.xml",
+        output_path="output.xml",
         sdmx_format=Format.DATA_SDMX_ML_3_0,
         prettyprint=True,
         header=header,
@@ -181,6 +186,7 @@ To convert SDMX Data messages between formats, you can combine the `get_datasets
 
     from pysdmx.io import get_datasets, write_sdmx
     from pathlib import Path
+    from pysdmx.io.format import Format
 
     # Read the data and structures SDMX-ML messages (any supported format can be used)
     datasets = get_datasets("data.xml", "structures.xml")

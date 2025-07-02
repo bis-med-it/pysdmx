@@ -103,6 +103,8 @@ Optionally, we can also create the Transformation Scheme and VTL Mapping objects
 
 .. code-block:: python
 
+    from pysdmx.model import VtlDataflowMapping, DataflowRef, VtlMappingScheme, TransformationScheme, Transformation
+
     # Mapping using VTLDataflowMapping object:
     dataflow_mapping = VtlDataflowMapping(
         dataflow=DataflowRef(agency="MD", id="TEST_DF", version="1.0"),

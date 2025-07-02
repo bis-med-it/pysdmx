@@ -22,19 +22,15 @@ from various sources, such as files or URLs.
 
 .. code-block:: python
 
-   from pysdmx.io import read_sdmx
-   from pathlib import Path
+    from pysdmx.io import read_sdmx
+    from pathlib import Path
+
     # Read file from the same folder as this code
     file_path = Path(__file__).parent / "structure.xml"
 
-    message = read_sdmx(filepath, validate=True)
-
-Once the file is read, you can access the structures:
-
-.. code-block:: python
-
-   # Access the structures of the SDMX Structures message
-   structures = message.structures
+    message = read_sdmx(file_path)
+    # Access the structures of the SDMX Structures message
+    structures = message.structures
 
 Check the :ref:`Message <message>` documentation for all the available methods.
 
@@ -67,14 +63,14 @@ A typical example to write structures:
 .. code-block:: python
 
     from pysdmx.io import write_sdmx
+    from pysdmx.io.format import Format
     from pysdmx.model import DataStructureDefinition
-    from pathlib import Path
 
-    dsd = DataStructureDefinition(...)
+    dsd = DataStructureDefinition(id=..., name=..., components=...)
 
     write_sdmx(
         dsd,
-        output_path=Path(__file__).parent / "output.xml",
+        output_path="output.xml",
         sdmx_format=Format.STRUCTURE_SDMX_ML_3_0,
     )
 
@@ -86,12 +82,16 @@ Additional arguments are available for SDMX-ML to:
 
 .. code-block:: python
 
-    from pysdmx.io import write_sdmx
-    from pysdmx.model import DataStructureDefinition, Header
-    from pathlib import Path
+    from datetime import datetime
 
-    dsd = DataStructureDefinition(...)
-        header = Header(
+    from pysdmx.io import write_sdmx
+    from pysdmx.io.format import Format
+    from pysdmx.model import DataStructureDefinition, Organisation
+
+    from pysdmx.model.message import Header
+
+    dsd = DataStructureDefinition(id=..., name=..., components=...)
+    header = Header(
         id="TEST_MESSAGE",
         test=True,
         prepared=datetime.now(),
@@ -100,7 +100,7 @@ Additional arguments are available for SDMX-ML to:
 
     write_sdmx(
         dsd,
-        output_path=Path(__file__).parent / "output.xml",
+        output_path="output.xml",
         sdmx_format=Format.DATA_SDMX_ML_3_0,
         prettyprint=True,
         header=header,
