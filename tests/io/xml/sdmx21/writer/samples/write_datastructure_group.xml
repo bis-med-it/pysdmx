@@ -43,7 +43,7 @@
 				</str:Agency>
 				<str:Agency id="UIS" urn="urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).UIS">
 					<com:Name xml:lang="en">UNESCO Institute for Statistics (UIS)</com:Name>
-					<com:Description xml:lang="en">The UNESCO Institute for Statistics (UIS) is the statistical office of the United Nations Educational, Scientific and Cultural Organization (UNESCO). The Institute produces the data and methodologies to monitor trends at national and international levels. It delivers comparative data for countries at all stages of development to provide a global perspective on education, science and technology, culture, and communication. The UIS is the official source for the indicators needed to achieve SDG 4â€“Education 2030 and key targets in science and innovation, culture and communication.</com:Description>
+					<com:Description xml:lang="en">The UNESCO Institute for Statistics (UIS) is the statistical office of the United Nations Educational, Scientific and Cultural Organization (UNESCO). The Institute produces the data and methodologies to monitor trends at national and international levels. It delivers comparative data for countries at all stages of development to provide a global perspective on education, science and technology, culture, and communication. The UIS is the official source for the indicators needed to achieve SDG 4–Education 2030 and key targets in science and innovation, culture and communication.</com:Description>
 					<str:Contact>
 						<com:Name>UNESCO Institute for Statistics (UIS)</com:Name>
 						<str:Department>UNESCO Institute for Statistics (UIS)</str:Department>
@@ -97,7 +97,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 					</str:Contact>
 				</str:Agency>
 				<str:Agency id="GW_INE" urn="urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).GW_INE">
-					<com:Name xml:lang="en">National Statistical Institute of Guinea-Bissau - Instituto Nacional de EstatÃ­stica da GuinÃ©-Bissau (INE)</com:Name>
+					<com:Name xml:lang="en">National Statistical Institute of Guinea-Bissau - Instituto Nacional de Estatística da Guiné-Bissau (INE)</com:Name>
 				</str:Agency>
 				<str:Agency id="BT_NSB" urn="urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).BT_NSB">
 					<com:Name xml:lang="en">Bhutan National Statistics Bureau (NSB)</com:Name>
@@ -802,7 +802,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 					<com:Name xml:lang="en">Switzerland</com:Name>
 				</str:Code>
 				<str:Code id="CI" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CI">
-					<com:Name xml:lang="en">CÃ´te d'Ivoire</com:Name>
+					<com:Name xml:lang="en">Côte d'Ivoire</com:Name>
 				</str:Code>
 				<str:Code id="CK" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CK">
 					<com:Name xml:lang="en">Cook Islands</com:Name>
@@ -835,7 +835,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 					<com:Name xml:lang="en">Cabo Verde</com:Name>
 				</str:Code>
 				<str:Code id="CW" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CW">
-					<com:Name xml:lang="en">CuraÃ§ao</com:Name>
+					<com:Name xml:lang="en">Curaçao</com:Name>
 				</str:Code>
 				<str:Code id="CX" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).CX">
 					<com:Name xml:lang="en">Christmas Island</com:Name>
@@ -1357,7 +1357,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 					<com:Name xml:lang="en">South Sudan</com:Name>
 				</str:Code>
 				<str:Code id="ST" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).ST">
-					<com:Name xml:lang="en">SÃ£o TomÃ© and PrÃ­ncipe</com:Name>
+					<com:Name xml:lang="en">São Tomé and Príncipe</com:Name>
 				</str:Code>
 				<str:Code id="SU" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).SU">
 					<com:Name xml:lang="en">USSR (Soviet Union)</com:Name>
@@ -1411,7 +1411,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 					<com:Name xml:lang="en">East Timor</com:Name>
 				</str:Code>
 				<str:Code id="TR" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TR">
-					<com:Name xml:lang="en">TÃ¼rkiye</com:Name>
+					<com:Name xml:lang="en">Türkiye</com:Name>
 				</str:Code>
 				<str:Code id="TT" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).TT">
 					<com:Name xml:lang="en">Trinidad and Tobago</com:Name>
@@ -1526,11 +1526,11 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 				<com:Name xml:lang="en">CBS basis</com:Name>
 				<str:Code id="F" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CBS_BASIS(1.0).F">
 					<com:Name xml:lang="en">Immediate counterparty basis</com:Name>
-					<com:Description xml:lang="en">Methodology whereby positions are allocated to the primary party to a contract. InÂ the CBS, claims on an immediate counterparty basis are allocated to the country andÂ sector of the entity to which the funds were lent.</com:Description>
+					<com:Description xml:lang="en">Methodology whereby positions are allocated to the primary party to a contract. In the CBS, claims on an immediate counterparty basis are allocated to the country and sector of the entity to which the funds were lent.</com:Description>
 				</str:Code>
 				<str:Code id="O" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CBS_BASIS(1.0).O">
 					<com:Name xml:lang="en">Outward risk transfers</com:Name>
-					<com:Description xml:lang="en">Outward risk transfers reallocate claims out of the country of theÂ immediate counterparty.</com:Description>
+					<com:Description xml:lang="en">Outward risk transfers reallocate claims out of the country of the immediate counterparty.</com:Description>
 				</str:Code>
 				<str:Code id="P" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CBS_BASIS(1.0).P">
 					<com:Name xml:lang="en">Inward risk transfers</com:Name>
@@ -1545,7 +1545,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 				</str:Code>
 				<str:Code id="U" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CBS_BASIS(1.0).U">
 					<com:Name xml:lang="en">Guarantor basis</com:Name>
-					<com:Description xml:lang="en">Methodology whereby positions are allocated to a third party that has contracted toÂ assume the debts or obligations of the primary party if that party fails to perform. InÂ the CBS, claims on a guarantor basis are allocated to the country and sector of theÂ entity that guarantees the claims (or, in the case of claims on branches, the country ofÂ the parent bank).</com:Description>
+					<com:Description xml:lang="en">Methodology whereby positions are allocated to a third party that has contracted to assume the debts or obligations of the primary party if that party fails to perform. In the CBS, claims on a guarantor basis are allocated to the country and sector of the entity that guarantees the claims (or, in the case of claims on branches, the country of the parent bank).</com:Description>
 				</str:Code>
 				<str:Code id="Y" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CBS_BASIS(1.0).Y">
 					<com:Name xml:lang="en">Residual reporting basis</com:Name>
@@ -2854,7 +2854,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 				<com:Name xml:lang="en">Position type</com:Name>
 				<str:Code id="B" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).B">
 					<com:Name xml:lang="en">Local claims</com:Name>
-					<com:Description xml:lang="en">Local claims are claims on counterparties located in the same country as the banking groupâ€™s entity that books the position.</com:Description>
+					<com:Description xml:lang="en">Local claims are claims on counterparties located in the same country as the banking group’s entity that books the position.</com:Description>
 				</str:Code>
 				<str:Code id="C" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).C">
 					<com:Name xml:lang="en">Total claims</com:Name>
@@ -2884,7 +2884,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 				</str:Code>
 				<str:Code id="M" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).M">
 					<com:Name xml:lang="en">Local liabilities</com:Name>
-					<com:Description xml:lang="en">Local liabilities are liabilities on counterparties located in the same country as the banking groupâ€™s entity that books the position.</com:Description>
+					<com:Description xml:lang="en">Local liabilities are liabilities on counterparties located in the same country as the banking group’s entity that books the position.</com:Description>
 				</str:Code>
 				<str:Code id="N" urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).N">
 					<com:Name xml:lang="en">Net positions</com:Name>

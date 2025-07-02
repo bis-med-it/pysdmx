@@ -95,7 +95,7 @@ def datastructure_group_read():
     base_path = (
         Path(__file__).parent / "samples" / "read_datastructure_group.xml"
     )
-    with open(base_path, "r") as f:
+    with open(base_path, "r", encoding="utf-8") as f:
         return f.read()
 
 
