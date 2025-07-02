@@ -484,7 +484,9 @@ def test_dataset_action_and_header_action_dataset_id(content, header):
 
 def test_write_structure_specific_with_groups(header, ds_with_group):
     base_path = (
-        Path(__file__).parent / "samples" / "test_structure_specific_with_groups.xml"
+        Path(__file__).parent
+        / "samples"
+        / "test_structure_specific_with_groups.xml"
     )
     with open(base_path, "r") as f:
         sample = f.read()
@@ -502,7 +504,7 @@ def test_write_structure_specific_with_groups(header, ds_with_group):
 
 def test_write_generic_with_groups(header, ds_with_group):
     base_path = (
-            Path(__file__).parent / "samples" / "test_generic_with_groups.xml"
+        Path(__file__).parent / "samples" / "test_generic_with_groups.xml"
     )
     with open(base_path, "r") as f:
         sample = f.read()
