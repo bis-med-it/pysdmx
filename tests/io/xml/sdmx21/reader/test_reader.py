@@ -858,6 +858,17 @@ def test_attribute_relationship_attachment_group(samples_folder):
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1
     result = read_sdmx(input_str, validate=True).structures
     assert result is not None
+    assert isinstance(result[0], DataStructureDefinition)
+    dsd = result[0]
+    assert len(dsd.groups) == 2
+    assert dsd.groups[0].dimensions == ["TEST_DIM_3"]
+    assert dsd.groups[1].dimensions == ["TEST_DIM_4"]
+    attribute = dsd.components.attributes[0]
+    assert attribute.id == "TEST"
+    assert (
+        attribute.attachment_level
+        == "TEST_DIM_1,TEST_DIM_2,TEST_DIM_3,TEST_DIM_4"
+    )
 
 
 def test_datastructure_group(datastructure_group):
@@ -867,8 +878,8 @@ def test_datastructure_group(datastructure_group):
     dsd = result[20]
     assert isinstance(dsd, DataStructureDefinition)
     group = dsd.groups
-    assert group[0]["id"] == "Sibling"
-    assert group[0]["dimensions"] == [
+    assert group[0].id == "Sibling"
+    assert group[0].dimensions == [
         "L_MEASURE",
         "L_REP_CTY",
         "CBS_BANK_TYPE",

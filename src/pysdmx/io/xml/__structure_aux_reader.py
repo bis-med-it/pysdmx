@@ -169,6 +169,7 @@ from pysdmx.model.dataflow import (
     Components,
     Dataflow,
     DataStructureDefinition,
+    GroupDimension,
     Role,
 )
 from pysdmx.model.vtl import (
@@ -568,24 +569,35 @@ class StructureParser(Struct):
                 att_grp = add_list(attribute[ATTACH_GROUP])
                 att_grp = [att[REF][ID] for att in att_grp]
                 for grp in att_grp:
-                    group_dims = next(
-                        (g for g in element_info[GROUPS_LOW] if g[ID] == grp),
-                        None,
+                    group_dims: List[str] = next(
+                        (
+                            g.dimensions
+                            for g in element_info[GROUPS_LOW]
+                            if g.id == grp
+                        ),
+                        [],
                     )
-
-                    att_level += "," + ",".join(
-                        group_dims["dimensions"],
+                    att_level += (
+                        "," + ",".join(group_dims)
+                        if len(group_dims) > 0
+                        else ""
                     )
         elif GROUP in attribute:
             if REF in attribute[GROUP]:
                 group_id = attribute[GROUP][REF][ID]
             else:
                 group_id = attribute[GROUP]
-            group_dimensions = next(
-                (g for g in element_info[GROUPS_LOW] if g[ID] == group_id),
-                None,
+            group_dimensions: List[str] = next(
+                (
+                    g.dimensions
+                    for g in element_info[GROUPS_LOW]
+                    if g.id == group_id
+                ),
+                [],
             )
-            att_level = ",".join(group_dimensions["dimensions"])
+            att_level = (
+                ",".join(group_dimensions) if len(group_dimensions) > 0 else ""
+            )
         elif OBSERVATION in attribute or PRIM_MEASURE in attribute:
             att_level = "O"
         else:
@@ -933,7 +945,7 @@ class StructureParser(Struct):
                         for d in group_dimensions
                     ]
 
-                element[GROUPS_LOW] = add_list(groups)
+                element[GROUPS_LOW] = [GroupDimension(**g) for g in groups]
                 del element[DSD_COMPS][GROUP]
         return element
 

@@ -122,6 +122,7 @@ from pysdmx.model.dataflow import (
     Component,
     Dataflow,
     DataStructureDefinition,
+    GroupDimension,
     Role,
 )
 from pysdmx.util import (
@@ -386,17 +387,15 @@ def __write_item(
 
 
 def __write_groups(
-    groups: list[Dict[str, Any]], indent: str, references_30: bool = False
+    groups: list[GroupDimension], indent: str, references_30: bool = False
 ) -> str:
     out_file = ""
-    print(groups, type(groups))
     for group in groups:
-        print(group, type(group))
         out_file += (
-            f"{indent}<{ABBR_STR}:{GROUP} {URN_LOW}={group[URN_LOW]!r}"
-            f" {ID}={group[ID]!r}>"
+            f"{indent}<{ABBR_STR}:{GROUP} {URN_LOW}={group.urn!r}"
+            f" {ID}={group.id!r}>"
         )
-        for dimension in group["dimensions"]:
+        for dimension in group.dimensions:
             if references_30:
                 out_file += (
                     f"{add_indent(indent)}"
@@ -472,12 +471,12 @@ def __write_components(
 
 
 def __find_matching_group_id(
-    att_rel: str, groups: list[Dict[str, Any]]
+    att_rel: str, groups: list[GroupDimension]
 ) -> Optional[str]:
     comps_to_relate = att_rel.split(",") if "," in att_rel else [att_rel]
     for group in groups:
-        if set(comps_to_relate) == set(group["dimensions"]):
-            return group[ID]
+        if set(comps_to_relate) == set(group.dimensions):
+            return group.id
     return None
 
 
@@ -504,7 +503,7 @@ def __write_attribute_relation(  # noqa: C901
     item: Component,
     indent: str,
     component_info: Dict[str, Any],
-    groups: list[Dict[str, Any]],
+    groups: list[GroupDimension],
     references_30: bool = False,
 ) -> str:
     measure_relationship = ""
@@ -584,7 +583,7 @@ def __write_component(
     position: int,
     indent: str,
     component_info: Dict[str, Any],
-    groups: list[Dict[str, Any]],
+    groups: list[GroupDimension],
     references_30: bool = False,
 ) -> str:
     """Writes the component to the XML file."""

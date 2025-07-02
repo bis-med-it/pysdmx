@@ -472,7 +472,7 @@ class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     version: str = "1.0"
     artefacts: Sequence[str] = ()
     generated: datetime = datetime.now(timezone.utc)
-    groups: Optional[list[GroupDimension]] = None
+    groups: Optional[List[GroupDimension]] = None
 
     def __str__(self) -> str:
         """Custom string representation without the class name."""
@@ -538,7 +538,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
     """
 
     components: Components
-    groups: Optional[list[GroupDimension]] = None
+    groups: Optional[List[GroupDimension]] = None
     evolving_structure: bool = False
 
     def __extract_artefacts(self) -> Sequence[str]:

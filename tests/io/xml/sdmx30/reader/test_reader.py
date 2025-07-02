@@ -620,8 +620,8 @@ def test_datastructure_group(samples_folder):
     dsd = result[20]
     assert isinstance(dsd, DataStructureDefinition)
     group = dsd.groups
-    assert group[0]["id"] == "Sibling"
-    assert group[0]["dimensions"] == [
+    assert group[0].id == "Sibling"
+    assert group[0].dimensions == [
         "L_MEASURE",
         "L_REP_CTY",
         "CBS_BANK_TYPE",
