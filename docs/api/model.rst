@@ -65,6 +65,7 @@ API Reference
    model/concept
    model/dataflow
    model/category
+   model/gds
    model/map
    model/refmeta
    model/organisation
