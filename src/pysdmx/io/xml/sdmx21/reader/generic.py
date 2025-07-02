@@ -87,7 +87,7 @@ def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
         obs = {
             **obs,
             **__get_element_to_list(data, mode=OBS_KEY),
-            OBS_VALUE_ID: data[OBS_VALUE_XML_TAG][VALUE.lower()],
+            OBS_VALUE_ID: data[OBS_VALUE_XML_TAG][VALUE.lower()] if OBS_VALUE_XML_TAG in data else "",
         }
         if ATTRIBUTES in data:
             obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
