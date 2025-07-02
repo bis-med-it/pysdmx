@@ -151,36 +151,30 @@ class GdsClient(__BaseGdsClient):
         """Get the list of catalogs for the supplied parameters.
 
         Args:
-                catalog: The agency maintaining the catalog.
-                resource: The resource ID(s) to query. Defaults to '*'.
-                version: The version(s) of the resource. Defaults to '*'.
-                resource_type: Filters the endpoints that support
-                 the requested resource type (eg, 'data', 'metadata')
-        .
-                message_format: Filters the endpoints that support any
-                  of the requested message formats.
-
-                api_version: Filters the endpoints that is in a
-                  specific SDMX API version.
-                  Multiple values separated by commas are possible.
-                  By default (if nothing is sent) it returns everything.
-
-                detail: The amount of information to be returned.
-                    Option full: All available information for all artefacts
-                      should be returned.
-                    Option raw: Any nested service will be referenced.
-
-                references: Instructs the web service to return
-                  (or not) the artefacts referenced by the
-                  artefact to be returned.
-
-                    Option none: No referenced artefacts will be returned.
-                    Option children: Returns the artefacts
-                      referenced by the artefact to be returned.
-
+            catalog: The agency maintaining the catalog.
+            resource: The resource ID(s) to query. Defaults to '*'.
+            version: The version(s) of the resource. Defaults to '*'.
+            resource_type: Filters the endpoints that support
+             the requested resource type (eg, 'data', 'metadata')
+            message_format: Filters the endpoints that support any
+              of the requested message formats.
+            api_version: Filters the endpoints that is in a
+              specific SDMX API version.
+              Multiple values separated by commas are possible.
+              By default (if nothing is sent) it returns everything.
+            detail: The amount of information to be returned.
+              If detail=full: All available information for all artefacts
+              should be returned.
+              If detail=raw: Any nested service will be referenced.
+            references: Instructs the web service to return
+              (or not) the artefacts referenced by the
+              artefact to be returned.
+              If references=none: No referenced artefacts will be returned.
+              If references=children: Returns the artefacts
+              referenced by the artefact to be returned.
 
         Returns:
-                A list of GdsCatalog objects.
+            A list of GdsCatalog objects.
         """
         query = super()._catalogs_q(
             catalog,
@@ -202,8 +196,8 @@ class GdsClient(__BaseGdsClient):
         """Get the list of SDMX API versions.
 
         Args:
-            api_version: The ID of the SDMX API version
-            to query. Defaults to '*'.
+            api_version: The version of the SDMX API to be returned.
+              Defaults to '*'.
         """
         query = super()._sdmx_api_q(api_version)
         response = self.__fetch(query)
