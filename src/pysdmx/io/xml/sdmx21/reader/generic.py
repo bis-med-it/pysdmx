@@ -58,7 +58,7 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
             for data in series[OBS]:
                 obs = {
                     OBS_DIM: data[OBS_DIM][VALUE.lower()],
-                    OBS_VALUE_ID: data[OBS_VALUE_XML_TAG][VALUE.lower()],
+                    OBS_VALUE_ID: data[OBS_VALUE_XML_TAG][VALUE.lower()] if OBS_VALUE_XML_TAG in data else "",
                 }
                 if ATTRIBUTES in data:
                     obs = {
