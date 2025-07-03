@@ -1,7 +1,8 @@
 """SDMX 2.0 CSV writer module."""
 
 from copy import copy
-from typing import Optional, Sequence
+from pathlib import Path
+from typing import Optional, Sequence, Union
 
 import pandas as pd
 
@@ -10,7 +11,8 @@ from pysdmx.io.pd import PandasDataset
 
 
 def write(
-    datasets: Sequence[PandasDataset], output_path: Optional[str] = None
+    datasets: Sequence[PandasDataset],
+    output_path: Optional[Union[str, Path]] = None,
 ) -> Optional[str]:
     """Write data to SDMX-CSV 2.0 format.
 
@@ -50,6 +52,15 @@ def write(
         dataframes.append(df)
 
     all_data = pd.concat(dataframes, ignore_index=True, axis=0)
+
+    all_data = all_data.astype(str).replace({"nan": "", "<NA>": ""})
+
+    # If the output path is an empty string we use None
+    output_path = (
+        None
+        if isinstance(output_path, str) and output_path == ""
+        else output_path
+    )
 
     # Convert the dataset into a csv file
     return all_data.to_csv(output_path, index=False, header=True)

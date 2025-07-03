@@ -1,11 +1,11 @@
 """Module for writing metadata to XML files."""
 
-from typing import Dict, Optional, Sequence
+from pathlib import Path
+from typing import Dict, Optional, Sequence, Union
 
 from pysdmx.io.format import Format
 from pysdmx.io.xml.__structure_aux_writer import (
     STR_DICT_TYPE_LIST_30,
-    STR_TYPES,
     __write_structures,
 )
 from pysdmx.io.xml.__write_aux import (
@@ -13,12 +13,13 @@ from pysdmx.io.xml.__write_aux import (
     create_namespaces,
     get_end_message,
 )
+from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.message import Header
 
 
 def write(
-    structures: Sequence[STR_TYPES],
-    output_path: str = "",
+    structures: Sequence[MaintainableArtefact],
+    output_path: Optional[Union[str, Path]] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
 ) -> Optional[str]:
@@ -38,7 +39,7 @@ def write(
     if header is None:
         header = Header()
 
-    content: Dict[str, Dict[str, STR_TYPES]] = {}
+    content: Dict[str, Dict[str, MaintainableArtefact]] = {}
     for urn, element in elements.items():
         list_ = STR_DICT_TYPE_LIST_30[type(element)]
         if list_ not in content:
@@ -54,8 +55,13 @@ def write(
 
     outfile += get_end_message(type_, prettyprint)
 
-    if output_path == "":
+    output_path = (
+        str(output_path) if isinstance(output_path, Path) else output_path
+    )
+
+    if output_path is None or output_path == "":
         return outfile
+
     with open(output_path, "w", encoding="UTF-8", errors="replace") as f:
         f.write(outfile)
     return None
