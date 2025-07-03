@@ -2,7 +2,7 @@
 
 from io import BytesIO
 from pathlib import Path
-from typing import Optional, Sequence, Union
+from typing import Dict, Optional, Sequence, Union
 
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
@@ -140,6 +140,29 @@ def read_sdmx(  # noqa: C901
     return Message(header=header, structures=result_structures)
 
 
+def __manage_dataset_level_attributes(dataset: Dataset) -> None:
+    """Manage attributes at dataset level and remove them from data."""
+    # This function requires the dataset to have a structure defined.
+    dataset_level_attributes = [
+        x
+        for x in dataset.structure.components.attributes  # type: ignore[union-attr]
+        if x.attachment_level == "D"
+    ]
+    if len(dataset.attributes) > 0:
+        # If the dataset already has attributes, we do not need to add them
+        return
+    attached_attributes: Dict[str, Optional[str]] = {}
+    for att in dataset_level_attributes:
+        if att.id not in dataset.data.columns:  # type: ignore[attr-defined]
+            attached_attributes[att.id] = None
+        else:
+            attached_attributes[att.id] = (
+                dataset.data[att.id].unique().tolist()[0]  # type: ignore[attr-defined]
+            )
+            del dataset.data[att.id]  # type: ignore[attr-defined]
+    dataset.attributes = attached_attributes
+
+
 def __assign_structure_to_dataset(
     datasets: Sequence[Dataset], structure_msg: Message
 ) -> None:
@@ -151,6 +174,7 @@ def __assign_structure_to_dataset(
         )
         dataset_ref = parse_short_urn(short_urn)
         dataset.structure = schema_generator(structure_msg, dataset_ref)
+        __manage_dataset_level_attributes(dataset)
 
 
 def get_datasets(

@@ -98,6 +98,11 @@ def data_wrong_dsd():
 
 
 @pytest.fixture
+def samples_folder():
+    return Path(__file__).parent / "samples"
+
+
+@pytest.fixture
 def sdmx_error_str():
     base_path = Path(__file__).parent / "samples" / "error.xml"
     with open(base_path, "r") as f:
@@ -243,3 +248,19 @@ def test_get_datasets_wrong_dsd(data_wrong_dsd, dataflow_children):
 def test_get_datasets_no_children(data_dataflow, dataflow_no_children):
     with pytest.raises(Invalid, match="Not found referenced DataStructure"):
         get_datasets(data_dataflow, dataflow_no_children)
+
+
+def test_get_datasets_missing_attribute(samples_folder):
+    data_file = samples_folder / "data_v1_missing_one_attached.csv"
+    structures_file = samples_folder / "dataflow_structure_children.xml"
+    datasets = get_datasets(data_file, structures_file)
+    assert len(datasets) == 1
+    dataset = datasets[0]
+
+    assert dataset.attributes == {
+        "DECIMALS": "3",
+        "UNIT_MULT": "6",
+        "UNIT_MEASURE": None,
+    }
+    assert "DECIMALS" not in dataset.data.columns
+    assert "UNIT_MULT" not in dataset.data.columns
