@@ -1,6 +1,7 @@
 """Module for writing metadata to XML files."""
 
 from collections import OrderedDict
+from copy import copy
 from typing import Any, Dict, Optional, Sequence, Union
 
 from pysdmx.errors import Invalid
@@ -223,8 +224,6 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
 def __write_identifiable(
     identifiable: IdentifiableArtefact,
     indent: str,
-    references_30: bool = False,
-    agency_id: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Writes the IdentifiableArtefact to the XML file."""
     attributes = ""
@@ -235,13 +234,7 @@ def __write_identifiable(
         attributes += f" uri={identifiable.uri!r}"
 
     if identifiable.urn is not None:
-        if references_30 and isinstance(identifiable, Agency):
-            attributes += (
-                f" urn='urn:sdmx:org.sdmx.infomodel.base.Agency={agency_id}"
-                f":AGENCIES(1.0).{identifiable.id}'"
-            )
-        else:
-            attributes += f" urn={identifiable.urn!r}"
+        attributes += f" urn={identifiable.urn!r}"
 
     outfile = {
         "Annotations": __write_annotable(identifiable, indent),
@@ -252,13 +245,10 @@ def __write_identifiable(
 
 
 def __write_nameable(
-    nameable: NameableArtefact,
-    indent: str,
-    references_30: bool = False,
-    agency_id: Optional[str] = None,
+    nameable: NameableArtefact, indent: str
 ) -> Dict[str, Any]:
     """Writes the NameableArtefact to the XML file."""
-    outfile = __write_identifiable(nameable, indent, references_30, agency_id)
+    outfile = __write_identifiable(nameable, indent)
     attrs = ["Name", "Description"]
 
     for attr in attrs:
@@ -361,17 +351,13 @@ def __write_contact(contact: Contact, indent: str) -> str:
 
 
 def __write_item(
-    item: Item,
-    indent: str,
-    scheme: str,
-    references_30: bool = False,
-    agency_id: Optional[str] = None,
+    item: Item, indent: str, scheme: str, references_30: bool = False
 ) -> str:
     """Writes the item to the XML file."""
     item_name = VALUE_ITEM if scheme == VALUE_LIST else type(item).__name__
     head = f"{ABBR_STR}:" + item_name
 
-    data = __write_nameable(item, add_indent(indent), references_30, agency_id)
+    data = __write_nameable(item, add_indent(indent))
     attributes = data["Attributes"].replace("'", '"')
     outfile = f"{indent}<{head}{attributes}>"
     outfile += __export_intern_data(data)
@@ -776,18 +762,20 @@ def __write_scheme(  # noqa: C901
         NAME_PER_SCHEME,
     ]:
         for item in item_scheme.items:
-            if scheme == AGENCY_SCHEME:
-                outfile += __write_item(
-                    item,
-                    add_indent(indent),
-                    scheme,
-                    references_30,
-                    item_scheme.agency,
+            if (
+                scheme == AGENCY_SCHEME
+                and item.urn is not None
+                and references_30
+            ):
+                agency_id = parse_short_urn(item_scheme.short_urn).agency
+                item = copy(
+                    item.__replace__(
+                        urn=f"urn:sdmx:org.sdmx.infomodel.base.Agency={agency_id}:AGENCIES(1.0).{item.id}"
+                    )
                 )
-            else:
-                outfile += __write_item(
-                    item, add_indent(indent), scheme, references_30
-                )
+            outfile += __write_item(
+                item, add_indent(indent), scheme, references_30
+            )
     if scheme in [
         RULE_SCHEME,
         UDO_SCHEME,
