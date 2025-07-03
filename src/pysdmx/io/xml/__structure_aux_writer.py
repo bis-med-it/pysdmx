@@ -367,13 +367,15 @@ def __write_item(
         or item.dtype is not None
     ):
         outfile += f"{add_indent(indent)}<{ABBR_STR}:{CORE_REP}>"
+        format_enum_text = TEXT_FORMAT
         if item.codes is not None:
+            format_enum_text = ENUM_FORMAT
             outfile += __write_enumeration(
                 item.codes, add_indent(indent), references_30
             )
         if item.facets is not None or item.dtype is not None:
             outfile += __write_text_format(
-                item.dtype, item.facets, TEXT_FORMAT, add_indent(indent)
+                item.dtype, item.facets, format_enum_text, add_indent(indent)
             )
         outfile += f"{add_indent(indent)}</{ABBR_STR}:{CORE_REP}>"
     outfile += f"{indent}</{head}>"
