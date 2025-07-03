@@ -381,7 +381,7 @@ def __write_item(
 
 
 def __write_components(
-    item: DataStructureDefinition, indent: str, references_30: bool = False
+    dsd: DataStructureDefinition, indent: str, references_30: bool = False
 ) -> str:
     """Writes the components to the XML file."""
     outfile = f"{indent}<{ABBR_STR}:{DSD_COMPS}>"
@@ -392,13 +392,19 @@ def __write_components(
         PRIM_MEASURE: [],
     }
 
-    for comp in item.components:
+    for comp in dsd.components:
         if comp.role == Role.DIMENSION:
             components[DIM].append(comp)
         elif comp.role == Role.ATTRIBUTE:
             components[ATT].append(comp)
         else:
             components[PRIM_MEASURE].append(comp)
+
+    if not references_30 and len(components[PRIM_MEASURE]) > 1:
+        raise Invalid(
+            f"SDMX-ML 2.1 does not support multiple measures. "
+            f"Check the {dsd.short_urn}."
+        )
 
     position = 1
     for _, comps in components.items():
