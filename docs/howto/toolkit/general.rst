@@ -11,4 +11,5 @@ ecosystem, such as `Pandas`.
 The toolkit functions does not follow any particular version of the SDMX standard.
 
 :ref:`vtl_toolkit`
+
 :ref:`pandas_toolkit`

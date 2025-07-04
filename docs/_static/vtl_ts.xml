@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>b8bd7d11-b2d1-4c62-b8c6-841deedb1645</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2025-06-27T16:16:36Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+	</mes:Header>
+	<mes:Structures>
+		<str:VtlMappings>
+			<str:VtlMappingScheme id="VTL_MAP_SCHEME_1" version="1.0" isExternalReference="false" isFinal="false" agencyID="MD" isPartial="false" >
+				<com:Name xml:lang="en">VTL Mapping Scheme 1</com:Name>
+				<str:VtlMapping id="VTL_MAP_1" alias="DS_1">
+					<com:Name xml:lang="en">VTL Mapping 1</com:Name>
+					<str:Dataflow>
+						<Ref package="datastructure" agencyID="MD" id="TEST_DF" version="1.0" class="Dataflow" />
+					</str:Dataflow>
+				</str:VtlMapping>
+			</str:VtlMappingScheme>
+		</str:VtlMappings>
+		<str:Transformations>
+			<str:TransformationScheme id="TS1" version="1.0" isExternalReference="false" isFinal="false" agencyID="MD" isPartial="false"  vtlVersion="2.1">
+				<com:Name xml:lang="en">Transformation Scheme 1</com:Name>
+				<str:Transformation id="T1" isPersistent="true">
+					<com:Name xml:lang="en">Transformation 1</com:Name>
+					<str:Expression>DS_1 [calc Me_4 := OBS_VALUE]</str:Expression>
+					<str:Result>DS_r</str:Result>
+				</str:Transformation>
+				<str:VtlMappingScheme>
+					<Ref package="transformation" agencyID="MD" id="VTL_MAP_SCHEME_1" version="1.0" class="VtlMappingScheme"/>
+				</str:VtlMappingScheme>
+			</str:TransformationScheme>
+		</str:Transformations>
+	</mes:Structures>
+</mes:Structure>
