@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>test</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2021-04-20T10:29:14</mes:Prepared>
+		<mes:Sender id="Unknown"/>
+		<mes:Receiver id="Not_supplied"/>
+	</mes:Header>
+	<mes:Structures>
+		<str:OrganisationSchemes>
+			<str:AgencyScheme id="AGENCIES" urn="urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)" version="1.0" isExternalReference="false" isFinal="false" agencyID="SDMX" isPartial="false">
+				<com:Name xml:lang="en">SDMX Agency Scheme</com:Name>
+				<str:Agency id="SDMX" urn="urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX">
+					<com:Name xml:lang="en">SDMX</com:Name>
+				</str:Agency>
+				<str:Agency id="ECB" urn="urn:sdmx:org.sdmx.infomodel.base.Agency=ECB">
+					<com:Name xml:lang="en">European Central Bank</com:Name>
+				</str:Agency>
+				<str:Agency id="BIS" urn="urn:sdmx:org.sdmx.infomodel.base.Agency=BIS">
+					<com:Name xml:lang="en">Bank for International Settlements</com:Name>
+				</str:Agency>
+				<str:Agency id="md" urn="urn:sdmx:org.sdmx.infomodel.base.Agency=md">
+					<com:Name xml:lang="en">Meaningful Data</com:Name>
+					<str:Contact>
+						<com:Name>TEST_NAME</com:Name>
+						<str:Department>TEST_DEPARTMENT</str:Department>
+						<str:Role>TEST_ROLE</str:Role>
+						<str:Telephone>TEST_TELEPHONE</str:Telephone>
+						<str:URI>http://example.com</str:URI>
+						<str:Email>test@example.com</str:Email>
+					</str:Contact>
+					<str:Contact>
+						<str:Telephone>TEST_TELEPHONE_2</str:Telephone>
+						<str:Fax>TEST_FAX</str:Fax>
+					</str:Contact>
+				</str:Agency>
+			</str:AgencyScheme>
+		</str:OrganisationSchemes>
+	</mes:Structures>
+</mes:Structure>
