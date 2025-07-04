@@ -61,6 +61,7 @@ class Header(Struct, repr_omit_defaults=True, kw_only=True):
     dataset_id: Optional[str] = None
 
     def __post_init__(self) -> None:
+        """Header post-initialization."""
         if isinstance(self.sender, str):
             self.sender = Organisation(id=self.sender)
 
