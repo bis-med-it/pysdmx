@@ -77,10 +77,12 @@ web service<sdmx-rest>`.
 Reading and writing SDMX datasets
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Head to the :ref:`how-to guide<data-rw>` to learn how to read and write SDMX datasets.
+Head to the :ref:`how-to guide <data-io-tutorial>` to learn how to read and write SDMX datasets.
 
 How can I get it?
 -----------------
+
+.. _installation:
 
 ``pysdmx`` is published on `PyPI <https://pypi.org/>`_ and can be
 installed using your preferred method (``pip``, ``pipx``, ``poetry``,
