@@ -150,7 +150,7 @@ def test_invalid_format(tmpdir):
 def test_invalid_sdmx_object_data(tmpdir):
     with pytest.raises(
         Invalid,
-        match="Only PandasDataset can be written to data formats",
+        match="Only Datasets can be written to data formats",
     ):
         write_sdmx(
             sdmx_objects=GEN_STRUCTURE,
@@ -162,7 +162,7 @@ def test_invalid_sdmx_object_data(tmpdir):
 def test_invalid_sdmx_object_structure(tmpdir):
     with pytest.raises(
         Invalid,
-        match="PandasDataset cannot be written to structure formats",
+        match="Datasets cannot be written to structure formats",
     ):
         write_sdmx(
             sdmx_objects=PandasDataset(

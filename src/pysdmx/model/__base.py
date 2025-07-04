@@ -362,11 +362,8 @@ class DataflowRef(
         )
 
     def __str__(self) -> str:
-        """Custom string representation without the class name."""
-        processed_output = []
-        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
-            processed_output.append(f"{attr}: {value}")
-        return f"{', '.join(processed_output)}"
+        """Short_urn representation of the dataflow reference."""
+        return f"Dataflow={self.agency}:{self.id}({self.version})"
 
     def __repr__(self) -> str:
         """Custom __repr__ that omits empty sequences."""

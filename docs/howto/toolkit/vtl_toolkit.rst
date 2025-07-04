@@ -64,10 +64,11 @@ As the Transformation Scheme contains the references for Ruleset Scheme and User
 
    transformation_scheme = msg.get_transformation_scheme("TransformationScheme=FR1:BPE_CENSUS(1.0)")
 
-Validating the metadata
-^^^^^^^^^^^^^^^^^^^^^^^
 
-Now we have the transformation, we can validate it.
+Validating the VTL objects
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Now we have the Transformation Scheme, we can validate it.
 The :meth:`pysdmx.toolkit.vtl.model_validations` method ensures that both the structure and content of your metadata
 are correct before generating the final VTL script:
 
@@ -79,7 +80,6 @@ are correct before generating the final VTL script:
     This validation can also be deferred until the VTL script is generated.
     Additionally, the Ruleset Scheme and User Defined Operator Scheme can be validated independently if needed.
 
-For more information, please check :ref:`vtl-validation`
 
 .. code-block:: python
 
@@ -88,9 +88,11 @@ For more information, please check :ref:`vtl-validation`
     # validate the metadata
     model_validations(transformation_scheme)
 
+For more information, please check :ref:`vtl-validation`
 
-Generating the VTL script
-^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Generating the VTL script from a Transformation Scheme
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Now we can generate the VTL script using the metadata with :meth:`pysdmx.toolkit.vtl.generate_vtl_script`.
 
@@ -116,14 +118,12 @@ For more information, please check :ref:`vtl-generation`
 How to use the VTL script
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Now that the VTL script has been generated,
-you are ready to run it.
+Check the :ref:`VTL tutorial <vtl-handling>` for more information on how to run VTL Scripts using pysdmx objects.
 
 Useful links:
 
-- `VTL Engine Docs <https://docs.vtlengine.meaningfuldata.eu/index.html>`_.
-- `VTL Semantic validation <https://docs.vtlengine.meaningfuldata.eu/api.html#vtlengine.semantic_analysis>`_.
-- `VTL Script run <https://docs.vtlengine.meaningfuldata.eu/api.html#vtlengine.run>`_.
+- `VTL Engine Docs <https://docs.vtlengine.meaningfuldata.eu>`_.
+- `10 Minutes to VTL Engine <https://docs.vtlengine.meaningfuldata.eu/walkthrough.html>`_.
 - `VTL Documentation <https://sdmx-twg.github.io/vtl/2.1/html/index.html>`_
 
 Summary
@@ -133,4 +133,4 @@ In this tutorial, we learned how to generate a VTL script step by step using met
 XML file with a Transformation Scheme structure.
 
 We read the metadata from the SDMX-ML file, validated the VTL objects, and generated the VTL script.
-This script can later be used to execute the validations and transformations, using the VTL engine.
+This script can later be used to execute the validations and transformations, using a VTL engine.
