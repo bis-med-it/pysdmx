@@ -69,7 +69,9 @@ def __write_data_structure_specific(
     outfile = ""
 
     for i, (short_urn, dataset) in enumerate(datasets.items()):
-        dataset.data = dataset.data.fillna("").astype(str)
+        dataset.data = dataset.data.astype(str).replace(
+            {"nan": "", "<NA>": ""}
+        )
         outfile += __write_data_single_dataset(
             dataset=dataset,
             prettyprint=prettyprint,
