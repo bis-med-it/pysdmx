@@ -13,7 +13,7 @@ class PandasDataset(Dataset, frozen=False, kw_only=True):
     """A Dataset that is backed by a Pandas DataFrame.
 
     Args:
-        data: Pandas Dataframe to withhold data.
+        data: Pandas Dataframe to contain SDMX data.
     """
 
     data: pd.DataFrame
