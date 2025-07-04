@@ -45,7 +45,6 @@
             </generic:Attributes>
             <generic:Obs>
                 <generic:ObsDimension value="2002"/>
-                <generic:ObsValue value=""/>
                 <generic:Attributes>
                     <generic:Value id="OBS_STATUS" value="M"/>
                     <generic:Value id="OBS_CONF" value="F"/>
