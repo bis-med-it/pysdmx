@@ -1,11 +1,13 @@
 """Module for writing metadata to XML files."""
 
 from collections import OrderedDict
+from copy import copy
 from typing import Any, Dict, Optional, Sequence, Union
 
 from pysdmx.errors import Invalid
 from pysdmx.io.xml.__tokens import (
     AGENCY_ID,
+    AGENCY_SCHEME,
     AS_STATUS,
     ATT,
     ATT_REL,
@@ -220,7 +222,8 @@ def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
 
 
 def __write_identifiable(
-    identifiable: IdentifiableArtefact, indent: str
+    identifiable: IdentifiableArtefact,
+    indent: str,
 ) -> Dict[str, Any]:
     """Writes the IdentifiableArtefact to the XML file."""
     attributes = ""
@@ -300,7 +303,7 @@ def __write_maintainable(
         f" isExternalReference="
         f"{str(maintainable.is_external_reference).lower()!r}"
     )
-    if not references_30:
+    if not references_30 and not (isinstance(maintainable, AgencyScheme)):
         outfile["Attributes"] += (
             f" isFinal={str(maintainable.is_final).lower()!r}"
         )
@@ -710,7 +713,7 @@ def __write_structure(
     return outfile
 
 
-def __write_scheme(
+def __write_scheme(  # noqa: C901
     item_scheme: Any, indent: str, scheme: str, references_30: bool = False
 ) -> str:
     """Writes the scheme to the XML file."""
@@ -771,6 +774,17 @@ def __write_scheme(
         NAME_PER_SCHEME,
     ]:
         for item in item_scheme.items:
+            if (
+                scheme == AGENCY_SCHEME
+                and item.urn is not None
+                and references_30
+            ):
+                agency_id = parse_short_urn(item_scheme.short_urn).agency
+                item = copy(
+                    item.__replace__(
+                        urn=f"urn:sdmx:org.sdmx.infomodel.base.Agency={agency_id}:AGENCIES(1.0).{item.id}"
+                    )
+                )
             outfile += __write_item(
                 item, add_indent(indent), scheme, references_30
             )
