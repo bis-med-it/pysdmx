@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:StructureSpecificData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/data/structurespecific" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=Short:Urn(1.0):ObsLevelDim:AllDimensions" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>032d13d3-fb62-4ac5-b84e-36507c60cba1</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2025-07-04T08:44:21Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Structure structureID="Urn" namespace="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=Short:Urn(1.0)" dimensionAtObservation="AllDimensions">
+			<com:StructureUsage>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=Short:Urn(1.0)</com:StructureUsage>
+		</mes:Structure>
+	</mes:Header>
+	<mes:DataSet ss:structureRef="Urn" xsi:type="ns1:DataSetType" action="Information">
+		<Obs A="NaN" />
+		<Obs A="1" />
+		<Obs A="#NA" />
+		<Obs A="#NA" />
+	</mes:DataSet>
+</mes:StructureSpecificData>
