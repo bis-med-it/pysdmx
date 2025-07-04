@@ -4,10 +4,13 @@ import pandas as pd
 import pytest
 
 from pysdmx.errors import Invalid
-from pysdmx.io import read_sdmx
+from pysdmx.io import get_datasets, read_sdmx
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_data_aux import writing_validation
 from pysdmx.io.xml.sdmx21.writer.structure import write
+from pysdmx.io.xml.sdmx21.writer.structure_specific import (
+    write as write_str_spec,
+)
 from pysdmx.model import (
     Component,
     Components,
@@ -299,3 +302,25 @@ def test_attribute_relationship_roundtrip(samples_folder):
     assert attribute_two.attachment_level == "D"
 
     assert attribute_one == attribute_two
+
+
+def test_data_write_nullable_nulltypes():
+    # Local import on numpy to avoid possible problems with C extensions
+    # on windows when using pysdmx
+    import numpy as np
+
+    # Create dataframe with nan value
+    data = pd.DataFrame(data={"A": [np.nan, 1, None, pd.NA]})
+    data["A"] = data["A"].astype("Int64")  # Use nullable integer type
+
+    # The backend is numpy_nullable by default,
+    # this line should just make clear
+    # that this is not pyarrow related
+    data = data.convert_dtypes(dtype_backend="numpy_nullable")
+
+    dataset = PandasDataset(data=data, structure="Dataflow=Short:Urn(1.0)")
+    result = write_str_spec([dataset])
+    datasets = get_datasets(result)
+    assert len(datasets) == 1
+    data = datasets[0].data
+    assert data["A"].values.tolist() == ["", "1", "", ""]
