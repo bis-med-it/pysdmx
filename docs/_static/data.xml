@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message:StructureSpecificData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                               xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                               xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/structurespecific"
+                               xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD:TEST_DF(1.0):ObsLevelDim:AllDimensions"
+                               xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+                               xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+    <message:Header>
+        <message:ID>test</message:ID>
+        <message:Test>true</message:Test>
+        <message:Prepared>2021-03-08T17:05:06</message:Prepared>
+        <message:Sender id="Unknown"/>
+        <message:Receiver id="Not_supplied"/>
+        <message:Structure structureID="MD_DF"
+                           namespace="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD:TEST_DF(1.0)"
+                           dimensionAtObservation="AllDimensions">
+            <common:StructureUsage>
+                <Ref agencyID="MD" id="TEST_DF" version="1.0"/>
+            </common:StructureUsage>
+        </message:Structure>
+    </message:Header>
+    <message:DataSet ss:structureRef="MD_DF" xsi:type="ns1:DataSetType"
+                     action="Replace">
+        <Obs  DIM_1="A" DIM_2="A"  OBS_VALUE="100" />
+        <Obs  DIM_1="A" DIM_2="B"  OBS_VALUE="102"/>
+        <Obs  DIM_1="B" DIM_2="B"  OBS_VALUE="14206.490766" />
+        <Obs  DIM_1="C" DIM_2="B"  OBS_VALUE="10130"/>
+        <Obs  DIM_1="C" DIM_2="C"  />
+        <Obs  DIM_1="C" DIM_2="D"  OBS_VALUE="29929.036014" />
+    </message:DataSet>
+</message:StructureSpecificData>

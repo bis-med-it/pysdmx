@@ -21,26 +21,15 @@ def read_sdmx(  # noqa: C901
     sdmx_document: Union[str, Path, BytesIO],
     validate: bool = True,
 ) -> Message:
-    """Reads any SDMX message and returns a dictionary.
+    """Reads any SDMX message and extracts its content.
 
-    Supported structures formats are:
-    - SDMX-ML 2.1 Structures
-
-    Supported webservices submissions are:
-    - SDMX-ML 2.1 RegistryInterface (Submission)
-    - SDMX-ML 2.1 Error (raises an exception with the error content)
-
-    Supported data formats are:
-    - SDMX-ML 2.1
-    - SDMX-CSV 1.0
-    - SDMX-CSV 2.0
+    Check the :ref:`formats supported <io-reader-formats-supported>`
 
     Args:
-        sdmx_document: Path to file (pathlib.Path), URL, or string.
+        sdmx_document: Path to file
+          (`pathlib.Path <https://docs.python.org/3/library/pathlib.html>`_),
+          URL, or string.
         validate: Validate the input file (only for SDMX-ML).
-
-    Returns:
-        A dictionary containing the parsed SDMX data or metadata.
 
     Raises:
         Invalid: If the file is empty or the format is not supported.
@@ -160,15 +149,27 @@ def get_datasets(
 ) -> Sequence[Dataset]:
     """Reads a data message and a structure message and returns a dataset.
 
-    Args:
-        data: Path to file (pathlib.Path), URL, or string for the data message.
-        structure:
-          Path to file (pathlib.Path), URL, or string
-          for the structure message, if needed.
-        validate: Validate the input file (only for SDMX-ML).
+    This method reads a data message and an optional structure message,
+    and returns a sequence of Datasets.
+    Check the :ref:`formats supported <io-reader-formats-supported>`
 
-    Returns:
-        A sequence of Datasets
+    The resulting datasets will have their structure assigned,
+    this is required for:
+
+    - Data validation against its structure
+    - Data writing in SDMX-ML Structure Specific with DimensionAtObservation
+      not equal to AllDimensions or Generic formats
+    - Execution of VTL scripts over PandasDataset
+
+    Args:
+        data: Path to file
+          (`pathlib.Path <https://docs.python.org/3/library/pathlib.html>`_),
+          URL, or string for the data message.
+        structure:
+          Path to file
+          (`pathlib.Path <https://docs.python.org/3/library/pathlib.html>`_),
+          URL, or string for the structure message, if needed.
+        validate: Validate the input file (only for SDMX-ML).
 
     Raises:
         Invalid:
