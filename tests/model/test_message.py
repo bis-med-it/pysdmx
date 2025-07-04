@@ -244,6 +244,24 @@ def test_message_str():
     assert s == expected_str
 
 
+def test_header_initialization_with_strings():
+    header = Header(
+        id="12345",
+        test=True,
+        prepared=datetime(2023, 1, 1, tzinfo=timezone.utc),
+        sender="TEST_SENDER",
+        receiver="TEST_RECEIVER",
+        source="Test Source",
+    )
+
+    assert header.id == "12345"
+    assert header.test is True
+    assert header.prepared == datetime(2023, 1, 1, tzinfo=timezone.utc)
+    assert header.sender.id == "TEST_SENDER"
+    assert header.receiver.id == "TEST_RECEIVER"
+    assert header.source == "Test Source"
+
+
 def test_message_repr():
     agency_scheme = AgencyScheme(id="agency1", agency="agency1")
     codelist = Codelist(id="codelist1", agency="agency1")

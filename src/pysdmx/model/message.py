@@ -84,6 +84,14 @@ class Header(Struct, repr_omit_defaults=True, kw_only=True):
     structure: Optional[Dict[str, str]] = None
     dataset_id: Optional[str] = None
 
+    def __post_init__(self) -> None:
+        """Header post-initialization."""
+        if isinstance(self.sender, str):
+            self.sender = Organisation(id=self.sender)
+
+        if isinstance(self.receiver, str):
+            self.receiver = Organisation(id=self.receiver)
+
     def __str__(self) -> str:
         """Custom string representation without the class name."""
         processed_output = []
