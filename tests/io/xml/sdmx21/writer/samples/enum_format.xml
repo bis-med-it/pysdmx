@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<mes:Structure xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+               xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+               xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+    <mes:Header>
+        <mes:ID>IDREFcc867f81-6802-4947-b8bc-7531b746f728</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2025-07-03T09:44:14Z</mes:Prepared>
+        <mes:Sender id="UNKNOWN"></mes:Sender>
+        <mes:Receiver id="not_supplied"></mes:Receiver>
+    </mes:Header>
+    <mes:Structures>
+        <str:Codelists>
+            <str:Codelist urn="urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_SUB_CHANNEL(1.0)"
+                          isExternalReference="false" agencyID="BIS" id="CL_SUB_CHANNEL" isFinal="false" version="1.0">
+                <com:Name xml:lang="en">Submission channel</com:Name>
+                <com:Description xml:lang="en">This codelist contains values for the different submission channels
+                </com:Description>
+                <str:Code urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_SUB_CHANNEL(1.0).A" id="A">
+                    <com:Name xml:lang="en">Application Programming Interface</com:Name>
+                </str:Code>
+                <str:Code urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_SUB_CHANNEL(1.0).D" id="D">
+                    <com:Name xml:lang="en">Direct submission</com:Name>
+                </str:Code>
+                <str:Code urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_SUB_CHANNEL(1.0).O" id="O">
+                    <com:Name xml:lang="en">Other</com:Name>
+                </str:Code>
+            </str:Codelist>
+        </str:Codelists>
+        <str:Concepts>
+            <str:ConceptScheme
+                    urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS:STANDALONE_CONCEPT_SCHEME(1.0)"
+                    isExternalReference="false" agencyID="BIS" id="STANDALONE_CONCEPT_SCHEME" isFinal="false"
+                    version="1.0">
+                <com:Name xml:lang="en">Default Scheme</com:Name>
+                <str:Concept
+                        urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).SUBMISSION_CHANNEL"
+                        id="SUBMISSION_CHANNEL">
+                    <com:Name xml:lang="en">Submission channel</com:Name>
+                    <str:CoreRepresentation>
+                        <str:Enumeration>
+                            <Ref package="codelist" agencyID="BIS" id="CL_SUB_CHANNEL" version="1.0"
+                                 class="Codelist"></Ref>
+                        </str:Enumeration>
+                        <str:EnumerationFormat textType="String"></str:EnumerationFormat>
+                    </str:CoreRepresentation>
+                </str:Concept>
+            </str:ConceptScheme>
+        </str:Concepts>
+    </mes:Structures>
+</mes:Structure>
