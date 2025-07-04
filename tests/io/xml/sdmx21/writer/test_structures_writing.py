@@ -671,6 +671,13 @@ def vtlmapping_sample():
         return f.read()
 
 
+@pytest.fixture
+def enum_format():
+    base_path = Path(__file__).parent / "samples" / "enum_format.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
 def test_codelist(codelist_sample, complete_header, codelist):
     content = [codelist]
     result = write(
@@ -991,3 +998,14 @@ def test_read_write_vtl_complete(vtl_complete):
         ts_2.name_personalisation_scheme, NamePersonalisationScheme
     )
     assert ts_2.name_personalisation_scheme == ts.name_personalisation_scheme
+
+
+def test_read_write_enum_format(enum_format):
+    structure = read_sdmx(enum_format, validate=True).structures
+    # Read the structure and write it back
+    result = write(
+        structure,
+        prettyprint=True,
+    )
+    # Read the result back to ensure it is valid
+    read_sdmx(result, validate=True)
