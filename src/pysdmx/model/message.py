@@ -65,7 +65,7 @@ class Header(Struct, repr_omit_defaults=True, kw_only=True):
         if isinstance(self.sender, str):
             self.sender = Organisation(id=self.sender)
 
-        if self.receiver is not None and isinstance(self.receiver, str):
+        if isinstance(self.receiver, str):
             self.receiver = Organisation(id=self.receiver)
 
     def __str__(self) -> str:
