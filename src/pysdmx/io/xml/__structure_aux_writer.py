@@ -404,8 +404,12 @@ def __write_components(
 
     if not references_30 and len(components[PRIM_MEASURE]) > 1:
         raise Invalid(
-            f"SDMX-ML 2.1 does not support multiple measures. "
-            f"Check the {dsd.short_urn}."
+            title="Request cannot be fulfilled",
+            description=f"SDMX-ML 2.1 does not support multiple measures. "
+            f"Check the {dsd.short_urn}.",
+            csi={
+                "measures_found": components[PRIM_MEASURE],
+            },
         )
 
     position = 1
