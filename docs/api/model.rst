@@ -64,9 +64,11 @@ API Reference
    model/code
    model/concept
    model/dataflow
+   model/dataset
    model/category
    model/gds
    model/map
+   model/message
    model/refmeta
    model/organisation
    model/vtl

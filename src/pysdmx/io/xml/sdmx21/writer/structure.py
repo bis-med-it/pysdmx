@@ -6,7 +6,6 @@ from typing import Dict, Optional, Sequence, Union
 from pysdmx.io.format import Format
 from pysdmx.io.xml.__structure_aux_writer import (
     STR_DICT_TYPE_LIST_21,
-    STR_TYPES,
     __write_structures,
 )
 from pysdmx.io.xml.__write_aux import (
@@ -14,11 +13,12 @@ from pysdmx.io.xml.__write_aux import (
     create_namespaces,
     get_end_message,
 )
+from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.message import Header
 
 
 def write(
-    structures: Sequence[STR_TYPES],
+    structures: Sequence[MaintainableArtefact],
     output_path: Optional[Union[str, Path]] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
@@ -39,7 +39,7 @@ def write(
     if header is None:
         header = Header()
 
-    content: Dict[str, Dict[str, STR_TYPES]] = {}
+    content: Dict[str, Dict[str, MaintainableArtefact]] = {}
     for urn, element in elements.items():
         list_ = STR_DICT_TYPE_LIST_21[type(element)]
         if list_ not in content:
