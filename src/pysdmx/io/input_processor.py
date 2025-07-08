@@ -24,7 +24,7 @@ def __check_xml(input_str: str) -> bool:
 
 def __check_csv(input_str: str) -> bool:
     try:
-        max_length = len(input_str) if len(input_str) < 1024 else 1024
+        max_length = len(input_str) if len(input_str) < 2048 else 2048
         dialect = csv.Sniffer().sniff(input_str[:max_length])
         control_csv_format = (
             dialect.delimiter == "," and dialect.quotechar == '"'

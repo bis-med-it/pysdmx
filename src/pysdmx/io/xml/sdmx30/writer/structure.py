@@ -1,6 +1,7 @@
 """Module for writing metadata to XML files."""
 
-from typing import Dict, Optional, Sequence
+from pathlib import Path
+from typing import Dict, Optional, Sequence, Union
 
 from pysdmx.io.format import Format
 from pysdmx.io.xml.__structure_aux_writer import (
@@ -18,7 +19,7 @@ from pysdmx.model.message import Header
 
 def write(
     structures: Sequence[MaintainableArtefact],
-    output_path: str = "",
+    output_path: Optional[Union[str, Path]] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
 ) -> Optional[str]:
@@ -54,8 +55,13 @@ def write(
 
     outfile += get_end_message(type_, prettyprint)
 
-    if output_path == "":
+    output_path = (
+        str(output_path) if isinstance(output_path, Path) else output_path
+    )
+
+    if output_path is None or output_path == "":
         return outfile
+
     with open(output_path, "w", encoding="UTF-8", errors="replace") as f:
         f.write(outfile)
     return None
