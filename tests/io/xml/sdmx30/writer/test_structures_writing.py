@@ -772,6 +772,13 @@ def write_datastructure_sample():
 
 
 @pytest.fixture
+def bis_der_agencies():
+    base_path = Path(__file__).parent / "samples" / "bis_der_agencies.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
 def datastructure_group_read():
     base_path = (
         Path(__file__).parent / "samples" / "read_datastructure_group.xml"
@@ -949,6 +956,20 @@ def test_no_header_outpath(concept):
     )
     os.remove(output_path)
     assert result is None
+
+
+def test_read_write_agencies(bis_der_agencies):
+    # Read the SDMX-ML file 2.1
+    message = read_sdmx(bis_der_agencies, validate=True)
+
+    # Write it back to SDMX-ML format 3.0
+    result = write(
+        structures=message.structures,
+        header=message.header,
+        prettyprint=True,
+    )
+    # Validate the result
+    read_sdmx(result, validate=True)
 
 
 def test_read_write_datastructure_group(

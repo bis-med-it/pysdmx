@@ -9,7 +9,7 @@
 	</mes:Header>
 	<mes:Structures>
 		<str:OrganisationSchemes>
-			<str:AgencyScheme id="AGENCIES" urn="urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)" version="1.0" isExternalReference="false" isFinal="false" agencyID="SDMX" isPartial="false">
+			<str:AgencyScheme id="AGENCIES" urn="urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)" version="1.0" isExternalReference="false" agencyID="SDMX" isPartial="false">
 				<com:Name xml:lang="en">SDMX Agency Scheme</com:Name>
 				<str:Agency id="SDMX" urn="urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).SDMX">
 					<com:Name xml:lang="en">SDMX</com:Name>
@@ -3910,7 +3910,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 						<str:Enumeration>
 							<Ref agencyID="BIS" class="Codelist" id="CL_SUB_CHANNEL" package="codelist" version="1.0"/>
 						</str:Enumeration>
-						<str:TextFormat textType="String"/>
+						<str:EnumerationFormat textType="String"/>
 					</str:CoreRepresentation>
 				</str:Concept>
 				<str:Concept id="MARKET_ISSUE" urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).MARKET_ISSUE">

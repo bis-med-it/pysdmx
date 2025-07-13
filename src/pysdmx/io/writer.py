@@ -7,7 +7,7 @@ from typing import Any, Optional, Sequence
 
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
-from pysdmx.io.pd import PandasDataset
+from pysdmx.model.dataset import Dataset
 
 WRITERS = {
     Format.DATA_SDMX_CSV_1_0_0: "pysdmx.io.csv.sdmx10.writer",
@@ -33,21 +33,23 @@ def write_sdmx(
     output_path: str = "",
     **kwargs: Any,
 ) -> Optional[str]:
-    """Reads any SDMX object (or list of them) to any SDMX format.
+    """Writes any SDMX object (or list of them) to any supported SDMX format.
 
-    Supported structures formats are:
-    - SDMX-ML 2.1 Structures
-    - SDMX-ML 3.0 Structures
-
-    Supported data formats are:
-    - SDMX-ML 2.1 Structure Specific Data
-    - SDMX-ML 2.1 Generic Data
-    - SDMX-CSV 1.0
-    - SDMX-CSV 2.0
+    See the :ref:`formats available <io-writer-formats-supported>`
 
     .. important::
-        For data formats, the pysdmx[data] extra is required.
-        For SDMX-ML formats, the pysdmx[xml] extra is required.
+        To use the pysdmx.io data functionalities, you need to
+        install the `pysdmx[data]` extra.
+
+        For SDMX-ML support, you also need to install the `pysdmx[xml]` extra.
+
+        Check the :ref:`installation guide <installation>`
+        for more information.
+
+    .. important::
+        To write SDMX-ML Generic or Series messages, the PandasDataset
+        requires to have its structure defined as a
+        :class:`Schema <pysdmx.model.dataflow.Schema>`.
 
     Args:
         sdmx_objects: Model objects to write, including PandasDataset,
@@ -55,14 +57,21 @@ def write_sdmx(
         sdmx_format: The pysdmx.io.Format to write to, e.g.,
             Format.DATA_SDMX_ML_3_0.
         output_path: The path to save the file. If empty, returns a string.
-        **kwargs: see Kwargs below.
+        **kwargs: Additional keyword arguments (see below).
 
-    Kwargs:
+    Keyword Args:
         prettyprint: Whether to pretty-print the output (default: True)
-            (Only for SDMX-ML).
-        header: Optional header to include in the output. (only for SDMX-ML)
+          (only for SDMX-ML).
+        header: Custom :class:`Header <pysdmx.model.message.Header>` to
+          include in the SDMX Message (only for SDMX-ML)
         dimension_at_observation: Mapping for dimension at observation
-            (only for SDMX-ML Data formats).
+          (only for SDMX-ML Data formats). This is a dictionary where
+          the keys are short URNs and the values are the dimension IDs
+          that should be used as the dimension at observation for that
+          structure in the output. For example,
+          ``{"Dataflow=MD:TEST_MD(1.0)": "TIME_PERIOD"}``.
+          Overrides the header.structure
+          (if a custom header is provided).
 
     Returns:
         A serialised string if output_path is an empty string, otherwise None.
@@ -88,16 +97,14 @@ def write_sdmx(
     key = "structures" if is_structure else "datasets"
     value = sdmx_objects if isinstance(sdmx_objects, list) else [sdmx_objects]
 
-    if is_structure and any(isinstance(x, PandasDataset) for x in value):
+    if is_structure and any(isinstance(x, Dataset) for x in value):
         raise Invalid(
-            "PandasDataset cannot be written to structure formats. "
+            "Datasets cannot be written to structure formats. "
             "Use data formats instead."
         )
-    elif not is_structure and not all(
-        isinstance(x, PandasDataset) for x in value
-    ):
+    elif not is_structure and not all(isinstance(x, Dataset) for x in value):
         raise Invalid(
-            "Only PandasDataset can be written to data formats. "
+            "Only Datasets can be written to data formats. "
             "Use structure formats for other SDMX objects."
         )
 

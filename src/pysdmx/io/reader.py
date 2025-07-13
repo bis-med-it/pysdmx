@@ -2,7 +2,7 @@
 
 from io import BytesIO
 from pathlib import Path
-from typing import Optional, Sequence, Union
+from typing import Dict, Optional, Sequence, Union
 
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
@@ -21,26 +21,15 @@ def read_sdmx(  # noqa: C901
     sdmx_document: Union[str, Path, BytesIO],
     validate: bool = True,
 ) -> Message:
-    """Reads any SDMX message and returns a dictionary.
+    """Reads any SDMX message and extracts its content.
 
-    Supported structures formats are:
-    - SDMX-ML 2.1 Structures
-
-    Supported webservices submissions are:
-    - SDMX-ML 2.1 RegistryInterface (Submission)
-    - SDMX-ML 2.1 Error (raises an exception with the error content)
-
-    Supported data formats are:
-    - SDMX-ML 2.1
-    - SDMX-CSV 1.0
-    - SDMX-CSV 2.0
+    Check the :ref:`formats supported <io-reader-formats-supported>`
 
     Args:
-        sdmx_document: Path to file (pathlib.Path), URL, or string.
+        sdmx_document: Path to file
+          (`pathlib.Path <https://docs.python.org/3/library/pathlib.html>`_),
+          URL, or string.
         validate: Validate the input file (only for SDMX-ML).
-
-    Returns:
-        A dictionary containing the parsed SDMX data or metadata.
 
     Raises:
         Invalid: If the file is empty or the format is not supported.
@@ -140,6 +129,29 @@ def read_sdmx(  # noqa: C901
     return Message(header=header, structures=result_structures)
 
 
+def __manage_dataset_level_attributes(dataset: Dataset) -> None:
+    """Manage attributes at dataset level and remove them from data."""
+    # This function requires the dataset to have a structure defined.
+    dataset_level_attributes = [
+        x
+        for x in dataset.structure.components.attributes  # type: ignore[union-attr]
+        if x.attachment_level == "D"
+    ]
+    if len(dataset.attributes) > 0:
+        # If the dataset already has attributes, we do not need to add them
+        return
+    attached_attributes: Dict[str, Optional[str]] = {}
+    for att in dataset_level_attributes:
+        if att.id not in dataset.data.columns:  # type: ignore[attr-defined]
+            attached_attributes[att.id] = None
+        else:
+            attached_attributes[att.id] = (
+                dataset.data[att.id].unique().tolist()[0]  # type: ignore[attr-defined]
+            )
+            del dataset.data[att.id]  # type: ignore[attr-defined]
+    dataset.attributes = attached_attributes
+
+
 def __assign_structure_to_dataset(
     datasets: Sequence[Dataset], structure_msg: Message
 ) -> None:
@@ -151,6 +163,7 @@ def __assign_structure_to_dataset(
         )
         dataset_ref = parse_short_urn(short_urn)
         dataset.structure = schema_generator(structure_msg, dataset_ref)
+        __manage_dataset_level_attributes(dataset)
 
 
 def get_datasets(
@@ -160,15 +173,27 @@ def get_datasets(
 ) -> Sequence[Dataset]:
     """Reads a data message and a structure message and returns a dataset.
 
-    Args:
-        data: Path to file (pathlib.Path), URL, or string for the data message.
-        structure:
-          Path to file (pathlib.Path), URL, or string
-          for the structure message, if needed.
-        validate: Validate the input file (only for SDMX-ML).
+    This method reads a data message and an optional structure message,
+    and returns a sequence of Datasets.
+    Check the :ref:`formats supported <io-reader-formats-supported>`
 
-    Returns:
-        A sequence of Datasets
+    The resulting datasets will have their structure assigned,
+    this is required for:
+
+    - Data validation against its structure
+    - Data writing in SDMX-ML Structure Specific with DimensionAtObservation
+      not equal to AllDimensions or Generic formats
+    - Execution of VTL scripts over PandasDataset
+
+    Args:
+        data: Path to file
+          (`pathlib.Path <https://docs.python.org/3/library/pathlib.html>`_),
+          URL, or string for the data message.
+        structure:
+          Path to file
+          (`pathlib.Path <https://docs.python.org/3/library/pathlib.html>`_),
+          URL, or string for the structure message, if needed.
+        validate: Validate the input file (only for SDMX-ML).
 
     Raises:
         Invalid:

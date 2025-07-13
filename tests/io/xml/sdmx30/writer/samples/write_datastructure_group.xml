@@ -3906,7 +3906,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 					<com:Name xml:lang="en">Submission channel</com:Name>
 					<str:CoreRepresentation>
 						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_SUB_CHANNEL(1.0)</str:Enumeration>
-						<str:TextFormat textType="String"/>
+						<str:EnumerationFormat textType="String"/>
 					</str:CoreRepresentation>
 				</str:Concept>
 				<str:Concept id="MARKET_ISSUE" urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).MARKET_ISSUE">

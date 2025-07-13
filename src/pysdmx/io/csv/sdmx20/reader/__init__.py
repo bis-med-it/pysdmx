@@ -83,7 +83,9 @@ def read(input_str: str) -> Sequence[PandasDataset]:
         Invalid: If it is an invalid CSV file.
     """
     # Get Dataframe from CSV file
-    df_csv = pd.read_csv(StringIO(input_str))
+    df_csv = pd.read_csv(
+        StringIO(input_str), keep_default_na=False, na_values=[""]
+    )
     # Drop empty columns
     df_csv = df_csv.dropna(axis=1, how="all")
 
@@ -100,7 +102,7 @@ def read(input_str: str) -> Sequence[PandasDataset]:
         )
 
     # Convert all columns to strings
-    df_csv = df_csv.astype("str")
+    df_csv = df_csv.astype(str).replace({"nan": "", "<NA>": ""})
     # Check if any column headers contain ':', indicating mode, label or text
     mode_label_text = any(":" in x for x in df_csv.columns)
 

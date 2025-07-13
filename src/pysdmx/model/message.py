@@ -48,7 +48,31 @@ from pysdmx.model.vtl import (
 
 
 class Header(Struct, repr_omit_defaults=True, kw_only=True):
-    """Header for the SDMX messages."""
+    """Header for the SDMX messages.
+
+    Represents the Header of an SDMX message, containing metadata about the
+    message such as the sender, receiver, and other relevant information.
+
+    Attributes:
+        id: Unique identifier for the message. (default: generated UUID)
+        test: Indicates if the message is a test message. (default: False)
+        prepared: Timestamp when the message was prepared.
+          (default: current UTC time)
+        sender: Organisation that sent the message.
+          (default: Organisation with id "ZZZ")
+        receiver: Optional Organisation that received the message.
+          (default: None)
+        source: Optional source of the message. (default: None)
+        dataset_action: Optional action for the dataset
+          (only for SDMX Data messages). (default: None)
+        structure: Dimension at observation mapping
+          (dict with short URN as key and Dimension ID as value)
+          (only for SDMX Data Messages)
+          (Overridden by dimension_at_observation argument in writers).
+          (default: None)
+        dataset_id: DatasetID defined at SDMX-ML
+          (only for SDMX-ML Data messages). (default: None)
+    """
 
     id: str = str(uuid.uuid4())
     test: bool = False
@@ -59,6 +83,14 @@ class Header(Struct, repr_omit_defaults=True, kw_only=True):
     dataset_action: Optional[ActionType] = None
     structure: Optional[Dict[str, str]] = None
     dataset_id: Optional[str] = None
+
+    def __post_init__(self) -> None:
+        """Header post-initialization."""
+        if isinstance(self.sender, str):
+            self.sender = Organisation(id=self.sender)
+
+        if isinstance(self.receiver, str):
+            self.receiver = Organisation(id=self.receiver)
 
     def __str__(self) -> str:
         """Custom string representation without the class name."""
@@ -73,8 +105,8 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
 
     Attributes:
         header: The header of the SDMX message.
-        structures: Sequence of structure objects. They represent the
-            contents of a Structure Message.
+        structures: Sequence of MaintainableArtefact objects.
+          They represent the contents of a Structure Message.
     """
 
     header: Optional[Header] = None
@@ -229,7 +261,7 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
         return self.__get_elements(RulesetScheme)
 
     def get_category_schemes(self) -> List[CategoryScheme]:
-        """Returns the Codelists."""
+        """Returns the CategorySchemes."""
         return self.__get_elements(CategoryScheme)
 
     def get_value_lists(self) -> List[Codelist]:
@@ -237,50 +269,50 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
         return self.__get_enumerations(Codelist, True)
 
     def get_hierarchies(self) -> List[Hierarchy]:
-        """Returns the Codelists."""
+        """Returns the HierarchyCodelists."""
         return self.__get_elements(Hierarchy)
 
     def get_hierarchy_associations(self) -> List[HierarchyAssociation]:
-        """Returns the Codelists."""
+        """Returns the HierarchyAssociations."""
         return self.__get_elements(HierarchyAssociation)
 
     def get_data_provider_schemes(self) -> List[DataProviderScheme]:
-        """Returns the Codelists."""
+        """Returns the DataProviderSchemes."""
         return self.__get_elements(DataProviderScheme)
 
     def get_provision_agreements(self) -> List[ProvisionAgreement]:
-        """Returns the Codelists."""
+        """Returns the ProvisionAgreements."""
         return self.__get_elements(ProvisionAgreement)
 
     def get_structure_maps(self) -> List[StructureMap]:
-        """Returns the Codelists."""
+        """Returns the StructureMaps."""
         return self.__get_elements(StructureMap)
 
     def get_representation_maps(
         self,
     ) -> List[Union[MultiRepresentationMap, RepresentationMap]]:
-        """Returns the Codelists."""
+        """Returns the RepresentationMaps."""
         out = []
         out.extend(self.__get_elements(RepresentationMap))
         out.extend(self.__get_elements(MultiRepresentationMap))
         return out
 
     def get_categorisations(self) -> List[Categorisation]:
-        """Returns the Codelists."""
+        """Returns the Categorisations."""
         return self.__get_elements(Categorisation)
 
     def get_custom_type_schemes(self) -> List[CustomTypeScheme]:
-        """Returns the Codelists."""
+        """Returns the CustomType Schemes."""
         return self.__get_elements(CustomTypeScheme)
 
     def get_vtl_mapping_schemes(self) -> List[VtlMappingScheme]:
-        """Returns the Codelists."""
+        """Returns the VTL Mapping Schemes."""
         return self.__get_elements(VtlMappingScheme)
 
     def get_name_personalisation_schemes(
         self,
     ) -> List[NamePersonalisationScheme]:
-        """Returns the Codelists."""
+        """Returns the NamePersonalisationSchemes."""
         return self.__get_elements(NamePersonalisationScheme)
 
 
@@ -308,7 +340,7 @@ class Message(StructureMessage, frozen=True):
 
     Attributes:
         header: The header of the SDMX message.
-        structures: Sequence of structure objects.
+        structures: Sequence of MaintainableArtefact objects.
         data: Sequence of Dataset objects. They represent the contents of a
            SDMX Data Message in any format.
         submission: Sequence of SubmissionResult objects. They represent the

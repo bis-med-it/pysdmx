@@ -1,6 +1,6 @@
 [project]
 name = "pysdmx"
-version = "1.3.0"
+version = "1.4.0rc1"
 description = "Your opinionated Python SDMX library"
 license = { text = "Apache-2.0" }
 readme = "README.rst"

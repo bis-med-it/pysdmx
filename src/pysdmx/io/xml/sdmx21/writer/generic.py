@@ -1,7 +1,8 @@
 # mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 2.1 Generic data messages."""
 
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import pandas as pd
 
@@ -450,7 +451,7 @@ def __format_ser_str(
 
 def write(
     datasets: Sequence[PandasDataset],
-    output_path: str = "",
+    output_path: Optional[Union[str, Path]] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
     dimension_at_observation: Optional[Dict[str, str]] = None,
@@ -492,7 +493,11 @@ def write(
 
     outfile += get_end_message(type_, prettyprint)
 
-    if output_path == "":
+    output_path = (
+        str(output_path) if isinstance(output_path, Path) else output_path
+    )
+
+    if output_path is None or output_path == "":
         return outfile
 
     with open(output_path, "w", encoding="UTF-8", errors="replace") as f:
