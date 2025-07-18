@@ -19,20 +19,25 @@ class Format(Enum):
         f"{_BASE}structurespecifictimeseriesdata+xml;version=2.1"
     )
     DATA_SDMX_ML_3_0 = f"{_BASE}data+xml;version=3.0.0"
+    DATA_SDMX_ML_3_1 = f"{_BASE}data+xml;version=3.1"
     GDS_JSON = "application/json"
     REFMETA_SDMX_CSV_2_0_0 = f"{_BASE}metadata+csv;version=2.0.0"
     REFMETA_SDMX_JSON_2_0_0 = f"{_BASE}metadata+json;version=2.0.0"
     REFMETA_SDMX_ML_3_0 = f"{_BASE}metadata+xml;version=3.0.0"
+    REFMETA_SDMX_ML_3_1 = f"{_BASE}metadata+xml;version=3.1"
     REGISTRY_SDMX_ML_2_1 = f"{_BASE}registry+xml;version=2.1"
     REGISTRY_SDMX_ML_3_0 = f"{_BASE}registry+xml;version=3.0"
+    REGISTRY_SDMX_ML_3_1 = f"{_BASE}registry+xml;version=3.1"
     SCHEMA_SDMX_JSON_1_0_0 = f"{_BASE}schema+json;version=1.0.0"
     SCHEMA_SDMX_JSON_2_0_0 = f"{_BASE}schema+json;version=2.0.0"
     SCHEMA_SDMX_ML_2_1 = f"{_BASE}schema+xml;version=2.1"
     SCHEMA_SDMX_ML_3_0 = f"{_BASE}schema+xml;version=3.0.0"
+    SCHEMA_SDMX_ML_3_1 = f"{_BASE}schema+xml;version=3.1"
     STRUCTURE_SDMX_JSON_1_0_0 = f"{_BASE}structure+json;version=1.0.0"
     STRUCTURE_SDMX_JSON_2_0_0 = f"{_BASE}structure+json;version=2.0.0"
     STRUCTURE_SDMX_ML_2_1 = f"{_BASE}structure+xml;version=2.1"
     STRUCTURE_SDMX_ML_3_0 = f"{_BASE}structure+xml;version=3.0.0"
+    STRUCTURE_SDMX_ML_3_1 = f"{_BASE}structure+xml;version=3.1"
     ERROR_SDMX_ML_2_1 = "application/error.xml"
     FUSION_JSON = "application/vnd.fusion.json"
 
@@ -44,6 +49,7 @@ class AvailabilityFormat(Enum):
     SDMX_JSON_2_0_0 = Format.STRUCTURE_SDMX_JSON_2_0_0.value
     SDMX_ML_2_1 = Format.STRUCTURE_SDMX_ML_2_1.value
     SDMX_ML_3_0 = Format.STRUCTURE_SDMX_ML_3_0.value
+    SDMX_ML_3_1 = Format.STRUCTURE_SDMX_ML_3_1.value
 
 
 class DataFormat(Enum):
@@ -58,6 +64,7 @@ class DataFormat(Enum):
     SDMX_ML_2_1_STR = Format.DATA_SDMX_ML_2_1_STR.value
     SDMX_ML_2_1_STRTS = Format.DATA_SDMX_ML_2_1_STRTS.value
     SDMX_ML_3_0 = Format.DATA_SDMX_ML_3_0.value
+    SDMX_ML_3_1 = Format.DATA_SDMX_ML_3_1.value
 
 
 class RefMetaFormat(Enum):
@@ -66,6 +73,7 @@ class RefMetaFormat(Enum):
     SDMX_CSV_2_0_0 = Format.REFMETA_SDMX_CSV_2_0_0.value
     SDMX_JSON_2_0_0 = Format.REFMETA_SDMX_JSON_2_0_0.value
     SDMX_ML_3_0 = Format.REFMETA_SDMX_ML_3_0.value
+    SDMX_ML_3_1 = Format.REFMETA_SDMX_ML_3_1.value
     FUSION_JSON = Format.FUSION_JSON.value
 
 
@@ -80,6 +88,8 @@ class SchemaFormat(Enum):
     SDMX_ML_3_0_SCHEMA = Format.SCHEMA_SDMX_ML_3_0.value
     SDMX_ML_2_1_STRUCTURE = Format.STRUCTURE_SDMX_ML_2_1.value
     SDMX_ML_3_0_STRUCTURE = Format.STRUCTURE_SDMX_ML_3_0.value
+    SDMX_ML_3_1_STRUCTURE = Format.STRUCTURE_SDMX_ML_3_1.value
+
     FUSION_JSON = Format.FUSION_JSON.value
 
 
@@ -90,6 +100,7 @@ class StructureFormat(Enum):
     SDMX_JSON_2_0_0 = Format.STRUCTURE_SDMX_JSON_2_0_0.value
     SDMX_ML_2_1 = Format.STRUCTURE_SDMX_ML_2_1.value
     SDMX_ML_3_0 = Format.STRUCTURE_SDMX_ML_3_0.value
+    SDMX_ML_3_1 = Format.STRUCTURE_SDMX_ML_3_1.value
     FUSION_JSON = Format.FUSION_JSON.value
 
 
@@ -98,6 +109,7 @@ class RegistryFormat(Enum):
 
     SDMX_ML_2_1 = Format.REGISTRY_SDMX_ML_2_1.value
     SDMX_ML_3_0 = Format.REGISTRY_SDMX_ML_3_0.value
+    SDMX_ML_3_1 = Format.REGISTRY_SDMX_ML_3_1.value
     FUSION_JSON = Format.FUSION_JSON.value
 
 

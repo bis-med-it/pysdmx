@@ -60,6 +60,15 @@ def read_sdmx(  # noqa: C901
         header = read_header(input_str, validate=validate)
         # SDMX-ML 3.0 Structure
         result_structures = read_structure(input_str, validate=validate)
+    elif read_format == Format.STRUCTURE_SDMX_ML_3_1:
+        from pysdmx.io.xml.header import read as read_header
+        from pysdmx.io.xml.sdmx31.reader.structure import (
+            read as read_structure,
+        )
+
+        header = read_header(input_str, validate=validate)
+        # SDMX-ML 3.1 Structure
+        result_structures = read_structure(input_str, validate=validate)
     elif read_format == Format.DATA_SDMX_ML_2_1_GEN:
         from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
@@ -96,6 +105,16 @@ def read_sdmx(  # noqa: C901
         header = read_header(input_str, validate=validate)
 
         # SDMX-ML 3.0 Structure Specific Data
+        result_data = read_str_spe(input_str, validate=validate)
+    elif read_format == Format.DATA_SDMX_ML_3_1:
+        from pysdmx.io.xml.header import read as read_header
+        from pysdmx.io.xml.sdmx31.reader.structure_specific import (
+            read as read_str_spe,
+        )
+
+        header = read_header(input_str, validate=validate)
+
+        # SDMX-ML 3.1 Structure Specific Data
         result_data = read_str_spe(input_str, validate=validate)
     elif read_format == Format.DATA_SDMX_CSV_1_0_0:
         from pysdmx.io.csv.sdmx10.reader import read as read_csv_v1
