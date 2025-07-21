@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:StructureSpecificData xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/data/structurespecific" 
+								xmlns:footer="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message/footer" 
+								xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=ECB:EXR(1.0):ObsLevelDim:TIME_PERIOD" 
+								xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message" 
+								xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/common" 
+								xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+								xmlns:xml="http://www.w3.org/XML/1998/namespace" 
+								xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message https://xml.sdmx.org/3.1/SDMXMessage.xsd urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=ECB:EXR(1.0):ObsLevelDim:TIME_PERIOD ECB_EXR_Dataflow.xsd">
+    <message:Header>
+        <message:ID>IREF411123</message:ID>
+        <message:Test>false</message:Test>
+        <message:Prepared>2021-03-08T22:05:13Z</message:Prepared>
+        <message:Sender id="Unknown" />
+        <message:Receiver id="ANONYMOUS" />
+        <message:Structure structureID="ECB_EXR_1_0" namespace="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=ECB:EXR(1.0):ObsLevelDim:TIME_PERIOD" dimensionAtObservation="TIME_PERIOD">
+            <common:StructureUsage>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=ECB:EXR(1.0)</common:StructureUsage>
+
+        </message:Structure>
+        <message:DataSetAction>Information</message:DataSetAction>
+        <message:Extracted>2021-03-08T22:05:13</message:Extracted>
+        <message:ReportingBegin>1999-01-01T00:00:00</message:ReportingBegin>
+        <message:ReportingEnd>2019-01-01T23:59:59</message:ReportingEnd>
+    </message:Header>
+    <message:DataSet xsi:type="ns1:DataSetType" ss:structureRef="ECB_EXR_1_0">
+        <Series FREQ="A" CURRENCY="CAD" CURRENCY_DENOM="EUR" EXR_TYPE="SP00" EXR_SUFFIX="A" TIME_FORMAT="P1Y" COLLECTION="A" DECIMALS="4" SOURCE_AGENCY="4F0" TITLE="Canadian dollar/Euro" TITLE_COMPL="ECB reference exchange rate, Canadian dollar/Euro, 2:15 pm (C.E.T.)" UNIT="CAD" UNIT_MULT="0">
+            <Obs TIME_PERIOD="1999" OBS_VALUE="1.583993822393823" OBS_STATUS="#N/A" />
+            <Obs TIME_PERIOD="2000" OBS_VALUE="1.37058431372549" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2001" OBS_VALUE="1.386378740157479" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2002" OBS_VALUE="1.483813725490196" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2003" OBS_VALUE="1.581680784313727" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2004" OBS_VALUE="1.616749806949807" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2005" OBS_VALUE="1.508733852140077" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2006" OBS_VALUE="1.423687450980391" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2007" OBS_VALUE="1.467847843137256" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2008" OBS_VALUE="1.559421484375" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2009" OBS_VALUE="1.584956640625" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2010" OBS_VALUE="1.365106201550388" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2011" OBS_VALUE="1.376102723735408" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2012" OBS_VALUE="1.284211718750001" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2013" OBS_VALUE="1.368372549019608" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2014" OBS_VALUE="1.466137647058824" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2015" OBS_VALUE="1.418560156249999" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2016" OBS_VALUE="1.465878988326847" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2017" OBS_VALUE="1.46472274509804" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2018" OBS_VALUE="1.529364705882353" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2019" OBS_VALUE="1.485477254901961" OBS_STATUS="A" />
+        </Series>
+        <Series FREQ="A" CURRENCY="CAD" CURRENCY_DENOM="EUR" EXR_TYPE="SP00" EXR_SUFFIX="E" TIME_FORMAT="P1Y" COLLECTION="E" DECIMALS="4" SOURCE_AGENCY="4F0" TITLE="Canadian dollar/Euro" TITLE_COMPL="ECB reference exchange rate, Canadian dollar/Euro, 2:15 pm (C.E.T.)" UNIT="CAD" UNIT_MULT="0">
+            <Obs TIME_PERIOD="1999" OBS_VALUE="1.4608" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2000" OBS_VALUE="1.3965" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2001" OBS_VALUE="1.4077" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2002" OBS_VALUE="1.655" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2003" OBS_VALUE="1.6234" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2004" OBS_VALUE="1.6416" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2005" OBS_VALUE="1.3725" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2006" OBS_VALUE="1.5281" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2007" OBS_VALUE="1.4449" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2008" OBS_VALUE="1.6998" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2009" OBS_VALUE="1.5128" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2010" OBS_VALUE="1.3322" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2011" OBS_VALUE="1.3215" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2012" OBS_VALUE="1.3137" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2013" OBS_VALUE="1.4671" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2014" OBS_VALUE="1.4063" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2015" OBS_VALUE="1.5116" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2016" OBS_VALUE="1.4188" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2017" OBS_VALUE="1.5039" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2018" OBS_VALUE="1.5605" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2019" OBS_VALUE="1.4598" OBS_STATUS="A" />
+        </Series>
+        <Series FREQ="A" CURRENCY="CHF" CURRENCY_DENOM="EUR" EXR_TYPE="SP00" EXR_SUFFIX="A" TIME_FORMAT="P1Y" COLLECTION="A" DECIMALS="4" SOURCE_AGENCY="4F0" TITLE="Swiss franc/Euro" TITLE_COMPL="ECB reference exchange rate, Swiss franc/Euro, 2:15 pm (C.E.T.)" UNIT="CHF" UNIT_MULT="0">
+            <Obs TIME_PERIOD="1999" OBS_VALUE="1.600342857142858" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2000" OBS_VALUE="1.557858823529411" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2001" OBS_VALUE="1.51051811023622" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2002" OBS_VALUE="1.467025490196078" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2003" OBS_VALUE="1.521200784313726" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2004" OBS_VALUE="1.543822007722009" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2005" OBS_VALUE="1.548281712062256" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2006" OBS_VALUE="1.57287843137255" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2007" OBS_VALUE="1.642719607843137" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2008" OBS_VALUE="1.58739453125" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2009" OBS_VALUE="1.510018749999999" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2010" OBS_VALUE="1.380344186046512" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2011" OBS_VALUE="1.232605058365759" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2012" OBS_VALUE="1.205275390624999" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2013" OBS_VALUE="1.231058823529412" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2014" OBS_VALUE="1.214622352941176" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2015" OBS_VALUE="1.067857031250002" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2016" OBS_VALUE="1.090155252918288" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2017" OBS_VALUE="1.11167411764706" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2018" OBS_VALUE="1.154958039215685" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2019" OBS_VALUE="1.112449019607843" OBS_STATUS="A" />
+        </Series>
+        <Series FREQ="A" CURRENCY="CHF" CURRENCY_DENOM="EUR" EXR_TYPE="SP00" EXR_SUFFIX="E" TIME_FORMAT="P1Y" COLLECTION="E" DECIMALS="4" SOURCE_AGENCY="4F0" TITLE="Swiss franc/Euro" TITLE_COMPL="ECB reference exchange rate, Swiss franc/Euro, 2:15 pm (C.E.T.)" UNIT="CHF" UNIT_MULT="0">
+            <Obs TIME_PERIOD="1999" OBS_VALUE="1.6051" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2000" OBS_VALUE="1.5232" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2001" OBS_VALUE="1.4829" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2002" OBS_VALUE="1.4524" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2003" OBS_VALUE="1.5579" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2004" OBS_VALUE="1.5429" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2005" OBS_VALUE="1.5551" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2006" OBS_VALUE="1.6069" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2007" OBS_VALUE="1.6547" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2008" OBS_VALUE="1.485" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2009" OBS_VALUE="1.4836" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2010" OBS_VALUE="1.2504" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2011" OBS_VALUE="1.2156" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2012" OBS_VALUE="1.2072" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2013" OBS_VALUE="1.2276" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2014" OBS_VALUE="1.2024" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2015" OBS_VALUE="1.0835" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2016" OBS_VALUE="1.0739" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2017" OBS_VALUE="1.1702" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2018" OBS_VALUE="1.1269" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2019" OBS_VALUE="1.0854" OBS_STATUS="A" />
+        </Series>
+        <Series FREQ="A" CURRENCY="LTL" CURRENCY_DENOM="EUR" EXR_TYPE="SP00" EXR_SUFFIX="A" TIME_FORMAT="P1Y" COLLECTION="A" DECIMALS="5" SOURCE_AGENCY="4F0" TITLE="Lithuanian litas/Euro" TITLE_COMPL="ECB reference exchange rate, Lithuanian litas/Euro, 2:15 pm (C.E.T.)" UNIT="LTL" UNIT_MULT="0">
+            <Obs TIME_PERIOD="1999" OBS_VALUE="4.264074131274129" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2000" OBS_VALUE="3.695179607843139" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2001" OBS_VALUE="3.582288188976375" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2002" OBS_VALUE="3.45943333333333" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2003" OBS_VALUE="3.452749411764708" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2004" OBS_VALUE="3.452861389961403" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2005" OBS_VALUE="3.452799610894958" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2006" OBS_VALUE="3.452800000000017" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2007" OBS_VALUE="3.452800000000017" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2008" OBS_VALUE="3.452800000000017" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2009" OBS_VALUE="3.452800000000017" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2010" OBS_VALUE="3.452800000000017" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2011" OBS_VALUE="3.452800000000017" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2012" OBS_VALUE="3.452800000000017" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2013" OBS_VALUE="3.452800000000017" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2014" OBS_VALUE="3.452800000000017" OBS_STATUS="A" />
+        </Series>
+        <Series FREQ="A" CURRENCY="LTL" CURRENCY_DENOM="EUR" EXR_TYPE="SP00" EXR_SUFFIX="E" TIME_FORMAT="P1Y" COLLECTION="E" DECIMALS="5" SOURCE_AGENCY="4F0" TITLE="Lithuanian litas/Euro" TITLE_COMPL="ECB reference exchange rate, Lithuanian litas/Euro, 2:15 pm (C.E.T.)" UNIT="LTL" UNIT_MULT="0">
+            <Obs TIME_PERIOD="1999" OBS_VALUE="4.0169" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2000" OBS_VALUE="3.7229" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2001" OBS_VALUE="3.5228" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2002" OBS_VALUE="3.4525" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2003" OBS_VALUE="3.4524" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2004" OBS_VALUE="3.4528" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2005" OBS_VALUE="3.4528" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2006" OBS_VALUE="3.4528" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2007" OBS_VALUE="3.4528" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2008" OBS_VALUE="3.4528" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2009" OBS_VALUE="3.4528" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2010" OBS_VALUE="3.4528" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2011" OBS_VALUE="3.4528" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2012" OBS_VALUE="3.4528" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2013" OBS_VALUE="3.4528" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2014" OBS_VALUE="3.4528" OBS_STATUS="A" />
+        </Series>
+    </message:DataSet>
+</message:StructureSpecificData>
