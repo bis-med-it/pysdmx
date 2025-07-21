@@ -15,7 +15,7 @@ SCHEMA_ROOT_31 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_1/"
 
 
 def validate_doc(input_str: str) -> None:
-    """Validates the SDMX-ML data against the XSD schema for SDMX-ML
+    """Validates the SDMX-ML data against the XSD schema for SDMX-ML.
 
     Args:
         input_str: The SDMX-ML data to validate.

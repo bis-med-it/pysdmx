@@ -137,6 +137,7 @@ def read_sdmx(  # noqa: C901
         Format.DATA_SDMX_ML_2_1_GEN,
         Format.DATA_SDMX_ML_2_1_STR,
         Format.DATA_SDMX_ML_3_0,
+        Format.DATA_SDMX_ML_3_1,
     ):
         # TODO: Add here the Schema download for Datasets, based on structure
         # TODO: Ensure we have changed the signature of the data readers

@@ -47,6 +47,8 @@ MESSAGE_TYPE_MAPPING = {
     Format.REGISTRY_SDMX_ML_2_1: "RegistryInterface",
     Format.DATA_SDMX_ML_3_0: "StructureSpecificData",
     Format.STRUCTURE_SDMX_ML_3_0: "Structure",
+    Format.DATA_SDMX_ML_3_1: "StructureSpecificData",
+    Format.STRUCTURE_SDMX_ML_3_1: "Structure",
 }
 
 ABBR_MSG = "mes"
@@ -89,6 +91,16 @@ NAMESPACES_30 = {
     ABBR_SPE: f"{BASE_URL_30}/data/structurespecific",
 }
 
+BASE_URL_31 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_1"
+
+NAMESPACES_31 = {
+    "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    ABBR_MSG: f"{BASE_URL_31}/message",
+    ABBR_COM: f"{BASE_URL_31}/common",
+    ABBR_STR: f"{BASE_URL_31}/structure",
+    ABBR_SPE: f"{BASE_URL_31}/data/structurespecific",
+}
+
 URN_DS_BASE = "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure="
 URN_PROVISION = "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement="
 URN_DFW = "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow="
@@ -116,6 +128,10 @@ def __namespaces_from_type(type_: Format) -> str:
         return f"xmlns:{ABBR_SPE}={NAMESPACES_30[ABBR_SPE]!r} "
     elif type_ == Format.STRUCTURE_SDMX_ML_3_0:
         return f"xmlns:{ABBR_STR}={NAMESPACES_30[ABBR_STR]!r} "
+    elif type_ == Format.DATA_SDMX_ML_3_1:
+        return f"xmlns:{ABBR_SPE}={NAMESPACES_31[ABBR_SPE]!r} "
+    elif type_ == Format.STRUCTURE_SDMX_ML_3_1:
+        return f"xmlns:{ABBR_STR}={NAMESPACES_31[ABBR_STR]!r} "
     else:
         raise NotImplemented(f"{type_} not implemented")
 
@@ -150,6 +166,19 @@ def create_namespaces(
             f"{ss_namespaces}"
             f'xsi:schemaLocation="{NAMESPACES_30[ABBR_MSG]} '
             f'https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">'
+        )
+    elif (
+        type_ == Format.DATA_SDMX_ML_3_1
+        or type_ == Format.STRUCTURE_SDMX_ML_3_1
+    ):
+        outfile += f"xmlns:xsi={NAMESPACES_31['xsi']!r} "
+        outfile += f"xmlns:{ABBR_MSG}={NAMESPACES_31[ABBR_MSG]!r} "
+        outfile += __namespaces_from_type(type_)
+        outfile += (
+            f"xmlns:{ABBR_COM}={NAMESPACES_31[ABBR_COM]!r} "
+            f"{ss_namespaces}"
+            f'xsi:schemaLocation="{NAMESPACES_31[ABBR_MSG]} '
+            f'https://registry.sdmx.org/schemas/v3_1/SDMXMessage.xsd">'
         )
     else:
         outfile += f"xmlns:xsi={NAMESPACES_21['xsi']!r} "
