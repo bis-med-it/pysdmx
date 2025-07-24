@@ -220,7 +220,15 @@ NO_REL = "NoSpecifiedRelationship"
 METADATA = "Metadata"
 
 # To exclude from attached_attributes
-EXCLUDED_ATTRIBUTES = [STR_REF, "action", "dataScope", "xsi:type", SERIES, OBS]
+EXCLUDED_ATTRIBUTES = [
+    STR_REF,
+    "action",
+    "dataScope",
+    "xsi:type",
+    SERIES,
+    OBS,
+    GROUP,
+]
 
 # Content types
 DATASTRUCTURES_CM = "DataStructures"

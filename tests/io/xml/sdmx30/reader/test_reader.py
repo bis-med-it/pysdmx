@@ -84,8 +84,8 @@ def test_prov_agree_30_groups_series(samples_folder):
     data = result.data[0].data
     num_rows = len(data)
     num_columns = data.shape[1]
-    assert num_rows == 2
-    assert num_columns == 2
+    assert num_rows == 3
+    assert num_columns == 5
 
 
 def test_data_no_structure_specific(samples_folder):
