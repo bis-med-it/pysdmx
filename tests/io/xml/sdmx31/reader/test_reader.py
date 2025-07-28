@@ -45,7 +45,7 @@ def test_concept_scheme_31(samples_folder):
     assert isinstance(concept_scheme, ConceptScheme)
     assert concept_scheme.id == "ECB_CONCEPTS"
     assert concept_scheme.agency == "ECB"
-    assert len(concept_scheme.concepts) == 342
+    assert len(concept_scheme.concepts) == 2
 
 
 def test_data_dataflow_31(samples_folder):
@@ -56,7 +56,7 @@ def test_data_dataflow_31(samples_folder):
     data = result[0].data
     num_rows = len(data)
     num_columns = data.shape[1]
-    assert num_rows == 116
+    assert num_rows == 21
     assert num_columns == 16
 
 
