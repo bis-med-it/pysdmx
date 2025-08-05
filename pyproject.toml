@@ -9,7 +9,8 @@ authors = [
     { name = "Xavier Sosnovsky", email = "<xavier.sosnovsky@bis.org>" },
     { name = "Stratos Nikoloutsos", email = "<stratos.nikoloutsos@bis.org>" },
     { name = "Francisco Javier Hernandez del Caño", email = "<javier.hernandez@meaningfuldata.eu>" },
-    { name = "Mateo de Lorenzo Argelés", email = "<mateo.delorenzo@meaningfuldata.eu>" }
+    { name = "Mateo de Lorenzo Argelés", email = "<mateo.delorenzo@meaningfuldata.eu>" },
+    { name = "Jose Antonio Franco Martin", email = "<jose.franco@meaningfuldata.eu>" }
 ]
 keywords = ["sdmx", "data discovery", "data retrieval", "metadata", "fmr"]
 classifiers = [
