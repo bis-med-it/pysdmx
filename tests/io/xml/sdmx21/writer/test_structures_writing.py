@@ -246,6 +246,23 @@ def concept():
 
 
 @pytest.fixture
+def concept_quotes():
+    return ConceptScheme(
+        id='"Quote"',
+        name='Concept with "Quotes"',
+        description='concept with "Quotes"',
+        agency=Agency(id="MD"),
+        version="1.0",
+        uri=TEST_CS_URN,
+        urn=TEST_CS_URN,
+        is_external_reference=False,
+        is_partial=False,
+        is_final=False,
+        items=[],
+    )
+
+
+@pytest.fixture
 def concept_ds():
     return ConceptScheme(
         urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
@@ -1069,3 +1086,14 @@ def test_writing_more_than_one_measure(datastructure_two_measures):
             content,
             prettyprint=True,
         )
+
+
+def test_write_dataflow_with_quote(concept_quotes):
+    content = [concept_quotes]
+    result = write(
+        content,
+        prettyprint=True,
+    )
+    assert 'id=""Quote""' in result
+    assert 'Name xml:lang="en">Concept with "Quotes"' in result
+    assert 'Description xml:lang="en">concept with "Quotes"' in result
