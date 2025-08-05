@@ -1,6 +1,7 @@
 # mypy: disable-error-code="union-attr"
 """Writer auxiliary functions."""
 
+import re
 import warnings
 from collections import OrderedDict
 from typing import Optional, Union
@@ -506,4 +507,6 @@ def __to_lower_camel_case(snake_str: str) -> str:
 
 
 def __escape_xml(value: str) -> str:
-    return escape(value)
+    final_value = escape(value)
+    final_value = re.sub(r'(?<!\w)"(?!\w)', "&quot;", final_value)
+    return final_value
