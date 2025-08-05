@@ -482,6 +482,7 @@ def test_dataset_action_and_header_action_dataset_id(content, header):
     assert data_gen.data[0].action == ActionType.Append
 
 
+
 def test_write_structure_specific_with_groups(header, ds_with_group):
     base_path = (
         Path(__file__).parent
@@ -517,3 +518,14 @@ def test_write_generic_with_groups(header, ds_with_group):
     )
 
     assert result == sample
+
+def test_data_scape_quote():
+    # Create dataframe with quotation mark in string
+    data = pd.DataFrame(
+        data={"A": 'quote="'}, index=pd.DatetimeIndex(["2000-1-1"])
+    )
+    dataset = PandasDataset(data=data, structure="Dataflow=Short:Urn(1.0)")
+    result = write_str_spec([dataset])
+    assert result is not None
+    assert 'A="quote=&quot;"' in result
+
