@@ -1,0 +1,5 @@
+STRUCTURE,STRUCTURE_ID,ACTION,A
+dataflow,Short:Urn(1.0),I,NaN
+dataflow,Short:Urn(1.0),I,1
+dataflow,Short:Urn(1.0),I,#NA
+dataflow,Short:Urn(1.0),I,#NA

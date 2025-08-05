@@ -10,7 +10,43 @@ from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.util._date_pattern_map import convert_dpm
 
 
-class DatePatternMap(Struct, frozen=True, omit_defaults=True, tag=True):
+class _BaseMap(
+    Struct,
+    frozen=True,
+    omit_defaults=True,
+    repr_omit_defaults=True,
+):
+    """Base class for mapping definitions."""
+
+    def __str__(self) -> str:
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # str is taken as a Sequence, so we need to check it's not a str
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                # Handle non-empty lists
+                if value:
+                    class_name = value[0].__class__.__name__
+                    value = f"{len(value)} {class_name.lower()}s"
+                # redundant if check for python 3.9 and lower versions cov
+                if not value:
+                    continue
+
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # Omit empty sequences
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
+
+
+class DatePatternMap(_BaseMap, frozen=True, omit_defaults=True, tag=True):
     """A mapping based on a date pattern.
 
     Examples:
@@ -41,6 +77,8 @@ class DatePatternMap(Struct, frozen=True, omit_defaults=True, tag=True):
             the target structure (e.g. `FREQ`). In this case, the input date
             can be converted to a different format, depending on the
             frequency of the converted data.
+        resolvePeriod: The point in time to resolve to when mapping from low
+            frequency to higher frequency periods.
     """
 
     source: str
@@ -50,6 +88,9 @@ class DatePatternMap(Struct, frozen=True, omit_defaults=True, tag=True):
     id: Optional[str] = None
     locale: str = "en"
     pattern_type: Literal["fixed", "variable"] = "fixed"
+    resolvePeriod: Optional[
+        Literal["startOfPeriod", "endOfPeriod", "midPeriod"]
+    ] = None
 
     @property
     def py_pattern(self) -> str:
@@ -57,7 +98,7 @@ class DatePatternMap(Struct, frozen=True, omit_defaults=True, tag=True):
         return convert_dpm(self.pattern)
 
 
-class FixedValueMap(Struct, frozen=True, omit_defaults=True, tag=True):
+class FixedValueMap(_BaseMap, frozen=True, omit_defaults=True, tag=True):
     """Set a component to a fixed value.
 
     Examples:
@@ -81,7 +122,9 @@ class FixedValueMap(Struct, frozen=True, omit_defaults=True, tag=True):
     located_in: Literal["source", "target"] = "target"
 
 
-class ImplicitComponentMap(Struct, frozen=True, omit_defaults=True, tag=True):
+class ImplicitComponentMap(
+    _BaseMap, frozen=True, omit_defaults=True, tag=True
+):
     """A mapping where the value in the source is copied to the target.
 
     Examples:
@@ -103,7 +146,7 @@ class ImplicitComponentMap(Struct, frozen=True, omit_defaults=True, tag=True):
     target: str
 
 
-class MultiValueMap(Struct, frozen=True, omit_defaults=True, kw_only=True):
+class MultiValueMap(_BaseMap, frozen=True, omit_defaults=True, kw_only=True):
     """Provides the values for a mapping between one or more components.
 
     Examples:
@@ -158,7 +201,7 @@ class MultiValueMap(Struct, frozen=True, omit_defaults=True, kw_only=True):
         return tuple(out)
 
 
-class ValueMap(Struct, frozen=True, omit_defaults=True, kw_only=True):
+class ValueMap(_BaseMap, frozen=True, omit_defaults=True, kw_only=True):
     """Maps the values of two components together.
 
     Examples:
@@ -232,7 +275,7 @@ class MultiRepresentationMap(
         return len(self.maps)
 
 
-class MultiComponentMap(Struct, frozen=True, omit_defaults=True, tag=True):
+class MultiComponentMap(_BaseMap, frozen=True, omit_defaults=True, tag=True):
     """Maps one or more source components to one or more target components.
 
     Examples:
@@ -293,7 +336,7 @@ class RepresentationMap(MaintainableArtefact, frozen=True, omit_defaults=True):
         return len(self.maps)
 
 
-class ComponentMap(Struct, frozen=True, omit_defaults=True, tag=True):
+class ComponentMap(_BaseMap, frozen=True, omit_defaults=True, tag=True):
     """Maps a source component to a target component.
 
     Examples:
@@ -314,7 +357,7 @@ class ComponentMap(Struct, frozen=True, omit_defaults=True, tag=True):
 
     source: str
     target: str
-    values: RepresentationMap
+    values: Union[RepresentationMap, str]
 
 
 class StructureMap(MaintainableArtefact, frozen=True, omit_defaults=True):

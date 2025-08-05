@@ -6,9 +6,10 @@ from pathlib import Path
 import pytest
 
 from pysdmx.errors import Invalid, NotImplemented
+from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
-from pysdmx.io.xml.sdmx21.__tokens import CON
+from pysdmx.io.xml.__tokens import CON
 from pysdmx.io.xml.sdmx21.reader.structure import read
 from pysdmx.io.xml.sdmx21.writer.error import write as write_err
 from pysdmx.io.xml.sdmx21.writer.structure import write
@@ -18,9 +19,13 @@ from pysdmx.model import (
     Codelist,
     Concept,
     ConceptScheme,
+    CustomTypeScheme,
     Facets,
+    FromVtlMapping,
+    NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
+    ToVtlMapping,
     Transformation,
     TransformationScheme,
     UserDefinedOperator,
@@ -46,8 +51,7 @@ from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import Header
 
 TEST_CS_URN = (
-    "urn:sdmx:org.sdmx.infomodel.conceptscheme."
-    "ConceptScheme=BIS:CS_FREQ(1.0)"
+    "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS:CS_FREQ(1.0)"
 )
 
 
@@ -75,6 +79,13 @@ def empty_sample():
 @pytest.fixture
 def read_write_sample():
     base_path = Path(__file__).parent / "samples" / "read_write_sample.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def vtl_complete():
+    base_path = Path(__file__).parent / "samples" / "vtl_complete.xml"
     with open(base_path, "r") as f:
         return f.read()
 
@@ -231,6 +242,23 @@ def concept():
                 description="Quarterly",
             ),
         ],
+    )
+
+
+@pytest.fixture
+def concept_quotes():
+    return ConceptScheme(
+        id='"Quote"',
+        name='Concept with "Quotes"',
+        description='concept with "Quotes"',
+        agency=Agency(id="MD"),
+        version="1.0",
+        uri=TEST_CS_URN,
+        urn=TEST_CS_URN,
+        is_external_reference=False,
+        is_partial=False,
+        is_final=False,
+        items=[],
     )
 
 
@@ -504,57 +532,106 @@ def datastructure(concept_ds):
         version="7.0",
         agency="ESTAT",
         is_final=True,
-        components=[
-            Component(
-                id="freq_dim",
-                required=True,
-                role=Role.DIMENSION,
-                concept=concept_ds.concepts[0],
-                local_facets=Facets(min_length="1", max_length="1"),
-                urn="urn:sdmx:org.sdmx.infomodel.datastructure."
-                "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).FREQ",
-            ),
-            Component(
-                id="DIM2",
-                required=True,
-                role=Role.DIMENSION,
-                # Missing Concept Scheme
-                concept=ItemReference(
-                    id="CS_FREQ2",
-                    sdmx_type=CON,
-                    agency="BIS",
-                    version="1.0",
-                    item_id="DIM2",
+        components=Components(
+            [
+                Component(
+                    id="freq_dim",
+                    required=True,
+                    role=Role.DIMENSION,
+                    concept=concept_ds.concepts[0],
+                    local_facets=Facets(min_length="1", max_length="1"),
+                    urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+                    "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).FREQ",
                 ),
-                local_facets=Facets(min_length="1", max_length="1"),
-                urn="urn:sdmx:org.sdmx.infomodel.datastructure."
-                "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).DIM2",
-            ),
-            Component(
-                id="DIM3",
-                required=True,
-                role=Role.DIMENSION,
-                # Missing Concept in Concept Identity
-                concept=ItemReference(
-                    id="CS_FREQ",
-                    sdmx_type=CON,
-                    agency="BIS",
-                    version="1.0",
-                    item_id="DIM3",
+                Component(
+                    id="DIM2",
+                    required=True,
+                    role=Role.DIMENSION,
+                    # Missing Concept Scheme
+                    concept=ItemReference(
+                        id="CS_FREQ2",
+                        sdmx_type=CON,
+                        agency="BIS",
+                        version="1.0",
+                        item_id="DIM2",
+                    ),
+                    local_facets=Facets(min_length="1", max_length="1"),
+                    urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+                    "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).DIM2",
                 ),
-                local_facets=Facets(min_length="1", max_length="1"),
-                urn="urn:sdmx:org.sdmx.infomodel.datastructure."
-                "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).DIM2",
-            ),
-            Component(
-                id="OBS_VALUE",
-                required=True,
-                role=Role.MEASURE,
-                concept=concept_ds.concepts[1],
-                urn="urn:sdmx:org.sdmx.infomodel.datastructure."
-                "PrimaryMeasure=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE",
-            ),
+                Component(
+                    id="DIM3",
+                    required=True,
+                    role=Role.DIMENSION,
+                    # Missing Concept in Concept Identity
+                    concept=ItemReference(
+                        id="CS_FREQ",
+                        sdmx_type=CON,
+                        agency="BIS",
+                        version="1.0",
+                        item_id="DIM3",
+                    ),
+                    local_facets=Facets(min_length="1", max_length="1"),
+                    urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+                    "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).DIM2",
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    required=True,
+                    role=Role.MEASURE,
+                    concept=concept_ds.concepts[1],
+                    urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+                    "PrimaryMeasure=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE",
+                ),
+            ]
+        ),
+        description="Healthcare resource partnership statistics",
+    )
+
+
+@pytest.fixture
+def datastructure_two_measures(concept_ds):
+    return DataStructureDefinition(
+        annotations=[
+            Annotation(title="OBS_FLAG", type="DISSEMINATION_FLAG_SETTINGS"),
+            Annotation(title="time", type="DISSEMINATION_TIME_DIMENSION_CODE"),
         ],
+        urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+        "DataStructure=ESTAT:HLTH_RS_PRSHP1(7.0)",
+        id="HLTH_RS_PRSHP1",
+        name="HLTH_RS_PRSHP1",
+        version="7.0",
+        agency="ESTAT",
+        is_final=True,
+        components=Components(
+            [
+                Component(
+                    id="freq_dim",
+                    required=True,
+                    role=Role.DIMENSION,
+                    concept=concept_ds.concepts[0],
+                    local_facets=Facets(min_length="1", max_length="1"),
+                    urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+                    "TimeDimension=ESTAT:HLTH_RS_PRSHP1(7.0).FREQ",
+                ),
+                Component(
+                    id="OBS_VALUE_1",
+                    required=True,
+                    role=Role.MEASURE,
+                    concept=concept_ds.concepts[1],
+                    urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+                    "PrimaryMeasure=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE_1",
+                ),
+                Component(
+                    id="OBS_VALUE_2",
+                    required=True,
+                    role=Role.MEASURE,
+                    concept=concept_ds.concepts[1],
+                    urn="urn:sdmx:org.sdmx.infomodel.datastructure."
+                    "PrimaryMeasure=ESTAT:HLTH_RS_PRSHP1(7.0).OBS_VALUE_2",
+                ),
+            ]
+        ),
         description="Healthcare resource partnership statistics",
     )
 
@@ -656,6 +733,13 @@ def vtlmapping_scheme():
 @pytest.fixture
 def vtlmapping_sample():
     base_path = Path(__file__).parent / "samples" / "vtl_mapping_scheme.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def enum_format():
+    base_path = Path(__file__).parent / "samples" / "enum_format.xml"
     with open(base_path, "r") as f:
         return f.read()
 
@@ -938,3 +1022,78 @@ def test_writer_raise_nameable_error(noname_codelist, complete_header):
             content,
             header=complete_header,
         )
+
+
+def test_read_write_vtl_complete(vtl_complete):
+    msg = read_sdmx(vtl_complete, validate=True)
+    ts = msg.get_transformation_schemes()[0]
+    result = write(
+        [
+            ts,
+            ts.user_defined_operator_schemes[0],
+            ts.ruleset_schemes[0],
+            ts.vtl_mapping_scheme,
+            ts.custom_type_scheme,
+            ts.name_personalisation_scheme,
+        ],
+        prettyprint=True,
+    )
+    msg_2 = read_sdmx(result, validate=True)
+    assert len(msg_2.get_transformation_schemes()) == 1
+    ts_2 = msg_2.get_transformation_schemes()[0]
+    assert ts_2.ruleset_schemes[0] == ts.ruleset_schemes[0]
+    assert (
+        ts_2.user_defined_operator_schemes[0]
+        == ts.user_defined_operator_schemes[0]
+    )
+    assert isinstance(ts_2.vtl_mapping_scheme, VtlMappingScheme)
+    assert ts_2.vtl_mapping_scheme == ts.vtl_mapping_scheme
+    dataflow_mapping = ts_2.vtl_mapping_scheme.items[0]
+    assert isinstance(dataflow_mapping, VtlDataflowMapping)
+    from_vtl = dataflow_mapping.from_vtl_mapping_method
+    assert isinstance(from_vtl, FromVtlMapping)
+    assert len(from_vtl.from_vtl_sub_space) == 3
+    assert from_vtl.from_vtl_sub_space[0] == "FREQ"
+    to_vtl = dataflow_mapping.to_vtl_mapping_method
+    assert isinstance(to_vtl, ToVtlMapping)
+    assert len(to_vtl.to_vtl_sub_space) == 2
+    assert to_vtl.to_vtl_sub_space[0] == "FREQ"
+    assert isinstance(ts_2.custom_type_scheme, CustomTypeScheme)
+    assert ts_2.custom_type_scheme == ts.custom_type_scheme
+    assert isinstance(
+        ts_2.name_personalisation_scheme, NamePersonalisationScheme
+    )
+    assert ts_2.name_personalisation_scheme == ts.name_personalisation_scheme
+
+
+def test_read_write_enum_format(enum_format):
+    structure = read_sdmx(enum_format, validate=True).structures
+    # Read the structure and write it back
+    result = write(
+        structure,
+        prettyprint=True,
+    )
+    # Read the result back to ensure it is valid
+    read_sdmx(result, validate=True)
+
+
+def test_writing_more_than_one_measure(datastructure_two_measures):
+    content = [datastructure_two_measures]
+    with pytest.raises(
+        Invalid, match="SDMX-ML 2.1 does not support multiple measures"
+    ):
+        write(
+            content,
+            prettyprint=True,
+        )
+
+
+def test_write_dataflow_with_quote(concept_quotes):
+    content = [concept_quotes]
+    result = write(
+        content,
+        prettyprint=True,
+    )
+    assert 'id=""Quote""' in result
+    assert 'Name xml:lang="en">Concept with "Quotes"' in result
+    assert 'Description xml:lang="en">concept with "Quotes"' in result

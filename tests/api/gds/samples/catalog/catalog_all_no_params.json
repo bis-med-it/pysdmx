@@ -1,0 +1,364 @@
+{
+  "structures": {
+    "catalogs": [
+      {
+        "agencyID": "BIS",
+        "id": "BIS_PUBS",
+        "version": "1.0",
+        "name": "BIS Service Ref",
+        "urn": "urn:sdmx:org.sdmx.infomodel.discovery.Catalog=BIS:BIS_PUBS(1.0)",
+        "endpoints": [
+          {
+            "api_version": "1.4.0",
+            "url": "https://stats.bis.org/api/v1",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.genericdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=2.1",
+              "application/vnd.sdmx.structure+xml;version=2.1",
+              "application/vnd.sdmx.structure+json;version=1.0.0",
+              "application/vnd.sdmx.structure+edi;version=1.0",
+              "application/vnd.sdmx.data+edi",
+              "application/vnd.sdmx.data+csv;version=1.0.0",
+              "application/vnd.sdmx.data+json;version=1.0.0"
+            ],
+            "rest_resources": [
+              "structure",
+              "data",
+              "schema",
+              "availability"
+            ]
+          },
+          {
+            "api_version": "2.0.0",
+            "url": "https://stats.bis.org/api/v2",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.data+xml;version=3.0.0",
+              "application/vnd.sdmx.data+json;version=2.0.0",
+              "application/vnd.sdmx.data+csv;version=2.0.0",
+              "application/vnd.sdmx.metadata+xml;version=3.0.0",
+              "application/vnd.sdmx.metadata+xml;version=2.0.0",
+              "application/vnd.sdmx.genericdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=3.0",
+              "application/vnd.sdmx.structure+xml;version=2.1",
+              "application/vnd.sdmx.structure+json;version=1.0.0",
+              "application/vnd.sdmx.structure+edi;version=1.0",
+              "application/vnd.sdmx.data+edi",
+              "application/vnd.sdmx.data+csv;version=1.0.0",
+              "application/vnd.sdmx.data+json;version=1.0.0",
+              "application/vnd.sdmx.data+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+json;version=2.0.0"
+            ],
+            "rest_resources": [
+              "structure",
+              "data",
+              "schema",
+              "availability",
+              "metadata"
+            ]
+          }
+        ]
+      },
+      {
+        "agencyID": "IMF",
+        "id": "CATALOG",
+        "version": "1.0",
+        "name": "IMF Web Services Catalog",
+        "urn": "urn:sdmx:org.sdmx.infomodel.discovery.Catalog=IMF:CATALOG(1.0)",
+        "endpoints": [
+          {
+            "api_version": "1.5.0",
+            "url": "https://api.imf.org/external/sdmx/2.1",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.data+xml;version=3.0.0",
+              "application/vnd.sdmx.data+json;version=2.0.0",
+              "application/vnd.sdmx.genericdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=2.1",
+              "application/vnd.sdmx.structure+xml;version=2.1",
+              "application/vnd.sdmx.structure+json;version=1.0.0"
+            ],
+            "rest_resources": [
+              "structure",
+              "data",
+              "availability"
+            ]
+          },
+          {
+            "api_version": "2.0.0",
+            "url": "https://api.imf.org/external/sdmx/3.0",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.data+xml;version=3.0.0",
+              "application/vnd.sdmx.data+json;version=2.0.0",
+              "application/vnd.sdmx.data+csv;version=2.0.0",
+              "application/vnd.sdmx.metadata+xml;version=3.0.0",
+              "application/vnd.sdmx.metadata+xml;version=2.0.0",
+              "application/vnd.sdmx.genericdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=3.0",
+              "application/vnd.sdmx.structure+xml;version=2.1",
+              "application/vnd.sdmx.structure+json;version=1.0.0",
+              "application/vnd.sdmx.structure+edi;version=1.0",
+              "application/vnd.sdmx.data+json;version=1.0.0",
+              "application/vnd.sdmx.data+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+json;version=2.0.0"
+            ],
+            "rest_resources": [
+              "structure",
+              "data",
+              "availability",
+              "metadata"
+            ]
+          },
+          {
+            "api_version": "1.5.0",
+            "url": "https://sdmxcentral.imf.org/ws/public/sdmxapi/rest/",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.genericdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=2.1",
+              "application/vnd.sdmx.structure+xml;version=2.1",
+              "application/vnd.sdmx.structure+json;version=1.0.0",
+              "application/vnd.sdmx.structure+edi;version=1.0",
+              "application/vnd.sdmx.data+edi",
+              "application/vnd.sdmx.data+csv;version=1.0.0",
+              "application/vnd.sdmx.data+json;version=1.0.0",
+              "application/vnd.sdmx.data+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+xml;version=2.0.0"
+            ],
+            "rest_resources": [
+              "structure",
+              "schema",
+              "metadata"
+            ]
+          },
+          {
+            "api_version": "2.0.0",
+            "url": "https://sdmxcentral.imf.org/sdmx/v2/",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.data+xml;version=3.0.0",
+              "application/vnd.sdmx.data+json;version=2.0.0",
+              "application/vnd.sdmx.data+csv;version=2.0.0",
+              "application/vnd.sdmx.metadata+xml;version=3.0.0",
+              "application/vnd.sdmx.metadata+xml;version=2.0.0",
+              "application/vnd.sdmx.genericdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=3.0",
+              "application/vnd.sdmx.structure+xml;version=2.1",
+              "application/vnd.sdmx.structure+json;version=1.0.0",
+              "application/vnd.sdmx.structure+edi;version=1.0",
+              "application/vnd.sdmx.data+edi",
+              "application/vnd.sdmx.data+csv;version=1.0.0",
+              "application/vnd.sdmx.data+json;version=1.0.0",
+              "application/vnd.sdmx.data+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+json;version=2.0.0"
+            ],
+            "rest_resources": [
+              "structure",
+              "schema",
+              "metadata"
+            ]
+          }
+        ]
+      },
+      {
+        "agencyID": "ILO",
+        "id": "ILO_PUBS",
+        "version": "1.0",
+        "name": "ILO Service Ref",
+        "urn": "urn:sdmx:org.sdmx.infomodel.discovery.Catalog=ILO:ILO_PUBS(1.0)",
+        "endpoints": [
+          {
+            "api_version": "1.5.0",
+            "url": "https://sdmx.ilo.org/rest/v1",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.data+json;version=2.0.0",
+              "application/vnd.sdmx.data+csv;version=2.0.0",
+              "application/vnd.sdmx.genericdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=3.0",
+              "application/vnd.sdmx.data+csv;version=1.0.0"
+            ],
+            "rest_resources": [
+              "structure",
+              "data"
+            ]
+          },
+          {
+            "api_version": "2.0.0",
+            "url": "https://sdmx.ilo.org/rest/v2",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.structurespecificdata+xml;version=2.1"
+            ],
+            "rest_resources": [
+              "structure"
+            ]
+          }
+        ]
+      },
+      {
+        "agencyID": "OECD",
+        "id": "OECD_PUB_LOCATION_SCHEME",
+        "version": "1.0",
+        "name": "OECD Service Ref",
+        "urn": "urn:sdmx:org.sdmx.infomodel.discovery.Catalog=OECD:OECD_PUB_LOCATION_SCHEME(1.0)",
+        "endpoints": [
+          {
+            "api_version": "1.5.0",
+            "url": "https://sdmx.oecd.org/public/rest/v1",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.data+json;version=2.0.0",
+              "application/vnd.sdmx.data+csv;version=2.0.0",
+              "application/vnd.sdmx.metadata+xml;version=2.0.0",
+              "application/vnd.sdmx.genericdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=2.1",
+              "application/vnd.sdmx.structure+xml;version=2.1",
+              "application/vnd.sdmx.structure+json;version=1.0.0",
+              "application/vnd.sdmx.data+csv;version=1.0.0",
+              "application/vnd.sdmx.data+json;version=1.0.0",
+              "application/vnd.sdmx.data+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+json;version=2.0.0"
+            ],
+            "rest_resources": [
+              "structure",
+              "data",
+              "availability"
+            ]
+          },
+          {
+            "api_version": "2.0.0",
+            "url": "https://sdmx.oecd.org/public/rest/v2",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.data+xml;version=3.0.0",
+              "application/vnd.sdmx.data+json;version=2.0.0",
+              "application/vnd.sdmx.data+csv;version=2.0.0",
+              "application/vnd.sdmx.metadata+xml;version=3.0.0",
+              "application/vnd.sdmx.metadata+xml;version=2.0.0",
+              "application/vnd.sdmx.genericdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=3.0",
+              "application/vnd.sdmx.structure+xml;version=2.1",
+              "application/vnd.sdmx.structure+json;version=1.0.0",
+              "application/vnd.sdmx.data+csv;version=1.0.0",
+              "application/vnd.sdmx.data+json;version=1.0.0",
+              "application/vnd.sdmx.data+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+json;version=2.0.0"
+            ],
+            "rest_resources": [
+              "structure",
+              "data",
+              "availability"
+            ]
+          },
+          {
+            "api_version": "1.5.0",
+            "url": "https://sdmx.oecd.org/archive/rest/v1",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.data+json;version=2.0.0",
+              "application/vnd.sdmx.data+csv;version=2.0.0",
+              "application/vnd.sdmx.metadata+xml;version=2.0.0",
+              "application/vnd.sdmx.genericdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=2.1",
+              "application/vnd.sdmx.structure+xml;version=2.1",
+              "application/vnd.sdmx.structure+json;version=1.0.0",
+              "application/vnd.sdmx.data+csv;version=1.0.0",
+              "application/vnd.sdmx.data+json;version=1.0.0",
+              "application/vnd.sdmx.data+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+json;version=2.0.0"
+            ],
+            "rest_resources": [
+              "structure",
+              "data",
+              "availability"
+            ]
+          },
+          {
+            "api_version": "2.0.0",
+            "url": "https://sdmx.oecd.org/archive/rest/v2",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.data+xml;version=3.0.0",
+              "application/vnd.sdmx.data+json;version=2.0.0",
+              "application/vnd.sdmx.data+csv;version=2.0.0",
+              "application/vnd.sdmx.metadata+xml;version=3.0.0",
+              "application/vnd.sdmx.metadata+xml;version=2.0.0",
+              "application/vnd.sdmx.genericdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=2.1",
+              "application/vnd.sdmx.structurespecificdata+xml;version=3.0",
+              "application/vnd.sdmx.structure+xml;version=2.1",
+              "application/vnd.sdmx.structure+json;version=1.0.0",
+              "application/vnd.sdmx.data+csv;version=1.0.0",
+              "application/vnd.sdmx.data+json;version=1.0.0",
+              "application/vnd.sdmx.data+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+json;version=2.0.0"
+            ],
+            "rest_resources": [
+              "structure",
+              "data",
+              "availability"
+            ]
+          }
+        ]
+      },
+      {
+        "agencyID": "SDMX",
+        "id": "CATALOG",
+        "version": "1.0",
+        "name": "SDMX catalog",
+        "urn": "urn:sdmx:org.sdmx.infomodel.discovery.Catalog=SDMX:CATALOG(1.0)",
+        "endpoints": [
+          {
+            "api_version": "1.5.0",
+            "url": "https://registry.sdmx.org/ws/public/sdmxapi/rest",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.metadata+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+xml;version=2.1",
+              "application/vnd.sdmx.structure+json;version=1.0.0",
+              "application/vnd.sdmx.structure+edi;version=1.0",
+              "application/vnd.sdmx.structure+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+json;version=2.0.0"
+            ],
+            "rest_resources": [
+              "structure",
+              "metadata"
+            ]
+          },
+          {
+            "api_version": "2.0.0",
+            "url": "https://registry.sdmx.org/sdmx/v2",
+            "comments": "",
+            "message_formats": [
+              "application/vnd.sdmx.metadata+xml;version=3.0.0",
+              "application/vnd.sdmx.metadata+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+xml;version=2.1",
+              "application/vnd.sdmx.structure+json;version=1.0.0",
+              "application/vnd.sdmx.structure+edi;version=1.0",
+              "application/vnd.sdmx.structure+xml;version=2.0.0",
+              "application/vnd.sdmx.structure+json;version=2.0.0"
+            ],
+            "rest_resources": [
+              "structure",
+              "metadata"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

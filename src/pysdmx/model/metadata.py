@@ -13,8 +13,14 @@ from typing import Any, Dict, Iterator, List, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx.model.__base import Annotation, MaintainableArtefact
+from pysdmx.model.concept import Facets
+from pysdmx.model.dataset import ActionType
 
-class MetadataAttribute(Struct, frozen=True, omit_defaults=True):
+
+class MetadataAttribute(
+    Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True
+):
     """An entry in a metadata report.
 
     An attribute is iterable, as it may contain other attributes.
@@ -29,40 +35,70 @@ class MetadataAttribute(Struct, frozen=True, omit_defaults=True):
     id: str
     value: Optional[Any] = None
     attributes: Sequence["MetadataAttribute"] = ()
+    annotations: Sequence[Annotation] = ()
+    format: Optional[Facets] = None
 
     def __iter__(self) -> Iterator["MetadataAttribute"]:
         """Return an iterator over the list of attributes."""
         yield from self.attributes
 
     def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        return f"{self.id}: {self.value}"
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # str is taken as a Sequence, so we need to check it's not a str
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                # Handle non-empty lists
+                if not value:
+                    continue
+                class_name = value[0].__class__.__name__
+                value = f"{len(value)} {class_name.lower()}s"
+
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # Omit empty sequences
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
-class MetadataReport(Struct, frozen=True, omit_defaults=True):
+class MetadataReport(MaintainableArtefact, frozen=True, omit_defaults=True):
     """An organized collection of metadata.
 
     A metadata report is iterable and it is also possible to directly
     retrieve an attribute using its ID.
 
     Attributes:
-        id: The identifier of the report (e.g. DTI_MACRO).
-        name: The name of the report (e.g. "Configuration metadata for
-            the MACRO dataflow").
         metadataflow: The URN of the dataflow for which the report
             belongs.
         targets: The URN(s) of SDMX artefact(s) to which the report relates.
         attributes: The list of metadata attributes included in the report.
             Attributes may contain other attributes.
-        version: The version of the metadata report.
+        metadataProvisionAgreement: reference to a metadata provision
+            agreement
+        publicationPeriod: The reporting period to which the metadata report
+            relates
+        publicationYear: The year when the report was published
+        reportingBegin: The oldest period to which the report relates.
+        reportingEnd: The most recent period to which the report relates.
+        action: The action to be performed by the receiver.
     """
 
-    id: str
-    name: str
-    metadataflow: str
-    targets: Sequence[str]
-    attributes: Sequence[MetadataAttribute]
-    version: str = "1.0"
+    metadataflow: str = ""
+    targets: Sequence[str] = ()
+    attributes: Sequence[MetadataAttribute] = ()
+    metadataProvisionAgreement: Optional[str] = None
+    publicationPeriod: Optional[str] = None
+    publicationYear: Optional[str] = None
+    reportingBegin: Optional[str] = None
+    reportingEnd: Optional[str] = None
+    action: Optional[ActionType] = None
 
     def __iter__(self) -> Iterator[MetadataAttribute]:
         """Return an iterator over the list of report attributes."""
@@ -98,6 +134,33 @@ class MetadataReport(Struct, frozen=True, omit_defaults=True):
             if out:
                 return out[0]
         return None
+
+    def __str__(self) -> str:
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # str is taken as a Sequence, so we need to check it's not a str
+            if isinstance(value, Sequence) and not isinstance(value, str):
+                # Handle non-empty lists
+                if not value:
+                    continue
+                class_name = value[0].__class__.__name__
+                if class_name == "MetadataAttribute":
+                    class_name = "Metadata Attribute"
+                value = f"{len(value)} {class_name.lower()}s"
+
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            # Omit empty sequences
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
 def merge_attributes(

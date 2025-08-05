@@ -34,6 +34,7 @@ def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
                     "Check the docs for the proper values on ACTION column.",
                 )
             action = ACTION_SDMX_CSV_MAPPER_READING[action_value]
+            del data["ACTION"]  # Remove ACTION column from DataFrame
         else:
             raise Invalid(
                 "Invalid value on ACTION column",
@@ -82,7 +83,9 @@ def read(input_str: str) -> Sequence[PandasDataset]:
         Invalid: If it is an invalid CSV file.
     """
     # Get Dataframe from CSV file
-    df_csv = pd.read_csv(StringIO(input_str))
+    df_csv = pd.read_csv(
+        StringIO(input_str), keep_default_na=False, na_values=[""]
+    )
     # Drop empty columns
     df_csv = df_csv.dropna(axis=1, how="all")
 
@@ -99,7 +102,7 @@ def read(input_str: str) -> Sequence[PandasDataset]:
         )
 
     # Convert all columns to strings
-    df_csv = df_csv.astype("str")
+    df_csv = df_csv.astype(str).replace({"nan": "", "<NA>": ""})
     # Check if any column headers contain ':', indicating mode, label or text
     mode_label_text = any(":" in x for x in df_csv.columns)
 

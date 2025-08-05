@@ -1,6 +1,6 @@
 [project]
 name = "pysdmx"
-version = "1.3.0"
+version = "1.4.0"
 description = "Your opinionated Python SDMX library"
 license = { text = "Apache-2.0" }
 readme = "README.rst"
@@ -9,7 +9,8 @@ authors = [
     { name = "Xavier Sosnovsky", email = "<xavier.sosnovsky@bis.org>" },
     { name = "Stratos Nikoloutsos", email = "<stratos.nikoloutsos@bis.org>" },
     { name = "Francisco Javier Hernandez del Caño", email = "<javier.hernandez@meaningfuldata.eu>" },
-    { name = "Mateo de Lorenzo Argelés", email = "<mateo.delorenzo@meaningfuldata.eu>" }
+    { name = "Mateo de Lorenzo Argelés", email = "<mateo.delorenzo@meaningfuldata.eu>" },
+    { name = "Jose Antonio Franco Martin", email = "<jose.franco@meaningfuldata.eu>" }
 ]
 keywords = ["sdmx", "data discovery", "data retrieval", "metadata", "fmr"]
 classifiers = [
@@ -34,9 +35,9 @@ documentation = "https://bis-med-it.github.io/pysdmx"
 [project.optional-dependencies]
 data = ["pandas>=2.1.4"]
 dc = ["python-dateutil>=2.8.2"]
-vtl = ["vtlengine>=1.1rc1"]
+vtl = ["vtlengine>=1.1,<2.0"]
 xml = ["lxml>=5.2", "xmltodict>=0.13", "sdmxschemas>=0.2.0"]
-all = ["lxml>=5.2", "xmltodict>=0.13", "sdmxschemas>=0.2.0", "pandas>=2.1.4", "python-dateutil>=2.8.2", "vtlengine>=1.1rc1"]
+all = ["lxml>=5.2", "xmltodict>=0.13", "sdmxschemas>=0.2.0", "pandas>=2.1.4", "python-dateutil>=2.8.2", "vtlengine>=1.1,<2.0"]
 
 [tool.poetry]
 requires-poetry = ">=2.0"

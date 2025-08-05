@@ -6,7 +6,12 @@ import pandas as pd
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.sdmx21.__tokens import (
+from pysdmx.io.xml.__data_aux import (
+    __process_df,
+    get_data_objects,
+)
+from pysdmx.io.xml.__parse_xml import parse_xml
+from pysdmx.io.xml.__tokens import (
     ATTRIBUTES,
     GENERIC,
     ID,
@@ -20,11 +25,6 @@ from pysdmx.io.xml.sdmx21.__tokens import (
     STR_REF,
     VALUE,
 )
-from pysdmx.io.xml.sdmx21.reader.__data_aux import (
-    __process_df,
-    get_data_objects,
-)
-from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model.dataset import ActionType
 
@@ -58,7 +58,9 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
             for data in series[OBS]:
                 obs = {
                     OBS_DIM: data[OBS_DIM][VALUE.lower()],
-                    OBS_VALUE_ID: data[OBS_VALUE_XML_TAG][VALUE.lower()],
+                    OBS_VALUE_ID: data[OBS_VALUE_XML_TAG][VALUE.lower()]
+                    if OBS_VALUE_XML_TAG in data
+                    else "",
                 }
                 if ATTRIBUTES in data:
                     obs = {
@@ -87,7 +89,9 @@ def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
         obs = {
             **obs,
             **__get_element_to_list(data, mode=OBS_KEY),
-            OBS_VALUE_ID: data[OBS_VALUE_XML_TAG][VALUE.lower()],
+            OBS_VALUE_ID: data[OBS_VALUE_XML_TAG][VALUE.lower()]
+            if OBS_VALUE_XML_TAG in data
+            else "",
         }
         if ATTRIBUTES in data:
             obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}

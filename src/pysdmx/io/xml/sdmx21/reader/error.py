@@ -1,13 +1,13 @@
 """SDMX 2.1 XML error reader."""
 
 from pysdmx.errors import Invalid
-from pysdmx.io.xml.sdmx21.__tokens import (
+from pysdmx.io.xml.__parse_xml import parse_xml
+from pysdmx.io.xml.__tokens import (
     ERROR,
     ERROR_CODE,
     ERROR_MESSAGE,
     ERROR_TEXT,
 )
-from pysdmx.io.xml.sdmx21.reader.__parse_xml import parse_xml
 
 
 def read(input_str: str, validate: bool = True) -> None:

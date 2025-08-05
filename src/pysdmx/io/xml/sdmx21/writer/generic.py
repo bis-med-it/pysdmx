@@ -1,13 +1,14 @@
 # mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 2.1 Generic data messages."""
 
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import pandas as pd
 
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.sdmx21.writer.__write_aux import (
+from pysdmx.io.xml.__write_aux import (
     ABBR_GEN,
     ABBR_MSG,
     ALL_DIM,
@@ -17,13 +18,13 @@ from pysdmx.io.xml.sdmx21.writer.__write_aux import (
     get_end_message,
     get_structure,
 )
-from pysdmx.io.xml.sdmx21.writer.__write_data_aux import (
+from pysdmx.io.xml.__write_data_aux import (
     check_content_dataset,
     check_dimension_at_observation,
     get_codes,
     writing_validation,
 )
-from pysdmx.io.xml.sdmx21.writer.config import CHUNKSIZE
+from pysdmx.io.xml.config import CHUNKSIZE
 from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
 
@@ -159,6 +160,7 @@ def __write_data_single_dataset(
     outfile = ""
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
+    dataset.data = dataset.data.fillna("").astype(str).replace("nan", "")
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
@@ -277,7 +279,7 @@ def __series_processing(
 ) -> str:
     def __generate_series_str() -> str:
         out_list: List[str] = []
-        data.groupby(by=series_codes + series_att_codes).apply(
+        data.groupby(by=series_codes + series_att_codes)[data.columns].apply(
             lambda x: __format_dict_ser(out_list, x)
         )
 
@@ -383,7 +385,7 @@ def __format_ser_str(
 
 def write(
     datasets: Sequence[PandasDataset],
-    output_path: str = "",
+    output_path: Optional[Union[str, Path]] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
     dimension_at_observation: Optional[Dict[str, str]] = None,
@@ -425,7 +427,11 @@ def write(
 
     outfile += get_end_message(type_, prettyprint)
 
-    if output_path == "":
+    output_path = (
+        str(output_path) if isinstance(output_path, Path) else output_path
+    )
+
+    if output_path is None or output_path == "":
         return outfile
 
     with open(output_path, "w", encoding="UTF-8", errors="replace") as f:

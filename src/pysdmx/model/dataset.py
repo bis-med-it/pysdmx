@@ -10,9 +10,15 @@ from pysdmx.model import Schema
 
 
 class ActionType(Enum):
-    """ActionType enumeration.
+    """Enumeration that defines the Dataset Action.
 
-    Enumeration that withholds the Action type for writing purposes.
+    Arguments:
+        Append: Append data to an existing dataset.
+        Replace: Replace the existing dataset with new data.
+        Delete: Delete the data provided from the data source.
+        Information: Provide information about the dataset
+          without modifying it.
+
     """
 
     Append = "Append"
@@ -20,8 +26,16 @@ class ActionType(Enum):
     Delete = "Delete"
     Information = "Information"
 
+    def __str__(self) -> str:
+        """Return the action as a string."""
+        return self.name.capitalize()
 
-class SeriesInfo(Struct, frozen=True):
+    def __repr__(self) -> str:
+        """Action String representation."""
+        return f"{self.__class__.__name__}.{self._name_}"
+
+
+class SeriesInfo(Struct, frozen=True, repr_omit_defaults=True):
     """A group of related data, such as a time series, or a case series.
 
     Attributes:
@@ -44,17 +58,41 @@ class SeriesInfo(Struct, frozen=True):
     is_active: bool = True
 
     def __str__(self) -> str:
-        """Returns a human-friendly description."""
-        out = []
-        for k in self.__annotations__:
-            v = self.__getattribute__(k)
-            if v:
-                out.append(f"{k}={v}")
-        return ", ".join(out)
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
-class Dataset(Struct, frozen=False, kw_only=True):
-    """Core Dataset class."""
+class Dataset(Struct, frozen=False, repr_omit_defaults=True, kw_only=True):
+    """An organised collection of data.
+
+    It includes metadata such as the structure of the dataset, attributes,
+    action type, reporting periods and publication details.
+
+    Args:
+        structure: The structure referenced from a dataset,
+          which can be a string (short_urn) or a Schema object.
+        attributes: dictionary of attributes at dataset level, with its values.
+        action: Defines the :class:`Action <pysdmx.model.dataset.ActionType>`
+          of the dataset, default is ActionType.Information.
+        reporting_begin: The start date for reporting, if applicable.
+        reporting_end: The end date for reporting, if applicable.
+        data_extraction_date: The date when the data was extracted.
+        valid_from: The start date for the validity of the dataset.
+        valid_to: The end date for the validity of the dataset.
+        publication_year: The year of publication of the dataset.
+        publication_period: The period of publication of the dataset.
+        set_id: An optional identifier for the dataset.
+    """
 
     structure: Union[str, Schema]
     attributes: Dict[str, Any] = {}
@@ -79,3 +117,17 @@ class Dataset(Struct, frozen=False, kw_only=True):
             return self.structure
         else:
             return self.structure.short_urn
+
+    def __str__(self) -> str:
+        """Custom string representation without the class name."""
+        processed_output = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            processed_output.append(f"{attr}: {value}")
+        return f"{', '.join(processed_output)}"
+
+    def __repr__(self) -> str:
+        """Custom __repr__ that omits empty sequences."""
+        attrs = []
+        for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
+            attrs.append(f"{attr}={repr(value)}")
+        return f"{self.__class__.__name__}({', '.join(attrs)})"

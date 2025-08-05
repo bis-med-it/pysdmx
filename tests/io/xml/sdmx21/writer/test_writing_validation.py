@@ -1,10 +1,29 @@
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
 from pysdmx.errors import Invalid
+from pysdmx.io import get_datasets, read_sdmx
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.sdmx21.writer.__write_data_aux import writing_validation
-from pysdmx.model import Component, Components, Concept, Role, Schema
+from pysdmx.io.xml.__write_data_aux import writing_validation
+from pysdmx.io.xml.sdmx21.writer.structure import write
+from pysdmx.io.xml.sdmx21.writer.structure_specific import (
+    write as write_str_spec,
+)
+from pysdmx.model import (
+    Component,
+    Components,
+    Concept,
+    DataStructureDefinition,
+    Role,
+    Schema,
+)
+
+
+@pytest.fixture
+def samples_folder():
+    return Path(__file__).parent / "samples"
 
 
 def test_structural_validation():
@@ -254,3 +273,54 @@ def test_match_columns():
     )
     with pytest.raises(Invalid, match="Data columns must match components."):
         writing_validation(dataset)
+
+
+def test_attribute_relationship_roundtrip(samples_folder):
+    # Read the SDMX-ML file with None attribute relationships
+    file_path = samples_folder / "datastructure_att_rel_21.xml"
+    message = read_sdmx(file_path.read_text(), validate=True)
+
+    # Check we have it set to "D" (Dataflow)
+    structure_one: DataStructureDefinition = message.structures[0]
+    attribute_one = structure_one.components.attributes[0]
+    assert attribute_one.attachment_level == "D"
+
+    # Write it back to SDMX-ML format
+    result = write(
+        structures=message.structures,
+        prettyprint=True,
+    )
+    # Check if a str:None is present in the output
+    assert "<str:None/>" in result
+
+    # Read the written content back
+    read_message = read_sdmx(result, validate=True)
+
+    structure_two: DataStructureDefinition = read_message.structures[0]
+    attribute_two = structure_two.components.attributes[0]
+    # Check if the attribute relationships are Dataflow
+    assert attribute_two.attachment_level == "D"
+
+    assert attribute_one == attribute_two
+
+
+def test_data_write_nullable_nulltypes():
+    # Local import on numpy to avoid possible problems with C extensions
+    # on windows when using pysdmx
+    import numpy as np
+
+    # Create dataframe with nan value
+    data = pd.DataFrame(data={"A": [np.nan, 1, None, pd.NA]})
+    data["A"] = data["A"].astype("Int64")  # Use nullable integer type
+
+    # The backend is numpy_nullable by default,
+    # this line should just make clear
+    # that this is not pyarrow related
+    data = data.convert_dtypes(dtype_backend="numpy_nullable")
+
+    dataset = PandasDataset(data=data, structure="Dataflow=Short:Urn(1.0)")
+    result = write_str_spec([dataset])
+    datasets = get_datasets(result)
+    assert len(datasets) == 1
+    data = datasets[0].data
+    assert data["A"].values.tolist() == ["", "1", "", ""]

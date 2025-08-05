@@ -40,7 +40,6 @@
                 <generic:Value id="DER_BASIS" value="C"/>
                 <generic:Value id="TIME_PERIOD" value="2002"/>
             </generic:ObsKey>
-            <generic:ObsValue value=""/>
             <generic:Attributes>
                 <generic:Value id="AVAILABILITY" value="K"/>
                 <generic:Value id="COLLECTION" value="S"/>

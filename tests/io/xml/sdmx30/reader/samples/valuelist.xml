@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message ../../schemas/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>IREF772628</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2021-03-08T17:49:35Z</mes:Prepared>
+		<mes:Sender id="Unknown"/>
+		<mes:Receiver id="not_supplied"/>
+	</mes:Header>
+	<mes:Structures>
+		<str:ValueLists>
+			<str:ValueList urn="urn:sdmx:org.sdmx.infomodel.codelist.ValueList=SDMX:VL_CURRENCY_SYMBOL(1.0)" agencyID="EXAMPLE" id="VL_CURRENCY_SYMBOL" version="1.0">
+				<com:Name xml:lang="en">Currency Symbol</com:Name>
+				<com:Description xml:lang="en">Enumerated list of currencies identified by symbol</com:Description>
+				<str:ValueItem id="$">
+					<com:Name xml:lang="en">USD</com:Name>
+					<com:Description xml:lang="en">US Dollar</com:Description>
+				</str:ValueItem>
+				<str:ValueItem id="£">
+					<com:Name xml:lang="en">GBP</com:Name>
+					<com:Description xml:lang="en">UK Pound</com:Description>
+				</str:ValueItem>
+				<str:ValueItem id="€">
+					<com:Name xml:lang="en">EUR</com:Name>
+					<com:Description xml:lang="en">Euro</com:Description>
+				</str:ValueItem>
+				<str:ValueItem id="¥">
+					<com:Name xml:lang="en">CNY</com:Name>
+					<com:Description xml:lang="en">China Yuan Renminbi</com:Description>
+				</str:ValueItem>
+				<str:ValueItem id="﷼">
+					<com:Name xml:lang="en">IRR</com:Name>
+					<com:Description xml:lang="en">Iran Rial</com:Description>
+				</str:ValueItem>
+				<str:ValueItem id="¥">
+					<com:Name xml:lang="en">JPY</com:Name>
+					<com:Description xml:lang="en">Japan Yen</com:Description>
+				</str:ValueItem>				
+			</str:ValueList>
+		</str:ValueLists>
+	</mes:Structures>
+</mes:Structure>

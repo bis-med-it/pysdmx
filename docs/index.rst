@@ -29,11 +29,25 @@ Your opinionated Python SDMX library.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Handling SDMX datasets
+   :caption: IO Tutorials
 
-   howto/data_rw
-   howto/vtl
+   howto/io_data
+   howto/io_structure
 
+.. toctree::
+   :maxdepth: 2
+   :caption: VTL Tutorials
+
+   howto/generate_ts
+   howto/vtl_handling
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Toolkit
+
+   howto/toolkit/general
+   howto/toolkit/vtl_toolkit
+   howto/toolkit/pandas_toolkit
 
 .. toctree::
    :maxdepth: 1
@@ -41,15 +55,11 @@ Your opinionated Python SDMX library.
 
    api/model
    api/fmr
+   api/gds
    api/rest
    api/helper
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Toolkit
-
-   howto/toolkit/general
-
+   api/toolkit
+   api/io
 
 
 Indices and tables

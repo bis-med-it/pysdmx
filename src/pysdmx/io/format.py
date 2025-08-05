@@ -19,6 +19,7 @@ class Format(Enum):
         f"{_BASE}structurespecifictimeseriesdata+xml;version=2.1"
     )
     DATA_SDMX_ML_3_0 = f"{_BASE}data+xml;version=3.0.0"
+    GDS_JSON = "application/json"
     REFMETA_SDMX_CSV_2_0_0 = f"{_BASE}metadata+csv;version=2.0.0"
     REFMETA_SDMX_JSON_2_0_0 = f"{_BASE}metadata+json;version=2.0.0"
     REFMETA_SDMX_ML_3_0 = f"{_BASE}metadata+xml;version=3.0.0"
@@ -98,3 +99,6 @@ class RegistryFormat(Enum):
     SDMX_ML_2_1 = Format.REGISTRY_SDMX_ML_2_1.value
     SDMX_ML_3_0 = Format.REGISTRY_SDMX_ML_3_0.value
     FUSION_JSON = Format.FUSION_JSON.value
+
+
+GDS_FORMAT = Format.GDS_JSON.value

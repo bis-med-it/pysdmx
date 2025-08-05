@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>true</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Receiver id="Not_Supplied"/>
+		<mes:Source>PySDMX</mes:Source>
+	</mes:Header>
+	<mes:Structures>
+		<str:DataStructures>
+			<str:DataStructure id="BIS_DER" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_DER(1.0)" version="1.0" isExternalReference="false" agencyID="BIS">
+				<com:Name xml:lang="en">BIS derivatives statistics</com:Name>
+				<str:DataStructureComponents>
+					<str:DimensionList>
+						<str:Dimension id="FREQ" position="1" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).FREQ">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).FREQ</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="1" maxLength="1" textType="String"/>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="DER_TYPE" position="2" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_TYPE">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).DER_TYPE</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="1" maxLength="1" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="DER_INSTR" position="3" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_INSTR">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).DER_INSTR</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="1" maxLength="1" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="DER_RISK" position="4" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_RISK">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).DER_RISK</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat maxLength="1" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="DER_REP_CTY" position="5" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_REP_CTY">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).DER_REP_CTY</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat maxLength="2" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="DER_SECTOR_CPY" position="6" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_SECTOR_CPY">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).DER_SECTOR_CPY</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="1" maxLength="1" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="DER_CPC" position="7" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_CPC">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).DER_CPC</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat maxLength="2" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="DER_SECTOR_UDL" position="8" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_SECTOR_UDL">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).DER_SECTOR_UDL</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="1" maxLength="1" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="DER_CURR_LEG1" position="9" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_CURR_LEG1">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).DER_CURR_LEG1</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat maxLength="3" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="DER_CURR_LEG2" position="10" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_CURR_LEG2">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).DER_CURR_LEG2</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat maxLength="3" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="DER_ISSUE_MAT" position="11" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_ISSUE_MAT">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).DER_ISSUE_MAT</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="1" maxLength="1" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="DER_RATING" position="12" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_RATING">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).DER_RATING</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="1" maxLength="1" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="DER_EX_METHOD" position="13" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_EX_METHOD">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).DER_EX_METHOD</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="1" maxLength="1" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="DER_BASIS" position="14" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_BASIS">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).DER_BASIS</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="1" maxLength="1" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:TimeDimension id="TIME_PERIOD" urn="urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=BIS:BIS_DER(1.0).TIME_PERIOD">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).TIME_PERIOD</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="ObservationalTimePeriod"/>
+							</str:LocalRepresentation>
+						</str:TimeDimension>
+					</str:DimensionList>
+					<str:AttributeList>
+						<str:Attribute usage="optional" id="TIME_FORMAT" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).TIME_FORMAT">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).TIME_FORMAT</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="3" maxLength="3" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+							<str:AttributeRelationship>
+								<str:Dimension>FREQ</str:Dimension>
+								<str:Dimension>DER_TYPE</str:Dimension>
+								<str:Dimension>DER_INSTR</str:Dimension>
+								<str:Dimension>DER_RISK</str:Dimension>
+								<str:Dimension>DER_REP_CTY</str:Dimension>
+								<str:Dimension>DER_SECTOR_CPY</str:Dimension>
+								<str:Dimension>DER_CPC</str:Dimension>
+								<str:Dimension>DER_SECTOR_UDL</str:Dimension>
+								<str:Dimension>DER_CURR_LEG1</str:Dimension>
+								<str:Dimension>DER_CURR_LEG2</str:Dimension>
+								<str:Dimension>DER_ISSUE_MAT</str:Dimension>
+								<str:Dimension>DER_RATING</str:Dimension>
+								<str:Dimension>DER_EX_METHOD</str:Dimension>
+								<str:Dimension>DER_BASIS</str:Dimension>
+							</str:AttributeRelationship>
+						</str:Attribute>
+						<str:Attribute usage="mandatory" id="OBS_STATUS" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).OBS_STATUS">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).OBS_STATUS</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="1" maxLength="1" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+							<str:AttributeRelationship>
+								<str:Observation/>
+							</str:AttributeRelationship>
+							<str:MeasureRelationship>
+								<str:Measure>OBS_VALUE</str:Measure>
+							</str:MeasureRelationship>
+						</str:Attribute>
+						<str:Attribute usage="mandatory" id="AVAILABILITY" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).AVAILABILITY">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).AVAILABILITY</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="1" maxLength="1" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+							<str:AttributeRelationship>
+								<str:Dimension>FREQ</str:Dimension>
+								<str:Dimension>DER_TYPE</str:Dimension>
+								<str:Dimension>DER_INSTR</str:Dimension>
+								<str:Dimension>DER_RISK</str:Dimension>
+								<str:Dimension>DER_REP_CTY</str:Dimension>
+								<str:Dimension>DER_SECTOR_CPY</str:Dimension>
+								<str:Dimension>DER_CPC</str:Dimension>
+								<str:Dimension>DER_SECTOR_UDL</str:Dimension>
+								<str:Dimension>DER_CURR_LEG1</str:Dimension>
+								<str:Dimension>DER_CURR_LEG2</str:Dimension>
+								<str:Dimension>DER_ISSUE_MAT</str:Dimension>
+								<str:Dimension>DER_RATING</str:Dimension>
+								<str:Dimension>DER_EX_METHOD</str:Dimension>
+								<str:Dimension>DER_BASIS</str:Dimension>
+							</str:AttributeRelationship>
+						</str:Attribute>
+						<str:Attribute usage="mandatory" id="COLLECTION" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).COLLECTION">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).COLLECTION</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="1" maxLength="1" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+							<str:AttributeRelationship>
+								<str:Dimension>FREQ</str:Dimension>
+								<str:Dimension>DER_TYPE</str:Dimension>
+								<str:Dimension>DER_INSTR</str:Dimension>
+								<str:Dimension>DER_RISK</str:Dimension>
+								<str:Dimension>DER_REP_CTY</str:Dimension>
+								<str:Dimension>DER_SECTOR_CPY</str:Dimension>
+								<str:Dimension>DER_CPC</str:Dimension>
+								<str:Dimension>DER_SECTOR_UDL</str:Dimension>
+								<str:Dimension>DER_CURR_LEG1</str:Dimension>
+								<str:Dimension>DER_CURR_LEG2</str:Dimension>
+								<str:Dimension>DER_ISSUE_MAT</str:Dimension>
+								<str:Dimension>DER_RATING</str:Dimension>
+								<str:Dimension>DER_EX_METHOD</str:Dimension>
+								<str:Dimension>DER_BASIS</str:Dimension>
+							</str:AttributeRelationship>
+						</str:Attribute>
+						<str:Attribute usage="mandatory" id="DECIMALS" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).DECIMALS">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).DECIMALS</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat maxLength="2" isSequence="false" textType="Integer"/>
+							</str:LocalRepresentation>
+							<str:AttributeRelationship>
+								<str:Dataflow/>
+							</str:AttributeRelationship>
+						</str:Attribute>
+						<str:Attribute usage="mandatory" id="UNIT_MEASURE" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).UNIT_MEASURE">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).UNIT_MEASURE</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="3" maxLength="3" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+							<str:AttributeRelationship>
+								<str:Dataflow/>
+							</str:AttributeRelationship>
+						</str:Attribute>
+						<str:Attribute usage="mandatory" id="UNIT_MULT" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).UNIT_MULT">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).UNIT_MULT</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat maxLength="2" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+							<str:AttributeRelationship>
+								<str:Dataflow/>
+							</str:AttributeRelationship>
+						</str:Attribute>
+						<str:Attribute usage="optional" id="OBS_CONF" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).OBS_CONF">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).OBS_CONF</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="1" maxLength="1" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+							<str:AttributeRelationship>
+								<str:Observation/>
+							</str:AttributeRelationship>
+							<str:MeasureRelationship>
+								<str:Measure>OBS_VALUE</str:Measure>
+							</str:MeasureRelationship>
+						</str:Attribute>
+						<str:Attribute usage="optional" id="OBS_PRE_BREAK" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).OBS_PRE_BREAK">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).OBS_PRE_BREAK</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat maxLength="15" isSequence="false" textType="String"/>
+							</str:LocalRepresentation>
+							<str:AttributeRelationship>
+								<str:Observation/>
+							</str:AttributeRelationship>
+							<str:MeasureRelationship>
+								<str:Measure>OBS_VALUE</str:Measure>
+							</str:MeasureRelationship>
+						</str:Attribute>
+						<str:Attribute usage="optional" id="TITLE_TS" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).TITLE_TS">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).TITLE_TS</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat maxLength="255" textType="String"/>
+							</str:LocalRepresentation>
+							<str:AttributeRelationship>
+								<str:Dimension>FREQ</str:Dimension>
+								<str:Dimension>DER_TYPE</str:Dimension>
+								<str:Dimension>DER_INSTR</str:Dimension>
+								<str:Dimension>DER_RISK</str:Dimension>
+								<str:Dimension>DER_REP_CTY</str:Dimension>
+								<str:Dimension>DER_SECTOR_CPY</str:Dimension>
+								<str:Dimension>DER_CPC</str:Dimension>
+								<str:Dimension>DER_SECTOR_UDL</str:Dimension>
+								<str:Dimension>DER_CURR_LEG1</str:Dimension>
+								<str:Dimension>DER_CURR_LEG2</str:Dimension>
+								<str:Dimension>DER_ISSUE_MAT</str:Dimension>
+								<str:Dimension>DER_RATING</str:Dimension>
+								<str:Dimension>DER_EX_METHOD</str:Dimension>
+								<str:Dimension>DER_BASIS</str:Dimension>
+							</str:AttributeRelationship>
+						</str:Attribute>
+					</str:AttributeList>
+					<str:MeasureList>
+						<str:Measure id="OBS_VALUE" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Measure=BIS:BIS_DER(1.0).OBS_VALUE">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:BIS_CONCEPT_SCHEME(1.0).OBS_VALUE</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat maxLength="15" textType="BigInteger"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+					</str:MeasureList>
+				</str:DataStructureComponents>
+			</str:DataStructure>
+		</str:DataStructures>
+	</mes:Structures>
+</mes:Structure>
