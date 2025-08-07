@@ -2,7 +2,7 @@ import pytest
 
 from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.structure import JsonStructureMessage
-from pysdmx.model import Agency, Code, Codelist
+from pysdmx.model import Agency, AgencyScheme, Code, Codelist
 from pysdmx.model.message import Header, StructureMessage
 
 
@@ -11,8 +11,16 @@ def message():
     a = Agency("BIS")
     cd = Code("A", name="Annual")
     cl = Codelist("CL_FREQ", agency=a, name="Frequency codelist", items=[cd])
+    vl = Codelist(
+        "CL_FREQ",
+        agency=a,
+        name="Frequency valuelist",
+        items=[cd],
+        sdmx_type="valuelist",
+    )
+    ag = AgencyScheme(agency="SDMX", items=[a])
     h = Header(sender=a)
-    return StructureMessage(h, [cl])
+    return StructureMessage(h, [cl, vl, ag])
 
 
 @pytest.fixture
@@ -42,6 +50,8 @@ def test_message(message: StructureMessage):
 
     assert sjson.meta is not None
     assert len(sjson.data.codelists) == 1
+    assert len(sjson.data.valueLists) == 1
+    assert len(sjson.data.agencySchemes) == 1
 
 
 def test_message_no_header(message_no_header: StructureMessage):
