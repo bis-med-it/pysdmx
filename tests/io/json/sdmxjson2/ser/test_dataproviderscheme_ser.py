@@ -4,7 +4,7 @@ from datetime import timezone as tz
 import pytest
 
 from pysdmx.io.json.sdmxjson2.messages.provider import JsonDataProviderScheme
-from pysdmx.model import Agency, DataProvider, DataProviderScheme, Annotation
+from pysdmx.model import Agency, Annotation, DataProvider, DataProviderScheme
 
 
 @pytest.fixture
