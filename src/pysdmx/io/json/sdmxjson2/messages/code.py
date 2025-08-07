@@ -168,6 +168,31 @@ class JsonValuelist(ItemSchemeType, frozen=True):
             sdmx_type="valuelist",
         )
 
+    @classmethod
+    def from_model(self, cl: Codelist) -> "JsonValuelist":
+        """Converts a pysdmx codelist to an SDMX-JSON valuelist."""
+        if not cl.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON valuelists must have a name",
+                {"valuelist": cl.id},
+            )
+        return JsonValuelist(
+            id=cl.id,
+            name=cl.name,
+            agency=(
+                cl.agency.id if isinstance(cl.agency, Agency) else cl.agency
+            ),
+            description=cl.description,
+            version=cl.version,
+            valueItems=[JsonCode.from_model(i) for i in cl.items],
+            annotations=[JsonAnnotation.from_model(a) for a in cl.annotations],
+            isExternalReference=cl.is_external_reference,
+            isPartial=cl.is_partial,
+            validFrom=cl.valid_from,
+            validTo=cl.valid_to,
+        )
+
 
 class JsonCodelists(Struct, frozen=True):
     """SDMX-JSON payload for lists of codes."""
