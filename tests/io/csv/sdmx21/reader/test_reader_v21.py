@@ -4,63 +4,65 @@ import pytest
 
 from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
-from pysdmx.io.csv.sdmx20.reader import read
+from pysdmx.io.csv.sdmx21.reader import read
 
 
 @pytest.fixture
 def data_path():
-    base_path = Path(__file__).parent / "samples" / "data_v2.csv"
+    base_path = Path(__file__).parent / "samples" / "data_v21.csv"
     return base_path
 
 
 @pytest.fixture
 def data_path_exception():
-    base_path = Path(__file__).parent / "samples" / "data_v2_exception.csv"
+    base_path = Path(__file__).parent / "samples" / "data_v21_exception.csv"
     return base_path
 
 
 @pytest.fixture
 def data_path_no_freq():
-    base_path = Path(__file__).parent / "samples" / "data_v2_no_freq_cols.csv"
+    base_path = Path(__file__).parent / "samples" / "data_v21_no_freq_cols.csv"
     return base_path
 
 
 @pytest.fixture
 def data_path_action():
-    base_path = Path(__file__).parent / "samples" / "data_v2_action_col.csv"
+    base_path = Path(__file__).parent / "samples" / "data_v21_action_col.csv"
     return base_path
 
 
 @pytest.fixture
 def data_path_structures():
-    base_path = Path(__file__).parent / "samples" / "data_v2_structures.csv"
+    base_path = Path(__file__).parent / "samples" / "data_v21_structures.csv"
     return base_path
 
 
 @pytest.fixture
 def data_path_structures_exc():
     base_path = (
-        Path(__file__).parent / "samples" / "data_v2_structures_exception.csv"
+        Path(__file__).parent / "samples" / "data_v21_structures_exception.csv"
     )
     return base_path
 
 
 @pytest.fixture
 def data_path_two_actions():
-    base_path = Path(__file__).parent / "samples" / "data_v2_two_actions.csv"
+    base_path = Path(__file__).parent / "samples" / "data_v21_two_actions.csv"
     return base_path
 
 
 @pytest.fixture
 def data_path_three_actions():
-    base_path = Path(__file__).parent / "samples" / "data_v2_three_actions.csv"
+    base_path = (
+        Path(__file__).parent / "samples" / "data_v21_three_actions.csv"
+    )
     return base_path
 
 
 @pytest.fixture
 def data_path_invalid_action():
     base_path = (
-        Path(__file__).parent / "samples" / "data_v2_invalid_action.csv"
+        Path(__file__).parent / "samples" / "data_v21_invalid_action.csv"
     )
     return base_path
 
@@ -83,7 +85,7 @@ def csv_keys_both():
     return base_path
 
 
-def test_reading_data_v2(data_path):
+def test_reading_data_v21(data_path):
     with open(data_path, "r") as f:
         infile = f.read()
     datasets = read(infile)
@@ -96,7 +98,7 @@ def test_reading_data_v2(data_path):
     assert len(datasets[0].attributes) == 0
 
 
-def test_reading_sdmx_csv_v2(data_path):
+def test_reading_sdmx_csv_v21(data_path):
     datasets = read_sdmx(data_path).data
     assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
@@ -107,7 +109,7 @@ def test_reading_sdmx_csv_v2(data_path):
     assert len(datasets[0].attributes) == 0
 
 
-def test_reading_sdmx_csv_v2_string(data_path):
+def test_reading_sdmx_csv_v21_string(data_path):
     with open(data_path, "r") as f:
         infile = f.read()
     datasets = read_sdmx(infile).data
@@ -120,14 +122,14 @@ def test_reading_sdmx_csv_v2_string(data_path):
     assert len(datasets[0].attributes) == 0
 
 
-def test_reading_v2_exception(data_path_exception):
+def test_reading_v21_exception(data_path_exception):
     with open(data_path_exception, "r") as f:
         infile = f.read()
-    with pytest.raises(Invalid, match="Invalid SDMX-CSV 2.0"):
+    with pytest.raises(Invalid, match="Invalid SDMX-CSV 2.1"):
         read(infile)
 
 
-def test_reading_no_freq_v2(data_path_no_freq):
+def test_reading_no_freq_v21(data_path_no_freq):
     with open(data_path_no_freq, "r") as f:
         infile = f.read()
     datasets = read(infile)

@@ -1,32 +1,33 @@
-"""SDMX 1.0 CSV writer module."""
+"""SDMX 2.1 CSV writer module."""
 
-from copy import copy
 from pathlib import Path
 from typing import Literal, Optional, Sequence, Union
 
 import pandas as pd
 
-from pysdmx.io.csv.__csv_aux_writer import __write_labels, __write_time_period
+from pysdmx.io.csv.__csv_aux_writer import (
+    _write_csv_2_aux,
+)
 from pysdmx.io.pd import PandasDataset
-from pysdmx.model import Schema
 
 
 def write(
     datasets: Sequence[PandasDataset],
-    labels: Optional[Literal["id", "both"]] = None,
+    labels: Optional[Literal["name", "id", "both"]] = None,
     time_format: Optional[Literal["original", "normalized"]] = None,
+    keys: Optional[Literal["obs", "series", "both"]] = None,
     output_path: Optional[Union[str, Path]] = None,
 ) -> Optional[str]:
-    """Write data to SDMX-CSV 1.0 format.
+    """Write data to SDMX-CSV 2.1 format.
 
     Args:
         datasets: List of datasets to write.
           Must have the same components.
-        output_path: Path to write the data to.
-          If None, the data is returned as a string.
         labels: How to write the name of the columns.
             If None, only the IDs are written.
             if "id", the names are written as ID only.
+            if "name", a colum called "STRUCTURE_NAME" is
+            added after struture ID.
             If "both", the names are witten as id:Name.
         time_format: How to write the time period.
             If None, the time period is not modified.
@@ -34,6 +35,16 @@ def write(
             is in the dataset.
             If "normalized", the time period is written in
             a normalized format (YYYY-MM-DD).
+        keys: to write or not the keys columns
+            If None, no keys are written.
+            If "obs", the keys are write as a single
+            column called "OBS_KEY".
+            If "series", the keys are write as a single
+            column called "SERIES_KEY".
+            If "both", the keys are write as two columns:
+            "OBS_KEY" and "SERIES_KEY".
+        output_path: Path to write the data to.
+          If None, the data is returned as a string.
 
     Returns:
         SDMX CSV data as a string, if output_path is None.
@@ -41,36 +52,14 @@ def write(
     # Link to pandas.to_csv documentation on sphinx:
     # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html
 
-    # Create a copy of the dataset
-    dataframes = []
-    for dataset in datasets:
-        df: pd.DataFrame = copy(dataset.data)
+    dataframes = _write_csv_2_aux(
+        datasets, labels, time_format, keys, references_21=True
+    )
 
-        # Add additional attributes to the dataset
-        for k, v in dataset.attributes.items():
-            df[k] = v
-        structure_id = dataset.short_urn.split("=")[1]
-        if time_format is not None and time_format != "original":
-            __write_time_period(df, time_format)
-        if (
-            labels is not None
-            and isinstance(dataset.structure, Schema)
-            and labels != "id"
-        ):
-            __write_labels(df, labels, dataset.structure)
-            df.insert(
-                0, "DATAFLOW", f"{structure_id}:{dataset.structure.name}"
-            )
-
-        else:
-            df.insert(0, "DATAFLOW", structure_id)
-        dataframes.append(df)
-
-    # Concatenate the dataframes
     all_data = pd.concat(dataframes, ignore_index=True, axis=0)
 
-    # Ensure null values are represented as empty strings
     all_data = all_data.astype(str).replace({"nan": "", "<NA>": ""})
+
     # If the output path is an empty string we use None
     output_path = (
         None
@@ -78,5 +67,5 @@ def write(
         else output_path
     )
 
-    # Return the SDMX CSV data as a string
+    # Convert the dataset into a csv file
     return all_data.to_csv(output_path, index=False, header=True)

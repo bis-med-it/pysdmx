@@ -463,6 +463,7 @@ class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     version: str = "1.0"
     artefacts: Sequence[str] = ()
     generated: datetime = datetime.now(timezone.utc)
+    name: Optional[str] = None
 
     def __str__(self) -> str:
         """Custom string representation without the class name."""
@@ -560,6 +561,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
             components=self.components,
             version=self.version,
             artefacts=self.__extract_artefacts(),
+            name=self.name,
         )
 
     @property

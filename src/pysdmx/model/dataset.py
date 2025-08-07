@@ -25,6 +25,7 @@ class ActionType(Enum):
     Replace = "Replace"
     Delete = "Delete"
     Information = "Information"
+    Merge = "Merge"
 
     def __str__(self) -> str:
         """Return the action as a string."""

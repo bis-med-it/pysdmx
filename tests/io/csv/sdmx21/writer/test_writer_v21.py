@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 
 from pysdmx.io import read_sdmx
-from pysdmx.io.csv.sdmx20.writer import write
+from pysdmx.io.csv.sdmx21.writer import write
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model.dataset import ActionType
 
