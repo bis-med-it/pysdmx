@@ -12,7 +12,7 @@ def asc():
     c = Agency("BIS", name="BIS")
     return AgencyScheme(
         agency="SDMX",
-        description="FREQ cl",
+        description="SDMX agencies",
         items=[c],
         annotations=[Annotation(type="test")],
         is_external_reference=False,
