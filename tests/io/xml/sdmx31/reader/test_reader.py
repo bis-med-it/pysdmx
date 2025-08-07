@@ -16,7 +16,7 @@ from pysdmx.model import (
     TransformationScheme,
     VtlMappingScheme,
 )
-from pysdmx.model.dataflow import DataStructureDefinition
+from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
 
 
 @pytest.fixture
@@ -49,7 +49,7 @@ def test_concept_scheme_31(samples_folder):
 
 
 def test_data_dataflow_31(samples_folder):
-    data_path = samples_folder / "data_dataflow.xml"
+    data_path = samples_folder / "ECB_EXR_data.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.DATA_SDMX_ML_3_1
     result = read_sdmx(input_str, validate=True).data
@@ -61,7 +61,7 @@ def test_data_dataflow_31(samples_folder):
 
 
 def test_data_structure_definition_31(samples_folder):
-    data_path = samples_folder / "datastructuredefinition.xml"
+    data_path = samples_folder / "ECB_EXR_metadata.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_3_1
     result = read_sdmx(input_str, validate=True).structures
@@ -77,7 +77,7 @@ def test_data_structure_definition_31(samples_folder):
 
 
 def test_vtl_complete_31(samples_folder):
-    data_path = samples_folder / "vtl_complete.xml"
+    data_path = samples_folder / "VTL_Sample_1.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_3_1
     result = read_sdmx(input_str, validate=True).structures
@@ -104,6 +104,35 @@ def test_vtl_complete_31(samples_folder):
     assert ts_scheme.id == "TS1"
     assert ts_scheme.agency == "SDMX"
     assert len(ts_scheme.items) == 2
+
+
+def test_vtl_complete_3_31(samples_folder):
+    data_path = samples_folder / "VTL_Sample_3.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    result = read_sdmx(input_str, validate=True).structures
+    assert len(result) == 9
+    assert isinstance(result[0], Codelist)
+    assert isinstance(result[1], Codelist)
+    assert isinstance(result[2], ConceptScheme)
+    assert isinstance(result[3], DataStructureDefinition)
+    assert isinstance(result[4], DataStructureDefinition)
+    assert isinstance(result[5], Dataflow)
+    assert isinstance(result[6], Dataflow)
+    assert isinstance(result[7], VtlMappingScheme)
+    assert isinstance(result[8], TransformationScheme)
+
+
+def test_dataflow_31(samples_folder):
+    data_path = samples_folder / "dataflow.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    result = read_sdmx(input_str, validate=True).structures
+    dataflow = result[0]
+    assert isinstance(dataflow, Dataflow)
+    assert dataflow.id == "EXR"
+    assert dataflow.agency == "ECB"
+    assert dataflow.structure == "DataStructure=ECB:EXR(1.0)"
 
 
 def test_data_structure_no_structure(samples_folder):
