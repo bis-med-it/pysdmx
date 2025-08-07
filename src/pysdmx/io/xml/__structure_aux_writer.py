@@ -1002,35 +1002,49 @@ def _write_vtl(  # noqa: C901
                 )
             if item_or_scheme.to_vtl_mapping_method is not None:
                 to_vtl = item_or_scheme.to_vtl_mapping_method
-                data += (
-                    f"{add_indent(indent)}<{ABBR_STR}:ToVtlMapping "
-                    f"method={to_vtl.method!r}>"
-                )
-                indent_2 = add_indent(add_indent(indent))
-                data += f"{indent_2}<{ABBR_STR}:ToVtlSubSpace>"
-                for key in to_vtl.to_vtl_sub_space:
+                if len(to_vtl.to_vtl_sub_space) == 0:
                     data += (
-                        f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
-                        f"</{ABBR_STR}:Key>"
+                        f"{add_indent(indent)}<{ABBR_STR}:ToVtlMapping "
+                        f"method='{to_vtl.method}' />"
                     )
-                data += f"{indent_2}</{ABBR_STR}:ToVtlSubSpace>"
-                data += f"{add_indent(indent)}</{ABBR_STR}:ToVtlMapping>"
+                else:
+                    data += (
+                        f"{add_indent(indent)}<{ABBR_STR}:ToVtlMapping "
+                        f"method='{to_vtl.method}'>"
+                    )
+                    indent_2 = add_indent(add_indent(indent))
+                    data += f"{indent_2}<{ABBR_STR}:ToVtlSubSpace>"
+                    for key in to_vtl.to_vtl_sub_space:
+                        data += (
+                            f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
+                            f"</{ABBR_STR}:Key>"
+                        )
+                    data += f"{indent_2}</{ABBR_STR}:ToVtlSubSpace>"
+                    data += f"{add_indent(indent)}</{ABBR_STR}:ToVtlMapping>"
 
             if item_or_scheme.from_vtl_mapping_method is not None:
                 from_vtl = item_or_scheme.from_vtl_mapping_method
-                data += (
-                    f"{add_indent(indent)}<{ABBR_STR}:FromVtlMapping "
-                    f"method={from_vtl.method!r}>"
-                )
-                indent_2 = add_indent(add_indent(indent))
-                data += f"{indent_2}<{ABBR_STR}:FromVtlSuperSpace>"
-                for key in from_vtl.from_vtl_sub_space:
+                if len(from_vtl.from_vtl_sub_space) == 0:
                     data += (
-                        f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
-                        f"</{ABBR_STR}:Key>"
+                        f"{add_indent(indent)}<{ABBR_STR}:FromVtlMapping "
+                        f"method={from_vtl.method!r} />"
+                        if from_vtl.method is not None
+                        else f"method='{from_vtl.method}' />"
                     )
-                data += f"{indent_2}</{ABBR_STR}:FromVtlSuperSpace>"
-                data += f"{add_indent(indent)}</{ABBR_STR}:FromVtlMapping>"
+                else:
+                    data += (
+                        f"{add_indent(indent)}<{ABBR_STR}:FromVtlMapping "
+                        f"method='{from_vtl.method}'>"
+                    )
+                    indent_2 = add_indent(add_indent(indent))
+                    data += f"{indent_2}<{ABBR_STR}:FromVtlSuperSpace>"
+                    for key in from_vtl.from_vtl_sub_space:
+                        data += (
+                            f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
+                            f"</{ABBR_STR}:Key>"
+                        )
+                    data += f"{indent_2}</{ABBR_STR}:FromVtlSuperSpace>"
+                    data += f"{add_indent(indent)}</{ABBR_STR}:FromVtlMapping>"
 
         if isinstance(item_or_scheme, VtlCodelistMapping):
             label = f"{ABBR_STR}:{VTLMAPPING}"

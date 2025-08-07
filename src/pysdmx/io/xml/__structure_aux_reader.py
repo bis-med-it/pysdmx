@@ -541,7 +541,7 @@ class StructureParser(Struct):
         for con in concept_scheme.concepts:
             if isinstance(concept_ref, str):
                 if con.id == item_reference.item_id:
-                    rep[CON] = con
+                    rep[CON] = parse_urn(concept_ref)
                     break
             elif con.id == concept_ref[ID]:
                 rep[CON] = con
