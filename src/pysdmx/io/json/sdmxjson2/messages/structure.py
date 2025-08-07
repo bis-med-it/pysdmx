@@ -139,7 +139,10 @@ class JsonStructures(Struct, frozen=True):
                 ),
             )
         codelists = [JsonCodelist.from_model(c) for c in msg.get_codelists()]
-        return JsonStructures(codelists=codelists)
+        agencies = [
+            JsonAgencyScheme.from_model(a) for a in msg.get_agency_schemes()
+        ]
+        return JsonStructures(codelists=codelists, agencySchemes=agencies)
 
 
 class JsonStructureMessage(Struct, frozen=True):

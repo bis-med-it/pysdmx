@@ -5,7 +5,10 @@ from typing import Dict, Sequence, Set
 
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import ItemSchemeType
+from pysdmx.io.json.sdmxjson2.messages.core import (
+    ItemSchemeType,
+    JsonAnnotation,
+)
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
 from pysdmx.model import Agency, AgencyScheme, DataflowRef
 
@@ -48,6 +51,27 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True):
             is_partial=self.isPartial,
             valid_from=self.validFrom,
             valid_to=self.validTo,
+        )
+
+    @classmethod
+    def from_model(self, asc: AgencyScheme) -> "JsonAgencyScheme":
+        """Converts a pysdmx agency scheme to an SDMX-JSON one."""
+        return JsonAgencyScheme(
+            id="AGENCIES",
+            name="AGENCIES",
+            agency=(
+                asc.agency.id if isinstance(asc.agency, Agency) else asc.agency
+            ),
+            description=asc.description,
+            version="1.0",
+            agencies=asc.items,
+            annotations=[
+                JsonAnnotation.from_model(a) for a in asc.annotations
+            ],
+            isExternalReference=asc.is_external_reference,
+            isPartial=asc.is_partial,
+            validFrom=asc.valid_from,
+            validTo=asc.valid_to,
         )
 
 
