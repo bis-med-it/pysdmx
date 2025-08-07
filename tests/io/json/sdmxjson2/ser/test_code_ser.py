@@ -3,6 +3,7 @@ from datetime import timezone as tz
 
 import pytest
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.code import JsonCode
 from pysdmx.model import Code
 
@@ -27,6 +28,11 @@ def code_vf_vt():
     vf = datetime.now(tz.utc)
     vt = vf + timedelta(hours=1)
     return Code("A", name="Annual", valid_from=vf, valid_to=vt)
+
+
+@pytest.fixture
+def code_no_name():
+    return Code("A")
 
 
 def test_code(code: Code):
@@ -80,3 +86,8 @@ def test_code_vf_vt(code_vf_vt: Code):
     vf = datetime.strftime(code_vf_vt.valid_from, "%Y-%m-%dT%H:%M:%S%z")
     vt = datetime.strftime(code_vf_vt.valid_to, "%Y-%m-%dT%H:%M:%S%z")
     assert a.title == f"{vf}/{vt}"
+
+
+def test_code_no_name(code_no_name):
+    with pytest.raises(errors.Invalid, match="must have a name"):
+        JsonCode.from_model(code_no_name)
