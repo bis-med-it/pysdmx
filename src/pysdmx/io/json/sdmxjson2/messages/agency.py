@@ -3,7 +3,7 @@
 from collections import defaultdict
 from typing import Dict, Sequence, Set
 
-from msgspec import Struct
+import msgspec
 
 from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
@@ -11,6 +11,11 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
 )
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
 from pysdmx.model import Agency, AgencyScheme, DataflowRef
+
+
+def _sanitize_agency_id(agency: Agency) -> Agency:
+    nid = agency.id[agency.id.rindex(".") + 1 :]
+    return msgspec.structs.replace(agency, id=nid)
 
 
 class JsonAgencyScheme(ItemSchemeType, frozen=True):
@@ -56,15 +61,21 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True):
     @classmethod
     def from_model(self, asc: AgencyScheme) -> "JsonAgencyScheme":
         """Converts a pysdmx agency scheme to an SDMX-JSON one."""
+        agency = (
+            asc.agency.id if isinstance(asc.agency, Agency) else asc.agency
+        )
+        if agency == "SDMX":
+            children = asc.items
+        else:
+            children = [_sanitize_agency_id(a) for a in asc.items]
+
         return JsonAgencyScheme(
             id="AGENCIES",
             name="AGENCIES",
-            agency=(
-                asc.agency.id if isinstance(asc.agency, Agency) else asc.agency
-            ),
+            agency=agency,
             description=asc.description,
             version="1.0",
-            agencies=asc.items,
+            agencies=children,
             annotations=[
                 JsonAnnotation.from_model(a) for a in asc.annotations
             ],
@@ -75,7 +86,7 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True):
         )
 
 
-class JsonAgencySchemes(Struct, frozen=True):
+class JsonAgencySchemes(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for the list of agency schemes."""
 
     agencySchemes: Sequence[JsonAgencyScheme]
@@ -86,7 +97,7 @@ class JsonAgencySchemes(Struct, frozen=True):
         return [a.to_model(self.dataflows) for a in self.agencySchemes]
 
 
-class JsonAgencyMessage(Struct, frozen=True):
+class JsonAgencyMessage(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for /agencyscheme queries."""
 
     data: JsonAgencySchemes
