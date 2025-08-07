@@ -129,12 +129,6 @@ class JsonCodelist(ItemSchemeType, frozen=True):
                 "SDMX-JSON codelists must have a name",
                 {"codelist": cl.id},
             )
-        if not cl.agency:
-            raise errors.Invalid(
-                "Invalid input",
-                "SDMX-JSON codelists must have an agency",
-                {"codelist": cl.id},
-            )
         return JsonCodelist(
             id=cl.id,
             name=cl.name,
