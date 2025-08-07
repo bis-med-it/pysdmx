@@ -11,7 +11,7 @@ def test_expected_formats():
         "application/vnd.sdmx.data+csv;version=1.0.0",
         "application/vnd.sdmx.data+json;version=2.0.0",
         "application/vnd.sdmx.data+xml;version=3.0.0",
-        "application/vnd.sdmx.data+xml;version=3.1",
+        "application/vnd.sdmx.data+xml;version=3.1.0",
         "application/vnd.sdmx.data+csv;version=2.0.0",
     ]
 
