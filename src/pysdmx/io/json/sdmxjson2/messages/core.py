@@ -57,6 +57,22 @@ class JsonAnnotation(msgspec.Struct, frozen=True):
             text=self.value if self.value else self.text,
         )
 
+    @classmethod
+    def from_model(self, annotation: Annotation) -> "JsonAnnotation":
+        """Converts a pysdmx annotation to an SDMX-JSON one."""
+        if annotation.url:
+            links = [JsonLink(rel="self", href=annotation.url)]
+        else:
+            links = []
+
+        return JsonAnnotation(
+            id=annotation.id,
+            title=annotation.title,
+            type=annotation.type,
+            text=annotation.text,
+            links=links,
+        )
+
 
 class IdentifiableType(msgspec.Struct, frozen=True):
     """An abstract base type used for all nameable artefacts."""
@@ -212,4 +228,15 @@ class JsonHeader(msgspec.Struct, frozen=True):
             test=self.test,
             prepared=self.prepared,
             sender=self.sender,
+        )
+
+    @classmethod
+    def from_model(self, header: Header) -> "JsonHeader":
+        """Create an SDMX-JSON header from a pysdmx Header."""
+        return JsonHeader(
+            header.id,
+            header.prepared,
+            header.sender,
+            header.test,
+            receivers=header.receiver,
         )

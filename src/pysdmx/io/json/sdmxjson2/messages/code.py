@@ -6,6 +6,7 @@ from typing import Optional, Sequence, Tuple
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
     JsonAnnotation,
@@ -14,6 +15,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     NameableType,
 )
 from pysdmx.model import (
+    Agency,
     Code,
     Codelist,
     HierarchicalCode,
@@ -60,6 +62,37 @@ class JsonCode(NameableType, frozen=True):
             annotations=[a.to_model() for a in self.annotations],
         )
 
+    @classmethod
+    def from_model(self, code: Code) -> "JsonCode":
+        """Converts a pysdmx code to an SDMX-JSON one."""
+        if not code.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON codelists must have a name",
+                {"codelist": code.id},
+            )
+
+        annotations = [JsonAnnotation.from_model(a) for a in code.annotations]
+        if code.valid_from and code.valid_to:
+            vp = f"{code.valid_from.isoformat()}/{code.valid_to.isoformat()}"
+        elif code.valid_from:
+            vp = f"{code.valid_from.isoformat()}/"
+        elif code.valid_to:
+            vp = f"/{code.valid_to.isoformat()}"
+        else:
+            vp = ""
+        if vp:
+            annotations.append(
+                JsonAnnotation(title=vp, type="FR_VALIDITY_PERIOD")
+            )
+
+        return JsonCode(
+            id=code.id,
+            name=code.name,
+            description=code.description,
+            annotations=annotations,
+        )
+
 
 class JsonCodelist(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for a codelist."""
@@ -80,6 +113,37 @@ class JsonCodelist(ItemSchemeType, frozen=True):
             is_partial=self.isPartial,
             valid_from=self.validFrom,
             valid_to=self.validTo,
+        )
+
+    @classmethod
+    def from_model(self, cl: Codelist) -> "JsonCodelist":
+        """Converts a pysdmx codelist to an SDMX-JSON one."""
+        if not cl.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON codelists must have a name",
+                {"codelist": cl.id},
+            )
+        if not cl.agency:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON codelists must have an agency",
+                {"codelist": cl.id},
+            )
+        return JsonCodelist(
+            id=cl.id,
+            name=cl.name,
+            agency=(
+                cl.agency.id if isinstance(cl.agency, Agency) else cl.agency
+            ),
+            description=cl.description,
+            version=cl.version,
+            codes=[JsonCode.from_model(i) for i in cl.items],
+            annotations=[JsonAnnotation.from_model(a) for a in cl.annotations],
+            isExternalReference=cl.is_external_reference,
+            isPartial=cl.is_partial,
+            validFrom=cl.valid_from,
+            validTo=cl.valid_to,
         )
 
 

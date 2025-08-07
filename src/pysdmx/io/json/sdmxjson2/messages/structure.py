@@ -4,6 +4,7 @@ from typing import Sequence
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.agency import JsonAgencyScheme
 from pysdmx.io.json.sdmxjson2.messages.category import (
     JsonCategorisation,
@@ -126,6 +127,20 @@ class JsonStructures(Struct, frozen=True):
             structures.append(rm.to_model(multi))
         return structures
 
+    @classmethod
+    def from_model(self, msg: StructureMessage) -> "JsonStructures":
+        """Create an SDMX-JSON structures from a list of artefacts."""
+        if not msg.structures:
+            raise errors.Invalid(
+                "Invalid input",
+                (
+                    "SDMX-JSON structure messages must contain at least "
+                    "one maintainable artefact."
+                ),
+            )
+        codelists = [JsonCodelist.from_model(c) for c in msg.get_codelists()]
+        return JsonStructures(codelists=codelists)
+
 
 class JsonStructureMessage(Struct, frozen=True):
     """A generic SDMX-JSON 2.0 Structure message."""
@@ -138,3 +153,14 @@ class JsonStructureMessage(Struct, frozen=True):
         header = self.meta.to_model()
         structures = self.data.to_model()
         return StructureMessage(header, structures)
+
+    @classmethod
+    def from_model(self, message: StructureMessage) -> "JsonStructureMessage":
+        """Creates an SDMX-JSON payload from a pysdmx StructureMessage."""
+        if not message.header:
+            raise errors.Invalid(
+                "Invalid input", "SDMX-JSON messages must have a header."
+            )
+        header = JsonHeader.from_model(message.header)
+        structs = JsonStructures.from_model(message)
+        return JsonStructureMessage(header, structs)
