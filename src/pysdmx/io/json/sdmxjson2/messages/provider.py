@@ -5,9 +5,12 @@ from typing import Dict, Sequence, Set
 
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import ItemSchemeType
+from pysdmx.io.json.sdmxjson2.messages.core import (
+    ItemSchemeType,
+    JsonAnnotation,
+)
 from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
-from pysdmx.model import DataflowRef, DataProvider, DataProviderScheme
+from pysdmx.model import Agency, DataflowRef, DataProvider, DataProviderScheme
 from pysdmx.util import parse_item_urn, parse_urn
 
 
@@ -61,6 +64,27 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True):
             is_partial=self.isPartial,
             valid_from=self.validFrom,
             valid_to=self.validTo,
+        )
+
+    @classmethod
+    def from_model(self, dps: DataProviderScheme) -> "JsonDataProviderScheme":
+        """Converts a pysdmx data provider scheme to an SDMX-JSON one."""
+        return JsonDataProviderScheme(
+            id="DATA_PROVIDERS",
+            name="DATA_PROVIDERS",
+            agency=(
+                dps.agency.id if isinstance(dps.agency, Agency) else dps.agency
+            ),
+            description=dps.description,
+            version="1.0",
+            dataProviders=dps.items,
+            annotations=[
+                JsonAnnotation.from_model(a) for a in dps.annotations
+            ],
+            isExternalReference=dps.is_external_reference,
+            isPartial=dps.is_partial,
+            validFrom=dps.valid_from,
+            validTo=dps.valid_to,
         )
 
 
