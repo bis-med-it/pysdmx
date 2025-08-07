@@ -2,6 +2,7 @@ from datetime import datetime, timezone as tz
 
 import pytest
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist
 from pysdmx.model import Agency, Annotation, Code, Codelist
 
@@ -42,6 +43,11 @@ def codelist_org():
     )
 
 
+@pytest.fixture
+def codelist_no_name():
+    return Codelist("CL_FREQ", agency="BIS")
+
+
 def test_codelist(codelist: Codelist):
     sjson = JsonCodelist.from_model(codelist)
 
@@ -72,3 +78,8 @@ def test_codelist_org(codelist_org: Codelist):
     assert sjson.isPartial is True
     assert sjson.validFrom == codelist_org.valid_from
     assert sjson.validTo == codelist_org.valid_to
+
+
+def test_codelist_no_name(codelist_no_name):
+    with pytest.raises(errors.Invalid, match="must have a name"):
+        JsonCodelist.from_model(codelist_no_name)
