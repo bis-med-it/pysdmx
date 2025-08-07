@@ -24,6 +24,8 @@ from pysdmx.model import (
 )
 from pysdmx.util import find_by_urn, parse_item_urn
 
+_VAL_FMT = "%Y-%m-%dT%H:%M:%S%z"
+
 
 class JsonCode(NameableType, frozen=True):
     """SDMX-JSON payload for codes."""
@@ -31,7 +33,7 @@ class JsonCode(NameableType, frozen=True):
     parent: Optional[str] = None
 
     def __handle_date(self, datestr: str) -> datetime:
-        return datetime.strptime(datestr, "%Y-%m-%dT%H:%M:%S%z")
+        return datetime.strptime(datestr, _VAL_FMT)
 
     def __get_val(
         self, a: JsonAnnotation
@@ -74,11 +76,14 @@ class JsonCode(NameableType, frozen=True):
 
         annotations = [JsonAnnotation.from_model(a) for a in code.annotations]
         if code.valid_from and code.valid_to:
-            vp = f"{code.valid_from.isoformat()}/{code.valid_to.isoformat()}"
+            vp = (
+                f"{datetime.strftime(code.valid_from, _VAL_FMT)}/"
+                f"{datetime.strftime(code.valid_to, _VAL_FMT)}"
+            )
         elif code.valid_from:
-            vp = f"{code.valid_from.isoformat()}/"
+            vp = f"{datetime.strftime(code.valid_from, _VAL_FMT)}/"
         elif code.valid_to:
-            vp = f"/{code.valid_to.isoformat()}"
+            vp = f"/{datetime.strftime(code.valid_to, _VAL_FMT)}"
         else:
             vp = ""
         if vp:
