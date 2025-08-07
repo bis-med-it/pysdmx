@@ -14,6 +14,8 @@ from pysdmx.io.xml.__parse_xml import parse_xml
 from pysdmx.io.xml.__tokens import (
     ATTRIBUTES,
     GENERIC,
+    GROUP,
+    GROUP_KEY,
     ID,
     OBS,
     OBS_DIM,
@@ -35,6 +37,27 @@ def __get_element_to_list(data: Dict[str, Any], mode: Any) -> Dict[str, Any]:
     for k in data[mode][VALUE]:
         obs[k[ID]] = k[VALUE.lower()]
     return obs
+
+
+def __reading_generic_groups(dataset: Dict[str, Any]) -> pd.DataFrame:
+    # Generic Groups
+    test_list = []
+    df = None
+    dataset[GROUP] = add_list(dataset[GROUP])
+    for group in dataset[GROUP]:
+        keys = {}
+        # Group Keys
+        group[GROUP_KEY][VALUE] = add_list(group[GROUP_KEY][VALUE])
+        for v in group[GROUP_KEY][VALUE]:
+            keys[v[ID]] = v[VALUE.lower()]
+        group[ATTRIBUTES][VALUE] = add_list(group[ATTRIBUTES][VALUE])
+        for v in group[ATTRIBUTES][VALUE]:
+            keys[v[ID]] = v[VALUE.lower()]
+
+        test_list.append(keys)
+        test_list, df = __process_df(test_list, df)
+    test_list, df = __process_df(test_list, df, is_end=True)
+    return df
 
 
 def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
@@ -123,6 +146,12 @@ def __parse_generic_data(
     if SERIES in dataset:
         # Generic Series
         df = __reading_generic_series(dataset)
+        if GROUP in dataset:
+            df_group = __reading_generic_groups(dataset)
+            common_columns = list(
+                set(df.columns).intersection(set(df_group.columns))
+            )
+            df = pd.merge(df, df_group, on=common_columns, how="left")
         dim_at_obs = structure_info["dimensionAtObservation"]
         # In case there are observations defined, we need to replace the
         # OBS_DIM column with the dimension at observation
