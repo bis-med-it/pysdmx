@@ -41,6 +41,24 @@ XML_OPTIONS_30 = {
     "dict_constructor": dict,
     "attr_prefix": "",
 }
+SCHEMA_ROOT_31 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_1/"
+NAMESPACES_31 = {
+    SCHEMA_ROOT_31 + "message": None,
+    SCHEMA_ROOT_31 + "common": None,
+    SCHEMA_ROOT_31 + "structure": None,
+    "http://www.w3.org/2001/XMLSchema-instance": "xsi",
+    "http://www.w3.org/XML/1998/namespace": None,
+    SCHEMA_ROOT_31 + "data/structurespecific": None,
+    SCHEMA_ROOT_31 + "registry": None,
+    "http://schemas.xmlsoap.org/soap/envelope/": None,
+}
+
+XML_OPTIONS_31 = {
+    "process_namespaces": True,
+    "namespaces": NAMESPACES_31,
+    "dict_constructor": dict,
+    "attr_prefix": "",
+}
 
 
 def parse_xml(
@@ -61,7 +79,12 @@ def parse_xml(
     """
     if validate:
         validate_doc(input_str)
-    if SCHEMA_ROOT_30 in input_str:
+    if SCHEMA_ROOT_31 in input_str:
+        dict_info = xmltodict.parse(
+            input_str,
+            **XML_OPTIONS_31,  # type: ignore[arg-type]
+        )
+    elif SCHEMA_ROOT_30 in input_str:
         dict_info = xmltodict.parse(
             input_str,
             **XML_OPTIONS_30,  # type: ignore[arg-type]

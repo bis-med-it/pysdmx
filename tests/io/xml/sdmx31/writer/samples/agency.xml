@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message https://registry.sdmx.org/schemas/v3_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Receiver id="Not_Supplied"/>
+		<mes:Source>PySDMX</mes:Source>
+	</mes:Header>
+	<mes:Structures>
+		<str:AgencySchemes>
+			<str:AgencyScheme id="AGENCIES" urn="urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)" isExternalReference="false" agencyID="SDMX" isPartial="false">
+				<com:Name xml:lang="en">SDMX Agency Scheme</com:Name>
+				<str:Agency id="BIS">
+					<com:Name xml:lang="en">Bank for International Settlements</com:Name>
+				</str:Agency>
+				<str:Agency id="ECB">
+					<com:Name xml:lang="en">European Central Bank</com:Name>
+				</str:Agency>
+				<str:Agency id="IMF">
+					<com:Name xml:lang="en">International Monetary Fund</com:Name>
+				</str:Agency>
+				<str:Agency id="SDMX">
+					<com:Name xml:lang="en">SDMX</com:Name>
+				</str:Agency>
+			</str:AgencyScheme>
+		</str:AgencySchemes>
+	</mes:Structures>
+</mes:Structure>

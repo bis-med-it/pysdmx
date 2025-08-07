@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                               xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message"
+                               xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/data/structurespecific"
+                               xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:BIS_DER(1.0):ObsLevelDim:AllDimensions"
+                               xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/common"
+                               xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message https://registry.sdmx.org/schemas/v3_1/SDMXMessage.xsd">
+    <message:Header>
+        <message:ID>test</message:ID>
+        <message:Test>true</message:Test>
+        <message:Prepared>2021-03-08T17:05:06</message:Prepared>
+        <message:Sender id="Unknown"/>
+        <message:Receiver id="Not_supplied"/>
+        <message:Structure structureID="BIS_WEBSTATS_DER_DATAFLOW_1_0"
+                           namespace="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0):ObsLevelDim:AllDimensions"
+                           dimensionAtObservation="AllDimensions">
+                <common:StructureUsage>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)</common:StructureUsage>
+        </message:Structure>
+        <message:DataSetAction>Information</message:DataSetAction>
+        <message:Extracted>2019-12-03T14:39:21</message:Extracted>
+        <message:ReportingBegin>1986-01-01T00:00:00</message:ReportingBegin>
+        <message:ReportingEnd>2019-01-01T00:00:00</message:ReportingEnd>
+        <message:Source xml:lang="en">Fusion Metadata Registry</message:Source>
+    </message:Header>
+</message:Structure>
