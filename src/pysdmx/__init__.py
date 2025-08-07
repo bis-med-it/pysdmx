@@ -1,3 +1,3 @@
 """Your opinionated Python SDMX library."""
 
-__version__ = "1.4.0rc1"
+__version__ = "1.4.0"
