@@ -1106,7 +1106,6 @@ def test_writing_more_than_one_measure(datastructure_two_measures):
         )
 
 
-
 def test_read_write_datastructure_group(
     datastructure_group_read, datastructure_group_write
 ):
@@ -1119,6 +1118,7 @@ def test_read_write_datastructure_group(
     )
     assert result == datastructure_group_write
 
+
 def test_write_dataflow_with_quote(concept_quotes):
     content = [concept_quotes]
     result = write(
@@ -1128,4 +1128,3 @@ def test_write_dataflow_with_quote(concept_quotes):
     assert 'id=""Quote""' in result
     assert 'Name xml:lang="en">Concept with "Quotes"' in result
     assert 'Description xml:lang="en">concept with "Quotes"' in result
-

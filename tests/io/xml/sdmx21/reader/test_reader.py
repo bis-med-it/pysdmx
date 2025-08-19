@@ -875,7 +875,7 @@ def test_datastructure_group(datastructure_group):
     input_str, read_format = process_string_to_read(datastructure_group)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1
     result = read_sdmx(input_str, validate=True).structures
-    dsd = result[20]
+    dsd = result[0]
     assert isinstance(dsd, DataStructureDefinition)
     group = dsd.groups
     assert group[0].id == "Sibling"
@@ -891,6 +891,10 @@ def test_datastructure_group(datastructure_group):
         "L_CP_SECTOR",
         "L_CP_COUNTRY",
     ]
+    attribute_1 = dsd.components.attributes[4]
+    assert attribute_1.attachment_level == ",".join(group[0].dimensions)
+    attribute_2 = dsd.components.attributes[8]
+    assert attribute_2.attachment_level == ",".join(group[0].dimensions)
 
 
 def test_generic_dataset_groups(generic_groups):

@@ -568,7 +568,7 @@ def __write_attribute_relation(  # noqa: C901
             outfile += (
                 f"{add_indent(indent)}<{ABBR_STR}:{GROUP}>"
                 f"{add_indent(add_indent(indent))}<{REF} "
-                f"{ID}={group_id!r}/"
+                f"{ID}={group_id!r}/>"
                 f"{add_indent(indent)}</{ABBR_STR}:{GROUP}>"
             )
         elif att_rel == "D":

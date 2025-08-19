@@ -10,7 +10,7 @@ as part of the response.
 from collections import Counter, UserList
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Iterable, List, Literal, Optional, Sequence, Union
+from typing import Any, Iterable, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -237,7 +237,7 @@ class GroupDimension(
 ):
     """A group of dimensions that can be used to identify a group."""
 
-    dimensions: List[str]
+    dimensions: Sequence[str]
 
 
 class Components(UserList[Component]):
@@ -472,7 +472,7 @@ class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     version: str = "1.0"
     artefacts: Sequence[str] = ()
     generated: datetime = datetime.now(timezone.utc)
-    groups: Optional[List[GroupDimension]] = None
+    groups: Optional[Sequence[GroupDimension]] = None
 
     def __str__(self) -> str:
         """Custom string representation without the class name."""
@@ -538,7 +538,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
     """
 
     components: Components
-    groups: Optional[List[GroupDimension]] = None
+    groups: Optional[Sequence[GroupDimension]] = None
     evolving_structure: bool = False
 
     def __extract_artefacts(self) -> Sequence[str]:

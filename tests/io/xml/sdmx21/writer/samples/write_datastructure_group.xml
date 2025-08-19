@@ -4246,7 +4246,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 							</str:LocalRepresentation>
 							<str:AttributeRelationship>
 								<str:Group>
-									<Ref id="Sibling"/
+									<Ref id="Sibling"/>
 								</str:Group>
 							</str:AttributeRelationship>
 						</str:Attribute>
@@ -4365,7 +4365,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 							</str:LocalRepresentation>
 							<str:AttributeRelationship>
 								<str:Group>
-									<Ref id="Sibling"/
+									<Ref id="Sibling"/>
 								</str:Group>
 							</str:AttributeRelationship>
 						</str:Attribute>
