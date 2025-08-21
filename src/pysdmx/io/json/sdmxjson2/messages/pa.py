@@ -41,7 +41,7 @@ class JsonProvisionAgreement(MaintainableType, frozen=True):
             raise errors.Invalid(
                 "Invalid input",
                 "SDMX-JSON provision agreements must have a name",
-                {"dataflow": pa.id},
+                {"provision_agreement": pa.id},
             )
         return JsonProvisionAgreement(
             agency=(
