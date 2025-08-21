@@ -46,7 +46,7 @@ def pa_no_name():
     )
 
 
-def test_dataflow(pa: ProvisionAgreement):
+def test_pa(pa: ProvisionAgreement):
     sjson = JsonProvisionAgreement.from_model(pa)
 
     assert sjson.id == pa.id
@@ -62,12 +62,12 @@ def test_dataflow(pa: ProvisionAgreement):
     assert sjson.dataProvider == pa.provider
 
 
-def test_dataflow_org(pa_org: ProvisionAgreement):
+def test_pa_org(pa_org: ProvisionAgreement):
     sjson = JsonProvisionAgreement.from_model(pa_org)
 
     assert sjson.agency == pa_org.agency.id
 
 
-def test_dataflow_no_name(pa_no_name):
+def test_pa_no_name(pa_no_name):
     with pytest.raises(errors.Invalid, match="must have a name"):
         JsonProvisionAgreement.from_model(pa_no_name)
