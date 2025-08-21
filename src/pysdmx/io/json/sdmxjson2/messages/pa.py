@@ -35,7 +35,7 @@ class JsonProvisionAgreement(MaintainableType, frozen=True):
         )
 
     @classmethod
-    def from_model(self, pa: ProvisionAgreement) -> "ProvisionAgreement":
+    def from_model(self, pa: ProvisionAgreement) -> "JsonProvisionAgreement":
         """Converts a pysdmx provision agreement to an SDMX-JSON one."""
         if not pa.name:
             raise errors.Invalid(
