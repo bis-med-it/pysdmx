@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright SDMX 2025 - www.sdmx.org -->
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+				xmlns:xml="http://www.w3.org/XML/1998/namespace" 
+				xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message" 
+				xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/structure" 
+				xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/common" 
+				xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message https://xml.sdmx.org/3.1/SDMXMessage.xsd">
+  <mes:Header>
+    <mes:ID>VTL_SAMPLE3</mes:ID>
+    <mes:Test>false</mes:Test>
+    <mes:Prepared>2020-06-05T12:00:00.000Z</mes:Prepared>
+    <mes:Sender id="SDMX" />
+    <mes:Receiver id="SDMX" />
+  </mes:Header>
+  <mes:Structures>
+    <str:Dataflows>
+      <str:Dataflow agencyID="SDMX" id="DF31" version="1.0">
+        <com:Name xml:lang="en">Dataflow #3.1</com:Name>
+        <str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=SDMX:DS31(1.0)</str:Structure>
+      </str:Dataflow>
+      <str:Dataflow agencyID="SDMX" id="DF3R1" version="1.0">
+        <com:Name xml:lang="en">Dataflow for Result #3.1</com:Name>
+        <str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=SDMX:DS3R1(1.0)</str:Structure>
+      </str:Dataflow>
+    </str:Dataflows>    
+    <str:Codelists>
+      <str:Codelist agencyID="SDMX" id="CL_AREA" version="1.0" isPartial="true">
+        <!-- All world countries, regions and areas should appear here, but were removed for keeping the samples smaller; hence the isPartial flag -->
+        <com:Name xml:lang="en">Area codelist</com:Name>
+        <str:Code id="NA">
+          <com:Name xml:lang="en">North America</com:Name>
+        </str:Code>
+        <str:Code id="US">
+          <com:Name xml:lang="en">United States of America</com:Name>
+        </str:Code>
+        <str:Code id="MX">
+          <com:Name xml:lang="en">Mexico</com:Name>
+        </str:Code>
+        <str:Code id="CA">
+          <com:Name xml:lang="en">Canada</com:Name>
+        </str:Code>
+        <str:Code id="EU">
+          <com:Name xml:lang="en">European Union</com:Name>
+        </str:Code>
+      </str:Codelist>
+      <str:Codelist agencyID="SDMX" id="CL_INDICATOR" version="1.0">
+        <com:Name xml:lang="en">Indicators Codelist</com:Name>
+        <str:Code id="GDP">
+          <com:Name xml:lang="en">Gross Domestic Product</com:Name>
+        </str:Code>
+        <str:Code id="POPULATION">
+          <com:Name xml:lang="en">Population</com:Name>
+        </str:Code>
+        <str:Code id="GDPPERCAPITA">
+          <com:Name xml:lang="en">Gross Domestic Product per Capita</com:Name>
+        </str:Code>
+      </str:Codelist>
+    </str:Codelists>
+    <str:ConceptSchemes>
+      <str:ConceptScheme agencyID="SDMX" id="CONCEPTS3" version="1.0">
+        <com:Name xml:lang="en">Concepts for DSDs #2.1</com:Name>
+        <str:Concept id="GEO_AREA">
+          <com:Name xml:lang="en">Geographical Area</com:Name>
+        </str:Concept>
+        <str:Concept id="COUNTRY">
+          <com:Name xml:lang="en">Country</com:Name>
+        </str:Concept>
+        <str:Concept id="TIME_PERIOD">
+          <com:Name xml:lang="en">Time Period</com:Name>
+        </str:Concept>
+        <str:Concept id="INDICATOR">
+          <com:Name xml:lang="en">Measure Dimension</com:Name>
+        </str:Concept>
+        <str:Concept id="OBS_VALUE">
+          <com:Name xml:lang="en">Observation Value</com:Name>
+        </str:Concept>
+      </str:ConceptScheme>
+    </str:ConceptSchemes>
+    <str:DataStructures>
+      <str:DataStructure agencyID="SDMX" id="DS31" version="1.0">
+        <com:Name xml:lang="en">Data Structure #3.1</com:Name>
+        <str:DataStructureComponents>
+          <str:DimensionList>
+            <str:Dimension id="COUNTRY">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS3(1.0).COUNTRY</str:ConceptIdentity>
+              <str:LocalRepresentation>
+				<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_AREA(1.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension id="INDICATOR">
+			<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS3(1.0).INDICATOR</str:ConceptIdentity>
+              <str:LocalRepresentation>
+				<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_INDICATOR(1.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:TimeDimension id="TIME_PERIOD">
+			<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS3(1.0).TIME_PERIOD</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="ObservationalTimePeriod"/>
+              </str:LocalRepresentation>
+            </str:TimeDimension>            
+          </str:DimensionList>
+          <str:MeasureList>
+            <str:Measure id="OBS_VALUE">
+			<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS3(1.0).OBS_VALUE</str:ConceptIdentity>
+            </str:Measure>
+          </str:MeasureList>
+        </str:DataStructureComponents>
+      </str:DataStructure>
+      <str:DataStructure agencyID="SDMX" id="DS3R1" version="1.0">
+        <com:Name xml:lang="en">Data Structure for Results #3.1</com:Name>
+        <str:DataStructureComponents>
+          <str:DimensionList>
+            <str:Dimension id="GEO_AREA">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS3(1.0).GEO_AREA</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_AREA(1.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension id="INDICATOR">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS3(1.0).INDICATOR</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_INDICATOR(1.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:TimeDimension id="TIME_PERIOD">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS3(1.0).TIME_PERIOD</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="ObservationalTimePeriod"/>
+              </str:LocalRepresentation>
+            </str:TimeDimension>            
+          </str:DimensionList>
+          <str:MeasureList>
+            <str:Measure id="OBS_VALUE">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:CONCEPTS3(1.0).OBS_VALUE</str:ConceptIdentity>
+            </str:Measure>
+          </str:MeasureList>
+        </str:DataStructureComponents>
+      </str:DataStructure>
+    </str:DataStructures>
+    <str:VtlMappingSchemes>
+      <str:VtlMappingScheme agencyID="SDMX" id="VTLMS3" version="1.0">
+        <com:Name xml:lang="en">VTL Mapping Scheme #3</com:Name>
+        <str:VtlMapping alias="DF3R1" id="VTLM1">
+          <com:Name xml:lang="en">VTL Mapping #1</com:Name>
+          <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=SDMX:DF3R1(1.0)</str:Dataflow>
+          <str:FromVtlMapping>
+            <str:FromVtlSuperSpace>
+              <str:Key>INDICATOR</str:Key>
+              <str:Key>GEO_AREA</str:Key>
+            </str:FromVtlSuperSpace>
+          </str:FromVtlMapping>
+        </str:VtlMapping>
+        <str:VtlMapping alias="DF31" id="VTLM2">
+          <com:Name xml:lang="en">VTL Mapping #2</com:Name>
+          <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=SDMX:D31(1.0)</str:Dataflow>
+          <str:ToVtlMapping>
+            <str:ToVtlSubSpace>
+              <str:Key>INDICATOR</str:Key>
+              <str:Key>COUNTRY</str:Key>
+            </str:ToVtlSubSpace>
+          </str:ToVtlMapping>
+        </str:VtlMapping>
+      </str:VtlMappingScheme>
+    </str:VtlMappingSchemes>
+    <str:TransformationSchemes>
+      <str:TransformationScheme agencyID="SDMX" id="TS3" version="1.0" vtlVersion="2.0">
+        <com:Name xml:lang="en">Transformation Scheme #3 – SDMX/VTL release sample</com:Name>
+        <!-- This Transformation Scheme uses an SDMX specific naming convention that requires 
+            pre-processing before parsing the VTL expressions. As explained in the SDMX 
+            Technical Notes, the dataset identifiers in this example are a shortcut of the
+            VTL 'sub' operator, i.e. 'DF31/GDP.US' is equivalent to DF31[sub INDICATOR=GDP, 
+            COUNTRY=US]. This convention works combined with the Mappings in this example,
+            which indicates the keys that are used for the used Dataflows. This is not
+            safe to use outside an SDMX context, as the Dataflows may have no meaning there. -->
+        <str:Transformation id="TS_A" isPersistent="true">
+          <com:Name xml:lang="en">GDP per Capita for USA</com:Name>
+          <str:Expression>'DF31/GDP.US' / 'DF31/POPULATION.US'</str:Expression>
+          <str:Result>DF3R1/GDPPERCAPITA.US</str:Result>
+        </str:Transformation>
+        <str:Transformation id="TS_B" isPersistent="true">
+          <com:Name xml:lang="en">GDP per Capita for Canada</com:Name>
+          <str:Expression>'DF31/GDP.CA' / 'DF31/POPULATION.CA'</str:Expression>
+          <str:Result>DF3R1/GDPPERCAPITA.CA</str:Result>
+        </str:Transformation>
+        <str:Transformation id="TS_C" isPersistent="true">
+          <com:Name xml:lang="en">Population for North America</com:Name>
+          <str:Expression>'DF31/POPULATION.US' + 'DF31/POPULATION.CA' + 'DF31/POPULATION.MX'</str:Expression>
+          <str:Result>DF3R1/POPULATION.NA</str:Result>
+        </str:Transformation>
+        <str:Transformation id="TS_D" isPersistent="true">
+          <com:Name xml:lang="en">GDP for North America</com:Name>
+          <str:Expression>'DF31/GDP.US' + 'DF31/GDP.CA' + 'DF31/GDP.MX'</str:Expression>
+          <str:Result>DF3R1/GDP.NA</str:Result>
+        </str:Transformation>
+        <str:Transformation id="TS_E" isPersistent="true">
+          <com:Name xml:lang="en">GDP per Capita for North America</com:Name>
+          <str:Expression>'DF31/GDP.NA' / 'DF31/POPULATION.NA'</str:Expression>
+          <str:Result>DF3R1/GDPPERCAPITA.NA</str:Result>
+        </str:Transformation>
+        <str:VtlMappingScheme>urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=SDMX:VTLMS3(1.0)</str:VtlMappingScheme>
+      </str:TransformationScheme>
+    </str:TransformationSchemes>
+  </mes:Structures>
+</mes:Structure>

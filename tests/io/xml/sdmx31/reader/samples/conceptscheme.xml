@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+				xmlns:xml="http://www.w3.org/XML/1998/namespace" 
+				xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message" 
+				xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/structure" 
+				xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/common" 
+				xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message https://xml.sdmx.org/3.1/SDMXMessage.xsd">
+    <mes:Header>
+        <mes:ID>IREF407410</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2021-03-08T21:59:08Z</mes:Prepared>
+        <mes:Sender id="Unknown" />
+        <mes:Receiver id="not_supplied" /></mes:Header>
+    <mes:Structures>
+        <str:ConceptSchemes>
+            <str:ConceptScheme urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=ECB:ECB_CONCEPTS(1.0)" isExternalReference="false" agencyID="ECB" id="ECB_CONCEPTS" version="1.0">
+                <com:Name xml:lang="en">ECB concepts</com:Name>
+                <str:Concept urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ECB:ECB_CONCEPTS(1.0).COUNT_AREA" id="COUNT_AREA">
+                    <com:Name xml:lang="en">Counterpart area</com:Name>
+                </str:Concept>
+                <str:Concept urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ECB:ECB_CONCEPTS(1.0).CURRENCY" id="CURRENCY">
+                    <com:Name xml:lang="en">Currency</com:Name>
+                </str:Concept>
+            </str:ConceptScheme>
+        </str:ConceptSchemes>
+    </mes:Structures>
+</mes:Structure>

@@ -36,6 +36,7 @@ from pysdmx.io.xml.__tokens import (
     MANDATORY_LOW,
     MEASURE,
     MEASURE_RELATIONSHIP,
+    MSR,
     NAME,
     NAME_PER,
     NAME_PER_SCHEME,
@@ -44,7 +45,6 @@ from pysdmx.io.xml.__tokens import (
     PAR_ID,
     PAR_VER,
     POSITION,
-    PRIM_MEASURE,
     REF,
     ROLE,
     RULE,
@@ -139,7 +139,7 @@ ANNOTATION_WRITER = OrderedDict(
 ROLE_MAPPING = {
     Role.DIMENSION: DIM,
     Role.ATTRIBUTE: ATT,
-    Role.MEASURE: PRIM_MEASURE,
+    Role.MEASURE: MEASURE,
 }
 
 STR_TYPES = Union[
@@ -394,7 +394,7 @@ def __write_components(
     components: Dict[str, Any] = {
         DIM: [],
         ATT: [],
-        PRIM_MEASURE: [],
+        MEASURE: [],
     }
 
     for comp in dsd.components:
@@ -403,15 +403,15 @@ def __write_components(
         elif comp.role == Role.ATTRIBUTE:
             components[ATT].append(comp)
         else:
-            components[PRIM_MEASURE].append(comp)
+            components[MEASURE].append(comp)
 
-    if not references_30 and len(components[PRIM_MEASURE]) > 1:
+    if not references_30 and len(components[MEASURE]) > 1:
         raise Invalid(
             title="Request cannot be fulfilled",
             description=f"SDMX-ML 2.1 does not support multiple measures. "
             f"Check the {dsd.short_urn}.",
             csi={
-                "measures_found": components[PRIM_MEASURE],
+                "measures_found": components[MEASURE],
             },
         )
 
@@ -419,8 +419,8 @@ def __write_components(
     for _, comps in components.items():
         if comps:
             role_name = ROLE_MAPPING[comps[0].role]
-            if role_name == PRIM_MEASURE:
-                role_name = MEASURE
+            if role_name == MEASURE:
+                role_name = MSR
             outfile += f"{add_indent(indent)}<{ABBR_STR}:{role_name}List>"
             for comp in comps:
                 outfile += __write_component(
@@ -445,10 +445,10 @@ def __comps_to_relate(
     elif att_rel == "O":
         if references_30:
             comps_to_relate = []
-            for measure in component_info[PRIM_MEASURE]:
+            for measure in component_info[MEASURE]:
                 comps_to_relate.append(measure)
         else:
-            comps_to_relate = [component_info[PRIM_MEASURE][0].id]
+            comps_to_relate = [component_info[MEASURE][0].id]
     else:
         comps_to_relate = [att_rel]
     return comps_to_relate
@@ -478,8 +478,8 @@ def __write_attribute_relation(
             )
             for comp_name in comps_to_relate:
                 measure_relationship += (
-                    f"{add_indent(indent)}<{ABBR_STR}:{MEASURE}>"
-                    f"{comp_name.id}</{ABBR_STR}:{MEASURE}>"  # type: ignore[attr-defined]
+                    f"{add_indent(indent)}<{ABBR_STR}:{MSR}>"
+                    f"{comp_name.id}</{ABBR_STR}:{MSR}>"  # type: ignore[attr-defined]
                 )
             measure_relationship += (
                 f"{indent}</{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
@@ -529,8 +529,8 @@ def __write_component(
     role_name = ROLE_MAPPING[item.role]
     if role_name == DIM and item.id == "TIME_PERIOD":
         role_name = TIME_DIM
-    if references_30 and role_name == PRIM_MEASURE:
-        role_name = MEASURE
+    if references_30 and role_name == MEASURE:
+        role_name = MSR
 
     head = f"{indent}<{ABBR_STR}:{role_name} "
 
@@ -1002,35 +1002,49 @@ def _write_vtl(  # noqa: C901
                 )
             if item_or_scheme.to_vtl_mapping_method is not None:
                 to_vtl = item_or_scheme.to_vtl_mapping_method
-                data += (
-                    f"{add_indent(indent)}<{ABBR_STR}:ToVtlMapping "
-                    f"method={to_vtl.method!r}>"
-                )
-                indent_2 = add_indent(add_indent(indent))
-                data += f"{indent_2}<{ABBR_STR}:ToVtlSubSpace>"
-                for key in to_vtl.to_vtl_sub_space:
+                if len(to_vtl.to_vtl_sub_space) == 0:
                     data += (
-                        f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
-                        f"</{ABBR_STR}:Key>"
+                        f"{add_indent(indent)}<{ABBR_STR}:ToVtlMapping "
+                        f"method='{to_vtl.method}' />"
                     )
-                data += f"{indent_2}</{ABBR_STR}:ToVtlSubSpace>"
-                data += f"{add_indent(indent)}</{ABBR_STR}:ToVtlMapping>"
+                else:
+                    data += (
+                        f"{add_indent(indent)}<{ABBR_STR}:ToVtlMapping "
+                        f"method='{to_vtl.method}'>"
+                    )
+                    indent_2 = add_indent(add_indent(indent))
+                    data += f"{indent_2}<{ABBR_STR}:ToVtlSubSpace>"
+                    for key in to_vtl.to_vtl_sub_space:
+                        data += (
+                            f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
+                            f"</{ABBR_STR}:Key>"
+                        )
+                    data += f"{indent_2}</{ABBR_STR}:ToVtlSubSpace>"
+                    data += f"{add_indent(indent)}</{ABBR_STR}:ToVtlMapping>"
 
             if item_or_scheme.from_vtl_mapping_method is not None:
                 from_vtl = item_or_scheme.from_vtl_mapping_method
-                data += (
-                    f"{add_indent(indent)}<{ABBR_STR}:FromVtlMapping "
-                    f"method={from_vtl.method!r}>"
-                )
-                indent_2 = add_indent(add_indent(indent))
-                data += f"{indent_2}<{ABBR_STR}:FromVtlSuperSpace>"
-                for key in from_vtl.from_vtl_sub_space:
+                if len(from_vtl.from_vtl_sub_space) == 0:
                     data += (
-                        f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
-                        f"</{ABBR_STR}:Key>"
+                        f"{add_indent(indent)}<{ABBR_STR}:FromVtlMapping "
+                        f"method={from_vtl.method!r} />"
+                        if from_vtl.method is not None
+                        else f"method='{from_vtl.method}' />"
                     )
-                data += f"{indent_2}</{ABBR_STR}:FromVtlSuperSpace>"
-                data += f"{add_indent(indent)}</{ABBR_STR}:FromVtlMapping>"
+                else:
+                    data += (
+                        f"{add_indent(indent)}<{ABBR_STR}:FromVtlMapping "
+                        f"method='{from_vtl.method}'>"
+                    )
+                    indent_2 = add_indent(add_indent(indent))
+                    data += f"{indent_2}<{ABBR_STR}:FromVtlSuperSpace>"
+                    for key in from_vtl.from_vtl_sub_space:
+                        data += (
+                            f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
+                            f"</{ABBR_STR}:Key>"
+                        )
+                    data += f"{indent_2}</{ABBR_STR}:FromVtlSuperSpace>"
+                    data += f"{add_indent(indent)}</{ABBR_STR}:FromVtlMapping>"
 
         if isinstance(item_or_scheme, VtlCodelistMapping):
             label = f"{ABBR_STR}:{VTLMAPPING}"
