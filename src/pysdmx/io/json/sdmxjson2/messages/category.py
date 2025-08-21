@@ -5,8 +5,10 @@ from typing import Dict, Sequence
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
+    JsonAnnotation,
     MaintainableType,
     NameableType,
 )
@@ -44,6 +46,33 @@ class JsonCategorisation(
             valid_from=self.validFrom,
             valid_to=self.validTo,
             annotations=[a.to_model() for a in self.annotations],
+        )
+
+    @classmethod
+    def from_model(self, cat: Categorisation) -> "JsonCategorisation":
+        """Converts a pysdmx categorisation to an SDMX-JSON one."""
+        if not cat.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON categorisations must have a name",
+                {"categorisation": cat.id},
+            )
+        return JsonCategorisation(
+            agency=(
+                cat.agency.id if isinstance(cat.agency, Agency) else cat.agency
+            ),
+            id=cat.id,
+            name=cat.name,
+            version=cat.version,
+            isExternalReference=cat.is_external_reference,
+            validFrom=cat.valid_from,
+            validTo=cat.valid_to,
+            description=cat.description,
+            annotations=[
+                JsonAnnotation.from_model(a) for a in cat.annotations
+            ],
+            source=cat.source,
+            target=cat.target,
         )
 
 
