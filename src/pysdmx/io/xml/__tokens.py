@@ -137,8 +137,8 @@ OBSERVATION = "Observation"
 # Measure
 ME_LIST = "MeasureList"
 ME_LIST_LOW = "measure_list"
-MEASURE = "Measure"
-PRIM_MEASURE = "PrimaryMeasure"
+MSR = "Measure"
+MEASURE = "PrimaryMeasure"
 MEASURE_RELATIONSHIP = "MeasureRelationship"
 # Group Dimension
 GROUP = "Group"

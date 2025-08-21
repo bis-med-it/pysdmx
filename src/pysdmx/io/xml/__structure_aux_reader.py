@@ -84,6 +84,7 @@ from pysdmx.io.xml.__tokens import (
     ME_REL,
     MEASURE,
     METADATA,
+    MSR,
     NAME,
     NAME_PER,
     NAME_PER_SCHEME,
@@ -93,7 +94,6 @@ from pysdmx.io.xml.__tokens import (
     ORGS,
     PAR_ID,
     PAR_VER,
-    PRIM_MEASURE,
     REF,
     REQUIRED,
     ROLE,
@@ -219,13 +219,13 @@ ITEMS_CLASSES = {
     CUSTOM_TYPE: CustomType,
 }
 
-COMP_TYPES = [DIM, ATT, PRIM_MEASURE, MEASURE, GROUP_DIM]
+COMP_TYPES = [DIM, ATT, MEASURE, MSR, GROUP_DIM]
 
 ROLE_MAPPING = {
     DIM: Role.DIMENSION,
     ATT: Role.ATTRIBUTE,
-    PRIM_MEASURE: Role.MEASURE,
     MEASURE: Role.MEASURE,
+    MSR: Role.MEASURE,
 }
 
 FACETS_MAPPING = {
@@ -544,7 +544,7 @@ class StructureParser(Struct):
         for con in concept_scheme.concepts:
             if isinstance(concept_ref, str):
                 if con.id == item_reference.item_id:
-                    rep[CON] = con
+                    rep[CON] = parse_urn(concept_ref)
                     break
             elif con.id == concept_ref[ID]:
                 rep[CON] = con
@@ -598,7 +598,7 @@ class StructureParser(Struct):
             att_level = (
                 ",".join(group_dimensions) if len(group_dimensions) > 0 else ""
             )
-        elif OBSERVATION in attribute or PRIM_MEASURE in attribute:
+        elif OBSERVATION in attribute or MEASURE in attribute:
             att_level = "O"
         else:
             # For None (SDMX-2.1) or Dataflow (SDMX-3.0), attribute is
