@@ -70,8 +70,8 @@ class JsonCode(NameableType, frozen=True):
         if not code.name:
             raise errors.Invalid(
                 "Invalid input",
-                "SDMX-JSON codelists must have a name",
-                {"codelist": code.id},
+                "SDMX-JSON codes must have a name",
+                {"code": code.id},
             )
 
         annotations = [JsonAnnotation.from_model(a) for a in code.annotations]
