@@ -339,6 +339,52 @@ class JsonHierarchyAssociation(MaintainableType, frozen=True):
             operator=lnk[0].urn if lnk else None,
         )
 
+    @classmethod
+    def from_model(
+        self, ha: HierarchyAssociation
+    ) -> "JsonHierarchyAssociation":
+        """Converts a pysdmx hierarchy association to an SDMX-JSON one."""
+        if not ha.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON hierarchy associations must have a name",
+                {"hierarchy_association": ha.id},
+            )
+        if not ha.hierarchy:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON hierarchy associations must reference a hierarchy",
+                {"hierarchy_association": ha.id},
+            )
+        if not ha.component_ref:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON hierarchy associations must reference a component",
+                {"hierarchy_association": ha.id},
+            )
+        if not ha.context_ref:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON hierarchy associations must reference a context",
+                {"hierarchy_association": ha.id},
+            )
+        return JsonHierarchyAssociation(
+            agency=(
+                ha.agency.id if isinstance(ha.agency, Agency) else ha.agency
+            ),
+            id=ha.id,
+            name=ha.name,
+            version=ha.version,
+            isExternalReference=ha.is_external_reference,
+            validFrom=ha.valid_from,
+            validTo=ha.valid_to,
+            description=ha.description,
+            annotations=[JsonAnnotation.from_model(a) for a in ha.annotations],
+            linkedHierarchy=ha.hierarchy,
+            linkedObject=ha.component_ref,
+            contextObject=ha.context_ref,
+        )
+
 
 class JsonHierarchyMessage(Struct, frozen=True):
     """SDMX-JSON payload for /hierarchy queries."""
