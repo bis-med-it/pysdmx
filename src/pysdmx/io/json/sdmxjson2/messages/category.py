@@ -134,6 +134,30 @@ class JsonCategoryScheme(
             annotations=[a.to_model() for a in self.annotations],
         )
 
+    def from_model(self, cs: CategoryScheme) -> "JsonCategoryScheme":
+        """Converts a pysdmx category scheme to an SDMX-JSON one."""
+        if not cs.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON category schemes must have a name",
+                {"category_scheme": cs.id},
+            )
+        return JsonCategoryScheme(
+            agency=(
+                cs.agency.id if isinstance(cs.agency, Agency) else cs.agency
+            ),
+            id=cs.id,
+            name=cs.name,
+            version=cs.version,
+            isExternalReference=cs.is_external_reference,
+            validFrom=cs.valid_from,
+            validTo=cs.valid_to,
+            description=cs.description,
+            annotations=[JsonAnnotation.from_model(a) for a in cs.annotations],
+            isPartial=cs.is_partial,
+            categories=[JsonCategory.from_model(c) for c in cs.categories],
+        )
+
 
 class JsonCategorySchemes(Struct, frozen=True):
     """SDMX-JSON payload for the list of category schemes."""
