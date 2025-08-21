@@ -4,10 +4,12 @@ from typing import Sequence
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.core import (
+    JsonAnnotation,
     MaintainableType,
 )
-from pysdmx.model import ProvisionAgreement
+from pysdmx.model import Agency, ProvisionAgreement
 
 
 class JsonProvisionAgreement(MaintainableType, frozen=True):
@@ -30,6 +32,31 @@ class JsonProvisionAgreement(MaintainableType, frozen=True):
             provider=self.dataProvider,
             annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
+        )
+
+    @classmethod
+    def from_model(self, pa: ProvisionAgreement) -> "ProvisionAgreement":
+        """Converts a pysdmx provision agreement to an SDMX-JSON one."""
+        if not pa.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON provision agreements must have a name",
+                {"dataflow": pa.id},
+            )
+        return JsonProvisionAgreement(
+            agency=(
+                pa.agency.id if isinstance(pa.agency, Agency) else pa.agency
+            ),
+            id=pa.id,
+            name=pa.name,
+            version=pa.version,
+            isExternalReference=pa.is_external_reference,
+            validFrom=pa.valid_from,
+            validTo=pa.valid_to,
+            description=pa.description,
+            annotations=[JsonAnnotation.from_model(a) for a in pa.annotations],
+            dataflow=pa.dataflow,
+            dataProvider=pa.provider,
         )
 
 
