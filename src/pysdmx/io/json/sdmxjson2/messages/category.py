@@ -134,6 +134,7 @@ class JsonCategoryScheme(
             annotations=[a.to_model() for a in self.annotations],
         )
 
+    @classmethod
     def from_model(self, cs: CategoryScheme) -> "JsonCategoryScheme":
         """Converts a pysdmx category scheme to an SDMX-JSON one."""
         if not cs.name:
