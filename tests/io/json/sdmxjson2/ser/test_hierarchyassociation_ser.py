@@ -5,7 +5,7 @@ import pytest
 
 from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.code import JsonHierarchyAssociation
-from pysdmx.model import Agency, Annotation, HierarchyAssociation
+from pysdmx.model import Agency, Annotation, Hierarchy, HierarchyAssociation
 
 
 @pytest.fixture
@@ -82,6 +82,32 @@ def ha_no_context():
     )
 
 
+@pytest.fixture
+def ha_with_hierarchy():
+    h = Hierarchy(
+        "H1",
+        name="My hierarchy",
+        agency="BIS",
+        version="1.2",
+        codes=(),
+        is_partial=True,
+    )
+    return HierarchyAssociation(
+        "UUID",
+        name="My categorisation",
+        agency="BIS",
+        description="My cat desc",
+        version="1.42",
+        annotations=[Annotation(type="test")],
+        is_external_reference=False,
+        valid_from=datetime.now(tz.utc),
+        valid_to=datetime.now(tz.utc),
+        hierarchy=h,
+        component_ref="component_urn",
+        context_ref="dataflow_urn",
+    )
+
+
 def test_ha(ha: HierarchyAssociation):
     sjson = JsonHierarchyAssociation.from_model(ha)
 
@@ -103,6 +129,13 @@ def test_ha_org(ha_org: HierarchyAssociation):
     sjson = JsonHierarchyAssociation.from_model(ha_org)
 
     assert sjson.agency == ha_org.agency.id
+
+
+def test_ha_with_hierarchy(ha_with_hierarchy: HierarchyAssociation):
+    sjson = JsonHierarchyAssociation.from_model(ha_with_hierarchy)
+    expected = "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS:H1(1.2)"
+
+    assert sjson.linkedHierarchy == expected
 
 
 def test_ha_no_name(ha_no_name):

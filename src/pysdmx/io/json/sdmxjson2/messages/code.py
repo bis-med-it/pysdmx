@@ -350,7 +350,7 @@ class JsonHierarchyAssociation(MaintainableType, frozen=True):
                 "SDMX-JSON hierarchy associations must have a name",
                 {"hierarchy_association": ha.id},
             )
-        if not ha.hierarchy:
+        if ha.hierarchy is None:
             raise errors.Invalid(
                 "Invalid input",
                 "SDMX-JSON hierarchy associations must reference a hierarchy",
@@ -362,6 +362,11 @@ class JsonHierarchyAssociation(MaintainableType, frozen=True):
                 "SDMX-JSON hierarchy associations must reference a component",
                 {"hierarchy_association": ha.id},
             )
+        if isinstance(ha.hierarchy, Hierarchy):
+            base = "urn:sdmx:org.sdmx.infomodel.codelist."
+            href = f"{base}{ha.hierarchy.short_urn}"
+        else:
+            href = ha.hierarchy
         if not ha.context_ref:
             raise errors.Invalid(
                 "Invalid input",
@@ -380,7 +385,7 @@ class JsonHierarchyAssociation(MaintainableType, frozen=True):
             validTo=ha.valid_to,
             description=ha.description,
             annotations=[JsonAnnotation.from_model(a) for a in ha.annotations],
-            linkedHierarchy=ha.hierarchy,
+            linkedHierarchy=href,
             linkedObject=ha.component_ref,
             contextObject=ha.context_ref,
         )
