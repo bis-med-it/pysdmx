@@ -65,6 +65,7 @@ class JsonDataflow(MaintainableType, frozen=True):
 
     @classmethod
     def from_model(self, df: Dataflow) -> "JsonDataflow":
+        """Converts a pysdmx dataflow to an SDMX-JSON one."""
         if not df.name:
             raise errors.Invalid(
                 "Invalid input",
