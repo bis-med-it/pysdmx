@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:StructureSpecificData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/structurespecific" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:TEST(1.0):ObsLevelDim:DIM1" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="SENDER"/>
+		<mes:Receiver id="RECEIVER"/>
+		<mes:Structure structureID="TEST" namespace="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:TEST(1.0)" dimensionAtObservation="DIM1">
+			<com:Structure>
+				<Ref agencyID="MD" id="TEST" version="1.0" class="DataStructure"/>
+			</com:Structure>
+		</mes:Structure>
+		<mes:Source>PySDMX</mes:Source>
+	</mes:Header>
+	<mes:DataSet ds_att1="value1" ds_att2="10" ss:structureRef="TEST" xsi:type="ns1:DataSetType" ss:dataScope="TEST" action="Information">
+		<Group xsi:type="ns1:Group" DIM2="4" ATT3="H" />
+		<Group xsi:type="ns1:Group" DIM2="5" ATT3="I" />
+		<Group xsi:type="ns1:Group" DIM2="6" ATT3="J" />
+		<Series DIM2="4" ATT1="A" >
+			<Obs DIM1="1" M1="10" ATT2="7" />
+		</Series>
+		<Series DIM2="5" ATT1="B" >
+			<Obs DIM1="2" M1="11" ATT2="8" />
+		</Series>
+		<Series DIM2="6" ATT1="C" >
+			<Obs DIM1="3" M1="12" ATT2="9" />
+		</Series>
+	</mes:DataSet>
+</mes:StructureSpecificData>

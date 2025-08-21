@@ -140,12 +140,17 @@ def __write_data_single_dataset(
         data += __memory_optimization_writing(dataset, prettyprint)
     else:
         writing_validation(dataset)
-        series_codes, obs_codes = get_codes(
+        series_codes, obs_codes, group_codes = get_codes(
             dimension_code=dim,
             structure=dataset.structure,  # type: ignore[arg-type]
             data=dataset.data,
         )
-
+        if group_codes:
+            data += __group_processing(
+                data=dataset.data,
+                group_codes=group_codes,
+                prettyprint=prettyprint,
+            )
         data += __series_processing(
             data=dataset.data,
             series_codes=series_codes,
@@ -162,6 +167,41 @@ def __write_data_single_dataset(
     outfile += f"{child1}</{ABBR_MSG}:DataSet>"
 
     return outfile.replace("'", '"')
+
+
+def __group_processing(
+    data: pd.DataFrame,
+    group_codes: list[Dict[str, Any]],
+    prettyprint: bool = True,
+) -> str:
+    def __format_group_str(data_info: Dict[Any, Any], group_id: str) -> str:
+        """Formats the series as key=value pairs."""
+        child2 = "\t\t" if prettyprint else ""
+        nl = "\n" if prettyprint else ""
+
+        out_element = f"{child2}<Group xsi:type='ns1:{group_id}' "
+        for k, v in data_info.items():
+            out_element += f"{k}={__escape_xml(str(v))!r} "
+        out_element += f"/>{nl}"
+
+        return out_element
+
+    out_list: List[str] = []
+
+    for group in group_codes:
+        group_keys = group["dimensions"] + [group["attribute"]]
+
+        grouped_data = (
+            data[group_keys]
+            .drop_duplicates()
+            .reset_index(drop=True)
+            .to_dict(orient="records")
+        )
+
+        for record in grouped_data:
+            out_list.append(__format_group_str(record, group["group_id"]))
+
+    return "".join(out_list)
 
 
 def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:

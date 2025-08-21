@@ -778,6 +778,24 @@ def bis_der_agencies():
         return f.read()
 
 
+@pytest.fixture
+def datastructure_group_read():
+    base_path = (
+        Path(__file__).parent / "samples" / "read_datastructure_group.xml"
+    )
+    with open(base_path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+@pytest.fixture
+def datastructure_group_write():
+    base_path = (
+        Path(__file__).parent / "samples" / "write_datastructure_group.xml"
+    )
+    with open(base_path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
 def test_codelist(complete_header, codelist, codelist_sample):
     content = [codelist]
     result = write(
@@ -919,20 +937,13 @@ def test_write_custom_type_scheme(
 def test_datastructure_read_write(
     complete_header, full_datastructure_sample, write_datastructure_sample
 ):
-    # TODO: This test will be revised in #166, currently fails
-    #  because of Group implementation
-    with pytest.raises(NotImplementedError, match="Group"):
-        read_sdmx(full_datastructure_sample, validate=True)
-    # Read the SDMX-ML file
-    # message = read_sdmx(full_datastructure_sample, validate=True)
-
-    # # Write it back to SDMX-ML format
-    # result = write(
-    #     structures=message.structures,
-    #     header=complete_header,
-    #     prettyprint=True,
-    # )
-    # assert result == write_datastructure_sample
+    message = read_sdmx(full_datastructure_sample, validate=True)
+    result = write(
+        structures=message.structures,
+        header=complete_header,
+        prettyprint=True,
+    )
+    assert result == write_datastructure_sample
 
 
 def test_no_header_outpath(concept):
@@ -959,3 +970,16 @@ def test_read_write_agencies(bis_der_agencies):
     )
     # Validate the result
     read_sdmx(result, validate=True)
+
+
+def test_read_write_datastructure_group(
+    datastructure_group_read, datastructure_group_write
+):
+    message = read_sdmx(datastructure_group_read, validate=True)
+
+    result = write(
+        structures=message.structures,
+        header=message.header,
+        prettyprint=True,
+    )
+    assert result == datastructure_group_write
