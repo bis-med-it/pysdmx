@@ -91,6 +91,25 @@ class JsonCategory(NameableType, frozen=True):
             annotations=[a.to_model() for a in self.annotations],
         )
 
+    @classmethod
+    def from_model(self, cat: Category) -> "JsonCategory":
+        """Converts a pysdmx category to an SDMX-JSON one."""
+        if not cat.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON category must have a name",
+                {"category": cat.id},
+            )
+        return JsonCategory(
+            id=cat.id,
+            name=cat.name,
+            description=cat.description,
+            annotations=[
+                JsonAnnotation.from_model(a) for a in cat.annotations
+            ],
+            categories=[JsonCategory.from_model(c) for c in cat.categories],
+        )
+
 
 class JsonCategoryScheme(
     ItemSchemeType, frozen=True, rename={"agency": "agencyID"}
