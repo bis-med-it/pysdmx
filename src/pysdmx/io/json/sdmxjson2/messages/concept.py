@@ -12,7 +12,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonRepresentation,
     NameableType,
 )
-from pysdmx.model import Codelist, Concept, ConceptScheme, DataType
+from pysdmx.model import Agency, Codelist, Concept, ConceptScheme, DataType
 
 
 class IsoConceptReference(Struct, frozen=True):
@@ -110,6 +110,31 @@ class JsonConceptScheme(ItemSchemeType, frozen=True):
             is_partial=self.isPartial,
             valid_from=self.validFrom,
             valid_to=self.validTo,
+        )
+
+    @classmethod
+    def from_model(self, cs: ConceptScheme) -> "JsonConceptScheme":
+        """Converts a pysdmx concept scheme to an SDMX-JSON one."""
+        if not cs.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON concept schemes must have a name",
+                {"concept_scheme": cs.id},
+            )
+        return JsonConceptScheme(
+            agency=(
+                cs.agency.id if isinstance(cs.agency, Agency) else cs.agency
+            ),
+            id=cs.id,
+            name=cs.name,
+            version=cs.version,
+            isExternalReference=cs.is_external_reference,
+            validFrom=cs.valid_from,
+            validTo=cs.valid_to,
+            description=cs.description,
+            annotations=[JsonAnnotation.from_model(a) for a in cs.annotations],
+            isPartial=cs.is_partial,
+            concepts=[JsonConcept.from_model(c) for c in cs.concepts],
         )
 
 
