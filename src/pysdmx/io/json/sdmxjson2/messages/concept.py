@@ -4,9 +4,11 @@ from typing import Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist
 from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
+    JsonAnnotation,
     JsonRepresentation,
     NameableType,
 )
@@ -54,6 +56,28 @@ class JsonConcept(NameableType, frozen=True):
             description=self.description,
             codes=codes,
             enum_ref=cl_ref,
+        )
+
+    @classmethod
+    def from_model(self, concept: Concept) -> "JsonConcept":
+        """Converts a pysdmx concept to an SDMX-JSON one."""
+        if not concept.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON concepts must have a name",
+                {"codelist": concept.id},
+            )
+
+        return JsonConcept(
+            id=concept.id,
+            name=concept.name,
+            description=concept.description,
+            annotations=[
+                JsonAnnotation.from_model(a) for a in concept.annotations
+            ],
+            coreRepresentation=JsonRepresentation.from_model(
+                concept.dtype, concept.enum_ref, concept.facets, None
+            ),
         )
 
 
