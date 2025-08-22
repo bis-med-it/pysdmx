@@ -1,7 +1,14 @@
 import pytest
 
 from pysdmx.io.json.sdmxjson2.messages.core import JsonRepresentation
-from pysdmx.model import ArrayBoundaries, Concept, DataType, Facets
+from pysdmx.model import (
+    ArrayBoundaries,
+    Component,
+    Concept,
+    DataType,
+    Facets,
+    Role,
+)
 
 
 @pytest.fixture
@@ -29,6 +36,19 @@ def concept3():
 @pytest.fixture
 def concept4():
     return Concept("C4")
+
+
+@pytest.fixture
+def component():
+    return Component(
+        "C5",
+        True,
+        Role.DIMENSION,
+        Concept("C5"),
+        DataType.SHORT,
+        Facets(min_value=0, max_value=9),
+        array_def=ArrayBoundaries(2, 7),
+    )
 
 
 def test_enumerated_concept(concept1: Concept):
@@ -76,3 +96,17 @@ def test_no_repr_concept(concept4: Concept):
         concept4.dtype, concept4.enum_ref, concept4.facets, None
     )
     assert sjson is None
+
+
+def test_component(component: Component):
+    sjson = JsonRepresentation.from_model(
+        component.dtype, None, component.facets, component.array_def
+    )
+
+    assert sjson.enumerationFormat is None
+    assert sjson.enumeration is None
+    assert sjson.format.dataType == "Short"
+    assert sjson.format.minValue == 0
+    assert sjson.format.maxValue == 9
+    assert sjson.minOccurs == 2
+    assert sjson.maxOccurs == 7
