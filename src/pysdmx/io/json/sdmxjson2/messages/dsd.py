@@ -1,9 +1,10 @@
 """Collection of SDMX-JSON schemas for SDMX-REST schema queries."""
 
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Dict, List, Literal, Optional, Sequence, Tuple
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist, JsonValuelist
 from pysdmx.io.json.sdmxjson2.messages.concept import (
     JsonConcept,
@@ -11,10 +12,12 @@ from pysdmx.io.json.sdmxjson2.messages.concept import (
 )
 from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
 from pysdmx.io.json.sdmxjson2.messages.core import (
+    JsonAnnotation,
     JsonRepresentation,
     MaintainableType,
 )
 from pysdmx.model import (
+    Agency,
     ArrayBoundaries,
     Codelist,
     Component,
@@ -23,6 +26,8 @@ from pysdmx.model import (
     DataStructureDefinition,
     DataType,
     Facets,
+    Hierarchy,
+    ItemReference,
     Role,
 )
 from pysdmx.util import parse_item_urn
@@ -67,6 +72,41 @@ def _get_representation(
     return (dt, facets, codes, ab)
 
 
+def _get_concept_reference(component: Component) -> str:
+    if isinstance(component.concept, ItemReference):
+        concept = (
+            "urn:sdmx:org.sdmx.infomodel.conceptscheme."
+            f"{str(component.concept)}"
+        )
+    elif component.concept.urn:
+        concept = component.concept.urn
+    else:
+        raise errors.Invalid(
+            "Missing concept reference",
+            (
+                "The full reference to the concept must be available "
+                "but could not be found. To have the full reference, "
+                "either the concept must be an ItemReference or a "
+                "concept object with a urn."
+            ),
+        )
+    return concept
+
+
+def _get_json_representation(
+    comp: Component,
+) -> Optional[JsonRepresentation]:
+    if isinstance(comp.local_codes, (Codelist, Hierarchy)):
+        base = "urn:sdmx:org.sdmx.infomodel.codelist."
+        urn = f"{base}{comp.local_codes.short_urn}"
+        enum = urn
+    else:
+        enum = None
+    return JsonRepresentation.from_model(
+        comp.local_dtype, enum, comp.local_facets, comp.array_def
+    )
+
+
 class JsonGroup(Struct, frozen=True):
     """SDMX-JSON payload for a group."""
 
@@ -95,6 +135,17 @@ class JsonAttributeRelationship(Struct, frozen=True):
             return ",".join(grp[0].groupDimensions)
         else:
             return "D"
+
+    @classmethod
+    def from_model(self, rel: str) -> "JsonAttributeRelationship":
+        """Converts a pysdmx attribute relationship to an SDMX-JSON one."""
+        if rel == "D":
+            return JsonAttributeRelationship(dataflow={})
+        if rel == "O":
+            return JsonAttributeRelationship(observation={})
+        else:
+            dims = rel.split(",")
+            return JsonAttributeRelationship(dimensions=dims)
 
 
 class JsonDimension(Struct, frozen=True):
@@ -134,6 +185,17 @@ class JsonDimension(Struct, frozen=True):
             description=desc,
             local_codes=codes,
             array_def=ab,
+        )
+
+    @classmethod
+    def from_model(self, dimension: Component) -> "JsonDimension":
+        """Converts a pysdmx dimension to an SDMX-JSON one."""
+        concept = _get_concept_reference(dimension)
+        repr = _get_json_representation(dimension)
+        return JsonDimension(
+            id=dimension.id,
+            conceptIdentity=concept,
+            localRepresentation=repr,
         )
 
 
@@ -185,6 +247,23 @@ class JsonAttribute(Struct, frozen=True):
             array_def=ab,
         )
 
+    @classmethod
+    def from_model(self, attribute: Component) -> "JsonAttribute":
+        """Converts a pysdmx attribute to an SDMX-JSON one."""
+        concept = _get_concept_reference(attribute)
+        usage = "mandatory" if attribute.required else "optional"
+        level = JsonAttributeRelationship.from_model(
+            attribute.attachment_level
+        )
+        repr = _get_json_representation(attribute)
+        return JsonAttribute(
+            id=attribute.id,
+            conceptIdentity=concept,
+            attributeRelationship=level,
+            usage=usage,
+            localRepresentation=repr,
+        )
+
 
 class JsonMeasure(Struct, frozen=True):
     """SDMX-JSON payload for a measure."""
@@ -226,10 +305,24 @@ class JsonMeasure(Struct, frozen=True):
             array_def=ab,
         )
 
+    @classmethod
+    def from_model(self, measure: Component) -> "JsonMeasure":
+        """Converts a pysdmx measure to an SDMX-JSON one."""
+        concept = _get_concept_reference(measure)
+        usage = "mandatory" if measure.required else "optional"
+        repr = _get_json_representation(measure)
+        return JsonMeasure(
+            id=measure.id,
+            conceptIdentity=concept,
+            usage=usage,
+            localRepresentation=repr,
+        )
+
 
 class JsonAttributes(Struct, frozen=True):
     """SDMX-JSON payload for the list of attributes."""
 
+    id: Literal["AttributeDescriptor"] = "AttributeDescriptor"
     attributes: Sequence[JsonAttribute] = ()
 
     def to_model(
@@ -242,11 +335,19 @@ class JsonAttributes(Struct, frozen=True):
         """Returns the list of attributes."""
         return [a.to_model(cs, cls, cons, groups) for a in self.attributes]
 
+    @classmethod
+    def from_model(self, attributes: Sequence[Component]) -> "JsonAttributes":
+        """Converts a pysdmx list of attributes to an SDMX-JSON one."""
+        return JsonAttributes(
+            [JsonAttribute.from_model(a) for a in attributes]
+        )
+
 
 class JsonDimensions(Struct, frozen=True):
     """SDMX-JSON payload for the list of dimensions."""
 
-    dimensions: Sequence[JsonDimension]
+    id: Literal["DimensionDescriptor"] = "DimensionDescriptor"
+    dimensions: Sequence[JsonDimension] = ()
     timeDimension: Optional[JsonDimension] = None
 
     def to_model(
@@ -262,20 +363,51 @@ class JsonDimensions(Struct, frozen=True):
             dims.append(self.timeDimension.to_model(cs, cls, cons))
         return dims
 
+    @classmethod
+    def from_model(
+        self,
+        dimensions: Sequence[Component],
+    ) -> "JsonDimensions":
+        """Converts a pysdmx list of dimensions to an SDMX-JSON one."""
+        td = [d for d in dimensions if d.id == "TIME_PERIOD"]
+        if len(td) == 0:
+            ftd = None
+        else:
+            ftd = JsonDimension.from_model(td[0])
+        return JsonDimensions(
+            dimensions=[
+                JsonDimension.from_model(d)
+                for d in dimensions
+                if d.id != "TIME_PERIOD"
+            ],
+            timeDimension=ftd,
+        )
+
 
 class JsonMeasures(Struct, frozen=True):
     """SDMX-JSON payload for the list of measures."""
 
-    measures: Sequence[JsonMeasure]
+    id: Literal["MeasureDescriptor"] = "MeasureDescriptor"
+    measures: Sequence[JsonMeasure] = ()
 
     def to_model(
         self,
         cs: Sequence[JsonConceptScheme],
         cls: Sequence[Codelist],
         cons: Dict[str, Sequence[str]],
-    ) -> List[Component]:
+    ) -> Optional[List[Component]]:
         """Returns the list of measures."""
         return [m.to_model(cs, cls, cons) for m in self.measures]
+
+    @classmethod
+    def from_model(self, measures: Sequence[Component]) -> "JsonMeasures":
+        """Converts a pysdmx list of measures to an SDMX-JSON one."""
+        if measures:
+            return JsonMeasures(
+                measures=[JsonMeasure.from_model(m) for m in measures]
+            )
+        else:
+            return None
 
 
 class JsonComponents(Struct, frozen=True):
@@ -315,6 +447,14 @@ class JsonComponents(Struct, frozen=True):
             )
         return Components(comps)
 
+    @classmethod
+    def from_model(self, components: Components) -> "JsonComponents":
+        """Converts a pysdmx components list to an SDMX-JSON one."""
+        dimensions = JsonDimensions.from_model(components.dimensions)
+        attributes = JsonAttributes.from_model(components.attributes)
+        measures = JsonMeasures.from_model(components.measures)
+        return JsonComponents(dimensions, measures, attributes)
+
 
 class JsonDataStructure(MaintainableType, frozen=True):
     """SDMX-JSON payload for a DSD."""
@@ -348,6 +488,34 @@ class JsonDataStructure(MaintainableType, frozen=True):
             valid_to=self.validTo,
             components=c,
             evolving_structure=self.evolvingStructure,
+        )
+
+    @classmethod
+    def from_model(self, dsd: DataStructureDefinition) -> "JsonDataStructure":
+        """Converts a pysdmx dsd to an SDMX-JSON one."""
+        if not dsd.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON data structures must have a name",
+                {"data_structure": dsd.id},
+            )
+
+        return JsonDataStructure(
+            agency=(
+                dsd.agency.id if isinstance(dsd.agency, Agency) else dsd.agency
+            ),
+            id=dsd.id,
+            name=dsd.name,
+            version=dsd.version,
+            isExternalReference=dsd.is_external_reference,
+            validFrom=dsd.valid_from,
+            validTo=dsd.valid_to,
+            description=dsd.description,
+            annotations=[
+                JsonAnnotation.from_model(a) for a in dsd.annotations
+            ],
+            dataStructureComponents=JsonComponents.from_model(dsd.components),
+            evolvingStructure=dsd.evolving_structure,
         )
 
 
