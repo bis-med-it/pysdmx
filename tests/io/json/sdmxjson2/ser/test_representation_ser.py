@@ -39,12 +39,20 @@ def concept4():
 
 
 @pytest.fixture
+def concept5():
+    return Concept(
+        "C5",
+        enum_ref="urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TS:A(1.0)",
+    )
+
+
+@pytest.fixture
 def component():
     return Component(
-        "C5",
+        "C6",
         True,
         Role.DIMENSION,
-        Concept("C5"),
+        Concept("C6"),
         DataType.SHORT,
         Facets(min_value=0, max_value=9),
         array_def=ArrayBoundaries(2, 7),
@@ -96,6 +104,17 @@ def test_no_repr_concept(concept4: Concept):
         concept4.dtype, concept4.enum_ref, concept4.facets, None
     )
     assert sjson is None
+
+
+def test_enum_ref_concept(concept5: Concept):
+    sjson = JsonRepresentation.from_model(
+        concept5.dtype, concept5.enum_ref, concept5.facets, None
+    )
+    assert sjson.enumerationFormat is None
+    assert sjson.enumeration == concept5.enum_ref
+    assert sjson.format is None
+    assert sjson.minOccurs is None
+    assert sjson.maxOccurs is None
 
 
 def test_component(component: Component):
