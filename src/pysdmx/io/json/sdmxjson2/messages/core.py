@@ -131,7 +131,7 @@ class JsonTextFormat(msgspec.Struct, frozen=True):
     isMultilingual: bool = False
     sentinelValues: Optional[Sequence[str]] = None
     timeInterval: Optional[str] = None
-    interval: Optional[int] = None
+    interval: Optional[Union[int, float]] = None
 
     @classmethod
     def from_model(
@@ -141,12 +141,12 @@ class JsonTextFormat(msgspec.Struct, frozen=True):
         if dtype is None and facets is None:
             return None
         else:
-            dtype = dtype.value if dtype else None
+            typ = dtype.value if dtype else None
             if facets is None:
-                return JsonTextFormat(dtype)
+                return JsonTextFormat(typ)
             else:
                 return JsonTextFormat(
-                    dtype,
+                    typ,
                     facets.min_length,
                     facets.max_length,
                     facets.min_value,

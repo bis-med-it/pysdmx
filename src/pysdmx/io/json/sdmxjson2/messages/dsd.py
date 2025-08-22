@@ -38,7 +38,7 @@ def _find_concept(cs: Sequence[JsonConceptScheme], urn: str) -> JsonConcept:
     return [c for c in f[0].concepts if c.id == r.item_id][0]
 
 
-def __get_type(repr_: JsonRepresentation) -> str:
+def __get_type(repr_: JsonRepresentation) -> Optional[str]:
     if repr_.enumerationFormat:
         t = repr_.enumerationFormat.dataType
     elif repr_.format:
