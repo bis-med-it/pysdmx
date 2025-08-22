@@ -245,25 +245,33 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
         enumeration: Optional[str],
         facets: Optional[Facets],
         array_def: Optional[ArrayBoundaries],
-    ) -> "JsonRepresentation":
-        fmt = JsonTextFormat.from_model(dtype, facets)
-        if array_def:
-            mino = array_def.min_size
-            maxo = array_def.max_size
+    ) -> Optional["JsonRepresentation"]:
+        if (
+            dtype is None
+            and enumeration is None
+            and facets is None
+            and array_def is None
+        ):
+            return None
         else:
-            mino = None
-            maxo = None
-        if enumeration:
-            return JsonRepresentation(
-                enumerationFormat=fmt,
-                enumeration=enumeration,
-                minOccurs=mino,
-                maxOccurs=maxo,
-            )
-        else:
-            return JsonRepresentation(
-                format=fmt, minOccurs=mino, maxOccurs=maxo
-            )
+            fmt = JsonTextFormat.from_model(dtype, facets)
+            if array_def:
+                mino = array_def.min_size
+                maxo = array_def.max_size
+            else:
+                mino = None
+                maxo = None
+            if enumeration:
+                return JsonRepresentation(
+                    enumerationFormat=fmt,
+                    enumeration=enumeration,
+                    minOccurs=mino,
+                    maxOccurs=maxo,
+                )
+            else:
+                return JsonRepresentation(
+                    format=fmt, minOccurs=mino, maxOccurs=maxo
+                )
 
 
 class JsonHeader(msgspec.Struct, frozen=True):
