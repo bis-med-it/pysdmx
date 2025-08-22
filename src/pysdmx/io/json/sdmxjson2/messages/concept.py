@@ -67,6 +67,15 @@ class JsonConcept(NameableType, frozen=True):
                 "SDMX-JSON concepts must have a name",
                 {"codelist": concept.id},
             )
+        if concept.codes:
+            enum_ref = (
+                "urn:sdmx:org.sdmx.infomodel.codelist."
+                f"{concept.codes.short_urn}"
+            )
+        elif concept.enum_ref:
+            enum_ref = concept.enum_ref
+        else:
+            enum_ref = None
 
         return JsonConcept(
             id=concept.id,
@@ -76,7 +85,7 @@ class JsonConcept(NameableType, frozen=True):
                 JsonAnnotation.from_model(a) for a in concept.annotations
             ],
             coreRepresentation=JsonRepresentation.from_model(
-                concept.dtype, concept.enum_ref, concept.facets, None
+                concept.dtype, enum_ref, concept.facets, None
             ),
         )
 
