@@ -137,6 +137,7 @@ class JsonTextFormat(msgspec.Struct, frozen=True):
     def from_model(
         self, dtype: Optional[DataType], facets: Optional[Facets]
     ) -> Optional["JsonTextFormat"]:
+        """Converts pysdmx format details to an SDMX-JSON JsonTextFormat."""
         if dtype is None and facets is None:
             return None
         else:
@@ -246,6 +247,7 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
         facets: Optional[Facets],
         array_def: Optional[ArrayBoundaries],
     ) -> Optional["JsonRepresentation"]:
+        """Converts pysdmx representation details to an SDMX-JSON one."""
         if (
             dtype is None
             and enumeration is None
