@@ -10,6 +10,7 @@ from pysdmx.model import (
     Annotation,
     ArrayBoundaries,
     Codelist,
+    DataType,
     Facets,
     Organisation,
 )
@@ -115,7 +116,7 @@ class ItemSchemeType(MaintainableType, frozen=True):
 class JsonTextFormat(msgspec.Struct, frozen=True):
     """SDMX-JSON payload for TextFormat."""
 
-    dataType: str
+    dataType: Optional[str] = None
     minLength: Optional[int] = None
     maxLength: Optional[int] = None
     minValue: Optional[Union[int, float]] = None
@@ -131,6 +132,35 @@ class JsonTextFormat(msgspec.Struct, frozen=True):
     sentinelValues: Optional[Sequence[str]] = None
     timeInterval: Optional[str] = None
     interval: Optional[int] = None
+
+    @classmethod
+    def from_model(
+        self, dtype: Optional[DataType], facets: Optional[Facets]
+    ) -> Optional["JsonTextFormat"]:
+        if dtype is None and facets is None:
+            return None
+        else:
+            dtype = dtype.value if dtype else None
+            if facets is None:
+                return JsonTextFormat(dtype)
+            else:
+                return JsonTextFormat(
+                    dtype,
+                    facets.min_length,
+                    facets.max_length,
+                    facets.min_value,
+                    facets.max_value,
+                    facets.start_value,
+                    facets.end_value,
+                    facets.decimals,
+                    facets.pattern,
+                    facets.start_time,
+                    facets.end_time,
+                    facets.is_sequence,
+                    facets.is_multilingual,
+                    timeInterval=facets.time_interval,
+                    interval=facets.interval,
+                )
 
 
 def get_facets(input: JsonTextFormat) -> Facets:
@@ -207,6 +237,33 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
             return ArrayBoundaries(m, self.maxOccurs)
         else:
             return None
+
+    @classmethod
+    def from_model(
+        self,
+        dtype: Optional[DataType],
+        enumeration: Optional[str],
+        facets: Optional[Facets],
+        array_def: Optional[ArrayBoundaries],
+    ) -> "JsonRepresentation":
+        fmt = JsonTextFormat.from_model(dtype, facets)
+        if array_def:
+            mino = array_def.min_size
+            maxo = array_def.max_size
+        else:
+            mino = None
+            maxo = None
+        if enumeration:
+            return JsonRepresentation(
+                enumerationFormat=fmt,
+                enumeration=enumeration,
+                minOccurs=mino,
+                maxOccurs=maxo,
+            )
+        else:
+            return JsonRepresentation(
+                format=fmt, minOccurs=mino, maxOccurs=maxo
+            )
 
 
 class JsonHeader(msgspec.Struct, frozen=True):
