@@ -657,6 +657,6 @@ def test_value_list_enum(samples_folder):
     assert enumeration.id == "VL_TEST"
     # Get the valueslist from the message
     # and check it is the same as the enumeration
-    valueslist = result.get_codelist(enumeration.short_urn)
-    assert valueslist.sdmx_type == enumeration.sdmx_type
-    assert valueslist.id == enumeration.id
+    valuelist = result.get_value_lists()[0]
+    assert valuelist.sdmx_type == enumeration.sdmx_type
+    assert valuelist.id == enumeration.id
