@@ -6,9 +6,10 @@ from io import BytesIO, StringIO, TextIOWrapper
 from json import JSONDecodeError, loads
 from os import PathLike
 from pathlib import Path
-from typing import Tuple, Union
+from typing import Optional, Tuple, Union
 
-from httpx import get as httpx_get
+from httpx import Client as httpx_Client
+from httpx import create_ssl_context
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
@@ -99,6 +100,7 @@ def __check_sdmx_str(input_str: str) -> Tuple[str, Format]:
 
 def process_string_to_read(
     sdmx_document: Union[str, Path, BytesIO],
+    pem: Optional[Union[str, Path]] = None,
 ) -> Tuple[str, Format]:
     """Processes the input that comes into read_sdmx function.
 
@@ -107,6 +109,7 @@ def process_string_to_read(
 
     Args:
         sdmx_document: Path to file, URL, or string.
+        pem: Path to a PEM file for SSL verification when reading from a URL.
 
     Returns:
         tuple: Tuple containing the parsed input and the format of the input.
@@ -132,19 +135,36 @@ def process_string_to_read(
 
     elif isinstance(sdmx_document, str):
         if sdmx_document.startswith("http"):
+            if pem is not None and isinstance(pem, Path):
+                pem = str(pem)
+            if pem is not None and pem and not os.path.exists(pem):
+                raise Invalid(
+                    "Validation Error",
+                    f"PEM file {pem} does not exist.",
+                )
+            # Read from URL
+            ssl_context = (
+                create_ssl_context(
+                    verify=pem,
+                )
+                if pem
+                else create_ssl_context()
+            )
             try:
-                response = httpx_get(sdmx_document, timeout=60)
-                if (
-                    response.status_code != 200
-                    and "<?xml" not in response.text
-                ):
-                    raise Exception("Invalid URL, no SDMX Error found")
-                out_str = response.text
-            except Exception:
+                out_str = ""
+                with httpx_Client(verify=ssl_context) as client:
+                    response = client.get(sdmx_document, timeout=60)
+                    if (
+                        response.status_code != 200
+                        and "<?xml" not in response.text
+                    ):
+                        raise Exception("Invalid URL, no SDMX Error found")
+                    out_str = response.text
+            except Exception as e:
                 raise Invalid(
                     "Validation Error",
                     f"Cannot retrieve a SDMX Message "
-                    f"from URL: {sdmx_document}.",
+                    f"from URL: {sdmx_document}. Error message: {e}",
                 ) from None
         else:
             out_str = sdmx_document

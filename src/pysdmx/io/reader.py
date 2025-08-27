@@ -20,6 +20,7 @@ from pysdmx.util._model_utils import schema_generator
 def read_sdmx(  # noqa: C901
     sdmx_document: Union[str, Path, BytesIO],
     validate: bool = True,
+    pem: Optional[Union[str, Path]] = None,
 ) -> Message:
     """Reads any SDMX message and extracts its content.
 
@@ -30,11 +31,15 @@ def read_sdmx(  # noqa: C901
           (`pathlib.Path <https://docs.python.org/3/library/pathlib.html>`_),
           URL, or string.
         validate: Validate the input file (only for SDMX-ML).
+        pem: When using a URL, in case the service exposed
+          a certificate created by an unknown certificate
+          authority, you can pass a PEM file for this
+          authority using this parameter.
 
     Raises:
         Invalid: If the file is empty or the format is not supported.
     """
-    input_str, read_format = process_string_to_read(sdmx_document)
+    input_str, read_format = process_string_to_read(sdmx_document, pem=pem)
 
     header = None
     result_data: Sequence[Dataset] = []
@@ -190,6 +195,7 @@ def get_datasets(
     data: Union[str, Path, BytesIO],
     structure: Optional[Union[str, Path, BytesIO]] = None,
     validate: bool = True,
+    pem: Optional[Union[str, Path]] = None,
 ) -> Sequence[Dataset]:
     """Reads a data message and a structure message and returns a dataset.
 
@@ -214,6 +220,10 @@ def get_datasets(
           (`pathlib.Path <https://docs.python.org/3/library/pathlib.html>`_),
           URL, or string for the structure message, if needed.
         validate: Validate the input file (only for SDMX-ML).
+        pem: When using a URL, in case the service exposed
+            a certificate created by an unknown certificate
+            authority, you can pass a PEM file for this
+            authority using this parameter.
 
     Raises:
         Invalid:
@@ -223,13 +233,13 @@ def get_datasets(
             If the related data structure (or dataflow with its children)
             is not found.
     """
-    data_msg = read_sdmx(data, validate=validate)
+    data_msg = read_sdmx(data, validate=validate, pem=pem)
     if not data_msg.data:
         raise Invalid("No data found in the data message")
 
     if structure is None:
         return data_msg.data
-    structure_msg = read_sdmx(structure, validate=validate)
+    structure_msg = read_sdmx(structure, validate=validate, pem=pem)
     if structure_msg.structures is None:
         raise Invalid("No structure found in the structure message")
 

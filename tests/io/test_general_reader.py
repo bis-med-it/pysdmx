@@ -148,6 +148,21 @@ def test_read_url_valid(respx_mock, data_csv_v1_str):
     assert result.data is not None
 
 
+def test_read_url_invalid_pem():
+    url = "https://validurl.com"
+    invalid_pem_path = Path(__file__).parent / "samples" / "invalid_pem.pem"
+    with pytest.raises(Invalid, match="does not exist"):
+        read_sdmx(url, pem=invalid_pem_path)
+
+
+def test_read_url_invalid_pem_str():
+    url = "https://validurl.com"
+    with pytest.raises(
+        Invalid, match="PEM file invalid_pem.pem does not exist."
+    ):
+        read_sdmx(url, pem="invalid_pem.pem")
+
+
 def test_url_invalid_sdmx_error(respx_mock, sdmx_error_str):
     url = "http://invalid_sdmx_error.com"
     respx_mock.get(url).mock(
