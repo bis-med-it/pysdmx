@@ -133,6 +133,7 @@ from pysdmx.io.xml.__tokens import (
     VALID_TO_LOW,
     VALUE_ITEM,
     VALUE_LIST,
+    VALUE_LIST_LOW,
     VALUE_LISTS,
     VERSION,
     VTL_CL_MAPP,
@@ -1006,7 +1007,7 @@ class StructureParser(Struct):
                 del element["xmlns"]
             # Dynamic creation with specific class
             if scheme == VALUE_LIST:
-                element["sdmx_type"] = "valuelist"
+                element["sdmx_type"] = VALUE_LIST_LOW
             element = self.__format_is_final_30(element)
             result: ItemScheme = STRUCTURES_MAPPING[scheme](**element)
             elements[result.short_urn] = result

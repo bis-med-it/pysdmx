@@ -202,7 +202,7 @@ def test_value_list_read(samples_folder):
     codelist = result[0]
     assert codelist.id == "VL_CURRENCY_SYMBOL"
     assert codelist.name == "Currency Symbol"
-    assert codelist.short_urn == "Codelist=EXAMPLE:VL_CURRENCY_SYMBOL(1.0)"
+    assert codelist.short_urn == "ValueList=EXAMPLE:VL_CURRENCY_SYMBOL(1.0)"
     assert codelist.sdmx_type == "valuelist"
 
 
@@ -644,10 +644,19 @@ def test_value_list_enum(samples_folder):
     data_path = samples_folder / "valuelist_enum.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_3_0
-    result = read_sdmx(input_str, validate=True).structures
-    assert result is not None
-    attributtes = result[2].components.attributes
+    result = read_sdmx(input_str, validate=True)
+    # Get structure
+    structure = result.structures
+    assert structure is not None
+    # Get attributes to check the enumeration
+    attributtes = structure[2].components.attributes
     enumeration = attributtes[0].enumeration
+    # Assertions for the enumeration
     assert enumeration is not None
     assert enumeration.sdmx_type == "valuelist"
     assert enumeration.id == "VL_TEST"
+    # Get the valueslist from the message
+    # and check it is the same as the enumeration
+    valueslist = result.get_codelist(enumeration.short_urn)
+    assert valueslist.sdmx_type == enumeration.sdmx_type
+    assert valueslist.id == enumeration.id
