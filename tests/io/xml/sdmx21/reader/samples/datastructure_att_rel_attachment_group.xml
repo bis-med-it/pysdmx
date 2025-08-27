@@ -51,6 +51,24 @@
                             </str:ConceptRole>
                         </str:Dimension>
                     </str:DimensionList>
+                    <str:Group
+                            urn="urn:sdmx:org.sdmx.infomodel.datastructure.GroupDimensionDescriptor=MD:TEST_GROUP(1.0).TEST_GROUP"
+                            id="TEST_GROUP">
+                        <str:GroupDimension>
+                            <str:DimensionReference>
+                                <Ref id="TEST_DIM_3"/>
+                            </str:DimensionReference>
+                        </str:GroupDimension>
+                    </str:Group>
+                    <str:Group
+                            urn="urn:sdmx:org.sdmx.infomodel.datastructure.GroupDimensionDescriptor=MD:TEST_GROUP(1.0).TEST_GROUP_2"
+                            id="TEST_GROUP_2">
+                        <str:GroupDimension>
+                            <str:DimensionReference>
+                                <Ref id="TEST_DIM_4"/>
+                            </str:DimensionReference>
+                        </str:GroupDimension>
+                    </str:Group>
                     <str:AttributeList
                             urn="urn:sdmx:org.sdmx.infomodel.datastructure.AttributeDescriptor=BIS:BIS_DER(1.0).AttributeDescriptor"
                             id="AttributeDescriptor">

@@ -1,0 +1,298 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common">
+  <message:Header>
+    <message:ID>IREF607293</message:ID>
+    <message:Test>false</message:Test>
+    <message:Prepared>2025-05-26T11:58:47Z</message:Prepared>
+    <message:Sender id="Unknown"/>
+    <message:Receiver id="not_supplied"/>
+  </message:Header>
+  <message:Structures>
+    <str:DataStructures>
+      <str:DataStructure urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)" isExternalReference="false" agencyID="BIS" id="BIS_CBS" version="1.0">
+        <com:Name xml:lang="en">Consolidated Banking Statistics</com:Name>
+        <str:DataStructureComponents>
+          <str:DimensionList urn="urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=BIS:BIS_CBS(1.0).DimensionDescriptor" id="DimensionDescriptor">
+            <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).FREQ" id="FREQ" position="1">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).FREQ</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_MEASURE" id="L_MEASURE" position="2">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_MEASURE</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_STOCK_FLOW(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_REP_CTY" id="L_REP_CTY" position="3">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_REP_CTY</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="2" textType="String" maxLength="2"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).CBS_BANK_TYPE" id="CBS_BANK_TYPE" position="4">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BANK_TYPE</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="2" textType="String" maxLength="2"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).CBS_BASIS" id="CBS_BASIS" position="5">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BASIS</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CBS_BASIS(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_POSITION" id="L_POSITION" position="6">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_POSITION</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_POSITION(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_INSTR" id="L_INSTR" position="7">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_INSTR</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_INSTR(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).REM_MATURITY" id="REM_MATURITY" position="8">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).REM_MATURITY</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ISSUE_MAT(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).CURR_TYPE_BOOK" id="CURR_TYPE_BOOK" position="9">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CURR_TYPE_BOOK</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CURRENCY_3POS(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="3" textType="String" maxLength="3"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_CP_SECTOR" id="L_CP_SECTOR" position="10">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_SECTOR</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_SECTOR(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_CP_COUNTRY" id="L_CP_COUNTRY" position="11">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_COUNTRY</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="2" textType="String" maxLength="2"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:TimeDimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=BIS:BIS_CBS(1.0).TIME_PERIOD" id="TIME_PERIOD">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_PERIOD</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="ObservationalTimePeriod"/>
+              </str:LocalRepresentation>
+            </str:TimeDimension>
+          </str:DimensionList>
+          <str:Group urn="urn:sdmx:org.sdmx.infomodel.datastructure.GroupDimensionDescriptor=BIS:BIS_CBS(1.0).Sibling" id="Sibling">
+            <str:GroupDimension>
+              <str:DimensionReference>L_MEASURE</str:DimensionReference>
+            </str:GroupDimension>
+            <str:GroupDimension>
+              <str:DimensionReference>L_REP_CTY</str:DimensionReference>
+            </str:GroupDimension>
+            <str:GroupDimension>
+              <str:DimensionReference>CBS_BANK_TYPE</str:DimensionReference>
+            </str:GroupDimension>
+            <str:GroupDimension>
+              <str:DimensionReference>CBS_BASIS</str:DimensionReference>
+            </str:GroupDimension>
+            <str:GroupDimension>
+              <str:DimensionReference>L_POSITION</str:DimensionReference>
+            </str:GroupDimension>
+            <str:GroupDimension>
+              <str:DimensionReference>L_INSTR</str:DimensionReference>
+            </str:GroupDimension>
+            <str:GroupDimension>
+              <str:DimensionReference>REM_MATURITY</str:DimensionReference>
+            </str:GroupDimension>
+            <str:GroupDimension>
+              <str:DimensionReference>CURR_TYPE_BOOK</str:DimensionReference>
+            </str:GroupDimension>
+            <str:GroupDimension>
+              <str:DimensionReference>L_CP_SECTOR</str:DimensionReference>
+            </str:GroupDimension>
+            <str:GroupDimension>
+              <str:DimensionReference>L_CP_COUNTRY</str:DimensionReference>
+            </str:GroupDimension>
+          </str:Group>
+          <str:AttributeList urn="urn:sdmx:org.sdmx.infomodel.datastructure.AttributeDescriptor=BIS:BIS_CBS(1.0).AttributeDescriptor" id="AttributeDescriptor">
+            <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).TIME_FORMAT" usage="optional" id="TIME_FORMAT">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_FORMAT</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_TIME_FORMAT(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="3" textType="String" maxLength="3"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dimension>FREQ</str:Dimension>
+                <str:Dimension>L_MEASURE</str:Dimension>
+                <str:Dimension>L_REP_CTY</str:Dimension>
+                <str:Dimension>CBS_BANK_TYPE</str:Dimension>
+                <str:Dimension>CBS_BASIS</str:Dimension>
+                <str:Dimension>L_POSITION</str:Dimension>
+                <str:Dimension>L_INSTR</str:Dimension>
+                <str:Dimension>REM_MATURITY</str:Dimension>
+                <str:Dimension>CURR_TYPE_BOOK</str:Dimension>
+                <str:Dimension>L_CP_SECTOR</str:Dimension>
+                <str:Dimension>L_CP_COUNTRY</str:Dimension>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).OBS_STATUS" usage="mandatory" id="OBS_STATUS">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_STATUS</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OBS_STATUS(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Observation/>
+              </str:AttributeRelationship>
+              <str:MeasureRelationship>
+                <str:Measure>OBS_VALUE</str:Measure>
+              </str:MeasureRelationship>
+            </str:Attribute>
+            <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).OBS_CONF" usage="optional" id="OBS_CONF">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_CONF</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CONF_STATUS(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Observation/>
+              </str:AttributeRelationship>
+              <str:MeasureRelationship>
+                <str:Measure>OBS_VALUE</str:Measure>
+                <str:Measure>OBS_VALUE1</str:Measure>
+              </str:MeasureRelationship>
+            </str:Attribute>
+            <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).OBS_PRE_BREAK" usage="optional" id="OBS_PRE_BREAK">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_PRE_BREAK</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat minLength="1" textType="String" maxLength="15"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Observation/>
+              </str:AttributeRelationship>
+              <str:MeasureRelationship>
+                <str:Measure>OBS_VALUE</str:Measure>
+              </str:MeasureRelationship>
+            </str:Attribute>
+            <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).AVAILABILITY" usage="mandatory" id="AVAILABILITY">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).AVAILABILITY</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_AVAILABILITY(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Group>Sibling</str:Group>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).COLLECTION" usage="mandatory" id="COLLECTION">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).COLLECTION</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_COLLECTION(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dimension>FREQ</str:Dimension>
+                <str:Dimension>L_MEASURE</str:Dimension>
+                <str:Dimension>L_REP_CTY</str:Dimension>
+                <str:Dimension>CBS_BANK_TYPE</str:Dimension>
+                <str:Dimension>CBS_BASIS</str:Dimension>
+                <str:Dimension>L_POSITION</str:Dimension>
+                <str:Dimension>L_INSTR</str:Dimension>
+                <str:Dimension>REM_MATURITY</str:Dimension>
+                <str:Dimension>CURR_TYPE_BOOK</str:Dimension>
+                <str:Dimension>L_CP_SECTOR</str:Dimension>
+                <str:Dimension>L_CP_COUNTRY</str:Dimension>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).DECIMALS" usage="mandatory" id="DECIMALS">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DECIMALS</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DECIMALS(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="BigInteger" maxLength="2"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dataflow/>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).ORG_VISIBILITY" usage="optional" id="ORG_VISIBILITY">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).ORG_VISIBILITY</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ORG_VISIBILITY(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dimension>FREQ</str:Dimension>
+                <str:Dimension>L_MEASURE</str:Dimension>
+                <str:Dimension>L_REP_CTY</str:Dimension>
+                <str:Dimension>CBS_BANK_TYPE</str:Dimension>
+                <str:Dimension>CBS_BASIS</str:Dimension>
+                <str:Dimension>L_POSITION</str:Dimension>
+                <str:Dimension>L_INSTR</str:Dimension>
+                <str:Dimension>REM_MATURITY</str:Dimension>
+                <str:Dimension>CURR_TYPE_BOOK</str:Dimension>
+                <str:Dimension>L_CP_SECTOR</str:Dimension>
+                <str:Dimension>L_CP_COUNTRY</str:Dimension>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).TITLE_GRP" usage="optional" id="TITLE_GRP">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TITLE_GRP</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat minLength="1" textType="String" maxLength="200"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Group>Sibling</str:Group>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).UNIT_MEASURE" usage="mandatory" id="UNIT_MEASURE">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MEASURE</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CURRENCY_3POS(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="3" textType="String" maxLength="3"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dataflow/>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).UNIT_MULT" usage="mandatory" id="UNIT_MULT">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MULT</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_UNIT_MULT(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="2"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dataflow/>
+              </str:AttributeRelationship>
+            </str:Attribute>
+          </str:AttributeList>
+          <str:MeasureList urn="urn:sdmx:org.sdmx.infomodel.datastructure.MeasureDescriptor=BIS:BIS_CBS(1.0).MeasureDescriptor" id="MeasureDescriptor">
+            <str:Measure urn="urn:sdmx:org.sdmx.infomodel.datastructure.Measure=BIS:BIS_CBS(1.0).OBS_VALUE" usage="optional" id="OBS_VALUE">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_VALUE</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat minLength="1" textType="String" maxLength="15"/>
+              </str:LocalRepresentation>
+            </str:Measure>
+            <str:Measure urn="urn:sdmx:org.sdmx.infomodel.datastructure.Measure=BIS:BIS_CBS(1.0).OBS_VALUE1" usage="optional" id="OBS_VALUE1">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_VALUE1</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat minLength="1" textType="String" maxLength="15"/>
+              </str:LocalRepresentation>
+            </str:Measure>
+          </str:MeasureList>
+        </str:DataStructureComponents>
+      </str:DataStructure>
+    </str:DataStructures></message:Structures></message:Structure>
