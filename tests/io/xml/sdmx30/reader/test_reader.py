@@ -638,3 +638,16 @@ def test_datastructure_group(samples_folder):
     assert attribute_1.attachment_level == ",".join(group[0].dimensions)
     attribute_2 = dsd.components.attributes[8]
     assert attribute_2.attachment_level == ",".join(group[0].dimensions)
+
+
+def test_value_list_enum(samples_folder):
+    data_path = samples_folder / "valuelist_enum.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_sdmx(input_str, validate=True).structures
+    assert result is not None
+    attributtes = result[2].components.attributes
+    enumeration = attributtes[0].enumeration
+    assert enumeration is not None
+    assert enumeration.sdmx_type == "valuelist"
+    assert enumeration.id == "VL_TEST"

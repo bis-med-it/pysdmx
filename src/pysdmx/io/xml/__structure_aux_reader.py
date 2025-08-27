@@ -294,6 +294,7 @@ class StructureParser(Struct):
 
     agencies: Dict[str, AgencyScheme] = {}
     codelists: Dict[str, Codelist] = {}
+    valuelists: Dict[str, Codelist] = {}
     concepts: Dict[str, ConceptScheme] = {}
     datastructures: Dict[str, DataStructureDefinition] = {}
     dataflows: Dict[str, Dataflow] = {}
@@ -469,20 +470,28 @@ class StructureParser(Struct):
         if TEXT_FORMAT in json_rep:
             self.__format_facets(json_rep[TEXT_FORMAT], json_obj)
 
-        if ENUM in json_rep and len(self.codelists) > 0:
+        if ENUM in json_rep and (
+            len(self.codelists) > 0 or len(self.valuelists) > 0
+        ):
             enum = json_rep[ENUM]
             if isinstance(enum, str):
                 ref = parse_urn(enum)
             else:
                 ref = enum.get(REF, enum)
-
             if isinstance(ref, dict) and "URN" in ref:
                 codelist = find_by_urn(
                     list(self.codelists.values()), ref["URN"]
                 )
 
             elif isinstance(ref, Reference):
-                codelist = find_by_urn(list(self.codelists.values()), str(ref))
+                codelist = find_by_urn(
+                    list(
+                        self.codelists.values()
+                        if ref.sdmx_type == CL
+                        else self.valuelists.values()
+                    ),
+                    str(ref),
+                )
             else:
                 short_urn = str(
                     Reference(
@@ -1118,6 +1127,7 @@ class StructureParser(Struct):
                 lambda data: self.__format_scheme(
                     data, VALUE_LIST, VALUE_ITEM
                 ),
+                "valuelists",
             ),
             CON_SCHEMES: process_structure(
                 CON_SCHEMES,

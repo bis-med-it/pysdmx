@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message ../../schemas/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>IREF772628</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2021-03-08T17:49:35Z</mes:Prepared>
+		<mes:Sender id="Unknown"/>
+		<mes:Receiver id="not_supplied"/>
+	</mes:Header>
+	<mes:Structures>
+        <str:Codelists>
+            <str:Codelist urn="urn:sdmx:org.sdmx.infomodel.codelist.Codelist=MD:TEST_CODELIST(1.0)" isExternalReference="false" agencyID="MD" id="TEST_CODELIST" version="1.0">
+                <com:Name xml:lang="en">TEST_CODELIST</com:Name>
+                <str:Code urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=MD:TEST_CODELIST(1.0).A" id="A">
+                    <com:Name xml:lang="en">TEST</com:Name>
+                </str:Code>
+            </str:Codelist>
+        </str:Codelists>
+		<str:DataStructures>
+      	<str:DataStructure urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:DS(1.0)" isExternalReference="false" agencyID="MD" id="DS" version="1.0"><com:Name xml:lang="en">DS Test</com:Name>
+        <str:DataStructureComponents>
+          <str:DimensionList urn="urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=MD:DML(1.0).DimensionDescriptor" id="DimensionDescriptor">
+            <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=MD:DM(1.0).FREQ" id="FREQ" position="1">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:STANDALONE_CONCEPT_SCHEME(1.0).FREQ</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=MD:TEST_CODELIST(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="1" textType="String" maxLength="1"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+          </str:DimensionList>
+			<str:AttributeList urn="urn:sdmx:org.sdmx.infomodel.datastructure.AttributeDescriptor=MD:AL(1.0).AttributeDescriptor" id="AttributeDescriptor">
+            <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:ATT1(1.0).TIME_FORMAT" usage="optional" id="TIME_FORMAT">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:STANDALONE_CONCEPT_SCHEME(1.0).TIME_FORMAT</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.ValueList=MD:VL_TEST(1.0)</str:Enumeration>
+                <str:EnumerationFormat minLength="3" textType="String" maxLength="3"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dimension>FREQ</str:Dimension>
+              </str:AttributeRelationship>
+            </str:Attribute>
+          </str:AttributeList>
+        </str:DataStructureComponents>
+      </str:DataStructure>
+    </str:DataStructures>
+        <str:ValueLists>
+			<str:ValueList urn="urn:sdmx:org.sdmx.infomodel.codelist.ValueList=MD:VL_TEST(1.0)" agencyID="MD" id="VL_TEST" version="1.0">
+				<com:Name xml:lang="en">TEST</com:Name>
+				<str:ValueItem id="TEST_1">
+				</str:ValueItem>
+			</str:ValueList>
+		</str:ValueLists>
+	</mes:Structures>
+</mes:Structure>
