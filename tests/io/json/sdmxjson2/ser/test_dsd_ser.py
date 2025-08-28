@@ -162,6 +162,36 @@ def dsd_no_name():
     )
 
 
+@pytest.fixture
+def no_concept_ref():
+    c1 = Component(
+        "FREQ",
+        True,
+        Role.DIMENSION,
+        Concept(
+            "FREQ",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).FREQ",
+        ),
+        DataType.ALPHA,
+        Facets(min_length=1, max_length=1),
+    )
+    c2 = Component(
+        "CUR1",
+        True,
+        Role.DIMENSION,
+        Concept("FREQ"),
+        DataType.ALPHA,
+        Facets(min_length=3, max_length=3),
+    )
+    comps = Components([c1, c2])
+    return DataStructureDefinition(
+        "EXR",
+        agency="BIS",
+        name="Exchange rates",
+        components=comps,
+    )
+
+
 def test_dsd(dsd: DataStructureDefinition):
     sjson = JsonDataStructure.from_model(dsd)
 
@@ -278,3 +308,8 @@ def test_dsd(dsd: DataStructureDefinition):
 def test_dsd_no_name(dsd_no_name):
     with pytest.raises(errors.Invalid, match="must have a name"):
         JsonDataStructure.from_model(dsd_no_name)
+
+
+def test_dsd_no_concept_ref(no_concept_ref):
+    with pytest.raises(errors.Invalid, match="Missing concept reference"):
+        JsonDataStructure.from_model(no_concept_ref)
