@@ -82,6 +82,14 @@ def csv_keys_both():
     return str(base_path)
 
 
+@pytest.fixture
+def csv_time_format_original():
+    base_path = (
+        Path(__file__).parent / "samples" / "csv_time_format_original.csv"
+    )
+    return str(base_path)
+
+
 def test_to_sdmx_csv_writing(data_path, data_path_reference):
     urn = (
         "urn:sdmx:org.sdmx.infomodel.registry."
@@ -277,3 +285,42 @@ def test_writer_keys_both(data_path_optional, dsd_path, csv_keys_both):
         reference_df.replace("nan", ""),
         check_like=True,
     )
+
+
+def test_writer_time_format_original(
+    data_path_optional, dsd_path, csv_time_format_original
+):
+    result = read_sdmx(dsd_path).get_data_structure_definitions()
+    dsd = result[0]
+    schema = dsd.to_schema()
+    dataset = PandasDataset(
+        attributes={},
+        data=pd.read_json(data_path_optional, orient="records"),
+        structure=schema,
+    )
+    dataset.data = dataset.data.astype("str")
+    result_sdmx_csv = write([dataset], time_format="original")
+    result_df = pd.read_csv(StringIO(result_sdmx_csv)).astype(str)
+    reference_df = pd.read_csv(csv_time_format_original).astype(str)
+    pd.testing.assert_frame_equal(
+        result_df.fillna("").replace("nan", ""),
+        reference_df.replace("nan", ""),
+        check_like=True,
+    )
+
+
+def test_writer_time_format_normalized(data_path_optional, dsd_path):
+    result = read_sdmx(dsd_path).get_data_structure_definitions()
+    dsd = result[0]
+    schema = dsd.to_schema()
+    dataset = PandasDataset(
+        attributes={},
+        data=pd.read_json(data_path_optional, orient="records"),
+        structure=schema,
+    )
+    dataset.data = dataset.data.astype("str")
+    with pytest.raises(
+        NotImplementedError,
+        match="Normalized time format is not implemented yet.",
+    ):
+        write([dataset], time_format="normalized")

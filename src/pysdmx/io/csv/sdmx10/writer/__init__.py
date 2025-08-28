@@ -6,9 +6,10 @@ from typing import Literal, Optional, Sequence, Union
 
 import pandas as pd
 
-from pysdmx.io.csv.__csv_aux_writer import __write_labels, __write_time_period
+from pysdmx.io.csv.__csv_aux_writer import __write_time_period
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
+from pysdmx.toolkit.pd._data_utils import format_labels
 
 
 def write(
@@ -52,18 +53,17 @@ def write(
         structure_id = dataset.short_urn.split("=")[1]
         if time_format is not None and time_format != "original":
             __write_time_period(df, time_format)
-        if (
-            labels is not None
-            and isinstance(dataset.structure, Schema)
-            and labels != "id"
-        ):
-            __write_labels(df, labels, dataset.structure)
-            df.insert(
-                0, "DATAFLOW", f"{structure_id}:{dataset.structure.name}"
-            )
-
+        if labels is not None and isinstance(dataset.structure, Schema):
+            format_labels(df, labels, dataset.structure.components)
+            if labels == "id":
+                df.insert(0, "DATAFLOW", structure_id)
+            else:
+                df.insert(
+                    0, "DATAFLOW", f"{structure_id}:{dataset.structure.name}"
+                )
         else:
             df.insert(0, "DATAFLOW", structure_id)
+
         dataframes.append(df)
 
     # Concatenate the dataframes

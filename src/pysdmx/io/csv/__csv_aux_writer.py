@@ -7,6 +7,7 @@ from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_data_aux import get_codes
 from pysdmx.model import Schema
 from pysdmx.model.dataset import ActionType
+from pysdmx.toolkit.pd._data_utils import format_labels
 
 SDMX_CSV_ACTION_MAPPER = {
     ActionType.Append: "A",
@@ -17,51 +18,9 @@ SDMX_CSV_ACTION_MAPPER = {
 }
 
 
-def __write_labels(
-    df: pd.DataFrame,
-    labels: Literal["name", "both"],
-    schema: Schema,
-) -> None:
-    """Writes the labels to the DataFrame.
-
-    Args:
-        df: The DataFrame to write the labels to.
-        labels: The label type to write.
-            if "id" the id of the data is written.
-            if "name" the name of the data is written.
-            if "both" a string id:name is written.
-        schema: The schema to use for the labels
-        to get the names
-    """
-    data = schema.components.data
-    if labels == "name":
-        for k in df.columns:
-            for component in data:
-                if component.id == k:
-                    df.rename(
-                        columns={k: component.concept.name},  # type: ignore[union-attr]
-                        inplace=True,
-                    )
-    else:
-        for k in df.columns:
-            v = df[k]
-            for component in data:
-                if component.id == k:
-                    df[f"{k}:{component.concept.name}"] = v.apply(  # type: ignore[union-attr]
-                        lambda x: f"{x}:{x}"
-                    )
-                    df.drop(columns=[k], inplace=True)
-
-
 def __write_time_period(df: pd.DataFrame, time_format: str) -> None:
-    if "TIME_PERIOD" not in df.columns or "FREQ" not in df.columns:
-        return
-    freq = df["FREQ"]
-    year = df["TIME_PERIOD"]
-
-    df["TIME_PERIOD"] = year
-
-    df.loc[(freq == "A"), "TIME_PERIOD"] = year + "-12-31"
+    # TODO: Correct handle of normalized time format
+    raise NotImplementedError("Normalized time format is not implemented yet.")
 
 
 def __write_keys(
@@ -138,12 +97,8 @@ def _write_csv_2_aux(
             __write_time_period(df, time_format)
         if keys is not None and isinstance(dataset.structure, Schema):
             __write_keys(df, keys, dataset.structure)
-        if (
-            labels is not None
-            and isinstance(dataset.structure, Schema)
-            and labels != "id"
-        ):
-            __write_labels(df, labels, dataset.structure)
+        if labels is not None and isinstance(dataset.structure, Schema):
+            format_labels(df, labels, dataset.structure.components)
             df.insert(0, "STRUCTURE", structure_ref)
             df.insert(
                 1,
