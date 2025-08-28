@@ -30,12 +30,12 @@ def test_cm():
         target="urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:AREA(1.0)",
         maps=[vm],
     )
-    icm = ComponentMap("OBS_CONF", "CONF_STATUS", rm)
+    icm = ComponentMap("COUNTRY", "REF_AREA", rm)
 
     sjson = JsonComponentMap.from_model(icm)
 
-    assert sjson.source == ["OBS_CONF"]
-    assert sjson.target == ["CONF_STATUS"]
+    assert sjson.source == ["COUNTRY"]
+    assert sjson.target == ["REF_AREA"]
     assert sjson.representationMap == (
         "urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap="
         "BIS:RM(1.42)"
@@ -53,12 +53,12 @@ def test_mcm():
         target=["urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:AREA(1.0)"],
         maps=[mvm],
     )
-    icm = ComponentMap("OBS_CONF", "CONF_STATUS", mrm)
+    icm = MultiComponentMap(["COUNTRY", "C2"], ["REF_AREA"], mrm)
 
     sjson = JsonComponentMap.from_model(icm)
 
-    assert sjson.source == ["OBS_CONF"]
-    assert sjson.target == ["CONF_STATUS"]
+    assert sjson.source == ["COUNTRY", "C2"]
+    assert sjson.target == ["REF_AREA"]
     assert sjson.representationMap == (
         "urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap="
         "BIS:MRM(1.7)"
