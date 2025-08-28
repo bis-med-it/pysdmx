@@ -18,6 +18,7 @@ from pysdmx.errors import Invalid
 from pysdmx.model.__base import (
     Agency,
     DataProvider,
+    IdentifiableArtefact,
     ItemReference,
     MaintainableArtefact,
 )
@@ -229,6 +230,14 @@ class Component(
         for attr, value, *_ in self.__rich_repr__():  # type: ignore[misc]
             attrs.append(f"{attr}={repr(value)}")
         return f"{self.__class__.__name__}({', '.join(attrs)})"
+
+
+class GroupDimension(
+    IdentifiableArtefact, frozen=True, omit_defaults=True, kw_only=True
+):
+    """A group of dimensions that can be used to identify a group."""
+
+    dimensions: Sequence[str]
 
 
 class Components(UserList[Component]):
@@ -464,6 +473,7 @@ class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     artefacts: Sequence[str] = ()
     generated: datetime = datetime.now(timezone.utc)
     name: Optional[str] = None
+    groups: Optional[Sequence[GroupDimension]] = None
 
     def __str__(self) -> str:
         """Custom string representation without the class name."""
@@ -529,6 +539,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
     """
 
     components: Components
+    groups: Optional[Sequence[GroupDimension]] = None
     evolving_structure: bool = False
 
     def __extract_artefacts(self) -> Sequence[str]:
@@ -558,6 +569,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
                 else self.agency
             ),
             id=self.id,
+            groups=self.groups,
             components=self.components,
             version=self.version,
             artefacts=self.__extract_artefacts(),

@@ -40,7 +40,7 @@ def __write_keys(
             "OBS_KEY" and "SERIES_KEY".
         schema: The schema to get the keys
     """
-    series_codes, obs_codes = get_codes(
+    series_codes, obs_codes, group_codes = get_codes(
         dimension_code="", structure=schema, data=df
     )
     del obs_codes[0]

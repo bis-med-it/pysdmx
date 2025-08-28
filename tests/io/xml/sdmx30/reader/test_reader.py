@@ -85,8 +85,8 @@ def test_prov_agree_30_groups_series(samples_folder):
     data = result.data[0].data
     num_rows = len(data)
     num_columns = data.shape[1]
-    assert num_rows == 2
-    assert num_columns == 2
+    assert num_rows == 3
+    assert num_columns == 5
 
 
 def test_data_no_structure_specific(samples_folder):
@@ -611,3 +611,30 @@ def test_vtl_sample_no_code(samples_folder):
     assert isinstance(result[0], Codelist)
     codelist = result[0]
     assert len(codelist.items) == 0
+
+
+def test_datastructure_group(samples_folder):
+    data_path = samples_folder / "datastructure_group.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_sdmx(input_str, validate=True).structures
+    dsd = result[0]
+    assert isinstance(dsd, DataStructureDefinition)
+    group = dsd.groups
+    assert group[0].id == "Sibling"
+    assert group[0].dimensions == [
+        "L_MEASURE",
+        "L_REP_CTY",
+        "CBS_BANK_TYPE",
+        "CBS_BASIS",
+        "L_POSITION",
+        "L_INSTR",
+        "REM_MATURITY",
+        "CURR_TYPE_BOOK",
+        "L_CP_SECTOR",
+        "L_CP_COUNTRY",
+    ]
+    attribute_1 = dsd.components.attributes[4]
+    assert attribute_1.attachment_level == ",".join(group[0].dimensions)
+    attribute_2 = dsd.components.attributes[8]
+    assert attribute_2.attachment_level == ",".join(group[0].dimensions)

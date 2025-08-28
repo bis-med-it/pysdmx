@@ -22,6 +22,7 @@ from pysdmx.model import (
     ConceptScheme,
     Contact,
     CustomTypeScheme,
+    DataStructureDefinition,
     FromVtlMapping,
     ItemReference,
     NamePersonalisationScheme,
@@ -88,6 +89,16 @@ def scheme_examples_json():
         encoding="utf-8",
     ) as file:
         return json.load(file)
+
+
+@pytest.fixture
+def datastructure_group():
+    return Path(__file__).parent / "samples" / "datastructure_group.xml"
+
+
+@pytest.fixture
+def generic_groups():
+    return Path(__file__).parent / "samples" / "generic_dataser_groups.xml"
 
 
 @pytest.fixture
@@ -841,17 +852,62 @@ def test_transformation_scheme_children(samples_folder):
     )
 
 
-def test_attribute_relationship_group(samples_folder):
-    data_path = samples_folder / "datastructure_att_rel_group.xml"
-    input_str, read_format = process_string_to_read(data_path)
-    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
-    with pytest.raises(NotImplementedError, match="Group"):
-        read_sdmx(input_str, validate=True)
-
-
 def test_attribute_relationship_attachment_group(samples_folder):
     data_path = samples_folder / "datastructure_att_rel_attachment_group.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1
-    with pytest.raises(NotImplementedError, match="AttachmentGroup"):
-        read_sdmx(input_str, validate=True)
+    result = read_sdmx(input_str, validate=True).structures
+    assert result is not None
+    assert isinstance(result[0], DataStructureDefinition)
+    dsd = result[0]
+    assert len(dsd.groups) == 2
+    assert dsd.groups[0].dimensions == ["TEST_DIM_3"]
+    assert dsd.groups[1].dimensions == ["TEST_DIM_4"]
+    attribute = dsd.components.attributes[0]
+    assert attribute.id == "TEST"
+    assert (
+        attribute.attachment_level
+        == "TEST_DIM_1,TEST_DIM_2,TEST_DIM_3,TEST_DIM_4"
+    )
+
+
+def test_datastructure_group(datastructure_group):
+    input_str, read_format = process_string_to_read(datastructure_group)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+    dsd = result[0]
+    assert isinstance(dsd, DataStructureDefinition)
+    group = dsd.groups
+    assert group[0].id == "Sibling"
+    assert group[0].dimensions == [
+        "L_MEASURE",
+        "L_REP_CTY",
+        "CBS_BANK_TYPE",
+        "CBS_BASIS",
+        "L_POSITION",
+        "L_INSTR",
+        "REM_MATURITY",
+        "CURR_TYPE_BOOK",
+        "L_CP_SECTOR",
+        "L_CP_COUNTRY",
+    ]
+    attribute_1 = dsd.components.attributes[4]
+    assert attribute_1.attachment_level == ",".join(group[0].dimensions)
+    attribute_2 = dsd.components.attributes[8]
+    assert attribute_2.attachment_level == ",".join(group[0].dimensions)
+
+
+def test_generic_dataset_groups(generic_groups):
+    input_str, read_format = process_string_to_read(generic_groups)
+    assert read_format == Format.DATA_SDMX_ML_2_1_GEN
+    result = read_sdmx(input_str, validate=True).data
+    assert result is not None
+    data = result[0].data
+    num_rows = len(data)
+    num_columns = data.shape[1]
+    assert num_rows > 0
+    assert num_columns > 0
+    expected_num_rows = 176
+    expected_num_columns = 19
+    assert num_rows == expected_num_rows
+    assert num_columns == expected_num_columns
