@@ -1,5 +1,3 @@
-from datetime import datetime, timezone
-
 from pysdmx.io.json.sdmxjson2.messages.map import JsonFixedValueMap
 from pysdmx.model import FixedValueMap
 
