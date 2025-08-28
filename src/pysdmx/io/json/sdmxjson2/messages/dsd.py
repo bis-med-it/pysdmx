@@ -339,7 +339,7 @@ class JsonAttributes(Struct, frozen=True):
     def from_model(self, attributes: Sequence[Component]) -> "JsonAttributes":
         """Converts a pysdmx list of attributes to an SDMX-JSON one."""
         return JsonAttributes(
-            [JsonAttribute.from_model(a) for a in attributes]
+            attributes=[JsonAttribute.from_model(a) for a in attributes]
         )
 
 
