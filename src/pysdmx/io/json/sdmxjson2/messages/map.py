@@ -212,6 +212,15 @@ class JsonFixedValueMap(Struct, frozen=True):
             located_in,  # type: ignore[arg-type]
         )
 
+    @classmethod
+    def from_model(self, fvm: FixedValueMap) -> "JsonFixedValueMap":
+        """Converts a pysdmx fixed value map to an SDMX-JSON one."""
+        return JsonFixedValueMap(
+            values=[fvm.value],
+            source=fvm.target if fvm.located_in == "source" else None,
+            target=fvm.target if fvm.located_in == "target" else None,
+        )
+
 
 class JsonComponentMap(Struct, frozen=True):
     """SDMX-JSON payload for a component map."""
