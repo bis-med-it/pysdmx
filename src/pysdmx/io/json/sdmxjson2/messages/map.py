@@ -11,6 +11,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     MaintainableType,
 )
 from pysdmx.model import (
+    Agency,
     ComponentMap,
     DataType,
     DatePatternMap,
@@ -82,7 +83,7 @@ class JsonRepresentationMapping(Struct, frozen=True):
 
     @classmethod
     def from_model(
-        self, vm: Union[ValueMap, MultiValueMap]
+        self, vm: Union[MultiValueMap, ValueMap]
     ) -> "JsonRepresentationMapping":
         """Converts a value map to an SDMX-JSON JsonRepresentationMapping."""
         if isinstance(vm, ValueMap):
@@ -145,6 +146,45 @@ class JsonRepresentationMap(MaintainableType, frozen=True):
                 description=self.description,
                 version=self.version,
             )
+
+    @classmethod
+    def from_model(
+        self, rm: Union[MultiRepresentationMap, RepresentationMap]
+    ) -> "JsonRepresentationMap":
+        """Converts a pysdmx representation map to an SDMX-JSON one."""
+
+        def __convert_st(st: str) -> Dict[str, str]:
+            if "ValueList" in st:
+                return {"valuelist": st}
+            elif "Codelist" in st:
+                return {"codelist": st}
+            else:
+                return {"dataType": st}
+
+        if isinstance(rm, RepresentationMap):
+            source = [__convert_st(rm.source)]
+            target = [__convert_st(rm.target)]
+        else:
+            source = [__convert_st(s) for s in rm.source]
+            target = [__convert_st(t) for t in rm.target]
+        return JsonRepresentationMap(
+            agency=(
+                rm.agency.id if isinstance(rm.agency, Agency) else rm.agency
+            ),
+            id=rm.id,
+            name=rm.name,
+            version=rm.version,
+            isExternalReference=rm.is_external_reference,
+            validFrom=rm.valid_from,
+            validTo=rm.valid_to,
+            description=rm.description,
+            annotations=[JsonAnnotation.from_model(a) for a in rm.annotations],
+            source=source,
+            target=target,
+            representationMappings=[
+                JsonRepresentationMapping.from_model(m) for m in rm.maps
+            ],
+        )
 
 
 class JsonFixedValueMap(Struct, frozen=True):
