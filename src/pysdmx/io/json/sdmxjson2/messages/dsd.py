@@ -397,7 +397,7 @@ class JsonMeasures(Struct, frozen=True):
         cs: Sequence[JsonConceptScheme],
         cls: Sequence[Codelist],
         cons: Dict[str, Sequence[str]],
-    ) -> Optional[List[Component]]:
+    ) -> List[Component]:
         """Returns the list of measures."""
         return [m.to_model(cs, cls, cons) for m in self.measures]
 
@@ -439,9 +439,7 @@ class JsonComponents(Struct, frozen=True):
             cons = {}
         comps.extend(self.dimensionList.to_model(cs, enums, cons))
         if self.measureList:
-            ml = self.measureList.to_model(cs, enums, cons)
-            if ml:
-                comps.extend(ml)
+            comps.extend(self.measureList.to_model(cs, enums, cons))
         if self.attributeList:
             comps.extend(
                 self.attributeList.to_model(
