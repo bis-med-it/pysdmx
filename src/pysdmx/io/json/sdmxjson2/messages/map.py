@@ -307,14 +307,34 @@ class JsonDatePatternMap(Struct, frozen=True):
         )
         typ = "fixed" if self.targetFrequencyID else "variable"
         return DatePatternMap(
-            self.mappedComponents[0].source,
-            self.mappedComponents[0].target,
-            self.sourcePattern,
-            freq,  # type: ignore[arg-type]
-            self.id,
-            self.locale,
-            typ,  # type: ignore[arg-type]
-            self.resolvePeriod,
+            source=self.mappedComponents[0].source,
+            target=self.mappedComponents[0].target,
+            pattern=self.sourcePattern,
+            frequency=freq,  # type: ignore[arg-type]
+            id=self.id,
+            locale=self.locale,
+            pattern_type=typ,  # type: ignore[arg-type]
+            resolve_period=self.resolvePeriod,
+        )
+
+    @classmethod
+    def from_model(self, dpm: DatePatternMap) -> "JsonDatePatternMap":
+        """Converts a pysdmx date pattern map to an SDMX-JSON one."""
+        if dpm.pattern_type == "fixed":
+            tf = dpm.frequency
+            fd = None
+        else:
+            tf = None
+            fd = dpm.frequency
+
+        return JsonDatePatternMap(
+            sourcePattern=dpm.pattern,
+            mappedComponents=[JsonMappedPair(dpm.source, dpm.target)],
+            locale=dpm.locale,
+            id=dpm.id,
+            resolvePeriod=dpm.resolve_period,
+            targetFrequencyID=tf,
+            frequencyDimension=fd,
         )
 
 
