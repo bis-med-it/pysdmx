@@ -649,8 +649,8 @@ def test_value_list_enum(samples_folder):
     structure = result.structures
     assert structure is not None
     # Get attributes to check the enumeration
-    attributtes = structure[2].components.attributes
-    enumeration = attributtes[0].enumeration
+    attributes = structure[2].components.attributes
+    enumeration = attributes[0].enumeration
     # Assertions for the enumeration
     assert enumeration is not None
     assert enumeration.sdmx_type == "valuelist"
@@ -658,5 +658,7 @@ def test_value_list_enum(samples_folder):
     # Get the valueslist from the message
     # and check it is the same as the enumeration
     valuelist = result.get_value_lists()[0]
+    assert valuelist.short_urn == "ValueList=MD:VL_TEST(1.0)"
     assert valuelist.sdmx_type == enumeration.sdmx_type
     assert valuelist.id == enumeration.id
+    assert valuelist.items == enumeration.items

@@ -89,9 +89,8 @@ class Codelist(ItemScheme, frozen=True, omit_defaults=True, tag=True):
         )
         # Value lists are represented as Codelist, but their short URN uses
         # ValueList instead of Codelist.
-        if self.sdmx_type == "valuelist":
-            return f"ValueList={agency}:{self.id}({self.version})"
-        return f"{self.__class__.__name__}={agency}:{self.id}({self.version})"
+        typ = "ValueList" if self.sdmx_type == "valuelist" else "Codelist"
+        return f"{typ}={agency}:{self.id}({self.version})"
 
     def __iter__(self) -> Iterator[Code]:
         """Return an iterator over the list of codes."""
