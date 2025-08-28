@@ -6,7 +6,7 @@ from typing import Any, Iterator, Literal, Optional, Sequence, Tuple, Union
 
 from msgspec import Struct
 
-from pysdmx.model.__base import MaintainableArtefact
+from pysdmx.model.__base import Agency, MaintainableArtefact
 from pysdmx.util._date_pattern_map import convert_dpm
 
 
@@ -264,6 +264,14 @@ class MultiRepresentationMap(
     target: Sequence[str] = []
     maps: Sequence[MultiValueMap] = []
 
+    @property
+    def short_urn(self) -> str:
+        """Returns the short URN for the MultiRepresentationMap."""
+        agency = (
+            self.agency.id if isinstance(self.agency, Agency) else self.agency
+        )
+        return f"RepresentationMap={agency}:{self.id}({self.version})"
+
     def __iter__(
         self,
     ) -> Iterator[MultiValueMap]:
@@ -478,9 +486,7 @@ class StructureMap(MaintainableArtefact, frozen=True, omit_defaults=True):
         """Return the number of mapping rules in the structure map."""
         return len(self.maps)
 
-    def __getitem__(
-        self, id_: str
-    ) -> Optional[
+    def __getitem__(self, id_: str) -> Optional[
         Sequence[
             Union[
                 ComponentMap,
