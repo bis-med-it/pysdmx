@@ -253,7 +253,7 @@ class JsonAttribute(Struct, frozen=True):
         concept = _get_concept_reference(attribute)
         usage = "mandatory" if attribute.required else "optional"
         level = JsonAttributeRelationship.from_model(
-            attribute.attachment_level
+            attribute.attachment_level  # type: ignore[arg-type]
         )
         repr = _get_json_representation(attribute)
         return JsonAttribute(
@@ -336,11 +336,16 @@ class JsonAttributes(Struct, frozen=True):
         return [a.to_model(cs, cls, cons, groups) for a in self.attributes]
 
     @classmethod
-    def from_model(self, attributes: Sequence[Component]) -> "JsonAttributes":
+    def from_model(
+        self, attributes: Sequence[Component]
+    ) -> Optional["JsonAttributes"]:
         """Converts a pysdmx list of attributes to an SDMX-JSON one."""
-        return JsonAttributes(
-            attributes=[JsonAttribute.from_model(a) for a in attributes]
-        )
+        if len(attributes) > 0:
+            return JsonAttributes(
+                attributes=[JsonAttribute.from_model(a) for a in attributes]
+            )
+        else:
+            return None
 
 
 class JsonDimensions(Struct, frozen=True):
@@ -397,9 +402,11 @@ class JsonMeasures(Struct, frozen=True):
         return [m.to_model(cs, cls, cons) for m in self.measures]
 
     @classmethod
-    def from_model(self, measures: Sequence[Component]) -> "JsonMeasures":
+    def from_model(
+        self, measures: Sequence[Component]
+    ) -> Optional["JsonMeasures"]:
         """Converts a pysdmx list of measures to an SDMX-JSON one."""
-        if measures:
+        if len(measures) > 0:
             return JsonMeasures(
                 measures=[JsonMeasure.from_model(m) for m in measures]
             )
@@ -432,7 +439,9 @@ class JsonComponents(Struct, frozen=True):
             cons = {}
         comps.extend(self.dimensionList.to_model(cs, enums, cons))
         if self.measureList:
-            comps.extend(self.measureList.to_model(cs, enums, cons))
+            ml = self.measureList.to_model(cs, enums, cons)
+            if ml:
+                comps.extend(ml)
         if self.attributeList:
             comps.extend(
                 self.attributeList.to_model(
