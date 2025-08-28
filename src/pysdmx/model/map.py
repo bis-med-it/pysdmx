@@ -308,7 +308,7 @@ class MultiComponentMap(_BaseMap, frozen=True, omit_defaults=True, tag=True):
 
     source: Sequence[str]
     target: Sequence[str]
-    values: MultiRepresentationMap
+    values: Union[MultiRepresentationMap, str]
 
 
 class RepresentationMap(MaintainableArtefact, frozen=True, omit_defaults=True):
