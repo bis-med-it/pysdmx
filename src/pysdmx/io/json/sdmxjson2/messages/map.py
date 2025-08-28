@@ -39,6 +39,14 @@ class JsonSourceValue(Struct, frozen=True):
         else:
             return self.value
 
+    @classmethod
+    def from_model(self, value: str) -> "JsonSourceValue":
+        """Converts a pysdmx source string value to an SDMX-JSON one."""
+        if value.startswith("regex:"):
+            return JsonSourceValue(value.replace("regex:", ""), True)
+        else:
+            return JsonSourceValue(value)
+
 
 class JsonRepresentationMapping(Struct, frozen=True):
     """SDMX-JSON payload for a representation mapping."""
