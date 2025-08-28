@@ -120,7 +120,7 @@ specific readers for SDMX-ML are also available:
 
 .. _sdmx_ml_31_structure_writer:
 
-- STRUCTURE_SDMX_ML_3_1 -> pysdmx.io.xml.sdmx30.writer.structure
+- STRUCTURE_SDMX_ML_3_1 -> pysdmx.io.xml.sdmx31.writer.structure
 
 .. autofunction:: pysdmx.io.xml.sdmx31.writer.structure.write
 
