@@ -255,23 +255,25 @@ class JsonComponentMap(Struct, frozen=True):
         if isinstance(cm, ImplicitComponentMap):
             return JsonComponentMap([cm.source], [cm.target])
         elif isinstance(cm, ComponentMap):
-            return JsonComponentMap(
-                [cm.source],
-                [cm.target],
+            rm = (
                 (
                     "urn:sdmx:org.sdmx.infomodel.structuremapping."
                     f"{cm.values.short_urn}"
-                ),
+                )
+                if isinstance(cm.values, RepresentationMap)
+                else cm.values
             )
+            return JsonComponentMap([cm.source], [cm.target], rm)
         else:
-            return JsonComponentMap(
-                cm.source,
-                cm.target,
+            rm = (
                 (
                     "urn:sdmx:org.sdmx.infomodel.structuremapping."
                     f"{cm.values.short_urn}"
-                ),
+                )
+                if isinstance(cm.values, MultiRepresentationMap)
+                else cm.values
             )
+            return JsonComponentMap(cm.source, cm.target, rm)
 
 
 class JsonMappedPair(Struct, frozen=True):
