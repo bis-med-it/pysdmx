@@ -247,6 +247,32 @@ class JsonComponentMap(Struct, frozen=True):
         else:
             return ImplicitComponentMap(self.source[0], self.target[0])
 
+    @classmethod
+    def from_model(
+        self, cm: Union[ComponentMap, MultiComponentMap, ImplicitComponentMap]
+    ) -> "JsonComponentMap":
+        """Converts a pysdmx component map to an SDMX-JSON one."""
+        if isinstance(cm, ImplicitComponentMap):
+            return JsonComponentMap([cm.source], [cm.target])
+        elif isinstance(cm, ComponentMap):
+            return JsonComponentMap(
+                [cm.source],
+                [cm.target],
+                (
+                    "urn:sdmx:org.sdmx.infomodel.structuremapping."
+                    f"{cm.values.short_urn}"
+                ),
+            )
+        else:
+            return JsonComponentMap(
+                cm.source,
+                cm.target,
+                (
+                    "urn:sdmx:org.sdmx.infomodel.structuremapping."
+                    f"{cm.values.short_urn}"
+                ),
+            )
+
 
 class JsonMappedPair(Struct, frozen=True):
     """SDMX-JSON payload for a pair of mapped components."""
