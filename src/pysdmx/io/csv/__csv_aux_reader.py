@@ -14,7 +14,7 @@ ACTION_SDMX_CSV_MAPPER_READING = {
 
 
 def __generate_dataset_from_sdmx_csv(  # noqa: C901
-    data: pd.DataFrame, references_21: bool = False
+    data: pd.DataFrame,
 ) -> PandasDataset:
     urn = ""
     df_csv = pd.DataFrame()
@@ -37,12 +37,6 @@ def __generate_dataset_from_sdmx_csv(  # noqa: C901
                         "on ACTION column.",
                     )
                 action = ACTION_SDMX_CSV_MAPPER_READING[action_value]
-                if (
-                    references_21
-                    and action == ActionType.Information
-                    or action == ActionType.Append
-                ):
-                    action = ActionType.Merge
                 del data["ACTION"]  # Remove ACTION column from DataFrame
             else:
                 raise Invalid(

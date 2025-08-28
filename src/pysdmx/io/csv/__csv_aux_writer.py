@@ -49,9 +49,9 @@ def __write_keys(
     for k, v in df.items():
         value = v.iloc[0]
         if k in obs_codes:
-            obs_parts.append(value)
+            obs_parts.append(str(value))
         if k in series_codes:
-            series_parts.append(value)
+            series_parts.append(str(value))
     obs_values = ".".join(obs_parts)
     series_values = ".".join(series_parts)
     if keys == "obs":
