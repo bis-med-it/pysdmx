@@ -131,6 +131,140 @@ def dsd():
 
 
 @pytest.fixture
+def dsd_no_attrs():
+    f1 = Code("A")
+    f2 = Code("M")
+    cl = Codelist("CL_FREQ", agency="BIS", version="1.0", items=[f1, f2])
+    c1 = Component(
+        "FREQ",
+        True,
+        Role.DIMENSION,
+        Concept(
+            "FREQ",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).FREQ",
+        ),
+        DataType.ALPHA,
+        Facets(min_length=1, max_length=1),
+        local_codes=cl,
+    )
+    c2 = Component(
+        "CUR1",
+        True,
+        Role.DIMENSION,
+        Concept(
+            "CUR1",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).CUR1",
+        ),
+        DataType.ALPHA,
+        Facets(min_length=3, max_length=3),
+    )
+    c3 = Component(
+        "CUR2",
+        True,
+        Role.DIMENSION,
+        Concept(
+            "CUR2",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).CUR2",
+        ),
+        DataType.ALPHA,
+        Facets(min_length=3, max_length=3),
+    )
+    c4 = Component(
+        "TIME_PERIOD",
+        True,
+        Role.DIMENSION,
+        Concept(
+            "TIME_PERIOD",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).TIME_PERIOD",
+        ),
+        DataType.PERIOD,
+    )
+    c5 = Component(
+        "OBS_VALUE",
+        False,
+        Role.MEASURE,
+        ItemReference("Concept", "Z", "ZZ", "1.0", "OBS_VALUE"),
+        DataType.FLOAT,
+    )
+    comps = Components([c1, c2, c3, c4, c5])
+    return DataStructureDefinition(
+        "EXR", name="Exchange rates", agency="BIS", components=comps
+    )
+
+
+@pytest.fixture
+def dsd_no_measures():
+    f1 = Code("A")
+    f2 = Code("M")
+    cl = Codelist("CL_FREQ", agency="BIS", version="1.0", items=[f1, f2])
+    c1 = Component(
+        "FREQ",
+        True,
+        Role.DIMENSION,
+        Concept(
+            "FREQ",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).FREQ",
+        ),
+        DataType.ALPHA,
+        Facets(min_length=1, max_length=1),
+        local_codes=cl,
+    )
+    c2 = Component(
+        "CUR1",
+        True,
+        Role.DIMENSION,
+        Concept(
+            "CUR1",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).CUR1",
+        ),
+        DataType.ALPHA,
+        Facets(min_length=3, max_length=3),
+    )
+    c3 = Component(
+        "CUR2",
+        True,
+        Role.DIMENSION,
+        Concept(
+            "CUR2",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).CUR2",
+        ),
+        DataType.ALPHA,
+        Facets(min_length=3, max_length=3),
+    )
+    c7 = Component(
+        "UNIT",
+        True,
+        Role.ATTRIBUTE,
+        ItemReference("Concept", "Z", "ZZ", "1.0", "UNIT"),
+        DataType.ALPHA,
+        Facets(min_length=3, max_length=3),
+        attachment_level="FREQ,CUR1,CUR2",
+    )
+    c8 = Component(
+        "TITLE",
+        False,
+        Role.ATTRIBUTE,
+        ItemReference("Concept", "Z", "ZZ", "1.0", "TITLE"),
+        DataType.STRING,
+        Facets(min_length=1, max_length=400),
+        attachment_level="FREQ,CUR1,CUR2",
+    )
+    c9 = Component(
+        "UNIT_MULT",
+        True,
+        Role.ATTRIBUTE,
+        ItemReference("Concept", "Z", "ZZ", "1.0", "UNIT_MULT"),
+        DataType.SHORT,
+        Facets(min_value=0, max_value=9),
+        attachment_level="D",
+    )
+    comps = Components([c1, c2, c3, c7, c8, c9])
+    return DataStructureDefinition(
+        "EXR", name="Exchange rates", agency="BIS", components=comps
+    )
+
+
+@pytest.fixture
 def dsd_no_name():
     c1 = Component(
         "FREQ",
@@ -313,3 +447,22 @@ def test_dsd_no_name(dsd_no_name):
 def test_dsd_no_concept_ref(no_concept_ref):
     with pytest.raises(errors.Invalid, match="Missing concept reference"):
         JsonDataStructure.from_model(no_concept_ref)
+
+
+def test_dsd_no_attrs(dsd_no_attrs: DataStructureDefinition):
+    sjson = JsonDataStructure.from_model(dsd_no_attrs)
+
+    # Check the attributes
+    assert sjson.dataStructureComponents.attributeList is None
+
+
+def test_dsd_no_measures(dsd_no_measures: DataStructureDefinition):
+    sjson = JsonDataStructure.from_model(dsd_no_measures)
+
+    # Check the dimensions
+    assert sjson.dataStructureComponents.dimensionList is not None
+    assert len(sjson.dataStructureComponents.dimensionList.dimensions) == 3
+    assert sjson.dataStructureComponents.dimensionList.timeDimension is None
+
+    # Check the measures
+    assert sjson.dataStructureComponents.measureList is None
