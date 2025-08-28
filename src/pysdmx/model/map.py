@@ -77,7 +77,7 @@ class DatePatternMap(_BaseMap, frozen=True, omit_defaults=True, tag=True):
             the target structure (e.g. `FREQ`). In this case, the input date
             can be converted to a different format, depending on the
             frequency of the converted data.
-        resolvePeriod: The point in time to resolve to when mapping from low
+        resolve_period: The point in time to resolve to when mapping from low
             frequency to higher frequency periods.
     """
 
@@ -88,7 +88,7 @@ class DatePatternMap(_BaseMap, frozen=True, omit_defaults=True, tag=True):
     id: Optional[str] = None
     locale: str = "en"
     pattern_type: Literal["fixed", "variable"] = "fixed"
-    resolvePeriod: Optional[
+    resolve_period: Optional[
         Literal["startOfPeriod", "endOfPeriod", "midPeriod"]
     ] = None
 
