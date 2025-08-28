@@ -13,6 +13,11 @@ On pysdmx, we support the validation against XSD schemas.
 
 `SDMX-ML 3.0 XSD Schema <https://github.com/sdmx-twg/sdmx-ml/tree/v3.0.0/schemas>`_
 
+`SDMX-ML 3.1 specification <https://github.com/sdmx-twg/sdmx-ml/tree/v3.1.0/documentation>`_
+
+`SDMX-ML 3.1 XSD Schema <https://github.com/sdmx-twg/sdmx-ml/tree/v3.1.0/schemas>`_
+
+
 .. important::
 
     To use the SDMX-ML functionalities, you need to install the `pysdmx[xml]` extra.
@@ -55,6 +60,18 @@ specific readers for SDMX-ML are also available:
 
 .. autofunction:: pysdmx.io.xml.sdmx30.reader.structure.read
 
+.. _sdmx_ml_31_spe_reader:
+
+- DATA_SDMX_ML_3_1 -> pysdmx.io.xml.sdmx31.reader.structure_specific
+
+.. autofunction:: pysdmx.io.xml.sdmx31.reader.structure_specific.read
+
+.. _sdmx_ml_31_structure_reader:
+
+- STRUCTURE_SDMX_ML_3_1 -> pysdmx.io.xml.sdmx31.reader.structure
+
+.. autofunction:: pysdmx.io.xml.sdmx31.reader.structure.read
+
 After reading the string, we will have a message object that contains a pandas
 DataFrame with the data or a structure object with the metadata.
 
@@ -94,3 +111,16 @@ specific readers for SDMX-ML are also available:
 - STRUCTURE_SDMX_ML_3_0 -> pysdmx.io.xml.sdmx30.writer.structure
 
 .. autofunction:: pysdmx.io.xml.sdmx30.writer.structure.write
+
+.. _sdmx_ml_31_spe_writer:
+
+- DATA_SDMX_ML_3_1 -> pysdmx.io.xml.sdmx31.writer.structure_specific
+
+.. autofunction:: pysdmx.io.xml.sdmx31.writer.structure_specific.write
+
+.. _sdmx_ml_31_structure_writer:
+
+- STRUCTURE_SDMX_ML_3_1 -> pysdmx.io.xml.sdmx31.writer.structure
+
+.. autofunction:: pysdmx.io.xml.sdmx31.writer.structure.write
+
