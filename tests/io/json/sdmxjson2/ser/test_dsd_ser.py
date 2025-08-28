@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from datetime import timezone as tz
 
 import pytest
@@ -19,6 +19,8 @@ from pysdmx.model import (
     Role,
 )
 
+_BASE = "urn:sdmx:org.sdmx.infomodel."
+
 
 @pytest.fixture
 def dsd():
@@ -31,7 +33,7 @@ def dsd():
         Role.DIMENSION,
         Concept(
             "FREQ",
-            urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=Z:ZZ(1.0).FREQ",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).FREQ",
         ),
         DataType.ALPHA,
         Facets(min_length=1, max_length=1),
@@ -43,7 +45,7 @@ def dsd():
         Role.DIMENSION,
         Concept(
             "CUR1",
-            urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=Z:ZZ(1.0).CUR1",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).CUR1",
         ),
         DataType.ALPHA,
         Facets(min_length=3, max_length=3),
@@ -54,7 +56,7 @@ def dsd():
         Role.DIMENSION,
         Concept(
             "CUR2",
-            urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=Z:ZZ(1.0).CUR2",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).CUR2",
         ),
         DataType.ALPHA,
         Facets(min_length=3, max_length=3),
@@ -65,7 +67,7 @@ def dsd():
         Role.DIMENSION,
         Concept(
             "TIME_PERIOD",
-            urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=Z:ZZ(1.0).TIME_PERIOD",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).TIME_PERIOD",
         ),
         DataType.PERIOD,
     )
@@ -127,7 +129,7 @@ def dsd_no_name():
         Role.DIMENSION,
         Concept(
             "FREQ",
-            urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=Z:ZZ(1.0).FREQ",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).FREQ",
         ),
         DataType.ALPHA,
         Facets(min_length=1, max_length=1),
@@ -138,7 +140,7 @@ def dsd_no_name():
         Role.DIMENSION,
         Concept(
             "FREQ",
-            urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=Z:ZZ(1.0).CUR1",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).CUR1",
         ),
         DataType.ALPHA,
         Facets(min_length=3, max_length=3),
@@ -178,8 +180,7 @@ def test_dsd(dsd: DataStructureDefinition):
     time = sjson.dataStructureComponents.dimensionList.timeDimension
     assert dim1.id == "FREQ"
     assert (
-        dim1.conceptIdentity
-        == "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=Z:ZZ(1.0).FREQ"
+        dim1.conceptIdentity == f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).FREQ"
     )
     assert dim1.conceptRoles is None
     assert dim1.position is None
@@ -191,12 +192,11 @@ def test_dsd(dsd: DataStructureDefinition):
     assert dim1.localRepresentation.enumerationFormat.maxLength == 1
     assert (
         dim1.localRepresentation.enumeration
-        == "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+        == f"{_BASE}codelist.Codelist=BIS:CL_FREQ(1.0)"
     )
     assert dim2.id == "CUR1"
     assert (
-        dim2.conceptIdentity
-        == "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=Z:ZZ(1.0).CUR1"
+        dim2.conceptIdentity == f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).CUR1"
     )
     assert dim2.conceptRoles is None
     assert dim2.position is None
@@ -206,7 +206,7 @@ def test_dsd(dsd: DataStructureDefinition):
     assert time.id == "TIME_PERIOD"
     assert (
         time.conceptIdentity
-        == "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=Z:ZZ(1.0).TIME_PERIOD"
+        == f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).TIME_PERIOD"
     )
     assert time.conceptRoles is None
     assert time.position is None
@@ -220,7 +220,7 @@ def test_dsd(dsd: DataStructureDefinition):
     assert attr1.id == "OBS_STATUS"
     assert (
         attr1.conceptIdentity
-        == "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=Z:ZZ(1.0).OBS_STATUS"
+        == f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).OBS_STATUS"
     )
     assert attr1.conceptRoles is None
     assert attr1.usage == "mandatory"
@@ -231,7 +231,7 @@ def test_dsd(dsd: DataStructureDefinition):
     assert attr2.id == "TITLE"
     assert (
         attr2.conceptIdentity
-        == "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=Z:ZZ(1.0).TITLE"
+        == f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).TITLE"
     )
     assert attr2.conceptRoles is None
     assert attr2.usage == "optional"
@@ -247,7 +247,7 @@ def test_dsd(dsd: DataStructureDefinition):
     assert measure.id == "OBS_VALUE"
     assert (
         measure.conceptIdentity
-        == "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=Z:ZZ(1.0).OBS_VALUE"
+        == f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).OBS_VALUE"
     )
     assert measure.conceptRoles is None
     assert measure.usage == "optional"

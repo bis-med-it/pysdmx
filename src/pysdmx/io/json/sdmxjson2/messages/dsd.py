@@ -370,10 +370,7 @@ class JsonDimensions(Struct, frozen=True):
     ) -> "JsonDimensions":
         """Converts a pysdmx list of dimensions to an SDMX-JSON one."""
         td = [d for d in dimensions if d.id == "TIME_PERIOD"]
-        if len(td) == 0:
-            ftd = None
-        else:
-            ftd = JsonDimension.from_model(td[0])
+        ftd = None if len(td) == 0 else JsonDimension.from_model(td[0])
         return JsonDimensions(
             dimensions=[
                 JsonDimension.from_model(d)
