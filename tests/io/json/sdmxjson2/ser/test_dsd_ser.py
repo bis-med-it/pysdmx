@@ -105,7 +105,16 @@ def dsd():
         Facets(min_length=1, max_length=400),
         attachment_level="FREQ,CUR1,CUR2",
     )
-    comps = Components([c1, c2, c3, c4, c5, c6, c7, c8])
+    c9 = Component(
+        "UNIT_MULT",
+        True,
+        Role.ATTRIBUTE,
+        ItemReference("Concept", "Z", "ZZ", "1.0", "UNIT_MULT"),
+        DataType.SHORT,
+        Facets(min_value=0, max_value=9),
+        attachment_level="D",
+    )
+    comps = Components([c1, c2, c3, c4, c5, c6, c7, c8, c9])
     return DataStructureDefinition(
         "EXR",
         name="Exchange rates",
@@ -214,9 +223,10 @@ def test_dsd(dsd: DataStructureDefinition):
 
     # Check the attributes
     assert sjson.dataStructureComponents.attributeList is not None
-    assert len(sjson.dataStructureComponents.attributeList.attributes) == 3
+    assert len(sjson.dataStructureComponents.attributeList.attributes) == 4
     attr1 = sjson.dataStructureComponents.attributeList.attributes[0]
     attr2 = sjson.dataStructureComponents.attributeList.attributes[2]
+    attr3 = sjson.dataStructureComponents.attributeList.attributes[3]
     assert attr1.id == "OBS_STATUS"
     assert (
         attr1.conceptIdentity
@@ -239,6 +249,17 @@ def test_dsd(dsd: DataStructureDefinition):
     assert attr2.localRepresentation.format.minLength == 1
     assert attr2.localRepresentation.format.maxLength == 400
     assert attr2.attributeRelationship.dimensions == ["FREQ", "CUR1", "CUR2"]
+    assert attr3.id == "UNIT_MULT"
+    assert (
+        attr3.conceptIdentity
+        == f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).UNIT_MULT"
+    )
+    assert attr3.conceptRoles is None
+    assert attr3.usage == "mandatory"
+    assert attr3.localRepresentation.format.dataType == DataType.SHORT.value
+    assert attr3.localRepresentation.format.minValue == 0
+    assert attr3.localRepresentation.format.maxValue == 9
+    assert attr3.attributeRelationship.dataflow == {}
 
     # Check the measures
     assert sjson.dataStructureComponents.measureList is not None
