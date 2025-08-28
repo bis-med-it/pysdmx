@@ -6,6 +6,7 @@ from typing import Any, Dict, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     MaintainableType,
@@ -161,9 +162,16 @@ class JsonRepresentationMap(MaintainableType, frozen=True):
             else:
                 return {"dataType": st}
 
+        if not rm.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON representation maps must have a name",
+                {"representation_map": rm.id},
+            )
+
         if isinstance(rm, RepresentationMap):
-            source = [__convert_st(rm.source)]
-            target = [__convert_st(rm.target)]
+            source = [__convert_st(rm.source)] if rm.source else []
+            target = [__convert_st(rm.target)] if rm.target else []
         else:
             source = [__convert_st(s) for s in rm.source]
             target = [__convert_st(t) for t in rm.target]

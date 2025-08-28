@@ -1,6 +1,9 @@
 from datetime import datetime
 from datetime import timezone as tz
 
+import pytest
+
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.map import (
     JsonRepresentationMap,
 )
@@ -68,3 +71,17 @@ def test_mrm():
     assert sjson.source == [{"dataType": "String"}, {"dataType": "String"}]
     assert sjson.target == [{"codelist": mrm.target[0]}]
     assert len(sjson.representationMappings) == 1
+
+
+def test_rm_no_name():
+    vm = ValueMap(source="056", target="BEL")
+    rm = RepresentationMap(
+        "RM",
+        agency="BIS",
+        source="urn:sdmx:org.sdmx.infomodel.codelist.ValueList=ZZ:AREA(1.0)",
+        target="urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:AREA(1.0)",
+        maps=[vm],
+    )
+
+    with pytest.raises(errors.Invalid, match="must have a name"):
+        JsonRepresentationMap.from_model(rm)
