@@ -320,6 +320,21 @@ class JsonUserDefinedOperatorScheme(ItemSchemeType, frozen=True):
                     f"({udos.vtl_mapping_scheme.version})"
                 )
 
+        # Convert ruleset_schemes to URN strings
+        ruleset_refs = []
+        for rs in udos.ruleset_schemes:
+            if isinstance(rs, str):
+                ruleset_refs.append(rs)
+            else:
+                # Handle both RulesetScheme objects and References
+                agency = (
+                    rs.agency.id if hasattr(rs.agency, "id") else rs.agency
+                )
+                ruleset_refs.append(
+                    f"urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme="
+                    f"{agency}:{rs.id}({rs.version})"
+                )
+
         return JsonUserDefinedOperatorScheme(
             agency=(
                 udos.agency.id
@@ -339,7 +354,7 @@ class JsonUserDefinedOperatorScheme(ItemSchemeType, frozen=True):
             isPartial=udos.is_partial,
             vtlVersion=udos.vtl_version,  # type: ignore[arg-type]
             vtlMappingScheme=vtl_mapping_ref,
-            rulesetSchemes=udos.ruleset_schemes,
+            rulesetSchemes=ruleset_refs,
             userDefinedOperators=[
                 JsonUserDefinedOperator.from_model(i) for i in udos.items
             ],
@@ -460,7 +475,7 @@ class JsonRulesetScheme(ItemSchemeType, frozen=True):
                 JsonAnnotation.from_model(a) for a in rss.annotations
             ],
             isPartial=rss.is_partial,
-            vtlVersion=rss.vtl_version,
+            vtlVersion=rss.vtl_version,  # type: ignore[arg-type]
             vtlMappingScheme=vtl_mapping_ref,
             rulesets=[JsonRuleset.from_model(i) for i in rss.items],
         )
