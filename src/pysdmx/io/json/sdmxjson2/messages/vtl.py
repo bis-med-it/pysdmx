@@ -150,6 +150,25 @@ class JsonNamePersonalisation(NameableType, frozen=True):
             annotations=[a.to_model() for a in self.annotations],
         )
 
+    @classmethod
+    def from_model(cls, np: NamePersonalisation) -> "JsonNamePersonalisation":
+        """Converts a pysdmx name personalisation to an SDMX-JSON one."""
+        if not np.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON name personalisations must have a name",
+                {"name_personalisation": np.id},
+            )
+        return JsonNamePersonalisation(
+            id=np.id,
+            name=np.name,
+            description=np.description,
+            annotations=[JsonAnnotation.from_model(a) for a in np.annotations],
+            vtlDefaultName=np.vtl_default_name,
+            personalisedName=np.personalised_name,
+            vtlArtefact=np.vtl_artefact,
+        )
+
 
 class JsonNamePersonalisationScheme(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for name personalisation schemes."""
@@ -173,6 +192,38 @@ class JsonNamePersonalisationScheme(ItemSchemeType, frozen=True):
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
             annotations=[a.to_model() for a in self.annotations],
+        )
+
+    @classmethod
+    def from_model(
+        cls, nps: NamePersonalisationScheme
+    ) -> "JsonNamePersonalisationScheme":
+        """Converts a pysdmx name personalisation scheme to an SDMX-JSON one."""
+        if not nps.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON name personalisation schemes must have a name",
+                {"name_personalisation_scheme": nps.id},
+            )
+        return JsonNamePersonalisationScheme(
+            agency=(
+                nps.agency.id if isinstance(nps.agency, Agency) else nps.agency
+            ),
+            id=nps.id,
+            name=nps.name,
+            version=nps.version,
+            isExternalReference=nps.is_external_reference,
+            validFrom=nps.valid_from,
+            validTo=nps.valid_to,
+            description=nps.description,
+            annotations=[
+                JsonAnnotation.from_model(a) for a in nps.annotations
+            ],
+            isPartial=nps.is_partial,
+            vtlVersion=nps.vtl_version,
+            namePersonalisations=[
+                JsonNamePersonalisation.from_model(i) for i in nps.items
+            ],
         )
 
 
