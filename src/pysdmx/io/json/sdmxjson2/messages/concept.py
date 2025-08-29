@@ -2,21 +2,20 @@
 
 from typing import Optional, Sequence
 
-from msgspec import Struct
+import msgspec
 
 from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist
 from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
     JsonAnnotation,
-    JsonLink,
     JsonRepresentation,
     NameableType,
 )
 from pysdmx.model import Agency, Codelist, Concept, ConceptScheme, DataType
 
 
-class IsoConceptReference(Struct, frozen=True):
+class IsoConceptReference(msgspec.Struct, frozen=True):
     """Payload for a reference to an ISO 11179 concept."""
 
     conceptAgency: str
@@ -30,7 +29,6 @@ class JsonConcept(NameableType, frozen=True):
     coreRepresentation: Optional[JsonRepresentation] = None
     parent: Optional[str] = None
     isoConceptReference: Optional[IsoConceptReference] = None
-    links: Sequence[JsonLink] = ()
 
     def to_model(self, codelists: Sequence[Codelist]) -> Concept:
         """Converts a JsonConcept to a standard concept."""
@@ -50,8 +48,6 @@ class JsonConcept(NameableType, frozen=True):
             facets = None
             codes = None
             cl_ref = None
-        urns = [l.urn for l in self.links if l.rel == "self"]
-        urn = urns[0] if len(urns) > 0 else None
         return Concept(
             id=self.id,
             dtype=dt,
@@ -60,7 +56,6 @@ class JsonConcept(NameableType, frozen=True):
             description=self.description,
             codes=codes,
             enum_ref=cl_ref,
-            urn=urn,
         )
 
     @classmethod
@@ -100,16 +95,25 @@ class JsonConceptScheme(ItemSchemeType, frozen=True):
 
     concepts: Sequence[JsonConcept] = ()
 
+    def __set_urn(self, concept: Concept) -> Concept:
+        urn = (
+            "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept="
+            f"{self.agency}:{self.id}({self.version}).{concept.id}"
+        )
+        return msgspec.structs.replace(concept, urn=urn)
+
     def to_model(self, codelists: Sequence[JsonCodelist]) -> ConceptScheme:
         """Converts a JsonConceptScheme to a standard concept scheme."""
-        cls = [c.to_model() for c in codelists]
+        cls = [cl.to_model() for cl in codelists]
+        concepts = [c.to_model(cls) for c in self.concepts]
+        concepts = [self.__set_urn(c) for c in concepts]
         return ConceptScheme(
             id=self.id,
             name=self.name,
             agency=self.agency,
             description=self.description,
             version=self.version,
-            items=[c.to_model(cls) for c in self.concepts],
+            items=concepts,
             annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
@@ -144,7 +148,7 @@ class JsonConceptScheme(ItemSchemeType, frozen=True):
 
 
 class JsonConceptSchemes(
-    Struct,
+    msgspec.Struct,
     frozen=True,
 ):
     """SDMX-JSON payload for the list of concept schemes."""
@@ -154,7 +158,7 @@ class JsonConceptSchemes(
 
 
 class JsonConceptSchemeMessage(
-    Struct,
+    msgspec.Struct,
     frozen=True,
 ):
     """SDMX-JSON payload for /conceptscheme queries."""
