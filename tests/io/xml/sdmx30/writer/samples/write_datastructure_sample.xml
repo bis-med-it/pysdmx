@@ -3907,7 +3907,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 					<com:Name xml:lang="en">Submission channel</com:Name>
 					<str:CoreRepresentation>
 						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_SUB_CHANNEL(1.0)</str:Enumeration>
-						<str:TextFormat textType="String"/>
+						<str:EnumerationFormat textType="String"/>
 					</str:CoreRepresentation>
 				</str:Concept>
 				<str:Concept id="MARKET_ISSUE" urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).MARKET_ISSUE">
@@ -4041,6 +4041,38 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 							</str:LocalRepresentation>
 						</str:TimeDimension>
 					</str:DimensionList>
+					<str:Group urn="urn:sdmx:org.sdmx.infomodel.datastructure.GroupDimensionDescriptor=BIS:BIS_CBS(1.0).Sibling" id="Sibling">
+						<str:GroupDimension>
+							<str:DimensionReference>L_MEASURE</str:DimensionReference>
+						</str:GroupDimension>
+						<str:GroupDimension>
+							<str:DimensionReference>L_REP_CTY</str:DimensionReference>
+						</str:GroupDimension>
+						<str:GroupDimension>
+							<str:DimensionReference>CBS_BANK_TYPE</str:DimensionReference>
+						</str:GroupDimension>
+						<str:GroupDimension>
+							<str:DimensionReference>CBS_BASIS</str:DimensionReference>
+						</str:GroupDimension>
+						<str:GroupDimension>
+							<str:DimensionReference>L_POSITION</str:DimensionReference>
+						</str:GroupDimension>
+						<str:GroupDimension>
+							<str:DimensionReference>L_INSTR</str:DimensionReference>
+						</str:GroupDimension>
+						<str:GroupDimension>
+							<str:DimensionReference>REM_MATURITY</str:DimensionReference>
+						</str:GroupDimension>
+						<str:GroupDimension>
+							<str:DimensionReference>CURR_TYPE_BOOK</str:DimensionReference>
+						</str:GroupDimension>
+						<str:GroupDimension>
+							<str:DimensionReference>L_CP_SECTOR</str:DimensionReference>
+						</str:GroupDimension>
+						<str:GroupDimension>
+							<str:DimensionReference>L_CP_COUNTRY</str:DimensionReference>
+						</str:GroupDimension>
+					</str:Group>
 					<str:AttributeList>
 						<str:Attribute usage="mandatory" id="TIME_FORMAT" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).TIME_FORMAT">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_FORMAT</str:ConceptIdentity>
@@ -4107,7 +4139,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 								<str:EnumerationFormat minLength="1" maxLength="1" textType="String"/>
 							</str:LocalRepresentation>
 							<str:AttributeRelationship>
-								<str:Observation/>
+								<str:Group>Sibling</str:Group>
 							</str:AttributeRelationship>
 						</str:Attribute>
 						<str:Attribute usage="mandatory" id="COLLECTION" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).COLLECTION">
@@ -4137,7 +4169,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 								<str:EnumerationFormat minLength="1" maxLength="2" textType="BigInteger"/>
 							</str:LocalRepresentation>
 							<str:AttributeRelationship>
-								<str:Observation/>
+								<str:Dataflow/>
 							</str:AttributeRelationship>
 						</str:Attribute>
 						<str:Attribute usage="optional" id="ORG_VISIBILITY" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).ORG_VISIBILITY">
@@ -4166,7 +4198,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 								<str:TextFormat minLength="1" maxLength="200" textType="String"/>
 							</str:LocalRepresentation>
 							<str:AttributeRelationship>
-								<str:Observation/>
+								<str:Group>Sibling</str:Group>
 							</str:AttributeRelationship>
 						</str:Attribute>
 						<str:Attribute usage="mandatory" id="UNIT_MEASURE" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).UNIT_MEASURE">
@@ -4176,7 +4208,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 								<str:EnumerationFormat minLength="3" maxLength="3" textType="String"/>
 							</str:LocalRepresentation>
 							<str:AttributeRelationship>
-								<str:Observation/>
+								<str:Dataflow/>
 							</str:AttributeRelationship>
 						</str:Attribute>
 						<str:Attribute usage="mandatory" id="UNIT_MULT" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).UNIT_MULT">
@@ -4186,7 +4218,7 @@ The main aims of the ILO are to promote rights at work, encourage decent employm
 								<str:EnumerationFormat minLength="1" maxLength="2" textType="String"/>
 							</str:LocalRepresentation>
 							<str:AttributeRelationship>
-								<str:Observation/>
+								<str:Dataflow/>
 							</str:AttributeRelationship>
 						</str:Attribute>
 					</str:AttributeList>

@@ -26,6 +26,8 @@ List of formats and versions supported by the general writer:
     - :ref:`SDMX-ML 2.1 Structure <sdmx_ml_21_structure_writer>`
     - :ref:`SDMX-ML 3.0 Structure Specific <sdmx_ml_30_spe_writer>`
     - :ref:`SDMX-ML 3.0 Structure <sdmx_ml_30_structure_writer>`
+    - :ref:`SDMX-ML 3.1 Structure Specific <sdmx_ml_31_spe_writer>`
+    - :ref:`SDMX-ML 3.1 Structure <sdmx_ml_31_structure_writer>`
 
 .. _write-sdmx:
 

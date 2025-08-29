@@ -24,18 +24,23 @@ from pysdmx.io.xml.__tokens import (
     DEPARTMENT,
     DFW,
     DIM,
+    DIM_REF,
     DSD,
     DSD_COMPS,
     EMAIL,
     ENUM,
     ENUM_FORMAT,
     FAX,
+    GROUP,
+    GROUP_DIM,
+    GROUPS_LOW,
     ID,
     LOCAL_REP,
     MANDATORY,
     MANDATORY_LOW,
     MEASURE,
     MEASURE_RELATIONSHIP,
+    MSR,
     NAME,
     NAME_PER,
     NAME_PER_SCHEME,
@@ -44,7 +49,6 @@ from pysdmx.io.xml.__tokens import (
     PAR_ID,
     PAR_VER,
     POSITION,
-    PRIM_MEASURE,
     REF,
     ROLE,
     RULE,
@@ -59,6 +63,7 @@ from pysdmx.io.xml.__tokens import (
     UDO_SCHEME,
     URI,
     URN,
+    URN_LOW,
     USAGE,
     VALUE_ITEM,
     VALUE_LIST,
@@ -119,6 +124,7 @@ from pysdmx.model.dataflow import (
     Component,
     Dataflow,
     DataStructureDefinition,
+    GroupDimension,
     Role,
 )
 from pysdmx.util import (
@@ -139,7 +145,7 @@ ANNOTATION_WRITER = OrderedDict(
 ROLE_MAPPING = {
     Role.DIMENSION: DIM,
     Role.ATTRIBUTE: ATT,
-    Role.MEASURE: PRIM_MEASURE,
+    Role.MEASURE: MEASURE,
 }
 
 STR_TYPES = Union[
@@ -385,7 +391,43 @@ def __write_item(
     return outfile
 
 
-def __write_components(
+def __write_groups(
+    groups: list[GroupDimension], indent: str, references_30: bool = False
+) -> str:
+    out_file = ""
+    for group in groups:
+        out_file += (
+            f"{indent}<{ABBR_STR}:{GROUP} {URN_LOW}={group.urn!r}"
+            f" {ID}={group.id!r}>"
+        )
+        for dimension in group.dimensions:
+            if references_30:
+                out_file += (
+                    f"{add_indent(indent)}"
+                    f"<{ABBR_STR}:{GROUP_DIM}>"
+                    f"{add_indent(add_indent(indent))}"
+                    f"<{ABBR_STR}:{DIM_REF}>{dimension}</{ABBR_STR}:{DIM_REF}>"
+                    f"{add_indent(indent)}</{ABBR_STR}:{GROUP_DIM}>"
+                )
+            else:
+                out_file += (
+                    f"{add_indent(indent)}"
+                    f"<{ABBR_STR}:{GROUP_DIM}>"
+                    f"{add_indent(add_indent(indent))}"
+                    f"<{ABBR_STR}:{DIM_REF}>"
+                    f"{add_indent(add_indent(add_indent(indent)))}"
+                    f"<{REF} {ID}={dimension!r}/>"
+                    f"{add_indent(add_indent(indent))}"
+                    f"</{ABBR_STR}:{DIM_REF}>"
+                    f"{add_indent(add_indent(indent))}</{ABBR_STR}:{GROUP_DIM}>"
+                )
+
+        out_file += f"{indent}</{ABBR_STR}:{GROUP}>"
+        out_file = out_file.replace("'", '"')
+    return out_file
+
+
+def __write_components(  # noqa: C901
     dsd: DataStructureDefinition, indent: str, references_30: bool = False
 ) -> str:
     """Writes the components to the XML file."""
@@ -394,8 +436,12 @@ def __write_components(
     components: Dict[str, Any] = {
         DIM: [],
         ATT: [],
-        PRIM_MEASURE: [],
+        MEASURE: [],
     }
+    out_group = ""
+    groups = getattr(dsd, GROUPS_LOW, [])
+    if groups is not None and len(groups) > 0:
+        out_group = __write_groups(groups, add_indent(indent), references_30)
 
     for comp in dsd.components:
         if comp.role == Role.DIMENSION:
@@ -403,15 +449,15 @@ def __write_components(
         elif comp.role == Role.ATTRIBUTE:
             components[ATT].append(comp)
         else:
-            components[PRIM_MEASURE].append(comp)
+            components[MEASURE].append(comp)
 
-    if not references_30 and len(components[PRIM_MEASURE]) > 1:
+    if not references_30 and len(components[MEASURE]) > 1:
         raise Invalid(
             title="Request cannot be fulfilled",
             description=f"SDMX-ML 2.1 does not support multiple measures. "
             f"Check the {dsd.short_urn}.",
             csi={
-                "measures_found": components[PRIM_MEASURE],
+                "measures_found": components[MEASURE],
             },
         )
 
@@ -419,8 +465,8 @@ def __write_components(
     for _, comps in components.items():
         if comps:
             role_name = ROLE_MAPPING[comps[0].role]
-            if role_name == PRIM_MEASURE:
-                role_name = MEASURE
+            if role_name == MEASURE:
+                role_name = MSR
             outfile += f"{add_indent(indent)}<{ABBR_STR}:{role_name}List>"
             for comp in comps:
                 outfile += __write_component(
@@ -428,36 +474,52 @@ def __write_components(
                     position,
                     add_indent(add_indent(indent)),
                     components,
+                    groups,
                     references_30,
                 )
                 position += 1
             outfile += f"{add_indent(indent)}</{ABBR_STR}:{role_name}List>"
+            if role_name == DIM:
+                outfile += out_group
 
     outfile += f"{indent}</{ABBR_STR}:{DSD_COMPS}>"
     return outfile
 
 
+def __find_matching_group_id(
+    att_rel: str, groups: list[GroupDimension]
+) -> Optional[str]:
+    comps_to_relate = att_rel.split(",") if "," in att_rel else [att_rel]
+    for group in groups:
+        if set(comps_to_relate) == set(group.dimensions):
+            return group.id
+    return None
+
+
 def __comps_to_relate(
-    att_rel: str, component_info: Dict[str, Any], references_30: bool = False
+    att_rel: str,
+    component_info: Dict[str, Any],
+    references_30: bool = False,
 ) -> list[str]:
     if "," in att_rel:
         comps_to_relate = att_rel.split(",")
     elif att_rel == "O":
         if references_30:
             comps_to_relate = []
-            for measure in component_info[PRIM_MEASURE]:
+            for measure in component_info[MEASURE]:
                 comps_to_relate.append(measure)
         else:
-            comps_to_relate = [component_info[PRIM_MEASURE][0].id]
+            comps_to_relate = [component_info[MEASURE][0].id]
     else:
         comps_to_relate = [att_rel]
     return comps_to_relate
 
 
-def __write_attribute_relation(
+def __write_attribute_relation(  # noqa: C901
     item: Component,
     indent: str,
     component_info: Dict[str, Any],
+    groups: list[GroupDimension],
     references_30: bool = False,
 ) -> str:
     measure_relationship = ""
@@ -467,9 +529,11 @@ def __write_attribute_relation(
     att_rel: str = item.attachment_level  # type: ignore[assignment]
     # Check if it is a list of Dimensions or it is related to the
     # primary measure
+    group_id = None
+    if groups is not None:
+        group_id = __find_matching_group_id(att_rel, groups)
     comps_to_relate = __comps_to_relate(att_rel, component_info, references_30)
     dim_names = [comp.id for comp in component_info[DIM]]
-
     if references_30:
         if att_rel == "O":
             outfile += f"{add_indent(indent)}<{ABBR_STR}:Observation/>"
@@ -478,8 +542,8 @@ def __write_attribute_relation(
             )
             for comp_name in comps_to_relate:
                 measure_relationship += (
-                    f"{add_indent(indent)}<{ABBR_STR}:{MEASURE}>"
-                    f"{comp_name.id}</{ABBR_STR}:{MEASURE}>"  # type: ignore[attr-defined]
+                    f"{add_indent(indent)}<{ABBR_STR}:{MSR}>"
+                    f"{comp_name.id}</{ABBR_STR}:{MSR}>"  # type: ignore[attr-defined]
                 )
             measure_relationship += (
                 f"{indent}</{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
@@ -487,7 +551,11 @@ def __write_attribute_relation(
 
         elif att_rel == "D":
             outfile += f"{add_indent(indent)}<{ABBR_STR}:Dataflow/>"
-
+        elif group_id is not None:
+            outfile += (
+                f"{add_indent(indent)}<{ABBR_STR}:{GROUP}>"
+                f"{group_id}</{ABBR_STR}:{GROUP}>"
+            )
         else:
             for comp_name in comps_to_relate:
                 outfile += (
@@ -496,8 +564,16 @@ def __write_attribute_relation(
                 )
 
     else:
-        if att_rel == "D":
+        if group_id is not None:
+            outfile += (
+                f"{add_indent(indent)}<{ABBR_STR}:{GROUP}>"
+                f"{add_indent(add_indent(indent))}<{REF} "
+                f"{ID}={group_id!r}/>"
+                f"{add_indent(indent)}</{ABBR_STR}:{GROUP}>"
+            )
+        elif att_rel == "D":
             outfile += f"{add_indent(indent)}<{ABBR_STR}:None/>"
+
         else:
             for comp_name in comps_to_relate:
                 role = (
@@ -523,14 +599,15 @@ def __write_component(
     position: int,
     indent: str,
     component_info: Dict[str, Any],
+    groups: list[GroupDimension],
     references_30: bool = False,
 ) -> str:
     """Writes the component to the XML file."""
     role_name = ROLE_MAPPING[item.role]
     if role_name == DIM and item.id == "TIME_PERIOD":
         role_name = TIME_DIM
-    if references_30 and role_name == PRIM_MEASURE:
-        role_name = MEASURE
+    if references_30 and role_name == MEASURE:
+        role_name = MSR
 
     head = f"{indent}<{ABBR_STR}:{role_name} "
 
@@ -544,7 +621,7 @@ def __write_component(
             status = MANDATORY if item.required else CONDITIONAL
             attributes += f"{AS_STATUS}={status!r} "
         attribute_relation = __write_attribute_relation(
-            item, add_indent(indent), component_info, references_30
+            item, add_indent(indent), component_info, groups, references_30
         )
 
     attributes += f"{ID}={item.id!r}"
@@ -1002,35 +1079,49 @@ def _write_vtl(  # noqa: C901
                 )
             if item_or_scheme.to_vtl_mapping_method is not None:
                 to_vtl = item_or_scheme.to_vtl_mapping_method
-                data += (
-                    f"{add_indent(indent)}<{ABBR_STR}:ToVtlMapping "
-                    f"method={to_vtl.method!r}>"
-                )
-                indent_2 = add_indent(add_indent(indent))
-                data += f"{indent_2}<{ABBR_STR}:ToVtlSubSpace>"
-                for key in to_vtl.to_vtl_sub_space:
+                if len(to_vtl.to_vtl_sub_space) == 0:
                     data += (
-                        f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
-                        f"</{ABBR_STR}:Key>"
+                        f"{add_indent(indent)}<{ABBR_STR}:ToVtlMapping "
+                        f"method='{to_vtl.method}' />"
                     )
-                data += f"{indent_2}</{ABBR_STR}:ToVtlSubSpace>"
-                data += f"{add_indent(indent)}</{ABBR_STR}:ToVtlMapping>"
+                else:
+                    data += (
+                        f"{add_indent(indent)}<{ABBR_STR}:ToVtlMapping "
+                        f"method='{to_vtl.method}'>"
+                    )
+                    indent_2 = add_indent(add_indent(indent))
+                    data += f"{indent_2}<{ABBR_STR}:ToVtlSubSpace>"
+                    for key in to_vtl.to_vtl_sub_space:
+                        data += (
+                            f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
+                            f"</{ABBR_STR}:Key>"
+                        )
+                    data += f"{indent_2}</{ABBR_STR}:ToVtlSubSpace>"
+                    data += f"{add_indent(indent)}</{ABBR_STR}:ToVtlMapping>"
 
             if item_or_scheme.from_vtl_mapping_method is not None:
                 from_vtl = item_or_scheme.from_vtl_mapping_method
-                data += (
-                    f"{add_indent(indent)}<{ABBR_STR}:FromVtlMapping "
-                    f"method={from_vtl.method!r}>"
-                )
-                indent_2 = add_indent(add_indent(indent))
-                data += f"{indent_2}<{ABBR_STR}:FromVtlSuperSpace>"
-                for key in from_vtl.from_vtl_sub_space:
+                if len(from_vtl.from_vtl_sub_space) == 0:
                     data += (
-                        f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
-                        f"</{ABBR_STR}:Key>"
+                        f"{add_indent(indent)}<{ABBR_STR}:FromVtlMapping "
+                        f"method={from_vtl.method!r} />"
+                        if from_vtl.method is not None
+                        else f"method='{from_vtl.method}' />"
                     )
-                data += f"{indent_2}</{ABBR_STR}:FromVtlSuperSpace>"
-                data += f"{add_indent(indent)}</{ABBR_STR}:FromVtlMapping>"
+                else:
+                    data += (
+                        f"{add_indent(indent)}<{ABBR_STR}:FromVtlMapping "
+                        f"method='{from_vtl.method}'>"
+                    )
+                    indent_2 = add_indent(add_indent(indent))
+                    data += f"{indent_2}<{ABBR_STR}:FromVtlSuperSpace>"
+                    for key in from_vtl.from_vtl_sub_space:
+                        data += (
+                            f"{add_indent(indent_2)}<{ABBR_STR}:Key>{key}"
+                            f"</{ABBR_STR}:Key>"
+                        )
+                    data += f"{indent_2}</{ABBR_STR}:FromVtlSuperSpace>"
+                    data += f"{add_indent(indent)}</{ABBR_STR}:FromVtlMapping>"
 
         if isinstance(item_or_scheme, VtlCodelistMapping):
             label = f"{ABBR_STR}:{VTLMAPPING}"

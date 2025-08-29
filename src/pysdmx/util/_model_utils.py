@@ -42,6 +42,7 @@ def schema_generator(message: Message, dataset_ref: Reference) -> Schema:
             id=dataset_ref.id,
             version=dataset_ref.version,
             agency=dataset_ref.agency,
+            groups=dsd.groups,
             components=dsd.components,
             artefacts=dsd.to_schema().artefacts,
         )
