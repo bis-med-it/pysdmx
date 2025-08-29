@@ -9,6 +9,7 @@ from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist
 from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
     JsonAnnotation,
+    JsonLink,
     JsonRepresentation,
     NameableType,
 )
@@ -29,6 +30,7 @@ class JsonConcept(NameableType, frozen=True):
     coreRepresentation: Optional[JsonRepresentation] = None
     parent: Optional[str] = None
     isoConceptReference: Optional[IsoConceptReference] = None
+    links: Sequence[JsonLink] = ()
 
     def to_model(self, codelists: Sequence[Codelist]) -> Concept:
         """Converts a JsonConcept to a standard concept."""
@@ -48,6 +50,8 @@ class JsonConcept(NameableType, frozen=True):
             facets = None
             codes = None
             cl_ref = None
+        urns = [l.urn for l in self.links if l.rel == "self"]
+        urn = urns[0] if len(urns) > 0 else None
         return Concept(
             id=self.id,
             dtype=dt,
@@ -56,6 +60,7 @@ class JsonConcept(NameableType, frozen=True):
             description=self.description,
             codes=codes,
             enum_ref=cl_ref,
+            urn=urn,
         )
 
     @classmethod

@@ -20,6 +20,7 @@ class FusionConcept(Struct, frozen=True):
     names: Sequence[FusionString]
     representation: Optional[FusionRepresentation] = None
     descriptions: Optional[Sequence[FusionString]] = None
+    urn: Optional[str] = None
 
     def to_model(self, codelists: Sequence[FusionCodelist]) -> Concept:
         """Converts a FusionConcept to a standard concept."""
@@ -48,6 +49,7 @@ class FusionConcept(Struct, frozen=True):
             description=d,
             codes=c,
             enum_ref=cl_ref,
+            urn=self.urn,
         )
 
 
