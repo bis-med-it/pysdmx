@@ -202,7 +202,7 @@ def test_value_list_read(samples_folder):
     codelist = result[0]
     assert codelist.id == "VL_CURRENCY_SYMBOL"
     assert codelist.name == "Currency Symbol"
-    assert codelist.short_urn == "Codelist=EXAMPLE:VL_CURRENCY_SYMBOL(1.0)"
+    assert codelist.short_urn == "ValueList=EXAMPLE:VL_CURRENCY_SYMBOL(1.0)"
     assert codelist.sdmx_type == "valuelist"
 
 
@@ -638,3 +638,27 @@ def test_datastructure_group(samples_folder):
     assert attribute_1.attachment_level == ",".join(group[0].dimensions)
     attribute_2 = dsd.components.attributes[8]
     assert attribute_2.attachment_level == ",".join(group[0].dimensions)
+
+
+def test_value_list_enum(samples_folder):
+    data_path = samples_folder / "valuelist_enum.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_sdmx(input_str, validate=True)
+    # Get structure
+    structure = result.structures
+    assert structure is not None
+    # Get attributes to check the enumeration
+    attributes = structure[2].components.attributes
+    enumeration = attributes[0].enumeration
+    # Assertions for the enumeration
+    assert enumeration is not None
+    assert enumeration.sdmx_type == "valuelist"
+    assert enumeration.id == "VL_TEST"
+    # Get the valueslist from the message
+    # and check it is the same as the enumeration
+    valuelist = result.get_value_lists()[0]
+    assert valuelist.short_urn == "ValueList=MD:VL_TEST(1.0)"
+    assert valuelist.sdmx_type == enumeration.sdmx_type
+    assert valuelist.id == enumeration.id
+    assert valuelist.items == enumeration.items
