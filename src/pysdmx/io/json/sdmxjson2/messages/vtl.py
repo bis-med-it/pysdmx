@@ -654,6 +654,30 @@ class JsonTransformation(Struct, frozen=True):
             annotations=[a.to_model() for a in self.annotations],
         )
 
+    @classmethod
+    def from_model(
+        cls, transformation: Transformation
+    ) -> "JsonTransformation":
+        """Converts a pysdmx transformation to an SDMX-JSON one."""
+        if not transformation.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON transformations must have a name",
+                {"transformation": transformation.id},
+            )
+        return JsonTransformation(
+            id=transformation.id,
+            name=transformation.name,
+            expression=transformation.expression,
+            result=transformation.result,
+            isPersistent=transformation.is_persistent,
+            description=transformation.description,
+            annotations=[
+                JsonAnnotation.from_model(a)
+                for a in transformation.annotations
+            ],
+        )
+
 
 class JsonTransformationScheme(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for VTL transformation schemes."""
@@ -699,6 +723,80 @@ class JsonTransformationScheme(ItemSchemeType, frozen=True):
             ruleset_schemes=rss,
             user_defined_operator_schemes=dos,
             annotations=[a.to_model() for a in self.annotations],
+        )
+
+    @classmethod
+    def from_model(
+        cls, ts: TransformationScheme
+    ) -> "JsonTransformationScheme":
+        """Converts a pysdmx transformation scheme to an SDMX-JSON one."""
+        if not ts.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON transformation schemes must have a name",
+                {"transformation_scheme": ts.id},
+            )
+
+        # Convert scheme references to strings
+        mapping_ref = None
+        if ts.vtl_mapping_scheme:
+            mapping_ref = (
+                f"urn:sdmx:org.sdmx.infomodel.vtl.VtlMappingScheme="
+                f"{ts.vtl_mapping_scheme.agency}:{ts.vtl_mapping_scheme.id}"
+                f"({ts.vtl_mapping_scheme.version})"
+            )
+
+        np_ref = None
+        if ts.name_personalisation_scheme:
+            np_ref = (
+                f"urn:sdmx:org.sdmx.infomodel.vtl.NamePersonalisationScheme="
+                f"{ts.name_personalisation_scheme.agency}:"
+                f"{ts.name_personalisation_scheme.id}"
+                f"({ts.name_personalisation_scheme.version})"
+            )
+
+        ct_ref = None
+        if ts.custom_type_scheme:
+            ct_ref = (
+                f"urn:sdmx:org.sdmx.infomodel.vtl.CustomTypeScheme="
+                f"{ts.custom_type_scheme.agency}:{ts.custom_type_scheme.id}"
+                f"({ts.custom_type_scheme.version})"
+            )
+
+        rs_refs = [
+            f"urn:sdmx:org.sdmx.infomodel.vtl.RulesetScheme="
+            f"{rs.agency}:{rs.id}({rs.version})"
+            for rs in ts.ruleset_schemes
+        ]
+
+        udo_refs = [
+            f"urn:sdmx:org.sdmx.infomodel.vtl.UserDefinedOperatorScheme="
+            f"{udos.agency}:{udos.id}({udos.version})"
+            for udos in ts.user_defined_operator_schemes
+        ]
+
+        return JsonTransformationScheme(
+            agency=(
+                ts.agency.id if isinstance(ts.agency, Agency) else ts.agency
+            ),
+            id=ts.id,
+            name=ts.name,
+            version=ts.version,
+            isExternalReference=ts.is_external_reference,
+            validFrom=ts.valid_from,
+            validTo=ts.valid_to,
+            description=ts.description,
+            annotations=[JsonAnnotation.from_model(a) for a in ts.annotations],
+            isPartial=ts.is_partial,
+            vtlVersion=ts.vtl_version,
+            vtlMappingScheme=mapping_ref,
+            namePersonalisationScheme=np_ref,
+            customTypeScheme=ct_ref,
+            rulesetSchemes=rs_refs,
+            userDefinedOperatorSchemes=udo_refs,
+            transformations=[
+                JsonTransformation.from_model(i) for i in ts.items
+            ],
         )
 
 
