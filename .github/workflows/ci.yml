@@ -36,6 +36,16 @@ jobs:
     - name: Run type checks
       run: poetry run mypy
     - name: Run tests
-      run: poetry run pytest --cov=pysdmx --cov-branch
+      run: |
+        poetry run pytest \
+          --cov=pysdmx \
+          --cov-branch \
+          --cov-report=term-missing \
+          --verbose \
+          --tb=short \
+          --strict-markers \
+          --strict-config \
+          --durations=10 \
+          tests/
     - name: Check coverage
       run: poetry run coverage report --fail-under=100
