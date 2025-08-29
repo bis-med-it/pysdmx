@@ -729,7 +729,10 @@ class JsonVtlMappingScheme(ItemSchemeType, frozen=True):
                 JsonAnnotation.from_model(a) for a in vms.annotations
             ],
             isPartial=vms.is_partial,
-            vtlMappings=[JsonVtlMapping.from_model(i) for i in vms.items],
+            vtlMappings=[
+                JsonVtlMapping.from_model(i)  # type: ignore[arg-type]
+                for i in vms.items
+            ],
         )
 
 
