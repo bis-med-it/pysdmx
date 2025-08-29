@@ -99,7 +99,6 @@ def test_no_name():
     icm = ImplicitComponentMap("OBS_CONF", "CONF_STATUS")
     sm = StructureMap(
         "SM",
-        name="Some structure map",
         agency="BIS",
         source="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=Z:O(1.0)",
         target="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=Z:O(2.0)",
