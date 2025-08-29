@@ -242,6 +242,25 @@ class JsonUserDefinedOperator(NameableType, frozen=True):
             annotations=[a.to_model() for a in self.annotations],
         )
 
+    @classmethod
+    def from_model(cls, udo: UserDefinedOperator) -> "JsonUserDefinedOperator":
+        """Converts a pysdmx user defined operator to an SDMX-JSON one."""
+        if not udo.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON user defined operators must have a name",
+                {"user_defined_operator": udo.id},
+            )
+        return JsonUserDefinedOperator(
+            id=udo.id,
+            name=udo.name,
+            description=udo.description,
+            annotations=[
+                JsonAnnotation.from_model(a) for a in udo.annotations
+            ],
+            operatorDefinition=udo.operator_definition,
+        )
+
 
 class JsonUserDefinedOperatorScheme(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for user defined operator schemes."""
@@ -269,6 +288,42 @@ class JsonUserDefinedOperatorScheme(ItemSchemeType, frozen=True):
             vtl_mapping_scheme=self.vtlMappingScheme,
             ruleset_schemes=self.rulesetSchemes,
             annotations=[a.to_model() for a in self.annotations],
+        )
+
+    @classmethod
+    def from_model(
+        cls, udos: UserDefinedOperatorScheme
+    ) -> "JsonUserDefinedOperatorScheme":
+        """Converts a pysdmx user defined operator scheme to an SDMX-JSON one."""
+        if not udos.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON user defined operator schemes must have a name",
+                {"user_defined_operator_scheme": udos.id},
+            )
+        return JsonUserDefinedOperatorScheme(
+            agency=(
+                udos.agency.id
+                if isinstance(udos.agency, Agency)
+                else udos.agency
+            ),
+            id=udos.id,
+            name=udos.name,
+            version=udos.version,
+            isExternalReference=udos.is_external_reference,
+            validFrom=udos.valid_from,
+            validTo=udos.valid_to,
+            description=udos.description,
+            annotations=[
+                JsonAnnotation.from_model(a) for a in udos.annotations
+            ],
+            isPartial=udos.is_partial,
+            vtlVersion=udos.vtl_version,
+            vtlMappingScheme=udos.vtl_mapping_scheme,
+            rulesetSchemes=udos.ruleset_schemes,
+            userDefinedOperators=[
+                JsonUserDefinedOperator.from_model(i) for i in udos.items
+            ],
         )
 
 
