@@ -426,6 +426,25 @@ class JsonRulesetScheme(ItemSchemeType, frozen=True):
                 "SDMX-JSON ruleset schemes must have a name",
                 {"ruleset_scheme": rss.id},
             )
+
+        # Convert vtl_mapping_scheme to URN string
+        vtl_mapping_ref = None
+        if rss.vtl_mapping_scheme:
+            if isinstance(rss.vtl_mapping_scheme, str):
+                vtl_mapping_ref = rss.vtl_mapping_scheme
+            else:
+                # Handle both VtlMappingScheme objects and References
+                agency = (
+                    rss.vtl_mapping_scheme.agency.id
+                    if hasattr(rss.vtl_mapping_scheme.agency, "id")
+                    else rss.vtl_mapping_scheme.agency
+                )
+                vtl_mapping_ref = (
+                    f"urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme="
+                    f"{agency}:{rss.vtl_mapping_scheme.id}"
+                    f"({rss.vtl_mapping_scheme.version})"
+                )
+
         return JsonRulesetScheme(
             agency=(
                 rss.agency.id if isinstance(rss.agency, Agency) else rss.agency
@@ -441,8 +460,8 @@ class JsonRulesetScheme(ItemSchemeType, frozen=True):
                 JsonAnnotation.from_model(a) for a in rss.annotations
             ],
             isPartial=rss.is_partial,
-            vtlVersion=rss.vtl_version,  # type: ignore[arg-type]
-            vtlMappingScheme=rss.vtl_mapping_scheme,
+            vtlVersion=rss.vtl_version,
+            vtlMappingScheme=vtl_mapping_ref,
             rulesets=[JsonRuleset.from_model(i) for i in rss.items],
         )
 

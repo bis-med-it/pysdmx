@@ -6,7 +6,8 @@ import pytest
 from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.vtl import JsonRulesetScheme
 from pysdmx.model import Agency, Annotation
-from pysdmx.model.vtl import Ruleset, RulesetScheme
+from pysdmx.model.__base import Reference
+from pysdmx.model.vtl import Ruleset, RulesetScheme, VtlMappingScheme
 
 
 @pytest.fixture
@@ -32,6 +33,50 @@ def rss():
         valid_to=datetime.now(tz.utc),
         vtl_version="1.0",
         vtl_mapping_scheme="VTL_MAPPING",
+    )
+
+
+@pytest.fixture
+def rss_with_vtl_mapping_scheme_object():
+    ruleset = Ruleset(
+        "RULESET1",
+        name="Test Ruleset",
+        ruleset_definition="ruleset definition",
+        ruleset_type="datapoint",
+        ruleset_scope="variable",
+    )
+    vtl_mapping_scheme = VtlMappingScheme(
+        "VMS", name="VTL Mapping Scheme", agency="BIS", version="2.0"
+    )
+    return RulesetScheme(
+        "RSS",
+        name="RSS Scheme",
+        agency="BIS",
+        items=[ruleset],
+        vtl_version="1.0",
+        vtl_mapping_scheme=vtl_mapping_scheme,
+    )
+
+
+@pytest.fixture
+def rss_with_vtl_mapping_scheme_reference():
+    ruleset = Ruleset(
+        "RULESET1",
+        name="Test Ruleset",
+        ruleset_definition="ruleset definition",
+        ruleset_type="datapoint",
+        ruleset_scope="variable",
+    )
+    vtl_mapping_ref = Reference(
+        sdmx_type="VtlMappingScheme", id="VMS", agency="BIS", version="3.0"
+    )
+    return RulesetScheme(
+        "RSS",
+        name="RSS Scheme",
+        agency="BIS",
+        items=[ruleset],
+        vtl_version="1.0",
+        vtl_mapping_scheme=vtl_mapping_ref,
     )
 
 
@@ -83,6 +128,28 @@ def test_rss(rss: RulesetScheme):
     assert sjson.validTo == rss.valid_to
     assert sjson.vtlVersion == rss.vtl_version
     assert sjson.vtlMappingScheme == rss.vtl_mapping_scheme
+
+
+def test_rss_with_vtl_mapping_scheme_object(
+    rss_with_vtl_mapping_scheme_object: RulesetScheme,
+):
+    sjson = JsonRulesetScheme.from_model(rss_with_vtl_mapping_scheme_object)
+
+    assert (
+        sjson.vtlMappingScheme
+        == "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=BIS:VMS(2.0)"
+    )
+
+
+def test_rss_with_vtl_mapping_scheme_reference(
+    rss_with_vtl_mapping_scheme_reference: RulesetScheme,
+):
+    sjson = JsonRulesetScheme.from_model(rss_with_vtl_mapping_scheme_reference)
+
+    assert (
+        sjson.vtlMappingScheme
+        == "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=BIS:VMS(3.0)"
+    )
 
 
 def test_rss_org(rss_org: RulesetScheme):
