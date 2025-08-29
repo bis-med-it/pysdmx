@@ -34,7 +34,7 @@ jobs:
     - name: Run lint checks
       run: poetry run ruff check --diff --show-fixes --output-format=github
     - name: Run type checks
-      run: poetry run mypy
+      run: poetry run mypy --show-error-codes --pretty
     - name: Run tests
       run: |
         poetry run pytest \
@@ -48,4 +48,4 @@ jobs:
           --durations=10 \
           tests/
     - name: Check coverage
-      run: poetry run coverage report --fail-under=100
+      run: poetry run coverage report --fail-under=100 --show-missing --skip-covered
