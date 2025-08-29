@@ -21,7 +21,7 @@ from typing import Iterator, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.model.__base import Item, ItemScheme, MaintainableArtefact
+from pysdmx.model.__base import Agency, Item, ItemScheme, MaintainableArtefact
 
 
 class Code(Item, frozen=True, omit_defaults=True):
@@ -73,6 +73,24 @@ class Codelist(ItemScheme, frozen=True, omit_defaults=True, tag=True):
     def codes(self) -> Sequence[Code]:
         """Extract the items in the Codelist."""
         return self.items
+
+    @property
+    def short_urn(self) -> str:
+        """Returns the short URN for Codelist.
+
+        A short URN follows the syntax: Type=Agency:Id(Version). For example:
+        Codelist=SDMX:CL_FREQ(1.0)
+
+        Returns:
+            The short URN for the Codelist .
+        """
+        agency = (
+            self.agency.id if isinstance(self.agency, Agency) else self.agency
+        )
+        # Value lists are represented as Codelist, but their short URN uses
+        # ValueList instead of Codelist.
+        typ = "ValueList" if self.sdmx_type == "valuelist" else "Codelist"
+        return f"{typ}={agency}:{self.id}({self.version})"
 
     def __iter__(self) -> Iterator[Code]:
         """Return an iterator over the list of codes."""
