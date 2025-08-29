@@ -9,6 +9,7 @@ from pysdmx.model.vtl import (
     VtlCodelistMapping,
     VtlConceptMapping,
     VtlDataflowMapping,
+    VtlMapping,
 )
 
 
@@ -56,6 +57,15 @@ def vtl_codelist_mapping_no_name():
         codelist="CL_FREQ",
         codelist_alias="FREQ",
     )
+
+
+@pytest.fixture
+def unsupported_type():
+    # Create a mock VtlMapping that's not one of the supported types
+    class UnsupportedVtlMapping(VtlMapping):
+        """Just an unsupported type."""
+
+    return UnsupportedVtlMapping("TEST", name="Test name")
 
 
 def test_vtl_codelist_mapping(vtl_codelist_mapping: VtlCodelistMapping):
@@ -106,3 +116,8 @@ def test_vtl_dataflow_mapping(vtl_dataflow_mapping: VtlDataflowMapping):
 def test_vtl_mapping_no_name(vtl_codelist_mapping_no_name):
     with pytest.raises(errors.Invalid, match="must have a name"):
         JsonVtlMapping.from_model(vtl_codelist_mapping_no_name)
+
+
+def test_unsupported_type(unsupported_type):
+    with pytest.raises(errors.Invalid, match="Unsupported VTL mapping type"):
+        JsonVtlMapping.from_model(unsupported_type)
