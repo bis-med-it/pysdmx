@@ -9,11 +9,12 @@ from pathlib import Path
 from typing import Optional, Tuple, Union
 
 from httpx import Client as httpx_Client
-from httpx import create_ssl_context
+from httpx import HTTPStatusError, create_ssl_context
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
 from pysdmx.io.xml.__parse_xml import SCHEMA_ROOT_31
+from pysdmx.util import map_httpx_errors
 
 
 def __remove_bom(input_string: str) -> str:
@@ -98,7 +99,7 @@ def __check_sdmx_str(input_str: str) -> Tuple[str, Format]:
     raise Invalid("Validation Error", "Cannot parse input as SDMX.")
 
 
-def process_string_to_read(
+def process_string_to_read(  # noqa: C901
     sdmx_document: Union[str, Path, BytesIO],
     pem: Optional[Union[str, Path]] = None,
 ) -> Tuple[str, Format]:
@@ -154,12 +155,15 @@ def process_string_to_read(
                 out_str = ""
                 with httpx_Client(verify=ssl_context) as client:
                     response = client.get(sdmx_document, timeout=60)
-                    if (
-                        response.status_code != 200
-                        and "<?xml" not in response.text
-                    ):
-                        raise Exception("Invalid URL, no SDMX Error found")
-                    out_str = response.text
+                    try:
+                        response.raise_for_status()
+                    except HTTPStatusError as e:
+                        if "<?xml" in e.response.text:
+                            out_str = e.response.text
+                        else:
+                            map_httpx_errors(e)
+                    else:
+                        out_str = response.text
             except Exception as e:
                 raise Invalid(
                     "Validation Error",
