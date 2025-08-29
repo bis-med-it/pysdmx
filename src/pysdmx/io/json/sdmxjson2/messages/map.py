@@ -374,8 +374,14 @@ class JsonStructureMap(MaintainableType, frozen=True):
     def from_model(self, sm: StructureMap) -> "JsonStructureMap":
         """Converts a pysdmx structure map to an SDMX-JSON one."""
         cms = list(sm.component_maps)
-        cms.extend(list(sm.implicit_component_maps))
-        cms.extend(list(sm.multi_component_maps))
+        cms.extend(list(sm.implicit_component_maps))  # type: ignore[arg-type]
+        cms.extend(list(sm.multi_component_maps))  # type: ignore[arg-type]
+        if not sm.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON structure maps must have a name",
+                {"structure_map": sm.id},
+            )
         return JsonStructureMap(
             agency=(
                 sm.agency.id if isinstance(sm.agency, Agency) else sm.agency
