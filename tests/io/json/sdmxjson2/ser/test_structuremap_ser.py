@@ -1,4 +1,5 @@
-from datetime import datetime, timezone as tz
+from datetime import datetime
+from datetime import timezone as tz
 
 from pysdmx.io.json.sdmxjson2.messages.map import (
     JsonComponentMap,
