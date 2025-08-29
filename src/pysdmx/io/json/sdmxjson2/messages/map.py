@@ -370,6 +370,37 @@ class JsonStructureMap(MaintainableType, frozen=True):
             valid_to=self.validTo,
         )
 
+    @classmethod
+    def from_model(self, sm: StructureMap) -> "JsonStructureMap":
+        """Converts a pysdmx structure map to an SDMX-JSON one."""
+        cms = list(sm.component_maps)
+        cms.extend(list(sm.implicit_component_maps))
+        cms.extend(list(sm.multi_component_maps))
+        return JsonStructureMap(
+            agency=(
+                sm.agency.id if isinstance(sm.agency, Agency) else sm.agency
+            ),
+            id=sm.id,
+            name=sm.name,
+            version=sm.version,
+            isExternalReference=sm.is_external_reference,
+            validFrom=sm.valid_from,
+            validTo=sm.valid_to,
+            description=sm.description,
+            annotations=[JsonAnnotation.from_model(a) for a in sm.annotations],
+            source=sm.source,
+            target=sm.target,
+            datePatternMaps=[
+                JsonDatePatternMap.from_model(dpm)
+                for dpm in sm.date_pattern_maps
+            ],
+            componentMaps=[JsonComponentMap.from_model(cm) for cm in cms],
+            fixedValueMaps=[
+                JsonFixedValueMap.from_model(fvm)
+                for fvm in sm.fixed_value_maps
+            ],
+        )
+
 
 class JsonStructureMaps(Struct, frozen=True):
     """SDMX-JSON payload for structure maps."""
