@@ -32,7 +32,7 @@ jobs:
     - name: Install dependencies
       run: poetry install --all-extras
     - name: Run lint checks
-      run: poetry run ruff check
+      run: poetry run ruff check --diff --show-fixes --output-format=github
     - name: Run type checks
       run: poetry run mypy
     - name: Run tests
