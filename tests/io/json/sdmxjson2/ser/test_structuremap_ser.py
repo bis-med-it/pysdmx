@@ -1,6 +1,9 @@
 from datetime import datetime
 from datetime import timezone as tz
 
+import pytest
+
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.map import (
     JsonComponentMap,
     JsonDatePatternMap,
@@ -90,3 +93,18 @@ def test_sm():
     assert len(sjson.componentMaps) == 3
     for i in sjson.componentMaps:
         assert isinstance(i, JsonComponentMap)
+
+
+def test_no_name():
+    icm = ImplicitComponentMap("OBS_CONF", "CONF_STATUS")
+    sm = StructureMap(
+        "SM",
+        name="Some structure map",
+        agency="BIS",
+        source="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=Z:O(1.0)",
+        target="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=Z:O(2.0)",
+        maps=[icm],
+    )
+
+    with pytest.raises(errors.Invalid, match="must have a name"):
+        JsonStructureMap.from_model(sm)
