@@ -51,6 +51,7 @@ from pysdmx.io.xml.__tokens import (
     DFWS,
     DIM,
     DIM_LIST,
+    DIM_REF,
     DSD,
     DSD_COMPS,
     DSDS,
@@ -64,6 +65,7 @@ from pysdmx.io.xml.__tokens import (
     FAXES,
     GROUP,
     GROUP_DIM,
+    GROUPS_LOW,
     ID,
     IS_EXTERNAL_REF,
     IS_EXTERNAL_REF_LOW,
@@ -82,6 +84,7 @@ from pysdmx.io.xml.__tokens import (
     ME_REL,
     MEASURE,
     METADATA,
+    MSR,
     NAME,
     NAME_PER,
     NAME_PER_SCHEME,
@@ -91,7 +94,6 @@ from pysdmx.io.xml.__tokens import (
     ORGS,
     PAR_ID,
     PAR_VER,
-    PRIM_MEASURE,
     REF,
     REQUIRED,
     ROLE,
@@ -131,6 +133,7 @@ from pysdmx.io.xml.__tokens import (
     VALID_TO_LOW,
     VALUE_ITEM,
     VALUE_LIST,
+    VALUE_LIST_LOW,
     VALUE_LISTS,
     VERSION,
     VTL_CL_MAPP,
@@ -167,6 +170,7 @@ from pysdmx.model.dataflow import (
     Components,
     Dataflow,
     DataStructureDefinition,
+    GroupDimension,
     Role,
 )
 from pysdmx.model.vtl import (
@@ -216,13 +220,13 @@ ITEMS_CLASSES = {
     CUSTOM_TYPE: CustomType,
 }
 
-COMP_TYPES = [DIM, ATT, PRIM_MEASURE, MEASURE, GROUP_DIM]
+COMP_TYPES = [DIM, ATT, MEASURE, MSR, GROUP_DIM]
 
 ROLE_MAPPING = {
     DIM: Role.DIMENSION,
     ATT: Role.ATTRIBUTE,
-    PRIM_MEASURE: Role.MEASURE,
     MEASURE: Role.MEASURE,
+    MSR: Role.MEASURE,
 }
 
 FACETS_MAPPING = {
@@ -291,6 +295,7 @@ class StructureParser(Struct):
 
     agencies: Dict[str, AgencyScheme] = {}
     codelists: Dict[str, Codelist] = {}
+    valuelists: Dict[str, Codelist] = {}
     concepts: Dict[str, ConceptScheme] = {}
     datastructures: Dict[str, DataStructureDefinition] = {}
     dataflows: Dict[str, Dataflow] = {}
@@ -466,20 +471,28 @@ class StructureParser(Struct):
         if TEXT_FORMAT in json_rep:
             self.__format_facets(json_rep[TEXT_FORMAT], json_obj)
 
-        if ENUM in json_rep and len(self.codelists) > 0:
+        if ENUM in json_rep and (
+            len(self.codelists) > 0 or len(self.valuelists) > 0
+        ):
             enum = json_rep[ENUM]
             if isinstance(enum, str):
                 ref = parse_urn(enum)
             else:
                 ref = enum.get(REF, enum)
-
             if isinstance(ref, dict) and "URN" in ref:
                 codelist = find_by_urn(
                     list(self.codelists.values()), ref["URN"]
                 )
 
             elif isinstance(ref, Reference):
-                codelist = find_by_urn(list(self.codelists.values()), str(ref))
+                codelist = find_by_urn(
+                    list(
+                        self.codelists.values()
+                        if ref.sdmx_type == CL
+                        else self.valuelists.values()
+                    ),
+                    str(ref),
+                )
             else:
                 short_urn = str(
                     Reference(
@@ -541,7 +554,7 @@ class StructureParser(Struct):
         for con in concept_scheme.concepts:
             if isinstance(concept_ref, str):
                 if con.id == item_reference.item_id:
-                    rep[CON] = con
+                    rep[CON] = parse_urn(concept_ref)
                     break
             elif con.id == concept_ref[ID]:
                 rep[CON] = con
@@ -551,7 +564,9 @@ class StructureParser(Struct):
         return rep
 
     @staticmethod
-    def __get_attachment_level(attribute: Dict[str, Any]) -> str:
+    def __get_attachment_level(  # noqa: C901
+        attribute: Dict[str, Any], element_info: Dict[str, Any]
+    ) -> str:
         if DIM in attribute:
             dims = add_list(attribute[DIM])
             if dims and isinstance(dims[0], dict):
@@ -561,15 +576,39 @@ class StructureParser(Struct):
             # therefore we need to check first if a Dimension is present,
             # then the AttachmentGroup
             if ATTACH_GROUP in attribute:
-                raise NotImplementedError(
-                    "Attribute relationships with Dimension "
-                    "and AttachmentGroup is not supported."
-                )
+                att_grp = add_list(attribute[ATTACH_GROUP])
+                att_grp = [att[REF][ID] for att in att_grp]
+                for grp in att_grp:
+                    group_dims: List[str] = next(
+                        (
+                            g.dimensions
+                            for g in element_info[GROUPS_LOW]
+                            if g.id == grp
+                        ),
+                        [],
+                    )
+                    att_level += (
+                        "," + ",".join(group_dims)
+                        if len(group_dims) > 0
+                        else ""
+                    )
         elif GROUP in attribute:
-            raise NotImplementedError(
-                "Attribute relationships with Group is not supported."
+            if REF in attribute[GROUP]:
+                group_id = attribute[GROUP][REF][ID]
+            else:
+                group_id = attribute[GROUP]
+            group_dimensions: List[str] = next(
+                (
+                    g.dimensions
+                    for g in element_info[GROUPS_LOW]
+                    if g.id == group_id
+                ),
+                [],
             )
-        elif OBSERVATION in attribute or PRIM_MEASURE in attribute:
+            att_level = (
+                ",".join(group_dimensions) if len(group_dimensions) > 0 else ""
+            )
+        elif OBSERVATION in attribute or MEASURE in attribute:
             att_level = "O"
         else:
             # For None (SDMX-2.1) or Dataflow (SDMX-3.0), attribute is
@@ -682,7 +721,7 @@ class StructureParser(Struct):
                     json_obj[DFW_LOW] = dataflow
 
     def __format_component(
-        self, comp: Dict[str, Any], role: Role
+        self, comp: Dict[str, Any], role: Role, element_info: Dict[str, Any]
     ) -> Component:
         comp[ROLE.lower()] = role
         comp[REQUIRED] = True
@@ -700,7 +739,9 @@ class StructureParser(Struct):
 
         # Attribute Handling
         if ATT_REL in comp:
-            comp[ATT_LVL] = self.__get_attachment_level(comp[ATT_REL])
+            comp[ATT_LVL] = self.__get_attachment_level(
+                comp[ATT_REL], element_info
+            )
             del comp[ATT_REL]
 
         if ME_REL in comp:
@@ -727,7 +768,7 @@ class StructureParser(Struct):
         return Component(**comp)
 
     def __format_component_lists(
-        self, element: Dict[str, Any]
+        self, element: Dict[str, Any], element_info: Dict[str, Any]
     ) -> List[Component]:
         comp_list = []
 
@@ -744,6 +785,7 @@ class StructureParser(Struct):
             formatted_comp = self.__format_component(
                 comp,
                 role,
+                element_info,
             )
             comp_list.append(formatted_comp)
 
@@ -754,12 +796,11 @@ class StructureParser(Struct):
             element[COMPS] = []
             comps = element[DSD_COMPS]
 
-            for comp_list in [DIM_LIST, ME_LIST, GROUP, ATT_LIST]:
-                if comp_list == GROUP and comp_list in comps:
-                    del comps[GROUP]
-
-                elif comp_list in comps:
-                    fmt_comps = self.__format_component_lists(comps[comp_list])
+            for comp_list in [DIM_LIST, ME_LIST, ATT_LIST]:
+                if comp_list in comps:
+                    fmt_comps = self.__format_component_lists(
+                        comps[comp_list], element
+                    )
                     element[COMPS].extend(fmt_comps)
 
             element[COMPS] = Components(element[COMPS])
@@ -892,6 +933,32 @@ class StructureParser(Struct):
 
         return ITEMS_CLASSES[item_name_class](**item_json_info)
 
+    @staticmethod
+    def __format_groups(element: Dict[str, Any]) -> Dict[str, Any]:
+        if DSD_COMPS in element:
+            dsd_comps = element[DSD_COMPS]
+            if GROUP in dsd_comps:
+                groups = (
+                    dsd_comps[GROUP]
+                    if isinstance(dsd_comps[GROUP], list)
+                    else [dsd_comps[GROUP]]
+                )
+                for group in groups:
+                    group_dimensions = group.pop(GROUP_DIM, [])
+                    if isinstance(group_dimensions, dict):
+                        group_dimensions = [group_dimensions]
+
+                    group["dimensions"] = [
+                        d[DIM_REF]
+                        if isinstance(d[DIM_REF], str)
+                        else d[DIM_REF][REF][ID]
+                        for d in group_dimensions
+                    ]
+
+                element[GROUPS_LOW] = [GroupDimension(**g) for g in groups]
+                del element[DSD_COMPS][GROUP]
+        return element
+
     def __format_is_final_30(
         self, json_elem: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -940,7 +1007,7 @@ class StructureParser(Struct):
                 del element["xmlns"]
             # Dynamic creation with specific class
             if scheme == VALUE_LIST:
-                element["sdmx_type"] = "valuelist"
+                element["sdmx_type"] = VALUE_LIST_LOW
             element = self.__format_is_final_30(element)
             result: ItemScheme = STRUCTURES_MAPPING[scheme](**element)
             elements[result.short_urn] = result
@@ -980,6 +1047,7 @@ class StructureParser(Struct):
             element = self.__format_urls(element)
             element = self.__format_agency(element)
             element = self.__format_validity(element)
+            element = self.__format_groups(element)
             element = self.__format_components(element)
 
             if "xmlns" in element:
@@ -1060,6 +1128,7 @@ class StructureParser(Struct):
                 lambda data: self.__format_scheme(
                     data, VALUE_LIST, VALUE_ITEM
                 ),
+                "valuelists",
             ),
             CON_SCHEMES: process_structure(
                 CON_SCHEMES,

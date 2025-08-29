@@ -6,6 +6,7 @@ from typing import Any, Sequence, Union
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.model import Agency, ItemReference, Reference
 from pysdmx.util._date_pattern_map import convert_dpm
+from pysdmx.util._net_utils import map_httpx_errors
 
 NF = "Not found"
 
@@ -134,4 +135,5 @@ __all__ = [
     "parse_short_item_urn",
     "ItemReference",
     "Reference",
+    "map_httpx_errors",
 ]

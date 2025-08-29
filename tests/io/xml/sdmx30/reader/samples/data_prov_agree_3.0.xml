@@ -25,7 +25,17 @@
     <message:DataSet DECIMALS="3" UNIT_MULT="6" UNIT_MEASURE="USD" ss:structureRef="BIS_WEBSTATS_DER_DATAFLOW_1_0"
                      xsi:type="ns1:DataSetType"
                      ss:dataScope="DataStructure" action="Replace">
-        <Obs FREQ="A" M1="1"/>
-        <Obs FREQ="A" M1="2"/>
+        <Group xsi:type="ns1:Sibling" DIM2="4" ATT1="A"/>
+        <Group xsi:type="ns1:Sibling" DIM2="4" ATT1="A"/>
+        <Group xsi:type="ns1:Sibling" DIM2="4" ATT1="A"/>
+        <Series DIM2="4" ATT1="A">
+            <Obs DIM1="1" M1="10" ATT2="7"/>
+        </Series>
+        <Series DIM2="5" ATT1="B">
+            <Obs DIM1="2" M1="11" ATT2="8"/>
+        </Series>
+        <Series DIM2="6" ATT1="C">
+            <Obs DIM1="3" M1="12" ATT2="9"/>
+        </Series>
     </message:DataSet>
 </message:StructureSpecificData>

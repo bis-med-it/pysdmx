@@ -6,12 +6,15 @@ from io import BytesIO, StringIO, TextIOWrapper
 from json import JSONDecodeError, loads
 from os import PathLike
 from pathlib import Path
-from typing import Tuple, Union
+from typing import Optional, Tuple, Union
 
-from httpx import get as httpx_get
+from httpx import Client as httpx_Client
+from httpx import HTTPStatusError, create_ssl_context
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
+from pysdmx.io.xml.__parse_xml import SCHEMA_ROOT_31
+from pysdmx.util import map_httpx_errors
 
 
 def __remove_bom(input_string: str) -> str:
@@ -58,11 +61,15 @@ def __get_sdmx_ml_flavour(input_str: str) -> Tuple[str, Format]:
     if ":structurespecificdata" in flavour_check:
         if SCHEMA_ROOT_30 in flavour_check:
             return input_str, Format.DATA_SDMX_ML_3_0
+        elif SCHEMA_ROOT_31 in flavour_check:
+            return input_str, Format.DATA_SDMX_ML_3_1
         else:
             return input_str, Format.DATA_SDMX_ML_2_1_STR
     if ":structure" in flavour_check:
         if SCHEMA_ROOT_30 in flavour_check:
             return input_str, Format.STRUCTURE_SDMX_ML_3_0
+        elif SCHEMA_ROOT_31 in flavour_check:
+            return input_str, Format.STRUCTURE_SDMX_ML_3_1
         else:
             return input_str, Format.STRUCTURE_SDMX_ML_2_1
     if ":registryinterface" in flavour_check:
@@ -92,8 +99,9 @@ def __check_sdmx_str(input_str: str) -> Tuple[str, Format]:
     raise Invalid("Validation Error", "Cannot parse input as SDMX.")
 
 
-def process_string_to_read(
+def process_string_to_read(  # noqa: C901
     sdmx_document: Union[str, Path, BytesIO],
+    pem: Optional[Union[str, Path]] = None,
 ) -> Tuple[str, Format]:
     """Processes the input that comes into read_sdmx function.
 
@@ -102,6 +110,7 @@ def process_string_to_read(
 
     Args:
         sdmx_document: Path to file, URL, or string.
+        pem: Path to a PEM file for SSL verification when reading from a URL.
 
     Returns:
         tuple: Tuple containing the parsed input and the format of the input.
@@ -127,19 +136,39 @@ def process_string_to_read(
 
     elif isinstance(sdmx_document, str):
         if sdmx_document.startswith("http"):
+            if pem is not None and isinstance(pem, Path):
+                pem = str(pem)
+            if pem is not None and pem and not os.path.exists(pem):
+                raise Invalid(
+                    "Validation Error",
+                    f"PEM file {pem} does not exist.",
+                )
+            # Read from URL
+            ssl_context = (
+                create_ssl_context(
+                    verify=pem,
+                )
+                if pem
+                else create_ssl_context()
+            )
             try:
-                response = httpx_get(sdmx_document, timeout=60)
-                if (
-                    response.status_code != 200
-                    and "<?xml" not in response.text
-                ):
-                    raise Exception("Invalid URL, no SDMX Error found")
-                out_str = response.text
-            except Exception:
+                out_str = ""
+                with httpx_Client(verify=ssl_context) as client:
+                    response = client.get(sdmx_document, timeout=60)
+                    try:
+                        response.raise_for_status()
+                    except HTTPStatusError as e:
+                        if "<?xml" in e.response.text:
+                            out_str = e.response.text
+                        else:
+                            map_httpx_errors(e)
+                    else:
+                        out_str = response.text
+            except Exception as e:
                 raise Invalid(
                     "Validation Error",
                     f"Cannot retrieve a SDMX Message "
-                    f"from URL: {sdmx_document}.",
+                    f"from URL: {sdmx_document}. Error message: {e}",
                 ) from None
         else:
             out_str = sdmx_document

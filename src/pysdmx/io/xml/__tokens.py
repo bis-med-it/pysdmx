@@ -18,12 +18,14 @@ LINK = "Link"
 STR_SPE = "StructureSpecificData"
 GENERIC = "GenericData"
 SERIES_KEY = "SeriesKey"
+GROUP_KEY = "GroupKey"
 ATTRIBUTES = "Attributes"
 VALUE = "Value"
 OBS_DIM = "ObsDimension"
 OBS_VALUE_XML_TAG = "ObsValue"
 OBS_VALUE_ID = "OBS_VALUE"
 OBS_KEY = "ObsKey"
+SIBLING_TYPE = "SiblingType"
 # Header
 STR_REF = "structureRef"
 STRUCTURE = "Structure"
@@ -135,11 +137,13 @@ OBSERVATION = "Observation"
 # Measure
 ME_LIST = "MeasureList"
 ME_LIST_LOW = "measure_list"
-MEASURE = "Measure"
-PRIM_MEASURE = "PrimaryMeasure"
+MSR = "Measure"
+MEASURE = "PrimaryMeasure"
 MEASURE_RELATIONSHIP = "MeasureRelationship"
 # Group Dimension
 GROUP = "Group"
+GROUP_LOW = "group"
+GROUPS_LOW = "groups"
 GROUP_DIM_LOW = "group_dimension_descriptor"
 GROUP_DIM = "GroupDimension"
 ATTACH_GROUP = "AttachmentGroup"
@@ -216,7 +220,15 @@ NO_REL = "NoSpecifiedRelationship"
 METADATA = "Metadata"
 
 # To exclude from attached_attributes
-EXCLUDED_ATTRIBUTES = [STR_REF, "action", "dataScope", "xsi:type", SERIES, OBS]
+EXCLUDED_ATTRIBUTES = [
+    STR_REF,
+    "action",
+    "dataScope",
+    "xsi:type",
+    SERIES,
+    OBS,
+    GROUP,
+]
 
 # Content types
 DATASTRUCTURES_CM = "DataStructures"
