@@ -438,6 +438,11 @@ class JsonToVtlMapping(Struct, frozen=True):
         """Converts deserialized class to pysdmx model class."""
         return ToVtlMapping(self.toVtlSubSpace, self.type)
 
+    @classmethod
+    def from_model(cls, mapping: ToVtlMapping) -> "JsonToVtlMapping":
+        """Converts a pysdmx "to VTL" mapping to an SDMX-JSON one."""
+        return JsonToVtlMapping(mapping.to_vtl_sub_space, mapping.method)
+
 
 class JsonFromVtlMapping(Struct, frozen=True):
     """SDMX-JSON payload for from VTL mappings."""
@@ -448,6 +453,11 @@ class JsonFromVtlMapping(Struct, frozen=True):
     def to_model(self) -> FromVtlMapping:
         """Converts deserialized class to pysdmx model class."""
         return FromVtlMapping(self.fromVtlSuperSpace, self.type)
+
+    @classmethod
+    def from_model(cls, mapping: FromVtlMapping) -> "JsonFromVtlMapping":
+        """Converts a pysdmx "from VTL" mapping to an SDMX-JSON one."""
+        return JsonFromVtlMapping(mapping.from_vtl_sub_space, mapping.method)
 
 
 class JsonVtlMapping(NameableType, frozen=True):
@@ -507,6 +517,68 @@ class JsonVtlMapping(NameableType, frozen=True):
                 annotations=[a.to_model() for a in self.annotations],
             )
 
+    @classmethod
+    def from_model(cls, mapping: VtlMapping) -> "JsonVtlMapping":
+        """Converts a pysdmx VTL mapping to an SDMX-JSON one."""
+        if not mapping.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON VTL mappings must have a name",
+                {"vtl_mapping": mapping.id},
+            )
+
+        if isinstance(mapping, VtlCodelistMapping):
+            return JsonVtlMapping(
+                id=mapping.id,
+                name=mapping.name,
+                description=mapping.description,
+                annotations=[
+                    JsonAnnotation.from_model(a) for a in mapping.annotations
+                ],
+                alias=mapping.codelist_alias,
+                codelist=mapping.codelist,
+            )
+        elif isinstance(mapping, VtlConceptMapping):
+            return JsonVtlMapping(
+                id=mapping.id,
+                name=mapping.name,
+                description=mapping.description,
+                annotations=[
+                    JsonAnnotation.from_model(a) for a in mapping.annotations
+                ],
+                alias=mapping.concept_alias,
+                concept=mapping.concept,
+            )
+        elif isinstance(mapping, VtlDataflowMapping):
+            return JsonVtlMapping(
+                id=mapping.id,
+                name=mapping.name,
+                description=mapping.description,
+                annotations=[
+                    JsonAnnotation.from_model(a) for a in mapping.annotations
+                ],
+                alias=mapping.dataflow_alias,
+                dataflow=f"urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow={mapping.dataflow.agency}:{mapping.dataflow.id}({mapping.dataflow.version})",
+                toVtlMapping=(
+                    JsonToVtlMapping.from_model(mapping.to_vtl_mapping_method)
+                    if mapping.to_vtl_mapping_method
+                    else None
+                ),
+                fromVtlMapping=(
+                    JsonFromVtlMapping.from_model(
+                        mapping.from_vtl_mapping_method
+                    )
+                    if mapping.from_vtl_mapping_method
+                    else None
+                ),
+            )
+        else:
+            raise errors.Invalid(
+                "Invalid input",
+                f"Unsupported VTL mapping type: {type(mapping)}",
+                {"vtl_mapping": mapping.id},
+            )
+
 
 class JsonVtlMappingScheme(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for VTL mapping schemes."""
@@ -529,6 +601,33 @@ class JsonVtlMappingScheme(ItemSchemeType, frozen=True):
             items=items,
             is_partial=self.isPartial,
             annotations=[a.to_model() for a in self.annotations],
+        )
+
+    @classmethod
+    def from_model(cls, vms: VtlMappingScheme) -> "JsonVtlMappingScheme":
+        """Converts a pysdmx VTL mapping scheme to an SDMX-JSON one."""
+        if not vms.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON VTL mapping schemes must have a name",
+                {"vtl_mapping_scheme": vms.id},
+            )
+        return JsonVtlMappingScheme(
+            agency=(
+                vms.agency.id if isinstance(vms.agency, Agency) else vms.agency
+            ),
+            id=vms.id,
+            name=vms.name,
+            version=vms.version,
+            isExternalReference=vms.is_external_reference,
+            validFrom=vms.valid_from,
+            validTo=vms.valid_to,
+            description=vms.description,
+            annotations=[
+                JsonAnnotation.from_model(a) for a in vms.annotations
+            ],
+            isPartial=vms.is_partial,
+            vtlMappings=[JsonVtlMapping.from_model(i) for i in vms.items],
         )
 
 
