@@ -350,6 +350,27 @@ class JsonRuleset(Struct, frozen=True):
             annotations=[a.to_model() for a in self.annotations],
         )
 
+    @classmethod
+    def from_model(cls, ruleset: Ruleset) -> "JsonRuleset":
+        """Converts a pysdmx ruleset to an SDMX-JSON one."""
+        if not ruleset.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON rulesets must have a name",
+                {"ruleset": ruleset.id},
+            )
+        return JsonRuleset(
+            id=ruleset.id,
+            name=ruleset.name,
+            description=ruleset.description,
+            annotations=[
+                JsonAnnotation.from_model(a) for a in ruleset.annotations
+            ],
+            rulesetDefinition=ruleset.ruleset_definition,
+            rulesetType=ruleset.ruleset_type,
+            rulesetScope=ruleset.ruleset_scope,
+        )
+
 
 class JsonRulesetScheme(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for ruleset schemes."""
@@ -375,6 +396,35 @@ class JsonRulesetScheme(ItemSchemeType, frozen=True):
             vtl_version=self.vtlVersion,
             vtl_mapping_scheme=self.vtlMappingScheme,
             annotations=[a.to_model() for a in self.annotations],
+        )
+
+    @classmethod
+    def from_model(cls, rss: RulesetScheme) -> "JsonRulesetScheme":
+        """Converts a pysdmx ruleset scheme to an SDMX-JSON one."""
+        if not rss.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON ruleset schemes must have a name",
+                {"ruleset_scheme": rss.id},
+            )
+        return JsonRulesetScheme(
+            agency=(
+                rss.agency.id if isinstance(rss.agency, Agency) else rss.agency
+            ),
+            id=rss.id,
+            name=rss.name,
+            version=rss.version,
+            isExternalReference=rss.is_external_reference,
+            validFrom=rss.valid_from,
+            validTo=rss.valid_to,
+            description=rss.description,
+            annotations=[
+                JsonAnnotation.from_model(a) for a in rss.annotations
+            ],
+            isPartial=rss.is_partial,
+            vtlVersion=rss.vtl_version,
+            vtlMappingScheme=rss.vtl_mapping_scheme,
+            rulesets=[JsonRuleset.from_model(i) for i in rss.items],
         )
 
 
