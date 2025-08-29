@@ -393,6 +393,18 @@ class JsonRuleset(Struct, frozen=True):
                 "SDMX-JSON rulesets must have a name",
                 {"ruleset": ruleset.id},
             )
+        if not ruleset.ruleset_type:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON rulesets must have a ruleset type",
+                {"ruleset": ruleset.id},
+            )
+        if not ruleset.ruleset_scope:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON rulesets must have a ruleset scope",
+                {"ruleset": ruleset.id},
+            )
         return JsonRuleset(
             id=ruleset.id,
             name=ruleset.name,
@@ -582,7 +594,6 @@ class JsonVtlMapping(NameableType, frozen=True):
 
         if isinstance(mapping, VtlCodelistMapping):
             # Convert codelist to URN string
-            codelist_ref = mapping.codelist
             if not isinstance(mapping.codelist, str):
                 # Handle both Codelist objects and References
                 agency = (
@@ -594,6 +605,8 @@ class JsonVtlMapping(NameableType, frozen=True):
                     f"urn:sdmx:org.sdmx.infomodel.codelist.Codelist="
                     f"{agency}:{mapping.codelist.id}({mapping.codelist.version})"
                 )
+            else:
+                codelist_ref = mapping.codelist
 
             return JsonVtlMapping(
                 id=mapping.id,

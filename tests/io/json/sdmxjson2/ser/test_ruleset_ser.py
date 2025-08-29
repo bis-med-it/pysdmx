@@ -27,6 +27,26 @@ def ruleset_no_name():
     )
 
 
+@pytest.fixture
+def ruleset_no_type():
+    return Ruleset(
+        "RULESET1",
+        name="Test Ruleset",
+        ruleset_definition="ruleset definition",
+        ruleset_scope="variable",
+    )
+
+
+@pytest.fixture
+def ruleset_no_scope():
+    return Ruleset(
+        "RULESET1",
+        name="Test Ruleset",
+        ruleset_definition="ruleset definition",
+        ruleset_type="datapoint",
+    )
+
+
 def test_ruleset(ruleset: Ruleset):
     sjson = JsonRuleset.from_model(ruleset)
 
@@ -42,3 +62,13 @@ def test_ruleset(ruleset: Ruleset):
 def test_ruleset_no_name(ruleset_no_name):
     with pytest.raises(errors.Invalid, match="must have a name"):
         JsonRuleset.from_model(ruleset_no_name)
+
+
+def test_ruleset_no_type(ruleset_no_type):
+    with pytest.raises(errors.Invalid, match="must have a ruleset type"):
+        JsonRuleset.from_model(ruleset_no_type)
+
+
+def test_ruleset_no_scope(ruleset_no_scope):
+    with pytest.raises(errors.Invalid, match="must have a ruleset scope"):
+        JsonRuleset.from_model(ruleset_no_scope)
