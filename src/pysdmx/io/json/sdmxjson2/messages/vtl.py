@@ -10,7 +10,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     NameableType,
 )
-from pysdmx.model.__base import Agency, DataflowRef
+from pysdmx.model.__base import Agency, DataflowRef, ItemReference
 from pysdmx.model.vtl import (
     CustomType,
     CustomTypeScheme,
@@ -581,6 +581,20 @@ class JsonVtlMapping(NameableType, frozen=True):
             )
 
         if isinstance(mapping, VtlCodelistMapping):
+            # Convert codelist to URN string
+            codelist_ref = mapping.codelist
+            if not isinstance(mapping.codelist, str):
+                # Handle both Codelist objects and References
+                agency = (
+                    mapping.codelist.agency.id
+                    if hasattr(mapping.codelist.agency, "id")
+                    else mapping.codelist.agency
+                )
+                codelist_ref = (
+                    f"urn:sdmx:org.sdmx.infomodel.codelist.Codelist="
+                    f"{agency}:{mapping.codelist.id}({mapping.codelist.version})"
+                )
+
             return JsonVtlMapping(
                 id=mapping.id,
                 name=mapping.name,
@@ -589,9 +603,31 @@ class JsonVtlMapping(NameableType, frozen=True):
                     JsonAnnotation.from_model(a) for a in mapping.annotations
                 ],
                 alias=mapping.codelist_alias,
-                codelist=mapping.codelist,
+                codelist=codelist_ref,
             )
         elif isinstance(mapping, VtlConceptMapping):
+            # Convert concept to URN string
+            if isinstance(mapping.concept, str):
+                concept_ref = mapping.concept
+            elif isinstance(mapping.concept, ItemReference):
+                concept_ref = (
+                    "urn:sdmx:org.sdmx.infomodel.conceptscheme."
+                    f"{mapping.concept.sdmx_type}={mapping.concept.agency}:"
+                    f"{mapping.concept.id}({mapping.concept.version})."
+                    f"{mapping.concept.item_id}"
+                )
+            elif mapping.concept.urn:
+                concept_ref = mapping.concept.urn
+            else:
+                raise errors.Invalid(
+                    "Missing concept reference",
+                    (
+                        "The full reference to the concept is missing but "
+                        "this is mandatory in a VtlConceptMapping"
+                    ),
+                    {"referenced_concept": mapping.concept},
+                )
+
             return JsonVtlMapping(
                 id=mapping.id,
                 name=mapping.name,
@@ -600,7 +636,7 @@ class JsonVtlMapping(NameableType, frozen=True):
                     JsonAnnotation.from_model(a) for a in mapping.annotations
                 ],
                 alias=mapping.concept_alias,
-                concept=mapping.concept,
+                concept=concept_ref,
             )
         elif isinstance(mapping, VtlDataflowMapping):
             return JsonVtlMapping(
