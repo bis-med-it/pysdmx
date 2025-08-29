@@ -1,8 +1,10 @@
 from pathlib import Path
+from types import SimpleNamespace
 
 import httpx
 import pytest
 
+import pysdmx.io.input_processor as m
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
 from pysdmx.io.reader import get_datasets
@@ -110,6 +112,43 @@ def sdmx_error_str():
     return text
 
 
+@pytest.fixture
+def mock_ssl_context(monkeypatch):
+    seen = {}
+
+    def mock_create_ssl_context(*, verify=None):
+        seen["verify"] = verify
+        return "CTX"
+
+    monkeypatch.setattr(m, "create_ssl_context", mock_create_ssl_context)
+    return seen
+
+
+@pytest.fixture
+def mock_http_client(monkeypatch, structures_path):
+    last = {}
+    xml_text = Path(structures_path).read_text(encoding="utf-8")
+    mock_response = SimpleNamespace(
+        status_code=200,
+        text=xml_text,
+        raise_for_status=lambda: None,
+    )
+
+    class DummyClient:
+        def __init__(self, **kwargs):
+            last["kwargs"] = kwargs
+
+        def __enter__(self):
+            self.get = lambda u, timeout=60: mock_response
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    monkeypatch.setattr(m, "httpx_Client", DummyClient)
+    return last
+
+
 def test_read_sdmx_invalid_extension():
     with pytest.raises(Invalid, match="Cannot parse input as SDMX."):
         read_sdmx(",,,,")
@@ -146,6 +185,43 @@ def test_read_url_valid(respx_mock, data_csv_v1_str):
     )
     result = read_sdmx(url)
     assert result.data is not None
+
+
+def test_read_url_invalid_pem():
+    url = "https://validurl.com"
+    invalid_pem_path = Path(__file__).parent / "samples" / "invalid_pem.pem"
+    with pytest.raises(Invalid, match="does not exist"):
+        read_sdmx(url, pem=invalid_pem_path)
+
+
+def test_read_url_invalid_pem_str():
+    url = "https://validurl.com"
+    with pytest.raises(
+        Invalid, match="PEM file invalid_pem.pem does not exist."
+    ):
+        read_sdmx(url, pem="invalid_pem.pem")
+
+
+def test_ssl_context_with_pem_path(
+    mock_ssl_context, mock_http_client, tmp_path
+):
+    url = "https://validurl.com"
+    pem = tmp_path / "cert.pem"
+    pem.write_text("dummy")
+
+    read_sdmx(url, validate=True, pem=pem)
+
+    assert mock_ssl_context["verify"] == str(pem)
+    assert mock_http_client["kwargs"]["verify"] == "CTX"
+
+
+def test_ssl_context_without_pem(mock_ssl_context, mock_http_client):
+    url = "https://validurl.com"
+
+    read_sdmx(url, validate=True)
+
+    assert mock_ssl_context["verify"] is None
+    assert mock_http_client["kwargs"]["verify"] == "CTX"
 
 
 def test_url_invalid_sdmx_error(respx_mock, sdmx_error_str):

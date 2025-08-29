@@ -24,6 +24,7 @@ from pysdmx.api.qb.schema import SchemaFormat, SchemaQuery
 from pysdmx.api.qb.structure import StructureFormat, StructureQuery
 from pysdmx.api.qb.util import ApiVersion
 from pysdmx.io.format import GDS_FORMAT
+from pysdmx.util._net_utils import map_httpx_errors
 
 
 class _CoreRestService:
@@ -65,38 +66,6 @@ class _CoreRestService:
             "Accept-Encoding": "gzip, deflate",
         }
         self._timeout = timeout
-
-    def _map_error(
-        self, e: Union[httpx.RequestError, httpx.HTTPStatusError]
-    ) -> NoReturn:
-        q = e.request.url
-        if isinstance(e, httpx.HTTPStatusError):
-            s = e.response.status_code
-            t = e.response.text
-            if s == 404:
-                msg = (
-                    "The requested resource(s) could not be found in the "
-                    f"targeted service. The query was `{q}`"
-                )
-                raise errors.NotFound("Not found", msg) from e
-            elif s < 500:
-                msg = (
-                    f"The query returned a {s} error code. The query "
-                    f"was `{q}`. The error message was: `{t}`."
-                )
-                raise errors.Invalid(f"Client error {s}", msg) from e
-            else:
-                msg = (
-                    f"The service returned a {s} error code. The query "
-                    f"was `{q}`. The error message was: `{t}`."
-                )
-                raise errors.InternalError(f"Service error {s}", msg) from e
-        else:
-            msg = (
-                f"There was an issue connecting to the targeted service. "
-                f"The query was `{q}`. The error message was: `{e}`."
-            )
-            raise errors.Unavailable("Connection error", msg) from e
 
 
 class RestService(_CoreRestService):
@@ -206,7 +175,7 @@ class RestService(_CoreRestService):
                 r.raise_for_status()
                 return r.content
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
-                self._map_error(e)
+                map_httpx_errors(e)
 
 
 class AsyncRestService(_CoreRestService):
@@ -322,7 +291,7 @@ class AsyncRestService(_CoreRestService):
                 r.raise_for_status()
                 return r.content
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
-                self._map_error(e)
+                map_httpx_errors(e)
 
 
 class _CoreGdsRestService:
