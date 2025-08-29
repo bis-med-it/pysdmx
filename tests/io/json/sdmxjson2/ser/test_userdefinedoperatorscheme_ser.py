@@ -6,7 +6,12 @@ import pytest
 from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.vtl import JsonUserDefinedOperatorScheme
 from pysdmx.model import Agency, Annotation
-from pysdmx.model.vtl import UserDefinedOperator, UserDefinedOperatorScheme
+from pysdmx.model.__base import Reference
+from pysdmx.model.vtl import (
+    UserDefinedOperator,
+    UserDefinedOperatorScheme,
+    VtlMappingScheme,
+)
 
 
 @pytest.fixture
@@ -31,6 +36,46 @@ def udos():
         vtl_version="1.0",
         vtl_mapping_scheme="VTL_MAPPING",
         ruleset_schemes=["RULESET1", "RULESET2"],
+    )
+
+
+@pytest.fixture
+def udos_with_vtl_mapping_scheme_object():
+    udo = UserDefinedOperator(
+        "UDO1",
+        name="User Defined Operator",
+        operator_definition="operator definition",
+    )
+    vtl_mapping_scheme = VtlMappingScheme(
+        "VMS", name="VTL Mapping Scheme", agency="BIS", version="2.0"
+    )
+    return UserDefinedOperatorScheme(
+        "UDOS",
+        name="UDOS Scheme",
+        agency="BIS",
+        items=[udo],
+        vtl_version="1.0",
+        vtl_mapping_scheme=vtl_mapping_scheme,
+    )
+
+
+@pytest.fixture
+def udos_with_vtl_mapping_scheme_reference():
+    udo = UserDefinedOperator(
+        "UDO1",
+        name="User Defined Operator",
+        operator_definition="operator definition",
+    )
+    vtl_mapping_ref = Reference(
+        sdmx_type="VtlMappingScheme", id="VMS", agency="BIS", version="3.0"
+    )
+    return UserDefinedOperatorScheme(
+        "UDOS",
+        name="UDOS Scheme",
+        agency="BIS",
+        items=[udo],
+        vtl_version="1.0",
+        vtl_mapping_scheme=vtl_mapping_ref,
     )
 
 
@@ -79,6 +124,32 @@ def test_udos(udos: UserDefinedOperatorScheme):
     assert sjson.vtlVersion == udos.vtl_version
     assert sjson.vtlMappingScheme == udos.vtl_mapping_scheme
     assert sjson.rulesetSchemes == udos.ruleset_schemes
+
+
+def test_udos_with_vtl_mapping_scheme_object(
+    udos_with_vtl_mapping_scheme_object: UserDefinedOperatorScheme,
+):
+    sjson = JsonUserDefinedOperatorScheme.from_model(
+        udos_with_vtl_mapping_scheme_object
+    )
+
+    assert (
+        sjson.vtlMappingScheme
+        == "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=BIS:VMS(2.0)"
+    )
+
+
+def test_udos_with_vtl_mapping_scheme_reference(
+    udos_with_vtl_mapping_scheme_reference: UserDefinedOperatorScheme,
+):
+    sjson = JsonUserDefinedOperatorScheme.from_model(
+        udos_with_vtl_mapping_scheme_reference
+    )
+
+    assert (
+        sjson.vtlMappingScheme
+        == "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=BIS:VMS(3.0)"
+    )
 
 
 def test_udos_org(udos_org: UserDefinedOperatorScheme):

@@ -126,7 +126,7 @@ class JsonCustomTypeScheme(ItemSchemeType, frozen=True):
                 JsonAnnotation.from_model(a) for a in cts.annotations
             ],
             isPartial=cts.is_partial,
-            vtlVersion=cts.vtl_version,
+            vtlVersion=cts.vtl_version,  # type: ignore[arg-type]
             customTypes=[JsonCustomType.from_model(i) for i in cts.items],
         )
 
@@ -220,7 +220,7 @@ class JsonNamePersonalisationScheme(ItemSchemeType, frozen=True):
                 JsonAnnotation.from_model(a) for a in nps.annotations
             ],
             isPartial=nps.is_partial,
-            vtlVersion=nps.vtl_version,
+            vtlVersion=nps.vtl_version,  # type: ignore[arg-type]
             namePersonalisations=[
                 JsonNamePersonalisation.from_model(i) for i in nps.items
             ],
@@ -294,13 +294,32 @@ class JsonUserDefinedOperatorScheme(ItemSchemeType, frozen=True):
     def from_model(
         cls, udos: UserDefinedOperatorScheme
     ) -> "JsonUserDefinedOperatorScheme":
-        """Converts a pysdmx user defined operator scheme to an SDMX-JSON one."""
+        """Converts a pysdmx user defined operator scheme to SDMX-JSON."""
         if not udos.name:
             raise errors.Invalid(
                 "Invalid input",
                 "SDMX-JSON user defined operator schemes must have a name",
                 {"user_defined_operator_scheme": udos.id},
             )
+
+        # Convert vtl_mapping_scheme to URN string
+        vtl_mapping_ref = None
+        if udos.vtl_mapping_scheme:
+            if isinstance(udos.vtl_mapping_scheme, str):
+                vtl_mapping_ref = udos.vtl_mapping_scheme
+            else:
+                # Handle both VtlMappingScheme objects and References
+                agency = (
+                    udos.vtl_mapping_scheme.agency.id
+                    if hasattr(udos.vtl_mapping_scheme.agency, "id")
+                    else udos.vtl_mapping_scheme.agency
+                )
+                vtl_mapping_ref = (
+                    f"urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme="
+                    f"{agency}:{udos.vtl_mapping_scheme.id}"
+                    f"({udos.vtl_mapping_scheme.version})"
+                )
+
         return JsonUserDefinedOperatorScheme(
             agency=(
                 udos.agency.id
@@ -318,8 +337,8 @@ class JsonUserDefinedOperatorScheme(ItemSchemeType, frozen=True):
                 JsonAnnotation.from_model(a) for a in udos.annotations
             ],
             isPartial=udos.is_partial,
-            vtlVersion=udos.vtl_version,
-            vtlMappingScheme=udos.vtl_mapping_scheme,
+            vtlVersion=udos.vtl_version,  # type: ignore[arg-type]
+            vtlMappingScheme=vtl_mapping_ref,
             rulesetSchemes=udos.ruleset_schemes,
             userDefinedOperators=[
                 JsonUserDefinedOperator.from_model(i) for i in udos.items
@@ -422,7 +441,7 @@ class JsonRulesetScheme(ItemSchemeType, frozen=True):
                 JsonAnnotation.from_model(a) for a in rss.annotations
             ],
             isPartial=rss.is_partial,
-            vtlVersion=rss.vtl_version,
+            vtlVersion=rss.vtl_version,  # type: ignore[arg-type]
             vtlMappingScheme=rss.vtl_mapping_scheme,
             rulesets=[JsonRuleset.from_model(i) for i in rss.items],
         )
@@ -788,7 +807,7 @@ class JsonTransformationScheme(ItemSchemeType, frozen=True):
             description=ts.description,
             annotations=[JsonAnnotation.from_model(a) for a in ts.annotations],
             isPartial=ts.is_partial,
-            vtlVersion=ts.vtl_version,
+            vtlVersion=ts.vtl_version,  # type: ignore[arg-type]
             vtlMappingScheme=mapping_ref,
             namePersonalisationScheme=np_ref,
             customTypeScheme=ct_ref,
