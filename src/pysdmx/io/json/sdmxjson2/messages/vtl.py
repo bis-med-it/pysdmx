@@ -4,12 +4,13 @@ from typing import Literal, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
     JsonAnnotation,
     NameableType,
 )
-from pysdmx.model.__base import DataflowRef
+from pysdmx.model.__base import Agency, DataflowRef
 from pysdmx.model.vtl import (
     CustomType,
     CustomTypeScheme,
@@ -55,6 +56,27 @@ class JsonCustomType(NameableType, frozen=True):
             annotations=[a.to_model() for a in self.annotations],
         )
 
+    @classmethod
+    def from_model(self, ct: CustomType) -> "JsonCustomType":
+        """Converts a pysdmx custom type to an SDMX-JSON one."""
+        if not ct.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON custom types must have a name",
+                {"custom_type": ct.id},
+            )
+        return JsonCustomType(
+            id=ct.id,
+            name=ct.name,
+            description=ct.description,
+            annotations=[JsonAnnotation.from_model(a) for a in ct.annotations],
+            vtlScalarType=ct.vtl_scalar_type,
+            dataType=ct.data_type,
+            vtlLiteralFormat=ct.vtl_literal_format,
+            outputFormat=ct.output_format,
+            nullValue=ct.null_value,
+        )
+
 
 class JsonCustomTypeScheme(ItemSchemeType, frozen=True):
     """SDMX-JSON payload for custom type schemes."""
@@ -78,6 +100,34 @@ class JsonCustomTypeScheme(ItemSchemeType, frozen=True):
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
             annotations=[a.to_model() for a in self.annotations],
+        )
+
+    @classmethod
+    def from_model(self, cts: CustomTypeScheme) -> "JsonCustomTypeScheme":
+        """Converts a pysdmx custom type scheme to an SDMX-JSON one."""
+        if not cts.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON custom type schemes must have a name",
+                {"custom_type_scheme": cts.id},
+            )
+        return JsonCustomTypeScheme(
+            agency=(
+                cts.agency.id if isinstance(cts.agency, Agency) else cts.agency
+            ),
+            id=cts.id,
+            name=cts.name,
+            version=cts.version,
+            isExternalReference=cts.is_external_reference,
+            validFrom=cts.valid_from,
+            validTo=cts.valid_to,
+            description=cts.description,
+            annotations=[
+                JsonAnnotation.from_model(a) for a in cts.annotations
+            ],
+            isPartial=cts.is_partial,
+            vtlVersion=cts.vtl_version,
+            customTypes=[JsonCustomType.from_model(i) for i in cts.items],
         )
 
 
