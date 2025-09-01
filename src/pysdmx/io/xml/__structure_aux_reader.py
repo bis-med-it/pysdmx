@@ -133,6 +133,7 @@ from pysdmx.io.xml.__tokens import (
     VALID_TO_LOW,
     VALUE_ITEM,
     VALUE_LIST,
+    VALUE_LIST_LOW,
     VALUE_LISTS,
     VERSION,
     VTL_CL_MAPP,
@@ -294,6 +295,7 @@ class StructureParser(Struct):
 
     agencies: Dict[str, AgencyScheme] = {}
     codelists: Dict[str, Codelist] = {}
+    valuelists: Dict[str, Codelist] = {}
     concepts: Dict[str, ConceptScheme] = {}
     datastructures: Dict[str, DataStructureDefinition] = {}
     dataflows: Dict[str, Dataflow] = {}
@@ -469,20 +471,28 @@ class StructureParser(Struct):
         if TEXT_FORMAT in json_rep:
             self.__format_facets(json_rep[TEXT_FORMAT], json_obj)
 
-        if ENUM in json_rep and len(self.codelists) > 0:
+        if ENUM in json_rep and (
+            len(self.codelists) > 0 or len(self.valuelists) > 0
+        ):
             enum = json_rep[ENUM]
             if isinstance(enum, str):
                 ref = parse_urn(enum)
             else:
                 ref = enum.get(REF, enum)
-
             if isinstance(ref, dict) and "URN" in ref:
                 codelist = find_by_urn(
                     list(self.codelists.values()), ref["URN"]
                 )
 
             elif isinstance(ref, Reference):
-                codelist = find_by_urn(list(self.codelists.values()), str(ref))
+                codelist = find_by_urn(
+                    list(
+                        self.codelists.values()
+                        if ref.sdmx_type == CL
+                        else self.valuelists.values()
+                    ),
+                    str(ref),
+                )
             else:
                 short_urn = str(
                     Reference(
@@ -997,7 +1007,7 @@ class StructureParser(Struct):
                 del element["xmlns"]
             # Dynamic creation with specific class
             if scheme == VALUE_LIST:
-                element["sdmx_type"] = "valuelist"
+                element["sdmx_type"] = VALUE_LIST_LOW
             element = self.__format_is_final_30(element)
             result: ItemScheme = STRUCTURES_MAPPING[scheme](**element)
             elements[result.short_urn] = result
@@ -1118,6 +1128,7 @@ class StructureParser(Struct):
                 lambda data: self.__format_scheme(
                     data, VALUE_LIST, VALUE_ITEM
                 ),
+                "valuelists",
             ),
             CON_SCHEMES: process_structure(
                 CON_SCHEMES,
