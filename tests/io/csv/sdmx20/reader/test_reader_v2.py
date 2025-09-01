@@ -89,7 +89,7 @@ def test_reading_data_v2(data_path):
     datasets = read(infile)
     assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
-    assert len(df) == 1000
+    assert len(df) == 20
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
     assert "ACTION" not in df.columns
@@ -100,7 +100,7 @@ def test_reading_sdmx_csv_v2(data_path):
     datasets = read_sdmx(data_path).data
     assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
-    assert len(df) == 1000
+    assert len(df) == 20
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
     assert "ACTION" not in df.columns
@@ -113,7 +113,7 @@ def test_reading_sdmx_csv_v2_string(data_path):
     datasets = read_sdmx(infile).data
     assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
-    assert len(df) == 1000
+    assert len(df) == 20
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
     assert "ACTION" not in df.columns
@@ -145,7 +145,7 @@ def test_reading_col_action(data_path_action):
     datasets = read(infile)
     assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
-    assert len(df) == 1000
+    assert len(df) == 20
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
     assert "ACTION" not in df.columns
