@@ -32,7 +32,7 @@ def __generate_dataset_from_sdmx_csv(  # noqa: C901
                 if action_value not in ACTION_SDMX_CSV_MAPPER_READING:
                     raise Invalid(
                         "Invalid value on ACTION column",
-                        "Invalid SDMX-CSV 2.0 file. "
+                        "Invalid SDMX-CSV file. "
                         "Check the docs for the proper values "
                         "on ACTION column.",
                     )
@@ -41,7 +41,7 @@ def __generate_dataset_from_sdmx_csv(  # noqa: C901
             else:
                 raise Invalid(
                     "Invalid value on ACTION column",
-                    "Invalid SDMX-CSV 2.0 file. "
+                    "Invalid SDMX-CSV file. "
                     "Cannot have more than one value on ACTION column, "
                     "or 2 if D is present",
                 )
@@ -70,7 +70,7 @@ def __generate_dataset_from_sdmx_csv(  # noqa: C901
         else:
             raise Invalid(
                 "Invalid value on STRUCTURE column",
-                "Invalid SDMX-CSV 2.0 file. "
+                "Invalid SDMX-CSV file. "
                 "Check the docs for the proper values on STRUCTURE column.",
             )
     else:

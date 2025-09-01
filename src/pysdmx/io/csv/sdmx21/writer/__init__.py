@@ -33,8 +33,7 @@ def write(
             If None, the time period is not modified.
             If "original", the time period is written as it
             is in the dataset.
-            If "normalized", the time period is written in
-            a normalized format (YYYY-MM-DD).
+            "normalized" is not implemented yet.
         keys: to write or not the keys columns
             If None, no keys are written.
             If "obs", the keys are write as a single
