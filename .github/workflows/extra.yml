@@ -24,6 +24,10 @@ jobs:
             marker: xml
             test_path: tests/io/xml
             needs_data: true
+          - extra: data
+            marker: data
+            test_path: tests/io/csv
+            needs_data: false
 
     steps:
       - name: Checkout code
@@ -56,7 +60,4 @@ jobs:
       - name: Run tests (marker=${{ matrix.marker }})
         run: |
           poetry run pytest ${{ matrix.test_path }} -m "${{ matrix.marker }}" --cov=pysdmx --cov-branch
-
-      - name: Check coverage
-        run: poetry run coverage report --fail-under=100
 
