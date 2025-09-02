@@ -1,5 +1,4 @@
 name: Extra
-
 on:
   push:
     branches: [ "develop", "main" ]
@@ -13,7 +12,6 @@ jobs:
   build:
     name: ${{ matrix.os }} • py${{ matrix.python-version }} • extra:${{ matrix.extra }}
     runs-on: ${{ matrix.os }}
-
     strategy:
       fail-fast: false
       matrix:
@@ -23,49 +21,29 @@ jobs:
           - extra: xml
             marker: xml
             test_path: tests/io/xml
-            needs_data: true
+            extras_to_install: 'xml data'
           - extra: data
             marker: data
             test_path: tests/io/csv
-            needs_data: false
+            extras_to_install: 'data'
           - extra: dc
             marker: dc
             test_path: tests/api/dc
-            needs_data: false
+            extras_to_install: 'dc'
           - extra: vtl
             marker: vtl
             test_path: tests/toolkit
-            needs_data: false
+            extras_to_install: 'vtl xml'
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: ${{ matrix.python-version }} }
       - name: Install Poetry
         run: pipx install poetry
+      - name: Install deps (${{ matrix.extras_to_install }})
+        run: poetry install --no-interaction ${{ join(fromJson('["--extras"] + matrix.extras_to_install.split(" ")'), ' --extras ') }}
+      - name: Run tests
+        run: poetry run pytest ${{ matrix.test_path }} -m "${{ matrix.marker }}" --cov=pysdmx --cov-branch
 
-      - name: Cache Poetry downloads
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pypoetry
-          key: poetry-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-
-      - name: Install deps for XML (xml + data)
-        if: matrix.extra == 'xml'
-        run: |
-          poetry install --no-interaction --extras "xml" --extras "data"
-
-      - name: Install deps for other extras
-        if: matrix.extra != 'xml'
-        run: |
-          poetry install --no-interaction --extras "${{ matrix.extra }}"
-
-      - name: Run tests (marker=${{ matrix.marker }})
-        run: |
-          poetry run pytest ${{ matrix.test_path }} -m "${{ matrix.marker }}" --cov=pysdmx --cov-branch
 
