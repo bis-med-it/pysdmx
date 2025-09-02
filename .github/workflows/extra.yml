@@ -30,7 +30,11 @@ jobs:
             needs_data: false
           - extra: dc
             marker: dc
-            test_path: tests/dc
+            test_path: tests/api/dc
+            needs_data: false
+          - extra: vtl
+            marker: vtl
+            test_path: tests/toolkit
             needs_data: false
 
     steps:
