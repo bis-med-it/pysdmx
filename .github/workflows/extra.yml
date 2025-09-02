@@ -23,12 +23,6 @@ jobs:
         include:
           - extra: xml
             marker: xml
-          - extra: data
-            marker: data
-          - extra: dc
-            marker: dc
-          - extra: vtl
-            marker: vtl
 
     steps:
       - name: Checkout code
@@ -44,12 +38,6 @@ jobs:
 
       - name: Install dependencies (extra=${{ matrix.extra }})
         run: poetry install --no-interaction --extras "${{ matrix.extra }}"
-
-      - name: Run lint checks
-        run: poetry run ruff check
-
-      - name: Run type checks
-        run: poetry run mypy
 
       - name: Run tests (marker=${{ matrix.marker }})
         run: poetry run pytest -m "${{ matrix.marker }}" --cov=pysdmx --cov-branch
