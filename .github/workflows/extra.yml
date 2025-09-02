@@ -28,6 +28,10 @@ jobs:
             marker: data
             test_path: tests/io/csv
             needs_data: false
+          - extra: dc
+            marker: dc
+            test_path: tests/dc
+            needs_data: false
 
     steps:
       - name: Checkout code
