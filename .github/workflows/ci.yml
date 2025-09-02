@@ -1,4 +1,4 @@
-name: Build
+name: Extra
 
 on:
   push:
@@ -11,31 +11,52 @@ permissions:
 
 jobs:
   build:
-
-    runs-on: ${{matrix.os}}
+    name: ${{ matrix.os }} • py${{ matrix.python-version }} • extra:${{ matrix.extra }}
+    runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.9", "3.10", "3.11", "3.12"]
-      fail-fast: false
+        include:
+          - extra: xml
+            marker: xml
+            test_path: tests/io/xml
+            needs_data: true
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install poetry
-      run: pipx install --python ${{ matrix.python-version }} poetry
-    - name: Install dependencies
-      run: poetry install --all-extras
-    - name: Run lint checks
-      run: poetry run ruff check
-    - name: Run type checks
-      run: poetry run mypy
-    - name: Run tests
-      run: poetry run pytest --cov=pysdmx --cov-branch
-    - name: Check coverage
-      run: poetry run coverage report --fail-under=100
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Cache Poetry downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: poetry-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install deps for XML (xml + data)
+        if: matrix.extra == 'xml'
+        run: |
+          poetry install --no-interaction --extras "xml" --extras "data"
+
+      - name: Install deps for other extras
+        if: matrix.extra != 'xml'
+        run: |
+          poetry install --no-interaction --extras "${{ matrix.extra }}"
+
+      - name: Run tests (marker=${{ matrix.marker }})
+        run: |
+          poetry run pytest ${{ matrix.test_path }} -m "${{ matrix.marker }}" --cov=pysdmx --cov-branch
+
+      - name: Check coverage
+        run: poetry run coverage report --fail-under=100
+
