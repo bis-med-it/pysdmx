@@ -1,4 +1,5 @@
 name: Extra
+
 on:
   push:
     branches: [ "develop", "main" ]
@@ -21,29 +22,40 @@ jobs:
           - extra: xml
             marker: xml
             test_path: tests/io/xml
-            extras_to_install: 'xml data'
+            extras_to_install: "xml data"
           - extra: data
             marker: data
             test_path: tests/io/csv
-            extras_to_install: 'data'
+            extras_to_install: "data"
           - extra: dc
             marker: dc
             test_path: tests/api/dc
-            extras_to_install: 'dc'
+            extras_to_install: "dc"
           - extra: vtl
             marker: vtl
             test_path: tests/toolkit
-            extras_to_install: 'vtl xml'
+            extras_to_install: "vtl xml"
 
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
-        with: { python-version: ${{ matrix.python-version }} }
+        with:
+          python-version: ${{ matrix.python-version }}
+
       - name: Install Poetry
         run: pipx install poetry
+
       - name: Install deps (${{ matrix.extras_to_install }})
-        run: poetry install --no-interaction ${{ join(fromJson('["--extras"] + matrix.extras_to_install.split(" ")'), ' --extras ') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for e in ${{ matrix.extras_to_install }}; do
+            poetry install --no-interaction --extras "$e"
+          done
+
       - name: Run tests
         run: poetry run pytest ${{ matrix.test_path }} -m "${{ matrix.marker }}" --cov=pysdmx --cov-branch
+
 
 
