@@ -12,12 +12,21 @@ PATH_RULES = {
     "/tests/model/": ("model", True),
 }
 
+EXCLUDE_FROM_AUTOMARK = {
+    "tests/io/test_input_processor.py::test_process_string_to_read_invalid_xml",
+}
+
 
 def pytest_collection_modifyitems(config, items):
     root = Path(config.rootdir).resolve()
     for item in items:
         rel = Path(item.fspath).resolve().relative_to(root).as_posix()
         rel_norm = "/" + rel
+
+        nodeid = item.nodeid.replace("\\", "/")
+        if nodeid in EXCLUDE_FROM_AUTOMARK:
+            continue
+
         for subpath, (markname, automark) in PATH_RULES.items():
             if subpath.endswith("/"):
                 if rel_norm.startswith(subpath.rstrip("/")) and automark:
