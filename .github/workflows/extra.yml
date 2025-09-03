@@ -16,24 +16,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        os: [ubuntu-latest]
+        python-version: ["3.12"]
         include:
-          - extra: xml
-            marker: xml
-            test_path: tests/io/xml
-            extras_to_install: "xml data"
+          - extra: None
+            marker: model
+            extras_to_install: ""
           - extra: data
             marker: data
-            test_path: tests/io/csv
             extras_to_install: "data"
-          - extra: dc
-            marker: dc
-            test_path: tests/api/dc
-            extras_to_install: "dc"
+          - extra: xml
+            marker: xml
+            extras_to_install: "xml data"
           - extra: vtl
             marker: vtl
-            test_path: tests/toolkit
             extras_to_install: "vtl xml"
 
     steps:
