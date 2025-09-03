@@ -49,7 +49,11 @@ def pytest_ignore_collect(collection_path: Path, config):
 
     for is_dir, ap in allowed:
         if is_dir:
-            if cand == ap or cand.is_relative_to(ap) or ap.is_relative_to(cand):
+            if (
+                cand == ap
+                or cand.is_relative_to(ap)
+                or ap.is_relative_to(cand)
+            ):
                 return False
         else:
             if cand == ap or ap.is_relative_to(cand):

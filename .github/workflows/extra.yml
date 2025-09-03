@@ -18,8 +18,9 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: ["3.12"]
+        extra: [none, data, xml, vtl]
         include:
-          - extra: None
+          - extra: none
             marker: model
             extras_to_install: ""
           - extra: data
@@ -46,12 +47,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for e in ${{ matrix.extras_to_install }}; do
-            poetry install --no-interaction --extras "$e"
-          done
+          if [ -n "${{ matrix.extras_to_install }}" ]; then
+            for e in ${{ matrix.extras_to_install }}; do
+              poetry install --no-interaction --extras "$e"
+            done
+          else
+            poetry install --no-interaction
+          fi
 
-      - name: Run tests
-        run: poetry run pytest ${{ matrix.test_path }} -m "${{ matrix.marker }}" --cov=pysdmx --cov-branch
-
+      - name: Run tests (${{ matrix.marker }})
+        run: poetry run pytest -m "${{ matrix.marker }}" --cov=pysdmx --cov-branch
 
 
