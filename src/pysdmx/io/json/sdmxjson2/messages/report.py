@@ -7,6 +7,7 @@ from msgspec import Struct
 from pysdmx.io.json.sdmxjson2.messages.core import (
     IdentifiableType,
     ItemSchemeType,
+    JsonAnnotation,
     JsonHeader,
     JsonTextFormat,
     get_facets,
@@ -37,6 +38,21 @@ class JsonMetadataAttribute(IdentifiableType, frozen=True, omit_defaults=True):
             attributes=attrs,
             annotations=[a.to_model() for a in self.annotations],
             format=get_facets(self.format) if self.format else None,
+        )
+
+    @classmethod
+    def from_model(self, attr: MetadataAttribute) -> "JsonMetadataAttribute":
+        """Converts a pysdmx metadata attribute to an SDMX-JSON one."""
+        return JsonMetadataAttribute(
+            id=attr.id,
+            annotations=[
+                JsonAnnotation.from_model(a) for a in attr.annotations
+            ],
+            value=attr.value,
+            attributes=[
+                JsonMetadataAttribute.from_model(a) for a in attr.attributes
+            ],
+            format=JsonTextFormat.from_model(None, attr.format),
         )
 
 
