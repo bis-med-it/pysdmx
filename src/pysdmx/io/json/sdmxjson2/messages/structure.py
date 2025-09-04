@@ -128,7 +128,7 @@ class JsonStructures(Struct, frozen=True):
         return structures
 
     @classmethod
-    def from_model(self, msg: StructureMessage) -> "JsonStructures":
+    def from_model(cls, msg: StructureMessage) -> "JsonStructures":
         """Create an SDMX-JSON structures from a list of artefacts."""
         if not msg.structures:
             raise errors.Invalid(
@@ -163,11 +163,16 @@ class JsonStructureMessage(Struct, frozen=True):
         return StructureMessage(header, structures)
 
     @classmethod
-    def from_model(self, message: StructureMessage) -> "JsonStructureMessage":
+    def from_model(cls, message: StructureMessage) -> "JsonStructureMessage":
         """Creates an SDMX-JSON payload from a pysdmx StructureMessage."""
         if not message.header:
             raise errors.Invalid(
                 "Invalid input", "SDMX-JSON messages must have a header."
+            )
+        if not message.structures:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON structure messages must have structures.",
             )
         header = JsonHeader.from_model(message.header)
         structs = JsonStructures.from_model(message)
