@@ -4,6 +4,7 @@ from typing import Any, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.core import (
     IdentifiableType,
     ItemSchemeType,
@@ -12,6 +13,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonTextFormat,
     get_facets,
 )
+from pysdmx.model.organisation import Agency
 from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import MetadataMessage
 from pysdmx.model.metadata import (
@@ -92,6 +94,45 @@ class JsonMetadataReport(ItemSchemeType, frozen=True):
             reportingBegin=self.reportingBegin,
             reportingEnd=self.reportingEnd,
             action=ActionType(self.action) if self.action else None,
+        )
+
+    @classmethod
+    def from_model(cls, report: MetadataReport) -> "JsonMetadataReport":
+        """Converts a pysdmx metadata report to an SDMX-JSON one."""
+        if not report.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON metadata reports must have a name",
+                {"metadata_report": report.id},
+            )
+
+        return JsonMetadataReport(
+            agency=(
+                report.agency.id
+                if isinstance(report.agency, Agency)
+                else report.agency
+            ),
+            id=report.id,
+            name=report.name,
+            version=report.version,
+            isExternalReference=report.is_external_reference,
+            validFrom=report.valid_from,
+            validTo=report.valid_to,
+            description=report.description,
+            annotations=[
+                JsonAnnotation.from_model(a) for a in report.annotations
+            ],
+            metadataflow=report.metadataflow,
+            targets=report.targets,
+            attributes=[
+                JsonMetadataAttribute.from_model(a) for a in report.attributes
+            ],
+            metadataProvisionAgreement=report.metadataProvisionAgreement,
+            publicationPeriod=report.publicationPeriod,
+            publicationYear=report.publicationYear,
+            reportingBegin=report.reportingBegin,
+            reportingEnd=report.reportingEnd,
+            action=report.action.value if report.action else None,
         )
 
 
