@@ -133,10 +133,7 @@ class JsonStructures(Struct, frozen=True):
         if not msg.structures:
             raise errors.Invalid(
                 "Invalid input",
-                (
-                    "SDMX-JSON structure messages must contain at least "
-                    "one maintainable artefact."
-                ),
+                "SDMX-JSON structure messages must have structures.",
             )
         codelists = [JsonCodelist.from_model(c) for c in msg.get_codelists()]
         valuelists = [
@@ -168,11 +165,6 @@ class JsonStructureMessage(Struct, frozen=True):
         if not message.header:
             raise errors.Invalid(
                 "Invalid input", "SDMX-JSON messages must have a header."
-            )
-        if not message.structures:
-            raise errors.Invalid(
-                "Invalid input",
-                "SDMX-JSON structure messages must have structures.",
             )
         header = JsonHeader.from_model(message.header)
         structs = JsonStructures.from_model(message)
