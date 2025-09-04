@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytest
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.report import (
     JsonMetadataMessage,
     JsonMetadataReport,
@@ -53,3 +54,21 @@ def test_metadata_report(msg: MetadataMessage):
     # Check content
     assert len(sjson.data.metadataSets) == 1
     assert isinstance(sjson.data.metadataSets[0], JsonMetadataReport)
+
+
+def test_no_header(report):
+    msg = MetadataMessage(None, [report])
+
+    with pytest.raises(
+        errors.Invalid, match="metadata messages must have a header"
+    ):
+        JsonMetadataMessage.from_model(msg)
+
+
+def test_no_report(header):
+    msg = MetadataMessage(header, [])
+
+    with pytest.raises(
+        errors.Invalid, match="metadata messages must have metadata reports"
+    ):
+        JsonMetadataMessage.from_model(msg)
