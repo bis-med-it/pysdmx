@@ -157,3 +157,10 @@ class JsonMetadataMessage(Struct, frozen=True):
         header = self.meta.to_model()
         reports = self.data.to_model()
         return MetadataMessage(header, reports)
+
+    @classmethod
+    def from_model(self, msg: MetadataMessage) -> "JsonMetadataMessage":
+        """Converts a pysdmx metadata message to an SDMX-JSON one."""
+        header = JsonHeader.from_model(msg.header)
+        reports = [JsonMetadataReport.from_model(r) for r in msg.get_reports()]
+        return JsonMetadataMessage(header, JsonMetadataSets(reports))
