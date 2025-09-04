@@ -47,18 +47,18 @@ class JsonMetadataAttribute(IdentifiableType, frozen=True, omit_defaults=True):
         """Converts a pysdmx metadata attribute to an SDMX-JSON one."""
         return JsonMetadataAttribute(
             id=attr.id,
-            annotations=[
-                JsonAnnotation.from_model(a) for a in attr.annotations
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in attr.annotations]
+            ),
             value=attr.value,
-            attributes=[
-                JsonMetadataAttribute.from_model(a) for a in attr.attributes
-            ],
+            attributes=tuple(
+                [JsonMetadataAttribute.from_model(a) for a in attr.attributes]
+            ),
             format=JsonTextFormat.from_model(None, attr.format),
         )
 
 
-class JsonMetadataReport(ItemSchemeType, frozen=True):
+class JsonMetadataReport(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a metadata report."""
 
     metadataflow: str = ""
@@ -119,14 +119,17 @@ class JsonMetadataReport(ItemSchemeType, frozen=True):
             validFrom=report.valid_from,
             validTo=report.valid_to,
             description=report.description,
-            annotations=[
-                JsonAnnotation.from_model(a) for a in report.annotations
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in report.annotations]
+            ),
             metadataflow=report.metadataflow,
             targets=report.targets,
-            attributes=[
-                JsonMetadataAttribute.from_model(a) for a in report.attributes
-            ],
+            attributes=tuple(
+                [
+                    JsonMetadataAttribute.from_model(a)
+                    for a in report.attributes
+                ]
+            ),
             metadataProvisionAgreement=report.metadataProvisionAgreement,
             publicationPeriod=report.publicationPeriod,
             publicationYear=report.publicationYear,
@@ -136,7 +139,7 @@ class JsonMetadataReport(ItemSchemeType, frozen=True):
         )
 
 
-class JsonMetadataSets(Struct, frozen=True):
+class JsonMetadataSets(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of metadata sets."""
 
     metadataSets: Sequence[JsonMetadataReport]
@@ -146,7 +149,7 @@ class JsonMetadataSets(Struct, frozen=True):
         return [r.to_model() for r in self.metadataSets]
 
 
-class JsonMetadataMessage(Struct, frozen=True):
+class JsonMetadataMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /metadata queries."""
 
     meta: JsonHeader

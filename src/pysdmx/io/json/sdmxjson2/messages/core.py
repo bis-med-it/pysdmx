@@ -276,7 +276,7 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
                 )
 
 
-class JsonHeader(msgspec.Struct, frozen=True):
+class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for message header."""
 
     id: str
