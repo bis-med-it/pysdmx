@@ -135,9 +135,9 @@ def test_rss_with_vtl_mapping_scheme_object(
 ):
     sjson = JsonRulesetScheme.from_model(rss_with_vtl_mapping_scheme_object)
 
-    assert (
-        sjson.vtlMappingScheme
-        == "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=BIS:VMS(2.0)"
+    assert sjson.vtlMappingScheme == (
+        "urn:sdmx:org.sdmx.infomodel.transformation."
+        "VtlMappingScheme=BIS:VMS(2.0)"
     )
 
 
@@ -146,9 +146,9 @@ def test_rss_with_vtl_mapping_scheme_reference(
 ):
     sjson = JsonRulesetScheme.from_model(rss_with_vtl_mapping_scheme_reference)
 
-    assert (
-        sjson.vtlMappingScheme
-        == "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=BIS:VMS(3.0)"
+    assert sjson.vtlMappingScheme == (
+        "urn:sdmx:org.sdmx.infomodel.transformation."
+        "VtlMappingScheme=BIS:VMS(3.0)"
     )
 
 

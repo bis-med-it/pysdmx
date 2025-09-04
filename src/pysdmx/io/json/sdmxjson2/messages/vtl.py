@@ -198,7 +198,7 @@ class JsonNamePersonalisationScheme(ItemSchemeType, frozen=True):
     def from_model(
         cls, nps: NamePersonalisationScheme
     ) -> "JsonNamePersonalisationScheme":
-        """Converts a pysdmx name personalisation scheme to an SDMX-JSON one."""
+        """Converts a pysdmx name personalisation scheme to SDMX-JSON."""
         if not nps.name:
             raise errors.Invalid(
                 "Invalid input",

@@ -136,9 +136,9 @@ def test_ts(ts: TransformationScheme):
         sjson.customTypeScheme
         == "urn:sdmx:org.sdmx.infomodel.vtl.CustomTypeScheme=BIS:CTS(1.0)"
     )
-    assert (
-        sjson.namePersonalisationScheme
-        == "urn:sdmx:org.sdmx.infomodel.vtl.NamePersonalisationScheme=BIS:NPS(1.0)"
+    assert sjson.namePersonalisationScheme == (
+        "urn:sdmx:org.sdmx.infomodel.vtl."
+        "NamePersonalisationScheme=BIS:NPS(1.0)"
     )
     assert len(sjson.rulesetSchemes) == 1
     assert (
@@ -146,9 +146,9 @@ def test_ts(ts: TransformationScheme):
         == "urn:sdmx:org.sdmx.infomodel.vtl.RulesetScheme=BIS:RSS(1.0)"
     )
     assert len(sjson.userDefinedOperatorSchemes) == 1
-    assert (
-        sjson.userDefinedOperatorSchemes[0]
-        == "urn:sdmx:org.sdmx.infomodel.vtl.UserDefinedOperatorScheme=BIS:UDOS(1.0)"
+    assert sjson.userDefinedOperatorSchemes[0] == (
+        "urn:sdmx:org.sdmx.infomodel.vtl."
+        "UserDefinedOperatorScheme=BIS:UDOS(1.0)"
     )
 
 

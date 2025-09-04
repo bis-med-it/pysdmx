@@ -188,9 +188,9 @@ def test_udos_with_vtl_mapping_scheme_object(
         udos_with_vtl_mapping_scheme_object
     )
 
-    assert (
-        sjson.vtlMappingScheme
-        == "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=BIS:VMS(2.0)"
+    assert sjson.vtlMappingScheme == (
+        "urn:sdmx:org.sdmx.infomodel.transformation."
+        "VtlMappingScheme=BIS:VMS(2.0)"
     )
 
 
@@ -201,9 +201,9 @@ def test_udos_with_vtl_mapping_scheme_reference(
         udos_with_vtl_mapping_scheme_reference
     )
 
-    assert (
-        sjson.vtlMappingScheme
-        == "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=BIS:VMS(3.0)"
+    assert sjson.vtlMappingScheme == (
+        "urn:sdmx:org.sdmx.infomodel.transformation."
+        "VtlMappingScheme=BIS:VMS(3.0)"
     )
 
 
@@ -226,13 +226,13 @@ def test_udos_with_ruleset_scheme_objects(
     )
 
     assert len(sjson.rulesetSchemes) == 2
-    assert (
-        sjson.rulesetSchemes[0]
-        == "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=BIS:RS1(1.0)"
+    assert sjson.rulesetSchemes[0] == (
+        "urn:sdmx:org.sdmx.infomodel.transformation."
+        "RulesetScheme=BIS:RS1(1.0)"
     )
-    assert (
-        sjson.rulesetSchemes[1]
-        == "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=ECB:RS2(2.0)"
+    assert sjson.rulesetSchemes[1] == (
+        "urn:sdmx:org.sdmx.infomodel.transformation."
+        "RulesetScheme=ECB:RS2(2.0)"
     )
 
 
@@ -244,11 +244,11 @@ def test_udos_with_ruleset_scheme_references(
     )
 
     assert len(sjson.rulesetSchemes) == 2
-    assert (
-        sjson.rulesetSchemes[0]
-        == "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=BIS:RS1(1.0)"
+    assert sjson.rulesetSchemes[0] == (
+        "urn:sdmx:org.sdmx.infomodel.transformation."
+        "RulesetScheme=BIS:RS1(1.0)"
     )
-    assert (
-        sjson.rulesetSchemes[1]
-        == "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=ECB:RS2(2.0)"
+    assert sjson.rulesetSchemes[1] == (
+        "urn:sdmx:org.sdmx.infomodel.transformation."
+        "RulesetScheme=ECB:RS2(2.0)"
     )
