@@ -1,11 +1,9 @@
 import pytest
 
-from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.report import (
     JsonMetadataAttribute,
-    JsonTextFormat,
 )
-from pysdmx.model import MetadataAttribute, Facets
+from pysdmx.model import Facets, MetadataAttribute
 
 
 @pytest.fixture
