@@ -124,7 +124,7 @@ from pysdmx.model.dataflow import (
     Component,
     Dataflow,
     DataStructureDefinition,
-    GroupDimension,
+    Group,
     Role,
 )
 from pysdmx.util import (
@@ -392,7 +392,7 @@ def __write_item(
 
 
 def __write_groups(
-    groups: list[GroupDimension], indent: str, references_30: bool = False
+    groups: list[Group], indent: str, references_30: bool = False
 ) -> str:
     out_file = ""
     for group in groups:
@@ -487,7 +487,7 @@ def __write_components(  # noqa: C901
 
 
 def __find_matching_group_id(
-    att_rel: str, groups: list[GroupDimension]
+    att_rel: str, groups: list[Group]
 ) -> Optional[str]:
     comps_to_relate = att_rel.split(",") if "," in att_rel else [att_rel]
     for group in groups:
@@ -519,7 +519,7 @@ def __write_attribute_relation(  # noqa: C901
     item: Component,
     indent: str,
     component_info: Dict[str, Any],
-    groups: list[GroupDimension],
+    groups: list[Group],
     references_30: bool = False,
 ) -> str:
     measure_relationship = ""
@@ -599,7 +599,7 @@ def __write_component(
     position: int,
     indent: str,
     component_info: Dict[str, Any],
-    groups: list[GroupDimension],
+    groups: list[Group],
     references_30: bool = False,
 ) -> str:
     """Writes the component to the XML file."""
