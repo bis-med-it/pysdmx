@@ -141,7 +141,7 @@ class JsonAttributeRelationship(Struct, frozen=True):
         """Converts a pysdmx attribute relationship to an SDMX-JSON one."""
         if rel == "D":
             return JsonAttributeRelationship(dataflow={})
-        if rel == "O":
+        elif rel == "O":
             return JsonAttributeRelationship(observation={})
         else:
             dims = rel.split(",")
