@@ -461,7 +461,7 @@ class JsonComponents(Struct, frozen=True):
         attributes = JsonAttributes.from_model(components.attributes)
         measures = JsonMeasures.from_model(components.measures)
         if grps is None:
-            groups = ()
+            groups = []
         else:
             groups = [JsonGroup(g.id, g.dimensions) for g in grps]
         return JsonComponents(dimensions, measures, attributes, groups)

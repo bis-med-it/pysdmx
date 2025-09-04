@@ -62,8 +62,10 @@ class FusionSchemaMessage(msgspec.Struct, frozen=True):
                 f"{h.agency}:{h.id}({h.version})"  # type: ignore[union-attr]
             )
         comps = Components(comp_dict.values())
-        grps = [
+        mapped_grps = [
             GroupDimension(g.id, dimensions=g.dimensionReferences)
             for g in grps
         ]
-        return Schema(context, agency, id_, comps, version, urns, groups=grps)
+        return Schema(
+            context, agency, id_, comps, version, urns, groups=mapped_grps
+        )

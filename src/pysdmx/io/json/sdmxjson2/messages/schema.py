@@ -31,17 +31,21 @@ class JsonSchemas(
     ) -> Tuple[Components, Optional[Sequence[GroupDimension]]]:
         """Returns the requested schema."""
         comps = self.dataStructures[0].dataStructureComponents
-        grps = self.dataStructures[0].dataStructureComponents.groups
-        comps = comps.to_model(  # type: ignore[union-attr]
+        grps = comps.groups if comps else None
+        comps = comps.to_model(  # type: ignore[union-attr,assignment]
             self.conceptSchemes,
             self.codelists,
             self.valuelists,
             self.contentConstraints,
         )
-        grps = [
-            GroupDimension(g.id, dimensions=g.groupDimensions) for g in grps
-        ]
-        return comps, grps
+        if grps:
+            mapped_grps = [
+                GroupDimension(g.id, dimensions=g.groupDimensions)
+                for g in grps
+            ]
+        else:
+            mapped_grps = None
+        return comps, mapped_grps  # type: ignore[return-value]
 
 
 class JsonSchemaMessage(
