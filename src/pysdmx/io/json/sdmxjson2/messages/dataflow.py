@@ -21,6 +21,7 @@ from pysdmx.model import (
     DataProvider,
     DataStructureDefinition,
 )
+from pysdmx.model.dataflow import GroupDimension
 from pysdmx.util import parse_urn
 
 
@@ -122,7 +123,12 @@ class JsonDataflows(Struct, frozen=True):
             return df.agency == agency and df.id == id_
 
     def to_model(
-        self, components: Components, agency: str, id_: str, version: str
+        self,
+        components: Components,
+        grps: Optional[Sequence[GroupDimension]],
+        agency: str,
+        id_: str,
+        version: str,
     ) -> DataflowInfo:
         """Returns the requested dataflow details."""
         prvs: List[DataProvider] = []
@@ -143,6 +149,7 @@ class JsonDataflows(Struct, frozen=True):
             version=df.version,
             providers=prvs,
             dsd_ref=df.structure,
+            groups=grps,
         )
 
     def to_generic_model(self) -> Sequence[Dataflow]:
@@ -164,10 +171,15 @@ class JsonDataflowMessage(Struct, frozen=True):
     data: JsonDataflows
 
     def to_model(
-        self, components: Components, agency: str, id_: str, version: str
+        self,
+        components: Components,
+        grps: Optional[Sequence[GroupDimension]],
+        agency: str,
+        id_: str,
+        version: str,
     ) -> DataflowInfo:
         """Returns the requested dataflow details."""
-        return self.data.to_model(components, agency, id_, version)
+        return self.data.to_model(components, grps, agency, id_, version)
 
 
 class JsonDataflowsMessage(Struct, frozen=True):
