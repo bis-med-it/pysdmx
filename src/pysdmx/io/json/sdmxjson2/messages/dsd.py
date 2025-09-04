@@ -30,6 +30,7 @@ from pysdmx.model import (
     ItemReference,
     Role,
 )
+from pysdmx.model.dataflow import GroupDimension
 from pysdmx.util import parse_item_urn
 
 
@@ -452,12 +453,18 @@ class JsonComponents(Struct, frozen=True):
         return Components(comps)
 
     @classmethod
-    def from_model(self, components: Components) -> "JsonComponents":
+    def from_model(
+        self, components: Components, grps: Optional[Sequence[GroupDimension]]
+    ) -> "JsonComponents":
         """Converts a pysdmx components list to an SDMX-JSON one."""
         dimensions = JsonDimensions.from_model(components.dimensions)
         attributes = JsonAttributes.from_model(components.attributes)
         measures = JsonMeasures.from_model(components.measures)
-        return JsonComponents(dimensions, measures, attributes)
+        if grps is None:
+            groups = ()
+        else:
+            groups = [JsonGroup(g.id, g.dimensions) for g in grps]
+        return JsonComponents(dimensions, measures, attributes, groups)
 
 
 class JsonDataStructure(MaintainableType, frozen=True):
@@ -518,7 +525,9 @@ class JsonDataStructure(MaintainableType, frozen=True):
             annotations=[
                 JsonAnnotation.from_model(a) for a in dsd.annotations
             ],
-            dataStructureComponents=JsonComponents.from_model(dsd.components),
+            dataStructureComponents=JsonComponents.from_model(
+                dsd.components, dsd.groups
+            ),
             evolvingStructure=dsd.evolving_structure,
         )
 

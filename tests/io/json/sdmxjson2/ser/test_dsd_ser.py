@@ -18,6 +18,7 @@ from pysdmx.model import (
     ItemReference,
     Role,
 )
+from pysdmx.model.dataflow import GroupDimension
 
 _BASE = "urn:sdmx:org.sdmx.infomodel."
 
@@ -115,6 +116,7 @@ def dsd():
         attachment_level="D",
     )
     comps = Components([c1, c2, c3, c4, c5, c6, c7, c8, c9])
+    grps = [GroupDimension("Sibling", dimensions=["CUR1", "CUR2"])]
     return DataStructureDefinition(
         "EXR",
         name="Exchange rates",
@@ -127,6 +129,7 @@ def dsd():
         annotations=[Annotation(type="test")],
         components=comps,
         evolving_structure=False,
+        groups=grps,
     )
 
 
@@ -438,6 +441,12 @@ def test_dsd(dsd: DataStructureDefinition):
     assert measure.usage == "optional"
     assert measure.localRepresentation.format.dataType == DataType.FLOAT.value
 
+    # Check the groups
+    assert len(sjson.dataStructureComponents.groups) == 1
+    grp = sjson.dataStructureComponents.groups[0]
+    assert grp.id == "Sibling"
+    assert grp.groupDimensions == ["CUR1", "CUR2"]
+
 
 def test_dsd_no_name(dsd_no_name):
     with pytest.raises(errors.Invalid, match="must have a name"):
@@ -454,6 +463,13 @@ def test_dsd_no_attrs(dsd_no_attrs: DataStructureDefinition):
 
     # Check the attributes
     assert sjson.dataStructureComponents.attributeList is None
+
+
+def test_dsd_no_grps(dsd_no_attrs: DataStructureDefinition):
+    sjson = JsonDataStructure.from_model(dsd_no_attrs)
+
+    # Check the attributes
+    assert len(sjson.dataStructureComponents.groups) == 0
 
 
 def test_dsd_no_measures(dsd_no_measures: DataStructureDefinition):
