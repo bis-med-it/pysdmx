@@ -332,7 +332,7 @@ class MetadataMessage(Struct, frozen=True):
         if self.reports:
             return self.reports
         else:
-            raise NotFound("No metadata reports werefound in the message.")
+            raise NotFound("No metadata reports were found in the message.")
 
 
 class Message(StructureMessage, frozen=True):
