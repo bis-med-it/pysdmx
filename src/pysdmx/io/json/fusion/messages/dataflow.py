@@ -15,7 +15,7 @@ from pysdmx.model import (
 from pysdmx.model import (
     Dataflow as DF,
 )
-from pysdmx.model.dataflow import GroupDimension
+from pysdmx.model.dataflow import Group
 
 
 class FusionDataflow(Struct, frozen=True, rename={"agency": "agencyId"}):
@@ -65,7 +65,7 @@ class FusionDataflowMessage(Struct, frozen=True):
     def to_model(
         self,
         components: Components,
-        grps: Optional[Sequence[GroupDimension]],
+        grps: Optional[Sequence[Group]],
         agency: str,
         id_: str,
         version: str,

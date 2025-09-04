@@ -30,7 +30,7 @@ from pysdmx.model import (
     ItemReference,
     Role,
 )
-from pysdmx.model.dataflow import GroupDimension
+from pysdmx.model.dataflow import Group
 from pysdmx.util import parse_item_urn
 
 
@@ -454,7 +454,7 @@ class JsonComponents(Struct, frozen=True):
 
     @classmethod
     def from_model(
-        self, components: Components, grps: Optional[Sequence[GroupDimension]]
+        self, components: Components, grps: Optional[Sequence[Group]]
     ) -> "JsonComponents":
         """Converts a pysdmx components list to an SDMX-JSON one."""
         dimensions = JsonDimensions.from_model(components.dimensions)

@@ -21,7 +21,7 @@ from pysdmx.model import (
     DataProvider,
     DataStructureDefinition,
 )
-from pysdmx.model.dataflow import GroupDimension
+from pysdmx.model.dataflow import Group
 from pysdmx.util import parse_urn
 
 
@@ -125,7 +125,7 @@ class JsonDataflows(Struct, frozen=True):
     def to_model(
         self,
         components: Components,
-        grps: Optional[Sequence[GroupDimension]],
+        grps: Optional[Sequence[Group]],
         agency: str,
         id_: str,
         version: str,
@@ -173,7 +173,7 @@ class JsonDataflowMessage(Struct, frozen=True):
     def to_model(
         self,
         components: Components,
-        grps: Optional[Sequence[GroupDimension]],
+        grps: Optional[Sequence[Group]],
         agency: str,
         id_: str,
         version: str,

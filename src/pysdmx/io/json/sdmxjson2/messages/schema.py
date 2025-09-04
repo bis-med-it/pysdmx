@@ -10,7 +10,7 @@ from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
 from pysdmx.io.json.sdmxjson2.messages.core import JsonHeader
 from pysdmx.io.json.sdmxjson2.messages.dsd import JsonDataStructure
 from pysdmx.model import Components, HierarchyAssociation, Schema
-from pysdmx.model.dataflow import GroupDimension
+from pysdmx.model.dataflow import Group
 from pysdmx.util import parse_item_urn
 
 
@@ -28,7 +28,7 @@ class JsonSchemas(
 
     def to_model(
         self,
-    ) -> Tuple[Components, Optional[Sequence[GroupDimension]]]:
+    ) -> Tuple[Components, Optional[Sequence[Group]]]:
         """Returns the requested schema."""
         comps = self.dataStructures[0].dataStructureComponents
         grps = comps.groups if comps else None
@@ -40,8 +40,7 @@ class JsonSchemas(
         )
         if grps:
             mapped_grps = [
-                GroupDimension(g.id, dimensions=g.groupDimensions)
-                for g in grps
+                Group(g.id, dimensions=g.groupDimensions) for g in grps
             ]
         else:
             mapped_grps = None

@@ -409,7 +409,7 @@ class DataflowInfo(
     end_period: Optional[str] = None
     last_updated: Optional[datetime] = None
     dsd_ref: Optional[str] = None
-    groups: Optional[Sequence[GroupDimension]] = None
+    groups: Optional[Sequence[Group]] = None
 
     def __str__(self) -> str:
         """Custom string representation without the class name."""

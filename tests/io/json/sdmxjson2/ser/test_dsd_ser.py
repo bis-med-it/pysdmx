@@ -18,7 +18,7 @@ from pysdmx.model import (
     ItemReference,
     Role,
 )
-from pysdmx.model.dataflow import GroupDimension
+from pysdmx.model.dataflow import Group
 
 _BASE = "urn:sdmx:org.sdmx.infomodel."
 
@@ -116,7 +116,7 @@ def dsd():
         attachment_level="D",
     )
     comps = Components([c1, c2, c3, c4, c5, c6, c7, c8, c9])
-    grps = [GroupDimension("Sibling", dimensions=["CUR1", "CUR2"])]
+    grps = [Group("Sibling", dimensions=["CUR1", "CUR2"])]
     return DataStructureDefinition(
         "EXR",
         name="Exchange rates",
