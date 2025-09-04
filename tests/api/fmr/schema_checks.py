@@ -62,6 +62,22 @@ def check_schema(
         assert comp.required is not None
         assert comp.role is not None
         assert comp.dtype is not None
+    assert vc.groups is not None
+    assert len(vc.groups) == 1
+    grp = vc.groups[0]
+    assert grp.id == "Sibling"
+    assert grp.dimensions == [
+        "L_MEASURE",
+        "L_REP_CTY",
+        "CBS_BANK_TYPE",
+        "CBS_BASIS",
+        "L_POSITION",
+        "L_INSTR",
+        "REM_MATURITY",
+        "CURR_TYPE_BOOK",
+        "L_CP_SECTOR",
+        "L_CP_COUNTRY",
+    ]
 
 
 def check_no_td(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
