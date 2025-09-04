@@ -161,6 +161,17 @@ class JsonMetadataMessage(Struct, frozen=True):
     @classmethod
     def from_model(self, msg: MetadataMessage) -> "JsonMetadataMessage":
         """Converts a pysdmx metadata message to an SDMX-JSON one."""
+        if not msg.header:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON metadata messages must have a header.",
+            )
+        if not msg.reports:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON metadata messages must have metadata reports.",
+            )
+
         header = JsonHeader.from_model(msg.header)
-        reports = [JsonMetadataReport.from_model(r) for r in msg.get_reports()]
+        reports = [JsonMetadataReport.from_model(r) for r in msg.reports]
         return JsonMetadataMessage(header, JsonMetadataSets(reports))
