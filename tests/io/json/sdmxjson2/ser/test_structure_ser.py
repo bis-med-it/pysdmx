@@ -60,10 +60,14 @@ def test_message_no_header(message_no_header: StructureMessage):
 
 
 def test_message_no_structures_1(message_no_structures_1: StructureMessage):
-    with pytest.raises(errors.Invalid, match="one maintainable artefact"):
+    with pytest.raises(
+        errors.Invalid, match="structure messages must have structures."
+    ):
         JsonStructureMessage.from_model(message_no_structures_1)
 
 
 def test_message_no_structures_2(message_no_structures_2: StructureMessage):
-    with pytest.raises(errors.Invalid, match="one maintainable artefact"):
+    with pytest.raises(
+        errors.Invalid, match="structure messages must have structures."
+    ):
         JsonStructureMessage.from_model(message_no_structures_2)
