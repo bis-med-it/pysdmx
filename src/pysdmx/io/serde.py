@@ -12,6 +12,15 @@ class Deserializer(Protocol):
         """Returns the domain objects."""
 
 
+@runtime_checkable
+class Serializer(Protocol):
+    """Creates an SDMX message from domain objects."""
+
+    @classmethod
+    def from_model(self) -> Any:
+        """Returns the SDMX message."""
+
+
 @dataclass
 class Deserializers:
     """Collection of deserializers for a format."""
