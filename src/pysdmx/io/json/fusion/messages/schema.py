@@ -10,6 +10,7 @@ from pysdmx.io.json.fusion.messages.constraint import FusionContentConstraint
 from pysdmx.io.json.fusion.messages.core import FusionLink
 from pysdmx.io.json.fusion.messages.dsd import FusionDataStructure
 from pysdmx.model import Components, HierarchyAssociation, Schema
+from pysdmx.model.dataflow import GroupDimension
 from pysdmx.util import parse_item_urn
 
 
@@ -44,6 +45,7 @@ class FusionSchemaMessage(msgspec.Struct, frozen=True):
         components = self.DataStructure[0].get_components(
             self.ConceptScheme, cls, self.DataConstraint
         )
+        grps = self.DataStructure[0].groups
         comp_dict = {c.id: c for c in components}
         urns = [a.urn for a in self.meta.links]
         for ha in hierarchies:
@@ -60,4 +62,8 @@ class FusionSchemaMessage(msgspec.Struct, frozen=True):
                 f"{h.agency}:{h.id}({h.version})"  # type: ignore[union-attr]
             )
         comps = Components(comp_dict.values())
-        return Schema(context, agency, id_, comps, version, urns)
+        grps = [
+            GroupDimension(g.id, dimensions=g.dimensionReferences)
+            for g in grps
+        ]
+        return Schema(context, agency, id_, comps, version, urns, groups=grps)

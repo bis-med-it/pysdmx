@@ -15,6 +15,7 @@ from pysdmx.model import (
 from pysdmx.model import (
     Dataflow as DF,
 )
+from pysdmx.model.dataflow import GroupDimension
 
 
 class FusionDataflow(Struct, frozen=True, rename={"agency": "agencyId"}):
@@ -62,7 +63,12 @@ class FusionDataflowMessage(Struct, frozen=True):
             return df.agency == agency and df.id == id_
 
     def to_model(
-        self, components: Components, agency: str, id_: str, version: str
+        self,
+        components: Components,
+        grps: Optional[Sequence[GroupDimension]],
+        agency: str,
+        id_: str,
+        version: str,
     ) -> DataflowInfo:
         """Returns the requested dataflow details."""
         prvs: List[DataProvider] = []
@@ -83,6 +89,7 @@ class FusionDataflowMessage(Struct, frozen=True):
             version=df.version,
             providers=prvs,
             dsd_ref=df.dataStructureRef,
+            groups=grps,
         )
 
 
