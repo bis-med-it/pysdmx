@@ -393,6 +393,7 @@ class DataflowInfo(
         end_period: The oldest period for which data are available.
         last_updated: When the dataflow was last updated.
         dsd_ref: The URN of the data structure used by the dataflow.
+        groups: The sequence of groups defined in the data structure.
     """
 
     id: str
@@ -408,6 +409,7 @@ class DataflowInfo(
     end_period: Optional[str] = None
     last_updated: Optional[datetime] = None
     dsd_ref: Optional[str] = None
+    groups: Optional[Sequence[GroupDimension]] = None
 
     def __str__(self) -> str:
         """Custom string representation without the class name."""
