@@ -13,6 +13,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonTextFormat,
     get_facets,
 )
+from pysdmx.model import Agency
 from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import MetadataMessage
 from pysdmx.model.metadata import (
@@ -20,7 +21,6 @@ from pysdmx.model.metadata import (
     MetadataReport,
     merge_attributes,
 )
-from pysdmx.model.organisation import Agency
 
 
 class JsonMetadataAttribute(IdentifiableType, frozen=True, omit_defaults=True):
