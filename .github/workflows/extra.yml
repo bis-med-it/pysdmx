@@ -20,8 +20,8 @@ jobs:
         python-version: ["3.12"]
         extra: [none, data, xml, vtl]
         include:
-          - extra: none
-            marker: model and api
+          - extra: noextra
+            marker: noextra
             extras_to_install: ""
           - extra: data
             marker: data
@@ -31,7 +31,7 @@ jobs:
             extras_to_install: "xml data"
           - extra: vtl
             marker: vtl
-            extras_to_install: "vtl"
+            extras_to_install: "vtl xml"
 
     steps:
       - uses: actions/checkout@v4

@@ -8,8 +8,8 @@ PATH_RULES = {
     "/tests/io/test_general_reader.py": ("data", False),
     "/tests/io/test_input_processor.py": ("data", True),
     "/tests/toolkit/": ("vtl", True),
-    "/tests/model/": ("model", True),
-    "/tests/api/": ("api", True),
+    "/tests/model/": ("noextra", True),
+    "/tests/api/": ("noextra", True),
 }
 
 EXCLUDE_FROM_AUTOMARK = {
