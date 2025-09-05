@@ -14,9 +14,6 @@ PATH_RULES = {
 
 EXCLUDE_FROM_AUTOMARK = {
     "tests/io/test_input_processor.py::test_process_string_to_read_invalid_xml",
-}
-
-IGNORE_TREES = {
     "/tests/api/dc/",
 }
 
@@ -28,7 +25,14 @@ def pytest_collection_modifyitems(config, items):
         rel_norm = "/" + rel
 
         nodeid = item.nodeid.replace("\\", "/")
+
         if nodeid in EXCLUDE_FROM_AUTOMARK:
+            continue
+        if any(
+            rel_norm.startswith(sp.rstrip("/"))
+            for sp in EXCLUDE_FROM_AUTOMARK
+            if sp.endswith("/")
+        ):
             continue
 
         for subpath, (markname, automark) in PATH_RULES.items():
@@ -47,11 +51,6 @@ def pytest_collection_modifyitems(config, items):
 def pytest_ignore_collect(collection_path: Path, config):
     root = Path(getattr(config, "rootpath", config.rootdir)).resolve()
     cand = collection_path.resolve()
-
-    for sp in IGNORE_TREES:
-        ap = (root / sp.lstrip("/")).resolve()
-        if cand == ap or cand.is_relative_to(ap):
-            return True
 
     expr = (config.getoption("-m") or "").strip()
     if not expr or any(c in expr for c in " ()&|!"):

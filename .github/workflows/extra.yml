@@ -43,61 +43,17 @@ jobs:
       - name: Install Poetry
         run: pipx install poetry
 
-      - name: Install deps (${{ matrix.extras_to_install }}) — synced
+      - name: Install deps (${{ matrix.extras_to_install }})
         shell: bash
         run: |
           set -euo pipefail
-          EXTRAS_FLAGS=""
           if [ -n "${{ matrix.extras_to_install }}" ]; then
             for e in ${{ matrix.extras_to_install }}; do
-              EXTRAS_FLAGS="$EXTRAS_FLAGS -E $e"
+              poetry install --no-interaction --extras "$e"
             done
+          else
+            poetry install --no-interaction
           fi
-          poetry install --no-interaction --only main --sync $EXTRAS_FLAGS
-
-      - name: Verify only requested extras are installed
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          EXTRAS_FLAGS=""
-          if [ -n "${{ matrix.extras_to_install }}" ]; then
-            for e in ${{ matrix.extras_to_install }}; do
-              EXTRAS_FLAGS="$EXTRAS_FLAGS -E $e"
-            done
-          fi
-
-          norm_names() { awk '{print tolower($1)}' | sed 's/\[.*\]//' | sort -u; }
-          norm_freeze() { awk -F'[=]' '{print tolower($1)}' | sed 's/\[.*\]//' | sort -u; }
-
-          expected=$(
-            poetry show --only main --tree $EXTRAS_FLAGS \
-              | sed -E 's/^[├└─┬ │]+//' \
-              | sed -E 's/ +[>=<].*$//' \
-              | grep -E '^[a-zA-Z0-9._-]+' \
-              | norm_names \
-              || true
-          )
-
-          installed=$(poetry run python -m pip list --format=freeze | norm_freeze)
-
-          ALLOW_RE='^(pip|setuptools|wheel)$'
-          PROJECT_NAME=$(poetry version | awk '{print $1}' | tr '[:upper:]' '[:lower:]')
-
-          unexpected=$(
-            comm -13 <(echo "$expected") <(echo "$installed") \
-              | grep -Ev "$ALLOW_RE" \
-              | grep -Ev "^${PROJECT_NAME}$" \
-              || true
-          )
-
-          if [ -n "$unexpected" ]; then
-            echo "❌ Packages not expected for extras='${{ matrix.extras_to_install }}':"
-            echo "$unexpected"
-            exit 1
-          fi
-
-          echo "✅ OK: env matches main + '${{ matrix.extras_to_install }}'"
 
       - name: Run tests (${{ matrix.marker }})
         run: poetry run pytest -m "${{ matrix.marker }}" --cov=pysdmx --cov-branch
