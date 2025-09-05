@@ -56,7 +56,9 @@ class JsonProvisionAgreement(
             validFrom=pa.valid_from,
             validTo=pa.valid_to,
             description=pa.description,
-            annotations=[JsonAnnotation.from_model(a) for a in pa.annotations],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in pa.annotations]
+            ),
             dataflow=pa.dataflow,
             dataProvider=pa.provider,
         )
