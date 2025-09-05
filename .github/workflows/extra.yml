@@ -60,8 +60,8 @@ jobs:
         run: |
           set -euo pipefail
           ALLOW_RE='^(pip|setuptools|wheel)$'
-          PROJECT_NAME=$(poetry version --name | tr '[:upper:]' '[:lower:]')
-
+          PROJECT_NAME=$(poetry version | awk '{print $1}' | tr '[:upper:]' '[:lower:]')
+            
           unexpected=$(
             poetry run python -m pip list --not-required --format=freeze \
               | awk -F'[=]' '{print tolower($1)}' \
