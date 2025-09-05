@@ -113,8 +113,6 @@ class JsonRepresentationMap(MaintainableType, frozen=True, omit_defaults=True):
     def __parse_st(self, item: Dict[str, str]) -> Union[DataType, str]:
         if "dataType" in item:
             return DataType(item["dataType"])
-        elif "valuelist" in item:
-            return item["valuelist"]
         else:
             return item["codelist"]
 
@@ -155,9 +153,7 @@ class JsonRepresentationMap(MaintainableType, frozen=True, omit_defaults=True):
         """Converts a pysdmx representation map to an SDMX-JSON one."""
 
         def __convert_st(st: str) -> Dict[str, str]:
-            if "ValueList" in st:
-                return {"valuelist": st}
-            elif "Codelist" in st:
+            if "Codelist" in st or "ValueList" in st:
                 return {"codelist": st}
             else:
                 return {"dataType": st}
