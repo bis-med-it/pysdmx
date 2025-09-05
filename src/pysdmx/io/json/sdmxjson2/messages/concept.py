@@ -81,9 +81,9 @@ class JsonConcept(NameableType, frozen=True, omit_defaults=True):
             id=concept.id,
             name=concept.name,
             description=concept.description,
-            annotations=[
-                JsonAnnotation.from_model(a) for a in concept.annotations
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in concept.annotations]
+            ),
             coreRepresentation=JsonRepresentation.from_model(
                 concept.dtype, enum_ref, concept.facets, None
             ),
