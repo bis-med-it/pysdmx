@@ -144,8 +144,77 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
         agencies = tuple(
             [JsonAgencyScheme.from_model(a) for a in msg.get_agency_schemes()]
         )
+        dataflows = tuple(
+            [JsonDataflow.from_model(d) for d in msg.get_dataflows()]
+        )
+        agreements = tuple(
+            [
+                JsonProvisionAgreement.from_model(p)
+                for p in msg.get_provision_agreements()
+            ]
+        )
+        categorisations = tuple(
+            [
+                JsonCategorisation.from_model(c)
+                for c in msg.get_categorisations()
+            ]
+        )
+        hier_associations = tuple(
+            [
+                JsonHierarchyAssociation.from_model(ha)
+                for ha in msg.get_hierarchy_associations()
+            ]
+        )
+        category_schemes = tuple(
+            [
+                JsonCategoryScheme.from_model(cs)
+                for cs in msg.get_category_schemes()
+            ]
+        )
+        concept_schemes = tuple(
+            [
+                JsonConceptScheme.from_model(cs)
+                for cs in msg.get_concept_schemes()
+            ]
+        )
+        data_structures = tuple(
+            [
+                JsonDataStructure.from_model(ds)
+                for ds in msg.get_data_structure_definitions()
+            ]
+        )
+        data_providers = tuple(
+            [
+                JsonDataProviderScheme.from_model(dps)
+                for dps in msg.get_data_provider_schemes()
+            ]
+        )
+        representations_maps = tuple(
+            [
+                JsonRepresentationMap.from_model(rm)
+                for rm in msg.get_representation_maps()
+            ]
+        )
+        structure_maps = tuple(
+            [
+                JsonStructureMap.from_model(sm)
+                for sm in msg.get_structure_maps()
+            ]
+        )
         return JsonStructures(
-            codelists=codelists, valueLists=valuelists, agencySchemes=agencies
+            agencySchemes=agencies,
+            provisionAgreements=agreements,
+            categorisations=categorisations,
+            categorySchemes=category_schemes,
+            codelists=codelists,
+            conceptSchemes=concept_schemes,
+            dataflows=dataflows,
+            dataProviderSchemes=data_providers,
+            dataStructures=data_structures,
+            hierarchyAssociations=hier_associations,
+            representationMaps=representations_maps,
+            structureMaps=structure_maps,
+            valueLists=valuelists,
         )
 
 
