@@ -13,9 +13,12 @@ from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
 from pysdmx.model import Agency, AgencyScheme, DataflowRef
 
 
-def _sanitize_agency_id(agency: Agency) -> Agency:
-    nid = agency.id[agency.id.rindex(".") + 1 :]
-    return msgspec.structs.replace(agency, id=nid)
+def _sanitize_agency(agency: Agency, is_sdmx_scheme: bool) -> Agency:
+    if is_sdmx_scheme:
+        nid = agency.id
+    else:
+        nid = agency.id[agency.id.rindex(".") + 1 :]
+    return msgspec.structs.replace(agency, id=nid, dataflows=())
 
 
 class JsonAgencyScheme(ItemSchemeType, frozen=True, omit_defaults=True):
@@ -34,7 +37,7 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             description=a.description,
             contacts=a.contacts,
             dataflows=flows,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
         )
 
     def to_model(self, dataflows: Sequence[JsonDataflow]) -> AgencyScheme:
@@ -51,7 +54,7 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             description=self.description,
             agency=self.agency,
             items=agencies,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
             valid_from=self.validFrom,
@@ -64,10 +67,8 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True, omit_defaults=True):
         agency = (
             asc.agency.id if isinstance(asc.agency, Agency) else asc.agency
         )
-        if agency == "SDMX":
-            children = asc.items
-        else:
-            children = [_sanitize_agency_id(a) for a in asc.items]
+        is_sdmx_scheme = True if agency == "SDMX" else False
+        children = [_sanitize_agency(a, is_sdmx_scheme) for a in asc.items]
 
         return JsonAgencyScheme(
             id="AGENCIES",
