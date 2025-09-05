@@ -110,7 +110,9 @@ class JsonCategory(NameableType, frozen=True, omit_defaults=True):
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in cat.annotations]
             ),
-            categories=[JsonCategory.from_model(c) for c in cat.categories],
+            categories=tuple(
+                [JsonCategory.from_model(c) for c in cat.categories]
+            ),
         )
 
 
@@ -164,7 +166,9 @@ class JsonCategoryScheme(
                 [JsonAnnotation.from_model(a) for a in cs.annotations]
             ),
             isPartial=cs.is_partial,
-            categories=[JsonCategory.from_model(c) for c in cs.categories],
+            categories=tuple(
+                [JsonCategory.from_model(c) for c in cs.categories]
+            ),
         )
 
 
