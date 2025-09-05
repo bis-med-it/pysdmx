@@ -171,6 +171,8 @@ async def check_coded_components(
                 if comp.id == "AVAILABILITY"
                 else "codelist"
             )
+            assert comp.enum_ref is not None
+            assert ".codelist." in comp.enum_ref
             count += 1
         else:
             assert not comp.enumeration

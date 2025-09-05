@@ -130,6 +130,9 @@ class Component(
             commas, for series- and group-level attributes).
             A post_init check makes this attribute mandatory for attributes.
         array_def: Any additional constraints for array types.
+        urn: The URN of the component.
+        local_enum_ref: The URN of the enumeration (codelist or valuelist) from
+            which the local codes are taken.
     """
 
     id: str
@@ -144,6 +147,7 @@ class Component(
     attachment_level: Optional[str] = None
     array_def: Optional[ArrayBoundaries] = None
     urn: Optional[str] = None
+    local_enum_ref: Optional[str] = None
 
     def __post_init__(self) -> None:
         """Validate the component."""
@@ -214,6 +218,20 @@ class Component(
             return self.local_codes
         elif isinstance(self.concept, Concept) and self.concept.codes:
             return self.concept.codes
+        else:
+            return None
+
+    @property
+    def enum_ref(self) -> Union[Codelist, Hierarchy, None]:
+        """Returns the URN of the enumeration from which the codes are taken.
+
+        Returns:
+            The URN of the enumeration from which the codes are taken.
+        """
+        if self.local_enum_ref:
+            return self.local_enum_ref
+        elif isinstance(self.concept, Concept) and self.concept.enum_ref:
+            return self.concept.enum_ref
         else:
             return None
 

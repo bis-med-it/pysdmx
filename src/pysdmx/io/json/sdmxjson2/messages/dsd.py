@@ -175,6 +175,10 @@ class JsonDimension(Struct, frozen=True, omit_defaults=True):
         dt, facets, codes, ab = _get_representation(
             self.id, self.localRepresentation, cls, cons
         )
+        if self.localRepresentation and self.localRepresentation.enumeration:
+            local_enum_ref = self.localRepresentation.enumeration
+        else:
+            local_enum_ref = None
         return Component(
             id=self.id,
             required=True,
@@ -186,6 +190,7 @@ class JsonDimension(Struct, frozen=True, omit_defaults=True):
             description=desc,
             local_codes=codes,
             array_def=ab,
+            local_enum_ref=local_enum_ref,
         )
 
     @classmethod
@@ -234,6 +239,10 @@ class JsonAttribute(Struct, frozen=True, omit_defaults=True):
             groups,
             self.measureRelationship,
         )
+        if self.localRepresentation and self.localRepresentation.enumeration:
+            local_enum_ref = self.localRepresentation.enumeration
+        else:
+            local_enum_ref = None
         return Component(
             id=self.id,
             required=req,
@@ -246,6 +255,7 @@ class JsonAttribute(Struct, frozen=True, omit_defaults=True):
             local_codes=codes,
             attachment_level=lvl,
             array_def=ab,
+            local_enum_ref=local_enum_ref,
         )
 
     @classmethod
@@ -293,6 +303,10 @@ class JsonMeasure(Struct, frozen=True, omit_defaults=True):
             self.id, self.localRepresentation, cls, cons
         )
         req = self.usage != "optional"
+        if self.localRepresentation and self.localRepresentation.enumeration:
+            local_enum_ref = self.localRepresentation.enumeration
+        else:
+            local_enum_ref = None
         return Component(
             id=self.id,
             required=req,
@@ -304,6 +318,7 @@ class JsonMeasure(Struct, frozen=True, omit_defaults=True):
             description=desc,
             local_codes=codes,
             array_def=ab,
+            local_enum_ref=local_enum_ref,
         )
 
     @classmethod
