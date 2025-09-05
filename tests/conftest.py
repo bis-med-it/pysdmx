@@ -2,7 +2,9 @@ from pathlib import Path
 
 import pytest
 
-# Mapa carpeta → marker
+from pathlib import Path
+import pytest
+
 PATH_RULES = {
     "/tests/io/xml/": ("xml", True),
     "/tests/io/csv/": ("data", True),
@@ -10,12 +12,16 @@ PATH_RULES = {
     "/tests/io/test_input_processor.py": ("data", True),
     "/tests/toolkit/": ("vtl", True),
     "/tests/model/": ("model", True),
+    "/tests/api/": ("api", True),
 }
 
 EXCLUDE_FROM_AUTOMARK = {
     "tests/io/test_input_processor.py::test_process_string_to_read_invalid_xml",
 }
 
+IGNORE_TREES = {
+    "/tests/api/dc/",
+}
 
 def pytest_collection_modifyitems(config, items):
     root = Path(config.rootdir).resolve()
@@ -28,23 +34,30 @@ def pytest_collection_modifyitems(config, items):
             continue
 
         for subpath, (markname, automark) in PATH_RULES.items():
+            if not automark:
+                continue
             if subpath.endswith("/"):
-                if rel_norm.startswith(subpath.rstrip("/")) and automark:
+                if rel_norm.startswith(subpath.rstrip("/")):
                     item.add_marker(getattr(pytest.mark, markname))
                     break
             else:
-                if rel_norm == subpath and automark:
+                if rel_norm == subpath:
                     item.add_marker(getattr(pytest.mark, markname))
                     break
 
 
 def pytest_ignore_collect(collection_path: Path, config):
+    root = Path(getattr(config, "rootpath", config.rootdir)).resolve()
+    cand = collection_path.resolve()
+
+    for sp in IGNORE_TREES:
+        ap = (root / sp.lstrip("/")).resolve()
+        if cand == ap or cand.is_relative_to(ap):
+            return True
+
     expr = (config.getoption("-m") or "").strip()
     if not expr or any(c in expr for c in " ()&|!"):
         return None
-
-    root = Path(getattr(config, "rootpath", config.rootdir)).resolve()
-    cand = collection_path.resolve()
 
     allowed = []
     for sp, (mark, _automark) in PATH_RULES.items():
@@ -56,16 +69,10 @@ def pytest_ignore_collect(collection_path: Path, config):
     if not allowed:
         return None
 
-    for is_dir, ap in allowed:
-        if is_dir:
-            if (
-                cand == ap
-                or cand.is_relative_to(ap)
-                or ap.is_relative_to(cand)
-            ):
-                return False
-        else:
-            if cand == ap or ap.is_relative_to(cand):
-                return False
+    for _is_dir, ap in allowed:
+        if cand == ap or cand.is_relative_to(ap) or ap.is_relative_to(cand):
+            return False
 
     return True
+
+

@@ -21,7 +21,7 @@ jobs:
         extra: [none, data, xml, vtl]
         include:
           - extra: none
-            marker: model
+            marker: model and api
             extras_to_install: ""
           - extra: data
             marker: data
@@ -31,7 +31,7 @@ jobs:
             extras_to_install: "xml data"
           - extra: vtl
             marker: vtl
-            extras_to_install: "vtl xml"
+            extras_to_install: "vtl"
 
     steps:
       - uses: actions/checkout@v4
@@ -43,19 +43,43 @@ jobs:
       - name: Install Poetry
         run: pipx install poetry
 
-      - name: Install deps (${{ matrix.extras_to_install }})
+      - name: Install deps (${{ matrix.extras_to_install }}) — synced
         shell: bash
         run: |
           set -euo pipefail
+          EXTRAS_FLAGS=""
           if [ -n "${{ matrix.extras_to_install }}" ]; then
             for e in ${{ matrix.extras_to_install }}; do
-              poetry install --no-interaction --extras "$e"
+              EXTRAS_FLAGS="$EXTRAS_FLAGS -E $e"
             done
+          fi
+          poetry install --no-interaction --only main --sync $EXTRAS_FLAGS
+
+      - name: Verify no unexpected packages are installed
+        shell: bash
+        run: |
+          set -euo pipefail
+          ALLOW_RE='^(pip|setuptools|wheel)$'
+          PROJECT_NAME=$(poetry version --name | tr '[:upper:]' '[:lower:]')
+
+          unexpected=$(
+            poetry run python -m pip list --not-required --format=freeze \
+              | awk -F'[=]' '{print tolower($1)}' \
+              | grep -Ev "$ALLOW_RE" \
+              | grep -Ev "^${PROJECT_NAME}$" \
+              || true
+          )
+
+          if [ -n "$unexpected" ]; then
+            echo "❌ Packages not expected for extras='${{ matrix.extras_to_install }}':"
+            echo "$unexpected"
+            exit 1
           else
-            poetry install --no-interaction
+            echo "✅ OK: Only installed main + extras ('${{ matrix.extras_to_install }}')."
           fi
 
       - name: Run tests (${{ matrix.marker }})
         run: poetry run pytest -m "${{ matrix.marker }}" --cov=pysdmx --cov-branch
+
 
 
