@@ -2,9 +2,6 @@ from pathlib import Path
 
 import pytest
 
-from pathlib import Path
-import pytest
-
 PATH_RULES = {
     "/tests/io/xml/": ("xml", True),
     "/tests/io/csv/": ("data", True),
@@ -22,6 +19,7 @@ EXCLUDE_FROM_AUTOMARK = {
 IGNORE_TREES = {
     "/tests/api/dc/",
 }
+
 
 def pytest_collection_modifyitems(config, items):
     root = Path(config.rootdir).resolve()
@@ -74,5 +72,3 @@ def pytest_ignore_collect(collection_path: Path, config):
             return False
 
     return True
-
-
