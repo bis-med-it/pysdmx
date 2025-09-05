@@ -62,9 +62,9 @@ class JsonAnnotation(msgspec.Struct, frozen=True, omit_defaults=True):
     def from_model(self, annotation: Annotation) -> "JsonAnnotation":
         """Converts a pysdmx annotation to an SDMX-JSON one."""
         if annotation.url:
-            links = [JsonLink(rel="self", href=annotation.url)]
+            links = tuple([JsonLink(rel="self", href=annotation.url)])
         else:
-            links = []
+            links = ()
 
         return JsonAnnotation(
             id=annotation.id,
