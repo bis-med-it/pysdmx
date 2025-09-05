@@ -19,7 +19,7 @@ from pysdmx.model import (
     Role,
     Schema,
 )
-from pysdmx.model.dataflow import GroupDimension
+from pysdmx.model.dataflow import Group
 from pysdmx.model.message import Header
 
 SCHEMA_ROOT = "http://www.sdmx.org/resources/sdmxml/schemas/v3_0/"
@@ -210,7 +210,7 @@ def ds_with_group():
             id="TEST",
             agency="MD",
             version="1.0",
-            groups=[GroupDimension(id="Group", dimensions=["DIM2"])],
+            groups=[Group(id="Group", dimensions=["DIM2"])],
             components=Components(
                 [
                     Component(

@@ -170,7 +170,7 @@ from pysdmx.model.dataflow import (
     Components,
     Dataflow,
     DataStructureDefinition,
-    GroupDimension,
+    Group,
     Role,
 )
 from pysdmx.model.vtl import (
@@ -955,7 +955,7 @@ class StructureParser(Struct):
                         for d in group_dimensions
                     ]
 
-                element[GROUPS_LOW] = [GroupDimension(**g) for g in groups]
+                element[GROUPS_LOW] = [Group(**g) for g in groups]
                 del element[DSD_COMPS][GROUP]
         return element
 
