@@ -201,20 +201,62 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
                 for sm in msg.get_structure_maps()
             ]
         )
+        custom_types = tuple(
+            [
+                JsonCustomTypeScheme.from_model(ct)
+                for ct in msg.get_custom_type_schemes()
+            ]
+        )
+        name_personalisations = tuple(
+            [
+                JsonNamePersonalisationScheme.from_model(np)
+                for np in msg.get_name_personalisation_schemes()
+            ]
+        )
+        user_operators = tuple(
+            [
+                JsonUserDefinedOperatorScheme.from_model(uo)
+                for uo in msg.get_user_defined_operator_schemes()
+            ]
+        )
+        rulesets = tuple(
+            [
+                JsonRulesetScheme.from_model(rs)
+                for rs in msg.get_ruleset_schemes()
+            ]
+        )
+        vtl_mappings = tuple(
+            [
+                JsonVtlMappingScheme.from_model(vm)
+                for vm in msg.get_vtl_mapping_schemes()
+            ]
+        )
+        transformations = tuple(
+            [
+                JsonTransformationScheme.from_model(ts)
+                for ts in msg.get_transformation_schemes()
+            ]
+        )
         return JsonStructures(
             agencySchemes=agencies,
-            provisionAgreements=agreements,
             categorisations=categorisations,
             categorySchemes=category_schemes,
             codelists=codelists,
             conceptSchemes=concept_schemes,
+            customTypeSchemes=custom_types,
             dataflows=dataflows,
             dataProviderSchemes=data_providers,
             dataStructures=data_structures,
             hierarchyAssociations=hier_associations,
+            namePersonalisationSchemes=name_personalisations,
+            provisionAgreements=agreements,
             representationMaps=representations_maps,
+            rulesetSchemes=rulesets,
             structureMaps=structure_maps,
+            transformationSchemes=transformations,
+            userDefinedOperatorSchemes=user_operators,
             valueLists=valuelists,
+            vtlMappingSchemes=vtl_mappings,
         )
 
 
