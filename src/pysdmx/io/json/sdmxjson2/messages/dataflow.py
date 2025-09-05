@@ -25,7 +25,7 @@ from pysdmx.model.dataflow import Group
 from pysdmx.util import parse_urn
 
 
-class JsonDataflow(MaintainableType, frozen=True):
+class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a dataflow."""
 
     structure: str = ""
@@ -102,7 +102,7 @@ class JsonDataflow(MaintainableType, frozen=True):
         )
 
 
-class JsonDataflows(Struct, frozen=True):
+class JsonDataflows(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of dataflows."""
 
     dataflows: Sequence[JsonDataflow]
@@ -165,7 +165,7 @@ class JsonDataflows(Struct, frozen=True):
         ]
 
 
-class JsonDataflowMessage(Struct, frozen=True):
+class JsonDataflowMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /dataflow queries (with details)."""
 
     data: JsonDataflows
@@ -182,7 +182,7 @@ class JsonDataflowMessage(Struct, frozen=True):
         return self.data.to_model(components, grps, agency, id_, version)
 
 
-class JsonDataflowsMessage(Struct, frozen=True):
+class JsonDataflowsMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /dataflow queries."""
 
     data: JsonDataflows

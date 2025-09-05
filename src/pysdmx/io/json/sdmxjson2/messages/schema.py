@@ -14,10 +14,7 @@ from pysdmx.model.dataflow import Group
 from pysdmx.util import parse_item_urn
 
 
-class JsonSchemas(
-    msgspec.Struct,
-    frozen=True,
-):
+class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload schema structures."""
 
     conceptSchemes: Sequence[JsonConceptScheme]
@@ -47,10 +44,7 @@ class JsonSchemas(
         return comps, mapped_grps  # type: ignore[return-value]
 
 
-class JsonSchemaMessage(
-    msgspec.Struct,
-    frozen=True,
-):
+class JsonSchemaMessage(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /schema queries."""
 
     meta: JsonHeader

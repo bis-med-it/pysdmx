@@ -14,7 +14,7 @@ from pysdmx.model import Agency, DataflowRef, DataProvider, DataProviderScheme
 from pysdmx.util import parse_item_urn, parse_urn
 
 
-class JsonDataProviderScheme(ItemSchemeType, frozen=True):
+class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a data provider scheme."""
 
     dataProviders: Sequence[DataProvider] = ()
@@ -88,7 +88,7 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True):
         )
 
 
-class JsonDataProviderSchemes(Struct, frozen=True):
+class JsonDataProviderSchemes(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of data provider schemes."""
 
     dataProviderSchemes: Sequence[JsonDataProviderScheme]
@@ -102,7 +102,7 @@ class JsonDataProviderSchemes(Struct, frozen=True):
         ]
 
 
-class JsonProviderMessage(Struct, frozen=True):
+class JsonProviderMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /dataproviderscheme queries."""
 
     data: JsonDataProviderSchemes

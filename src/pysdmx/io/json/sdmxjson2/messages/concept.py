@@ -15,7 +15,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
 from pysdmx.model import Agency, Codelist, Concept, ConceptScheme, DataType
 
 
-class IsoConceptReference(msgspec.Struct, frozen=True):
+class IsoConceptReference(msgspec.Struct, frozen=True, omit_defaults=True):
     """Payload for a reference to an ISO 11179 concept."""
 
     conceptAgency: str
@@ -23,7 +23,7 @@ class IsoConceptReference(msgspec.Struct, frozen=True):
     conceptID: str
 
 
-class JsonConcept(NameableType, frozen=True):
+class JsonConcept(NameableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for concepts."""
 
     coreRepresentation: Optional[JsonRepresentation] = None
@@ -90,7 +90,7 @@ class JsonConcept(NameableType, frozen=True):
         )
 
 
-class JsonConceptScheme(ItemSchemeType, frozen=True):
+class JsonConceptScheme(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a concept scheme."""
 
     concepts: Sequence[JsonConcept] = ()
@@ -147,10 +147,7 @@ class JsonConceptScheme(ItemSchemeType, frozen=True):
         )
 
 
-class JsonConceptSchemes(
-    msgspec.Struct,
-    frozen=True,
-):
+class JsonConceptSchemes(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of concept schemes."""
 
     conceptSchemes: Sequence[JsonConceptScheme]
@@ -158,8 +155,7 @@ class JsonConceptSchemes(
 
 
 class JsonConceptSchemeMessage(
-    msgspec.Struct,
-    frozen=True,
+    msgspec.Struct, frozen=True, omit_defaults=True
 ):
     """SDMX-JSON payload for /conceptscheme queries."""
 

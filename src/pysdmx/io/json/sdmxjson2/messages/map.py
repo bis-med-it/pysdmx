@@ -28,7 +28,7 @@ from pysdmx.model import (
 from pysdmx.util import find_by_urn
 
 
-class JsonSourceValue(Struct, frozen=True):
+class JsonSourceValue(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a source value."""
 
     value: str
@@ -50,7 +50,7 @@ class JsonSourceValue(Struct, frozen=True):
             return JsonSourceValue(value)
 
 
-class JsonRepresentationMapping(Struct, frozen=True):
+class JsonRepresentationMapping(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a representation mapping."""
 
     sourceValues: Sequence[JsonSourceValue]
@@ -103,7 +103,7 @@ class JsonRepresentationMapping(Struct, frozen=True):
             )
 
 
-class JsonRepresentationMap(MaintainableType, frozen=True):
+class JsonRepresentationMap(MaintainableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a representation map."""
 
     source: Sequence[Dict[str, str]] = ()
@@ -195,7 +195,7 @@ class JsonRepresentationMap(MaintainableType, frozen=True):
         )
 
 
-class JsonFixedValueMap(Struct, frozen=True):
+class JsonFixedValueMap(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a fixed value map."""
 
     values: Sequence[Any]
@@ -222,7 +222,7 @@ class JsonFixedValueMap(Struct, frozen=True):
         )
 
 
-class JsonComponentMap(Struct, frozen=True):
+class JsonComponentMap(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a component map."""
 
     source: Sequence[str]
@@ -276,14 +276,14 @@ class JsonComponentMap(Struct, frozen=True):
             return JsonComponentMap(cm.source, cm.target, rm)
 
 
-class JsonMappedPair(Struct, frozen=True):
+class JsonMappedPair(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a pair of mapped components."""
 
     source: str
     target: str
 
 
-class JsonDatePatternMap(Struct, frozen=True):
+class JsonDatePatternMap(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a date pattern map."""
 
     sourcePattern: str
@@ -338,7 +338,7 @@ class JsonDatePatternMap(Struct, frozen=True):
         )
 
 
-class JsonStructureMap(MaintainableType, frozen=True):
+class JsonStructureMap(MaintainableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a structure map."""
 
     source: str = ""
@@ -408,7 +408,7 @@ class JsonStructureMap(MaintainableType, frozen=True):
         )
 
 
-class JsonStructureMaps(Struct, frozen=True):
+class JsonStructureMaps(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for structure maps."""
 
     structureMaps: Sequence[JsonStructureMap]
@@ -421,7 +421,7 @@ class JsonStructureMaps(Struct, frozen=True):
         ]
 
 
-class JsonMappingMessage(Struct, frozen=True):
+class JsonMappingMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /structuremap queries."""
 
     data: JsonStructureMaps
@@ -431,7 +431,7 @@ class JsonMappingMessage(Struct, frozen=True):
         return self.data.to_model()[0]
 
 
-class JsonStructureMapsMessage(Struct, frozen=True):
+class JsonStructureMapsMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for generic /structuremap queries."""
 
     data: JsonStructureMaps
@@ -441,7 +441,7 @@ class JsonStructureMapsMessage(Struct, frozen=True):
         return self.data.to_model()
 
 
-class JsonRepresentationMaps(Struct, frozen=True):
+class JsonRepresentationMaps(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for representation maps."""
 
     representationMaps: Sequence[JsonRepresentationMap]
@@ -457,7 +457,7 @@ class JsonRepresentationMaps(Struct, frozen=True):
         return maps
 
 
-class JsonRepresentationMapMessage(Struct, frozen=True):
+class JsonRepresentationMapMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /representationmap queries."""
 
     data: JsonRepresentationMaps
@@ -467,7 +467,7 @@ class JsonRepresentationMapMessage(Struct, frozen=True):
         return self.data.to_model()[0]
 
 
-class JsonRepresentationMapsMessage(Struct, frozen=True):
+class JsonRepresentationMapsMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /representationmap queries."""
 
     data: JsonRepresentationMaps

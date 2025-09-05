@@ -12,7 +12,9 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
 from pysdmx.model import Agency, ProvisionAgreement
 
 
-class JsonProvisionAgreement(MaintainableType, frozen=True):
+class JsonProvisionAgreement(
+    MaintainableType, frozen=True, omit_defaults=True
+):
     """SDMX-JSON payload for a provision agreement."""
 
     dataflow: str = ""
@@ -60,7 +62,7 @@ class JsonProvisionAgreement(MaintainableType, frozen=True):
         )
 
 
-class JsonProvisionAgreements(Struct, frozen=True):
+class JsonProvisionAgreements(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for provision agreements."""
 
     provisionAgreements: Sequence[JsonProvisionAgreement]
@@ -70,7 +72,7 @@ class JsonProvisionAgreements(Struct, frozen=True):
         return [pa.to_model() for pa in self.provisionAgreements]
 
 
-class JsonProvisionAgreementsMessage(Struct, frozen=True):
+class JsonProvisionAgreementsMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /provisionagreement queries."""
 
     data: JsonProvisionAgreements

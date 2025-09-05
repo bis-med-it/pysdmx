@@ -27,7 +27,7 @@ from pysdmx.util import find_by_urn, parse_item_urn
 _VAL_FMT = "%Y-%m-%dT%H:%M:%S%z"
 
 
-class JsonCode(NameableType, frozen=True):
+class JsonCode(NameableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for codes."""
 
     parent: Optional[str] = None
@@ -99,7 +99,7 @@ class JsonCode(NameableType, frozen=True):
         )
 
 
-class JsonCodelist(ItemSchemeType, frozen=True):
+class JsonCodelist(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a codelist."""
 
     codes: Sequence[JsonCode] = ()
@@ -146,7 +146,7 @@ class JsonCodelist(ItemSchemeType, frozen=True):
         )
 
 
-class JsonValuelist(ItemSchemeType, frozen=True):
+class JsonValuelist(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a valuelist."""
 
     valueItems: Sequence[JsonCode] = ()
@@ -194,14 +194,14 @@ class JsonValuelist(ItemSchemeType, frozen=True):
         )
 
 
-class JsonCodelists(Struct, frozen=True):
+class JsonCodelists(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for lists of codes."""
 
     codelists: Sequence[JsonCodelist] = ()
     valuelists: Sequence[JsonValuelist] = ()
 
 
-class JsonCodelistMessage(Struct, frozen=True):
+class JsonCodelistMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /codelist queries."""
 
     data: JsonCodelists
@@ -214,7 +214,7 @@ class JsonCodelistMessage(Struct, frozen=True):
             return self.data.valuelists[0].to_model()
 
 
-class JsonHierarchicalCode(Struct, frozen=True):
+class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
     """Fusion-JSON payload for hierarchical codes."""
 
     id: str
@@ -263,7 +263,7 @@ class JsonHierarchicalCode(Struct, frozen=True):
         )
 
 
-class JsonHierarchy(ItemSchemeType, frozen=True):
+class JsonHierarchy(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a hierarchy."""
 
     hierarchicalCodes: Sequence[JsonHierarchicalCode] = ()
@@ -286,7 +286,7 @@ class JsonHierarchy(ItemSchemeType, frozen=True):
         )
 
 
-class JsonHierarchies(Struct, frozen=True):
+class JsonHierarchies(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for hierarchies."""
 
     codelists: Sequence[JsonCodelist] = ()
@@ -297,7 +297,9 @@ class JsonHierarchies(Struct, frozen=True):
         return [h.to_model(self.codelists) for h in self.hierarchies]
 
 
-class JsonHierarchyAssociation(MaintainableType, frozen=True):
+class JsonHierarchyAssociation(
+    MaintainableType, frozen=True, omit_defaults=True
+):
     """SDMX-JSON payload for a hierarchy association."""
 
     linkedHierarchy: str = ""
@@ -391,7 +393,7 @@ class JsonHierarchyAssociation(MaintainableType, frozen=True):
         )
 
 
-class JsonHierarchyMessage(Struct, frozen=True):
+class JsonHierarchyMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /hierarchy queries."""
 
     data: JsonHierarchies
@@ -401,7 +403,7 @@ class JsonHierarchyMessage(Struct, frozen=True):
         return self.data.to_model()[0]
 
 
-class JsonHierarchiesMessage(Struct, frozen=True):
+class JsonHierarchiesMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /hierarchy queries."""
 
     data: JsonHierarchies
@@ -411,7 +413,7 @@ class JsonHierarchiesMessage(Struct, frozen=True):
         return self.data.to_model()
 
 
-class JsonHierarchyAssociations(Struct, frozen=True):
+class JsonHierarchyAssociations(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for hierarchy associations."""
 
     codelists: Sequence[JsonCodelist] = ()
@@ -426,7 +428,7 @@ class JsonHierarchyAssociations(Struct, frozen=True):
         ]
 
 
-class JsonHierarchyAssociationMessage(Struct, frozen=True):
+class JsonHierarchyAssociationMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for hierarchy associations messages."""
 
     data: JsonHierarchyAssociations

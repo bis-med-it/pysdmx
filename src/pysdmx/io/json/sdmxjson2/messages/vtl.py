@@ -33,7 +33,7 @@ from pysdmx.model.vtl import (
 from pysdmx.util import parse_urn
 
 
-class JsonCustomType(NameableType, frozen=True):
+class JsonCustomType(NameableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for custom types."""
 
     vtlScalarType: str = ""
@@ -78,7 +78,7 @@ class JsonCustomType(NameableType, frozen=True):
         )
 
 
-class JsonCustomTypeScheme(ItemSchemeType, frozen=True):
+class JsonCustomTypeScheme(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for custom type schemes."""
 
     vtlVersion: str = ""
@@ -131,7 +131,7 @@ class JsonCustomTypeScheme(ItemSchemeType, frozen=True):
         )
 
 
-class JsonNamePersonalisation(NameableType, frozen=True):
+class JsonNamePersonalisation(NameableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for name personalisations."""
 
     vtlDefaultName: str = ""
@@ -170,7 +170,9 @@ class JsonNamePersonalisation(NameableType, frozen=True):
         )
 
 
-class JsonNamePersonalisationScheme(ItemSchemeType, frozen=True):
+class JsonNamePersonalisationScheme(
+    ItemSchemeType, frozen=True, omit_defaults=True
+):
     """SDMX-JSON payload for name personalisation schemes."""
 
     vtlVersion: str = ""
@@ -227,7 +229,7 @@ class JsonNamePersonalisationScheme(ItemSchemeType, frozen=True):
         )
 
 
-class JsonUserDefinedOperator(NameableType, frozen=True):
+class JsonUserDefinedOperator(NameableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for user defined operator."""
 
     operatorDefinition: str = ""
@@ -262,7 +264,9 @@ class JsonUserDefinedOperator(NameableType, frozen=True):
         )
 
 
-class JsonUserDefinedOperatorScheme(ItemSchemeType, frozen=True):
+class JsonUserDefinedOperatorScheme(
+    ItemSchemeType, frozen=True, omit_defaults=True
+):
     """SDMX-JSON payload for user defined operator schemes."""
 
     vtlVersion: str = ""
@@ -361,7 +365,7 @@ class JsonUserDefinedOperatorScheme(ItemSchemeType, frozen=True):
         )
 
 
-class JsonRuleset(Struct, frozen=True):
+class JsonRuleset(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for rulesets."""
 
     id: str
@@ -418,7 +422,7 @@ class JsonRuleset(Struct, frozen=True):
         )
 
 
-class JsonRulesetScheme(ItemSchemeType, frozen=True):
+class JsonRulesetScheme(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for ruleset schemes."""
 
     vtlVersion: str = ""
@@ -493,7 +497,7 @@ class JsonRulesetScheme(ItemSchemeType, frozen=True):
         )
 
 
-class JsonToVtlMapping(Struct, frozen=True):
+class JsonToVtlMapping(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for To VTL mappings."""
 
     toVtlSubSpace: Sequence[str]
@@ -509,7 +513,7 @@ class JsonToVtlMapping(Struct, frozen=True):
         return JsonToVtlMapping(mapping.to_vtl_sub_space, mapping.method)
 
 
-class JsonFromVtlMapping(Struct, frozen=True):
+class JsonFromVtlMapping(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for from VTL mappings."""
 
     fromVtlSuperSpace: Sequence[str]
@@ -525,7 +529,7 @@ class JsonFromVtlMapping(Struct, frozen=True):
         return JsonFromVtlMapping(mapping.from_vtl_sub_space, mapping.method)
 
 
-class JsonVtlMapping(NameableType, frozen=True):
+class JsonVtlMapping(NameableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for VTL mappings."""
 
     alias: str = ""
@@ -682,7 +686,7 @@ class JsonVtlMapping(NameableType, frozen=True):
             )
 
 
-class JsonVtlMappingScheme(ItemSchemeType, frozen=True):
+class JsonVtlMappingScheme(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for VTL mapping schemes."""
 
     vtlMappings: Sequence[JsonVtlMapping] = ()
@@ -736,7 +740,7 @@ class JsonVtlMappingScheme(ItemSchemeType, frozen=True):
         )
 
 
-class JsonTransformation(Struct, frozen=True):
+class JsonTransformation(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for VTL transformations."""
 
     id: str
@@ -784,7 +788,9 @@ class JsonTransformation(Struct, frozen=True):
         )
 
 
-class JsonTransformationScheme(ItemSchemeType, frozen=True):
+class JsonTransformationScheme(
+    ItemSchemeType, frozen=True, omit_defaults=True
+):
     """SDMX-JSON payload for VTL transformation schemes."""
 
     vtlVersion: str = ""
@@ -905,7 +911,7 @@ class JsonTransformationScheme(ItemSchemeType, frozen=True):
         )
 
 
-class JsonVtlTransformations(Struct, frozen=True):
+class JsonVtlTransformations(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for VTL transformation schemes."""
 
     transformationSchemes: Sequence[JsonTransformationScheme]
@@ -926,7 +932,7 @@ class JsonVtlTransformations(Struct, frozen=True):
         )
 
 
-class JsonVtlTransformationsMessage(Struct, frozen=True):
+class JsonVtlTransformationsMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /transformationscheme queries."""
 
     data: JsonVtlTransformations

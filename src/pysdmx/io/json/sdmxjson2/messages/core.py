@@ -18,7 +18,7 @@ from pysdmx.model.message import Header
 from pysdmx.util import find_by_urn
 
 
-class JsonLink(msgspec.Struct, frozen=True):
+class JsonLink(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for link objects."""
 
     href: Optional[str] = None
@@ -30,7 +30,7 @@ class JsonLink(msgspec.Struct, frozen=True):
     hreflang: Optional[str] = None
 
 
-class JsonAnnotation(msgspec.Struct, frozen=True):
+class JsonAnnotation(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for annotations."""
 
     id: Optional[str] = None
@@ -75,14 +75,14 @@ class JsonAnnotation(msgspec.Struct, frozen=True):
         )
 
 
-class IdentifiableType(msgspec.Struct, frozen=True):
+class IdentifiableType(msgspec.Struct, frozen=True, omit_defaults=True):
     """An abstract base type used for all nameable artefacts."""
 
     id: str
     annotations: Sequence[JsonAnnotation] = ()
 
 
-class NameableType(msgspec.Struct, frozen=True):
+class NameableType(msgspec.Struct, frozen=True, omit_defaults=True):
     """An abstract base type used for all nameable artefacts."""
 
     id: str
@@ -92,7 +92,10 @@ class NameableType(msgspec.Struct, frozen=True):
 
 
 class MaintainableType(
-    msgspec.Struct, frozen=True, rename={"agency": "agencyID"}
+    msgspec.Struct,
+    frozen=True,
+    rename={"agency": "agencyID"},
+    omit_defaults=True,
 ):
     """An abstract base type used for all maintainable artefacts."""
 
@@ -107,13 +110,13 @@ class MaintainableType(
     annotations: Sequence[JsonAnnotation] = ()
 
 
-class ItemSchemeType(MaintainableType, frozen=True):
+class ItemSchemeType(MaintainableType, frozen=True, omit_defaults=True):
     """An abstract base type used for all item schemes."""
 
     isPartial: bool = False
 
 
-class JsonTextFormat(msgspec.Struct, frozen=True):
+class JsonTextFormat(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for TextFormat."""
 
     dataType: Optional[str] = None
@@ -182,7 +185,7 @@ def get_facets(input: JsonTextFormat) -> Facets:
     )
 
 
-class JsonRepresentation(msgspec.Struct, frozen=True):
+class JsonRepresentation(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for core representation."""
 
     enumerationFormat: Optional[JsonTextFormat] = None

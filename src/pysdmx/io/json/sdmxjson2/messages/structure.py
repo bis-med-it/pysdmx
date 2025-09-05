@@ -38,7 +38,7 @@ from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.message import StructureMessage
 
 
-class JsonStructures(Struct, frozen=True):
+class JsonStructures(Struct, frozen=True, omit_defaults=True):
     """The allowed strutures."""
 
     dataStructures: Sequence[JsonDataStructure] = ()
@@ -147,7 +147,7 @@ class JsonStructures(Struct, frozen=True):
         )
 
 
-class JsonStructureMessage(Struct, frozen=True):
+class JsonStructureMessage(Struct, frozen=True, omit_defaults=True):
     """A generic SDMX-JSON 2.0 Structure message."""
 
     meta: JsonHeader

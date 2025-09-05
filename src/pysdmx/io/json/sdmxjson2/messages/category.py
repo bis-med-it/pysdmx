@@ -25,7 +25,10 @@ from pysdmx.util import find_by_urn
 
 
 class JsonCategorisation(
-    MaintainableType, frozen=True, rename={"agency": "agencyID"}
+    MaintainableType,
+    frozen=True,
+    rename={"agency": "agencyID"},
+    omit_defaults=True,
 ):
     """SDMX-JSON payload for a categorisation."""
 
@@ -76,7 +79,7 @@ class JsonCategorisation(
         )
 
 
-class JsonCategory(NameableType, frozen=True):
+class JsonCategory(NameableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a category."""
 
     categories: Sequence["JsonCategory"] = ()
@@ -112,7 +115,10 @@ class JsonCategory(NameableType, frozen=True):
 
 
 class JsonCategoryScheme(
-    ItemSchemeType, frozen=True, rename={"agency": "agencyID"}
+    ItemSchemeType,
+    frozen=True,
+    rename={"agency": "agencyID"},
+    omit_defaults=True,
 ):
     """SDMX-JSON payload for a category scheme."""
 
@@ -160,7 +166,7 @@ class JsonCategoryScheme(
         )
 
 
-class JsonCategorySchemes(Struct, frozen=True):
+class JsonCategorySchemes(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of category schemes."""
 
     categorySchemes: Sequence[JsonCategoryScheme]
@@ -168,7 +174,7 @@ class JsonCategorySchemes(Struct, frozen=True):
     dataflows: Sequence[JsonDataflow] = ()
 
 
-class JsonCategorySchemeMessage(Struct, frozen=True):
+class JsonCategorySchemeMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /categoryscheme queries."""
 
     data: JsonCategorySchemes
@@ -212,13 +218,13 @@ class JsonCategorySchemeMessage(Struct, frozen=True):
         return cs
 
 
-class JsonCategorisations(Struct, frozen=True):
+class JsonCategorisations(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of categorisations."""
 
     categorisations: Sequence[JsonCategorisation]
 
 
-class JsonCategorisationMessage(Struct, frozen=True):
+class JsonCategorisationMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /categorisation queries."""
 
     data: JsonCategorisations

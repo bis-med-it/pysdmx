@@ -18,7 +18,7 @@ def _sanitize_agency_id(agency: Agency) -> Agency:
     return msgspec.structs.replace(agency, id=nid)
 
 
-class JsonAgencyScheme(ItemSchemeType, frozen=True):
+class JsonAgencyScheme(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for an agency scheme."""
 
     agencies: Sequence[Agency] = ()
@@ -86,7 +86,7 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True):
         )
 
 
-class JsonAgencySchemes(msgspec.Struct, frozen=True):
+class JsonAgencySchemes(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of agency schemes."""
 
     agencySchemes: Sequence[JsonAgencyScheme]
@@ -97,7 +97,7 @@ class JsonAgencySchemes(msgspec.Struct, frozen=True):
         return [a.to_model(self.dataflows) for a in self.agencySchemes]
 
 
-class JsonAgencyMessage(msgspec.Struct, frozen=True):
+class JsonAgencyMessage(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /agencyscheme queries."""
 
     data: JsonAgencySchemes

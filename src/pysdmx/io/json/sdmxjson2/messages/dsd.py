@@ -108,14 +108,14 @@ def _get_json_representation(
     )
 
 
-class JsonGroup(Struct, frozen=True):
+class JsonGroup(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a group."""
 
     id: str
     groupDimensions: Sequence[str]
 
 
-class JsonAttributeRelationship(Struct, frozen=True):
+class JsonAttributeRelationship(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for an attribute relationship."""
 
     dataflow: Optional[Dict] = None  # type: ignore[type-arg]
@@ -149,7 +149,7 @@ class JsonAttributeRelationship(Struct, frozen=True):
             return JsonAttributeRelationship(dimensions=dims)
 
 
-class JsonDimension(Struct, frozen=True):
+class JsonDimension(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a component."""
 
     id: str
@@ -200,7 +200,7 @@ class JsonDimension(Struct, frozen=True):
         )
 
 
-class JsonAttribute(Struct, frozen=True):
+class JsonAttribute(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for an attribute."""
 
     id: str
@@ -266,7 +266,7 @@ class JsonAttribute(Struct, frozen=True):
         )
 
 
-class JsonMeasure(Struct, frozen=True):
+class JsonMeasure(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a measure."""
 
     id: str
@@ -320,7 +320,7 @@ class JsonMeasure(Struct, frozen=True):
         )
 
 
-class JsonAttributes(Struct, frozen=True):
+class JsonAttributes(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of attributes."""
 
     id: Literal["AttributeDescriptor"] = "AttributeDescriptor"
@@ -349,7 +349,7 @@ class JsonAttributes(Struct, frozen=True):
             return None
 
 
-class JsonDimensions(Struct, frozen=True):
+class JsonDimensions(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of dimensions."""
 
     id: Literal["DimensionDescriptor"] = "DimensionDescriptor"
@@ -387,7 +387,7 @@ class JsonDimensions(Struct, frozen=True):
         )
 
 
-class JsonMeasures(Struct, frozen=True):
+class JsonMeasures(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of measures."""
 
     id: Literal["MeasureDescriptor"] = "MeasureDescriptor"
@@ -415,7 +415,7 @@ class JsonMeasures(Struct, frozen=True):
             return None
 
 
-class JsonComponents(Struct, frozen=True):
+class JsonComponents(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of DSD components."""
 
     dimensionList: JsonDimensions
@@ -467,7 +467,7 @@ class JsonComponents(Struct, frozen=True):
         return JsonComponents(dimensions, measures, attributes, groups)
 
 
-class JsonDataStructure(MaintainableType, frozen=True):
+class JsonDataStructure(MaintainableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a DSD."""
 
     dataStructureComponents: Optional[JsonComponents] = None
@@ -532,7 +532,7 @@ class JsonDataStructure(MaintainableType, frozen=True):
         )
 
 
-class JsonDataStructures(Struct, frozen=True):
+class JsonDataStructures(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for data structures."""
 
     dataStructures: Sequence[JsonDataStructure]
@@ -554,7 +554,7 @@ class JsonDataStructures(Struct, frozen=True):
         ]
 
 
-class JsonDataStructuresMessage(Struct, frozen=True):
+class JsonDataStructuresMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /datastructure queries."""
 
     data: JsonDataStructures
