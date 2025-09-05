@@ -222,7 +222,7 @@ class Component(
             return None
 
     @property
-    def enum_ref(self) -> Union[Codelist, Hierarchy, None]:
+    def enum_ref(self) -> Optional[str]:
         """Returns the URN of the enumeration from which the codes are taken.
 
         Returns:
