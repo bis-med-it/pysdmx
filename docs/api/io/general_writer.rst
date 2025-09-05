@@ -19,6 +19,7 @@ List of formats and versions supported by the general writer:
 - :ref:`SDMX-CSV<sdmx_csv>`
     - :ref:`SDMX-CSV 1.0 <sdmx_csv_10_writer>`
     - :ref:`SDMX-CSV 2.0 <sdmx_csv_20_writer>`
+    - :ref:`SDMX-CSV 2.1 <sdmx_csv_21_writer>`
 
 - :ref:`SDMX-ML<sdmx_ml>`
     - :ref:`SDMX-ML 2.1 Generic <sdmx_ml_21_gen_writer>`

@@ -19,6 +19,7 @@ List of formats and versions supported by the general reader:
 - :ref:`SDMX-CSV<sdmx_csv>`
     - :ref:`SDMX-CSV 1.0 <sdmx_csv_10_reader>`
     - :ref:`SDMX-CSV 2.0 <sdmx_csv_20_reader>`
+    - :ref:`SDMX-CSV 2.1 <sdmx_csv_21_reader>`
 
 - :ref:`SDMX-ML<sdmx_ml>`
     - :ref:`SDMX-ML 2.1 Generic <sdmx_ml_21_gen_reader>`

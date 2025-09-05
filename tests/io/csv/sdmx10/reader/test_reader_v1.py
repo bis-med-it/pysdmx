@@ -25,6 +25,12 @@ def data_path_no_freq():
     return base_path
 
 
+@pytest.fixture
+def csv_labels_both():
+    base_path = Path(__file__).parent / "samples" / "csv_labels_both.csv"
+    return base_path
+
+
 def test_reading_data_v1(data_path):
     with open(data_path, "r") as f:
         infile = f.read()
@@ -66,10 +72,19 @@ def test_reading_no_freq_v1(data_path_no_freq):
     with open(data_path_no_freq, "r") as f:
         infile = f.read()
     datasets = read(infile)
-    assert (
-        datasets[0].short_urn
-        == "Dataflow=WB:GCI(1.0):GlobalCompetitivenessIndex"
-    )
+    assert datasets[0].short_urn == "Dataflow=WB:GCI(1.0)"
     df = datasets[0].data
     assert len(df) == 7
+    assert "DATAFLOW" not in df.columns
+
+
+def test_reading_labels_both(csv_labels_both):
+    with open(csv_labels_both, "r") as f:
+        infile = f.read()
+    datasets = read(infile)
+    assert datasets[0].short_urn == "Dataflow=MD:MD_TEST(1.0)"
+    df = datasets[0].data
+    assert "ATT1" in df.columns
+    assert df.at[0, "ATT1"] == "C"
+    assert len(df) == 1
     assert "DATAFLOW" not in df.columns

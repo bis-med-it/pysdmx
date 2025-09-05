@@ -2,15 +2,20 @@
 
 from copy import copy
 from pathlib import Path
-from typing import Optional, Sequence, Union
+from typing import Literal, Optional, Sequence, Union
 
 import pandas as pd
 
+from pysdmx.io.csv.__csv_aux_writer import __write_time_period
 from pysdmx.io.pd import PandasDataset
+from pysdmx.model import Schema
+from pysdmx.toolkit.pd._data_utils import format_labels
 
 
 def write(
     datasets: Sequence[PandasDataset],
+    labels: Optional[Literal["id", "both"]] = None,
+    time_format: Optional[Literal["original", "normalized"]] = None,
     output_path: Optional[Union[str, Path]] = None,
 ) -> Optional[str]:
     """Write data to SDMX-CSV 1.0 format.
@@ -20,6 +25,15 @@ def write(
           Must have the same components.
         output_path: Path to write the data to.
           If None, the data is returned as a string.
+        labels: How to write the name of the columns.
+            If None, only the IDs are written.
+            if "id", the names are written as ID only.
+            If "both", the names are witten as id:Name.
+        time_format: How to write the time period.
+            If None, the time period is not modified.
+            If "original", the time period is written as it
+            is in the dataset.
+            "Normalized" is not implemented yet.
 
     Returns:
         SDMX CSV data as a string, if output_path is None.
@@ -31,11 +45,23 @@ def write(
     dataframes = []
     for dataset in datasets:
         df: pd.DataFrame = copy(dataset.data)
-        df.insert(0, "DATAFLOW", dataset.short_urn.split("=")[1])
 
         # Add additional attributes to the dataset
         for k, v in dataset.attributes.items():
             df[k] = v
+        structure_id = dataset.short_urn.split("=")[1]
+        if time_format is not None and time_format != "original":
+            __write_time_period(df, time_format)
+        if labels is not None and isinstance(dataset.structure, Schema):
+            format_labels(df, labels, dataset.structure.components)
+            if labels == "id":
+                df.insert(0, "DATAFLOW", structure_id)
+            else:
+                df.insert(
+                    0, "DATAFLOW", f"{structure_id}:{dataset.structure.name}"
+                )
+        else:
+            df.insert(0, "DATAFLOW", structure_id)
 
         dataframes.append(df)
 

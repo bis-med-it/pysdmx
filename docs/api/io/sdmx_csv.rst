@@ -10,6 +10,8 @@ The SDMX CSV readers and writers are compatible with SDMX-CSV 1.0 and 2.0 standa
 
 `SDMX-CSV 2.0 specification <https://github.com/sdmx-twg/sdmx-csv/blob/v2.0.0/data-message/docs/sdmx-csv-field-guide.md>`_
 
+`SDMX-CSV 2.1 specification <https://github.com/sdmx-twg/sdmx-csv/blob/v2.1.0/data-message/docs/sdmx-csv-field-guide.md>`_
+
 .. important::
 
     To use the SDMX-CSV functionalities, you need to install the `pysdmx[data]` extra.
@@ -34,6 +36,13 @@ specific readers for SDMX-CSV are also available:
 .. autofunction:: pysdmx.io.csv.sdmx20.reader.read
 
 
+.. _sdmx_csv_21_reader:
+
+- DATA_SDMX_CSV_2_1_0 -> pysdmx.io.csv.sdmx21.reader
+
+.. autofunction:: pysdmx.io.csv.sdmx21.reader.read
+
+
 
 Writing
 -------
@@ -52,5 +61,11 @@ specific readers for SDMX-CSV are also available:
 - DATA_SDMX_CSV_2_0_0 -> pysdmx.io.csv.sdmx20.writer
 
 .. autofunction:: pysdmx.io.csv.sdmx20.writer.write
+
+.. _sdmx_csv_21_writer:
+
+- DATA_SDMX_CSV_2_1_0 -> pysdmx.io.csv.sdmx21.writer
+
+.. autofunction:: pysdmx.io.csv.sdmx21.writer.write
 
 

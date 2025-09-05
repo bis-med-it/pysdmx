@@ -6,21 +6,8 @@ from typing import Sequence
 import pandas as pd
 
 from pysdmx.errors import Invalid
+from pysdmx.io.csv.__csv_aux_reader import __generate_dataset_from_sdmx_csv
 from pysdmx.io.pd import PandasDataset
-
-
-def __generate_dataset_from_sdmx_csv(data: pd.DataFrame) -> PandasDataset:
-    # For SDMX-CSV version 1, use 'DATAFLOW' column as the structure id
-    structure_id = data["DATAFLOW"].iloc[0]
-    # Drop 'DATAFLOW' column from DataFrame
-    df_csv = data.drop(["DATAFLOW"], axis=1)
-    urn = f"Dataflow={structure_id}"
-
-    # Return a Dataset object with the extracted information
-    return PandasDataset(
-        structure=urn,
-        data=df_csv,
-    )
 
 
 def read(input_str: str) -> Sequence[PandasDataset]:
@@ -55,6 +42,14 @@ def read(input_str: str) -> Sequence[PandasDataset]:
     df_csv = df_csv.astype(str).replace({"nan": "", "<NA>": ""})
     # Check if any column headers contain ':', indicating mode, label or text
     mode_label_text = any(":" in x for x in df_csv.columns)
+
+    # if values in the columns contain ':', split them
+    for col in df_csv.columns[1:]:
+        df_csv[col] = (
+            df_csv[col]
+            .astype(str)
+            .apply(lambda x: x.split(":")[0] if ":" in x else x)
+        )
 
     # Determine the id column based on the SDMX-CSV version
     id_column = "DATAFLOW"
