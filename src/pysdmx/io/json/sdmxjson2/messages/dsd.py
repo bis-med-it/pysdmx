@@ -26,7 +26,6 @@ from pysdmx.model import (
     DataStructureDefinition,
     DataType,
     Facets,
-    Hierarchy,
     ItemReference,
     Role,
 )
