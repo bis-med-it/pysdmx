@@ -862,7 +862,7 @@ class JsonTransformationScheme(
         mapping_ref = None
         if ts.vtl_mapping_scheme:
             mapping_ref = (
-                f"urn:sdmx:org.sdmx.infomodel.vtl.VtlMappingScheme="
+                f"urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme="
                 f"{ts.vtl_mapping_scheme.agency}:{ts.vtl_mapping_scheme.id}"
                 f"({ts.vtl_mapping_scheme.version})"
             )
@@ -870,7 +870,7 @@ class JsonTransformationScheme(
         np_ref = None
         if ts.name_personalisation_scheme:
             np_ref = (
-                f"urn:sdmx:org.sdmx.infomodel.vtl.NamePersonalisationScheme="
+                f"urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisationScheme="
                 f"{ts.name_personalisation_scheme.agency}:"
                 f"{ts.name_personalisation_scheme.id}"
                 f"({ts.name_personalisation_scheme.version})"
@@ -879,22 +879,24 @@ class JsonTransformationScheme(
         ct_ref = None
         if ts.custom_type_scheme:
             ct_ref = (
-                f"urn:sdmx:org.sdmx.infomodel.vtl.CustomTypeScheme="
+                f"urn:sdmx:org.sdmx.infomodel.transformation.CustomTypeScheme="
                 f"{ts.custom_type_scheme.agency}:{ts.custom_type_scheme.id}"
                 f"({ts.custom_type_scheme.version})"
             )
 
         rs_refs = [
-            f"urn:sdmx:org.sdmx.infomodel.vtl.RulesetScheme="
+            f"urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme="
             f"{rs.agency}:{rs.id}({rs.version})"
             for rs in ts.ruleset_schemes
         ]
 
-        udo_refs = [
-            f"urn:sdmx:org.sdmx.infomodel.vtl.UserDefinedOperatorScheme="
-            f"{udos.agency}:{udos.id}({udos.version})"
-            for udos in ts.user_defined_operator_schemes
-        ]
+        udo_refs = tuple(
+            [
+                f"urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme="
+                f"{udos.agency}:{udos.id}({udos.version})"
+                for udos in ts.user_defined_operator_schemes
+            ]
+        )
 
         return JsonTransformationScheme(
             agency=(
