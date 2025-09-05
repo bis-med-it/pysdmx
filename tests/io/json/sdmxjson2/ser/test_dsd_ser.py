@@ -39,6 +39,7 @@ def dsd():
         DataType.ALPHA,
         Facets(min_length=1, max_length=1),
         local_codes=cl,
+        local_enum_ref=f"{_BASE}codelist.Codelist=BIS:CL_FREQ(1.0)",
     )
     c2 = Component(
         "CUR1",
