@@ -32,7 +32,7 @@ class JsonProvisionAgreement(
             valid_to=self.validTo,
             dataflow=self.dataflow,
             provider=self.dataProvider,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
         )
 

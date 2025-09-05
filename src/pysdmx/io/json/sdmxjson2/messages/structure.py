@@ -135,13 +135,15 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
                 "Invalid input",
                 "SDMX-JSON structure messages must have structures.",
             )
-        codelists = [JsonCodelist.from_model(c) for c in msg.get_codelists()]
-        valuelists = [
-            JsonValuelist.from_model(c) for c in msg.get_value_lists()
-        ]
-        agencies = [
-            JsonAgencyScheme.from_model(a) for a in msg.get_agency_schemes()
-        ]
+        codelists = tuple(
+            [JsonCodelist.from_model(c) for c in msg.get_codelists()]
+        )
+        valuelists = tuple(
+            [JsonValuelist.from_model(c) for c in msg.get_value_lists()]
+        )
+        agencies = tuple(
+            [JsonAgencyScheme.from_model(a) for a in msg.get_agency_schemes()]
+        )
         return JsonStructures(
             codelists=codelists, valueLists=valuelists, agencySchemes=agencies
         )

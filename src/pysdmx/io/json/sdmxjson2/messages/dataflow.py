@@ -97,7 +97,9 @@ class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
             validFrom=df.valid_from,
             validTo=df.valid_to,
             description=df.description,
-            annotations=[JsonAnnotation.from_model(a) for a in df.annotations],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in df.annotations]
+            ),
             structure=dsdref,
         )
 

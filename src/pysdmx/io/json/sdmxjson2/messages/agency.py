@@ -76,9 +76,9 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             description=asc.description,
             version="1.0",
             agencies=children,
-            annotations=[
-                JsonAnnotation.from_model(a) for a in asc.annotations
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in asc.annotations]
+            ),
             isExternalReference=asc.is_external_reference,
             isPartial=asc.is_partial,
             validFrom=asc.valid_from,

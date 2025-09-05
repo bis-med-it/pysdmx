@@ -186,12 +186,14 @@ class JsonRepresentationMap(MaintainableType, frozen=True, omit_defaults=True):
             validFrom=rm.valid_from,
             validTo=rm.valid_to,
             description=rm.description,
-            annotations=[JsonAnnotation.from_model(a) for a in rm.annotations],
-            source=source,
-            target=target,
-            representationMappings=[
-                JsonRepresentationMapping.from_model(m) for m in rm.maps
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in rm.annotations]
+            ),
+            source=tuple(source),
+            target=tuple(target),
+            representationMappings=tuple(
+                [JsonRepresentationMapping.from_model(m) for m in rm.maps]
+            ),
         )
 
 
@@ -393,18 +395,26 @@ class JsonStructureMap(MaintainableType, frozen=True, omit_defaults=True):
             validFrom=sm.valid_from,
             validTo=sm.valid_to,
             description=sm.description,
-            annotations=[JsonAnnotation.from_model(a) for a in sm.annotations],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in sm.annotations]
+            ),
             source=sm.source,
             target=sm.target,
-            datePatternMaps=[
-                JsonDatePatternMap.from_model(dpm)
-                for dpm in sm.date_pattern_maps
-            ],
-            componentMaps=[JsonComponentMap.from_model(cm) for cm in cms],
-            fixedValueMaps=[
-                JsonFixedValueMap.from_model(fvm)
-                for fvm in sm.fixed_value_maps
-            ],
+            datePatternMaps=tuple(
+                [
+                    JsonDatePatternMap.from_model(dpm)
+                    for dpm in sm.date_pattern_maps
+                ]
+            ),
+            componentMaps=tuple(
+                [JsonComponentMap.from_model(cm) for cm in cms]
+            ),
+            fixedValueMaps=tuple(
+                [
+                    JsonFixedValueMap.from_model(fvm)
+                    for fvm in sm.fixed_value_maps
+                ]
+            ),
         )
 
 

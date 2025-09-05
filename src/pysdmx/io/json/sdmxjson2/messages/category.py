@@ -71,9 +71,9 @@ class JsonCategorisation(
             validFrom=cat.valid_from,
             validTo=cat.valid_to,
             description=cat.description,
-            annotations=[
-                JsonAnnotation.from_model(a) for a in cat.annotations
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in cat.annotations]
+            ),
             source=cat.source,
             target=cat.target,
         )
@@ -107,9 +107,9 @@ class JsonCategory(NameableType, frozen=True, omit_defaults=True):
             id=cat.id,
             name=cat.name,
             description=cat.description,
-            annotations=[
-                JsonAnnotation.from_model(a) for a in cat.annotations
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in cat.annotations]
+            ),
             categories=[JsonCategory.from_model(c) for c in cat.categories],
         )
 
@@ -160,7 +160,9 @@ class JsonCategoryScheme(
             validFrom=cs.valid_from,
             validTo=cs.valid_to,
             description=cs.description,
-            annotations=[JsonAnnotation.from_model(a) for a in cs.annotations],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in cs.annotations]
+            ),
             isPartial=cs.is_partial,
             categories=[JsonCategory.from_model(c) for c in cs.categories],
         )

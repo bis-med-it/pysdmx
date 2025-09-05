@@ -78,9 +78,9 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             description=dps.description,
             version="1.0",
             dataProviders=dps.items,
-            annotations=[
-                JsonAnnotation.from_model(a) for a in dps.annotations
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in dps.annotations]
+            ),
             isExternalReference=dps.is_external_reference,
             isPartial=dps.is_partial,
             validFrom=dps.valid_from,

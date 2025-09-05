@@ -95,7 +95,7 @@ class JsonCode(NameableType, frozen=True, omit_defaults=True):
             id=code.id,
             name=code.name,
             description=code.description,
-            annotations=annotations,
+            annotations=tuple(annotations),
         )
 
 
@@ -138,7 +138,9 @@ class JsonCodelist(ItemSchemeType, frozen=True, omit_defaults=True):
             description=cl.description,
             version=cl.version,
             codes=[JsonCode.from_model(i) for i in cl.items],
-            annotations=[JsonAnnotation.from_model(a) for a in cl.annotations],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in cl.annotations]
+            ),
             isExternalReference=cl.is_external_reference,
             isPartial=cl.is_partial,
             validFrom=cl.valid_from,

@@ -522,9 +522,9 @@ class JsonDataStructure(MaintainableType, frozen=True, omit_defaults=True):
             validFrom=dsd.valid_from,
             validTo=dsd.valid_to,
             description=dsd.description,
-            annotations=[
-                JsonAnnotation.from_model(a) for a in dsd.annotations
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in dsd.annotations]
+            ),
             dataStructureComponents=JsonComponents.from_model(
                 dsd.components, dsd.groups
             ),

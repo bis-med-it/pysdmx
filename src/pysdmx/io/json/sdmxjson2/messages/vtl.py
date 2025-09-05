@@ -69,7 +69,9 @@ class JsonCustomType(NameableType, frozen=True, omit_defaults=True):
             id=ct.id,
             name=ct.name,
             description=ct.description,
-            annotations=[JsonAnnotation.from_model(a) for a in ct.annotations],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in ct.annotations]
+            ),
             vtlScalarType=ct.vtl_scalar_type,
             dataType=ct.data_type,
             vtlLiteralFormat=ct.vtl_literal_format,
@@ -122,12 +124,14 @@ class JsonCustomTypeScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             validFrom=cts.valid_from,
             validTo=cts.valid_to,
             description=cts.description,
-            annotations=[
-                JsonAnnotation.from_model(a) for a in cts.annotations
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in cts.annotations]
+            ),
             isPartial=cts.is_partial,
             vtlVersion=cts.vtl_version,  # type: ignore[arg-type]
-            customTypes=[JsonCustomType.from_model(i) for i in cts.items],
+            customTypes=tuple(
+                [JsonCustomType.from_model(i) for i in cts.items]
+            ),
         )
 
 
@@ -163,7 +167,9 @@ class JsonNamePersonalisation(NameableType, frozen=True, omit_defaults=True):
             id=np.id,
             name=np.name,
             description=np.description,
-            annotations=[JsonAnnotation.from_model(a) for a in np.annotations],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in np.annotations]
+            ),
             vtlDefaultName=np.vtl_default_name,
             personalisedName=np.personalised_name,
             vtlArtefact=np.vtl_artefact,
@@ -218,14 +224,14 @@ class JsonNamePersonalisationScheme(
             validFrom=nps.valid_from,
             validTo=nps.valid_to,
             description=nps.description,
-            annotations=[
-                JsonAnnotation.from_model(a) for a in nps.annotations
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in nps.annotations]
+            ),
             isPartial=nps.is_partial,
             vtlVersion=nps.vtl_version,  # type: ignore[arg-type]
-            namePersonalisations=[
-                JsonNamePersonalisation.from_model(i) for i in nps.items
-            ],
+            namePersonalisations=tuple(
+                [JsonNamePersonalisation.from_model(i) for i in nps.items]
+            ),
         )
 
 
@@ -257,9 +263,9 @@ class JsonUserDefinedOperator(NameableType, frozen=True, omit_defaults=True):
             id=udo.id,
             name=udo.name,
             description=udo.description,
-            annotations=[
-                JsonAnnotation.from_model(a) for a in udo.annotations
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in udo.annotations]
+            ),
             operatorDefinition=udo.operator_definition,
         )
 
@@ -352,16 +358,16 @@ class JsonUserDefinedOperatorScheme(
             validFrom=udos.valid_from,
             validTo=udos.valid_to,
             description=udos.description,
-            annotations=[
-                JsonAnnotation.from_model(a) for a in udos.annotations
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in udos.annotations]
+            ),
             isPartial=udos.is_partial,
             vtlVersion=udos.vtl_version,  # type: ignore[arg-type]
             vtlMappingScheme=vtl_mapping_ref,
             rulesetSchemes=ruleset_refs,
-            userDefinedOperators=[
-                JsonUserDefinedOperator.from_model(i) for i in udos.items
-            ],
+            userDefinedOperators=tuple(
+                [JsonUserDefinedOperator.from_model(i) for i in udos.items]
+            ),
         )
 
 
@@ -413,9 +419,9 @@ class JsonRuleset(Struct, frozen=True, omit_defaults=True):
             id=ruleset.id,
             name=ruleset.name,
             description=ruleset.description,
-            annotations=[
-                JsonAnnotation.from_model(a) for a in ruleset.annotations
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in ruleset.annotations]
+            ),
             rulesetDefinition=ruleset.ruleset_definition,
             rulesetType=ruleset.ruleset_type,
             rulesetScope=ruleset.ruleset_scope,
@@ -487,13 +493,13 @@ class JsonRulesetScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             validFrom=rss.valid_from,
             validTo=rss.valid_to,
             description=rss.description,
-            annotations=[
-                JsonAnnotation.from_model(a) for a in rss.annotations
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in rss.annotations]
+            ),
             isPartial=rss.is_partial,
             vtlVersion=rss.vtl_version,  # type: ignore[arg-type]
             vtlMappingScheme=vtl_mapping_ref,
-            rulesets=[JsonRuleset.from_model(i) for i in rss.items],
+            rulesets=tuple([JsonRuleset.from_model(i) for i in rss.items]),
         )
 
 
@@ -616,9 +622,9 @@ class JsonVtlMapping(NameableType, frozen=True, omit_defaults=True):
                 id=mapping.id,
                 name=mapping.name,
                 description=mapping.description,
-                annotations=[
-                    JsonAnnotation.from_model(a) for a in mapping.annotations
-                ],
+                annotations=tuple(
+                    [JsonAnnotation.from_model(a) for a in mapping.annotations]
+                ),
                 alias=mapping.codelist_alias,
                 codelist=codelist_ref,
             )
@@ -649,9 +655,9 @@ class JsonVtlMapping(NameableType, frozen=True, omit_defaults=True):
                 id=mapping.id,
                 name=mapping.name,
                 description=mapping.description,
-                annotations=[
-                    JsonAnnotation.from_model(a) for a in mapping.annotations
-                ],
+                annotations=tuple(
+                    [JsonAnnotation.from_model(a) for a in mapping.annotations]
+                ),
                 alias=mapping.concept_alias,
                 concept=concept_ref,
             )
@@ -660,9 +666,9 @@ class JsonVtlMapping(NameableType, frozen=True, omit_defaults=True):
                 id=mapping.id,
                 name=mapping.name,
                 description=mapping.description,
-                annotations=[
-                    JsonAnnotation.from_model(a) for a in mapping.annotations
-                ],
+                annotations=tuple(
+                    [JsonAnnotation.from_model(a) for a in mapping.annotations]
+                ),
                 alias=mapping.dataflow_alias,
                 dataflow=f"urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow={mapping.dataflow.agency}:{mapping.dataflow.id}({mapping.dataflow.version})",
                 toVtlMapping=(
@@ -729,14 +735,16 @@ class JsonVtlMappingScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             validFrom=vms.valid_from,
             validTo=vms.valid_to,
             description=vms.description,
-            annotations=[
-                JsonAnnotation.from_model(a) for a in vms.annotations
-            ],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in vms.annotations]
+            ),
             isPartial=vms.is_partial,
-            vtlMappings=[
-                JsonVtlMapping.from_model(i)  # type: ignore[arg-type]
-                for i in vms.items
-            ],
+            vtlMappings=tuple(
+                [
+                    JsonVtlMapping.from_model(i)  # type: ignore[arg-type]
+                    for i in vms.items
+                ]
+            ),
         )
 
 
@@ -781,10 +789,12 @@ class JsonTransformation(Struct, frozen=True, omit_defaults=True):
             result=transformation.result,
             isPersistent=transformation.is_persistent,
             description=transformation.description,
-            annotations=[
-                JsonAnnotation.from_model(a)
-                for a in transformation.annotations
-            ],
+            annotations=tuple(
+                [
+                    JsonAnnotation.from_model(a)
+                    for a in transformation.annotations
+                ]
+            ),
         )
 
 
@@ -897,7 +907,9 @@ class JsonTransformationScheme(
             validFrom=ts.valid_from,
             validTo=ts.valid_to,
             description=ts.description,
-            annotations=[JsonAnnotation.from_model(a) for a in ts.annotations],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in ts.annotations]
+            ),
             isPartial=ts.is_partial,
             vtlVersion=ts.vtl_version,  # type: ignore[arg-type]
             vtlMappingScheme=mapping_ref,
@@ -905,9 +917,9 @@ class JsonTransformationScheme(
             customTypeScheme=ct_ref,
             rulesetSchemes=rs_refs,
             userDefinedOperatorSchemes=udo_refs,
-            transformations=[
-                JsonTransformation.from_model(i) for i in ts.items
-            ],
+            transformations=tuple(
+                [JsonTransformation.from_model(i) for i in ts.items]
+            ),
         )
 
 

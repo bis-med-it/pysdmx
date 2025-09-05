@@ -141,9 +141,11 @@ class JsonConceptScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             validFrom=cs.valid_from,
             validTo=cs.valid_to,
             description=cs.description,
-            annotations=[JsonAnnotation.from_model(a) for a in cs.annotations],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in cs.annotations]
+            ),
             isPartial=cs.is_partial,
-            concepts=[JsonConcept.from_model(c) for c in cs.concepts],
+            concepts=tuple([JsonConcept.from_model(c) for c in cs.concepts]),
         )
 
 
