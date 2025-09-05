@@ -97,10 +97,8 @@ def _get_concept_reference(component: Component) -> str:
 def _get_json_representation(
     comp: Component,
 ) -> Optional[JsonRepresentation]:
-    if isinstance(comp.local_codes, (Codelist, Hierarchy)):
-        base = "urn:sdmx:org.sdmx.infomodel.codelist."
-        urn = f"{base}{comp.local_codes.short_urn}"
-        enum = urn
+    if comp.local_enum_ref:
+        enum = comp.local_enum_ref
     else:
         enum = None
     return JsonRepresentation.from_model(
