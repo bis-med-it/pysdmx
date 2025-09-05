@@ -44,7 +44,7 @@ def test_rm():
     assert sjson.validTo == rm.valid_to
     assert sjson.description == rm.description
     assert len(sjson.annotations) == 1
-    assert sjson.source == tuple([{"valuelist": rm.source}])
+    assert sjson.source == tuple([{"codelist": rm.source}])
     assert sjson.target == tuple([{"codelist": rm.target}])
     assert len(sjson.representationMappings) == 1
 
