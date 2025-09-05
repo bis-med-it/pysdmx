@@ -40,7 +40,9 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
                     description=p.description,
                     contacts=p.contacts,
                     dataflows=list(paprs[f"{self.agency}:{p.id}"]),
-                    annotations=[a.to_model() for a in self.annotations],
+                    annotations=tuple(
+                        [a.to_model() for a in self.annotations]
+                    ),
                 )
                 for p in self.dataProviders
             ]
@@ -51,7 +53,9 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
                     name=p.name,
                     description=p.description,
                     contacts=p.contacts,
-                    annotations=[a.to_model() for a in self.annotations],
+                    annotations=tuple(
+                        [a.to_model() for a in self.annotations]
+                    ),
                 )
                 for p in self.dataProviders
             ]
