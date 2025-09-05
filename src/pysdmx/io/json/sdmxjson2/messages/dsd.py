@@ -429,7 +429,7 @@ class JsonComponents(Struct, frozen=True, omit_defaults=True):
         cls: Sequence[JsonCodelist],
         vls: Sequence[JsonValuelist],
         constraints: Sequence[JsonDataConstraint],
-    ) -> Components:
+    ) -> Tuple[Components, Sequence[Group]]:
         """Returns the components for this DSD."""
         enums = [cl.to_model() for cl in cls]
         enums.extend([vl.to_model() for vl in vls])
@@ -450,7 +450,10 @@ class JsonComponents(Struct, frozen=True, omit_defaults=True):
                     self.groups,
                 )
             )
-        return Components(comps)
+        mapped_grps = [
+            Group(g.id, dimensions=g.groupDimensions) for g in self.groups
+        ]
+        return (Components(comps), mapped_grps)
 
     @classmethod
     def from_model(
@@ -481,7 +484,7 @@ class JsonDataStructure(MaintainableType, frozen=True, omit_defaults=True):
         constraints: Sequence[JsonDataConstraint],
     ) -> DataStructureDefinition:
         """Map to pysdmx model class."""
-        c = self.dataStructureComponents.to_model(  # type: ignore[union-attr]
+        c, grps = self.dataStructureComponents.to_model(  # type: ignore[union-attr]
             cs,
             cls,
             vls,
@@ -499,6 +502,7 @@ class JsonDataStructure(MaintainableType, frozen=True, omit_defaults=True):
             valid_to=self.validTo,
             components=c,
             evolving_structure=self.evolvingStructure,
+            groups=grps,
         )
 
     @classmethod

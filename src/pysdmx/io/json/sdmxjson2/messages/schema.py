@@ -28,20 +28,13 @@ class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
     ) -> Tuple[Components, Optional[Sequence[Group]]]:
         """Returns the requested schema."""
         comps = self.dataStructures[0].dataStructureComponents
-        grps = comps.groups if comps else None
-        comps = comps.to_model(  # type: ignore[union-attr,assignment]
+        comps, grps = comps.to_model(  # type: ignore[union-attr,assignment]
             self.conceptSchemes,
             self.codelists,
             self.valuelists,
             self.contentConstraints,
         )
-        if grps:
-            mapped_grps = [
-                Group(g.id, dimensions=g.groupDimensions) for g in grps
-            ]
-        else:
-            mapped_grps = None
-        return comps, mapped_grps  # type: ignore[return-value]
+        return comps, grps  # type: ignore[return-value]
 
 
 class JsonSchemaMessage(msgspec.Struct, frozen=True, omit_defaults=True):
