@@ -1,0 +1,62 @@
+name: Extra
+
+on:
+  push:
+    branches: [ "develop", "main" ]
+  pull_request:
+    branches: [ "develop", "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.os }} • py${{ matrix.python-version }} • extra:${{ matrix.extra }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.12"]
+        extra: [noextra, data, xml, vtl]
+        include:
+          - extra: noextra
+            marker: noextra
+            extras_to_install: ""
+          - extra: data
+            marker: data
+            extras_to_install: "data"
+          - extra: xml
+            marker: xml
+            extras_to_install: "xml data"
+          - extra: vtl
+            marker: vtl
+            extras_to_install: "vtl xml"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install deps (${{ matrix.extras_to_install }})
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${{ matrix.extras_to_install }}" ]; then
+            for e in ${{ matrix.extras_to_install }}; do
+              poetry install --no-interaction --extras "$e"
+            done
+          else
+            poetry install --no-interaction
+          fi
+
+      - name: Run tests (${{ matrix.marker }})
+        run: poetry run pytest -m "${{ matrix.marker }}" --cov=pysdmx --cov-branch
+
+
+

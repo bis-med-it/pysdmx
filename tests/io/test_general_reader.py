@@ -149,11 +149,13 @@ def mock_http_client(monkeypatch, structures_path):
     return last
 
 
+@pytest.mark.data
 def test_read_sdmx_invalid_extension():
     with pytest.raises(Invalid, match="Cannot parse input as SDMX."):
         read_sdmx(",,,,")
 
 
+@pytest.mark.data
 def test_read_sdmx_json_not_supported(sdmx_json):
     with pytest.raises(
         NotImplemented, match="JSON formats reading are not supported yet"
@@ -161,6 +163,7 @@ def test_read_sdmx_json_not_supported(sdmx_json):
         read_sdmx(sdmx_json, validate=False)
 
 
+@pytest.mark.data
 def test_read_url_invalid(respx_mock):
     url = "https://invalidurl.com"
     respx_mock.get(url).mock(
@@ -175,6 +178,7 @@ def test_read_url_invalid(respx_mock):
         read_sdmx(url)
 
 
+@pytest.mark.data
 def test_read_url_valid(respx_mock, data_csv_v1_str):
     url = "http://validurl.com"
     respx_mock.get(url).mock(
@@ -187,6 +191,7 @@ def test_read_url_valid(respx_mock, data_csv_v1_str):
     assert result.data is not None
 
 
+@pytest.mark.data
 def test_read_url_invalid_pem():
     url = "https://validurl.com"
     invalid_pem_path = Path(__file__).parent / "samples" / "invalid_pem.pem"
@@ -194,6 +199,7 @@ def test_read_url_invalid_pem():
         read_sdmx(url, pem=invalid_pem_path)
 
 
+@pytest.mark.data
 def test_read_url_invalid_pem_str():
     url = "https://validurl.com"
     with pytest.raises(
