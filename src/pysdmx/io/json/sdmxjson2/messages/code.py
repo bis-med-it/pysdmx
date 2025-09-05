@@ -390,7 +390,9 @@ class JsonHierarchyAssociation(
             validFrom=ha.valid_from,
             validTo=ha.valid_to,
             description=ha.description,
-            annotations=[JsonAnnotation.from_model(a) for a in ha.annotations],
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in ha.annotations]
+            ),
             linkedHierarchy=href,
             linkedObject=ha.component_ref,
             contextObject=ha.context_ref,
