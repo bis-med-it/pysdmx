@@ -884,11 +884,13 @@ class JsonTransformationScheme(
                 f"({ts.custom_type_scheme.version})"
             )
 
-        rs_refs = [
-            f"urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme="
-            f"{rs.agency}:{rs.id}({rs.version})"
-            for rs in ts.ruleset_schemes
-        ]
+        rs_refs = tuple(
+            [
+                f"urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme="
+                f"{rs.agency}:{rs.id}({rs.version})"
+                for rs in ts.ruleset_schemes
+            ]
+        )
 
         udo_refs = tuple(
             [
