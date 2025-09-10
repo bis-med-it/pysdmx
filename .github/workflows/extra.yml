@@ -28,7 +28,7 @@ jobs:
             extras_to_install: "data"
           - extra: xml
             marker: xml
-            extras_to_install: "xml data"
+            extras_to_install: "xml,data"
           - extra: vtl
             marker: vtl
             extras_to_install: "vtl"
@@ -48,12 +48,11 @@ jobs:
         run: |
           set -euo pipefail
           if [ -n "${{ matrix.extras_to_install }}" ]; then
-            for e in ${{ matrix.extras_to_install }}; do
-              poetry install --no-interaction --extras "$e"
-            done
+            poetry install --no-interaction --only "main,${{ matrix.extras_to_install }}" --sync
           else
-            poetry install --no-interaction
+            poetry install --no-interaction --only main --sync
           fi
+
       - name: Validate forbidden packages per extra
         shell: bash
         run: |
@@ -76,7 +75,7 @@ jobs:
           case "${{ matrix.extra }}" in
             noextra)
               assert_not_installed "xmltodict"
-              assert_not_installed "numpy"
+              assert_not_installed "pandas"
               assert_not_installed "vtlengine"
               ;;
             data)
@@ -88,7 +87,7 @@ jobs:
               ;;
             vtl)
               assert_not_installed "xmltodict"
-              assert_not_installed "numpy"
+              assert_not_installed "pandas"
               ;;
           esac
 
@@ -99,6 +98,7 @@ jobs:
 
       - name: Run tests (${{ matrix.marker }})
         run: poetry run pytest -m "${{ matrix.marker }}" --cov=pysdmx --cov-branch
+
 
 
 
