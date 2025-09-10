@@ -47,16 +47,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
-          EXTRAS="${{ matrix.extras_to_install }}"
-          CMD="poetry install --no-interaction --sync"
-
-          if [ -n "$EXTRAS" ]; then
-            for e in $(echo "$EXTRAS" | tr ',' ' '); do
+          CMD="poetry install --no-interaction --without dev"
+          if [ -n "${{ matrix.extras_to_install }}" ]; then
+            for e in $(echo "${{ matrix.extras_to_install }}" | tr ',' ' '); do
               CMD="$CMD --extras $e"
             done
           fi
-
           echo "+ $CMD"
           eval "$CMD"
       
