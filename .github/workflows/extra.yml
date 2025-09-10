@@ -47,11 +47,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ -n "${{ matrix.extras_to_install }}" ]; then
-            poetry install --no-interaction --only "main,${{ matrix.extras_to_install }}" --sync
-          else
-            poetry install --no-interaction --only main --sync
+
+          EXTRAS="${{ matrix.extras_to_install }}"
+          CMD="poetry install --no-interaction --sync"
+
+          if [ -n "$EXTRAS" ]; then
+            for e in $(echo "$EXTRAS" | tr ',' ' '); do
+              CMD="$CMD --extras $e"
+            done
           fi
+
+          echo "+ $CMD"
+          eval "$CMD"
+      
 
       - name: Validate forbidden packages per extra
         shell: bash
