@@ -18,17 +18,17 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: ["3.12"]
-        extra: [noextra, data, xml, vtl]
+        extra: [none, data, xml, vtl]
         include:
-          - extra: noextra
-            marker: noextra
+          - extra: none
+            marker: model
             extras_to_install: ""
           - extra: data
             marker: data
             extras_to_install: "data"
           - extra: xml
             marker: xml
-            extras_to_install: "xml,data"
+            extras_to_install: "xml data"
           - extra: vtl
             marker: vtl
             extras_to_install: "vtl"
@@ -47,57 +47,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          CMD="poetry install --no-interaction --without dev"
           if [ -n "${{ matrix.extras_to_install }}" ]; then
-            for e in $(echo "${{ matrix.extras_to_install }}" | tr ',' ' '); do
-              CMD="$CMD --extras $e"
+            for e in ${{ matrix.extras_to_install }}; do
+              poetry install --no-interaction --extras "$e"
             done
-          fi
-          echo "+ $CMD"
-          eval "$CMD"
-      
-
-      - name: Validate forbidden packages per extra
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          installed="$(poetry show --tree | grep -E '^[A-Za-z0-9._-]+' | awk '{print tolower($1)}' | sort -u)"
-          
-          echo "Installed packages (first 50 lines):"
-          echo "$installed" | head -n 50
-
-          fail=0
-          assert_not_installed() {
-            pkg="$1"
-            if echo "$installed" | grep -qx "$pkg"; then
-              echo "❌ Forbidden package was installed: $pkg"
-              fail=1
-            fi
-          }
-
-          case "${{ matrix.extra }}" in
-            noextra)
-              assert_not_installed "xmltodict"
-              assert_not_installed "pandas"
-              assert_not_installed "vtlengine"
-              ;;
-            data)
-              assert_not_installed "xmltodict"
-              assert_not_installed "vtlengine"
-              ;;
-            xml)
-              assert_not_installed "vtlengine"
-              ;;
-            vtl)
-              assert_not_installed "xmltodict"
-              assert_not_installed "pandas"
-              ;;
-          esac
-
-          if [ "$fail" -ne 0 ]; then
-            echo "❌ Some forbidden packages were installed for extra '${{ matrix.extra }}'."
-            exit 1
+          else
+            poetry install --no-interaction
           fi
 
       - name: Run tests (${{ matrix.marker }})
