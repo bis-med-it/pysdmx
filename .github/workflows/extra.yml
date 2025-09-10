@@ -59,7 +59,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          installed="$(poetry show --no-dev --tree | grep -E '^[A-Za-z0-9._-]+' | awk '{print tolower($1)}' | sort -u)"
+          installed="$(poetry show --tree | grep -E '^[A-Za-z0-9._-]+' | awk '{print tolower($1)}' | sort -u)"
 
           fail=0
 
