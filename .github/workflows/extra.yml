@@ -62,6 +62,13 @@ jobs:
           installed="$(poetry show --tree | grep -E '^[A-Za-z0-9._-]+' | awk '{print tolower($1)}' | sort -u)"
 
           fail=0
+          assert_not_installed() {
+            pkg="$1"
+            if echo "$installed" | grep -qx "$pkg"; then
+              echo "❌ Forbidden package was installed: $pkg"
+              fail=1
+            fi
+          }
 
           case "${{ matrix.extra }}" in
             noextra)
