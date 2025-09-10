@@ -31,7 +31,7 @@ jobs:
             extras_to_install: "xml data"
           - extra: vtl
             marker: vtl
-            extras_to_install: "vtl xml"
+            extras_to_install: "vtl"
 
     steps:
       - uses: actions/checkout@v4
@@ -53,6 +53,38 @@ jobs:
             done
           else
             poetry install --no-interaction
+          fi
+      - name: Validate forbidden packages per extra
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          installed="$(poetry show --no-dev --tree | grep -E '^[A-Za-z0-9._-]+' | awk '{print tolower($1)}' | sort -u)"
+
+          fail=0
+
+          case "${{ matrix.extra }}" in
+            noextra)
+              assert_not_installed "xmltodict"
+              assert_not_installed "numpy"
+              assert_not_installed "vtlengine"
+              ;;
+            data)
+              assert_not_installed "xmltodict"
+              assert_not_installed "vtlengine"
+              ;;
+            xml)
+              assert_not_installed "vtlengine"
+              ;;
+            vtl)
+              assert_not_installed "xmltodict"
+              assert_not_installed "numpy"
+              ;;
+          esac
+
+          if [ "$fail" -ne 0 ]; then
+            echo "❌ Some forbidden packages were installed for extra '${{ matrix.extra }}'."
+            exit 1
           fi
 
       - name: Run tests (${{ matrix.marker }})
