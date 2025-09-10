@@ -18,10 +18,10 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: ["3.12"]
-        extra: [none, data, xml, vtl]
+        extra: [noextra, data, xml, vtl]
         include:
-          - extra: none
-            marker: model
+          - extra: noextra
+            marker: noextra
             extras_to_install: ""
           - extra: data
             marker: data
