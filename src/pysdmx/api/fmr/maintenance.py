@@ -42,7 +42,7 @@ class StructureAction(Enum):
 
 
 class RegistryMaintenanceClient:
-    """A client to update metadata in the FMR."""
+    """EXPERIMENTAL: A client to update metadata in the FMR."""
 
     def __init__(
         self,
@@ -113,6 +113,20 @@ class RegistryMaintenanceClient:
         header: Optional[Header] = None,
         action: StructureAction = StructureAction.Replace,
     ) -> None:
+        """EXPERIMENTAL: Upload SDMX structures to the FMR.
+
+        This method is experimental and its interface or behavior may change
+        without notice.
+
+        Args:
+            artefacts: The sequence of SDMX maintainable artefacts to upload.
+            username: Username for authentication.
+            password: Password for authentication.
+            header: Optional SDMX Header to include in the message. If not
+                supplied, pysdmx will generate one for you.
+            action: How to apply the changes in case of already existing
+                structures.
+        """
         if not header:
             header = Header(source=f"pysdmx v{__version__}")
         message = StructureMessage(header=header, structures=artefacts)
@@ -126,6 +140,20 @@ class RegistryMaintenanceClient:
         header: Optional[Header] = None,
         action: StructureAction = StructureAction.Replace,
     ) -> None:
+        """EXPERIMENTAL: Upload SDMX metadata reports to the FMR.
+
+        This method is experimental and its interface or behavior may change
+        without notice.
+
+        Args:
+            reports: A sequence of metadata reports to upload.
+            username: Username for authentication.
+            password: Password for authentication.
+            header: Optional SDMX Header to include in the message. If not
+                supplied, pysdmx will generate one for you.
+            action: How to apply the changes in case of already existing
+                structures.
+        """
         if not header:
             header = Header(source=f"pysdmx v{__version__}")
         message = MetadataMessage(header=header, reports=reports)
