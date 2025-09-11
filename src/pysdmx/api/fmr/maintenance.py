@@ -8,11 +8,11 @@ import msgspec
 
 from pysdmx import __version__
 from pysdmx.io.json.sdmxjson2.writer import serializers
+from pysdmx.model import MetadataReport
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.message import (
     Header,
     MetadataMessage,
-    MetadataReport,
     StructureMessage,
 )
 from pysdmx.util._net_utils import map_httpx_errors

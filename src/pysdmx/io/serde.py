@@ -17,7 +17,7 @@ class Serializer(Protocol):
     """Creates an SDMX message from domain objects."""
 
     @classmethod
-    def from_model(self) -> Any:
+    def from_model(self, message: Any) -> Any:
         """Returns the SDMX message."""
 
 

@@ -4,6 +4,6 @@ from pysdmx.io.json.sdmxjson2 import messages as msg
 from pysdmx.io.serde import Serializers
 
 serializers = Serializers(
-    metadata_message=msg.JsonMetadataMessage,  # type: ignore[arg-type]
-    structure_message=msg.JsonStructureMessage,  # type: ignore[arg-type]
+    metadata_message=msg.JsonMetadataMessage,
+    structure_message=msg.JsonStructureMessage,
 )
