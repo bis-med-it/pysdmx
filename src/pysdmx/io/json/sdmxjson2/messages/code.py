@@ -357,7 +357,9 @@ class JsonHierarchy(ItemSchemeType, frozen=True, omit_defaults=True):
             agency=(h.agency.id if isinstance(h.agency, Agency) else h.agency),
             description=h.description,
             version=h.version,
-            codes=tuple([JsonHierarchicalCode.from_model(i) for i in h.codes]),
+            hierarchicalCodes=tuple(
+                [JsonHierarchicalCode.from_model(i) for i in h.codes]
+            ),
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in h.annotations]
             ),
