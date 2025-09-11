@@ -631,3 +631,24 @@ def check_hierarchy_pra(
             )
         else:
             assert isinstance(d.enumeration, Codelist)
+
+
+def check_coded_measure(
+    mock, fmr: RegistryClient, query, hca_query, body, hca_body
+):
+    """get_schema() works with coded measures."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    vc = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0")
+
+    assert isinstance(vc, Schema)
+    assert len(vc.components) == 13
+    assert len(vc.components.measures) == 1
+    obs_value = vc.components.measures[0]
+    assert obs_value.local_enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist="
+        "BIS:CL_BIS_IF_REF_AREA(1.0)"
+    )

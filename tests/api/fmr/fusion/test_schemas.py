@@ -146,6 +146,12 @@ def no_attr_body():
 
 
 @pytest.fixture
+def coded_measure_body():
+    with open("tests/api/fmr/samples/df/coded_measure.fusion.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture
 def error_body():
     with open("tests/api/fmr/samples/df/errorlvl.fusion.json", "rb") as f:
         return f.read()
@@ -428,4 +434,13 @@ def test_has_hierarchy_pra(
         hierarchy_hca_query_pra,
         hierarchy_pra_body,
         hier_assoc_pra_body,
+    )
+
+
+def test_coded_measure(
+    respx_mock, fmr, query, no_hca_query, coded_measure_body, no_hca_body
+):
+    """DSD may contain coded measures."""
+    checks.check_coded_measure(
+        respx_mock, fmr, query, no_hca_query, coded_measure_body, no_hca_body
     )
