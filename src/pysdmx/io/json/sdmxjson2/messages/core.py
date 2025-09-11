@@ -89,7 +89,6 @@ class NameableType(msgspec.Struct, frozen=True, omit_defaults=True):
     name: str
     description: Optional[str] = None
     annotations: Sequence[JsonAnnotation] = ()
-    urn: Optional[str] = None
 
 
 class MaintainableType(
