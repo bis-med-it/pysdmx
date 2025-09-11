@@ -311,7 +311,8 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
             header.test,
             receivers=header.receiver,
             schema=(
-                "https://json.sdmx.org/2.0.0/"
+                "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/"
+                "develop/structure-message/tools/schemas/2.0.0/"
                 "sdmx-json-structure-schema.json"
             ),
         )
