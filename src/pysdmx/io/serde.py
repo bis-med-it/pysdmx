@@ -44,6 +44,14 @@ class Deserializers:
 
 
 @dataclass
+class Serializers:
+    """Collection of serializers for a format."""
+
+    structure_message: Serializer
+    metadata_message: Serializer
+
+
+@dataclass
 class GdsDeserializers:
     """Collection of GDS deserializers for a format."""
 
