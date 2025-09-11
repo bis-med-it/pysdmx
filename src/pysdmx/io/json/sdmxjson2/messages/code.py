@@ -286,6 +286,54 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
             code.urn,
         )
 
+    @classmethod
+    def from_model(self, code: HierarchicalCode) -> "JsonHierarchicalCode":
+        """Converts a pysdmx hierarchical code to an SDMX-JSON one."""
+        if not code.urn:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON hierarchical codes must have the code urn.",
+                {"code": code.id},
+            )
+
+        annotations = [
+            JsonAnnotation.from_model(a)
+            for a in code.annotations
+            if a.type != "pysdmx"
+        ]
+        if code.valid_from and code.valid_to:
+            vp = (
+                f"{datetime.strftime(code.valid_from, _VAL_FMT)}/"
+                f"{datetime.strftime(code.valid_to, _VAL_FMT)}"
+            )
+        elif code.valid_from:
+            vp = f"{datetime.strftime(code.valid_from, _VAL_FMT)}/"
+        elif code.valid_to:
+            vp = f"/{datetime.strftime(code.valid_to, _VAL_FMT)}"
+        else:
+            vp = ""
+        if vp:
+            annotations.append(
+                JsonAnnotation(title=vp, type="FR_VALIDITY_PERIOD")
+            )
+        id_ano = [
+            a
+            for a in code.annotations
+            if a.type == "pysdmx" and a.id == "hcode"
+        ]
+        hid = id_ano[0].value if len(id_ano) > 0 else code.id
+
+        return JsonCode(
+            id=hid,
+            code=code.urn,
+            validFrom=code.rel_valid_from,
+            validTo=code.rel_valid_to,
+            annotations=tuple(annotations),
+            hierarchicalCodes=[
+                JsonHierarchicalCode.from_model(c) for c in code.codes
+            ],
+        )
+
 
 class JsonHierarchy(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a hierarchy."""
@@ -307,6 +355,31 @@ class JsonHierarchy(ItemSchemeType, frozen=True, omit_defaults=True):
             valid_from=self.validFrom,
             valid_to=self.validTo,
             codes=[i.to_model(cls) for i in self.hierarchicalCodes],
+        )
+
+    @classmethod
+    def from_model(self, h: Hierarchy) -> "JsonHierarchy":
+        """Converts a pysdmx hierarchy to an SDMX-JSON one."""
+        if not h.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON hierarchy must have a name",
+                {"hierarchy": h.id},
+            )
+        return JsonHierarchy(
+            id=h.id,
+            name=h.name,
+            agency=(h.agency.id if isinstance(h.agency, Agency) else h.agency),
+            description=h.description,
+            version=h.version,
+            codes=tuple([JsonHierarchicalCode.from_model(i) for i in h.codes]),
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in h.annotations]
+            ),
+            isExternalReference=h.is_external_reference,
+            isPartial=h.is_partial,
+            validFrom=h.valid_from,
+            validTo=h.valid_to,
         )
 
 
