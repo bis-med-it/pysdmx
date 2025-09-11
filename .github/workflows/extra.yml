@@ -54,6 +54,27 @@ jobs:
           else
             poetry install --no-interaction
           fi
+      - name: Verify extras
+        run: |
+          poetry run python - <<'PY'
+          from importlib.util import find_spec
+          selected = "${{ matrix.extras_to_install }}".split()   # p.ej. ["xml","data"]
+          WANT = {
+            "data": ["pandas"],
+            "xml":  ["lxml","sdmxschemas","xmltodict"],
+            "vtl":  ["vtlengine"],
+          }
+          all_mods = {m for mods in WANT.values() for m in mods}
+          must = {m for e in selected for m in WANT.get(e, [])}
+          forbidden = all_mods - must                             
+          
+          ok = True
+          for m in sorted(must):
+            if not find_spec(m): print(f"Missing: {m}"); ok = False
+          for m in sorted(forbidden):
+            if find_spec(m): print(f"Unexpected: {m}"); ok = False
+          raise SystemExit(0 if ok else 1)
+          PY
 
       - name: Run tests (${{ matrix.marker }})
         run: poetry run pytest -m "${{ matrix.marker }}" --cov=pysdmx --cov-branch
