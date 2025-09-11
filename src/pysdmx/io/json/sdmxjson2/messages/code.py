@@ -297,7 +297,7 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
         hid = id_ano[0].value if len(id_ano) > 0 else code.id
 
         return JsonHierarchicalCode(
-            id=hid,
+            id=hid,  # type: ignore[arg-type]
             code=code.urn,
             validFrom=code.rel_valid_from,
             validTo=code.rel_valid_to,
