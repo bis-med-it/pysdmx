@@ -145,6 +145,8 @@ class HierarchicalCode(
         rel_valid_from: Start of the hierarchical relationship validity.
         rel_valid_to: End of the hierarchical relationship validity.
         codes: The child codes.
+        annotations: Annotations attached to the code.
+        urn: The URN of the code.
     """
 
     id: str
@@ -156,6 +158,7 @@ class HierarchicalCode(
     rel_valid_to: Optional[datetime] = None
     codes: Sequence["HierarchicalCode"] = ()
     annotations: Sequence[Annotation] = ()
+    urn: Optional[str] = None
 
     def __iter__(self) -> Iterator["HierarchicalCode"]:
         """Return an iterator over the list of codes."""
