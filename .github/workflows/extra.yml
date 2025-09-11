@@ -23,15 +23,15 @@ jobs:
           - extra: noextra
             marker: noextra
             extras_to_install: ""
+          - extra: vtl
+            marker: vtl
+            extras_to_install: "vtl"
           - extra: data
             marker: data
             extras_to_install: "data"
           - extra: xml
             marker: xml
             extras_to_install: "xml data"
-          - extra: vtl
-            marker: vtl
-            extras_to_install: "vtl"
 
     steps:
       - uses: actions/checkout@v4
