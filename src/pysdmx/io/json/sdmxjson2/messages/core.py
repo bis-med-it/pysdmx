@@ -291,6 +291,7 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
     name: Optional[str] = None
     receivers: Optional[Organisation] = None
     links: Sequence[JsonLink] = ()
+    schema: Optional[str] = None
 
     def to_model(self) -> Header:
         """Map to pysdmx header class."""
@@ -310,4 +311,8 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
             header.sender,
             header.test,
             receivers=header.receiver,
+            schema=(
+                "https://json.sdmx.org/2.0.0/"
+                "sdmx-json-structure-schema.json"
+            ),
         )
