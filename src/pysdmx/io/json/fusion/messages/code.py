@@ -12,6 +12,7 @@ from pysdmx.io.json.fusion.messages.core import (
     FusionString,
 )
 from pysdmx.model import (
+    Annotation,
     Code,
     HierarchicalCode,
 )
@@ -108,6 +109,7 @@ class FusionCodelistMessage(Struct, frozen=True):
 class FusionHierarchicalCode(Struct, frozen=True):
     """Fusion-JSON payload for hierarchical codes."""
 
+    id: str
     code: str
     validFrom: Optional[int] = None
     validTo: Optional[int] = None
@@ -140,6 +142,11 @@ class FusionHierarchicalCode(Struct, frozen=True):
         rvf = self.__convert_epoch(self.validFrom) if self.validFrom else None
         rvt = self.__convert_epoch(self.validTo) if self.validTo else None
         codes = [c.to_model(codelists) for c in self.codes]
+        if self.id != code.id:
+            a = Annotation(id="hcode", type="pysdmx", text=self.id)
+            annotations = [a]
+        else:
+            annotations = []
         return HierarchicalCode(
             code.id,
             code.name,
@@ -149,6 +156,7 @@ class FusionHierarchicalCode(Struct, frozen=True):
             rvf,
             rvt,
             codes,
+            tuple(annotations),
         )
 
 

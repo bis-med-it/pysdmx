@@ -81,6 +81,7 @@ def check_hcode_details(mock, fmr: RegistryClient, query, body):
                 assert c.id in ["M1", "M2", "M3", "M4", "M5", "M6"]
                 assert c.name is not None
                 assert c.description is None
+                assert len(hc.annotations) == 1
                 if c.id == "M1":
                     assert len(c.codes) == 6
                     assert c.valid_from == datetime(
@@ -104,10 +105,21 @@ def check_hcode_details(mock, fmr: RegistryClient, query, body):
                                 2020, 12, 31, 23, 59, 59, tzinfo=timezone.utc
                             )
                             pass
+
                 else:
                     assert not c.codes
+            assert len(hc.annotations) == 1
+            ano = hc.annotations[0]
+            assert ano.type == "pysdmx"
+            assert ano.id == "hcode"
+            assert ano.value == "Ze33"
         elif hc.id == "D0":
             assert not hc.codes
+            assert len(hc.annotations) == 1
+            ano = hc.annotations[0]
+            assert ano.type == "pysdmx"
+            assert ano.id == "hcode"
+            assert ano.value == "OJ55"
         elif hc.id == "N0":
             assert len(hc.codes) == 2
             c1 = hc.codes[0]
@@ -115,9 +127,11 @@ def check_hcode_details(mock, fmr: RegistryClient, query, body):
             assert c1.id == "N1"
             assert c1.description is None
             assert not c1.codes
+            assert not c1.annotations
             assert c2.id == "N2"
             assert c2.description is None
             assert not c2.codes
+            assert not c2.annotations
         else:
             assert hc.id == "U0"
             assert not hc.codes

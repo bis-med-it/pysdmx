@@ -16,6 +16,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
 )
 from pysdmx.model import (
     Agency,
+    Annotation,
     Code,
     Codelist,
     HierarchicalCode,
@@ -255,6 +256,11 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
         codes = [c.to_model(codelists) for c in self.hierarchicalCodes]
         vf = self.validFrom.replace(tzinfo=tz.utc) if self.validFrom else None
         vt = self.validTo.replace(tzinfo=tz.utc) if self.validTo else None
+        if self.id != code.id:
+            a = Annotation(id="hcode", type="pysdmx", text=self.id)
+            annotations = [a]
+        else:
+            annotations = []
         return HierarchicalCode(
             code.id,
             name,
@@ -264,6 +270,7 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
             vf,
             vt,
             codes,
+            tuple(annotations),
         )
 
 
