@@ -283,7 +283,7 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
             vt,
             codes,
             tuple(annotations),
-            code.urn,
+            self.code,
         )
 
     @classmethod
