@@ -194,5 +194,6 @@ def __check_core_info(codes: Sequence[HierarchicalCode]):
     for code in codes:
         assert code.id is not None
         assert code.name is not None
+        assert code.urn is not None
     if code.codes:
         __check_core_info(code.codes)

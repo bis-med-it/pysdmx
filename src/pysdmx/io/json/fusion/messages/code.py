@@ -32,6 +32,7 @@ class FusionCode(Struct, frozen=True):
     """Fusion-JSON payload for codes."""
 
     id: str
+    urn: Optional[str] = None
     annotations: Sequence[FusionAnnotation] = ()
     names: Sequence[FusionString] = ()
     descriptions: Sequence[FusionString] = ()
@@ -50,10 +51,11 @@ class FusionCode(Struct, frozen=True):
             valid_to = self.__handle_date(vals[1]) if vals[1] else None
             return (valid_from, valid_to)
 
-    def to_model(self) -> Code:
+    def to_model(self, extract_urn: bool = False) -> Code:
         """Converts a FusionCode to a standard code."""
         vp = [a for a in self.annotations if a.type == "FR_VALIDITY_PERIOD"]
         vf, vt = self.__get_val(vp[0]) if vp else (None, None)
+        urn = self.urn if extract_urn else None
         return Code(
             id=self.id,
             name=self.names[0].value,
@@ -62,6 +64,7 @@ class FusionCode(Struct, frozen=True):
             ),
             valid_from=vf,
             valid_to=vt,
+            urn=urn,
         )
 
 
@@ -76,7 +79,7 @@ class FusionCodelist(Struct, frozen=True, rename={"agency": "agencyId"}):
     version: str = "1.0"
     items: Sequence[FusionCode] = ()
 
-    def to_model(self) -> CL:
+    def to_model(self, extract_urns: bool = False) -> CL:
         """Converts a JsonCodelist to a standard codelist."""
         t = "codelist" if "Codelist" in self.urn else "valuelist"
         return CL(
@@ -87,7 +90,7 @@ class FusionCodelist(Struct, frozen=True, rename={"agency": "agencyId"}):
                 self.descriptions[0].value if self.descriptions else None
             ),
             version=self.version,
-            items=[i.to_model() for i in self.items],
+            items=[i.to_model(extract_urns) for i in self.items],
             sdmx_type=t,  # type: ignore[arg-type]
         )
 
@@ -157,6 +160,7 @@ class FusionHierarchicalCode(Struct, frozen=True):
             rvt,
             codes,
             tuple(annotations),
+            code.urn,
         )
 
 
@@ -230,7 +234,7 @@ class FusionHierarchyMessage(Struct, frozen=True):
 
     def to_model(self) -> HCL:
         """Returns the requested hierarchy."""
-        cls = [cl.to_model() for cl in self.Codelist]
+        cls = [cl.to_model(True) for cl in self.Codelist]
         return self.Hierarchy[0].to_model(cls)
 
 

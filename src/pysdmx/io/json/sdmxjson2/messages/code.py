@@ -47,7 +47,7 @@ class JsonCode(NameableType, frozen=True, omit_defaults=True):
             valid_to = self.__handle_date(vals[1]) if vals[1] else None
             return (valid_from, valid_to)
 
-    def to_model(self) -> Code:
+    def to_model(self, scheme: Optional[str] = None) -> Code:
         """Converts a JsonCode to a standard code."""
         if self.annotations:
             vp = [
@@ -56,6 +56,10 @@ class JsonCode(NameableType, frozen=True, omit_defaults=True):
         else:
             vp = None
         vf, vt = self.__get_val(vp[0]) if vp else (None, None)
+        if scheme:
+            urn = f"{scheme}.{self.id}"
+        else:
+            urn = None
         return Code(
             id=self.id,
             name=self.name,
@@ -63,6 +67,7 @@ class JsonCode(NameableType, frozen=True, omit_defaults=True):
             valid_from=vf,
             valid_to=vt,
             annotations=[a.to_model() for a in self.annotations],
+            urn=urn,
         )
 
     @classmethod
@@ -105,15 +110,22 @@ class JsonCodelist(ItemSchemeType, frozen=True, omit_defaults=True):
 
     codes: Sequence[JsonCode] = ()
 
-    def to_model(self) -> Codelist:
+    def to_model(self, extract_urns: bool = False) -> Codelist:
         """Converts a JsonCodelist to a standard codelist."""
+        if extract_urns:
+            scheme = (
+                "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=",
+                f"{self.agency}:{self.id}({self.version})",
+            )
+        else:
+            scheme = None
         return Codelist(
             id=self.id,
             name=self.name,
             agency=self.agency,
             description=self.description,
             version=self.version,
-            items=[i.to_model() for i in self.codes],
+            items=[i.to_model(scheme) for i in self.codes],
             annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
@@ -271,6 +283,7 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
             vt,
             codes,
             tuple(annotations),
+            code.urn,
         )
 
 
@@ -281,7 +294,7 @@ class JsonHierarchy(ItemSchemeType, frozen=True, omit_defaults=True):
 
     def to_model(self, codelists: Sequence[JsonCodelist]) -> Hierarchy:
         """Converts a JsonHierarchy to a standard hierarchy."""
-        cls = [cl.to_model() for cl in codelists]
+        cls = [cl.to_model(True) for cl in codelists]
         return Hierarchy(
             id=self.id,
             name=self.name,
