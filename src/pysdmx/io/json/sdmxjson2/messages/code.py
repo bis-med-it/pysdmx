@@ -301,21 +301,6 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
             for a in code.annotations
             if a.type != "pysdmx"
         ]
-        if code.valid_from and code.valid_to:
-            vp = (
-                f"{datetime.strftime(code.valid_from, _VAL_FMT)}/"
-                f"{datetime.strftime(code.valid_to, _VAL_FMT)}"
-            )
-        elif code.valid_from:
-            vp = f"{datetime.strftime(code.valid_from, _VAL_FMT)}/"
-        elif code.valid_to:
-            vp = f"/{datetime.strftime(code.valid_to, _VAL_FMT)}"
-        else:
-            vp = ""
-        if vp:
-            annotations.append(
-                JsonAnnotation(title=vp, type="FR_VALIDITY_PERIOD")
-            )
         id_ano = [
             a
             for a in code.annotations
@@ -323,7 +308,7 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
         ]
         hid = id_ano[0].value if len(id_ano) > 0 else code.id
 
-        return JsonCode(
+        return JsonHierarchicalCode(
             id=hid,
             code=code.urn,
             validFrom=code.rel_valid_from,
