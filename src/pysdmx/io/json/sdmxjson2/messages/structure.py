@@ -237,6 +237,9 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
                 for ts in msg.get_transformation_schemes()
             ]
         )
+        hierarchies = tuple(
+            [JsonHierarchy.from_model(h) for h in msg.get_hierarchies()]
+        )
         return JsonStructures(
             agencySchemes=agencies,
             categorisations=categorisations,
@@ -247,6 +250,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             dataflows=dataflows,
             dataProviderSchemes=data_providers,
             dataStructures=data_structures,
+            hierarchies=hierarchies,
             hierarchyAssociations=hier_associations,
             namePersonalisationSchemes=name_personalisations,
             provisionAgreements=agreements,
