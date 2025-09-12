@@ -31,8 +31,13 @@ def end_point_in_2() -> str:
 
 
 @pytest.fixture
-def end_point_out() -> str:
+def end_point_out_structure() -> str:
     return "https://registry.sdmx.org/ws/secure/sdmxapi/rest"
+
+
+@pytest.fixture
+def end_point_out_report() -> str:
+    return "https://registry.sdmx.org/ws/secure/sdmx/v2/metadata"
 
 
 @pytest.fixture
@@ -71,9 +76,11 @@ def header():
 
 
 def test_structure_maintenance(
-    respx_mock, structure, end_point_in, end_point_out, user, pwd
+    respx_mock, structure, end_point_in, end_point_out_structure, user, pwd
 ):
-    respx_mock.post(end_point_out).mock(return_value=httpx.Response(200))
+    respx_mock.post(end_point_out_structure).mock(
+        return_value=httpx.Response(200)
+    )
 
     client = RegistryMaintenanceClient(end_point_in, user, pwd)
 
@@ -104,9 +111,17 @@ def test_structure_maintenance(
 
 
 def test_structure_maintenance_header(
-    respx_mock, structure, end_point_in, end_point_out, user, pwd, header
+    respx_mock,
+    structure,
+    end_point_in,
+    end_point_out_structure,
+    user,
+    pwd,
+    header,
 ):
-    respx_mock.post(end_point_out).mock(return_value=httpx.Response(200))
+    respx_mock.post(end_point_out_structure).mock(
+        return_value=httpx.Response(200)
+    )
 
     client = RegistryMaintenanceClient(end_point_in, user, pwd)
 
@@ -126,9 +141,11 @@ def test_structure_maintenance_header(
 
 
 def test_report_maintenance(
-    respx_mock, report, end_point_in, end_point_out, user, pwd
+    respx_mock, report, end_point_in, end_point_out_report, user, pwd
 ):
-    respx_mock.post(end_point_out).mock(return_value=httpx.Response(200))
+    respx_mock.post(end_point_out_report).mock(
+        return_value=httpx.Response(200)
+    )
 
     client = RegistryMaintenanceClient(end_point_in, user, pwd)
 
@@ -159,9 +176,11 @@ def test_report_maintenance(
 
 
 def test_report_maintenance_header(
-    respx_mock, report, end_point_in, end_point_out, user, pwd, header
+    respx_mock, report, end_point_in, end_point_out_report, user, pwd, header
 ):
-    respx_mock.post(end_point_out).mock(return_value=httpx.Response(200))
+    respx_mock.post(end_point_out_report).mock(
+        return_value=httpx.Response(200)
+    )
 
     client = RegistryMaintenanceClient(end_point_in, user, pwd)
 
@@ -181,9 +200,11 @@ def test_report_maintenance_header(
 
 
 def test_endpoint_ending(
-    respx_mock, structure, end_point_in_2, end_point_out, user, pwd
+    respx_mock, structure, end_point_in_2, end_point_out_structure, user, pwd
 ):
-    respx_mock.post(end_point_out).mock(return_value=httpx.Response(200))
+    respx_mock.post(end_point_out_structure).mock(
+        return_value=httpx.Response(200)
+    )
 
     client = RegistryMaintenanceClient(end_point_in_2, user, pwd)
 
@@ -193,9 +214,11 @@ def test_endpoint_ending(
 
 
 def test_client_error(
-    respx_mock, structure, end_point_in, end_point_out, user, pwd
+    respx_mock, structure, end_point_in, end_point_out_structure, user, pwd
 ):
-    respx_mock.post(end_point_out).mock(return_value=httpx.Response(409))
+    respx_mock.post(end_point_out_structure).mock(
+        return_value=httpx.Response(409)
+    )
     client = RegistryMaintenanceClient(end_point_in, user, pwd)
 
     with pytest.raises(errors.Invalid) as e:

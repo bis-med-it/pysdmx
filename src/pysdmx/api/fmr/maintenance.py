@@ -66,7 +66,7 @@ class RegistryMaintenanceClient:
         """
         if api_endpoint.endswith("/"):
             api_endpoint = api_endpoint[0:-1]
-        self._api_endpoint = f"{api_endpoint}/ws/secure/sdmxapi/rest"
+        self._api_endpoint = f"{api_endpoint}"
         self._user = user
         self._password = password
         self._timeout = timeout
@@ -82,11 +82,12 @@ class RegistryMaintenanceClient:
     def __post(
         self,
         message: Union[MetadataMessage, StructureMessage],
-        action: StructureAction = StructureAction.Replace,
+        action: StructureAction,
+        endpoint: str,
     ) -> None:
         with httpx.Client(verify=self._ssl_context) as client:
             try:
-                url = f"{self._api_endpoint}"
+                url = f"{endpoint}"
                 auth = httpx.BasicAuth(self._user, self._password)
                 headers = {
                     "Content-Type": "application/text",
@@ -129,7 +130,8 @@ class RegistryMaintenanceClient:
         if not header:
             header = Header()
         message = StructureMessage(header=header, structures=artefacts)
-        return self.__post(message, action)
+        endpoint = f"{self._api_endpoint}/ws/secure/sdmxapi/rest"
+        return self.__post(message, action, endpoint)
 
     def put_metadata_reports(
         self,
@@ -152,4 +154,5 @@ class RegistryMaintenanceClient:
         if not header:
             header = Header()
         message = MetadataMessage(header=header, reports=reports)
-        return self.__post(message, action)
+        endpoint = f"{self._api_endpoint}/ws/secure/sdmx/v2/metadata"
+        return self.__post(message, action, endpoint)
