@@ -128,7 +128,7 @@ class RegistryMaintenanceClient:
                 structures.
         """
         if not header:
-            header = Header(source=f"pysdmx v{__version__}")
+            header = Header()
         message = StructureMessage(header=header, structures=artefacts)
         return self.__post(message, username, password, action)
 
@@ -155,6 +155,6 @@ class RegistryMaintenanceClient:
                 structures.
         """
         if not header:
-            header = Header(source=f"pysdmx v{__version__}")
+            header = Header()
         message = MetadataMessage(header=header, reports=reports)
         return self.__post(message, username, password, action)
