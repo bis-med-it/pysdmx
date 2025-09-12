@@ -25,7 +25,7 @@ maintain metadata are required.
 
 .. code-block:: python
 
-    from pysdmx.api.fm.maintenance import RegistryMaintenanceClient
+    from pysdmx.api.fmr.maintenance import RegistryMaintenanceClient
 
     target = "https://registry.sdmx.org"
     user = "your_username"

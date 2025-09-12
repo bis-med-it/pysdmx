@@ -8,7 +8,7 @@ Maintenance client
 
 This is the client to be used for maintaining metadata in an SDMX Registry.
 
->>> from pysdmx.api.fm.maintenance import RegistryMaintenanceClient
+>>> from pysdmx.api.fmr.maintenance import RegistryMaintenanceClient
 >>> cd = Code("A", name="Code A")
 >>> cl = Codelist("CL_TEST", agency="TEST", name="Test CL", items=[cd])
 >>> target = "https://registry.sdmx.org"
