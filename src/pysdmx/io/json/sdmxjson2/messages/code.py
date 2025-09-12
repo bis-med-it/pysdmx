@@ -62,7 +62,7 @@ class JsonCode(NameableType, frozen=True, omit_defaults=True):
             description=self.description,
             valid_from=vf,
             valid_to=vt,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
         )
 
     @classmethod
@@ -113,8 +113,8 @@ class JsonCodelist(ItemSchemeType, frozen=True, omit_defaults=True):
             agency=self.agency,
             description=self.description,
             version=self.version,
-            items=[i.to_model() for i in self.codes],
-            annotations=[a.to_model() for a in self.annotations],
+            items=tuple([i.to_model() for i in self.codes]),
+            annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
             valid_from=self.validFrom,
@@ -322,7 +322,7 @@ class JsonHierarchy(ItemSchemeType, frozen=True, omit_defaults=True):
             agency=self.agency,
             description=self.description,
             version=self.version,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
             valid_from=self.validFrom,
