@@ -31,9 +31,9 @@ class StructureAction(Enum):
             and C, and the same codelist is submitted with codes B and X, then
             the resulting codelist will have codes A, B, C, X, i.e. code B has
             been replaced while code X has been added.
-        Replace: Metadata uploaded with action 'Replace' may add new metadata
-            to the  Registry, and can also replace existing metadata with new
-            ones. This is the default.
+        Replace: Metadata uploaded with action 'Replace' may add new metadata,
+            and can also replace existing metadata with new ones. This is the
+            default.
     """
 
     Append = "Append"
