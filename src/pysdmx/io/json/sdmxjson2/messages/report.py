@@ -38,7 +38,7 @@ class JsonMetadataAttribute(IdentifiableType, frozen=True, omit_defaults=True):
             id=self.id,
             value=self.value,
             attributes=attrs,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
             format=get_facets(self.format) if self.format else None,
         )
 
@@ -76,7 +76,7 @@ class JsonMetadataReport(ItemSchemeType, frozen=True, omit_defaults=True):
         attrs = [a.to_model() for a in self.attributes]
         attrs = merge_attributes(attrs)  # type: ignore[assignment]
         return MetadataReport(
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
             id=self.id,
             name=self.name,
             description=self.description,
@@ -86,8 +86,8 @@ class JsonMetadataReport(ItemSchemeType, frozen=True, omit_defaults=True):
             agency=self.agency,
             is_external_reference=self.isExternalReference,
             metadataflow=self.metadataflow,
-            targets=self.targets,
-            attributes=attrs,
+            targets=tuple(self.targets),
+            attributes=tuple(attrs),
             metadataProvisionAgreement=self.metadataProvisionAgreement,
             publicationPeriod=self.publicationPeriod,
             publicationYear=self.publicationYear,
