@@ -21,18 +21,19 @@ class StructureAction(Enum):
     """Enumeration that defines the action when updating metadata in the FMR.
 
     Arguments:
-        Append: Structures uploaded with action 'Append' may only add new
-            structures and may not overwrite any existing structures.
-        Merge: Structures uploaded with action 'Merge' may add new structures
-            and replace existing structures. However for Item Schemes
-            (codelists, concept schemes, etc.), the items submitted will be
-            added to the existing scheme. For example if a codelist exists
-            with codes A, B, and C, and the same codelist is submitted with
-            codes B and X, then the resulting codelist will have codes A, B,
-            C, X, i.e. code B has been replace while code X has been added.
-        Replace: Structures uploaded with action 'Replace' may add new
-            structures to the Registry, and can also replace existing
-            structures with new ones. This is the default.
+        Append: Metadata uploaded with action 'Append' may only add new
+            metadata and may not overwrite any existing metadata, i.e. any
+            attempt to update existing metadata will be rejected.
+        Merge: Metadata uploaded with action 'Merge' may add new metadata and
+            replace existing metadata. However, for Item Schemes (codelists,
+            concept schemes, etc.), the items submitted will be added to the
+            existing scheme. For example, if a codelist exists with codes A, B,
+            and C, and the same codelist is submitted with codes B and X, then
+            the resulting codelist will have codes A, B, C, X, i.e. code B has
+            been replaced while code X has been added.
+        Replace: Metadata uploaded with action 'Replace' may add new metadata
+            to the  Registry, and can also replace existing metadata with new
+            ones. This is the default.
     """
 
     Append = "Append"
