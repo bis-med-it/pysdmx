@@ -46,6 +46,8 @@ class RegistryMaintenanceClient:
     def __init__(
         self,
         api_endpoint: str,
+        user: str,
+        password: str,
         pem: Optional[str] = None,
         timeout: float = 60.0,
     ):
@@ -53,6 +55,8 @@ class RegistryMaintenanceClient:
 
         Args:
             api_endpoint: The endpoint of the targeted service.
+            user: Username for authentication.
+            password: Password for authentication.
             pem: In case the service exposed a certificate created by an
                 unknown certificate authority, you can pass a pem file for
                 this authority using this parameter.
@@ -62,6 +66,8 @@ class RegistryMaintenanceClient:
         if api_endpoint.endswith("/"):
             api_endpoint = api_endpoint[0:-1]
         self._api_endpoint = f"{api_endpoint}/ws/secure/sdmxapi/rest"
+        self._user = user
+        self._password = password
         self._timeout = timeout
         self._ssl_context = (
             httpx.create_ssl_context(
@@ -75,15 +81,12 @@ class RegistryMaintenanceClient:
     def __post(
         self,
         message: Union[MetadataMessage, StructureMessage],
-        username: str,
-        password: str,
         action: StructureAction = StructureAction.Replace,
     ) -> None:
-
         with httpx.Client(verify=self._ssl_context) as client:
             try:
                 url = f"{self._api_endpoint}"
-                auth = httpx.BasicAuth(username, password)
+                auth = httpx.BasicAuth(self._user, self._password)
                 headers = {
                     "Content-Type": "application/text",
                     "Action": action.value,
@@ -107,8 +110,6 @@ class RegistryMaintenanceClient:
     def put_structures(
         self,
         artefacts: Sequence[MaintainableArtefact],
-        username: str,
-        password: str,
         header: Optional[Header] = None,
         action: StructureAction = StructureAction.Replace,
     ) -> None:
@@ -119,8 +120,6 @@ class RegistryMaintenanceClient:
 
         Args:
             artefacts: The sequence of SDMX maintainable artefacts to upload.
-            username: Username for authentication.
-            password: Password for authentication.
             header: Optional SDMX Header to include in the message. If not
                 supplied, pysdmx will generate one for you.
             action: How to apply the changes in case of already existing
@@ -129,13 +128,11 @@ class RegistryMaintenanceClient:
         if not header:
             header = Header()
         message = StructureMessage(header=header, structures=artefacts)
-        return self.__post(message, username, password, action)
+        return self.__post(message, action)
 
     def put_metadata_reports(
         self,
         reports: Sequence[MetadataReport],
-        username: str,
-        password: str,
         header: Optional[Header] = None,
         action: StructureAction = StructureAction.Replace,
     ) -> None:
@@ -146,8 +143,6 @@ class RegistryMaintenanceClient:
 
         Args:
             reports: A sequence of metadata reports to upload.
-            username: Username for authentication.
-            password: Password for authentication.
             header: Optional SDMX Header to include in the message. If not
                 supplied, pysdmx will generate one for you.
             action: How to apply the changes in case of already existing
@@ -156,4 +151,4 @@ class RegistryMaintenanceClient:
         if not header:
             header = Header()
         message = MetadataMessage(header=header, reports=reports)
-        return self.__post(message, username, password, action)
+        return self.__post(message, action)

@@ -75,9 +75,9 @@ def test_structure_maintenance(
 ):
     respx_mock.post(end_point_out).mock(return_value=httpx.Response(200))
 
-    client = RegistryMaintenanceClient(end_point_in)
+    client = RegistryMaintenanceClient(end_point_in, user, pwd)
 
-    client.put_structures([structure], user, pwd)
+    client.put_structures([structure])
 
     assert respx_mock.calls.call_count == 1
     request = respx_mock.calls[0].request
@@ -108,9 +108,9 @@ def test_structure_maintenance_header(
 ):
     respx_mock.post(end_point_out).mock(return_value=httpx.Response(200))
 
-    client = RegistryMaintenanceClient(end_point_in)
+    client = RegistryMaintenanceClient(end_point_in, user, pwd)
 
-    client.put_structures([structure], user, pwd, header)
+    client.put_structures([structure], header)
 
     # Check header
     request = respx_mock.calls[0].request
@@ -130,9 +130,9 @@ def test_report_maintenance(
 ):
     respx_mock.post(end_point_out).mock(return_value=httpx.Response(200))
 
-    client = RegistryMaintenanceClient(end_point_in)
+    client = RegistryMaintenanceClient(end_point_in, user, pwd)
 
-    client.put_metadata_reports([report], user, pwd)
+    client.put_metadata_reports([report])
 
     assert respx_mock.calls.call_count == 1
     request = respx_mock.calls[0].request
@@ -163,9 +163,9 @@ def test_report_maintenance_header(
 ):
     respx_mock.post(end_point_out).mock(return_value=httpx.Response(200))
 
-    client = RegistryMaintenanceClient(end_point_in)
+    client = RegistryMaintenanceClient(end_point_in, user, pwd)
 
-    client.put_metadata_reports([report], user, pwd, header)
+    client.put_metadata_reports([report], header)
 
     # Check header
     request = respx_mock.calls[0].request
@@ -185,9 +185,9 @@ def test_endpoint_ending(
 ):
     respx_mock.post(end_point_out).mock(return_value=httpx.Response(200))
 
-    client = RegistryMaintenanceClient(end_point_in_2)
+    client = RegistryMaintenanceClient(end_point_in_2, user, pwd)
 
-    client.put_structures([structure], user, pwd)
+    client.put_structures([structure])
 
     assert respx_mock.calls.call_count == 1
 
@@ -196,10 +196,10 @@ def test_client_error(
     respx_mock, structure, end_point_in, end_point_out, user, pwd
 ):
     respx_mock.post(end_point_out).mock(return_value=httpx.Response(409))
-    client = RegistryMaintenanceClient(end_point_in)
+    client = RegistryMaintenanceClient(end_point_in, user, pwd)
 
     with pytest.raises(errors.Invalid) as e:
-        client.put_structures([structure], user, pwd)
+        client.put_structures([structure])
     assert e.value.title is not None
     assert e.value.description is not None
     assert end_point_in in e.value.description
