@@ -4,7 +4,7 @@ import httpx
 import msgspec
 import pytest
 
-from pysdmx import __version__, errors
+from pysdmx import errors
 from pysdmx.api.fmr.maintenance import RegistryMaintenanceClient
 from pysdmx.io.json.sdmxjson2.messages import (
     JsonMetadataMessage,
@@ -38,9 +38,7 @@ def end_point_out() -> str:
 @pytest.fixture
 def structure():
     cd = Code("A", name="Code A")
-    return Codelist(
-        "CL_TEST", agency="TEST", name="Test CL", items=tuple([cd])
-    )
+    return Codelist("CL_TEST", agency="TEST", name="Test CL", items=(cd,))
 
 
 @pytest.fixture
@@ -50,9 +48,9 @@ def report():
         "CL_TEST",
         agency="TEST",
         name="Test CL",
-        attributes=tuple([a]),
+        attributes=tuple(a),
         targets=tuple(
-            ["urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TS:T1(1.0)"]
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TS:T1(1.0)"
         ),
     )
 

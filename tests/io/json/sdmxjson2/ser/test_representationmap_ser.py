@@ -44,8 +44,8 @@ def test_rm():
     assert sjson.validTo == rm.valid_to
     assert sjson.description == rm.description
     assert len(sjson.annotations) == 1
-    assert sjson.source == tuple([{"codelist": rm.source}])
-    assert sjson.target == tuple([{"codelist": rm.target}])
+    assert list(sjson.source) == [{"codelist": rm.source}]
+    assert list(sjson.target) == [{"codelist": rm.target}]
     assert len(sjson.representationMappings) == 1
 
 
@@ -68,10 +68,11 @@ def test_mrm():
 
     sjson = JsonRepresentationMap.from_model(mrm)
 
-    assert sjson.source == tuple(
-        [{"dataType": "String"}, {"dataType": "String"}]
-    )
-    assert sjson.target == tuple([{"codelist": mrm.target[0]}])
+    assert list(sjson.source) == [
+        {"dataType": "String"},
+        {"dataType": "String"},
+    ]
+    assert list(sjson.target) == [{"codelist": mrm.target[0]}]
     assert len(sjson.representationMappings) == 1
 
 
