@@ -64,7 +64,7 @@ class JsonAnnotation(msgspec.Struct, frozen=True, omit_defaults=True):
         if annotation.url:
             links = (JsonLink(rel="self", href=annotation.url),)
         else:
-            links = ()
+            links = ()  # type: ignore[assignment]
 
         return JsonAnnotation(
             id=annotation.id,
