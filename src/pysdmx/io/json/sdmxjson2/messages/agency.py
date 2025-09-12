@@ -67,7 +67,7 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True, omit_defaults=True):
         agency = (
             asc.agency.id if isinstance(asc.agency, Agency) else asc.agency
         )
-        is_sdmx_scheme = True if agency == "SDMX" else False
+        is_sdmx_scheme = agency == "SDMX"
         children = [_sanitize_agency(a, is_sdmx_scheme) for a in asc.items]
 
         return JsonAgencyScheme(

@@ -6,7 +6,6 @@ from typing import Optional, Sequence, Union
 import httpx
 import msgspec
 
-from pysdmx import __version__
 from pysdmx.io.json.sdmxjson2.writer import serializers
 from pysdmx.model import MetadataReport
 from pysdmx.model.__base import MaintainableArtefact

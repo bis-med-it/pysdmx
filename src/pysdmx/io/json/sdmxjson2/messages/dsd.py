@@ -96,10 +96,7 @@ def _get_concept_reference(component: Component) -> str:
 def _get_json_representation(
     comp: Component,
 ) -> Optional[JsonRepresentation]:
-    if comp.local_enum_ref:
-        enum = comp.local_enum_ref
-    else:
-        enum = None
+    enum = comp.local_enum_ref if comp.local_enum_ref else None
     return JsonRepresentation.from_model(
         comp.local_dtype, enum, comp.local_facets, comp.array_def
     )
