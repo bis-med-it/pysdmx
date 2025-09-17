@@ -100,6 +100,7 @@ def test_data_no_structure_specific(samples_folder):
         read_str_spe(text, validate=False)
 
 
+@pytest.mark.xml
 def test_agency_scheme_read(samples_folder):
     data_path = samples_folder / "agencies.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -129,6 +130,7 @@ def test_agency_scheme_read(samples_folder):
     assert contact.role == "ROLE"
 
 
+@pytest.mark.xml
 def test_code_list_read(samples_folder):
     data_path = samples_folder / "codelists.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -206,6 +208,7 @@ def test_value_list_read(samples_folder):
     assert codelist.sdmx_type == "valuelist"
 
 
+@pytest.mark.xml
 def test_dataflow_structure_read(samples_folder):
     data_path = samples_folder / "dataflow_structure.xml"
     input_str, read_format = process_string_to_read(data_path)

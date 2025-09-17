@@ -3,7 +3,15 @@ from pathlib import Path
 import pytest
 
 PATH_RULES = {
-    "/tests/io/xml/": ("xml", True),
+    "/tests/io/xml/sdmx21/writer/test_structures_writing.py": ("xml", True),
+    "/tests/io/xml/sdmx30/writer/test_structures_writing.py": ("xml", True),
+    "/tests/io/xml/sdmx31/writer/test_structures_writing.py": ("xml", True),
+    "/tests/io/xml/sdmx30/reader/test_reader.py": ("xml", False),
+    "/tests/io/xml/sdmx31/reader/test_reader.py": ("xml", False),
+    "/tests/io/xml/sdmx21/writer/test_data_writing.py": ("xmlWithData", True),
+    "/tests/io/xml/sdmx30/writer/test_data_writing.py": ("xmlWithData", True),
+    "/tests/io/xml/sdmx31/writer/test_data_writing.py": ("xmlWithData", True),
+    "/tests/io/xml/sdmx21/reader/test_reader.py": ("xmlWithData", False),
     "/tests/io/csv/": ("data", True),
     "/tests/io/test_general_reader.py": ("data", False),
     "/tests/io/test_input_processor.py": ("data", True),

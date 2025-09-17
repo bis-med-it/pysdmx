@@ -18,7 +18,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: ["3.12"]
-        extra: [noextra, data, xml, vtl]
+        extra: [noextra, data, xml,xml-data, vtl]
         include:
           - extra: noextra
             marker: noextra
@@ -31,6 +31,9 @@ jobs:
             extras_to_install: "data"
           - extra: xml
             marker: xml
+            extras_to_install: "xml"
+          - extra: xml-data
+            marker: xmlWithData
             extras_to_install: "xml data"
 
     steps:
