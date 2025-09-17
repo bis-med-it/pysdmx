@@ -8,7 +8,6 @@ from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
 from pysdmx.io.reader import read_sdmx as reader
 from pysdmx.io.xml.sdmx30.reader.structure import read as read_structure
-from pysdmx.io.xml.sdmx30.reader.structure_specific import read as read_str_spe
 from pysdmx.model import (
     Agency,
     AgencyScheme,
@@ -90,6 +89,10 @@ def test_prov_agree_30_groups_series(samples_folder):
 
 
 def test_data_no_structure_specific(samples_folder):
+    from pysdmx.io.xml.sdmx30.reader.structure_specific import (
+        read as read_str_spe,
+    )
+
     data_path = samples_folder / "dataflow_no_structure_specific.xml"
     with open(data_path, "r") as f:
         text = f.read()
