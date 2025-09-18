@@ -1,0 +1,92 @@
+name: Extra
+
+on:
+  push:
+    branches: [ "develop", "main" ]
+  pull_request:
+    branches: [ "develop", "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.os }} • py${{ matrix.python-version }} • extra:${{ matrix.extra }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.12"]
+        extra: [noextra,dc,vtl,data,xml,xml-data]
+        include:
+          - extra: noextra
+            marker: noextra
+            extras_to_install: ""
+          - extra: dc
+            marker: dc
+            extras_to_install: "dc"
+          - extra: vtl
+            marker: vtl
+            extras_to_install: "vtl"
+          - extra: data
+            marker: data
+            extras_to_install: "data"
+          - extra: xml
+            marker: xml
+            extras_to_install: "xml"
+          - extra: xml-data
+            marker: xml_data
+            extras_to_install: "xml data"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install deps (${{ matrix.extras_to_install }})
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${{ matrix.extras_to_install }}" ]; then
+            for e in ${{ matrix.extras_to_install }}; do
+              poetry install --no-interaction --extras "$e"
+            done
+          else
+            poetry install --no-interaction
+          fi
+      - name: Verify extras
+        run: |
+          poetry run python - <<'PY'
+          from importlib.util import find_spec
+          selected = "${{ matrix.extras_to_install }}".split()
+          WANT = {
+            "data": ["pandas","dateutil"],
+            "xml":  ["lxml","sdmxschemas","xmltodict"],
+            "xml-data":  ["lxml","sdmxschemas","xmltodict","pandas","dateutil"],
+            "vtl":  ["vtlengine","pandas","dateutil"],
+            "dc":  ["dateutil"],
+          }
+          all_mods = {m for mods in WANT.values() for m in mods}
+          must = {m for e in selected for m in WANT.get(e, [])}
+          forbidden = all_mods - must                             
+          
+          ok = True
+          for m in sorted(must):
+            if not find_spec(m): print(f"Missing: {m}"); ok = False
+          for m in sorted(forbidden):
+            if find_spec(m): print(f"Unexpected: {m}"); ok = False
+          raise SystemExit(0 if ok else 1)
+          PY
+
+      - name: Run tests (${{ matrix.marker }})
+        run: poetry run pytest -m "${{ matrix.marker }}" --cov=pysdmx --cov-branch
+
+
+
+

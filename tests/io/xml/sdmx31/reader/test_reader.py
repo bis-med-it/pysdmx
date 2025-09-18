@@ -7,7 +7,6 @@ from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
 from pysdmx.io.xml.sdmx31.reader.structure import read as read_structure
-from pysdmx.io.xml.sdmx31.reader.structure_specific import read as read_str_spe
 from pysdmx.model import (
     Codelist,
     ConceptScheme,
@@ -24,6 +23,7 @@ def samples_folder():
     return Path(__file__).parent / "samples"
 
 
+@pytest.mark.xml
 def test_codelist_31(samples_folder):
     data_path = samples_folder / "codelist.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -36,6 +36,7 @@ def test_codelist_31(samples_folder):
     assert len(codelist.items) == 5
 
 
+@pytest.mark.xml
 def test_concept_scheme_31(samples_folder):
     data_path = samples_folder / "conceptscheme.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -60,6 +61,7 @@ def test_data_dataflow_31(samples_folder):
     assert num_columns == 16
 
 
+@pytest.mark.xml
 def test_data_structure_definition_31(samples_folder):
     data_path = samples_folder / "ECB_EXR_metadata.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -146,6 +148,10 @@ def test_data_structure_no_structure(samples_folder):
 
 
 def test_data_no_structure_specific(samples_folder):
+    from pysdmx.io.xml.sdmx31.reader.structure_specific import (
+        read as read_str_spe,
+    )
+
     data_path = samples_folder / "dataflow_no_structure_specific.xml"
     with open(data_path, "r") as f:
         text = f.read()

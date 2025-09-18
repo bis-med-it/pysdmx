@@ -10,7 +10,6 @@ from vtlengine.AST import (
 )
 
 from pysdmx.errors import Invalid
-from pysdmx.io.xml.__tokens import RULE_SCHEME, UDO_SCHEME
 from pysdmx.model import Reference
 from pysdmx.model.vtl import (
     Ruleset,
@@ -62,7 +61,7 @@ def _ruleset_scheme_validations(ruleset_scheme: RulesetScheme) -> None:
 
 def _ruleset_scheme_reference_validations(ruleset_scheme: Reference) -> None:
     """Additional validation checks for ruleset schemes."""
-    if ruleset_scheme.sdmx_type != RULE_SCHEME:
+    if ruleset_scheme.sdmx_type != "RulesetScheme":
         raise Invalid(
             "Reference in Ruleset Schemes must point to a Ruleset Scheme, "
             f"got {ruleset_scheme.sdmx_type}"
@@ -105,7 +104,7 @@ def _user_defined_operator_scheme_validations(
 
 def _udo_scheme_reference_validations(udo_scheme: Reference) -> None:
     """Additional validation checks for ruleset schemes."""
-    if udo_scheme.sdmx_type != UDO_SCHEME:
+    if udo_scheme.sdmx_type != "UserDefinedOperatorScheme":
         raise Invalid(
             "Reference in User Defined Operator Schemes"
             " must point to a Defined Operator Scheme, "
