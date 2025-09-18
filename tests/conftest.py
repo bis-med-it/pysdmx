@@ -8,21 +8,23 @@ PATH_RULES = {
     "/tests/io/xml/sdmx31/writer/test_structures_writing.py": ("xml", True),
     "/tests/io/xml/sdmx30/reader/test_reader.py": ("xml", False),
     "/tests/io/xml/sdmx31/reader/test_reader.py": ("xml", False),
-    "/tests/io/xml/sdmx21/writer/test_data_writing.py": ("xmlWithData", True),
-    "/tests/io/xml/sdmx30/writer/test_data_writing.py": ("xmlWithData", True),
-    "/tests/io/xml/sdmx31/writer/test_data_writing.py": ("xmlWithData", True),
-    "/tests/io/xml/sdmx21/reader/test_reader.py": ("xmlWithData", False),
+    "/tests/io/xml/sdmx21/writer/test_data_writing.py": ("xml_data", True),
+    "/tests/io/xml/sdmx30/writer/test_data_writing.py": ("xml_data", True),
+    "/tests/io/xml/sdmx31/writer/test_data_writing.py": ("xml_data", True),
+    "/tests/io/xml/sdmx21/reader/test_reader.py": ("xml_data", False),
     "/tests/io/csv/": ("data", True),
     "/tests/io/test_general_reader.py": ("data", False),
     "/tests/io/test_input_processor.py": ("data", True),
     "/tests/toolkit/": ("vtl", True),
     "/tests/model/": ("noextra", True),
-    "/tests/api/": ("noextra", True),
+    "/tests/api/fmr/": ("noextra", True),
+    "/tests/api/gds/": ("noextra", True),
+    "/tests/api/qb/": ("noextra", True),
+    "/tests/api/dc/": ("dc", True),
 }
 
 EXCLUDE_FROM_AUTOMARK = {
     "tests/io/test_input_processor.py::test_process_string_to_read_invalid_xml",
-    "/tests/api/dc/",
 }
 
 

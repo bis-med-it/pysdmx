@@ -243,7 +243,7 @@ def test_error_message_with_different_mode(agency_scheme_path):
         "str_ser_group.xml",
     ],
 )
-@pytest.mark.xmlWithData
+@pytest.mark.xml_data
 def test_reading_validation(samples_folder, filename):
     data_path = samples_folder / filename
     input_str, read_format = process_string_to_read(data_path)
@@ -273,7 +273,7 @@ def test_reading_validation(samples_folder, filename):
         "str_ser_group.xml",
     ],
 )
-@pytest.mark.xmlWithData
+@pytest.mark.xml_data
 def test_reading_validation_read_sdmx(samples_folder, filename):
     result = read_sdmx(samples_folder / filename, validate=True).data
     assert result is not None
@@ -285,7 +285,7 @@ def test_reading_validation_read_sdmx(samples_folder, filename):
 
 
 # Test reading of dataflow SDMX file
-@pytest.mark.xmlWithData
+@pytest.mark.xml_data
 def test_dataflow(samples_folder):
     data_path = samples_folder / "dataflow.xml"
     input_str, read_format = process_string_to_read(data_path)
