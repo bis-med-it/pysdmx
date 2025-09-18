@@ -66,10 +66,10 @@ jobs:
           from importlib.util import find_spec
           selected = "${{ matrix.extras_to_install }}".split()
           WANT = {
-            "data": ["pandas"],
+            "data": ["pandas","dateutil"],
             "xml":  ["lxml","sdmxschemas","xmltodict"],
-            "xml-data":  ["lxml","sdmxschemas","xmltodict","pandas"],
-            "vtl":  ["vtlengine","pandas"],
+            "xml-data":  ["lxml","sdmxschemas","xmltodict","pandas","dateutil"],
+            "vtl":  ["vtlengine","pandas","dateutil"],
             "dc":  ["dateutil"],
           }
           all_mods = {m for mods in WANT.values() for m in mods}
