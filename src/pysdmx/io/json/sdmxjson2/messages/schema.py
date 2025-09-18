@@ -1,6 +1,6 @@
 """Collection of SDMX-JSON schemas for SDMX-REST schema queries."""
 
-from typing import Literal, Sequence
+from typing import Literal, Optional, Sequence, Tuple
 
 import msgspec
 
@@ -10,13 +10,11 @@ from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
 from pysdmx.io.json.sdmxjson2.messages.core import JsonHeader
 from pysdmx.io.json.sdmxjson2.messages.dsd import JsonDataStructure
 from pysdmx.model import Components, HierarchyAssociation, Schema
+from pysdmx.model.dataflow import Group
 from pysdmx.util import parse_item_urn
 
 
-class JsonSchemas(
-    msgspec.Struct,
-    frozen=True,
-):
+class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload schema structures."""
 
     conceptSchemes: Sequence[JsonConceptScheme]
@@ -25,21 +23,21 @@ class JsonSchemas(
     codelists: Sequence[JsonCodelist] = ()
     contentConstraints: Sequence[JsonDataConstraint] = ()
 
-    def to_model(self) -> Components:
+    def to_model(
+        self,
+    ) -> Tuple[Components, Optional[Sequence[Group]]]:
         """Returns the requested schema."""
         comps = self.dataStructures[0].dataStructureComponents
-        return comps.to_model(  # type: ignore[union-attr]
+        comps, grps = comps.to_model(  # type: ignore[union-attr,assignment]
             self.conceptSchemes,
             self.codelists,
             self.valuelists,
             self.contentConstraints,
         )
+        return comps, grps  # type: ignore[return-value]
 
 
-class JsonSchemaMessage(
-    msgspec.Struct,
-    frozen=True,
-):
+class JsonSchemaMessage(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /schema queries."""
 
     meta: JsonHeader
@@ -54,7 +52,7 @@ class JsonSchemaMessage(
         hierarchies: Sequence[HierarchyAssociation],
     ) -> Schema:
         """Returns the requested schema."""
-        components = self.data.to_model()
+        components, groups = self.data.to_model()
         comp_dict = {c.id: c for c in components}
         urns = [a.urn for a in self.meta.links]
         for ha in hierarchies:
@@ -78,4 +76,5 @@ class JsonSchemaMessage(
             comps,
             version,
             urns,  # type: ignore[arg-type]
+            groups=groups,
         )

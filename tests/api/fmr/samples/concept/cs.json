@@ -184,7 +184,7 @@
                                 "rel": "self",
                                 "type": "concept",
                                 "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:TEST_FACETS_CS(1.0).DIM3"
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.MEDIT:MEDIT_CS(1.0).DIM3"
                             }
                         ],
                         "id": "DIM3",
@@ -207,7 +207,7 @@
                                 "rel": "self",
                                 "type": "concept",
                                 "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:TEST_FACETS_CS(1.0).DIM4"
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.MEDIT:MEDIT_CS(1.0).DIM4"
                             }
                         ],
                         "id": "DIM4",

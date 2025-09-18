@@ -20,6 +20,7 @@ Your opinionated Python SDMX library.
    howto/validate
    howto/map
    howto/config
+   howto/maintenance
 
 .. toctree::
    :maxdepth: 1

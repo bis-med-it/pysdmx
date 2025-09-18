@@ -110,6 +110,10 @@ class FusionAttribute(Struct, frozen=True):
         )
         lvl = self.__derive_level(groups)
         desc = c.descriptions[0].value if c.descriptions else None
+        if self.representation and self.representation.representation:
+            local_enum_ref = self.representation.representation
+        else:
+            local_enum_ref = None
         return Component(
             id=self.id,
             required=self.mandatory,
@@ -122,6 +126,7 @@ class FusionAttribute(Struct, frozen=True):
             local_codes=codes,
             attachment_level=lvl,
             array_def=ab,
+            local_enum_ref=local_enum_ref,
         )
 
 
@@ -160,6 +165,10 @@ class FusionDimension(Struct, frozen=True):
             self.id, self.representation, cls, cons
         )
         desc = c.descriptions[0].value if c.descriptions else None
+        if self.representation and self.representation.representation:
+            local_enum_ref = self.representation.representation
+        else:
+            local_enum_ref = None
         return Component(
             id=self.id,
             required=True,
@@ -171,6 +180,7 @@ class FusionDimension(Struct, frozen=True):
             description=desc,
             local_codes=codes,
             array_def=ab,
+            local_enum_ref=local_enum_ref,
         )
 
 
@@ -209,6 +219,10 @@ class FusionMeasure(Struct, frozen=True):
             self.id, self.representation, cls, cons
         )
         desc = c.descriptions[0].value if c.descriptions else None
+        if self.representation and self.representation.representation:
+            local_enum_ref = self.representation.representation
+        else:
+            local_enum_ref = None
         return Component(
             id=self.id,
             required=self.mandatory,
@@ -220,6 +234,7 @@ class FusionMeasure(Struct, frozen=True):
             description=desc,
             local_codes=codes,
             array_def=ab,
+            local_enum_ref=local_enum_ref,
         )
 
 

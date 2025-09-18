@@ -6,11 +6,13 @@ from typing import Any, Dict, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     MaintainableType,
 )
 from pysdmx.model import (
+    Agency,
     ComponentMap,
     DataType,
     DatePatternMap,
@@ -26,7 +28,7 @@ from pysdmx.model import (
 from pysdmx.util import find_by_urn
 
 
-class JsonSourceValue(Struct, frozen=True):
+class JsonSourceValue(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a source value."""
 
     value: str
@@ -39,8 +41,16 @@ class JsonSourceValue(Struct, frozen=True):
         else:
             return self.value
 
+    @classmethod
+    def from_model(self, value: str) -> "JsonSourceValue":
+        """Converts a pysdmx source string value to an SDMX-JSON one."""
+        if value.startswith("regex:"):
+            return JsonSourceValue(value.replace("regex:", ""), True)
+        else:
+            return JsonSourceValue(value)
 
-class JsonRepresentationMapping(Struct, frozen=True):
+
+class JsonRepresentationMapping(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a representation mapping."""
 
     sourceValues: Sequence[JsonSourceValue]
@@ -72,8 +82,28 @@ class JsonRepresentationMapping(Struct, frozen=True):
                 valid_to=self.__get_dt(self.validTo) if self.validTo else None,
             )
 
+    @classmethod
+    def from_model(
+        self, vm: Union[MultiValueMap, ValueMap]
+    ) -> "JsonRepresentationMapping":
+        """Converts a value map to an SDMX-JSON JsonRepresentationMapping."""
+        if isinstance(vm, ValueMap):
+            return JsonRepresentationMapping(
+                [JsonSourceValue.from_model(vm.source)],
+                [vm.target],
+                vm.valid_from.strftime("%Y-%m-%d") if vm.valid_from else None,
+                vm.valid_to.strftime("%Y-%m-%d") if vm.valid_to else None,
+            )
+        else:
+            return JsonRepresentationMapping(
+                [JsonSourceValue.from_model(s) for s in vm.source],
+                vm.target,
+                vm.valid_from.strftime("%Y-%m-%d") if vm.valid_from else None,
+                vm.valid_to.strftime("%Y-%m-%d") if vm.valid_to else None,
+            )
 
-class JsonRepresentationMap(MaintainableType, frozen=True):
+
+class JsonRepresentationMap(MaintainableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a representation map."""
 
     source: Sequence[Dict[str, str]] = ()
@@ -83,8 +113,6 @@ class JsonRepresentationMap(MaintainableType, frozen=True):
     def __parse_st(self, item: Dict[str, str]) -> Union[DataType, str]:
         if "dataType" in item:
             return DataType(item["dataType"])
-        elif "valuelist" in item:
-            return item["valuelist"]
         else:
             return item["codelist"]
 
@@ -118,8 +146,54 @@ class JsonRepresentationMap(MaintainableType, frozen=True):
                 version=self.version,
             )
 
+    @classmethod
+    def from_model(
+        self, rm: Union[MultiRepresentationMap, RepresentationMap]
+    ) -> "JsonRepresentationMap":
+        """Converts a pysdmx representation map to an SDMX-JSON one."""
 
-class JsonFixedValueMap(Struct, frozen=True):
+        def __convert_st(st: str) -> Dict[str, str]:
+            if "Codelist" in st or "ValueList" in st:
+                return {"codelist": st}
+            else:
+                return {"dataType": st}
+
+        if not rm.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON representation maps must have a name",
+                {"representation_map": rm.id},
+            )
+
+        if isinstance(rm, RepresentationMap):
+            source = [__convert_st(rm.source)] if rm.source else []
+            target = [__convert_st(rm.target)] if rm.target else []
+        else:
+            source = [__convert_st(s) for s in rm.source]
+            target = [__convert_st(t) for t in rm.target]
+        return JsonRepresentationMap(
+            agency=(
+                rm.agency.id if isinstance(rm.agency, Agency) else rm.agency
+            ),
+            id=rm.id,
+            name=rm.name,
+            version=rm.version,
+            isExternalReference=rm.is_external_reference,
+            validFrom=rm.valid_from,
+            validTo=rm.valid_to,
+            description=rm.description,
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in rm.annotations]
+            ),
+            source=tuple(source),
+            target=tuple(target),
+            representationMappings=tuple(
+                [JsonRepresentationMapping.from_model(m) for m in rm.maps]
+            ),
+        )
+
+
+class JsonFixedValueMap(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a fixed value map."""
 
     values: Sequence[Any]
@@ -136,8 +210,17 @@ class JsonFixedValueMap(Struct, frozen=True):
             located_in,  # type: ignore[arg-type]
         )
 
+    @classmethod
+    def from_model(self, fvm: FixedValueMap) -> "JsonFixedValueMap":
+        """Converts a pysdmx fixed value map to an SDMX-JSON one."""
+        return JsonFixedValueMap(
+            values=[fvm.value],
+            source=fvm.target if fvm.located_in == "source" else None,
+            target=fvm.target if fvm.located_in == "target" else None,
+        )
 
-class JsonComponentMap(Struct, frozen=True):
+
+class JsonComponentMap(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a component map."""
 
     source: Sequence[str]
@@ -162,15 +245,43 @@ class JsonComponentMap(Struct, frozen=True):
         else:
             return ImplicitComponentMap(self.source[0], self.target[0])
 
+    @classmethod
+    def from_model(
+        self, cm: Union[ComponentMap, MultiComponentMap, ImplicitComponentMap]
+    ) -> "JsonComponentMap":
+        """Converts a pysdmx component map to an SDMX-JSON one."""
+        if isinstance(cm, ImplicitComponentMap):
+            return JsonComponentMap([cm.source], [cm.target])
+        elif isinstance(cm, ComponentMap):
+            rm = (
+                (
+                    "urn:sdmx:org.sdmx.infomodel.structuremapping."
+                    f"{cm.values.short_urn}"
+                )
+                if isinstance(cm.values, RepresentationMap)
+                else cm.values
+            )
+            return JsonComponentMap([cm.source], [cm.target], rm)
+        else:
+            rm = (
+                (
+                    "urn:sdmx:org.sdmx.infomodel.structuremapping."
+                    f"{cm.values.short_urn}"
+                )
+                if isinstance(cm.values, MultiRepresentationMap)
+                else cm.values
+            )
+            return JsonComponentMap(cm.source, cm.target, rm)
 
-class JsonMappedPair(Struct, frozen=True):
+
+class JsonMappedPair(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a pair of mapped components."""
 
     source: str
     target: str
 
 
-class JsonDatePatternMap(Struct, frozen=True):
+class JsonDatePatternMap(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a date pattern map."""
 
     sourcePattern: str
@@ -194,18 +305,38 @@ class JsonDatePatternMap(Struct, frozen=True):
         )
         typ = "fixed" if self.targetFrequencyID else "variable"
         return DatePatternMap(
-            self.mappedComponents[0].source,
-            self.mappedComponents[0].target,
-            self.sourcePattern,
-            freq,  # type: ignore[arg-type]
-            self.id,
-            self.locale,
-            typ,  # type: ignore[arg-type]
-            self.resolvePeriod,
+            source=self.mappedComponents[0].source,
+            target=self.mappedComponents[0].target,
+            pattern=self.sourcePattern,
+            frequency=freq,  # type: ignore[arg-type]
+            id=self.id,
+            locale=self.locale,
+            pattern_type=typ,  # type: ignore[arg-type]
+            resolve_period=self.resolvePeriod,
+        )
+
+    @classmethod
+    def from_model(self, dpm: DatePatternMap) -> "JsonDatePatternMap":
+        """Converts a pysdmx date pattern map to an SDMX-JSON one."""
+        if dpm.pattern_type == "fixed":
+            tf = dpm.frequency
+            fd = None
+        else:
+            tf = None
+            fd = dpm.frequency
+
+        return JsonDatePatternMap(
+            sourcePattern=dpm.pattern,
+            mappedComponents=[JsonMappedPair(dpm.source, dpm.target)],
+            locale=dpm.locale,
+            id=dpm.id,
+            resolvePeriod=dpm.resolve_period,
+            targetFrequencyID=tf,
+            frequencyDimension=fd,
         )
 
 
-class JsonStructureMap(MaintainableType, frozen=True):
+class JsonStructureMap(MaintainableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a structure map."""
 
     source: str = ""
@@ -237,8 +368,53 @@ class JsonStructureMap(MaintainableType, frozen=True):
             valid_to=self.validTo,
         )
 
+    @classmethod
+    def from_model(self, sm: StructureMap) -> "JsonStructureMap":
+        """Converts a pysdmx structure map to an SDMX-JSON one."""
+        cms = list(sm.component_maps)
+        cms.extend(list(sm.implicit_component_maps))  # type: ignore[arg-type]
+        cms.extend(list(sm.multi_component_maps))  # type: ignore[arg-type]
+        if not sm.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON structure maps must have a name",
+                {"structure_map": sm.id},
+            )
+        return JsonStructureMap(
+            agency=(
+                sm.agency.id if isinstance(sm.agency, Agency) else sm.agency
+            ),
+            id=sm.id,
+            name=sm.name,
+            version=sm.version,
+            isExternalReference=sm.is_external_reference,
+            validFrom=sm.valid_from,
+            validTo=sm.valid_to,
+            description=sm.description,
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in sm.annotations]
+            ),
+            source=sm.source,
+            target=sm.target,
+            datePatternMaps=tuple(
+                [
+                    JsonDatePatternMap.from_model(dpm)
+                    for dpm in sm.date_pattern_maps
+                ]
+            ),
+            componentMaps=tuple(
+                [JsonComponentMap.from_model(cm) for cm in cms]
+            ),
+            fixedValueMaps=tuple(
+                [
+                    JsonFixedValueMap.from_model(fvm)
+                    for fvm in sm.fixed_value_maps
+                ]
+            ),
+        )
 
-class JsonStructureMaps(Struct, frozen=True):
+
+class JsonStructureMaps(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for structure maps."""
 
     structureMaps: Sequence[JsonStructureMap]
@@ -251,7 +427,7 @@ class JsonStructureMaps(Struct, frozen=True):
         ]
 
 
-class JsonMappingMessage(Struct, frozen=True):
+class JsonMappingMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /structuremap queries."""
 
     data: JsonStructureMaps
@@ -261,7 +437,7 @@ class JsonMappingMessage(Struct, frozen=True):
         return self.data.to_model()[0]
 
 
-class JsonStructureMapsMessage(Struct, frozen=True):
+class JsonStructureMapsMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for generic /structuremap queries."""
 
     data: JsonStructureMaps
@@ -271,7 +447,7 @@ class JsonStructureMapsMessage(Struct, frozen=True):
         return self.data.to_model()
 
 
-class JsonRepresentationMaps(Struct, frozen=True):
+class JsonRepresentationMaps(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for representation maps."""
 
     representationMaps: Sequence[JsonRepresentationMap]
@@ -287,7 +463,7 @@ class JsonRepresentationMaps(Struct, frozen=True):
         return maps
 
 
-class JsonRepresentationMapMessage(Struct, frozen=True):
+class JsonRepresentationMapMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /representationmap queries."""
 
     data: JsonRepresentationMaps
@@ -297,7 +473,7 @@ class JsonRepresentationMapMessage(Struct, frozen=True):
         return self.data.to_model()[0]
 
 
-class JsonRepresentationMapsMessage(Struct, frozen=True):
+class JsonRepresentationMapsMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /representationmap queries."""
 
     data: JsonRepresentationMaps
