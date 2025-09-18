@@ -34,7 +34,6 @@
                 "version": "1.42",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "source": [
                     {
                         "dataType": "String"
@@ -51,7 +50,7 @@
                 ],
                 "target": [
                     {
-                        "valuelist": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=ISO:CL_3166-A3(1.0)"
+                        "codelist": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=ISO:CL_3166-A3(1.0)"
                     }
                 ],
                 "representationMappings": [

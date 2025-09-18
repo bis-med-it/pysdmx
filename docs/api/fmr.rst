@@ -15,6 +15,7 @@ that can be used to **power statistical processes**.
     - :ref:`physical-model`.
     - :ref:`validate`.
     - :ref:`map`.
+    - :ref:`maintenance`.
 
 These metadata are typically stored in an **SDMX Registry**, such as the
 `FMR <https://www.bis.org/innovation/bis_open_tech_sdmx.htm>`_. However,
@@ -50,8 +51,12 @@ The only distinction is that one client operates synchronously
 (``RegistryClient``), while the other operates asynchronously
 (``AsyncRegistryClient``).
 
+In addition, an **experimental** client is now also available to support
+metadata maintenance operations.
+
 .. toctree::
    :maxdepth: 1
 
    fmr/sync
    fmr/async
+   fmr/maintenance

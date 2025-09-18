@@ -571,13 +571,16 @@ class RegistryClient(__BaseRegistryClient):
         d = DataflowDetails(detail) if isinstance(detail, str) else detail
         sq, dr = super()._df_details(d)
         if sq:
-            cmps = self.get_schema("dataflow", agency, id, version).components
+            schema = self.get_schema("dataflow", agency, id, version)
+            cmps = schema.components
+            grps = schema.groups
         else:
             cmps = None
+            grps = None
         query = super()._dataflow_details_q(agency, id, version, dr)
         out = self.__fetch(query)
         return super()._out(
-            out, self.deser.dataflow_info, cmps, agency, id, version
+            out, self.deser.dataflow_info, cmps, grps, agency, id, version
         )
 
     def get_dataflows(
@@ -1034,12 +1037,14 @@ class AsyncRegistryClient(__BaseRegistryClient):
                 version,
             )
             cmps = schema.components
+            grps = schema.groups
         else:
             cmps = None
+            grps = None
         query = super()._dataflow_details_q(agency, id, version, dr)
         out = await self.__fetch(query)
         return super()._out(
-            out, self.deser.dataflow_info, cmps, agency, id, version
+            out, self.deser.dataflow_info, cmps, grps, agency, id, version
         )
 
     async def get_dataflows(

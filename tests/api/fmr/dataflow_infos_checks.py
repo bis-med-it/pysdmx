@@ -274,10 +274,25 @@ def __check_dsi_and_schema(dsi):
     assert dsi.obs_count is None
     assert dsi.series_count is None
     assert dsi.last_updated is None
-
     assert isinstance(dsi.components, Components)
     assert len(dsi.components) == 24
     for comp in dsi.components:
         assert isinstance(comp, Component)
         assert comp.id is not None
         assert comp.name is not None
+    assert dsi.groups is not None
+    assert len(dsi.groups) == 1
+    grp = dsi.groups[0]
+    assert grp.id == "Sibling"
+    assert grp.dimensions == [
+        "L_MEASURE",
+        "L_REP_CTY",
+        "CBS_BANK_TYPE",
+        "CBS_BASIS",
+        "L_POSITION",
+        "L_INSTR",
+        "REM_MATURITY",
+        "CURR_TYPE_BOOK",
+        "L_CP_SECTOR",
+        "L_CP_COUNTRY",
+    ]

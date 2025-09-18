@@ -52,6 +52,9 @@ async def check_concept_core_info(mock, fmr: AsyncRegistryClient, query, body):
         ]
         assert concept.name is not None
         assert concept.dtype is not None
+        assert concept.urn is not None
+        exp_urn = f"Concept={cs.agency}:{cs.id}({cs.version}).{concept.id}"
+        assert exp_urn in concept.urn
 
 
 def check_concept_details(mock, fmr: RegistryClient, query, body):

@@ -57,6 +57,7 @@ async def check_code_core_info(mock, fmr: AsyncRegistryClient, query, body):
     for code in codelist:
         assert code.id in ["A", "S", "Q", "M", "W", "D", "H", "B", "N"]
         assert code.name is not None
+        assert code.urn is None
 
 
 def check_code_details(mock, fmr: RegistryClient, query, body):
