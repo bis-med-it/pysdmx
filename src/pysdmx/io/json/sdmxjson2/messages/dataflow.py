@@ -4,9 +4,13 @@ from typing import List, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist, JsonValuelist
 from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptScheme
-from pysdmx.io.json.sdmxjson2.messages.core import MaintainableType
+from pysdmx.io.json.sdmxjson2.messages.core import (
+    JsonAnnotation,
+    MaintainableType,
+)
 from pysdmx.io.json.sdmxjson2.messages.dsd import JsonDataStructure
 from pysdmx.io.json.sdmxjson2.messages.provider import JsonDataProviderScheme
 from pysdmx.model import (
@@ -17,10 +21,11 @@ from pysdmx.model import (
     DataProvider,
     DataStructureDefinition,
 )
+from pysdmx.model.dataflow import Group
 from pysdmx.util import parse_urn
 
 
-class JsonDataflow(MaintainableType, frozen=True):
+class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a dataflow."""
 
     structure: str = ""
@@ -59,8 +64,47 @@ class JsonDataflow(MaintainableType, frozen=True):
             valid_to=self.validTo,
         )
 
+    @classmethod
+    def from_model(self, df: Dataflow) -> "JsonDataflow":
+        """Converts a pysdmx dataflow to an SDMX-JSON one."""
+        if not df.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON dataflows must have a name",
+                {"dataflow": df.id},
+            )
+        if not df.structure:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON dataflows must reference a DSD.",
+                {"dataflow": df.id},
+            )
+        if isinstance(df.structure, DataStructureDefinition):
+            dsdref = (
+                "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure="
+                f"{df.structure.agency}:{df.structure.id}({df.structure.version})"
+            )
+        else:
+            dsdref = df.structure
+        return JsonDataflow(
+            agency=(
+                df.agency.id if isinstance(df.agency, Agency) else df.agency
+            ),
+            id=df.id,
+            name=df.name,
+            version=df.version,
+            isExternalReference=df.is_external_reference,
+            validFrom=df.valid_from,
+            validTo=df.valid_to,
+            description=df.description,
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in df.annotations]
+            ),
+            structure=dsdref,
+        )
 
-class JsonDataflows(Struct, frozen=True):
+
+class JsonDataflows(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of dataflows."""
 
     dataflows: Sequence[JsonDataflow]
@@ -81,7 +125,12 @@ class JsonDataflows(Struct, frozen=True):
             return df.agency == agency and df.id == id_
 
     def to_model(
-        self, components: Components, agency: str, id_: str, version: str
+        self,
+        components: Components,
+        grps: Optional[Sequence[Group]],
+        agency: str,
+        id_: str,
+        version: str,
     ) -> DataflowInfo:
         """Returns the requested dataflow details."""
         prvs: List[DataProvider] = []
@@ -102,6 +151,7 @@ class JsonDataflows(Struct, frozen=True):
             version=df.version,
             providers=prvs,
             dsd_ref=df.structure,
+            groups=grps,
         )
 
     def to_generic_model(self) -> Sequence[Dataflow]:
@@ -117,19 +167,24 @@ class JsonDataflows(Struct, frozen=True):
         ]
 
 
-class JsonDataflowMessage(Struct, frozen=True):
+class JsonDataflowMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /dataflow queries (with details)."""
 
     data: JsonDataflows
 
     def to_model(
-        self, components: Components, agency: str, id_: str, version: str
+        self,
+        components: Components,
+        grps: Optional[Sequence[Group]],
+        agency: str,
+        id_: str,
+        version: str,
     ) -> DataflowInfo:
         """Returns the requested dataflow details."""
-        return self.data.to_model(components, agency, id_, version)
+        return self.data.to_model(components, grps, agency, id_, version)
 
 
-class JsonDataflowsMessage(Struct, frozen=True):
+class JsonDataflowsMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /dataflow queries."""
 
     data: JsonDataflows

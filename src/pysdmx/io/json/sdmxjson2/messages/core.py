@@ -10,6 +10,7 @@ from pysdmx.model import (
     Annotation,
     ArrayBoundaries,
     Codelist,
+    DataType,
     Facets,
     Organisation,
 )
@@ -17,7 +18,7 @@ from pysdmx.model.message import Header
 from pysdmx.util import find_by_urn
 
 
-class JsonLink(msgspec.Struct, frozen=True):
+class JsonLink(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for link objects."""
 
     href: Optional[str] = None
@@ -29,7 +30,7 @@ class JsonLink(msgspec.Struct, frozen=True):
     hreflang: Optional[str] = None
 
 
-class JsonAnnotation(msgspec.Struct, frozen=True):
+class JsonAnnotation(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for annotations."""
 
     id: Optional[str] = None
@@ -57,15 +58,31 @@ class JsonAnnotation(msgspec.Struct, frozen=True):
             text=self.value if self.value else self.text,
         )
 
+    @classmethod
+    def from_model(self, annotation: Annotation) -> "JsonAnnotation":
+        """Converts a pysdmx annotation to an SDMX-JSON one."""
+        if annotation.url:
+            links = (JsonLink(rel="self", href=annotation.url),)
+        else:
+            links = ()  # type: ignore[assignment]
 
-class IdentifiableType(msgspec.Struct, frozen=True):
+        return JsonAnnotation(
+            id=annotation.id,
+            title=annotation.title,
+            type=annotation.type,
+            text=annotation.text,
+            links=links,
+        )
+
+
+class IdentifiableType(msgspec.Struct, frozen=True, omit_defaults=True):
     """An abstract base type used for all nameable artefacts."""
 
     id: str
     annotations: Sequence[JsonAnnotation] = ()
 
 
-class NameableType(msgspec.Struct, frozen=True):
+class NameableType(msgspec.Struct, frozen=True, omit_defaults=True):
     """An abstract base type used for all nameable artefacts."""
 
     id: str
@@ -75,7 +92,10 @@ class NameableType(msgspec.Struct, frozen=True):
 
 
 class MaintainableType(
-    msgspec.Struct, frozen=True, rename={"agency": "agencyID"}
+    msgspec.Struct,
+    frozen=True,
+    rename={"agency": "agencyID"},
+    omit_defaults=True,
 ):
     """An abstract base type used for all maintainable artefacts."""
 
@@ -90,16 +110,16 @@ class MaintainableType(
     annotations: Sequence[JsonAnnotation] = ()
 
 
-class ItemSchemeType(MaintainableType, frozen=True):
+class ItemSchemeType(MaintainableType, frozen=True, omit_defaults=True):
     """An abstract base type used for all item schemes."""
 
     isPartial: bool = False
 
 
-class JsonTextFormat(msgspec.Struct, frozen=True):
+class JsonTextFormat(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for TextFormat."""
 
-    dataType: str
+    dataType: Optional[str] = None
     minLength: Optional[int] = None
     maxLength: Optional[int] = None
     minValue: Optional[Union[int, float]] = None
@@ -114,7 +134,37 @@ class JsonTextFormat(msgspec.Struct, frozen=True):
     isMultilingual: bool = False
     sentinelValues: Optional[Sequence[str]] = None
     timeInterval: Optional[str] = None
-    interval: Optional[int] = None
+    interval: Optional[Union[int, float]] = None
+
+    @classmethod
+    def from_model(
+        self, dtype: Optional[DataType], facets: Optional[Facets]
+    ) -> Optional["JsonTextFormat"]:
+        """Converts pysdmx format details to an SDMX-JSON JsonTextFormat."""
+        if dtype is None and facets is None:
+            return None
+        else:
+            typ = dtype.value if dtype else None
+            if facets is None:
+                return JsonTextFormat(typ)
+            else:
+                return JsonTextFormat(
+                    typ,
+                    facets.min_length,
+                    facets.max_length,
+                    facets.min_value,
+                    facets.max_value,
+                    facets.start_value,
+                    facets.end_value,
+                    facets.decimals,
+                    facets.pattern,
+                    facets.start_time,
+                    facets.end_time,
+                    facets.is_sequence,
+                    facets.is_multilingual,
+                    timeInterval=facets.time_interval,
+                    interval=facets.interval,
+                )
 
 
 def get_facets(input: JsonTextFormat) -> Facets:
@@ -135,7 +185,7 @@ def get_facets(input: JsonTextFormat) -> Facets:
     )
 
 
-class JsonRepresentation(msgspec.Struct, frozen=True):
+class JsonRepresentation(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for core representation."""
 
     enumerationFormat: Optional[JsonTextFormat] = None
@@ -192,8 +242,44 @@ class JsonRepresentation(msgspec.Struct, frozen=True):
         else:
             return None
 
+    @classmethod
+    def from_model(
+        self,
+        dtype: Optional[DataType],
+        enumeration: Optional[str],
+        facets: Optional[Facets],
+        array_def: Optional[ArrayBoundaries],
+    ) -> Optional["JsonRepresentation"]:
+        """Converts pysdmx representation details to an SDMX-JSON one."""
+        if (
+            dtype is None
+            and enumeration is None
+            and facets is None
+            and array_def is None
+        ):
+            return None
+        else:
+            fmt = JsonTextFormat.from_model(dtype, facets)
+            if array_def:
+                mino = array_def.min_size
+                maxo = array_def.max_size
+            else:
+                mino = None
+                maxo = None
+            if enumeration:
+                return JsonRepresentation(
+                    enumerationFormat=fmt,
+                    enumeration=enumeration,
+                    minOccurs=mino,
+                    maxOccurs=maxo,
+                )
+            else:
+                return JsonRepresentation(
+                    format=fmt, minOccurs=mino, maxOccurs=maxo
+                )
 
-class JsonHeader(msgspec.Struct, frozen=True):
+
+class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for message header."""
 
     id: str
@@ -204,6 +290,7 @@ class JsonHeader(msgspec.Struct, frozen=True):
     name: Optional[str] = None
     receivers: Optional[Organisation] = None
     links: Sequence[JsonLink] = ()
+    schema: Optional[str] = None
 
     def to_model(self) -> Header:
         """Map to pysdmx header class."""
@@ -212,4 +299,20 @@ class JsonHeader(msgspec.Struct, frozen=True):
             test=self.test,
             prepared=self.prepared,
             sender=self.sender,
+        )
+
+    @classmethod
+    def from_model(self, header: Header) -> "JsonHeader":
+        """Create an SDMX-JSON header from a pysdmx Header."""
+        return JsonHeader(
+            header.id,
+            header.prepared,
+            header.sender,
+            header.test,
+            receivers=header.receiver,
+            schema=(
+                "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/"
+                "develop/structure-message/tools/schemas/2.0.0/"
+                "sdmx-json-structure-schema.json"
+            ),
         )

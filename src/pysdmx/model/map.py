@@ -6,7 +6,7 @@ from typing import Any, Iterator, Literal, Optional, Sequence, Tuple, Union
 
 from msgspec import Struct
 
-from pysdmx.model.__base import MaintainableArtefact
+from pysdmx.model.__base import Agency, MaintainableArtefact
 from pysdmx.util._date_pattern_map import convert_dpm
 
 
@@ -77,7 +77,7 @@ class DatePatternMap(_BaseMap, frozen=True, omit_defaults=True, tag=True):
             the target structure (e.g. `FREQ`). In this case, the input date
             can be converted to a different format, depending on the
             frequency of the converted data.
-        resolvePeriod: The point in time to resolve to when mapping from low
+        resolve_period: The point in time to resolve to when mapping from low
             frequency to higher frequency periods.
     """
 
@@ -88,7 +88,7 @@ class DatePatternMap(_BaseMap, frozen=True, omit_defaults=True, tag=True):
     id: Optional[str] = None
     locale: str = "en"
     pattern_type: Literal["fixed", "variable"] = "fixed"
-    resolvePeriod: Optional[
+    resolve_period: Optional[
         Literal["startOfPeriod", "endOfPeriod", "midPeriod"]
     ] = None
 
@@ -264,6 +264,14 @@ class MultiRepresentationMap(
     target: Sequence[str] = []
     maps: Sequence[MultiValueMap] = []
 
+    @property
+    def short_urn(self) -> str:
+        """Returns the short URN for the MultiRepresentationMap."""
+        agency = (
+            self.agency.id if isinstance(self.agency, Agency) else self.agency
+        )
+        return f"RepresentationMap={agency}:{self.id}({self.version})"
+
     def __iter__(
         self,
     ) -> Iterator[MultiValueMap]:
@@ -300,7 +308,7 @@ class MultiComponentMap(_BaseMap, frozen=True, omit_defaults=True, tag=True):
 
     source: Sequence[str]
     target: Sequence[str]
-    values: MultiRepresentationMap
+    values: Union[MultiRepresentationMap, str]
 
 
 class RepresentationMap(MaintainableArtefact, frozen=True, omit_defaults=True):
@@ -478,9 +486,7 @@ class StructureMap(MaintainableArtefact, frozen=True, omit_defaults=True):
         """Return the number of mapping rules in the structure map."""
         return len(self.maps)
 
-    def __getitem__(
-        self, id_: str
-    ) -> Optional[
+    def __getitem__(self, id_: str) -> Optional[
         Sequence[
             Union[
                 ComponentMap,

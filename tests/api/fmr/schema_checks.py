@@ -62,6 +62,22 @@ def check_schema(
         assert comp.required is not None
         assert comp.role is not None
         assert comp.dtype is not None
+    assert vc.groups is not None
+    assert len(vc.groups) == 1
+    grp = vc.groups[0]
+    assert grp.id == "Sibling"
+    assert grp.dimensions == [
+        "L_MEASURE",
+        "L_REP_CTY",
+        "CBS_BANK_TYPE",
+        "CBS_BASIS",
+        "L_POSITION",
+        "L_INSTR",
+        "REM_MATURITY",
+        "CURR_TYPE_BOOK",
+        "L_CP_SECTOR",
+        "L_CP_COUNTRY",
+    ]
 
 
 def check_no_td(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
@@ -155,6 +171,8 @@ async def check_coded_components(
                 if comp.id == "AVAILABILITY"
                 else "codelist"
             )
+            assert comp.enum_ref is not None
+            assert ".codelist." in comp.enum_ref
             count += 1
         else:
             assert not comp.enumeration
@@ -613,3 +631,24 @@ def check_hierarchy_pra(
             )
         else:
             assert isinstance(d.enumeration, Codelist)
+
+
+def check_coded_measure(
+    mock, fmr: RegistryClient, query, hca_query, body, hca_body
+):
+    """get_schema() works with coded measures."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    vc = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0")
+
+    assert isinstance(vc, Schema)
+    assert len(vc.components) == 13
+    assert len(vc.components.measures) == 1
+    obs_value = vc.components.measures[0]
+    assert obs_value.local_enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist="
+        "BIS:CL_BIS_IF_REF_AREA(1.0)"
+    )

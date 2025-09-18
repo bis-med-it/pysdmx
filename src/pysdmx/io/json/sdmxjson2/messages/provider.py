@@ -5,13 +5,16 @@ from typing import Dict, Sequence, Set
 
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import ItemSchemeType
+from pysdmx.io.json.sdmxjson2.messages.core import (
+    ItemSchemeType,
+    JsonAnnotation,
+)
 from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
-from pysdmx.model import DataflowRef, DataProvider, DataProviderScheme
+from pysdmx.model import Agency, DataflowRef, DataProvider, DataProviderScheme
 from pysdmx.util import parse_item_urn, parse_urn
 
 
-class JsonDataProviderScheme(ItemSchemeType, frozen=True):
+class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a data provider scheme."""
 
     dataProviders: Sequence[DataProvider] = ()
@@ -37,7 +40,9 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True):
                     description=p.description,
                     contacts=p.contacts,
                     dataflows=list(paprs[f"{self.agency}:{p.id}"]),
-                    annotations=[a.to_model() for a in self.annotations],
+                    annotations=tuple(
+                        [a.to_model() for a in self.annotations]
+                    ),
                 )
                 for p in self.dataProviders
             ]
@@ -48,7 +53,9 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True):
                     name=p.name,
                     description=p.description,
                     contacts=p.contacts,
-                    annotations=[a.to_model() for a in self.annotations],
+                    annotations=tuple(
+                        [a.to_model() for a in self.annotations]
+                    ),
                 )
                 for p in self.dataProviders
             ]
@@ -63,8 +70,29 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True):
             valid_to=self.validTo,
         )
 
+    @classmethod
+    def from_model(self, dps: DataProviderScheme) -> "JsonDataProviderScheme":
+        """Converts a pysdmx data provider scheme to an SDMX-JSON one."""
+        return JsonDataProviderScheme(
+            id="DATA_PROVIDERS",
+            name="DATA_PROVIDERS",
+            agency=(
+                dps.agency.id if isinstance(dps.agency, Agency) else dps.agency
+            ),
+            description=dps.description,
+            version="1.0",
+            dataProviders=dps.items,
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in dps.annotations]
+            ),
+            isExternalReference=dps.is_external_reference,
+            isPartial=dps.is_partial,
+            validFrom=dps.valid_from,
+            validTo=dps.valid_to,
+        )
 
-class JsonDataProviderSchemes(Struct, frozen=True):
+
+class JsonDataProviderSchemes(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of data provider schemes."""
 
     dataProviderSchemes: Sequence[JsonDataProviderScheme]
@@ -78,7 +106,7 @@ class JsonDataProviderSchemes(Struct, frozen=True):
         ]
 
 
-class JsonProviderMessage(Struct, frozen=True):
+class JsonProviderMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /dataproviderscheme queries."""
 
     data: JsonDataProviderSchemes

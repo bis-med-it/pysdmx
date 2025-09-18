@@ -2,7 +2,7 @@
 
 from typing import Optional, Sequence
 
-from msgspec import Struct
+import msgspec
 
 from pysdmx.io.json.fusion.messages.code import FusionCodelist
 from pysdmx.io.json.fusion.messages.core import (
@@ -13,7 +13,7 @@ from pysdmx.model.concept import Concept, DataType
 from pysdmx.model.concept import ConceptScheme as CS
 
 
-class FusionConcept(Struct, frozen=True):
+class FusionConcept(msgspec.Struct, frozen=True):
     """Fusion-JSON payload for concepts."""
 
     id: str
@@ -51,7 +51,9 @@ class FusionConcept(Struct, frozen=True):
         )
 
 
-class FusionConceptScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
+class FusionConceptScheme(
+    msgspec.Struct, frozen=True, rename={"agency": "agencyId"}
+):
     """Fusion-JSON payload for a concept scheme."""
 
     id: str
@@ -61,23 +63,29 @@ class FusionConceptScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
     version: str = "1.0"
     items: Sequence[FusionConcept] = ()
 
+    def __set_urn(self, concept: Concept) -> Concept:
+        urn = (
+            "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept="
+            f"{self.agency}:{self.id}({self.version}).{concept.id}"
+        )
+        return msgspec.structs.replace(concept, urn=urn)
+
     def to_model(self, codelists: Sequence[FusionCodelist]) -> CS:
         """Converts a FusionConceptScheme to a standard concept scheme."""
         d = self.descriptions[0].value if self.descriptions else None
+        concepts = [c.to_model(codelists) for c in self.items]
+        concepts = [self.__set_urn(c) for c in concepts]
         return CS(
             id=self.id,
             name=self.names[0].value,
             agency=self.agency,
             description=d,
             version=self.version,
-            items=[c.to_model(codelists) for c in self.items],
+            items=concepts,
         )
 
 
-class FusionConceptSchemeMessage(
-    Struct,
-    frozen=True,
-):
+class FusionConceptSchemeMessage(msgspec.Struct, frozen=True):
     """Fusion-JSON payload for /conceptscheme queries."""
 
     ConceptScheme: Sequence[FusionConceptScheme]

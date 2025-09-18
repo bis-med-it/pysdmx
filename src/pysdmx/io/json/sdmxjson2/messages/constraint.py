@@ -7,13 +7,13 @@ from msgspec import Struct
 from pysdmx.io.json.sdmxjson2.messages.core import MaintainableType
 
 
-class JsonValue(Struct, frozen=True):
+class JsonValue(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for an allowed value."""
 
     value: str
 
 
-class JsonKeyValue(Struct, frozen=True):
+class JsonKeyValue(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of allowed values per component."""
 
     id: str
@@ -24,7 +24,7 @@ class JsonKeyValue(Struct, frozen=True):
         return [v.value for v in self.values]
 
 
-class JsonCubeRegion(Struct, frozen=True):
+class JsonCubeRegion(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a cube region."""
 
     keyValues: Sequence[JsonKeyValue]
@@ -34,7 +34,7 @@ class JsonCubeRegion(Struct, frozen=True):
         return {kv.id: kv.to_model() for kv in self.keyValues}
 
 
-class JsonConstraintAttachment(Struct, frozen=True):
+class JsonConstraintAttachment(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a constraint attachment."""
 
     dataProvider: Optional[str]
@@ -45,7 +45,7 @@ class JsonConstraintAttachment(Struct, frozen=True):
     queryableDataSources: Optional[Sequence[str]] = None
 
 
-class JsonDataConstraint(MaintainableType, frozen=True):
+class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a content constraint."""
 
     role: Optional[Literal["Allowed", "Actual"]] = None
