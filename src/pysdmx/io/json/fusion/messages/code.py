@@ -146,6 +146,11 @@ class FusionHierarchicalCode(Struct, frozen=True):
         rvt = self.__convert_epoch(self.validTo) if self.validTo else None
         codes = [c.to_model(codelists) for c in self.codes]
         if self.id != code.id:
+            # The ID of the hierarchical code differs from the ID of the
+            # code that the hierarchical code references. We therefore need
+            # to store the ID of the hierarchical code, else the information
+            # will be lost and we won't be able to write the hierarchy back
+            # to the Registry, if requested.
             a = Annotation(id="hcode", type="pysdmx", text=self.id)
             annotations = [a]
         else:
