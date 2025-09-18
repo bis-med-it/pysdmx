@@ -17,6 +17,7 @@ def test_api_enum():
         "V2_1_0",
         "V2_2_0",
         "V2_2_1",
+        "V2_2_2",
     ]
 
     assert len(ApiVersion.__members__) == len(expected)
