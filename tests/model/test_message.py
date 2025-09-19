@@ -15,6 +15,7 @@ from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Components, Dataflow, DataStructureDefinition
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header, Message
+from pysdmx.model.metadata import MetadataAttribute, MetadataReport
 
 
 def test_default_initialization():
@@ -314,3 +315,26 @@ def test_header_repr():
         "sender=Organisation(id='TEST'), source='Test Source')"
     )
     assert r == expected_repr
+
+
+def test_metadata_report():
+    a = MetadataAttribute("ATTR1", "test")
+    r = MetadataReport(
+        "my_report",
+        agency="TEST",
+        metadataflow="mdf_ref",
+        targets=["df_ref1"],
+        attributes=[a],
+    )
+
+    msg = Message(reports=[r])
+
+    assert len(msg.get_reports()) == 1
+    assert msg.get_reports()[0] == r
+
+
+def test_no_metadata_report():
+    msg = Message()
+
+    with pytest.raises(NotFound):
+        msg.get_reports()
