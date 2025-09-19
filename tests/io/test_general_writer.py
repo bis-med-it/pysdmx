@@ -183,7 +183,7 @@ def test_invalid_sdmx_object_data(tmpdir):
 def test_invalid_sdmx_object_structure(tmpdir):
     with pytest.raises(
         Invalid,
-        match="Datasets cannot be written to structure formats",
+        match="Only maintainable artefacts can be written to structure formats.",
     ):
         write_sdmx(
             sdmx_objects=PandasDataset(
