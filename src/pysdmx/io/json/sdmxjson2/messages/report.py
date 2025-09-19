@@ -175,6 +175,6 @@ class JsonMetadataMessage(Struct, frozen=True, omit_defaults=True):
                 "SDMX-JSON metadata messages must have metadata reports.",
             )
 
-        header = JsonHeader.from_model(msg.header)
+        header = JsonHeader.from_model(msg.header, "metadata")
         reports = [JsonMetadataReport.from_model(r) for r in msg.reports]
         return JsonMetadataMessage(header, JsonMetadataSets(reports))
