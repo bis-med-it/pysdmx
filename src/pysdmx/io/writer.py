@@ -132,7 +132,11 @@ def write_sdmx(
                 "metadata formats."
             )
         )
-    elif not all(isinstance(x, Dataset) for x in value):
+    elif (
+        not is_structure
+        and not is_ref_meta
+        and not all(isinstance(x, Dataset) for x in value)
+    ):
         raise Invalid("Only Datasets can be written to data formats.")
 
     args = {
