@@ -5,7 +5,7 @@ import httpx
 import pytest
 
 import pysdmx.io.input_processor as m
-from pysdmx.errors import Invalid, NotImplemented
+from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
 from pysdmx.io.reader import get_datasets
 from pysdmx.model import Schema
