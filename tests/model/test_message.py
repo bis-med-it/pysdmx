@@ -17,10 +17,13 @@ from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header, Message
 
 
-def test_initialization():
-    message = Message({}, {}, {})
-    assert message.structures == {}
-    assert message.data == {}
+def test_default_initialization():
+    message = Message()
+    assert message.header is None
+    assert message.structures is None
+    assert message.data is None
+    assert message.submission is None
+    assert message.reports is None
 
 
 def test_get_agency_scheme():
