@@ -8,10 +8,10 @@ from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.model import Schema
-from pysdmx.model.__base import ItemScheme
-from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
+from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Message
+from pysdmx.model.metadata import MetadataReport
 from pysdmx.model.submission import SubmissionResult
 from pysdmx.util import parse_short_urn
 from pysdmx.util._model_utils import schema_generator
@@ -43,10 +43,9 @@ def read_sdmx(  # noqa: C901
 
     header = None
     result_data: Sequence[Dataset] = []
-    result_structures: Sequence[
-        Union[ItemScheme, Dataflow, DataStructureDefinition]
-    ] = []
+    result_structures: Sequence[MaintainableArtefact] = []
     result_submission: Sequence[SubmissionResult] = []
+    reports: Sequence[MetadataReport] = []
     if read_format == Format.STRUCTURE_SDMX_ML_2_1:
         from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.structure import (
@@ -86,7 +85,7 @@ def read_sdmx(  # noqa: C901
             .to_model()
         )
         header = struct_msg.header
-        result_structures = struct_msg.structures  # type: ignore[assignment]
+        result_structures = struct_msg.structures
     elif read_format == Format.REFMETA_SDMX_JSON_2_0_0:
         import msgspec
 
