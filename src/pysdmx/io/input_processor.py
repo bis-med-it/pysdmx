@@ -90,28 +90,16 @@ def __get_sdmx_csv_flavour(input_str: str) -> Tuple[str, Format]:
 
 def __get_sdmx_json_flavour(input_str: str) -> Tuple[str, Format]:
     flavour_check = input_str[:1000].lower()
-    if "2.1/sdmx-json-structure-schema.json" in flavour_check:
-        raise NotImplemented(
-            "Unsupported format", "SDMX-JSON Structure 2.1.0 is not supported."
-        )
-    elif "2.0.0/sdmx-json-structure-schema.json" in flavour_check:
+    if "2.0.0/sdmx-json-structure-schema.json" in flavour_check:
         return input_str, Format.STRUCTURE_SDMX_JSON_2_0_0
-    elif "1.0/sdmx-json-structure-schema.json" in flavour_check:
-        raise NotImplemented(
-            "Unsupported format", "SDMX-JSON Structure 1.0.0 is not supported."
-        )
-    elif "2.1/sdmx-json-metadata-schema.json" in flavour_check:
-        raise NotImplemented(
-            "Unsupported format",
-            "SDMX-JSON Referential metadata 2.1.0 is not supported.",
-        )
     elif "2.0.0/sdmx-json-metadata-schema.json" in flavour_check:
         return input_str, Format.REFMETA_SDMX_JSON_2_0_0
-    elif "sdmx-json-data-schema.json" in flavour_check:
+    elif "sdmx-json" in flavour_check:
         raise NotImplemented(
-            "Unsupported format", "SDMX-JSON Data is not supported."
+            "Unsupported format", "This flavour of SDMX-JSON is not supported."
         )
-    raise Invalid("Validation Error", "Cannot parse input as SDMX-CSV.")
+    else:
+        raise Invalid("Validation Error", "Cannot parse input as SDMX-JSON.")
 
 
 def __check_sdmx_str(input_str: str) -> Tuple[str, Format]:
