@@ -4,10 +4,9 @@ from typing import List, Literal, Optional, Sequence
 import pandas as pd
 
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.__write_data_aux import get_codes
 from pysdmx.model import Schema
 from pysdmx.model.dataset import ActionType
-from pysdmx.toolkit.pd._data_utils import format_labels
+from pysdmx.toolkit.pd._data_utils import format_labels, get_codes
 
 SDMX_CSV_ACTION_MAPPER = {
     ActionType.Append: "A",
