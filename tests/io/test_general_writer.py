@@ -15,6 +15,7 @@ CSV_2_0_PATH = Path(__file__).parent / "csv" / "sdmx20" / "reader"
 XML_2_1_PATH = Path(__file__).parent / "xml" / "sdmx21" / "reader"
 XML_3_0_PATH = Path(__file__).parent / "xml" / "sdmx30" / "reader"
 XML_STR_PATH = Path(__file__).parent
+JSN_2_0_PATH = Path(__file__).parent.parent / "api" / "fmr"
 
 DIMENSIONS = [
     "FREQ",
@@ -48,11 +49,15 @@ GEN_STRUCTURE = (
             [
                 Component(
                     id=id_,
-                    role=Role.DIMENSION
-                    if id_ in DIMENSIONS
-                    else Role.ATTRIBUTE
-                    if id_ in ATTRIBUTES
-                    else Role.MEASURE,
+                    role=(
+                        Role.DIMENSION
+                        if id_ in DIMENSIONS
+                        else (
+                            Role.ATTRIBUTE
+                            if id_ in ATTRIBUTES
+                            else Role.MEASURE
+                        )
+                    ),
                     concept=Concept(id=id_),
                     required=True,
                     attachment_level="O" if id_ in ATTRIBUTES else None,
@@ -109,6 +114,7 @@ def output_path(extension, tmpdir):
             "datastructure3_0.xml",
             {},
         ),
+        (Format.STRUCTURE_SDMX_JSON_2_0_0, JSN_2_0_PATH, "code/freq.json", {}),
     ],
 )
 def test_write_sdmx(
