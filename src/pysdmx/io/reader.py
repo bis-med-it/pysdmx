@@ -85,7 +85,9 @@ def read_sdmx(  # noqa: C901
             .to_model()
         )
         header = struct_msg.header
-        result_structures = struct_msg.structures
+        result_structures = (
+            struct_msg.structures if struct_msg.structures else []
+        )
     elif read_format == Format.REFMETA_SDMX_JSON_2_0_0:
         import msgspec
 
@@ -98,7 +100,7 @@ def read_sdmx(  # noqa: C901
             .to_model()
         )
         header = ref_msg.header
-        reports = ref_msg.reports
+        reports = ref_msg.get_reports()
     elif read_format == Format.DATA_SDMX_ML_2_1_GEN:
         from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
