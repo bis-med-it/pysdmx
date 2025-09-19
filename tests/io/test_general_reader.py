@@ -156,14 +156,6 @@ def test_read_sdmx_invalid_extension():
 
 
 @pytest.mark.data
-def test_read_sdmx_json_not_supported(sdmx_json):
-    with pytest.raises(
-        NotImplemented, match="JSON formats reading are not supported yet"
-    ):
-        read_sdmx(sdmx_json, validate=False)
-
-
-@pytest.mark.data
 def test_read_url_invalid(respx_mock):
     url = "https://invalidurl.com"
     respx_mock.get(url).mock(
