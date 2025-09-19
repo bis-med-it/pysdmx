@@ -80,26 +80,26 @@ def read_sdmx(  # noqa: C901
         from pysdmx.io.json.sdmxjson2.messages import JsonStructureMessage
         from pysdmx.model import decoders
 
-        msg = (
+        struct_msg = (
             msgspec.json.Decoder(JsonStructureMessage, dec_hook=decoders)
             .decode(input_str)
             .to_model()
         )
-        header = msg.header
-        result_structures = msg.structures
+        header = struct_msg.header
+        result_structures = struct_msg.structures  # type: ignore[assignment]
     elif read_format == Format.REFMETA_SDMX_JSON_2_0_0:
         import msgspec
 
         from pysdmx.io.json.sdmxjson2.messages import JsonMetadataMessage
         from pysdmx.model import decoders
 
-        msg = (
+        ref_msg = (
             msgspec.json.Decoder(JsonMetadataMessage, dec_hook=decoders)
             .decode(input_str)
             .to_model()
         )
-        header = msg.header
-        reports = msg.reports
+        header = ref_msg.header
+        reports = ref_msg.reports
     elif read_format == Format.DATA_SDMX_ML_2_1_GEN:
         from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
