@@ -22,12 +22,19 @@ WRITERS = {
     Format.DATA_SDMX_ML_3_1: "pysdmx.io.xml.sdmx31.writer."
     "structure_specific",
     Format.STRUCTURE_SDMX_ML_3_1: "pysdmx.io.xml.sdmx31.writer.structure",
+    Format.STRUCTURE_SDMX_JSON_2_0_0: (
+        "pysdmx.io.json.sdmxjson2.writer.structure"
+    ),
+    Format.REFMETA_SDMX_JSON_2_0_0: (
+        "pysdmx.io.json.sdmxjson2.writer.metadata"
+    ),
 }
 
 STRUCTURE_WRITERS = (
     Format.STRUCTURE_SDMX_ML_2_1,
     Format.STRUCTURE_SDMX_ML_3_0,
     Format.STRUCTURE_SDMX_ML_3_1,
+    Format.STRUCTURE_SDMX_JSON_2_0_0,
 )
 
 
