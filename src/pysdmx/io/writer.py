@@ -105,6 +105,7 @@ def write_sdmx(
 
     is_structure = sdmx_format in STRUCTURE_WRITERS
     is_xml = "xml" in WRITERS[sdmx_format]
+    is_json = "json" in WRITERS[sdmx_format]
     key = "structures" if is_structure else "datasets"
     value = sdmx_objects if isinstance(sdmx_objects, list) else [sdmx_objects]
 
@@ -127,7 +128,7 @@ def write_sdmx(
                 "prettyprint": kwargs.get("prettyprint"),
                 "header": kwargs.get("header"),
             }
-            if is_xml
+            if is_xml or is_json
             else {}
         ),
         **(
