@@ -75,9 +75,10 @@ def read_sdmx(  # noqa: C901
         # SDMX-ML 3.1 Structure
         result_structures = read_structure(input_str, validate=validate)
     elif read_format == Format.STRUCTURE_SDMX_JSON_2_0_0:
+        import msgspec
+
         from pysdmx.io.json.sdmxjson2.messages import JsonStructureMessage
         from pysdmx.model import decoders
-        import msgspec
 
         msg = (
             msgspec.json.Decoder(JsonStructureMessage, dec_hook=decoders)
@@ -87,9 +88,10 @@ def read_sdmx(  # noqa: C901
         header = msg.header
         result_structures = msg.structures
     elif read_format == Format.REFMETA_SDMX_JSON_2_0_0:
+        import msgspec
+
         from pysdmx.io.json.sdmxjson2.messages import JsonMetadataMessage
         from pysdmx.model import decoders
-        import msgspec
 
         msg = (
             msgspec.json.Decoder(JsonMetadataMessage, dec_hook=decoders)
