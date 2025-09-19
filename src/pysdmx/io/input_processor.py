@@ -89,7 +89,7 @@ def __get_sdmx_csv_flavour(input_str: str) -> Tuple[str, Format]:
 
 
 def __get_sdmx_json_flavour(input_str: str) -> Tuple[str, Format]:
-    flavour_check = input_str[:1000].lower()
+    flavour_check = input_str[:300].lower()
     if "2.0.0/sdmx-json-structure-schema.json" in flavour_check:
         return input_str, Format.STRUCTURE_SDMX_JSON_2_0_0
     elif "2.0.0/sdmx-json-metadata-schema.json" in flavour_check:
