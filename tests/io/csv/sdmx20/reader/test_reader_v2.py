@@ -66,6 +66,12 @@ def data_path_invalid_action():
 
 
 @pytest.fixture
+def data_path_merge_action():
+    base_path = Path(__file__).parent / "samples" / "data_v2_merge_action.csv"
+    return base_path
+
+
+@pytest.fixture
 def csv_labels_both():
     base_path = Path(__file__).parent / "samples" / "csv_labels_both.csv"
     return base_path
@@ -191,6 +197,17 @@ def test_reading_invalid_action(data_path_invalid_action):
     with open(data_path_invalid_action, "r") as f:
         infile = f.read()
     with pytest.raises(Invalid, match="proper values on ACTION column"):
+        read(infile)
+
+
+def test_reading_merge_action(data_path_merge_action):
+    with open(data_path_merge_action, "r") as f:
+        infile = f.read()
+    with pytest.raises(
+        Invalid,
+        match="Invalid value on ACTION column: Value 'M'"
+        " is only allowed for SDMX-CSV 2.1 files.",
+    ):
         read(infile)
 
 

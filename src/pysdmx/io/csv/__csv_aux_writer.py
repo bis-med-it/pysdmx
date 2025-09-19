@@ -14,7 +14,6 @@ SDMX_CSV_ACTION_MAPPER = {
     ActionType.Replace: "R",
     ActionType.Information: "I",
     ActionType.Delete: "D",
-    ActionType.Merge: "M",
 }
 
 
@@ -89,7 +88,7 @@ def _write_csv_2_aux(
             ActionType.Information,
             ActionType.Append,
         ]:
-            action_value = SDMX_CSV_ACTION_MAPPER[ActionType.Merge]
+            action_value = "M"
         else:
             action_value = SDMX_CSV_ACTION_MAPPER[dataset.action]
 

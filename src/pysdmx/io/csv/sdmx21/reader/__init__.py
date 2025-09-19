@@ -77,7 +77,7 @@ def read(input_str: str) -> Sequence[PandasDataset]:
     payload = []
     for df in list_df:
         # Generate a dataset from each subset of the DataFrame
-        dataset = __generate_dataset_from_sdmx_csv(data=df)
+        dataset = __generate_dataset_from_sdmx_csv(data=df, references_21=True)
 
         # Add the dataset to the payload dictionary
         payload.append(dataset)

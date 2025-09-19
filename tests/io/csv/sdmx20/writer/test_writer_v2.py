@@ -4,7 +4,6 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from pysdmx.io import read_sdmx
 from pysdmx.io.csv.sdmx20.writer import write
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model.dataset import ActionType
@@ -82,6 +81,7 @@ def csv_keys_both():
     return str(base_path)
 
 
+@pytest.mark.data
 def test_to_sdmx_csv_writing(data_path, data_path_reference):
     urn = (
         "urn:sdmx:org.sdmx.infomodel.registry."
@@ -103,6 +103,7 @@ def test_to_sdmx_csv_writing(data_path, data_path_reference):
     )
 
 
+@pytest.mark.data
 def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir):
     urn = (
         "urn:sdmx:org.sdmx.infomodel.registry."
@@ -124,6 +125,7 @@ def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir):
     )
 
 
+@pytest.mark.data
 def test_writer_attached_attrs(data_path, data_path_reference_attch_atts):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
@@ -141,6 +143,7 @@ def test_writer_attached_attrs(data_path, data_path_reference_attch_atts):
     )
 
 
+@pytest.mark.data
 def test_writer_with_action(data_path, data_path_reference_action):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
@@ -160,6 +163,8 @@ def test_writer_with_action(data_path, data_path_reference_action):
 
 
 def test_writer_labels_id(data_path_optional, dsd_path, csv_labels_id):
+    from pysdmx.io import read_sdmx
+
     result = read_sdmx(dsd_path).get_data_structure_definitions()
     dsd = result[0]
     schema = dsd.to_schema()
@@ -180,6 +185,8 @@ def test_writer_labels_id(data_path_optional, dsd_path, csv_labels_id):
 
 
 def test_writer_labels_name(data_path_optional, dsd_path, csv_labels_name):
+    from pysdmx.io import read_sdmx
+
     result = read_sdmx(dsd_path).get_data_structure_definitions()
     dsd = result[0]
     schema = dsd.to_schema()
@@ -200,6 +207,8 @@ def test_writer_labels_name(data_path_optional, dsd_path, csv_labels_name):
 
 
 def test_writer_labels_both(data_path_optional, dsd_path, csv_labels_both):
+    from pysdmx.io import read_sdmx
+
     result = read_sdmx(dsd_path).get_data_structure_definitions()
     dsd = result[0]
     schema = dsd.to_schema()
@@ -220,6 +229,8 @@ def test_writer_labels_both(data_path_optional, dsd_path, csv_labels_both):
 
 
 def test_writer_keys_obs(data_path_optional, dsd_path, csv_keys_obs):
+    from pysdmx.io import read_sdmx
+
     result = read_sdmx(dsd_path).get_data_structure_definitions()
     dsd = result[0]
     schema = dsd.to_schema()
@@ -240,6 +251,8 @@ def test_writer_keys_obs(data_path_optional, dsd_path, csv_keys_obs):
 
 
 def test_writer_keys_series(data_path_optional, dsd_path, csv_keys_series):
+    from pysdmx.io import read_sdmx
+
     result = read_sdmx(dsd_path).get_data_structure_definitions()
     dsd = result[0]
     schema = dsd.to_schema()
@@ -260,6 +273,8 @@ def test_writer_keys_series(data_path_optional, dsd_path, csv_keys_series):
 
 
 def test_writer_keys_both(data_path_optional, dsd_path, csv_keys_both):
+    from pysdmx.io import read_sdmx
+
     result = read_sdmx(dsd_path).get_data_structure_definitions()
     dsd = result[0]
     schema = dsd.to_schema()

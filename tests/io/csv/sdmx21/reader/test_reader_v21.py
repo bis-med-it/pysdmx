@@ -5,6 +5,7 @@ import pytest
 from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
 from pysdmx.io.csv.sdmx21.reader import read
+from pysdmx.model.dataset import ActionType
 
 
 @pytest.fixture
@@ -82,6 +83,12 @@ def csv_labels_name():
 @pytest.fixture
 def csv_keys_both():
     base_path = Path(__file__).parent / "samples" / "csv_keys_both.csv"
+    return base_path
+
+
+@pytest.fixture
+def csv_merge_action():
+    base_path = Path(__file__).parent / "samples" / "data_v21_merge_action.csv"
     return base_path
 
 
@@ -231,5 +238,17 @@ def test_reading_keys_both(csv_keys_both):
     assert len(df) == 1
     assert "SERIES_KEYS" not in df.columns
     assert "OBS_KEYS" not in df.columns
+
+    assert len(datasets[0].attributes) == 0
+
+
+def test_reading_merge_action(csv_merge_action):
+    with open(csv_merge_action, "r") as f:
+        infile = f.read()
+    datasets = read(infile)
+    assert datasets[0].short_urn == "DataStructure=TEST:TEST_MD(1.0)"
+    assert datasets[0].action == ActionType.Append
+    df = datasets[0].data
+    assert len(df) == 1
 
     assert len(datasets[0].attributes) == 0

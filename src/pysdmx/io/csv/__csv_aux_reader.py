@@ -9,12 +9,12 @@ ACTION_SDMX_CSV_MAPPER_READING = {
     "D": ActionType.Delete,
     "R": ActionType.Replace,
     "I": ActionType.Information,
-    "M": ActionType.Merge,
 }
 
 
 def __generate_dataset_from_sdmx_csv(  # noqa: C901
     data: pd.DataFrame,
+    references_21: bool = False,
 ) -> PandasDataset:
     urn = ""
     df_csv = pd.DataFrame()
@@ -29,14 +29,24 @@ def __generate_dataset_from_sdmx_csv(  # noqa: C901
                 data = data[data["ACTION"] != "D"]
             if len(unique_values) == 1:  # If there is only one value, use it
                 action_value = unique_values[0]
-                if action_value not in ACTION_SDMX_CSV_MAPPER_READING:
+                if action_value == "M":
+                    if not references_21:
+                        raise Invalid(
+                            "Invalid value on ACTION column",
+                            "Value 'M' is only allowed for"
+                            " SDMX-CSV 2.1 files.",
+                        )
+                    action = ActionType.Append
+                elif action_value in ACTION_SDMX_CSV_MAPPER_READING:
+                    action = ACTION_SDMX_CSV_MAPPER_READING[action_value]
+                else:
                     raise Invalid(
                         "Invalid value on ACTION column",
                         "Invalid SDMX-CSV file. "
                         "Check the docs for the proper values "
                         "on ACTION column.",
                     )
-                action = ACTION_SDMX_CSV_MAPPER_READING[action_value]
+
                 del data["ACTION"]  # Remove ACTION column from DataFrame
             else:
                 raise Invalid(
