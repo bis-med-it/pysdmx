@@ -115,12 +115,23 @@ def output_path(extension, tmpdir):
             {},
         ),
         (Format.STRUCTURE_SDMX_JSON_2_0_0, JSN_2_0_PATH, "code/freq.json", {}),
+        (
+            Format.REFMETA_SDMX_JSON_2_0_0,
+            JSN_2_0_PATH,
+            "refmeta/report.json",
+            {},
+        ),
     ],
 )
 def test_write_sdmx(
     format_, test_path, reference_file, params, reference, output_path
 ):
-    data = reference.data if reference.data else reference.structures
+    if reference.reports:
+        data = reference.reports
+    elif reference.structures:
+        data = reference.structures
+    else:
+        data = reference.data
     if format_ == Format.DATA_SDMX_ML_2_1_GEN:
         data[0].structure = GEN_STRUCTURE[0]
     params["header"] = reference.header
@@ -135,6 +146,10 @@ def test_write_sdmx(
     if reference.data:
         for actual, ref in zip(written_content.data, reference.data):
             actual.data.equals(ref.data), "Data does not match reference."
+    elif reference.reports:
+        assert (
+            written_content.reports == reference.reports
+        ), "Metadata reports do not match reference."
     else:
         assert (
             written_content.structures == reference.structures
