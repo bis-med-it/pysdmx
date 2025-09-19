@@ -5,7 +5,7 @@ import httpx
 import pytest
 
 import pysdmx.io.input_processor as m
-from pysdmx.errors import Invalid
+from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
 from pysdmx.io.reader import get_datasets
 from pysdmx.model import Codelist, MetadataReport, Schema
@@ -53,6 +53,14 @@ def sdmx_json_refmeta():
         / "refmeta"
         / "report.json"
     )
+    with open(file_path, "r") as f:
+        text = f.read()
+    return text
+
+
+@pytest.fixture
+def sdmx_json_data():
+    file_path = Path(__file__).parent / "samples" / "exr-time-series.json"
     with open(file_path, "r") as f:
         text = f.read()
     return text
@@ -397,3 +405,10 @@ def test_get_json2_refmeta(sdmx_json_refmeta):
     assert rep.agency == "BIS.MEDIT"
     assert rep.version == "1.0.42"
     assert len(rep.attributes) == 2
+
+
+def test_get_json2_data(sdmx_json_data):
+    with pytest.raises(
+        NotImplemented, match="This flavour of SDMX-JSON is not supported."
+    ):
+        read_sdmx(sdmx_json_data)
