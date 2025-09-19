@@ -62,7 +62,13 @@ class JsonCode(NameableType, frozen=True, omit_defaults=True):
             description=self.description,
             valid_from=vf,
             valid_to=vt,
-            annotations=tuple([a.to_model() for a in self.annotations]),
+            annotations=tuple(
+                [
+                    a.to_model()
+                    for a in self.annotations
+                    if a.type != "FR_VALIDITY_PERIOD"
+                ]
+            ),
         )
 
     @classmethod
