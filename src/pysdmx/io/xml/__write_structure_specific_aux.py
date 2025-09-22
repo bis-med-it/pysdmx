@@ -13,10 +13,10 @@ from pysdmx.io.xml.__write_aux import (
     get_structure,
 )
 from pysdmx.io.xml.__write_data_aux import (
-    get_codes,
     writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
+from pysdmx.toolkit.pd._data_utils import get_codes
 from pysdmx.util import parse_short_urn
 
 

@@ -7,6 +7,7 @@ def test_expected_formats():
         "application/vnd.sdmx.metadata+xml;version=3.1.0",
         "application/vnd.sdmx.metadata+json;version=2.0.0",
         "application/vnd.sdmx.metadata+csv;version=2.0.0",
+        "application/vnd.sdmx.metadata+csv;version=2.1.0",
         "application/vnd.fusion.json",
     ]
 

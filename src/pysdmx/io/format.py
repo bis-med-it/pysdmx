@@ -63,6 +63,7 @@ class DataFormat(Enum):
 
     SDMX_CSV_1_0_0 = Format.DATA_SDMX_CSV_1_0_0.value
     SDMX_CSV_2_0_0 = Format.DATA_SDMX_CSV_2_0_0.value
+    SDMX_CSV_2_1_0 = Format.DATA_SDMX_CSV_2_1_0.value
     SDMX_JSON_1_0_0 = Format.DATA_SDMX_JSON_1_0_0.value
     SDMX_JSON_2_0_0 = Format.DATA_SDMX_JSON_2_0_0.value
     SDMX_ML_2_1_GEN = Format.DATA_SDMX_ML_2_1_GEN.value
@@ -77,6 +78,7 @@ class RefMetaFormat(Enum):
     """The SDMX Reference Metadata formats."""
 
     SDMX_CSV_2_0_0 = Format.REFMETA_SDMX_CSV_2_0_0.value
+    SDMX_CSV_2_1_0 = Format.REFMETA_SDMX_CSV_2_1_0.value
     SDMX_JSON_2_0_0 = Format.REFMETA_SDMX_JSON_2_0_0.value
     SDMX_ML_3_0 = Format.REFMETA_SDMX_ML_3_0.value
     SDMX_ML_3_1 = Format.REFMETA_SDMX_ML_3_1.value
