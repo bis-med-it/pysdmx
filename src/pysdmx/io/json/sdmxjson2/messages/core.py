@@ -288,7 +288,7 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
     test: bool = False
     contentLanguages: Sequence[str] = ()
     name: Optional[str] = None
-    receivers: Optional[Organisation] = None
+    receivers: Optional[Sequence[Organisation]] = None
     links: Sequence[JsonLink] = ()
     schema: Optional[str] = None
 
@@ -313,7 +313,7 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
             header.prepared,
             header.sender,
             header.test,
-            receivers=header.receiver,
+            receivers=(header.receiver,) if header.receiver else None,
             schema=(
                 "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/"
                 "develop/structure-message/tools/schemas/2.0.0/"
