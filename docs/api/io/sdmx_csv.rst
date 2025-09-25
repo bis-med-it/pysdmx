@@ -48,7 +48,7 @@ Writing
 -------
 
 Although the use of the :ref:`general writer<general-writer>` is always recommended,
-specific readers for SDMX-CSV are also available:
+specific writers for SDMX-CSV are also available:
 
 .. _sdmx_csv_10_writer:
 
