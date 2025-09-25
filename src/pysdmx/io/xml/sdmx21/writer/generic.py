@@ -21,11 +21,11 @@ from pysdmx.io.xml.__write_aux import (
 from pysdmx.io.xml.__write_data_aux import (
     check_content_dataset,
     check_dimension_at_observation,
-    get_codes,
     writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
 from pysdmx.model.message import Header
+from pysdmx.toolkit.pd._data_utils import get_codes
 from pysdmx.util import parse_short_urn
 
 

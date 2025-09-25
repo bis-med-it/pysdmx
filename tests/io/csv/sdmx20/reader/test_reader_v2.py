@@ -65,13 +65,37 @@ def data_path_invalid_action():
     return base_path
 
 
+@pytest.fixture
+def data_path_merge_action():
+    base_path = Path(__file__).parent / "samples" / "data_v2_merge_action.csv"
+    return base_path
+
+
+@pytest.fixture
+def csv_labels_both():
+    base_path = Path(__file__).parent / "samples" / "csv_labels_both.csv"
+    return base_path
+
+
+@pytest.fixture
+def csv_labels_name():
+    base_path = Path(__file__).parent / "samples" / "csv_labels_name.csv"
+    return base_path
+
+
+@pytest.fixture
+def csv_keys_both():
+    base_path = Path(__file__).parent / "samples" / "csv_keys_both.csv"
+    return base_path
+
+
 def test_reading_data_v2(data_path):
     with open(data_path, "r") as f:
         infile = f.read()
     datasets = read(infile)
     assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
-    assert len(df) == 1000
+    assert len(df) == 20
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
     assert "ACTION" not in df.columns
@@ -82,7 +106,7 @@ def test_reading_sdmx_csv_v2(data_path):
     datasets = read_sdmx(data_path).data
     assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
-    assert len(df) == 1000
+    assert len(df) == 20
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
     assert "ACTION" not in df.columns
@@ -95,7 +119,7 @@ def test_reading_sdmx_csv_v2_string(data_path):
     datasets = read_sdmx(infile).data
     assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
-    assert len(df) == 1000
+    assert len(df) == 20
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
     assert "ACTION" not in df.columns
@@ -113,10 +137,7 @@ def test_reading_no_freq_v2(data_path_no_freq):
     with open(data_path_no_freq, "r") as f:
         infile = f.read()
     datasets = read(infile)
-    assert (
-        datasets[0].short_urn
-        == "Dataflow=WB:GCI(1.0):GlobalCompetitivenessIndex"
-    )
+    assert datasets[0].short_urn == "Dataflow=WB:GCI(1.0)"
     df = datasets[0].data
     assert len(df) == 7
     assert "STRUCTURE" not in df.columns
@@ -130,7 +151,7 @@ def test_reading_col_action(data_path_action):
     datasets = read(infile)
     assert datasets[0].short_urn == "Dataflow=BIS:BIS_DER(1.0)"
     df = datasets[0].data
-    assert len(df) == 1000
+    assert len(df) == 20
     assert "STRUCTURE" not in df.columns
     assert "STRUCTURE_ID" not in df.columns
     assert "ACTION" not in df.columns
@@ -177,3 +198,53 @@ def test_reading_invalid_action(data_path_invalid_action):
         infile = f.read()
     with pytest.raises(Invalid, match="proper values on ACTION column"):
         read(infile)
+
+
+def test_reading_merge_action(data_path_merge_action):
+    with open(data_path_merge_action, "r") as f:
+        infile = f.read()
+    with pytest.raises(
+        Invalid,
+        match="Invalid value on ACTION column: Value 'M'"
+        " is only allowed for SDMX-CSV 2.1 files.",
+    ):
+        read(infile)
+
+
+def test_reading_labels_both(csv_labels_both):
+    with open(csv_labels_both, "r") as f:
+        infile = f.read()
+    datasets = read(infile)
+    assert datasets[0].short_urn == "DataStructure=MD:MD_TEST(1.0)"
+    df = datasets[0].data
+    assert "ATT1" in df.columns
+    assert df.at[0, "ATT1"] == "C"
+    assert len(df) == 1
+    assert "STRUCTURE" not in df.columns
+    assert "STRUCTURE_ID" not in df.columns
+    assert "ACTION" not in df.columns
+    assert len(datasets[0].attributes) == 0
+
+
+def test_reading_labels_name(csv_labels_name):
+    with open(csv_labels_name, "r") as f:
+        infile = f.read()
+    datasets = read(infile)
+    assert datasets[0].short_urn == "DataStructure=MD:MD_TEST(1.0)"
+    df = datasets[0].data
+    assert len(df) == 1
+    assert "STRUCTURE_NAME" not in df.columns
+    assert len(datasets[0].attributes) == 0
+
+
+def test_reading_keys_both(csv_keys_both):
+    with open(csv_keys_both, "r") as f:
+        infile = f.read()
+    datasets = read(infile)
+    assert datasets[0].short_urn == "DataStructure=MD:MD_TEST(1.0)"
+    df = datasets[0].data
+    assert len(df) == 1
+    assert "SERIES_KEYS" not in df.columns
+    assert "OBS_KEYS" not in df.columns
+
+    assert len(datasets[0].attributes) == 0

@@ -154,8 +154,8 @@ def read_sdmx(  # noqa: C901
         # SDMX-CSV 1.0
         result_data = read_csv_v1(input_str)
     else:
-        # SDMX-CSV 2.0
-        from pysdmx.io.csv.sdmx20.reader import read as read_csv_v2
+        # SDMX-CSV 2.1
+        from pysdmx.io.csv.sdmx21.reader import read as read_csv_v2
 
         result_data = read_csv_v2(input_str)
 
@@ -166,6 +166,7 @@ def read_sdmx(  # noqa: C901
     if read_format in (
         Format.DATA_SDMX_CSV_1_0_0,
         Format.DATA_SDMX_CSV_2_0_0,
+        Format.DATA_SDMX_CSV_2_1_0,
         Format.DATA_SDMX_ML_2_1_GEN,
         Format.DATA_SDMX_ML_2_1_STR,
         Format.DATA_SDMX_ML_3_0,

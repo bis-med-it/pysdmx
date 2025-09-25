@@ -14,6 +14,7 @@ from pysdmx.model.dataset import Dataset
 WRITERS = {
     Format.DATA_SDMX_CSV_1_0_0: "pysdmx.io.csv.sdmx10.writer",
     Format.DATA_SDMX_CSV_2_0_0: "pysdmx.io.csv.sdmx20.writer",
+    Format.DATA_SDMX_CSV_2_1_0: "pysdmx.io.csv.sdmx21.writer",
     Format.DATA_SDMX_ML_2_1_GEN: "pysdmx.io.xml.sdmx21.writer.generic",
     Format.DATA_SDMX_ML_2_1_STR: "pysdmx.io.xml.sdmx21.writer."
     "structure_specific",
@@ -159,7 +160,15 @@ def write_sdmx(
             if is_xml and not is_structure
             else {}
         ),
+        **(
+            {
+                "labels": kwargs.get("labels"),
+                "keys": kwargs.get("keys"),
+                "time_format": kwargs.get("time_format"),
+            }
+            if not is_xml
+            else {}
+        ),
     }
     args = {k: v for k, v in args.items() if v is not None}
-
     return writer(**args)
