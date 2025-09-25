@@ -30,6 +30,10 @@ List of formats and versions supported by the general writer:
     - :ref:`SDMX-ML 3.1 Structure Specific <sdmx_ml_31_spe_writer>`
     - :ref:`SDMX-ML 3.1 Structure <sdmx_ml_31_structure_writer>`
 
+- :ref:`SDMX-JSON<sdmx_json>`
+    - :ref:`SDMX-JSON 2.0.0 Structure <sdmx_json_20_writer_structure>`
+    - :ref:`SDMX-JSON 2.0.0 Reference Metadata <sdmx_json_20_writer_refmeta>`
+
 .. _write-sdmx:
 
 Write SDMX

@@ -1,7 +1,7 @@
 """Collection of SDMX-JSON schemas for common artefacts."""
 
 from datetime import datetime
-from typing import Optional, Sequence, Union
+from typing import Literal, Optional, Sequence, Union
 
 import msgspec
 
@@ -288,7 +288,7 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
     test: bool = False
     contentLanguages: Sequence[str] = ()
     name: Optional[str] = None
-    receivers: Optional[Organisation] = None
+    receivers: Optional[Sequence[Organisation]] = None
     links: Sequence[JsonLink] = ()
     schema: Optional[str] = None
 
@@ -302,17 +302,21 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
         )
 
     @classmethod
-    def from_model(self, header: Header) -> "JsonHeader":
+    def from_model(
+        self,
+        header: Header,
+        msg_type: Literal["structure", "metadata"] = "structure",
+    ) -> "JsonHeader":
         """Create an SDMX-JSON header from a pysdmx Header."""
         return JsonHeader(
             header.id,
             header.prepared,
             header.sender,
             header.test,
-            receivers=header.receiver,
+            receivers=(header.receiver,) if header.receiver else None,
             schema=(
                 "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/"
                 "develop/structure-message/tools/schemas/2.0.0/"
-                "sdmx-json-structure-schema.json"
+                f"sdmx-json-{msg_type}-schema.json"
             ),
         )

@@ -7,6 +7,8 @@ from typing import Any, Optional, Sequence
 
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
+from pysdmx.model import MetadataReport
+from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.dataset import Dataset
 
 WRITERS = {
@@ -23,13 +25,22 @@ WRITERS = {
     Format.DATA_SDMX_ML_3_1: "pysdmx.io.xml.sdmx31.writer."
     "structure_specific",
     Format.STRUCTURE_SDMX_ML_3_1: "pysdmx.io.xml.sdmx31.writer.structure",
+    Format.STRUCTURE_SDMX_JSON_2_0_0: (
+        "pysdmx.io.json.sdmxjson2.writer.structure"
+    ),
+    Format.REFMETA_SDMX_JSON_2_0_0: (
+        "pysdmx.io.json.sdmxjson2.writer.metadata"
+    ),
 }
 
 STRUCTURE_WRITERS = (
     Format.STRUCTURE_SDMX_ML_2_1,
     Format.STRUCTURE_SDMX_ML_3_0,
     Format.STRUCTURE_SDMX_ML_3_1,
+    Format.STRUCTURE_SDMX_JSON_2_0_0,
 )
+
+REFMETA_WRITERS = (Format.REFMETA_SDMX_JSON_2_0_0,)
 
 
 def write_sdmx(
@@ -98,20 +109,36 @@ def write_sdmx(
     writer = module.write
 
     is_structure = sdmx_format in STRUCTURE_WRITERS
+    is_ref_meta = sdmx_format in REFMETA_WRITERS
     is_xml = "xml" in WRITERS[sdmx_format]
-    key = "structures" if is_structure else "datasets"
+    is_json = "json" in WRITERS[sdmx_format]
+    if is_structure:
+        key = "structures"
+    elif is_ref_meta:
+        key = "reports"
+    else:
+        key = "datasets"
     value = sdmx_objects if isinstance(sdmx_objects, list) else [sdmx_objects]
 
-    if is_structure and any(isinstance(x, Dataset) for x in value):
+    if is_structure and not all(
+        isinstance(x, MaintainableArtefact) for x in value
+    ):
         raise Invalid(
-            "Datasets cannot be written to structure formats. "
-            "Use data formats instead."
+            "Only maintainable artefacts can be written to structure formats."
         )
-    elif not is_structure and not all(isinstance(x, Dataset) for x in value):
+    elif is_ref_meta and not all(isinstance(x, MetadataReport) for x in value):
         raise Invalid(
-            "Only Datasets can be written to data formats. "
-            "Use structure formats for other SDMX objects."
+            (
+                "Only metadata reports can be written to reference "
+                "metadata formats."
+            )
         )
+    elif (
+        not is_structure
+        and not is_ref_meta
+        and not all(isinstance(x, Dataset) for x in value)
+    ):
+        raise Invalid("Only Datasets can be written to data formats.")
 
     args = {
         key: value,
@@ -121,7 +148,7 @@ def write_sdmx(
                 "prettyprint": kwargs.get("prettyprint"),
                 "header": kwargs.get("header"),
             }
-            if is_xml
+            if is_xml or is_json
             else {}
         ),
         **(

@@ -8,10 +8,10 @@ from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.model import Schema
-from pysdmx.model.__base import ItemScheme
-from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
+from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Message
+from pysdmx.model.metadata import MetadataReport
 from pysdmx.model.submission import SubmissionResult
 from pysdmx.util import parse_short_urn
 from pysdmx.util._model_utils import schema_generator
@@ -43,10 +43,9 @@ def read_sdmx(  # noqa: C901
 
     header = None
     result_data: Sequence[Dataset] = []
-    result_structures: Sequence[
-        Union[ItemScheme, Dataflow, DataStructureDefinition]
-    ] = []
+    result_structures: Sequence[MaintainableArtefact] = []
     result_submission: Sequence[SubmissionResult] = []
+    reports: Sequence[MetadataReport] = []
     if read_format == Format.STRUCTURE_SDMX_ML_2_1:
         from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.structure import (
@@ -74,6 +73,24 @@ def read_sdmx(  # noqa: C901
         header = read_header(input_str, validate=validate)
         # SDMX-ML 3.1 Structure
         result_structures = read_structure(input_str, validate=validate)
+    elif read_format == Format.STRUCTURE_SDMX_JSON_2_0_0:
+        from pysdmx.io.json.sdmxjson2.reader.structure import (
+            read as read_struct,
+        )
+
+        struct_msg = read_struct(input_str)
+        header = struct_msg.header
+        result_structures = (
+            struct_msg.structures if struct_msg.structures else []
+        )
+    elif read_format == Format.REFMETA_SDMX_JSON_2_0_0:
+        from pysdmx.io.json.sdmxjson2.reader.metadata import (
+            read as read_refmeta,
+        )
+
+        ref_msg = read_refmeta(input_str)
+        header = ref_msg.header
+        reports = ref_msg.get_reports()
     elif read_format == Format.DATA_SDMX_ML_2_1_GEN:
         from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
@@ -132,7 +149,7 @@ def read_sdmx(  # noqa: C901
 
         result_data = read_csv_v2(input_str)
 
-    if not (result_data or result_structures or result_submission):
+    if not (result_data or result_structures or result_submission or reports):
         raise Invalid("Empty SDMX Message")
 
     # Returning a Message class
@@ -150,7 +167,8 @@ def read_sdmx(  # noqa: C901
         return Message(header=header, data=result_data)
     elif read_format == Format.REGISTRY_SDMX_ML_2_1:
         return Message(header=header, submission=result_submission)
-
+    elif read_format == Format.REFMETA_SDMX_JSON_2_0_0:
+        return Message(header=header, reports=reports)
     # TODO: Ensure we have changed the signature of the structure readers
     return Message(header=header, structures=result_structures)
 

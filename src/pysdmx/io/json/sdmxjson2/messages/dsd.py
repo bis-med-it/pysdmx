@@ -44,11 +44,12 @@ def _find_concept(cs: Sequence[JsonConceptScheme], urn: str) -> JsonConcept:
 
 
 def __get_type(repr_: JsonRepresentation) -> Optional[str]:
+    t: Optional[str] = None
     if repr_.enumerationFormat:
         t = repr_.enumerationFormat.dataType
     elif repr_.format:
         t = repr_.format.dataType
-    else:
+    if not t:
         t = "String"
     return t
 

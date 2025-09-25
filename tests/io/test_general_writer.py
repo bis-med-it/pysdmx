@@ -16,6 +16,7 @@ CSV_2_0_PATH = Path(__file__).parent / "csv" / "sdmx20" / "reader"
 XML_2_1_PATH = Path(__file__).parent / "xml" / "sdmx21" / "reader"
 XML_3_0_PATH = Path(__file__).parent / "xml" / "sdmx30" / "reader"
 XML_STR_PATH = Path(__file__).parent
+JSN_2_0_PATH = Path(__file__).parent.parent / "api" / "fmr"
 
 DIMENSIONS = [
     "FREQ",
@@ -49,11 +50,15 @@ GEN_STRUCTURE = (
             [
                 Component(
                     id=id_,
-                    role=Role.DIMENSION
-                    if id_ in DIMENSIONS
-                    else Role.ATTRIBUTE
-                    if id_ in ATTRIBUTES
-                    else Role.MEASURE,
+                    role=(
+                        Role.DIMENSION
+                        if id_ in DIMENSIONS
+                        else (
+                            Role.ATTRIBUTE
+                            if id_ in ATTRIBUTES
+                            else Role.MEASURE
+                        )
+                    ),
                     concept=Concept(id=id_),
                     required=True,
                     attachment_level="O" if id_ in ATTRIBUTES else None,
@@ -128,12 +133,24 @@ def output_path(extension, tmpdir):
             "datastructure3_0.xml",
             {},
         ),
+        (Format.STRUCTURE_SDMX_JSON_2_0_0, JSN_2_0_PATH, "code/freq.json", {}),
+        (
+            Format.REFMETA_SDMX_JSON_2_0_0,
+            JSN_2_0_PATH,
+            "refmeta/report.json",
+            {},
+        ),
     ],
 )
 def test_write_sdmx(
     format_, test_path, reference_file, params, reference, output_path
 ):
-    data = reference.data if reference.data else reference.structures
+    if reference.reports:
+        data = reference.reports
+    elif reference.structures:
+        data = reference.structures
+    else:
+        data = reference.data
     if format_ == Format.DATA_SDMX_ML_2_1_GEN:
         data[0].structure = GEN_STRUCTURE[0]
     params["header"] = reference.header
@@ -148,6 +165,88 @@ def test_write_sdmx(
     if reference.data:
         for actual, ref in zip(written_content.data, reference.data):
             actual.data.equals(ref.data), "Data does not match reference."
+    elif reference.reports:
+        assert (
+            written_content.reports == reference.reports
+        ), "Metadata reports do not match reference."
+    else:
+        assert (
+            written_content.structures == reference.structures
+        ), "Structures do not match reference."
+
+
+@pytest.mark.parametrize(
+    ("format_", "test_path", "reference_file", "params"),
+    [
+        (Format.STRUCTURE_SDMX_JSON_2_0_0, JSN_2_0_PATH, "code/freq.json", {}),
+        (
+            Format.REFMETA_SDMX_JSON_2_0_0,
+            JSN_2_0_PATH,
+            "refmeta/report.json",
+            {},
+        ),
+    ],
+)
+def test_write_sdmx_no_header(
+    format_, test_path, reference_file, params, reference, output_path
+):
+    if reference.reports:
+        data = reference.reports
+    elif reference.structures:
+        data = reference.structures
+    else:
+        data = reference.data
+    if format_ == Format.DATA_SDMX_ML_2_1_GEN:
+        data[0].structure = GEN_STRUCTURE[0]
+    params["header"] = None
+    params["prettyprint"] = False
+
+    write_sdmx(data, format_, Path(str(output_path)), **params)
+    assert output_path.exists(), f"Output file {output_path} was not created."
+
+    written_content = read_sdmx(output_path)
+
+    assert written_content.header is not None, "The header is missing."
+    assert written_content.header.sender.id == "ZZZ", "Unexpected sender."
+
+
+@pytest.mark.parametrize(
+    ("format_", "test_path", "reference_file", "params"),
+    [
+        (Format.STRUCTURE_SDMX_JSON_2_0_0, JSN_2_0_PATH, "code/freq.json", {}),
+        (
+            Format.REFMETA_SDMX_JSON_2_0_0,
+            JSN_2_0_PATH,
+            "refmeta/report.json",
+            {},
+        ),
+    ],
+)
+def test_write_sdmx_no_output_file(
+    format_, test_path, reference_file, params, reference, output_path
+):
+    if reference.reports:
+        data = reference.reports
+    elif reference.structures:
+        data = reference.structures
+    else:
+        data = reference.data
+    if format_ == Format.DATA_SDMX_ML_2_1_GEN:
+        data[0].structure = GEN_STRUCTURE[0]
+    params["header"] = None
+    params["prettyprint"] = False
+
+    out = write_sdmx(data, format_, **params)
+
+    written_content = read_sdmx(out)
+
+    assert written_content.header is not None, "The header is missing."
+    assert written_content.header.sender.id == "ZZZ", "Unexpected sender."
+    assert written_content is not None, "Written content should not be None."
+    if reference.reports:
+        assert (
+            written_content.reports == reference.reports
+        ), "Metadata reports do not match reference."
     else:
         assert (
             written_content.structures == reference.structures
@@ -181,7 +280,9 @@ def test_invalid_sdmx_object_data(tmpdir):
 def test_invalid_sdmx_object_structure(tmpdir):
     with pytest.raises(
         Invalid,
-        match="Datasets cannot be written to structure formats",
+        match=(
+            "Only maintainable artefacts can be written to structure formats."
+        ),
     ):
         write_sdmx(
             sdmx_objects=PandasDataset(
@@ -215,3 +316,20 @@ def test_write_sdmx_csv_optionals(data_path_optional, dsd_path, csv_optionals):
         reference_df.replace("nan", ""),
         check_like=True,
     )
+
+
+def test_invalid_sdmx_object_refmeta(tmpdir):
+    with pytest.raises(
+        Invalid,
+        match=(
+            "Only metadata reports can be written to "
+            "reference metadata formats."
+        ),
+    ):
+        write_sdmx(
+            sdmx_objects=PandasDataset(
+                structure="DataStructure=MD:TEST_DSD(1.0)", data=pd.DataFrame()
+            ),
+            sdmx_format=Format.REFMETA_SDMX_JSON_2_0_0,
+            output_path=tmpdir / "output.invalid",
+        )
