@@ -30,6 +30,10 @@ List of formats and versions supported by the general reader:
     - :ref:`SDMX-ML 3.1 Structure Specific <sdmx_ml_31_spe_reader>`
     - :ref:`SDMX-ML 3.1 Structure <sdmx_ml_31_structure_reader>`
 
+- :ref:`SDMX-JSON<sdmx_json>`
+    - :ref:`SDMX-JSON 2.0.0 Structure <sdmx_json_20_reader_structure>`
+    - :ref:`SDMX-JSON 2.0.0 Reference Metadata <sdmx_json_20_reader_refmeta>`
+
 .. _read-sdmx:
 
 Read SDMX
