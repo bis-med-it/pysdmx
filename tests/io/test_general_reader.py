@@ -8,7 +8,8 @@ import pysdmx.io.input_processor as m
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
 from pysdmx.io.reader import get_datasets
-from pysdmx.model import Schema
+from pysdmx.model import Codelist, MetadataReport, Schema
+from pysdmx.model.message import Message
 
 
 @pytest.fixture
@@ -22,6 +23,44 @@ def empty_message():
 @pytest.fixture
 def sdmx_json():
     file_path = Path(__file__).parent / "samples" / "sdmx.json"
+    with open(file_path, "r") as f:
+        text = f.read()
+    return text
+
+
+@pytest.fixture
+def sdmx_json_structure():
+    file_path = (
+        Path(__file__).parent.parent
+        / "api"
+        / "fmr"
+        / "samples"
+        / "code"
+        / "freq.json"
+    )
+    with open(file_path, "r") as f:
+        text = f.read()
+    return text
+
+
+@pytest.fixture
+def sdmx_json_refmeta():
+    file_path = (
+        Path(__file__).parent.parent
+        / "api"
+        / "fmr"
+        / "samples"
+        / "refmeta"
+        / "report.json"
+    )
+    with open(file_path, "r") as f:
+        text = f.read()
+    return text
+
+
+@pytest.fixture
+def sdmx_json_data():
+    file_path = Path(__file__).parent / "samples" / "exr-time-series.json"
     with open(file_path, "r") as f:
         text = f.read()
     return text
@@ -149,18 +188,13 @@ def mock_http_client(monkeypatch, structures_path):
     return last
 
 
+@pytest.mark.data
 def test_read_sdmx_invalid_extension():
     with pytest.raises(Invalid, match="Cannot parse input as SDMX."):
         read_sdmx(",,,,")
 
 
-def test_read_sdmx_json_not_supported(sdmx_json):
-    with pytest.raises(
-        NotImplemented, match="JSON formats reading are not supported yet"
-    ):
-        read_sdmx(sdmx_json, validate=False)
-
-
+@pytest.mark.data
 def test_read_url_invalid(respx_mock):
     url = "https://invalidurl.com"
     respx_mock.get(url).mock(
@@ -175,6 +209,7 @@ def test_read_url_invalid(respx_mock):
         read_sdmx(url)
 
 
+@pytest.mark.data
 def test_read_url_valid(respx_mock, data_csv_v1_str):
     url = "http://validurl.com"
     respx_mock.get(url).mock(
@@ -187,6 +222,7 @@ def test_read_url_valid(respx_mock, data_csv_v1_str):
     assert result.data is not None
 
 
+@pytest.mark.data
 def test_read_url_invalid_pem():
     url = "https://validurl.com"
     invalid_pem_path = Path(__file__).parent / "samples" / "invalid_pem.pem"
@@ -194,6 +230,7 @@ def test_read_url_invalid_pem():
         read_sdmx(url, pem=invalid_pem_path)
 
 
+@pytest.mark.data
 def test_read_url_invalid_pem_str():
     url = "https://validurl.com"
     with pytest.raises(
@@ -340,3 +377,38 @@ def test_get_datasets_missing_attribute(samples_folder):
     }
     assert "DECIMALS" not in dataset.data.columns
     assert "UNIT_MULT" not in dataset.data.columns
+
+
+def test_get_json2_structure(sdmx_json_structure):
+    msg = read_sdmx(sdmx_json_structure)
+
+    assert isinstance(msg, Message)
+    assert msg.header is not None
+    assert len(msg.structures) == 1
+    assert isinstance(msg.structures[0], Codelist)
+    cl = msg.structures[0]
+    assert cl.id == "CL_FREQ"
+    assert cl.agency == "SDMX"
+    assert cl.version == "2.0"
+    assert len(cl.codes) == 9
+
+
+def test_get_json2_refmeta(sdmx_json_refmeta):
+    msg = read_sdmx(sdmx_json_refmeta)
+
+    assert isinstance(msg, Message)
+    assert msg.header is not None
+    assert len(msg.reports) == 1
+    assert isinstance(msg.reports[0], MetadataReport)
+    rep = msg.reports[0]
+    assert rep.id == "DTI_BIS_MACRO"
+    assert rep.agency == "BIS.MEDIT"
+    assert rep.version == "1.0.42"
+    assert len(rep.attributes) == 2
+
+
+def test_get_json2_data(sdmx_json_data):
+    with pytest.raises(
+        NotImplemented, match="This flavour of SDMX-JSON is not supported."
+    ):
+        read_sdmx(sdmx_json_data)

@@ -100,6 +100,12 @@ def no_attr_body():
 
 
 @pytest.fixture
+def coded_measure_body():
+    with open("tests/api/fmr/samples/df/coded_measure.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture
 def hierarchy_body():
     with open("tests/api/fmr/samples/df/hierarchy_schema.json", "rb") as f:
         return f.read()
@@ -254,4 +260,13 @@ def test_no_time_dimension(
     """Not having a time dimension works fine."""
     checks.check_no_td(
         respx_mock, fmr, query, no_hca_query, no_td_body, no_hca_body
+    )
+
+
+def test_coded_measure(
+    respx_mock, fmr, query, no_hca_query, coded_measure_body, no_hca_body
+):
+    """DSD may contain coded measures."""
+    checks.check_coded_measure(
+        respx_mock, fmr, query, no_hca_query, coded_measure_body, no_hca_body
     )

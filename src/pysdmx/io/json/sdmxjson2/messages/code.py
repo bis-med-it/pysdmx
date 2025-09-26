@@ -6,6 +6,7 @@ from typing import Optional, Sequence, Tuple
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
     JsonAnnotation,
@@ -14,6 +15,8 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     NameableType,
 )
 from pysdmx.model import (
+    Agency,
+    Annotation,
     Code,
     Codelist,
     HierarchicalCode,
@@ -22,14 +25,16 @@ from pysdmx.model import (
 )
 from pysdmx.util import find_by_urn, parse_item_urn
 
+_VAL_FMT = "%Y-%m-%dT%H:%M:%S%z"
 
-class JsonCode(NameableType, frozen=True):
+
+class JsonCode(NameableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for codes."""
 
     parent: Optional[str] = None
 
     def __handle_date(self, datestr: str) -> datetime:
-        return datetime.strptime(datestr, "%Y-%m-%dT%H:%M:%S%z")
+        return datetime.strptime(datestr, _VAL_FMT)
 
     def __get_val(
         self, a: JsonAnnotation
@@ -57,11 +62,51 @@ class JsonCode(NameableType, frozen=True):
             description=self.description,
             valid_from=vf,
             valid_to=vt,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple(
+                [
+                    a.to_model()
+                    for a in self.annotations
+                    if a.type != "FR_VALIDITY_PERIOD"
+                ]
+            ),
+        )
+
+    @classmethod
+    def from_model(self, code: Code) -> "JsonCode":
+        """Converts a pysdmx code to an SDMX-JSON one."""
+        if not code.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON codes must have a name",
+                {"code": code.id},
+            )
+
+        annotations = [JsonAnnotation.from_model(a) for a in code.annotations]
+        if code.valid_from and code.valid_to:
+            vp = (
+                f"{datetime.strftime(code.valid_from, _VAL_FMT)}/"
+                f"{datetime.strftime(code.valid_to, _VAL_FMT)}"
+            )
+        elif code.valid_from:
+            vp = f"{datetime.strftime(code.valid_from, _VAL_FMT)}/"
+        elif code.valid_to:
+            vp = f"/{datetime.strftime(code.valid_to, _VAL_FMT)}"
+        else:
+            vp = ""
+        if vp:
+            annotations.append(
+                JsonAnnotation(title=vp, type="FR_VALIDITY_PERIOD")
+            )
+
+        return JsonCode(
+            id=code.id,
+            name=code.name,
+            description=code.description,
+            annotations=tuple(annotations),
         )
 
 
-class JsonCodelist(ItemSchemeType, frozen=True):
+class JsonCodelist(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a codelist."""
 
     codes: Sequence[JsonCode] = ()
@@ -74,16 +119,43 @@ class JsonCodelist(ItemSchemeType, frozen=True):
             agency=self.agency,
             description=self.description,
             version=self.version,
-            items=[i.to_model() for i in self.codes],
-            annotations=[a.to_model() for a in self.annotations],
+            items=tuple([i.to_model() for i in self.codes]),
+            annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
             valid_from=self.validFrom,
             valid_to=self.validTo,
         )
 
+    @classmethod
+    def from_model(self, cl: Codelist) -> "JsonCodelist":
+        """Converts a pysdmx codelist to an SDMX-JSON one."""
+        if not cl.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON codelists must have a name",
+                {"codelist": cl.id},
+            )
+        return JsonCodelist(
+            id=cl.id,
+            name=cl.name,
+            agency=(
+                cl.agency.id if isinstance(cl.agency, Agency) else cl.agency
+            ),
+            description=cl.description,
+            version=cl.version,
+            codes=tuple([JsonCode.from_model(i) for i in cl.items]),
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in cl.annotations]
+            ),
+            isExternalReference=cl.is_external_reference,
+            isPartial=cl.is_partial,
+            validFrom=cl.valid_from,
+            validTo=cl.valid_to,
+        )
 
-class JsonValuelist(ItemSchemeType, frozen=True):
+
+class JsonValuelist(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a valuelist."""
 
     valueItems: Sequence[JsonCode] = ()
@@ -105,15 +177,42 @@ class JsonValuelist(ItemSchemeType, frozen=True):
             sdmx_type="valuelist",
         )
 
+    @classmethod
+    def from_model(self, cl: Codelist) -> "JsonValuelist":
+        """Converts a pysdmx codelist to an SDMX-JSON valuelist."""
+        if not cl.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON valuelists must have a name",
+                {"valuelist": cl.id},
+            )
+        return JsonValuelist(
+            id=cl.id,
+            name=cl.name,
+            agency=(
+                cl.agency.id if isinstance(cl.agency, Agency) else cl.agency
+            ),
+            description=cl.description,
+            version=cl.version,
+            valueItems=tuple([JsonCode.from_model(i) for i in cl.items]),
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in cl.annotations]
+            ),
+            isExternalReference=cl.is_external_reference,
+            isPartial=cl.is_partial,
+            validFrom=cl.valid_from,
+            validTo=cl.valid_to,
+        )
 
-class JsonCodelists(Struct, frozen=True):
+
+class JsonCodelists(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for lists of codes."""
 
     codelists: Sequence[JsonCodelist] = ()
     valuelists: Sequence[JsonValuelist] = ()
 
 
-class JsonCodelistMessage(Struct, frozen=True):
+class JsonCodelistMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /codelist queries."""
 
     data: JsonCodelists
@@ -126,7 +225,7 @@ class JsonCodelistMessage(Struct, frozen=True):
             return self.data.valuelists[0].to_model()
 
 
-class JsonHierarchicalCode(Struct, frozen=True):
+class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
     """Fusion-JSON payload for hierarchical codes."""
 
     id: str
@@ -163,6 +262,11 @@ class JsonHierarchicalCode(Struct, frozen=True):
         codes = [c.to_model(codelists) for c in self.hierarchicalCodes]
         vf = self.validFrom.replace(tzinfo=tz.utc) if self.validFrom else None
         vt = self.validTo.replace(tzinfo=tz.utc) if self.validTo else None
+        if self.id != code.id:
+            a = Annotation(id="hcode", type="pysdmx", text=self.id)
+            annotations = [a]
+        else:
+            annotations = []
         return HierarchicalCode(
             code.id,
             name,
@@ -172,10 +276,45 @@ class JsonHierarchicalCode(Struct, frozen=True):
             vf,
             vt,
             codes,
+            tuple(annotations),
+            self.code,
+        )
+
+    @classmethod
+    def from_model(self, code: HierarchicalCode) -> "JsonHierarchicalCode":
+        """Converts a pysdmx hierarchical code to an SDMX-JSON one."""
+        if not code.urn:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON hierarchical codes must have the code urn.",
+                {"code": code.id},
+            )
+
+        annotations = [
+            JsonAnnotation.from_model(a)
+            for a in code.annotations
+            if a.type != "pysdmx"
+        ]
+        id_ano = [
+            a
+            for a in code.annotations
+            if a.type == "pysdmx" and a.id == "hcode"
+        ]
+        hid = id_ano[0].value if len(id_ano) > 0 else code.id
+
+        return JsonHierarchicalCode(
+            id=hid,  # type: ignore[arg-type]
+            code=code.urn,
+            validFrom=code.rel_valid_from,
+            validTo=code.rel_valid_to,
+            annotations=tuple(annotations),
+            hierarchicalCodes=[
+                JsonHierarchicalCode.from_model(c) for c in code.codes
+            ],
         )
 
 
-class JsonHierarchy(ItemSchemeType, frozen=True):
+class JsonHierarchy(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a hierarchy."""
 
     hierarchicalCodes: Sequence[JsonHierarchicalCode] = ()
@@ -189,7 +328,7 @@ class JsonHierarchy(ItemSchemeType, frozen=True):
             agency=self.agency,
             description=self.description,
             version=self.version,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
             valid_from=self.validFrom,
@@ -197,8 +336,35 @@ class JsonHierarchy(ItemSchemeType, frozen=True):
             codes=[i.to_model(cls) for i in self.hierarchicalCodes],
         )
 
+    @classmethod
+    def from_model(self, h: Hierarchy) -> "JsonHierarchy":
+        """Converts a pysdmx hierarchy to an SDMX-JSON one."""
+        if not h.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON hierarchy must have a name",
+                {"hierarchy": h.id},
+            )
+        return JsonHierarchy(
+            id=h.id,
+            name=h.name,
+            agency=(h.agency.id if isinstance(h.agency, Agency) else h.agency),
+            description=h.description,
+            version=h.version,
+            hierarchicalCodes=tuple(
+                [JsonHierarchicalCode.from_model(i) for i in h.codes]
+            ),
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in h.annotations]
+            ),
+            isExternalReference=h.is_external_reference,
+            isPartial=h.is_partial,
+            validFrom=h.valid_from,
+            validTo=h.valid_to,
+        )
 
-class JsonHierarchies(Struct, frozen=True):
+
+class JsonHierarchies(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for hierarchies."""
 
     codelists: Sequence[JsonCodelist] = ()
@@ -209,7 +375,9 @@ class JsonHierarchies(Struct, frozen=True):
         return [h.to_model(self.codelists) for h in self.hierarchies]
 
 
-class JsonHierarchyAssociation(MaintainableType, frozen=True):
+class JsonHierarchyAssociation(
+    MaintainableType, frozen=True, omit_defaults=True
+):
     """SDMX-JSON payload for a hierarchy association."""
 
     linkedHierarchy: str = ""
@@ -251,8 +419,61 @@ class JsonHierarchyAssociation(MaintainableType, frozen=True):
             operator=lnk[0].urn if lnk else None,
         )
 
+    @classmethod
+    def from_model(
+        self, ha: HierarchyAssociation
+    ) -> "JsonHierarchyAssociation":
+        """Converts a pysdmx hierarchy association to an SDMX-JSON one."""
+        if not ha.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON hierarchy associations must have a name",
+                {"hierarchy_association": ha.id},
+            )
+        if ha.hierarchy is None:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON hierarchy associations must reference a hierarchy",
+                {"hierarchy_association": ha.id},
+            )
+        if not ha.component_ref:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON hierarchy associations must reference a component",
+                {"hierarchy_association": ha.id},
+            )
+        if isinstance(ha.hierarchy, Hierarchy):
+            base = "urn:sdmx:org.sdmx.infomodel.codelist."
+            href = f"{base}{ha.hierarchy.short_urn}"
+        else:
+            href = ha.hierarchy
+        if not ha.context_ref:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON hierarchy associations must reference a context",
+                {"hierarchy_association": ha.id},
+            )
+        return JsonHierarchyAssociation(
+            agency=(
+                ha.agency.id if isinstance(ha.agency, Agency) else ha.agency
+            ),
+            id=ha.id,
+            name=ha.name,
+            version=ha.version,
+            isExternalReference=ha.is_external_reference,
+            validFrom=ha.valid_from,
+            validTo=ha.valid_to,
+            description=ha.description,
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in ha.annotations]
+            ),
+            linkedHierarchy=href,
+            linkedObject=ha.component_ref,
+            contextObject=ha.context_ref,
+        )
 
-class JsonHierarchyMessage(Struct, frozen=True):
+
+class JsonHierarchyMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /hierarchy queries."""
 
     data: JsonHierarchies
@@ -262,7 +483,7 @@ class JsonHierarchyMessage(Struct, frozen=True):
         return self.data.to_model()[0]
 
 
-class JsonHierarchiesMessage(Struct, frozen=True):
+class JsonHierarchiesMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /hierarchy queries."""
 
     data: JsonHierarchies
@@ -272,7 +493,7 @@ class JsonHierarchiesMessage(Struct, frozen=True):
         return self.data.to_model()
 
 
-class JsonHierarchyAssociations(Struct, frozen=True):
+class JsonHierarchyAssociations(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for hierarchy associations."""
 
     codelists: Sequence[JsonCodelist] = ()
@@ -287,7 +508,7 @@ class JsonHierarchyAssociations(Struct, frozen=True):
         ]
 
 
-class JsonHierarchyAssociationMessage(Struct, frozen=True):
+class JsonHierarchyAssociationMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for hierarchy associations messages."""
 
     data: JsonHierarchyAssociations

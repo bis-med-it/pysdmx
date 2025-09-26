@@ -1,7 +1,9 @@
 import msgspec
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.io.json.sdmxjson2.messages import JsonStructureMessage
+from pysdmx.io.json.sdmxjson2.reader.structure import read
 from pysdmx.model.message import StructureMessage
 
 
@@ -38,3 +40,8 @@ def test_structure_reader(body):
     assert len(msg.get_hierarchy_associations()) == 0
     assert len(msg.get_custom_type_schemes()) == 0
     assert len(msg.get_name_personalisation_schemes()) == 0
+
+
+def test_get_json2_invalid_structure():
+    with pytest.raises(Invalid, match="as SDMX-JSON 2.0.0 structure message."):
+        read("pyproject.toml")

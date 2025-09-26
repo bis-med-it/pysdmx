@@ -1,17 +1,21 @@
 """SDMX 2.0 CSV writer module."""
 
-from copy import copy
 from pathlib import Path
-from typing import Optional, Sequence, Union
+from typing import Literal, Optional, Sequence, Union
 
 import pandas as pd
 
-from pysdmx.io.csv.sdmx20 import SDMX_CSV_ACTION_MAPPER
+from pysdmx.io.csv.__csv_aux_writer import (
+    _write_csv_2_aux,
+)
 from pysdmx.io.pd import PandasDataset
 
 
 def write(
     datasets: Sequence[PandasDataset],
+    labels: Optional[Literal["name", "id", "both"]] = None,
+    time_format: Optional[Literal["original", "normalized"]] = None,
+    keys: Optional[Literal["obs", "series", "both"]] = None,
     output_path: Optional[Union[str, Path]] = None,
 ) -> Optional[str]:
     """Write data to SDMX-CSV 2.0 format.
@@ -19,6 +23,25 @@ def write(
     Args:
         datasets: List of datasets to write.
           Must have the same components.
+        labels: How to write the name of the columns.
+            If None, only the IDs are written.
+            if "id", the names are written as ID only.
+            if "name", a colum called "STRUCTURE_NAME" is
+            added after struture ID.
+            If "both", the names are witten as id:Name.
+        time_format: How to write the time period.
+            If None, the time period is not modified.
+            If "original", the time period is written as it
+            is in the dataset.
+            "normalized" is not implemented yet.
+        keys: to write or not the keys columns
+            If None, no keys are written.
+            If "obs", the keys are write as a single
+            column called "OBS_KEY".
+            If "series", the keys are write as a single
+            column called "SERIES_KEY".
+            If "both", the keys are write as two columns:
+            "OBS_KEY" and "SERIES_KEY".
         output_path: Path to write the data to.
           If None, the data is returned as a string.
 
@@ -28,28 +51,12 @@ def write(
     # Link to pandas.to_csv documentation on sphinx:
     # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html
 
-    dataframes = []
-    for dataset in datasets:
-        # Create a copy of the dataset
-        df: pd.DataFrame = copy(dataset.data)
-
-        # Add additional attributes to the dataset
-        for k, v in dataset.attributes.items():
-            df[k] = v
-
-        structure_ref, unique_id = dataset.short_urn.split("=", maxsplit=1)
-        if structure_ref in ["DataStructure", "Dataflow"]:
-            structure_ref = structure_ref.lower()
-        else:
-            structure_ref = "dataprovision"
-
-        # Insert two columns at the beginning of the data set
-        df.insert(0, "STRUCTURE", structure_ref)
-        df.insert(1, "STRUCTURE_ID", unique_id)
-        action_value = SDMX_CSV_ACTION_MAPPER[dataset.action]
-        df.insert(2, "ACTION", action_value)
-
-        dataframes.append(df)
+    dataframes = _write_csv_2_aux(
+        datasets,
+        labels,
+        time_format,
+        keys,
+    )
 
     all_data = pd.concat(dataframes, ignore_index=True, axis=0)
 

@@ -19,6 +19,7 @@ List of formats and versions supported by the general reader:
 - :ref:`SDMX-CSV<sdmx_csv>`
     - :ref:`SDMX-CSV 1.0 <sdmx_csv_10_reader>`
     - :ref:`SDMX-CSV 2.0 <sdmx_csv_20_reader>`
+    - :ref:`SDMX-CSV 2.1 <sdmx_csv_21_reader>`
 
 - :ref:`SDMX-ML<sdmx_ml>`
     - :ref:`SDMX-ML 2.1 Generic <sdmx_ml_21_gen_reader>`
@@ -28,6 +29,10 @@ List of formats and versions supported by the general reader:
     - :ref:`SDMX-ML 3.0 Structure <sdmx_ml_30_structure_reader>`
     - :ref:`SDMX-ML 3.1 Structure Specific <sdmx_ml_31_spe_reader>`
     - :ref:`SDMX-ML 3.1 Structure <sdmx_ml_31_structure_reader>`
+
+- :ref:`SDMX-JSON<sdmx_json>`
+    - :ref:`SDMX-JSON 2.0.0 Structure <sdmx_json_20_reader_structure>`
+    - :ref:`SDMX-JSON 2.0.0 Reference Metadata <sdmx_json_20_reader_refmeta>`
 
 .. _read-sdmx:
 

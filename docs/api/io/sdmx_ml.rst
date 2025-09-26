@@ -80,7 +80,7 @@ Writing
 -------
 
 Although the use of the :ref:`general writer<general-writer>` is always recommended,
-specific readers for SDMX-ML are also available:
+specific writers for SDMX-ML are also available:
 
 .. _sdmx_ml_21_gen_writer:
 

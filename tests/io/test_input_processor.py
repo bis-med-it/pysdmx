@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from pysdmx.errors import Invalid, NotImplemented
+from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
@@ -97,9 +97,7 @@ def test_process_string_to_read_invalid_path():
 
 
 def test_process_string_to_read_valid_json():
-    with pytest.raises(
-        NotImplemented, match="JSON formats reading are not supported yet"
-    ):
+    with pytest.raises(Invalid, match="Cannot parse input as SDMX-JSON."):
         process_string_to_read('{"key": "value"}')
 
 

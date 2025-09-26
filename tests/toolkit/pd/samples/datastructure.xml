@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+               xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+               xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+               xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+    <mes:Header>
+        <mes:ID>ID</mes:ID>
+        <mes:Test>true</mes:Test>
+        <mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+        <mes:Sender id="ZZZ"/>
+        <mes:Receiver id="Not_Supplied"/>
+        <mes:Source>PySDMX</mes:Source>
+    </mes:Header>
+    <mes:Structures>
+        <str:Concepts>
+			<str:ConceptScheme id="MD_CONCEPT_SCHEME" urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=MD:MD_CONCEPT_SCHEME(1.0)" version="1.0" isExternalReference="false" isFinal="false" agencyID="MD" isPartial="false">
+				<com:Name xml:lang="en">MD Concept Scheme</com:Name>
+				<str:Concept id="DIM1" urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:MD_CONCEPT_SCHEME(1.0).DIM1">
+					<com:Name xml:lang="en">DIMENSION 1</com:Name>
+				</str:Concept>
+                <str:Concept id="DIM2" urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:MD_CONCEPT_SCHEME(1.0).DIM2">
+					<com:Name xml:lang="en">DIMENSION 2</com:Name>
+				</str:Concept>
+                <str:Concept id="ATT1" urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:MD_CONCEPT_SCHEME(1.0).ATT1">
+					<com:Name xml:lang="en">ATTRIBUTE 1</com:Name>
+				</str:Concept>
+                <str:Concept id="ATT2" urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:MD_CONCEPT_SCHEME(1.0).ATT2">
+					<com:Name xml:lang="en">ATTRIBUTE 2</com:Name>
+				</str:Concept>
+                <str:Concept id="OBS_VALUE" urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:MD_CONCEPT_SCHEME(1.0).OBS_VALUE">
+					<com:Name xml:lang="en">OBS VALUE</com:Name>
+				</str:Concept>
+                <str:Concept id="TIME_PERIOD" urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:MD_CONCEPT_SCHEME(1.0).TIME_PERIOD">
+					<com:Name xml:lang="en">TIME PERIOD</com:Name>
+				</str:Concept>
+            </str:ConceptScheme>
+        </str:Concepts>
+        <str:DataStructures>
+            <str:DataStructure
+                    urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:MD_TEST(1.0)"
+                    isExternalReference="false" agencyID="MD" id="MD_TEST"
+                    isFinal="false" version="1.0">
+                <com:Name>MD TEST</com:Name>
+                <com:Description></com:Description>
+                <str:DataStructureComponents>
+                    <str:DimensionList
+                            urn="urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=MD:MD_TEST(1.0).DimensionDescriptor"
+                            id="DimensionDescriptor">
+                        <str:Dimension
+                                urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=MD:MD_TEST(1.0).DIM1"
+                                id="DIM1" position="1">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="MD_CONCEPT_SCHEME"
+                                     package="conceptscheme"
+                                     maintainableParentVersion="1.0"
+                                     agencyID="MD" id="DIM1" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:ConceptRole>
+                                <Ref maintainableParentID="MD_CONCEPT_ROLES" maintainableParentVersion="1.0"
+                                     agencyID="MD" id="DIM1" package="conceptscheme" class="Concept"/>
+                            </str:ConceptRole>
+                        </str:Dimension>
+                        <str:Dimension
+                                urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=MD:MD_TEST(1.0).DIM2"
+                                id="DIM2" position="1">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="MD_CONCEPT_SCHEME"
+                                     package="conceptscheme"
+                                     maintainableParentVersion="1.0"
+                                     agencyID="MD" id="DIM2" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:ConceptRole>
+                                <Ref maintainableParentID="MD_CONCEPT_ROLES" maintainableParentVersion="1.0"
+                                     agencyID="MD" id="DIM2" package="conceptscheme" class="Concept"/>
+                            </str:ConceptRole>
+                        </str:Dimension>
+                        <str:TimeDimension id="TIME_PERIOD" position="15" urn="urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=MD:MD_DER(1.0).TIME_PERIOD">
+							<str:ConceptIdentity>
+								<Ref agencyID="MD" class="Concept" id="TIME_PERIOD" maintainableParentID="MD_CONCEPT_SCHEME" maintainableParentVersion="1.0" package="conceptscheme"/>
+							</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="ObservationalTimePeriod"/>
+							</str:LocalRepresentation>
+						</str:TimeDimension>
+                    </str:DimensionList>
+                    <str:AttributeList
+                            urn="urn:sdmx:org.sdmx.infomodel.datastructure.AttributeDescriptor=MD:MD_TEST(1.0).AttributeDescriptor"
+                            id="AttributeDescriptor">
+                        <str:Attribute
+                                urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=MD:MD_TEST(1.0).ATT1"
+                                assignmentStatus="Conditional" id="ATT1">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="MD_CONCEPT_SCHEME" package="conceptscheme"
+                                     maintainableParentVersion="1.0" agencyID="MD" id="ATT1" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:AttributeRelationship>
+                                <str:Dimension>
+                                    <Ref id="DIM1"/>
+                                </str:Dimension>
+                                <str:Dimension>
+                                    <Ref id="DIM2"/>
+                                </str:Dimension>
+                            </str:AttributeRelationship>
+                        </str:Attribute>
+                            <str:Attribute
+                                urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=MD:MD_TEST(1.0).ATT2"
+                                assignmentStatus="Conditional" id="ATT2">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="MD_CONCEPT_SCHEME" package="conceptscheme"
+                                     maintainableParentVersion="1.0" agencyID="MD" id="ATT2" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:AttributeRelationship>
+								<str:PrimaryMeasure>
+									<Ref id="OBS_VALUE"/>
+								</str:PrimaryMeasure>
+							</str:AttributeRelationship>
+                        </str:Attribute>
+                    </str:AttributeList>
+                    <str:MeasureList
+                            urn="urn:sdmx:org.sdmx.infomodel.datastructure.MeasureDescriptor=MD:MD_TEST(1.0).MeasureDescriptor"
+                            id="MeasureDescriptor">
+                        <str:PrimaryMeasure
+                                urn="urn:sdmx:org.sdmx.infomodel.datastructure.PrimaryMeasure=MD:MD_TEST(1.0).OBS_VALUE"
+                                id="OBS_VALUE">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="MD_CONCEPT_SCHEME"
+                                     package="conceptscheme"
+                                     maintainableParentVersion="1.0"
+                                     agencyID="MD" id="OBS_VALUE"
+                                     class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:PrimaryMeasure>
+                    </str:MeasureList>
+                </str:DataStructureComponents>
+            </str:DataStructure>
+        </str:DataStructures>
+    </mes:Structures>
+</mes:Structure>

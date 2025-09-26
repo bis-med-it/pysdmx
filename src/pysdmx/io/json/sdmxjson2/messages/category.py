@@ -5,8 +5,10 @@ from typing import Dict, Sequence
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
+    JsonAnnotation,
     MaintainableType,
     NameableType,
 )
@@ -23,7 +25,10 @@ from pysdmx.util import find_by_urn
 
 
 class JsonCategorisation(
-    MaintainableType, frozen=True, rename={"agency": "agencyID"}
+    MaintainableType,
+    frozen=True,
+    rename={"agency": "agencyID"},
+    omit_defaults=True,
 ):
     """SDMX-JSON payload for a categorisation."""
 
@@ -46,8 +51,35 @@ class JsonCategorisation(
             annotations=[a.to_model() for a in self.annotations],
         )
 
+    @classmethod
+    def from_model(self, cat: Categorisation) -> "JsonCategorisation":
+        """Converts a pysdmx categorisation to an SDMX-JSON one."""
+        if not cat.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON categorisations must have a name",
+                {"categorisation": cat.id},
+            )
+        return JsonCategorisation(
+            agency=(
+                cat.agency.id if isinstance(cat.agency, Agency) else cat.agency
+            ),
+            id=cat.id,
+            name=cat.name,
+            version=cat.version,
+            isExternalReference=cat.is_external_reference,
+            validFrom=cat.valid_from,
+            validTo=cat.valid_to,
+            description=cat.description,
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in cat.annotations]
+            ),
+            source=cat.source,
+            target=cat.target,
+        )
 
-class JsonCategory(NameableType, frozen=True):
+
+class JsonCategory(NameableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a category."""
 
     categories: Sequence["JsonCategory"] = ()
@@ -62,9 +94,33 @@ class JsonCategory(NameableType, frozen=True):
             annotations=[a.to_model() for a in self.annotations],
         )
 
+    @classmethod
+    def from_model(self, cat: Category) -> "JsonCategory":
+        """Converts a pysdmx category to an SDMX-JSON one."""
+        if not cat.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON category must have a name",
+                {"category": cat.id},
+            )
+        return JsonCategory(
+            id=cat.id,
+            name=cat.name,
+            description=cat.description,
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in cat.annotations]
+            ),
+            categories=tuple(
+                [JsonCategory.from_model(c) for c in cat.categories]
+            ),
+        )
+
 
 class JsonCategoryScheme(
-    ItemSchemeType, frozen=True, rename={"agency": "agencyID"}
+    ItemSchemeType,
+    frozen=True,
+    rename={"agency": "agencyID"},
+    omit_defaults=True,
 ):
     """SDMX-JSON payload for a category scheme."""
 
@@ -86,8 +142,37 @@ class JsonCategoryScheme(
             annotations=[a.to_model() for a in self.annotations],
         )
 
+    @classmethod
+    def from_model(self, cs: CategoryScheme) -> "JsonCategoryScheme":
+        """Converts a pysdmx category scheme to an SDMX-JSON one."""
+        if not cs.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON category schemes must have a name",
+                {"category_scheme": cs.id},
+            )
+        return JsonCategoryScheme(
+            agency=(
+                cs.agency.id if isinstance(cs.agency, Agency) else cs.agency
+            ),
+            id=cs.id,
+            name=cs.name,
+            version=cs.version,
+            isExternalReference=cs.is_external_reference,
+            validFrom=cs.valid_from,
+            validTo=cs.valid_to,
+            description=cs.description,
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in cs.annotations]
+            ),
+            isPartial=cs.is_partial,
+            categories=tuple(
+                [JsonCategory.from_model(c) for c in cs.categories]
+            ),
+        )
 
-class JsonCategorySchemes(Struct, frozen=True):
+
+class JsonCategorySchemes(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of category schemes."""
 
     categorySchemes: Sequence[JsonCategoryScheme]
@@ -95,7 +180,7 @@ class JsonCategorySchemes(Struct, frozen=True):
     dataflows: Sequence[JsonDataflow] = ()
 
 
-class JsonCategorySchemeMessage(Struct, frozen=True):
+class JsonCategorySchemeMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /categoryscheme queries."""
 
     data: JsonCategorySchemes
@@ -139,13 +224,13 @@ class JsonCategorySchemeMessage(Struct, frozen=True):
         return cs
 
 
-class JsonCategorisations(Struct, frozen=True):
+class JsonCategorisations(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of categorisations."""
 
     categorisations: Sequence[JsonCategorisation]
 
 
-class JsonCategorisationMessage(Struct, frozen=True):
+class JsonCategorisationMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /categorisation queries."""
 
     data: JsonCategorisations

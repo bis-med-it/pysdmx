@@ -267,3 +267,30 @@ def test_attachment_level_mandatory(concept):
             role=Role.ATTRIBUTE,
             attachment_level=None,
         )
+
+
+def test_core_enum_ref():
+    i = Concept("FREQ", enum_ref="cl1")
+
+    c = Component("FREQ", True, Role.DIMENSION, i)
+
+    assert c.local_enum_ref is None
+    assert c.enum_ref == "cl1"
+
+
+def test_local_enum_ref():
+    i = Concept("FREQ")
+
+    c = Component("FREQ", True, Role.DIMENSION, i, local_enum_ref="cl1")
+
+    assert c.local_enum_ref == "cl1"
+    assert c.enum_ref == "cl1"
+
+
+def test_no_enum_ref():
+    i = Concept("FREQ")
+
+    c = Component("FREQ", True, Role.DIMENSION, i)
+
+    assert c.local_enum_ref is None
+    assert c.enum_ref is None

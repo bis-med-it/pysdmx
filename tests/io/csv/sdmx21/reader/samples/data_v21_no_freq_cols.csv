@@ -1,0 +1,8 @@
+STRUCTURE,STRUCTURE_ID,REF_AREA:ReferenceArea,INDICATOR:Indicator,SUB_INDICATOR:SubIndicator,FREQ:Frequency,TIME_PERIOD:Timeperiod,OBS_VALUE:Observation
+dataflow,WB:GCI(1.0):GlobalCompetitivenessIndex,GHA:Ghana,GCI:GlobalCompetitivenessIndex,RANK:Rank,A:Annual,2008,102
+dataflow,WB:GCI(1.0):GlobalCompetitivenessIndex,GHA:Ghana,GCI:GlobalCompetitivenessIndex,RANK:Rank,A:Annual,2009,114
+dataflow,WB:GCI(1.0):GlobalCompetitivenessIndex,GHA:Ghana,GCI:GlobalCompetitivenessIndex,RANK:Rank,A:Annual,2010,114
+dataflow,WB:GCI(1.0):GlobalCompetitivenessIndex,GHA:Ghana,GCI:GlobalCompetitivenessIndex,RANK:Rank,A:Annual,2011,114
+dataflow,WB:GCI(1.0):GlobalCompetitivenessIndex,GHA:Ghana,GCI:GlobalCompetitivenessIndex,RANK:Rank,A:Annual,2012,103
+dataflow,WB:GCI(1.0):GlobalCompetitivenessIndex,GHA:Ghana,GCI:GlobalCompetitivenessIndex,RANK:Rank,A:Annual,2013,114
+dataflow,WB:GCI(1.0):GlobalCompetitivenessIndex,GHA:Ghana,GCI GlobalCompetitivenessIndex,RANK:Rank,A:Annual,2014,111

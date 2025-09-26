@@ -332,7 +332,7 @@ class MetadataMessage(Struct, frozen=True):
         if self.reports:
             return self.reports
         else:
-            raise NotFound("No metadata reports werefound in the message.")
+            raise NotFound("No metadata reports were found in the message.")
 
 
 class Message(StructureMessage, frozen=True):
@@ -349,6 +349,7 @@ class Message(StructureMessage, frozen=True):
 
     data: Optional[Sequence[Dataset]] = None
     submission: Optional[Sequence[SubmissionResult]] = None
+    reports: Optional[Sequence[MetadataReport]] = None
 
     def __post_init__(self) -> None:
         """Checks if the content is valid."""
@@ -382,3 +383,10 @@ class Message(StructureMessage, frozen=True):
             f"No Dataset with Short URN {short_urn} found in data.",
             "Could not find the requested Dataset.",
         )
+
+    def get_reports(self) -> Sequence[MetadataReport]:
+        """Returns the metadata reports."""
+        if self.reports:
+            return self.reports
+        else:
+            raise NotFound("No metadata reports were found in the message.")
