@@ -43,6 +43,7 @@ from pysdmx.io.xml.__tokens import (
     CUSTOM_TYPE_SCHEME,
     CUSTOM_TYPE_SCHEMES,
     CUSTOM_TYPES,
+    DATA_PROV,
     DEPARTMENT,
     DESC,
     DFW,
@@ -94,6 +95,8 @@ from pysdmx.io.xml.__tokens import (
     ORGS,
     PAR_ID,
     PAR_VER,
+    PROV_AGREEMENT,
+    PROV_AGREEMENTS,
     REF,
     REQUIRED,
     ROLE,
@@ -105,6 +108,7 @@ from pysdmx.io.xml.__tokens import (
     SER_URL_LOW,
     STR_URL,
     STR_URL_LOW,
+    STR_USAGE,
     STRUCTURE,
     TELEPHONE,
     TELEPHONES,
@@ -171,6 +175,7 @@ from pysdmx.model.dataflow import (
     Dataflow,
     DataStructureDefinition,
     Group,
+    ProvisionAgreement,
     Role,
 )
 from pysdmx.model.vtl import (
@@ -204,6 +209,7 @@ STRUCTURES_MAPPING = {
     VTL_MAPPING_SCHEME: VtlMappingScheme,
     NAME_PER_SCHEME: NamePersonalisationScheme,
     CUSTOM_TYPE_SCHEME: CustomTypeScheme,
+    PROV_AGREEMENTS: ProvisionAgreement,
 }
 ITEMS_CLASSES = {
     AGENCY: Agency,
@@ -808,6 +814,63 @@ class StructureParser(Struct):
 
         return element
 
+    def __format_prov_agreement(
+        self, element: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        dfw = None
+        provider = None
+        if STR_USAGE in element:
+            ref_dfw: Union[Reference, ItemReference]
+            if REF in element[STR_USAGE]:
+                str_usage = element[STR_USAGE][REF]
+                ref_dfw = Reference(
+                    sdmx_type=str_usage[CLASS],
+                    agency=str_usage[AGENCY_ID],
+                    id=str_usage[ID],
+                    version=str_usage[VERSION],
+                )
+            else:
+                ref_dfw = parse_urn(element[STR_USAGE][URN])
+            dfw = (
+                f"{ref_dfw.sdmx_type}={ref_dfw.agency}:"
+                f"{ref_dfw.id}({ref_dfw.version})"
+            )
+            del element[STR_USAGE]
+
+        if DATA_PROV in element:
+            ref_data_prov: Union[Reference, ItemReference]
+            if REF in element[DATA_PROV]:
+                data_prov = element[DATA_PROV][REF]
+                ref_data_prov = ItemReference(
+                    sdmx_type=data_prov[CLASS],
+                    agency=data_prov[AGENCY_ID],
+                    id=data_prov[PAR_ID],
+                    version=data_prov[PAR_VER],
+                    item_id=data_prov[ID],
+                )
+            elif URN in element[DATA_PROV]:
+                ref_data_prov = parse_urn(element[DATA_PROV][URN])
+            else:
+                ref_data_prov = parse_urn(element[DATA_PROV])
+            del element[DATA_PROV]
+            provider = (
+                f"{ref_data_prov.sdmx_type}={ref_data_prov.agency}:"
+                f"{ref_data_prov.id}({ref_data_prov.version})"
+                f".{ref_data_prov.item_id}"  # type: ignore[union-attr]
+            )
+        if DFW in element:
+            ref_dfw = parse_urn(element[DFW])
+            dfw = (
+                f"{ref_dfw.sdmx_type}={ref_dfw.agency}:"
+                f"{ref_dfw.id}({ref_dfw.version})"
+            )
+            del element[DFW]
+
+        element["dataflow"] = dfw
+        element["provider"] = provider
+
+        return element
+
     def __format_vtl(self, json_vtl: Dict[str, Any]) -> Dict[str, Any]:
         # VTL Scheme Handling
         _format_lower_key("vtlVersion", json_vtl)
@@ -1049,6 +1112,8 @@ class StructureParser(Struct):
             element = self.__format_validity(element)
             element = self.__format_groups(element)
             element = self.__format_components(element)
+            if item == PROV_AGREEMENT:
+                element = self.__format_prov_agreement(element)
 
             if "xmlns" in element:
                 del element["xmlns"]
@@ -1149,6 +1214,12 @@ class StructureParser(Struct):
                 DFWS,
                 lambda data: self.__format_schema(data, DFWS, DFW),
                 "dataflows",
+            ),
+            PROV_AGREEMENTS: process_structure(
+                PROV_AGREEMENTS,
+                lambda data: self.__format_schema(
+                    data, PROV_AGREEMENTS, PROV_AGREEMENT
+                ),
             ),
             VTLMAPPINGS: process_structure(
                 VTLMAPPINGS,

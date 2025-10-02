@@ -21,6 +21,7 @@ from pysdmx.io.xml.__tokens import (
     CS,
     CUSTOM_TYPE,
     CUSTOM_TYPE_SCHEME,
+    DATA_PROV,
     DEPARTMENT,
     DFW,
     DIM,
@@ -49,10 +50,12 @@ from pysdmx.io.xml.__tokens import (
     PAR_ID,
     PAR_VER,
     POSITION,
+    PROV_AGREEMENT,
     REF,
     ROLE,
     RULE,
     RULE_SCHEME,
+    STR_USAGE,
     TELEPHONE,
     TEXT_FORMAT,
     TEXT_TYPE,
@@ -125,10 +128,12 @@ from pysdmx.model.dataflow import (
     Dataflow,
     DataStructureDefinition,
     Group,
+    ProvisionAgreement,
     Role,
 )
 from pysdmx.util import (
     parse_item_urn,
+    parse_short_item_urn,
     parse_short_urn,
     parse_urn,
 )
@@ -174,6 +179,7 @@ STR_DICT_TYPE_LIST_21 = {
     RulesetScheme: "Rulesets",
     UserDefinedOperatorScheme: "UserDefinedOperators",
     TransformationScheme: "Transformations",
+    ProvisionAgreement: "ProvisionAgreements",
 }
 
 
@@ -189,6 +195,7 @@ STR_DICT_TYPE_LIST_30 = {
     RulesetScheme: "RulesetSchemes",
     UserDefinedOperatorScheme: "UserDefinedOperatorSchemes",
     TransformationScheme: "TransformationSchemes",
+    ProvisionAgreement: "ProvisionAgreements",
 }
 
 
@@ -790,6 +797,50 @@ def __write_structure(
     return outfile
 
 
+def __write_prov_agreement(
+    dataflow: str, provider: str, indent: str, references_30: bool = False
+) -> str:
+    """Writes the provision agreement structure to the XML file."""
+    ref_df = parse_short_urn(dataflow)
+    ref_pr = parse_short_item_urn(provider)
+    if references_30:
+        outfile = f"{indent}<{ABBR_STR}:{DFW}>"
+        outfile += (
+            f"urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow={ref_df.agency}:{ref_df.id}({ref_df.version})"
+            f"</{ABBR_STR}:{DFW}>"
+        )
+        outfile += f"{indent}<{ABBR_STR}:{DATA_PROV}>"
+        outfile += (
+            f"urn:sdmx:org.sdmx.infomodel.base.DataProvider={ref_pr.agency}:{ref_pr.id}({ref_pr.version}).{ref_pr.item_id}"
+            f"</{ABBR_STR}:{DATA_PROV}>"
+        )
+    else:
+        outfile = f"{indent}<{ABBR_STR}:{STR_USAGE}>"
+        outfile += (
+            f"{add_indent(indent)}<{REF} "
+            f'{PACKAGE}="datastructure" '
+            f"{AGENCY_ID}={ref_df.agency!r} "
+            f"{ID}={ref_df.id!r} "
+            f"{VERSION}={ref_df.version!r} "
+            f"{CLASS}={DFW!r}/>"
+        )
+        outfile += f"{indent}</{ABBR_STR}:{STR_USAGE}>"
+        outfile += f"{indent}<{ABBR_STR}:{DATA_PROV}>"
+        outfile += (
+            f"{add_indent(indent)}<{REF} "
+            f"{PAR_ID}={ref_pr.id!r} "
+            f'{PACKAGE}="base" '
+            f"{PAR_VER}={ref_pr.version!r} "
+            f"{AGENCY_ID}={ref_pr.agency!r} "
+            f"{ID}={ref_pr.item_id!r} "
+            f"{CLASS}={DATA_PROV!r}/>"
+        )
+        outfile += f"{indent}</{ABBR_STR}:{DATA_PROV}>"
+
+    outfile = outfile.replace("'", '"')
+    return outfile
+
+
 def __write_scheme(  # noqa: C901
     item_scheme: Any, indent: str, scheme: str, references_30: bool = False
 ) -> str:
@@ -805,10 +856,7 @@ def __write_scheme(  # noqa: C901
             item_scheme, add_indent(indent), references_30
         )
 
-    if scheme not in [
-        DSD,
-        DFW,
-    ]:
+    if scheme not in [DSD, DFW, PROV_AGREEMENT]:
         data["Attributes"] += (
             f" isPartial={str(item_scheme.is_partial).lower()!r}"
         )
@@ -839,6 +887,13 @@ def __write_scheme(  # noqa: C901
         outfile += __write_structure(
             item_scheme.structure, add_indent(indent), references_30
         )
+    if scheme == PROV_AGREEMENT:
+        outfile += __write_prov_agreement(
+            item_scheme.dataflow,
+            item_scheme.provider,
+            add_indent(indent),
+            references_30,
+        )
 
     if scheme not in [
         DSD,
@@ -849,6 +904,7 @@ def __write_scheme(  # noqa: C901
         VTL_MAPPING_SCHEME,
         CUSTOM_TYPE_SCHEME,
         NAME_PER_SCHEME,
+        PROV_AGREEMENT,
     ]:
         for item in item_scheme.items:
             if (
