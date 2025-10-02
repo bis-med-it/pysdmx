@@ -168,10 +168,7 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
             raise NotFound(
                 f"No {type_.__name__} found in message.",
             )
-        structures = []
-        for element in self.structures:
-            if isinstance(element, type_):
-                structures.append(element)
+        structures = [e for e in self.structures if isinstance(e, type_)]
         return structures
 
     def __get_enumerations(

@@ -907,9 +907,9 @@ class StructureParser(Struct):
         item_json_info = self.__format_name_description(item_json_info)
         if CONTACT in item_json_info and item_name_class == AGENCY:
             item_json_info[CONTACT] = add_list(item_json_info[CONTACT])
-            contacts = []
-            for e in item_json_info[CONTACT]:
-                contacts.append(self.__format_contact(e))
+            contacts = [
+                self.__format_contact(e) for e in item_json_info[CONTACT]
+            ]
             item_json_info[CONTACT.lower() + "s"] = contacts
             del item_json_info[CONTACT]
 
@@ -949,9 +949,11 @@ class StructureParser(Struct):
                         group_dimensions = [group_dimensions]
 
                     group["dimensions"] = [
-                        d[DIM_REF]
-                        if isinstance(d[DIM_REF], str)
-                        else d[DIM_REF][REF][ID]
+                        (
+                            d[DIM_REF]
+                            if isinstance(d[DIM_REF], str)
+                            else d[DIM_REF][REF][ID]
+                        )
                         for d in group_dimensions
                     ]
 
