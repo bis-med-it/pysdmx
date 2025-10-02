@@ -82,6 +82,7 @@ lint.select = [
     "FURB",  # refurb: functional Python improvements and refactoring
     "I",     # isort: import sorting
     "LOG",   # flake8-logging: logging best practices
+    "PERF",  # perflint: performance optimizations
     "PT",    # flake8-pytest-style: pytest best practices
     "S",     # flake8-bandit: security issues
     "SIM",   # flake8-simplify: code simplification suggestions
@@ -92,7 +93,7 @@ lint.mccabe.max-complexity = 10
 lint.pydocstyle.convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["DTZ", "D100", "D103", "D104", "S101", "S311", ]
+"tests/*" = ["DTZ", "D100", "D103", "D104", "PERF", "S101", "S311"]
 
 [tool.mypy]
 files = "src"
