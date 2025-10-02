@@ -34,7 +34,7 @@ class JsonCode(NameableType, frozen=True, omit_defaults=True):
     parent: Optional[str] = None
 
     def __handle_date(self, datestr: str) -> datetime:
-        return datetime.strptime(datestr, _VAL_FMT)
+        return datetime.strptime(datestr, _VAL_FMT)  # noqa
 
     def __get_val(
         self, a: JsonAnnotation
