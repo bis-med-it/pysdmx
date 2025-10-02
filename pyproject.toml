@@ -46,7 +46,7 @@ requires-poetry = ">=2.0"
 python = ">=3.9,<4.0"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.8.1"
+ruff = ">=0.13.2"
 mypy = "^1.1.1"
 pytest = "^8.3.2"
 pytest-asyncio = "^0.21.1"
@@ -85,9 +85,7 @@ lint.select = [
     "SIM",   # flake8-simplify: code simplification suggestions
     "W"      # pycodestyle warnings    
 ]
-lint.ignore = [
-    "E203", "D411", "F901", "S320"
-]
+lint.ignore = ["D411", "E203", "F901"]
 lint.mccabe.max-complexity = 10
 lint.pydocstyle.convention = "google"
 
