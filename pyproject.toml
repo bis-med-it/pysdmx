@@ -75,6 +75,7 @@ lint.select = [
     "C4",    # flake8-comprehensions: better list/dict/set comprehensions
     "C90",   # mccabe: code complexity checker
     "D",     # pydocstyle: enforce docstring conventions
+    "DTZ",   # flake8-datetimez: datetime best practices and timezone issues
     "E",     # pycodestyle errors
     "F",     # pyflakes: detect various errors
     "I",     # isort: import sorting
@@ -91,7 +92,7 @@ lint.mccabe.max-complexity = 10
 lint.pydocstyle.convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["S101", "S311", "D100", "D103", "D104"]
+"tests/*" = ["DTZ", "D100", "D103", "D104", "S101", "S311", ]
 
 [tool.mypy]
 files = "src"
