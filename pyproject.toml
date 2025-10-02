@@ -21,7 +21,7 @@ classifiers = [
     "Typing :: Typed"
 ]
 dependencies = [
-    "httpx>=0.*",
+    "httpx[http2]>=0.*",
     "msgspec>=0.*",
     "parsy>=2.1",
 ]
@@ -70,7 +70,19 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 line-length = 79
 lint.select = [
-    "ASYNC", "B", "C4", "C90", "D", "E", "F", "I", "LOG", "PT", "S", "SIM", "W"
+    "ASYNC", # flake8-async: checks for async/await best practices
+    "B",     # flake8-bugbear: detect bugs and design problems
+    "C4",    # flake8-comprehensions: better list/dict/set comprehensions
+    "C90",   # mccabe: code complexity checker
+    "D",     # pydocstyle: enforce docstring conventions
+    "E",     # pycodestyle errors
+    "F",     # pyflakes: detect various errors
+    "I",     # isort: import sorting
+    "LOG",   # flake8-logging: logging best practices
+    "PT",    # flake8-pytest-style: pytest best practices
+    "S",     # flake8-bandit: security issues
+    "SIM",   # flake8-simplify: code simplification suggestions
+    "W"      # pycodestyle warnings    
 ]
 lint.ignore = [
     "E203", "D411", "F901", "S320"
