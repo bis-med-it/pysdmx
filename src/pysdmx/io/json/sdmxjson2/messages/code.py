@@ -49,26 +49,38 @@ class JsonCode(NameableType, frozen=True, omit_defaults=True):
 
     def to_model(self) -> Code:
         """Converts a JsonCode to a standard code."""
+        # Pre-filter annotations once outside the tuple creation
+        vf, vt = None, None
+
         if self.annotations:
-            vp = [
-                a for a in self.annotations if a.type == "FR_VALIDITY_PERIOD"
+            # Get validity period info
+            vp = next(
+                (
+                    a
+                    for a in self.annotations
+                    if a.type == "FR_VALIDITY_PERIOD"
+                ),
+                None,
+            )
+            if vp:
+                vf, vt = self.__get_val(vp)
+
+            # Pre-filter non-validity period annotations
+            filtered_annotations = [
+                a.to_model()
+                for a in self.annotations
+                if a.type != "FR_VALIDITY_PERIOD"
             ]
         else:
-            vp = None
-        vf, vt = self.__get_val(vp[0]) if vp else (None, None)
+            filtered_annotations = []
+
         return Code(
             id=self.id,
             name=self.name,
             description=self.description,
             valid_from=vf,
             valid_to=vt,
-            annotations=tuple(
-                [
-                    a.to_model()
-                    for a in self.annotations
-                    if a.type != "FR_VALIDITY_PERIOD"
-                ]
-            ),
+            annotations=tuple(filtered_annotations),
         )
 
     @classmethod
@@ -113,13 +125,23 @@ class JsonCodelist(ItemSchemeType, frozen=True, omit_defaults=True):
 
     def to_model(self) -> Codelist:
         """Converts a JsonCodelist to a standard codelist."""
+        # Process codes in batches to reduce memory pressure
+        batch_size = 10000
+        all_codes = []
+
+        # Process in batches
+        for i in range(0, len(self.codes), batch_size):
+            batch = self.codes[i : i + batch_size]
+            batch_models = [code.to_model() for code in batch]
+            all_codes.extend(batch_models)
+
         return Codelist(
             id=self.id,
             name=self.name,
             agency=self.agency,
             description=self.description,
             version=self.version,
-            items=tuple([i.to_model() for i in self.codes]),
+            items=tuple(all_codes),
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
