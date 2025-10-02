@@ -996,9 +996,12 @@ class StructureParser(Struct):
             items = []
             if item in element:
                 element[item] = add_list(element[item])
-                for item_elem in element[item]:
-                    # Dynamic
-                    items.append(self.__format_item(item_elem, item))
+                items.extend(
+                    [
+                        self.__format_item(item_elem, item)
+                        for item_elem in element[item]
+                    ]
+                )
                 del element[item]
             element["items"] = items
             element = self.__format_agency(element)
