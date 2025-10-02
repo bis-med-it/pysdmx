@@ -21,7 +21,7 @@ classifiers = [
     "Typing :: Typed"
 ]
 dependencies = [
-    "httpx>=0.*",
+    "httpx[http2]>=0.*",
     "msgspec>=0.*",
     "parsy>=2.1",
 ]
