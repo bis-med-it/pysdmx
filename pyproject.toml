@@ -78,6 +78,7 @@ lint.select = [
     "DTZ",   # flake8-datetimez: datetime best practices and timezone issues
     "E",     # pycodestyle errors
     "F",     # pyflakes: detect various errors
+    "FURB",  # refurb: functional Python improvements and refactoring
     "I",     # isort: import sorting
     "LOG",   # flake8-logging: logging best practices
     "PT",    # flake8-pytest-style: pytest best practices
