@@ -397,7 +397,7 @@ class StructureParser(Struct):
         """
         if json_fac is None:
             return
-        for key in json_fac.keys():
+        for key in json_fac:
             if key == TEXT_TYPE and json_fac[TEXT_TYPE] in list(DataType):
                 json_obj["dtype"] = DataType(json_fac[TEXT_TYPE])
 
