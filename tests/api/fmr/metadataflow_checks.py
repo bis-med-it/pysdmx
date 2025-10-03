@@ -1,13 +1,10 @@
 import httpx
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
-from pysdmx.io.format import Format
 from pysdmx.model import Metadataflow
 
 
-def check_metadataflows(
-    mock, fmr: RegistryClient, query, body, is_fusion: bool = False
-):
+def check_metadataflows(mock, fmr: RegistryClient, query, body):
     """get_metadataflows() returns a collection of metadataflows."""
     mock.get(query).mock(
         return_value=httpx.Response(

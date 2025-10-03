@@ -55,6 +55,7 @@ __all__ = [
     "JsonHierarchyAssociationMessage",
     "JsonHierarchiesMessage",
     "JsonHierarchyMessage",
+    "JsonMdfsMsg",
     "JsonMetadataMessage",
     "JsonMPAMsg",
     "JsonMappingMessage",
