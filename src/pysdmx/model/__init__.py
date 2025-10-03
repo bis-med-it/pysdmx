@@ -54,10 +54,10 @@ from pysdmx.model.map import (
     ValueMap,
 )
 from pysdmx.model.metadata import (
-    MetadataComponent,
-    MetadataStructure,
     MetadataAttribute,
+    MetadataComponent,
     MetadataReport,
+    MetadataStructure,
 )
 from pysdmx.model.organisation import (
     AgencyScheme,

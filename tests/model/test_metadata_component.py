@@ -7,6 +7,8 @@ from pysdmx.model import (
     Concept,
     DataType,
     Facets,
+)
+from pysdmx.model import (
     MetadataComponent as Component,
 )
 
