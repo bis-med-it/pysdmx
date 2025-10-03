@@ -13,7 +13,6 @@ from typing import Any, Dict, Iterator, List, Optional, Sequence, Union
 
 from msgspec import Struct
 
-from pysdmx.errors import Invalid
 from pysdmx.model.__base import (
     Annotation,
     IdentifiableArtefact,

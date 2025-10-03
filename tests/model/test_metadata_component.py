@@ -256,7 +256,8 @@ def test_torepr_full():
     s = repr(c)
     expected_str = (
         "MetadataComponent(id='top', concept=Concept(id='top'), "
-        "components=[MetadataComponent(id='child', concept=Concept(id='child'))])"
+        "components=[MetadataComponent(id='child', "
+        "concept=Concept(id='child'))])"
     )
 
     assert s == expected_str
