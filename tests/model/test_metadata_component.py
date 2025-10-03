@@ -243,3 +243,20 @@ def test_no_enum_ref():
 
     assert c.local_enum_ref is None
     assert c.enum_ref is None
+
+
+def test_torepr_full():
+    child = Component(id="child", concept=Concept("child"))
+    c = Component(
+        id="top",
+        concept=Concept("top"),
+        components=[child],
+    )
+
+    s = repr(c)
+    expected_str = (
+        "MetadataComponent(id='top', concept=Concept(id='top'), "
+        "components=[MetadataComponent(id='child', concept=Concept(id='child'))])"
+    )
+
+    assert s == expected_str
