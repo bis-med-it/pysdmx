@@ -18,6 +18,9 @@ from pysdmx.io.json.fusion.messages.map import (
     FusionMappingMessage,
     FusionRepresentationMapMessage,
 )
+from pysdmx.io.json.fusion.messages.metadataflow import (
+    FusionMetadataflowsMessage,
+)
 from pysdmx.io.json.fusion.messages.mpa import (
     FusionMetadataProvisionAgreementMessage,
 )
@@ -44,6 +47,7 @@ __all__ = [
     "FusionDataflowMessage",
     "FusionDataflowsMessage",
     "FusionMappingMessage",
+    "FusionMetadataflowsMessage",
     "FusionMetadataProvisionAgreementMessage",
     "FusionRepresentationMapMessage",
     "FusionAgencyMessage",
