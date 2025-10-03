@@ -24,7 +24,7 @@ def query(fmr: RegistryClient) -> str:
 
 @pytest.fixture
 def body():
-    with open("tests/api/fmr/samples/refmeta/mdf.fusion.json", "rb") as f:
+    with open("tests/api/fmr/samples/refmeta/mdf.json", "rb") as f:
         return f.read()
 
 
