@@ -53,15 +53,14 @@ def get_codes(
     dimension_code: str, structure: Schema, data: pd.DataFrame
 ) -> Tuple[List[str], List[str], List[Dict[str, Any]]]:
     """This function divides the components in Series and Obs."""
-    series_codes = []
     groups = structure.groups
     group_codes = []
     obs_codes = [dimension_code, structure.components.measures[0].id]
 
     # Getting the series and obs codes
-    for dim in structure.components.dimensions:
-        if dim.id != dimension_code:
-            series_codes.append(dim.id)
+    series_codes = [
+        d.id for d in structure.components.dimensions if d.id != dimension_code
+    ]
 
     # Adding the attributes based on the attachment level
     for att in structure.components.attributes:

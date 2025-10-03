@@ -30,7 +30,7 @@ def test_url_no_default_updated_after(api_version: ApiVersion):
 def test_url_updated_after(updated_after: datetime, api_version: ApiVersion):
     expected = (
         "/registration/*/*/*/*"
-        f'?updatedAfter={updated_after.isoformat("T", "seconds")}'
+        f"?updatedAfter={updated_after.isoformat('T', 'seconds')}"
     )
 
     q = RegistrationByContextQuery(updated_after=updated_after)
@@ -46,8 +46,7 @@ def test_url_omit_defaults_updated_after(
     updated_after: datetime, api_version: ApiVersion
 ):
     expected = (
-        "/registration"
-        f'?updatedAfter={updated_after.isoformat("T", "seconds")}'
+        f"/registration?updatedAfter={updated_after.isoformat('T', 'seconds')}"
     )
 
     q = RegistrationByContextQuery(updated_after=updated_after)

@@ -99,10 +99,7 @@ def csv_time_format_original():
 
 @pytest.mark.data
 def test_to_sdmx_csv_writing(data_path, data_path_reference):
-    urn = (
-        "urn:sdmx:org.sdmx.infomodel.registry."
-        "ProvisionAgreement=MD:PA1(1.0)"
-    )
+    urn = "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=MD:PA1(1.0)"
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),
@@ -121,10 +118,7 @@ def test_to_sdmx_csv_writing(data_path, data_path_reference):
 
 @pytest.mark.data
 def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir):
-    urn = (
-        "urn:sdmx:org.sdmx.infomodel.registry."
-        "ProvisionAgreement=MD:PA1(1.0)"
-    )
+    urn = "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=MD:PA1(1.0)"
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),

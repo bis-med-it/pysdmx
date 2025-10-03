@@ -469,7 +469,7 @@ def __write_components(  # noqa: C901
         )
 
     position = 1
-    for _, comps in components.items():
+    for comps in components.values():
         if comps:
             role_name = ROLE_MAPPING[comps[0].role]
             if role_name == MEASURE:

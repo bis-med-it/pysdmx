@@ -3,11 +3,11 @@
 import csv
 import os.path
 from io import BytesIO, StringIO, TextIOWrapper
-from json import JSONDecodeError, loads
 from os import PathLike
 from pathlib import Path
 from typing import Optional, Tuple, Union
 
+import msgspec
 from httpx import Client as httpx_Client
 from httpx import HTTPStatusError, create_ssl_context
 
@@ -29,7 +29,7 @@ def __check_xml(input_str: str) -> bool:
 
 def __check_csv(input_str: str) -> bool:
     try:
-        max_length = len(input_str) if len(input_str) < 2048 else 2048
+        max_length = min(2048, len(input_str))
         dialect = csv.Sniffer().sniff(input_str[:max_length])
         control_csv_format = (
             dialect.delimiter == "," and dialect.quotechar == '"'
@@ -47,9 +47,9 @@ def __check_csv(input_str: str) -> bool:
 
 def __check_json(input_str: str) -> bool:
     try:
-        loads(input_str)
+        msgspec.json.decode(input_str)
         return True
-    except JSONDecodeError:
+    except msgspec.DecodeError:
         return False
 
 

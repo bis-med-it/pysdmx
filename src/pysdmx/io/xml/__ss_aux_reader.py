@@ -30,8 +30,7 @@ def _reading_str_series(dataset: Dict[str, Any]) -> pd.DataFrame:
         if OBS in data:
             del keys[OBS]
             data[OBS] = add_list(data[OBS])
-            for j in data[OBS]:
-                test_list.append({**keys, **j})
+            test_list.extend([{**keys, **j} for j in data[OBS]])
         else:
             test_list.append(keys)
         test_list, df = __process_df(test_list, df)

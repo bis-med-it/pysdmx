@@ -43,7 +43,7 @@ class _RefMetaCoreQuery(CoreQuery, frozen=True, omit_defaults=True):
             )
 
     def _get_as_of_value(self, as_of: Optional[datetime]) -> str:
-        return f'&asOf={as_of.isoformat("T", "seconds")}' if as_of else ""
+        return f"&asOf={as_of.isoformat('T', 'seconds')}" if as_of else ""
 
     def _get_short_qs(
         self, detail: RefMetaDetail, as_of: Optional[datetime]

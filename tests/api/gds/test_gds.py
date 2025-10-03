@@ -220,7 +220,6 @@ GENERIC_PARAMS = [
         None,
         "comma_separated_agencies.json",
     ),
-    # ("agency", REST_ALL, {}, None, "agency_all.json"),
     (
         "catalog",
         "BIS",
@@ -299,7 +298,6 @@ GENERIC_PARAMS = [
     ),
     ("sdmxapi", "1.4.0", {}, None, "sdmxapi_1.4.0.json"),
     ("sdmxapi", "2.0.0", {}, None, "sdmxapi_2.0.0.json"),
-    # ("sdmxapi", REST_ALL, {}, None, "sdmxapi_all.json"),
     ("service", "BIS", {}, REST_ALL, "service_bis.json"),
     (
         "service",
@@ -547,5 +545,5 @@ async def test_async_connection_error(respx_mock, gds_async_service):
         await gds_async_service._fetch("/resource", "application/json")
     assert e.value.title == "Connection error"
     assert (
-        "Connection error. Query: " "`https://gds.sdmx.io/resource`."
+        "Connection error. Query: `https://gds.sdmx.io/resource`."
     ) in e.value.description
