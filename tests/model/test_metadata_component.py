@@ -86,7 +86,7 @@ def test_full_initialization(fid, concept, typ, array_def, facets, codes, urn):
 
     assert f.id == fid
     assert f.concept == concept
-    assert f.is_presentational == False
+    assert f.is_presentational is False
     assert f.dtype == typ
     assert f.facets == facets
     assert f.enumeration == codes
