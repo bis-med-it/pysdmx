@@ -30,7 +30,7 @@ def body():
 
 def test_returns_dataflows(respx_mock, fmr, query, body):
     """get_metadataflows() returns a collection of metadataflows."""
-    checks.check_metadataflows(respx_mock, fmr, query, body, True)
+    checks.check_metadataflows(respx_mock, fmr, query, body)
 
 
 @pytest.mark.asyncio
