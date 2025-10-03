@@ -23,6 +23,9 @@ from pysdmx.io.json.sdmxjson2.messages.map import (
     JsonRepresentationMapsMessage,
     JsonStructureMapsMessage,
 )
+from pysdmx.io.json.sdmxjson2.messages.mpa import (
+    JsonMetadataProvisionAgreementsMessage as JsonMPAMsg,
+)
 from pysdmx.io.json.sdmxjson2.messages.pa import (
     JsonProvisionAgreementsMessage as JsonPAMessage,
 )
@@ -50,6 +53,7 @@ __all__ = [
     "JsonHierarchiesMessage",
     "JsonHierarchyMessage",
     "JsonMetadataMessage",
+    "JsonMPAMsg",
     "JsonMappingMessage",
     "JsonRepresentationMapMessage",
     "JsonRepresentationMapsMessage",
