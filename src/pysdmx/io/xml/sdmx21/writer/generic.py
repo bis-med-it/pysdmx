@@ -327,10 +327,12 @@ def __group_processing(
             .to_dict(orient="records")
         )
 
-        for record in grouped_data:
-            out_list.append(
+        out_list.extend(
+            [
                 __format_group_str(record, group_id, dimensions, attribute)
-            )
+                for record in grouped_data
+            ]
+        )
 
     return "".join(out_list)
 

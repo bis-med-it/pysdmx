@@ -486,9 +486,7 @@ class StructureMap(MaintainableArtefact, frozen=True, omit_defaults=True):
         """Return the number of mapping rules in the structure map."""
         return len(self.maps)
 
-    def __getitem__(
-        self, id_: str
-    ) -> Optional[
+    def __getitem__(self, id_: str) -> Optional[
         Sequence[
             Union[
                 ComponentMap,
@@ -500,12 +498,12 @@ class StructureMap(MaintainableArtefact, frozen=True, omit_defaults=True):
         ]
     ]:
         """Return the mapping rules for the supplied component."""
-        out = []
-        for m in self.maps:
-            if (
-                hasattr(m, "source") and (m.source == id_ or id_ in m.source)
-            ) or (isinstance(m, FixedValueMap) and m.target == id_):
-                out.append(m)
+        out = [
+            m
+            for m in self.maps
+            if (hasattr(m, "source") and (m.source == id_ or id_ in m.source))
+            or (isinstance(m, FixedValueMap) and m.target == id_)
+        ]
         if len(out) == 0:
             return None
         else:

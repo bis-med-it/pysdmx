@@ -1,6 +1,6 @@
 [project]
 name = "pysdmx"
-version = "1.6.0"
+version = "1.7.0"
 description = "Your opinionated Python SDMX library"
 license = { text = "Apache-2.0" }
 readme = "README.rst"
@@ -21,7 +21,7 @@ classifiers = [
     "Typing :: Typed"
 ]
 dependencies = [
-    "httpx>=0.*",
+    "httpx[http2]>=0.*",
     "msgspec>=0.*",
     "parsy>=2.1",
 ]
@@ -46,7 +46,7 @@ requires-poetry = ">=2.0"
 python = ">=3.9,<4.0"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.8.1"
+ruff = ">=0.13.2"
 mypy = "^1.1.1"
 pytest = "^8.3.2"
 pytest-asyncio = "^0.21.1"
@@ -70,16 +70,30 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 line-length = 79
 lint.select = [
-    "ASYNC", "B", "C4", "C90", "D", "E", "F", "I", "LOG", "PT", "S", "SIM", "W"
+    "ASYNC", # flake8-async: checks for async/await best practices
+    "B",     # flake8-bugbear: detect bugs and design problems
+    "C4",    # flake8-comprehensions: better list/dict/set comprehensions
+    "C90",   # mccabe: code complexity checker
+    "D",     # pydocstyle: enforce docstring conventions
+    "DTZ",   # flake8-datetimez: datetime best practices and timezone issues
+    "E",     # pycodestyle errors
+    "ERA",   # eradicate: Find commented-out code that should be removed
+    "F",     # pyflakes: detect various errors
+    "FURB",  # refurb: functional Python improvements and refactoring
+    "I",     # isort: import sorting
+    "LOG",   # flake8-logging: logging best practices
+    "PERF",  # perflint: performance optimizations
+    "PT",    # flake8-pytest-style: pytest best practices
+    "S",     # flake8-bandit: security issues
+    "SIM",   # flake8-simplify: code simplification suggestions
+    "W"      # pycodestyle warnings    
 ]
-lint.ignore = [
-    "E203", "D411", "F901", "S320"
-]
+lint.ignore = ["D411", "E203", "F901"]
 lint.mccabe.max-complexity = 10
 lint.pydocstyle.convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["S101", "S311", "D100", "D103", "D104"]
+"tests/*" = ["DTZ", "D100", "D103", "D104", "PERF", "S101", "S311"]
 
 [tool.mypy]
 files = "src"
