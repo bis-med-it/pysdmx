@@ -198,8 +198,12 @@ def __group_processing(
             .to_dict(orient="records")
         )
 
-        for record in grouped_data:
-            out_list.append(__format_group_str(record, group["group_id"]))
+        out_list.extend(
+            [
+                __format_group_str(record, group["group_id"])
+                for record in grouped_data
+            ]
+        )
 
     return "".join(out_list)
 

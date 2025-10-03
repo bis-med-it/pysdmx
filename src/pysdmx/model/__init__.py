@@ -131,9 +131,7 @@ def decoders(type: Type, obj: Any) -> Any:  # type: ignore[type-arg]
             target types
     """
     if type is Components:
-        comps = []
-        for item in obj:
-            comps.append(msgspec.convert(item, Component))
+        comps = [msgspec.convert(item, Component) for item in obj]
         return Components(comps)
     else:
         raise NotImplementedError(f"Objects of type {type} are not supported")
