@@ -24,6 +24,10 @@ from pysdmx.io.json.sdmxjson2.messages.map import (
     JsonRepresentationMap,
     JsonStructureMap,
 )
+from pysdmx.io.json.sdmxjson2.messages.metadataflow import JsonMetadataflow
+from pysdmx.io.json.sdmxjson2.messages.mpa import (
+    JsonMetadataProvisionAgreement,
+)
 from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
 from pysdmx.io.json.sdmxjson2.messages.provider import JsonDataProviderScheme
 from pysdmx.io.json.sdmxjson2.messages.vtl import (
@@ -52,6 +56,8 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
     dataProviderSchemes: Sequence[JsonDataProviderScheme] = ()
     dataflows: Sequence[JsonDataflow] = ()
     provisionAgreements: Sequence[JsonProvisionAgreement] = ()
+    metadataflows: Sequence[JsonMetadataflow] = ()
+    metadataProvisionAgreements: Sequence[JsonMetadataProvisionAgreement] = ()
     structureMaps: Sequence[JsonStructureMap] = ()
     representationMaps: Sequence[JsonRepresentationMap] = ()
     categorisations: Sequence[JsonCategorisation] = ()
@@ -99,6 +105,10 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             for i in self.dataflows
         )
         structures.extend(i.to_model() for i in self.provisionAgreements)
+        structures.extend(i.to_model() for i in self.metadataflows)
+        structures.extend(
+            i.to_model() for i in self.metadataProvisionAgreements
+        )
         structures.extend(
             i.to_model(self.representationMaps) for i in self.structureMaps
         )
