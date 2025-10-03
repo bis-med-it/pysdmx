@@ -9,6 +9,7 @@ from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist
 from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
     JsonAnnotation,
+    JsonLink,
     JsonRepresentation,
     NameableType,
 )
@@ -29,6 +30,7 @@ class JsonConcept(NameableType, frozen=True, omit_defaults=True):
     coreRepresentation: Optional[JsonRepresentation] = None
     parent: Optional[str] = None
     isoConceptReference: Optional[IsoConceptReference] = None
+    links: Sequence[JsonLink] = ()
 
     def to_model(self, codelists: Sequence[Codelist]) -> Concept:
         """Converts a JsonConcept to a standard concept."""
@@ -48,6 +50,8 @@ class JsonConcept(NameableType, frozen=True, omit_defaults=True):
             facets = None
             codes = None
             cl_ref = None
+        urn_lnk = [lnk for lnk in self.links if lnk.rel == "self"]
+        c_urn = urn_lnk[0].urn if len(urn_lnk) > 0 else None
         return Concept(
             id=self.id,
             dtype=dt,
@@ -56,6 +60,7 @@ class JsonConcept(NameableType, frozen=True, omit_defaults=True):
             description=self.description,
             codes=codes,
             enum_ref=cl_ref,
+            urn=c_urn,
         )
 
     @classmethod
@@ -95,18 +100,10 @@ class JsonConceptScheme(ItemSchemeType, frozen=True, omit_defaults=True):
 
     concepts: Sequence[JsonConcept] = ()
 
-    def __set_urn(self, concept: Concept) -> Concept:
-        urn = (
-            "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept="
-            f"{self.agency}:{self.id}({self.version}).{concept.id}"
-        )
-        return msgspec.structs.replace(concept, urn=urn)
-
     def to_model(self, codelists: Sequence[JsonCodelist]) -> ConceptScheme:
         """Converts a JsonConceptScheme to a standard concept scheme."""
         cls = [cl.to_model() for cl in codelists]
         concepts = [c.to_model(cls) for c in self.concepts]
-        concepts = [self.__set_urn(c) for c in concepts]
         return ConceptScheme(
             id=self.id,
             name=self.name,

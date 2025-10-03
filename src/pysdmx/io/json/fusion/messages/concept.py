@@ -17,6 +17,7 @@ class FusionConcept(msgspec.Struct, frozen=True):
     """Fusion-JSON payload for concepts."""
 
     id: str
+    urn: str
     names: Sequence[FusionString]
     representation: Optional[FusionRepresentation] = None
     descriptions: Optional[Sequence[FusionString]] = None
@@ -48,6 +49,7 @@ class FusionConcept(msgspec.Struct, frozen=True):
             description=d,
             codes=c,
             enum_ref=cl_ref,
+            urn=self.urn,
         )
 
 
@@ -63,18 +65,10 @@ class FusionConceptScheme(
     version: str = "1.0"
     items: Sequence[FusionConcept] = ()
 
-    def __set_urn(self, concept: Concept) -> Concept:
-        urn = (
-            "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept="
-            f"{self.agency}:{self.id}({self.version}).{concept.id}"
-        )
-        return msgspec.structs.replace(concept, urn=urn)
-
     def to_model(self, codelists: Sequence[FusionCodelist]) -> CS:
         """Converts a FusionConceptScheme to a standard concept scheme."""
         d = self.descriptions[0].value if self.descriptions else None
         concepts = [c.to_model(codelists) for c in self.items]
-        concepts = [self.__set_urn(c) for c in concepts]
         return CS(
             id=self.id,
             name=self.names[0].value,
