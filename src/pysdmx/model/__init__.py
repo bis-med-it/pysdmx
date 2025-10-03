@@ -53,7 +53,12 @@ from pysdmx.model.map import (
     StructureMap,
     ValueMap,
 )
-from pysdmx.model.metadata import MetadataAttribute, MetadataReport
+from pysdmx.model.metadata import (
+    MetadataComponent,
+    MetadataStructure,
+    MetadataAttribute,
+    MetadataReport,
+)
 from pysdmx.model.organisation import (
     AgencyScheme,
     DataConsumerScheme,
@@ -174,9 +179,11 @@ __all__ = [
     "ImplicitComponentMap",
     "ItemReference",
     "MetadataAttribute",
+    "MetadataComponent",
     "MetadataProvider",
     "MetadataProviderScheme",
     "MetadataReport",
+    "MetadataStructure",
     "MultiComponentMap",
     "MultiRepresentationMap",
     "MultiValueMap",
