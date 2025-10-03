@@ -13,11 +13,13 @@ from typing import Any, Dict, Iterator, List, Optional, Sequence, Union
 
 from msgspec import Struct
 
+from pysdmx.errors import Invalid
 from pysdmx.model.__base import (
     Annotation,
     IdentifiableArtefact,
     ItemReference,
     MaintainableArtefact,
+    Reference,
 )
 from pysdmx.model.code import Codelist, Hierarchy
 from pysdmx.model.concept import Concept, DataType, Facets
@@ -234,6 +236,38 @@ class MetadataStructure(
 
             processed_output.append(f"{attr}: {value}")
         return f"{', '.join(processed_output)}"
+
+
+class Metadataflow(
+    MaintainableArtefact,
+    frozen=True,
+    omit_defaults=True,
+    tag=True,
+    kw_only=True,
+):
+    """A flow of reference metadata that metadata providers will provide.
+
+    Attributes:
+        structure: The MSD describing the structure of all reference
+            metadata reports for this metadataflow.
+        targets: Identifiable structures to which the reference metadata
+            reports described by the referenced MSD should be restricted to.
+            For example, to indicate that the reports can be related to
+            dataflows only, the following can be used:
+            urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=*:*(*)
+    """
+
+    structure: Optional[Union[MetadataStructure, str]]
+    targets: Union[Sequence[str], Sequence[Reference]]
+
+
+class MetadataProvisionAgreement(
+    MaintainableArtefact, frozen=True, omit_defaults=True, kw_only=True
+):
+    """Link between a metadata provider and metadataflow."""
+
+    metadataflow: str
+    metadata_provider: str
 
 
 class MetadataAttribute(
