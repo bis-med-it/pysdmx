@@ -20,5 +20,6 @@ deserializers = Deserializers(
     mapping=msg.JsonMappingMessage,  # type: ignore[arg-type]
     code_map=msg.JsonRepresentationMapMessage,  # type: ignore[arg-type]
     transformation_scheme=msg.JsonTransfoMsg,  # type: ignore[arg-type]
+    metadataflows=msg.JsonMdfsMsg,  # type: ignore[arg-type]
     metadata_provision_agreement=msg.JsonMPAMsg,  # type: ignore[arg-type]
 )

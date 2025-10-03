@@ -23,6 +23,9 @@ from pysdmx.io.json.sdmxjson2.messages.map import (
     JsonRepresentationMapsMessage,
     JsonStructureMapsMessage,
 )
+from pysdmx.io.json.sdmxjson2.messages.metadataflow import (
+    JsonMetadataflowsMessage as JsonMdfsMsg,
+)
 from pysdmx.io.json.sdmxjson2.messages.mpa import (
     JsonMetadataProvisionAgreementsMessage as JsonMPAMsg,
 )
