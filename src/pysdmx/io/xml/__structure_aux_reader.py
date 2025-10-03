@@ -818,7 +818,6 @@ class StructureParser(Struct):
         self, element: Dict[str, Any]
     ) -> Dict[str, Any]:
         dfw = None
-        provider = None
         if STR_USAGE in element:
             ref_dfw: Union[Reference, ItemReference]
             if REF in element[STR_USAGE]:
@@ -837,27 +836,6 @@ class StructureParser(Struct):
             )
             del element[STR_USAGE]
 
-        if DATA_PROV in element:
-            ref_data_prov: Union[Reference, ItemReference]
-            if REF in element[DATA_PROV]:
-                data_prov = element[DATA_PROV][REF]
-                ref_data_prov = ItemReference(
-                    sdmx_type=data_prov[CLASS],
-                    agency=data_prov[AGENCY_ID],
-                    id=data_prov[PAR_ID],
-                    version=data_prov[PAR_VER],
-                    item_id=data_prov[ID],
-                )
-            elif URN in element[DATA_PROV]:
-                ref_data_prov = parse_urn(element[DATA_PROV][URN])
-            else:
-                ref_data_prov = parse_urn(element[DATA_PROV])
-            del element[DATA_PROV]
-            provider = (
-                f"{ref_data_prov.sdmx_type}={ref_data_prov.agency}:"
-                f"{ref_data_prov.id}({ref_data_prov.version})"
-                f".{ref_data_prov.item_id}"  # type: ignore[union-attr]
-            )
         if DFW in element:
             ref_dfw = parse_urn(element[DFW])
             dfw = (
@@ -865,6 +843,27 @@ class StructureParser(Struct):
                 f"{ref_dfw.id}({ref_dfw.version})"
             )
             del element[DFW]
+
+        ref_data_prov: Union[Reference, ItemReference]
+        if REF in element[DATA_PROV]:
+            data_prov = element[DATA_PROV][REF]
+            ref_data_prov = ItemReference(
+                sdmx_type=data_prov[CLASS],
+                agency=data_prov[AGENCY_ID],
+                id=data_prov[PAR_ID],
+                version=data_prov[PAR_VER],
+                item_id=data_prov[ID],
+            )
+        elif URN in element[DATA_PROV]:
+            ref_data_prov = parse_urn(element[DATA_PROV][URN])
+        else:
+            ref_data_prov = parse_urn(element[DATA_PROV])
+        del element[DATA_PROV]
+        provider = (
+            f"{ref_data_prov.sdmx_type}={ref_data_prov.agency}:"
+            f"{ref_data_prov.id}({ref_data_prov.version})"
+            f".{ref_data_prov.item_id}"  # type: ignore[union-attr]
+        )
 
         element["dataflow"] = dfw
         element["provider"] = provider
