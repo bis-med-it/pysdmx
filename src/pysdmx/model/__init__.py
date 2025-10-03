@@ -56,6 +56,8 @@ from pysdmx.model.map import (
 from pysdmx.model.metadata import (
     MetadataAttribute,
     MetadataComponent,
+    Metadataflow,
+    MetadataProvisionAgreement,
     MetadataReport,
     MetadataStructure,
 )
@@ -180,8 +182,10 @@ __all__ = [
     "ItemReference",
     "MetadataAttribute",
     "MetadataComponent",
+    "Metadataflow",
     "MetadataProvider",
     "MetadataProviderScheme",
+    "MetadataProvisionAgreement",
     "MetadataReport",
     "MetadataStructure",
     "MultiComponentMap",
