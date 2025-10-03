@@ -116,6 +116,7 @@ class Component(
         id: A unique identifier for the component (e.g. FREQ).
         required: Whether the component must have a value.
         role: The role played by the component.
+        concept: The concept giving its identity to the component.
         local_dtype: The component's local data type (string, number, etc.).
         local_facets: Additional local details such as the component's minimum
             length.
