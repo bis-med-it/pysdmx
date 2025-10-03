@@ -41,6 +41,7 @@ from pysdmx.model import (
     DataProvider,
     Hierarchy,
     HierarchyAssociation,
+    MetadataProvisionAgreement,
     MetadataReport,
     MultiRepresentationMap,
     ProvisionAgreement,
@@ -271,6 +272,11 @@ class __BaseRegistryClient:
     def _pa_q(self, agency: str, id: str, version: str) -> StructureQuery:
         return StructureQuery(
             StructureType.PROVISION_AGREEMENT, agency, id, version
+        )
+
+    def _mpa_q(self, agency: str, id: str, version: str) -> StructureQuery:
+        return StructureQuery(
+            StructureType.METADATA_PROVISION_AGREEMENT, agency, id, version
         )
 
 
@@ -671,6 +677,28 @@ class RegistryClient(__BaseRegistryClient):
         query = super()._reports_q(artefact_type, agency, id, version)
         out = self.__fetch(query)
         return super()._out(out, self.deser.report).reports
+
+    def get_metadata_provision_agreement(
+        self,
+        agency: str,
+        id: str,
+        version: str = "+",
+    ) -> MetadataProvisionAgreement:
+        """Get the metadata provision agreement matching the parameters.
+
+        Args:
+            agency: The agency maintaining the metadata provision agreement.
+            id: The ID of the metadata provision agreement to be returned.
+            version: The version of the metadata provision agreement to be
+                returned. The most recent version will be returned, unless
+                specified otherwise.
+
+        Returns:
+            The requested metadata provision agreement.
+        """
+        query = super()._mpa_q(agency, id, version)
+        out = self.__fetch(query)
+        return super()._out(out, self.deser.metadata_provision_agreement)[0]
 
     def get_mapping(
         self,
@@ -1135,6 +1163,28 @@ class AsyncRegistryClient(__BaseRegistryClient):
         query = super()._reports_q(artefact_type, agency, id, version)
         out = await self.__fetch(query)
         return super()._out(out, self.deser.report).reports
+
+    async def get_metadata_provision_agreement(
+        self,
+        agency: str,
+        id: str,
+        version: str = "+",
+    ) -> MetadataProvisionAgreement:
+        """Get the metadata provision agreement matching the parameters.
+
+        Args:
+            agency: The agency maintaining the metadata provision agreement.
+            id: The ID of the metadata provision agreement to be returned.
+            version: The version of the metadata provision agreement to be
+                returned. The most recent version will be returned, unless
+                specified otherwise.
+
+        Returns:
+            The requested metadata provision agreement.
+        """
+        query = super()._mpa_q(agency, id, version)
+        out = await self.__fetch(query)
+        return super()._out(out, self.deser.metadata_provision_agreement)[0]
 
     async def get_mapping(
         self,
