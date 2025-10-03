@@ -39,9 +39,7 @@ def validate_doc(input_str: str) -> None:
     doc = etree.parse(bytes_infile, parser=parser)
     if not xmlschema.validate(doc):
         log_errors = list(xmlschema.error_log)  # type: ignore[call-overload]
-        unhandled_errors = []
-        for e in log_errors:
-            unhandled_errors.append(e.message)
+        unhandled_errors = [e.message for e in log_errors]
         severe_errors = unhandled_errors.copy()
         for e in unhandled_errors:
             for allowed_error in ALLOWED_ERRORS_CONTENT:

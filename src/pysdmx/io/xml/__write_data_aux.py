@@ -54,13 +54,15 @@ def writing_validation(dataset: PandasDataset) -> None:
         for comp in dataset.structure.components
         if comp.role in (Role.DIMENSION, Role.MEASURE)
     ]
-    for att in dataset.structure.components.attributes:
+    required_components.extend(
+        att.id
+        for att in dataset.structure.components.attributes
         if (
             att.required
             and att.attachment_level is not None
             and att.attachment_level != "D"
-        ):
-            required_components.append(att.id)
+        )
+    )
     non_required = [
         comp.id
         for comp in dataset.structure.components
