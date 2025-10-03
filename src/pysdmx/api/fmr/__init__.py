@@ -41,6 +41,7 @@ from pysdmx.model import (
     DataProvider,
     Hierarchy,
     HierarchyAssociation,
+    Metadataflow,
     MetadataProvisionAgreement,
     MetadataReport,
     MultiRepresentationMap,
@@ -273,6 +274,11 @@ class __BaseRegistryClient:
         return StructureQuery(
             StructureType.PROVISION_AGREEMENT, agency, id, version
         )
+
+    def _metadataflows_q(
+        self, agency: str, id: str, version: str
+    ) -> StructureQuery:
+        return StructureQuery(StructureType.METADATAFLOW, agency, id, version)
 
     def _mpa_q(self, agency: str, id: str, version: str) -> StructureQuery:
         return StructureQuery(
@@ -677,6 +683,28 @@ class RegistryClient(__BaseRegistryClient):
         query = super()._reports_q(artefact_type, agency, id, version)
         out = self.__fetch(query)
         return super()._out(out, self.deser.report).reports
+
+    def get_metadataflows(
+        self,
+        agency: str = "*",
+        id: str = "*",
+        version: str = "+",
+    ) -> Sequence[Metadataflow]:
+        """Get the metadataflow(s) matching the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the metadataflow(s).
+            id: The ID of the metadataflow(s) to be returned.
+            version: The version of the metadataflow(s) to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested metadataflow(s).
+        """
+        query = super()._metadataflows_q(agency, id, version)
+        out = self.__fetch(query)
+        return super()._out(out, self.deser.metadataflows)
 
     def get_metadata_provision_agreement(
         self,
@@ -1163,6 +1191,28 @@ class AsyncRegistryClient(__BaseRegistryClient):
         query = super()._reports_q(artefact_type, agency, id, version)
         out = await self.__fetch(query)
         return super()._out(out, self.deser.report).reports
+
+    async def get_metadataflows(
+        self,
+        agency: str = "*",
+        id: str = "*",
+        version: str = "+",
+    ) -> Sequence[Metadataflow]:
+        """Get the metadataflow(s) matching the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the metadataflow(s).
+            id: The ID of the metadataflow(s) to be returned.
+            version: The version of the metadataflow(s) to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested metadataflow(s).
+        """
+        query = super()._metadataflows_q(agency, id, version)
+        out = await self.__fetch(query)
+        return super()._out(out, self.deser.metadataflows)
 
     async def get_metadata_provision_agreement(
         self,
