@@ -340,9 +340,15 @@ class GdsRestService(_CoreGdsRestService):
     """Synchronous GDS-REST service."""
 
     def _fetch(self, query: str, format_: str) -> bytes:
-        with httpx.Client(verify=self._ssl_context, follow_redirects=True) as client:
+        with httpx.Client(
+            verify=self._ssl_context, follow_redirects=True
+        ) as client:
             try:
-                if "?" not in query and "#" not in query and not query.endswith("/"):
+                if (
+                    "?" not in query
+                    and "#" not in query
+                    and not query.endswith("/")
+                ):
                     query += "/"
 
                 url = f"{self._api_endpoint}{query}"
@@ -369,7 +375,11 @@ class GdsAsyncRestService(_CoreGdsRestService):
             verify=self._ssl_context, follow_redirects=True
         ) as client:
             try:
-                if "?" not in query and "#" not in query and not query.endswith("/"):
+                if (
+                    "?" not in query
+                    and "#" not in query
+                    and not query.endswith("/")
+                ):
                     query += "/"
 
                 url = f"{self._api_endpoint}{query}"
