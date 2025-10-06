@@ -674,7 +674,7 @@ def test_prov_agreement(samples_folder):
     data_path = samples_folder / "prov_agreement_3.0.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_3_0
-    result = read_sdmx(input_str, validate=True).structures
+    result = read_sdmx(input_str, validate=True).get_provision_agreements()
     assert result is not None
     prov_agreement = result[0]
     assert isinstance(prov_agreement, ProvisionAgreement)

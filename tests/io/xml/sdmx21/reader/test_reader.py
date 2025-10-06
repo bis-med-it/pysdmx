@@ -930,7 +930,7 @@ def test_generic_dataset_groups(generic_groups):
 def test_prov_agreement(prov_agreement_path):
     input_str, read_format = process_string_to_read(prov_agreement_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1
-    result = read_sdmx(input_str, validate=True).structures
+    result = read_sdmx(input_str, validate=True).get_provision_agreements()
     assert result is not None
     prov_agreement = result[0]
     assert isinstance(prov_agreement, ProvisionAgreement)
@@ -943,7 +943,7 @@ def test_prov_agreement(prov_agreement_path):
 def test_prov_agreement_urns(prov_agreement_urns_path):
     input_str, read_format = process_string_to_read(prov_agreement_urns_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1
-    result = read_sdmx(input_str, validate=True).structures
+    result = read_sdmx(input_str, validate=True).get_provision_agreements()
     assert result is not None
     prov_agreement = result[0]
     assert isinstance(prov_agreement, ProvisionAgreement)

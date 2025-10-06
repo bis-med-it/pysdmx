@@ -1014,5 +1014,5 @@ def test_prov_agreement(
         content,
         header=complete_header,
     )
-    read_sdmx(result, validate=False)
+    read_sdmx(result, validate=True)
     assert result == prov_agreement_sample
