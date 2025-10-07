@@ -200,6 +200,7 @@ MSG_CONTENT_PKG_21 = OrderedDict(
     [
         (ORGS, "OrganisationSchemes"),
         (DATAFLOWS, "Dataflows"),
+        (PROV_AGREEMENTS, "ProvisionAgreements"),
         (CODELISTS, "Codelists"),
         (CONCEPTS, "Concepts"),
         (DSDS, "DataStructures"),
@@ -210,7 +211,6 @@ MSG_CONTENT_PKG_21 = OrderedDict(
         (RULESETS, "Rulesets"),
         (TRANSFORMATIONS, "Transformations"),
         (UDOS, "UserDefinedOperators"),
-        (PROV_AGREEMENTS, "ProvisionAgreements"),
     ]
 )
 
@@ -219,6 +219,7 @@ MSG_CONTENT_PKG_30 = OrderedDict(
     [
         (AGC, "AgencySchemes"),
         (DATAFLOWS, "Dataflows"),
+        (PROV_AGREEMENTS, "ProvisionAgreements"),
         (CODELISTS, "Codelists"),
         (CONCEPTS_SCHEMES, "ConceptSchemes"),
         (DSDS, "DataStructures"),
@@ -229,7 +230,6 @@ MSG_CONTENT_PKG_30 = OrderedDict(
         (RULE_SCHEMES, "RulesetSchemes"),
         (TRANS_SCHEMES, "TransformationSchemes"),
         (UDO_SCHEMES, "UserDefinedOperatorSchemes"),
-        (PROV_AGREEMENTS, "ProvisionAgreements"),
     ]
 )
 
