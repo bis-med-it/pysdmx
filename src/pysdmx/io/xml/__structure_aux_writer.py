@@ -310,9 +310,9 @@ def __write_maintainable(
         f"{str(maintainable.is_external_reference).lower()!r}"
     )
     if not references_30 and not (isinstance(maintainable, AgencyScheme)):
-        outfile[
-            "Attributes"
-        ] += f" isFinal={str(maintainable.is_final).lower()!r}"
+        outfile["Attributes"] += (
+            f" isFinal={str(maintainable.is_final).lower()!r}"
+        )
 
     if isinstance(maintainable.agency, str):
         outfile["Attributes"] += f" agencyID={maintainable.agency!r}"
@@ -809,9 +809,9 @@ def __write_scheme(  # noqa: C901
         DSD,
         DFW,
     ]:
-        data[
-            "Attributes"
-        ] += f" isPartial={str(item_scheme.is_partial).lower()!r}"
+        data["Attributes"] += (
+            f" isPartial={str(item_scheme.is_partial).lower()!r}"
+        )
     if scheme in [
         RULE_SCHEME,
         UDO_SCHEME,
@@ -820,9 +820,9 @@ def __write_scheme(  # noqa: C901
         CUSTOM_TYPE_SCHEME,
         NAME_PER_SCHEME,
     ]:
-        data[
-            "Attributes"
-        ] += f" {_write_vtl(item_scheme, indent, references_30)}"
+        data["Attributes"] += (
+            f" {_write_vtl(item_scheme, indent, references_30)}"
+        )
 
     outfile = ""
 
