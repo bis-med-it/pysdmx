@@ -95,7 +95,8 @@ def test_url_both_n_before_2_0_0_short(
     api_version: ApiVersion,
 ):
     expected = (
-        f"/data/{res}?firstNObservations={first_n}&lastNObservations={last_n}"
+        f"/data/{res}?firstNObservations={first_n}"
+        f"&lastNObservations={last_n}"
     )
 
     q = DataQuery(resource_id=res, first_n_obs=first_n, last_n_obs=last_n)

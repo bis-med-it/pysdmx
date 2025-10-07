@@ -42,7 +42,7 @@ def test_url_updated_before(
 ):
     expected = (
         "/registration/provider/*/*"
-        f"?updatedBefore={updated_before.isoformat('T', 'seconds')}"
+        f'?updatedBefore={updated_before.isoformat("T", "seconds")}'
     )
 
     q = RegistrationByProviderQuery(updated_before=updated_before)
@@ -61,8 +61,8 @@ def test_url_updated_before_and_after(
 ):
     expected = (
         "/registration/provider/*/*"
-        f"?updatedBefore={updated_before.isoformat('T', 'seconds')}"
-        f"&updatedAfter={updated_after.isoformat('T', 'seconds')}"
+        f'?updatedBefore={updated_before.isoformat("T", "seconds")}'
+        f'&updatedAfter={updated_after.isoformat("T", "seconds")}'
     )
 
     q = RegistrationByProviderQuery(
@@ -81,7 +81,7 @@ def test_url_omit_defaults_updated_before(
 ):
     expected = (
         "/registration/provider"
-        f"?updatedBefore={updated_before.isoformat('T', 'seconds')}"
+        f'?updatedBefore={updated_before.isoformat("T", "seconds")}'
     )
 
     q = RegistrationByProviderQuery(updated_before=updated_before)

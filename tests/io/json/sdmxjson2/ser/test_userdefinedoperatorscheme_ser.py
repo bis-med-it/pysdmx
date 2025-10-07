@@ -227,10 +227,12 @@ def test_udos_with_ruleset_scheme_objects(
 
     assert len(sjson.rulesetSchemes) == 2
     assert sjson.rulesetSchemes[0] == (
-        "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=BIS:RS1(1.0)"
+        "urn:sdmx:org.sdmx.infomodel.transformation."
+        "RulesetScheme=BIS:RS1(1.0)"
     )
     assert sjson.rulesetSchemes[1] == (
-        "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=ECB:RS2(2.0)"
+        "urn:sdmx:org.sdmx.infomodel.transformation."
+        "RulesetScheme=ECB:RS2(2.0)"
     )
 
 
@@ -243,8 +245,10 @@ def test_udos_with_ruleset_scheme_references(
 
     assert len(sjson.rulesetSchemes) == 2
     assert sjson.rulesetSchemes[0] == (
-        "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=BIS:RS1(1.0)"
+        "urn:sdmx:org.sdmx.infomodel.transformation."
+        "RulesetScheme=BIS:RS1(1.0)"
     )
     assert sjson.rulesetSchemes[1] == (
-        "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=ECB:RS2(2.0)"
+        "urn:sdmx:org.sdmx.infomodel.transformation."
+        "RulesetScheme=ECB:RS2(2.0)"
     )

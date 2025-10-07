@@ -72,7 +72,8 @@ def test_short_url_asof(
     api_version: ApiVersion,
 ):
     expected = (
-        f"/metadata/metadataflow/{agency}/{res}?asOf=2025-01-01T12:42:21+00:00"
+        f"/metadata/metadataflow/{agency}/{res}"
+        f"?asOf=2025-01-01T12:42:21+00:00"
     )
 
     q = RefMetaByMetadataflowQuery(agency, res, as_of=as_of)

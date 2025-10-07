@@ -54,7 +54,8 @@ def test_short_url_details(
 ):
     d = RefMetaDetail.ALL_STUBS
     expected = (
-        f"/metadata/metadataset/{provider}/{res}/{version}?detail={d.value}"
+        f"/metadata/metadataset/{provider}/{res}/{version}"
+        f"?detail={d.value}"
     )
 
     q = RefMetaByMetadatasetQuery(provider, res, version, d)

@@ -83,9 +83,9 @@ def test_data_rwr(samples_folder, filename, output_format):
     data_path = samples_folder / filename
     structures_path = samples_folder / "dataflow_structure_children.xml"
 
-    assert data_path.exists(), (
-        f"Data file {filename} does not exist in {samples_folder}"
-    )
+    assert (
+        data_path.exists()
+    ), f"Data file {filename} does not exist in {samples_folder}"
 
     datasets = get_datasets(data_path, structures_path)
 

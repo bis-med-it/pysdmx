@@ -35,7 +35,7 @@ def test_url_updated_after(
 ):
     expected = (
         "/registration/provider/*/*"
-        f"?updatedAfter={updated_after.isoformat('T', 'seconds')}"
+        f'?updatedAfter={updated_after.isoformat("T", "seconds")}'
     )
 
     q = RegistrationByProviderQuery(updated_after=updated_after)
@@ -52,7 +52,7 @@ def test_url_omit_defaults_updated_after(
 ):
     expected = (
         "/registration/provider"
-        f"?updatedAfter={updated_after.isoformat('T', 'seconds')}"
+        f'?updatedAfter={updated_after.isoformat("T", "seconds")}'
     )
 
     q = RegistrationByProviderQuery(updated_after=updated_after)
