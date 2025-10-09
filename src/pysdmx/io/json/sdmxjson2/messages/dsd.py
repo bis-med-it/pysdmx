@@ -1,4 +1,4 @@
-"""Collection of SDMX-JSON schemas for SDMX-REST schema queries."""
+"""Collection of SDMX-JSON schemas for SDMX-REST DSD queries."""
 
 from typing import Dict, List, Literal, Optional, Sequence, Tuple
 
