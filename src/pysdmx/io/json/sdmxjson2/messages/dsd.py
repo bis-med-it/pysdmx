@@ -43,7 +43,7 @@ def _find_concept(cs: Sequence[JsonConceptScheme], urn: str) -> JsonConcept:
     return [c for c in f[0].concepts if c.id == r.item_id][0]
 
 
-def __get_type(repr_: JsonRepresentation) -> Optional[str]:
+def _get_type(repr_: JsonRepresentation) -> Optional[str]:
     t: Optional[str] = None
     if repr_.enumerationFormat:
         t = repr_.enumerationFormat.dataType
@@ -67,7 +67,7 @@ def _get_representation(
 ]:
     valid = cons.get(id_, [])
     codes = local.to_enumeration(cls, valid) if local else None
-    dt = DataType(__get_type(local)) if local else None
+    dt = DataType(_get_type(local)) if local else None
     facets = local.to_facets() if local else None
     ab = local.to_array_def() if local else None
     return (dt, facets, codes, ab)
