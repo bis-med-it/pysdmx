@@ -189,7 +189,7 @@ class JsonMetadataProviderScheme(
         self, dps: MetadataProviderScheme
     ) -> "JsonMetadataProviderScheme":
         """Converts a pysdmx metadata provider scheme to an SDMX-JSON one."""
-        return JsonDataProviderScheme(
+        return JsonMetadataProviderScheme(
             id="METADATA_PROVIDERS",
             name="METADATA_PROVIDERS",
             agency=(
@@ -197,7 +197,7 @@ class JsonMetadataProviderScheme(
             ),
             description=dps.description,
             version="1.0",
-            dataProviders=dps.items,
+            metadataProviders=dps.items,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in dps.annotations]
             ),
