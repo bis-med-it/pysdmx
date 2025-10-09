@@ -34,16 +34,17 @@ def _infer_message_type(instance: dict[str, Any]) -> str:
 
 def _load_schema(message_type: str) -> tuple[Mapping[str, Any], RefResolver]:
     schema_filename = _SCHEMA_FILES[message_type]
+
     base = pkgres.files("sdmxschemas.json.sdmx20")
+    resource = base.joinpath(schema_filename)
 
-    with pkgres.as_file(base) as base_dir:
-        schema_path = base_dir / schema_filename
-
+    with pkgres.as_file(resource) as schema_path:
         schema = json.loads(schema_path.read_text(encoding="utf-8"))
         base_uri = schema_path.parent.as_uri() + "/"
-        schema.setdefault("$id", base_uri + schema_filename)
-        resolver = RefResolver(base_uri=base_uri, referrer=schema)
-        return schema, resolver
+
+    schema.setdefault("$id", base_uri + schema_filename)
+    resolver = RefResolver(base_uri=base_uri, referrer=schema)
+    return schema, resolver
 
 
 def validate_sdmx_json(input_str: str) -> None:
