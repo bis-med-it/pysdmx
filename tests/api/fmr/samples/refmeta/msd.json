@@ -1389,9 +1389,9 @@
                                 ],
                                 "id": "META_LAST_UPDATE",
                                 "localRepresentation": {
-                                    "textFormat": {
+                                    "format": {
                                         "isSequence": false,
-                                        "textType": "GregorianDay"
+                                        "dataType": "GregorianDay"
                                     }
                                 },
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).META_LAST_UPDATE"
