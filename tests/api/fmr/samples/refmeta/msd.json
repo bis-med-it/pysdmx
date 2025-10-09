@@ -1,0 +1,1757 @@
+{
+    "meta": {
+        "id": "IREF095782",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2025-10-09T11:32:53Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "Unknown"
+        }
+    },
+    "data": {
+        "agencySchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "agencyscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)"
+                    }
+                ],
+                "id": "AGENCIES",
+                "name": "SDMX Agency Scheme",
+                "names": {
+                    "en": "SDMX Agency Scheme"
+                },
+                "version": "1.0",
+                "agencyID": "SDMX",
+                "isExternalReference": false,
+                "isPartial": true,
+                "agencies": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "agency",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).SDMX"
+                            }
+                        ],
+                        "id": "SDMX",
+                        "name": "SDMX",
+                        "names": {
+                            "en": "SDMX"
+                        },
+                        "description": "SDMX is an initiative to foster standards for the exchange of statistical information. It is sponsored by the Bank for International Settlements (BIS), the European Central Bank (ECB), the Statistical Office of the European Union (Eurostat), the International Monetary Fund (IMF), the Organization for Economic Co-Operation and Development (OECD), the United Nations (UN) and the World Bank.",
+                        "descriptions": {
+                            "en": "SDMX is an initiative to foster standards for the exchange of statistical information. It is sponsored by the Bank for International Settlements (BIS), the European Central Bank (ECB), the Statistical Office of the European Union (Eurostat), the International Monetary Fund (IMF), the Organization for Economic Co-Operation and Development (OECD), the United Nations (UN) and the World Bank."
+                        },
+                        "contacts": [
+                            {
+                                "name": "SDMX Secretariat",
+                                "names": {
+                                    "en": "SDMX Secretariat"
+                                },
+                                "department": "SDMX Secretariat",
+                                "departments": {
+                                    "en": "SDMX Secretariat"
+                                },
+                                "role": "Single entry point for external inquiries",
+                                "roles": {
+                                    "en": "Single entry point for external inquiries"
+                                },
+                                "uris": [
+                                    "http://sdmx.org"
+                                ],
+                                "emails": [
+                                    "secretariat@sdmx.org"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "agency",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).IAEG-SDGs"
+                            }
+                        ],
+                        "id": "IAEG-SDGs",
+                        "name": "Inter-agency and Expert Group on SDG Indicators (IAEG-SDGs)",
+                        "names": {
+                            "en": "Inter-agency and Expert Group on SDG Indicators (IAEG-SDGs)"
+                        },
+                        "description": "The United Nations Statistical Commission created the Inter-agency and Expert Group on SDG Indicators (IAEG-SDGs), composed of Member States and including regional and international agencies as observers. The IAEG-SDGs was tasked to develop and implement the global indicator framework for the Goals and targets of the 2030 Agenda. The global indicator framework was developed by the IAEG-SDGs and agreed upon, including refinements on several indicators, at the 48th session of the United Nations Statistical Commission held in March 2017. The global indicator framework was subsequently adopted by the General Assembly on 6 July 2017 and is contained in the Resolution adopted by the General Assembly on Work of the Statistical Commission pertaining to the 2030 Agenda for Sustainable Development (A/RES/71/313)",
+                        "descriptions": {
+                            "en": "The United Nations Statistical Commission created the Inter-agency and Expert Group on SDG Indicators (IAEG-SDGs), composed of Member States and including regional and international agencies as observers. The IAEG-SDGs was tasked to develop and implement the global indicator framework for the Goals and targets of the 2030 Agenda. The global indicator framework was developed by the IAEG-SDGs and agreed upon, including refinements on several indicators, at the 48th session of the United Nations Statistical Commission held in March 2017. The global indicator framework was subsequently adopted by the General Assembly on 6 July 2017 and is contained in the Resolution adopted by the General Assembly on Work of the Statistical Commission pertaining to the 2030 Agenda for Sustainable Development (A/RES/71/313)"
+                        },
+                        "contacts": [
+                            {
+                                "name": "Abdulla Gozalov",
+                                "names": {
+                                    "en": "Abdulla Gozalov"
+                                },
+                                "uris": [
+                                    "https://unstats.un.org/sdgs/iaeg-sdgs/"
+                                ],
+                                "emails": [
+                                    "gozalov@un.org"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "conceptSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "conceptscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=IAEG-SDGs:SDG_META_CONCEPTS(1.0)"
+                    }
+                ],
+                "id": "SDG_META_CONCEPTS",
+                "name": "SDG Metadata Concepts",
+                "names": {
+                    "en": "SDG Metadata Concepts"
+                },
+                "description": "Metadata concepts for Sustainable Development Goals Indicators",
+                "descriptions": {
+                    "en": "Metadata concepts for Sustainable Development Goals Indicators"
+                },
+                "version": "1.0",
+                "agencyID": "IAEG-SDGs",
+                "isExternalReference": false,
+                "isPartial": false,
+                "concepts": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_INDICATOR_INFO"
+                            }
+                        ],
+                        "id": "SDG_INDICATOR_INFO",
+                        "name": "0. Indicator information",
+                        "names": {
+                            "en": "0. Indicator information"
+                        },
+                        "description": "Description of the Goal, Target, Indicator and data series - if applicable. The date/period when this metadata file is last updated should be provided. The linkages with any other Goals and Targets under the SDG framework, if any, should be described. The name of international organisation(s) responsible for monitoring this indicator should be provided.",
+                        "descriptions": {
+                            "en": "Description of the Goal, Target, Indicator and data series - if applicable. The date/period when this metadata file is last updated should be provided. The linkages with any other Goals and Targets under the SDG framework, if any, should be described. The name of international organisation(s) responsible for monitoring this indicator should be provided."
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_GOAL"
+                            }
+                        ],
+                        "id": "SDG_GOAL",
+                        "name": "0.a. Goal",
+                        "names": {
+                            "en": "0.a. Goal"
+                        },
+                        "description": "SDG Goal number and name.",
+                        "descriptions": {
+                            "en": "SDG Goal number and name."
+                        },
+                        "parent": "SDG_INDICATOR_INFO"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_TARGET"
+                            }
+                        ],
+                        "id": "SDG_TARGET",
+                        "name": "0.b. Target",
+                        "names": {
+                            "en": "0.b. Target"
+                        },
+                        "description": "SDG Target number and name.",
+                        "descriptions": {
+                            "en": "SDG Target number and name."
+                        },
+                        "parent": "SDG_INDICATOR_INFO"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_INDICATOR"
+                            }
+                        ],
+                        "id": "SDG_INDICATOR",
+                        "name": "0.c. Indicator",
+                        "names": {
+                            "en": "0.c. Indicator"
+                        },
+                        "description": "SDG Indicator number and name.",
+                        "descriptions": {
+                            "en": "SDG Indicator number and name."
+                        },
+                        "parent": "SDG_INDICATOR_INFO"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_SERIES_DESCR"
+                            }
+                        ],
+                        "id": "SDG_SERIES_DESCR",
+                        "name": "0.d. Series",
+                        "names": {
+                            "en": "0.d. Series"
+                        },
+                        "description": "Description of SDG data series.",
+                        "descriptions": {
+                            "en": "Description of SDG data series."
+                        },
+                        "parent": "SDG_INDICATOR_INFO"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).META_LAST_UPDATE"
+                            }
+                        ],
+                        "id": "META_LAST_UPDATE",
+                        "name": "0.e. Metadata update",
+                        "names": {
+                            "en": "0.e. Metadata update"
+                        },
+                        "description": "The date when this metadata report is last updated.",
+                        "descriptions": {
+                            "en": "The date when this metadata report is last updated."
+                        },
+                        "coreRepresentation": {
+                            "format": {
+                                "isSequence": false,
+                                "dataType": "GregorianDay"
+                            }
+                        },
+                        "parent": "SDG_INDICATOR_INFO"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_RELATED_INDICATORS"
+                            }
+                        ],
+                        "id": "SDG_RELATED_INDICATORS",
+                        "name": "0.f. Related Indicators",
+                        "names": {
+                            "en": "0.f. Related Indicators"
+                        },
+                        "description": "Linkages with any other Goals and Targets.",
+                        "descriptions": {
+                            "en": "Linkages with any other Goals and Targets."
+                        },
+                        "parent": "SDG_INDICATOR_INFO"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_CUSTODIAN_AGENCIES"
+                            }
+                        ],
+                        "id": "SDG_CUSTODIAN_AGENCIES",
+                        "name": "0.g. International organisations(s) responsible for global monitoring",
+                        "names": {
+                            "en": "0.g. International organisations(s) responsible for global monitoring"
+                        },
+                        "description": "Global reporting: International organizations (departments/offices) responsible for monitoring this indicator at the global level. rnCountry reporting: This concept has no national counterpart.",
+                        "descriptions": {
+                            "en": "Global reporting: International organizations (departments/offices) responsible for monitoring this indicator at the global level. rnCountry reporting: This concept has no national counterpart."
+                        },
+                        "parent": "SDG_INDICATOR_INFO"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT"
+                            }
+                        ],
+                        "id": "CONTACT",
+                        "name": "1. Data reporter",
+                        "names": {
+                            "en": "1. Data reporter"
+                        },
+                        "description": "Information of the contact persons and their organization responsible for the reporting of the indicator or time series specified.",
+                        "descriptions": {
+                            "en": "Information of the contact persons and their organization responsible for the reporting of the indicator or time series specified."
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_ORGANISATION"
+                            }
+                        ],
+                        "id": "CONTACT_ORGANISATION",
+                        "name": "1.a. Organisation",
+                        "names": {
+                            "en": "1.a. Organisation"
+                        },
+                        "description": "Agency responsible for reporting of the indicator or time series specified below.",
+                        "descriptions": {
+                            "en": "Agency responsible for reporting of the indicator or time series specified below."
+                        },
+                        "parent": "CONTACT"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_NAME"
+                            }
+                        ],
+                        "id": "CONTACT_NAME",
+                        "name": "1.b. Contact person(s)",
+                        "names": {
+                            "en": "1.b. Contact person(s)"
+                        },
+                        "description": "Name(s) of the contact points for the data or metadata.",
+                        "descriptions": {
+                            "en": "Name(s) of the contact points for the data or metadata."
+                        },
+                        "parent": "CONTACT"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).ORGANISATION_UNIT"
+                            }
+                        ],
+                        "id": "ORGANISATION_UNIT",
+                        "name": "1.c. Contact Organisation Unit",
+                        "names": {
+                            "en": "1.c. Contact Organisation Unit"
+                        },
+                        "description": "Organisation unit information of the contact points for the data or metadata.",
+                        "descriptions": {
+                            "en": "Organisation unit information of the contact points for the data or metadata."
+                        },
+                        "parent": "CONTACT"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_FUNCT"
+                            }
+                        ],
+                        "id": "CONTACT_FUNCT",
+                        "name": "1.d. Contact Person Function",
+                        "names": {
+                            "en": "1.d. Contact Person Function"
+                        },
+                        "description": "Functional title(s) of the contact points for the data or metadata.",
+                        "descriptions": {
+                            "en": "Functional title(s) of the contact points for the data or metadata."
+                        },
+                        "parent": "CONTACT"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_PHONE"
+                            }
+                        ],
+                        "id": "CONTACT_PHONE",
+                        "name": "1.e. Contact Phone",
+                        "names": {
+                            "en": "1.e. Contact Phone"
+                        },
+                        "description": "Phone number(s) of the contact points for the data or metadata.",
+                        "descriptions": {
+                            "en": "Phone number(s) of the contact points for the data or metadata."
+                        },
+                        "parent": "CONTACT"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_MAIL"
+                            }
+                        ],
+                        "id": "CONTACT_MAIL",
+                        "name": "1.f. Contact Mail",
+                        "names": {
+                            "en": "1.f. Contact Mail"
+                        },
+                        "description": "Mailing address(es) of the contact points for the data or metadata.",
+                        "descriptions": {
+                            "en": "Mailing address(es) of the contact points for the data or metadata."
+                        },
+                        "parent": "CONTACT"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_EMAIL"
+                            }
+                        ],
+                        "id": "CONTACT_EMAIL",
+                        "name": "1.g. Contact emails",
+                        "names": {
+                            "en": "1.g. Contact emails"
+                        },
+                        "description": "E-mail address(es) of the contact points for the data or metadata.",
+                        "descriptions": {
+                            "en": "E-mail address(es) of the contact points for the data or metadata."
+                        },
+                        "parent": "CONTACT"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).IND_DEF_CON_CLASS"
+                            }
+                        ],
+                        "id": "IND_DEF_CON_CLASS",
+                        "name": "2. Definition, concepts and classifications",
+                        "names": {
+                            "en": "2. Definition, concepts and classifications"
+                        },
+                        "description": "Precise definition of the indicator including references to standards and classifications, preferably relying on international agreed definitions. The indicator definition should be unambiguous and be expressed in universally applicable terms. It must clearly express the unit of measurement (proportion, dollars, number of people, etc.). rnrnPrecise definition of all different concepts and terms associated with the indicator, also including reference to any associated classifications.",
+                        "descriptions": {
+                            "en": "Precise definition of the indicator including references to standards and classifications, preferably relying on international agreed definitions. The indicator definition should be unambiguous and be expressed in universally applicable terms. It must clearly express the unit of measurement (proportion, dollars, number of people, etc.). rnrnPrecise definition of all different concepts and terms associated with the indicator, also including reference to any associated classifications."
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).STAT_CONC_DEF"
+                            }
+                        ],
+                        "id": "STAT_CONC_DEF",
+                        "name": "2.a. Definition and Concepts",
+                        "names": {
+                            "en": "2.a. Definition and Concepts"
+                        },
+                        "description": "Precise definition of the indicator preferably relying on internationally agreed definitions. The indicator definition should be unambiguous and be expressed in universally applicable terms. Precise definition of all different concepts and terms associated with the indicator, also including reference to any associated classifications.",
+                        "descriptions": {
+                            "en": "Precise definition of the indicator preferably relying on internationally agreed definitions. The indicator definition should be unambiguous and be expressed in universally applicable terms. Precise definition of all different concepts and terms associated with the indicator, also including reference to any associated classifications."
+                        },
+                        "parent": "IND_DEF_CON_CLASS"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).UNIT_MEASURE"
+                            }
+                        ],
+                        "id": "UNIT_MEASURE",
+                        "name": "2.b. Unit of Measure",
+                        "names": {
+                            "en": "2.b. Unit of Measure"
+                        },
+                        "description": "Description of the unit of measurement (proportion, dollars, number of people, etc.)",
+                        "descriptions": {
+                            "en": "Description of the unit of measurement (proportion, dollars, number of people, etc.)"
+                        },
+                        "parent": "IND_DEF_CON_CLASS"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CLASS_SYSTEM"
+                            }
+                        ],
+                        "id": "CLASS_SYSTEM",
+                        "name": "2.c. Classifications",
+                        "names": {
+                            "en": "2.c. Classifications"
+                        },
+                        "description": "Describe references to both national and international standards and classification being used. [Information to be provided where applicable.]rn",
+                        "descriptions": {
+                            "en": "Describe references to both national and international standards and classification being used. [Information to be provided where applicable.]rn"
+                        },
+                        "parent": "IND_DEF_CON_CLASS"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SRC_TYPE_COLL_METHOD"
+                            }
+                        ],
+                        "id": "SRC_TYPE_COLL_METHOD",
+                        "name": "3. Data source type and data collection method",
+                        "names": {
+                            "en": "3. Data source type and data collection method"
+                        },
+                        "description": "Description of data sources, data collection methods, and related information such as descriptions of all data collection methods, data collection and release calendar, data providers and compilers, as well as their institutional mandates.",
+                        "descriptions": {
+                            "en": "Description of data sources, data collection methods, and related information such as descriptions of all data collection methods, data collection and release calendar, data providers and compilers, as well as their institutional mandates."
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SOURCE_TYPE"
+                            }
+                        ],
+                        "id": "SOURCE_TYPE",
+                        "name": "3.a. Data sources",
+                        "names": {
+                            "en": "3.a. Data sources"
+                        },
+                        "description": "Description of all actual and recommended sources of data. This description should include, when applicable, any changes of the data source over time, details of denominator (if from a different source) and any other relevant information related to the origin of the source or indicator. Similar details should be given for administrative sources.",
+                        "descriptions": {
+                            "en": "Description of all actual and recommended sources of data. This description should include, when applicable, any changes of the data source over time, details of denominator (if from a different source) and any other relevant information related to the origin of the source or indicator. Similar details should be given for administrative sources."
+                        },
+                        "parent": "SRC_TYPE_COLL_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COLL_METHOD"
+                            }
+                        ],
+                        "id": "COLL_METHOD",
+                        "name": "3.b. Data collection method",
+                        "names": {
+                            "en": "3.b. Data collection method"
+                        },
+                        "description": "Description of all methods used for data collection. This description should include, when applicable, the sample frame used, the questions used to collect the data, the type of interview, the dates/duration of fieldwork, the sample size and the response rate. Some additional information on questionnaire design and testing, interviewer training, methods used to monitor non-response etc. should be provided here. Questionnaires used should be annexed (if very long: via hyperlink).",
+                        "descriptions": {
+                            "en": "Description of all methods used for data collection. This description should include, when applicable, the sample frame used, the questions used to collect the data, the type of interview, the dates/duration of fieldwork, the sample size and the response rate. Some additional information on questionnaire design and testing, interviewer training, methods used to monitor non-response etc. should be provided here. Questionnaires used should be annexed (if very long: via hyperlink)."
+                        },
+                        "parent": "SRC_TYPE_COLL_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).FREQ_COLL"
+                            }
+                        ],
+                        "id": "FREQ_COLL",
+                        "name": "3.c. Data collection calendar",
+                        "names": {
+                            "en": "3.c. Data collection calendar"
+                        },
+                        "description": "Dates when source collection is next planned.",
+                        "descriptions": {
+                            "en": "Dates when source collection is next planned."
+                        },
+                        "parent": "SRC_TYPE_COLL_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).REL_CAL_POLICY"
+                            }
+                        ],
+                        "id": "REL_CAL_POLICY",
+                        "name": "3.d. Data release calendar",
+                        "names": {
+                            "en": "3.d. Data release calendar"
+                        },
+                        "description": "Expected dates of release of new data for this indicator, including the year (or, ideally, the quarter/month when the next data point associated with the indicator will become available).",
+                        "descriptions": {
+                            "en": "Expected dates of release of new data for this indicator, including the year (or, ideally, the quarter/month when the next data point associated with the indicator will become available)."
+                        },
+                        "parent": "SRC_TYPE_COLL_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DATA_SOURCE"
+                            }
+                        ],
+                        "id": "DATA_SOURCE",
+                        "name": "3.e. Data providers",
+                        "names": {
+                            "en": "3.e. Data providers"
+                        },
+                        "description": "Identification of national and/or international data provider(s), specifying the organization(s) responsible for producing the data.",
+                        "descriptions": {
+                            "en": "Identification of national and/or international data provider(s), specifying the organization(s) responsible for producing the data."
+                        },
+                        "parent": "SRC_TYPE_COLL_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COMPILING_ORG"
+                            }
+                        ],
+                        "id": "COMPILING_ORG",
+                        "name": "3.f. Data compilers",
+                        "names": {
+                            "en": "3.f. Data compilers"
+                        },
+                        "description": "Organization(s) responsible for compilation of on this indicator either at national or global level.",
+                        "descriptions": {
+                            "en": "Organization(s) responsible for compilation of on this indicator either at national or global level."
+                        },
+                        "parent": "SRC_TYPE_COLL_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).INST_MANDATE"
+                            }
+                        ],
+                        "id": "INST_MANDATE",
+                        "name": "3.g. Institutional Mandate",
+                        "names": {
+                            "en": "3.g. Institutional Mandate"
+                        },
+                        "description": "Description of the set of rules or other formal set of instructions assigning responsibility as well as the authority to an organisation for the collection, processing, and dissemination of statistics for this indicator.",
+                        "descriptions": {
+                            "en": "Description of the set of rules or other formal set of instructions assigning responsibility as well as the authority to an organisation for the collection, processing, and dissemination of statistics for this indicator."
+                        },
+                        "parent": "SRC_TYPE_COLL_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).OTHER_METHOD"
+                            }
+                        ],
+                        "id": "OTHER_METHOD",
+                        "name": "4. Other methodological considerations",
+                        "names": {
+                            "en": "4. Other methodological considerations"
+                        },
+                        "description": "Other methodological considerations. These include rationale behind the indicator, comments and limitations, computation methodology at the country, regional, and global level,  treatment of missing values if applicable, and information related to quality assurance.",
+                        "descriptions": {
+                            "en": "Other methodological considerations. These include rationale behind the indicator, comments and limitations, computation methodology at the country, regional, and global level,  treatment of missing values if applicable, and information related to quality assurance."
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).RATIONALE"
+                            }
+                        ],
+                        "id": "RATIONALE",
+                        "name": "4.a. Rationale",
+                        "names": {
+                            "en": "4.a. Rationale"
+                        },
+                        "description": "Description of the purpose and rationale behind the indicator, as well as examples and guidance on its correct interpretation and meaning.",
+                        "descriptions": {
+                            "en": "Description of the purpose and rationale behind the indicator, as well as examples and guidance on its correct interpretation and meaning."
+                        },
+                        "parent": "OTHER_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).REC_USE_LIM"
+                            }
+                        ],
+                        "id": "REC_USE_LIM",
+                        "name": "4.b. Comment and limitations",
+                        "names": {
+                            "en": "4.b. Comment and limitations"
+                        },
+                        "description": "Comments on the feasibility, suitability, relevance and limitations of the indicator. Also includes data comparability issues, presence of wide confidence intervals (such as for maternal mortality ratios); provides further details on additional non-official indicators commonly used together with the indicator.",
+                        "descriptions": {
+                            "en": "Comments on the feasibility, suitability, relevance and limitations of the indicator. Also includes data comparability issues, presence of wide confidence intervals (such as for maternal mortality ratios); provides further details on additional non-official indicators commonly used together with the indicator."
+                        },
+                        "parent": "OTHER_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DATA_COMP"
+                            }
+                        ],
+                        "id": "DATA_COMP",
+                        "name": "4.c. Method of computation",
+                        "names": {
+                            "en": "4.c. Method of computation"
+                        },
+                        "description": "Explanation of how the indicator is calculated, including mathematical formulas and descriptive information of computations made on the source data to produce the indicator (including adjustments and weighting). This explanation should also highlight cases in which mixed sources are used or where the calculation has changed over time (i.e., discontinuities in the series).",
+                        "descriptions": {
+                            "en": "Explanation of how the indicator is calculated, including mathematical formulas and descriptive information of computations made on the source data to produce the indicator (including adjustments and weighting). This explanation should also highlight cases in which mixed sources are used or where the calculation has changed over time (i.e., discontinuities in the series)."
+                        },
+                        "parent": "OTHER_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DATA_VALIDATION"
+                            }
+                        ],
+                        "id": "DATA_VALIDATION",
+                        "name": "4.d. Validation",
+                        "names": {
+                            "en": "4.d. Validation"
+                        },
+                        "description": "Description of process of monitoring the results of data compilation and ensuring the quality of the statistical results, including consultation process with countries on the national data submitted to the SDGs Indicators Database. Descriptions and links to all relevant reference materials should be provided.",
+                        "descriptions": {
+                            "en": "Description of process of monitoring the results of data compilation and ensuring the quality of the statistical results, including consultation process with countries on the national data submitted to the SDGs Indicators Database. Descriptions and links to all relevant reference materials should be provided."
+                        },
+                        "parent": "OTHER_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).ADJUSTMENT"
+                            }
+                        ],
+                        "id": "ADJUSTMENT",
+                        "name": "4.e. Adjustments",
+                        "names": {
+                            "en": "4.e. Adjustments"
+                        },
+                        "description": "Global reporting: Description of any adjustments with respect to use of standard classifications and harmonization of breakdowns for age group and other dimensions, or adjustments made for compliance with specific international or national definitions.rnNational reporting:  This concept is typically not applicable for national reporting.",
+                        "descriptions": {
+                            "en": "Global reporting: Description of any adjustments with respect to use of standard classifications and harmonization of breakdowns for age group and other dimensions, or adjustments made for compliance with specific international or national definitions.rnNational reporting:  This concept is typically not applicable for national reporting."
+                        },
+                        "parent": "OTHER_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).IMPUTATION"
+                            }
+                        ],
+                        "id": "IMPUTATION",
+                        "name": "4.f. Treatment of missing values (i) at country level and (ii) at regional level.",
+                        "names": {
+                            "en": "4.f. Treatment of missing values (i) at country level and (ii) at regional level."
+                        },
+                        "description": "Global reporting: (National level) Description of the methodology employed for producing estimates for the indicator when country data are not available, including any mathematical formulas and description of additional variables used as input into the estimation process.rn(Regional level) Description of how missing values for individual countries or areas are imputed or otherwise estimated by international agencies to derive regional or global aggregates of the indicator. rnNational reporting: This concept is not applicable for national reporting.",
+                        "descriptions": {
+                            "en": "Global reporting: (National level) Description of the methodology employed for producing estimates for the indicator when country data are not available, including any mathematical formulas and description of additional variables used as input into the estimation process.rn(Regional level) Description of how missing values for individual countries or areas are imputed or otherwise estimated by international agencies to derive regional or global aggregates of the indicator. rnNational reporting: This concept is not applicable for national reporting."
+                        },
+                        "parent": "OTHER_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).REG_AGG"
+                            }
+                        ],
+                        "id": "REG_AGG",
+                        "name": "4.g. Regional aggregations",
+                        "names": {
+                            "en": "4.g. Regional aggregations"
+                        },
+                        "description": "Global reporting: Description of the methodology, including any mathematical formulas, used for the calculation of the regional/global aggregates from the country values. Description of the weighting structure used for aggregating country indicator values to regional and global levels. Additional methodological details on how the data from countries or areas is assembled by custodian international agencies to provide regional and global aggregates. This is distinct from the method of computation, which looks at how the indicator is compiled at a national level. rnNational reporting: This concept is not applicable for national reporting.",
+                        "descriptions": {
+                            "en": "Global reporting: Description of the methodology, including any mathematical formulas, used for the calculation of the regional/global aggregates from the country values. Description of the weighting structure used for aggregating country indicator values to regional and global levels. Additional methodological details on how the data from countries or areas is assembled by custodian international agencies to provide regional and global aggregates. This is distinct from the method of computation, which looks at how the indicator is compiled at a national level. rnNational reporting: This concept is not applicable for national reporting."
+                        },
+                        "parent": "OTHER_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DOC_METHOD"
+                            }
+                        ],
+                        "id": "DOC_METHOD",
+                        "name": "4.h. Methods and guidance available to countries for the compilation of the data at the national level",
+                        "names": {
+                            "en": "4.h. Methods and guidance available to countries for the compilation of the data at the national level"
+                        },
+                        "description": "Global reporting: Description of methodology used by countries for the compilation of data at national level and the relevant international recommendations and guidelines available to countries. Descriptions and links to all relevant reference materials should be provided. rnNational reporting: For national reporting a country may refer to the globally available metadata and explain how it is being used.",
+                        "descriptions": {
+                            "en": "Global reporting: Description of methodology used by countries for the compilation of data at national level and the relevant international recommendations and guidelines available to countries. Descriptions and links to all relevant reference materials should be provided. rnNational reporting: For national reporting a country may refer to the globally available metadata and explain how it is being used."
+                        },
+                        "parent": "OTHER_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).QUALITY_MGMNT"
+                            }
+                        ],
+                        "id": "QUALITY_MGMNT",
+                        "name": "4.i. Quality management",
+                        "names": {
+                            "en": "4.i. Quality management"
+                        },
+                        "description": "Description of systems and frameworks in place within an organisation to manage the quality of statistical products and processes.rn",
+                        "descriptions": {
+                            "en": "Description of systems and frameworks in place within an organisation to manage the quality of statistical products and processes.rn"
+                        },
+                        "parent": "OTHER_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).QUALITY_ASSURE"
+                            }
+                        ],
+                        "id": "QUALITY_ASSURE",
+                        "name": "4.j. Quality assurance",
+                        "names": {
+                            "en": "4.j. Quality assurance"
+                        },
+                        "description": "Description of practices and guidelines focusing on quality in general and dealing with quality of statistical programmes at your agency, including measures for ensuring the efficient use of resources.rn",
+                        "descriptions": {
+                            "en": "Description of practices and guidelines focusing on quality in general and dealing with quality of statistical programmes at your agency, including measures for ensuring the efficient use of resources.rn"
+                        },
+                        "parent": "OTHER_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).QUALITY_ASSMNT"
+                            }
+                        ],
+                        "id": "QUALITY_ASSMNT",
+                        "name": "4.k. Quality assessment",
+                        "names": {
+                            "en": "4.k. Quality assessment"
+                        },
+                        "description": "Description of overall evaluation of fulfilling quality requirements, based on standard quality criteria.",
+                        "descriptions": {
+                            "en": "Description of overall evaluation of fulfilling quality requirements, based on standard quality criteria."
+                        },
+                        "parent": "OTHER_METHOD"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COVERAGE"
+                            }
+                        ],
+                        "id": "COVERAGE",
+                        "name": "5. Data availability and disaggregation",
+                        "names": {
+                            "en": "5. Data availability and disaggregation"
+                        },
+                        "description": "Global reporting: Indicate for how many countries the data for this indicator are already currently available on a regular basis. Data availability by regional breakdowns and time periods can also be descibed here. Describe the specification of the dimensions and levels used for disaggregation of the indicator (e.g., income, sex, age group, geographic location, disability status, etc.).rnNational reporting: Data availability by sub-national breakdowns and time periods can be descibed here. Describe the specification of the dimensions and levels used for disaggregation of the indicator (e.g., income, sex, age group, geographic location, disability status, etc.).",
+                        "descriptions": {
+                            "en": "Global reporting: Indicate for how many countries the data for this indicator are already currently available on a regular basis. Data availability by regional breakdowns and time periods can also be descibed here. Describe the specification of the dimensions and levels used for disaggregation of the indicator (e.g., income, sex, age group, geographic location, disability status, etc.).rnNational reporting: Data availability by sub-national breakdowns and time periods can be descibed here. Describe the specification of the dimensions and levels used for disaggregation of the indicator (e.g., income, sex, age group, geographic location, disability status, etc.)."
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COMPARABILITY"
+                            }
+                        ],
+                        "id": "COMPARABILITY",
+                        "name": "6. Comparability / Deviation from international standards",
+                        "names": {
+                            "en": "6. Comparability / Deviation from international standards"
+                        },
+                        "description": "Explanation on the differences between country produced and internationally estimated data on this indicator, highlighting and summarising the main sources of differences.",
+                        "descriptions": {
+                            "en": "Explanation on the differences between country produced and internationally estimated data on this indicator, highlighting and summarising the main sources of differences."
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).OTHER_DOC"
+                            }
+                        ],
+                        "id": "OTHER_DOC",
+                        "name": "7. References and Documentation",
+                        "names": {
+                            "en": "7. References and Documentation"
+                        },
+                        "description": "Descriptions and links to all relevant reference materials related to this indicator.",
+                        "descriptions": {
+                            "en": "Descriptions and links to all relevant reference materials related to this indicator."
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).TRANSLATIONS"
+                            }
+                        ],
+                        "id": "TRANSLATIONS",
+                        "name": "8. Translations",
+                        "names": {
+                            "en": "8. Translations"
+                        },
+                        "description": "Additional information on translation of reference metadata set.",
+                        "descriptions": {
+                            "en": "Additional information on translation of reference metadata set."
+                        }
+                    }
+                ]
+            }
+        ],
+        "metadataStructures": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "metadatastructure",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataStructure=IAEG-SDGs:SDG_MSD(1.0)"
+                    }
+                ],
+                "id": "SDG_MSD",
+                "name": "SDG Metadata Structure Definition",
+                "names": {
+                    "en": "SDG Metadata Structure Definition"
+                },
+                "description": "Metadata Structure Definition for Sustainable Development Goals Indicators.",
+                "descriptions": {
+                    "en": "Metadata Structure Definition for Sustainable Development Goals Indicators."
+                },
+                "version": "1.0",
+                "agencyID": "IAEG-SDGs",
+                "isExternalReference": false,
+                "metadataStructureComponents": {
+                    "metadataAttributeList": {
+                        "id": "MetadataAttributeDescriptor",
+                        "metadataAttributes": [
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).ADJUSTMENT"
+                                    }
+                                ],
+                                "id": "ADJUSTMENT",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).ADJUSTMENT"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CLASS_SYSTEM"
+                                    }
+                                ],
+                                "id": "CLASS_SYSTEM",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CLASS_SYSTEM"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).COLL_METHOD"
+                                    }
+                                ],
+                                "id": "COLL_METHOD",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COLL_METHOD"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).COMPARABILITY"
+                                    }
+                                ],
+                                "id": "COMPARABILITY",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COMPARABILITY"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).COMPILING_ORG"
+                                    }
+                                ],
+                                "id": "COMPILING_ORG",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COMPILING_ORG"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CONTACT"
+                                    }
+                                ],
+                                "id": "CONTACT",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CONTACT_EMAIL"
+                                    }
+                                ],
+                                "id": "CONTACT_EMAIL",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_EMAIL"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CONTACT_FUNCT"
+                                    }
+                                ],
+                                "id": "CONTACT_FUNCT",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_FUNCT"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CONTACT_MAIL"
+                                    }
+                                ],
+                                "id": "CONTACT_MAIL",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_MAIL"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CONTACT_NAME"
+                                    }
+                                ],
+                                "id": "CONTACT_NAME",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_NAME"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CONTACT_ORGANISATION"
+                                    }
+                                ],
+                                "id": "CONTACT_ORGANISATION",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_ORGANISATION"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CONTACT_PHONE"
+                                    }
+                                ],
+                                "id": "CONTACT_PHONE",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_PHONE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).COVERAGE"
+                                    }
+                                ],
+                                "id": "COVERAGE",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COVERAGE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).DATA_COMP"
+                                    }
+                                ],
+                                "id": "DATA_COMP",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DATA_COMP"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).DATA_SOURCE"
+                                    }
+                                ],
+                                "id": "DATA_SOURCE",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DATA_SOURCE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).DATA_VALIDATION"
+                                    }
+                                ],
+                                "id": "DATA_VALIDATION",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DATA_VALIDATION"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).DOC_METHOD"
+                                    }
+                                ],
+                                "id": "DOC_METHOD",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DOC_METHOD"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).FREQ_COLL"
+                                    }
+                                ],
+                                "id": "FREQ_COLL",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).FREQ_COLL"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).IMPUTATION"
+                                    }
+                                ],
+                                "id": "IMPUTATION",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).IMPUTATION"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).IND_DEF_CON_CLASS"
+                                    }
+                                ],
+                                "id": "IND_DEF_CON_CLASS",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).IND_DEF_CON_CLASS"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).INST_MANDATE"
+                                    }
+                                ],
+                                "id": "INST_MANDATE",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).INST_MANDATE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).META_LAST_UPDATE"
+                                    }
+                                ],
+                                "id": "META_LAST_UPDATE",
+                                "localRepresentation": {
+                                    "textFormat": {
+                                        "isSequence": false,
+                                        "textType": "GregorianDay"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).META_LAST_UPDATE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).ORGANISATION_UNIT"
+                                    }
+                                ],
+                                "id": "ORGANISATION_UNIT",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).ORGANISATION_UNIT"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).OTHER_DOC"
+                                    }
+                                ],
+                                "id": "OTHER_DOC",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).OTHER_DOC"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).OTHER_METHOD"
+                                    }
+                                ],
+                                "id": "OTHER_METHOD",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).OTHER_METHOD"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).QUALITY_ASSMNT"
+                                    }
+                                ],
+                                "id": "QUALITY_ASSMNT",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).QUALITY_ASSMNT"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).QUALITY_ASSURE"
+                                    }
+                                ],
+                                "id": "QUALITY_ASSURE",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).QUALITY_ASSURE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).QUALITY_MGMNT"
+                                    }
+                                ],
+                                "id": "QUALITY_MGMNT",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).QUALITY_MGMNT"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).RATIONALE"
+                                    }
+                                ],
+                                "id": "RATIONALE",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).RATIONALE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).REC_USE_LIM"
+                                    }
+                                ],
+                                "id": "REC_USE_LIM",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).REC_USE_LIM"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).REG_AGG"
+                                    }
+                                ],
+                                "id": "REG_AGG",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).REG_AGG"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).REL_CAL_POLICY"
+                                    }
+                                ],
+                                "id": "REL_CAL_POLICY",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).REL_CAL_POLICY"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SDG_CUSTODIAN_AGENCIES"
+                                    }
+                                ],
+                                "id": "SDG_CUSTODIAN_AGENCIES",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_CUSTODIAN_AGENCIES"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SDG_GOAL"
+                                    }
+                                ],
+                                "id": "SDG_GOAL",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_GOAL"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SDG_INDICATOR"
+                                    }
+                                ],
+                                "id": "SDG_INDICATOR",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_INDICATOR"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SDG_INDICATOR_INFO"
+                                    }
+                                ],
+                                "id": "SDG_INDICATOR_INFO",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_INDICATOR_INFO"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SDG_RELATED_INDICATORS"
+                                    }
+                                ],
+                                "id": "SDG_RELATED_INDICATORS",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_RELATED_INDICATORS"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SDG_SERIES_DESCR"
+                                    }
+                                ],
+                                "id": "SDG_SERIES_DESCR",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_SERIES_DESCR"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SDG_TARGET"
+                                    }
+                                ],
+                                "id": "SDG_TARGET",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_TARGET"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SOURCE_TYPE"
+                                    }
+                                ],
+                                "id": "SOURCE_TYPE",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SOURCE_TYPE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SRC_TYPE_COLL_METHOD"
+                                    }
+                                ],
+                                "id": "SRC_TYPE_COLL_METHOD",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SRC_TYPE_COLL_METHOD"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).STAT_CONC_DEF"
+                                    }
+                                ],
+                                "id": "STAT_CONC_DEF",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).STAT_CONC_DEF"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).UNIT_MEASURE"
+                                    }
+                                ],
+                                "id": "UNIT_MEASURE",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).UNIT_MEASURE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).TRANSLATIONS"
+                                    }
+                                ],
+                                "id": "TRANSLATIONS",
+                                "localRepresentation": {},
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).TRANSLATIONS"
+                            }
+                        ]
+                    }
+                }
+            }
+        ]
+    }
+}
