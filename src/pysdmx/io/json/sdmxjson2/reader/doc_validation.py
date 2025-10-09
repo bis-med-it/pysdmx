@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import importlib.resources as pkgres
 import json
 import re
+from importlib import resources
 from typing import Any, Callable, Mapping, Match, Optional
 
 from jsonschema import Draft202012Validator  # type: ignore[import-untyped]
@@ -12,6 +12,7 @@ from jsonschema.exceptions import (  # type: ignore[import-untyped]
     ValidationError,
 )
 from jsonschema.validators import RefResolver  # type: ignore[import-untyped]
+from sdmxschemas.json import sdmx20
 
 from pysdmx import errors
 
@@ -34,17 +35,11 @@ def _infer_message_type(instance: dict[str, Any]) -> str:
 
 def _load_schema(message_type: str) -> tuple[Mapping[str, Any], RefResolver]:
     schema_filename = _SCHEMA_FILES[message_type]
-
-    base = pkgres.files("sdmxschemas.json.sdmx20")
-    resource = base.joinpath(schema_filename)
-
-    with pkgres.as_file(resource) as schema_path:
-        schema = json.loads(schema_path.read_text(encoding="utf-8"))
-        base_uri = schema_path.parent.as_uri() + "/"
-
+    schema_path = resources.files(sdmx20).joinpath(schema_filename)
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    base_uri = schema_path.parent.as_uri() + "/"  # type: ignore[attr-defined]
     schema.setdefault("$id", base_uri + schema_filename)
-    resolver = RefResolver(base_uri=base_uri, referrer=schema)
-    return schema, resolver
+    return schema, RefResolver(base_uri=base_uri, referrer=schema)
 
 
 def validate_sdmx_json(input_str: str) -> None:
