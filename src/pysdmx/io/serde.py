@@ -44,6 +44,7 @@ class Deserializers:
     metadataflows: Deserializer
     metadata_provision_agreement: Deserializer
     metadata_providers: Deserializer
+    msds: Deserializer
 
 
 @dataclass

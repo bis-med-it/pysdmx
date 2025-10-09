@@ -297,6 +297,16 @@ class __BaseRegistryClient:
             StructureType.METADATA_PROVISION_AGREEMENT, agency, id, version
         )
 
+    def _msds_q(self, agency: str, id: str, version: str) -> StructureQuery:
+        return StructureQuery(
+            StructureType.METADATA_STRUCTURE,
+            agency,
+            id,
+            version,
+            detail=StructureDetail.REFERENCE_PARTIAL,
+            references=StructureReference.DESCENDANTS,
+        )
+
 
 class RegistryClient(__BaseRegistryClient):
     """A client to be used to retrieve metadata from the FMR.
@@ -717,6 +727,28 @@ class RegistryClient(__BaseRegistryClient):
         query = super()._reports_q(artefact_type, agency, id, version)
         out = self.__fetch(query)
         return super()._out(out, self.deser.report).reports
+
+    def get_metadata_structures(
+        self,
+        agency: str = "*",
+        id: str = "*",
+        version: str = "+",
+    ) -> Sequence[Dataflow]:
+        """Get the metadata structures (MSD) matching the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the MSD(s).
+            id: The ID of the metadata structure(s) to be returned.
+            version: The version of the metadata structure(s) to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested MSD(s).
+        """
+        query = super()._msds_q(agency, id, version)
+        out = self.__fetch(query)
+        return super()._out(out, self.deser.msds)
 
     def get_metadataflows(
         self,
@@ -1247,6 +1279,28 @@ class AsyncRegistryClient(__BaseRegistryClient):
         query = super()._reports_q(artefact_type, agency, id, version)
         out = await self.__fetch(query)
         return super()._out(out, self.deser.report).reports
+
+    async def get_metadata_structures(
+        self,
+        agency: str = "*",
+        id: str = "*",
+        version: str = "+",
+    ) -> Sequence[Dataflow]:
+        """Get the metadata structures (MSD) matching the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the MSD(s).
+            id: The ID of the metadata structure(s) to be returned.
+            version: The version of the metadata structure(s) to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested MSD(s).
+        """
+        query = super()._msds_q(agency, id, version)
+        out = await self.__fetch(query)
+        return super()._out(out, self.deser.msds)
 
     async def get_metadataflows(
         self,
