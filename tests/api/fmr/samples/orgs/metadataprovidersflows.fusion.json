@@ -1,0 +1,69 @@
+{
+    "meta": {
+        "id": "IREF025411",
+        "test": false,
+        "prepared": "2025-10-09T09:35:43Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0_DEV"
+        }
+    },
+    "MetadataProviderScheme": [
+        {
+            "id": "METADATA_PROVIDERS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.base.MetadataProviderScheme=BIS:METADATA_PROVIDERS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "DATA_PROVIDERS"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": false,
+            "items": [
+                {
+                    "id": "MD",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.MetadataProvider=BIS:METADATA_PROVIDERS(1.0).MD",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Top-level BIS metadata provider"
+                        }
+                    ]
+                },
+                {
+                    "id": "MD_PROVIDER",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.MetadataProvider=BIS:METADATA_PROVIDERS(1.0).MD_PROVIDER",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Metadata Provider (test)"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "MetadataProvisionAgreement": [
+        {
+            "id": "DF_CNF_BIS_MD",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.MetadataProvisionAgreement=BIS:DF_CNF_BIS_MD(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Dataflow Configuration"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isFinal": false,
+            "metadataflowRef": "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=BIS:DF_CNF(1.0)",
+            "metadataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.MetadataProvider=BIS:METADATA_PROVIDERS(1.0).MD",
+            "targets": []
+        }
+    ]
+}

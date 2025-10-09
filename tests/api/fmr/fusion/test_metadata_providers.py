@@ -42,12 +42,12 @@ def body():
         return f.read()
 
 
-# @pytest.fixture
-# def flowbody():
-#     with open(
-#         "tests/api/fmr/samples/orgs/metadataprovidersflows.fusion.json", "rb"
-#     ) as f:
-#         return f.read()
+@pytest.fixture
+def flowbody():
+    with open(
+        "tests/api/fmr/samples/orgs/metadataprovidersflows.fusion.json", "rb"
+    ) as f:
+        return f.read()
 
 
 def test_returns_metadata_providers(respx_mock, fmr, query, body):
@@ -61,6 +61,6 @@ async def test_providers_have_core_info(respx_mock, async_fmr, query, body):
     await checks.check_org_core_info(respx_mock, async_fmr, query, body)
 
 
-# def test_providers_with_flows(respx_mock, fmr, flowquery, flowbody):
-#     """Providers may have a list of dataflows for which they provide data."""
-#     checks.check_with_flows(respx_mock, fmr, flowquery, flowbody)
+def test_providers_with_flows(respx_mock, fmr, flowquery, flowbody):
+    """Metadata providers may have a list of metadataflows."""
+    checks.check_with_flows(respx_mock, fmr, flowquery, flowbody)

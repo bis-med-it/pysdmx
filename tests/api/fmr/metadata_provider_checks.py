@@ -2,7 +2,6 @@ import httpx
 import pytest
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
-from pysdmx.io.format import Format
 from pysdmx.model import MetadataProvider
 
 
@@ -44,23 +43,23 @@ async def check_org_core_info(mock, fmr: AsyncRegistryClient, query, body):
             pytest.fail(f"Unexepcted provider: {prv.id}")
 
 
-# def check_with_flows(mock, fmr, query, body):
-#     """Providers may have flows attached."""
-#     mock.get(query).mock(
-#         return_value=httpx.Response(
-#             200,
-#             content=body,
-#         )
-#     )
+def check_with_flows(mock, fmr, query, body):
+    """Providers may have flows attached."""
+    mock.get(query).mock(
+        return_value=httpx.Response(
+            200,
+            content=body,
+        )
+    )
 
-#     prvs = fmr.get_metadata_providers("BIS", True)
+    prvs = fmr.get_metadata_providers("BIS", True)
 
-#     for prv in prvs:
-#         if prv.id == "TEST":
-#             assert len(prv.dataflows) == 2
-#             for df in prv.dataflows:
-#                 assert df.id in ["DF1", "DF2"]
-#         elif prv.id == "TEST2":
-#             assert len(prv.dataflows) == 0
-#         else:
-#             pytest.fail(f"Unexepcted provider: {prv.id}")
+    for prv in prvs:
+        if prv.id == "MD":
+            assert len(prv.dataflows) == 1
+            for df in prv.dataflows:
+                assert df.id == "DF_CNF"
+        elif prv.id == "MD_PROVIDER":
+            assert len(prv.dataflows) == 0
+        else:
+            pytest.fail(f"Unexepcted provider: {prv.id}")
