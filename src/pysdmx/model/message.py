@@ -38,6 +38,7 @@ from pysdmx.model.metadata import (
     Metadataflow,
     MetadataProvisionAgreement,
     MetadataReport,
+    MetadataStructure,
 )
 from pysdmx.model.organisation import (
     AgencyScheme,
@@ -302,6 +303,10 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
     ) -> List[MetadataProvisionAgreement]:
         """Returns the MetadataProvisionAgreements."""
         return self.__get_elements(MetadataProvisionAgreement)
+
+    def get_metadata_structures(self) -> List[MetadataStructure]:
+        """Returns the MetadataStructures."""
+        return self.__get_elements(MetadataStructure)
 
     def get_structure_maps(self) -> List[StructureMap]:
         """Returns the StructureMaps."""
