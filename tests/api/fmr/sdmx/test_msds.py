@@ -37,12 +37,12 @@ def body():
         return f.read()
 
 
-def test_returns_dataflows(respx_mock, fmr, query, body):
+def test_returns_msds(respx_mock, fmr, query, body):
     """get_metadata_structures should return a collection of MSDs."""
     checks.check_msds(respx_mock, fmr, query, body)
 
 
 @pytest.mark.asyncio
-async def test_returns_dataflows_async(respx_mock, async_fmr, query, body):
+async def test_returns_msds_async(respx_mock, async_fmr, query, body):
     """get_metadata_structures should return a collection of MSDs (async)."""
     await checks.check_msds_async(respx_mock, async_fmr, query, body)
