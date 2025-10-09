@@ -7,7 +7,6 @@ import json
 import re
 from typing import Any, Callable, Mapping, Match, Optional
 
-import sdmxschemas.json.sdmx20 as sdmx20
 from jsonschema import Draft202012Validator  # type: ignore[import-untyped]
 from jsonschema.exceptions import (  # type: ignore[import-untyped]
     ValidationError,
@@ -33,14 +32,14 @@ def _infer_message_type(instance: dict[str, Any]) -> str:
     return next(m for m, f in _SCHEMA_FILES.items() if f in schema_url)  # type: ignore[operator]
 
 
-def _load_schema(
-    message_type: str,
-) -> tuple[Mapping[str, Any], RefResolver]:
+def _load_schema(message_type: str) -> tuple[Mapping[str, Any], RefResolver]:
     schema_filename = _SCHEMA_FILES[message_type]
-    with pkgres.as_file(pkgres.files(sdmx20)) as base_dir:
-        schema_path = base_dir / schema_filename
-        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    base = pkgres.files("sdmxschemas.json.sdmx20")
 
+    with pkgres.as_file(base) as base_dir:
+        schema_path = base_dir / schema_filename
+
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
         base_uri = schema_path.parent.as_uri() + "/"
         schema.setdefault("$id", base_uri + schema_filename)
         resolver = RefResolver(base_uri=base_uri, referrer=schema)
