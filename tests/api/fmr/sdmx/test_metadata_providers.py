@@ -29,7 +29,10 @@ def query(fmr: RegistryClient):
 def flowquery(fmr: RegistryClient):
     res = "/structure/metadataproviderscheme/"
     agency = "BIS"
-    return f"{fmr.api_endpoint}{res}{agency}?references=metadataprovisionagreement"
+    return (
+        f"{fmr.api_endpoint}{res}{agency}"
+        "?references=metadataprovisionagreement"
+    )
 
 
 @pytest.fixture
