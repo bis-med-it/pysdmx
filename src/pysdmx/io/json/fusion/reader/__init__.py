@@ -22,4 +22,5 @@ deserializers = Deserializers(
     transformation_scheme=msg.FusionTransfoMsg,  # type: ignore[arg-type]
     metadataflows=msg.FusionMetadataflowsMessage,  # type: ignore[arg-type]
     metadata_provision_agreement=msg.FusionMetadataProvisionAgreementMessage,  # type: ignore[arg-type]
+    metadata_providers=msg.FusionMetadataProviderMessage,  # type: ignore[arg-type]
 )

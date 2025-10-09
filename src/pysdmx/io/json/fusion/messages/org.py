@@ -6,18 +6,23 @@ from typing import Dict, Optional, Sequence, Set
 from msgspec import Struct
 
 from pysdmx.io.json.fusion.messages.core import FusionString
+from pysdmx.io.json.fusion.messages.mpa import FusionMetadataProvisionAgreement
 from pysdmx.io.json.fusion.messages.pa import FusionProvisionAgreement
 from pysdmx.model import (
     Agency,
     Contact,
     DataflowRef,
     DataProvider,
+    MetadataProvider,
 )
 from pysdmx.model import (
     AgencyScheme as AS,
 )
 from pysdmx.model import (
     DataProviderScheme as DPS,
+)
+from pysdmx.model import (
+    MetadataProviderScheme as MDPS,
 )
 from pysdmx.util import parse_item_urn, parse_urn
 
@@ -187,4 +192,89 @@ class FusionProviderMessage(Struct, frozen=True):
         return [
             p.to_model(self.ProvisionAgreement)
             for p in self.DataProviderScheme
+        ]
+
+
+class FusionMetadataProvider(Struct, frozen=True):
+    """Fusion-JSON payload for a metadata provider."""
+
+    id: str
+    names: Sequence[FusionString]
+    descriptions: Optional[Sequence[FusionString]] = None
+    contacts: Sequence[FusionContact] = ()
+
+    def to_model(self, owner: Optional[str] = None) -> MetadataProvider:
+        """Converts a FusionMetadataProvider to a pysdmx one."""
+        d = self.descriptions[0].value if self.descriptions else None
+        c = tuple([c.to_model() for c in self.contacts])
+        oid = f"{owner}.{self.id}" if owner and owner != "SDMX" else self.id
+        return MetadataProvider(
+            id=oid, name=self.names[0].value, description=d, contacts=c
+        )
+
+
+class FusionMetadataProviderScheme(Struct, frozen=True):
+    """Fusion-JSON payload for a metadata provider scheme."""
+
+    id: str
+    agencyId: str
+    names: Sequence[FusionString] = ()
+    descriptions: Sequence[FusionString] = ()
+    items: Sequence[FusionMetadataProvider] = ()
+
+    def __get_df_ref(self, ref: str) -> DataflowRef:
+        a = parse_urn(ref)
+        return DataflowRef(id=a.id, agency=a.agency, version=a.version)
+
+    def to_model(
+        self, pas: Sequence[FusionMetadataProvisionAgreement]
+    ) -> MDPS:
+        """Converts a FusionProviderScheme to a DataProviderScheme."""
+        if pas:
+            paprs: Dict[str, Set[DataflowRef]] = defaultdict(set)
+            for pa in pas:
+                df = self.__get_df_ref(pa.metadataflowRef)
+                ref = parse_item_urn(pa.metadataproviderRef)
+                paprs[f"{ref.agency}:{ref.item_id}"].add(df)
+            prvs = [o.to_model() for o in self.items]
+            prvs = [
+                MetadataProvider(
+                    id=p.id,
+                    name=p.name,
+                    description=p.description,
+                    contacts=p.contacts,
+                    dataflows=list(paprs[f"{self.agencyId}:{p.id}"]),
+                )
+                for p in prvs
+            ]
+            return MDPS(
+                agency=self.agencyId,
+                name=self.names[0].value,
+                description=(
+                    self.descriptions[0].value if self.descriptions else None
+                ),
+                items=prvs,
+            )
+        else:
+            return MDPS(
+                agency=self.agencyId,
+                name=self.names[0].value,
+                description=(
+                    self.descriptions[0].value if self.descriptions else None
+                ),
+                items=[o.to_model() for o in self.items],
+            )
+
+
+class FusionMetadataProviderMessage(Struct, frozen=True):
+    """Fusion-JSON payload for /metadataproviderscheme queries."""
+
+    MetadataProviderScheme: Sequence[FusionMetadataProviderScheme]
+    MetadataProvisionAgreement: Sequence[FusionMetadataProvisionAgreement] = ()
+
+    def to_model(self) -> Sequence[MDPS]:
+        """Returns the requested list of metadata providers."""
+        return [
+            p.to_model(self.MetadataProvisionAgreement)
+            for p in self.MetadataProviderScheme
         ]
