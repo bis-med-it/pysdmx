@@ -1,6 +1,6 @@
 """Collection of SDMX-JSON schemas for SDMX-REST DSD queries."""
 
-from typing import Dict, List, Literal, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 from msgspec import Struct
 
@@ -27,6 +27,7 @@ from pysdmx.model import (
     DataType,
     Facets,
     ItemReference,
+    MetadataComponent,
     Role,
 )
 from pysdmx.model.dataflow import Group
@@ -73,7 +74,9 @@ def _get_representation(
     return (dt, facets, codes, ab)
 
 
-def _get_concept_reference(component: Component) -> str:
+def _get_concept_reference(
+    component: Union[Component, MetadataComponent]
+) -> str:
     if isinstance(component.concept, ItemReference):
         concept = (
             "urn:sdmx:org.sdmx.infomodel.conceptscheme."
