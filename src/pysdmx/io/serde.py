@@ -43,6 +43,7 @@ class Deserializers:
     transformation_scheme: Deserializer
     metadataflows: Deserializer
     metadata_provision_agreement: Deserializer
+    metadata_providers: Deserializer
 
 
 @dataclass

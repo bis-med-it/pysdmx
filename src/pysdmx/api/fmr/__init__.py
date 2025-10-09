@@ -198,6 +198,18 @@ class __BaseRegistryClient:
             StructureType.DATA_PROVIDER_SCHEME, agency, references=r
         )
 
+    def _metadata_providers_q(
+        self, agency: str, with_flows: bool
+    ) -> StructureQuery:
+        r = (
+            StructureReference.METADATA_PROVISION_AGREEMENT
+            if with_flows
+            else StructureReference.NONE
+        )
+        return StructureQuery(
+            StructureType.METADATA_PROVIDER_SCHEME, agency, references=r
+        )
+
     def _categories_q(
         self, agency: str, id: str, version: str
     ) -> StructureQuery:
@@ -395,6 +407,28 @@ class RegistryClient(__BaseRegistryClient):
         query = super()._providers_q(agency, with_flows)
         out = self.__fetch(query)
         schemes = super()._out(out, self.deser.providers)
+        return schemes[0].items
+
+    def get_metadata_providers(
+        self,
+        agency: str,
+        with_flows: bool = False,
+    ) -> Sequence[DataProvider]:
+        """Get the list of **metadata providers** for the supplied agency.
+
+        Args:
+            agency: The agency maintaining the metadata provider scheme from
+                which metadata providers must be returned.
+            with_flows: Whether the metadata providers should contain the list
+                of metadataflows for which the metadata provider provides
+                metadata reports.
+
+        Returns:
+            The requested list of metadata providers.
+        """
+        query = super()._metadata_providers_q(agency, with_flows)
+        out = self.__fetch(query)
+        schemes = super()._out(out, self.deser.metadata_providers)
         return schemes[0].items
 
     def get_categories(
@@ -898,6 +932,28 @@ class AsyncRegistryClient(__BaseRegistryClient):
         query = super()._providers_q(agency, with_flows)
         out = await self.__fetch(query)
         schemes = super()._out(out, self.deser.providers)
+        return schemes[0].items
+
+    async def get_metadata_providers(
+        self,
+        agency: str,
+        with_flows: bool = False,
+    ) -> Sequence[DataProvider]:
+        """Get the list of **metadata providers** for the supplied agency.
+
+        Args:
+            agency: The agency maintaining the metadata provider scheme from
+                which metadata providers must be returned.
+            with_flows: Whether the metadata providers should contain the list
+                of metadataflows for which the metadata provider provides
+                metadata reports.
+
+        Returns:
+            The requested list of metadata providers.
+        """
+        query = super()._metadata_providers_q(agency, with_flows)
+        out = await self.__fetch(query)
+        schemes = super()._out(out, self.deser.metadata_providers)
         return schemes[0].items
 
     async def get_categories(
