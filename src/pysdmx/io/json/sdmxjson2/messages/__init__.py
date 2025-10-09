@@ -33,8 +33,8 @@ from pysdmx.io.json.sdmxjson2.messages.pa import (
     JsonProvisionAgreementsMessage as JsonPAMessage,
 )
 from pysdmx.io.json.sdmxjson2.messages.provider import (
-    JsonProviderMessage,
     JsonMetadataProviderMessage,
+    JsonProviderMessage,
 )
 from pysdmx.io.json.sdmxjson2.messages.report import JsonMetadataMessage
 from pysdmx.io.json.sdmxjson2.messages.schema import JsonSchemaMessage
