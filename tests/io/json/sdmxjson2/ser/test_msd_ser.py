@@ -105,7 +105,7 @@ def test_msd(msd: MetadataStructure):
     )
     assert cmp1.isPresentational is False
     assert cmp1.minOccurs == 0
-    assert cmp1.maxOccurs == 1
+    assert cmp1.maxOccurs == "unbounded"
 
 
 def test_msd_no_name(msd_no_name):
