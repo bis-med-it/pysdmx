@@ -98,7 +98,7 @@ def _get_concept_reference(
 
 
 def _get_json_representation(
-    comp: Component,
+    comp: Union[Component, MetadataComponent],
 ) -> Optional[JsonRepresentation]:
     enum = comp.local_enum_ref if comp.local_enum_ref else None
     return JsonRepresentation.from_model(

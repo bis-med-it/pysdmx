@@ -49,7 +49,7 @@ class JsonMetadataflow(MaintainableType, frozen=True, omit_defaults=True):
                 f"{df.structure.agency}:{df.structure.id}({df.structure.version})"
             )
         else:
-            dsdref = df.structure
+            dsdref = df.structure  # type: ignore[assignment]
         return JsonMetadataflow(
             agency=(
                 df.agency.id if isinstance(df.agency, Agency) else df.agency

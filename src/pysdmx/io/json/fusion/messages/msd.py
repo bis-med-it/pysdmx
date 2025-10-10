@@ -16,7 +16,6 @@ from pysdmx.io.json.fusion.messages.dsd import (
 )
 from pysdmx.model import (
     ArrayBoundaries,
-    Components,
     MetadataComponent,
 )
 from pysdmx.model import (
@@ -60,7 +59,7 @@ class FusionMetadataAttribute(Struct, frozen=True):
 
         return MetadataComponent(
             self.id,
-            is_presentational=self.presentational,
+            is_presentational=self.presentational,  # type: ignore[arg-type]
             concept=c.to_model(cls),
             local_dtype=dt,
             local_facets=facets,
@@ -89,7 +88,7 @@ class FusionMetadataStructure(
         self,
         cs: Sequence[FusionConceptScheme],
         cls: Sequence[FusionCodelist],
-    ) -> Components:
+    ) -> MSD:
         """Returns the schema for this DSD."""
         return MSD(
             id=self.id,
@@ -115,7 +114,7 @@ class FusionMetadataStructuresMessage(Struct, frozen=True):
         """Returns the requested metadata structures."""
         all_mds = []
         for msd in self.MetadataStructure:
-            cls = []
+            cls: list[FusionCodelist] = []
             cls.extend(self.Codelist)
             cls.extend(self.ValueList)
             all_mds.append(msd.to_model(self.ConceptScheme, cls))

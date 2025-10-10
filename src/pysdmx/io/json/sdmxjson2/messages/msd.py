@@ -22,7 +22,6 @@ from pysdmx.model import (
     Agency,
     ArrayBoundaries,
     Codelist,
-    Component,
     MetadataComponent,
     MetadataStructure,
 )
@@ -84,7 +83,7 @@ class JsonMetadataAttribute(Struct, frozen=True, omit_defaults=True):
 
         min_occurs = cmp.array_def.min_size if cmp.array_def else 0
         if cmp.array_def is None or cmp.array_def.max_size is None:
-            max_occurs = "unbounded"
+            max_occurs: Union[int, Literal["unbounded"]] = "unbounded"
         else:
             max_occurs = cmp.array_def.max_size
 
@@ -106,13 +105,13 @@ class JsonMetadataAttributes(Struct, frozen=True, omit_defaults=True):
 
     def to_model(
         self, cs: Sequence[JsonConceptScheme], cls: Sequence[Codelist]
-    ) -> List[Component]:
+    ) -> List[MetadataComponent]:
         """Returns the list of metadata attributes."""
         return [a.to_model(cs, cls) for a in self.metadataAttributes]
 
     @classmethod
     def from_model(
-        self, attributes: Sequence[Component]
+        self, attributes: Sequence[MetadataComponent]
     ) -> "JsonMetadataAttributes":
         """Converts a pysdmx list of metadata attributes to SDMX-JSON."""
         return JsonMetadataAttributes(
