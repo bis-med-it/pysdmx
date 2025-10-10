@@ -927,14 +927,14 @@
                     "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).COMPILING_ORG",
                     "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COMPILING_ORG",
                     "minOccurs": 0,
-                    "maxOccurs": 1
+                    "maxOccurs": 42
                 },
                 {
                     "id": "CONTACT",
                     "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CONTACT",
                     "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT",
-                    "minOccurs": 0,
-                    "maxOccurs": 1
+                    "minOccurs": 1,
+                    "maxOccurs": "unbounded"
                 },
                 {
                     "id": "CONTACT_EMAIL",

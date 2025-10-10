@@ -56,7 +56,7 @@ def __check_msds(msds: Sequence[MetadataStructure]):
         for cmp in msd.components:
             assert isinstance(cmp, MetadataComponent)
             assert cmp.is_presentational is False
-            assert cmp.array_def is None
+
             assert cmp.enum_ref is None
             assert len(cmp.components) == 0
             assert isinstance(cmp.concept, Concept)
@@ -65,4 +65,14 @@ def __check_msds(msds: Sequence[MetadataStructure]):
                 assert cmp.dtype == DataType.DATE
             else:
                 assert cmp.dtype == DataType.STRING
+            if cmp.id == "COMPILING_ORG":
+                assert cmp.array_def is not None
+                assert cmp.array_def.min_size == 0
+                assert cmp.array_def.max_size == 42
+            elif cmp.id == "CONTACT":
+                assert cmp.array_def is not None
+                assert cmp.array_def.min_size == 1
+                assert cmp.array_def.max_size is None
+            else:
+                assert cmp.array_def is None
             assert cmp.enumeration is None

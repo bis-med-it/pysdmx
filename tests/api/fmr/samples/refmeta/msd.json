@@ -1106,7 +1106,7 @@
                             {
                                 "isPresentational": false,
                                 "minOccurs": 0,
-                                "maxOccurs": 1,
+                                "maxOccurs": 42,
                                 "links": [
                                     {
                                         "rel": "self",
@@ -1121,8 +1121,8 @@
                             },
                             {
                                 "isPresentational": false,
-                                "minOccurs": 0,
-                                "maxOccurs": 1,
+                                "minOccurs": 1,
+                                "maxOccurs": "unbounded",
                                 "links": [
                                     {
                                         "rel": "self",
