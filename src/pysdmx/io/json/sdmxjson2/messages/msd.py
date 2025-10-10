@@ -1,6 +1,6 @@
 """Collection of SDMX-JSON schemas for SDMX-REST MSD queries."""
 
-from typing import List, Literal, Optional, Sequence
+from typing import List, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -36,7 +36,7 @@ class JsonMetadataAttribute(Struct, frozen=True, omit_defaults=True):
     id: str
     conceptIdentity: str
     minOccurs: int
-    maxOccurs: int
+    maxOccurs: Union[int, Literal["unbounded"]]
     isPresentational: bool
     localRepresentation: Optional[JsonRepresentation] = None
 
@@ -58,7 +58,9 @@ class JsonMetadataAttribute(Struct, frozen=True, omit_defaults=True):
         else:
             local_enum_ref = None
 
-        if self.maxOccurs > 1:
+        if self.maxOccurs == "unbounded":
+            ab = ArrayBoundaries(self.minOccurs)
+        elif self.maxOccurs > 1:
             ab = ArrayBoundaries(self.minOccurs, self.maxOccurs)
         else:
             ab = None
@@ -82,7 +84,10 @@ class JsonMetadataAttribute(Struct, frozen=True, omit_defaults=True):
         repr = _get_json_representation(cmp)
 
         min_occurs = cmp.array_def.min_size if cmp.array_def else 0
-        max_occurs = cmp.array_def.max_size if cmp.array_def else 1
+        if cmp.array_def is None or cmp.array_def.max_size is None:
+            max_occurs = "unbounded"
+        else:
+            max_occurs = cmp.array_def.max_size
 
         return JsonMetadataAttribute(
             id=cmp.id,
