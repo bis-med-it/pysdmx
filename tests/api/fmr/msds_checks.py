@@ -57,10 +57,10 @@ def __check_msds(msds: Sequence[MetadataStructure]):
             assert isinstance(cmp, MetadataComponent)
             assert cmp.is_presentational is False
 
-            assert cmp.enum_ref is None
             assert len(cmp.components) == 0
             assert isinstance(cmp.concept, Concept)
             assert cmp.facets is None
+            assert cmp.enumeration is None
             if cmp.id == "META_LAST_UPDATE":
                 assert cmp.dtype == DataType.DATE
             else:
@@ -75,4 +75,10 @@ def __check_msds(msds: Sequence[MetadataStructure]):
                 assert cmp.array_def.max_size is None
             else:
                 assert cmp.array_def is None
-            assert cmp.enumeration is None
+            if cmp.id == "COLL_METHOD":
+                assert cmp.enum_ref == (
+                    "urn:sdmx:org.sdmx.infomodel.codelist.Codelist="
+                    "BIS.MEDIT:MEDAL_INM(1.0)"
+                )
+            else:
+                assert cmp.enum_ref is None

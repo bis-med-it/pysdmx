@@ -1084,7 +1084,12 @@
                                     }
                                 ],
                                 "id": "COLL_METHOD",
-                                "localRepresentation": {},
+                                "localRepresentation": {
+                                    "textFormat": {
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS.MEDIT:MEDAL_INM(1.0)"
+                                },
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COLL_METHOD"
                             },
                             {

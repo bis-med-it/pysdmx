@@ -913,7 +913,13 @@
                     "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).COLL_METHOD",
                     "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COLL_METHOD",
                     "minOccurs": 0,
-                    "maxOccurs": 1
+                    "maxOccurs": 1,
+                    "representation": {
+                        "textFormat": {
+                            "textType": "String"
+                        },
+                        "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS.MEDIT:MEDAL_INM(1.0)"
+                    }
                 },
                 {
                     "id": "COMPARABILITY",
