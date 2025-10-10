@@ -34,8 +34,17 @@ from pysdmx.model.map import (
     RepresentationMap,
     StructureMap,
 )
-from pysdmx.model.metadata import MetadataReport
-from pysdmx.model.organisation import AgencyScheme, DataProviderScheme
+from pysdmx.model.metadata import (
+    Metadataflow,
+    MetadataProvisionAgreement,
+    MetadataReport,
+    MetadataStructure,
+)
+from pysdmx.model.organisation import (
+    AgencyScheme,
+    DataProviderScheme,
+    MetadataProviderScheme,
+)
 from pysdmx.model.submission import SubmissionResult
 from pysdmx.model.vtl import (
     CustomTypeScheme,
@@ -221,6 +230,10 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
         """Returns the Dataflows."""
         return self.__get_elements(Dataflow)
 
+    def get_metadataflows(self) -> List[Metadataflow]:
+        """Returns the MetadataProvisionAgreements."""
+        return self.__get_elements(Metadataflow)
+
     def get_organisation_scheme(self, short_urn: str) -> AgencyScheme:
         """Returns a specific OrganisationScheme."""
         return self.__get_single_structure(AgencyScheme, short_urn)
@@ -280,6 +293,20 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
     def get_provision_agreements(self) -> List[ProvisionAgreement]:
         """Returns the ProvisionAgreements."""
         return self.__get_elements(ProvisionAgreement)
+
+    def get_metadata_provider_schemes(self) -> List[MetadataProviderScheme]:
+        """Returns the MetadataProviderSchemes."""
+        return self.__get_elements(MetadataProviderScheme)
+
+    def get_metadata_provision_agreements(
+        self,
+    ) -> List[MetadataProvisionAgreement]:
+        """Returns the MetadataProvisionAgreements."""
+        return self.__get_elements(MetadataProvisionAgreement)
+
+    def get_metadata_structures(self) -> List[MetadataStructure]:
+        """Returns the MetadataStructures."""
+        return self.__get_elements(MetadataStructure)
 
     def get_structure_maps(self) -> List[StructureMap]:
         """Returns the StructureMaps."""

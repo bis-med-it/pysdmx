@@ -1,0 +1,32 @@
+{
+    "meta": {
+        "id": "IREF959477",
+        "test": false,
+        "prepared": "2025-10-03T12:52:25Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "TEST"
+        }
+    },
+    "Metadataflow": [
+        {
+            "id": "DF_CNF",
+            "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=TEST:DF_CNF(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Dataflow Configuration Settings"
+                }
+            ],
+            "agencyId": "TEST",
+            "version": "1.0",
+            "isFinal": false,
+            "metadataStructureRef": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataStructure=TEST:DF_CNF(1.0)",
+            "targets": [
+                "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=*:*(*)"
+            ]
+        }
+    ]
+}

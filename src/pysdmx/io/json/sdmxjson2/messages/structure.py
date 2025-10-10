@@ -24,8 +24,16 @@ from pysdmx.io.json.sdmxjson2.messages.map import (
     JsonRepresentationMap,
     JsonStructureMap,
 )
+from pysdmx.io.json.sdmxjson2.messages.metadataflow import JsonMetadataflow
+from pysdmx.io.json.sdmxjson2.messages.mpa import (
+    JsonMetadataProvisionAgreement,
+)
+from pysdmx.io.json.sdmxjson2.messages.msd import JsonMetadataStructure
 from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
-from pysdmx.io.json.sdmxjson2.messages.provider import JsonDataProviderScheme
+from pysdmx.io.json.sdmxjson2.messages.provider import (
+    JsonDataProviderScheme,
+    JsonMetadataProviderScheme,
+)
 from pysdmx.io.json.sdmxjson2.messages.vtl import (
     JsonCustomTypeScheme,
     JsonNamePersonalisationScheme,
@@ -50,8 +58,12 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
     hierarchyAssociations: Sequence[JsonHierarchyAssociation] = ()
     agencySchemes: Sequence[JsonAgencyScheme] = ()
     dataProviderSchemes: Sequence[JsonDataProviderScheme] = ()
+    metadataProviderSchemes: Sequence[JsonMetadataProviderScheme] = ()
     dataflows: Sequence[JsonDataflow] = ()
     provisionAgreements: Sequence[JsonProvisionAgreement] = ()
+    metadataflows: Sequence[JsonMetadataflow] = ()
+    metadataProvisionAgreements: Sequence[JsonMetadataProvisionAgreement] = ()
+    metadataStructures: Sequence[JsonMetadataStructure] = ()
     structureMaps: Sequence[JsonStructureMap] = ()
     representationMaps: Sequence[JsonRepresentationMap] = ()
     categorisations: Sequence[JsonCategorisation] = ()
@@ -90,6 +102,14 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             for i in self.dataProviderSchemes
         )
         structures.extend(
+            i.to_model(self.metadataProvisionAgreements)
+            for i in self.metadataProviderSchemes
+        )
+        structures.extend(
+            i.to_model(self.conceptSchemes, self.codelists, self.valueLists)
+            for i in self.metadataStructures
+        )
+        structures.extend(
             i.to_model(
                 self.dataStructures,
                 self.conceptSchemes,
@@ -99,6 +119,10 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             for i in self.dataflows
         )
         structures.extend(i.to_model() for i in self.provisionAgreements)
+        structures.extend(i.to_model() for i in self.metadataflows)
+        structures.extend(
+            i.to_model() for i in self.metadataProvisionAgreements
+        )
         structures.extend(
             i.to_model(self.representationMaps) for i in self.structureMaps
         )

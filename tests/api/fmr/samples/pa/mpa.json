@@ -1,0 +1,39 @@
+{
+    "meta": {
+        "id": "IREF906174",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2025-10-03T11:23:33Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0_DEV"
+        }
+    },
+    "data": {
+        "metadataProvisionAgreements": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "metadataprovisionagreement",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.registry.MetadataProvisionAgreement=TEST:DF_CNF_SDMX_TEST(1.0)"
+                    }
+                ],
+                "id": "DF_CNF_SDMX_TEST",
+                "name": "PAs for Dataflow Processing settings",
+                "names": {
+                    "en": "PAs for Dataflow Processing settings"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "metadataflow": "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=TEST:DF_CNF(1.0)",
+                "metadataProvider": "urn:sdmx:org.sdmx.infomodel.base.MetadataProvider=SDMX:METADATA_PROVIDERS(1.0).TEST",
+                "targets": []
+            }
+        ]
+    }
+}
