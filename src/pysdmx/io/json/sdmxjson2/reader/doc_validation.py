@@ -1,17 +1,16 @@
 """SDMX-JSON document validation against JSON schemas."""
 
-from __future__ import annotations
 
 import json
 import re
 from importlib import resources
+from pathlib import Path
 from typing import Any, Callable, Mapping, Match, Optional
 
 from jsonschema import Draft202012Validator  # type: ignore[import-untyped]
 from jsonschema.exceptions import (  # type: ignore[import-untyped]
     ValidationError,
 )
-from jsonschema.validators import RefResolver  # type: ignore[import-untyped]
 from sdmxschemas.json import sdmx20
 
 from pysdmx import errors
@@ -29,17 +28,19 @@ def _infer_message_type(instance: dict[str, Any]) -> str:
         if isinstance(instance.get("meta"), dict)
         else None
     )
+    return next(m for m, f in _SCHEMA_FILES.items()
+                if schema_url and f in schema_url)
 
-    return next(m for m, f in _SCHEMA_FILES.items() if f in schema_url)  # type: ignore[operator]
 
-
-def _load_schema(message_type: str) -> tuple[Mapping[str, Any], RefResolver]:
+def _load_schema(message_type: str) -> Mapping[str, Any]:
     schema_filename = _SCHEMA_FILES[message_type]
-    schema_path = resources.files(sdmx20).joinpath(schema_filename)
-    schema = json.loads(schema_path.read_text(encoding="utf-8"))
-    base_uri = schema_path.parent.as_uri() + "/"  # type: ignore[attr-defined]
+    schema_trav = resources.files(sdmx20).joinpath(schema_filename)
+    with resources.as_file(schema_trav) as schema_path:
+        schema_path = Path(schema_path)
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        base_uri = schema_path.parent.as_uri() + "/"
     schema.setdefault("$id", base_uri + schema_filename)
-    return schema, RefResolver(base_uri=base_uri, referrer=schema)
+    return schema
 
 
 def validate_sdmx_json(input_str: str) -> None:
@@ -51,11 +52,10 @@ def validate_sdmx_json(input_str: str) -> None:
 
     """
     instance = json.loads(input_str)
-
     message_type = _infer_message_type(instance)
 
-    schema, resolver = _load_schema(message_type)
-    validator = Draft202012Validator(schema, resolver=resolver)
+    schema = _load_schema(message_type)
+    validator = Draft202012Validator(schema)
 
     failures = sorted(
         validator.iter_errors(instance),
