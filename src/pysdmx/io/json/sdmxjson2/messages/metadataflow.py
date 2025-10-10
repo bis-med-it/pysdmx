@@ -4,8 +4,12 @@ from typing import Sequence
 
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import MaintainableType
-from pysdmx.model import Metadataflow
+from pysdmx import errors
+from pysdmx.io.json.sdmxjson2.messages.core import (
+    JsonAnnotation,
+    MaintainableType,
+)
+from pysdmx.model import Agency, Metadataflow, MetadataStructure
 
 
 class JsonMetadataflow(MaintainableType, frozen=True, omit_defaults=True):
@@ -28,6 +32,45 @@ class JsonMetadataflow(MaintainableType, frozen=True, omit_defaults=True):
             is_external_reference=self.isExternalReference,
             valid_from=self.validFrom,
             valid_to=self.validTo,
+        )
+
+    @classmethod
+    def from_model(self, df: Metadataflow) -> "JsonMetadataflow":
+        """Converts a pysdmx metadataflow to an SDMX-JSON one."""
+        if not df.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON metadataflows must have a name",
+                {"metadataflow": df.id},
+            )
+        if not df.structure:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON metadataflows must reference a DSD.",
+                {"metadataflow": df.id},
+            )
+        if isinstance(df.structure, MetadataStructure):
+            dsdref = (
+                "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataStructure="
+                f"{df.structure.agency}:{df.structure.id}({df.structure.version})"
+            )
+        else:
+            dsdref = df.structure
+        return JsonMetadataflow(
+            agency=(
+                df.agency.id if isinstance(df.agency, Agency) else df.agency
+            ),
+            id=df.id,
+            name=df.name,
+            version=df.version,
+            isExternalReference=df.is_external_reference,
+            validFrom=df.valid_from,
+            validTo=df.valid_to,
+            description=df.description,
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in df.annotations]
+            ),
+            structure=dsdref,
         )
 
 
