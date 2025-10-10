@@ -20,4 +20,8 @@ deserializers = Deserializers(
     mapping=msg.FusionMappingMessage,  # type: ignore[arg-type]
     code_map=msg.FusionRepresentationMapMessage,  # type: ignore[arg-type]
     transformation_scheme=msg.FusionTransfoMsg,  # type: ignore[arg-type]
+    metadataflows=msg.FusionMetadataflowsMessage,  # type: ignore[arg-type]
+    metadata_provision_agreement=msg.FusionMetadataProvisionAgreementMessage,  # type: ignore[arg-type]
+    metadata_providers=msg.FusionMetadataProviderMessage,  # type: ignore[arg-type]
+    msds=msg.FusionMetadataStructuresMessage,  # type: ignore[arg-type]
 )
