@@ -33,7 +33,7 @@ def query() -> DataQuery:
 
 @pytest.fixture
 def url(end_point: str, query: DataQuery, version: ApiVersion) -> str:
-    return f"{end_point}{query.get_url(version, True)}"
+    return f"{end_point}{query.get_url(version, True)}/"
 
 
 @pytest.fixture

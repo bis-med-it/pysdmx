@@ -34,7 +34,7 @@ def query() -> RegistrationByIdQuery:
 def url(
     end_point: str, query: RegistrationByIdQuery, version: ApiVersion
 ) -> str:
-    return f"{end_point}{query.get_url(version, True)}"
+    return f"{end_point}{query.get_url(version, True)}/"
 
 
 @pytest.fixture

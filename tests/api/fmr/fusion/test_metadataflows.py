@@ -25,7 +25,7 @@ def query(fmr: RegistryClient) -> str:
     res = "/structure/metadataflow"
     all = "*"
     latest = "+"
-    return f"{fmr.api_endpoint}{res}/{all}/{all}/{latest}"
+    return f"{fmr.api_endpoint}{res}/{all}/{all}/{latest}/"
 
 
 @pytest.fixture

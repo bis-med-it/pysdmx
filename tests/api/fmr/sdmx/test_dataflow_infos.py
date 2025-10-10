@@ -24,7 +24,7 @@ def schema_query(fmr):
     agency = "BIS.CBS"
     id = "CBS"
     version = "1.0"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}/"
 
 
 @pytest.fixture
@@ -33,7 +33,7 @@ def schema_query_no_version(fmr):
     agency = "BIS.CBS"
     id = "CBS"
     version = "+"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}/"
 
 
 @pytest.fixture
