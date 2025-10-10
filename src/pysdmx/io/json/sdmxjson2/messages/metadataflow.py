@@ -43,12 +43,6 @@ class JsonMetadataflow(MaintainableType, frozen=True, omit_defaults=True):
                 "SDMX-JSON metadataflows must have a name",
                 {"metadataflow": df.id},
             )
-        if not df.structure:
-            raise errors.Invalid(
-                "Invalid input",
-                "SDMX-JSON metadataflows must reference a DSD.",
-                {"metadataflow": df.id},
-            )
         if isinstance(df.structure, MetadataStructure):
             dsdref = (
                 "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataStructure="
