@@ -545,5 +545,5 @@ async def test_async_connection_error(respx_mock, gds_async_service):
         await gds_async_service._fetch("/resource", "application/json")
     assert e.value.title == "Connection error"
     assert (
-        "Connection error. Query: " "`https://gds.sdmx.io/resource/`."
+        "Connection error. Query: `https://gds.sdmx.io/resource/`."
     ) in e.value.description
