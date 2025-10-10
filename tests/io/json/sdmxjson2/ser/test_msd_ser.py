@@ -7,6 +7,7 @@ from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.msd import JsonMetadataStructure
 from pysdmx.model import (
     Annotation,
+    ArrayBoundaries,
     Code,
     Codelist,
     Concept,
@@ -35,6 +36,15 @@ def msd():
         local_codes=cl,
         local_enum_ref=f"{_BASE}codelist.Codelist=BIS:CL_FREQ(1.0)",
     )
+    c2 = MetadataComponent(
+        "C2",
+        concept=Concept(
+            "C2",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).C2",
+        ),
+        local_dtype=DataType.INTEGER,
+        array_def=ArrayBoundaries(1, 42),
+    )
     return MetadataStructure(
         "EXR",
         name="Exchange rates",
@@ -45,7 +55,7 @@ def msd():
         is_external_reference=False,
         agency="BIS",
         annotations=[Annotation(type="test")],
-        components=[c1],
+        components=[c1, c2],
     )
 
 
@@ -84,8 +94,9 @@ def test_msd(msd: MetadataStructure):
         len(
             sjson.metadataStructureComponents.metadataAttributeList.metadataAttributes
         )
-        == 1
+        == 2
     )
+
     cmp1 = sjson.metadataStructureComponents.metadataAttributeList.metadataAttributes[
         0
     ]
@@ -106,6 +117,18 @@ def test_msd(msd: MetadataStructure):
     assert cmp1.isPresentational is False
     assert cmp1.minOccurs == 0
     assert cmp1.maxOccurs == "unbounded"
+
+    cmp2 = sjson.metadataStructureComponents.metadataAttributeList.metadataAttributes[
+        1
+    ]
+    assert cmp2.id == "C2"
+    assert cmp2.conceptIdentity == f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).C2"
+    assert cmp2.localRepresentation.format.dataType == DataType.INTEGER.value
+    assert cmp2.localRepresentation.enumerationFormat is None
+    assert cmp2.localRepresentation.enumeration is None
+    assert cmp2.isPresentational is False
+    assert cmp2.minOccurs == 1
+    assert cmp2.maxOccurs == 42
 
 
 def test_msd_no_name(msd_no_name):
