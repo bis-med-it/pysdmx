@@ -3,7 +3,6 @@
 
 import json
 import re
-from importlib import resources
 from pathlib import Path
 from typing import Any, Callable, Mapping, Match, Optional
 
@@ -11,35 +10,28 @@ from jsonschema import Draft202012Validator  # type: ignore[import-untyped]
 from jsonschema.exceptions import (  # type: ignore[import-untyped]
     ValidationError,
 )
-from sdmxschemas.json import sdmx20
+from sdmxschemas import SDMX_JSON_20_DATA_PATH as SCHEMA_PATH_JSON20_DATA
+from sdmxschemas import (
+    SDMX_JSON_20_METADATA_PATH as SCHEMA_PATH_JSON20_METADATA,
+)
+from sdmxschemas import (
+    SDMX_JSON_20_STRUCTURE_PATH as SCHEMA_PATH_JSON20_STRUCTURE,
+)
 
 from pysdmx import errors
 
-_SCHEMA_FILES = {
-    "structure": "sdmx-json-structure-schema.json",
-    "metadata": "sdmx-json-metadata-schema.json",
-    "data": "sdmx-json-data-schema.json",
+_SCHEMA_FILES: Mapping[str, Path] = {
+    "structure": SCHEMA_PATH_JSON20_STRUCTURE,
+    "metadata": SCHEMA_PATH_JSON20_METADATA,
+    "data": SCHEMA_PATH_JSON20_DATA,
 }
 
 
-def _infer_message_type(instance: dict[str, Any]) -> str:
-    schema_url: Optional[str] = (
-        instance.get("meta", {}).get("schema")
-        if isinstance(instance.get("meta"), dict)
-        else None
-    )
-    return next(m for m, f in _SCHEMA_FILES.items()
-                if schema_url and f in schema_url)
-
-
-def _load_schema(message_type: str) -> Mapping[str, Any]:
-    schema_filename = _SCHEMA_FILES[message_type]
-    schema_trav = resources.files(sdmx20).joinpath(schema_filename)
-    with resources.as_file(schema_trav) as schema_path:
-        schema_path = Path(schema_path)
-        schema = json.loads(schema_path.read_text(encoding="utf-8"))
-        base_uri = schema_path.parent.as_uri() + "/"
-    schema.setdefault("$id", base_uri + schema_filename)
+def _schema_for(instance: Mapping[str, Any]) -> dict[str, Any]:
+    schema_url = instance.get("meta", {}).get("schema")
+    p = next(p for p in _SCHEMA_FILES.values() if p.name in schema_url)
+    with p.open("r", encoding="utf-8") as f:
+        schema = json.load(f)
     return schema
 
 
@@ -52,9 +44,7 @@ def validate_sdmx_json(input_str: str) -> None:
 
     """
     instance = json.loads(input_str)
-    message_type = _infer_message_type(instance)
-
-    schema = _load_schema(message_type)
+    schema = _schema_for(instance)
     validator = Draft202012Validator(schema)
 
     failures = sorted(
