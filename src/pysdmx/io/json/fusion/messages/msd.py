@@ -1,6 +1,6 @@
 """Collection of Fusion-JSON schemas for SDMX-REST schema queries."""
 
-from typing import Optional, Sequence
+from typing import Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -28,7 +28,7 @@ class FusionMetadataAttribute(Struct, frozen=True):
     id: str
     concept: str
     minOccurs: int
-    maxOccurs: int
+    maxOccurs: Union[int, Literal["unbounded"]]
     presentational: Optional[bool] = False
     representation: Optional[FusionRepresentation] = None
     metadataAttributes: Sequence["FusionMetadataAttribute"] = ()
@@ -49,7 +49,9 @@ class FusionMetadataAttribute(Struct, frozen=True):
         else:
             local_enum_ref = None
 
-        if self.maxOccurs > 1:
+        if self.maxOccurs == "unbounded":
+            ab = ArrayBoundaries(self.minOccurs)
+        elif self.maxOccurs > 1:
             ab = ArrayBoundaries(self.minOccurs, self.maxOccurs)
         else:
             ab = None
