@@ -88,18 +88,12 @@ def test_msd(msd: MetadataStructure):
     assert len(sjson.annotations) == 1
 
     # Check the components
-    assert sjson.metadataStructureComponents is not None
-    assert sjson.metadataStructureComponents.metadataAttributeList is not None
-    assert (
-        len(
-            sjson.metadataStructureComponents.metadataAttributeList.metadataAttributes
-        )
-        == 2
-    )
+    msc = sjson.metadataStructureComponents
+    assert msc is not None
+    assert msc.metadataAttributeList is not None
+    assert len(msc.metadataAttributeList.metadataAttributes) == 2
 
-    cmp1 = sjson.metadataStructureComponents.metadataAttributeList.metadataAttributes[
-        0
-    ]
+    cmp1 = msc.metadataAttributeList.metadataAttributes[0]
     assert cmp1.id == "FREQ"
     assert (
         cmp1.conceptIdentity == f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).FREQ"
@@ -118,9 +112,7 @@ def test_msd(msd: MetadataStructure):
     assert cmp1.minOccurs == 0
     assert cmp1.maxOccurs == "unbounded"
 
-    cmp2 = sjson.metadataStructureComponents.metadataAttributeList.metadataAttributes[
-        1
-    ]
+    cmp2 = msc.metadataAttributeList.metadataAttributes[1]
     assert cmp2.id == "C2"
     assert cmp2.conceptIdentity == f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).C2"
     assert cmp2.localRepresentation.format.dataType == DataType.INTEGER.value
