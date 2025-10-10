@@ -1,0 +1,31 @@
+{
+    "meta": {
+        "id": "IREF916404",
+        "test": false,
+        "prepared": "2025-10-03T11:40:42Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "TEST"
+        }
+    },
+    "MetadataProvisionAgreement": [
+        {
+            "id": "DF_CNF_SDMX_TEST",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.MetadataProvisionAgreement=TEST:DF_CNF_SDMX_TEST(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "PAs for Dataflow Processing settings"
+                }
+            ],
+            "agencyId": "TEST",
+            "version": "1.0",
+            "isFinal": false,
+            "metadataflowRef": "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=TEST:DF_CNF(1.0)",
+            "metadataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.MetadataProvider=SDMX:METADATA_PROVIDERS(1.0).TEST",
+            "targets": []
+        }
+    ]
+}

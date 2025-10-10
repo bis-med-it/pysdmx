@@ -1,6 +1,6 @@
-"""Collection of SDMX-JSON schemas for SDMX-REST schema queries."""
+"""Collection of SDMX-JSON schemas for SDMX-REST DSD queries."""
 
-from typing import Dict, List, Literal, Optional, Sequence, Tuple
+from typing import Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 from msgspec import Struct
 
@@ -27,6 +27,7 @@ from pysdmx.model import (
     DataType,
     Facets,
     ItemReference,
+    MetadataComponent,
     Role,
 )
 from pysdmx.model.dataflow import Group
@@ -43,7 +44,7 @@ def _find_concept(cs: Sequence[JsonConceptScheme], urn: str) -> JsonConcept:
     return [c for c in f[0].concepts if c.id == r.item_id][0]
 
 
-def __get_type(repr_: JsonRepresentation) -> Optional[str]:
+def _get_type(repr_: JsonRepresentation) -> Optional[str]:
     t: Optional[str] = None
     if repr_.enumerationFormat:
         t = repr_.enumerationFormat.dataType
@@ -67,13 +68,15 @@ def _get_representation(
 ]:
     valid = cons.get(id_, [])
     codes = local.to_enumeration(cls, valid) if local else None
-    dt = DataType(__get_type(local)) if local else None
+    dt = DataType(_get_type(local)) if local else None
     facets = local.to_facets() if local else None
     ab = local.to_array_def() if local else None
     return (dt, facets, codes, ab)
 
 
-def _get_concept_reference(component: Component) -> str:
+def _get_concept_reference(
+    component: Union[Component, MetadataComponent]
+) -> str:
     if isinstance(component.concept, ItemReference):
         concept = (
             "urn:sdmx:org.sdmx.infomodel.conceptscheme."
@@ -95,7 +98,7 @@ def _get_concept_reference(component: Component) -> str:
 
 
 def _get_json_representation(
-    comp: Component,
+    comp: Union[Component, MetadataComponent],
 ) -> Optional[JsonRepresentation]:
     enum = comp.local_enum_ref if comp.local_enum_ref else None
     return JsonRepresentation.from_model(

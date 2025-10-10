@@ -248,7 +248,7 @@ class FusionDataStructure(Struct, frozen=True, rename={"agency": "agencyId"}):
     measures: Sequence[FusionMeasure] = ()
     attributeList: Optional[FusionAttributes] = None
     groups: Sequence[FusionGroup] = ()
-    description: Optional[Sequence[FusionString]] = None
+    descriptions: Optional[Sequence[FusionString]] = None
     version: str = "1.0"
 
     def get_components(
