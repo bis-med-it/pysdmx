@@ -36,6 +36,7 @@ def test_structure_reader(body):
     assert len(msg.get_metadataflows()) == 0
     assert len(msg.get_metadata_provider_schemes()) == 0
     assert len(msg.get_metadata_provision_agreements()) == 0
+    assert len(msg.get_metadata_structures()) == 1
     assert len(msg.get_vtl_mapping_schemes()) == 2
     assert len(msg.get_ruleset_schemes()) == 1
     assert len(msg.get_transformation_schemes()) == 1
