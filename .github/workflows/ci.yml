@@ -32,7 +32,7 @@ jobs:
     - name: Install dependencies
       run: poetry install --all-extras
     - name: Check compliance with code formatting guidelines
-      run: poetry run ruff format --check
+      run: poetry run ruff format --no-cache --check
     - name: Run lint checks
       run: poetry run ruff check --output-format=github
     - name: Run type checks
