@@ -37,7 +37,7 @@ def test_url_no_default_updated_before(api_version: ApiVersion):
 def test_url_updated_before(updated_before: datetime, api_version: ApiVersion):
     expected = (
         "/registration/*/*/*/*"
-        f'?updatedBefore={updated_before.isoformat("T", "seconds")}'
+        f"?updatedBefore={updated_before.isoformat('T', 'seconds')}"
     )
 
     q = RegistrationByContextQuery(updated_before=updated_before)
@@ -56,8 +56,8 @@ def test_url_updated_before_and_after(
 ):
     expected = (
         "/registration/*/*/*/*"
-        f'?updatedBefore={updated_before.isoformat("T", "seconds")}'
-        f'&updatedAfter={updated_after.isoformat("T", "seconds")}'
+        f"?updatedBefore={updated_before.isoformat('T', 'seconds')}"
+        f"&updatedAfter={updated_after.isoformat('T', 'seconds')}"
     )
 
     q = RegistrationByContextQuery(
@@ -76,7 +76,7 @@ def test_url_omit_defaults_updated_before(
 ):
     expected = (
         "/registration"
-        f'?updatedBefore={updated_before.isoformat("T", "seconds")}'
+        f"?updatedBefore={updated_before.isoformat('T', 'seconds')}"
     )
 
     q = RegistrationByContextQuery(updated_before=updated_before)

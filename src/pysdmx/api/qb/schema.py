@@ -101,10 +101,7 @@ class SchemaQuery(CoreQuery, frozen=True, omit_defaults=True):
         self.__check_deletion(version)
 
     def _create_full_query(self, ver: ApiVersion) -> str:
-        u = (
-            f"/schema/{self.context.value}/"
-            f"{self.agency_id}/{self.resource_id}"
-        )
+        u = f"/schema/{self.context.value}/{self.agency_id}/{self.resource_id}"
         u += f"/{self._to_kw(self.version, ver)}"
         if (
             self.obs_dimension
@@ -122,7 +119,7 @@ class SchemaQuery(CoreQuery, frozen=True, omit_defaults=True):
         if self.as_of:
             if self.obs_dimension:
                 u += "&"
-            u += f'asOf={self.as_of.isoformat("T", "seconds")}'
+            u += f"asOf={self.as_of.isoformat('T', 'seconds')}"
         if ver >= ApiVersion.V2_2_0:
             if self.obs_dimension or self.as_of:
                 u += "&"
@@ -130,10 +127,7 @@ class SchemaQuery(CoreQuery, frozen=True, omit_defaults=True):
         return u
 
     def _create_short_query(self, ver: ApiVersion) -> str:
-        u = (
-            f"/schema/{self.context.value}/"
-            f"{self.agency_id}/{self.resource_id}"
-        )
+        u = f"/schema/{self.context.value}/{self.agency_id}/{self.resource_id}"
         if self.version != REST_LATEST:
             u += f"/{self._to_kw(self.version, ver)}"
         if self.obs_dimension or self.explicit or self.as_of or self.deletion:
@@ -147,7 +141,7 @@ class SchemaQuery(CoreQuery, frozen=True, omit_defaults=True):
         if self.as_of:
             if self.obs_dimension:
                 u += "&"
-            u += f'asOf={self.as_of.isoformat("T", "seconds")}'
+            u += f"asOf={self.as_of.isoformat('T', 'seconds')}"
         if self.deletion:
             if self.obs_dimension or self.as_of:
                 u += "&"

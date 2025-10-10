@@ -433,7 +433,7 @@ class StructureQuery(CoreQuery, frozen=True, omit_defaults=True):
         u += f"/{i}" if all(ck) else ""
         u += f"?detail={self.detail.value}&references={self.references.value}"
         if self.as_of:
-            u += f'&asOf={self.as_of.isoformat("T", "seconds")}'
+            u += f"&asOf={self.as_of.isoformat('T', 'seconds')}"
         return u
 
     def _create_short_query(self, ver: ApiVersion) -> str:
@@ -492,7 +492,7 @@ class StructureQuery(CoreQuery, frozen=True, omit_defaults=True):
             else ""
         )
         u += (
-            f'asOf={self.as_of.isoformat("T", "seconds")}'
+            f"asOf={self.as_of.isoformat('T', 'seconds')}"
             if self.as_of
             else ""
         )
