@@ -168,7 +168,7 @@ def process_string_to_read(  # noqa: C901
             try:
                 out_str = ""
                 with httpx_Client(verify=ssl_context) as client:
-                    response = client.get(sdmx_document, timeout=60)
+                    response = client.get(sdmx_document, timeout=60) #alkjsadlkjasdslkjdsalkdjaslkdasjlkdajlkdjaljdkasldjaslkdskla
                     try:
                         response.raise_for_status()
                     except HTTPStatusError as e:
