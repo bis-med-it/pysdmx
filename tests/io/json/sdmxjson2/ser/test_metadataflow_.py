@@ -9,10 +9,10 @@ from pysdmx.model import (
     Agency,
     Annotation,
     Concept,
+    DataType,
     MetadataComponent,
     Metadataflow,
     MetadataStructure,
-    DataType,
 )
 
 _CBS = (

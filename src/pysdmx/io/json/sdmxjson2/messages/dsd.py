@@ -1,6 +1,6 @@
 """Collection of SDMX-JSON schemas for SDMX-REST DSD queries."""
 
-from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Union
+from typing import Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 from msgspec import Struct
 

@@ -18,6 +18,8 @@ from pysdmx.model import (
     ArrayBoundaries,
     Components,
     MetadataComponent,
+)
+from pysdmx.model import (
     MetadataStructure as MSD,
 )
 

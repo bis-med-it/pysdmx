@@ -7,7 +7,6 @@ from msgspec import Struct
 from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist, JsonValuelist
 from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptScheme
-from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
 from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     JsonRepresentation,
@@ -16,8 +15,8 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
 from pysdmx.io.json.sdmxjson2.messages.dsd import (
     _find_concept,
     _get_concept_reference,
-    _get_representation,
     _get_json_representation,
+    _get_representation,
 )
 from pysdmx.model import (
     Agency,

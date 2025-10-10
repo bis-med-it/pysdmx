@@ -1,4 +1,5 @@
 from typing import Sequence
+
 import httpx
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
