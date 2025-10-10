@@ -336,6 +336,16 @@ class _CoreGdsRestService:
             raise errors.Unavailable("Connection error", msg) from e
 
 
+def _add_query_slash(query: str) -> str:
+    if (
+            "?" not in query
+            and "#" not in query
+            and not query.endswith("/")
+    ):
+        query += "/"
+    return query
+
+
 class GdsRestService(_CoreGdsRestService):
     """Synchronous GDS-REST service."""
 
@@ -344,12 +354,7 @@ class GdsRestService(_CoreGdsRestService):
             verify=self._ssl_context, follow_redirects=True
         ) as client:
             try:
-                if (
-                    "?" not in query
-                    and "#" not in query
-                    and not query.endswith("/")
-                ):
-                    query += "/"
+                query = _add_query_slash(query)
 
                 url = f"{self._api_endpoint}{query}"
                 headers = {**self._headers, "Accept": format_}
@@ -375,12 +380,7 @@ class GdsAsyncRestService(_CoreGdsRestService):
             verify=self._ssl_context, follow_redirects=True
         ) as client:
             try:
-                if (
-                    "?" not in query
-                    and "#" not in query
-                    and not query.endswith("/")
-                ):
-                    query += "/"
+                query = _add_query_slash(query)
 
                 url = f"{self._api_endpoint}{query}"
                 headers = {**self._headers, "Accept": format_}
