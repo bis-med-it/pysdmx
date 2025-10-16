@@ -41,6 +41,8 @@ from pysdmx.model import (
     DataProvider,
     Hierarchy,
     HierarchyAssociation,
+    Metadataflow,
+    MetadataProvisionAgreement,
     MetadataReport,
     MultiRepresentationMap,
     ProvisionAgreement,
@@ -196,6 +198,18 @@ class __BaseRegistryClient:
             StructureType.DATA_PROVIDER_SCHEME, agency, references=r
         )
 
+    def _metadata_providers_q(
+        self, agency: str, with_flows: bool
+    ) -> StructureQuery:
+        r = (
+            StructureReference.METADATA_PROVISION_AGREEMENT
+            if with_flows
+            else StructureReference.NONE
+        )
+        return StructureQuery(
+            StructureType.METADATA_PROVIDER_SCHEME, agency, references=r
+        )
+
     def _categories_q(
         self, agency: str, id: str, version: str
     ) -> StructureQuery:
@@ -271,6 +285,26 @@ class __BaseRegistryClient:
     def _pa_q(self, agency: str, id: str, version: str) -> StructureQuery:
         return StructureQuery(
             StructureType.PROVISION_AGREEMENT, agency, id, version
+        )
+
+    def _metadataflows_q(
+        self, agency: str, id: str, version: str
+    ) -> StructureQuery:
+        return StructureQuery(StructureType.METADATAFLOW, agency, id, version)
+
+    def _mpa_q(self, agency: str, id: str, version: str) -> StructureQuery:
+        return StructureQuery(
+            StructureType.METADATA_PROVISION_AGREEMENT, agency, id, version
+        )
+
+    def _msds_q(self, agency: str, id: str, version: str) -> StructureQuery:
+        return StructureQuery(
+            StructureType.METADATA_STRUCTURE,
+            agency,
+            id,
+            version,
+            detail=StructureDetail.REFERENCE_PARTIAL,
+            references=StructureReference.DESCENDANTS,
         )
 
 
@@ -383,6 +417,28 @@ class RegistryClient(__BaseRegistryClient):
         query = super()._providers_q(agency, with_flows)
         out = self.__fetch(query)
         schemes = super()._out(out, self.deser.providers)
+        return schemes[0].items
+
+    def get_metadata_providers(
+        self,
+        agency: str,
+        with_flows: bool = False,
+    ) -> Sequence[DataProvider]:
+        """Get the list of **metadata providers** for the supplied agency.
+
+        Args:
+            agency: The agency maintaining the metadata provider scheme from
+                which metadata providers must be returned.
+            with_flows: Whether the metadata providers should contain the list
+                of metadataflows for which the metadata provider provides
+                metadata reports.
+
+        Returns:
+            The requested list of metadata providers.
+        """
+        query = super()._metadata_providers_q(agency, with_flows)
+        out = self.__fetch(query)
+        schemes = super()._out(out, self.deser.metadata_providers)
         return schemes[0].items
 
     def get_categories(
@@ -672,6 +728,72 @@ class RegistryClient(__BaseRegistryClient):
         out = self.__fetch(query)
         return super()._out(out, self.deser.report).reports
 
+    def get_metadata_structures(
+        self,
+        agency: str = "*",
+        id: str = "*",
+        version: str = "+",
+    ) -> Sequence[Dataflow]:
+        """Get the metadata structures (MSD) matching the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the MSD(s).
+            id: The ID of the metadata structure(s) to be returned.
+            version: The version of the metadata structure(s) to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested MSD(s).
+        """
+        query = super()._msds_q(agency, id, version)
+        out = self.__fetch(query)
+        return super()._out(out, self.deser.msds)
+
+    def get_metadataflows(
+        self,
+        agency: str = "*",
+        id: str = "*",
+        version: str = "+",
+    ) -> Sequence[Metadataflow]:
+        """Get the metadataflow(s) matching the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the metadataflow(s).
+            id: The ID of the metadataflow(s) to be returned.
+            version: The version of the metadataflow(s) to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested metadataflow(s).
+        """
+        query = super()._metadataflows_q(agency, id, version)
+        out = self.__fetch(query)
+        return super()._out(out, self.deser.metadataflows)
+
+    def get_metadata_provision_agreement(
+        self,
+        agency: str,
+        id: str,
+        version: str = "+",
+    ) -> MetadataProvisionAgreement:
+        """Get the metadata provision agreement matching the parameters.
+
+        Args:
+            agency: The agency maintaining the metadata provision agreement.
+            id: The ID of the metadata provision agreement to be returned.
+            version: The version of the metadata provision agreement to be
+                returned. The most recent version will be returned, unless
+                specified otherwise.
+
+        Returns:
+            The requested metadata provision agreement.
+        """
+        query = super()._mpa_q(agency, id, version)
+        out = self.__fetch(query)
+        return super()._out(out, self.deser.metadata_provision_agreement)[0]
+
     def get_mapping(
         self,
         agency: str,
@@ -842,6 +964,28 @@ class AsyncRegistryClient(__BaseRegistryClient):
         query = super()._providers_q(agency, with_flows)
         out = await self.__fetch(query)
         schemes = super()._out(out, self.deser.providers)
+        return schemes[0].items
+
+    async def get_metadata_providers(
+        self,
+        agency: str,
+        with_flows: bool = False,
+    ) -> Sequence[DataProvider]:
+        """Get the list of **metadata providers** for the supplied agency.
+
+        Args:
+            agency: The agency maintaining the metadata provider scheme from
+                which metadata providers must be returned.
+            with_flows: Whether the metadata providers should contain the list
+                of metadataflows for which the metadata provider provides
+                metadata reports.
+
+        Returns:
+            The requested list of metadata providers.
+        """
+        query = super()._metadata_providers_q(agency, with_flows)
+        out = await self.__fetch(query)
+        schemes = super()._out(out, self.deser.metadata_providers)
         return schemes[0].items
 
     async def get_categories(
@@ -1135,6 +1279,72 @@ class AsyncRegistryClient(__BaseRegistryClient):
         query = super()._reports_q(artefact_type, agency, id, version)
         out = await self.__fetch(query)
         return super()._out(out, self.deser.report).reports
+
+    async def get_metadata_structures(
+        self,
+        agency: str = "*",
+        id: str = "*",
+        version: str = "+",
+    ) -> Sequence[Dataflow]:
+        """Get the metadata structures (MSD) matching the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the MSD(s).
+            id: The ID of the metadata structure(s) to be returned.
+            version: The version of the metadata structure(s) to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested MSD(s).
+        """
+        query = super()._msds_q(agency, id, version)
+        out = await self.__fetch(query)
+        return super()._out(out, self.deser.msds)
+
+    async def get_metadataflows(
+        self,
+        agency: str = "*",
+        id: str = "*",
+        version: str = "+",
+    ) -> Sequence[Metadataflow]:
+        """Get the metadataflow(s) matching the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the metadataflow(s).
+            id: The ID of the metadataflow(s) to be returned.
+            version: The version of the metadataflow(s) to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested metadataflow(s).
+        """
+        query = super()._metadataflows_q(agency, id, version)
+        out = await self.__fetch(query)
+        return super()._out(out, self.deser.metadataflows)
+
+    async def get_metadata_provision_agreement(
+        self,
+        agency: str,
+        id: str,
+        version: str = "+",
+    ) -> MetadataProvisionAgreement:
+        """Get the metadata provision agreement matching the parameters.
+
+        Args:
+            agency: The agency maintaining the metadata provision agreement.
+            id: The ID of the metadata provision agreement to be returned.
+            version: The version of the metadata provision agreement to be
+                returned. The most recent version will be returned, unless
+                specified otherwise.
+
+        Returns:
+            The requested metadata provision agreement.
+        """
+        query = super()._mpa_q(agency, id, version)
+        out = await self.__fetch(query)
+        return super()._out(out, self.deser.metadata_provision_agreement)[0]
 
     async def get_mapping(
         self,

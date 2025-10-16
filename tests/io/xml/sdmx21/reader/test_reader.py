@@ -847,11 +847,11 @@ def test_transformation_scheme_children(samples_folder):
     assert len(udo_scheme.ruleset_schemes) == 1
     assert isinstance(udo_scheme.ruleset_schemes[0], RulesetScheme)
     assert udo_scheme.ruleset_schemes[0].short_urn == (
-        "RulesetScheme=" "MD:TEST-RS(1.0)"
+        "RulesetScheme=MD:TEST-RS(1.0)"
     )
     assert isinstance(udo_scheme.vtl_mapping_scheme, VtlMappingScheme)
     assert udo_scheme.vtl_mapping_scheme.short_urn == (
-        "VtlMappingScheme=" "MD:VMS1(1.0)"
+        "VtlMappingScheme=MD:VMS1(1.0)"
     )
 
 

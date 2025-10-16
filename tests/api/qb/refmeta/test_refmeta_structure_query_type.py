@@ -44,8 +44,7 @@ def test_url_default_type(
     api_version: ApiVersion,
 ):
     expected = (
-        f"/metadata/structure/*/{agency}/{res}/{version}"
-        f"?detail={detail.value}"
+        f"/metadata/structure/*/{agency}/{res}/{version}?detail={detail.value}"
     )
 
     q = RefMetaByStructureQuery(

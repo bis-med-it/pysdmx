@@ -166,13 +166,13 @@ def test_write_sdmx(
         for actual, ref in zip(written_content.data, reference.data):
             actual.data.equals(ref.data), "Data does not match reference."
     elif reference.reports:
-        assert (
-            written_content.reports == reference.reports
-        ), "Metadata reports do not match reference."
+        assert written_content.reports == reference.reports, (
+            "Metadata reports do not match reference."
+        )
     else:
-        assert (
-            written_content.structures == reference.structures
-        ), "Structures do not match reference."
+        assert written_content.structures == reference.structures, (
+            "Structures do not match reference."
+        )
 
 
 @pytest.mark.parametrize(
@@ -244,13 +244,13 @@ def test_write_sdmx_no_output_file(
     assert written_content.header.sender.id == "ZZZ", "Unexpected sender."
     assert written_content is not None, "Written content should not be None."
     if reference.reports:
-        assert (
-            written_content.reports == reference.reports
-        ), "Metadata reports do not match reference."
+        assert written_content.reports == reference.reports, (
+            "Metadata reports do not match reference."
+        )
     else:
-        assert (
-            written_content.structures == reference.structures
-        ), "Structures do not match reference."
+        assert written_content.structures == reference.structures, (
+            "Structures do not match reference."
+        )
 
 
 def test_invalid_format(tmpdir):

@@ -23,10 +23,20 @@ from pysdmx.io.json.sdmxjson2.messages.map import (
     JsonRepresentationMapsMessage,
     JsonStructureMapsMessage,
 )
+from pysdmx.io.json.sdmxjson2.messages.metadataflow import (
+    JsonMetadataflowsMessage as JsonMdfsMsg,
+)
+from pysdmx.io.json.sdmxjson2.messages.mpa import (
+    JsonMetadataProvisionAgreementsMessage as JsonMPAMsg,
+)
+from pysdmx.io.json.sdmxjson2.messages.msd import JsonMetadataStructuresMessage
 from pysdmx.io.json.sdmxjson2.messages.pa import (
     JsonProvisionAgreementsMessage as JsonPAMessage,
 )
-from pysdmx.io.json.sdmxjson2.messages.provider import JsonProviderMessage
+from pysdmx.io.json.sdmxjson2.messages.provider import (
+    JsonMetadataProviderMessage,
+    JsonProviderMessage,
+)
 from pysdmx.io.json.sdmxjson2.messages.report import JsonMetadataMessage
 from pysdmx.io.json.sdmxjson2.messages.schema import JsonSchemaMessage
 from pysdmx.io.json.sdmxjson2.messages.structure import JsonStructureMessage
@@ -43,14 +53,18 @@ __all__ = [
     "JsonDataflowMessage",
     "JsonDataflowsMessage",
     "JsonDataStructuresMessage",
+    "JsonMetadataProviderMessage",
     "JsonProviderMessage",
     "JsonPAMessage",
     "JsonSchemaMessage",
     "JsonHierarchyAssociationMessage",
     "JsonHierarchiesMessage",
     "JsonHierarchyMessage",
+    "JsonMdfsMsg",
     "JsonMetadataMessage",
+    "JsonMPAMsg",
     "JsonMappingMessage",
+    "JsonMetadataStructuresMessage",
     "JsonRepresentationMapMessage",
     "JsonRepresentationMapsMessage",
     "JsonStructureMapsMessage",

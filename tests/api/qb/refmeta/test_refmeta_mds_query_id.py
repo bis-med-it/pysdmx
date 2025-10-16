@@ -63,8 +63,7 @@ def test_url_default_id(
     api_version: ApiVersion,
 ):
     expected = (
-        f"/metadata/metadataset/{provider}/*/{version}"
-        f"?detail={detail.value}"
+        f"/metadata/metadataset/{provider}/*/{version}?detail={detail.value}"
     )
 
     q = RefMetaByMetadatasetQuery(provider, version=version, detail=detail)
