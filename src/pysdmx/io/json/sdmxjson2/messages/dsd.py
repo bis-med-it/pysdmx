@@ -75,7 +75,7 @@ def _get_representation(
 
 
 def _get_concept_reference(
-    component: Union[Component, MetadataComponent]
+    component: Union[Component, MetadataComponent],
 ) -> str:
     if isinstance(component.concept, ItemReference):
         concept = (

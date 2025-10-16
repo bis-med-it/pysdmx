@@ -18,8 +18,7 @@ from pysdmx.model import (
 )
 
 _CBS = (
-    "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure="
-    "BIS:BIS_CBS(1.0)"
+    "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)"
 )
 
 

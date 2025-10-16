@@ -53,8 +53,7 @@ def test_url_attr(
     api_version: ApiVersion,
 ):
     expected = (
-        f"/data/*/*/*/*/*?attributes={attr}&measures=all"
-        "&includeHistory=false"
+        f"/data/*/*/*/*/*?attributes={attr}&measures=all&includeHistory=false"
     )
     q = DataQuery(attributes=attr)
     url = q.get_url(api_version)
