@@ -20,10 +20,12 @@ from pysdmx.model import (
     Codelist,
     Component,
     Components,
+    DataStructureDefinition,
     DataType,
     Facets,
     Role,
 )
+from pysdmx.model.dataflow import Group
 from pysdmx.util import parse_item_urn
 
 
@@ -273,3 +275,59 @@ class FusionDataStructure(Struct, frozen=True, rename={"agency": "agencyId"}):
                 )
             )
         return Components(comps)
+
+    def to_model(
+        self,
+        cs: Sequence[FusionConceptScheme],
+        cls: Sequence[FusionCodelist],
+        vls: Sequence[FusionCodelist],
+        constraints: Sequence[FusionContentConstraint],
+    ) -> DataStructureDefinition:
+        """Map to pysdmx model class."""
+        cmps = self.get_components(cs, cls + vls, constraints)
+        grps = [
+            Group(g.id, dimensions=g.dimensionReferences) for g in self.groups
+        ]
+        return DataStructureDefinition(
+            id=self.id,
+            name=self.names[0].value,
+            agency=self.agency,
+            description=(
+                self.descriptions[0].value if self.descriptions else None
+            ),
+            version=self.version,
+            components=cmps,
+            groups=grps,
+        )
+
+
+class FusionDataStructures(Struct, frozen=True, omit_defaults=True):
+    """Fusion-JSON payload for data structures."""
+
+    dataStructures: Sequence[FusionDataStructure]
+    conceptSchemes: Sequence[FusionConceptScheme] = ()
+    valuelists: Sequence[FusionCodelist] = ()
+    codelists: Sequence[FusionCodelist] = ()
+    contentConstraints: Sequence[FusionContentConstraint] = ()
+
+    def to_model(self) -> Sequence[DataStructureDefinition]:
+        """Returns the requested dsds."""
+        return [
+            dsd.to_model(
+                self.conceptSchemes,
+                self.codelists,
+                self.valuelists,
+                self.contentConstraints,
+            )
+            for dsd in self.dataStructures
+        ]
+
+
+class FusionDataStructuresMessage(Struct, frozen=True, omit_defaults=True):
+    """Fusion-JSON payload for /datastructure queries."""
+
+    data: FusionDataStructures
+
+    def to_model(self) -> Sequence[DataStructureDefinition]:
+        """Returns the requested data structures."""
+        return self.data.to_model()

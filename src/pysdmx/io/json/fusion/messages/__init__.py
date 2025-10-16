@@ -14,6 +14,7 @@ from pysdmx.io.json.fusion.messages.dataflow import (
     FusionDataflowMessage,
     FusionDataflowsMessage,
 )
+from pysdmx.io.json.fusion.messages.dsd import FusionDataStructuresMessage
 from pysdmx.io.json.fusion.messages.map import (
     FusionMappingMessage,
     FusionRepresentationMapMessage,
