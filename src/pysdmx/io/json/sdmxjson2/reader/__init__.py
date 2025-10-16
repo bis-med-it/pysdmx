@@ -24,4 +24,5 @@ deserializers = Deserializers(
     metadata_provision_agreement=msg.JsonMPAMsg,  # type: ignore[arg-type]
     metadata_providers=msg.JsonMetadataProviderMessage,  # type: ignore[arg-type]
     msds=msg.JsonMetadataStructuresMessage,  # type: ignore[arg-type]
+    data_structures=msg.JsonMetadataStructuresMessage,  # type: ignore[arg-type]
 )
