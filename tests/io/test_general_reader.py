@@ -424,10 +424,9 @@ def test_get_json2_data(sdmx_json_data):
 
 def test_json_metadata_wrong(json_meta_failed):
     with pytest.raises(
-        Invalid, match=r"Validation Error: .*unexpected property"
-                       r" 'isFinal'.*missing property 'agencyID'"
-                       r".*does not match required pattern"
+        Invalid,
+        match=r"Validation Error: .*unexpected property"
+        r" 'isFinal'.*missing property 'agencyID'"
+        r".*does not match required pattern",
     ):
         read_sdmx(json_meta_failed)
-
-

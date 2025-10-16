@@ -1,6 +1,5 @@
 """SDMX-JSON document validation against JSON schemas."""
 
-
 import json
 import re
 from pathlib import Path
