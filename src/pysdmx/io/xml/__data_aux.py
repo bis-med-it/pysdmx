@@ -16,7 +16,7 @@ from pysdmx.io.xml.__tokens import (
     STR_USAGE,
     STRUCTURE,
     URN,
-    VERSION,
+    VERSION, PROV_AGREMENT,
 )
 from pysdmx.io.xml.utils import add_list
 from pysdmx.util import parse_urn
@@ -91,9 +91,12 @@ def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
     elif PROV_AGREEMENT in structure:
         structure_type = "ProvisionAgreement"
         tuple_ids = __get_ids_from_structure(structure[PROV_AGREEMENT])
+    elif PROV_AGREMENT in structure:
+        structure_type = "ProvisionAgreement"
+        tuple_ids = __get_ids_from_structure(structure[PROV_AGREMENT])
     else:
-        raise NotImplemented(
-            "Unsupported", "ProvisionAgrement not implemented"
+        raise Invalid(
+            "structure must contain STRUCTURE, STR_USAGE or PROV_AGREEMENT"
         )
     return tuple_ids + (structure_type,)
 

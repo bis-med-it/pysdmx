@@ -190,7 +190,7 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
 
     def __get_single_structure(
         self,
-        type_: Type[Union[ItemScheme, DataStructureDefinition, Dataflow]],
+        type_: Type[Union[ItemScheme, DataStructureDefinition, Dataflow, ProvisionAgreement]],
         short_urn: str,
     ) -> Any:
         """Returns a specific element from content."""
@@ -255,6 +255,10 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
     def get_dataflow(self, short_urn: str) -> Dataflow:
         """Returns a specific Dataflow."""
         return self.__get_single_structure(Dataflow, short_urn)
+
+    def get_provision_agreement(self, short_urn: str) -> ProvisionAgreement:
+        """Returns a specific Provision Agreement."""
+        return self.__get_single_structure(ProvisionAgreement, short_urn)
 
     def get_transformation_schemes(self) -> List[TransformationScheme]:
         """Returns the TransformationSchemes."""

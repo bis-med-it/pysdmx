@@ -188,6 +188,21 @@ def mock_http_client(monkeypatch, structures_path):
     return last
 
 
+@pytest.fixture
+def prov_agreement_structure():
+    base_path = (
+        Path(__file__).parent / "samples" / "prov_agree_structure.xml"
+    )
+    return str(base_path)
+
+
+@pytest.fixture
+def data_prov_agreement():
+    base_path = Path(__file__).parent / "samples" / "data_prov_agree.xml"
+    return str(base_path)
+
+
+
 @pytest.mark.data
 def test_read_sdmx_invalid_extension():
     with pytest.raises(Invalid, match="Cannot parse input as SDMX."):
@@ -412,3 +427,16 @@ def test_get_json2_data(sdmx_json_data):
         NotImplemented, match="This flavour of SDMX-JSON is not supported."
     ):
         read_sdmx(sdmx_json_data)
+
+
+def test_get_datasets_prov_agreement(data_prov_agreement, prov_agreement_structure):
+    result = get_datasets(data_prov_agreement, prov_agreement_structure)
+    assert len(result) == 1
+    dataset = result[0]
+    assert dataset.data is not None
+    assert isinstance(dataset.structure, Schema)
+    assert len(dataset.data) == 1000
+    assert (
+        dataset.structure.short_urn
+        == "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"
+    )
