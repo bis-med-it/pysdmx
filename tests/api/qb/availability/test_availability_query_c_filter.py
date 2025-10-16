@@ -163,8 +163,7 @@ def test_availability_one_text_comp_nc(api_version: ApiVersion):
 def test_availability_one_text_comp_sw(api_version: ApiVersion):
     flt = TextFilter("TITLE", Operator.LIKE, "ICP%")
     expected = (
-        "/availability/*/*/*/*/*/*?c[TITLE]=sw:ICP"
-        "&references=none&mode=exact"
+        "/availability/*/*/*/*/*/*?c[TITLE]=sw:ICP&references=none&mode=exact"
     )
 
     q = AvailabilityQuery(components=flt)
@@ -179,8 +178,7 @@ def test_availability_one_text_comp_sw(api_version: ApiVersion):
 def test_availability_one_text_comp_ew(api_version: ApiVersion):
     flt = TextFilter("TITLE", Operator.LIKE, "%ICP")
     expected = (
-        "/availability/*/*/*/*/*/*?c[TITLE]=ew:ICP"
-        "&references=none&mode=exact"
+        "/availability/*/*/*/*/*/*?c[TITLE]=ew:ICP&references=none&mode=exact"
     )
 
     q = AvailabilityQuery(components=flt)
