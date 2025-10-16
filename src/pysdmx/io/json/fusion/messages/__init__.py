@@ -61,4 +61,5 @@ __all__ = [
     "FusionSchemaMessage",
     "FusionTransfoMsg",
     "FusionPAMessage",
+    "FusionDataStructuresMessage",
 ]
