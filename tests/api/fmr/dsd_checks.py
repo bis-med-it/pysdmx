@@ -12,6 +12,8 @@ def check_dsd(mock, fmr: RegistryClient, query, body):
 
     assert len(mock.calls) == 1
 
+    __check_content(dsds)
+
 
 async def check_dsd_async(mock, fmr: AsyncRegistryClient, query, body):
     """get_data_structures() should return a DSD (async)."""
