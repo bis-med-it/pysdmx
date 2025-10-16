@@ -301,33 +301,23 @@ class FusionDataStructure(Struct, frozen=True, rename={"agency": "agencyId"}):
         )
 
 
-class FusionDataStructures(Struct, frozen=True, omit_defaults=True):
-    """Fusion-JSON payload for data structures."""
-
-    dataStructures: Sequence[FusionDataStructure]
-    conceptSchemes: Sequence[FusionConceptScheme] = ()
-    valuelists: Sequence[FusionCodelist] = ()
-    codelists: Sequence[FusionCodelist] = ()
-    contentConstraints: Sequence[FusionContentConstraint] = ()
-
-    def to_model(self) -> Sequence[DataStructureDefinition]:
-        """Returns the requested dsds."""
-        return [
-            dsd.to_model(
-                self.conceptSchemes,
-                self.codelists,
-                self.valuelists,
-                self.contentConstraints,
-            )
-            for dsd in self.dataStructures
-        ]
-
-
 class FusionDataStructuresMessage(Struct, frozen=True, omit_defaults=True):
     """Fusion-JSON payload for /datastructure queries."""
 
-    data: FusionDataStructures
+    ConceptScheme: Sequence[FusionConceptScheme]
+    DataStructure: Sequence[FusionDataStructure]
+    ValueList: Sequence[FusionCodelist] = ()
+    Codelist: Sequence[FusionCodelist] = ()
+    DataConstraint: Sequence[FusionContentConstraint] = ()
 
     def to_model(self) -> Sequence[DataStructureDefinition]:
         """Returns the requested data structures."""
-        return self.data.to_model()
+        return [
+            dsd.to_model(
+                self.ConceptScheme,
+                self.Codelist,
+                self.ValueList,
+                self.DataConstraint,
+            )
+            for dsd in self.DataStructure
+        ]
