@@ -284,7 +284,10 @@ class FusionDataStructure(Struct, frozen=True, rename={"agency": "agencyId"}):
         constraints: Sequence[FusionContentConstraint],
     ) -> DataStructureDefinition:
         """Map to pysdmx model class."""
-        cmps = self.get_components(cs, cls + vls, constraints)
+        enums: list[FusionCodelist] = []
+        enums.extend(cls)
+        enums.extend(vls)
+        cmps = self.get_components(cs, enums, constraints)
         grps = [
             Group(g.id, dimensions=g.dimensionReferences) for g in self.groups
         ]
