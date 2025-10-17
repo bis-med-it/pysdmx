@@ -93,7 +93,7 @@ lint.mccabe.max-complexity = 10
 lint.pydocstyle.convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["DTZ", "D100", "D103", "D104", "PERF", "S101", "S311"]
+"tests/*" = ["C901", "DTZ", "D100", "D103", "D104", "PERF", "S101", "S311"]
 
 [tool.mypy]
 files = "src"
