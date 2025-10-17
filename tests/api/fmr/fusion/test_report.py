@@ -26,7 +26,7 @@ def query(fmr):
     provider = "BIS.MEDIT"
     id = "DTI_BIS_MACRO"
     version = "1.0"
-    return f"{fmr.api_endpoint}{res}{provider}/{id}/{version}"
+    return f"{fmr.api_endpoint}{res}{provider}/{id}/{version}/"
 
 
 @pytest.fixture
@@ -41,7 +41,7 @@ def query2(fmr):
     provider = "BIS.MEDIT"
     id = "DTI_OCC_SRC"
     version = "1.0"
-    return f"{fmr.api_endpoint}{res}{provider}/{id}/{version}"
+    return f"{fmr.api_endpoint}{res}{provider}/{id}/{version}/"
 
 
 @pytest.fixture
