@@ -26,7 +26,7 @@ def q1(fmr):
     agency = "TEST"
     id = "CTYPES"
     version = "1.0"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}/"
 
 
 @pytest.fixture
@@ -35,7 +35,7 @@ def q2(fmr):
     agency = "TEST"
     id = "CTYPES"
     version = "1.0"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}/"
 
 
 @pytest.fixture

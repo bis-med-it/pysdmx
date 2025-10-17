@@ -26,7 +26,7 @@ def query(fmr):
     provider = "BIS"
     id = "ISO3166-A3_2_CTY"
     version = "1.0"
-    return f"{fmr.api_endpoint}{res}{provider}/{id}/{version}"
+    return f"{fmr.api_endpoint}{res}{provider}/{id}/{version}/"
 
 
 @pytest.fixture
@@ -41,7 +41,7 @@ def multi_query(fmr):
     provider = "BIS"
     id = "CONSOLIDATE_ADDRESS_FIELDS"
     version = "1.42"
-    return f"{fmr.api_endpoint}{res}{provider}/{id}/{version}"
+    return f"{fmr.api_endpoint}{res}{provider}/{id}/{version}/"
 
 
 @pytest.fixture

@@ -33,7 +33,7 @@ def async_fmr() -> AsyncRegistryClient:
 def query(fmr: RegistryClient) -> str:
     res = "/structure/agencyscheme/"
     agency = "BIS"
-    return f"{fmr.api_endpoint}{res}{agency}"
+    return f"{fmr.api_endpoint}{res}{agency}/"
 
 
 @pytest.fixture
