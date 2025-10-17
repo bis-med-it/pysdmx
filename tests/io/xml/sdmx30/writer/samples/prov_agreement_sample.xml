@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Receiver id="Not_Supplied"/>
+		<mes:Source>PySDMX</mes:Source>
+	</mes:Header>
+	<mes:Structures>
+		<str:ProvisionAgreements>
+			<str:ProvisionAgreement id="TEST" version="1.0" isExternalReference="false" agencyID="MD">
+				<com:Name xml:lang="en">Test Provision Agreement</com:Name>
+				<str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD:TEST(1.0)</str:Dataflow>
+				<str:DataProvider>urn:sdmx:org.sdmx.infomodel.base.DataProvider=MD:DATA_PROVIDERS(1.0).MD</str:DataProvider>
+			</str:ProvisionAgreement>
+		</str:ProvisionAgreements>
+	</mes:Structures>
+</mes:Structure>
