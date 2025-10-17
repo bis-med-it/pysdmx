@@ -29,7 +29,7 @@ class FusionMetadataAttribute(Struct, frozen=True):
     id: str
     concept: str
     minOccurs: int
-    maxOccurs: Union[int, Literal["unbounded"]]
+    maxOccurs: Union[int, Literal["unbounded"]] = "unbounded"
     presentational: Optional[bool] = False
     representation: Optional[FusionRepresentation] = None
     metadataAttributes: Sequence["FusionMetadataAttribute"] = ()
