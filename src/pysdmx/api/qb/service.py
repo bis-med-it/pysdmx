@@ -166,8 +166,12 @@ class RestService(_CoreRestService):
         return self.__fetch(q, f)
 
     def __fetch(self, query: str, format: str) -> bytes:
-        with httpx.Client(verify=self._ssl_context) as client:
+        with httpx.Client(
+            verify=self._ssl_context, follow_redirects=True
+        ) as client:
             try:
+                query = _add_query_slash(query)
+
                 url = f"{self._api_endpoint}{query}"
                 h = self._headers.copy()
                 h["Accept"] = format
@@ -282,8 +286,12 @@ class AsyncRestService(_CoreRestService):
         return out
 
     async def __fetch(self, query: str, format: str) -> bytes:
-        async with httpx.AsyncClient(verify=self._ssl_context) as client:
+        async with httpx.AsyncClient(
+            verify=self._ssl_context, follow_redirects=True
+        ) as client:
             try:
+                query = _add_query_slash(query)
+
                 url = f"{self._api_endpoint}{query}"
                 h = self._headers.copy()
                 h["Accept"] = format
@@ -336,12 +344,22 @@ class _CoreGdsRestService:
             raise errors.Unavailable("Connection error", msg) from e
 
 
+def _add_query_slash(query: str) -> str:
+    if "?" not in query and "#" not in query and not query.endswith("/"):
+        query += "/"
+    return query
+
+
 class GdsRestService(_CoreGdsRestService):
     """Synchronous GDS-REST service."""
 
     def _fetch(self, query: str, format_: str) -> bytes:
-        with httpx.Client(verify=self._ssl_context) as client:
+        with httpx.Client(
+            verify=self._ssl_context, follow_redirects=True
+        ) as client:
             try:
+                query = _add_query_slash(query)
+
                 url = f"{self._api_endpoint}{query}"
                 headers = {**self._headers, "Accept": format_}
                 response = client.get(
@@ -362,8 +380,12 @@ class GdsAsyncRestService(_CoreGdsRestService):
     """Asynchronous GDS-REST service."""
 
     async def _fetch(self, query: str, format_: str) -> bytes:
-        async with httpx.AsyncClient(verify=self._ssl_context) as client:
+        async with httpx.AsyncClient(
+            verify=self._ssl_context, follow_redirects=True
+        ) as client:
             try:
+                query = _add_query_slash(query)
+
                 url = f"{self._api_endpoint}{query}"
                 headers = {**self._headers, "Accept": format_}
                 response = await client.get(

@@ -19,7 +19,7 @@ def query(fmr):
     res = "/structure/metadataprovisionagreement/"
     agency = "TEST"
     id = "DF_CNF_SDMX_TEST"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/1.0"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/1.0/"
 
 
 @pytest.fixture

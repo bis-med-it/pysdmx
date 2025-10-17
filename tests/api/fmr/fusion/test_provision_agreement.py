@@ -25,7 +25,7 @@ def query(fmr):
     res = "/structure/provisionagreement/"
     agency = "BIS.CBS"
     id = "CBS_BIS_5B0"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/1.0"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/1.0/"
 
 
 @pytest.fixture
