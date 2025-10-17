@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -190,9 +191,7 @@ def mock_http_client(monkeypatch, structures_path):
 
 @pytest.fixture
 def prov_agreement_structure():
-    base_path = (
-        Path(__file__).parent / "samples" / "prov_agree_structure.xml"
-    )
+    base_path = Path(__file__).parent / "samples" / "prov_agree_structure.xml"
     return str(base_path)
 
 
@@ -201,6 +200,15 @@ def data_prov_agreement():
     base_path = Path(__file__).parent / "samples" / "data_prov_agree.xml"
     return str(base_path)
 
+
+@pytest.fixture
+def prov_agreement_structure_no_dataflow():
+    base_path = (
+        Path(__file__).parent
+        / "samples"
+        / "prov_agree_structure_no_dataflow.xml"
+    )
+    return str(base_path)
 
 
 @pytest.mark.data
@@ -429,14 +437,30 @@ def test_get_json2_data(sdmx_json_data):
         read_sdmx(sdmx_json_data)
 
 
-def test_get_datasets_prov_agreement(data_prov_agreement, prov_agreement_structure):
+def test_get_datasets_prov_agreement(
+    data_prov_agreement, prov_agreement_structure
+):
     result = get_datasets(data_prov_agreement, prov_agreement_structure)
     assert len(result) == 1
     dataset = result[0]
     assert dataset.data is not None
     assert isinstance(dataset.structure, Schema)
-    assert len(dataset.data) == 1000
-    assert (
-        dataset.structure.short_urn
-        == "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"
-    )
+    assert len(dataset.data) == 2
+    assert dataset.structure.short_urn == "ProvisionAgreement=MD:TEST(1.0)"
+
+
+def test_get_datasets_prov_agreement_no_dataflow(
+    data_prov_agreement, prov_agreement_structure_no_dataflow
+):
+    with pytest.raises(
+        Invalid,
+        match=re.escape(
+            "Provision Agreement ProvisionAgreement=MD:TEST(1.0)"
+            " does not have a Dataflow defined."
+        ),
+    ):
+        get_datasets(
+            data_prov_agreement,
+            prov_agreement_structure_no_dataflow,
+            validate=False,
+        )

@@ -5,7 +5,7 @@ from pysdmx.model.message import Message
 from pysdmx.util import parse_urn
 
 
-def schema_generator(message: Message, dataset_ref: Reference) -> Schema:
+def schema_generator(message: Message, dataset_ref: Reference) -> Schema:  # noqa: C901
     """Generates a Schema by resolving the short_urn in the message."""
     context = dataset_ref.sdmx_type.lower()
     if context == "datastructure":
@@ -51,18 +51,20 @@ def schema_generator(message: Message, dataset_ref: Reference) -> Schema:
             prov_agree = message.get_provision_agreement(str(dataset_ref))
         except NotFound:
             raise Invalid(
-                f"Missing Provision Agreement {dataset_ref} in structures message.",
+                f"Missing Provision Agreement {dataset_ref} "
+                f"in structures message.",
             ) from None
         if prov_agree.dataflow is None:
             raise Invalid(
-                f"Provision Agreement {dataset_ref} does not have a structure defined.",
+                f"Provision Agreement {dataset_ref} does not have a "
+                f"Dataflow defined.",
             )
         dfw_ref = parse_urn(prov_agree.dataflow)
         try:
             dataflow = message.get_dataflow(str(dfw_ref))
         except NotFound:
             raise Invalid(
-                f"Missing Dataflow {dataset_ref} in structures message.",
+                f"Missing Dataflow in {dataset_ref} structures message.",
             ) from None
         if dataflow.structure is None:
             raise Invalid(
@@ -74,9 +76,7 @@ def schema_generator(message: Message, dataset_ref: Reference) -> Schema:
         except NotFound:
             raise Invalid(
                 f"Not found referenced DataStructure {dsd_ref}"
-                f"from Dataflow {dataset_ref}. "
-                f"Please send the structures message using "
-                f"references=children to include the DataStructureDefinition.",
+                f" from Provision Agreement {dataset_ref}.",
             ) from None
         return Schema(
             context=context,  # type: ignore[arg-type]

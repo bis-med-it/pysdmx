@@ -190,7 +190,14 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
 
     def __get_single_structure(
         self,
-        type_: Type[Union[ItemScheme, DataStructureDefinition, Dataflow, ProvisionAgreement]],
+        type_: Type[
+            Union[
+                ItemScheme,
+                DataStructureDefinition,
+                Dataflow,
+                ProvisionAgreement,
+            ]
+        ],
         short_urn: str,
     ) -> Any:
         """Returns a specific element from content."""

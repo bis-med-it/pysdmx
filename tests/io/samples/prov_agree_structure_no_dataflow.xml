@@ -860,9 +860,6 @@
                     urn="urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=MD:TEST(1.0)"
                     isExternalReference="false" agencyID="MD" id="TEST" isFinal="false" version="1.0">
                 <com:Name xml:lang="en">TEST</com:Name>
-                <str:StructureUsage>
-                    <Ref package="datastructure" agencyID="BIS" id="WEBSTATS_DER_DATAFLOW" version="1.0" class="Dataflow"/>
-                </str:StructureUsage>
                 <str:DataProvider>
                     <Ref maintainableParentID="DATA_PROVIDERS" package="base" maintainableParentVersion="1.0"
                          agencyID="MD" id="MD" class="DataProvider"/>

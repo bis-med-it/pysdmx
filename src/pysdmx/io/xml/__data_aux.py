@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
-from pysdmx.errors import Invalid, NotImplemented
+from pysdmx.errors import Invalid
 from pysdmx.io.xml.__tokens import (
     AGENCY_ID,
     DATASET,
@@ -10,13 +10,14 @@ from pysdmx.io.xml.__tokens import (
     HEADER,
     ID,
     PROV_AGREEMENT,
+    PROV_AGREMENT,
     REF,
     STR_ID,
     STR_REF,
     STR_USAGE,
     STRUCTURE,
     URN,
-    VERSION, PROV_AGREMENT,
+    VERSION,
 )
 from pysdmx.io.xml.utils import add_list
 from pysdmx.util import parse_urn
@@ -91,13 +92,9 @@ def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
     elif PROV_AGREEMENT in structure:
         structure_type = "ProvisionAgreement"
         tuple_ids = __get_ids_from_structure(structure[PROV_AGREEMENT])
-    elif PROV_AGREMENT in structure:
+    else:
         structure_type = "ProvisionAgreement"
         tuple_ids = __get_ids_from_structure(structure[PROV_AGREMENT])
-    else:
-        raise Invalid(
-            "structure must contain STRUCTURE, STR_USAGE or PROV_AGREEMENT"
-        )
     return tuple_ids + (structure_type,)
 
 
