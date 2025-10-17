@@ -23,7 +23,7 @@ def query(fmr):
     res = "/structure/categorisation/"
     agency = "TEST"
     id = "06E00965-AB55-F0C3-5CA3-9D454F3BE88F"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/1.0"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/1.0/"
 
 
 @pytest.fixture
