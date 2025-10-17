@@ -78,7 +78,7 @@ def data_path_reference(test_path, reference_file):
 
 @pytest.fixture
 def reference(data_path_reference):
-    return read_sdmx(data_path_reference)
+    return read_sdmx(data_path_reference, validate=False)
 
 
 @pytest.fixture
