@@ -1,0 +1,421 @@
+{
+    "meta": {
+        "id": "IREF080955",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2025-10-17T13:34:53Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "FusionRegistry"
+        }
+    },
+    "data": {
+        "metadataStructures": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "metadatastructure",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataStructure=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2)"
+                    }
+                ],
+                "id": "ACQUIS_COMPLIANCE_MSD",
+                "name": "Monitoring of Acquis compliance MSD",
+                "names": {
+                    "en": "Monitoring of Acquis compliance MSD"
+                },
+                "version": "1.2",
+                "agencyID": "ESTAT",
+                "isExternalReference": false,
+                "metadataStructureComponents": {
+                    "metadataAttributeList": {
+                        "id": "MetadataAttributeDescriptor",
+                        "metadataAttributes": [
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": "unbounded",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).CONTACT"
+                                    }
+                                ],
+                                "id": "CONTACT",
+                                "localRepresentation": {
+                                    "textFormat": {
+                                        "textType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).CONTACT",
+                                "metadataAttributes": [
+                                    {
+                                        "isPresentational": false,
+                                        "minOccurs": 0,
+                                        "maxOccurs": "unbounded",
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "metadataattribute",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).CONTACT.CONTACT_ORGANISATION"
+                                            }
+                                        ],
+                                        "id": "CONTACT_ORGANISATION",
+                                        "localRepresentation": {
+                                            "textFormat": {
+                                                "textType": "String"
+                                            }
+                                        },
+                                        "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).CONTACT_ORGANISATION"
+                                    },
+                                    {
+                                        "isPresentational": false,
+                                        "minOccurs": 0,
+                                        "maxOccurs": "unbounded",
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "metadataattribute",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).CONTACT.ORGANISATION_UNIT"
+                                            }
+                                        ],
+                                        "id": "ORGANISATION_UNIT",
+                                        "localRepresentation": {
+                                            "textFormat": {
+                                                "textType": "String"
+                                            }
+                                        },
+                                        "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).ORGANISATION_UNIT"
+                                    },
+                                    {
+                                        "isPresentational": false,
+                                        "minOccurs": 0,
+                                        "maxOccurs": "unbounded",
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "metadataattribute",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).CONTACT.CONTACT_NAME"
+                                            }
+                                        ],
+                                        "id": "CONTACT_NAME",
+                                        "localRepresentation": {
+                                            "textFormat": {
+                                                "textType": "String"
+                                            }
+                                        },
+                                        "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).CONTACT_NAME"
+                                    },
+                                    {
+                                        "isPresentational": false,
+                                        "minOccurs": 0,
+                                        "maxOccurs": "unbounded",
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "metadataattribute",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).CONTACT.CONTACT_EMAIL"
+                                            }
+                                        ],
+                                        "id": "CONTACT_EMAIL",
+                                        "localRepresentation": {
+                                            "textFormat": {
+                                                "textType": "String"
+                                            }
+                                        },
+                                        "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).CONTACT_EMAIL"
+                                    },
+                                    {
+                                        "isPresentational": false,
+                                        "minOccurs": 0,
+                                        "maxOccurs": "unbounded",
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "metadataattribute",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).CONTACT.CONTACT_PHONE"
+                                            }
+                                        ],
+                                        "id": "CONTACT_PHONE",
+                                        "localRepresentation": {
+                                            "textFormat": {
+                                                "textType": "String"
+                                            }
+                                        },
+                                        "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).CONTACT_PHONE"
+                                    }
+                                ]
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": "unbounded",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).SELFASSESSMENT_CTRY"
+                                    }
+                                ],
+                                "id": "SELFASSESSMENT_CTRY",
+                                "localRepresentation": {
+                                    "textFormat": {
+                                        "textType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).SELFASSESSMENT_CTRY",
+                                "metadataAttributes": [
+                                    {
+                                        "isPresentational": false,
+                                        "minOccurs": 0,
+                                        "maxOccurs": "unbounded",
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "metadataattribute",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).SELFASSESSMENT_CTRY.ASSESSMENT"
+                                            }
+                                        ],
+                                        "id": "ASSESSMENT",
+                                        "localRepresentation": {
+                                            "textFormat": {
+                                                "textType": "String"
+                                            }
+                                        },
+                                        "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ASSESSMENT"
+                                    },
+                                    {
+                                        "isPresentational": false,
+                                        "minOccurs": 0,
+                                        "maxOccurs": "unbounded",
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "metadataattribute",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).SELFASSESSMENT_CTRY.ASSESSMENT_COMPLIANCE"
+                                            }
+                                        ],
+                                        "id": "ASSESSMENT_COMPLIANCE",
+                                        "localRepresentation": {
+                                            "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_COMPLIANCE_LEVEL(1.0)"
+                                        },
+                                        "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ASSESSMENT_COMPLIANCE"
+                                    },
+                                    {
+                                        "isPresentational": false,
+                                        "minOccurs": 0,
+                                        "maxOccurs": "unbounded",
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "metadataattribute",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).SELFASSESSMENT_CTRY.ACTION_FORESEEN"
+                                            }
+                                        ],
+                                        "id": "ACTION_FORESEEN",
+                                        "localRepresentation": {
+                                            "textFormat": {
+                                                "textType": "String"
+                                            }
+                                        },
+                                        "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ACTION_FORESEEN"
+                                    },
+                                    {
+                                        "isPresentational": false,
+                                        "minOccurs": 0,
+                                        "maxOccurs": "unbounded",
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "metadataattribute",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).SELFASSESSMENT_CTRY.ASSISTANCE_REQ_CTRY"
+                                            }
+                                        ],
+                                        "id": "ASSISTANCE_REQ_CTRY",
+                                        "localRepresentation": {
+                                            "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_BOOL_INDIC(1.0)"
+                                        },
+                                        "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ASSISTANCE_REQ_CTRY"
+                                    },
+                                    {
+                                        "isPresentational": false,
+                                        "minOccurs": 0,
+                                        "maxOccurs": "unbounded",
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "metadataattribute",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).SELFASSESSMENT_CTRY.ASSISTANCE_COMMENT_CTRY"
+                                            }
+                                        ],
+                                        "id": "ASSISTANCE_COMMENT_CTRY",
+                                        "localRepresentation": {
+                                            "textFormat": {
+                                                "textType": "String"
+                                            }
+                                        },
+                                        "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ASSISTANCE_COMMENT_CTRY"
+                                    }
+                                ]
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": "unbounded",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).EVALUATION_ESTAT"
+                                    }
+                                ],
+                                "id": "EVALUATION_ESTAT",
+                                "localRepresentation": {
+                                    "textFormat": {
+                                        "textType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).EVALUATION_ESTAT",
+                                "metadataAttributes": [
+                                    {
+                                        "isPresentational": false,
+                                        "minOccurs": 0,
+                                        "maxOccurs": "unbounded",
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "metadataattribute",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).EVALUATION_ESTAT.EVALUATION"
+                                            }
+                                        ],
+                                        "id": "EVALUATION",
+                                        "localRepresentation": {
+                                            "textFormat": {
+                                                "textType": "String"
+                                            }
+                                        },
+                                        "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).EVALUATION"
+                                    },
+                                    {
+                                        "isPresentational": false,
+                                        "minOccurs": 0,
+                                        "maxOccurs": "unbounded",
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "metadataattribute",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).EVALUATION_ESTAT.EVALUATION_COMPLIANCE"
+                                            }
+                                        ],
+                                        "id": "EVALUATION_COMPLIANCE",
+                                        "localRepresentation": {
+                                            "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_COMPLIANCE_LEVEL(1.0)"
+                                        },
+                                        "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).EVALUATION_COMPLIANCE"
+                                    },
+                                    {
+                                        "isPresentational": false,
+                                        "minOccurs": 0,
+                                        "maxOccurs": "unbounded",
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "metadataattribute",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).EVALUATION_ESTAT.ACTION_RECOMMENDED"
+                                            }
+                                        ],
+                                        "id": "ACTION_RECOMMENDED",
+                                        "localRepresentation": {
+                                            "textFormat": {
+                                                "textType": "String"
+                                            }
+                                        },
+                                        "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ACTION_RECOMMENDED"
+                                    },
+                                    {
+                                        "isPresentational": false,
+                                        "minOccurs": 0,
+                                        "maxOccurs": "unbounded",
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "metadataattribute",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).EVALUATION_ESTAT.ASSISTANCE_REQ_ESTAT"
+                                            }
+                                        ],
+                                        "id": "ASSISTANCE_REQ_ESTAT",
+                                        "localRepresentation": {
+                                            "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_BOOL_INDIC(1.0)"
+                                        },
+                                        "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ASSISTANCE_REQ_ESTAT"
+                                    },
+                                    {
+                                        "isPresentational": false,
+                                        "minOccurs": 0,
+                                        "maxOccurs": "unbounded",
+                                        "links": [
+                                            {
+                                                "rel": "self",
+                                                "type": "metadataattribute",
+                                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).EVALUATION_ESTAT.ASSISTANCE_COMMENT_ESTAT"
+                                            }
+                                        ],
+                                        "id": "ASSISTANCE_COMMENT_ESTAT",
+                                        "localRepresentation": {
+                                            "textFormat": {
+                                                "textType": "String"
+                                            }
+                                        },
+                                        "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ASSISTANCE_COMMENT_ESTAT"
+                                    }
+                                ]
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": "unbounded",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).COMMENT_DSET"
+                                    }
+                                ],
+                                "id": "COMMENT_DSET",
+                                "localRepresentation": {
+                                    "textFormat": {
+                                        "textType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).COMMENT_DSET"
+                            }
+                        ]
+                    }
+                }
+            }
+        ]
+    }
+}
