@@ -37,6 +37,7 @@ class JsonMetadataAttribute(Struct, frozen=True, omit_defaults=True):
     maxOccurs: Union[int, Literal["unbounded"]]
     isPresentational: bool
     localRepresentation: Optional[JsonRepresentation] = None
+    metadataAttributes: Sequence["JsonMetadataAttribute"] = ()
 
     def to_model(
         self, cs: Sequence[JsonConceptScheme], cls: Sequence[Codelist]
@@ -72,7 +73,7 @@ class JsonMetadataAttribute(Struct, frozen=True, omit_defaults=True):
             local_codes=codes,
             array_def=ab,
             local_enum_ref=local_enum_ref,
-            components=(),
+            components=[a.to_model(cs, cls) for a in self.metadataAttributes],
         )
 
     @classmethod
@@ -94,6 +95,9 @@ class JsonMetadataAttribute(Struct, frozen=True, omit_defaults=True):
             minOccurs=min_occurs,
             maxOccurs=max_occurs,
             isPresentational=cmp.is_presentational,
+            metadataAttributes=[
+                JsonMetadataAttribute.from_model(c) for c in cmp.components
+            ],
         )
 
 
