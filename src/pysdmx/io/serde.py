@@ -41,6 +41,11 @@ class Deserializers:
     mapping: Deserializer
     code_map: Deserializer
     transformation_scheme: Deserializer
+    metadataflows: Deserializer
+    metadata_provision_agreement: Deserializer
+    metadata_providers: Deserializer
+    msds: Deserializer
+    data_structures: Deserializer
 
 
 @dataclass

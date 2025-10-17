@@ -33,7 +33,7 @@ def query() -> SchemaQuery:
 
 @pytest.fixture
 def url(end_point: str, query: SchemaQuery, version: ApiVersion) -> str:
-    return f"{end_point}{query.get_url(version, True)}"
+    return f"{end_point}{query.get_url(version, True)}/"
 
 
 @pytest.fixture

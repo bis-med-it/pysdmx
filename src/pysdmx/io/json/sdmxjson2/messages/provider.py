@@ -9,8 +9,18 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
     JsonAnnotation,
 )
+from pysdmx.io.json.sdmxjson2.messages.mpa import (
+    JsonMetadataProvisionAgreement,
+)
 from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
-from pysdmx.model import Agency, DataflowRef, DataProvider, DataProviderScheme
+from pysdmx.model import (
+    Agency,
+    DataflowRef,
+    DataProvider,
+    DataProviderScheme,
+    MetadataProvider,
+    MetadataProviderScheme,
+)
 from pysdmx.util import parse_item_urn, parse_urn
 
 
@@ -113,4 +123,110 @@ class JsonProviderMessage(Struct, frozen=True, omit_defaults=True):
 
     def to_model(self) -> Sequence[DataProviderScheme]:
         """Returns the requested list of data provider schemes."""
+        return self.data.to_model()
+
+
+class JsonMetadataProviderScheme(
+    ItemSchemeType, frozen=True, omit_defaults=True
+):
+    """SDMX-JSON payload for a metadata provider scheme."""
+
+    metadataProviders: Sequence[MetadataProvider] = ()
+
+    def __get_df_ref(self, ref: str) -> DataflowRef:
+        a = parse_urn(ref)
+        return DataflowRef(id=a.id, agency=a.agency, version=a.version)
+
+    def to_model(
+        self, pas: Sequence[JsonMetadataProvisionAgreement]
+    ) -> MetadataProviderScheme:
+        """Converts a JsonMetadataProviderScheme to a pysdmx one."""
+        if pas:
+            paprs: Dict[str, Set[DataflowRef]] = defaultdict(set)
+            for pa in pas:
+                df = self.__get_df_ref(pa.metadataflow)
+                ref = parse_item_urn(pa.metadataProvider)
+                paprs[f"{ref.agency}:{ref.item_id}"].add(df)
+            provs = [
+                MetadataProvider(
+                    id=p.id,
+                    name=p.name,
+                    description=p.description,
+                    contacts=p.contacts,
+                    dataflows=list(paprs[f"{self.agency}:{p.id}"]),
+                    annotations=tuple(
+                        [a.to_model() for a in self.annotations]
+                    ),
+                )
+                for p in self.metadataProviders
+            ]
+        else:
+            provs = [
+                MetadataProvider(
+                    id=p.id,
+                    name=p.name,
+                    description=p.description,
+                    contacts=p.contacts,
+                    annotations=tuple(
+                        [a.to_model() for a in self.annotations]
+                    ),
+                )
+                for p in self.metadataProviders
+            ]
+        return MetadataProviderScheme(
+            agency=self.agency,
+            description=self.description,
+            items=provs,
+            annotations=[a.to_model() for a in self.annotations],
+            is_external_reference=self.isExternalReference,
+            is_partial=self.isPartial,
+            valid_from=self.validFrom,
+            valid_to=self.validTo,
+        )
+
+    @classmethod
+    def from_model(
+        self, dps: MetadataProviderScheme
+    ) -> "JsonMetadataProviderScheme":
+        """Converts a pysdmx metadata provider scheme to an SDMX-JSON one."""
+        return JsonMetadataProviderScheme(
+            id="METADATA_PROVIDERS",
+            name="METADATA_PROVIDERS",
+            agency=(
+                dps.agency.id if isinstance(dps.agency, Agency) else dps.agency
+            ),
+            description=dps.description,
+            version="1.0",
+            metadataProviders=dps.items,
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in dps.annotations]
+            ),
+            isExternalReference=dps.is_external_reference,
+            isPartial=dps.is_partial,
+            validFrom=dps.valid_from,
+            validTo=dps.valid_to,
+        )
+
+
+class JsonMetadataProviderSchemes(Struct, frozen=True, omit_defaults=True):
+    """SDMX-JSON payload for the list of metadata provider schemes."""
+
+    metadataProviderSchemes: Sequence[JsonMetadataProviderScheme]
+    metadataProvisionAgreements: Sequence[JsonMetadataProvisionAgreement] = ()
+
+    def to_model(self) -> Sequence[MetadataProviderScheme]:
+        """Converts a JsonMetadataProviderSchemes to the pysdmx model."""
+        return [
+            s.to_model(self.metadataProvisionAgreements)
+            for s in self.metadataProviderSchemes
+        ]
+
+
+class JsonMetadataProviderMessage(Struct, frozen=True, omit_defaults=True):
+    """SDMX-JSON payload for /metadataproviderscheme queries."""
+
+    data: JsonMetadataProviderSchemes
+
+    def to_model(self) -> Sequence[MetadataProviderScheme]:
+        """Returns the requested list of metadata provider schemes."""
         return self.data.to_model()

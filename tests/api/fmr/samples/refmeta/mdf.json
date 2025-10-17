@@ -1,0 +1,40 @@
+{
+    "meta": {
+        "id": "IREF851343",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2025-10-03T09:52:15Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0_DEV"
+        }
+    },
+    "data": {
+        "metadataflows": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "metadataflow",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=TEST:DF_CNF(1.0)"
+                    }
+                ],
+                "id": "DF_CNF",
+                "name": "Dataflow Configuration Settings",
+                "names": {
+                    "en": "Dataflow Configuration Settings"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "structure": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataStructure=TEST:DF_CNF(1.0)",
+                "targets": [
+                    "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=*:*(*)"
+                ]
+            }
+        ]
+    }
+}

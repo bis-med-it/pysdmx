@@ -20,10 +20,12 @@ from pysdmx.model import (
     Codelist,
     Component,
     Components,
+    DataStructureDefinition,
     DataType,
     Facets,
     Role,
 )
+from pysdmx.model.dataflow import Group
 from pysdmx.util import parse_item_urn
 
 
@@ -248,7 +250,7 @@ class FusionDataStructure(Struct, frozen=True, rename={"agency": "agencyId"}):
     measures: Sequence[FusionMeasure] = ()
     attributeList: Optional[FusionAttributes] = None
     groups: Sequence[FusionGroup] = ()
-    description: Optional[Sequence[FusionString]] = None
+    descriptions: Optional[Sequence[FusionString]] = None
     version: str = "1.0"
 
     def get_components(
@@ -273,3 +275,52 @@ class FusionDataStructure(Struct, frozen=True, rename={"agency": "agencyId"}):
                 )
             )
         return Components(comps)
+
+    def to_model(
+        self,
+        cs: Sequence[FusionConceptScheme],
+        cls: Sequence[FusionCodelist],
+        vls: Sequence[FusionCodelist],
+        constraints: Sequence[FusionContentConstraint],
+    ) -> DataStructureDefinition:
+        """Map to pysdmx model class."""
+        enums: list[FusionCodelist] = []
+        enums.extend(cls)
+        enums.extend(vls)
+        cmps = self.get_components(cs, enums, constraints)
+        grps = [
+            Group(g.id, dimensions=g.dimensionReferences) for g in self.groups
+        ]
+        return DataStructureDefinition(
+            id=self.id,
+            name=self.names[0].value,
+            agency=self.agency,
+            description=(
+                self.descriptions[0].value if self.descriptions else None
+            ),
+            version=self.version,
+            components=cmps,
+            groups=grps,
+        )
+
+
+class FusionDataStructuresMessage(Struct, frozen=True, omit_defaults=True):
+    """Fusion-JSON payload for /datastructure queries."""
+
+    ConceptScheme: Sequence[FusionConceptScheme]
+    DataStructure: Sequence[FusionDataStructure]
+    ValueList: Sequence[FusionCodelist] = ()
+    Codelist: Sequence[FusionCodelist] = ()
+    DataConstraint: Sequence[FusionContentConstraint] = ()
+
+    def to_model(self) -> Sequence[DataStructureDefinition]:
+        """Returns the requested data structures."""
+        return [
+            dsd.to_model(
+                self.ConceptScheme,
+                self.Codelist,
+                self.ValueList,
+                self.DataConstraint,
+            )
+            for dsd in self.DataStructure
+        ]

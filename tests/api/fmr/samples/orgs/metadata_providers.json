@@ -1,0 +1,69 @@
+{
+    "meta": {
+        "id": "IREF012737",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2025-10-09T09:14:38Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0_DEV"
+        }
+    },
+    "data": {
+        "metadataProviderSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "metadataproviderscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.base.MetadataProviderScheme=BIS:METADATA_PROVIDERS(1.0)"
+                    }
+                ],
+                "id": "METADATA_PROVIDERS",
+                "name": "DATA_PROVIDERS",
+                "names": {
+                    "en": "DATA_PROVIDERS"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": false,
+                "metadataProviders": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "metadataprovider",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.base.MetadataProvider=BIS:METADATA_PROVIDERS(1.0).MD"
+                            }
+                        ],
+                        "id": "MD",
+                        "name": "Top-level metadata provider",
+                        "names": {
+                            "en": "Top-level metadata provider"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "metadataprovider",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.base.MetadataProvider=BIS:METADATA_PROVIDERS(1.0).MD_PROVIDER"
+                            }
+                        ],
+                        "id": "MD_PROVIDER",
+                        "name": "Metadata Provider (test)",
+                        "names": {
+                            "en": "Metadata Provider (test)"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

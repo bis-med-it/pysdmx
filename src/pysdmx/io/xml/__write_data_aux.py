@@ -33,8 +33,7 @@ def check_dimension_at_observation(
         dimension_codes = [dim.id for dim in components.dimensions]
         if value not in dimension_codes:
             raise Invalid(
-                f"Dimension at observation {value} "
-                f"not found in dataset {key}."
+                f"Dimension at observation {value} not found in dataset {key}."
             )
     # Add the missing datasets on mapping with ALL_DIM
     for key in datasets:

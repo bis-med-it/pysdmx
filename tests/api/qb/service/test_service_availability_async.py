@@ -33,7 +33,7 @@ def query() -> AvailabilityQuery:
 
 @pytest.fixture
 def url(end_point: str, query: AvailabilityQuery, version: ApiVersion) -> str:
-    return f"{end_point}{query.get_url(version, True)}"
+    return f"{end_point}{query.get_url(version, True)}/"
 
 
 @pytest.fixture

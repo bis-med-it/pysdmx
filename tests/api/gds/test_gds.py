@@ -121,7 +121,7 @@ def query(gds: GdsClient, endpoint, value, params, resource):
     v = f"/{version}" if version and version != REST_ALL else ""
     r = f"/{resource}{v}" if v or resource and resource != REST_ALL else ""
     a = f"/{value}{r}" if r or value and value != REST_ALL else ""
-    base_query = f"{gds.api_endpoint}/{endpoint}{a}"
+    base_query = f"{gds.api_endpoint}/{endpoint}{a}/"
 
     # Add query parameters for catalog endpoint
     if endpoint == "catalog":
@@ -129,7 +129,7 @@ def query(gds: GdsClient, endpoint, value, params, resource):
             f"{k}={v}" for k, v in params.items() if k != "version"
         )
         final_query = (
-            f"{base_query}/?{query_params}" if (query_params) else base_query
+            f"{base_query}?{query_params}" if (query_params) else base_query
         )
         return final_query
 
@@ -476,7 +476,7 @@ def test_invalid_artefact_type():
 
 def test_not_found(respx_mock, gds_service):
     """Test 404 Not Found error."""
-    url = "https://gds.sdmx.io/agency"
+    url = "https://gds.sdmx.io/agency/"
     respx_mock.get(url).mock(
         return_value=httpx.Response(
             404,
@@ -495,7 +495,7 @@ def test_not_found(respx_mock, gds_service):
 
 def test_client_error(respx_mock, gds_service):
     """Test 400 Client Error."""
-    url = "https://gds.sdmx.io/resource"
+    url = "https://gds.sdmx.io/resource/"
     respx_mock.get(url).mock(
         return_value=httpx.Response(
             400,
@@ -508,14 +508,14 @@ def test_client_error(respx_mock, gds_service):
     assert e.value.title == "Client error 400"
     assert (
         "Client error 400. Query: "
-        "`https://gds.sdmx.io/resource`. "
+        "`https://gds.sdmx.io/resource/`. "
         "Error: `Bad Request`."
     ) in e.value.description
 
 
 def test_service_error(respx_mock, gds_service):
     """Test 500 Internal Server Error."""
-    url = "https://gds.sdmx.io/resource"
+    url = "https://gds.sdmx.io/resource/"
     respx_mock.get(url).mock(
         return_value=httpx.Response(
             500,
@@ -528,7 +528,7 @@ def test_service_error(respx_mock, gds_service):
     assert e.value.title == "Service error 500"
     assert (
         "Service error 500. Query: "
-        "`https://gds.sdmx.io/resource`. "
+        "`https://gds.sdmx.io/resource/`. "
         "Error: `Internal Server Error`."
     ) in e.value.description
 
@@ -536,7 +536,7 @@ def test_service_error(respx_mock, gds_service):
 @pytest.mark.asyncio
 async def test_async_connection_error(respx_mock, gds_async_service):
     """Test connection error (httpx.RequestError) in async fetch."""
-    url = "https://gds.sdmx.io/resource"
+    url = "https://gds.sdmx.io/resource/"
     respx_mock.get(url).mock(
         side_effect=httpx.RequestError("Connection failed")
     )
@@ -545,5 +545,5 @@ async def test_async_connection_error(respx_mock, gds_async_service):
         await gds_async_service._fetch("/resource", "application/json")
     assert e.value.title == "Connection error"
     assert (
-        "Connection error. Query: " "`https://gds.sdmx.io/resource`."
+        "Connection error. Query: `https://gds.sdmx.io/resource/`."
     ) in e.value.description

@@ -14,12 +14,21 @@ from pysdmx.io.json.fusion.messages.dataflow import (
     FusionDataflowMessage,
     FusionDataflowsMessage,
 )
+from pysdmx.io.json.fusion.messages.dsd import FusionDataStructuresMessage
 from pysdmx.io.json.fusion.messages.map import (
     FusionMappingMessage,
     FusionRepresentationMapMessage,
 )
+from pysdmx.io.json.fusion.messages.metadataflow import (
+    FusionMetadataflowsMessage,
+)
+from pysdmx.io.json.fusion.messages.mpa import (
+    FusionMetadataProvisionAgreementMessage,
+)
+from pysdmx.io.json.fusion.messages.msd import FusionMetadataStructuresMessage
 from pysdmx.io.json.fusion.messages.org import (
     FusionAgencyMessage,
+    FusionMetadataProviderMessage,
     FusionProviderMessage,
 )
 from pysdmx.io.json.fusion.messages.pa import (
@@ -41,6 +50,10 @@ __all__ = [
     "FusionDataflowMessage",
     "FusionDataflowsMessage",
     "FusionMappingMessage",
+    "FusionMetadataflowsMessage",
+    "FusionMetadataProviderMessage",
+    "FusionMetadataProvisionAgreementMessage",
+    "FusionMetadataStructuresMessage",
     "FusionRepresentationMapMessage",
     "FusionAgencyMessage",
     "FusionProviderMessage",
@@ -48,4 +61,5 @@ __all__ = [
     "FusionSchemaMessage",
     "FusionTransfoMsg",
     "FusionPAMessage",
+    "FusionDataStructuresMessage",
 ]
