@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mes:Structure xmlns:xml="http://www.w3.org/XML/1998/namespace"
+               xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+               xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+               xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+    <mes:Header>
+        <mes:ID>IREF093890</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2025-09-25T14:09:43Z</mes:Prepared>
+        <mes:Sender id="Unknown"/>
+        <mes:Receiver id="not_supplied"/>
+    </mes:Header>
+    <mes:Structures>
+        <str:ProvisionAgreements>
+            <str:ProvisionAgreement
+                    urn="urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=MD:TEST(1.0)"
+                    isExternalReference="false" agencyID="MD" id="TEST" isFinal="false" version="1.0">
+                <com:Name xml:lang="en">TEST</com:Name>
+                <str:StructureUsage>
+                    <URN>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD:TEST(1.0)</URN>
+                </str:StructureUsage>
+                <str:DataProvider>
+                    <URN>urn:sdmx:org.sdmx.infomodel.base.DataProvider=MD:DATA_PROVIDERS(1.0).MD</URN>
+                </str:DataProvider>
+            </str:ProvisionAgreement>
+        </str:ProvisionAgreements>
+    </mes:Structures>
+</mes:Structure>
