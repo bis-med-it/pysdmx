@@ -307,6 +307,18 @@ class __BaseRegistryClient:
             references=StructureReference.DESCENDANTS,
         )
 
+    def _data_structures_q(
+        self, agency: str, id: str, version: str
+    ) -> StructureQuery:
+        return StructureQuery(
+            StructureType.DATA_STRUCTURE,
+            agency,
+            id,
+            version,
+            detail=StructureDetail.REFERENCE_PARTIAL,
+            references=StructureReference.DESCENDANTS,
+        )
+
 
 class RegistryClient(__BaseRegistryClient):
     """A client to be used to retrieve metadata from the FMR.
@@ -660,6 +672,28 @@ class RegistryClient(__BaseRegistryClient):
         query = super()._dataflows_q(agency, id, version)
         out = self.__fetch(query)
         return super()._out(out, self.deser.dataflows)
+
+    def get_data_structures(
+        self,
+        agency: str = "*",
+        id: str = "*",
+        version: str = "+",
+    ) -> Sequence[Dataflow]:
+        """Get the data structures(s) matching the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the data structures(s).
+            id: The ID of the data structures(s) to be returned.
+            version: The version of the data structures(s) to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested data structures(s).
+        """
+        query = super()._data_structures_q(agency, id, version)
+        out = self.__fetch(query)
+        return super()._out(out, self.deser.data_structures)
 
     def get_hierarchy(
         self,
@@ -1212,6 +1246,28 @@ class AsyncRegistryClient(__BaseRegistryClient):
         query = super()._dataflows_q(agency, id, version)
         out = await self.__fetch(query)
         return super()._out(out, self.deser.dataflows)
+
+    async def get_data_structures(
+        self,
+        agency: str = "*",
+        id: str = "*",
+        version: str = "+",
+    ) -> Sequence[Dataflow]:
+        """Get the data structures(s) matching the supplied parameters.
+
+        Args:
+            agency: The agency maintaining the data structures(s).
+            id: The ID of the data structures(s) to be returned.
+            version: The version of the data structures(s) to be returned.
+                The most recent version will be returned, unless specified
+                otherwise.
+
+        Returns:
+            The requested data structures(s).
+        """
+        query = super()._data_structures_q(agency, id, version)
+        out = await self.__fetch(query)
+        return super()._out(out, self.deser.data_structures)
 
     async def get_hierarchy(
         self,

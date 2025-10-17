@@ -45,6 +45,7 @@ class Deserializers:
     metadata_provision_agreement: Deserializer
     metadata_providers: Deserializer
     msds: Deserializer
+    data_structures: Deserializer
 
 
 @dataclass
