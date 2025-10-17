@@ -24,7 +24,7 @@ def async_fmr():
 def query(fmr: RegistryClient):
     res = "/structure/metadataproviderscheme/"
     agency = "BIS"
-    return f"{fmr.api_endpoint}{res}{agency}"
+    return f"{fmr.api_endpoint}{res}{agency}/"
 
 
 @pytest.fixture

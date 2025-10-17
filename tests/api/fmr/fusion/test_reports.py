@@ -27,7 +27,7 @@ def query(fmr):
     agency = "BIS.MACRO"
     id = "BIS_MACRO"
     version = "1.0"
-    return f"{fmr.api_endpoint}{res}{typ}/{agency}/{id}/{version}"
+    return f"{fmr.api_endpoint}{res}{typ}/{agency}/{id}/{version}/"
 
 
 @pytest.fixture

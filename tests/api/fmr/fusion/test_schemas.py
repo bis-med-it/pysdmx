@@ -28,7 +28,7 @@ def query(fmr):
     agency = "BIS.CBS"
     id = "CBS"
     version = "1.0"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}/"
 
 
 @pytest.fixture
@@ -37,7 +37,7 @@ def query_pra(fmr):
     agency = "BIS.CBS"
     id = "CBS_BIS_GR2"
     version = "1.0"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}/"
 
 
 @pytest.fixture
@@ -94,7 +94,7 @@ def hierarchy_query(fmr):
     agency = "BIS"
     id = "TEST_DF"
     version = "1.0"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}/"
 
 
 @pytest.fixture
@@ -103,7 +103,7 @@ def hierarchy_query_pra(fmr):
     agency = "BIS.CBS"
     id = "CBS_BIS_TEST"
     version = "1.0"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}/"
 
 
 @pytest.fixture
@@ -112,7 +112,7 @@ def no_const_query(fmr):
     agency = "BIS"
     id = "BIS_CBS"
     version = "1.0"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}/"
 
 
 @pytest.fixture

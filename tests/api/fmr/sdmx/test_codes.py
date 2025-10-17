@@ -24,7 +24,7 @@ def query(fmr):
     agency = "SDMX"
     id = "CL_FREQ"
     version = "2.0"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}/"
 
 
 @pytest.fixture
