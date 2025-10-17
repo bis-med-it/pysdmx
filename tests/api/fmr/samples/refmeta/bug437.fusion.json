@@ -1,8 +1,8 @@
 {
     "meta": {
-        "id": "IREF080553",
+        "id": "IREF104001",
         "test": false,
-        "prepared": "2025-10-17T13:34:17Z",
+        "prepared": "2025-10-17T14:13:21Z",
         "contentLanguages": [
             "en"
         ],
@@ -10,6 +10,581 @@
             "id": "FusionRegistry"
         }
     },
+    "AgencyScheme": [
+        {
+            "id": "AGENCIES",
+            "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "SDMX Agency Scheme"
+                }
+            ],
+            "agencyId": "SDMX",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "items": [
+                {
+                    "id": "SDMX",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).SDMX",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "SDMX"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "SDMX is an initiative to foster standards for the exchange of statistical information. It is sponsored by the Bank for International Settlements (BIS), the European Central Bank (ECB), the Statistical Office of the European Union (Eurostat), the International Monetary Fund (IMF), the Organization for Economic Co-Operation and Development (OECD), the United Nations (UN) and the World Bank."
+                        }
+                    ],
+                    "contacts": [
+                        {
+                            "departments": [
+                                {
+                                    "locale": "en",
+                                    "value": "SDMX Secretariat"
+                                }
+                            ],
+                            "roles": [
+                                {
+                                    "locale": "en",
+                                    "value": "Single entry point for external inquiries"
+                                }
+                            ],
+                            "names": [
+                                {
+                                    "locale": "en",
+                                    "value": "SDMX Secretariat"
+                                }
+                            ],
+                            "email": [
+                                "secretariat@sdmx.org"
+                            ],
+                            "uri": [
+                                "http://sdmx.org"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "ESTAT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).ESTAT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Statistical Office of the European Union (Eurostat)"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Eurostat is the statistical office of the European Union situated in Luxembourg. Its task is to provide the European Union with high quality statistics at European level that enable comparisons between countries and regions. Website: http://ec.europa.eu/eurostat/."
+                        }
+                    ],
+                    "contacts": [
+                        {
+                            "departments": [
+                                {
+                                    "locale": "en",
+                                    "value": "Eurostat unit B1"
+                                }
+                            ],
+                            "roles": [
+                                {
+                                    "locale": "en",
+                                    "value": "SDMX Support"
+                                }
+                            ],
+                            "names": [
+                                {
+                                    "locale": "en",
+                                    "value": "SDMX Support"
+                                }
+                            ],
+                            "email": [
+                                "estat-data-metadata-services@ec.europa.eu"
+                            ],
+                            "uri": [
+                                "http://ec.europa.eu/eurostat/"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "Codelist": [
+        {
+            "id": "CL_BOOL_INDIC",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_BOOL_INDIC(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Codelist (Y/N)"
+                }
+            ],
+            "structureURL": "https://webgate.ec.europa.eu/sdmxrr/rest/codelist/ESTAT/CL_BOOL_INDIC/1.0",
+            "agencyId": "ESTAT",
+            "version": "1.0",
+            "isFinal": true,
+            "isPartial": false,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "N",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_BOOL_INDIC(1.0).N",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "No"
+                        }
+                    ]
+                },
+                {
+                    "id": "Y",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_BOOL_INDIC(1.0).Y",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Yes"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_COMPLIANCE_LEVEL",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_COMPLIANCE_LEVEL(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Compliance level"
+                }
+            ],
+            "agencyId": "ESTAT",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": false,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "FULLCOMPLIANCE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COMPLIANCE_LEVEL(1.0).FULLCOMPLIANCE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Full compliance"
+                        }
+                    ]
+                },
+                {
+                    "id": "HIGHCOMPLIANCE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COMPLIANCE_LEVEL(1.0).HIGHCOMPLIANCE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "High compliance"
+                        }
+                    ]
+                },
+                {
+                    "id": "MEDCOMPLIANCE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COMPLIANCE_LEVEL(1.0).MEDCOMPLIANCE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Medium compliance"
+                        }
+                    ]
+                },
+                {
+                    "id": "LOWCOMPLIANCE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COMPLIANCE_LEVEL(1.0).LOWCOMPLIANCE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Low compliance"
+                        }
+                    ]
+                },
+                {
+                    "id": "NCOMPLIANCE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COMPLIANCE_LEVEL(1.0).NCOMPLIANCE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "No compliance at all"
+                        }
+                    ]
+                },
+                {
+                    "id": "_Z",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COMPLIANCE_LEVEL(1.0)._Z",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Not applicable"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "ConceptScheme": [
+        {
+            "id": "CS_COMPLIANCE",
+            "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=ESTAT:CS_COMPLIANCE(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Concepts for Acquis compliance MSD"
+                }
+            ],
+            "descriptions": [
+                {
+                    "locale": "en",
+                    "value": "These concepts are defined in order to be used in customised MSD for Acquis compliance monitoring of enlargement and other non-EU countries"
+                }
+            ],
+            "agencyId": "ESTAT",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "SELFASSESSMENT_CTRY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).SELFASSESSMENT_CTRY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Selfassessment by the country"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Selfassessment by the country"
+                        }
+                    ]
+                },
+                {
+                    "id": "ASSESSMENT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ASSESSMENT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Assessment"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Assessment"
+                        }
+                    ]
+                },
+                {
+                    "id": "ASSESSMENT_COMPLIANCE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ASSESSMENT_COMPLIANCE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Assessment Compliance level"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Assessment Compliance level"
+                        }
+                    ]
+                },
+                {
+                    "id": "ACTION_FORESEEN",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ACTION_FORESEEN",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Further action foreseen"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Further action foreseen"
+                        }
+                    ]
+                },
+                {
+                    "id": "ASSISTANCE_COMMENT_CTRY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ASSISTANCE_COMMENT_CTRY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Assessment - Assistance comments by Country"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Assessment - Assistance comments by Country"
+                        }
+                    ]
+                },
+                {
+                    "id": "EVALUATION_ESTAT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).EVALUATION_ESTAT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Evaluation by Eurostat"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Evaluation by Eurostat"
+                        }
+                    ]
+                },
+                {
+                    "id": "EVALUATION",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).EVALUATION",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Evaluation"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Evaluation"
+                        }
+                    ]
+                },
+                {
+                    "id": "EVALUATION_COMPLIANCE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).EVALUATION_COMPLIANCE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Evaluation Compliance level"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Evaluation Compliance level"
+                        }
+                    ]
+                },
+                {
+                    "id": "ACTION_RECOMMENDED",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ACTION_RECOMMENDED",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Further action recommended"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Further action recommended"
+                        }
+                    ]
+                },
+                {
+                    "id": "ASSISTANCE_REQ_ESTAT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ASSISTANCE_REQ_ESTAT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Evaluation - Assistance required"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Evaluation - Assistance required"
+                        }
+                    ]
+                },
+                {
+                    "id": "ASSISTANCE_REQ_CTRY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ASSISTANCE_REQ_CTRY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Assessment - Assistance required"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Assessment - Assistance required"
+                        }
+                    ]
+                },
+                {
+                    "id": "ASSISTANCE_COMMENT_ESTAT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ASSISTANCE_COMMENT_ESTAT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Evaluation - Assistance comments by Eurostat"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Evaluation - Assistance comments by Eurostat"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "SDMX_CDC",
+            "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=ESTAT:SDMX_CDC(3.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Cross Domain Metadata Concepts"
+                }
+            ],
+            "descriptions": [
+                {
+                    "locale": "en",
+                    "value": "Cross-domain concepts in the SDMX framework describe metadata concepts relevant to many statistical domains. SDMX recommends use of the concepts outlined below whenever feasible to promote re-usability and exchange of statistical information and their related metadata between national and international organisations."
+                }
+            ],
+            "agencyId": "ESTAT",
+            "version": "3.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "COMMENT_DSET",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).COMMENT_DSET",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Comment"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Supplementary descriptive text which can be attached to data or metadata"
+                        }
+                    ]
+                },
+                {
+                    "id": "CONTACT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).CONTACT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Contact"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Individual or organisational contact points for the data or metadata, including information on how to reach the contact points."
+                        }
+                    ]
+                },
+                {
+                    "id": "CONTACT_EMAIL",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).CONTACT_EMAIL",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Contact email address"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "E-mail address of the contact points for the data or metadata"
+                        }
+                    ]
+                },
+                {
+                    "id": "CONTACT_NAME",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).CONTACT_NAME",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Contact name"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "The name of the contact points for the data or metadata."
+                        }
+                    ]
+                },
+                {
+                    "id": "CONTACT_ORGANISATION",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).CONTACT_ORGANISATION",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Contact organisation"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "The name of the organisation of the contact points for the data or metadata."
+                        }
+                    ]
+                },
+                {
+                    "id": "CONTACT_PHONE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).CONTACT_PHONE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Contact phone number"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "The telephone number of the contact points for the data or metadata."
+                        }
+                    ]
+                },
+                {
+                    "id": "ORGANISATION_UNIT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).ORGANISATION_UNIT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Contact organisation unit"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "An addressable subdivision of an organisation"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
     "MetadataStructure": [
         {
             "id": "ACQUIS_COMPLIANCE_MSD",
