@@ -82,14 +82,14 @@ def check_bug437(mock, fmr: RegistryClient, query, body):
                     "CONTACT_EMAIL",
                     "CONTACT_PHONE",
                 ]
-                assert c.is_presentational is False
-                assert c.concept is not None
-                assert c.dtype == DataType.STRING
-                assert c.facets is None
-                assert c.enum_ref is None
-                assert c.array_def is not None
-                assert c.array_def.min_size == 0
-                assert c.array_def.max_size is None
+                assert cc.is_presentational is False
+                assert cc.concept is not None
+                assert cc.dtype == DataType.STRING
+                assert cc.facets is None
+                assert cc.enum_ref is None
+                assert cc.array_def is not None
+                assert cc.array_def.min_size == 0
+                assert cc.array_def.max_size is None
         elif c.id == "SELFASSESSMENT_CTRY":
             assert len(c.components) == 5
             for cc in c.components:
@@ -100,14 +100,25 @@ def check_bug437(mock, fmr: RegistryClient, query, body):
                     "ASSISTANCE_REQ_CTRY",
                     "ASSISTANCE_COMMENT_CTRY",
                 ]
-                assert c.is_presentational is False
-                assert c.concept is not None
-                assert c.dtype == DataType.STRING
-                assert c.facets is None
-                assert c.enum_ref is None
-                assert c.array_def is not None
-                assert c.array_def.min_size == 0
-                assert c.array_def.max_size is None
+                assert cc.is_presentational is False
+                assert cc.concept is not None
+                assert cc.dtype == DataType.STRING
+                assert cc.facets is None
+                if cc.id == "ASSISTANCE_REQ_CTRY":
+                    assert cc.enum_ref == (
+                        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist="
+                        "ESTAT:CL_BOOL_INDIC(1.0)"
+                    )
+                elif cc.id == "ASSESSMENT_COMPLIANCE":
+                    assert cc.enum_ref == (
+                        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist="
+                        "ESTAT:CL_COMPLIANCE_LEVEL(1.0)"
+                    )
+                else:
+                    assert cc.enum_ref is None
+                assert cc.array_def is not None
+                assert cc.array_def.min_size == 0
+                assert cc.array_def.max_size is None
         elif c.id == "EVALUATION_ESTAT":
             assert len(c.components) == 5
             for cc in c.components:
@@ -118,14 +129,25 @@ def check_bug437(mock, fmr: RegistryClient, query, body):
                     "ASSISTANCE_REQ_ESTAT",
                     "ASSISTANCE_COMMENT_ESTAT",
                 ]
-                assert c.is_presentational is False
-                assert c.concept is not None
-                assert c.dtype == DataType.STRING
-                assert c.facets is None
-                assert c.enum_ref is None
-                assert c.array_def is not None
-                assert c.array_def.min_size == 0
-                assert c.array_def.max_size is None
+                assert cc.is_presentational is False
+                assert cc.concept is not None
+                assert cc.dtype == DataType.STRING
+                assert cc.facets is None
+                if cc.id == "ASSISTANCE_REQ_ESTAT":
+                    assert cc.enum_ref == (
+                        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist="
+                        "ESTAT:CL_BOOL_INDIC(1.0)"
+                    )
+                elif cc.id == "EVALUATION_COMPLIANCE":
+                    assert cc.enum_ref == (
+                        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist="
+                        "ESTAT:CL_COMPLIANCE_LEVEL(1.0)"
+                    )
+                else:
+                    assert cc.enum_ref is None
+                assert cc.array_def is not None
+                assert cc.array_def.min_size == 0
+                assert cc.array_def.max_size is None
         else:
             assert len(c.components) == 0
 
