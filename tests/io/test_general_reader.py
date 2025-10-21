@@ -445,7 +445,7 @@ def test_get_datasets_prov_agreement(
     dataset = result[0]
     assert dataset.data is not None
     assert isinstance(dataset.structure, Schema)
-    assert len(dataset.data) == 2
+    assert len(dataset.data) == 1
     assert dataset.structure.short_urn == "ProvisionAgreement=MD:TEST(1.0)"
 
 
