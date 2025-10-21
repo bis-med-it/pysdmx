@@ -239,14 +239,6 @@ def test_read_url_invalid_pem_str():
         read_sdmx(url, pem="invalid_pem.pem")
 
 
-@pytest.fixture
-def json_meta_failed():
-    file_path = Path(__file__).parent / "samples" / "report_failed.json"
-    with open(file_path, "r") as f:
-        text = f.read()
-    return text
-
-
 def test_ssl_context_with_pem_path(
     mock_ssl_context, mock_http_client, tmp_path
 ):
@@ -420,13 +412,3 @@ def test_get_json2_data(sdmx_json_data):
         NotImplemented, match="This flavour of SDMX-JSON is not supported."
     ):
         read_sdmx(sdmx_json_data)
-
-
-def test_json_metadata_wrong(json_meta_failed):
-    with pytest.raises(
-        Invalid,
-        match=r"Validation Error: .*unexpected property"
-        r" 'isFinal'.*missing property 'agencyID'"
-        r".*does not match required pattern",
-    ):
-        read_sdmx(json_meta_failed)

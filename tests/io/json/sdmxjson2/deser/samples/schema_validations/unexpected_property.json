@@ -22,12 +22,13 @@
                     }
                 ],
                 "id": "Test",
-                "isFinal": true,
+                "agencyID": "AgencyTest",
+                "unexpected property": "This property is not defined in the schema",
                 "name": "Metadata test",
                 "names": {
                     "en": "Metadata test"
                 },
-                "version": "1.0",
+                "version": "1.0.2",
                 "isExternalReference": false,
                 "metadataflow": "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=MD.TEST:TEST(1.0)",
                 "targets": [

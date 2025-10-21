@@ -63,10 +63,6 @@ def validate_sdmx_json(input_str: str) -> None:
 
             patterns: list[tuple[str, Callable[[Match[str]], str]]] = [
                 (
-                    r"'([^']+)' is a required property",
-                    lambda m: f"missing property '{m.group(1)}'",
-                ),
-                (
                     r"Additional properties are not allowed.*'([^']+)'",
                     lambda m: f"unexpected property '{m.group(1)}'",
                 ),
@@ -75,17 +71,24 @@ def validate_sdmx_json(input_str: str) -> None:
                     lambda m: f"invalid type (expected {m.group(1)})",
                 ),
                 (
-                    r"is not one of",
-                    lambda m: "invalid value (not in enumeration)",
+                    r"""['"]?([^'"\n]+)['"]?\s+is not one of\s+\[([^\]]+)\]""",
+                    lambda m: "invalid value {!r}"
+                    " (expected one of: {})".format(
+                        m.group(1),
+                        ", ".join(
+                            s.strip().strip("'\"")
+                            for s in m.group(2).split(",")
+                        ),
+                    ),
                 ),
                 (
-                    r"does not match",
-                    lambda m: "does not match required pattern",
+                    r"'([^']+)' is a required property",
+                    lambda m: f"missing property '{m.group(1)}'",
                 ),
                 (
-                    r"is not valid under any of the"
-                    r" given schemas|does not satisfy any allowed schema",
-                    lambda m: "does not satisfy any allowed schema",
+                    r"""does not match ['"]([^'"]+)['"]""",
+                    lambda m: f"does not match required"
+                    f" pattern {m.group(1)!r}",
                 ),
             ]
 
@@ -97,11 +100,7 @@ def validate_sdmx_json(input_str: str) -> None:
                 ),
                 None,
             )
-            msg = msg or (
-                e.message.replace("\n", " ")[:77] + "…"
-                if len(e.message) > 80
-                else e.message
-            )
+            msg = msg or e.message
             return f"{path}: {msg}"
 
         summary = "; ".join(compact(e) for e in failures[:3])
