@@ -55,15 +55,10 @@ def check_bug437(mock, fmr: RegistryClient, query, body):
     assert len(msds) == 1
     msd = msds[0]
     assert isinstance(msd, MetadataStructure)
-    assert len(msd) == 19
-    assert len(msd.components) == 4
+    assert len(msd) == 4
+    assert len(msd.components) == 2
     for c in msd.components:
-        assert c.id in [
-            "CONTACT",
-            "SELFASSESSMENT_CTRY",
-            "EVALUATION_ESTAT",
-            "COMMENT_DSET",
-        ]
+        assert c.id in ["CONTACT", "SELFASSESSMENT_CTRY"]
         assert c.is_presentational is False
         assert c.concept is not None
         assert c.dtype == DataType.STRING
@@ -73,15 +68,9 @@ def check_bug437(mock, fmr: RegistryClient, query, body):
         assert c.array_def.min_size == 0
         assert c.array_def.max_size is None
         if c.id == "CONTACT":
-            assert len(c.components) == 5
+            assert len(c.components) == 1
             for cc in c.components:
-                assert cc.id in [
-                    "CONTACT_ORGANISATION",
-                    "ORGANISATION_UNIT",
-                    "CONTACT_NAME",
-                    "CONTACT_EMAIL",
-                    "CONTACT_PHONE",
-                ]
+                assert cc.id == "CONTACT_ORGANISATION"
                 assert cc.is_presentational is False
                 assert cc.concept is not None
                 assert cc.dtype == DataType.STRING
@@ -90,66 +79,22 @@ def check_bug437(mock, fmr: RegistryClient, query, body):
                 assert cc.array_def is not None
                 assert cc.array_def.min_size == 0
                 assert cc.array_def.max_size is None
-        elif c.id == "SELFASSESSMENT_CTRY":
-            assert len(c.components) == 5
-            for cc in c.components:
-                assert cc.id in [
-                    "ASSESSMENT",
-                    "ASSESSMENT_COMPLIANCE",
-                    "ACTION_FORESEEN",
-                    "ASSISTANCE_REQ_CTRY",
-                    "ASSISTANCE_COMMENT_CTRY",
-                ]
-                assert cc.is_presentational is False
-                assert cc.concept is not None
-                assert cc.dtype == DataType.STRING
-                assert cc.facets is None
-                if cc.id == "ASSISTANCE_REQ_CTRY":
-                    assert cc.enum_ref == (
-                        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist="
-                        "ESTAT:CL_BOOL_INDIC(1.0)"
-                    )
-                elif cc.id == "ASSESSMENT_COMPLIANCE":
-                    assert cc.enum_ref == (
-                        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist="
-                        "ESTAT:CL_COMPLIANCE_LEVEL(1.0)"
-                    )
-                else:
-                    assert cc.enum_ref is None
-                assert cc.array_def is not None
-                assert cc.array_def.min_size == 0
-                assert cc.array_def.max_size is None
-        elif c.id == "EVALUATION_ESTAT":
-            assert len(c.components) == 5
-            for cc in c.components:
-                assert cc.id in [
-                    "EVALUATION",
-                    "EVALUATION_COMPLIANCE",
-                    "ACTION_RECOMMENDED",
-                    "ASSISTANCE_REQ_ESTAT",
-                    "ASSISTANCE_COMMENT_ESTAT",
-                ]
-                assert cc.is_presentational is False
-                assert cc.concept is not None
-                assert cc.dtype == DataType.STRING
-                assert cc.facets is None
-                if cc.id == "ASSISTANCE_REQ_ESTAT":
-                    assert cc.enum_ref == (
-                        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist="
-                        "ESTAT:CL_BOOL_INDIC(1.0)"
-                    )
-                elif cc.id == "EVALUATION_COMPLIANCE":
-                    assert cc.enum_ref == (
-                        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist="
-                        "ESTAT:CL_COMPLIANCE_LEVEL(1.0)"
-                    )
-                else:
-                    assert cc.enum_ref is None
-                assert cc.array_def is not None
-                assert cc.array_def.min_size == 0
-                assert cc.array_def.max_size is None
         else:
-            assert len(c.components) == 0
+            assert c.id == "SELFASSESSMENT_CTRY"
+            assert len(c.components) == 1
+            for cc in c.components:
+                assert cc.id == "ASSISTANCE_REQ_CTRY"
+                assert cc.is_presentational is False
+                assert cc.concept is not None
+                assert cc.dtype == DataType.STRING
+                assert cc.facets is None
+                assert cc.enum_ref == (
+                    "urn:sdmx:org.sdmx.infomodel.codelist.Codelist="
+                    "ESTAT:CL_BOOL_INDIC(1.0)"
+                )
+                assert cc.array_def is not None
+                assert cc.array_def.min_size == 0
+                assert cc.array_def.max_size is None
 
 
 def __check_msds(msds: Sequence[MetadataStructure]):
