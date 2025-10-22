@@ -1,0 +1,338 @@
+{
+    "meta": {
+        "id": "IREF104001",
+        "test": false,
+        "prepared": "2025-10-17T14:13:21Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "FusionRegistry"
+        }
+    },
+    "AgencyScheme": [
+        {
+            "id": "AGENCIES",
+            "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "SDMX Agency Scheme"
+                }
+            ],
+            "agencyId": "SDMX",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "items": [
+                {
+                    "id": "SDMX",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).SDMX",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "SDMX"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "SDMX is an initiative to foster standards for the exchange of statistical information. It is sponsored by the Bank for International Settlements (BIS), the European Central Bank (ECB), the Statistical Office of the European Union (Eurostat), the International Monetary Fund (IMF), the Organization for Economic Co-Operation and Development (OECD), the United Nations (UN) and the World Bank."
+                        }
+                    ],
+                    "contacts": [
+                        {
+                            "departments": [
+                                {
+                                    "locale": "en",
+                                    "value": "SDMX Secretariat"
+                                }
+                            ],
+                            "roles": [
+                                {
+                                    "locale": "en",
+                                    "value": "Single entry point for external inquiries"
+                                }
+                            ],
+                            "names": [
+                                {
+                                    "locale": "en",
+                                    "value": "SDMX Secretariat"
+                                }
+                            ],
+                            "email": [
+                                "secretariat@sdmx.org"
+                            ],
+                            "uri": [
+                                "http://sdmx.org"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "ESTAT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).ESTAT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Statistical Office of the European Union (Eurostat)"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Eurostat is the statistical office of the European Union situated in Luxembourg. Its task is to provide the European Union with high quality statistics at European level that enable comparisons between countries and regions. Website: http://ec.europa.eu/eurostat/."
+                        }
+                    ],
+                    "contacts": [
+                        {
+                            "departments": [
+                                {
+                                    "locale": "en",
+                                    "value": "Eurostat unit B1"
+                                }
+                            ],
+                            "roles": [
+                                {
+                                    "locale": "en",
+                                    "value": "SDMX Support"
+                                }
+                            ],
+                            "names": [
+                                {
+                                    "locale": "en",
+                                    "value": "SDMX Support"
+                                }
+                            ],
+                            "email": [
+                                "estat-data-metadata-services@ec.europa.eu"
+                            ],
+                            "uri": [
+                                "http://ec.europa.eu/eurostat/"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "Codelist": [
+        {
+            "id": "CL_BOOL_INDIC",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_BOOL_INDIC(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Codelist (Y/N)"
+                }
+            ],
+            "structureURL": "https://webgate.ec.europa.eu/sdmxrr/rest/codelist/ESTAT/CL_BOOL_INDIC/1.0",
+            "agencyId": "ESTAT",
+            "version": "1.0",
+            "isFinal": true,
+            "isPartial": false,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "N",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_BOOL_INDIC(1.0).N",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "No"
+                        }
+                    ]
+                },
+                {
+                    "id": "Y",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_BOOL_INDIC(1.0).Y",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Yes"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "ConceptScheme": [
+        {
+            "id": "CS_COMPLIANCE",
+            "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=ESTAT:CS_COMPLIANCE(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Concepts for Acquis compliance MSD"
+                }
+            ],
+            "descriptions": [
+                {
+                    "locale": "en",
+                    "value": "These concepts are defined in order to be used in customised MSD for Acquis compliance monitoring of enlargement and other non-EU countries"
+                }
+            ],
+            "agencyId": "ESTAT",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "SELFASSESSMENT_CTRY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).SELFASSESSMENT_CTRY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Selfassessment by the country"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Selfassessment by the country"
+                        }
+                    ]
+                },
+                {
+                    "id": "ASSISTANCE_REQ_CTRY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ASSISTANCE_REQ_CTRY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Assessment - Assistance required"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Assessment - Assistance required"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "SDMX_CDC",
+            "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=ESTAT:SDMX_CDC(3.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Cross Domain Metadata Concepts"
+                }
+            ],
+            "descriptions": [
+                {
+                    "locale": "en",
+                    "value": "Cross-domain concepts in the SDMX framework describe metadata concepts relevant to many statistical domains. SDMX recommends use of the concepts outlined below whenever feasible to promote re-usability and exchange of statistical information and their related metadata between national and international organisations."
+                }
+            ],
+            "agencyId": "ESTAT",
+            "version": "3.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "CONTACT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).CONTACT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Contact"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Individual or organisational contact points for the data or metadata, including information on how to reach the contact points."
+                        }
+                    ]
+                },
+                {
+                    "id": "CONTACT_ORGANISATION",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).CONTACT_ORGANISATION",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Contact organisation"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "The name of the organisation of the contact points for the data or metadata."
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "MetadataStructure": [
+        {
+            "id": "ACQUIS_COMPLIANCE_MSD",
+            "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataStructure=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Monitoring of Acquis compliance MSD"
+                }
+            ],
+            "agencyId": "ESTAT",
+            "version": "1.2",
+            "isFinal": false,
+            "metadataAttributes": [
+                {
+                    "id": "CONTACT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).CONTACT",
+                    "representation": {
+                        "textFormat": {
+                            "textType": "String"
+                        }
+                    },
+                    "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).CONTACT",
+                    "minOccurs": 0,
+                    "presentational": false,
+                    "metadataAttributes": [
+                        {
+                            "id": "CONTACT_ORGANISATION",
+                            "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).CONTACT.CONTACT_ORGANISATION",
+                            "representation": {
+                                "textFormat": {
+                                    "textType": "String"
+                                }
+                            },
+                            "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:SDMX_CDC(3.0).CONTACT_ORGANISATION",
+                            "minOccurs": 0,
+                            "presentational": false
+                        }
+                    ]
+                },
+                {
+                    "id": "SELFASSESSMENT_CTRY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).SELFASSESSMENT_CTRY",
+                    "representation": {
+                        "textFormat": {
+                            "textType": "String"
+                        }
+                    },
+                    "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).SELFASSESSMENT_CTRY",
+                    "minOccurs": 0,
+                    "presentational": false,
+                    "metadataAttributes": [
+                        {
+                            "id": "ASSISTANCE_REQ_CTRY",
+                            "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=ESTAT:ACQUIS_COMPLIANCE_MSD(1.2).SELFASSESSMENT_CTRY.ASSISTANCE_REQ_CTRY",
+                            "representation": {
+                                "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_BOOL_INDIC(1.0)"
+                            },
+                            "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ESTAT:CS_COMPLIANCE(1.0).ASSISTANCE_REQ_CTRY",
+                            "minOccurs": 0,
+                            "presentational": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
