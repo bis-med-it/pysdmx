@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xmlns:xml="http://www.w3.org/XML/1998/namespace"
+				xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message"
+				xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/structure"
+				xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/common"
+				xsi:schemaLocation="http://xmlschema.sdmx.org/resources/sdmxml/schemas/v3_1/message https://xml.sdmx.org/3.1/SDMXMessage.xsd">
+    <mes:Header>
+        <mes:ID>IREF257793</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2021-03-08T17:49:35Z</mes:Prepared>
+        <mes:Sender id="Unknown" />
+        <mes:Receiver id="not_supplied" /></mes:Header>
+    <mes:Structures>
+        <str:ProvisionAgreements>
+            <str:ProvisionAgreement urn="urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=MD:TEST(1.0)"
+                                    isExternalReference="false" agencyID="MD" id="TEST" version="1.0">
+                <com:Name xml:lang="en">TEST</com:Name>
+                <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD:TEST(1.0)</str:Dataflow>
+                <str:DataProvider>urn:sdmx:org.sdmx.infomodel.base.DataProvider=MD:DATA_PROVIDERS(1.0).MD</str:DataProvider>
+            </str:ProvisionAgreement>
+        </str:ProvisionAgreements>
+    </mes:Structures>
+</mes:Structure>

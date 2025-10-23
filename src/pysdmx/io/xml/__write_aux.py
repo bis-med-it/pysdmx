@@ -69,6 +69,7 @@ CONCEPTS_SCHEMES = "ConceptSchemes"
 DSDS = "DataStructures"
 DATAFLOWS = "Dataflows"
 CONSTRAINTS = "Constraints"
+PROV_AGREEMENTS = "ProvisionAgreements"
 ALL_DIM = "AllDimensions"
 
 BASE_URL_21 = "http://www.sdmx.org/resources/sdmxml/schemas/v2_1"
@@ -199,6 +200,7 @@ MSG_CONTENT_PKG_21 = OrderedDict(
     [
         (ORGS, "OrganisationSchemes"),
         (DATAFLOWS, "Dataflows"),
+        (PROV_AGREEMENTS, "ProvisionAgreements"),
         (CODELISTS, "Codelists"),
         (CONCEPTS, "Concepts"),
         (DSDS, "DataStructures"),
@@ -217,6 +219,7 @@ MSG_CONTENT_PKG_30 = OrderedDict(
     [
         (AGC, "AgencySchemes"),
         (DATAFLOWS, "Dataflows"),
+        (PROV_AGREEMENTS, "ProvisionAgreements"),
         (CODELISTS, "Codelists"),
         (CONCEPTS_SCHEMES, "ConceptSchemes"),
         (DSDS, "DataStructures"),
