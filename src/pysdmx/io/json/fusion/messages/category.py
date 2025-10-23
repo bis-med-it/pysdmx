@@ -57,14 +57,41 @@ class FusionCategory(Struct, frozen=True):
     descriptions: Optional[Sequence[FusionString]] = None
     items: Sequence["FusionCategory"] = ()
 
-    def to_model(self) -> Category:
+    def __add_flows(
+        self, cni: str, cf: Dict[str, list[DF]]
+    ) -> Sequence[DataflowRef]:
+        if cni in cf:
+            return [
+                DataflowRef(
+                    (
+                        df.agency.id
+                        if isinstance(df.agency, Agency)
+                        else df.agency
+                    ),
+                    df.id,
+                    df.version,
+                    df.name,
+                )
+                for df in cf[cni]
+            ]
+        else:
+            return ()
+
+    def to_model(
+        self,
+        cat_flows: dict[str, list[DF]],
+        parent_id: Optional[str] = None,
+    ) -> Category:
         """Converts a FusionCode to a standard code."""
         description = self.descriptions[0].value if self.descriptions else None
+        cni = f"{parent_id}.{self.id}" if parent_id else self.id
+        dataflows = self.__add_flows(cni, cat_flows)
         return Category(
             id=self.id,
             name=self.names[0].value,
             description=description,
-            categories=[c.to_model() for c in self.items],
+            categories=[c.to_model(cat_flows, cni) for c in self.items],
+            dataflows=dataflows,
         )
 
 
@@ -78,7 +105,7 @@ class FusionCategoryScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
     version: str = "1.0"
     items: Sequence[FusionCategory] = ()
 
-    def to_model(self) -> CS:
+    def to_model(self, cat_flows: dict[str, list[DF]]) -> CS:
         """Converts a JsonCodelist to a standard codelist."""
         description = self.descriptions[0].value if self.descriptions else None
         return CS(
@@ -87,7 +114,7 @@ class FusionCategoryScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
             agency=self.agency,
             description=description,
             version=self.version,
-            items=[c.to_model() for c in self.items],
+            items=[c.to_model(cat_flows) for c in self.items],
         )
 
 
@@ -106,35 +133,10 @@ class FusionCategorySchemeMessage(Struct, frozen=True):
             out[src].append(d.to_model())
         return out
 
-    def __add_flows(
-        self, cat: Category, cni: str, cf: Dict[str, list[DF]]
-    ) -> None:
-        if cat.categories:
-            for c in cat.categories:
-                self.__add_flows(c, f"{cni}.{c.id}", cf)
-        if cni in cf:
-            dfrefs = [
-                DataflowRef(
-                    (
-                        df.agency.id
-                        if isinstance(df.agency, Agency)
-                        else df.agency
-                    ),
-                    df.id,
-                    df.version,
-                    df.name,
-                )
-                for df in cf[cni]
-            ]
-            cat.dataflows = dfrefs
-
     def to_model(self) -> CS:
         """Returns the requested category scheme."""
         cf = self.__group_flows()
-        cs = self.CategoryScheme[0].to_model()
-        for c in cs:
-            self.__add_flows(c, c.id, cf)
-        return cs
+        return self.CategoryScheme[0].to_model(cf)
 
 
 class FusionCategorisationMessage(Struct, frozen=True):

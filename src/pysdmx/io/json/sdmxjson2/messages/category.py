@@ -1,7 +1,7 @@
 """Collection of SDMX-JSON schemas for categories and category schemes."""
 
 from collections import defaultdict
-from typing import Dict, Sequence
+from typing import Dict, Optional, Sequence
 
 from msgspec import Struct
 
@@ -84,14 +84,41 @@ class JsonCategory(NameableType, frozen=True, omit_defaults=True):
 
     categories: Sequence["JsonCategory"] = ()
 
-    def to_model(self) -> Category:
+    def __add_flows(
+        self, cni: str, cf: Dict[str, list[Dataflow]]
+    ) -> Sequence[DataflowRef]:
+        if cni in cf:
+            return [
+                DataflowRef(
+                    (
+                        df.agency.id
+                        if isinstance(df.agency, Agency)
+                        else df.agency
+                    ),
+                    df.id,
+                    df.version,
+                    df.name,
+                )
+                for df in cf[cni]
+            ]
+        else:
+            return ()
+
+    def to_model(
+        self,
+        cat_flows: dict[str, list[Dataflow]],
+        parent_id: Optional[str] = None,
+    ) -> Category:
         """Converts a FusionCode to a standard code."""
+        cni = f"{parent_id}.{self.id}" if parent_id else self.id
+        dataflows = self.__add_flows(cni, cat_flows)
         return Category(
             id=self.id,
             name=self.name,
             description=self.description,
-            categories=[c.to_model() for c in self.categories],
+            categories=[c.to_model(cat_flows, cni) for c in self.categories],
             annotations=[a.to_model() for a in self.annotations],
+            dataflows=dataflows,
         )
 
     @classmethod
@@ -126,7 +153,7 @@ class JsonCategoryScheme(
 
     categories: Sequence[JsonCategory] = ()
 
-    def to_model(self) -> CategoryScheme:
+    def to_model(self, cat_flows: dict[str, list[Dataflow]]) -> CategoryScheme:
         """Converts a JsonCodelist to a standard codelist."""
         return CategoryScheme(
             id=self.id,
@@ -134,7 +161,7 @@ class JsonCategoryScheme(
             agency=self.agency,
             description=self.description,
             version=self.version,
-            items=[c.to_model() for c in self.categories],
+            items=[c.to_model(cat_flows) for c in self.categories],
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
             valid_from=self.validFrom,
@@ -179,49 +206,28 @@ class JsonCategorySchemes(Struct, frozen=True, omit_defaults=True):
     categorisations: Sequence[JsonCategorisation] = ()
     dataflows: Sequence[JsonDataflow] = ()
 
+    def __group_flows(self) -> defaultdict[str, list[Dataflow]]:
+        out: defaultdict[str, list[Dataflow]] = defaultdict(list)
+        for c in self.categorisations:
+            d = find_by_urn(self.dataflows, c.source)
+            src = c.target[c.target.find(")") + 2 :]
+            out[src].append(d.to_model())
+        return out
+
+    def to_model(self) -> CategoryScheme:
+        """Returns the requested codelist."""
+        cf = self.__group_flows()
+        return self.categorySchemes[0].to_model(cf)
+
 
 class JsonCategorySchemeMessage(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for /categoryscheme queries."""
 
     data: JsonCategorySchemes
 
-    def __group_flows(self) -> defaultdict[str, list[Dataflow]]:
-        out: defaultdict[str, list[Dataflow]] = defaultdict(list)
-        for c in self.data.categorisations:
-            d = find_by_urn(self.data.dataflows, c.source)
-            src = c.target[c.target.find(")") + 2 :]
-            out[src].append(d.to_model())
-        return out
-
-    def __add_flows(
-        self, cat: Category, cni: str, cf: Dict[str, list[Dataflow]]
-    ) -> None:
-        if cat.categories:
-            for c in cat.categories:
-                self.__add_flows(c, f"{cni}.{c.id}", cf)
-        if cni in cf:
-            dfrefs = [
-                DataflowRef(
-                    (
-                        df.agency.id
-                        if isinstance(df.agency, Agency)
-                        else df.agency
-                    ),
-                    df.id,
-                    df.version,
-                    df.name,
-                )
-                for df in cf[cni]
-            ]
-            cat.dataflows = dfrefs
-
     def to_model(self) -> CategoryScheme:
-        """Returns the requested codelist."""
-        cf = self.__group_flows()
-        cs = self.data.categorySchemes[0].to_model()
-        for c in cs:
-            self.__add_flows(c, c.id, cf)
-        return cs
+        """Returns the requested category scheme."""
+        return self.data.to_model()
 
 
 class JsonCategorisations(Struct, frozen=True, omit_defaults=True):
