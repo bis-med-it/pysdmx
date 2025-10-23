@@ -394,7 +394,7 @@ def test_get_json2_structure(sdmx_json_structure):
 
 
 def test_get_json2_refmeta(sdmx_json_refmeta):
-    msg = read_sdmx(sdmx_json_refmeta, validate=False)
+    msg = read_sdmx(sdmx_json_refmeta)
 
     assert isinstance(msg, Message)
     assert msg.header is not None
