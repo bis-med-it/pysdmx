@@ -373,7 +373,7 @@ class DataflowRef(
         return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
-class Reference(Struct, frozen=True, repr_omit_defaults=True):
+class Reference(Struct, frozen=True, repr_omit_defaults=True, tag=True):
     """The coordinates of an SDMX maintainable artefact.
 
     Attributes:
