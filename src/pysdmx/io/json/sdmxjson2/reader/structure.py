@@ -4,19 +4,24 @@ import msgspec
 
 from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages import JsonStructureMessage
+from pysdmx.io.json.sdmxjson2.reader.doc_validation import validate_sdmx_json
 from pysdmx.model import decoders
 from pysdmx.model.message import StructureMessage
 
 
-def read(input_str: str) -> StructureMessage:
+def read(input_str: str, validate: bool = True) -> StructureMessage:
     """Read an SDMX-JSON 2.0.0 Stucture Message.
 
     Args:
         input_str: SDMX-JSON structure message to read.
+        validate: If True, the JSON data will be validated against the schemas.
 
     Returns:
         A pysdmx StructureMessage
     """
+    if validate:
+        validate_sdmx_json(input_str)
+
     try:
         msg = msgspec.json.Decoder(
             JsonStructureMessage, dec_hook=decoders

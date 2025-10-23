@@ -78,7 +78,7 @@ def read_sdmx(  # noqa: C901
             read as read_struct,
         )
 
-        struct_msg = read_struct(input_str)
+        struct_msg = read_struct(input_str, validate=validate)
         header = struct_msg.header
         result_structures = (
             struct_msg.structures if struct_msg.structures else []
@@ -88,7 +88,7 @@ def read_sdmx(  # noqa: C901
             read as read_refmeta,
         )
 
-        ref_msg = read_refmeta(input_str)
+        ref_msg = read_refmeta(input_str, validate=validate)
         header = ref_msg.header
         reports = ref_msg.get_reports()
     elif read_format == Format.DATA_SDMX_ML_2_1_GEN:
