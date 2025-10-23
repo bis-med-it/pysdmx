@@ -153,8 +153,12 @@ class JsonCategoryScheme(
 
     categories: Sequence[JsonCategory] = ()
 
-    def to_model(self, cat_flows: dict[str, list[Dataflow]]) -> CategoryScheme:
+    def to_model(
+        self, cat_flows: Optional[dict[str, list[Dataflow]]] = None
+    ) -> CategoryScheme:
         """Converts a JsonCodelist to a standard codelist."""
+        if cat_flows is None:
+            cat_flows = {}
         return CategoryScheme(
             id=self.id,
             name=self.name,
