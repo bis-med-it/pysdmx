@@ -19,7 +19,7 @@ from typing import Any, Dict, List, Optional, Sequence, Type, Union
 from msgspec import Struct
 
 from pysdmx.errors import Invalid, NotFound
-from pysdmx.model.__base import ItemScheme, MaintainableArtefact, Organisation
+from pysdmx.model.__base import MaintainableArtefact, Organisation
 from pysdmx.model.category import Categorisation, CategoryScheme
 from pysdmx.model.code import Codelist, Hierarchy, HierarchyAssociation
 from pysdmx.model.concept import ConceptScheme
@@ -190,16 +190,9 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
 
     def __get_single_structure(
         self,
-        type_: Type[
-            Union[
-                ItemScheme,
-                DataStructureDefinition,
-                Dataflow,
-                ProvisionAgreement,
-            ]
-        ],
+        type_: Type[MaintainableArtefact],
         short_urn: str,
-    ) -> Any:
+    ) -> MaintainableArtefact:
         """Returns a specific element from content."""
         if self.structures is None:
             raise NotFound(
@@ -242,30 +235,66 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
         return self.__get_elements(Metadataflow)
 
     def get_organisation_scheme(self, short_urn: str) -> AgencyScheme:
-        """Returns a specific OrganisationScheme."""
-        return self.__get_single_structure(AgencyScheme, short_urn)
+        """Returns a specific AgencyScheme."""
+        obj = self.__get_single_structure(AgencyScheme, short_urn)
+        if not isinstance(obj, AgencyScheme):
+            raise TypeError(
+                f"Expected object of type AgencyScheme, "
+                f"but got {type(obj).__name__!r} for Short URN {short_urn}"
+            )
+        return obj
 
     def get_codelist(self, short_urn: str) -> Codelist:
         """Returns a specific Codelist."""
-        return self.__get_single_structure(Codelist, short_urn)
+        obj = self.__get_single_structure(Codelist, short_urn)
+        if not isinstance(obj, Codelist):
+            raise TypeError(
+                f"Expected object of type Codelist, "
+                f"but got {type(obj).__name__!r} for Short URN {short_urn}"
+            )
+        return obj
 
     def get_concept_scheme(self, short_urn: str) -> ConceptScheme:
         """Returns a specific Concept Scheme."""
-        return self.__get_single_structure(ConceptScheme, short_urn)
+        obj = self.__get_single_structure(ConceptScheme, short_urn)
+        if not isinstance(obj, ConceptScheme):
+            raise TypeError(
+                f"Expected object of type ConceptScheme, "
+                f"but got {type(obj).__name__!r} for Short URN {short_urn}"
+            )
+        return obj
 
     def get_data_structure_definition(
         self, short_urn: str
     ) -> DataStructureDefinition:
         """Returns a specific DataStructureDefinition."""
-        return self.__get_single_structure(DataStructureDefinition, short_urn)
+        obj = self.__get_single_structure(DataStructureDefinition, short_urn)
+        if not isinstance(obj, DataStructureDefinition):
+            raise TypeError(
+                f"Expected object of type DataStructureDefinition, "
+                f"but got {type(obj).__name__!r} for Short URN {short_urn}"
+            )
+        return obj
 
     def get_dataflow(self, short_urn: str) -> Dataflow:
         """Returns a specific Dataflow."""
-        return self.__get_single_structure(Dataflow, short_urn)
+        obj = self.__get_single_structure(Dataflow, short_urn)
+        if not isinstance(obj, Dataflow):
+            raise TypeError(
+                f"Expected object of type Dataflow, "
+                f"but got {type(obj).__name__!r} for Short URN {short_urn}"
+            )
+        return obj
 
     def get_provision_agreement(self, short_urn: str) -> ProvisionAgreement:
         """Returns a specific Provision Agreement."""
-        return self.__get_single_structure(ProvisionAgreement, short_urn)
+        obj = self.__get_single_structure(ProvisionAgreement, short_urn)
+        if not isinstance(obj, ProvisionAgreement):
+            raise TypeError(
+                f"Expected object of type ProvisionAgreement, "
+                f"but got {type(obj).__name__!r} for Short URN {short_urn}"
+            )
+        return obj
 
     def get_transformation_schemes(self) -> List[TransformationScheme]:
         """Returns the TransformationSchemes."""
