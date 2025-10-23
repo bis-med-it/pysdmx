@@ -44,6 +44,7 @@ from pysdmx.model.dataflow import (
     Components,
     Dataflow,
     DataStructureDefinition,
+    ProvisionAgreement,
     Role,
 )
 from pysdmx.model.message import Header
@@ -796,6 +797,26 @@ def datastructure_group_write():
         return f.read()
 
 
+@pytest.fixture
+def prov_agreement():
+    return ProvisionAgreement(
+        id="TEST",
+        agency="MD",
+        version="1.0",
+        name="Test Provision Agreement",
+        description=None,
+        dataflow="Dataflow=MD:TEST(1.0)",
+        provider="DataProvider=MD:DATA_PROVIDERS(1.0).MD",
+    )
+
+
+@pytest.fixture
+def prov_agreement_sample():
+    base_path = Path(__file__).parent / "samples" / "prov_agreement_sample.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
 def test_codelist(complete_header, codelist, codelist_sample):
     content = [codelist]
     result = write(
@@ -983,3 +1004,15 @@ def test_read_write_datastructure_group(
         prettyprint=True,
     )
     assert result == datastructure_group_write
+
+
+def test_prov_agreement(
+    prov_agreement_sample, complete_header, prov_agreement
+):
+    content = [prov_agreement]
+    result = write(
+        content,
+        header=complete_header,
+    )
+    read_sdmx(result, validate=True)
+    assert result == prov_agreement_sample

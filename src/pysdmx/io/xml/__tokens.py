@@ -13,6 +13,7 @@ POSITION = "position"
 CLASS = "class"
 PACKAGE = "package"
 LINK = "Link"
+DATA_PROV = "DataProvider"
 
 # Structure Specific
 STR_SPE = "StructureSpecificData"
@@ -93,6 +94,8 @@ CON_SCHEMES = "ConceptSchemes"
 DSDS = "DataStructures"
 DATAFLOWS = "Dataflows"
 CONSTRAINTS = "Constraints"
+PROV_AGREEMENTS = "ProvisionAgreements"
+
 
 # Individual
 AGENCY = "Agency"

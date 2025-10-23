@@ -45,6 +45,7 @@ from pysdmx.model.dataflow import (
     Components,
     Dataflow,
     DataStructureDefinition,
+    ProvisionAgreement,
     Role,
 )
 from pysdmx.model.dataset import ActionType
@@ -762,6 +763,26 @@ def enum_format():
         return f.read()
 
 
+@pytest.fixture
+def prov_agreement():
+    return ProvisionAgreement(
+        id="TEST",
+        agency="MD",
+        version="1.0",
+        name="Test Provision Agreement",
+        description=None,
+        dataflow="Dataflow=MD:TEST(1.0)",
+        provider="DataProvider=MD:DATA_PROVIDERS(1.0).MD",
+    )
+
+
+@pytest.fixture
+def prov_agreement_sample():
+    base_path = Path(__file__).parent / "samples" / "prov_agreement_sample.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
 def test_codelist(codelist_sample, complete_header, codelist):
     content = [codelist]
     result = write(
@@ -1128,3 +1149,15 @@ def test_write_dataflow_with_quote(concept_quotes):
     assert 'id=""Quote""' in result
     assert 'Name xml:lang="en">Concept with "Quotes"' in result
     assert 'Description xml:lang="en">concept with "Quotes"' in result
+
+
+def test_prov_agreement(
+    prov_agreement_sample, complete_header, prov_agreement
+):
+    content = [prov_agreement]
+    result = write(
+        content,
+        header=complete_header,
+    )
+    read(result, validate=True)
+    assert result == prov_agreement_sample
