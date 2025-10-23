@@ -14,8 +14,18 @@ from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Components, Dataflow, DataStructureDefinition
 from pysdmx.model.dataset import Dataset
-from pysdmx.model.message import Header, Message
+from pysdmx.model.message import Header, Message, StructureMessage
 from pysdmx.model.metadata import MetadataAttribute, MetadataReport
+
+
+@pytest.fixture
+def patched_structure(monkeypatch):
+    monkeypatch.setattr(
+        StructureMessage,
+        "_StructureMessage__get_single_structure",
+        lambda self, t, u: object(),
+    )
+    return StructureMessage()
 
 
 def test_default_initialization():
@@ -338,3 +348,47 @@ def test_no_metadata_report():
 
     with pytest.raises(NotFound):
         msg.get_reports()
+
+
+def test_get_organisation_scheme_wrong_type(patched_structure):
+    msg = patched_structure
+    with pytest.raises(
+        TypeError, match="Expected object of type AgencyScheme"
+    ):
+        msg.get_organisation_scheme("urn=test:test(1.0)")
+
+
+def test_get_codelist_wrong_type(patched_structure):
+    msg = patched_structure
+    with pytest.raises(TypeError, match="Expected object of type Codelist"):
+        msg.get_codelist("urn=test:test(1.0)")
+
+
+def test_get_concept_scheme_wrong_type(patched_structure):
+    msg = patched_structure
+    with pytest.raises(
+        TypeError, match="Expected object of type ConceptScheme"
+    ):
+        msg.get_concept_scheme("urn=test:test(1.0)")
+
+
+def test_get_data_structure_definition_wrong_type(patched_structure):
+    msg = patched_structure
+    with pytest.raises(
+        TypeError, match="Expected object of type DataStructureDefinition"
+    ):
+        msg.get_data_structure_definition("urn=test:test(1.0)")
+
+
+def test_get_dataflow_wrong_type(patched_structure):
+    msg = patched_structure
+    with pytest.raises(TypeError, match="Expected object of type Dataflow"):
+        msg.get_dataflow("urn=test:test(1.0)")
+
+
+def test_get_provision_agreement_wrong_type(patched_structure):
+    msg = patched_structure
+    with pytest.raises(
+        TypeError, match="Expected object of type ProvisionAgreement"
+    ):
+        msg.get_provision_agreement("urn=test:test(1.0)")
