@@ -70,10 +70,11 @@ def test_full_instantiation(id, name, desc):
     assert c.other_references == refs
 
 
-def test_mutable(id, name):
-    """Categories are mutable, so that we can add dataflows to them."""
+def test_immutable(id, name):
+    """Categories are immutable."""
     c = Category(id=id)
-    c.name = name
+    with pytest.raises(AttributeError):
+        c.name = name
 
 
 def test_equal(id, name, desc):

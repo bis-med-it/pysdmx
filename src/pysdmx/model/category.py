@@ -17,7 +17,7 @@ from pysdmx.model.__base import (
 from pysdmx.model.dataflow import Dataflow
 
 
-class Category(Item, frozen=False, omit_defaults=True):  # type: ignore[misc]
+class Category(Item, frozen=True, omit_defaults=True):
     """A category, ie a way to **organize and group** things.
 
     Categories are used to organize and group other artefacts in SDMX.
