@@ -94,8 +94,10 @@ def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
         tuple_ids = __get_ids_from_structure(structure[PROV_AGREEMENT])
     else:
         # This section handles ProvisionAgrement.
-        # IMPORTANT: This is a typo in the SDMX standard XML schema 2.1.
-        # We intentionally read that exact key to be compatible with such files.
+        # IMPORTANT: This is a typo in the SDMX standard XML schema 2.1
+        # fixed in 3.0 version.
+        # We intentionally read that exact key to be compatible
+        # with such files.
         structure_type = "ProvisionAgreement"
         tuple_ids = __get_ids_from_structure(structure[PROV_AGREMENT])
     return tuple_ids + (structure_type,)
