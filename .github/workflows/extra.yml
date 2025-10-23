@@ -67,8 +67,8 @@ jobs:
           selected = "${{ matrix.extras_to_install }}".split()
           WANT = {
             "data": ["pandas","dateutil"],
-            "xml":  ["lxml","xmltodict"],
-            "xml-data":  ["lxml","xmltodict","pandas","dateutil"],
+            "xml":  ["lxml","sdmxschemas","xmltodict"],
+            "xml-data":  ["lxml","sdmxschemas","xmltodict","pandas","dateutil"],
             "vtl":  ["vtlengine","pandas","dateutil"],
             "dc":  ["dateutil"],
           }

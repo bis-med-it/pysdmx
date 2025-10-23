@@ -33,6 +33,7 @@ def __check_data_extra() -> None:
 def __check_xml_extra() -> None:
     try:
         import lxml  # noqa: F401
+        import sdmxschemas  # noqa: F401
         import xmltodict  # noqa: F401
     except ImportError:
         raise ImportError(

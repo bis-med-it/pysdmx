@@ -1679,9 +1679,10 @@ files = [
 name = "sdmxschemas"
 version = "1.0.0"
 description = "Python wrapper for SDMX Schemas"
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
+markers = "extra == \"xml\" or extra == \"all\""
 files = [
     {file = "sdmxschemas-1.0.0-py3-none-any.whl", hash = "sha256:044953e162ae65fb676bf7bdd8b60a13c4d8d975dd0a298a3a0c56cc756583bf"},
     {file = "sdmxschemas-1.0.0.tar.gz", hash = "sha256:9d0ea6075084daa23dad7414434f797e3ff55c281f04f3ef354fc82ca1d517e4"},
@@ -2157,13 +2158,13 @@ test = ["big-O", "importlib-resources ; python_version < \"3.9\"", "jaraco.funct
 type = ["pytest-mypy"]
 
 [extras]
-all = ["lxml", "pandas", "python-dateutil", "vtlengine", "xmltodict"]
+all = ["lxml", "pandas", "python-dateutil", "sdmxschemas", "vtlengine", "xmltodict"]
 data = ["pandas"]
 dc = ["python-dateutil"]
 vtl = ["vtlengine"]
-xml = ["lxml", "xmltodict"]
+xml = ["lxml", "sdmxschemas", "xmltodict"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "bb888fb0e114e049277565402413a3a7c684a3eb4c08e9641d5c068326231ed2"
+content-hash = "ecb330a0c95eca2ac750c69ce9f08c42e7e16f212a778e5c5a1d195a9d0a7699"
