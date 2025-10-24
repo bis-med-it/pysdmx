@@ -82,14 +82,14 @@ class FusionCategory(Struct, frozen=True):
     def to_model(
         self,
         cat_flows: dict[str, list[DF]],
-        cat_other: dict[str, Tuple[ItemReference, Reference]],
+        cat_other: dict[str, list[Union[ItemReference, Reference]]],
         parent_id: Optional[str] = None,
     ) -> Category:
         """Converts a FusionCode to a standard code."""
         description = self.descriptions[0].value if self.descriptions else None
         cni = f"{parent_id}.{self.id}" if parent_id else self.id
         dataflows = self.__add_flows(cni, cat_flows)
-        others = cat_other[cni] if cni in cat_other else ()
+        others = cat_other.get(cni, ())
         return Category(
             id=self.id,
             name=self.names[0].value,
@@ -112,7 +112,7 @@ class FusionCategoryScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
     version: str = "1.0"
     items: Sequence[FusionCategory] = ()
 
-    def __group_flows(
+    def __group_refs(
         self,
         categorisations: Sequence[FusionCategorisation],
         dataflows: Sequence[FusionDataflow],
@@ -140,7 +140,7 @@ class FusionCategoryScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
     ) -> CS:
         """Converts a JsonCodelist to a standard codelist."""
         description = self.descriptions[0].value if self.descriptions else None
-        cat_flows, cat_others = self.__group_flows(categorisations, dataflows)
+        cat_flows, cat_others = self.__group_refs(categorisations, dataflows)
         return CS(
             id=self.id,
             name=self.names[0].value,

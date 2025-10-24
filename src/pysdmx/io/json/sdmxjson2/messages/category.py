@@ -109,13 +109,13 @@ class JsonCategory(NameableType, frozen=True, omit_defaults=True):
     def to_model(
         self,
         cat_flows: dict[str, list[Dataflow]],
-        cat_other: dict[str, Tuple[ItemReference, Reference]],
+        cat_other: dict[str, list[Union[ItemReference, Reference]]],
         parent_id: Optional[str] = None,
     ) -> Category:
         """Converts a FusionCode to a standard code."""
         cni = f"{parent_id}.{self.id}" if parent_id else self.id
         dataflows = self.__add_flows(cni, cat_flows)
-        others = cat_other[cni] if cni in cat_other else ()
+        others = cat_other.get(cni, ())
         return Category(
             id=self.id,
             name=self.name,
@@ -166,7 +166,7 @@ class JsonCategoryScheme(
         dataflows: Sequence[JsonDataflow] = (),
     ) -> Tuple[
         dict[str, list[Dataflow]],
-        dict[str, Tuple[ItemReference, Reference]],
+        dict[str, list[Union[ItemReference, Reference]]],
     ]:
         flows: defaultdict[str, list[Dataflow]] = defaultdict(list)
         other: defaultdict[str, list[Union[ItemReference, Reference]]] = (
@@ -242,7 +242,6 @@ class JsonCategorySchemes(Struct, frozen=True, omit_defaults=True):
 
     def to_model(self) -> CategoryScheme:
         """Returns the requested codelist."""
-
         return self.categorySchemes[0].to_model(
             self.categorisations, self.dataflows
         )
