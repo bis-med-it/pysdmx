@@ -201,6 +201,27 @@
                 "isFinal": false,
                 "target": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE",
                 "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF_2(1.0)"
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "categorisation",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Categorisation=TEST:F70E4C5A-75A3-C506-3630-9761E9189242(1.0)"
+                    }
+                ],
+                "id": "F70E4C5A-75A3-C506-3630-9761E9189242",
+                "name": "Category 'TEST:TEST_CS(1.0).ONE' linking to Codelist 'SDMX:CL_FREQ(1.0)'",
+                "names": {
+                    "en": "Category 'TEST:TEST_CS(1.0).ONE' linking to Codelist 'SDMX:CL_FREQ(1.0)'"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "target": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE",
+                "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Codelist=SDMX:CL_FREQ(1.0)"
             }
         ],
         "categorySchemes": [
