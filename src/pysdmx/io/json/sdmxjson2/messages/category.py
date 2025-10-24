@@ -1,7 +1,7 @@
 """Collection of SDMX-JSON schemas for categories and category schemes."""
 
 from collections import defaultdict
-from typing import Dict, Optional, Sequence
+from typing import Dict, Optional, Sequence, Tuple, Union
 
 from msgspec import Struct
 
@@ -20,8 +20,10 @@ from pysdmx.model import (
     CategoryScheme,
     Dataflow,
     DataflowRef,
+    ItemReference,
+    Reference,
 )
-from pysdmx.util import find_by_urn
+from pysdmx.util import find_by_urn, parse_urn
 
 
 class JsonCategorisation(
@@ -107,18 +109,23 @@ class JsonCategory(NameableType, frozen=True, omit_defaults=True):
     def to_model(
         self,
         cat_flows: dict[str, list[Dataflow]],
+        cat_other: dict[str, Tuple[ItemReference, Reference]],
         parent_id: Optional[str] = None,
     ) -> Category:
         """Converts a FusionCode to a standard code."""
         cni = f"{parent_id}.{self.id}" if parent_id else self.id
         dataflows = self.__add_flows(cni, cat_flows)
+        others = cat_other[cni] if cni in cat_other else ()
         return Category(
             id=self.id,
             name=self.name,
             description=self.description,
-            categories=[c.to_model(cat_flows, cni) for c in self.categories],
+            categories=[
+                c.to_model(cat_flows, cat_other, cni) for c in self.categories
+            ],
             annotations=[a.to_model() for a in self.annotations],
             dataflows=dataflows,
+            other_references=others,
         )
 
     @classmethod
@@ -153,19 +160,42 @@ class JsonCategoryScheme(
 
     categories: Sequence[JsonCategory] = ()
 
+    def __group_flows(
+        self,
+        categorisations: Sequence[JsonCategorisation] = (),
+        dataflows: Sequence[JsonDataflow] = (),
+    ) -> Tuple[
+        dict[str, list[Dataflow]],
+        dict[str, Tuple[ItemReference, Reference]],
+    ]:
+        flows: defaultdict[str, list[Dataflow]] = defaultdict(list)
+        other: defaultdict[str, list[Union[ItemReference, Reference]]] = (
+            defaultdict(list)
+        )
+        for c in categorisations:
+            ref = parse_urn(c.source)
+            src = c.target[c.target.find(")") + 2 :]
+            if ref.sdmx_type == "Dataflow":
+                d = find_by_urn(dataflows, c.source)
+                flows[src].append(d.to_model())
+            else:
+                other[src].append(ref)
+        return (flows, other)
+
     def to_model(
-        self, cat_flows: Optional[dict[str, list[Dataflow]]] = None
+        self,
+        categorisations: Sequence[JsonCategorisation] = (),
+        dataflows: Sequence[JsonDataflow] = (),
     ) -> CategoryScheme:
-        """Converts a JsonCodelist to a standard codelist."""
-        if cat_flows is None:
-            cat_flows = {}
+        """Converts a JsonCategoryScheme to a standard one."""
+        cat_flows, cat_other = self.__group_flows(categorisations, dataflows)
         return CategoryScheme(
             id=self.id,
             name=self.name,
             agency=self.agency,
             description=self.description,
             version=self.version,
-            items=[c.to_model(cat_flows) for c in self.categories],
+            items=[c.to_model(cat_flows, cat_other) for c in self.categories],
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
             valid_from=self.validFrom,
@@ -210,18 +240,12 @@ class JsonCategorySchemes(Struct, frozen=True, omit_defaults=True):
     categorisations: Sequence[JsonCategorisation] = ()
     dataflows: Sequence[JsonDataflow] = ()
 
-    def __group_flows(self) -> defaultdict[str, list[Dataflow]]:
-        out: defaultdict[str, list[Dataflow]] = defaultdict(list)
-        for c in self.categorisations:
-            d = find_by_urn(self.dataflows, c.source)
-            src = c.target[c.target.find(")") + 2 :]
-            out[src].append(d.to_model())
-        return out
-
     def to_model(self) -> CategoryScheme:
         """Returns the requested codelist."""
-        cf = self.__group_flows()
-        return self.categorySchemes[0].to_model(cf)
+
+        return self.categorySchemes[0].to_model(
+            self.categorisations, self.dataflows
+        )
 
 
 class JsonCategorySchemeMessage(Struct, frozen=True, omit_defaults=True):
