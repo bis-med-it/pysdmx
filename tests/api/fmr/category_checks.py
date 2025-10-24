@@ -4,7 +4,7 @@ import httpx
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
 from pysdmx.io.format import Format
-from pysdmx.model import Category, CategoryScheme
+from pysdmx.model import Category, CategoryScheme, Reference
 
 
 def check_categories(
@@ -77,30 +77,41 @@ def check_category_details(mock, fmr: RegistryClient, query, body):
             assert cat.description is None
             assert not cat.categories
             assert len(cat.dataflows) == 3
+            assert len(cat.other_references) == 1
+            ref = cat.other_references[0]
+            assert isinstance(ref, Reference)
+            assert ref.sdmx_type == "Codelist"
+            assert ref.agency == "SDMX"
+            assert ref.id == "CL_FREQ"
+            assert ref.version == "1.0"
         elif cat.id == "TWO":
             assert cat.description is None
             assert not cat.dataflows
             assert len(cat.categories) == 1
+            assert not cat.other_references
             child = cat.categories[0]
             assert child.id == "TWO_KID"
             assert child.description is None
             assert not child.categories
             assert len(child.dataflows) == 2
+            assert not child.other_references
         elif cat.id == "THREE":
             assert cat.description is not None
             assert not cat.dataflows
             assert len(cat.categories) == 1
+            assert not cat.other_references
             child = cat.categories[0]
             assert child.id == "THREE_KID"
             assert child.description is None
             assert not child.categories
             assert not child.dataflows
-
+            assert not child.other_references
         else:
             assert cat.id in ["FOUR", "FIVE", "SIX"]
             assert cat.description is None
             assert not cat.categories
             assert not cat.dataflows
+            assert not cat.other_references
 
 
 def __check_core_info(categories: Sequence[Category]):

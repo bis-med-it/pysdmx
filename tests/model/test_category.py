@@ -2,7 +2,7 @@ from typing import Iterable
 
 import pytest
 
-from pysdmx.model import Category, DataflowRef
+from pysdmx.model import Category, DataflowRef, Reference
 
 
 @pytest.fixture
@@ -51,9 +51,15 @@ def test_default(id):
 def test_full_instantiation(id, name, desc):
     cats = [Category(id="chld", name="Child")]
     flows = [DataflowRef(id="EXR", agency="BIS")]
+    refs = [Reference("Codelist", "BIS", "CL_FREQ", "1.0")]
 
     c = Category(
-        id=id, name=name, description=desc, categories=cats, dataflows=flows
+        id=id,
+        name=name,
+        description=desc,
+        categories=cats,
+        dataflows=flows,
+        other_references=refs,
     )
 
     assert c.id == id
@@ -61,12 +67,14 @@ def test_full_instantiation(id, name, desc):
     assert c.description == desc
     assert c.categories == cats
     assert c.dataflows == flows
+    assert c.other_references == refs
 
 
-def test_mutable(id, name):
-    """Categories are mutable, so that we can add dataflows to them."""
+def test_immutable(id, name):
+    """Categories are immutable."""
     c = Category(id=id)
-    c.name = name
+    with pytest.raises(AttributeError):
+        c.name = name
 
 
 def test_equal(id, name, desc):
