@@ -160,7 +160,7 @@ class JsonCategoryScheme(
 
     categories: Sequence[JsonCategory] = ()
 
-    def __group_flows(
+    def __group_refs(
         self,
         categorisations: Sequence[JsonCategorisation] = (),
         dataflows: Sequence[JsonDataflow] = (),
@@ -188,7 +188,7 @@ class JsonCategoryScheme(
         dataflows: Sequence[JsonDataflow] = (),
     ) -> CategoryScheme:
         """Converts a JsonCategoryScheme to a standard one."""
-        cat_flows, cat_other = self.__group_flows(categorisations, dataflows)
+        cat_flows, cat_other = self.__group_refs(categorisations, dataflows)
         return CategoryScheme(
             id=self.id,
             name=self.name,
