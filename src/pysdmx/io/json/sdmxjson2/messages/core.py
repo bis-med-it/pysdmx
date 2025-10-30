@@ -299,6 +299,7 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
             test=self.test,
             prepared=self.prepared,
             sender=self.sender,
+            receiver=self.receivers,
         )
 
     @classmethod
