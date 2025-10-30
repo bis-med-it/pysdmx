@@ -87,7 +87,7 @@ class Header(Struct, repr_omit_defaults=True, kw_only=True):
     test: bool = False
     prepared: datetime = datetime.now(timezone.utc)
     sender: Organisation = Organisation(id="ZZZ")
-    receiver: Optional[Organisation] = None
+    receiver: Sequence[Organisation] = ()
     source: Optional[str] = None
     dataset_action: Optional[ActionType] = None
     structure: Optional[Dict[str, str]] = None
@@ -99,7 +99,13 @@ class Header(Struct, repr_omit_defaults=True, kw_only=True):
             self.sender = Organisation(id=self.sender)
 
         if isinstance(self.receiver, str):
-            self.receiver = Organisation(id=self.receiver)
+            self.receiver = [Organisation(id=self.receiver)]
+
+        if isinstance(self.receiver, Organisation):
+            self.receiver = [self.receiver]
+
+        if self.receiver is None:
+            self.receiver = ()
 
     def __str__(self) -> str:
         """Custom string representation without the class name."""
