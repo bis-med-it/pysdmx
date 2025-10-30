@@ -1,4 +1,5 @@
 from datetime import timezone
+
 import msgspec
 import pytest
 
