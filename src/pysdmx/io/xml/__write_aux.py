@@ -284,35 +284,32 @@ def __item(
     name = None
     org_id = None
 
-    if isinstance(sender_receiver, Organisation):
-        org_id = sender_receiver.id
-        name = sender_receiver.name
+    org_id = sender_receiver.id
+    name = sender_receiver.name
 
-        unexpected_keys = {
-            URI_LOW,
-            URN_LOW,
-            DESC_LOW,
-            CONTACTS_LOW,
-            DFWS_LOW,
-            ANNOTATIONS_LOW,
-        }
+    unexpected_keys = {
+        URI_LOW,
+        URN_LOW,
+        DESC_LOW,
+        CONTACTS_LOW,
+        DFWS_LOW,
+        ANNOTATIONS_LOW,
+    }
 
-        unexpected_with_values = {
-            key
-            for key in unexpected_keys
-            if hasattr(sender_receiver, key)
-            and getattr(sender_receiver, key) not in (None, (), [], {})
-        }
+    unexpected_with_values = {
+        key
+        for key in unexpected_keys
+        if hasattr(sender_receiver, key)
+        and getattr(sender_receiver, key) not in (None, (), [], {})
+    }
 
-        if unexpected_with_values:
-            warnings.warn(
-                f"The following attributes will be lost: "
-                f"{', '.join(unexpected_with_values)}",
-                UserWarning,
-                stacklevel=2,
-            )
-    else:
-        return ""
+    if unexpected_with_values:
+        warnings.warn(
+            f"The following attributes will be lost: "
+            f"{', '.join(unexpected_with_values)}",
+            UserWarning,
+            stacklevel=2,
+        )
 
     message = f"{nl}{child2}<{ABBR_MSG}:{element} id={org_id!r}"
     if name is not None:
