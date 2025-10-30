@@ -399,15 +399,7 @@ def __reference(
 
 
 def __write_receivers(header: Header, nl: str, prettyprint: bool) -> str:
-    recs = [
-        __item(
-            "Receiver",
-            header.receiver[0] if header.receiver else None,
-            nl,
-            prettyprint,
-        )
-        for r in header.receiver
-    ]
+    recs = [__item("Receiver", r, nl, prettyprint) for r in header.receiver]
     return "".join(recs)
 
 
