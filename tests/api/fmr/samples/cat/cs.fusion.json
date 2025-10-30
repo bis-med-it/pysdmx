@@ -152,6 +152,21 @@
             "isFinal": false,
             "structureReference": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF_2(1.0)",
             "categoryReference": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE"
+        },
+        {
+            "id": "F70E4C5A-75A3-C506-3630-9761E9189242",
+            "urn": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Categorisation=TEST:F70E4C5A-75A3-C506-3630-9761E9189242(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Category 'TEST:TEST_CS(1.0).ONE' linking to Codelist 'SDMX:CL_FREQ(1.0)'"
+                }
+            ],
+            "agencyId": "TEST",
+            "version": "1.0",
+            "isFinal": false,
+            "structureReference": "urn:sdmx:org.sdmx.infomodel.datastructure.Codelist=SDMX:CL_FREQ(1.0)",
+            "categoryReference": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE"
         }
     ],
     "CategoryScheme": [
