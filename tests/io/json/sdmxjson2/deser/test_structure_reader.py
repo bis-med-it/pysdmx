@@ -37,7 +37,6 @@ def test_structure_reader(body):
     assert msg.header.receiver[0].id == "UY2"
     assert msg.header.receiver[1].id == "AR2"
 
-
     # Check content
     assert len(msg.get_agency_schemes()) == 5
     assert len(msg.get_categorisations()) == 6
