@@ -398,6 +398,19 @@ def __reference(
     )
 
 
+def __write_receivers(header: Header, nl: str, prettyprint: bool) -> str:
+    recs = [
+        __item(
+            "Receiver",
+            header.receiver[0] if header.receiver else None,
+            nl,
+            prettyprint,
+        )
+        for r in header.receiver
+    ]
+    return "".join(recs)
+
+
 def __write_header(
     header: Header,
     prettyprint: bool,
@@ -470,7 +483,7 @@ def __write_header(
         f"{__value('Test', test)}"
         f"{__value('Prepared', prepared)}"
         f"{__item('Sender', header.sender, nl, prettyprint)}"
-        f"{__item('Receiver', header.receiver, nl, prettyprint)}"
+        f"{__write_receivers(header, nl, prettyprint)}"
         f"{references_str}"
         f"{__value('DataSetAction', action_value)}"
         f"{__value('DataSetID', header.dataset_id)}"
