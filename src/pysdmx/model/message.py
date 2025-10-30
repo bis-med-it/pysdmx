@@ -19,7 +19,7 @@ from typing import Any, Dict, List, Optional, Sequence, Type, Union
 from msgspec import Struct
 
 from pysdmx.errors import Invalid, NotFound
-from pysdmx.model.__base import ItemScheme, MaintainableArtefact, Organisation
+from pysdmx.model.__base import MaintainableArtefact, Organisation
 from pysdmx.model.category import Categorisation, CategoryScheme
 from pysdmx.model.code import Codelist, Hierarchy, HierarchyAssociation
 from pysdmx.model.concept import ConceptScheme
@@ -171,7 +171,9 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
             attrs.append(f"{attr}={repr(value)}")
         return f"{self.__class__.__name__}({', '.join(attrs)})"
 
-    def __get_elements(self, type_: Type[Any]) -> List[Any]:
+    # Returns MaintainableArtefacts only, but mypy complains.
+    # As it is an internal method, it's acceptable.
+    def __get_elements(self, type_: Type[MaintainableArtefact]) -> List[Any]:
         """Returns a list of elements of a specific type."""
         if self.structures is None:
             raise NotFound(
@@ -180,6 +182,8 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
         structures = [e for e in self.structures if isinstance(e, type_)]
         return structures
 
+    # Returns Codelist or ValueList only, but mypy complains.
+    # As it is an internal method, it's acceptable.
     def __get_enumerations(
         self, type_: Type[Any], is_vl: bool = False
     ) -> List[Any]:
@@ -188,9 +192,11 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
         t = "valuelist" if is_vl else "codelist"
         return [e for e in enums if e.sdmx_type == t]
 
+    # Returns MaintainableArtefacts only,
+    # but mypy complains. As it is an internal method, it's acceptable.
     def __get_single_structure(
         self,
-        type_: Type[Union[ItemScheme, DataStructureDefinition, Dataflow]],
+        type_: Type[MaintainableArtefact],
         short_urn: str,
     ) -> Any:
         """Returns a specific element from content."""
@@ -235,7 +241,7 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
         return self.__get_elements(Metadataflow)
 
     def get_organisation_scheme(self, short_urn: str) -> AgencyScheme:
-        """Returns a specific OrganisationScheme."""
+        """Returns a specific AgencyScheme."""
         return self.__get_single_structure(AgencyScheme, short_urn)
 
     def get_codelist(self, short_urn: str) -> Codelist:
@@ -255,6 +261,10 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
     def get_dataflow(self, short_urn: str) -> Dataflow:
         """Returns a specific Dataflow."""
         return self.__get_single_structure(Dataflow, short_urn)
+
+    def get_provision_agreement(self, short_urn: str) -> ProvisionAgreement:
+        """Returns a specific Provision Agreement."""
+        return self.__get_single_structure(ProvisionAgreement, short_urn)
 
     def get_transformation_schemes(self) -> List[TransformationScheme]:
         """Returns the TransformationSchemes."""
