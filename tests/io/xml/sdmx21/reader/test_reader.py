@@ -635,7 +635,7 @@ def test_message_full(samples_folder):
 
     assert result.sender.id == "Unknown"
     assert result.sender.name == "Unknown"
-    assert result.receiver.id == "Not_supplied"
+    assert result.receiver[0].id == "Not_supplied"
     assert result.structure == {
         "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
     }
@@ -649,7 +649,7 @@ def test_message_full_with_langs(samples_folder):
 
     assert result.sender.id == "Unknown"
     assert result.sender.name == "Unknown"
-    assert result.receiver.id == "Not_supplied"
+    assert result.receiver[0].id == "Not_supplied"
     assert result.structure == {
         "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
     }
