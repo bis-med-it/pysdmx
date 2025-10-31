@@ -26,6 +26,13 @@ def read_sdmx(  # noqa: C901
 
     Check the :ref:`formats supported <io-reader-formats-supported>`
 
+    .. important::
+        When reading a SDMX-JSON structure message, you can read it
+        without installing the pysdmx[json] extra
+        by passing the parameter ``validate=False`` to this function.
+        Otherwise, if not installed, an error will be raised
+        if using ``validate=True``, as it is the default value.
+
     Args:
         sdmx_document: Path to file
           (`pathlib.Path <https://docs.python.org/3/library/pathlib.html>`_),
@@ -229,6 +236,13 @@ def get_datasets(
     - Data writing in SDMX-ML Structure Specific with DimensionAtObservation
       not equal to AllDimensions or Generic formats
     - Execution of VTL scripts over PandasDataset
+
+    .. important::
+        When reading a SDMX-JSON structure message (as the structure argument),
+        you can read it without installing the pysdmx[json] extra
+        by passing the parameter ``validate=False`` to this function.
+        Otherwise, if not installed, an error will be raised
+        if using ``validate=True``, as it is the default value.
 
     Args:
         data: Path to file
