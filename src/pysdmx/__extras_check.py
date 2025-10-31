@@ -55,3 +55,16 @@ def __check_vtl_extra() -> None:
                 " and prettify",
             )
         ) from None
+
+
+def __check_json_extra() -> None:
+    try:
+        import sdmxschemas  # noqa: F401
+    except ImportError:
+        raise ImportError(
+            ERROR_MESSAGE.format(
+                extra_name="json",
+                extra_desc="the validation of SDMX-JSON Structure Messages "
+                "(hint, use validate=False if you don't need validation)",
+            )
+        ) from None

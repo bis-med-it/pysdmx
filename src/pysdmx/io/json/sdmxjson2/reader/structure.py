@@ -3,6 +3,7 @@
 import msgspec
 
 from pysdmx import errors
+from pysdmx.__extras_check import __check_json_extra
 from pysdmx.io.json.sdmxjson2.messages import JsonStructureMessage
 from pysdmx.io.json.sdmxjson2.reader.doc_validation import validate_sdmx_json
 from pysdmx.model import decoders
@@ -10,7 +11,7 @@ from pysdmx.model.message import StructureMessage
 
 
 def read(input_str: str, validate: bool = True) -> StructureMessage:
-    """Read an SDMX-JSON 2.0.0 Stucture Message.
+    """Read an SDMX-JSON 2.0.0 Structure Message.
 
     Args:
         input_str: SDMX-JSON structure message to read.
@@ -20,6 +21,7 @@ def read(input_str: str, validate: bool = True) -> StructureMessage:
         A pysdmx StructureMessage
     """
     if validate:
+        __check_json_extra()
         validate_sdmx_json(input_str)
 
     try:
