@@ -161,12 +161,19 @@ def __parse_header(header: Dict[str, Any]) -> Header:
         Header: The header of the SDMX message.
 
     """
+    print(header)
+    if isinstance(header.get(RECEIVER), list):
+        receiver = [
+            __parse_sender_receiver(r) for r in header.get(RECEIVER, [])
+        ]
+    else:
+        receiver = __parse_sender_receiver(header.get(RECEIVER))  # type: ignore[assignment]
     dict_header = {
         "id": header.get(HEADER_ID),
         "test": header.get(TEST),
         "prepared": __parse_prepared(header.get(PREPARED)),  # type: ignore[arg-type]
         "sender": __parse_sender_receiver(header.get(SENDER)),
-        "receiver": __parse_sender_receiver(header.get(RECEIVER)),
+        "receiver": receiver,
         "source": __parse_source(header.get(SOURCE)),
         "dataset_action": __parse_dataset_action(header.get(DATASET_ACTION)),
         "structure": __parse_structure(header.get(STRUCTURE)),
