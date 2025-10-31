@@ -74,6 +74,7 @@ jobs:
             "xml-data":  ["lxml","sdmxschemas","xmltodict","pandas","dateutil"],
             "vtl":  ["vtlengine","pandas","dateutil"],
             "dc":  ["dateutil"],
+            "json": ["sdmxschemas"],
           }
           all_mods = {m for mods in WANT.values() for m in mods}
           must = {m for e in selected for m in WANT.get(e, [])}
