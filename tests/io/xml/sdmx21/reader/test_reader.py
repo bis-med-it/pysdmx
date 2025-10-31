@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 import pysdmx
-from pysdmx.errors import Invalid, NotImplemented
+from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
@@ -369,8 +369,10 @@ def test_header_structure_provision_agrement(samples_folder):
     data_path = samples_folder / "header_structure_provision_agrement.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.DATA_SDMX_ML_2_1_STR
-    with pytest.raises(NotImplemented, match="ProvisionAgrement"):
-        read_sdmx(input_str, validate=True)
+    data = read_sdmx(input_str, validate=True).data
+    assert len(data) == 1
+    df = data[0].data
+    assert df.shape == (1, 19)
 
 
 def test_stref_dif_strid(samples_folder):
@@ -633,7 +635,8 @@ def test_message_full(samples_folder):
 
     assert result.sender.id == "Unknown"
     assert result.sender.name == "Unknown"
-    assert result.receiver.id == "Not_supplied"
+    assert result.receiver[0].id == "AR2"
+    assert result.receiver[1].id == "UY2"
     assert result.structure == {
         "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
     }
@@ -647,7 +650,7 @@ def test_message_full_with_langs(samples_folder):
 
     assert result.sender.id == "Unknown"
     assert result.sender.name == "Unknown"
-    assert result.receiver.id == "Not_supplied"
+    assert result.receiver[0].id == "Not_supplied"
     assert result.structure == {
         "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
     }
