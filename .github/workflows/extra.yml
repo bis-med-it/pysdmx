@@ -23,6 +23,9 @@ jobs:
           - extra: noextra
             marker: noextra
             extras_to_install: ""
+          - extra: json
+            marker: json
+            extras_to_install: "json"
           - extra: dc
             marker: dc
             extras_to_install: "dc"
@@ -32,9 +35,6 @@ jobs:
           - extra: data
             marker: data
             extras_to_install: "data"
-          - extra: json
-            marker: json
-            extras_to_install: "json"
           - extra: xml
             marker: xml
             extras_to_install: "xml"
