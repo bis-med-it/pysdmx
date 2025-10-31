@@ -401,7 +401,7 @@ def test_get_datasets_missing_attribute(samples_folder):
     assert "DECIMALS" not in dataset.data.columns
     assert "UNIT_MULT" not in dataset.data.columns
 
-
+@pytest.mark.json
 def test_get_json2_structure(sdmx_json_structure):
     msg = read_sdmx(sdmx_json_structure)
 
@@ -415,7 +415,7 @@ def test_get_json2_structure(sdmx_json_structure):
     assert cl.version == "2.0"
     assert len(cl.codes) == 9
 
-
+@pytest.mark.json
 def test_get_json2_refmeta(sdmx_json_refmeta):
     msg = read_sdmx(sdmx_json_refmeta)
 
@@ -429,7 +429,7 @@ def test_get_json2_refmeta(sdmx_json_refmeta):
     assert rep.version == "1.0.42"
     assert len(rep.attributes) == 2
 
-
+@pytest.mark.json
 def test_get_json2_data(sdmx_json_data):
     with pytest.raises(
         NotImplemented, match="This flavour of SDMX-JSON is not supported."

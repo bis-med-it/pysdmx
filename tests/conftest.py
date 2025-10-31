@@ -32,6 +32,8 @@ PATH_RULES = {
     "/tests/api/qb/": ("noextra", True),
     # dc tests
     "/tests/api/dc/": ("dc", True),
+    # json tests
+    "/tests/io/json/sdmxjson2/": ("json", True),
 }
 
 EXCLUDE_FROM_AUTOMARK = {
