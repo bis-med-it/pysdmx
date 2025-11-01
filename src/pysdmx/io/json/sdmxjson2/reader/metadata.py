@@ -3,6 +3,7 @@
 import msgspec
 
 from pysdmx import errors
+from pysdmx.__extras_check import __check_json_extra
 from pysdmx.io.json.sdmxjson2.messages import JsonMetadataMessage
 from pysdmx.io.json.sdmxjson2.reader.doc_validation import validate_sdmx_json
 from pysdmx.model import decoders
@@ -20,6 +21,7 @@ def read(input_str: str, validate: bool = True) -> MetadataMessage:
         A pysdmx MetadataMessage
     """
     if validate:
+        __check_json_extra()
         validate_sdmx_json(input_str)
 
     try:
