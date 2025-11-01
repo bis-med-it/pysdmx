@@ -5,10 +5,8 @@ import re
 from pathlib import Path
 from typing import Any, Callable, Mapping, Match, Optional
 
-from jsonschema import Draft202012Validator  # type: ignore[import-untyped]
-from jsonschema.exceptions import (  # type: ignore[import-untyped]
-    ValidationError,
-)
+from jsonschema import Draft202012Validator
+from jsonschema.exceptions import ValidationError
 from sdmxschemas import SDMX_JSON_20_DATA_PATH as SCHEMA_PATH_JSON20_DATA
 from sdmxschemas import (
     SDMX_JSON_20_METADATA_PATH as SCHEMA_PATH_JSON20_METADATA,

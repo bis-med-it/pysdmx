@@ -59,6 +59,7 @@ def __check_vtl_extra() -> None:
 
 def __check_json_extra() -> None:
     try:
+        import jsonschema  # noqa: F401
         import sdmxschemas  # noqa: F401
     except ImportError:
         raise ImportError(
