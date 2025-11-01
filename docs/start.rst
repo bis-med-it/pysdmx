@@ -118,6 +118,8 @@ The following extras are available:
      - Purpose
    * - ``xml``
      - Read and Write SDMX-ML messages, on pysdmx.io.xml.
+   * - ``json``
+     - Only required to validate SDMX-JSON Structure messages when reading them.
    * - ``data``
      - Read and write SDMX-CSV and handle SDMX datasets as Pandas Dataframes.
    * - ``dc``

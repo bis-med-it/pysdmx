@@ -26,11 +26,18 @@ def read_sdmx(  # noqa: C901
 
     Check the :ref:`formats supported <io-reader-formats-supported>`
 
+    .. important::
+        When reading a SDMX-JSON structure message, you can read it
+        without installing the pysdmx[json] extra
+        by passing the parameter ``validate=False`` to this function.
+        Otherwise, if not installed, an error will be raised
+        if using ``validate=True``, as it is the default value.
+
     Args:
         sdmx_document: Path to file
           (`pathlib.Path <https://docs.python.org/3/library/pathlib.html>`_),
           URL, or string.
-        validate: Validate the input file (only for SDMX-ML).
+        validate: Validate the input file (only for SDMX-ML and SDMX-JSON).
         pem: When using a URL, in case the service exposed
           a certificate created by an unknown certificate
           authority, you can pass a PEM file for this
@@ -78,7 +85,7 @@ def read_sdmx(  # noqa: C901
             read as read_struct,
         )
 
-        struct_msg = read_struct(input_str)
+        struct_msg = read_struct(input_str, validate=validate)
         header = struct_msg.header
         result_structures = (
             struct_msg.structures if struct_msg.structures else []
@@ -88,7 +95,7 @@ def read_sdmx(  # noqa: C901
             read as read_refmeta,
         )
 
-        ref_msg = read_refmeta(input_str)
+        ref_msg = read_refmeta(input_str, validate=validate)
         header = ref_msg.header
         reports = ref_msg.get_reports()
     elif read_format == Format.DATA_SDMX_ML_2_1_GEN:
@@ -230,6 +237,13 @@ def get_datasets(
       not equal to AllDimensions or Generic formats
     - Execution of VTL scripts over PandasDataset
 
+    .. important::
+        When reading a SDMX-JSON structure message (as the structure argument),
+        you can read it without installing the pysdmx[json] extra
+        by passing the parameter ``validate=False`` to this function.
+        Otherwise, if not installed, an error will be raised
+        if using ``validate=True``, as it is the default value.
+
     Args:
         data: Path to file
           (`pathlib.Path <https://docs.python.org/3/library/pathlib.html>`_),
@@ -238,7 +252,7 @@ def get_datasets(
           Path to file
           (`pathlib.Path <https://docs.python.org/3/library/pathlib.html>`_),
           URL, or string for the structure message, if needed.
-        validate: Validate the input file (only for SDMX-ML).
+        validate: Validate the input file (only for SDMX-ML and SDMX-JSON).
         pem: When using a URL, in case the service exposed
             a certificate created by an unknown certificate
             authority, you can pass a PEM file for this

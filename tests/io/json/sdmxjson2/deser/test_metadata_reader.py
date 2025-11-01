@@ -46,4 +46,4 @@ def test_get_json2_invalid_refmeta():
     with pytest.raises(
         errors.Invalid, match="as SDMX-JSON 2.0.0 reference metadata message."
     ):
-        read("pyproject.toml")
+        read("pyproject.toml", validate=False)
