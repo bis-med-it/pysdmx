@@ -54,7 +54,7 @@ description = "Classes Without Boilerplate"
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"vtl\" or extra == \"all\""
+markers = "extra == \"vtl\" or extra == \"all\" or extra == \"json\""
 files = [
     {file = "attrs-25.1.0-py3-none-any.whl", hash = "sha256:c75a69e28a550a7e93789579c22aa26b0f5b83b75dc4e08fe092980051e1090a"},
     {file = "attrs-25.1.0.tar.gz", hash = "sha256:1c97078a80c814273a76b2a298a932eb681c87415c11dee0a6921de7f1b02c3e"},
@@ -594,7 +594,7 @@ description = "An implementation of JSON Schema validation for Python"
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"vtl\" or extra == \"all\""
+markers = "extra == \"vtl\" or extra == \"all\" or extra == \"json\""
 files = [
     {file = "jsonschema-4.23.0-py3-none-any.whl", hash = "sha256:fbadb6f8b144a8f8cf9f0b89ba94501d143e50411a1278633f56a7acf7fd5566"},
     {file = "jsonschema-4.23.0.tar.gz", hash = "sha256:d71497fef26351a33265337fa77ffeb82423f3ea21283cd9467bb03999266bc4"},
@@ -617,7 +617,7 @@ description = "The JSON Schema meta-schemas and vocabularies, exposed as a Regis
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "extra == \"vtl\" or extra == \"all\""
+markers = "extra == \"vtl\" or extra == \"all\" or extra == \"json\""
 files = [
     {file = "jsonschema_specifications-2024.10.1-py3-none-any.whl", hash = "sha256:a09a0680616357d9a0ecf05c12ad234479f549239d0f5b55f3deea67475da9bf"},
     {file = "jsonschema_specifications-2024.10.1.tar.gz", hash = "sha256:0f38b83639958ce1152d02a7f062902c41c8fd20d558b0c34344292d417ae272"},
@@ -1484,7 +1484,7 @@ description = "JSON Referencing + Python"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "extra == \"vtl\" or extra == \"all\""
+markers = "extra == \"vtl\" or extra == \"all\" or extra == \"json\""
 files = [
     {file = "referencing-0.36.2-py3-none-any.whl", hash = "sha256:e8699adbbf8b5c7de96d8ffa0eb5c158b3beafce084968e2ea8bb08c6794dcd0"},
     {file = "referencing-0.36.2.tar.gz", hash = "sha256:df2e89862cd09deabbdba16944cc3f10feb6b3e6f18e902f7cc25609a34775aa"},
@@ -1539,7 +1539,7 @@ description = "Python bindings to Rust's persistent data structures (rpds)"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "extra == \"vtl\" or extra == \"all\""
+markers = "extra == \"vtl\" or extra == \"all\" or extra == \"json\""
 files = [
     {file = "rpds_py-0.22.3-cp310-cp310-macosx_10_12_x86_64.whl", hash = "sha256:6c7b99ca52c2c1752b544e310101b98a659b720b21db00e65edca34483259967"},
     {file = "rpds_py-0.22.3-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:be2eb3f2495ba669d2a985f9b426c1797b7d48d6963899276d22f23e33d47e37"},
@@ -2161,11 +2161,11 @@ type = ["pytest-mypy"]
 all = ["lxml", "pandas", "python-dateutil", "sdmxschemas", "vtlengine", "xmltodict"]
 data = ["pandas"]
 dc = ["python-dateutil"]
-json = ["sdmxschemas"]
+json = ["jsonschema", "sdmxschemas"]
 vtl = ["vtlengine"]
 xml = ["lxml", "sdmxschemas", "xmltodict"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "76fe612f4a3f8ced403646a04ad33495ad4c84afbaec65db24f34864ef091f7e"
+content-hash = "7af89166b0f4cdae30c6bcaeddfc4e32bc07aeaaa51e468a12899a7fd138f1b7"
