@@ -37,7 +37,7 @@ def read_sdmx(  # noqa: C901
         sdmx_document: Path to file
           (`pathlib.Path <https://docs.python.org/3/library/pathlib.html>`_),
           URL, or string.
-        validate: Validate the input file (only for SDMX-ML).
+        validate: Validate the input file (only for SDMX-ML and SDMX-JSON).
         pem: When using a URL, in case the service exposed
           a certificate created by an unknown certificate
           authority, you can pass a PEM file for this
@@ -252,7 +252,7 @@ def get_datasets(
           Path to file
           (`pathlib.Path <https://docs.python.org/3/library/pathlib.html>`_),
           URL, or string for the structure message, if needed.
-        validate: Validate the input file (only for SDMX-ML).
+        validate: Validate the input file (only for SDMX-ML and SDMX-JSON).
         pem: When using a URL, in case the service exposed
             a certificate created by an unknown certificate
             authority, you can pass a PEM file for this
