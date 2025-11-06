@@ -28,7 +28,7 @@ from pysdmx.model import (
     VtlDataflowMapping,
     VtlMappingScheme,
 )
-from pysdmx.model.dataflow import DataStructureDefinition
+from pysdmx.model.dataflow import DataStructureDefinition, ProvisionAgreement
 from pysdmx.util import parse_urn
 
 
@@ -46,6 +46,8 @@ def test_dataflow_30(samples_folder):
     assert header.structure == {
         "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)": "AllDimensions"
     }
+    assert header.receiver[0].id == "AR2"
+    assert header.receiver[1].id == "UY2"
     assert result.data is not None
     data = result.data[0].data
     num_rows = len(data)
@@ -668,3 +670,17 @@ def test_value_list_enum(samples_folder):
     assert valuelist.sdmx_type == enumeration.sdmx_type
     assert valuelist.id == enumeration.id
     assert valuelist.items == enumeration.items
+
+
+def test_prov_agreement(samples_folder):
+    data_path = samples_folder / "prov_agreement_3.0.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_sdmx(input_str, validate=True).get_provision_agreements()
+    assert result is not None
+    prov_agreement = result[0]
+    assert isinstance(prov_agreement, ProvisionAgreement)
+    assert prov_agreement.id == "TEST"
+    assert prov_agreement.short_urn == "ProvisionAgreement=MD:TEST(1.0)"
+    assert prov_agreement.dataflow == "Dataflow=MD:TEST(1.0)"
+    assert prov_agreement.provider == "DataProvider=MD:DATA_PROVIDERS(1.0).MD"

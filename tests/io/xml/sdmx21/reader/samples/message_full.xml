@@ -13,7 +13,8 @@
             <common:Name>Unknown</common:Name>
             <common:Name>Unknown</common:Name>
         </message:Sender>
-        <message:Receiver id="Not_supplied"/>
+        <message:Receiver id="AR2"/>
+        <message:Receiver id="UY2"/>
         <message:Structure structureID="BIS_DER"
                            namespace="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_DER(1.0)"
                            dimensionAtObservation="AllDimensions">

@@ -1,0 +1,54 @@
+{
+    "meta": {
+        "id": "IREF944364",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/master/metadata-message/tools/schemas/2.0.0/sdmx-json-metadata-schema.json",
+        "prepared": "2023-08-16T14:00:39Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "FusionRegistry"
+        }
+    },
+    "data": {
+        "metadataSets": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "metadataset",
+                        "href": "https://example.org/metadataSets/BIS.MEDIT/DTI_BIS_MACRO/1.0.2"
+                    }
+                ],
+                "id": "Test",
+                "agencyID": "AgencyTest",
+                "name": "Metadata test",
+                "names": {
+                    "en": "Metadata test"
+                },
+                "version": "1.0",
+                "isExternalReference": false,
+                "metadataflow": "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=MD.TEST:TEST(1.0)",
+                "targets": [
+                    "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD.TEST:TEST(1.0)"
+                ],
+                "attributes": [
+                    {
+                        "id": "TEST",
+                        "attributes": [
+                            {
+                                "id": "TEST",
+                                "value": "TEST"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "TEST",
+                        "value": "TEST"
+                    }
+                ]
+            }
+        ]
+    }
+}

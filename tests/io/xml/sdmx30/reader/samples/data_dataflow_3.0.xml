@@ -10,7 +10,8 @@
         <message:Test>true</message:Test>
         <message:Prepared>2021-03-08T17:05:06</message:Prepared>
         <message:Sender id="Unknown"/>
-        <message:Receiver id="Not_supplied"/>
+        <message:Receiver id="AR2"/>
+        <message:Receiver id="UY2"/>
         <message:Structure structureID="BIS_WEBSTATS_DER_DATAFLOW_1_0"
                            namespace="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0):ObsLevelDim:AllDimensions"
                            dimensionAtObservation="AllDimensions">

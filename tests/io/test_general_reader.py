@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -186,6 +187,28 @@ def mock_http_client(monkeypatch, structures_path):
 
     monkeypatch.setattr(m, "httpx_Client", DummyClient)
     return last
+
+
+@pytest.fixture
+def prov_agreement_structure():
+    base_path = Path(__file__).parent / "samples" / "prov_agree_structure.xml"
+    return str(base_path)
+
+
+@pytest.fixture
+def data_prov_agreement():
+    base_path = Path(__file__).parent / "samples" / "data_prov_agree.xml"
+    return str(base_path)
+
+
+@pytest.fixture
+def prov_agreement_structure_no_dataflow():
+    base_path = (
+        Path(__file__).parent
+        / "samples"
+        / "prov_agree_structure_no_dataflow.xml"
+    )
+    return str(base_path)
 
 
 @pytest.mark.data
@@ -379,6 +402,7 @@ def test_get_datasets_missing_attribute(samples_folder):
     assert "UNIT_MULT" not in dataset.data.columns
 
 
+@pytest.mark.json
 def test_get_json2_structure(sdmx_json_structure):
     msg = read_sdmx(sdmx_json_structure)
 
@@ -393,8 +417,9 @@ def test_get_json2_structure(sdmx_json_structure):
     assert len(cl.codes) == 9
 
 
+@pytest.mark.json
 def test_get_json2_refmeta(sdmx_json_refmeta):
-    msg = read_sdmx(sdmx_json_refmeta)
+    msg = read_sdmx(sdmx_json_refmeta, validate=False)
 
     assert isinstance(msg, Message)
     assert msg.header is not None
@@ -407,8 +432,38 @@ def test_get_json2_refmeta(sdmx_json_refmeta):
     assert len(rep.attributes) == 2
 
 
+@pytest.mark.json
 def test_get_json2_data(sdmx_json_data):
     with pytest.raises(
         NotImplemented, match="This flavour of SDMX-JSON is not supported."
     ):
         read_sdmx(sdmx_json_data)
+
+
+def test_get_datasets_prov_agreement(
+    data_prov_agreement, prov_agreement_structure
+):
+    result = get_datasets(data_prov_agreement, prov_agreement_structure)
+    assert len(result) == 1
+    dataset = result[0]
+    assert dataset.data is not None
+    assert isinstance(dataset.structure, Schema)
+    assert len(dataset.data) == 1
+    assert dataset.structure.short_urn == "ProvisionAgreement=MD:TEST(1.0)"
+
+
+def test_get_datasets_prov_agreement_no_dataflow(
+    data_prov_agreement, prov_agreement_structure_no_dataflow
+):
+    with pytest.raises(
+        Invalid,
+        match=re.escape(
+            "Provision Agreement ProvisionAgreement=MD:TEST(1.0)"
+            " does not have a Dataflow defined."
+        ),
+    ):
+        get_datasets(
+            data_prov_agreement,
+            prov_agreement_structure_no_dataflow,
+            validate=False,
+        )

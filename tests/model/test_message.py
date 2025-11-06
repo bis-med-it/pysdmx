@@ -262,7 +262,7 @@ def test_header_initialization_with_strings():
     assert header.test is True
     assert header.prepared == datetime(2023, 1, 1, tzinfo=timezone.utc)
     assert header.sender.id == "TEST_SENDER"
-    assert header.receiver.id == "TEST_RECEIVER"
+    assert header.receiver[0].id == "TEST_RECEIVER"
     assert header.source == "Test Source"
 
 

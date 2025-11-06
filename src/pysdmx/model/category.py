@@ -9,13 +9,15 @@ from typing import Iterator, Optional, Sequence, Union
 from pysdmx.model.__base import (
     DataflowRef,
     Item,
+    ItemReference,
     ItemScheme,
     MaintainableArtefact,
+    Reference,
 )
 from pysdmx.model.dataflow import Dataflow
 
 
-class Category(Item, frozen=False, omit_defaults=True):  # type: ignore[misc]
+class Category(Item, frozen=True, omit_defaults=True):
     """A category, ie a way to **organize and group** things.
 
     Categories are used to organize and group other artefacts in SDMX.
@@ -34,10 +36,13 @@ class Category(Item, frozen=False, omit_defaults=True):  # type: ignore[misc]
         categories: The sub-categories, i.e. the categories belonging
             to the category.
         dataflows: The list of dataflows attached to the category.
+        other_references: References to other types artefacts (i.e. not
+            dataflows) attached to the category.
     """
 
     categories: Sequence["Category"] = ()
     dataflows: Sequence[Union[Dataflow, DataflowRef]] = ()
+    other_references: Sequence[Union[ItemReference, Reference]] = ()
 
     def __iter__(self) -> Iterator["Category"]:
         """Return an iterator over the list of categories."""

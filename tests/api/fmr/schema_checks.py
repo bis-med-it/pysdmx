@@ -216,7 +216,6 @@ async def check_coded_pra_components(
 
     count = 0
     for comp in vc.components:
-        print(comp.id)
         if comp.id in exp:
             assert len(comp.enumeration) == exp.get(comp.id)
             assert comp.enumeration.id is not None

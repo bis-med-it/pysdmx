@@ -15,7 +15,11 @@ from pysdmx.model import (
     TransformationScheme,
     VtlMappingScheme,
 )
-from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
+from pysdmx.model.dataflow import (
+    Dataflow,
+    DataStructureDefinition,
+    ProvisionAgreement,
+)
 
 
 @pytest.fixture
@@ -129,8 +133,11 @@ def test_dataflow_31(samples_folder):
     data_path = samples_folder / "dataflow.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_3_1
-    result = read_sdmx(input_str, validate=True).structures
-    dataflow = result[0]
+    result = read_sdmx(input_str, validate=True)
+    header = result.header
+    assert header.receiver[0].id == "AR2"
+    assert header.receiver[1].id == "UY2"
+    dataflow = result.structures[0]
     assert isinstance(dataflow, Dataflow)
     assert dataflow.id == "EXR"
     assert dataflow.agency == "ECB"
@@ -160,3 +167,17 @@ def test_data_no_structure_specific(samples_folder):
         match="This SDMX document is not an SDMX-ML StructureSpecificData.",
     ):
         read_str_spe(text, validate=False)
+
+
+def test_prov_agreement(samples_folder):
+    data_path = samples_folder / "prov_agreement_3.1.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    result = read_sdmx(input_str, validate=True).get_provision_agreements()
+    assert result is not None
+    prov_agreement = result[0]
+    assert isinstance(prov_agreement, ProvisionAgreement)
+    assert prov_agreement.id == "TEST"
+    assert prov_agreement.short_urn == "ProvisionAgreement=MD:TEST(1.0)"
+    assert prov_agreement.dataflow == "Dataflow=MD:TEST(1.0)"
+    assert prov_agreement.provider == "DataProvider=MD:DATA_PROVIDERS(1.0).MD"

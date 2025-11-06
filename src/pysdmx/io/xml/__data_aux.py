@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
-from pysdmx.errors import Invalid, NotImplemented
+from pysdmx.errors import Invalid
 from pysdmx.io.xml.__tokens import (
     AGENCY_ID,
     DATASET,
@@ -10,6 +10,7 @@ from pysdmx.io.xml.__tokens import (
     HEADER,
     ID,
     PROV_AGREEMENT,
+    PROV_AGREMENT,
     REF,
     STR_ID,
     STR_REF,
@@ -92,9 +93,13 @@ def __get_elements_from_structure(structure: Dict[str, Any]) -> Any:
         structure_type = "ProvisionAgreement"
         tuple_ids = __get_ids_from_structure(structure[PROV_AGREEMENT])
     else:
-        raise NotImplemented(
-            "Unsupported", "ProvisionAgrement not implemented"
-        )
+        # This section handles ProvisionAgrement.
+        # IMPORTANT: This is a typo in the SDMX standard XML schema 2.1
+        # fixed in 3.0 version.
+        # We intentionally read that exact key to be compatible
+        # with such files.
+        structure_type = "ProvisionAgreement"
+        tuple_ids = __get_ids_from_structure(structure[PROV_AGREMENT])
     return tuple_ids + (structure_type,)
 
 
