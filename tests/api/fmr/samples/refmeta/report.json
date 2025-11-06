@@ -19,7 +19,7 @@
                         "rel": "self",
                         "type": "metadataset",
                         "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
-                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataStructure=BIS.MEDIT:DTI_BIS_MACRO(1.0.42)"
+                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS.MEDIT:DTI_BIS_MACRO(1.0.42)"
                     }
                 ],
                 "id": "DTI_BIS_MACRO",

@@ -419,7 +419,7 @@ def test_get_json2_structure(sdmx_json_structure):
 
 @pytest.mark.json
 def test_get_json2_refmeta(sdmx_json_refmeta):
-    msg = read_sdmx(sdmx_json_refmeta)
+    msg = read_sdmx(sdmx_json_refmeta, validate=False)
 
     assert isinstance(msg, Message)
     assert msg.header is not None

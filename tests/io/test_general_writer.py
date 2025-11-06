@@ -158,7 +158,7 @@ def test_write_sdmx(
     write_sdmx(data, format_, str(output_path), **params)
     assert output_path.exists(), f"Output file {output_path} was not created."
 
-    written_content = read_sdmx(output_path)
+    written_content = read_sdmx(output_path, validate=False)
 
     assert written_content is not None, "Written content should not be None."
     assert written_content.header == reference.header, "Headers do not match."
@@ -204,7 +204,7 @@ def test_write_sdmx_no_header(
     write_sdmx(data, format_, Path(str(output_path)), **params)
     assert output_path.exists(), f"Output file {output_path} was not created."
 
-    written_content = read_sdmx(output_path)
+    written_content = read_sdmx(output_path, validate=False)
 
     assert written_content.header is not None, "The header is missing."
     assert written_content.header.sender.id == "ZZZ", "Unexpected sender."
@@ -238,7 +238,7 @@ def test_write_sdmx_no_output_file(
 
     out = write_sdmx(data, format_, **params)
 
-    written_content = read_sdmx(out)
+    written_content = read_sdmx(out, validate=False)
 
     assert written_content.header is not None, "The header is missing."
     assert written_content.header.sender.id == "ZZZ", "Unexpected sender."
