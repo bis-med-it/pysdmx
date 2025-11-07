@@ -1,4 +1,3 @@
-# mypy: disable-error-code="override"
 """Model for SDMX Codes and Codelists.
 
 Two different types of collections are provided:
