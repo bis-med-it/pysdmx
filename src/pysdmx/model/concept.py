@@ -1,3 +1,4 @@
+# mypy: disable-error-code="override"
 """Model for SDMX Concepts and Concept Schemes.
 
 Concepts are used to **describe the relevant characteristics of statistical

@@ -1,3 +1,4 @@
+# mypy: disable-error-code="override"
 """Model for SDMX agency schemes and data provider schemes."""
 
 from typing import Iterator, Optional, Sequence

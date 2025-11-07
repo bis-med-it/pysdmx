@@ -1,3 +1,4 @@
+# mypy: disable-error-code="override"
 """Model for VTL artefacts."""
 
 from enum import Enum

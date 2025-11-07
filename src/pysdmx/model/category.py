@@ -1,3 +1,4 @@
+# mypy: disable-error-code="override"
 """Model for SDMX Categories.
 
 An example of a category scheme is one which categorises data, sometimes
