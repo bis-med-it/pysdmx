@@ -36,6 +36,7 @@ jobs:
     - name: Run lint checks
       run: poetry run ruff check --output-format=github
     - name: Run type checks
+      if: matrix.python-version <= '3.12'
       run: poetry run mypy --show-error-codes --pretty
     - name: Run tests
       run: poetry run pytest --cov=pysdmx --cov-branch --cov-report=term-missing --verbose --tb=short --strict-markers --strict-config --durations=10 tests/
