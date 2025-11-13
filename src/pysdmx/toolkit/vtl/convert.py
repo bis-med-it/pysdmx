@@ -1,6 +1,6 @@
 """Conversions between pysdmx PandasDataset and vtlengine Dataset."""
 
-from typing import Dict, Type
+from typing import Dict, Optional, Type
 
 from vtlengine.DataTypes import (  # type: ignore[import-untyped]
     Boolean,
@@ -21,6 +21,7 @@ from vtlengine.Model import Role as VTLRole
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
+from pysdmx.model import Component, Components, Concept, Reference
 from pysdmx.model.concept import DataType
 from pysdmx.model.dataflow import Role, Schema
 
@@ -34,6 +35,16 @@ SDMX_TO_VTL_TYPE_MAP: Dict[DataType, Type[ScalarType]] = {
     # DataType.TIME: Time,
     DataType.DURATION: Duration,
 }
+VTL_TO_SDMX_TYPE_MAP: Dict[Type[ScalarType], DataType] = {
+    String: DataType.STRING,
+    Integer: DataType.INTEGER,
+    Number: DataType.DOUBLE,
+    Boolean: DataType.BOOLEAN,
+    Date: DataType.DATE,
+    TimePeriod: DataType.PERIOD,
+    # Time: DataType.TIME,
+    Duration: DataType.DURATION,
+}
 
 # Role mappings
 SDMX_TO_VTL_ROLE_MAP: Dict[Role, VTLRole] = {
@@ -41,7 +52,13 @@ SDMX_TO_VTL_ROLE_MAP: Dict[Role, VTLRole] = {
     Role.MEASURE: VTLRole.MEASURE,
     Role.ATTRIBUTE: VTLRole.ATTRIBUTE,
 }
+VTL_TO_SDMX_ROLE_MAP: Dict[VTLRole, Role] = {
+    VTLRole.IDENTIFIER: Role.DIMENSION,
+    VTLRole.MEASURE: Role.MEASURE,
+    VTLRole.ATTRIBUTE: Role.ATTRIBUTE,
+}
 
+VALID_SDMX_TYPES = {"DataStructure", "Dataflow", "ProvisionAgreement"}
 
 
 def convert_dataset_to_vtl(
@@ -125,3 +142,127 @@ def convert_dataset_to_vtl(
     )
 
     return vtl_dataset
+
+
+def convert_dataset_to_sdmx(
+    dataset: VTLengineDataset,
+    reference: Optional[Reference] = None,
+    schema: Optional[Schema] = None,
+) -> PandasDataset:
+    """Convert a vtlengine Dataset to a PandasDataset.
+
+    Args:
+        dataset: The vtlengine Dataset to convert.
+        reference: Reference to the SDMX structure (DataStructure, Dataflow,
+            or ProvisionAgreement) used for metadata.
+        schema: Optional Schema object. If provided, it will be used for
+            validation. If not provided, a Schema will be generated from
+            the VTL Dataset components.
+
+    Returns:
+        A PandasDataset with the data and structure from the vtlengine Dataset.
+
+    Raises:
+        Invalid: If the reference sdmx_type is not valid, if component types
+            cannot be mapped, or if validation fails when schema is provided.
+    """
+    # If schema is provided
+    if schema is not None:
+        # Validate that schema components match VTL dataset components
+        vtl_component_names = set(dataset.components.keys())
+        schema_component_names = {comp.id for comp in schema.components}
+
+        if vtl_component_names != schema_component_names:
+            missing_in_schema = vtl_component_names - schema_component_names
+            missing_in_vtl = schema_component_names - vtl_component_names
+            error_parts = []
+            if missing_in_schema:
+                error_parts.append(
+                    f"VTL components not in Schema: {missing_in_schema}"
+                )
+            if missing_in_vtl:
+                error_parts.append(
+                    f"Schema components not in VTL: {missing_in_vtl}"
+                )
+            raise Invalid(
+                "Validation Error",
+                f"Component mismatch between VTL Dataset and Schema. "
+                f"{'; '.join(error_parts)}",
+            )
+
+        pandas_dataset = PandasDataset(
+            structure=schema,
+            data=dataset.data,
+        )
+
+        return pandas_dataset
+
+    # If schema is not provided, reference must be provided
+    if reference is None:
+        raise Invalid(
+            "Validation Error",
+            "Either schema or reference must be provided",
+        )
+
+    # Validate reference.sdmx_type
+    if reference.sdmx_type not in VALID_SDMX_TYPES:
+        raise Invalid(
+            "Validation Error",
+            f"Reference sdmx_type must be one of {VALID_SDMX_TYPES}, "
+            f"but got '{reference.sdmx_type}'",
+        )
+
+    # Generate a new Schema from VTL Dataset components
+    sdmx_components = []
+
+    for comp_name, vtl_comp in dataset.components.items():
+        # Map VTL data type to SDMX data type
+        vtl_dtype_class = type(vtl_comp.data_type)
+        if vtl_dtype_class not in VTL_TO_SDMX_TYPE_MAP:
+            supported = ", ".join(
+                str(t.__name__) for t in VTL_TO_SDMX_TYPE_MAP
+            )
+            raise Invalid(
+                "Validation Error",
+                f"VTL DataType '{vtl_dtype_class.__name__}' cannot be "
+                f"mapped to an SDMX type. Supported types are: {supported}",
+            )
+        sdmx_dtype = VTL_TO_SDMX_TYPE_MAP[vtl_dtype_class]
+
+        # Map VTL role to SDMX role
+        if vtl_comp.role not in VTL_TO_SDMX_ROLE_MAP:
+            raise Invalid(
+                "Validation Error",
+                f"VTL Role '{vtl_comp.role}' cannot be mapped to an "
+                "SDMX Role",
+            )
+        sdmx_role = VTL_TO_SDMX_ROLE_MAP[vtl_comp.role]
+
+        # Determine attachment_level for attributes
+        attachment_level = "O" if sdmx_role == Role.ATTRIBUTE else None
+
+        # Create SDMX Component
+        sdmx_comp = Component(
+            id=comp_name,
+            required=not vtl_comp.nullable,
+            role=sdmx_role,
+            concept=Concept(comp_name, dtype=sdmx_dtype),
+            attachment_level=attachment_level,
+        )
+        sdmx_components.append(sdmx_comp)
+
+    # Create Schema using reference information
+    generated_schema = Schema(
+        context=reference.sdmx_type.lower(),
+        agency=reference.agency,
+        id=reference.id,
+        version=reference.version,
+        components=Components(sdmx_components),
+    )
+
+    pandas_dataset = PandasDataset(
+        structure=generated_schema,
+        data=dataset.data,
+    )
+
+    return pandas_dataset
