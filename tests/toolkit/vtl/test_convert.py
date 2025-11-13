@@ -587,3 +587,35 @@ def test_convert_to_sdmx_schema_mismatch(
         match="Component mismatch between VTL Dataset and Schema",
     ):
         convert_dataset_to_sdmx(vtl_dataset, schema=basic_schema)
+
+def test_roundtrip_conversion(
+    basic_schema: Schema,
+    basic_dataframe: pd.DataFrame,
+) -> None:
+    """Test that converting SDMX -> VTL -> SDMX -> VTL preserves data."""
+    # SDMX -> VTL
+    original_dataset = PandasDataset(
+        structure=basic_schema, data=basic_dataframe
+    )
+    vtl_dataset_1 = convert_dataset_to_vtl(original_dataset, "test_1")
+
+    # VTL -> SDMX
+    sdmx_dataset = convert_dataset_to_sdmx(vtl_dataset_1, schema=basic_schema)
+    assert sdmx_dataset.structure == original_dataset.structure
+    pd.testing.assert_frame_equal(sdmx_dataset.data, original_dataset.data)
+
+    # SDMX -> VTL (second conversion)
+    vtl_dataset_2 = convert_dataset_to_vtl(sdmx_dataset, "test_2")
+
+    # Check that components match between the two VTL datasets
+    assert len(vtl_dataset_2.components) == len(vtl_dataset_1.components)
+    for comp_name in vtl_dataset_1.components:
+        assert comp_name in vtl_dataset_2.components
+        comp_1 = vtl_dataset_1.components[comp_name]
+        comp_2 = vtl_dataset_2.components[comp_name]
+        assert type(comp_2.data_type) is type(comp_1.data_type)
+        assert comp_2.role == comp_1.role
+        assert comp_2.nullable == comp_1.nullable
+
+    # Check that data is preserved
+    pd.testing.assert_frame_equal(vtl_dataset_2.data, vtl_dataset_1.data)

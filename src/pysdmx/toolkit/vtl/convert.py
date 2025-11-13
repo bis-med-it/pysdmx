@@ -153,7 +153,7 @@ def convert_dataset_to_sdmx(
 
     Args:
         dataset: The vtlengine Dataset to convert.
-        reference: Reference to the SDMX structure (DataStructure, Dataflow,
+        reference: Optional Reference to the SDMX structure (DataStructure, Dataflow,
             or ProvisionAgreement) used for metadata.
         schema: Optional Schema object. If provided, it will be used for
             validation. If not provided, a Schema will be generated from
