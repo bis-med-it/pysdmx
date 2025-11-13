@@ -589,8 +589,8 @@ def test_convert_to_sdmx_schema_mismatch(
     basic_schema: Schema,
     vtl_basic_dataset: VTLengineDataset,
 ) -> None:
-    """Test that conversion fails when VTL components and Schema dont match."""
-    # VTL dataset has an extra component and is missing one from the schema
+    """Test that conversion fails with various schema/VTL mismatches."""
+    # VTL dataset has an extra component and is missing some from schema
     components = {
         "FREQ": VTLComponent(
             name="FREQ",
@@ -648,13 +648,100 @@ def test_convert_to_sdmx_schema_mismatch(
                     id="EXTRA_COMPONENT",
                     required=False,
                     role=Role.ATTRIBUTE,
-                    concept=Concept("EXTRA_COMPONENT", dtype=DataType.STRING),
+                    concept=Concept(
+                        "EXTRA_COMPONENT", dtype=DataType.STRING
+                    ),
                     attachment_level="O",
                 ),
             ]
         ),
     )
+    with pytest.raises(
+        Invalid,
+        match="Component mismatch between VTL Dataset and Schema",
+    ):
+        convert_dataset_to_sdmx(vtl_basic_dataset, schema=schema)
 
+    # Schema has different type for OBS_VALUE (INTEGER instead of Number)
+    schema = Schema(
+        context="datastructure",
+        agency="TEST",
+        id="TEST_DSD",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="FREQ",
+                    required=True,
+                    role=Role.DIMENSION,
+                    concept=Concept("FREQ", dtype=DataType.STRING),
+                ),
+                Component(
+                    id="REF_AREA",
+                    required=True,
+                    role=Role.DIMENSION,
+                    concept=Concept("REF_AREA", dtype=DataType.STRING),
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    required=False,
+                    role=Role.MEASURE,
+                    concept=Concept("OBS_VALUE", dtype=DataType.INTEGER),
+                ),
+                Component(
+                    id="OBS_STATUS",
+                    required=False,
+                    role=Role.ATTRIBUTE,
+                    concept=Concept("OBS_STATUS", dtype=DataType.STRING),
+                    attachment_level="O",
+                ),
+            ]
+        ),
+    )
+    with pytest.raises(
+        Invalid,
+        match="Component mismatch between VTL Dataset and Schema",
+    ):
+        convert_dataset_to_sdmx(vtl_basic_dataset, schema=schema)
+
+    # Schema has different role for OBS_VALUE
+    # (ATTRIBUTE instead of MEASURE)
+    schema = Schema(
+        context="datastructure",
+        agency="TEST",
+        id="TEST_DSD",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="FREQ",
+                    required=True,
+                    role=Role.DIMENSION,
+                    concept=Concept("FREQ", dtype=DataType.STRING),
+                ),
+                Component(
+                    id="REF_AREA",
+                    required=True,
+                    role=Role.DIMENSION,
+                    concept=Concept("REF_AREA", dtype=DataType.STRING),
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    required=False,
+                    role=Role.ATTRIBUTE,
+                    concept=Concept("OBS_VALUE", dtype=DataType.DOUBLE),
+                    attachment_level="O",
+                ),
+                Component(
+                    id="OBS_STATUS",
+                    required=False,
+                    role=Role.ATTRIBUTE,
+                    concept=Concept("OBS_STATUS", dtype=DataType.STRING),
+                    attachment_level="O",
+                ),
+            ]
+        ),
+    )
     with pytest.raises(
         Invalid,
         match="Component mismatch between VTL Dataset and Schema",
