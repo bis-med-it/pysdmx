@@ -1,4 +1,4 @@
-"""Tests for VTL conversion functions."""
+"""Tests for VTL and SDMX conversion functions."""
 
 import pandas as pd
 import pytest
@@ -223,14 +223,29 @@ def test_convert_to_vtl_component_types(
 
 
 def test_convert_to_vtl_dataset_without_data(basic_schema: Schema) -> None:
-    """Test conversion of a dataset without data (None DataFrame)."""
-    dataset = PandasDataset(structure=basic_schema, data=None)  # type: ignore[arg-type]
+    """Test conversion of a dataset without data (None or empty DataFrame)."""
+    # Test with None data
+    dataset_none = PandasDataset(structure=basic_schema, data=None)  # type: ignore[arg-type]
+    vtl_dataset_none = convert_dataset_to_vtl(
+                        dataset_none,
+                        "empty_dataset_none")
 
-    vtl_dataset = convert_dataset_to_vtl(dataset, "empty_dataset")
+    assert vtl_dataset_none.name == "empty_dataset_none"
+    assert len(vtl_dataset_none.components) == 4
+    assert vtl_dataset_none.data is None
 
-    assert vtl_dataset.name == "empty_dataset"
-    assert len(vtl_dataset.components) == 4
-    assert vtl_dataset.data is None
+    # Test with empty DataFrame
+    empty_df = pd.DataFrame(columns=["FREQ", "REF_AREA",
+                                     "OBS_VALUE", "OBS_STATUS"])
+    dataset_empty = PandasDataset(structure=basic_schema, data=empty_df)
+    vtl_dataset_empty = convert_dataset_to_vtl(
+                            dataset_empty,
+                            "empty_dataset_df")
+
+    assert vtl_dataset_empty.name == "empty_dataset_df"
+    assert len(vtl_dataset_empty.components) == 4
+    assert vtl_dataset_empty.data is not None
+    assert len(vtl_dataset_empty.data) == 0
 
 
 def test_convert_to_vtl_dataset_with_string_structure() -> None:
@@ -503,7 +518,10 @@ def test_convert_to_sdmx_type_mappings(
 def test_convert_to_sdmx_without_data(
     basic_reference: Reference,
 ) -> None:
-    """Test conversion of VTL Dataset without data."""
+    """Test conversion of VTL Dataset without data.
+
+    (None or empty DataFrame).
+    """
     components = {
         "DIM1": VTLComponent(
             name="DIM1",
@@ -512,14 +530,30 @@ def test_convert_to_sdmx_without_data(
             nullable=False,
         ),
     }
-    vtl_dataset = VTLengineDataset(
-        name="empty", components=components, data=None
+
+    # Test with None data
+    vtl_dataset_none = VTLengineDataset(
+        name="empty_none", components=components, data=None
     )
+    pandas_dataset_none = convert_dataset_to_sdmx(
+                            vtl_dataset_none,
+                            basic_reference)
 
-    pandas_dataset = convert_dataset_to_sdmx(vtl_dataset, basic_reference)
+    assert pandas_dataset_none.data is None
+    assert len(pandas_dataset_none.structure.components) == 1
 
-    assert pandas_dataset.data is None
-    assert len(pandas_dataset.structure.components) == 1
+    # Test with empty DataFrame
+    empty_df = pd.DataFrame(columns=["DIM1"])
+    vtl_dataset_empty = VTLengineDataset(
+        name="empty_df", components=components, data=empty_df
+    )
+    pandas_dataset_empty = convert_dataset_to_sdmx(
+                            vtl_dataset_empty,
+                            basic_reference)
+
+    assert pandas_dataset_empty.data is not None
+    assert len(pandas_dataset_empty.data) == 0
+    assert len(pandas_dataset_empty.structure.components) == 1
 
 
 def test_convert_to_sdmx_no_schema_no_reference(
@@ -553,8 +587,9 @@ def test_convert_to_sdmx_invalid_sdmx_type(
 
 def test_convert_to_sdmx_schema_mismatch(
     basic_schema: Schema,
+    vtl_basic_dataset: VTLengineDataset,
 ) -> None:
-    """Test that conversion fails when VTL components don't match Schema."""
+    """Test that conversion fails when VTL components and Schema dont match."""
     # VTL dataset has an extra component and is missing one from the schema
     components = {
         "FREQ": VTLComponent(
@@ -587,6 +622,44 @@ def test_convert_to_sdmx_schema_mismatch(
         match="Component mismatch between VTL Dataset and Schema",
     ):
         convert_dataset_to_sdmx(vtl_dataset, schema=basic_schema)
+
+    # Schema is missing components that exist in VTL dataset
+    schema = Schema(
+        context="datastructure",
+        agency="TEST",
+        id="TEST_DSD",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="FREQ",
+                    required=True,
+                    role=Role.DIMENSION,
+                    concept=Concept("FREQ", dtype=DataType.STRING),
+                ),
+                Component(
+                    id="REF_AREA",
+                    required=True,
+                    role=Role.DIMENSION,
+                    concept=Concept("REF_AREA", dtype=DataType.STRING),
+                ),
+                # Missing OBS_VALUE and OBS_STATUS
+                Component(
+                    id="EXTRA_COMPONENT",
+                    required=False,
+                    role=Role.ATTRIBUTE,
+                    concept=Concept("EXTRA_COMPONENT", dtype=DataType.STRING),
+                    attachment_level="O",
+                ),
+            ]
+        ),
+    )
+
+    with pytest.raises(
+        Invalid,
+        match="Component mismatch between VTL Dataset and Schema",
+    ):
+        convert_dataset_to_sdmx(vtl_basic_dataset, schema=schema)
 
 def test_roundtrip_conversion(
     basic_schema: Schema,
