@@ -40,7 +40,7 @@ def test_keyset_deser(body):
     assert len(keyset.constraint_attachment.provision_agreements) == 0
     assert len(keyset.key_sets) == 1
     ks = keyset.key_sets[0]
-    assert ks.include is True
+    assert ks.is_included is True
     assert len(ks.keys) == 2
     for k in ks.keys:
         assert len(k.keys_values) == 4

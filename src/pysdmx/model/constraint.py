@@ -27,7 +27,7 @@ class CubeRegion(Struct, frozen=True, omit_defaults=True):
     """A cube region, with its associated values (by default, included)."""
 
     key_values: Sequence[CubeKeyValue]
-    include: bool = True
+    is_included: bool = True
 
 
 class ConstraintAttachment(Struct, frozen=True, omit_defaults=True):
@@ -58,7 +58,7 @@ class KeySet(Struct, frozen=True, omit_defaults=True):
     """A set of keys, inluded by default."""
 
     keys: Sequence[DataKey]
-    include: bool
+    is_included: bool
 
 
 class DataConstraint(MaintainableArtefact, frozen=True, omit_defaults=True):
