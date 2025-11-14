@@ -1,10 +1,12 @@
 """Model for SDMX Data Constraints."""
+
 from datetime import datetime
 from typing import Literal, Optional, Sequence
 
 from msgspec import Struct
 
 from pysdmx.model.__base import MaintainableArtefact
+
 
 class CubeValue(Struct, frozen=True, omit_defaults=True):
     """A value of the cube, with optional business validity."""
@@ -66,4 +68,3 @@ class DataConstraint(MaintainableArtefact, frozen=True, omit_defaults=True):
     role: Literal["Allowed", "Actual"] = "Allowed"
     cube_regions: Sequence[CubeRegion] = ()
     key_sets: Sequence[KeySet] = ()
-
