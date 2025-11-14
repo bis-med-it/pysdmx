@@ -1,7 +1,7 @@
 """Collection of SDMX-JSON schemas for content constraints."""
 
 from datetime import datetime
-from typing import Dict, Literal, Optional, Sequence
+from typing import Literal, Optional, Sequence
 
 from msgspec import Struct
 
@@ -26,7 +26,7 @@ class JsonValue(Struct, frozen=True, omit_defaults=True):
     validTo: Optional[datetime] = None
 
     def to_model(self) -> CubeValue:
-        """Returns the requested cube value."""
+        """Converts a JsonValue to a CubeValue."""
         return CubeValue(self.value, self.validFrom, self.validTo)
 
 
@@ -36,11 +36,11 @@ class JsonKeyValue(Struct, frozen=True, omit_defaults=True):
     id: str
     values: Sequence[JsonValue]
     # Additional properties are supported in the model (include,
-    # removePrefix, validFrom, validTo, timeRange) but not by the FMR. Therefore,
-    # they are ignored for now.
+    # removePrefix, validFrom, validTo, timeRange) but not by the FMR.
+    # Therefore, they are ignored for now.
 
     def to_model(self) -> CubeKeyValue:
-        """Returns the requested list of values."""
+        """Converts a JsonKeyValue to a CubeKeyValue."""
         return CubeKeyValue(self.id, [v.to_model() for v in self.values])
 
 
@@ -51,8 +51,8 @@ class JsonCubeRegion(Struct, frozen=True, omit_defaults=True):
     keyValues: Sequence[JsonKeyValue]
     include: bool = True
 
-    def to_model(self) -> CubeKeyValue:
-        """Returns the requested list of values."""
+    def to_model(self) -> CubeRegion:
+        """Converts a JsonCubeRegion to a CubeRegion."""
         return CubeRegion(
             [kv.to_model() for kv in self.keyValues], self.include
         )
@@ -67,6 +67,7 @@ class JsonConstraintAttachment(Struct, frozen=True, omit_defaults=True):
     provisionAgreements: Optional[Sequence[str]] = None
 
     def to_model(self) -> ConstraintAttachment:
+        """Converts a JsonConstraintAttachment to a ConstraintAttachment."""
         return ConstraintAttachment(
             self.dataProvider,
             self.dataStructures,
@@ -82,6 +83,7 @@ class JsonDataKeyValue(Struct, frozen=True, omit_defaults=True):
     value: str
 
     def to_model(self) -> DataKeyValue:
+        """Converts a JsonDataKeyValue to a DataKeyValue."""
         return DataKeyValue(self.id, self.value)
 
 
@@ -93,6 +95,7 @@ class JsonDataKey(Struct, frozen=True, omit_defaults=True):
     validTo: Optional[datetime] = None
 
     def to_model(self) -> DataKey:
+        """Converts a JsonDataKey to a DataKey."""
         return DataKey(
             [kv.to_model() for kv in self.keysValues],
             self.validFrom,
@@ -106,7 +109,8 @@ class JsonKeySet(Struct, frozen=True, omit_defaults=True):
     isIncluded: bool
     keys: Sequence[JsonDataKey]
 
-    def to_model(self) -> DataKey:
+    def to_model(self) -> KeySet:
+        """Converts a JsonKeySet to a KeySet."""
         return KeySet([k.to_model() for k in self.keys], self.isIncluded)
 
 
