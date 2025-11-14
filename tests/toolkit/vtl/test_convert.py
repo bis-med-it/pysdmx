@@ -828,3 +828,63 @@ def test_roundtrip_conversion(
 
     # Check that data is preserved
     pd.testing.assert_frame_equal(vtl_dataset_2.data, vtl_dataset_1.data)
+
+
+def test_convert_to_sdmx_unsupported_vtl_dtype(
+    basic_reference: Reference,
+) -> None:
+    """Test unsupported VTL types raise Invalid via convert_dataset_to_sdmx."""
+
+    class CustomScalar:
+        pass
+
+    components = {
+        "DIM1": VTLComponent(
+            name="DIM1",
+            data_type=CustomScalar(),
+            role=VTLRole.IDENTIFIER,
+            nullable=False,
+        ),
+    }
+    data = pd.DataFrame({"DIM1": ["A"]})
+    vtl_dataset = VTLengineDataset(
+                    name="test_custom_scalar",
+                    components=components, data=data
+                )
+
+    with pytest.raises(
+        Invalid,
+        match="VTL DataType 'CustomScalar' cannot be mapped to an SDMX type",
+    ):
+        convert_dataset_to_sdmx(vtl_dataset, basic_reference)
+
+
+def test_convert_to_sdmx_unsupported_vtl_role(
+    basic_reference: Reference,
+) -> None:
+    """Test unsupported VTL roles raise Invalid via convert_dataset_to_sdmx."""
+
+    class FakeRole:
+        pass
+
+    fake_role = FakeRole()
+
+    components = {
+        "DIM1": VTLComponent(
+            name="DIM1",
+            data_type=String(),
+            role=fake_role,  # type: ignore[unused-ignore]
+            nullable=False,
+        ),
+    }
+    data = pd.DataFrame({"DIM1": ["A"]})
+    vtl_dataset = VTLengineDataset(
+                    name="test_fake_role",
+                    components=components, data=data
+                )
+
+    with pytest.raises(
+        Invalid,
+        match="VTL Role",
+    ):
+        convert_dataset_to_sdmx(vtl_dataset, basic_reference)
