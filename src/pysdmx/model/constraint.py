@@ -14,7 +14,7 @@ class CubeValue(Struct, frozen=True, omit_defaults=True):
     valid_to: Optional[datetime] = None
 
 
-class KeyValue(Struct, frozen=True, omit_defaults=True):
+class CubeKeyValue(Struct, frozen=True, omit_defaults=True):
     """The list of values for a cube's component."""
 
     id: str
@@ -24,7 +24,7 @@ class KeyValue(Struct, frozen=True, omit_defaults=True):
 class CubeRegion(Struct, frozen=True, omit_defaults=True):
     """A cube region, with its associated values (by default, included)."""
 
-    key_values: Sequence[KeyValue]
+    key_values: Sequence[CubeKeyValue]
     include: bool = True
 
 
@@ -34,7 +34,7 @@ class ConstraintAttachment(Struct, frozen=True, omit_defaults=True):
     data_provider: Optional[str]
     data_structures: Optional[Sequence[str]] = None
     dataflows: Optional[Sequence[str]] = None
-    provision_greements: Optional[Sequence[str]] = None
+    provision_agreements: Optional[Sequence[str]] = None
 
 
 class DataKeyValue(Struct, frozen=True, omit_defaults=True):
