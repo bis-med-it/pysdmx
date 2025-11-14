@@ -124,6 +124,7 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
 
     def to_model(self) -> DataConstraint:
         """Converts a JsonDataConstraint to a pysdmx Data Constraint."""
+        at = self.constraintAttachment.to_model()  # type: ignore[union-attr]
         return DataConstraint(
             id=self.id,
             name=self.name,
@@ -134,8 +135,8 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             is_external_reference=self.isExternalReference,
             valid_from=self.validFrom,
             valid_to=self.validTo,
-            role=self.role,
-            constraint_attachment=self.constraintAttachment.to_model(),
+            role=self.role if self.role else "Allowed",
+            constraint_attachment=at,
             cube_regions=[r.to_model() for r in self.cubeRegions],
             key_sets=[s.to_model() for s in self.dataKeySets],
         )

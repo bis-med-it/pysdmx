@@ -460,15 +460,27 @@ class JsonComponents(Struct, frozen=True, omit_defaults=True):
                 cons = {}
         else:
             cons = {}
-        comps.extend(self.dimensionList.to_model(cs, enums, cons))
+        comps.extend(
+            self.dimensionList.to_model(
+                cs,
+                enums,
+                cons,  # type: ignore[arg-type]
+            )
+        )
         if self.measureList:
-            comps.extend(self.measureList.to_model(cs, enums, cons))
+            comps.extend(
+                self.measureList.to_model(
+                    cs,
+                    enums,
+                    cons,  # type: ignore[arg-type]
+                )
+            )
         if self.attributeList:
             comps.extend(
                 self.attributeList.to_model(
                     cs,
                     enums,
-                    cons,
+                    cons,  # type: ignore[arg-type]
                     self.groups,
                 )
             )
