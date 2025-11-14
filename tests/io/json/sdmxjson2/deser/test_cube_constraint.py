@@ -14,7 +14,6 @@ def body():
 
 
 def test_cube_deser(body):
-
     res = msgspec.json.Decoder(JsonDataConstraintMessage).decode(body)
 
     cubes = res.to_model()

@@ -14,7 +14,6 @@ def body():
 
 
 def test_keyset_deser(body):
-
     res = msgspec.json.Decoder(JsonDataConstraintMessage).decode(body)
 
     keysets = res.to_model()
@@ -45,7 +44,12 @@ def test_keyset_deser(body):
     for k in ks.keys:
         assert len(k.keys_values) == 4
         for v in k.keys_values:
-            assert v.id in ["SERIES", "UNIT_MEASURE", "UNIT_MULT", "COMPOSITE_BREAKDOWN"]
+            assert v.id in [
+                "SERIES",
+                "UNIT_MEASURE",
+                "UNIT_MULT",
+                "COMPOSITE_BREAKDOWN",
+            ]
             if v.id == "SERIES":
                 assert v.value == "SI_POV_DAY1"
             elif v.id == "UNIT_MEASURE":
@@ -54,4 +58,3 @@ def test_keyset_deser(body):
                 assert v.value == "0"
             else:
                 assert v.value in ["_T", "MS_MIGRANT"]
-
