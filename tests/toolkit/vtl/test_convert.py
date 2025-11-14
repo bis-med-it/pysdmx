@@ -634,12 +634,11 @@ def test_convert_to_sdmx_invalid_sdmx_type(
         convert_dataset_to_sdmx(vtl_basic_dataset, invalid_reference)
 
 
-def test_convert_to_sdmx_schema_mismatch(
+
+def test_convert_to_sdmx_schema_mismatch_vtl_extra_and_missing(
     basic_schema: Schema,
-    vtl_basic_dataset: VTLengineDataset,
 ) -> None:
-    """Test that conversion fails with various schema/VTL mismatches."""
-    # VTL dataset has an extra component and is missing some from schema
+    """VTL dataset has an extra component missing some from the schema."""
     components = {
         "FREQ": VTLComponent(
             name="FREQ",
@@ -672,7 +671,11 @@ def test_convert_to_sdmx_schema_mismatch(
     ):
         convert_dataset_to_sdmx(vtl_dataset, schema=basic_schema)
 
-    # Schema is missing components that exist in VTL dataset
+
+def test_convert_to_sdmx_schema_mismatch_schema_missing_components(
+    vtl_basic_dataset: VTLengineDataset,
+) -> None:
+    """Schema is missing components that exist in VTL dataset."""
     schema = Schema(
         context="datastructure",
         agency="TEST",
@@ -705,13 +708,21 @@ def test_convert_to_sdmx_schema_mismatch(
             ]
         ),
     )
+
     with pytest.raises(
         Invalid,
         match="Component mismatch between VTL Dataset and Schema",
     ):
         convert_dataset_to_sdmx(vtl_basic_dataset, schema=schema)
 
-    # Schema has different type for OBS_VALUE (INTEGER instead of Number)
+
+def test_convert_to_sdmx_schema_mismatch_wrong_type(
+    vtl_basic_dataset: VTLengineDataset,
+) -> None:
+    """Schema has different type for OBS_VALUE.
+
+    (INTEGER instead of DOUBLE/Number).
+    """
     schema = Schema(
         context="datastructure",
         agency="TEST",
@@ -747,14 +758,21 @@ def test_convert_to_sdmx_schema_mismatch(
             ]
         ),
     )
+
     with pytest.raises(
         Invalid,
         match="Component mismatch between VTL Dataset and Schema",
     ):
         convert_dataset_to_sdmx(vtl_basic_dataset, schema=schema)
 
-    # Schema has different role for OBS_VALUE
-    # (ATTRIBUTE instead of MEASURE)
+
+def test_convert_to_sdmx_schema_mismatch_wrong_role(
+    vtl_basic_dataset: VTLengineDataset,
+) -> None:
+    """Schema has different role for OBS_VALUE.
+
+    (ATTRIBUTE instead of MEASURE).
+    """
     schema = Schema(
         context="datastructure",
         agency="TEST",
@@ -791,11 +809,100 @@ def test_convert_to_sdmx_schema_mismatch(
             ]
         ),
     )
+
     with pytest.raises(
         Invalid,
         match="Component mismatch between VTL Dataset and Schema",
     ):
         convert_dataset_to_sdmx(vtl_basic_dataset, schema=schema)
+
+
+def test_convert_to_sdmx_schema_mismatch_schema_only_extra_component(
+    vtl_basic_dataset: VTLengineDataset,
+) -> None:
+    """Schema has an extra component that is not present in VTL dataset."""
+    schema_with_only_extra = Schema(
+        context="datastructure",
+        agency="TEST",
+        id="TEST_DSD",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="FREQ",
+                    required=True,
+                    role=Role.DIMENSION,
+                    concept=Concept("FREQ", dtype=DataType.STRING),
+                ),
+                Component(
+                    id="REF_AREA",
+                    required=True,
+                    role=Role.DIMENSION,
+                    concept=Concept("REF_AREA", dtype=DataType.STRING),
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    required=False,
+                    role=Role.MEASURE,
+                    concept=Concept("OBS_VALUE", dtype=DataType.DOUBLE),
+                ),
+                Component(
+                    id="OBS_STATUS",
+                    required=False,
+                    role=Role.ATTRIBUTE,
+                    concept=Concept("OBS_STATUS", dtype=DataType.STRING),
+                    attachment_level="O",
+                ),
+                Component(
+                    id="EXTRA_COMPONENT",
+                    required=False,
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(
+                        "EXTRA_COMPONENT", dtype=DataType.STRING
+                    ),
+                    attachment_level="O",
+                ),
+            ]
+        ),
+    )
+
+    with pytest.raises(
+        Invalid,
+        match="Component mismatch between VTL Dataset and Schema",
+    ):
+        convert_dataset_to_sdmx(
+            vtl_basic_dataset,
+            schema=schema_with_only_extra
+        )
+
+
+def test_convert_to_sdmx_schema_mismatch_vtl_only_extra_component(
+    basic_schema: Schema,
+    vtl_basic_dataset: VTLengineDataset,
+) -> None:
+    """VTL dataset has an extra component missing some from the schema."""
+    vtl_components_with_only_extra = dict(vtl_basic_dataset.components)
+    vtl_components_with_only_extra["EXTRA_COMPONENT"] = VTLComponent(
+        name="EXTRA_COMPONENT",
+        data_type=String(),
+        role=VTLRole.ATTRIBUTE,
+        nullable=True,
+    )
+    vtl_dataset_with_only_extra = VTLengineDataset(
+        name="test_extra_vtl",
+        components=vtl_components_with_only_extra,
+        data=None,
+    )
+
+    with pytest.raises(
+        Invalid,
+        match="Component mismatch between VTL Dataset and Schema",
+    ):
+        convert_dataset_to_sdmx(
+            vtl_dataset_with_only_extra,
+            schema=basic_schema
+        )
+
 
 def test_roundtrip_conversion(
     basic_schema: Schema,
