@@ -313,6 +313,39 @@ def test_convert_to_vtl_unsupported_data_type() -> None:
         convert_dataset_to_vtl(dataset, "test_dataset")
 
 
+def test_convert_to_vtl_invalid_role() -> None:
+    """Test that conversion fails when a component role cannot be mapped."""
+    class FakeRole:
+        pass
+
+    fake_role = FakeRole()
+
+    schema = Schema(
+        context="datastructure",
+        agency="TEST",
+        id="TEST_DSD",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    required=True,
+                    role=fake_role,  # type: ignore[arg-type]
+                    concept=Concept("DIM1", dtype=DataType.STRING),
+                )
+            ]
+        ),
+    )
+    df = pd.DataFrame({"DIM1": ["A"]})
+    dataset = PandasDataset(structure=schema, data=df)
+
+    with pytest.raises(
+        Invalid,
+        match="SDMX Role",
+    ):
+        convert_dataset_to_vtl(dataset, "test_dataset")
+
+
 # Tests for convert_dataset_to_sdmx
 
 @pytest.fixture
