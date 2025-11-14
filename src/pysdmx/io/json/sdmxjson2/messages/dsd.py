@@ -577,7 +577,7 @@ class JsonDataStructures(Struct, frozen=True, omit_defaults=True):
     conceptSchemes: Sequence[JsonConceptScheme] = ()
     valuelists: Sequence[JsonValuelist] = ()
     codelists: Sequence[JsonCodelist] = ()
-    contentConstraints: Sequence[JsonDataConstraint] = ()
+    dataConstraints: Sequence[JsonDataConstraint] = ()
 
     def to_model(self) -> Sequence[DataStructureDefinition]:
         """Returns the requested dsds."""
@@ -586,7 +586,7 @@ class JsonDataStructures(Struct, frozen=True, omit_defaults=True):
                 self.conceptSchemes,
                 self.codelists,
                 self.valuelists,
-                self.contentConstraints,
+                self.dataConstraints,
             )
             for dsd in self.dataStructures
         ]
