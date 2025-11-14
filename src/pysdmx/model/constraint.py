@@ -55,8 +55,8 @@ class DataKey(Struct, frozen=True, omit_defaults=True):
 class KeySet(Struct, frozen=True, omit_defaults=True):
     """A set of keys, inluded by default."""
 
-    include: bool
     keys: Sequence[DataKey]
+    include: bool
 
 
 class DataConstraint(MaintainableArtefact, frozen=True, omit_defaults=True):
