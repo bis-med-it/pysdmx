@@ -61,10 +61,10 @@ class JsonCubeRegion(Struct, frozen=True, omit_defaults=True):
 class JsonConstraintAttachment(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a constraint attachment."""
 
-    dataProvider: Optional[str]
-    dataStructures: Optional[Sequence[str]] = None
-    dataflows: Optional[Sequence[str]] = None
-    provisionAgreements: Optional[Sequence[str]] = None
+    dataProvider: Optional[str] = None
+    dataStructures: Sequence[str] = ()
+    dataflows: Sequence[str] = ()
+    provisionAgreements: Sequence[str] = ()
 
     def to_model(self) -> ConstraintAttachment:
         """Converts a JsonConstraintAttachment to a ConstraintAttachment."""
@@ -90,14 +90,14 @@ class JsonDataKeyValue(Struct, frozen=True, omit_defaults=True):
 class JsonDataKey(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a data key."""
 
-    keysValues: Sequence[JsonDataKeyValue]
+    keyValues: Sequence[JsonDataKeyValue]
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
 
     def to_model(self) -> DataKey:
         """Converts a JsonDataKey to a DataKey."""
         return DataKey(
-            [kv.to_model() for kv in self.keysValues],
+            [kv.to_model() for kv in self.keyValues],
             self.validFrom,
             self.validTo,
         )
@@ -145,11 +145,11 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
 class JsonDataConstraints(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for data constraints."""
 
-    contentConstraints: Sequence[JsonDataConstraint] = ()
+    dataConstraints: Sequence[JsonDataConstraint] = ()
 
     def to_model(self) -> Sequence[DataConstraint]:
         """Returns the requested data constraints."""
-        return [cc.to_model() for cc in self.contentConstraints]
+        return [cc.to_model() for cc in self.dataConstraints]
 
 
 class JsonDataConstraintMessage(Struct, frozen=True, omit_defaults=True):
