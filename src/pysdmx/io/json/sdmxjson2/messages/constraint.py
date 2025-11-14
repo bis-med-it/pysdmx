@@ -49,12 +49,12 @@ class JsonCubeRegion(Struct, frozen=True, omit_defaults=True):
 
     # The property `components` is ignored as it's not used in the FMR`
     keyValues: Sequence[JsonKeyValue]
-    isIncluded: bool = True
+    include: bool = True
 
     def to_model(self) -> CubeRegion:
         """Converts a JsonCubeRegion to a CubeRegion."""
         return CubeRegion(
-            [kv.to_model() for kv in self.keyValues], self.isIncluded
+            [kv.to_model() for kv in self.keyValues], self.include
         )
 
 
