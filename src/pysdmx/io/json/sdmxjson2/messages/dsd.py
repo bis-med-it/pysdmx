@@ -447,8 +447,12 @@ class JsonComponents(Struct, frozen=True, omit_defaults=True):
         enums = [cl.to_model() for cl in cls]
         enums.extend([vl.to_model() for vl in vls])
         comps = []
-        if constraints and constraints[0].cubeRegions:
-            cons = constraints[0].cubeRegions[0].to_map()
+        if constraints:
+            incl_cubes = [cr for c in constraints for cr in c.cubeRegions if cr.include]
+            if len(incl_cubes) == 1:
+                cons = incl_cubes[0].to_map()
+            else:
+                cons = {}
         else:
             cons = {}
         comps.extend(self.dimensionList.to_model(cs, enums, cons))
