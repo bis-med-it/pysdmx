@@ -182,9 +182,7 @@ def test_convert_to_vtl_basic_conversion(
     assert vtl_dataset.components["OBS_STATUS"].role == VTLRole.ATTRIBUTE
 
     # Check a component's type
-    assert isinstance(
-        vtl_dataset.components["OBS_VALUE"].data_type, type(Number)
-    )
+    assert vtl_dataset.components["OBS_VALUE"].data_type is Number
 
 
 def test_convert_to_vtl_component_types(
@@ -199,27 +197,30 @@ def test_convert_to_vtl_component_types(
     vtl_dataset = convert_dataset_to_vtl(dataset, "test_dataset")
 
     # Check type mappings
-    assert isinstance(
-        vtl_dataset.components["STRING_DIM"].data_type, type(String)
-    )
-    assert isinstance(
-        vtl_dataset.components["INTEGER_MEASURE"].data_type, type(Integer)
-    )
-    assert isinstance(
-        vtl_dataset.components["DOUBLE_MEASURE"].data_type, type(Number)
-    )
-    assert isinstance(
-        vtl_dataset.components["BOOLEAN_ATTR"].data_type, type(Boolean)
-    )
-    assert isinstance(
-        vtl_dataset.components["DATE_ATTR"].data_type, type(Date)
-    )
-    assert isinstance(
-        vtl_dataset.components["PERIOD_DIM"].data_type, type(TimePeriod)
-    )
-    assert isinstance(
-        vtl_dataset.components["DURATION_ATTR"].data_type, type(Duration)
-    )
+    assert vtl_dataset.components["STRING_DIM"].data_type is String
+    assert vtl_dataset.components["INTEGER_MEASURE"].data_type is Integer
+    assert vtl_dataset.components["DOUBLE_MEASURE"].data_type is Number
+    assert vtl_dataset.components["BOOLEAN_ATTR"].data_type is Boolean
+    assert vtl_dataset.components["DATE_ATTR"].data_type is Date
+    assert vtl_dataset.components["PERIOD_DIM"].data_type is TimePeriod
+    assert vtl_dataset.components["DURATION_ATTR"].data_type is Duration
+
+
+def test_convert_to_vtl_nullable_matches_required_flag(
+    basic_schema: Schema,
+    basic_dataframe: pd.DataFrame
+) -> None:
+    """Test that nullable is correctly derived from the required flag."""
+    dataset = PandasDataset(structure=basic_schema, data=basic_dataframe)
+    vtl_dataset = convert_dataset_to_vtl(dataset, "test_dataset")
+
+    # FREQ, REF_AREA: required=True -> nullable=False
+    assert vtl_dataset.components["FREQ"].nullable is False
+    assert vtl_dataset.components["REF_AREA"].nullable is False
+
+    # OBS_VALUE, OBS_STATUS: required=False -> nullable=True
+    assert vtl_dataset.components["OBS_VALUE"].nullable is True
+    assert vtl_dataset.components["OBS_STATUS"].nullable is True
 
 
 def test_convert_to_vtl_dataset_without_data(basic_schema: Schema) -> None:
@@ -235,8 +236,9 @@ def test_convert_to_vtl_dataset_without_data(basic_schema: Schema) -> None:
     assert vtl_dataset_none.data is None
 
     # Test with empty DataFrame
-    empty_df = pd.DataFrame(columns=["FREQ", "REF_AREA",
-                                     "OBS_VALUE", "OBS_STATUS"])
+    empty_df = pd.DataFrame(
+        columns=["FREQ", "REF_AREA", "OBS_VALUE", "OBS_STATUS"]
+    )
     dataset_empty = PandasDataset(structure=basic_schema, data=empty_df)
     vtl_dataset_empty = convert_dataset_to_vtl(
                             dataset_empty,
@@ -254,7 +256,10 @@ def test_convert_to_vtl_dataset_with_string_structure() -> None:
         structure="DataStructure=BIS:BIS_DER(1.0)", data=pd.DataFrame()
     )
 
-    with pytest.raises(Invalid, match="Dataset structure must be a Schema"):
+    with pytest.raises(
+        Invalid,
+        match="Dataset structure must be a Schema object for conversion to VTL"
+    ):
         convert_dataset_to_vtl(dataset, "test_dataset")
 
 
@@ -513,6 +518,17 @@ def test_convert_to_sdmx_type_mappings(
     assert components_dict["DATE_ATTR"].dtype == DataType.DATE
     assert components_dict["PERIOD_DIM"].dtype == DataType.PERIOD
     assert components_dict["DURATION_ATTR"].dtype == DataType.DURATION
+
+    # Attributes should have attachment_level "O"
+    assert components_dict["BOOLEAN_ATTR"].attachment_level == "O"
+    assert components_dict["DATE_ATTR"].attachment_level == "O"
+    assert components_dict["DURATION_ATTR"].attachment_level == "O"
+
+    # Non-attributes should not have attachment_level
+    assert components_dict["STRING_DIM"].attachment_level is None
+    assert components_dict["INTEGER_MEASURE"].attachment_level is None
+    assert components_dict["DOUBLE_MEASURE"].attachment_level is None
+    assert components_dict["PERIOD_DIM"].attachment_level is None
 
 
 def test_convert_to_sdmx_without_data(
