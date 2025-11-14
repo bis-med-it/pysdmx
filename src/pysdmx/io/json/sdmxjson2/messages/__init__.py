@@ -12,6 +12,7 @@ from pysdmx.io.json.sdmxjson2.messages.code import (
     JsonHierarchyMessage,
 )
 from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptSchemeMessage
+from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraintMessage
 from pysdmx.io.json.sdmxjson2.messages.dataflow import (
     JsonDataflowMessage,
     JsonDataflowsMessage,
@@ -50,6 +51,7 @@ __all__ = [
     "JsonCategorySchemeMessage",
     "JsonCodelistMessage",
     "JsonConceptSchemeMessage",
+    "JsonDataConstraintMessage",
     "JsonDataflowMessage",
     "JsonDataflowsMessage",
     "JsonDataStructuresMessage",
