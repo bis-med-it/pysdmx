@@ -175,6 +175,7 @@ def convert_dataset_to_sdmx(
 
     return pandas_dataset
 
+
 def _map_vtl_dtype_to_sdmx(vtl_dtype_value: ScalarType) -> DataType:
     """Return the SDMX DataType for a given VTL scalar.
 
@@ -188,7 +189,8 @@ def _map_vtl_dtype_to_sdmx(vtl_dtype_value: ScalarType) -> DataType:
         Invalid: If the VTL DataType cannot be mapped to an SDMX DataType.
     """
     vtl_dtype_class = (
-        vtl_dtype_value if isinstance(vtl_dtype_value, type)
+        vtl_dtype_value
+        if isinstance(vtl_dtype_value, type)
         else type(vtl_dtype_value)
     )
     if vtl_dtype_class not in VTL_TO_SDMX_TYPE_MAP:

@@ -32,6 +32,7 @@ from pysdmx.toolkit.vtl import convert_dataset_to_sdmx, convert_dataset_to_vtl
 
 # Tests for convert_dataset_to_vtl
 
+
 @pytest.fixture
 def basic_schema() -> Schema:
     """Create a basic schema with common components."""
@@ -162,8 +163,7 @@ def all_types_dataframe() -> pd.DataFrame:
 
 
 def test_convert_to_vtl_basic_conversion(
-    basic_schema: Schema,
-    basic_dataframe: pd.DataFrame
+    basic_schema: Schema, basic_dataframe: pd.DataFrame
 ) -> None:
     """Test basic conversion of a PandasDataset to a VTL Dataset."""
     dataset = PandasDataset(structure=basic_schema, data=basic_dataframe)
@@ -186,8 +186,7 @@ def test_convert_to_vtl_basic_conversion(
 
 
 def test_convert_to_vtl_component_types(
-    all_types_schema: Schema,
-    all_types_dataframe: pd.DataFrame
+    all_types_schema: Schema, all_types_dataframe: pd.DataFrame
 ) -> None:
     """Test that all SDMX data types are correctly mapped to VTL types."""
     dataset = PandasDataset(
@@ -207,8 +206,7 @@ def test_convert_to_vtl_component_types(
 
 
 def test_convert_to_vtl_nullable_matches_required_flag(
-    basic_schema: Schema,
-    basic_dataframe: pd.DataFrame
+    basic_schema: Schema, basic_dataframe: pd.DataFrame
 ) -> None:
     """Test that nullable is correctly derived from the required flag."""
     dataset = PandasDataset(structure=basic_schema, data=basic_dataframe)
@@ -228,8 +226,8 @@ def test_convert_to_vtl_dataset_without_data(basic_schema: Schema) -> None:
     # Test with None data
     dataset_none = PandasDataset(structure=basic_schema, data=None)  # type: ignore[arg-type]
     vtl_dataset_none = convert_dataset_to_vtl(
-                        dataset_none,
-                        "empty_dataset_none")
+        dataset_none, "empty_dataset_none"
+    )
 
     assert vtl_dataset_none.name == "empty_dataset_none"
     assert len(vtl_dataset_none.components) == 4
@@ -241,8 +239,8 @@ def test_convert_to_vtl_dataset_without_data(basic_schema: Schema) -> None:
     )
     dataset_empty = PandasDataset(structure=basic_schema, data=empty_df)
     vtl_dataset_empty = convert_dataset_to_vtl(
-                            dataset_empty,
-                            "empty_dataset_df")
+        dataset_empty, "empty_dataset_df"
+    )
 
     assert vtl_dataset_empty.name == "empty_dataset_df"
     assert len(vtl_dataset_empty.components) == 4
@@ -258,12 +256,13 @@ def test_convert_to_vtl_dataset_with_string_structure() -> None:
 
     with pytest.raises(
         Invalid,
-        match="Dataset structure must be a Schema object for conversion to VTL"
+        match="Dataset structure must be a Schema object for conversion to VTL",
     ):
         convert_dataset_to_vtl(dataset, "test_dataset")
 
 
 # Tests for convert_dataset_to_sdmx
+
 
 @pytest.fixture
 def vtl_basic_dataset() -> VTLengineDataset:
@@ -502,8 +501,8 @@ def test_convert_to_sdmx_without_data(
         name="empty_none", components=components, data=None
     )
     pandas_dataset_none = convert_dataset_to_sdmx(
-                            vtl_dataset_none,
-                            basic_reference)
+        vtl_dataset_none, basic_reference
+    )
 
     assert pandas_dataset_none.data is None
     assert len(pandas_dataset_none.structure.components) == 1
@@ -514,8 +513,8 @@ def test_convert_to_sdmx_without_data(
         name="empty_df", components=components, data=empty_df
     )
     pandas_dataset_empty = convert_dataset_to_sdmx(
-                            vtl_dataset_empty,
-                            basic_reference)
+        vtl_dataset_empty, basic_reference
+    )
 
     assert pandas_dataset_empty.data is not None
     assert len(pandas_dataset_empty.data) == 0
@@ -549,7 +548,6 @@ def test_convert_to_sdmx_invalid_sdmx_type(
         match="Reference sdmx_type must be one of",
     ):
         convert_dataset_to_sdmx(vtl_basic_dataset, invalid_reference)
-
 
 
 def test_convert_to_sdmx_schema_mismatch_vtl_extra_and_missing(
@@ -617,9 +615,7 @@ def test_convert_to_sdmx_schema_mismatch_schema_missing_components(
                     id="EXTRA_COMPONENT",
                     required=False,
                     role=Role.ATTRIBUTE,
-                    concept=Concept(
-                        "EXTRA_COMPONENT", dtype=DataType.STRING
-                    ),
+                    concept=Concept("EXTRA_COMPONENT", dtype=DataType.STRING),
                     attachment_level="O",
                 ),
             ]
@@ -774,9 +770,7 @@ def test_convert_to_sdmx_schema_mismatch_schema_only_extra_component(
                     id="EXTRA_COMPONENT",
                     required=False,
                     role=Role.ATTRIBUTE,
-                    concept=Concept(
-                        "EXTRA_COMPONENT", dtype=DataType.STRING
-                    ),
+                    concept=Concept("EXTRA_COMPONENT", dtype=DataType.STRING),
                     attachment_level="O",
                 ),
             ]
@@ -788,8 +782,7 @@ def test_convert_to_sdmx_schema_mismatch_schema_only_extra_component(
         match="Component mismatch between VTL Dataset and Schema",
     ):
         convert_dataset_to_sdmx(
-            vtl_basic_dataset,
-            schema=schema_with_only_extra
+            vtl_basic_dataset, schema=schema_with_only_extra
         )
 
 
@@ -816,8 +809,7 @@ def test_convert_to_sdmx_schema_mismatch_vtl_only_extra_component(
         match="Component mismatch between VTL Dataset and Schema",
     ):
         convert_dataset_to_sdmx(
-            vtl_dataset_with_only_extra,
-            schema=basic_schema
+            vtl_dataset_with_only_extra, schema=basic_schema
         )
 
 
@@ -872,9 +864,8 @@ def test_convert_to_sdmx_unsupported_vtl_dtype(
     }
     data = pd.DataFrame({"DIM1": ["A"]})
     vtl_dataset = VTLengineDataset(
-                    name="test_custom_scalar",
-                    components=components, data=data
-                )
+        name="test_custom_scalar", components=components, data=data
+    )
 
     with pytest.raises(
         Invalid,
@@ -903,9 +894,8 @@ def test_convert_to_sdmx_unsupported_vtl_role(
     }
     data = pd.DataFrame({"DIM1": ["A"]})
     vtl_dataset = VTLengineDataset(
-                    name="test_fake_role",
-                    components=components, data=data
-                )
+        name="test_fake_role", components=components, data=data
+    )
 
     with pytest.raises(
         Invalid,
