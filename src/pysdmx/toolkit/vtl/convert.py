@@ -12,7 +12,7 @@ from vtlengine.DataTypes import (
     Number,
     ScalarType,
     String,
-    # Time,
+    TimeInterval,
     TimePeriod,
 )
 from vtlengine.Model import (
@@ -34,7 +34,7 @@ VTL_TO_SDMX_TYPE_MAP: Dict[Type[ScalarType], DataType] = {
     Boolean: DataType.BOOLEAN,
     Date: DataType.DATE,
     TimePeriod: DataType.PERIOD,
-    # Time: DataType.TIME,
+    TimeInterval: DataType.TIME,
     Duration: DataType.DURATION,
 }
 

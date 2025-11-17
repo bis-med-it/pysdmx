@@ -9,6 +9,7 @@ from vtlengine.DataTypes import (
     Integer,
     Number,
     String,
+    TimeInterval,
     TimePeriod,
 )
 from vtlengine.Model import (
@@ -128,6 +129,13 @@ def all_types_schema() -> Schema:
                     concept=Concept("DURATION_ATTR", dtype=DataType.DURATION),
                     attachment_level="O",
                 ),
+                Component(
+                    id="TIME_ATTR",
+                    required=False,
+                    role=Role.ATTRIBUTE,
+                    concept=Concept("TIME_ATTR", dtype=DataType.TIME),
+                    attachment_level="O",
+                ),
             ]
         ),
     )
@@ -203,6 +211,7 @@ def test_convert_to_vtl_component_types(
     assert vtl_dataset.components["DATE_ATTR"].data_type is Date
     assert vtl_dataset.components["PERIOD_DIM"].data_type is TimePeriod
     assert vtl_dataset.components["DURATION_ATTR"].data_type is Duration
+    assert vtl_dataset.components["TIME_ATTR"].data_type is String  # TimeInterval not yet supported by vtlengine
 
 
 def test_convert_to_vtl_nullable_matches_required_flag(
@@ -351,6 +360,12 @@ def vtl_all_types_dataset() -> VTLengineDataset:
             role=VTLRole.ATTRIBUTE,
             nullable=True,
         ),
+        "TIME_ATTR": VTLComponent(
+            name="TIME_ATTR",
+            data_type=TimeInterval(),
+            role=VTLRole.ATTRIBUTE,
+            nullable=True,
+        ),
     }
     data = pd.DataFrame(
         {
@@ -361,6 +376,7 @@ def vtl_all_types_dataset() -> VTLengineDataset:
             "DATE_ATTR": ["2025-01-01", "2025-01-02", "2025-01-03"],
             "PERIOD_DIM": ["2025", "2025-01", "2025-Q1"],
             "DURATION_ATTR": ["P1Y", "P1M", "P1D"],
+            "TIME_ATTR": ["12:00:00", "13:30:00", "14:45:00"],
         }
     )
     return VTLengineDataset(
@@ -468,11 +484,13 @@ def test_convert_to_sdmx_type_mappings(
     assert components_dict["DATE_ATTR"].dtype == DataType.DATE
     assert components_dict["PERIOD_DIM"].dtype == DataType.PERIOD
     assert components_dict["DURATION_ATTR"].dtype == DataType.DURATION
+    assert components_dict["TIME_ATTR"].dtype == DataType.TIME
 
     # Attributes should have attachment_level "O"
     assert components_dict["BOOLEAN_ATTR"].attachment_level == "O"
     assert components_dict["DATE_ATTR"].attachment_level == "O"
     assert components_dict["DURATION_ATTR"].attachment_level == "O"
+    assert components_dict["TIME_ATTR"].attachment_level == "O"
 
     # Non-attributes should not have attachment_level
     assert components_dict["STRING_DIM"].attachment_level is None
