@@ -2,7 +2,7 @@
 
 from typing import Dict, Optional, Type
 
-from vtlengine.API import load_datasets
+from vtlengine.API import load_datasets  # type: ignore[attr-defined]
 from vtlengine.API._InternalApi import to_vtl_json
 from vtlengine.DataTypes import (
     Boolean,
@@ -15,10 +15,8 @@ from vtlengine.DataTypes import (
     TimeInterval,
     TimePeriod,
 )
-from vtlengine.Model import (
-    Dataset as VTLengineDataset,
-    Role as VTLRole,
-)
+from vtlengine.Model import Dataset as VTLengineDataset
+from vtlengine.Model import Role as VTLRole
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
@@ -112,11 +110,18 @@ def convert_dataset_to_sdmx(
     # If schema is provided
     if schema is not None:
         _validate_vtl_dataset_against_schema(dataset, schema)
+
+        data = dataset.data
+        if data is None:
+            raise Invalid(
+                "Validation Error",
+                "VTL dataset has no data for conversion to SDMX",
+            )
+
         pandas_dataset = PandasDataset(
             structure=schema,
-            data=dataset.data,
+            data=data,
         )
-
         return pandas_dataset
 
     # If schema is not provided, reference must be provided
@@ -166,15 +171,23 @@ def convert_dataset_to_sdmx(
         components=Components(sdmx_components),
     )
 
+    data = dataset.data
+    if data is None:
+        raise Invalid(
+            "Validation Error",
+            "VTL dataset has no data for conversion to SDMX",
+        )
+
     pandas_dataset = PandasDataset(
         structure=generated_schema,
-        data=dataset.data,
+        data=data,
     )
-
     return pandas_dataset
 
 
-def _map_vtl_dtype_to_sdmx(vtl_dtype_value: ScalarType) -> DataType:
+def _map_vtl_dtype_to_sdmx(
+    vtl_dtype_value: ScalarType | type[ScalarType],
+) -> DataType:
     """Return the SDMX DataType for a given VTL scalar.
 
     Args:
@@ -186,18 +199,19 @@ def _map_vtl_dtype_to_sdmx(vtl_dtype_value: ScalarType) -> DataType:
     Raises:
         Invalid: If the VTL DataType cannot be mapped to an SDMX DataType.
     """
-    vtl_dtype_class = (
-        vtl_dtype_value
-        if isinstance(vtl_dtype_value, type)
-        else type(vtl_dtype_value)
-    )
+    if isinstance(vtl_dtype_value, type):
+        vtl_dtype_class: type[ScalarType] = vtl_dtype_value
+    else:
+        vtl_dtype_class = type(vtl_dtype_value)
+
     if vtl_dtype_class not in VTL_TO_SDMX_TYPE_MAP:
-        supported = ", ".join(t.__name__ for t in VTL_TO_SDMX_TYPE_MAP)
+        supported = ", ".join(str(t.__name__) for t in VTL_TO_SDMX_TYPE_MAP)
         raise Invalid(
             "Validation Error",
             f"VTL DataType '{vtl_dtype_class.__name__}' cannot be "
             f"mapped to an SDMX type. Supported types are: {supported}",
         )
+
     return VTL_TO_SDMX_TYPE_MAP[vtl_dtype_class]
 
 

@@ -12,11 +12,9 @@ from vtlengine.DataTypes import (
     TimeInterval,
     TimePeriod,
 )
-from vtlengine.Model import (
-    Component as VTLComponent,
-    Dataset as VTLengineDataset,
-    Role as VTLRole,
-)
+from vtlengine.Model import Component as VTLComponent
+from vtlengine.Model import Dataset as VTLengineDataset
+from vtlengine.Model import Role as VTLRole
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
@@ -211,7 +209,8 @@ def test_convert_to_vtl_component_types(
     assert vtl_dataset.components["DATE_ATTR"].data_type is Date
     assert vtl_dataset.components["PERIOD_DIM"].data_type is TimePeriod
     assert vtl_dataset.components["DURATION_ATTR"].data_type is Duration
-    assert vtl_dataset.components["TIME_ATTR"].data_type is String  # TimeInterval not yet supported by vtlengine
+    # TimeInterval not yet supported by vtlengine
+    assert vtl_dataset.components["TIME_ATTR"].data_type is String
 
 
 def test_convert_to_vtl_nullable_matches_required_flag(
