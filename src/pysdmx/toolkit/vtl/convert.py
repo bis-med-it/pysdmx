@@ -1,6 +1,6 @@
 """Conversions between pysdmx PandasDataset and vtlengine Dataset."""
 
-from typing import Dict, Optional, Type
+from typing import Dict, Optional, Type, Union
 
 from vtlengine.API import load_datasets  # type: ignore[attr-defined]
 from vtlengine.API._InternalApi import to_vtl_json
@@ -186,7 +186,7 @@ def convert_dataset_to_sdmx(
 
 
 def _map_vtl_dtype_to_sdmx(
-    vtl_dtype_value: ScalarType | type[ScalarType],
+    vtl_dtype_value: Union[ScalarType, Type[ScalarType]],
 ) -> DataType:
     """Return the SDMX DataType for a given VTL scalar.
 
