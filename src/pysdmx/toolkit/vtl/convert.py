@@ -2,11 +2,9 @@
 
 from typing import Dict, Optional, Type
 
-from vtlengine.API import load_datasets  # type: ignore[import-untyped]
-from vtlengine.API._InternalApi import (  # type: ignore[import-untyped]
-    to_vtl_json,
-)
-from vtlengine.DataTypes import (  # type: ignore[import-untyped]
+from vtlengine.API import load_datasets
+from vtlengine.API._InternalApi import to_vtl_json
+from vtlengine.DataTypes import (
     Boolean,
     Date,
     Duration,
@@ -17,10 +15,10 @@ from vtlengine.DataTypes import (  # type: ignore[import-untyped]
     # Time,
     TimePeriod,
 )
-from vtlengine.Model import (  # type: ignore[import-untyped]
+from vtlengine.Model import (
     Dataset as VTLengineDataset,
+    Role as VTLRole,
 )
-from vtlengine.Model import Role as VTLRole
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
@@ -80,7 +78,7 @@ def convert_dataset_to_vtl(
     vtl_json = to_vtl_json(schema, vtl_dataset_name)
 
     # Load the dataset structure using vtlengine's API
-    datasets = load_datasets(vtl_json)
+    datasets, scalars = load_datasets(vtl_json)
     vtl_dataset = datasets[vtl_dataset_name]
 
     # Assign the pandas DataFrame to the VTL dataset

@@ -23,7 +23,8 @@ classifiers = [
 dependencies = [
     "httpx[http2]>=0.*",
     "msgspec>=0.*",
-    "parsy>=2.1"
+    "parsy>=2.1",
+    "vtlengine (>=1.2)"
 ]
 
 [project.urls]

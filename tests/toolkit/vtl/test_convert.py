@@ -2,7 +2,7 @@
 
 import pandas as pd
 import pytest
-from vtlengine.DataTypes import (  # type: ignore[import-untyped]
+from vtlengine.DataTypes import (
     Boolean,
     Date,
     Duration,
@@ -11,11 +11,11 @@ from vtlengine.DataTypes import (  # type: ignore[import-untyped]
     String,
     TimePeriod,
 )
-from vtlengine.Model import (  # type: ignore[import-untyped]
+from vtlengine.Model import (
     Component as VTLComponent,
+    Dataset as VTLengineDataset,
+    Role as VTLRole,
 )
-from vtlengine.Model import Dataset as VTLengineDataset
-from vtlengine.Model import Role as VTLRole
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
