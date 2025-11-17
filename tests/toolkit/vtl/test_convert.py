@@ -415,6 +415,48 @@ def test_convert_to_sdmx_with_schema(
     ]
 
 
+def test_convert_to_sdmx_with_schema_no_data(
+    basic_schema: Schema,
+) -> None:
+    """Test conversion with Schema but no data raises error."""
+    components = {
+        "FREQ": VTLComponent(
+            name="FREQ",
+            data_type=String(),
+            role=VTLRole.IDENTIFIER,
+            nullable=False,
+        ),
+        "REF_AREA": VTLComponent(
+            name="REF_AREA",
+            data_type=String(),
+            role=VTLRole.IDENTIFIER,
+            nullable=False,
+        ),
+        "OBS_VALUE": VTLComponent(
+            name="OBS_VALUE",
+            data_type=Number(),
+            role=VTLRole.MEASURE,
+            nullable=True,
+        ),
+        "OBS_STATUS": VTLComponent(
+            name="OBS_STATUS",
+            data_type=String(),
+            role=VTLRole.ATTRIBUTE,
+            nullable=True,
+        ),
+    }
+
+    vtl_dataset_no_data = VTLengineDataset(
+        name="no_data", components=components, data=None
+    )
+
+    with pytest.raises(
+        Invalid,
+        match="VTL dataset has no data for conversion to SDMX",
+    ):
+        convert_dataset_to_sdmx(vtl_dataset_no_data, schema=basic_schema)
+
+
 @pytest.mark.parametrize(
     ("sdmx_type", "expected_context", "ref_id", "version"),
     [
@@ -518,12 +560,11 @@ def test_convert_to_sdmx_without_data(
     vtl_dataset_none = VTLengineDataset(
         name="empty_none", components=components, data=None
     )
-    pandas_dataset_none = convert_dataset_to_sdmx(
-        vtl_dataset_none, basic_reference
-    )
-
-    assert pandas_dataset_none.data is None
-    assert len(pandas_dataset_none.structure.components) == 1
+    with pytest.raises(
+        Invalid,
+        match="VTL dataset has no data for conversion to SDMX",
+    ):
+        convert_dataset_to_sdmx(vtl_dataset_none, basic_reference)
 
     # Test with empty DataFrame
     empty_df = pd.DataFrame(columns=["DIM1"])
