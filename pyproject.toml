@@ -23,8 +23,7 @@ classifiers = [
 dependencies = [
     "httpx[http2]>=0.*",
     "msgspec>=0.*",
-    "parsy>=2.1",
-    "vtlengine (>=1.2)"
+    "parsy>=2.1"
 ]
 
 [project.urls]
@@ -36,10 +35,10 @@ documentation = "https://bis-med-it.github.io/pysdmx"
 [project.optional-dependencies]
 data = ["pandas>=2.1.4"]
 dc = ["python-dateutil>=2.8.2"]
-vtl = ["vtlengine>=1.1,<2.0"]
+vtl = ["vtlengine>=1.2,<2.0"]
 json = ["sdmxschemas>=1.0.0", "jsonschema>=4.10"]
 xml = ["lxml>=5.2", "xmltodict>=0.13", "sdmxschemas>=1.0.0"]
-all = ["lxml>=5.2", "xmltodict>=0.13", "sdmxschemas>=1.0.0", "pandas>=2.1.4", "python-dateutil>=2.8.2", "vtlengine>=1.1,<2.0"]
+all = ["lxml>=5.2", "xmltodict>=0.13", "sdmxschemas>=1.0.0", "pandas>=2.1.4", "python-dateutil>=2.8.2", "vtlengine>=1.2,<2.0"]
 
 [tool.poetry]
 requires-poetry = ">=2.0"
