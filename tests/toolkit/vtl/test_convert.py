@@ -256,7 +256,8 @@ def test_convert_to_vtl_dataset_with_string_structure() -> None:
 
     with pytest.raises(
         Invalid,
-        match="Dataset structure must be a Schema object for conversion to VTL",
+        match="Dataset structure must be a Schema "
+        "object for conversion to VTL",
     ):
         convert_dataset_to_vtl(dataset, "test_dataset")
 
