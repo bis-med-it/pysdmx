@@ -139,6 +139,13 @@ def convert_dataset_to_sdmx(
             f"but got '{reference.sdmx_type}'",
         )
 
+    data = dataset.data
+    if data is None:
+        raise Invalid(
+            "Validation Error",
+            "VTL dataset has no data for conversion to SDMX",
+        )
+
     # Generate a new Schema from VTL Dataset components
     sdmx_components = []
 
@@ -170,13 +177,6 @@ def convert_dataset_to_sdmx(
         version=reference.version,
         components=Components(sdmx_components),
     )
-
-    data = dataset.data
-    if data is None:
-        raise Invalid(
-            "Validation Error",
-            "VTL dataset has no data for conversion to SDMX",
-        )
 
     pandas_dataset = PandasDataset(
         structure=generated_schema,
