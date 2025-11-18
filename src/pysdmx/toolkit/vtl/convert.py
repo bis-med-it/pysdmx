@@ -37,10 +37,13 @@ VTL_TO_SDMX_TYPE_MAP: Dict[Type[ScalarType], DataType] = {
 }
 
 # Role mapping
+# ViralAttribute is not yet supported as a separate role in VTL 1.2.2,
+# so it is mapped to Attribute following vtlengine's behavior
 VTL_TO_SDMX_ROLE_MAP: Dict[VTLRole, Role] = {
     VTLRole.IDENTIFIER: Role.DIMENSION,
     VTLRole.MEASURE: Role.MEASURE,
     VTLRole.ATTRIBUTE: Role.ATTRIBUTE,
+    "ViralAttribute": "Attribute",  # type: ignore[dict-item]
 }
 
 VALID_SDMX_TYPES = {"DataStructure", "Dataflow", "ProvisionAgreement"}
