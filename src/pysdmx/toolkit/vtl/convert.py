@@ -43,7 +43,7 @@ VTL_TO_SDMX_ROLE_MAP: Dict[VTLRole, Role] = {
     VTLRole.IDENTIFIER: Role.DIMENSION,
     VTLRole.MEASURE: Role.MEASURE,
     VTLRole.ATTRIBUTE: Role.ATTRIBUTE,
-    "ViralAttribute": "Attribute",  # type: ignore[dict-item]
+    "ViralAttribute": Role.ATTRIBUTE,  # type: ignore[dict-item]
 }
 
 VALID_SDMX_TYPES = {"DataStructure", "Dataflow", "ProvisionAgreement"}
