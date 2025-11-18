@@ -54,6 +54,13 @@ def convert_dataset_to_vtl(
 ) -> VTLengineDataset:
     """Convert a PandasDataset to a vtlengine Dataset.
 
+    This function converts a PandasDataset, which contains both data and
+    structure (Schema), into a vtlengine Dataset. It uses vtlengine's
+    conversion functions to handle the Schema to VTL structure mapping.
+
+    It raises an Invalid exception if the dataset structure is not a
+    Schema object.
+
     Args:
         dataset: The PandasDataset to convert.
         vtl_dataset_name: The name for the vtlengine Dataset.
@@ -93,18 +100,42 @@ def convert_dataset_to_sdmx(
     reference: Optional[Reference] = None,
     schema: Optional[Schema] = None,
 ) -> PandasDataset:
-    """Convert a vtlengine Dataset to a PandasDataset.
+    """Convert a VTLengine Dataset to a PandasDataset.
+
+    This function converts a `vtlengine.Model.Dataset` into
+    a `PandasDataset` by:
+
+    * Using a provided `Schema` for direct validation and conversion.
+    * Generating a new SDMX-compatible `Schema` from the dataset components,
+      using metadata from a provided `Reference`.
+
+    When a `schema` is supplied, the dataset is first validated against it and,
+    if validation passes, the data is wrapped in a `PandasDataset` with that
+    schema. If no `schema` is provided, a `reference` must be given so a new
+    SDMX structure (with components, roles, and data types mapped from the
+    VTL dataset) can be created.
+
+    Invalid is raised in the following cases:
+        * If neither `schema` nor `reference` is provided.
+        * If the `reference` has an unsupported `sdmx_type`.
+        * If the `dataset` contains no data.
+        * If component types or roles cannot be mapped to SDMX equivalents.
+        * If validation fails when a `schema` is provided.
 
     Args:
-        dataset: The vtlengine Dataset to convert.
-        reference: Optional Reference to the SDMX structure (DataStructure,
-            Dataflow, or ProvisionAgreement) used for metadata.
-        schema: Optional Schema object. If provided, it will be used for
-            validation. If not provided, a Schema will be generated from
-            the VTL Dataset components.
+        dataset: The VTLengine dataset to convert.
+            Must include components and associated data.
+        reference: Optional reference to the SDMX structure
+            (DataStructure, Dataflow, or ProvisionAgreement).
+            Required only when no `schema` is provided.
+            Used to build a schema and supply contextual identifiers.
+        schema: Optional schema describing the SDMX structure.
+            If provided, the dataset is validated against it
+            and the same schema is used directly in the output.
 
     Returns:
-        A PandasDataset with the data and structure from the vtlengine Dataset.
+        A `PandasDataset` containing the converted data and the associated SDMX
+        structure (either the provided schema or a generated one).
 
     Raises:
         Invalid: If the reference sdmx_type is not valid, if component types
