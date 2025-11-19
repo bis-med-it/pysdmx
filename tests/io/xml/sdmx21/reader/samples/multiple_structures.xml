@@ -5,8 +5,7 @@
                                xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:DS1(1.0):ObsLevelDim:AllDimensions"
                                xmlns:ns2="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:BIS_LOC_STATS(1.0):ObsLevelDim:AllDimensions"
                                xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
-                               xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message
-https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+                               xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
     <message:Header>
         <message:ID>test</message:ID>
         <message:Test>true</message:Test>
