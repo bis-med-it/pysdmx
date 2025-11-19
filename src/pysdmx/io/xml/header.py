@@ -127,7 +127,7 @@ def __parse_structure(
             ref_obj = parse_maintainable_urn(structure_info[URN])
         else:
             ref_obj = parse_maintainable_urn(structure_info)
-        
+
         result[str(ref_obj)] = dim_at_obs
 
     return result
