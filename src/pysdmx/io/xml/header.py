@@ -87,10 +87,25 @@ def __parse_sender_receiver(
 def __parse_structure(
     structure: Union[Dict[str, Any], None],
 ) -> Union[Dict[str, str], None]:
-    """Parses the structure of the SDMX header."""
+    """Parses the structure/s of the SDMX header."""
     if structure is None:
         return None
 
+    # Multiple structures
+    if isinstance(structure, list):
+        result = {}
+        for struct in structure:
+            result.update(__parse_single_structure(struct))
+        return result if result else None
+
+    # Single structure
+    return __parse_single_structure(structure)
+
+
+def __parse_single_structure(
+    structure: Dict[str, Any],
+) -> Union[Dict[str, str], None]:
+    """Parses a single structure element of the SDMX header."""
     dim_at_obs = structure.get(DIM_OBS, "AllDimensions")
 
     if STRUCTURE in structure:
