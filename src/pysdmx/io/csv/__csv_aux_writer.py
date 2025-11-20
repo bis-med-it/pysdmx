@@ -3,8 +3,8 @@ from typing import List, Literal, Optional, Sequence
 
 import pandas as pd
 
+from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.__write_data_aux import writing_validation
 from pysdmx.model import Schema
 from pysdmx.model.dataset import ActionType
 from pysdmx.toolkit.pd._data_utils import (
@@ -19,6 +19,14 @@ SDMX_CSV_ACTION_MAPPER = {
     ActionType.Information: "I",
     ActionType.Delete: "D",
 }
+
+
+def _validate_schema_exists(dataset: PandasDataset) -> None:
+    """Validates that the dataset has a Schema defined."""
+    if not isinstance(dataset.structure, Schema):
+        raise Invalid(
+            "Dataset Structure is not a Schema. Cannot perform operation."
+        )
 
 
 def __write_time_period(df: pd.DataFrame, time_format: str) -> None:
@@ -75,7 +83,7 @@ def _write_csv_2_aux(
 ) -> List[pd.DataFrame]:
     dataframes = []
     for dataset in datasets:
-        writing_validation(dataset)
+        _validate_schema_exists(dataset)
         # Create a copy of the dataset
         df: pd.DataFrame = copy(dataset.data)
         df = fill_na_values(df, dataset.structure)

@@ -6,9 +6,11 @@ from typing import Literal, Optional, Sequence, Union
 
 import pandas as pd
 
-from pysdmx.io.csv.__csv_aux_writer import __write_time_period
+from pysdmx.io.csv.__csv_aux_writer import (
+    __write_time_period,
+    _validate_schema_exists,
+)
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.__write_data_aux import writing_validation
 from pysdmx.model import Schema
 from pysdmx.toolkit.pd._data_utils import fill_na_values, format_labels
 
@@ -46,7 +48,7 @@ def write(
     dataframes = []
     for dataset in datasets:
         # Validate that dataset has a proper Schema
-        writing_validation(dataset)
+        _validate_schema_exists(dataset)
 
         df: pd.DataFrame = copy(dataset.data)
 
