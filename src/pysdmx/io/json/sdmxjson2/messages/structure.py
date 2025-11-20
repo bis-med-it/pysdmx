@@ -275,6 +275,30 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
                 for c in msg.get_data_constraints()
             ]
         )
+        mpas = tuple(
+            [
+                JsonMetadataProvisionAgreement.from_model(c)
+                for c in msg.get_metadata_provision_agreements()
+            ]
+        )
+        mprvs = tuple(
+            [
+                JsonMetadataProviderScheme.from_model(c)
+                for c in msg.get_metadata_provider_schemes()
+            ]
+        )
+        mdfs = tuple(
+            [
+                JsonMetadataflow.from_model(c)
+                for c in msg.get_metadataflows()
+            ]
+        )
+        msds = tuple(
+            [
+                JsonMetadataStructure.from_model(c)
+                for c in msg.get_metadata_structures()
+            ]
+        )
         return JsonStructures(
             agencySchemes=agencies,
             categorisations=categorisations,
@@ -288,6 +312,10 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             dataStructures=data_structures,
             hierarchies=hierarchies,
             hierarchyAssociations=hier_associations,
+            metadataflows=mdfs,
+            metadataProviderSchemes=mprvs,
+            metadataProvisionAgreements=mpas,
+            metadataStructures=msds,
             namePersonalisationSchemes=name_personalisations,
             provisionAgreements=agreements,
             representationMaps=representations_maps,
