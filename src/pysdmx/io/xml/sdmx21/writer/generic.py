@@ -25,7 +25,7 @@ from pysdmx.io.xml.__write_data_aux import (
 )
 from pysdmx.io.xml.config import CHUNKSIZE
 from pysdmx.model.message import Header
-from pysdmx.toolkit.pd._data_utils import get_codes
+from pysdmx.toolkit.pd._data_utils import fill_na_values, get_codes
 from pysdmx.util import parse_short_urn
 
 
@@ -122,7 +122,6 @@ def __write_data_generic(
 
     for short_urn, dataset in datasets.items():
         writing_validation(dataset)
-        dataset.data = dataset.data.fillna("").astype(str)
         outfile += __write_data_single_dataset(
             dataset=dataset,
             prettyprint=prettyprint,
@@ -160,7 +159,7 @@ def __write_data_single_dataset(
     outfile = ""
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
-    dataset.data = dataset.data.fillna("").astype(str).replace("nan", "")
+    dataset.data = fill_na_values(dataset.data, dataset.structure)
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
@@ -347,9 +346,14 @@ def __series_processing(
 ) -> str:
     def __generate_series_str() -> str:
         out_list: List[str] = []
-        data.groupby(by=series_codes + series_att_codes)[data.columns].apply(
-            lambda x: __format_dict_ser(out_list, x)
-        )
+        group_cols = series_codes + series_att_codes
+        if not group_cols:
+            if not data.empty:
+                __format_dict_ser(out_list, data)
+        else:
+            data.groupby(by=group_cols)[data.columns].apply(
+                lambda x: __format_dict_ser(out_list, x)
+            )
 
         return "".join(out_list)
 
@@ -359,13 +363,14 @@ def __series_processing(
     ) -> Any:
         obs_data = group_data[obs_codes + obs_att_codes].copy()
         data_dict["Series"][0]["Obs"] = obs_data.to_dict(orient="records")
-        data_dict["Series"][0].update(
-            {
-                k: v
-                for k, v in group_data[series_att_codes].iloc[0].items()
-                if k in series_att_codes
-            }
-        )
+        if series_att_codes:
+            data_dict["Series"][0].update(
+                {
+                    k: v
+                    for k, v in group_data[series_att_codes].iloc[0].items()
+                    if k in series_att_codes
+                }
+            )
         output_list.append(
             __format_ser_str(
                 data_info=data_dict["Series"][0],
@@ -380,12 +385,15 @@ def __series_processing(
 
     # Getting each datapoint from data and creating dict
     data = data.sort_values(series_codes, axis=0)
-    data_dict = {
-        "Series": data[series_codes]
-        .drop_duplicates()
-        .reset_index(drop=True)
-        .to_dict(orient="records")
-    }
+    if not series_codes:
+        data_dict = {"Series": [{}] if not data.empty else []}
+    else:
+        data_dict = {
+            "Series": data[series_codes]
+            .drop_duplicates()
+            .reset_index(drop=True)
+            .to_dict(orient="records")
+        }
 
     out = __generate_series_str()
 

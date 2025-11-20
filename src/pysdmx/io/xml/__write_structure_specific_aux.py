@@ -16,7 +16,7 @@ from pysdmx.io.xml.__write_data_aux import (
     writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
-from pysdmx.toolkit.pd._data_utils import get_codes
+from pysdmx.toolkit.pd._data_utils import fill_na_values, get_codes
 from pysdmx.util import parse_short_urn
 
 
@@ -69,9 +69,6 @@ def __write_data_structure_specific(
     outfile = ""
 
     for i, (short_urn, dataset) in enumerate(datasets.items()):
-        dataset.data = dataset.data.astype(str).replace(
-            {"nan": "", "<NA>": ""}
-        )
         outfile += __write_data_single_dataset(
             dataset=dataset,
             prettyprint=prettyprint,
@@ -115,8 +112,12 @@ def __write_data_single_dataset(
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
     sdmx_type = parse_short_urn(structure_urn).id
+
+    # Validate structure before writing
+    writing_validation(dataset)
+
     # Remove nan values from DataFrame
-    dataset.data = dataset.data.fillna("").astype(str).replace("nan", "")
+    dataset.data = fill_na_values(dataset.data, dataset.structure)
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
@@ -139,7 +140,6 @@ def __write_data_single_dataset(
     if dim == ALL_DIM:
         data += __memory_optimization_writing(dataset, prettyprint)
     else:
-        writing_validation(dataset)
         series_codes, obs_codes, group_codes = get_codes(
             dimension_code=dim,
             structure=dataset.structure,  # type: ignore[arg-type]
@@ -239,9 +239,13 @@ def __series_processing(
     def __generate_series_str() -> str:
         """Generates the series item with its observations."""
         out_list: List[str] = []
-        data.groupby(by=series_codes)[obs_codes].apply(
-            lambda x: __format_dict_ser(out_list, x)
-        )
+        if not series_codes:
+            if not data.empty:
+                __format_dict_ser(out_list, data[obs_codes])
+        else:
+            data.groupby(by=series_codes)[obs_codes].apply(
+                lambda x: __format_dict_ser(out_list, x)
+            )
 
         return "".join(out_list)
 
@@ -286,12 +290,15 @@ def __series_processing(
 
     # Getting each datapoint from data and creating dict
     data = data.sort_values(series_codes, axis=0)
-    data_dict = {
-        "Series": data[series_codes]
-        .drop_duplicates()
-        .reset_index(drop=True)
-        .to_dict(orient="records")
-    }
+    if not series_codes:
+        data_dict = {"Series": [{}] if not data.empty else []}
+    else:
+        data_dict = {
+            "Series": data[series_codes]
+            .drop_duplicates()
+            .reset_index(drop=True)
+            .to_dict(orient="records")
+        }
 
     out = __generate_series_str()
 
