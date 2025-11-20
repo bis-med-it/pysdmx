@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message:StructureSpecificData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                               xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                               xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/structurespecific"
+                               xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:DS1(1.0):ObsLevelDim:AllDimensions"
+                               xmlns:ns2="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:BIS_LOC_STATS(1.0):ObsLevelDim:AllDimensions"
+                               xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+                               xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+    <message:Header>
+        <message:ID>test</message:ID>
+        <message:Test>true</message:Test>
+        <message:Prepared>2021-03-08T17:05:06</message:Prepared>
+        <message:Sender id="Unknown"/>
+        <message:Receiver id="Not_supplied"/>
+        <message:Structure structureID="MD_DS1_1_0"
+                           namespace="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:DS1(1.0)"
+                           dimensionAtObservation="AllDimensions">
+            <common:Structure>
+                <Ref agencyID="MD" id="DS1" version="1.0" class="DataStructure"/>
+            </common:Structure>
+        </message:Structure>
+        <message:Structure structureID="MD_BIS_LOC_STATS_1_0"
+                namespace="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:BIS_LOC_STATS(1.0)"
+                dimensionAtObservation="AllDimensions">
+            <common:Structure>
+                <Ref agencyID="MD" id="BIS_LOC_STATS" version="1.0" class="DataStructure"/>
+            </common:Structure>
+        </message:Structure>
+    </message:Header>
+    <message:DataSet ss:structureRef="MD_DS1_1_0" xsi:type="ns1:DataSetType"
+                     ss:dataScope="DataStructure" action="Replace">
+        <Obs PARTY="ALM" OBS_VALUE="125"/>
+        <Obs PARTY="ALN" OBS_VALUE="120"/>
+    </message:DataSet>
+    <message:DataSet ss:structureRef="MD_BIS_LOC_STATS_1_0" xsi:type="ns2:DataSetType"
+                     ss:dataScope="DataStructure" action="Replace">
+        <Obs REP_COUNTRY="ALM" OBS_VALUE="125"/>
+        <Obs REP_COUNTRY="ALN" OBS_VALUE="120"/>
+    </message:DataSet>
+</message:StructureSpecificData>
