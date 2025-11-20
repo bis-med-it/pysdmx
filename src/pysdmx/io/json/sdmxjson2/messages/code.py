@@ -231,7 +231,7 @@ class JsonCodelists(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for lists of codes."""
 
     codelists: Sequence[JsonCodelist] = ()
-    valuelists: Sequence[JsonValuelist] = ()
+    valueLists: Sequence[JsonValuelist] = ()
 
 
 class JsonCodelistMessage(Struct, frozen=True, omit_defaults=True):
@@ -244,7 +244,7 @@ class JsonCodelistMessage(Struct, frozen=True, omit_defaults=True):
         if self.data.codelists:
             return self.data.codelists[0].to_model()
         else:
-            return self.data.valuelists[0].to_model()
+            return self.data.valueLists[0].to_model()
 
 
 class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
