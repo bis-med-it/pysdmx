@@ -28,7 +28,6 @@ def test_keyset_deser(body):
     assert keyset.description is None
     assert keyset.valid_from is None
     assert keyset.valid_to is None
-    assert keyset.role == "Allowed"
     assert keyset.constraint_attachment.data_provider is None
     assert len(keyset.constraint_attachment.data_structures) == 0
     assert len(keyset.constraint_attachment.dataflows) == 1

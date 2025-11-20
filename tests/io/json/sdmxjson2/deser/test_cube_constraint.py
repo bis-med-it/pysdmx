@@ -28,7 +28,6 @@ def test_cube_deser(body):
     assert cube.description is None
     assert cube.valid_from is None
     assert cube.valid_to is None
-    assert cube.role == "Allowed"
     assert cube.constraint_attachment.data_provider is None
     assert len(cube.constraint_attachment.data_structures) == 0
     assert len(cube.constraint_attachment.dataflows) == 1

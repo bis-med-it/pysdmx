@@ -1,7 +1,7 @@
 """Collection of SDMX-JSON schemas for content constraints."""
 
 from datetime import datetime
-from typing import Literal, Optional, Sequence
+from typing import Optional, Sequence
 
 from msgspec import Struct
 
@@ -117,7 +117,6 @@ class JsonKeySet(Struct, frozen=True, omit_defaults=True):
 class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a content constraint."""
 
-    role: Optional[Literal["Allowed", "Actual"]] = None
     constraintAttachment: Optional[JsonConstraintAttachment] = None
     cubeRegions: Sequence[JsonCubeRegion] = ()
     dataKeySets: Sequence[JsonKeySet] = ()
@@ -135,7 +134,6 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             is_external_reference=self.isExternalReference,
             valid_from=self.validFrom,
             valid_to=self.validTo,
-            role=self.role if self.role else "Allowed",
             constraint_attachment=at,
             cube_regions=[r.to_model() for r in self.cubeRegions],
             key_sets=[s.to_model() for s in self.dataKeySets],

@@ -1,7 +1,7 @@
 """Model for SDMX Data Constraints."""
 
 from datetime import datetime
-from typing import Literal, Optional, Sequence
+from typing import Optional, Sequence
 
 from msgspec import Struct
 
@@ -65,6 +65,5 @@ class DataConstraint(MaintainableArtefact, frozen=True, omit_defaults=True):
     """A data constraint, defining the allowed or available values."""
 
     constraint_attachment: Optional[ConstraintAttachment] = None
-    role: Literal["Allowed", "Actual"] = "Allowed"
     cube_regions: Sequence[CubeRegion] = ()
     key_sets: Sequence[KeySet] = ()
