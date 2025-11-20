@@ -17,6 +17,7 @@ XML_2_1_PATH = Path(__file__).parent / "xml" / "sdmx21" / "reader" / "samples"
 XML_3_0_PATH = Path(__file__).parent / "xml" / "sdmx30" / "reader" / "samples"
 XML_STR_PATH = Path(__file__).parent / "samples"
 JSN_2_0_PATH = Path(__file__).parent.parent / "api" / "fmr" / "samples"
+JSN_2_0_PATH_ALT = Path(__file__).parent / "json" / "sdmxjson2" / "deser" / "samples"
 
 DIMENSIONS = [
     "FREQ",
@@ -151,6 +152,20 @@ def output_path(extension, tmpdir):
             Format.STRUCTURE_SDMX_JSON_2_0_0,
             JSN_2_0_PATH,
             "code/freq.json",
+            {},
+            True,
+        ),
+        (
+            Format.STRUCTURE_SDMX_JSON_2_0_0,
+            JSN_2_0_PATH_ALT,
+            "constraints/cube.json",
+            {},
+            True,
+        ),
+        (
+            Format.STRUCTURE_SDMX_JSON_2_0_0,
+            JSN_2_0_PATH_ALT,
+            "constraints/keyset.json",
             {},
             True,
         ),
