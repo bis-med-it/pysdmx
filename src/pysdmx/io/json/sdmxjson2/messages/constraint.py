@@ -5,11 +5,13 @@ from typing import Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     MaintainableType,
 )
 from pysdmx.model import (
+    Agency,
     ConstraintAttachment,
     CubeKeyValue,
     CubeRegion,
@@ -214,10 +216,26 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             if cons.key_sets
             else None
         )
+        if not cons.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON data constraints must have a name",
+                {"data_constraint": cons.id},
+            )
+        if not cons.constraint_attachment:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON data constraints must have a constraint attachment",
+                {"data_constraint": cons.id},
+            )
         return JsonDataConstraint(
             id=cons.id,
             name=cons.name,
-            agency=cons.agency,
+            agency=(
+                cons.agency.id
+                if isinstance(cons.agency, Agency)
+                else cons.agency
+            ),
             description=cons.description,
             version=cons.version,
             annotations=tuple(

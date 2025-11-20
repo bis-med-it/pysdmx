@@ -131,9 +131,10 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             i.to_model() for i in self.namePersonalisationSchemes
         )
         structures.extend(i.to_model() for i in self.provisionAgreements)
-        for rm in self.representationMaps:
-            multi = bool(len(rm.source) > 1 or len(rm.target) > 1)
-            structures.append(rm.to_model(multi))
+        structures.extend(
+            i.to_model(bool(len(i.source) > 1 or len(i.target) > 1))
+            for i in self.representationMaps
+        )
         structures.extend(i.to_model() for i in self.rulesetSchemes)
         structures.extend(
             i.to_model(self.representationMaps) for i in self.structureMaps

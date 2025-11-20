@@ -448,9 +448,12 @@ class JsonComponents(Struct, frozen=True, omit_defaults=True):
         enums.extend([vl.to_model() for vl in vls])
         comps = []
         if constraints:
-            incl_cubes = [
-                cr for c in constraints for cr in c.cubeRegions if cr.include
-            ]
+            incl_cubes = []
+            for const in constraints:
+                if const.cubeRegions is not None:
+                    incl_cubes.extend(
+                        [cr for cr in const.cubeRegions if cr.include]
+                    )
             if len(incl_cubes) == 1:
                 cons = {
                     kv.id: [v.value for v in kv.values]
