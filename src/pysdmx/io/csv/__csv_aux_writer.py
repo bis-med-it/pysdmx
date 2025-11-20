@@ -4,9 +4,14 @@ from typing import List, Literal, Optional, Sequence
 import pandas as pd
 
 from pysdmx.io.pd import PandasDataset
+from pysdmx.io.xml.__write_data_aux import writing_validation
 from pysdmx.model import Schema
 from pysdmx.model.dataset import ActionType
-from pysdmx.toolkit.pd._data_utils import format_labels, get_codes
+from pysdmx.toolkit.pd._data_utils import (
+    fill_na_values,
+    format_labels,
+    get_codes,
+)
 
 SDMX_CSV_ACTION_MAPPER = {
     ActionType.Append: "A",
@@ -70,8 +75,10 @@ def _write_csv_2_aux(
 ) -> List[pd.DataFrame]:
     dataframes = []
     for dataset in datasets:
+        writing_validation(dataset)
         # Create a copy of the dataset
         df: pd.DataFrame = copy(dataset.data)
+        df = fill_na_values(df, dataset.structure)
         structure_ref, unique_id = dataset.short_urn.split("=", maxsplit=1)
 
         # Add additional attributes to the dataset

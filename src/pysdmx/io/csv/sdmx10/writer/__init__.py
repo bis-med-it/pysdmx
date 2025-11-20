@@ -8,8 +8,9 @@ import pandas as pd
 
 from pysdmx.io.csv.__csv_aux_writer import __write_time_period
 from pysdmx.io.pd import PandasDataset
+from pysdmx.io.xml.__write_data_aux import writing_validation
 from pysdmx.model import Schema
-from pysdmx.toolkit.pd._data_utils import format_labels
+from pysdmx.toolkit.pd._data_utils import fill_na_values, format_labels
 
 
 def write(
@@ -44,7 +45,13 @@ def write(
     # Create a copy of the dataset
     dataframes = []
     for dataset in datasets:
+        # Validate that dataset has a proper Schema
+        writing_validation(dataset)
+
         df: pd.DataFrame = copy(dataset.data)
+
+        # Fill missing values
+        df = fill_na_values(df, dataset.structure)
 
         # Add additional attributes to the dataset
         for k, v in dataset.attributes.items():
@@ -68,8 +75,7 @@ def write(
     # Concatenate the dataframes
     all_data = pd.concat(dataframes, ignore_index=True, axis=0)
 
-    # Ensure null values are represented as empty strings
-    all_data = all_data.astype(str).replace({"nan": "", "<NA>": ""})
+    all_data = all_data.astype(str)
     # If the output path is an empty string we use None
     output_path = (
         None
