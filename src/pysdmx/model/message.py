@@ -23,6 +23,7 @@ from pysdmx.model.__base import MaintainableArtefact, Organisation
 from pysdmx.model.category import Categorisation, CategoryScheme
 from pysdmx.model.code import Codelist, Hierarchy, HierarchyAssociation
 from pysdmx.model.concept import ConceptScheme
+from pysdmx.model.constraint import DataConstraint
 from pysdmx.model.dataflow import (
     Dataflow,
     DataStructureDefinition,
@@ -255,6 +256,10 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
     def get_dataflows(self) -> List[Dataflow]:
         """Returns the Dataflows."""
         return self.__get_elements(Dataflow)
+    
+    def get_data_constraints(self) -> List[DataConstraint]:
+        """Returns the DataConstraints."""
+        return self.__get_elements(DataConstraint)
 
     def get_data_provider_schemes(self) -> List[DataProviderScheme]:
         """Returns the DataProviderSchemes."""
