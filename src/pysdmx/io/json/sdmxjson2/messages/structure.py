@@ -288,10 +288,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             ]
         )
         mdfs = tuple(
-            [
-                JsonMetadataflow.from_model(c)
-                for c in msg.get_metadataflows()
-            ]
+            [JsonMetadataflow.from_model(c) for c in msg.get_metadataflows()]
         )
         msds = tuple(
             [
