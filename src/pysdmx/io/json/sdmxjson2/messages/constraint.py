@@ -5,7 +5,7 @@ from typing import Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.io.json.sdmxjson2.messages.core import MaintainableType
+from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation, MaintainableType
 from pysdmx.model import (
     ConstraintAttachment,
     CubeKeyValue,
@@ -29,6 +29,11 @@ class JsonValue(Struct, frozen=True, omit_defaults=True):
         """Converts a JsonValue to a CubeValue."""
         return CubeValue(self.value, self.validFrom, self.validTo)
 
+    @classmethod
+    def from_model(self, value: CubeValue) -> "JsonValue":
+        """Converts a pysdmx cube value to an SDMX-JSON one."""
+        return JsonValue(value.value, value.valid_from, value.valid_to)
+
 
 class JsonKeyValue(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of allowed values per component."""
@@ -43,6 +48,13 @@ class JsonKeyValue(Struct, frozen=True, omit_defaults=True):
         """Converts a JsonKeyValue to a CubeKeyValue."""
         return CubeKeyValue(self.id, [v.to_model() for v in self.values])
 
+    @classmethod
+    def from_model(self, key_value: CubeKeyValue) -> "JsonKeyValue":
+        """Converts a pysdmx cube key value to an SDMX-JSON one."""
+        return JsonKeyValue(
+            key_value.id, [JsonValue.from_model(v for v in key_value.values)]
+        )
+
 
 class JsonCubeRegion(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a cube region."""
@@ -55,6 +67,14 @@ class JsonCubeRegion(Struct, frozen=True, omit_defaults=True):
         """Converts a JsonCubeRegion to a CubeRegion."""
         return CubeRegion(
             [kv.to_model() for kv in self.keyValues], self.include
+        )
+
+    @classmethod
+    def from_model(self, region: CubeRegion) -> "JsonCubeRegion":
+        """Converts a pysdmx cube region to an SDMX-JSON one."""
+        return JsonCubeRegion(
+            [JsonKeyValue.from_model(kv) for kv in region.key_values],
+            region.is_included,
         )
 
 
@@ -75,6 +95,20 @@ class JsonConstraintAttachment(Struct, frozen=True, omit_defaults=True):
             self.provisionAgreements,
         )
 
+    @classmethod
+    def from_model(
+        self, attachment: ConstraintAttachment
+    ) -> "JsonConstraintAttachment":
+        """Converts a pysdmx constraint attachment to an SDMX-JSON one."""
+        ds = attachment.data_structures if attachment.data_structures else ()
+        df = attachment.dataflows if attachment.dataflows else ()
+        pa = (
+            attachment.provision_agreements
+            if attachment.provision_agreements
+            else ()
+        )
+        return JsonConstraintAttachment(attachment.data_provider, ds, df, pa)
+
 
 class JsonDataKeyValue(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a data key value."""
@@ -85,6 +119,11 @@ class JsonDataKeyValue(Struct, frozen=True, omit_defaults=True):
     def to_model(self) -> DataKeyValue:
         """Converts a JsonDataKeyValue to a DataKeyValue."""
         return DataKeyValue(self.id, self.value)
+
+    @classmethod
+    def from_model(self, kv: DataKeyValue) -> "JsonDataKeyValue":
+        """Converts a pysdmx key value to an SDMX-JSON one."""
+        return JsonDataKeyValue(kv.id, kv.value)
 
 
 class JsonDataKey(Struct, frozen=True, omit_defaults=True):
@@ -102,16 +141,32 @@ class JsonDataKey(Struct, frozen=True, omit_defaults=True):
             self.validTo,
         )
 
+    @classmethod
+    def from_model(self, kv: DataKey) -> "JsonDataKey":
+        """Converts a pysdmx key constraint to an SDMX-JSON one."""
+        return JsonDataKey(
+            [JsonDataKeyValue.from_model(val) for val in kv.keys_values],
+            kv.valid_from,
+            kv.valid_to,
+        )
+
 
 class JsonKeySet(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a keyset."""
 
-    isIncluded: bool
     keys: Sequence[JsonDataKey]
+    isIncluded: bool
 
     def to_model(self) -> KeySet:
         """Converts a JsonKeySet to a KeySet."""
         return KeySet([k.to_model() for k in self.keys], self.isIncluded)
+
+    @classmethod
+    def from_model(self, ks: KeySet) -> "JsonKeySet":
+        """Converts a pysdmx key set constraint to an SDMX-JSON one."""
+        return JsonDataKey(
+            [JsonDataKey.from_model(k) for k in ks.keys], ks.is_included
+        )
 
 
 class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
@@ -137,6 +192,26 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             constraint_attachment=at,
             cube_regions=[r.to_model() for r in self.cubeRegions],
             key_sets=[s.to_model() for s in self.dataKeySets],
+        )
+    
+    @classmethod
+    def from_model(self, cons: DataConstraint) -> "JsonDataConstraint":
+        """Converts a pysdmx constraint to an SDMX-JSON one."""
+        return JsonDataConstraint(
+            id=cons.id,
+            name=cons.name,
+            agency=cons.agency,
+            description=cons.description,
+            version=cons.version,
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in cons.annotations]
+            ),
+            is_external_reference=cons.is_external_reference,
+            valid_from=cons.valid_from,
+            valid_to=cons.valid_to,
+            constraint_attachment=JsonConstraintAttachment.from_model(cons.constraint_attachment),
+            cube_regions=[JsonCubeRegion.from_model(r) for r in cons.cube_regions],
+            key_sets=[JsonKeySet.from_model(s) for s in cons.key_sets],
         )
 
 
