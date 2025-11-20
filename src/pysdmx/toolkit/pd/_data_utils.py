@@ -2,6 +2,8 @@ from typing import Any, Dict, List, Literal, Sequence, Tuple
 
 import pandas as pd
 
+from pysdmx.errors import Invalid
+from pysdmx.model.concept import DataType
 from pysdmx.model.dataflow import Component, Schema
 
 
@@ -97,3 +99,52 @@ def get_codes(
             series_codes.append(att.id)
 
     return series_codes, obs_codes, group_codes
+
+
+def fill_na_values(data: pd.DataFrame, structure: Any) -> pd.DataFrame:
+    """Fills missing values in the DataFrame based on the component type.
+
+    Numeric components are filled with "NaN".
+    Other components are filled with "#N/A".
+    If the structure does not have components,
+    all missing values are filled with "".
+
+    Args:
+        data: The DataFrame to fill.
+        structure: The structure definition (Schema, Dataflow, etc.).
+
+    Returns:
+        The DataFrame with filled missing values.
+
+    Raises:
+        Invalid: If the structure does not have components.
+    """
+    NUMERIC_TYPES = {
+        DataType.BIG_INTEGER,
+        DataType.COUNT,
+        DataType.DECIMAL,
+        DataType.DOUBLE,
+        DataType.FLOAT,
+        DataType.INTEGER,
+        DataType.LONG,
+        DataType.SHORT,
+    }
+
+    if not hasattr(structure, "components"):
+        raise Invalid(
+            "Structure must have components defined. "
+            "Cannot write data without a proper Schema."
+        )
+
+    for component in structure.components:
+        if component.id in data.columns:
+            if component.dtype in NUMERIC_TYPES:
+                data[component.id] = (
+                    data[component.id].astype(object).fillna("NaN")
+                )
+            else:
+                data[component.id] = (
+                    data[component.id].astype(object).fillna("#N/A")
+                )
+
+    return data
