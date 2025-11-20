@@ -193,8 +193,12 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             valid_from=self.validFrom,
             valid_to=self.validTo,
             constraint_attachment=at,
-            cube_regions=[r.to_model() for r in self.cubeRegions] if self.cubeRegions else (),
-            key_sets=[s.to_model() for s in self.dataKeySets] if self.dataKeySets else (),
+            cube_regions=[r.to_model() for r in self.cubeRegions]
+            if self.cubeRegions
+            else (),
+            key_sets=[s.to_model() for s in self.dataKeySets]
+            if self.dataKeySets
+            else (),
         )
 
     @classmethod

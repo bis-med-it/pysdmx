@@ -49,6 +49,7 @@ from pysdmx.model.message import StructureMessage
 
 class JsonStructures(Struct, frozen=True, omit_defaults=True):
     """The allowed strutures."""
+
     agencySchemes: Sequence[JsonAgencyScheme] = ()
     categorisations: Sequence[JsonCategorisation] = ()
     categorySchemes: Sequence[JsonCategoryScheme] = ()
@@ -88,9 +89,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             i.to_model(self.codelists) for i in self.conceptSchemes
         )
         structures.extend(i.to_model() for i in self.customTypeSchemes)
-        structures.extend(
-            i.to_model() for i in self.dataConstraints
-        )
+        structures.extend(i.to_model() for i in self.dataConstraints)
         structures.extend(
             i.to_model(
                 self.dataStructures,
@@ -115,7 +114,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             i.to_model(self.hierarchies, self.codelists)
             for i in self.hierarchyAssociations
         )
-        
+
         structures.extend(i.to_model() for i in self.metadataflows)
         structures.extend(
             i.to_model(self.metadataProvisionAgreements)
@@ -135,7 +134,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
         for rm in self.representationMaps:
             multi = bool(len(rm.source) > 1 or len(rm.target) > 1)
             structures.append(rm.to_model(multi))
-        structures.extend(i.to_model() for i in self.rulesetSchemes)        
+        structures.extend(i.to_model() for i in self.rulesetSchemes)
         structures.extend(
             i.to_model(self.representationMaps) for i in self.structureMaps
         )
@@ -270,7 +269,10 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             [JsonHierarchy.from_model(h) for h in msg.get_hierarchies()]
         )
         constraints = tuple(
-            [JsonDataConstraint.from_model(c) for c in msg.get_data_constraints()]
+            [
+                JsonDataConstraint.from_model(c)
+                for c in msg.get_data_constraints()
+            ]
         )
         return JsonStructures(
             agencySchemes=agencies,
@@ -293,7 +295,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             userDefinedOperatorSchemes=user_operators,
             valueLists=valuelists,
             vtlMappingSchemes=vtl_mappings,
-            dataConstraints=constraints
+            dataConstraints=constraints,
         )
 
 
