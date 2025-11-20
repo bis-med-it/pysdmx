@@ -282,6 +282,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             codelists=codelists,
             conceptSchemes=concept_schemes,
             customTypeSchemes=custom_types,
+            dataConstraints=constraints,
             dataflows=dataflows,
             dataProviderSchemes=data_providers,
             dataStructures=data_structures,
@@ -296,7 +297,6 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             userDefinedOperatorSchemes=user_operators,
             valueLists=valuelists,
             vtlMappingSchemes=vtl_mappings,
-            dataConstraints=constraints,
         )
 
 
