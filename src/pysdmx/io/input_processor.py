@@ -32,7 +32,7 @@ def __check_csv(input_str: str) -> bool:
         lines = input_str.splitlines()
 
         # Use the first N complete lines
-        # (1 should be enought)
+        # (1 should be enough)
         max_lines = 1
         sample = "\n".join(lines[:max_lines])
 
