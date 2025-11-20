@@ -17,6 +17,7 @@ from pysdmx.io.json.sdmxjson2.messages.code import (
     JsonValuelist,
 )
 from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptScheme
+from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
 from pysdmx.io.json.sdmxjson2.messages.core import JsonHeader
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
 from pysdmx.io.json.sdmxjson2.messages.dsd import JsonDataStructure
@@ -49,6 +50,7 @@ from pysdmx.model.message import StructureMessage
 class JsonStructures(Struct, frozen=True, omit_defaults=True):
     """The allowed strutures."""
 
+    dataConstraints: Sequence[JsonDataConstraint] = ()
     dataStructures: Sequence[JsonDataStructure] = ()
     categorySchemes: Sequence[JsonCategoryScheme] = ()
     conceptSchemes: Sequence[JsonConceptScheme] = ()
@@ -145,6 +147,9 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
         )
         structures.extend(
             i.to_model() for i in self.userDefinedOperatorSchemes
+        )
+        structures.extend(
+            i.to_model() for i in self.dataConstraints
         )
         for rm in self.representationMaps:
             multi = bool(len(rm.source) > 1 or len(rm.target) > 1)
@@ -264,6 +269,9 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
         hierarchies = tuple(
             [JsonHierarchy.from_model(h) for h in msg.get_hierarchies()]
         )
+        constraints = tuple(
+            [JsonDataConstraint.from_model(c) for c in msg.get_data_constraints()]
+        )
         return JsonStructures(
             agencySchemes=agencies,
             categorisations=categorisations,
@@ -285,6 +293,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             userDefinedOperatorSchemes=user_operators,
             valueLists=valuelists,
             vtlMappingSchemes=vtl_mappings,
+            dataConstraints=constraints
         )
 
 
