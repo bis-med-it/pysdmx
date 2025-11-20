@@ -49,67 +49,47 @@ from pysdmx.model.message import StructureMessage
 
 class JsonStructures(Struct, frozen=True, omit_defaults=True):
     """The allowed strutures."""
-
-    dataConstraints: Sequence[JsonDataConstraint] = ()
-    dataStructures: Sequence[JsonDataStructure] = ()
+    agencySchemes: Sequence[JsonAgencyScheme] = ()
+    categorisations: Sequence[JsonCategorisation] = ()
     categorySchemes: Sequence[JsonCategoryScheme] = ()
-    conceptSchemes: Sequence[JsonConceptScheme] = ()
     codelists: Sequence[JsonCodelist] = ()
-    valueLists: Sequence[JsonValuelist] = ()
+    conceptSchemes: Sequence[JsonConceptScheme] = ()
+    customTypeSchemes: Sequence[JsonCustomTypeScheme] = ()
+    dataConstraints: Sequence[JsonDataConstraint] = ()
+    dataflows: Sequence[JsonDataflow] = ()
+    dataProviderSchemes: Sequence[JsonDataProviderScheme] = ()
+    dataStructures: Sequence[JsonDataStructure] = ()
     hierarchies: Sequence[JsonHierarchy] = ()
     hierarchyAssociations: Sequence[JsonHierarchyAssociation] = ()
-    agencySchemes: Sequence[JsonAgencyScheme] = ()
-    dataProviderSchemes: Sequence[JsonDataProviderScheme] = ()
-    metadataProviderSchemes: Sequence[JsonMetadataProviderScheme] = ()
-    dataflows: Sequence[JsonDataflow] = ()
-    provisionAgreements: Sequence[JsonProvisionAgreement] = ()
     metadataflows: Sequence[JsonMetadataflow] = ()
+    metadataProviderSchemes: Sequence[JsonMetadataProviderScheme] = ()
     metadataProvisionAgreements: Sequence[JsonMetadataProvisionAgreement] = ()
     metadataStructures: Sequence[JsonMetadataStructure] = ()
-    structureMaps: Sequence[JsonStructureMap] = ()
-    representationMaps: Sequence[JsonRepresentationMap] = ()
-    categorisations: Sequence[JsonCategorisation] = ()
-    customTypeSchemes: Sequence[JsonCustomTypeScheme] = ()
-    vtlMappingSchemes: Sequence[JsonVtlMappingScheme] = ()
     namePersonalisationSchemes: Sequence[JsonNamePersonalisationScheme] = ()
+    provisionAgreements: Sequence[JsonProvisionAgreement] = ()
+    representationMaps: Sequence[JsonRepresentationMap] = ()
     rulesetSchemes: Sequence[JsonRulesetScheme] = ()
+    structureMaps: Sequence[JsonStructureMap] = ()
     transformationSchemes: Sequence[JsonTransformationScheme] = ()
     userDefinedOperatorSchemes: Sequence[JsonUserDefinedOperatorScheme] = ()
+    valueLists: Sequence[JsonValuelist] = ()
+    vtlMappingSchemes: Sequence[JsonVtlMappingScheme] = ()
 
     def to_model(self) -> Sequence[MaintainableArtefact]:
         """Map to pysdmx artefacts."""
         structures = []  # type: ignore[var-annotated]
         structures.extend(
-            i.to_model(
-                self.conceptSchemes, self.codelists, self.valueLists, ()
-            )
-            for i in self.dataStructures
+            i.to_model(self.dataflows) for i in self.agencySchemes
         )
+        structures.extend(i.to_model() for i in self.categorisations)
         structures.extend(i.to_model() for i in self.categorySchemes)
+        structures.extend(i.to_model() for i in self.codelists)
         structures.extend(
             i.to_model(self.codelists) for i in self.conceptSchemes
         )
-        structures.extend(i.to_model() for i in self.codelists)
-        structures.extend(i.to_model() for i in self.valueLists)
-        structures.extend(i.to_model(self.codelists) for i in self.hierarchies)
+        structures.extend(i.to_model() for i in self.customTypeSchemes)
         structures.extend(
-            i.to_model(self.hierarchies, self.codelists)
-            for i in self.hierarchyAssociations
-        )
-        structures.extend(
-            i.to_model(self.dataflows) for i in self.agencySchemes
-        )
-        structures.extend(
-            i.to_model(self.provisionAgreements)
-            for i in self.dataProviderSchemes
-        )
-        structures.extend(
-            i.to_model(self.metadataProvisionAgreements)
-            for i in self.metadataProviderSchemes
-        )
-        structures.extend(
-            i.to_model(self.conceptSchemes, self.codelists, self.valueLists)
-            for i in self.metadataStructures
+            i.to_model() for i in self.dataConstraints
         )
         structures.extend(
             i.to_model(
@@ -120,21 +100,45 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             )
             for i in self.dataflows
         )
-        structures.extend(i.to_model() for i in self.provisionAgreements)
+        structures.extend(
+            i.to_model(self.provisionAgreements)
+            for i in self.dataProviderSchemes
+        )
+        structures.extend(
+            i.to_model(
+                self.conceptSchemes, self.codelists, self.valueLists, ()
+            )
+            for i in self.dataStructures
+        )
+        structures.extend(i.to_model(self.codelists) for i in self.hierarchies)
+        structures.extend(
+            i.to_model(self.hierarchies, self.codelists)
+            for i in self.hierarchyAssociations
+        )
+        
         structures.extend(i.to_model() for i in self.metadataflows)
+        structures.extend(
+            i.to_model(self.metadataProvisionAgreements)
+            for i in self.metadataProviderSchemes
+        )
         structures.extend(
             i.to_model() for i in self.metadataProvisionAgreements
         )
         structures.extend(
-            i.to_model(self.representationMaps) for i in self.structureMaps
+            i.to_model(self.conceptSchemes, self.codelists, self.valueLists)
+            for i in self.metadataStructures
         )
-        structures.extend(i.to_model() for i in self.categorisations)
-        structures.extend(i.to_model() for i in self.customTypeSchemes)
-        structures.extend(i.to_model() for i in self.vtlMappingSchemes)
         structures.extend(
             i.to_model() for i in self.namePersonalisationSchemes
         )
-        structures.extend(i.to_model() for i in self.rulesetSchemes)
+        structures.extend(i.to_model() for i in self.provisionAgreements)
+        for rm in self.representationMaps:
+            multi = bool(len(rm.source) > 1 or len(rm.target) > 1)
+            structures.append(rm.to_model(multi))
+        structures.extend(i.to_model() for i in self.rulesetSchemes)        
+        structures.extend(
+            i.to_model(self.representationMaps) for i in self.structureMaps
+        )
         structures.extend(
             i.to_model(
                 self.customTypeSchemes,
@@ -148,12 +152,8 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
         structures.extend(
             i.to_model() for i in self.userDefinedOperatorSchemes
         )
-        structures.extend(
-            i.to_model() for i in self.dataConstraints
-        )
-        for rm in self.representationMaps:
-            multi = bool(len(rm.source) > 1 or len(rm.target) > 1)
-            structures.append(rm.to_model(multi))
+        structures.extend(i.to_model() for i in self.valueLists)
+        structures.extend(i.to_model() for i in self.vtlMappingSchemes)
         return structures
 
     @classmethod
