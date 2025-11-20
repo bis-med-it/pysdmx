@@ -31,6 +31,7 @@ from pysdmx.io.xml.__tokens import (
     URN,
     VERSION,
 )
+from pysdmx.io.xml.utils import add_list
 from pysdmx.model import Organisation, Reference
 from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import Header
@@ -87,43 +88,49 @@ def __parse_sender_receiver(
 def __parse_structure(
     structure: Union[Dict[str, Any], None],
 ) -> Union[Dict[str, str], None]:
-    """Parses the structure of the SDMX header."""
+    """Parses the structure/s of the SDMX header."""
     if structure is None:
         return None
 
-    dim_at_obs = structure.get(DIM_OBS, "AllDimensions")
+    result = {}
 
-    if STRUCTURE in structure:
-        structure_info = structure[STRUCTURE]
-        sdmx_type = DSD
-    elif STR_USAGE in structure:
-        structure_info = structure[STR_USAGE]
-        sdmx_type = DFW
-    elif PROV_AGREEMENT in structure:
-        structure_info = structure[PROV_AGREEMENT]
-        sdmx_type = PROV_AGREEMENT
-    else:
-        # Provision Agrement is a typo in the SDMX 2.1 schema,
-        # and it is later solved in SDMX 3.0
-        structure_info = structure[PROV_AGREMENT]
-        sdmx_type = PROV_AGREMENT
+    for struct in add_list(structure):
+        dim_at_obs = struct.get(DIM_OBS, "AllDimensions")
 
-    if REF in structure_info:
-        reference = structure_info[REF]
-        agency_id = reference[AGENCY_ID]
-        structure_id = reference[ID]
-        version = reference[VERSION]
-        ref_obj = Reference(
-            sdmx_type=sdmx_type,
-            agency=agency_id,
-            id=structure_id,
-            version=version,
-        )
-    elif URN in structure_info:
-        ref_obj = parse_maintainable_urn(structure_info[URN])
-    else:
-        ref_obj = parse_maintainable_urn(structure_info)
-    return {str(ref_obj): dim_at_obs}
+        if STRUCTURE in struct:
+            structure_info = struct[STRUCTURE]
+            sdmx_type = DSD
+        elif STR_USAGE in struct:
+            structure_info = struct[STR_USAGE]
+            sdmx_type = DFW
+        elif PROV_AGREEMENT in struct:
+            structure_info = struct[PROV_AGREEMENT]
+            sdmx_type = PROV_AGREEMENT
+        else:
+            # Provision Agrement is a typo in the SDMX 2.1 schema,
+            # and it is later solved in SDMX 3.0
+            structure_info = struct[PROV_AGREMENT]
+            sdmx_type = PROV_AGREMENT
+
+        if REF in structure_info:
+            reference = structure_info[REF]
+            agency_id = reference[AGENCY_ID]
+            structure_id = reference[ID]
+            version = reference[VERSION]
+            ref_obj = Reference(
+                sdmx_type=sdmx_type,
+                agency=agency_id,
+                id=structure_id,
+                version=version,
+            )
+        elif URN in structure_info:
+            ref_obj = parse_maintainable_urn(structure_info[URN])
+        else:
+            ref_obj = parse_maintainable_urn(structure_info)
+
+        result[str(ref_obj)] = dim_at_obs
+
+    return result
 
 
 def __parse_source(source: Optional[Dict[str, Any]]) -> Optional[str]:
