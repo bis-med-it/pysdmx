@@ -89,8 +89,10 @@ class JsonMetadataAttribute(Struct, frozen=True, omit_defaults=True):
         repr = _get_attr_repr(cmp)
 
         min_occurs = cmp.array_def.min_size if cmp.array_def else 0
-        if cmp.array_def is None or cmp.array_def.max_size is None:
-            max_occurs: Union[int, Literal["unbounded"]] = "unbounded"
+        if cmp.array_def is None:
+            max_occurs: Union[int, Literal["unbounded"]] = 1
+        elif cmp.array_def.max_size is None:
+            max_occurs = "unbounded"
         else:
             max_occurs = cmp.array_def.max_size
 
