@@ -209,6 +209,13 @@ def output_path(extension, tmpdir):
         (
             Format.STRUCTURE_SDMX_JSON_2_0_0,
             JSN_2_0_PATH,
+            "refmeta/msd_alone.json",
+            {},
+            True,
+        ),
+        (
+            Format.STRUCTURE_SDMX_JSON_2_0_0,
+            JSN_2_0_PATH,
             "refmeta/mdf.json",
             {},
             True,
