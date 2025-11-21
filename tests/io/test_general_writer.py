@@ -229,6 +229,13 @@ def output_path(extension, tmpdir):
         ),
         (
             Format.STRUCTURE_SDMX_JSON_2_0_0,
+            JSN_2_0_PATH_ALT,
+            "hier/hier.json",
+            {},
+            True,
+        ),
+        (
+            Format.STRUCTURE_SDMX_JSON_2_0_0,
             JSN_2_0_PATH,
             "map/code_map.json",
             {},
