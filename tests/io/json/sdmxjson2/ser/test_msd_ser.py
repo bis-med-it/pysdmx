@@ -110,7 +110,7 @@ def test_msd(msd: MetadataStructure):
     )
     assert cmp1.isPresentational is False
     assert cmp1.minOccurs == 0
-    assert cmp1.maxOccurs == "unbounded"
+    assert cmp1.maxOccurs == 1
 
     cmp2 = msc.metadataAttributeList.metadataAttributes[1]
     assert cmp2.id == "C2"

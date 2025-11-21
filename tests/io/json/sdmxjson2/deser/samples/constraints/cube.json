@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "id": "IREF309309",
+    "test": false,
+    "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+    "prepared": "2025-11-14T14:35:33Z",
+    "contentLanguages": [
+      "en"
+    ],
+    "sender": {
+      "id": "Unknown"
+    }
+  },
+  "data": {
+    "dataConstraints": [
+      {
+        "links": [
+          {
+            "rel": "self",
+            "type": "dataconstraint",
+            "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=IAEG-SDGs:CN_SDG_GLC(1.22)"
+          }
+        ],
+        "id": "CN_SDG_GLC",
+        "name": "IAEG-SDGs:CN_SDG_GLC",
+        "names": {
+          "en": "IAEG-SDGs:CN_SDG_GLC"
+        },
+        "version": "1.22",
+        "agencyID": "IAEG-SDGs",
+        "isExternalReference": false,
+        "role": "Allowed",
+        "constraintAttachment": {
+          "dataflows": [
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=IAEG-SDGs:DF_SDG_GLC(1.22)"
+          ]
+        },
+        "cubeRegions": [
+          {
+            "include": true,
+            "keyValues": [
+              {
+                "id": "REPORTING_TYPE",
+                "values": [
+                  {
+                    "value": "N"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

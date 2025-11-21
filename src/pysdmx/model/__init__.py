@@ -29,6 +29,16 @@ from pysdmx.model.code import (
     HierarchyAssociation,
 )
 from pysdmx.model.concept import Concept, ConceptScheme, DataType, Facets
+from pysdmx.model.constraint import (
+    ConstraintAttachment,
+    CubeKeyValue,
+    CubeRegion,
+    CubeValue,
+    DataConstraint,
+    DataKey,
+    DataKeyValue,
+    KeySet,
+)
 from pysdmx.model.dataflow import (
     ArrayBoundaries,
     Component,
@@ -161,9 +171,16 @@ __all__ = [
     "ComponentMap",
     "Concept",
     "ConceptScheme",
+    "ConstraintAttachment",
     "Contact",
+    "CubeKeyValue",
+    "CubeRegion",
+    "CubeValue",
     "DataConsumer",
     "DataConsumerScheme",
+    "DataConstraint",
+    "DataKey",
+    "DataKeyValue",
     "Dataflow",
     "DataflowInfo",
     "DataflowRef",
@@ -180,6 +197,7 @@ __all__ = [
     "HierarchyAssociation",
     "ImplicitComponentMap",
     "ItemReference",
+    "KeySet",
     "MetadataAttribute",
     "MetadataComponent",
     "Metadataflow",

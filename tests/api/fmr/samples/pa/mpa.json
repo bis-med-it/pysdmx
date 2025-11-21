@@ -32,7 +32,9 @@
                 "isExternalReference": false,
                 "metadataflow": "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=TEST:DF_CNF(1.0)",
                 "metadataProvider": "urn:sdmx:org.sdmx.infomodel.base.MetadataProvider=SDMX:METADATA_PROVIDERS(1.0).TEST",
-                "targets": []
+                "targets": [
+                    "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=*:*(*)"
+                ]
             }
         ]
     }

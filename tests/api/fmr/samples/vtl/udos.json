@@ -1,0 +1,77 @@
+{
+    "meta": {
+        "id": "IREF384710",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2024-12-03T15:07:53Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "ZZZ"
+        }
+    },
+    "data": {
+        "userDefinedOperatorSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "userdefinedoperatorscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=SDMX:OPS(1.0)"
+                    }
+                ],
+                "id": "OPS",
+                "name": "Operators",
+                "names": {
+                    "en": "Operators"
+                },
+                "version": "1.0",
+                "agencyID": "SDMX",
+                "isExternalReference": false,
+                "isFinal": false,
+                "vtlVersion": "2.0",
+                "vtlMappingScheme": "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=TEST:TEST_DETAIL(1.0)",
+                "rulesetSchemes": [
+                    "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=TEST:RS1(1.0)"
+                ],
+                "isPartial": false,
+                "userDefinedOperators": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "userdefinedoperator",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=SDMX:OPS(1.0).SUM"
+                            }
+                        ],
+                        "id": "SUM",
+                        "name": "Sum",
+                        "names": {
+                            "en": "Sum"
+                        },
+                        "operatorDefinition": "define operator filter_ds (ds1 dataset, great_cons string default \"1\", less_cons number default 4.0) returns dataset is ds1[filter Me_1 > great_cons and Me_2 < less_cons] end operator;"
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "userdefinedoperator",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=SDMX:OPS(1.0).AVG"
+                            }
+                        ],
+                        "id": "AVG",
+                        "name": "Average",
+                        "names": {
+                            "en": "Average"
+                        },
+                        "operatorDefinition": "define operator filter_ds (ds1 dataset, great_cons string default \"1\", less_cons number default 4.0) returns dataset is ds1[filter Me_1 > great_cons and Me_2 < less_cons] end operator;"
+                    }
+                ]
+            }
+        ]
+    }
+}

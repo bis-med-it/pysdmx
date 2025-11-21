@@ -65,6 +65,7 @@ class JsonMetadataflow(MaintainableType, frozen=True, omit_defaults=True):
                 [JsonAnnotation.from_model(a) for a in df.annotations]
             ),
             structure=dsdref,
+            targets=df.targets,  # type: ignore[arg-type]
         )
 
 

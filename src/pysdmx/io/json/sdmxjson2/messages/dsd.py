@@ -265,12 +265,17 @@ class JsonAttribute(Struct, frozen=True, omit_defaults=True):
             attribute.attachment_level  # type: ignore[arg-type]
         )
         repr = _get_json_representation(attribute)
+        # The line below will need to be changed when we work on
+        # Measure Relationship (cf. issue #467)
+        mr = ["OBS_VALUE"] if attribute.attachment_level == "O" else None
+
         return JsonAttribute(
             id=attribute.id,
             conceptIdentity=concept,
             attributeRelationship=level,
             usage=usage,
             localRepresentation=repr,
+            measureRelationship=mr,
         )
 
 
@@ -447,19 +452,42 @@ class JsonComponents(Struct, frozen=True, omit_defaults=True):
         enums = [cl.to_model() for cl in cls]
         enums.extend([vl.to_model() for vl in vls])
         comps = []
-        if constraints and constraints[0].cubeRegions:
-            cons = constraints[0].cubeRegions[0].to_map()
+        if constraints:
+            incl_cubes = []
+            for const in constraints:
+                incl_cubes.extend(
+                    [cr for cr in (const.cubeRegions or []) if cr.include]
+                )
+            if len(incl_cubes) == 1:
+                cons = {
+                    kv.id: [v.value for v in kv.values]
+                    for kv in incl_cubes[0].keyValues
+                }
+            else:
+                cons = {}
         else:
             cons = {}
-        comps.extend(self.dimensionList.to_model(cs, enums, cons))
+        comps.extend(
+            self.dimensionList.to_model(
+                cs,
+                enums,
+                cons,  # type: ignore[arg-type]
+            )
+        )
         if self.measureList:
-            comps.extend(self.measureList.to_model(cs, enums, cons))
+            comps.extend(
+                self.measureList.to_model(
+                    cs,
+                    enums,
+                    cons,  # type: ignore[arg-type]
+                )
+            )
         if self.attributeList:
             comps.extend(
                 self.attributeList.to_model(
                     cs,
                     enums,
-                    cons,
+                    cons,  # type: ignore[arg-type]
                     self.groups,
                 )
             )
@@ -556,7 +584,7 @@ class JsonDataStructures(Struct, frozen=True, omit_defaults=True):
     conceptSchemes: Sequence[JsonConceptScheme] = ()
     valuelists: Sequence[JsonValuelist] = ()
     codelists: Sequence[JsonCodelist] = ()
-    contentConstraints: Sequence[JsonDataConstraint] = ()
+    dataConstraints: Sequence[JsonDataConstraint] = ()
 
     def to_model(self) -> Sequence[DataStructureDefinition]:
         """Returns the requested dsds."""
@@ -565,7 +593,7 @@ class JsonDataStructures(Struct, frozen=True, omit_defaults=True):
                 self.conceptSchemes,
                 self.codelists,
                 self.valuelists,
-                self.contentConstraints,
+                self.dataConstraints,
             )
             for dsd in self.dataStructures
         ]

@@ -49,17 +49,21 @@
                         },
                         "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_DETAIL(1.0)",
                         "fromVtlMapping": {
-                            "type": "from_test",
-                            "fromVtlSuperSpace": [
-                                "ID1",
-                                "ID2"
-                            ]
+                            "method": "from_test",
+                            "fromVtlSuperSpace": {
+                                "keys": [
+                                    "ID1",
+                                    "ID2"
+                                ]
+                            }
                         },
                         "toVtlMapping": {
-                            "type": "to_test",
-                            "toVtlSubSpace": [
-                                "ID"
-                            ]
+                            "method": "to_test",
+                            "toVtlSubSpace": {
+                                "keys": [
+                                    "ID"
+                                ]
+                            }
                         },
                         "alias": "TEST_DETAIL_VTL"
                     }

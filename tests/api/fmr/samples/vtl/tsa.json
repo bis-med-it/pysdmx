@@ -1,0 +1,72 @@
+{
+    "meta": {
+        "id": "IREF384710",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2024-12-03T15:07:53Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "ZZZ"
+        }
+    },
+    "data": {
+        "transformationSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "transformationscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=TEST:TEST_TS(1.0)"
+                    }
+                ],
+                "id": "TEST_TS",
+                "name": "Transformation Scheme",
+                "names": {
+                    "en": "Transformation Scheme"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "vtlVersion": "2.0",
+                "vtlMappingScheme": "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=TEST:TEST_DETAIL(1.0)",
+                "namePersonalisationScheme": "urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisationScheme=BIS.TEST:TEST_NPS(1.0)",
+                "customTypeScheme": "urn:sdmx:org.sdmx.infomodel.transformation.CustomTypeScheme=TEST:TS_CTS(1.0)",
+                "rulesetSchemes": [
+                    "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=TEST:RS1(1.0)"
+                ],
+                "userDefinedOperatorSchemes": [
+                    "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperatorScheme=SDMX:OPS(1.0)"
+                ],
+                "isPartial": false,
+                "transformations": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "transformation",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.transformation.Transformation=TEST:TEST_TS(1.0).STEP_1"
+                            }
+                        ],
+                        "id": "STEP_1",
+                        "name": "Step 1",
+                        "names": {
+                            "en": "Step 1"
+                        },
+                        "description": "Validation of something in input file",
+                        "descriptions": {
+                            "en": "Validation of something in input file"
+                        },
+                        "expression": "check_datapoint(TEST_DETAIL_VTL, UNIQUE_SOMETHING invalid)",
+                        "result": "CHECK_SOMETHING",
+                        "isPersistent": false
+                    }
+                ]
+            }
+        ]
+    }
+}

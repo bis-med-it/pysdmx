@@ -1,0 +1,89 @@
+{
+    "meta": {
+        "id": "IREF273606",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2025-11-14T13:36:02Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "ZZZ"
+        }
+    },
+    "data": {
+        "dataConstraints": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "dataconstraint",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=IAEG-SDGs:CN_SERIES_SDG_GLH(1.22)"
+                    }
+                ],
+                "id": "CN_SERIES_SDG_GLH",
+                "name": "SDG Series Level content constraints",
+                "names": {
+                    "en": "SDG Series Level content constraints"
+                },
+                "version": "1.22",
+                "agencyID": "IAEG-SDGs",
+                "isExternalReference": false,
+                "role": "Allowed",
+                "constraintAttachment": {
+                    "dataflows": [
+                        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=IAEG-SDGs:DF_SDG_GLH(1.22)"
+                    ]
+                },
+                "dataKeySets": [
+                    {
+                        "isIncluded": true,
+                        "keys": [
+                            {
+                                "keyValues": [
+                                    {
+                                        "id": "SERIES",
+                                        "value": "SI_POV_DAY1"
+                                    },
+                                    {
+                                        "id": "UNIT_MEASURE",
+                                        "value": "PT"
+                                    },
+                                    {
+                                        "id": "UNIT_MULT",
+                                        "value": "0"
+                                    },
+                                    {
+                                        "id": "COMPOSITE_BREAKDOWN",
+                                        "value": "_T"
+                                    }
+                                ]
+                            },
+                            {
+                                "keyValues": [
+                                    {
+                                        "id": "SERIES",
+                                        "value": "SI_POV_DAY1"
+                                    },
+                                    {
+                                        "id": "UNIT_MEASURE",
+                                        "value": "PT"
+                                    },
+                                    {
+                                        "id": "UNIT_MULT",
+                                        "value": "0"
+                                    },
+                                    {
+                                        "id": "COMPOSITE_BREAKDOWN",
+                                        "value": "MS_MIGRANT"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

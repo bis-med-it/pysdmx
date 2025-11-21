@@ -15,7 +15,6 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
 from pysdmx.io.json.sdmxjson2.messages.dsd import (
     _find_concept,
     _get_concept_reference,
-    _get_json_representation,
     _get_representation,
 )
 from pysdmx.model import (
@@ -26,6 +25,13 @@ from pysdmx.model import (
     MetadataStructure,
 )
 from pysdmx.util import parse_item_urn
+
+
+def _get_attr_repr(comp: MetadataComponent) -> Optional[JsonRepresentation]:
+    enum = comp.local_enum_ref if comp.local_enum_ref else None
+    return JsonRepresentation.from_model(
+        comp.local_dtype, enum, comp.local_facets, None
+    )
 
 
 class JsonMetadataAttribute(Struct, frozen=True, omit_defaults=True):
@@ -80,11 +86,13 @@ class JsonMetadataAttribute(Struct, frozen=True, omit_defaults=True):
     def from_model(self, cmp: MetadataComponent) -> "JsonMetadataAttribute":
         """Converts a pysdmx metadata attribute to an SDMX-JSON one."""
         concept = _get_concept_reference(cmp)
-        repr = _get_json_representation(cmp)
+        repr = _get_attr_repr(cmp)
 
         min_occurs = cmp.array_def.min_size if cmp.array_def else 0
-        if cmp.array_def is None or cmp.array_def.max_size is None:
-            max_occurs: Union[int, Literal["unbounded"]] = "unbounded"
+        if cmp.array_def is None:
+            max_occurs: Union[int, Literal["unbounded"]] = 1
+        elif cmp.array_def.max_size is None:
+            max_occurs = "unbounded"
         else:
             max_occurs = cmp.array_def.max_size
 
@@ -95,9 +103,9 @@ class JsonMetadataAttribute(Struct, frozen=True, omit_defaults=True):
             minOccurs=min_occurs,
             maxOccurs=max_occurs,
             isPresentational=cmp.is_presentational,
-            metadataAttributes=[
-                JsonMetadataAttribute.from_model(c) for c in cmp.components
-            ],
+            metadataAttributes=tuple(
+                [JsonMetadataAttribute.from_model(c) for c in cmp.components]
+            ),
         )
 
 
@@ -119,9 +127,9 @@ class JsonMetadataAttributes(Struct, frozen=True, omit_defaults=True):
     ) -> "JsonMetadataAttributes":
         """Converts a pysdmx list of metadata attributes to SDMX-JSON."""
         return JsonMetadataAttributes(
-            metadataAttributes=[
-                JsonMetadataAttribute.from_model(a) for a in attributes
-            ]
+            metadataAttributes=tuple(
+                [JsonMetadataAttribute.from_model(a) for a in attributes]
+            )
         )
 
 

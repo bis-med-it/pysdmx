@@ -6689,7 +6689,7 @@
                 }
             }
         ],
-        "contentConstraints": [
+        "dataConstraints": [
             {
                 "links": [
                     {

@@ -1,0 +1,59 @@
+{
+    "meta": {
+        "id": "IREF384710",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2024-12-03T15:07:53Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "ZZZ"
+        }
+    },
+    "data": {
+        "rulesetSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "rulesetscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=TEST:RS1(1.0)"
+                    }
+                ],
+                "id": "RS1",
+                "name": "Ruleset Scheme #1",
+                "names": {
+                    "en": "Ruleset Scheme #1"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "vtlVersion": "2.0",
+                "isPartial": false,
+                "rulesets": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "ruleset",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.transformation.Ruleset=TEST:RS1(1.0).UNIQUE_SOMETHING"
+                            }
+                        ],
+                        "id": "UNIQUE_SOMETHING",
+                        "name": "Datapoint Ruleset UNIQUE_SOMETHING",
+                        "names": {
+                            "en": "Datapoint Ruleset UNIQUE_SOMETHING"
+                        },
+                        "rulesetDefinition": "define datapoint ruleset signValidation (variable ACCOUNTING_ENTRY as AE, INT_ACC_ITEM as IAI,FUNCTIONAL_CAT as FC, INSTR_ASSET as IA, OBS_VALUE as O) is sign1c: when AE = \"C\" and IAI = \"G\" then O > 0 errorcode \"sign1c\" errorlevel 1 end datapoint ruleset;",
+                        "rulesetScope": "variable",
+                        "rulesetType": "datapoint"
+                    }
+                ]
+            }
+        ]
+    }
+}

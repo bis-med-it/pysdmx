@@ -48,7 +48,7 @@ def test_code(code: HierarchicalCode):
     assert sjson.code == code.urn
     assert sjson.validFrom == code.rel_valid_from
     assert sjson.validTo == code.rel_valid_to
-    assert len(sjson.annotations) == 0
+    assert sjson.annotations is None
     assert len(sjson.hierarchicalCodes) == 1
     assert isinstance(sjson.hierarchicalCodes[0], JsonHierarchicalCode)
     assert sjson.hierarchicalCodes[0].id == "A1"
@@ -61,7 +61,7 @@ def test_code_diff_ids(code_diff_ids: HierarchicalCode):
     assert sjson.code == code_diff_ids.urn
     assert sjson.validFrom is None
     assert sjson.validTo is None
-    assert len(sjson.annotations) == 0
+    assert sjson.annotations is None
     assert len(sjson.hierarchicalCodes) == 0
 
 
