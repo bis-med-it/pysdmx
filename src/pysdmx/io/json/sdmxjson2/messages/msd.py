@@ -95,9 +95,9 @@ class JsonMetadataAttribute(Struct, frozen=True, omit_defaults=True):
             minOccurs=min_occurs,
             maxOccurs=max_occurs,
             isPresentational=cmp.is_presentational,
-            metadataAttributes=tuple([
-                JsonMetadataAttribute.from_model(c) for c in cmp.components
-            ]),
+            metadataAttributes=tuple(
+                [JsonMetadataAttribute.from_model(c) for c in cmp.components]
+            ),
         )
 
 
@@ -119,9 +119,9 @@ class JsonMetadataAttributes(Struct, frozen=True, omit_defaults=True):
     ) -> "JsonMetadataAttributes":
         """Converts a pysdmx list of metadata attributes to SDMX-JSON."""
         return JsonMetadataAttributes(
-            metadataAttributes=tuple([
-                JsonMetadataAttribute.from_model(a) for a in attributes
-            ])
+            metadataAttributes=tuple(
+                [JsonMetadataAttribute.from_model(a) for a in attributes]
+            )
         )
 
 
