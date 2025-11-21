@@ -265,12 +265,17 @@ class JsonAttribute(Struct, frozen=True, omit_defaults=True):
             attribute.attachment_level  # type: ignore[arg-type]
         )
         repr = _get_json_representation(attribute)
+        # The line below will need to be changed when we work on
+        # Measure Relationship (cf. issue #467)
+        mr = ["OBS_VALUE"] if attribute.attachment_level == "O" else None
+
         return JsonAttribute(
             id=attribute.id,
             conceptIdentity=concept,
             attributeRelationship=level,
             usage=usage,
             localRepresentation=repr,
+            measureRelationship=mr,
         )
 
 
