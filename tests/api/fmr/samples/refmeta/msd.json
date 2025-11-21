@@ -1052,7 +1052,6 @@
                                     }
                                 ],
                                 "id": "ADJUSTMENT",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).ADJUSTMENT"
                             },
                             {
@@ -1068,7 +1067,6 @@
                                     }
                                 ],
                                 "id": "CLASS_SYSTEM",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CLASS_SYSTEM"
                             },
                             {
@@ -1105,7 +1103,6 @@
                                     }
                                 ],
                                 "id": "COMPARABILITY",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COMPARABILITY"
                             },
                             {
@@ -1121,7 +1118,6 @@
                                     }
                                 ],
                                 "id": "COMPILING_ORG",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COMPILING_ORG"
                             },
                             {
@@ -1137,7 +1133,6 @@
                                     }
                                 ],
                                 "id": "CONTACT",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT"
                             },
                             {
@@ -1153,7 +1148,6 @@
                                     }
                                 ],
                                 "id": "CONTACT_EMAIL",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_EMAIL"
                             },
                             {
@@ -1169,7 +1163,6 @@
                                     }
                                 ],
                                 "id": "CONTACT_FUNCT",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_FUNCT"
                             },
                             {
@@ -1185,7 +1178,6 @@
                                     }
                                 ],
                                 "id": "CONTACT_MAIL",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_MAIL"
                             },
                             {
@@ -1201,7 +1193,6 @@
                                     }
                                 ],
                                 "id": "CONTACT_NAME",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_NAME"
                             },
                             {
@@ -1217,7 +1208,6 @@
                                     }
                                 ],
                                 "id": "CONTACT_ORGANISATION",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_ORGANISATION"
                             },
                             {
@@ -1233,7 +1223,6 @@
                                     }
                                 ],
                                 "id": "CONTACT_PHONE",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_PHONE"
                             },
                             {
@@ -1249,7 +1238,6 @@
                                     }
                                 ],
                                 "id": "COVERAGE",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COVERAGE"
                             },
                             {
@@ -1265,7 +1253,6 @@
                                     }
                                 ],
                                 "id": "DATA_COMP",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DATA_COMP"
                             },
                             {
@@ -1281,7 +1268,6 @@
                                     }
                                 ],
                                 "id": "DATA_SOURCE",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DATA_SOURCE"
                             },
                             {
@@ -1297,7 +1283,6 @@
                                     }
                                 ],
                                 "id": "DATA_VALIDATION",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DATA_VALIDATION"
                             },
                             {
@@ -1313,7 +1298,6 @@
                                     }
                                 ],
                                 "id": "DOC_METHOD",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DOC_METHOD"
                             },
                             {
@@ -1329,7 +1313,6 @@
                                     }
                                 ],
                                 "id": "FREQ_COLL",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).FREQ_COLL"
                             },
                             {
@@ -1345,7 +1328,6 @@
                                     }
                                 ],
                                 "id": "IMPUTATION",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).IMPUTATION"
                             },
                             {
@@ -1361,7 +1343,6 @@
                                     }
                                 ],
                                 "id": "IND_DEF_CON_CLASS",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).IND_DEF_CON_CLASS"
                             },
                             {
@@ -1377,7 +1358,6 @@
                                     }
                                 ],
                                 "id": "INST_MANDATE",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).INST_MANDATE"
                             },
                             {
@@ -1414,7 +1394,6 @@
                                     }
                                 ],
                                 "id": "ORGANISATION_UNIT",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).ORGANISATION_UNIT"
                             },
                             {
@@ -1430,7 +1409,6 @@
                                     }
                                 ],
                                 "id": "OTHER_DOC",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).OTHER_DOC"
                             },
                             {
@@ -1446,7 +1424,6 @@
                                     }
                                 ],
                                 "id": "OTHER_METHOD",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).OTHER_METHOD"
                             },
                             {
@@ -1462,7 +1439,6 @@
                                     }
                                 ],
                                 "id": "QUALITY_ASSMNT",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).QUALITY_ASSMNT"
                             },
                             {
@@ -1478,7 +1454,6 @@
                                     }
                                 ],
                                 "id": "QUALITY_ASSURE",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).QUALITY_ASSURE"
                             },
                             {
@@ -1494,7 +1469,6 @@
                                     }
                                 ],
                                 "id": "QUALITY_MGMNT",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).QUALITY_MGMNT"
                             },
                             {
@@ -1510,7 +1484,6 @@
                                     }
                                 ],
                                 "id": "RATIONALE",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).RATIONALE"
                             },
                             {
@@ -1526,7 +1499,6 @@
                                     }
                                 ],
                                 "id": "REC_USE_LIM",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).REC_USE_LIM"
                             },
                             {
@@ -1542,7 +1514,6 @@
                                     }
                                 ],
                                 "id": "REG_AGG",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).REG_AGG"
                             },
                             {
@@ -1558,7 +1529,6 @@
                                     }
                                 ],
                                 "id": "REL_CAL_POLICY",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).REL_CAL_POLICY"
                             },
                             {
@@ -1574,7 +1544,6 @@
                                     }
                                 ],
                                 "id": "SDG_CUSTODIAN_AGENCIES",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_CUSTODIAN_AGENCIES"
                             },
                             {
@@ -1590,7 +1559,6 @@
                                     }
                                 ],
                                 "id": "SDG_GOAL",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_GOAL"
                             },
                             {
@@ -1606,7 +1574,6 @@
                                     }
                                 ],
                                 "id": "SDG_INDICATOR",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_INDICATOR"
                             },
                             {
@@ -1622,7 +1589,6 @@
                                     }
                                 ],
                                 "id": "SDG_INDICATOR_INFO",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_INDICATOR_INFO"
                             },
                             {
@@ -1638,7 +1604,6 @@
                                     }
                                 ],
                                 "id": "SDG_RELATED_INDICATORS",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_RELATED_INDICATORS"
                             },
                             {
@@ -1654,7 +1619,6 @@
                                     }
                                 ],
                                 "id": "SDG_SERIES_DESCR",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_SERIES_DESCR"
                             },
                             {
@@ -1670,7 +1634,6 @@
                                     }
                                 ],
                                 "id": "SDG_TARGET",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_TARGET"
                             },
                             {
@@ -1686,7 +1649,6 @@
                                     }
                                 ],
                                 "id": "SOURCE_TYPE",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SOURCE_TYPE"
                             },
                             {
@@ -1702,7 +1664,6 @@
                                     }
                                 ],
                                 "id": "SRC_TYPE_COLL_METHOD",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SRC_TYPE_COLL_METHOD"
                             },
                             {
@@ -1718,7 +1679,6 @@
                                     }
                                 ],
                                 "id": "STAT_CONC_DEF",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).STAT_CONC_DEF"
                             },
                             {
@@ -1734,7 +1694,6 @@
                                     }
                                 ],
                                 "id": "UNIT_MEASURE",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).UNIT_MEASURE"
                             },
                             {
@@ -1750,7 +1709,6 @@
                                     }
                                 ],
                                 "id": "TRANSLATIONS",
-                                "localRepresentation": {},
                                 "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).TRANSLATIONS"
                             }
                         ]
