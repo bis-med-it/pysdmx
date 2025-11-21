@@ -329,10 +329,10 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
             code=code.urn,
             validFrom=code.rel_valid_from,
             validTo=code.rel_valid_to,
-            annotations=tuple(annotations),
-            hierarchicalCodes=[
-                JsonHierarchicalCode.from_model(c) for c in code.codes
-            ],
+            annotations=tuple(annotations) if annotations else None,
+            hierarchicalCodes=tuple(
+                [JsonHierarchicalCode.from_model(c) for c in code.codes]
+            ),
         )
 
 
