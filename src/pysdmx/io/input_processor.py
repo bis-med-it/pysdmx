@@ -29,16 +29,19 @@ def __check_xml(input_str: str) -> bool:
 
 def __check_csv(input_str: str) -> bool:
     try:
-        max_length = min(2048, len(input_str))
-        dialect = csv.Sniffer().sniff(input_str[:max_length])
+        lines = input_str.splitlines()
+
+        # Use the first N complete lines
+        # (1 should be enough)
+        max_lines = 1
+        sample = "\n".join(lines[:max_lines])
+
+        dialect = csv.Sniffer().sniff(sample)
         control_csv_format = (
             dialect.delimiter == "," and dialect.quotechar == '"'
         )
         # Check we can access the data and it is not empty
-        if (
-            len(input_str.splitlines()) > 1
-            or input_str.splitlines()[0].count(",") > 1
-        ) and control_csv_format:
+        if (len(lines) > 1 or lines[0].count(",") > 1) and control_csv_format:
             return True
     except Exception:
         return False

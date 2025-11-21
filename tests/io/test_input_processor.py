@@ -47,6 +47,20 @@ def invalid_message_xml():
         return f.read()
 
 
+@pytest.fixture
+def large_csv_1():
+    path = Path(__file__).parent / "samples" / "large_csv_1.csv"
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+@pytest.fixture
+def large_csv_2():
+    path = Path(__file__).parent / "samples" / "large_csv_2.csv"
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
 def test_process_string_to_read(valid_xml, valid_xml_path):
     infile, read_format = process_string_to_read(valid_xml_path)
     assert infile == valid_xml
@@ -120,3 +134,13 @@ def test_process_string_to_read_invalid_allowed_error(invalid_message_xml):
 def test_invalid_xml_flavour():
     with pytest.raises(Invalid):
         process_string_to_read("<?xmlAAAA")
+
+
+def test_process_large_csv(large_csv_1, large_csv_2):
+    infile, read_format = process_string_to_read(large_csv_1)
+    assert infile == large_csv_1
+    assert read_format == Format.DATA_SDMX_CSV_1_0_0
+
+    infile, read_format = process_string_to_read(large_csv_2)
+    assert infile == large_csv_2
+    assert read_format == Format.DATA_SDMX_CSV_2_1_0
