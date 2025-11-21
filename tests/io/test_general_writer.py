@@ -312,6 +312,13 @@ def output_path(extension, tmpdir):
             True,
         ),
         (
+            Format.STRUCTURE_SDMX_JSON_2_0_0,
+            JSN_2_0_PATH,
+            "vtl/vms.json",
+            {},
+            True,
+        ),
+        (
             Format.REFMETA_SDMX_JSON_2_0_0,
             JSN_2_0_PATH,
             "refmeta/report.json",
