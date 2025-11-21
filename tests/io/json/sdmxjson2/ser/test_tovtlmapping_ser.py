@@ -20,12 +20,12 @@ def to_vtl_mapping_no_type():
 def test_to_vtl_mapping(to_vtl_mapping: ToVtlMapping):
     sjson = JsonToVtlMapping.from_model(to_vtl_mapping)
 
-    assert sjson.toVtlSubSpace == to_vtl_mapping.to_vtl_sub_space
-    assert sjson.type == to_vtl_mapping.method
+    assert sjson.toVtlSubSpace == {"keys": to_vtl_mapping.to_vtl_sub_space}
+    assert sjson.method == to_vtl_mapping.method
 
 
 def test_to_vtl_mapping_no_type(to_vtl_mapping_no_type: ToVtlMapping):
     sjson = JsonToVtlMapping.from_model(to_vtl_mapping_no_type)
 
-    assert sjson.toVtlSubSpace == to_vtl_mapping_no_type.to_vtl_sub_space
-    assert sjson.type is None
+    assert sjson.toVtlSubSpace == {"keys": to_vtl_mapping_no_type.to_vtl_sub_space}
+    assert sjson.method is None
