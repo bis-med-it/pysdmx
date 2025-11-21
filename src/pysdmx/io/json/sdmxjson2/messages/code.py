@@ -475,6 +475,15 @@ class JsonHierarchyAssociation(
                 "SDMX-JSON hierarchy associations must reference a context",
                 {"hierarchy_association": ha.id},
             )
+        lnk = (
+            JsonLink(
+                rel="UserDefinedOperator",
+                type="sdmx_artefact",
+                urn=ha.operator,
+            )
+            if ha.operator
+            else None
+        )
         return JsonHierarchyAssociation(
             agency=(
                 ha.agency.id if isinstance(ha.agency, Agency) else ha.agency
@@ -492,6 +501,7 @@ class JsonHierarchyAssociation(
             linkedHierarchy=href,
             linkedObject=ha.component_ref,
             contextObject=ha.context_ref,
+            links=[lnk] if lnk else (),
         )
 
 
