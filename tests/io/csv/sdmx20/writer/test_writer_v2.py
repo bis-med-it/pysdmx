@@ -6,6 +6,7 @@ import pytest
 
 from pysdmx.io.csv.sdmx20.writer import write
 from pysdmx.io.pd import PandasDataset
+from pysdmx.model import Schema
 from pysdmx.model.dataset import ActionType
 
 
@@ -44,6 +45,17 @@ def dsd_path():
     base_path = Path(__file__).parent / "samples" / "datastructure.xml"
     return str(base_path)
 
+@pytest.fixture
+def dsd_path_alt_id_and_version():
+    base_path = Path(__file__).parent / "samples" / "datastructure_alt_id_and_version.xml"
+    return str(base_path)
+
+
+@pytest.fixture
+def dsd_path_provision_agreement():
+    base_path = Path(__file__).parent / "samples" / "datastructure_provision_agreement.xml"
+    return str(base_path)
+
 
 @pytest.fixture
 def csv_labels_id():
@@ -79,15 +91,53 @@ def csv_keys_series():
 def csv_keys_both():
     base_path = Path(__file__).parent / "samples" / "csv_keys_both.csv"
     return str(base_path)
+    
+
+@pytest.fixture
+def schema(dsd_path):
+    from pysdmx.io import read_sdmx
+
+    result = read_sdmx(dsd_path).get_data_structure_definitions()
+    dsd = result[0]
+    return dsd.to_schema()
+
+@pytest.fixture
+def schema_alt_id_and_version(dsd_path_alt_id_and_version):
+    from pysdmx.io import read_sdmx
+
+    result = read_sdmx(dsd_path_alt_id_and_version).get_data_structure_definitions()
+    dsd = result[0]
+    return dsd.to_schema()
+
+@pytest.fixture
+def schema_provision_agreement(dsd_path_provision_agreement):
+    from pysdmx.io import read_sdmx
+
+    result = read_sdmx(dsd_path_provision_agreement).get_data_structure_definitions()
+    dsd = result[0]
+
+    base_schema = dsd.to_schema()
+
+    # Build a Schema with provisionagreement context
+    return Schema(
+        context="provisionagreement",
+        agency=base_schema.agency,
+        id=base_schema.id,
+        version=base_schema.version,
+        components=base_schema.components,
+        artefacts=base_schema.artefacts,
+        generated=base_schema.generated,
+        name=base_schema.name,
+        groups=base_schema.groups,
+    )
 
 
 @pytest.mark.data
-def test_to_sdmx_csv_writing(data_path, data_path_reference):
-    urn = "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=MD:PA1(1.0)"
+def test_to_sdmx_csv_writing(data_path, data_path_reference, schema_provision_agreement):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),
-        structure=urn,
+        structure=schema_provision_agreement,
     )
     dataset.data = dataset.data.astype("str")
     result_sdmx = write([dataset])
@@ -101,12 +151,13 @@ def test_to_sdmx_csv_writing(data_path, data_path_reference):
 
 
 @pytest.mark.data
-def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir):
-    urn = "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=MD:PA1(1.0)"
+def test_to_sdmx_csv_writing_to_file(
+    data_path, data_path_reference, tmpdir, schema_provision_agreement
+):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),
-        structure=urn,
+        structure=schema_provision_agreement,
     )
     dataset.data = dataset.data.astype("str")
     write([dataset], output_path=tmpdir / "output.csv")
@@ -120,11 +171,13 @@ def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir):
 
 
 @pytest.mark.data
-def test_writer_attached_attrs(data_path, data_path_reference_attch_atts):
+def test_writer_attached_attrs(
+    data_path, data_path_reference_attch_atts, schema_alt_id_and_version
+):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),
-        structure="DataStructure=MD:DS1(2.0)",
+        structure=schema_alt_id_and_version,
     )
     dataset.data = dataset.data.astype(str)
     result_sdmx = write([dataset])
@@ -138,11 +191,11 @@ def test_writer_attached_attrs(data_path, data_path_reference_attch_atts):
 
 
 @pytest.mark.data
-def test_writer_with_action(data_path, data_path_reference_action):
+def test_writer_with_action(data_path, data_path_reference_action, schema_alt_id_and_version):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),
-        structure="DataStructure=MD:DS1(2.0)",
+        structure=schema_alt_id_and_version,
         action=ActionType.Replace,
     )
     dataset.data = dataset.data.astype(str)
@@ -156,12 +209,7 @@ def test_writer_with_action(data_path, data_path_reference_action):
     )
 
 
-def test_writer_labels_id(data_path_optional, dsd_path, csv_labels_id):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_labels_id(data_path_optional, csv_labels_id, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -178,12 +226,7 @@ def test_writer_labels_id(data_path_optional, dsd_path, csv_labels_id):
     )
 
 
-def test_writer_labels_name(data_path_optional, dsd_path, csv_labels_name):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_labels_name(data_path_optional, csv_labels_name, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -200,12 +243,7 @@ def test_writer_labels_name(data_path_optional, dsd_path, csv_labels_name):
     )
 
 
-def test_writer_labels_both(data_path_optional, dsd_path, csv_labels_both):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_labels_both(data_path_optional, csv_labels_both, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -222,12 +260,7 @@ def test_writer_labels_both(data_path_optional, dsd_path, csv_labels_both):
     )
 
 
-def test_writer_keys_obs(data_path_optional, dsd_path, csv_keys_obs):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_keys_obs(data_path_optional, csv_keys_obs, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -244,12 +277,7 @@ def test_writer_keys_obs(data_path_optional, dsd_path, csv_keys_obs):
     )
 
 
-def test_writer_keys_series(data_path_optional, dsd_path, csv_keys_series):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_keys_series(data_path_optional, csv_keys_series, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -266,12 +294,7 @@ def test_writer_keys_series(data_path_optional, dsd_path, csv_keys_series):
     )
 
 
-def test_writer_keys_both(data_path_optional, dsd_path, csv_keys_both):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_keys_both(data_path_optional, csv_keys_both, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),

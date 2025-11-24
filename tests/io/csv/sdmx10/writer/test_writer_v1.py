@@ -6,6 +6,7 @@ import pytest
 
 from pysdmx.io.csv.sdmx10.writer import write
 from pysdmx.io.pd import PandasDataset
+from pysdmx.model import Schema
 
 
 @pytest.fixture
@@ -58,13 +59,20 @@ def csv_time_format_original():
     return str(base_path)
 
 
+@pytest.fixture
+def schema(dsd_path):
+    from pysdmx.io.reader import read_sdmx
+    result = read_sdmx(dsd_path).get_data_structure_definitions()
+    dsd = result[0]
+    return dsd.to_schema()
+
+
 @pytest.mark.data
-def test_to_sdmx_csv_writing(data_path, data_path_reference):
-    urn = "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD:DS1(1.0)"
+def test_to_sdmx_csv_writing(data_path, data_path_reference, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),
-        structure=urn,
+        structure=schema,
     )
     dataset.data = dataset.data.astype("str")
     result_sdmx_csv = write([dataset])
@@ -78,13 +86,11 @@ def test_to_sdmx_csv_writing(data_path, data_path_reference):
 
 
 @pytest.mark.data
-def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir):
-    urn = "urn:sdmx:org.sdmx.infomodel.datastructure.DataFlow=MD:DS1(1.0)"
-
+def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),
-        structure=urn,
+        structure=schema,
     )
     dataset.data = dataset.data.astype("str")
     write([dataset], output_path=tmpdir / "output.csv")
@@ -98,12 +104,11 @@ def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir):
 
 
 @pytest.mark.data
-def test_writer_attached_attrs(data_path, data_path_reference_atch_atts):
-    urn = "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD:DS1(1.0)"
+def test_writer_attached_attrs(data_path, data_path_reference_atch_atts, schema):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),
-        structure=urn,
+        structure=schema,
     )
     dataset.data = dataset.data.astype("str")
     result_sdmx_csv = write([dataset])
@@ -116,12 +121,7 @@ def test_writer_attached_attrs(data_path, data_path_reference_atch_atts):
     )
 
 
-def test_writer_labels_id(data_path_optional, dsd_path, csv_labels_id):
-    from pysdmx.io.reader import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_labels_id(data_path_optional, csv_labels_id, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -138,12 +138,7 @@ def test_writer_labels_id(data_path_optional, dsd_path, csv_labels_id):
     )
 
 
-def test_writer_labels_both(data_path_optional, dsd_path, csv_labels_both):
-    from pysdmx.io.reader import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_labels_both(data_path_optional, csv_labels_both, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -161,13 +156,8 @@ def test_writer_labels_both(data_path_optional, dsd_path, csv_labels_both):
 
 
 def test_writer_time_format_original(
-    data_path_optional, dsd_path, csv_time_format_original
+    data_path_optional, csv_time_format_original, schema
 ):
-    from pysdmx.io.reader import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -184,12 +174,7 @@ def test_writer_time_format_original(
     )
 
 
-def test_writer_time_format_normalized(data_path_optional, dsd_path):
-    from pysdmx.io.reader import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_time_format_normalized(data_path_optional, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
