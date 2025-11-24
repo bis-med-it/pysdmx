@@ -461,6 +461,13 @@ def test_read_write_structure_specific_all(samples_folder):
     assert dataset.short_urn == "DataStructure=BIS:BIS_DER(1.0)"
     shape_read = dataset.data.shape
     assert shape_read == (1000, 20)
+
+    structure_path = samples_folder / "datastructure_full.xml"
+    input_str_struct, _ = process_string_to_read(structure_path)
+    structures = read_structure(input_str_struct)
+    dsd = structures[0]
+    dataset.structure = dsd.to_schema()
+
     result = write(datasets)
     # Check if it is well formed using validate=True
     datasets_written = read_sdmx(result, validate=True).data

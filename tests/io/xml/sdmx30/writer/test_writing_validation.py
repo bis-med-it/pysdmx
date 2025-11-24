@@ -9,8 +9,14 @@ from pysdmx.io.xml.sdmx30.writer.structure import write
 from pysdmx.io.xml.sdmx30.writer.structure_specific import (
     write as write_str_spec,
 )
-from pysdmx.model import DataStructureDefinition
-
+from pysdmx.model import (
+    DataStructureDefinition,
+    Schema,
+    Components,
+    Component,
+    Concept,
+    Role
+)
 
 @pytest.fixture
 def samples_folder():
@@ -72,17 +78,39 @@ def test_data_write_nullable_nulltypes():
     import numpy as np
 
     # Create dataframe with nan value
-    data = pd.DataFrame(data={"A": [np.nan, 1, None, pd.NA]})
+    data = pd.DataFrame(data={"A": [np.nan, 1, None, pd.NA],"DIM1": [1, 2, 3, 4]})
     data["A"] = data["A"].astype("Int64")  # Use nullable integer type
+    structure_schema = Schema(
+        context="datastructure",
+        agency="Short",
+        id="Urn",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="DIM1"),
+                    required=True,
+                ),
+                Component(
+                    id="A",
+                    role=Role.MEASURE,
+                    concept=Concept(id="A"),
+                    required=False,
+                ),
+            ]
+        ),
+    )
 
     # The backend is numpy_nullable by default,
     # this line should just make clear
     # that this is not pyarrow related
     data = data.convert_dtypes(dtype_backend="numpy_nullable")
 
-    dataset = PandasDataset(data=data, structure="Dataflow=Short:Urn(1.0)")
+    dataset = PandasDataset(data=data, structure=structure_schema)
     result = write_str_spec([dataset])
     datasets = get_datasets(result)
     assert len(datasets) == 1
     data = datasets[0].data
-    assert data["A"].values.tolist() == ["", "1", "", ""]
+    assert data["A"].values.tolist() == ["#N/A", "1", "#N/A", "#N/A"]

@@ -7,6 +7,8 @@ from pysdmx.io import get_datasets, read_sdmx, write_sdmx
 from pysdmx.io.csv.sdmx10.writer import write as write_csv10
 from pysdmx.io.csv.sdmx20.writer import write as write_csv20
 from pysdmx.io.format import Format
+from pysdmx.model.concept import Concept
+from pysdmx.model.dataflow import Component, Components, Role, Schema
 
 
 @pytest.fixture
@@ -32,6 +34,25 @@ def csv_20():
 @pytest.fixture
 def samples_folder():
     return Path(__file__).parent / "samples"
+
+@pytest.fixture
+def schema():
+    return Schema(
+        context="dataflow",
+        agency="Short",
+        id="Urn",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="A",
+                    required=False,
+                    role=Role.MEASURE,
+                    concept=Concept(id="A"),
+                )
+            ]
+        ),
+    )
 
 
 data_params = [
@@ -156,13 +177,14 @@ data_no_structure_params = [
 )
 def test_data_rwr_no_structure(samples_folder, filename, output_format):
     data_path = samples_folder / filename
+    structures_path = samples_folder / "dataflow_structure_children.xml"
 
     assert data_path.exists(), f"Data file does not exist in {samples_folder}"
 
-    datasets = get_datasets(data_path)
+    datasets = get_datasets(data_path, structures_path)
 
     output_str = write_sdmx(datasets, sdmx_format=Format.DATA_SDMX_CSV_2_0_0)
-    datasets_2 = get_datasets(output_str)
+    datasets_2 = get_datasets(output_str, structures_path)
     assert len(datasets) == len(datasets_2), "Number of datasets mismatch"
 
     pd.testing.assert_frame_equal(
@@ -173,9 +195,12 @@ def test_data_rwr_no_structure(samples_folder, filename, output_format):
     )
 
 
-def test_read_xml_write_csv_10(xml_data_path, csv_10):
+def test_read_xml_write_csv_10(xml_data_path, csv_10, schema):
     # Read the SDMX XML data
     data = read_sdmx(xml_data_path, validate=True).data
+    for ds in data:
+        ds.structure = schema
+
     # Write it to SDMX CSV 1.0 format
     result = write_csv10(
         data,
@@ -183,9 +208,12 @@ def test_read_xml_write_csv_10(xml_data_path, csv_10):
     assert result == csv_10
 
 
-def test_read_xml_write_csv_20(xml_data_path, csv_20):
+def test_read_xml_write_csv_20(xml_data_path, csv_20, schema):
     # Read the SDMX XML data
     data = read_sdmx(xml_data_path, validate=True).data
+    for ds in data:
+        ds.structure = schema
+
     # Write it to SDMX CSV 2.0 format
     result = write_csv20(
         data,

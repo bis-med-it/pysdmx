@@ -51,7 +51,7 @@ def test_dataflow_30(samples_folder):
     num_rows = len(data)
     num_columns = data.shape[1]
     assert num_rows == 2
-    assert num_columns == 19
+    assert num_columns == 20
 
 
 def test_datastructure_30__series(samples_folder):

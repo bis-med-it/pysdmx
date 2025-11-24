@@ -52,6 +52,14 @@ def test_data_dataflow_31(samples_folder):
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.DATA_SDMX_ML_3_1
     data = read_sdmx(input_str, validate=True).data
+
+    structure_path = samples_folder / "ECB_EXR_metadata.xml"
+    struct_input, struct_format = process_string_to_read(structure_path)
+    structures = read_sdmx(struct_input, validate=True).structures
+    schema = structures[0].to_schema()
+    for ds in data:
+        ds.structure = schema
+
     write = write_str_spe(datasets=data, prettyprint=True)
     result = read_sdmx(write, validate=True).data
     read_data = result[0].data
