@@ -4,7 +4,11 @@ import pandas as pd
 import pytest
 
 from pysdmx.io import read_sdmx
-from pysdmx.toolkit.pd._data_utils import format_labels, fill_na_values
+from pysdmx.toolkit.pd._data_utils import (
+    format_labels,
+    fill_na_values,
+    NUMERIC_TYPES,
+)
 from pysdmx.model.concept import DataType
 from pysdmx.errors import Invalid
 
@@ -77,17 +81,18 @@ def test_fill_na_values_raises_when_no_components():
         fill_na_values(data, structure)
 
 
-def test_fill_na_values_numeric_and_non_numeric():
+@pytest.mark.parametrize("dtype", list(NUMERIC_TYPES))
+def test_fill_na_values_numeric_and_non_numeric(dtype):
     data = pd.DataFrame({"num": [None, 1], "cat": [None, "x"]})
 
     class SimpleComp:
-        def __init__(self, id_, dtype):
+        def __init__(self, id_, dtype_):
             self.id = id_
-            self.dtype = dtype
+            self.dtype = dtype_
 
     structure = type("S", (), {})()
     structure.components = [
-        SimpleComp("num", DataType.INTEGER),
+        SimpleComp("num", dtype),
         SimpleComp("cat", DataType.STRING),
     ]
 

@@ -6,6 +6,17 @@ from pysdmx.errors import Invalid
 from pysdmx.model.concept import DataType
 from pysdmx.model.dataflow import Component, Schema
 
+NUMERIC_TYPES = {
+    DataType.BIG_INTEGER,
+    DataType.COUNT,
+    DataType.DECIMAL,
+    DataType.DOUBLE,
+    DataType.FLOAT,
+    DataType.INTEGER,
+    DataType.LONG,
+    DataType.SHORT,
+}
+
 
 def format_labels(  # noqa: C901
     df: pd.DataFrame,
@@ -119,17 +130,6 @@ def fill_na_values(data: pd.DataFrame, structure: Any) -> pd.DataFrame:
     Raises:
         Invalid: If the structure does not have components.
     """
-    NUMERIC_TYPES = {
-        DataType.BIG_INTEGER,
-        DataType.COUNT,
-        DataType.DECIMAL,
-        DataType.DOUBLE,
-        DataType.FLOAT,
-        DataType.INTEGER,
-        DataType.LONG,
-        DataType.SHORT,
-    }
-
     if not hasattr(structure, "components"):
         raise Invalid(
             "Structure must have components defined. "
