@@ -398,3 +398,99 @@ def test_write_data_with_groups(header, ds_with_group):
     )
 
     assert result == sample
+
+
+def test_write_data_with_empty_dataframe(header):
+    ds = PandasDataset(
+        data=pd.DataFrame(
+            {
+                "DIM1": pd.Series([], dtype="int64"),
+                "M1": pd.Series([], dtype="int64"),
+            }
+        ),
+        structure=Schema(
+            context="datastructure",
+            id="TEST",
+            agency="MD",
+            version="1.0",
+            components=Components(
+                [
+                    Component(
+                        id="DIM1",
+                        role=Role.DIMENSION,
+                        concept=Concept(id="DIM1"),
+                        required=True,
+                    ),
+                    Component(
+                        id="M1",
+                        role=Role.MEASURE,
+                        concept=Concept(id="M1"),
+                        required=True,
+                    ),
+                ]
+            ),
+        ),
+    )
+
+    result = write_str_spec(
+        datasets=[ds],
+        header=header,
+        prettyprint=True,
+        dimension_at_observation={"DataStructure=MD:TEST(1.0)": "DIM1"},
+    )
+    
+    assert result is not None
+    dict_info = xmltodict.parse(
+        result,
+        **XML_OPTIONS,
+    )
+    assert dict_info is not None
+
+
+def test_write_data_with_single_dimension_non_empty(header):
+    ds = PandasDataset(
+        data=pd.DataFrame(
+            {
+                "DIM1": [1, 2],
+                "M1": [10, 20],
+            }
+        ),
+        structure=Schema(
+            context="datastructure",
+            id="TEST",
+            agency="MD",
+            version="1.0",
+            components=Components(
+                [
+                    Component(
+                        id="DIM1",
+                        role=Role.DIMENSION,
+                        concept=Concept(id="DIM1"),
+                        required=True,
+                    ),
+                    Component(
+                        id="M1",
+                        role=Role.MEASURE,
+                        concept=Concept(id="M1"),
+                        required=True,
+                    ),
+                ]
+            ),
+        ),
+    )
+    
+
+    result = write_str_spec(
+        datasets=[ds],
+        header=header,
+        prettyprint=True,
+        dimension_at_observation={"DataStructure=MD:TEST(1.0)": "DIM1"},
+    )
+    
+    assert result is not None
+    assert "M1" in result
+    dict_info = xmltodict.parse(
+        result,
+        **XML_OPTIONS,
+    )
+    assert dict_info is not None

@@ -7,6 +7,7 @@ import pytest
 from pysdmx.io.csv.sdmx10.writer import write
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
+from pysdmx.errors import Invalid
 
 
 @pytest.fixture
@@ -186,3 +187,13 @@ def test_writer_time_format_normalized(data_path_optional, schema):
         match="Normalized time format is not implemented yet.",
     ):
         write([dataset], time_format="normalized")
+
+
+def test_writer_invalid_structure():
+    dataset = PandasDataset(
+        attributes={},
+        data=pd.DataFrame({"A": [1]}),
+        structure="DataStructure=ID",
+    )
+    with pytest.raises(Invalid, match="Dataset Structure is not a Schema"):
+        write([dataset])
