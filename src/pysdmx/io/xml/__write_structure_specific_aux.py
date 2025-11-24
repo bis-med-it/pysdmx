@@ -1,7 +1,7 @@
 # mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 3.0 Structure Specific auxiliary functions."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, Hashable, List
 
 import pandas as pd
 
@@ -291,7 +291,9 @@ def __series_processing(
     # Getting each datapoint from data and creating dict
     data = data.sort_values(series_codes, axis=0)
     if not series_codes:
-        data_dict = {"Series": [{}] if not data.empty else []}
+        data_dict: Dict[str, List[Dict[Hashable, Any]]] = {
+            "Series": [{}] if not data.empty else []
+        }
     else:
         data_dict = {
             "Series": data[series_codes]

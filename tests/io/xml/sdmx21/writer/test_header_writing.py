@@ -7,8 +7,8 @@ from pysdmx.io.xml.__write_aux import (
     __write_header as write_header_aux,
 )
 from pysdmx.io.xml.__write_aux import get_structure
-from pysdmx.model.dataset import Dataset
 from pysdmx.model import Organisation
+from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
 
 

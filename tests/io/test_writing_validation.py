@@ -35,6 +35,7 @@ def csv_20():
 def samples_folder():
     return Path(__file__).parent / "samples"
 
+
 @pytest.fixture
 def schema():
     return Schema(

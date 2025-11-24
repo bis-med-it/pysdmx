@@ -120,7 +120,9 @@ def csv_time_format_original():
 def schema(dsd_provision_agreement_path):
     from pysdmx.io import read_sdmx
 
-    result = read_sdmx(dsd_provision_agreement_path).get_data_structure_definitions()
+    result = read_sdmx(
+        dsd_provision_agreement_path
+    ).get_data_structure_definitions()
     dsd = result[0]
     return dsd.to_schema()
 
@@ -129,7 +131,9 @@ def schema(dsd_provision_agreement_path):
 def schema_provision_agreement(dsd_provision_agreement_path):
     from pysdmx.io import read_sdmx
 
-    result = read_sdmx(dsd_provision_agreement_path).get_data_structure_definitions()
+    result = read_sdmx(
+        dsd_provision_agreement_path
+    ).get_data_structure_definitions()
     base_schema = result[0]
     return Schema(
         context="provisionagreement",
@@ -152,7 +156,9 @@ def schema_alter_ID(dsd_alter_ID_path):
 
 
 @pytest.mark.data
-def test_to_sdmx_csv_writing(schema_provision_agreement, data_path, data_path_reference):
+def test_to_sdmx_csv_writing(
+    schema_provision_agreement, data_path, data_path_reference
+):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),
@@ -170,7 +176,9 @@ def test_to_sdmx_csv_writing(schema_provision_agreement, data_path, data_path_re
 
 
 @pytest.mark.data
-def test_to_sdmx_csv_writing_to_file(schema_provision_agreement, data_path, data_path_reference, tmpdir):
+def test_to_sdmx_csv_writing_to_file(
+    schema_provision_agreement, data_path, data_path_reference, tmpdir
+):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),
@@ -188,7 +196,9 @@ def test_to_sdmx_csv_writing_to_file(schema_provision_agreement, data_path, data
 
 
 @pytest.mark.data
-def test_writer_attached_attrs(schema_alter_ID, data_path, data_path_reference_attch_atts):
+def test_writer_attached_attrs(
+    schema_alter_ID, data_path, data_path_reference_attch_atts
+):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),
@@ -206,7 +216,9 @@ def test_writer_attached_attrs(schema_alter_ID, data_path, data_path_reference_a
 
 
 @pytest.mark.data
-def test_writer_with_action(schema_alter_ID, data_path, data_path_reference_action):
+def test_writer_with_action(
+    schema_alter_ID, data_path, data_path_reference_action
+):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),

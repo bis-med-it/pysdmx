@@ -10,13 +10,14 @@ from pysdmx.io.xml.sdmx30.writer.structure_specific import (
     write as write_str_spec,
 )
 from pysdmx.model import (
-    DataStructureDefinition,
-    Schema,
-    Components,
     Component,
+    Components,
     Concept,
-    Role
+    DataStructureDefinition,
+    Role,
+    Schema,
 )
+
 
 @pytest.fixture
 def samples_folder():
@@ -78,7 +79,9 @@ def test_data_write_nullable_nulltypes():
     import numpy as np
 
     # Create dataframe with nan value
-    data = pd.DataFrame(data={"A": [np.nan, 1, None, pd.NA],"DIM1": [1, 2, 3, 4]})
+    data = pd.DataFrame(
+        data={"A": [np.nan, 1, None, pd.NA], "DIM1": [1, 2, 3, 4]}
+    )
     data["A"] = data["A"].astype("Int64")  # Use nullable integer type
     structure_schema = Schema(
         context="datastructure",

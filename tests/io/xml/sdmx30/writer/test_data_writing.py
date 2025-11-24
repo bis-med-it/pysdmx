@@ -438,7 +438,7 @@ def test_write_data_with_empty_dataframe(header):
         prettyprint=True,
         dimension_at_observation={"DataStructure=MD:TEST(1.0)": "DIM1"},
     )
-    
+
     assert result is not None
     dict_info = xmltodict.parse(
         result,
@@ -478,7 +478,6 @@ def test_write_data_with_single_dimension_non_empty(header):
             ),
         ),
     )
-    
 
     result = write_str_spec(
         datasets=[ds],
@@ -486,7 +485,7 @@ def test_write_data_with_single_dimension_non_empty(header):
         prettyprint=True,
         dimension_at_observation={"DataStructure=MD:TEST(1.0)": "DIM1"},
     )
-    
+
     assert result is not None
     assert "M1" in result
     dict_info = xmltodict.parse(

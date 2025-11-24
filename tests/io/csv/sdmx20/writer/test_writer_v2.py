@@ -45,15 +45,24 @@ def dsd_path():
     base_path = Path(__file__).parent / "samples" / "datastructure.xml"
     return str(base_path)
 
+
 @pytest.fixture
 def dsd_path_alt_id_and_version():
-    base_path = Path(__file__).parent / "samples" / "datastructure_alt_id_and_version.xml"
+    base_path = (
+        Path(__file__).parent
+        / "samples"
+        / "datastructure_alt_id_and_version.xml"
+    )
     return str(base_path)
 
 
 @pytest.fixture
 def dsd_path_provision_agreement():
-    base_path = Path(__file__).parent / "samples" / "datastructure_provision_agreement.xml"
+    base_path = (
+        Path(__file__).parent
+        / "samples"
+        / "datastructure_provision_agreement.xml"
+    )
     return str(base_path)
 
 
@@ -91,7 +100,7 @@ def csv_keys_series():
 def csv_keys_both():
     base_path = Path(__file__).parent / "samples" / "csv_keys_both.csv"
     return str(base_path)
-    
+
 
 @pytest.fixture
 def schema(dsd_path):
@@ -101,19 +110,25 @@ def schema(dsd_path):
     dsd = result[0]
     return dsd.to_schema()
 
+
 @pytest.fixture
 def schema_alt_id_and_version(dsd_path_alt_id_and_version):
     from pysdmx.io import read_sdmx
 
-    result = read_sdmx(dsd_path_alt_id_and_version).get_data_structure_definitions()
+    result = read_sdmx(
+        dsd_path_alt_id_and_version
+    ).get_data_structure_definitions()
     dsd = result[0]
     return dsd.to_schema()
+
 
 @pytest.fixture
 def schema_provision_agreement(dsd_path_provision_agreement):
     from pysdmx.io import read_sdmx
 
-    result = read_sdmx(dsd_path_provision_agreement).get_data_structure_definitions()
+    result = read_sdmx(
+        dsd_path_provision_agreement
+    ).get_data_structure_definitions()
     dsd = result[0]
 
     base_schema = dsd.to_schema()
@@ -133,7 +148,9 @@ def schema_provision_agreement(dsd_path_provision_agreement):
 
 
 @pytest.mark.data
-def test_to_sdmx_csv_writing(data_path, data_path_reference, schema_provision_agreement):
+def test_to_sdmx_csv_writing(
+    data_path, data_path_reference, schema_provision_agreement
+):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),
@@ -191,7 +208,9 @@ def test_writer_attached_attrs(
 
 
 @pytest.mark.data
-def test_writer_with_action(data_path, data_path_reference_action, schema_alt_id_and_version):
+def test_writer_with_action(
+    data_path, data_path_reference_action, schema_alt_id_and_version
+):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),

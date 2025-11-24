@@ -3,14 +3,14 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from pysdmx.io import read_sdmx
-from pysdmx.toolkit.pd._data_utils import (
-    format_labels,
-    fill_na_values,
-    NUMERIC_TYPES,
-)
-from pysdmx.model.concept import DataType
 from pysdmx.errors import Invalid
+from pysdmx.io import read_sdmx
+from pysdmx.model.concept import DataType
+from pysdmx.toolkit.pd._data_utils import (
+    NUMERIC_TYPES,
+    fill_na_values,
+    format_labels,
+)
 
 
 @pytest.fixture

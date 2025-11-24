@@ -522,11 +522,8 @@ def test_write_generic_with_groups(header, ds_with_group):
 def test_data_scape_quote():
     # Create dataframe with quotation mark in string
     data = pd.DataFrame(
-        data={
-                "DIM1": [1],
-                "A": ['quote="']
-            },
-            index=pd.DatetimeIndex(["2000-1-1"])
+        data={"DIM1": [1], "A": ['quote="']},
+        index=pd.DatetimeIndex(["2000-1-1"]),
     )
     dataset = PandasDataset(
         data=data,
@@ -592,7 +589,10 @@ def test_series_processing_single_dimension_roundtrip():
         ),
     )
 
-    result = write_gen([dataset], dimension_at_observation={dataset.structure.short_urn: "DIM1"})
+    result = write_gen(
+        [dataset],
+        dimension_at_observation={dataset.structure.short_urn: "DIM1"},
+    )
 
     assert result is not None
     assert "ObsValue" in result
