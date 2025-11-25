@@ -10,6 +10,7 @@ from pysdmx.toolkit.pd._data_utils import (
     NUMERIC_TYPES,
     fill_na_values,
     format_labels,
+    validate_explicit_null_values,
 )
 
 
@@ -100,3 +101,85 @@ def test_fill_na_values_numeric_and_non_numeric(dtype):
 
     assert out["num"].iloc[0] == "NaN"
     assert out["cat"].iloc[0] == "#N/A"
+
+
+def test_validate_explicit_null_values_valid():
+    data = pd.DataFrame({"num": ["1", "NaN"], "cat": ["x", "#N/A"]})
+
+    class SimpleComp:
+        def __init__(self, id_, dtype_):
+            self.id = id_
+            self.dtype = dtype_
+
+    structure = type("S", (), {})()
+    structure.components = [
+        SimpleComp("num", DataType.INTEGER),
+        SimpleComp("cat", DataType.STRING),
+    ]
+
+    # Should not raise and return None
+    result = validate_explicit_null_values(data, structure)
+    assert result is None
+
+
+def test_validate_explicit_null_values_invalid_numeric():
+    data = pd.DataFrame({"num": ["1", "#N/A"]})
+
+    class SimpleComp:
+        def __init__(self, id_, dtype_):
+            self.id = id_
+            self.dtype = dtype_
+
+    structure = type("S", (), {})()
+    structure.components = [
+        SimpleComp("num", DataType.INTEGER),
+    ]
+
+    with pytest.raises(Invalid) as excinfo:
+        validate_explicit_null_values(data, structure)
+
+    assert "Invalid null value '#N/A' in numeric component 'num'" in str(
+        excinfo.value
+    )
+
+
+def test_validate_explicit_null_values_invalid_non_numeric():
+    data = pd.DataFrame({"cat": ["x", "NaN"]})
+
+    class SimpleComp:
+        def __init__(self, id_, dtype_):
+            self.id = id_
+            self.dtype = dtype_
+
+    structure = type("S", (), {})()
+    structure.components = [
+        SimpleComp("cat", DataType.STRING),
+    ]
+
+    with pytest.raises(Invalid) as excinfo:
+        validate_explicit_null_values(data, structure)
+
+    assert "Invalid null value 'NaN' in non-numeric component 'cat'" in str(
+        excinfo.value
+    )
+
+
+def test_validate_explicit_null_values_no_components():
+    data = pd.DataFrame({"a": ["#N/A"]})
+    structure = object()
+    result = validate_explicit_null_values(data, structure)
+    assert result is None
+
+
+def test_validate_explicit_null_values_skips_when_column_missing():
+    data = pd.DataFrame({"present": ["x"]})
+
+    class SimpleComp:
+        def __init__(self, id_, dtype_):
+            self.id = id_
+            self.dtype = dtype_
+
+    structure = type("S", (), {})()
+    structure.components = [SimpleComp("missing_col", DataType.STRING)]
+    result = validate_explicit_null_values(data, structure)
+    assert result is None
