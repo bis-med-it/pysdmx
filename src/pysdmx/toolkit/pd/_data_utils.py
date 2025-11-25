@@ -12,6 +12,7 @@ NUMERIC_TYPES = {
     DataType.DECIMAL,
     DataType.DOUBLE,
     DataType.FLOAT,
+    DataType.INCREMENTAL,
     DataType.INTEGER,
     DataType.LONG,
     DataType.SHORT,
