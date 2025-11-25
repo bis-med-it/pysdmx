@@ -230,78 +230,85 @@ def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
     return "".join(iterator)
 
 
+def __format_ser_str(
+    data_info: Dict[Any, Any], prettyprint: bool = True
+) -> str:
+    """Formats the series as key=value pairs."""
+    child2 = "\t\t" if prettyprint else ""
+    child3 = "\t\t\t" if prettyprint else ""
+    nl = "\n" if prettyprint else ""
+
+    out_element = f"{child2}<Series "
+
+    for k, v in data_info.items():
+        if k != "Obs":
+            out_element += f"{k}={__escape_xml(str(v))!r} "
+
+    out_element += f">{nl}"
+
+    for obs in data_info["Obs"]:
+        out_element += f"{child3}<Obs "
+
+        for k, v in obs.items():
+            out_element += f"{k}={__escape_xml(str(v))!r} "
+
+        out_element += f"/>{nl}"
+
+    out_element += f"{child2}</Series>{nl}"
+
+    return out_element
+
+
+def __build_series_dict(
+    data: pd.DataFrame, series_codes: List[str]
+) -> Dict[str, List[Dict[Hashable, Any]]]:
+    """Build series dictionary from data."""
+    if not series_codes:
+        return {"Series": [{}] if not data.empty else []}
+    return {
+        "Series": data[series_codes]
+        .drop_duplicates()
+        .reset_index(drop=True)
+        .to_dict(orient="records")
+    }
+
+
+def __process_series_observations(
+    data: pd.DataFrame,
+    series_codes: List[str],
+    obs_codes: List[str],
+    data_dict: Dict[str, List[Dict[Hashable, Any]]],
+    prettyprint: bool = True,
+) -> str:
+    """Process series and their observations into XML string."""
+    out_list: List[str] = []
+
+    def append_series_with_obs(obs: Any) -> str:
+        """Append series with observations to output list."""
+        data_dict["Series"][0]["Obs"] = obs.to_dict(orient="records")
+        result = __format_ser_str(data_dict["Series"][0], prettyprint)
+        out_list.append(result)
+        del data_dict["Series"][0]
+        return result
+
+    if not series_codes:
+        if not data.empty:
+            append_series_with_obs(data[obs_codes])
+    else:
+        data.groupby(by=series_codes)[obs_codes].apply(append_series_with_obs)
+
+    return "".join(out_list)
+
+
 def __series_processing(
     data: pd.DataFrame,
     series_codes: List[str],
     obs_codes: List[str],
     prettyprint: bool = True,
 ) -> str:
-    def __generate_series_str() -> str:
-        """Generates the series item with its observations."""
-        out_list: List[str] = []
-        if not series_codes:
-            if not data.empty:
-                __format_dict_ser(out_list, data[obs_codes])
-        else:
-            data.groupby(by=series_codes)[obs_codes].apply(
-                lambda x: __format_dict_ser(out_list, x)
-            )
-
-        return "".join(out_list)
-
-    def __format_dict_ser(
-        output_list: List[str],
-        obs: Any,
-    ) -> Any:
-        """Formats the series as key=value pairs."""
-        # Creating the observation dict,
-        # we always get the first element on Series
-        # as we are grouping by it
-        data_dict["Series"][0]["Obs"] = obs.to_dict(orient="records")
-        output_list.append(__format_ser_str(data_dict["Series"][0]))
-        # We remove the data for series as it is no longer necessary
-        del data_dict["Series"][0]
-
-    def __format_ser_str(data_info: Dict[Any, Any]) -> str:
-        """Formats the series as key=value pairs."""
-        child2 = "\t\t" if prettyprint else ""
-        child3 = "\t\t\t" if prettyprint else ""
-        nl = "\n" if prettyprint else ""
-
-        out_element = f"{child2}<Series "
-
-        for k, v in data_info.items():
-            if k != "Obs":
-                out_element += f"{k}={__escape_xml(str(v))!r} "
-
-        out_element += f">{nl}"
-
-        for obs in data_info["Obs"]:
-            out_element += f"{child3}<Obs "
-
-            for k, v in obs.items():
-                out_element += f"{k}={__escape_xml(str(v))!r} "
-
-            out_element += f"/>{nl}"
-
-        out_element += f"{child2}</Series>{nl}"
-
-        return out_element
-
-    # Getting each datapoint from data and creating dict
+    """Write series to SDMX-ML Structure-Specific format."""
     data = data.sort_values(series_codes, axis=0)
-    if not series_codes:
-        data_dict: Dict[str, List[Dict[Hashable, Any]]] = {
-            "Series": [{}] if not data.empty else []
-        }
-    else:
-        data_dict = {
-            "Series": data[series_codes]
-            .drop_duplicates()
-            .reset_index(drop=True)
-            .to_dict(orient="records")
-        }
-
-    out = __generate_series_str()
-
-    return out
+    data_dict = __build_series_dict(data, series_codes)
+    return __process_series_observations(
+        data, series_codes, obs_codes, data_dict, prettyprint
+    )
