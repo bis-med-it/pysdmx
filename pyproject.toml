@@ -1,6 +1,6 @@
 [project]
 name = "pysdmx"
-version = "1.8.1"
+version = "1.9.0"
 description = "Your opinionated Python SDMX library"
 license = { text = "Apache-2.0" }
 readme = "README.rst"
@@ -23,7 +23,7 @@ classifiers = [
 dependencies = [
     "httpx[http2]>=0.*",
     "msgspec>=0.*",
-    "parsy>=2.1",
+    "parsy>=2.1"
 ]
 
 [project.urls]
@@ -36,6 +36,7 @@ documentation = "https://bis-med-it.github.io/pysdmx"
 data = ["pandas>=2.1.4"]
 dc = ["python-dateutil>=2.8.2"]
 vtl = ["vtlengine>=1.1,<2.0"]
+json = ["sdmxschemas>=1.0.0", "jsonschema>=4.10"]
 xml = ["lxml>=5.2", "xmltodict>=0.13", "sdmxschemas>=1.0.0"]
 all = ["lxml>=5.2", "xmltodict>=0.13", "sdmxschemas>=1.0.0", "pandas>=2.1.4", "python-dateutil>=2.8.2", "vtlengine>=1.1,<2.0"]
 
@@ -47,7 +48,7 @@ python = ">=3.9,<4.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.13.2"
-mypy = "^1.1.1"
+mypy = "^1.18.2"
 pytest = "^8.3.2"
 pytest-asyncio = "^0.21.1"
 pytest-cov = "^4.0.0"
@@ -57,6 +58,7 @@ lxml-stubs = "^0.5.1"
 types-xmltodict = "^0.13.0.3"
 types-python-dateutil = "^2.9.0.20240316"
 pandas-stubs = "^2.1.4.231227"
+types-jsonschema = "^4.25.1.20251009"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "^7.2.6"

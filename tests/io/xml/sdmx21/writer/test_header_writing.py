@@ -22,9 +22,7 @@ def header():
             id="ZZZ",
             name="unknown",
         ),
-        receiver=Organisation(
-            id="unknown",
-        ),
+        receiver=[Organisation(id="AR2"), Organisation(id="UY2")],
         source=None,
         dataset_action=None,
         structure={"DataStructure=MD:TEST(1.0)": "AllDimensions"},

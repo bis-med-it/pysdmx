@@ -1,3 +1,5 @@
+from datetime import timezone
+
 import msgspec
 import pytest
 
@@ -21,6 +23,22 @@ def test_structure_reader(body):
 
     assert isinstance(msg, StructureMessage)
 
+    # Check header
+    assert msg.header.id == "IREF195025"
+    assert msg.header.test is False
+    assert msg.header.prepared.year == 2025
+    assert msg.header.prepared.month == 5
+    assert msg.header.prepared.day == 22
+    assert msg.header.prepared.hour == 13
+    assert msg.header.prepared.minute == 11
+    assert msg.header.prepared.second == 43
+    assert msg.header.prepared.tzinfo == timezone.utc
+    assert msg.header.sender.id == "FusionRegistry"
+    assert len(msg.header.receiver) == 2
+    assert msg.header.receiver[0].id == "UY2"
+    assert msg.header.receiver[1].id == "AR2"
+
+    # Check content
     assert len(msg.get_agency_schemes()) == 5
     assert len(msg.get_categorisations()) == 6
     assert len(msg.get_category_schemes()) == 1
@@ -48,4 +66,4 @@ def test_structure_reader(body):
 
 def test_get_json2_invalid_structure():
     with pytest.raises(Invalid, match="as SDMX-JSON 2.0.0 structure message."):
-        read("pyproject.toml")
+        read("pyproject.toml", validate=False)

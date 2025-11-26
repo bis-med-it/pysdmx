@@ -2,6 +2,7 @@ from typing import Any, Dict
 
 import xmltodict
 
+from pysdmx.__extras_check import __check_xml_extra
 from pysdmx.io.xml.doc_validation import validate_doc
 
 SCHEMA_ROOT = "http://www.sdmx.org/resources/sdmxml/schemas/v2_1/"
@@ -77,6 +78,7 @@ def parse_xml(
     Raises:
         Invalid: If the SDMX data cannot be parsed.
     """
+    __check_xml_extra()
     if validate:
         validate_doc(input_str)
     if SCHEMA_ROOT_31 in input_str:

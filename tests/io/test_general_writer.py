@@ -11,12 +11,12 @@ from pysdmx.io.pd import PandasDataset
 from pysdmx.io.writer import write_sdmx
 from pysdmx.model import Component, Components, Concept, Role, Schema
 
-CSV_1_0_PATH = Path(__file__).parent / "csv" / "sdmx10" / "reader"
-CSV_2_0_PATH = Path(__file__).parent / "csv" / "sdmx20" / "reader"
-XML_2_1_PATH = Path(__file__).parent / "xml" / "sdmx21" / "reader"
-XML_3_0_PATH = Path(__file__).parent / "xml" / "sdmx30" / "reader"
-XML_STR_PATH = Path(__file__).parent
-JSN_2_0_PATH = Path(__file__).parent.parent / "api" / "fmr"
+CSV_1_0_PATH = Path(__file__).parent / "csv" / "sdmx10" / "reader" / "samples"
+CSV_2_0_PATH = Path(__file__).parent / "csv" / "sdmx20" / "reader" / "samples"
+XML_2_1_PATH = Path(__file__).parent / "xml" / "sdmx21" / "reader" / "samples"
+XML_3_0_PATH = Path(__file__).parent / "xml" / "sdmx30" / "reader" / "samples"
+XML_STR_PATH = Path(__file__).parent / "samples"
+JSN_2_0_PATH = Path(__file__).parent.parent / "api" / "fmr" / "samples"
 
 DIMENSIONS = [
     "FREQ",
@@ -122,32 +122,55 @@ def output_path(extension, tmpdir):
 
 
 @pytest.mark.parametrize(
-    ("format_", "test_path", "reference_file", "params"),
+    ("format_", "test_path", "reference_file", "params", "validate"),
     [
-        (Format.DATA_SDMX_CSV_1_0_0, CSV_1_0_PATH, "data_v1.csv", {}),
-        (Format.DATA_SDMX_CSV_2_0_0, CSV_2_0_PATH, "data_v2.csv", {}),
+        (Format.DATA_SDMX_CSV_1_0_0, CSV_1_0_PATH, "data_v1.csv", {}, True),
+        (Format.DATA_SDMX_CSV_2_0_0, CSV_2_0_PATH, "data_v2.csv", {}, True),
         (
             Format.DATA_SDMX_ML_2_1_GEN,
             XML_2_1_PATH,
             "gen_all.xml",
             {"dimension_at_observation": {}},
+            True,
         ),
-        (Format.DATA_SDMX_ML_2_1_STR, XML_2_1_PATH, "str_all.xml", {}),
-        (Format.DATA_SDMX_ML_3_0, XML_3_0_PATH, "data_dataflow_3.0.xml", {}),
-        (Format.STRUCTURE_SDMX_ML_2_1, XML_STR_PATH, "datastructure.xml", {}),
+        (Format.DATA_SDMX_ML_2_1_STR, XML_2_1_PATH, "str_all.xml", {}, True),
+        (
+            Format.DATA_SDMX_ML_3_0,
+            XML_3_0_PATH,
+            "data_dataflow_3.0.xml",
+            {},
+            True,
+        ),
+        (
+            Format.STRUCTURE_SDMX_ML_2_1,
+            XML_STR_PATH,
+            "datastructure.xml",
+            {},
+            True,
+        ),
         (
             Format.STRUCTURE_SDMX_ML_3_0,
             XML_STR_PATH,
             "datastructure3_0.xml",
             {},
+            True,
         ),
-        (Format.STRUCTURE_SDMX_JSON_2_0_0, JSN_2_0_PATH, "code/freq.json", {}),
+        (
+            Format.STRUCTURE_SDMX_JSON_2_0_0,
+            JSN_2_0_PATH,
+            "code/freq.json",
+            {},
+            True,
+        ),
         (
             Format.REFMETA_SDMX_JSON_2_0_0,
             JSN_2_0_PATH,
             "refmeta/report.json",
             {},
+            False,
         ),
+        # False due to schema validation issues
+        # in reference file from URN error in Schemas
     ],
 )
 def test_write_sdmx(
@@ -159,6 +182,7 @@ def test_write_sdmx(
     output_path,
     schema_bis_der,
 ):
+    reference = read_sdmx(test_path / reference_file, validate=validate)
     if reference.reports:
         data = reference.reports
     elif reference.structures:
@@ -173,7 +197,7 @@ def test_write_sdmx(
     write_sdmx(data, format_, str(output_path), **params)
     assert output_path.exists(), f"Output file {output_path} was not created."
 
-    written_content = read_sdmx(output_path)
+    written_content = read_sdmx(output_path, validate=validate)
 
     assert written_content is not None, "Written content should not be None."
     assert written_content.header == reference.header, "Headers do not match."
@@ -203,14 +227,15 @@ def test_write_sdmx(
     ],
 )
 def test_write_sdmx_no_header(
-    format_, test_path, reference_file, params, reference, output_path
+    format_, test_path, reference_file, params, output_path
 ):
-    if reference.reports:
-        data = reference.reports
-    elif reference.structures:
-        data = reference.structures
+    reference_this_test = read_sdmx(test_path / reference_file, validate=False)
+    if reference_this_test.reports:
+        data = reference_this_test.reports
+    elif reference_this_test.structures:
+        data = reference_this_test.structures
     else:
-        data = reference.data
+        data = reference_this_test.data
     if format_ == Format.DATA_SDMX_ML_2_1_GEN:
         data[0].structure = GEN_STRUCTURE[0]
     params["header"] = None
@@ -219,7 +244,7 @@ def test_write_sdmx_no_header(
     write_sdmx(data, format_, Path(str(output_path)), **params)
     assert output_path.exists(), f"Output file {output_path} was not created."
 
-    written_content = read_sdmx(output_path)
+    written_content = read_sdmx(output_path, validate=False)
 
     assert written_content.header is not None, "The header is missing."
     assert written_content.header.sender.id == "ZZZ", "Unexpected sender."
@@ -238,8 +263,9 @@ def test_write_sdmx_no_header(
     ],
 )
 def test_write_sdmx_no_output_file(
-    format_, test_path, reference_file, params, reference, output_path
+    format_, test_path, reference_file, params, output_path
 ):
+    reference = read_sdmx(test_path / reference_file, validate=False)
     if reference.reports:
         data = reference.reports
     elif reference.structures:
@@ -253,7 +279,7 @@ def test_write_sdmx_no_output_file(
 
     out = write_sdmx(data, format_, **params)
 
-    written_content = read_sdmx(out)
+    written_content = read_sdmx(out, validate=False)
 
     assert written_content.header is not None, "The header is missing."
     assert written_content.header.sender.id == "ZZZ", "Unexpected sender."

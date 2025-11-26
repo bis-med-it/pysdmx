@@ -1,0 +1,149 @@
+{
+  "meta": {
+    "id": "TEST_ID",
+    "test": false,
+    "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+    "prepared": "2025-01-01T00:00:00Z",
+    "contentLanguages": ["en"],
+    "sender": { "id": "TEST_SENDER" }
+  },
+  "data": {
+    "dataStructures": [
+      {
+        "links": [
+          {
+            "rel": "self",
+            "type": "datastructure",
+            "uri": "https://example.org/schema.json",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_DSD(1.0)"
+          }
+        ],
+        "id": "TEST_DSD",
+        "name": "Test Data Structure",
+        "names": { "en": "Test Data Structure" },
+        "description": "Test description",
+        "descriptions": { "en": "Test description" },
+        "version": "1.0",
+        "agencyID": "TEST",
+        "isExternalReference": false,
+        "isFinal": false,
+        "dataStructureComponents": {
+          "attributeList": {
+            "links": [
+              {
+                "rel": "self",
+                "type": "attributedescriptor",
+                "uri": "https://example.org/schema.json",
+                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.AttributeDescriptor=TEST:TEST_DSD(1.0).AttributeDescriptor"
+              }
+            ],
+            "id": "AttributeDescriptor",
+            "attributes": [
+              {
+                "usage": "mandatory",
+                "attributeRelationship": { "observation": {} },
+                "links": [
+                  {
+                    "rel": "self",
+                    "type": "dataattribute",
+                    "uri": "https://example.org/schema.json",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_DSD(1.0).ATTR1"
+                  }
+                ],
+                "id": "ATTR1",
+                "localRepresentation": {
+                  "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_ATTR1(1.0)"
+                },
+                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CS(1.0).ATTR1"
+              }
+            ]
+          },
+          "dimensionList": {
+            "links": [
+              {
+                "rel": "self",
+                "type": "dimensiondescriptor",
+                "uri": "https://example.org/schema.json",
+                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=TEST:TEST_DSD(1.0).DimensionDescriptor"
+              }
+            ],
+            "id": "DimensionDescriptor",
+            "dimensions": [
+              {
+                "position": 1,
+                "links": [
+                  {
+                    "rel": "self",
+                    "type": "dimension",
+                    "uri": "https://example.org/schema.json",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=TEST:TEST_DSD(1.0).DIM1"
+                  }
+                ],
+                "id": "DIM1",
+                "localRepresentation": {
+                  "enumerationFormat": { "maxLength": 1, "minLength": 1, "dataType": "String" },
+                  "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_DIM1(1.0)"
+                },
+                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CS(1.0).DIM1"
+              }
+            ],
+            "timeDimension": {
+              "links": [
+                {
+                  "rel": "self",
+                  "type": "timedimension",
+                  "uri": "https://example.org/schema.json",
+                  "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=TEST:TEST_DSD(1.0).TIME_PERIOD"
+                }
+              ],
+              "id": "TIME_PERIOD",
+              "localRepresentation": { "format": { "dataType": "wrongtype" } },
+              "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CS(1.0).TIME_PERIOD"
+            }
+          },
+          "groups": [
+            {
+              "links": [
+                {
+                  "rel": "self",
+                  "type": "groupdimensiondescriptor",
+                  "uri": "https://example.org/schema.json",
+                  "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.GroupDimensionDescriptor=TEST:TEST_DSD(1.0).GRP1"
+                }
+              ],
+              "id": "GRP1",
+              "groupDimensions": ["DIM1"]
+            }
+          ],
+          "measureList": {
+            "links": [
+              {
+                "rel": "self",
+                "type": "measuredescriptor",
+                "uri": "https://example.org/schema.json",
+                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.MeasureDescriptor=TEST:TEST_DSD(1.0).MeasureDescriptor"
+              }
+            ],
+            "id": "MeasureDescriptor",
+            "measures": [
+              {
+                "usage": "mandatory",
+                "links": [
+                  {
+                    "rel": "self",
+                    "type": "primarymeasure",
+                    "uri": "https://example.org/schema.json",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Measure=TEST:TEST_DSD(1.0).OBS_VALUE"
+                  }
+                ],
+                "id": "OBS_VALUE",
+                "localRepresentation": { "format": { "maxLength": 15, "minLength": 1, "dataType": "String" } },
+                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CS(1.0).OBS_VALUE"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

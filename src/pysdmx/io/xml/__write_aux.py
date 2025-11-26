@@ -284,35 +284,32 @@ def __item(
     name = None
     org_id = None
 
-    if isinstance(sender_receiver, Organisation):
-        org_id = sender_receiver.id
-        name = sender_receiver.name
+    org_id = sender_receiver.id
+    name = sender_receiver.name
 
-        unexpected_keys = {
-            URI_LOW,
-            URN_LOW,
-            DESC_LOW,
-            CONTACTS_LOW,
-            DFWS_LOW,
-            ANNOTATIONS_LOW,
-        }
+    unexpected_keys = {
+        URI_LOW,
+        URN_LOW,
+        DESC_LOW,
+        CONTACTS_LOW,
+        DFWS_LOW,
+        ANNOTATIONS_LOW,
+    }
 
-        unexpected_with_values = {
-            key
-            for key in unexpected_keys
-            if hasattr(sender_receiver, key)
-            and getattr(sender_receiver, key) not in (None, (), [], {})
-        }
+    unexpected_with_values = {
+        key
+        for key in unexpected_keys
+        if hasattr(sender_receiver, key)
+        and getattr(sender_receiver, key) not in (None, (), [], {})
+    }
 
-        if unexpected_with_values:
-            warnings.warn(
-                f"The following attributes will be lost: "
-                f"{', '.join(unexpected_with_values)}",
-                UserWarning,
-                stacklevel=2,
-            )
-    else:
-        return ""
+    if unexpected_with_values:
+        warnings.warn(
+            f"The following attributes will be lost: "
+            f"{', '.join(unexpected_with_values)}",
+            UserWarning,
+            stacklevel=2,
+        )
 
     message = f"{nl}{child2}<{ABBR_MSG}:{element} id={org_id!r}"
     if name is not None:
@@ -398,6 +395,11 @@ def __reference(
     )
 
 
+def __write_receivers(header: Header, nl: str, prettyprint: bool) -> str:
+    recs = [__item("Receiver", r, nl, prettyprint) for r in header.receiver]
+    return "".join(recs)
+
+
 def __write_header(
     header: Header,
     prettyprint: bool,
@@ -470,7 +472,7 @@ def __write_header(
         f"{__value('Test', test)}"
         f"{__value('Prepared', prepared)}"
         f"{__item('Sender', header.sender, nl, prettyprint)}"
-        f"{__item('Receiver', header.receiver, nl, prettyprint)}"
+        f"{__write_receivers(header, nl, prettyprint)}"
         f"{references_str}"
         f"{__value('DataSetAction', action_value)}"
         f"{__value('DataSetID', header.dataset_id)}"

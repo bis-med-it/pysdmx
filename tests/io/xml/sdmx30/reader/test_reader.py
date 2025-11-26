@@ -46,6 +46,8 @@ def test_dataflow_30(samples_folder):
     assert header.structure == {
         "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)": "AllDimensions"
     }
+    assert header.receiver[0].id == "AR2"
+    assert header.receiver[1].id == "UY2"
     assert result.data is not None
     data = result.data[0].data
     num_rows = len(data)

@@ -13,7 +13,11 @@ In this tutorial, we learn how to read SDMX Structures messages using the
 
 .. important::
 
-    For SDMX-ML support, you also to install the `pysdmx[xml]` extra.
+    For SDMX-ML support, you need to install the `pysdmx[xml]` extra.
+
+    For SDMX-JSON structural validation you need to install the `pysdmx[json]` extra.
+    ``validate=True`` is the default behaviour on read_sdmx and get_datasets.
+
 
     Check the :ref:`installation guide <installation>` for more information.
 
