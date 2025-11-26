@@ -16,8 +16,9 @@ from pysdmx.io.xml.__write_data_aux import (
     writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
-from pysdmx.toolkit.pd._data_utils import fill_na_values, get_codes
+from pysdmx.toolkit.pd._data_utils import get_codes
 from pysdmx.util import parse_short_urn
+from pysdmx.util._pd_utils import _fill_na_values
 
 
 def __memory_optimization_writing(
@@ -117,7 +118,7 @@ def __write_data_single_dataset(
     writing_validation(dataset)
 
     # Remove nan values from DataFrame
-    dataset.data = fill_na_values(dataset.data, dataset.structure)
+    dataset.data = _fill_na_values(dataset.data, dataset.structure)
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""

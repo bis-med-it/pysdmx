@@ -25,8 +25,9 @@ from pysdmx.io.xml.__write_data_aux import (
 )
 from pysdmx.io.xml.config import CHUNKSIZE
 from pysdmx.model.message import Header
-from pysdmx.toolkit.pd._data_utils import fill_na_values, get_codes
+from pysdmx.toolkit.pd._data_utils import get_codes
 from pysdmx.util import parse_short_urn
+from pysdmx.util._pd_utils import _fill_na_values
 
 
 def __value(id: str, value: str) -> str:
@@ -159,7 +160,7 @@ def __write_data_single_dataset(
     outfile = ""
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
-    dataset.data = fill_na_values(dataset.data, dataset.structure)
+    dataset.data = _fill_na_values(dataset.data, dataset.structure)
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""

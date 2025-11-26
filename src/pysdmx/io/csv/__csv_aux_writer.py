@@ -7,11 +7,8 @@ from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
 from pysdmx.model.dataset import ActionType
-from pysdmx.toolkit.pd._data_utils import (
-    fill_na_values,
-    format_labels,
-    get_codes,
-)
+from pysdmx.toolkit.pd._data_utils import format_labels, get_codes
+from pysdmx.util._pd_utils import _fill_na_values
 
 SDMX_CSV_ACTION_MAPPER = {
     ActionType.Append: "A",
@@ -86,7 +83,7 @@ def _write_csv_2_aux(
         _validate_schema_exists(dataset)
         # Create a copy of the dataset
         df: pd.DataFrame = copy(dataset.data)
-        df = fill_na_values(df, dataset.structure)
+        df = _fill_na_values(df, dataset.structure)
         structure_ref, unique_id = dataset.short_urn.split("=", maxsplit=1)
 
         # Add additional attributes to the dataset

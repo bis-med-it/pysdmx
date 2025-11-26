@@ -12,7 +12,8 @@ from pysdmx.io.csv.__csv_aux_writer import (
 )
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
-from pysdmx.toolkit.pd._data_utils import fill_na_values, format_labels
+from pysdmx.toolkit.pd._data_utils import format_labels
+from pysdmx.util._pd_utils import _fill_na_values
 
 
 def write(
@@ -53,7 +54,7 @@ def write(
         df: pd.DataFrame = copy(dataset.data)
 
         # Fill missing values
-        df = fill_na_values(df, dataset.structure)
+        df = _fill_na_values(df, dataset.structure)
 
         # Add additional attributes to the dataset
         for k, v in dataset.attributes.items():

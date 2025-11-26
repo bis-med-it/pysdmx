@@ -6,11 +6,11 @@ import pytest
 from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
 from pysdmx.model.concept import DataType
-from pysdmx.toolkit.pd._data_utils import (
+from pysdmx.toolkit.pd._data_utils import format_labels
+from pysdmx.util._pd_utils import (
     NUMERIC_TYPES,
-    fill_na_values,
-    format_labels,
-    validate_explicit_null_values,
+    _fill_na_values,
+    _validate_explicit_null_values,
 )
 
 
@@ -74,16 +74,16 @@ def test_write_labels_id(data_path_optional_names, dsd_path):
     assert "TIME_PERIOD" in data.columns
 
 
-def test_fill_na_values_raises_when_no_components():
+def test__fill_na_values_raises_when_no_components():
     data = pd.DataFrame({"a": [None]})
     structure = object()
 
     with pytest.raises(Invalid):
-        fill_na_values(data, structure)
+        _fill_na_values(data, structure)
 
 
 @pytest.mark.parametrize("dtype", list(NUMERIC_TYPES))
-def test_fill_na_values_numeric_and_non_numeric(dtype):
+def test__fill_na_values_numeric_and_non_numeric(dtype):
     data = pd.DataFrame({"num": [None, 1], "cat": [None, "x"]})
 
     class SimpleComp:
@@ -97,7 +97,7 @@ def test_fill_na_values_numeric_and_non_numeric(dtype):
         SimpleComp("cat", DataType.STRING),
     ]
 
-    out = fill_na_values(data.copy(), structure)
+    out = _fill_na_values(data.copy(), structure)
 
     assert out["num"].iloc[0] == "NaN"
     assert out["cat"].iloc[0] == "#N/A"
@@ -118,7 +118,7 @@ def test_validate_explicit_null_values_valid():
     ]
 
     # Should not raise and return None
-    result = validate_explicit_null_values(data, structure)
+    result = _validate_explicit_null_values(data, structure)
     assert result is None
 
 
@@ -136,7 +136,7 @@ def test_validate_explicit_null_values_invalid_numeric():
     ]
 
     with pytest.raises(Invalid) as excinfo:
-        validate_explicit_null_values(data, structure)
+        _validate_explicit_null_values(data, structure)
 
     assert "Invalid null value '#N/A' in numeric component 'num'" in str(
         excinfo.value
@@ -157,7 +157,7 @@ def test_validate_explicit_null_values_invalid_non_numeric():
     ]
 
     with pytest.raises(Invalid) as excinfo:
-        validate_explicit_null_values(data, structure)
+        _validate_explicit_null_values(data, structure)
 
     assert "Invalid null value 'NaN' in non-numeric component 'cat'" in str(
         excinfo.value
@@ -167,7 +167,7 @@ def test_validate_explicit_null_values_invalid_non_numeric():
 def test_validate_explicit_null_values_no_components():
     data = pd.DataFrame({"a": ["#N/A"]})
     structure = object()
-    result = validate_explicit_null_values(data, structure)
+    result = _validate_explicit_null_values(data, structure)
     assert result is None
 
 
@@ -181,5 +181,5 @@ def test_validate_explicit_null_values_skips_when_column_missing():
 
     structure = type("S", (), {})()
     structure.components = [SimpleComp("missing_col", DataType.STRING)]
-    result = validate_explicit_null_values(data, structure)
+    result = _validate_explicit_null_values(data, structure)
     assert result is None
