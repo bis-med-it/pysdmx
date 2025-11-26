@@ -72,13 +72,13 @@ GEN_STRUCTURE = (
 
 @pytest.fixture
 def data_path_reference(test_path, reference_file):
-    base_path = Path(__file__).parent / test_path / "samples" / reference_file
+    base_path = Path(__file__).parent / test_path / reference_file
     return str(base_path)
 
 
 @pytest.fixture
-def reference(data_path_reference):
-    return read_sdmx(data_path_reference)
+def reference(data_path_reference, validate):
+    return read_sdmx(data_path_reference, validate=validate)
 
 
 @pytest.fixture
@@ -175,14 +175,12 @@ def output_path(extension, tmpdir):
 )
 def test_write_sdmx(
     format_,
-    test_path,
-    reference_file,
     params,
     reference,
     output_path,
     schema_bis_der,
+    validate,
 ):
-    reference = read_sdmx(test_path / reference_file, validate=validate)
     if reference.reports:
         data = reference.reports
     elif reference.structures:
