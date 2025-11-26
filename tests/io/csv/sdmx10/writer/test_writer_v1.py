@@ -7,6 +7,7 @@ import pytest
 from pysdmx.errors import Invalid
 from pysdmx.io.csv.sdmx10.writer import write
 from pysdmx.io.pd import PandasDataset
+from pysdmx.model import Component, Components, Concept, DataType, Role, Schema
 
 
 @pytest.fixture
@@ -34,12 +35,6 @@ def data_path_reference_atch_atts():
 
 
 @pytest.fixture
-def dsd_path():
-    base_path = Path(__file__).parent / "samples" / "datastructure.xml"
-    return str(base_path)
-
-
-@pytest.fixture
 def csv_labels_id():
     base_path = Path(__file__).parent / "samples" / "csv_labels_id.csv"
     return str(base_path)
@@ -60,12 +55,70 @@ def csv_time_format_original():
 
 
 @pytest.fixture
-def schema(dsd_path):
-    from pysdmx.io.reader import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    return dsd.to_schema()
+def schema():
+    return Schema(
+        context="datastructure",
+        agency="MD",
+        id="MD_TEST",
+        version="1.0",
+        name="MD TEST",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    concept=Concept(
+                        id="DIM1", dtype=DataType.STRING, name="DIMENSION 1"
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DIM2",
+                    concept=Concept(
+                        id="DIM2", dtype=DataType.STRING, name="DIMENSION 2"
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="TIME_PERIOD",
+                    concept=Concept(
+                        id="TIME_PERIOD",
+                        dtype=DataType.TIME,
+                        name="TIME PERIOD",
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="ATT1",
+                    concept=Concept(
+                        id="ATT1", dtype=DataType.STRING, name="ATTRIBUTE 1"
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="S",
+                ),
+                Component(
+                    id="ATT2",
+                    concept=Concept(
+                        id="ATT2", dtype=DataType.STRING, name="ATTRIBUTE 2"
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    concept=Concept(
+                        id="OBS_VALUE", dtype=DataType.STRING, name="OBS_VALUE"
+                    ),
+                    role=Role.MEASURE,
+                    required=False,
+                ),
+            ]
+        ),
+    )
 
 
 @pytest.mark.data

@@ -6,7 +6,7 @@ import pytest
 
 from pysdmx.io.csv.sdmx20.writer import write
 from pysdmx.io.pd import PandasDataset
-from pysdmx.model import Schema
+from pysdmx.model import Component, Components, Concept, DataType, Role, Schema
 from pysdmx.model.dataset import ActionType
 
 
@@ -38,32 +38,6 @@ def data_path_reference_attch_atts():
 def data_path_reference_action():
     base_path = Path(__file__).parent / "samples" / "reference_with_action.csv"
     return base_path
-
-
-@pytest.fixture
-def dsd_path():
-    base_path = Path(__file__).parent / "samples" / "datastructure.xml"
-    return str(base_path)
-
-
-@pytest.fixture
-def dsd_path_alt_id_and_version():
-    base_path = (
-        Path(__file__).parent
-        / "samples"
-        / "datastructure_alt_id_and_version.xml"
-    )
-    return str(base_path)
-
-
-@pytest.fixture
-def dsd_path_provision_agreement():
-    base_path = (
-        Path(__file__).parent
-        / "samples"
-        / "datastructure_provision_agreement.xml"
-    )
-    return str(base_path)
 
 
 @pytest.fixture
@@ -103,47 +77,203 @@ def csv_keys_both():
 
 
 @pytest.fixture
-def schema(dsd_path):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    return dsd.to_schema()
+def schema():
+    return Schema(
+        context="datastructure",
+        agency="MD",
+        id="MD_TEST",
+        version="1.0",
+        name="MD TEST",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    concept=Concept(
+                        id="DIM1", name="DIMENSION 1", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DIM2",
+                    concept=Concept(
+                        id="DIM2", name="DIMENSION 2", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="TIME_PERIOD",
+                    concept=Concept(
+                        id="TIME_PERIOD",
+                        name="TIME PERIOD",
+                        dtype=DataType.TIME,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="ATT1",
+                    concept=Concept(
+                        id="ATT1", name="ATTRIBUTE 1", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="S",
+                ),
+                Component(
+                    id="ATT2",
+                    concept=Concept(
+                        id="ATT2", name="ATTRIBUTE 2", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    concept=Concept(
+                        id="OBS_VALUE", name="OBS_VALUE", dtype=DataType.STRING
+                    ),
+                    role=Role.MEASURE,
+                    required=False,
+                ),
+            ]
+        ),
+    )
 
 
 @pytest.fixture
-def schema_alt_id_and_version(dsd_path_alt_id_and_version):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(
-        dsd_path_alt_id_and_version
-    ).get_data_structure_definitions()
-    dsd = result[0]
-    return dsd.to_schema()
+def schema_alt_id_and_version():
+    return Schema(
+        context="datastructure",
+        agency="MD",
+        id="DS1",
+        version="2.0",
+        name="MD TEST",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    concept=Concept(
+                        id="DIM1", name="DIMENSION 1", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DIM2",
+                    concept=Concept(
+                        id="DIM2", name="DIMENSION 2", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="TIME_PERIOD",
+                    concept=Concept(
+                        id="TIME_PERIOD",
+                        name="TIME PERIOD",
+                        dtype=DataType.TIME,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="ATT1",
+                    concept=Concept(
+                        id="ATT1", name="ATTRIBUTE 1", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="S",
+                ),
+                Component(
+                    id="ATT2",
+                    concept=Concept(
+                        id="ATT2", name="ATTRIBUTE 2", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    concept=Concept(
+                        id="OBS_VALUE", name="OBS_VALUE", dtype=DataType.STRING
+                    ),
+                    role=Role.MEASURE,
+                    required=False,
+                ),
+            ]
+        ),
+    )
 
 
 @pytest.fixture
-def schema_provision_agreement(dsd_path_provision_agreement):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(
-        dsd_path_provision_agreement
-    ).get_data_structure_definitions()
-    dsd = result[0]
-
-    base_schema = dsd.to_schema()
-
-    # Build a Schema with provisionagreement context
+def schema_provision_agreement():
     return Schema(
         context="provisionagreement",
-        agency=base_schema.agency,
-        id=base_schema.id,
-        version=base_schema.version,
-        components=base_schema.components,
-        artefacts=base_schema.artefacts,
-        generated=base_schema.generated,
-        name=base_schema.name,
-        groups=base_schema.groups,
+        agency="MD",
+        id="PA1",
+        version="1.0",
+        name="MD TEST",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    concept=Concept(
+                        id="DIM1", name="DIMENSION 1", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DIM2",
+                    concept=Concept(
+                        id="DIM2", name="DIMENSION 2", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="TIME_PERIOD",
+                    concept=Concept(
+                        id="TIME_PERIOD",
+                        name="TIME PERIOD",
+                        dtype=DataType.TIME,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="ATT1",
+                    concept=Concept(
+                        id="ATT1", name="ATTRIBUTE 1", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="S",
+                ),
+                Component(
+                    id="ATT2",
+                    concept=Concept(
+                        id="ATT2", name="ATTRIBUTE 2", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    concept=Concept(
+                        id="OBS_VALUE", name="OBS_VALUE", dtype=DataType.STRING
+                    ),
+                    role=Role.MEASURE,
+                    required=False,
+                ),
+            ]
+        ),
     )
 
 

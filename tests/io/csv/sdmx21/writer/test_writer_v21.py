@@ -6,7 +6,7 @@ import pytest
 
 from pysdmx.io.csv.sdmx21.writer import write
 from pysdmx.io.pd import PandasDataset
-from pysdmx.model import Schema
+from pysdmx.model import Component, Components, Concept, DataType, Role, Schema
 from pysdmx.model.dataset import ActionType
 
 
@@ -46,30 +46,6 @@ def data_path_reference_append_action():
         Path(__file__).parent / "samples" / "reference_with_append_action.csv"
     )
     return base_path
-
-
-@pytest.fixture
-def dsd_path():
-    base_path = Path(__file__).parent / "samples" / "datastructure.xml"
-    return str(base_path)
-
-
-@pytest.fixture
-def dsd_provision_agreement_path():
-    base_path = (
-        Path(__file__).parent
-        / "samples"
-        / "datastructure_provision_agreement.xml"
-    )
-    return str(base_path)
-
-
-@pytest.fixture
-def dsd_alter_ID_path():
-    base_path = (
-        Path(__file__).parent / "samples" / "datastructure_alter_ID.xml"
-    )
-    return str(base_path)
 
 
 @pytest.fixture
@@ -117,42 +93,204 @@ def csv_time_format_original():
 
 
 @pytest.fixture
-def schema(dsd_provision_agreement_path):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(
-        dsd_provision_agreement_path
-    ).get_data_structure_definitions()
-    dsd = result[0]
-    return dsd.to_schema()
-
-
-@pytest.fixture
-def schema_provision_agreement(dsd_provision_agreement_path):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(
-        dsd_provision_agreement_path
-    ).get_data_structure_definitions()
-    base_schema = result[0]
+def schema():
     return Schema(
-        context="provisionagreement",
-        agency=base_schema.agency,
-        id=base_schema.id,
-        version=base_schema.version,
-        components=base_schema.components,
-        name=base_schema.name,
-        groups=base_schema.groups,
+        context="datastructure",
+        agency="MD",
+        id="MD_TEST",
+        version="1.0",
+        name="MD TEST",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    concept=Concept(
+                        id="DIM1", name="DIMENSION 1", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DIM2",
+                    concept=Concept(
+                        id="DIM2", name="DIMENSION 2", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="TIME_PERIOD",
+                    concept=Concept(
+                        id="TIME_PERIOD",
+                        name="TIME PERIOD",
+                        dtype=DataType.TIME,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="ATT1",
+                    concept=Concept(
+                        id="ATT1", name="ATTRIBUTE 1", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="S",
+                ),
+                Component(
+                    id="ATT2",
+                    concept=Concept(
+                        id="ATT2", name="ATTRIBUTE 2", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    concept=Concept(
+                        id="OBS_VALUE", name="OBS_VALUE", dtype=DataType.STRING
+                    ),
+                    role=Role.MEASURE,
+                    required=False,
+                ),
+            ]
+        ),
     )
 
 
 @pytest.fixture
-def schema_alter_ID(dsd_alter_ID_path):
-    from pysdmx.io import read_sdmx
+def schema_provision_agreement():
+    return Schema(
+        context="provisionagreement",
+        agency="MD",
+        id="PA1",
+        version="1.0",
+        name="MD TEST",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    concept=Concept(
+                        id="DIM1", name="DIMENSION 1", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DIM2",
+                    concept=Concept(
+                        id="DIM2", name="DIMENSION 2", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="TIME_PERIOD",
+                    concept=Concept(
+                        id="TIME_PERIOD",
+                        name="TIME PERIOD",
+                        dtype=DataType.TIME,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="ATT1",
+                    concept=Concept(
+                        id="ATT1", name="ATTRIBUTE 1", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="S",
+                ),
+                Component(
+                    id="ATT2",
+                    concept=Concept(
+                        id="ATT2", name="ATTRIBUTE 2", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    concept=Concept(
+                        id="OBS_VALUE", name="OBS_VALUE", dtype=DataType.STRING
+                    ),
+                    role=Role.MEASURE,
+                    required=False,
+                ),
+            ]
+        ),
+    )
 
-    result = read_sdmx(dsd_alter_ID_path).get_data_structure_definitions()
-    dsd = result[0]
-    return dsd.to_schema()
+
+@pytest.fixture
+def schema_alter_ID():
+    return Schema(
+        context="datastructure",
+        agency="MD",
+        id="DS1",
+        version="2.0",
+        name="MD TEST",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    concept=Concept(
+                        id="DIM1", name="DIMENSION 1", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DIM2",
+                    concept=Concept(
+                        id="DIM2", name="DIMENSION 2", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="TIME_PERIOD",
+                    concept=Concept(
+                        id="TIME_PERIOD",
+                        name="TIME PERIOD",
+                        dtype=DataType.TIME,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="ATT1",
+                    concept=Concept(
+                        id="ATT1", name="ATTRIBUTE 1", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="S",
+                ),
+                Component(
+                    id="ATT2",
+                    concept=Concept(
+                        id="ATT2", name="ATTRIBUTE 2", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    concept=Concept(
+                        id="OBS_VALUE", name="OBS_VALUE", dtype=DataType.STRING
+                    ),
+                    role=Role.MEASURE,
+                    required=False,
+                ),
+            ]
+        ),
+    )
 
 
 @pytest.mark.data
@@ -257,12 +395,7 @@ def test_writer_with_append_action(
     )
 
 
-def test_writer_labels_id(data_path_optional, dsd_path, csv_labels_id):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_labels_id(data_path_optional, csv_labels_id, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -279,12 +412,7 @@ def test_writer_labels_id(data_path_optional, dsd_path, csv_labels_id):
     )
 
 
-def test_writer_labels_name(data_path_optional, dsd_path, csv_labels_name):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_labels_name(data_path_optional, csv_labels_name, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -301,12 +429,7 @@ def test_writer_labels_name(data_path_optional, dsd_path, csv_labels_name):
     )
 
 
-def test_writer_labels_both(data_path_optional, dsd_path, csv_labels_both):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_labels_both(data_path_optional, csv_labels_both, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -323,12 +446,7 @@ def test_writer_labels_both(data_path_optional, dsd_path, csv_labels_both):
     )
 
 
-def test_writer_keys_obs(data_path_optional, dsd_path, csv_keys_obs):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_keys_obs(data_path_optional, csv_keys_obs, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -345,12 +463,7 @@ def test_writer_keys_obs(data_path_optional, dsd_path, csv_keys_obs):
     )
 
 
-def test_writer_keys_series(data_path_optional, dsd_path, csv_keys_series):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_keys_series(data_path_optional, csv_keys_series, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -367,12 +480,7 @@ def test_writer_keys_series(data_path_optional, dsd_path, csv_keys_series):
     )
 
 
-def test_writer_keys_both(data_path_optional, dsd_path, csv_keys_both):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_keys_both(data_path_optional, csv_keys_both, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -390,13 +498,8 @@ def test_writer_keys_both(data_path_optional, dsd_path, csv_keys_both):
 
 
 def test_writer_time_format_original(
-    data_path_optional, dsd_path, csv_time_format_original
+    data_path_optional, csv_time_format_original, schema
 ):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -413,12 +516,7 @@ def test_writer_time_format_original(
     )
 
 
-def test_writer_time_format_normalized(data_path_optional, dsd_path):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_time_format_normalized(data_path_optional, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
