@@ -22,7 +22,6 @@ jobs:
         run: |
           export DEBIAN_FRONTEND=noninteractive
           sudo apt update
-          sudo apt upgrade -y
           sudo apt install -y \
             python-is-python3 \
             python3-pip \
@@ -43,7 +42,7 @@ jobs:
 
       - name: Install pip-only dependencies
         run: |
-          pip3 install --no-dependencies --break-system-packages \
+          pip install --no-dependencies --break-system-packages \
             sdmxschemas \
             parsy \
             msgspec \
@@ -51,9 +50,9 @@ jobs:
 
       - name: Install vtlengine and its dependencies
         run: |
-          pip3 install --no-dependencies --break-system-packages vtlengine
+          pip install --no-dependencies --break-system-packages vtlengine
 
-          pip3 install --break-system-packages --force-reinstall --no-dependencies \
+          pip install --break-system-packages --force-reinstall --no-dependencies \
             "antlr4-python3-runtime==4.9.3" \
             duckdb \
             "networkx==2.8.8" \
@@ -61,7 +60,7 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pip3 install poetry
+          pip install poetry
           poetry config virtualenvs.create false
 
       - name: Build wheel
@@ -70,7 +69,7 @@ jobs:
 
       - name: Install built package
         run: |
-          pip3 install "./pysdmx-$(poetry version -s)-py3-none-any.whl" --no-dependencies --break-system-packages
+          pip install "./pysdmx-$(poetry version -s)-py3-none-any.whl" --no-dependencies --break-system-packages
 
       - name: Run tests
         run: pytest --verbose --tb=short --strict-markers --strict-config
