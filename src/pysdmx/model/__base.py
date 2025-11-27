@@ -350,7 +350,7 @@ class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
             )
 
         # Determine which fields to search in
-        search_fields = ["name", "description"] if fields == "all" else fields
+        search_fields = ["name", "description"] if fields == "all" else [fields]
 
         # Transform plain text queries into a regex
         if not use_regex:
@@ -362,7 +362,7 @@ class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
             item
             for item in self.items
             if any(
-                pattern.search(getattr(item, field, ""))
+                pattern.search(str(getattr(item, field, "")))
                 for field in search_fields
             )
         ]
