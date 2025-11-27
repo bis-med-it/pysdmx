@@ -1,0 +1,719 @@
+{
+    "meta": {
+        "id": "IREF095782",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2025-10-09T11:32:53Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "Unknown"
+        }
+    },
+    "data": {
+        "metadataStructures": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "metadatastructure",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataStructure=IAEG-SDGs:SDG_MSD(1.0)"
+                    }
+                ],
+                "id": "SDG_MSD",
+                "name": "SDG Metadata Structure Definition",
+                "names": {
+                    "en": "SDG Metadata Structure Definition"
+                },
+                "description": "Metadata Structure Definition for Sustainable Development Goals Indicators.",
+                "descriptions": {
+                    "en": "Metadata Structure Definition for Sustainable Development Goals Indicators."
+                },
+                "version": "1.0",
+                "agencyID": "IAEG-SDGs",
+                "isExternalReference": false,
+                "metadataStructureComponents": {
+                    "metadataAttributeList": {
+                        "id": "MetadataAttributeDescriptor",
+                        "metadataAttributes": [
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).ADJUSTMENT"
+                                    }
+                                ],
+                                "id": "ADJUSTMENT",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).ADJUSTMENT"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CLASS_SYSTEM"
+                                    }
+                                ],
+                                "id": "CLASS_SYSTEM",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CLASS_SYSTEM"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).COLL_METHOD"
+                                    }
+                                ],
+                                "id": "COLL_METHOD",
+                                "localRepresentation": {
+                                    "textFormat": {
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS.MEDIT:MEDAL_INM(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COLL_METHOD"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).COMPARABILITY"
+                                    }
+                                ],
+                                "id": "COMPARABILITY",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COMPARABILITY"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 42,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).COMPILING_ORG"
+                                    }
+                                ],
+                                "id": "COMPILING_ORG",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COMPILING_ORG"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 1,
+                                "maxOccurs": "unbounded",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CONTACT"
+                                    }
+                                ],
+                                "id": "CONTACT",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CONTACT_EMAIL"
+                                    }
+                                ],
+                                "id": "CONTACT_EMAIL",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_EMAIL"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CONTACT_FUNCT"
+                                    }
+                                ],
+                                "id": "CONTACT_FUNCT",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_FUNCT"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CONTACT_MAIL"
+                                    }
+                                ],
+                                "id": "CONTACT_MAIL",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_MAIL"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CONTACT_NAME"
+                                    }
+                                ],
+                                "id": "CONTACT_NAME",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_NAME"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CONTACT_ORGANISATION"
+                                    }
+                                ],
+                                "id": "CONTACT_ORGANISATION",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_ORGANISATION"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).CONTACT_PHONE"
+                                    }
+                                ],
+                                "id": "CONTACT_PHONE",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).CONTACT_PHONE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).COVERAGE"
+                                    }
+                                ],
+                                "id": "COVERAGE",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).COVERAGE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).DATA_COMP"
+                                    }
+                                ],
+                                "id": "DATA_COMP",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DATA_COMP"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).DATA_SOURCE"
+                                    }
+                                ],
+                                "id": "DATA_SOURCE",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DATA_SOURCE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).DATA_VALIDATION"
+                                    }
+                                ],
+                                "id": "DATA_VALIDATION",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DATA_VALIDATION"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).DOC_METHOD"
+                                    }
+                                ],
+                                "id": "DOC_METHOD",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).DOC_METHOD"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).FREQ_COLL"
+                                    }
+                                ],
+                                "id": "FREQ_COLL",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).FREQ_COLL"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).IMPUTATION"
+                                    }
+                                ],
+                                "id": "IMPUTATION",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).IMPUTATION"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).IND_DEF_CON_CLASS"
+                                    }
+                                ],
+                                "id": "IND_DEF_CON_CLASS",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).IND_DEF_CON_CLASS"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).INST_MANDATE"
+                                    }
+                                ],
+                                "id": "INST_MANDATE",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).INST_MANDATE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).META_LAST_UPDATE"
+                                    }
+                                ],
+                                "id": "META_LAST_UPDATE",
+                                "localRepresentation": {
+                                    "format": {
+                                        "isSequence": false,
+                                        "dataType": "GregorianDay"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).META_LAST_UPDATE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).ORGANISATION_UNIT"
+                                    }
+                                ],
+                                "id": "ORGANISATION_UNIT",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).ORGANISATION_UNIT"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).OTHER_DOC"
+                                    }
+                                ],
+                                "id": "OTHER_DOC",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).OTHER_DOC"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).OTHER_METHOD"
+                                    }
+                                ],
+                                "id": "OTHER_METHOD",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).OTHER_METHOD"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).QUALITY_ASSMNT"
+                                    }
+                                ],
+                                "id": "QUALITY_ASSMNT",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).QUALITY_ASSMNT"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).QUALITY_ASSURE"
+                                    }
+                                ],
+                                "id": "QUALITY_ASSURE",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).QUALITY_ASSURE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).QUALITY_MGMNT"
+                                    }
+                                ],
+                                "id": "QUALITY_MGMNT",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).QUALITY_MGMNT"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).RATIONALE"
+                                    }
+                                ],
+                                "id": "RATIONALE",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).RATIONALE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).REC_USE_LIM"
+                                    }
+                                ],
+                                "id": "REC_USE_LIM",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).REC_USE_LIM"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).REG_AGG"
+                                    }
+                                ],
+                                "id": "REG_AGG",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).REG_AGG"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).REL_CAL_POLICY"
+                                    }
+                                ],
+                                "id": "REL_CAL_POLICY",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).REL_CAL_POLICY"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SDG_CUSTODIAN_AGENCIES"
+                                    }
+                                ],
+                                "id": "SDG_CUSTODIAN_AGENCIES",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_CUSTODIAN_AGENCIES"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SDG_GOAL"
+                                    }
+                                ],
+                                "id": "SDG_GOAL",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_GOAL"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SDG_INDICATOR"
+                                    }
+                                ],
+                                "id": "SDG_INDICATOR",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_INDICATOR"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SDG_INDICATOR_INFO"
+                                    }
+                                ],
+                                "id": "SDG_INDICATOR_INFO",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_INDICATOR_INFO"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SDG_RELATED_INDICATORS"
+                                    }
+                                ],
+                                "id": "SDG_RELATED_INDICATORS",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_RELATED_INDICATORS"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SDG_SERIES_DESCR"
+                                    }
+                                ],
+                                "id": "SDG_SERIES_DESCR",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_SERIES_DESCR"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SDG_TARGET"
+                                    }
+                                ],
+                                "id": "SDG_TARGET",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SDG_TARGET"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SOURCE_TYPE"
+                                    }
+                                ],
+                                "id": "SOURCE_TYPE",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SOURCE_TYPE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).SRC_TYPE_COLL_METHOD"
+                                    }
+                                ],
+                                "id": "SRC_TYPE_COLL_METHOD",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).SRC_TYPE_COLL_METHOD"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).STAT_CONC_DEF"
+                                    }
+                                ],
+                                "id": "STAT_CONC_DEF",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).STAT_CONC_DEF"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).UNIT_MEASURE"
+                                    }
+                                ],
+                                "id": "UNIT_MEASURE",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).UNIT_MEASURE"
+                            },
+                            {
+                                "isPresentational": false,
+                                "minOccurs": 0,
+                                "maxOccurs": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "metadataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataAttribute=IAEG-SDGs:SDG_MSD(1.0).TRANSLATIONS"
+                                    }
+                                ],
+                                "id": "TRANSLATIONS",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=IAEG-SDGs:SDG_META_CONCEPTS(1.0).TRANSLATIONS"
+                            }
+                        ]
+                    }
+                }
+            }
+        ]
+    }
+}

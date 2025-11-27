@@ -1,0 +1,144 @@
+{
+    "meta": {
+        "id": "IREF398951",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2023-07-27T06:38:10Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0"
+        }
+    },
+    "data": {
+        "codelists": [
+            {
+                "id": "MEDAL_NMM",
+                "name": "MEDAL Mapping Modes",
+                "names": {
+                    "en": "MEDAL Mapping Modes"
+                },
+                "description": "Describe how mapping errors should be handled by MEDAL Normalization process",
+                "descriptions": {
+                    "en": "Describe how mapping errors should be handled by MEDAL Normalization process"
+                },
+                "version": "1.0",
+                "agencyID": "BIS.MEDIT",
+                "isExternalReference": false,
+                "isFinal": false,
+                "isPartial": false,
+                "codes": [
+                    {
+
+                        "id": "I",
+                        "name": "IGNORE",
+                        "names": {
+                            "en": "IGNORE"
+                        }
+                    },
+                    {
+                        "id": "F",
+                        "name": "FAIL",
+                        "names": {
+                            "en": "FAIL"
+                        }
+                    },
+                    {
+                        "id": "W",
+                        "name": "WARN",
+                        "names": {
+                            "en": "WARN"
+                        }
+                    }
+                ]
+            }
+        ],
+        "conceptSchemes": [
+            {
+                "id": "MEDIT_CS",
+                "name": "List of concepts used by MED IT",
+                "names": {
+                    "en": "List of concepts used by MED IT"
+                },
+                "version": "1.0",
+                "agencyID": "BIS.MEDIT",
+                "isExternalReference": false,
+                "isFinal": false,
+                "isPartial": false,
+                "concepts": [
+                    {
+                        "id": "mapping_mode",
+                        "name": "Normalisation Mapping Mode",
+                        "names": {
+                            "en": "Normalisation Mapping Mode"
+                        },
+                        "coreRepresentation": {
+                            "enumerationFormat": {
+                                "maxLength": 1,
+                                "minLength": 1,
+                                "dataType": "String"
+                            },
+                            "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS.MEDIT:MEDAL_NMM(1.0)"
+                        }
+                    },
+                    {
+                        "id": "default_flow",
+                        "name": "Default flow",
+                        "names": {
+                            "en": "Default flow"
+                        },
+                        "description": "In case a submission does not contain any dataflow information (i.e. it only contains a reference to a data structure) and that data structure is referenced by more than one dataflow according to the Metadata Registry, the value set in default_flow will be used as dataflow for the submission.",
+                        "descriptions": {
+                            "en": "In case a submission does not contain any dataflow information (i.e. it only contains a reference to a data structure) and that data structure is referenced by more than one dataflow according to the Metadata Registry, the value set in default_flow will be used as dataflow for the submission."
+                        },
+                        "coreRepresentation": {
+                            "format": {
+                                "maxLength": 250,
+                                "dataType": "String"
+                            }
+                        }
+                    },
+                    {
+                        "id": "block_on_error",
+                        "name": "Block the flow if there is error",
+                        "names": {
+                            "en": "Block the flow if there is error"
+                        },
+                        "description": "Block the flow if there is an error in the submission",
+                        "descriptions": {
+                            "en": "Block the flow if there is an error in the submission"
+                        },
+                        "coreRepresentation": {
+                            "format": {
+                                "dataType": "Boolean"
+                            }
+                        }
+                    },
+                    {
+                        "id": "DIM3",
+                        "name": "Dimension 3",
+                        "names": {
+                            "en": "Dimension 3"
+                        },
+                        "coreRepresentation": {
+                            "format": {
+                                "endTime": "2020-12-31T23:59:59",
+                                "isSequence": true,
+                                "startTime": "2000-01-01T00:00:00",
+                                "dataType": "GregorianYearMonth"
+                            }
+                        }
+                    },
+                    {
+                        "id": "DIM4",
+                        "name": "Dimension 4",
+                        "names": {
+                            "en": "Dimension 4"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

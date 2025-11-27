@@ -87,19 +87,20 @@ class JsonRepresentationMapping(Struct, frozen=True, omit_defaults=True):
         self, vm: Union[MultiValueMap, ValueMap]
     ) -> "JsonRepresentationMapping":
         """Converts a value map to an SDMX-JSON JsonRepresentationMapping."""
+        fmt = r"%Y-%m-%dT%H:%M:%S"
         if isinstance(vm, ValueMap):
             return JsonRepresentationMapping(
                 [JsonSourceValue.from_model(vm.source)],
                 [vm.target],
-                vm.valid_from.strftime("%Y-%m-%d") if vm.valid_from else None,
-                vm.valid_to.strftime("%Y-%m-%d") if vm.valid_to else None,
+                vm.valid_from.strftime(fmt) if vm.valid_from else None,
+                vm.valid_to.strftime(fmt) if vm.valid_to else None,
             )
         else:
             return JsonRepresentationMapping(
                 [JsonSourceValue.from_model(s) for s in vm.source],
                 vm.target,
-                vm.valid_from.strftime("%Y-%m-%d") if vm.valid_from else None,
-                vm.valid_to.strftime("%Y-%m-%d") if vm.valid_to else None,
+                vm.valid_from.strftime(fmt) if vm.valid_from else None,
+                vm.valid_to.strftime(fmt) if vm.valid_to else None,
             )
 
 
