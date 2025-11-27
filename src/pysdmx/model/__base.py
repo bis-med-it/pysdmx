@@ -350,7 +350,9 @@ class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
             )
 
         # Determine which fields to search in
-        search_fields = ["name", "description"] if fields == "all" else [fields]
+        search_fields = (
+            ["name", "description"] if fields == "all" else [fields]
+        )
 
         # Transform plain text queries into a regex
         if not use_regex:
