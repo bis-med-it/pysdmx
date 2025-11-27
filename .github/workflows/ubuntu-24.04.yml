@@ -38,7 +38,10 @@ jobs:
             python3-xmltodict \
             python3-jsonschema \
             python3-pytest \
-            python3-pytest-asyncio
+            python3-pytest-asyncio \
+            python3-antlr4 \
+            python3-networkx \
+            python3-sqlglot
 
       - name: Install pip-only dependencies
         run: |
@@ -50,13 +53,9 @@ jobs:
 
       - name: Install vtlengine and its dependencies
         run: |
-          pip install --no-dependencies --break-system-packages vtlengine
+          pip install --no-dependencies --break-system-packages vtlengine==1.3.0
 
-          pip install --break-system-packages --force-reinstall --no-dependencies \
-            "antlr4-python3-runtime==4.9.3" \
-            duckdb \
-            "networkx==2.8.8" \
-            "sqlglot==22.2.0"
+          pip install --break-system-packages --force-reinstall --no-dependencies duckdb
 
       - name: Install Poetry
         run: |
