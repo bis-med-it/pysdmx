@@ -97,7 +97,7 @@ def generate_vtl_script(
 
     if prettyprint:
         __check_vtl_extra()
-        from vtlengine import prettify  # type: ignore[import-untyped]
+        from vtlengine import prettify
 
         return prettify(vtl_script)
 
