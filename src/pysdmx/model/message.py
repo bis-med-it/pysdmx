@@ -23,6 +23,7 @@ from pysdmx.model.__base import MaintainableArtefact, Organisation
 from pysdmx.model.category import Categorisation, CategoryScheme
 from pysdmx.model.code import Codelist, Hierarchy, HierarchyAssociation
 from pysdmx.model.concept import ConceptScheme
+from pysdmx.model.constraint import DataConstraint
 from pysdmx.model.dataflow import (
     Dataflow,
     DataStructureDefinition,
@@ -220,9 +221,19 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
             "Could not find the requested element.",
         )
 
+    # Return collection of a certain type
+
     def get_agency_schemes(self) -> List[AgencyScheme]:
         """Returns the AgencySchemes."""
         return self.__get_elements(AgencyScheme)
+
+    def get_categorisations(self) -> List[Categorisation]:
+        """Returns the Categorisations."""
+        return self.__get_elements(Categorisation)
+
+    def get_category_schemes(self) -> List[CategoryScheme]:
+        """Returns the CategorySchemes."""
+        return self.__get_elements(CategoryScheme)
 
     def get_codelists(self) -> List[Codelist]:
         """Returns the Codelists."""
@@ -231,6 +242,10 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
     def get_concept_schemes(self) -> List[ConceptScheme]:
         """Returns the Concept Schemes."""
         return self.__get_elements(ConceptScheme)
+
+    def get_custom_type_schemes(self) -> List[CustomTypeScheme]:
+        """Returns the CustomType Schemes."""
+        return self.__get_elements(CustomTypeScheme)
 
     def get_data_structure_definitions(
         self,
@@ -242,57 +257,13 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
         """Returns the Dataflows."""
         return self.__get_elements(Dataflow)
 
-    def get_metadataflows(self) -> List[Metadataflow]:
-        """Returns the MetadataProvisionAgreements."""
-        return self.__get_elements(Metadataflow)
+    def get_data_constraints(self) -> List[DataConstraint]:
+        """Returns the DataConstraints."""
+        return self.__get_elements(DataConstraint)
 
-    def get_organisation_scheme(self, short_urn: str) -> AgencyScheme:
-        """Returns a specific AgencyScheme."""
-        return self.__get_single_structure(AgencyScheme, short_urn)
-
-    def get_codelist(self, short_urn: str) -> Codelist:
-        """Returns a specific Codelist."""
-        return self.__get_single_structure(Codelist, short_urn)
-
-    def get_concept_scheme(self, short_urn: str) -> ConceptScheme:
-        """Returns a specific Concept Scheme."""
-        return self.__get_single_structure(ConceptScheme, short_urn)
-
-    def get_data_structure_definition(
-        self, short_urn: str
-    ) -> DataStructureDefinition:
-        """Returns a specific DataStructureDefinition."""
-        return self.__get_single_structure(DataStructureDefinition, short_urn)
-
-    def get_dataflow(self, short_urn: str) -> Dataflow:
-        """Returns a specific Dataflow."""
-        return self.__get_single_structure(Dataflow, short_urn)
-
-    def get_provision_agreement(self, short_urn: str) -> ProvisionAgreement:
-        """Returns a specific Provision Agreement."""
-        return self.__get_single_structure(ProvisionAgreement, short_urn)
-
-    def get_transformation_schemes(self) -> List[TransformationScheme]:
-        """Returns the TransformationSchemes."""
-        return self.__get_elements(TransformationScheme)
-
-    def get_user_defined_operator_schemes(
-        self,
-    ) -> List[UserDefinedOperatorScheme]:
-        """Returns the UserDefinedOperatorSchemes."""
-        return self.__get_elements(UserDefinedOperatorScheme)
-
-    def get_ruleset_schemes(self) -> List[RulesetScheme]:
-        """Returns the RulesetSchemes."""
-        return self.__get_elements(RulesetScheme)
-
-    def get_category_schemes(self) -> List[CategoryScheme]:
-        """Returns the CategorySchemes."""
-        return self.__get_elements(CategoryScheme)
-
-    def get_value_lists(self) -> List[Codelist]:
-        """Returns the Codelists."""
-        return self.__get_enumerations(Codelist, True)
+    def get_data_provider_schemes(self) -> List[DataProviderScheme]:
+        """Returns the DataProviderSchemes."""
+        return self.__get_elements(DataProviderScheme)
 
     def get_hierarchies(self) -> List[Hierarchy]:
         """Returns the HierarchyCodelists."""
@@ -302,13 +273,9 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
         """Returns the HierarchyAssociations."""
         return self.__get_elements(HierarchyAssociation)
 
-    def get_data_provider_schemes(self) -> List[DataProviderScheme]:
-        """Returns the DataProviderSchemes."""
-        return self.__get_elements(DataProviderScheme)
-
-    def get_provision_agreements(self) -> List[ProvisionAgreement]:
-        """Returns the ProvisionAgreements."""
-        return self.__get_elements(ProvisionAgreement)
+    def get_metadataflows(self) -> List[Metadataflow]:
+        """Returns the MetadataProvisionAgreements."""
+        return self.__get_elements(Metadataflow)
 
     def get_metadata_provider_schemes(self) -> List[MetadataProviderScheme]:
         """Returns the MetadataProviderSchemes."""
@@ -324,9 +291,15 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
         """Returns the MetadataStructures."""
         return self.__get_elements(MetadataStructure)
 
-    def get_structure_maps(self) -> List[StructureMap]:
-        """Returns the StructureMaps."""
-        return self.__get_elements(StructureMap)
+    def get_name_personalisation_schemes(
+        self,
+    ) -> List[NamePersonalisationScheme]:
+        """Returns the NamePersonalisationSchemes."""
+        return self.__get_elements(NamePersonalisationScheme)
+
+    def get_provision_agreements(self) -> List[ProvisionAgreement]:
+        """Returns the ProvisionAgreements."""
+        return self.__get_elements(ProvisionAgreement)
 
     def get_representation_maps(
         self,
@@ -337,23 +310,59 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
         out.extend(self.__get_elements(MultiRepresentationMap))
         return out
 
-    def get_categorisations(self) -> List[Categorisation]:
-        """Returns the Categorisations."""
-        return self.__get_elements(Categorisation)
+    def get_ruleset_schemes(self) -> List[RulesetScheme]:
+        """Returns the RulesetSchemes."""
+        return self.__get_elements(RulesetScheme)
 
-    def get_custom_type_schemes(self) -> List[CustomTypeScheme]:
-        """Returns the CustomType Schemes."""
-        return self.__get_elements(CustomTypeScheme)
+    def get_structure_maps(self) -> List[StructureMap]:
+        """Returns the StructureMaps."""
+        return self.__get_elements(StructureMap)
+
+    def get_transformation_schemes(self) -> List[TransformationScheme]:
+        """Returns the TransformationSchemes."""
+        return self.__get_elements(TransformationScheme)
+
+    def get_user_defined_operator_schemes(
+        self,
+    ) -> List[UserDefinedOperatorScheme]:
+        """Returns the UserDefinedOperatorSchemes."""
+        return self.__get_elements(UserDefinedOperatorScheme)
+
+    def get_value_lists(self) -> List[Codelist]:
+        """Returns the Codelists."""
+        return self.__get_enumerations(Codelist, True)
 
     def get_vtl_mapping_schemes(self) -> List[VtlMappingScheme]:
         """Returns the VTL Mapping Schemes."""
         return self.__get_elements(VtlMappingScheme)
 
-    def get_name_personalisation_schemes(
-        self,
-    ) -> List[NamePersonalisationScheme]:
-        """Returns the NamePersonalisationSchemes."""
-        return self.__get_elements(NamePersonalisationScheme)
+    # Return individual items
+
+    def get_codelist(self, short_urn: str) -> Codelist:
+        """Returns a specific Codelist."""
+        return self.__get_single_structure(Codelist, short_urn)
+
+    def get_concept_scheme(self, short_urn: str) -> ConceptScheme:
+        """Returns a specific Concept Scheme."""
+        return self.__get_single_structure(ConceptScheme, short_urn)
+
+    def get_dataflow(self, short_urn: str) -> Dataflow:
+        """Returns a specific Dataflow."""
+        return self.__get_single_structure(Dataflow, short_urn)
+
+    def get_data_structure_definition(
+        self, short_urn: str
+    ) -> DataStructureDefinition:
+        """Returns a specific DataStructureDefinition."""
+        return self.__get_single_structure(DataStructureDefinition, short_urn)
+
+    def get_organisation_scheme(self, short_urn: str) -> AgencyScheme:
+        """Returns a specific AgencyScheme."""
+        return self.__get_single_structure(AgencyScheme, short_urn)
+
+    def get_provision_agreement(self, short_urn: str) -> ProvisionAgreement:
+        """Returns a specific Provision Agreement."""
+        return self.__get_single_structure(ProvisionAgreement, short_urn)
 
 
 class MetadataMessage(Struct, frozen=True):

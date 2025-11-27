@@ -220,3 +220,37 @@ def test_read_xml_write_csv_20(xml_data_path, csv_20, schema):
         data,
     )
     assert result == csv_20
+
+
+@pytest.mark.parametrize(
+    "csv_format",
+    [Format.DATA_SDMX_CSV_1_0_0, Format.DATA_SDMX_CSV_2_0_0],
+)
+def test_write_sdmx_csv_read_back(samples_folder, csv_format):
+    data_path = samples_folder / "data_dataflow.xml"
+    structures_path = samples_folder / "dataflow_structure_children.xml"
+
+    datasets = get_datasets(data_path, structures_path)
+
+    csv_output = write_sdmx(datasets, sdmx_format=csv_format)
+
+    read_datasets = get_datasets(csv_output, structures_path)
+
+    assert len(datasets) == len(read_datasets), "Number of datasets mismatch"
+
+    pd.testing.assert_frame_equal(
+        datasets[0].data,
+        read_datasets[0].data,
+        check_dtype=False,
+        check_like=True,
+    )
+
+    assert (
+        datasets[0].attributes
+        == read_datasets[0].attributes
+        == {
+            "DECIMALS": "3",
+            "UNIT_MULT": "6",
+            "UNIT_MEASURE": "USD",
+        }
+    )
