@@ -3,7 +3,7 @@ name: Ubuntu 24.04 Tests
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "dev", "cr-447"]
+    branches: [ "main", "dev"]
   pull_request:
     branches: [ "main", "dev" ]
 
