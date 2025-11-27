@@ -1,9 +1,8 @@
-from typing import Any
-
 import pandas as pd
 
 from pysdmx.errors import Invalid
 from pysdmx.model.concept import DataType
+from pysdmx.model.dataflow import Schema
 
 NUMERIC_TYPES = {
     DataType.BIG_INTEGER,
@@ -18,7 +17,7 @@ NUMERIC_TYPES = {
 }
 
 
-def _fill_na_values(data: pd.DataFrame, structure: Any) -> pd.DataFrame:
+def _fill_na_values(data: pd.DataFrame, structure: Schema) -> pd.DataFrame:
     """Fills missing values in the DataFrame based on the component type.
 
     Numeric components are filled with "NaN".
@@ -28,7 +27,7 @@ def _fill_na_values(data: pd.DataFrame, structure: Any) -> pd.DataFrame:
 
     Args:
         data: The DataFrame to fill.
-        structure: The structure definition (Schema, Dataflow, etc.).
+        structure: The structure definition (´Schema´).
 
     Returns:
         The DataFrame with filled missing values.
@@ -36,12 +35,6 @@ def _fill_na_values(data: pd.DataFrame, structure: Any) -> pd.DataFrame:
     Raises:
         Invalid: If the structure does not have components.
     """
-    if not hasattr(structure, "components"):
-        raise Invalid(
-            "Structure must have components defined. "
-            "Cannot write data without a proper Schema."
-        )
-
     for component in structure.components:
         if component.id in data.columns:
             if component.dtype in NUMERIC_TYPES:
@@ -56,7 +49,9 @@ def _fill_na_values(data: pd.DataFrame, structure: Any) -> pd.DataFrame:
     return data
 
 
-def _validate_explicit_null_values(data: pd.DataFrame, structure: Any) -> None:
+def _validate_explicit_null_values(
+    data: pd.DataFrame, structure: Schema
+) -> None:
     """Validates that explicit null values are correct for the component type.
 
     Numeric components must not contain "#N/A".
@@ -64,14 +59,11 @@ def _validate_explicit_null_values(data: pd.DataFrame, structure: Any) -> None:
 
     Args:
         data: The DataFrame to validate.
-        structure: The structure definition.
+        structure: The structure definition (´Schema´).
 
     Raises:
         Invalid: If invalid null values are found.
     """
-    if not hasattr(structure, "components"):
-        return
-
     for component in structure.components:
         if component.id in data.columns:
             series = data[component.id].astype(str)
