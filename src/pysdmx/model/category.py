@@ -91,6 +91,15 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
             flows.update(self.__extract_flows(cat))
         return list(flows)
 
+    @property
+    def all_items(self) -> Sequence[Category]:
+        """Get all the categories in the category scheme as a flat list.
+
+        Returns:
+            A flat list of all the categories present in the category scheme.
+        """
+        return self.__get_categories(self.categories)
+
     def __iter__(self) -> Iterator[Category]:
         """Return an iterator over the list of categories."""
         yield from self.categories
@@ -159,6 +168,14 @@ class CategoryScheme(ItemScheme, frozen=True, omit_defaults=True):
 
             processed_output.append(f"{attr}: {value}")
         return f"{', '.join(processed_output)}"
+
+    def __get_categories(self, cats: Sequence[Category]) -> Sequence[Category]:
+        out = []
+        for cat in cats:
+            out.append(cat)
+            if cat.categories:
+                out.extend(self.__get_categories(cat.categories))
+        return out
 
 
 class Categorisation(

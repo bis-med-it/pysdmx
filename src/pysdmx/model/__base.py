@@ -360,9 +360,12 @@ class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
 
         pattern = re.compile(query, re.IGNORECASE if not use_regex else 0)
 
+        all_items = getattr(self, "all_items", "")
+        items = all_items if all_items else self.items
+
         return [
-            item
-            for item in self.items
+            item  # type: ignore[misc]
+            for item in items
             if any(
                 pattern.search(str(getattr(item, field, "")))
                 for field in search_fields
