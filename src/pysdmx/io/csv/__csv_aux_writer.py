@@ -4,11 +4,11 @@ from typing import List, Literal, Optional, Sequence
 import pandas as pd
 
 from pysdmx.errors import Invalid
+from pysdmx.io._pd_utils import _fill_na_values
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
 from pysdmx.model.dataset import ActionType
 from pysdmx.toolkit.pd._data_utils import format_labels, get_codes
-from pysdmx.util._pd_utils import _fill_na_values
 
 SDMX_CSV_ACTION_MAPPER = {
     ActionType.Append: "A",

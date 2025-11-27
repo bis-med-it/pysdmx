@@ -6,6 +6,7 @@ from typing import Any, Dict, Hashable, List, Optional, Sequence, Tuple, Union
 
 import pandas as pd
 
+from pysdmx.io._pd_utils import _fill_na_values
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import (
@@ -27,7 +28,6 @@ from pysdmx.io.xml.config import CHUNKSIZE
 from pysdmx.model.message import Header
 from pysdmx.toolkit.pd._data_utils import get_codes
 from pysdmx.util import parse_short_urn
-from pysdmx.util._pd_utils import _fill_na_values
 
 
 def __value(id: str, value: str) -> str:

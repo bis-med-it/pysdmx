@@ -5,13 +5,13 @@ import pytest
 
 from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
-from pysdmx.model.concept import DataType
-from pysdmx.toolkit.pd._data_utils import format_labels
-from pysdmx.util._pd_utils import (
+from pysdmx.io._pd_utils import (
     NUMERIC_TYPES,
     _fill_na_values,
     _validate_explicit_null_values,
 )
+from pysdmx.model.concept import DataType
+from pysdmx.toolkit.pd._data_utils import format_labels
 
 
 @pytest.fixture
