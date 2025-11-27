@@ -53,11 +53,11 @@ jobs:
         run: |
           pip3 install --no-dependencies --break-system-packages vtlengine
 
-          pip3 install --break-system-packages \
-            "antlr4-python3-runtime>=4,<4.13" \
+          pip3 install --break-system-packages --force-reinstall --no-dependencies \
+            "antlr4-python3-runtime==4.9.3" \
             duckdb \
-            networkx \
-            sqlglot
+            "networkx==2.8.8" \
+            "sqlglot==22.2.0"
 
       - name: Install Poetry
         run: |
