@@ -42,20 +42,31 @@ def check_dimension_at_observation(
     return dimension_at_observation
 
 
-def writing_validation(dataset: PandasDataset) -> None:
-    """Structural validation of the dataset."""
+def writing_validation(dataset: PandasDataset) -> Schema:
+    """Structural validation of the dataset.
+
+    Args:
+        dataset: The dataset to validate.
+
+    Returns:
+        The `Schema` from the dataset.
+
+    Raises:
+        Invalid: If the structure is not a `Schema` or validation fails.
+    """
     if not isinstance(dataset.structure, Schema):
         raise Invalid(
             "Dataset Structure is not a Schema. Cannot perform operation."
         )
+    schema = dataset.structure
     required_components = [
         comp.id
-        for comp in dataset.structure.components
+        for comp in schema.components
         if comp.role in (Role.DIMENSION, Role.MEASURE)
     ]
     required_components.extend(
         att.id
-        for att in dataset.structure.components.attributes
+        for att in schema.components.attributes
         if (
             att.required
             and att.attachment_level is not None
@@ -64,7 +75,7 @@ def writing_validation(dataset: PandasDataset) -> None:
     )
     non_required = [
         comp.id
-        for comp in dataset.structure.components
+        for comp in schema.components
         if comp.id not in required_components
     ]
     # Columns match components
@@ -80,9 +91,11 @@ def writing_validation(dataset: PandasDataset) -> None:
             f"Difference: {', '.join(difference)}"
         )
     # Check if the dataset has at least one dimension and one measure
-    if not dataset.structure.components.dimensions:
+    if not schema.components.dimensions:
         raise Invalid(
             "The dataset structure must have at least one dimension."
         )
-    if not dataset.structure.components.measures:
+    if not schema.components.measures:
         raise Invalid("The dataset structure must have at least one measure.")
+
+    return schema

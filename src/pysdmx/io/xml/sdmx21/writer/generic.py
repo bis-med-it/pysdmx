@@ -160,7 +160,8 @@ def __write_data_single_dataset(
     outfile = ""
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
-    dataset.data = _fill_na_values(dataset.data, dataset.structure)
+    schema = writing_validation(dataset)
+    dataset.data = _fill_na_values(dataset.data, schema)
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""

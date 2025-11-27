@@ -18,12 +18,23 @@ SDMX_CSV_ACTION_MAPPER = {
 }
 
 
-def _validate_schema_exists(dataset: PandasDataset) -> None:
-    """Validates that the dataset has a Schema defined."""
+def _validate_schema_exists(dataset: PandasDataset) -> Schema:
+    """Validates that the dataset has a Schema defined.
+
+    Args:
+        dataset: The dataset to validate.
+
+    Returns:
+        The `Schema` from the dataset.
+
+    Raises:
+        Invalid: If the structure is not a `Schema`.
+    """
     if not isinstance(dataset.structure, Schema):
         raise Invalid(
             "Dataset Structure is not a Schema. Cannot perform operation."
         )
+    return dataset.structure
 
 
 def __write_time_period(df: pd.DataFrame, time_format: str) -> None:
@@ -80,10 +91,10 @@ def _write_csv_2_aux(
 ) -> List[pd.DataFrame]:
     dataframes = []
     for dataset in datasets:
-        _validate_schema_exists(dataset)
+        schema = _validate_schema_exists(dataset)
         # Create a copy of the dataset
         df: pd.DataFrame = copy(dataset.data)
-        df = _fill_na_values(df, dataset.structure)
+        df = _fill_na_values(df, schema)
         structure_ref, unique_id = dataset.short_urn.split("=", maxsplit=1)
 
         # Add additional attributes to the dataset

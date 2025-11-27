@@ -115,10 +115,10 @@ def __write_data_single_dataset(
     sdmx_type = parse_short_urn(structure_urn).id
 
     # Validate structure before writing
-    writing_validation(dataset)
+    schema = writing_validation(dataset)
 
     # Remove nan values from DataFrame
-    dataset.data = _fill_na_values(dataset.data, dataset.structure)
+    dataset.data = _fill_na_values(dataset.data, schema)
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""

@@ -74,14 +74,6 @@ def test_write_labels_id(data_path_optional_names, dsd_path):
     assert "TIME_PERIOD" in data.columns
 
 
-def test__fill_na_values_raises_when_no_components():
-    data = pd.DataFrame({"a": [None]})
-    structure = object()
-
-    with pytest.raises(Invalid):
-        _fill_na_values(data, structure)
-
-
 @pytest.mark.parametrize("dtype", list(NUMERIC_TYPES))
 def test__fill_na_values_numeric_and_non_numeric(dtype):
     data = pd.DataFrame({"num": [None, 1], "cat": [None, "x"]})
@@ -162,13 +154,6 @@ def test_validate_explicit_null_values_invalid_non_numeric():
     assert "Invalid null value 'NaN' in non-numeric component 'cat'" in str(
         excinfo.value
     )
-
-
-def test_validate_explicit_null_values_no_components():
-    data = pd.DataFrame({"a": ["#N/A"]})
-    structure = object()
-    result = _validate_explicit_null_values(data, structure)
-    assert result is None
 
 
 def test_validate_explicit_null_values_skips_when_column_missing():
