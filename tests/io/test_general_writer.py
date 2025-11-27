@@ -372,3 +372,29 @@ def test_invalid_sdmx_object_refmeta(tmpdir):
             sdmx_format=Format.REFMETA_SDMX_JSON_2_0_0,
             output_path=tmpdir / "output.invalid",
         )
+
+
+@pytest.mark.parametrize(
+    "format_",
+    [
+        Format.DATA_SDMX_CSV_1_0_0,
+        Format.DATA_SDMX_CSV_2_0_0,
+        Format.DATA_SDMX_CSV_2_1_0,
+        Format.DATA_SDMX_ML_2_1_GEN,
+        Format.DATA_SDMX_ML_2_1_STR,
+        Format.DATA_SDMX_ML_3_0,
+        Format.DATA_SDMX_ML_3_1,
+    ],
+)
+def test_write_sdmx_dataset_without_structure(format_, tmpdir):
+    dataset = PandasDataset(
+        data=pd.DataFrame({"A": [1, 2, 3]}),
+        structure="DataStructure=TEST:DSD(1.0)",
+    )
+
+    with pytest.raises(Invalid, match="Dataset Structure is not a Schema"):
+        write_sdmx(
+            sdmx_objects=dataset,
+            sdmx_format=format_,
+            output_path=str(tmpdir / "output.invalid"),
+        )
