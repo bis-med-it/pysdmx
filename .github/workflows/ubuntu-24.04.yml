@@ -54,7 +54,7 @@ jobs:
           pip3 install --no-dependencies --break-system-packages vtlengine
 
           pip3 install --break-system-packages \
-            antlr4-python3-runtime \
+            "antlr4-python3-runtime>=4,<4.13" \
             duckdb \
             networkx \
             sqlglot
