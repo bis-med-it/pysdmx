@@ -6690,7 +6690,7 @@
                 }
             }
         ],
-        "contentConstraints": [
+        "dataConstraints": [
             {
                 "links": [
                     {

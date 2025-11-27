@@ -7010,7 +7010,7 @@
                 }
             }
         ],
-        "contentConstraints": [
+        "dataConstraints": [
             {
                 "links": [
                     {

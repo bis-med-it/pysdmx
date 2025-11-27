@@ -1,0 +1,58 @@
+{
+    "meta": {
+        "id": "IREF384710",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2024-12-03T15:07:53Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "ZZZ"
+        }
+    },
+    "data": {
+        "vtlMappingSchemes": [
+            {
+                "id": "TEST_DETAIL",
+                "name": "VTL Mapping Scheme #1",
+                "names": {
+                    "en": "VTL Mapping Scheme #1"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "isPartial": false,
+                "vtlMappings": [
+                    {
+                        "id": "VTLM1",
+                        "name": "VTL Mapping #1",
+                        "names": {
+                            "en": "VTL Mapping #1"
+                        },
+                        "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_DETAIL(1.0)",
+                        "fromVtlMapping": {
+                            "method": "from_test",
+                            "fromVtlSuperSpace": {
+                                "keys": [
+                                    "ID1",
+                                    "ID2"
+                                ]
+                            }
+                        },
+                        "toVtlMapping": {
+                            "method": "to_test",
+                            "toVtlSubSpace": {
+                                "keys": [
+                                    "ID"
+                                ]
+                            }
+                        },
+                        "alias": "TEST_DETAIL_VTL"
+                    }
+                ]
+            }
+        ]
+    }
+}
