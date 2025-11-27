@@ -1,0 +1,76 @@
+name: Ubuntu 24.04 Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "dev", "cr-447"]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt update
+          sudo apt upgrade -y
+          sudo apt install -y \
+            python-is-python3 \
+            python3-pip \
+            python3-httpx \
+            python3-anyio \
+            python3-certifi \
+            python3-h2 \
+            python3-httpcore \
+            python3-idna \
+            python3-pandas \
+            python3-numpy \
+            python3-dateutil \
+            python3-lxml \
+            python3-xmltodict \
+            python3-jsonschema \
+            python3-pytest \
+            python3-pytest-asyncio
+
+      - name: Install pip-only dependencies
+        run: |
+          pip3 install --no-dependencies --break-system-packages \
+            sdmxschemas \
+            parsy \
+            msgspec \
+            respx
+
+      - name: Install vtlengine and its dependencies
+        run: |
+          pip3 install --no-dependencies --break-system-packages vtlengine
+
+          pip3 install --break-system-packages \
+            antlr4-python3-runtime \
+            duckdb \
+            networkx \
+            sqlglot
+
+      - name: Install Poetry
+        run: |
+          pip3 install poetry
+          poetry config virtualenvs.create false
+
+      - name: Build wheel
+        run: |
+          poetry build -f wheel -o .
+
+      - name: Install built package
+        run: |
+          pip3 install "./pysdmx-$(poetry version -s)-py3-none-any.whl" --no-dependencies --break-system-packages
+
+      - name: Run tests
+        run: pytest --verbose --tb=short --strict-markers --strict-config
