@@ -1,0 +1,59 @@
+{
+    "meta": {
+        "id": "IREF384710",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2024-12-03T15:07:53Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "ZZZ"
+        }
+    },
+    "data": {
+        "namePersonalisationSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "namepersonalisationscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisationScheme=BIS.TEST:TEST_NPS(1.0)"
+                    }
+                ],
+                "id": "TEST_NPS",
+                "name": "Test for name personalisations",
+                "names": {
+                    "en": "Test for name personalisations"
+                },
+                "version": "1.0",
+                "agencyID": "BIS.TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "vtlVersion": "2.1",
+                "isPartial": false,
+                "namePersonalisations": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "namepersonalisation",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisation=BIS.TEST:TEST_NPS(1.0).ALDF"
+                            }
+                        ],
+                        "id": "ALDF",
+                        "name": "Alias for Dataflow",
+                        "names": {
+                            "en": "Alias for Dataflow"
+                        },
+                        "vtlDefaultName": "Dataflow",
+                        "personalisedName": "Dataset",
+                        "vtlArtefact": "Dataflow"
+                    }
+                ]
+            }
+        ]
+    }
+}

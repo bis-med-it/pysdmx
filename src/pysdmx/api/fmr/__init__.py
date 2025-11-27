@@ -44,6 +44,7 @@ from pysdmx.model import (
     Metadataflow,
     MetadataProvisionAgreement,
     MetadataReport,
+    MetadataStructure,
     MultiRepresentationMap,
     ProvisionAgreement,
     RepresentationMap,
@@ -767,7 +768,7 @@ class RegistryClient(__BaseRegistryClient):
         agency: str = "*",
         id: str = "*",
         version: str = "+",
-    ) -> Sequence[Dataflow]:
+    ) -> Sequence[MetadataStructure]:
         """Get the metadata structures (MSD) matching the supplied parameters.
 
         Args:
@@ -1341,7 +1342,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         agency: str = "*",
         id: str = "*",
         version: str = "+",
-    ) -> Sequence[Dataflow]:
+    ) -> Sequence[MetadataStructure]:
         """Get the metadata structures (MSD) matching the supplied parameters.
 
         Args:

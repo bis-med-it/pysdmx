@@ -6936,7 +6936,7 @@
                 }
             }
         ],
-        "contentConstraints": [
+        "dataConstraints": [
             {
                 "links": [
                     {

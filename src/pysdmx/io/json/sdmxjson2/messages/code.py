@@ -231,7 +231,7 @@ class JsonCodelists(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for lists of codes."""
 
     codelists: Sequence[JsonCodelist] = ()
-    valuelists: Sequence[JsonValuelist] = ()
+    valueLists: Sequence[JsonValuelist] = ()
 
 
 class JsonCodelistMessage(Struct, frozen=True, omit_defaults=True):
@@ -244,7 +244,7 @@ class JsonCodelistMessage(Struct, frozen=True, omit_defaults=True):
         if self.data.codelists:
             return self.data.codelists[0].to_model()
         else:
-            return self.data.valuelists[0].to_model()
+            return self.data.valueLists[0].to_model()
 
 
 class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
@@ -329,10 +329,10 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
             code=code.urn,
             validFrom=code.rel_valid_from,
             validTo=code.rel_valid_to,
-            annotations=tuple(annotations),
-            hierarchicalCodes=[
-                JsonHierarchicalCode.from_model(c) for c in code.codes
-            ],
+            annotations=tuple(annotations) if annotations else None,
+            hierarchicalCodes=tuple(
+                [JsonHierarchicalCode.from_model(c) for c in code.codes]
+            ),
         )
 
 
@@ -475,6 +475,15 @@ class JsonHierarchyAssociation(
                 "SDMX-JSON hierarchy associations must reference a context",
                 {"hierarchy_association": ha.id},
             )
+        lnk = (
+            JsonLink(
+                rel="UserDefinedOperator",
+                type="sdmx_artefact",
+                urn=ha.operator,
+            )
+            if ha.operator
+            else None
+        )
         return JsonHierarchyAssociation(
             agency=(
                 ha.agency.id if isinstance(ha.agency, Agency) else ha.agency
@@ -492,6 +501,7 @@ class JsonHierarchyAssociation(
             linkedHierarchy=href,
             linkedObject=ha.component_ref,
             contextObject=ha.context_ref,
+            links=[lnk] if lnk else (),
         )
 
 
