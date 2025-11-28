@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:GenericData
+        xmlns:generic="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic"
+        xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+        xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+>
+    <message:Header>
+        <message:ID>test</message:ID>
+        <message:Test>true</message:Test>
+        <message:Prepared>2021-03-08T17:05:06Z</message:Prepared>
+        <message:Sender id="Unknown"/>
+        <message:Receiver id="Not_supplied"/>
+        <message:Structure structureID="BIS_BIS_DER_1_0" dimensionAtObservation="TIME_PERIOD">
+            <common:Structure>
+                <Ref agencyID="BIS" id="BIS_DER" version="1.0"/>
+            </common:Structure>
+        </message:Structure>
+    </message:Header>
+    <message:DataSet structureRef="BIS_BIS_DER_1_0" action="Replace">
+        <generic:Attributes>
+            <generic:Value id="DECIMALS" value="3"/>
+            <generic:Value id="UNIT_MULT" value="6"/>
+            <generic:Value id="UNIT_MEASURE" value="USD"/>
+        </generic:Attributes>
+        <generic:Series>
+            <generic:SeriesKey>
+                <generic:Value id="FREQ" value="A"/>
+                <generic:Value id="DER_TYPE" value="U"/>
+                <generic:Value id="DER_INSTR" value="A"/>
+                <generic:Value id="DER_RISK" value="B"/>
+            </generic:SeriesKey>
+            <generic:Obs>
+                <generic:ObsDimension value="2000"/>
+                <generic:ObsValue value="NaN"/>
+            </generic:Obs>
+            <generic:Obs>
+                <generic:ObsDimension value="2001"/>
+                <generic:ObsValue value="#N/A"/>
+            </generic:Obs>
+            <generic:Obs>
+                <generic:ObsDimension value="2002"/>
+                <generic:ObsValue value="1.5"/>
+            </generic:Obs>
+        </generic:Series>
+    </message:DataSet>
+</message:GenericData>
