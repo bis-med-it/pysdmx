@@ -41,7 +41,8 @@ jobs:
             python3-pytest-asyncio \
             python3-antlr4 \
             python3-networkx \
-            python3-sqlglot
+            python3-sqlglot \
+            python3-respx
 
       - name: Install pip-only dependencies
         run: |
