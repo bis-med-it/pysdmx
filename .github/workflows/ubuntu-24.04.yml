@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   ubuntu-24.04:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu_24.04
 
     steps:
       - name: Checkout repository
