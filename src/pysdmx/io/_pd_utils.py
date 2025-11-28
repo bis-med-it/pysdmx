@@ -38,13 +38,11 @@ def _fill_na_values(data: pd.DataFrame, structure: Schema) -> pd.DataFrame:
     for component in structure.components:
         if component.id in data.columns:
             if component.dtype in NUMERIC_TYPES:
-                data[component.id] = (
-                    data[component.id].astype(object).fillna("NaN")
-                )
+                data[component.id] = data[component.id].astype(object)
+                data.loc[data[component.id].isna(), component.id] = "NaN"
             else:
-                data[component.id] = (
-                    data[component.id].astype(object).fillna("#N/A")
-                )
+                data[component.id] = data[component.id].astype(object)
+                data.loc[data[component.id].isna(), component.id] = "#N/A"
 
     return data
 
