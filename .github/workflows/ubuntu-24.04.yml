@@ -41,15 +41,15 @@ jobs:
             python3-pytest-asyncio \
             python3-antlr4 \
             python3-networkx \
-            python3-sqlglot \
-            python3-respx
+            python3-sqlglot
 
       - name: Install pip-only dependencies
         run: |
           pip install --no-dependencies --break-system-packages \
             sdmxschemas \
             parsy \
-            msgspec
+            msgspec \
+            respx  # Needed for tests
 
       - name: Install vtlengine and its dependencies
         run: |
