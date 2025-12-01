@@ -404,6 +404,52 @@ def __series_processing(
     return out
 
 
+def __format_obs_value(obs_value: Any) -> str:
+    return f"<{ABBR_GEN}:ObsValue value={str(obs_value)!r}/>"
+
+
+def __should_write_obs_value(obs_value: Any) -> bool:
+    return not pd.isna(obs_value) and obs_value != "" and str(obs_value) != ""
+
+
+def __format_obs_element(
+    obs: Dict[Any, Any],
+    obs_codes: List[str],
+    obs_att_codes: List[str],
+    child3: str,
+    child4: str,
+    child5: str,
+    nl: str,
+) -> str:
+    obs_element = f"{child3}<{ABBR_GEN}:Obs>{nl}"
+
+    # Obs Dimension writing
+    obs_element += (
+        f"{child4}<{ABBR_GEN}:ObsDimension "
+        f"value={str(obs[obs_codes[0]])!r}/>{nl}"
+    )
+
+    # Obs Value writing
+    measure_col = obs_codes[1] if len(obs_codes) > 1 else None
+    if measure_col and measure_col in obs:
+        obs_value = obs[measure_col]
+        # Only write ObsValue if it has a value (not empty, not NA)
+        if __should_write_obs_value(obs_value):
+            obs_value_elem = __format_obs_value(obs_value)
+            obs_element += f"{child4}{obs_value_elem}{nl}"
+
+    # Obs Attributes writing
+    if len(obs_att_codes) > 0:
+        obs_element += f"{child4}<{ABBR_GEN}:Attributes>{nl}"
+        for k, v in obs.items():
+            if k in obs_att_codes:
+                obs_element += f"{child5}{__value(k, v)}{nl}"
+        obs_element += f"{child4}</{ABBR_GEN}:Attributes>{nl}"
+
+    obs_element += f"{child3}</{ABBR_GEN}:Obs>{nl}"
+    return obs_element
+
+
 def __format_ser_str(
     data_info: Dict[Any, Any],
     series_codes: List[str],
@@ -437,33 +483,9 @@ def __format_ser_str(
 
     # Obs writing
     for obs in data_info["Obs"]:
-        out_element += f"{child3}<{ABBR_GEN}:Obs>{nl}"
-
-        # Obs Dimension writing
-        out_element += (
-            f"{child4}<{ABBR_GEN}:ObsDimension "
-            f"value={str(obs[obs_codes[0]])!r}/>{nl}"
+        out_element += __format_obs_element(
+            obs, obs_codes, obs_att_codes, child3, child4, child5, nl
         )
-        # Obs Value writing
-        measure_col = obs_codes[1] if len(obs_codes) > 1 else None
-        if measure_col and measure_col in obs:
-            obs_value = obs[measure_col]
-            # Only write ObsValue if it has a value (not empty, not NA)
-            if (
-                not pd.isna(obs_value)
-                and obs_value != ""
-                and str(obs_value) != ""
-            ):
-                out_element += f"{child4}<{ABBR_GEN}:ObsValue value={str(obs_value)!r}/>{nl}"
-
-        # Obs Attributes writing
-        if len(obs_att_codes) > 0:
-            out_element += f"{child4}<{ABBR_GEN}:Attributes>{nl}"
-            for k, v in obs.items():
-                if k in obs_att_codes:
-                    out_element += f"{child5}{__value(k, v)}{nl}"
-            out_element += f"{child4}</{ABBR_GEN}:Attributes>{nl}"
-        out_element += f"{child3}</{ABBR_GEN}:Obs>{nl}"
 
     out_element += f"{child2}</{ABBR_GEN}:Series>{nl}"
 

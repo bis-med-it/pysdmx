@@ -18,6 +18,68 @@ SDMX_CSV_ACTION_MAPPER = {
 }
 
 
+def _csv_prepare_df(dataset: PandasDataset) -> pd.DataFrame:
+    schema = _validate_schema_exists(dataset)
+    df: pd.DataFrame = copy(dataset.data)
+
+    for k, v in dataset.attributes.items():
+        df[k] = v
+
+    if schema.components:
+        for comp in schema.components:
+            if comp.required and comp.id not in df.columns:
+                df[comp.id] = pd.NA
+
+    df = _fill_na_values(df, schema)
+    return df
+
+
+def _csv_structure_ref_and_id(short_urn: str) -> tuple[str, str]:
+    structure_ref, unique_id = short_urn.split("=", maxsplit=1)
+    if structure_ref in ["DataStructure", "Dataflow"]:
+        structure_ref = structure_ref.lower()
+    else:
+        structure_ref = "dataprovision"
+    return structure_ref, unique_id
+
+
+def _csv_determine_action(dataset: PandasDataset, references_21: bool) -> str:
+    if references_21 and dataset.action in [
+        ActionType.Information,
+        ActionType.Append,
+    ]:
+        return "M"
+    return SDMX_CSV_ACTION_MAPPER[dataset.action]
+
+
+def _csv_insert_labels_action(
+    df: pd.DataFrame,
+    dataset: PandasDataset,
+    structure_ref: str,
+    unique_id: str,
+    action_value: str,
+    labels: Literal["name", "id", "both"],
+) -> None:
+    schema = dataset.structure
+    if not isinstance(schema, Schema):
+        raise Invalid(
+            "Dataset Structure is not a Schema. Cannot perform operation."
+        )
+    format_labels(df, labels, schema.components)
+    df.insert(0, "STRUCTURE", structure_ref)
+    structure_name = schema.name
+    if labels == "both":
+        structure_id_value = f"{unique_id}:{structure_name}"
+    else:
+        structure_id_value = unique_id
+    df.insert(1, "STRUCTURE_ID", structure_id_value)
+    action_position = 2
+    if labels == "name":
+        action_position += 1
+        df.insert(2, "STRUCTURE_NAME", schema.name)
+    df.insert(action_position, "ACTION", action_value)
+
+
 def _validate_schema_exists(dataset: PandasDataset) -> Schema:
     """Validates that the dataset has a Schema defined.
 
@@ -89,60 +151,26 @@ def _write_csv_2_aux(
     keys: Optional[Literal["obs", "series", "both"]] = None,
     references_21: bool = False,
 ) -> List[pd.DataFrame]:
-    dataframes = []
+    dataframes: List[pd.DataFrame] = []
     for dataset in datasets:
-        schema = _validate_schema_exists(dataset)
-        # Create a copy of the dataset
-        df: pd.DataFrame = copy(dataset.data)
+        df = _csv_prepare_df(dataset)
 
-        # Add additional attributes to the dataset
-        for k, v in dataset.attributes.items():
-            df[k] = v
+        structure_ref, unique_id = _csv_structure_ref_and_id(dataset.short_urn)
 
-        # Ensure all required components are present
-        if schema.components:
-            for comp in schema.components:
-                if comp.required and comp.id not in df.columns:
-                    df[comp.id] = pd.NA
-
-        df = _fill_na_values(df, schema)
-        structure_ref, unique_id = dataset.short_urn.split("=", maxsplit=1)
-
-        if structure_ref in ["DataStructure", "Dataflow"]:
-            structure_ref = structure_ref.lower()
-        else:
-            structure_ref = "dataprovision"
-
-        if references_21 and dataset.action in [
-            ActionType.Information,
-            ActionType.Append,
-        ]:
-            action_value = "M"
-        else:
-            action_value = SDMX_CSV_ACTION_MAPPER[dataset.action]
+        action_value = _csv_determine_action(dataset, references_21)
 
         if time_format is not None and time_format != "original":
             __write_time_period(df, time_format)
         if keys is not None and isinstance(dataset.structure, Schema):
             __write_keys(df, keys, dataset.structure)
         if labels is not None and isinstance(dataset.structure, Schema):
-            format_labels(df, labels, dataset.structure.components)
-            df.insert(0, "STRUCTURE", structure_ref)
-            df.insert(
-                1,
-                "STRUCTURE_ID",
-                f"{unique_id}:{dataset.structure.name}"
-                if labels == "both"
-                else unique_id,
+            _csv_insert_labels_action(
+                df, dataset, structure_ref, unique_id, action_value, labels
             )
-            action_position = 2
-            if labels == "name":
-                action_position += 1
-                df.insert(2, "STRUCTURE_NAME", dataset.structure.name)
-            df.insert(action_position, "ACTION", action_value)
         else:
             df.insert(0, "STRUCTURE", structure_ref)
             df.insert(1, "STRUCTURE_ID", unique_id)
             df.insert(2, "ACTION", action_value)
         dataframes.append(df)
+
     return dataframes
