@@ -596,7 +596,8 @@ def test_series_processing_single_dimension_roundtrip():
 
     assert result is not None
     assert "ObsValue" in result
-    assert 'value="M1"' in result
+    assert 'value="10"' in result
+    assert 'value="11"' in result
 
 
 def test_series_processing_group_cols_empty_data_empty():
