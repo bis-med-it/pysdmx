@@ -88,6 +88,10 @@ def validate_sdmx_json(input_str: str) -> None:
                     lambda m: f"does not match required"
                     f" pattern {m.group(1)!r}",
                 ),
+                (
+                    r"\[\]\s+is\s+too\s+short",
+                    lambda _m: "[] should be non-empty",
+                ),
             ]
 
             msg: Optional[str] = next(
