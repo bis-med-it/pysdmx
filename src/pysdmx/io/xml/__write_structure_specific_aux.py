@@ -218,6 +218,10 @@ def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
         out = f"{child2}<Obs "
 
         for k, v in element.items():
+            # Skip only empty strings
+            # (pandas NA should have been converted to "NaN"/"#N/A")
+            if pd.isna(v) or str(v) == "":
+                continue
             out += f"{k}={__escape_xml(str(v))!r} "
 
         out += f"/>{nl}"

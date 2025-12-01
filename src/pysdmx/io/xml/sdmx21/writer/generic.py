@@ -445,9 +445,16 @@ def __format_ser_str(
             f"value={str(obs[obs_codes[0]])!r}/>{nl}"
         )
         # Obs Value writing
-        out_element += (
-            f"{child4}<{ABBR_GEN}:ObsValue value={str(obs_codes[1])!r}/>{nl}"
-        )
+        measure_col = obs_codes[1] if len(obs_codes) > 1 else None
+        if measure_col and measure_col in obs:
+            obs_value = obs[measure_col]
+            # Only write ObsValue if it has a value (not empty, not NA)
+            if (
+                not pd.isna(obs_value)
+                and obs_value != ""
+                and str(obs_value) != ""
+            ):
+                out_element += f"{child4}<{ABBR_GEN}:ObsValue value={str(obs_value)!r}/>{nl}"
 
         # Obs Attributes writing
         if len(obs_att_codes) > 0:

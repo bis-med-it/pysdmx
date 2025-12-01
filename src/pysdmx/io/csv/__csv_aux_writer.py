@@ -94,12 +94,19 @@ def _write_csv_2_aux(
         schema = _validate_schema_exists(dataset)
         # Create a copy of the dataset
         df: pd.DataFrame = copy(dataset.data)
-        df = _fill_na_values(df, schema)
-        structure_ref, unique_id = dataset.short_urn.split("=", maxsplit=1)
 
         # Add additional attributes to the dataset
         for k, v in dataset.attributes.items():
             df[k] = v
+
+        # Ensure all required components are present
+        if schema.components:
+            for comp in schema.components:
+                if comp.required and comp.id not in df.columns:
+                    df[comp.id] = pd.NA
+
+        df = _fill_na_values(df, schema)
+        structure_ref, unique_id = dataset.short_urn.split("=", maxsplit=1)
 
         if structure_ref in ["DataStructure", "Dataflow"]:
             structure_ref = structure_ref.lower()
