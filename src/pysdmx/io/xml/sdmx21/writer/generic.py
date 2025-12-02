@@ -408,10 +408,6 @@ def __format_obs_value(obs_value: Any) -> str:
     return f"<{ABBR_GEN}:ObsValue value={str(obs_value)!r}/>"
 
 
-def __should_write_obs_value(obs_value: Any) -> bool:
-    return not pd.isna(obs_value) and obs_value != "" and str(obs_value) != ""
-
-
 def __format_obs_element(
     obs: Dict[Any, Any],
     obs_codes: List[str],
@@ -430,13 +426,10 @@ def __format_obs_element(
     )
 
     # Obs Value writing
-    measure_col = obs_codes[1] if len(obs_codes) > 1 else None
-    if measure_col and measure_col in obs:
-        obs_value = obs[measure_col]
-        # Only write ObsValue if it has a value (not empty, not NA)
-        if __should_write_obs_value(obs_value):
-            obs_value_elem = __format_obs_value(obs_value)
-            obs_element += f"{child4}{obs_value_elem}{nl}"
+    obs_value = obs[obs_codes[1]]
+
+    obs_value_elem = __format_obs_value(obs_value)
+    obs_element += f"{child4}{obs_value_elem}{nl}"
 
     # Obs Attributes writing
     if len(obs_att_codes) > 0:

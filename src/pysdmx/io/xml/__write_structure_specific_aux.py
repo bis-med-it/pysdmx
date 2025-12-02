@@ -17,6 +17,7 @@ from pysdmx.io.xml.__write_data_aux import (
     writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
+from pysdmx.model import Role, Schema
 from pysdmx.toolkit.pd._data_utils import get_codes
 from pysdmx.util import parse_short_urn
 
@@ -34,18 +35,26 @@ def __memory_optimization_writing(
             # Sliding a window for efficient access to the data
             # and avoid memory issues
             outfile += __obs_processing(
-                dataset.data.iloc[previous:next_], prettyprint
+                dataset.data.iloc[previous:next_],
+                dataset.structure,
+                prettyprint,
             )
             previous = next_
             next_ += CHUNKSIZE
 
             if next_ >= length_:
                 outfile += __obs_processing(
-                    dataset.data.iloc[previous:], prettyprint
+                    dataset.data.iloc[previous:],
+                    dataset.structure,
+                    prettyprint,
                 )
                 previous = next_
     else:
-        outfile += __obs_processing(dataset.data, prettyprint)
+        outfile += __obs_processing(
+            dataset.data,
+            dataset.structure,
+            prettyprint,
+        )
 
     return outfile
 
@@ -209,7 +218,30 @@ def __group_processing(
     return "".join(out_list)
 
 
-def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
+def __obs_processing(
+    data: pd.DataFrame,
+    structure: Schema,
+    prettyprint: bool = True,
+) -> str:
+
+    def __should_skip_obs(element: Dict[str, Any]) -> bool:
+        """Check if observation should be skipped.
+
+        Skip if any required dimension has no value.
+        """
+        dimension_ids = [
+            comp.id
+            for comp in structure.components
+            if comp.role == Role.DIMENSION
+        ]
+
+        for dim_id in dimension_ids:
+            val = element[dim_id]
+            # If dimension value is empty, skip this obs
+            if pd.isna(val) or str(val) == "":
+                return True
+        return False
+
     def __format_obs_str(element: Dict[str, Any]) -> str:
         """Formats the observation as key=value pairs."""
         nl = "\n" if prettyprint else ""
@@ -228,7 +260,7 @@ def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
 
         return out
 
-    parser = lambda x: __format_obs_str(x)  # noqa: E731
+    parser = lambda x: __format_obs_str(x) if not __should_skip_obs(x) else ""  # noqa: E731
 
     iterator = map(parser, data.to_dict(orient="records"))
 

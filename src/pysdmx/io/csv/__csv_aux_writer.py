@@ -25,10 +25,9 @@ def _csv_prepare_df(dataset: PandasDataset) -> pd.DataFrame:
     for k, v in dataset.attributes.items():
         df[k] = v
 
-    if schema.components:
-        for comp in schema.components:
-            if comp.required and comp.id not in df.columns:
-                df[comp.id] = pd.NA
+    for comp in schema.components:
+        if comp.required and comp.id not in df.columns:
+            df[comp.id] = pd.NA
 
     df = _fill_na_values(df, schema)
     return df
@@ -60,11 +59,8 @@ def _csv_insert_labels_action(
     action_value: str,
     labels: Literal["name", "id", "both"],
 ) -> None:
-    schema = dataset.structure
-    if not isinstance(schema, Schema):
-        raise Invalid(
-            "Dataset Structure is not a Schema. Cannot perform operation."
-        )
+    schema = _validate_schema_exists(dataset)
+
     format_labels(df, labels, schema.components)
     df.insert(0, "STRUCTURE", structure_ref)
     structure_name = schema.name
