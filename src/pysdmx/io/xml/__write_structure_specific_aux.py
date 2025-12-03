@@ -11,13 +11,15 @@ from pysdmx.io.xml.__write_aux import (
     ABBR_MSG,
     ALL_DIM,
     __escape_xml,
+    _format_observation_attributes,
+    _should_skip_obs,
     get_structure,
 )
 from pysdmx.io.xml.__write_data_aux import (
     writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
-from pysdmx.model import Role, Schema
+from pysdmx.model import Schema
 from pysdmx.toolkit.pd._data_utils import get_codes
 from pysdmx.util import parse_short_urn
 
@@ -226,24 +228,8 @@ def __obs_processing(
     structure: Schema,
     prettyprint: bool = True,
 ) -> str:
-
-    def __should_skip_obs(element: Dict[str, Any]) -> bool:
-        """Check if observation should be skipped.
-
-        Skip if any required dimension has no value.
-        """
-        dimension_ids = [
-            comp.id
-            for comp in structure.components
-            if comp.role == Role.DIMENSION
-        ]
-
-        for dim_id in dimension_ids:
-            val = element[dim_id]
-            # If dimension value is empty, skip this obs
-            if pd.isna(val) or str(val) == "":
-                return True
-        return False
+    comp_required = {comp.id: comp.required for comp in structure.components}
+    all_comp_ids = [comp.id for comp in structure.components]
 
     def __format_obs_str(element: Dict[str, Any]) -> str:
         """Formats the observation as key=value pairs."""
@@ -252,18 +238,22 @@ def __obs_processing(
 
         out = f"{child2}<Obs "
 
-        for k, v in element.items():
-            # Skip only empty strings
-            # (pandas NA should have been converted to "NaN"/"#N/A")
-            if pd.isna(v) or str(v) == "":
-                continue
+        # Use shared function to filter attributes
+        attr_lines = _format_observation_attributes(
+            element, all_comp_ids, comp_required
+        )
+
+        for k, v in attr_lines:
             out += f"{k}={__escape_xml(str(v))!r} "
 
         out += f"/>{nl}"
 
         return out
 
-    parser = lambda x: __format_obs_str(x) if not __should_skip_obs(x) else ""  # noqa: E731
+    def parser(x: Dict[Any, Any]) -> str:
+        if _should_skip_obs(x, structure):
+            return ""
+        return __format_obs_str(x)
 
     iterator = map(parser, data.to_dict(orient="records"))
 

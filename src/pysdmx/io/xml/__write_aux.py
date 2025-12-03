@@ -4,8 +4,10 @@
 import re
 import warnings
 from collections import OrderedDict
-from typing import Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 from xml.sax.saxutils import escape
+
+import pandas as pd
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
@@ -36,6 +38,7 @@ from pysdmx.io.xml.__tokens import (
     VTLMAPPINGS,
 )
 from pysdmx.model import Organisation
+from pysdmx.model.dataflow import Role, Schema
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
 from pysdmx.util import parse_short_urn
@@ -106,6 +109,27 @@ NAMESPACES_31 = {
 URN_DS_BASE = "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure="
 URN_PROVISION = "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement="
 URN_DFW = "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow="
+
+
+def _should_skip_obs(element: Dict[str, Any], structure: Schema) -> bool:
+    """Check if observation should be skipped.
+
+    Skip if any required dimension has no value.
+
+    Args:
+        element: Dictionary representing one observation row
+        structure: Schema containing component definitions
+
+    Returns:
+        True if observation should be skipped, False otherwise
+    """
+    for comp in structure.components:
+        if comp.role == Role.DIMENSION and comp.required:
+            val = element[comp.id]
+            # If dimension value is empty, skip this obs
+            if pd.isna(val) or str(val) == "":
+                return True
+    return False
 
 
 def __namespaces_from_type(type_: Format) -> str:
@@ -515,3 +539,31 @@ def __escape_xml(value: str) -> str:
     final_value = escape(value)
     final_value = re.sub(r'(?<!\w)"(?!\w)', "&quot;", final_value)
     return final_value
+
+
+def _format_observation_attributes(
+    element: Dict[str, Any],
+    attribute_ids: list[str],
+    attr_required: Dict[str, bool],
+) -> List[Tuple[str, Any]]:
+    """Format observation attributes filtering empty optional ones.
+
+    Args:
+        element: Dictionary containing the observation data
+        attribute_ids: List of attribute IDs to process
+        attr_required: Dictionary mapping attribute IDs to required status
+
+    Returns:
+        List of (attribute_id, value) tuples (empty if no attributes to write)
+    """
+    attr_lines = []
+    for k, v in element.items():
+        if k in attribute_ids:
+            is_required = attr_required.get(k, False)
+            is_empty = pd.isna(v) or str(v) == ""
+
+            # Write if: required (even if empty) OR has a value
+            if is_required or not is_empty:
+                attr_lines.append((k, v))
+
+    return attr_lines
