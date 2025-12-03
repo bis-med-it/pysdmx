@@ -29,6 +29,19 @@ def _csv_prepare_df(dataset: PandasDataset) -> pd.DataFrame:
             df[comp.id] = pd.NA
 
     df = _fill_na_values(df, schema)
+
+    optional_attrs = {
+        comp.id for comp in schema.components.attributes if not comp.required
+    }
+    for attr_id in optional_attrs:
+        if attr_id in df.columns:
+            col_values = df[attr_id]
+            if (
+                col_values.isna().all()
+                or (col_values.astype(str).str.strip() == "").all()
+            ):
+                df = df.drop(columns=[attr_id])
+
     return df
 
 

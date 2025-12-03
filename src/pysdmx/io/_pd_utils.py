@@ -3,7 +3,7 @@ import pandas as pd
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model.concept import DataType
-from pysdmx.model.dataflow import Schema
+from pysdmx.model.dataflow import Role, Schema
 
 NUMERIC_TYPES = {
     DataType.BIG_INTEGER,
@@ -23,6 +23,8 @@ def _fill_na_values(data: pd.DataFrame, structure: Schema) -> pd.DataFrame:
 
     Numeric components are filled with "NaN".
     Other components are filled with "#N/A".
+    Optional attributes that are missing (NaN) are left as NaN,
+    so they can be omitted during writing.
     If the structure does not have components,
     all missing values are filled with "".
 
@@ -38,6 +40,16 @@ def _fill_na_values(data: pd.DataFrame, structure: Schema) -> pd.DataFrame:
     """
     for component in structure.components:
         if component.id in data.columns:
+            # Skip optional attributes (leave NaN)
+            # so they can be omitted during writing
+            is_optional_attribute = (
+                hasattr(component, "role")
+                and component.role == Role.ATTRIBUTE
+                and not component.required
+            )
+            if is_optional_attribute:
+                continue
+
             if component.dtype in NUMERIC_TYPES:
                 data[component.id] = data[component.id].astype(object)
                 data.loc[data[component.id].isna(), component.id] = "NaN"
