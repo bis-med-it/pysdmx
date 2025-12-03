@@ -3,8 +3,7 @@ from typing import List, Literal, Optional, Sequence
 
 import pandas as pd
 
-from pysdmx.errors import Invalid
-from pysdmx.io._pd_utils import _fill_na_values
+from pysdmx.io._pd_utils import _fill_na_values, _validate_schema_exists
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
 from pysdmx.model.dataset import ActionType
@@ -74,25 +73,6 @@ def _csv_insert_labels_action(
         action_position += 1
         df.insert(2, "STRUCTURE_NAME", schema.name)
     df.insert(action_position, "ACTION", action_value)
-
-
-def _validate_schema_exists(dataset: PandasDataset) -> Schema:
-    """Validates that the dataset has a Schema defined.
-
-    Args:
-        dataset: The dataset to validate.
-
-    Returns:
-        The `Schema` from the dataset.
-
-    Raises:
-        Invalid: If the structure is not a `Schema`.
-    """
-    if not isinstance(dataset.structure, Schema):
-        raise Invalid(
-            "Dataset Structure is not a Schema. Cannot perform operation."
-        )
-    return dataset.structure
 
 
 def __write_time_period(df: pd.DataFrame, time_format: str) -> None:

@@ -6,7 +6,7 @@ from typing import Any, Dict, Hashable, List, Optional, Sequence, Tuple, Union
 
 import pandas as pd
 
-from pysdmx.io._pd_utils import _fill_na_values
+from pysdmx.io._pd_utils import _fill_na_values, _validate_schema_exists
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import (
@@ -81,6 +81,9 @@ def __memory_optimization_writing(
     """Memory optimization for writing data."""
     outfile = ""
     length_ = len(dataset.data)
+
+    schema = _validate_schema_exists(dataset)
+
     if len(dataset.data) > CHUNKSIZE:
         previous = 0
         next_ = CHUNKSIZE
@@ -88,18 +91,26 @@ def __memory_optimization_writing(
             # Sliding a window for efficient access to the data
             # and avoid memory issues
             outfile += __obs_processing(
-                dataset.data.iloc[previous:next_], obs_structure, prettyprint
+                dataset.data.iloc[previous:next_],
+                obs_structure,
+                schema,
+                prettyprint,
             )
             previous = next_
             next_ += CHUNKSIZE
 
             if next_ >= length_:
                 outfile += __obs_processing(
-                    dataset.data.iloc[previous:], obs_structure, prettyprint
+                    dataset.data.iloc[previous:],
+                    obs_structure,
+                    schema,
+                    prettyprint,
                 )
                 previous = next_
     else:
-        outfile += __obs_processing(dataset.data, obs_structure, prettyprint)
+        outfile += __obs_processing(
+            dataset.data, obs_structure, schema, prettyprint
+        )
 
     return outfile
 

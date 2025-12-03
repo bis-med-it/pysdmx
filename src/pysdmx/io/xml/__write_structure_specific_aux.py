@@ -5,7 +5,7 @@ from typing import Any, Dict, Hashable, List
 
 import pandas as pd
 
-from pysdmx.io._pd_utils import _fill_na_values
+from pysdmx.io._pd_utils import _fill_na_values, _validate_schema_exists
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import (
     ABBR_MSG,
@@ -28,6 +28,9 @@ def __memory_optimization_writing(
     """Memory optimization for writing data."""
     outfile = ""
     length_ = len(dataset.data)
+
+    schema = _validate_schema_exists(dataset)
+
     if len(dataset.data) > CHUNKSIZE:
         previous = 0
         next_ = CHUNKSIZE
@@ -36,7 +39,7 @@ def __memory_optimization_writing(
             # and avoid memory issues
             outfile += __obs_processing(
                 dataset.data.iloc[previous:next_],
-                dataset.structure,
+                schema,
                 prettyprint,
             )
             previous = next_
@@ -45,14 +48,14 @@ def __memory_optimization_writing(
             if next_ >= length_:
                 outfile += __obs_processing(
                     dataset.data.iloc[previous:],
-                    dataset.structure,
+                    schema,
                     prettyprint,
                 )
                 previous = next_
     else:
         outfile += __obs_processing(
             dataset.data,
-            dataset.structure,
+            schema,
             prettyprint,
         )
 

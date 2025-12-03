@@ -6,11 +6,8 @@ from typing import Literal, Optional, Sequence, Union
 
 import pandas as pd
 
-from pysdmx.io._pd_utils import _fill_na_values
-from pysdmx.io.csv.__csv_aux_writer import (
-    __write_time_period,
-    _validate_schema_exists,
-)
+from pysdmx.io._pd_utils import _fill_na_values, _validate_schema_exists
+from pysdmx.io.csv.__csv_aux_writer import __write_time_period
 from pysdmx.io.pd import PandasDataset
 from pysdmx.toolkit.pd._data_utils import format_labels
 
