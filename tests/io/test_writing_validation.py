@@ -254,3 +254,105 @@ def test_write_sdmx_csv_read_back(samples_folder, csv_format):
             "UNIT_MEASURE": "USD",
         }
     )
+
+
+@pytest.mark.parametrize(
+    "format_",
+    [
+        Format.DATA_SDMX_ML_2_1_STR,
+        Format.DATA_SDMX_ML_2_1_GEN,
+        Format.DATA_SDMX_ML_3_0,
+        Format.DATA_SDMX_ML_3_1,
+        Format.DATA_SDMX_CSV_1_0_0,
+        Format.DATA_SDMX_CSV_2_0_0,
+        Format.DATA_SDMX_CSV_2_1_0,
+    ],
+)
+def test_attributes_preservation(samples_folder, format_):
+    csv_path = samples_folder / "csv_mixed_attributes.csv"
+    dsd_path = samples_folder / "datastructure_mixed_attributes.xml"
+
+    datasets = get_datasets(csv_path, dsd_path)
+    orig_data = datasets[0].data
+
+    val_2020_req = orig_data.at[0, "ATT_REQ"]
+    # Verify required empty attribute is read as empty
+    assert val_2020_req == "", "Input 2020 ATT_REQ should be empty"
+
+    val_2021_opt = orig_data.at[1, "ATT_OPT"]
+    # Verify optional empty attribute is read as empty
+    assert val_2021_opt == "", "Input 2021 ATT_OPT should be empty"
+
+    val_2022_opt = orig_data.at[2, "ATT_OPT"]
+    # 'Nan' is read as literal text
+    assert val_2022_opt == "Nan", (
+        f"Input 2022 ATT_OPT should be text 'Nan', got {val_2022_opt!r}"
+    )
+
+    val_2023_opt = orig_data.at[3, "ATT_OPT"]
+    # '#N/A' is read as literal text
+    assert val_2023_opt == "#N/A", (
+        f"Input 2023 ATT_OPT should be text '#N/A', got {val_2023_opt!r}"
+    )
+
+    val_2024_obs = orig_data.at[4, "OBS_VALUE"]
+    # 'NaN' in numeric field is read as literal text
+    assert val_2024_obs == "NaN", (
+        f"Input 2024 OBS_VALUE should be literal string 'NaN' (strict reader)."
+        f" Got: {val_2024_obs!r}"
+    )
+
+    # Roundtrip
+    output_str = write_sdmx(datasets, sdmx_format=format_)
+    datasets_2 = get_datasets(output_str, dsd_path)
+
+    new_data = datasets_2[0].data
+
+    if format_ != Format.DATA_SDMX_CSV_1_0_0:
+        # Drop fully empty optional columns
+        assert "ATT_OPT_EMPTY" not in new_data.columns, (
+            "ATT_OPT_EMPTY (all empty) should be dropped"
+        )
+    elif "ATT_OPT_EMPTY" in new_data.columns:
+        # CSV v1.0 keeps columns defined in DSD even if empty
+        col = new_data["ATT_OPT_EMPTY"].replace("", pd.NA)
+        assert col.isna().all(), (
+            "ATT_OPT_EMPTY exists in CSV v1.0 but must be fully empty"
+        )
+
+    # Required attributes must be present
+    assert "ATT_REQ" in new_data.columns, (
+        "ATT_REQ (required) must be present in output"
+    )
+    val_req_out = new_data.at[0, "ATT_REQ"]
+    # Required attribute must be explicitly preserved as empty string
+    assert val_req_out == "", (
+        "Output 2020 ATT_REQ (required) must be preserved as empty string"
+    )
+
+    val_opt_2021 = new_data.at[1, "ATT_OPT"]
+    # Optional attribute (Implicit Null) Must remain empty
+    assert val_opt_2021 == "", (
+        "Output 2021 ATT_OPT (Implicit Null) should be empty"
+    )
+
+    val_opt_2022 = new_data.at[2, "ATT_OPT"]
+    # Text 'Nan' in String attribute must survive roundtrip as valid text
+    assert val_opt_2022 == "Nan", (
+        f"Output 2022 ATT_OPT should preserve text 'Nan'."
+        f" Got: {val_opt_2022!r}"
+    )
+
+    val_opt_2023 = new_data.at[3, "ATT_OPT"]
+    # Explicit marker '#N/A' in String and must survive roundtrip as is
+    assert val_opt_2023 == "#N/A", (
+        f"Output 2023 ATT_OPT must preserve explicit '#N/A'."
+        f" Got: {val_opt_2023!r}"
+    )
+
+    val_obs_2024 = new_data.at[4, "OBS_VALUE"]
+    # Input text 'NaN' returns as text 'NaN'
+    assert val_obs_2024 == "NaN", (
+        f"Output 2024 OBS_VALUE should be preserved as text 'NaN'."
+        f" Got: {val_obs_2024!r}"
+    )
