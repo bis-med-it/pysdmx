@@ -15,8 +15,6 @@ from pysdmx.io.xml.__write_aux import (
     ALL_DIM,
     __escape_xml,
     __write_header,
-    _format_observation_attributes,
-    _should_skip_obs,
     create_namespaces,
     get_end_message,
     get_structure,
@@ -25,6 +23,10 @@ from pysdmx.io.xml.__write_data_aux import (
     check_content_dataset,
     check_dimension_at_observation,
     writing_validation,
+)
+from pysdmx.io.xml.__write_structure_specific_aux import (
+    _format_observation_attributes,
+    _should_skip_obs,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
 from pysdmx.model import Schema

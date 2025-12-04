@@ -1,7 +1,7 @@
 # mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 3.0 Structure Specific auxiliary functions."""
 
-from typing import Any, Dict, Hashable, List
+from typing import Any, Dict, Hashable, List, Tuple
 
 import pandas as pd
 
@@ -11,15 +11,13 @@ from pysdmx.io.xml.__write_aux import (
     ABBR_MSG,
     ALL_DIM,
     __escape_xml,
-    _format_observation_attributes,
-    _should_skip_obs,
     get_structure,
 )
 from pysdmx.io.xml.__write_data_aux import (
     writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
-from pysdmx.model import Schema
+from pysdmx.model import Role, Schema
 from pysdmx.toolkit.pd._data_utils import get_codes
 from pysdmx.util import parse_short_urn
 
@@ -342,3 +340,52 @@ def __series_processing(
     return __process_series_observations(
         data, series_codes, obs_codes, data_dict, prettyprint
     )
+
+
+def _should_skip_obs(element: Dict[str, Any], structure: Schema) -> bool:
+    """Check if observation should be skipped.
+
+    Skip if any required dimension has no value.
+
+    Args:
+        element: Dictionary representing one observation row
+        structure: Schema containing component definitions
+
+    Returns:
+        True if observation should be skipped, False otherwise
+    """
+    for comp in structure.components:
+        if comp.role == Role.DIMENSION and comp.required:
+            val = element[comp.id]
+            # If dimension value is empty, skip this obs
+            if pd.isna(val) or str(val) == "":
+                return True
+    return False
+
+
+def _format_observation_attributes(
+    element: Dict[str, Any],
+    attribute_ids: list[str],
+    attr_required: Dict[str, bool],
+) -> List[Tuple[str, Any]]:
+    """Format observation attributes filtering empty optional ones.
+
+    Args:
+        element: Dictionary containing the observation data
+        attribute_ids: List of attribute IDs to process
+        attr_required: Dictionary mapping attribute IDs to required status
+
+    Returns:
+        List of (attribute_id, value) tuples (empty if no attributes to write)
+    """
+    attr_lines = []
+    for k, v in element.items():
+        if k in attribute_ids:
+            is_required = attr_required.get(k, False)
+            is_empty = pd.isna(v) or str(v) == ""
+
+            # Write if: required (even if empty) OR has a value
+            if is_required or not is_empty:
+                attr_lines.append((k, v))
+
+    return attr_lines
