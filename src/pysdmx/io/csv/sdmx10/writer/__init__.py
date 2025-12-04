@@ -1,13 +1,12 @@
 """SDMX 1.0 CSV writer module."""
 
-from copy import copy
 from pathlib import Path
 from typing import Literal, Optional, Sequence, Union
 
 import pandas as pd
 
-from pysdmx.io._pd_utils import _fill_na_values, _validate_schema_exists
-from pysdmx.io.csv.__csv_aux_writer import __write_time_period
+from pysdmx.io._pd_utils import _validate_schema_exists
+from pysdmx.io.csv.__csv_aux_writer import __write_time_period, _csv_prepare_df
 from pysdmx.io.pd import PandasDataset
 from pysdmx.toolkit.pd._data_utils import format_labels
 
@@ -44,13 +43,8 @@ def write(
     # Create a copy of the dataset
     dataframes = []
     for dataset in datasets:
-        # Validate that dataset has a proper Schema
-        schema = _validate_schema_exists(dataset)
-
-        df: pd.DataFrame = copy(dataset.data)
-
-        # Fill missing values
-        df = _fill_na_values(df, schema)
+        df = _csv_prepare_df(dataset)
+        schema = dataset.structure
 
         # Add additional attributes to the dataset
         for k, v in dataset.attributes.items():
