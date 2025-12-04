@@ -308,17 +308,9 @@ def test_attributes_preservation(samples_folder, format_):
 
     new_data = datasets_2[0].data
 
-    if format_ != Format.DATA_SDMX_CSV_1_0_0:
-        # Drop fully empty optional columns
-        assert "ATT_OPT_EMPTY" not in new_data.columns, (
-            "ATT_OPT_EMPTY (all empty) should be dropped"
-        )
-    elif "ATT_OPT_EMPTY" in new_data.columns:
-        # CSV v1.0 keeps columns defined in DSD even if empty
-        col = new_data["ATT_OPT_EMPTY"].replace("", pd.NA)
-        assert col.isna().all(), (
-            "ATT_OPT_EMPTY exists in CSV v1.0 but must be fully empty"
-        )
+    assert "ATT_OPT_EMPTY" not in new_data.columns, (
+        f"ATT_OPT_EMPTY (all empty) should be dropped in {format_}"
+    )
 
     # Required attributes must be present
     assert "ATT_REQ" in new_data.columns, (
