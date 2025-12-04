@@ -375,6 +375,17 @@ def test_header_structure_provision_agrement(samples_folder):
     assert df.shape == (1, 19)
 
 
+def test_multiple_structures_in_header(samples_folder):
+    data_path = samples_folder / "multiple_structures.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+    data = read_sdmx(input_str, validate=True).data
+
+    assert len(data) == 2
+    assert data[0].structure == "DataStructure=MD:DS1(1.0)"
+    assert data[1].structure == "DataStructure=MD:BIS_LOC_STATS(1.0)"
+
+
 def test_stref_dif_strid(samples_folder):
     data_path = samples_folder / "str_dif_ref_and_ID.xml"
     input_str, read_format = process_string_to_read(data_path)

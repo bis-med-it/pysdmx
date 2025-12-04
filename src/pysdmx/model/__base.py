@@ -1,5 +1,6 @@
+import re
 from datetime import datetime
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -326,6 +327,50 @@ class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
 
     items: Sequence[Item] = ()
     is_partial: bool = False
+
+    def search(
+        self,
+        query: str,
+        use_regex: bool = False,
+        fields: Literal["name", "description", "all"] = "all",
+    ) -> Sequence[Item]:
+        """Search for items matching the query.
+
+        Args:
+            query: The substring or regex pattern to search for.
+            use_regex: Whether to treat the query as a regex (default: False).
+            fields: The fields to search in (default: all textual fields).
+
+        Returns:
+           Items that match the query.
+        """
+        if not query:
+            raise Invalid(
+                "Invalid search", "The query string cannot be empty."
+            )
+
+        # Determine which fields to search in
+        search_fields = (
+            ["name", "description"] if fields == "all" else [fields]
+        )
+
+        # Transform plain text queries into a regex
+        if not use_regex:
+            query = re.escape(query)
+
+        pattern = re.compile(query, re.IGNORECASE if not use_regex else 0)
+
+        all_items = getattr(self, "all_items", "")
+        items = all_items if all_items else self.items
+
+        return [
+            item  # type: ignore[misc]
+            for item in items
+            if any(
+                pattern.search(str(getattr(item, field, "")))
+                for field in search_fields
+            )
+        ]
 
 
 class DataflowRef(

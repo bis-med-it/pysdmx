@@ -21,7 +21,7 @@ class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
     dataStructures: Sequence[JsonDataStructure]
     valuelists: Sequence[JsonValuelist] = ()
     codelists: Sequence[JsonCodelist] = ()
-    contentConstraints: Sequence[JsonDataConstraint] = ()
+    dataConstraints: Sequence[JsonDataConstraint] = ()
 
     def to_model(
         self,
@@ -32,7 +32,7 @@ class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
             self.conceptSchemes,
             self.codelists,
             self.valuelists,
-            self.contentConstraints,
+            self.dataConstraints,
         )
         return comps, grps  # type: ignore[return-value]
 

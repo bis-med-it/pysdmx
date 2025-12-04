@@ -1,0 +1,59 @@
+{
+    "meta": {
+        "id": "IREF384710",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2024-12-03T15:07:53Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "ZZZ"
+        }
+    },
+    "data": {
+        "customTypeSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "customtypescheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.transformation.CustomTypeScheme=TEST:TS_CTS(1.0)"
+                    }
+                ],
+                "id": "TS_CTS",
+                "name": "Test Custom Types",
+                "names": {
+                    "en": "Test Custom Types"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isFinal": false,
+                "vtlVersion": "2.1",
+                "isPartial": false,
+                "customTypes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "customtype",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.transformation.CustomType=TEST:TS_CTS(1.0).TITLE"
+                            }
+                        ],
+                        "id": "TITLE",
+                        "name": "Title",
+                        "names": {
+                            "en": "Title"
+                        },
+                        "vtlScalarType": "String",
+                        "dataType": "String",
+                        "nullValue": "null"
+                    }
+                ]
+            }
+        ]
+    }
+}

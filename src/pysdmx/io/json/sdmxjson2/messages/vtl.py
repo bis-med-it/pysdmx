@@ -1,6 +1,6 @@
 """Collection of SDMX-JSON schemas for VTL artefacts."""
 
-from typing import Literal, Optional, Sequence
+from typing import Dict, Literal, Optional, Sequence
 
 from msgspec import Struct
 
@@ -506,33 +506,37 @@ class JsonRulesetScheme(ItemSchemeType, frozen=True, omit_defaults=True):
 class JsonToVtlMapping(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for To VTL mappings."""
 
-    toVtlSubSpace: Sequence[str]
-    type: Optional[str] = None
+    toVtlSubSpace: Dict[str, Sequence[str]]
+    method: Optional[str] = None
 
     def to_model(self) -> ToVtlMapping:
         """Converts deserialized class to pysdmx model class."""
-        return ToVtlMapping(self.toVtlSubSpace, self.type)
+        return ToVtlMapping(self.toVtlSubSpace["keys"], self.method)
 
     @classmethod
     def from_model(cls, mapping: ToVtlMapping) -> "JsonToVtlMapping":
         """Converts a pysdmx "to VTL" mapping to an SDMX-JSON one."""
-        return JsonToVtlMapping(mapping.to_vtl_sub_space, mapping.method)
+        return JsonToVtlMapping(
+            {"keys": mapping.to_vtl_sub_space}, mapping.method
+        )
 
 
 class JsonFromVtlMapping(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for from VTL mappings."""
 
-    fromVtlSuperSpace: Sequence[str]
-    type: Optional[str] = None
+    fromVtlSuperSpace: Dict[str, Sequence[str]]
+    method: Optional[str] = None
 
     def to_model(self) -> FromVtlMapping:
         """Converts deserialized class to pysdmx model class."""
-        return FromVtlMapping(self.fromVtlSuperSpace, self.type)
+        return FromVtlMapping(self.fromVtlSuperSpace["keys"], self.method)
 
     @classmethod
     def from_model(cls, mapping: FromVtlMapping) -> "JsonFromVtlMapping":
         """Converts a pysdmx "from VTL" mapping to an SDMX-JSON one."""
-        return JsonFromVtlMapping(mapping.from_vtl_sub_space, mapping.method)
+        return JsonFromVtlMapping(
+            {"keys": mapping.from_vtl_sub_space}, mapping.method
+        )
 
 
 class JsonVtlMapping(NameableType, frozen=True, omit_defaults=True):

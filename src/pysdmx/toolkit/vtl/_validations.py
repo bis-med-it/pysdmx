@@ -1,13 +1,9 @@
 """Private module for VTL validation functions."""
 
-from vtlengine.API import create_ast  # type: ignore[import-untyped]
-from vtlengine.AST import (  # type: ignore[import-untyped]
-    DPRuleset as ASTDPRuleset,
-)
+from vtlengine.API import create_ast
+from vtlengine.AST import DPRuleset as ASTDPRuleset
 from vtlengine.AST import HRuleset as ASTHRuleset
-from vtlengine.AST import (
-    Operator as ASTOperator,
-)
+from vtlengine.AST import Operator as ASTOperator
 
 from pysdmx.errors import Invalid
 from pysdmx.model import Reference
@@ -37,14 +33,14 @@ def _ruleset_validation(ruleset: Ruleset) -> None:
         ast.children[0], ASTDPRuleset
     ):
         raise Invalid("Ruleset type does not match the definition")
-    if (
-        ruleset.ruleset_scope == "variable"
-        and ast.children[0].signature_type != "variable"
-    ):
+
+    child = ast.children[0]
+    signature_type = getattr(child, "signature_type", None)
+    if ruleset.ruleset_scope == "variable" and signature_type != "variable":
         raise Invalid("Ruleset scope does not match the definition")
     if (
         ruleset.ruleset_scope == "valuedomain"
-        and ast.children[0].signature_type != "valuedomain"
+        and signature_type != "valuedomain"
     ):
         raise Invalid("Ruleset scope does not match the definition")
 

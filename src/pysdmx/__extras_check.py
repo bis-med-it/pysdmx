@@ -46,7 +46,7 @@ def __check_xml_extra() -> None:
 
 def __check_vtl_extra() -> None:
     try:
-        import vtlengine  # type: ignore[import-untyped]  # noqa: F401
+        import vtlengine  # noqa: F401
     except ImportError:
         raise ImportError(
             ERROR_MESSAGE.format(
