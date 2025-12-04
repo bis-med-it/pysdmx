@@ -44,7 +44,7 @@ def write(
     dataframes = []
     for dataset in datasets:
         df = _csv_prepare_df(dataset)
-        schema = dataset.structure
+        schema = _validate_schema_exists(dataset)
 
         # Add additional attributes to the dataset
         for k, v in dataset.attributes.items():
