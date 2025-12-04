@@ -268,7 +268,7 @@ def test_write_sdmx_csv_read_back(samples_folder, csv_format):
         Format.DATA_SDMX_CSV_2_1_0,
     ],
 )
-def test_attributes_preservation(samples_folder, format_):
+def test_attributes_preservation_csv_source(samples_folder, format_):
     csv_path = samples_folder / "csv_mixed_attributes.csv"
     dsd_path = samples_folder / "datastructure_mixed_attributes.xml"
 
@@ -347,4 +347,105 @@ def test_attributes_preservation(samples_folder, format_):
     assert val_obs_2024 == "NaN", (
         f"Output 2024 OBS_VALUE should be preserved as text 'NaN'."
         f" Got: {val_obs_2024!r}"
+    )
+
+
+@pytest.mark.parametrize(
+    "output_format",
+    [
+        Format.DATA_SDMX_ML_2_1_STR,
+        Format.DATA_SDMX_ML_2_1_GEN,
+        Format.DATA_SDMX_ML_3_0,
+        Format.DATA_SDMX_ML_3_1,
+        Format.DATA_SDMX_CSV_1_0_0,
+        Format.DATA_SDMX_CSV_2_0_0,
+        Format.DATA_SDMX_CSV_2_1_0,
+    ],
+)
+def test_xml_to_csv_attributes_preservation_xml_source(
+    samples_folder, output_format
+):
+    csv_path = samples_folder / "csv_mixed_attributes.csv"
+    dsd_path = samples_folder / "datastructure_mixed_attributes.xml"
+
+    orig_datasets = get_datasets(csv_path, dsd_path)
+    xml_source_str = write_sdmx(orig_datasets, Format.DATA_SDMX_ML_2_1_GEN)
+
+    xml_datasets = get_datasets(xml_source_str, dsd_path)
+    xml_data = xml_datasets[0].data
+
+    val_xml_0_req = xml_data.at[0, "ATT_REQ"]
+    # Verify required empty attribute is read as empty from XML
+    assert val_xml_0_req == "", (
+        "XML Reader failed on Row 0: Empty Required Attribute should be ''"
+    )
+
+    val_xml_1_opt = xml_data.at[1, "ATT_OPT"]
+    # Verify optional empty attribute is read as empty from XML
+    assert val_xml_1_opt == "", (
+        "XML Reader failed on Row 1: Empty Optional Attribute should be ''"
+    )
+
+    val_xml_2_opt = xml_data.at[2, "ATT_OPT"]
+    # Verify literal 'Nan' is preserved in XML read
+    assert val_xml_2_opt == "Nan", (
+        f"XML Reader failed on Row 2: Expected 'Nan', got {val_xml_2_opt!r}"
+    )
+
+    val_xml_3_opt = xml_data.at[3, "ATT_OPT"]
+    # Verify literal '#N/A' is preserved in XML read
+    assert val_xml_3_opt == "#N/A", (
+        f"XML Reader failed on Row 3: Expected '#N/A', got {val_xml_3_opt!r}"
+    )
+
+    val_xml_4_obs = xml_data.at[4, "OBS_VALUE"]
+    # Verify numeric 'NaN' is preserved as string "NaN" in XML read
+    assert val_xml_4_obs == "NaN", (
+        f"XML Reader failed on Row 4: Expected 'NaN', got {val_xml_4_obs!r}"
+    )
+
+    final_output_str = write_sdmx(xml_datasets, sdmx_format=output_format)
+
+    final_datasets = get_datasets(final_output_str, dsd_path)
+    final_data = final_datasets[0].data
+
+    assert "ATT_OPT_EMPTY" not in final_data.columns, (
+        f"ATT_OPT_EMPTY (all empty) should be dropped in {output_format}"
+    )
+
+    # Required attributes must be present
+    assert "ATT_REQ" in final_data.columns, (
+        "ATT_REQ (required) must be present in output"
+    )
+    val_out_0_req = final_data.at[0, "ATT_REQ"]
+    # Required attribute must be explicitly preserved as empty string
+    assert val_out_0_req == "", (
+        "Output Row 0 ATT_REQ (required) must be preserved as empty string"
+    )
+
+    val_out_1_opt = final_data.at[1, "ATT_OPT"]
+    # Optional attribute (Implicit Null) Must remain empty
+    assert val_out_1_opt == "", (
+        "Output Row 1 ATT_OPT (Implicit Null) should be empty"
+    )
+
+    val_out_2_opt = final_data.at[2, "ATT_OPT"]
+    # Text 'Nan' in String attribute must survive roundtrip as valid text
+    assert val_out_2_opt == "Nan", (
+        f"Output Row 2 ATT_OPT should preserve text 'Nan'. "
+        f"Got: {val_out_2_opt!r}"
+    )
+
+    val_out_3_opt = final_data.at[3, "ATT_OPT"]
+    # Explicit marker '#N/A' in String must survive roundtrip as is
+    assert val_out_3_opt == "#N/A", (
+        f"Output Row 3 ATT_OPT must preserve explicit '#N/A'. "
+        f"Got: {val_out_3_opt!r}"
+    )
+
+    val_out_4_obs = final_data.at[4, "OBS_VALUE"]
+    # Input text 'NaN' returns as text 'NaN'
+    assert val_out_4_obs == "NaN", (
+        f"Output Row 4 OBS_VALUE should be preserved as text 'NaN'. "
+        f"Got: {val_out_4_obs!r}"
     )
