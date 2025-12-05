@@ -7,6 +7,7 @@ import pandas as pd
 
 from pysdmx.io._pd_utils import _fill_na_values, _validate_schema_exists
 from pysdmx.io.pd import PandasDataset
+from pysdmx.io.xml.__tokens import OBS, SERIES
 from pysdmx.io.xml.__write_aux import (
     ABBR_MSG,
     ALL_DIM,
@@ -234,7 +235,7 @@ def __obs_processing(
         nl = "\n" if prettyprint else ""
         child2 = "\t\t" if prettyprint else ""
 
-        out = f"{child2}<Obs "
+        out = f"{child2}<{OBS} "
 
         # Use shared function to filter attributes
         attr_lines = _format_observation_attributes(
@@ -266,23 +267,23 @@ def __format_ser_str(
     child3 = "\t\t\t" if prettyprint else ""
     nl = "\n" if prettyprint else ""
 
-    out_element = f"{child2}<Series "
+    out_element = f"{child2}<{SERIES} "
 
     for k, v in data_info.items():
-        if k != "Obs":
+        if k != OBS:
             out_element += f"{k}={__escape_xml(str(v))!r} "
 
     out_element += f">{nl}"
 
-    for obs in data_info["Obs"]:
-        out_element += f"{child3}<Obs "
+    for obs in data_info[OBS]:
+        out_element += f"{child3}<{OBS} "
 
         for k, v in obs.items():
             out_element += f"{k}={__escape_xml(str(v))!r} "
 
         out_element += f"/>{nl}"
 
-    out_element += f"{child2}</Series>{nl}"
+    out_element += f"{child2}</{SERIES}>{nl}"
 
     return out_element
 
@@ -292,9 +293,9 @@ def __build_series_dict(
 ) -> Dict[str, List[Dict[Hashable, Any]]]:
     """Build series dictionary from data."""
     if not series_codes:
-        return {"Series": [{}] if not data.empty else []}
+        return {SERIES: [{}] if not data.empty else []}
     return {
-        "Series": data[series_codes]
+        SERIES: data[series_codes]
         .drop_duplicates()
         .reset_index(drop=True)
         .to_dict(orient="records")
@@ -313,10 +314,10 @@ def __process_series_observations(
 
     def append_series_with_obs(obs: Any) -> str:
         """Append series with observations to output list."""
-        data_dict["Series"][0]["Obs"] = obs.to_dict(orient="records")
-        result = __format_ser_str(data_dict["Series"][0], prettyprint)
+        data_dict[SERIES][0][OBS] = obs.to_dict(orient="records")
+        result = __format_ser_str(data_dict[SERIES][0], prettyprint)
         out_list.append(result)
-        del data_dict["Series"][0]
+        del data_dict[SERIES][0]
         return result
 
     if not series_codes:

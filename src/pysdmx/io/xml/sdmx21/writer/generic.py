@@ -9,6 +9,16 @@ import pandas as pd
 from pysdmx.io._pd_utils import _fill_na_values, _validate_schema_exists
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
+from pysdmx.io.xml.__tokens import (
+    ACTION,
+    ATTRIBUTES,
+    DATASET,
+    OBS,
+    OBS_DIM,
+    OBS_VALUE_XML_TAG,
+    SERIES,
+    STR_REF,
+)
 from pysdmx.io.xml.__write_aux import (
     ABBR_GEN,
     ABBR_MSG,
@@ -186,9 +196,9 @@ def __write_data_single_dataset(
 
     # Datasets
     outfile += (
-        f"{nl}{child1}<{ABBR_MSG}:DataSet "
-        f"structureRef={id_structure!r} "
-        f"action={dataset.action.value!r}>{nl}"
+        f"{nl}{child1}<{ABBR_MSG}:{DATASET} "
+        f"{STR_REF}={id_structure!r} "
+        f"{ACTION}={dataset.action.value!r}>{nl}"
     )
     data = ""
     # Write attached attributes
@@ -393,9 +403,9 @@ def __series_processing(
         group_data: Any,
     ) -> Any:
         obs_data = group_data[obs_codes + obs_att_codes].copy()
-        data_dict["Series"][0]["Obs"] = obs_data.to_dict(orient="records")
+        data_dict[SERIES][0][OBS] = obs_data.to_dict(orient="records")
         if series_att_codes:
-            data_dict["Series"][0].update(
+            data_dict[SERIES][0].update(
                 {
                     k: v
                     for k, v in group_data[series_att_codes].iloc[0].items()
@@ -404,7 +414,7 @@ def __series_processing(
             )
         output_list.append(
             __format_ser_str(
-                data_info=data_dict["Series"][0],
+                data_info=data_dict[SERIES][0],
                 series_codes=series_codes,
                 series_att_codes=series_att_codes,
                 obs_codes=obs_codes,
@@ -412,17 +422,17 @@ def __series_processing(
                 prettyprint=prettyprint,
             )
         )
-        del data_dict["Series"][0]
+        del data_dict[SERIES][0]
 
     # Getting each datapoint from data and creating dict
     data = data.sort_values(series_codes, axis=0)
     if not series_codes:
         data_dict: Dict[str, List[Dict[Hashable, Any]]] = {
-            "Series": [{}] if not data.empty else []
+            SERIES: [{}] if not data.empty else []
         }
     else:
         data_dict = {
-            "Series": data[series_codes]
+            SERIES: data[series_codes]
             .drop_duplicates()
             .reset_index(drop=True)
             .to_dict(orient="records")
@@ -434,7 +444,7 @@ def __series_processing(
 
 
 def __format_obs_value(obs_value: Any) -> str:
-    return f"<{ABBR_GEN}:ObsValue value={str(obs_value)!r}/>"
+    return f"<{ABBR_GEN}:{OBS_VALUE_XML_TAG} value={str(obs_value)!r}/>"
 
 
 def __format_obs_element(
@@ -446,12 +456,11 @@ def __format_obs_element(
     child5: str,
     nl: str,
 ) -> str:
-    obs_element = f"{child3}<{ABBR_GEN}:Obs>{nl}"
+    obs_element = f"{child3}<{ABBR_GEN}:{OBS}>{nl}"
 
     # Obs Dimension writing
     obs_element += (
-        f"{child4}<{ABBR_GEN}:ObsDimension "
-        f"value={str(obs[obs_codes[0]])!r}/>{nl}"
+        f"{child4}<{ABBR_GEN}:{OBS_DIM} value={str(obs[obs_codes[0]])!r}/>{nl}"
     )
 
     # Obs Value writing
@@ -462,13 +471,13 @@ def __format_obs_element(
 
     # Obs Attributes writing
     if len(obs_att_codes) > 0:
-        obs_element += f"{child4}<{ABBR_GEN}:Attributes>{nl}"
+        obs_element += f"{child4}<{ABBR_GEN}:{ATTRIBUTES}>{nl}"
         for k, v in obs.items():
             if k in obs_att_codes:
                 obs_element += f"{child5}{__value(k, v)}{nl}"
-        obs_element += f"{child4}</{ABBR_GEN}:Attributes>{nl}"
+        obs_element += f"{child4}</{ABBR_GEN}:{ATTRIBUTES}>{nl}"
 
-    obs_element += f"{child3}</{ABBR_GEN}:Obs>{nl}"
+    obs_element += f"{child3}</{ABBR_GEN}:{OBS}>{nl}"
     return obs_element
 
 
