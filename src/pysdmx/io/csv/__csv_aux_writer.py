@@ -5,7 +5,6 @@ import pandas as pd
 
 from pysdmx.io._pd_utils import _fill_na_values, _validate_schema_exists
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.__tokens import DFW, DSD
 from pysdmx.model import Schema
 from pysdmx.model.dataset import ActionType
 from pysdmx.toolkit.pd._data_utils import format_labels, get_codes
@@ -48,7 +47,7 @@ def _csv_prepare_df(dataset: PandasDataset) -> pd.DataFrame:
 
 def _csv_structure_ref_and_id(short_urn: str) -> tuple[str, str]:
     structure_ref, unique_id = short_urn.split("=", maxsplit=1)
-    if structure_ref in [DSD, DFW]:
+    if structure_ref in ["DataStructure", "Dataflow"]:
         structure_ref = structure_ref.lower()
     else:
         structure_ref = "dataprovision"
