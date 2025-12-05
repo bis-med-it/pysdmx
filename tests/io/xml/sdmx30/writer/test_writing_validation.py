@@ -83,8 +83,18 @@ def test_data_write_nullable_nulltypes():
     data = pd.DataFrame(
         data={
             "DIM1": [1, 2, 3, 4],  # Required dimension (always has values)
-            "MEASURE_REQ": [np.nan, 1, None, pd.NA],  # Required numeric measure
-            "MEASURE_OPT": [np.nan, 2, None, pd.NA],  # Optional numeric measure
+            "MEASURE_REQ": [
+                np.nan,
+                1,
+                None,
+                pd.NA,
+            ],  # Required numeric measure
+            "MEASURE_OPT": [
+                np.nan,
+                2,
+                None,
+                pd.NA,
+            ],  # Optional numeric measure
             "ATTR_REQ": [None, "value", np.nan, ""],  # Required string attr
             "ATTR_OPT": [None, "value", np.nan, ""],  # Optional string attr
         }
@@ -150,5 +160,10 @@ def test_data_write_nullable_nulltypes():
 
     assert data["MEASURE_REQ"].values.tolist() == ["NaN", "1", "NaN", "NaN"]
     assert data["MEASURE_OPT"].values.tolist() == ["", "2", "", ""]
-    assert data["ATTR_REQ"].values.tolist() == ["#N/A", "value", "#N/A", "#N/A"]
+    assert data["ATTR_REQ"].values.tolist() == [
+        "#N/A",
+        "value",
+        "#N/A",
+        "#N/A",
+    ]
     assert data["ATTR_OPT"].values.tolist() == ["", "value", "", ""]
