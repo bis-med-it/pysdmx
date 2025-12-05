@@ -86,7 +86,7 @@ def convert_dataset_to_vtl(
     vtl_json = to_vtl_json(schema, vtl_dataset_name)
 
     # Load the dataset structure using vtlengine's API
-    datasets, scalars = load_datasets(vtl_json)
+    datasets = load_datasets(vtl_json)
     vtl_dataset = datasets[vtl_dataset_name]
 
     # Assign the pandas DataFrame to the VTL dataset
