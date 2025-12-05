@@ -6,7 +6,9 @@ import pytest
 from pysdmx.io.xml.__write_aux import (
     __write_header as write_header_aux,
 )
+from pysdmx.io.xml.__write_aux import get_structure
 from pysdmx.model import Organisation
+from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
 
 
@@ -167,3 +169,8 @@ def test_write_header_provision_agreement(
     with open(file_path, "r") as f:
         expected = f.read()
     assert header == expected
+
+
+def test_get_structure_string():
+    ds = Dataset(structure="DataStructure=MD:TEST(1.0)")
+    assert get_structure(ds) == "DataStructure=MD:TEST(1.0)"

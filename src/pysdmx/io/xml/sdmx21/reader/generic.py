@@ -107,6 +107,14 @@ def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
         return pd.DataFrame()
     df = None
     dataset[OBS] = add_list(dataset[OBS])
+
+    attribute_ids = set()
+    for data in dataset[OBS]:
+        if ATTRIBUTES in data:
+            data[ATTRIBUTES][VALUE] = add_list(data[ATTRIBUTES][VALUE])
+            for v in data[ATTRIBUTES][VALUE]:
+                attribute_ids.add(v[ID])
+
     for data in dataset[OBS]:
         obs: Dict[str, Any] = {}
         obs = {
@@ -118,6 +126,11 @@ def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
         }
         if ATTRIBUTES in data:
             obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
+
+        for aid in attribute_ids:
+            if aid not in obs:
+                obs[aid] = ""
+
         test_list.append({**obs})
         test_list, df = __process_df(test_list, df)
 

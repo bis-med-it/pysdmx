@@ -1,0 +1,5 @@
+STRUCTURE,STRUCTURE_ID,ACTION,DIM1,DIM2,ATT1,ATT2,OBS_VALUE,TIME_PERIOD
+datastructure,MD:MD_TEST(1.0),I,A,B,,X,,
+datastructure,MD:MD_TEST(1.0),I,A,B,,X,10,2020
+datastructure,MD:MD_TEST(1.0),I,C,D,Y,,20,2021
+datastructure,MD:MD_TEST(1.0),I,E,F,,,30,2022

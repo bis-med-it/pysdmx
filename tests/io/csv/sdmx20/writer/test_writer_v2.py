@@ -6,6 +6,7 @@ import pytest
 
 from pysdmx.io.csv.sdmx20.writer import write
 from pysdmx.io.pd import PandasDataset
+from pysdmx.model import Component, Components, Concept, DataType, Role, Schema
 from pysdmx.model.dataset import ActionType
 
 
@@ -37,12 +38,6 @@ def data_path_reference_attch_atts():
 def data_path_reference_action():
     base_path = Path(__file__).parent / "samples" / "reference_with_action.csv"
     return base_path
-
-
-@pytest.fixture
-def dsd_path():
-    base_path = Path(__file__).parent / "samples" / "datastructure.xml"
-    return str(base_path)
 
 
 @pytest.fixture
@@ -81,13 +76,487 @@ def csv_keys_both():
     return str(base_path)
 
 
+@pytest.fixture
+def schema():
+    return Schema(
+        context="datastructure",
+        agency="MD",
+        id="MD_TEST",
+        version="1.0",
+        name="MD TEST",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    concept=Concept(
+                        id="DIM1", name="DIMENSION 1", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DIM2",
+                    concept=Concept(
+                        id="DIM2", name="DIMENSION 2", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="TIME_PERIOD",
+                    concept=Concept(
+                        id="TIME_PERIOD",
+                        name="TIME PERIOD",
+                        dtype=DataType.TIME,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="ATT1",
+                    concept=Concept(
+                        id="ATT1", name="ATTRIBUTE 1", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="S",
+                ),
+                Component(
+                    id="ATT2",
+                    concept=Concept(
+                        id="ATT2", name="ATTRIBUTE 2", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    concept=Concept(
+                        id="OBS_VALUE", name="OBS_VALUE", dtype=DataType.STRING
+                    ),
+                    role=Role.MEASURE,
+                    required=False,
+                ),
+            ]
+        ),
+    )
+
+
+@pytest.fixture
+def schema_alt_id_and_version():
+    return Schema(
+        context="datastructure",
+        agency="MD",
+        id="DS1",
+        version="2.0",
+        name="MD TEST",
+        components=Components(
+            [
+                Component(
+                    id="FREQ",
+                    concept=Concept(
+                        id="FREQ", name="FREQ", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_TYPE",
+                    concept=Concept(
+                        id="DER_TYPE", name="DER_TYPE", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_INSTR",
+                    concept=Concept(
+                        id="DER_INSTR", name="DER_INSTR", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_RISK",
+                    concept=Concept(
+                        id="DER_RISK", name="DER_RISK", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_REP_CTY",
+                    concept=Concept(
+                        id="DER_REP_CTY",
+                        name="DER_REP_CTY",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_SECTOR_CPY",
+                    concept=Concept(
+                        id="DER_SECTOR_CPY",
+                        name="DER_SECTOR_CPY",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_CPC",
+                    concept=Concept(
+                        id="DER_CPC", name="DER_CPC", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_SECTOR_UDL",
+                    concept=Concept(
+                        id="DER_SECTOR_UDL",
+                        name="DER_SECTOR_UDL",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_CURR_LEG1",
+                    concept=Concept(
+                        id="DER_CURR_LEG1",
+                        name="DER_CURR_LEG1",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_CURR_LEG2",
+                    concept=Concept(
+                        id="DER_CURR_LEG2",
+                        name="DER_CURR_LEG2",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_ISSUE_MAT",
+                    concept=Concept(
+                        id="DER_ISSUE_MAT",
+                        name="DER_ISSUE_MAT",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_RATING",
+                    concept=Concept(
+                        id="DER_RATING",
+                        name="DER_RATING",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_EX_METHOD",
+                    concept=Concept(
+                        id="DER_EX_METHOD",
+                        name="DER_EX_METHOD",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_BASIS",
+                    concept=Concept(
+                        id="DER_BASIS", name="DER_BASIS", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="TIME_PERIOD",
+                    concept=Concept(
+                        id="TIME_PERIOD",
+                        name="TIME PERIOD",
+                        dtype=DataType.TIME,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    concept=Concept(
+                        id="OBS_VALUE", name="OBS_VALUE", dtype=DataType.STRING
+                    ),
+                    role=Role.MEASURE,
+                    required=False,
+                ),
+                Component(
+                    id="AVAILABILITY",
+                    concept=Concept(
+                        id="AVAILABILITY",
+                        name="AVAILABILITY",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="COLLECTION",
+                    concept=Concept(
+                        id="COLLECTION",
+                        name="COLLECTION",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="OBS_STATUS",
+                    concept=Concept(
+                        id="OBS_STATUS",
+                        name="OBS_STATUS",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="OBS_CONF",
+                    concept=Concept(
+                        id="OBS_CONF", name="OBS_CONF", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+            ]
+        ),
+    )
+
+
+@pytest.fixture
+def schema_provision_agreement():
+    return Schema(
+        context="provisionagreement",
+        agency="MD",
+        id="PA1",
+        version="1.0",
+        name="MD TEST",
+        components=Components(
+            [
+                Component(
+                    id="FREQ",
+                    concept=Concept(
+                        id="FREQ", name="FREQ", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_TYPE",
+                    concept=Concept(
+                        id="DER_TYPE", name="DER_TYPE", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_INSTR",
+                    concept=Concept(
+                        id="DER_INSTR", name="DER_INSTR", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_RISK",
+                    concept=Concept(
+                        id="DER_RISK", name="DER_RISK", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_REP_CTY",
+                    concept=Concept(
+                        id="DER_REP_CTY",
+                        name="DER_REP_CTY",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_SECTOR_CPY",
+                    concept=Concept(
+                        id="DER_SECTOR_CPY",
+                        name="DER_SECTOR_CPY",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_CPC",
+                    concept=Concept(
+                        id="DER_CPC", name="DER_CPC", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_SECTOR_UDL",
+                    concept=Concept(
+                        id="DER_SECTOR_UDL",
+                        name="DER_SECTOR_UDL",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_CURR_LEG1",
+                    concept=Concept(
+                        id="DER_CURR_LEG1",
+                        name="DER_CURR_LEG1",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_CURR_LEG2",
+                    concept=Concept(
+                        id="DER_CURR_LEG2",
+                        name="DER_CURR_LEG2",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_ISSUE_MAT",
+                    concept=Concept(
+                        id="DER_ISSUE_MAT",
+                        name="DER_ISSUE_MAT",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_RATING",
+                    concept=Concept(
+                        id="DER_RATING",
+                        name="DER_RATING",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_EX_METHOD",
+                    concept=Concept(
+                        id="DER_EX_METHOD",
+                        name="DER_EX_METHOD",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DER_BASIS",
+                    concept=Concept(
+                        id="DER_BASIS", name="DER_BASIS", dtype=DataType.STRING
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="TIME_PERIOD",
+                    concept=Concept(
+                        id="TIME_PERIOD",
+                        name="TIME PERIOD",
+                        dtype=DataType.TIME,
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    concept=Concept(
+                        id="OBS_VALUE", name="OBS_VALUE", dtype=DataType.STRING
+                    ),
+                    role=Role.MEASURE,
+                    required=False,
+                ),
+                Component(
+                    id="AVAILABILITY",
+                    concept=Concept(
+                        id="AVAILABILITY",
+                        name="AVAILABILITY",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="COLLECTION",
+                    concept=Concept(
+                        id="COLLECTION",
+                        name="COLLECTION",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="OBS_STATUS",
+                    concept=Concept(
+                        id="OBS_STATUS",
+                        name="OBS_STATUS",
+                        dtype=DataType.STRING,
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="OBS_CONF",
+                    concept=Concept(
+                        id="OBS_CONF", name="OBS_CONF", dtype=DataType.STRING
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+            ]
+        ),
+    )
+
+
 @pytest.mark.data
-def test_to_sdmx_csv_writing(data_path, data_path_reference):
-    urn = "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=MD:PA1(1.0)"
+def test_to_sdmx_csv_writing(
+    data_path, data_path_reference, schema_provision_agreement
+):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),
-        structure=urn,
+        structure=schema_provision_agreement,
     )
     dataset.data = dataset.data.astype("str")
     result_sdmx = write([dataset])
@@ -101,12 +570,13 @@ def test_to_sdmx_csv_writing(data_path, data_path_reference):
 
 
 @pytest.mark.data
-def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir):
-    urn = "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=MD:PA1(1.0)"
+def test_to_sdmx_csv_writing_to_file(
+    data_path, data_path_reference, tmpdir, schema_provision_agreement
+):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),
-        structure=urn,
+        structure=schema_provision_agreement,
     )
     dataset.data = dataset.data.astype("str")
     write([dataset], output_path=tmpdir / "output.csv")
@@ -120,11 +590,13 @@ def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir):
 
 
 @pytest.mark.data
-def test_writer_attached_attrs(data_path, data_path_reference_attch_atts):
+def test_writer_attached_attrs(
+    data_path, data_path_reference_attch_atts, schema_alt_id_and_version
+):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),
-        structure="DataStructure=MD:DS1(2.0)",
+        structure=schema_alt_id_and_version,
     )
     dataset.data = dataset.data.astype(str)
     result_sdmx = write([dataset])
@@ -138,11 +610,13 @@ def test_writer_attached_attrs(data_path, data_path_reference_attch_atts):
 
 
 @pytest.mark.data
-def test_writer_with_action(data_path, data_path_reference_action):
+def test_writer_with_action(
+    data_path, data_path_reference_action, schema_alt_id_and_version
+):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),
-        structure="DataStructure=MD:DS1(2.0)",
+        structure=schema_alt_id_and_version,
         action=ActionType.Replace,
     )
     dataset.data = dataset.data.astype(str)
@@ -156,12 +630,7 @@ def test_writer_with_action(data_path, data_path_reference_action):
     )
 
 
-def test_writer_labels_id(data_path_optional, dsd_path, csv_labels_id):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_labels_id(data_path_optional, csv_labels_id, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -178,12 +647,7 @@ def test_writer_labels_id(data_path_optional, dsd_path, csv_labels_id):
     )
 
 
-def test_writer_labels_name(data_path_optional, dsd_path, csv_labels_name):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_labels_name(data_path_optional, csv_labels_name, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -200,12 +664,7 @@ def test_writer_labels_name(data_path_optional, dsd_path, csv_labels_name):
     )
 
 
-def test_writer_labels_both(data_path_optional, dsd_path, csv_labels_both):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_labels_both(data_path_optional, csv_labels_both, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -222,12 +681,7 @@ def test_writer_labels_both(data_path_optional, dsd_path, csv_labels_both):
     )
 
 
-def test_writer_keys_obs(data_path_optional, dsd_path, csv_keys_obs):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_keys_obs(data_path_optional, csv_keys_obs, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -244,12 +698,7 @@ def test_writer_keys_obs(data_path_optional, dsd_path, csv_keys_obs):
     )
 
 
-def test_writer_keys_series(data_path_optional, dsd_path, csv_keys_series):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_keys_series(data_path_optional, csv_keys_series, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -266,12 +715,7 @@ def test_writer_keys_series(data_path_optional, dsd_path, csv_keys_series):
     )
 
 
-def test_writer_keys_both(data_path_optional, dsd_path, csv_keys_both):
-    from pysdmx.io import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_keys_both(data_path_optional, csv_keys_both, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),

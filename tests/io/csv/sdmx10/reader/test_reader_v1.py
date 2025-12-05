@@ -31,6 +31,11 @@ def csv_labels_both():
     return base_path
 
 
+@pytest.fixture
+def data_v1_nulls():
+    return Path(__file__).parent / "samples" / "data_v1_nulls.csv"
+
+
 def test_reading_data_v1(data_path):
     with open(data_path, "r") as f:
         infile = f.read()
@@ -88,3 +93,18 @@ def test_reading_labels_both(csv_labels_both):
     assert df.at[0, "ATT1"] == "C"
     assert len(df) == 1
     assert "DATAFLOW" not in df.columns
+
+
+def test_read_csv_v1_nulls(data_v1_nulls):
+    msg = read_sdmx(data_v1_nulls)
+    df = msg.data[0].data
+
+    # Check NaN value
+    row_nan = df[df["TIME_PERIOD"] == "2002"].iloc[0]
+    assert row_nan["OBS_VALUE"] == "NaN"
+    assert isinstance(row_nan["OBS_VALUE"], str)
+
+    # Check #N/A value
+    row_na = df[df["TIME_PERIOD"] == "2003"].iloc[0]
+    assert row_na["OBS_VALUE"] == "#N/A"
+    assert isinstance(row_na["OBS_VALUE"], str)

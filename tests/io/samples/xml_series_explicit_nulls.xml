@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:StructureSpecificData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/structurespecific" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:MD_TEST(1.0):ObsLevelDim:AllDimensions" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>true</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Structure structureID="MD_TEST" namespace="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:MD_TEST(1.0)" dimensionAtObservation="AllDimensions">
+			<com:StructureUsage>
+                <Ref package="datastructure" agencyID="MD" id="MD_TEST" version="1.0" class="Dataflow"/>
+            </com:StructureUsage>
+		</mes:Structure>
+	</mes:Header>
+	<mes:DataSet ss:structureRef="MD_TEST" xsi:type="ns1:DataSetType" action="Information">
+		<Series DIM1="A" DIM2="B" ATT1="X">
+			<Obs TIME_PERIOD="2020" OBS_VALUE="10" />
+		</Series>
+        <Series DIM1="C" DIM2="D" ATT1="Y">
+			<Obs TIME_PERIOD="2021" OBS_VALUE="20" />
+		</Series>
+        <Series DIM1="E" DIM2="F" ATT1="#N/A">
+			<Obs TIME_PERIOD="2022" OBS_VALUE="30" />
+		</Series>
+	</mes:DataSet>
+</mes:StructureSpecificData>
