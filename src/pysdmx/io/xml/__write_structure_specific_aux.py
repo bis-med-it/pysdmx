@@ -357,8 +357,8 @@ def _should_skip_obs(element: Dict[str, Any], structure: Schema) -> bool:
     for comp in structure.components:
         if comp.role == Role.DIMENSION and comp.required:
             val = element[comp.id]
-            # If dimension value is empty, skip this obs
-            if pd.isna(val) or str(val) == "":
+            # If dimension value is empty or nan, skip this obs
+            if pd.isna(val) or str(val) in ("", "#N/A", "NaN"):
                 return True
     return False
 
