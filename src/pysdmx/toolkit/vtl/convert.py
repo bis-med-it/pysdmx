@@ -20,7 +20,6 @@ from vtlengine.Model import Role as VTLRole
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.__tokens import DFW, DSD, PROV_AGREEMENT
 from pysdmx.model import Component, Components, Concept, Reference
 from pysdmx.model.concept import DataType
 from pysdmx.model.dataflow import Role, Schema
@@ -47,7 +46,7 @@ VTL_TO_SDMX_ROLE_MAP: Dict[VTLRole, Role] = {
     "ViralAttribute": Role.ATTRIBUTE,  # type: ignore[dict-item]
 }
 
-VALID_SDMX_TYPES = {DSD, DFW, PROV_AGREEMENT}
+VALID_SDMX_TYPES = {"DataStructure", "Dataflow", "ProvisionAgreement"}
 
 
 def convert_dataset_to_vtl(
