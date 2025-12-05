@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 
 from pysdmx.io import get_datasets, read_sdmx, write_sdmx
+from pysdmx.io._pd_utils import _fill_na_values
 from pysdmx.io.csv.sdmx10.writer import write as write_csv10
 from pysdmx.io.csv.sdmx20.writer import write as write_csv20
 from pysdmx.io.format import Format
@@ -115,8 +116,12 @@ def test_data_rwr(samples_folder, filename, output_format):
     datasets_2 = get_datasets(output_str, structures_path)
     assert len(datasets) == len(datasets_2), "Number of datasets mismatch"
 
+    expected_data = _fill_na_values(
+        datasets[0].data.copy(), datasets[0].structure
+    )
+
     pd.testing.assert_frame_equal(
-        datasets[0].data,
+        expected_data,
         datasets_2[0].data,
         check_dtype=False,
         check_like=True,
@@ -188,8 +193,12 @@ def test_data_rwr_no_structure(samples_folder, filename, output_format):
     datasets_2 = get_datasets(output_str, structures_path)
     assert len(datasets) == len(datasets_2), "Number of datasets mismatch"
 
+    expected_data = _fill_na_values(
+        datasets[0].data.copy(), datasets[0].structure
+    )
+
     pd.testing.assert_frame_equal(
-        datasets[0].data,
+        expected_data,
         datasets_2[0].data,
         check_dtype=False,
         check_like=True,
@@ -233,13 +242,15 @@ def test_write_sdmx_csv_read_back(samples_folder, csv_format):
     datasets = get_datasets(data_path, structures_path)
 
     csv_output = write_sdmx(datasets, sdmx_format=csv_format)
-
     read_datasets = get_datasets(csv_output, structures_path)
-
     assert len(datasets) == len(read_datasets), "Number of datasets mismatch"
 
+    expected_data = _fill_na_values(
+        datasets[0].data.copy(), datasets[0].structure
+    )
+
     pd.testing.assert_frame_equal(
-        datasets[0].data,
+        expected_data,
         read_datasets[0].data,
         check_dtype=False,
         check_like=True,
@@ -317,9 +328,9 @@ def test_attributes_preservation_csv_source(samples_folder, format_):
         "ATT_REQ (required) must be present in output"
     )
     val_req_out = new_data.at[0, "ATT_REQ"]
-    # Required attribute must be explicitly preserved as empty string
-    assert val_req_out == "", (
-        "Output 2020 ATT_REQ (required) must be preserved as empty string"
+    # Required attribute with empty value must be marked as #N/A
+    assert val_req_out == "#N/A", (
+        "Output 2020 ATT_REQ (required) must be '#N/A' for empty values"
     )
 
     val_opt_2021 = new_data.at[1, "ATT_OPT"]
@@ -375,9 +386,9 @@ def test_xml_to_csv_attributes_preservation_xml_source(
     xml_data = xml_datasets[0].data
 
     val_xml_0_req = xml_data.at[0, "ATT_REQ"]
-    # Verify required empty attribute is read as empty from XML
-    assert val_xml_0_req == "", (
-        "XML Reader failed on Row 0: Empty Required Attribute should be ''"
+    # Verify required empty attribute is read as #N/A from XML
+    assert val_xml_0_req == "#N/A", (
+        "XML Reader failed on Row 0: Empty Required Attribute should be '#N/A'"
     )
 
     val_xml_1_opt = xml_data.at[1, "ATT_OPT"]
@@ -418,9 +429,9 @@ def test_xml_to_csv_attributes_preservation_xml_source(
         "ATT_REQ (required) must be present in output"
     )
     val_out_0_req = final_data.at[0, "ATT_REQ"]
-    # Required attribute must be explicitly preserved as empty string
-    assert val_out_0_req == "", (
-        "Output Row 0 ATT_REQ (required) must be preserved as empty string"
+    # Required attribute with empty value must be marked as #N/A
+    assert val_out_0_req == "#N/A", (
+        "Output Row 0 ATT_REQ (required) must be '#N/A' for empty values"
     )
 
     val_out_1_opt = final_data.at[1, "ATT_OPT"]

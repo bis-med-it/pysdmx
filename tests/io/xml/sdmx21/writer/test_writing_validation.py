@@ -16,6 +16,7 @@ from pysdmx.model import (
     Components,
     Concept,
     DataStructureDefinition,
+    DataType,
     Role,
     Schema,
 )
@@ -309,11 +310,19 @@ def test_data_write_nullable_nulltypes():
     # on windows when using pysdmx
     import numpy as np
 
-    # Create dataframe with nan value
+    # Create dataframe with various null types and data types
     data = pd.DataFrame(
-        data={"A": [np.nan, 1, None, pd.NA], "DIM1": [1, 2, 3, 4]}
+        data={
+            "DIM1": [1, 2, 3, 4],  # Required dimension (always has values)
+            "MEASURE_REQ": [np.nan, 1, None, pd.NA],  # Required numeric measure
+            "MEASURE_OPT": [np.nan, 2, None, pd.NA],  # Optional numeric measure
+            "ATTR_REQ": [None, "value", np.nan, ""],  # Required string attr
+            "ATTR_OPT": [None, "value", np.nan, ""],  # Optional string attr
+        }
     )
-    data["A"] = data["A"].astype("Int64")  # Use nullable integer type
+    data["MEASURE_REQ"] = data["MEASURE_REQ"].astype("Int64")
+    data["MEASURE_OPT"] = data["MEASURE_OPT"].astype("Int64")
+
     structure_schema = Schema(
         context="datastructure",
         agency="Short",
@@ -328,10 +337,32 @@ def test_data_write_nullable_nulltypes():
                     required=True,
                 ),
                 Component(
-                    id="A",
+                    id="MEASURE_REQ",
                     role=Role.MEASURE,
-                    concept=Concept(id="A"),
+                    concept=Concept(id="MEASURE_REQ"),
+                    required=True,
+                    local_dtype=DataType.INTEGER,
+                ),
+                Component(
+                    id="MEASURE_OPT",
+                    role=Role.MEASURE,
+                    concept=Concept(id="MEASURE_OPT"),
                     required=False,
+                    local_dtype=DataType.INTEGER,
+                ),
+                Component(
+                    id="ATTR_REQ",
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(id="ATTR_REQ"),
+                    required=True,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="ATTR_OPT",
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(id="ATTR_OPT"),
+                    required=False,
+                    attachment_level="O",
                 ),
             ]
         ),
@@ -347,4 +378,8 @@ def test_data_write_nullable_nulltypes():
     datasets = get_datasets(result)
     assert len(datasets) == 1
     data = datasets[0].data
-    assert data["A"].values.tolist() == ["#N/A", "1", "#N/A", "#N/A"]
+
+    assert data["MEASURE_REQ"].values.tolist() == ["NaN", "1", "NaN", "NaN"]
+    assert data["MEASURE_OPT"].values.tolist() == ["", "2", "", ""]
+    assert data["ATTR_REQ"].values.tolist() == ["#N/A", "value", "#N/A", "#N/A"]
+    assert data["ATTR_OPT"].values.tolist() == ["", "value", "", ""]
