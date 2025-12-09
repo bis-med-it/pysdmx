@@ -59,40 +59,6 @@ def _fill_na_values(data: pd.DataFrame, structure: Schema) -> pd.DataFrame:
     return data
 
 
-def _validate_explicit_null_values(
-    data: pd.DataFrame, structure: Schema
-) -> None:
-    """Validates that explicit null values are correct for the component type.
-
-    Numeric components must not contain "#N/A".
-    Non-numeric components must not contain "NaN".
-
-    Args:
-        data: The DataFrame to validate.
-        structure: The structure definition (´Schema´).
-
-    Raises:
-        Invalid: If invalid null values are found.
-    """
-    for component in structure.components:
-        if component.id in data.columns:
-            series = data[component.id].astype(str)
-            if component.dtype in NUMERIC_TYPES:
-                # Numeric: #N/A is invalid
-                if series.isin(["#N/A"]).any():
-                    raise Invalid(
-                        f"Invalid null value '#N/A' in numeric component "
-                        f"'{component.id}'."
-                    )
-            else:
-                # Non-numeric: NaN is invalid
-                if series.isin(["NaN"]).any():
-                    raise Invalid(
-                        f"Invalid null value 'NaN' in non-numeric component "
-                        f"'{component.id}'."
-                    )
-
-
 def _validate_schema_exists(dataset: PandasDataset) -> Schema:
     """Validates that the dataset has a Schema defined.
 
