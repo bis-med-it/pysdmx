@@ -4,7 +4,6 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from pysdmx.errors import Invalid
 from pysdmx.io.csv.sdmx10.writer import write
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Component, Components, Concept, DataType, Role, Schema
