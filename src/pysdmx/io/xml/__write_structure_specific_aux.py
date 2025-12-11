@@ -5,7 +5,7 @@ from typing import Any, Dict, Hashable, List, Tuple
 
 import pandas as pd
 
-from pysdmx.io._pd_utils import _fill_na_values, _validate_schema_exists
+from pysdmx.io._pd_utils import _validate_schema_exists
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__tokens import OBS, SERIES
 from pysdmx.io.xml.__write_aux import (
@@ -13,9 +13,6 @@ from pysdmx.io.xml.__write_aux import (
     ALL_DIM,
     __escape_xml,
     get_structure,
-)
-from pysdmx.io.xml.__write_data_aux import (
-    writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
 from pysdmx.model import Role, Schema
@@ -126,12 +123,6 @@ def __write_data_single_dataset(
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
     sdmx_type = parse_short_urn(structure_urn).id
-
-    # Validate structure before writing
-    schema = writing_validation(dataset)
-
-    # Remove nan values from DataFrame
-    dataset.data = _fill_na_values(dataset.data, schema)
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
@@ -387,6 +378,7 @@ def _format_observation_attributes(
 
             # Write if: required (even if empty) OR has a value
             if is_required or not is_empty:
-                attr_lines.append((k, v))
+                value = "" if is_empty else v
+                attr_lines.append((k, value))
 
     return attr_lines

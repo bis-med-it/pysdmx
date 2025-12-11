@@ -6,7 +6,7 @@ from typing import Any, Dict, Hashable, List, Optional, Sequence, Tuple, Union
 
 import pandas as pd
 
-from pysdmx.io._pd_utils import _fill_na_values, _validate_schema_exists
+from pysdmx.io._pd_utils import _validate_schema_exists
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__tokens import (
@@ -47,7 +47,8 @@ from pysdmx.util import parse_short_urn
 
 def __value(id: str, value: str) -> str:
     """Write a value tag."""
-    return f"<{ABBR_GEN}:Value id={id!r} value={__escape_xml(str(value))!r}/>"
+    val_str = "" if pd.isna(value) or str(value) == "" else str(value)
+    return f"<{ABBR_GEN}:Value id={id!r} value={__escape_xml(val_str)!r}/>"
 
 
 def __generate_obs_structure(
@@ -186,8 +187,6 @@ def __write_data_single_dataset(
     outfile = ""
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
-    schema = writing_validation(dataset)
-    dataset.data = _fill_na_values(dataset.data, schema)
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
@@ -284,9 +283,11 @@ def __obs_processing(
         out += f"{child3}</{ABBR_GEN}:ObsKey>{nl}"
 
         # Obs Value writing
+        val = element[obs_structure[1]]
+        val_str = "" if pd.isna(val) or str(val) == "" else str(val)
         out += (
             f"{child3}<{ABBR_GEN}:ObsValue "
-            f"value={str(element[obs_structure[1]])!r}/>{nl}"
+            f"value={val_str!r}/>{nl}"
         )
 
         if len(obs_structure[2]) > 0:

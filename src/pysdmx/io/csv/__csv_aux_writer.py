@@ -3,7 +3,7 @@ from typing import List, Literal, Optional, Sequence
 
 import pandas as pd
 
-from pysdmx.io._pd_utils import _fill_na_values, _validate_schema_exists
+from pysdmx.io._pd_utils import _validate_schema_exists
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
 from pysdmx.model.dataset import ActionType
@@ -27,8 +27,6 @@ def _csv_prepare_df(dataset: PandasDataset) -> pd.DataFrame:
     for comp in schema.components:
         if comp.required and comp.id not in df.columns:
             df[comp.id] = pd.NA
-
-    df = _fill_na_values(df, schema)
 
     optional_attrs = {
         comp.id for comp in schema.components.attributes if not comp.required
