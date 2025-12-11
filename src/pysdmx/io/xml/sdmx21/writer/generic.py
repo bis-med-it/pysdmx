@@ -285,10 +285,7 @@ def __obs_processing(
         # Obs Value writing
         val = element[obs_structure[1]]
         val_str = "" if pd.isna(val) or str(val) == "" else str(val)
-        out += (
-            f"{child3}<{ABBR_GEN}:ObsValue "
-            f"value={val_str!r}/>{nl}"
-        )
+        out += f"{child3}<{ABBR_GEN}:ObsValue value={val_str!r}/>{nl}"
 
         if len(obs_structure[2]) > 0:
             # Obs Attributes writing
