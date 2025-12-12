@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:StructureSpecificData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/data/structurespecific" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:BIS_DER(1.0):ObsLevelDim:AllDimensions" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>d6c7fe91-2879-43fc-9b07-4f0d71bfb43f</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2025-11-28T13:28:53Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Structure structureID="BIS_DER" namespace="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:BIS_DER(1.0)" dimensionAtObservation="AllDimensions">
+		<com:StructureUsage>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:BIS_DER(1.0)</com:StructureUsage>
+		</mes:Structure>
+	</mes:Header>
+	<mes:DataSet ss:structureRef="BIS_DER" xsi:type="ns1:DataSetType" action="Information">
+		<Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="HKD" DER_CURR_LEG2="TO1" DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C" AVAILABILITY="#N/A" COLLECTION="A">
+			<Obs TIME_PERIOD="2003" OBS_STATUS="M" OBS_VALUE="NaN"/>
+			<Obs TIME_PERIOD="2004" OBS_CONF="#N/A" OBS_VALUE="14206.490766" OBS_STATUS=""/>
+		</Series>
+		<Series FREQ="A" DER_TYPE="U" DER_INSTR="A" DER_RISK="B" DER_REP_CTY="5J" DER_SECTOR_CPY="A" DER_CPC="1E" DER_SECTOR_UDL="A" DER_CURR_LEG1="HKD" DER_CURR_LEG2="TO1" DER_ISSUE_MAT="A" DER_RATING="A" DER_EX_METHOD="3" DER_BASIS="C" TIME_FORMAT="P1M"/>
+	</mes:DataSet>
+</mes:StructureSpecificData>

@@ -36,7 +36,6 @@ from pysdmx.io.xml.__write_data_aux import (
 )
 from pysdmx.io.xml.__write_structure_specific_aux import (
     _format_observation_attributes,
-    _should_skip_obs,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
 from pysdmx.model import Schema
@@ -264,10 +263,6 @@ def __obs_processing(
     structure: Schema,
     prettyprint: bool = True,
 ) -> str:
-    attr_required = {
-        att.id: att.required for att in structure.components.attributes
-    }
-
     def __format_obs_str(element: Dict[str, Any]) -> str:
         child2 = "\t\t" if prettyprint else ""
         child3 = "\t\t\t" if prettyprint else ""
@@ -290,7 +285,7 @@ def __obs_processing(
         if len(obs_structure[2]) > 0:
             # Obs Attributes writing
             attr_lines = _format_observation_attributes(
-                element, obs_structure[2], attr_required
+                element, obs_structure[2]
             )
 
             # Only write Attributes block if there are attributes to write
@@ -305,8 +300,6 @@ def __obs_processing(
         return out
 
     def parser(x: Dict[Any, Any]) -> str:
-        if _should_skip_obs(x, structure):
-            return ""
         return __format_obs_str(x)
 
     iterator = map(parser, data.to_dict(orient="records"))
