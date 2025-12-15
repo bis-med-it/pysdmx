@@ -156,7 +156,7 @@ def __write_data_single_dataset(
                 group_codes=group_codes,
                 prettyprint=prettyprint,
             )
-        data += __process_series_observations(
+        data += __series_processing(
             data=dataset.data,
             series_codes=series_codes,
             obs_codes=obs_codes,
@@ -301,7 +301,7 @@ def __format_ser_str(
     return out_element
 
 
-def __process_series_observations(
+def __series_processing(
     data: pd.DataFrame,
     series_codes: List[str],
     obs_codes: List[str],
