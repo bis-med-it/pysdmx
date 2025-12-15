@@ -456,7 +456,23 @@ def test_xml_to_csv_attributes_preservation_xml_source(
     )
 
 
-def test_cross_format_integrity(samples_folder):
+XML_FORMATS = [
+    Format.DATA_SDMX_ML_2_1_STR,
+    Format.DATA_SDMX_ML_2_1_GEN,
+    Format.DATA_SDMX_ML_3_0,
+    Format.DATA_SDMX_ML_3_1,
+]
+
+CSV_FORMATS = [
+    Format.DATA_SDMX_CSV_1_0_0,
+    Format.DATA_SDMX_CSV_2_0_0,
+    Format.DATA_SDMX_CSV_2_1_0,
+]
+
+
+@pytest.mark.parametrize("xml_format", XML_FORMATS)
+@pytest.mark.parametrize("csv_format", CSV_FORMATS)
+def test_cross_format_integrity(samples_folder, xml_format, csv_format):
     csv_path = samples_folder / "data_integrity_test.csv"
     xml_path = samples_folder / "data_integrity_test.xml"
     schema_path = samples_folder / "datastructure.xml"
@@ -464,66 +480,65 @@ def test_cross_format_integrity(samples_folder):
     msg = read_sdmx(schema_path)
     dsds = msg.get_data_structure_definitions()
     schema = dsds[0].to_schema()
+    dim_map = {schema.short_urn: "TIME_PERIOD"}
 
-    # From CSV
-    datasets = get_datasets(csv_path)
+    csv_read = get_datasets(csv_path)
+    xml_read = get_datasets(xml_path)
+
     csv_dataset_with_schema = PandasDataset(
-        data=datasets[0].data,
+        data=csv_read[0].data,
         structure=schema,
     )
-    dim_map = {csv_dataset_with_schema.short_urn: "TIME_PERIOD"}
-    xml_output = write_sdmx(
+    xml_dataset_with_schema = PandasDataset(
+        data=xml_read[0].data,
+        structure=schema,
+    )
+
+    from_csv_to_csv = write_sdmx(
         [csv_dataset_with_schema],
-        sdmx_format=Format.DATA_SDMX_ML_3_0,
+        sdmx_format=csv_format,
+        dimension_at_observation=dim_map,
+    )
+    from_csv_to_xml = write_sdmx(
+        [csv_dataset_with_schema],
+        sdmx_format=xml_format,
+        dimension_at_observation=dim_map,
+    )
+    from_xml_to_csv = write_sdmx(
+        [xml_dataset_with_schema],
+        sdmx_format=csv_format,
+        dimension_at_observation=dim_map,
+    )
+    from_xml_to_xml = write_sdmx(
+        [xml_dataset_with_schema],
+        sdmx_format=xml_format,
         dimension_at_observation=dim_map,
     )
 
-    # Verify XML output matches data.xml
-    generated_xml_datasets = get_datasets(xml_output)
-    expected_xml_datasets = get_datasets(xml_path)
-
     pd.testing.assert_frame_equal(
-        generated_xml_datasets[0].data,
-        expected_xml_datasets[0].data,
+        get_datasets(from_xml_to_csv)[0].data,
+        csv_read[0].data,
         check_dtype=False,
-        check_like=True,  # Ignore column order
+        check_like=True,
     )
-
-    # From XML
-    datasets_xml = get_datasets(xml_path)
-    ds = datasets_xml[0]
-
-    schema_as_dataflow = Schema(
-        context="dataflow",
-        agency=schema.agency,
-        id=schema.id,
-        components=schema.components,
-        version=schema.version,
-        artefacts=getattr(schema, "artefacts", ()),
-        generated=getattr(schema, "generated", None),
-        name=getattr(schema, "name", None),
-        groups=getattr(schema, "groups", None),
-    )
-
-    csv_dataset = PandasDataset(
-        data=ds.data,
-        structure=schema_as_dataflow,
-    )
-
-    dim_map = {csv_dataset.short_urn: "TIME_PERIOD"}
-    csv_output = write_sdmx(
-        [csv_dataset],
-        sdmx_format=Format.DATA_SDMX_CSV_2_1_0,
-        dimension_at_observation=dim_map,
-    )
-
-    # Verify CSV output matches data.csv
-    generated_csv_datasets = get_datasets(csv_output)
-    expected_csv_datasets = get_datasets(csv_path)
 
     pd.testing.assert_frame_equal(
-        generated_csv_datasets[0].data,
-        expected_csv_datasets[0].data,
+        get_datasets(from_csv_to_csv)[0].data,
+        csv_read[0].data,
+        check_dtype=False,
+        check_like=True,
+    )
+
+    pd.testing.assert_frame_equal(
+        get_datasets(from_csv_to_xml)[0].data,
+        xml_read[0].data,
+        check_dtype=False,
+        check_like=True,
+    )
+
+    pd.testing.assert_frame_equal(
+        get_datasets(from_xml_to_xml)[0].data,
+        xml_read[0].data,
         check_dtype=False,
         check_like=True,
     )
