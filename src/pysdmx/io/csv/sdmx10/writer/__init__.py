@@ -46,9 +46,6 @@ def write(
         df = _csv_prepare_df(dataset)
         schema = _validate_schema_exists(dataset)
 
-        # Add additional attributes to the dataset
-        for k, v in dataset.attributes.items():
-            df[k] = v
         structure_id = dataset.short_urn.split("=")[1]
         if time_format is not None and time_format != "original":
             __write_time_period(df, time_format)
