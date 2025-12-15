@@ -219,6 +219,7 @@ def __obs_processing(
     prettyprint: bool = True,
 ) -> str:
     all_comp_ids = [comp.id for comp in structure.components]
+    required_ids = {comp.id for comp in structure.components if comp.required}
 
     def __format_obs_str(element: Dict[str, Any]) -> str:
         """Formats the observation as key=value pairs."""
@@ -228,7 +229,9 @@ def __obs_processing(
         out = f"{child2}<{OBS} "
 
         # Use shared function to filter attributes
-        attr_lines = _format_observation_attributes(element, all_comp_ids)
+        attr_lines = _format_observation_attributes(
+            element, all_comp_ids, required_ids
+        )
 
         for k, v in attr_lines:
             out += f"{k}={__escape_xml(str(v))!r} "
@@ -354,25 +357,32 @@ def __process_series_observations(
 def _format_observation_attributes(
     element: Dict[str, Any],
     attribute_ids: list[str],
+    required_ids: set[str],
 ) -> List[Tuple[str, Any]]:
     """Format observation attributes filtering empty optional ones.
 
     Args:
         element: Dictionary containing the observation data
         attribute_ids: List of attribute IDs to process
+        required_ids: Set of attribute IDs that must be written even if empty
 
     Returns:
         List of (attribute_id, value) tuples (empty if no attributes to write)
     """
     attr_lines = []
-    for k, v in element.items():
-        if k in attribute_ids:
-            is_empty = pd.isna(v)
 
-            if isinstance(v, str) and v.strip() == "":
-                is_empty = True
+    for attribute_id in attribute_ids:
+        if attribute_id in element:
+            attribute = element[attribute_id]
+            is_empty = False
+
+            is_empty = attribute is None or (
+                isinstance(attribute, str) and attribute.strip() == ""
+            )
 
             if not is_empty:
-                attr_lines.append((k, v))
+                attr_lines.append((attribute_id, attribute))
+            elif attribute_id in required_ids:
+                attr_lines.append((attribute_id, ""))
 
     return attr_lines

@@ -398,16 +398,24 @@ def test_write_sdmx(
 
 
 @pytest.mark.parametrize(
-    ("format_", "expected_period_snippet"),
+    ("format_", "expected_filled_snippet", "expected_empty_snippet"),
     [
-        (Format.DATA_SDMX_ML_2_1_STR, 'TIME_PERIOD="2020"'),
-        (Format.DATA_SDMX_ML_2_1_GEN, 'id="TIME_PERIOD" value="2020"'),
-        (Format.DATA_SDMX_ML_3_0, 'TIME_PERIOD="2020"'),
-        (Format.DATA_SDMX_ML_3_1, 'TIME_PERIOD="2020"'),
+        (Format.DATA_SDMX_ML_2_1_STR, 'TIME_PERIOD="2020"', 'TIME_PERIOD=""'),
+        (
+            Format.DATA_SDMX_ML_2_1_GEN,
+            'id="TIME_PERIOD" value="2020"',
+            'id="TIME_PERIOD" value=""',
+        ),
+        (Format.DATA_SDMX_ML_3_0, 'TIME_PERIOD="2020"', 'TIME_PERIOD=""'),
+        (Format.DATA_SDMX_ML_3_1, 'TIME_PERIOD="2020"', 'TIME_PERIOD=""'),
     ],
 )
 def test_csv_to_xml_empty_cells_and_series(
-    csv_empty_obs, dsd_path, format_, expected_period_snippet
+    csv_empty_obs,
+    dsd_path,
+    format_,
+    expected_filled_snippet,
+    expected_empty_snippet,
 ):
     reference = read_sdmx(csv_empty_obs)
 
@@ -418,17 +426,19 @@ def test_csv_to_xml_empty_cells_and_series(
 
     result = write_sdmx(reference.data, format_, header=reference.header)
 
-    assert 'TIME_PERIOD=""' not in result, (
-        "An observation was written with an empty period attribute"
+    assert expected_filled_snippet in result, (
+        f"Expected filled snippet '{expected_filled_snippet}' "
+        f"not found in {format_}"
     )
 
-    assert expected_period_snippet in result, (
-        f"Expected snippet '{expected_period_snippet}' not found in {format_}"
+    assert expected_empty_snippet in result, (
+        f"Required empty Dimension snippet '{expected_empty_snippet}' "
+        f"not found in {format_}"
     )
 
     assert 'ATT2=""' not in result, (
-        "Empty optional attribute ATT2 "
-        "should not be written as literal empty string"
+        "Empty optional attribute ATT2 should not be written "
+        "as literal empty string"
     )
     assert 'id="ATT2" value=""' not in result, (
         "Empty optional attribute ATT2 should not be written"

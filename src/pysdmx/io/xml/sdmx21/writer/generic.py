@@ -272,6 +272,8 @@ def __obs_processing(
     structure: Schema,
     prettyprint: bool = True,
 ) -> str:
+    required_ids = {comp.id for comp in structure.components if comp.required}
+
     def __format_obs_str(element: Dict[str, Any]) -> str:
         child2 = "\t\t" if prettyprint else ""
         child3 = "\t\t\t" if prettyprint else ""
@@ -294,7 +296,7 @@ def __obs_processing(
         if len(obs_structure[2]) > 0:
             # Obs Attributes writing
             attr_lines = _format_observation_attributes(
-                element, obs_structure[2]
+                element, obs_structure[2], required_ids
             )
 
             # Only write Attributes block if there are attributes to write
