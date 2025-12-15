@@ -415,9 +415,7 @@ def __series_processing(
             series_dict.update(
                 {
                     k: v
-                    for k, v in group_data[series_att_codes]
-                    .iloc[0]
-                    .items()
+                    for k, v in group_data[series_att_codes].iloc[0].items()
                     if k in series_att_codes
                 }
             )
@@ -482,7 +480,7 @@ def __format_obs_element(
     # Obs Attributes writing
     if obs_att_codes:
         att_content = ""
-        
+
         for k, v in obs.items():
             if k in obs_att_codes and not pd.isna(v):
                 att_content += f"{child5}{__value(k, v)}{nl}"
@@ -520,11 +518,11 @@ def __format_ser_str(
 
     if series_att_codes:
         att_content = ""
-        
+
         for k, v in data_info.items():
             if k in series_att_codes:
                 is_empty = pd.isna(v) or (isinstance(v, str) and not v.strip())
-                
+
                 if not is_empty:
                     att_content += f"{child4}{__value(k, v)}{nl}"
 
