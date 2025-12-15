@@ -156,7 +156,7 @@ def __write_data_single_dataset(
                 group_codes=group_codes,
                 prettyprint=prettyprint,
             )
-        data += __series_processing(
+        data += __process_series_observations(
             data=dataset.data,
             series_codes=series_codes,
             obs_codes=obs_codes,
@@ -349,19 +349,6 @@ def __process_series_observations(
         out_list.append(result)
 
     return "".join(out_list)
-
-
-def __series_processing(
-    data: pd.DataFrame,
-    series_codes: List[str],
-    obs_codes: List[str],
-    prettyprint: bool = True,
-) -> str:
-    """Write series to SDMX-ML Structure-Specific format."""
-    data = data.sort_values(series_codes, axis=0)
-    return __process_series_observations(
-        data, series_codes, obs_codes, prettyprint
-    )
 
 
 def _format_observation_attributes(
