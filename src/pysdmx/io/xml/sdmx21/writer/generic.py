@@ -16,7 +16,6 @@ from pysdmx.io.xml.__tokens import (
     OBS,
     OBS_DIM,
     OBS_VALUE_XML_TAG,
-    SERIES,
     STR_REF,
 )
 from pysdmx.io.xml.__write_aux import (
@@ -178,7 +177,7 @@ def __write_data_single_dataset(
         """This function removes data when optional attributes are found."""
         for att in dataset.structure.components.attributes:
             if not att.required:
-                to_replace = f'<{ABBR_GEN}:Value id={att.id!r} value=""/>'
+                to_replace = f'<{ABBR_GEN}:Value id="{att.id}" value=""/>'
                 to_replace = f"{child3}{to_replace}{nl}"
                 str_to_check = str_to_check.replace(to_replace, "")
         return str_to_check
@@ -246,15 +245,15 @@ def __write_data_single_dataset(
             prettyprint=prettyprint,
         )
 
-    # Remove optional attributes empty data
-    data = __remove_optional_attributes_empty_data(data)
-
     # Add to outfile
     outfile += data
 
     outfile += f"{child1}</{ABBR_MSG}:DataSet>"
 
-    return outfile.replace("'", '"')
+    outfile = outfile.replace("'", '"')
+    outfile = __remove_optional_attributes_empty_data(outfile)
+
+    return outfile
 
 
 def __obs_processing(
@@ -376,62 +375,82 @@ def __series_processing(
     obs_att_codes: List[str],
     prettyprint: bool = True,
 ) -> str:
-    def __generate_series_str() -> str:
-        out_list: List[str] = []
-        group_cols = series_codes + series_att_codes
-        if not group_cols:
-            if not data.empty:
-                __format_dict_ser(out_list, data)
-        else:
-            data.groupby(by=group_cols)[data.columns].apply(
-                lambda x: __format_dict_ser(out_list, x)
+    out_list: List[str] = []
+    group_cols = series_codes + series_att_codes
+
+    if not group_cols:
+        # No series codes - process all data as one series
+        if not data.empty:
+            obs_data = data[obs_codes + obs_att_codes].copy()
+            obs_rows = obs_data.to_dict(orient="records")
+
+            # Filter out observations with empty required dimension
+            filtered_obs = []
+            for obs in obs_rows:
+                # Check if the dimension at observation is not empty
+                dim_value = obs.get(obs_codes[0])
+                filtered_obs.append(obs)
+
+            series_dict: Dict[Hashable, Any] = {OBS: filtered_obs}
+
+            out_list.append(
+                __format_ser_str(
+                    data_info=series_dict,
+                    series_codes=series_codes,
+                    series_att_codes=series_att_codes,
+                    obs_codes=obs_codes,
+                    obs_att_codes=obs_att_codes,
+                    prettyprint=prettyprint,
+                )
             )
+    else:
+        # Group by series codes and process each group
+        for _, group_data in data.groupby(
+            by=group_cols, sort=False, dropna=False
+        ):
+            # Create series dict from the group
+            series_dict = {}
 
-        return "".join(out_list)
-
-    def __format_dict_ser(
-        output_list: List[str],
-        group_data: Any,
-    ) -> Any:
-        obs_data = group_data[obs_codes + obs_att_codes].copy()
-        data_dict[SERIES][0][OBS] = obs_data.to_dict(orient="records")
-        if series_att_codes:
-            data_dict[SERIES][0].update(
+            series_dict.update(group_data[series_codes].iloc[0].to_dict())
+            series_dict.update(
                 {
                     k: v
-                    for k, v in group_data[series_att_codes].iloc[0].items()
+                    for k, v in group_data[series_att_codes]
+                    .iloc[0]
+                    .items()
                     if k in series_att_codes
                 }
             )
-        output_list.append(
-            __format_ser_str(
-                data_info=data_dict[SERIES][0],
-                series_codes=series_codes,
-                series_att_codes=series_att_codes,
-                obs_codes=obs_codes,
-                obs_att_codes=obs_att_codes,
-                prettyprint=prettyprint,
+
+            # Add observations - filter out empty required dimensions
+            obs_data = group_data[obs_codes + obs_att_codes].copy()
+            obs_rows = obs_data.to_dict(orient="records")
+
+            # Filter out observations with empty required dimension
+            filtered_obs = []
+            for obs in obs_rows:
+                # Check if the dimension at observation is not empty
+                dim_value = obs.get(obs_codes[0])
+                if not (
+                    pd.isna(dim_value)
+                    or (isinstance(dim_value, str) and dim_value.strip() == "")
+                ):
+                    filtered_obs.append(obs)
+
+            series_dict[OBS] = filtered_obs
+
+            out_list.append(
+                __format_ser_str(
+                    data_info=series_dict,
+                    series_codes=series_codes,
+                    series_att_codes=series_att_codes,
+                    obs_codes=obs_codes,
+                    obs_att_codes=obs_att_codes,
+                    prettyprint=prettyprint,
+                )
             )
-        )
-        del data_dict[SERIES][0]
 
-    # Getting each datapoint from data and creating dict
-    data = data.sort_values(series_codes, axis=0)
-    if not series_codes:
-        data_dict: Dict[str, List[Dict[Hashable, Any]]] = {
-            SERIES: [{}] if not data.empty else []
-        }
-    else:
-        data_dict = {
-            SERIES: data[series_codes]
-            .drop_duplicates()
-            .reset_index(drop=True)
-            .to_dict(orient="records")
-        }
-
-    out = __generate_series_str()
-
-    return out
+    return "".join(out_list)
 
 
 def __format_obs_value(obs_value: Any) -> str:
@@ -461,11 +480,15 @@ def __format_obs_element(
     obs_element += f"{child4}{obs_value_elem}{nl}"
 
     # Obs Attributes writing
-    if len(obs_att_codes) > 0:
-        obs_element += f"{child4}<{ABBR_GEN}:{ATTRIBUTES}>{nl}"
+    if obs_att_codes:
+        att_content = ""
+        
         for k, v in obs.items():
-            if k in obs_att_codes:
-                obs_element += f"{child5}{__value(k, v)}{nl}"
+            if k in obs_att_codes and not pd.isna(v):
+                att_content += f"{child5}{__value(k, v)}{nl}"
+
+        obs_element += f"{child4}<{ABBR_GEN}:{ATTRIBUTES}>{nl}"
+        obs_element += att_content
         obs_element += f"{child4}</{ABBR_GEN}:{ATTRIBUTES}>{nl}"
 
     obs_element += f"{child3}</{ABBR_GEN}:{OBS}>{nl}"
@@ -495,12 +518,18 @@ def __format_ser_str(
             out_element += f"{child4}{__value(k, v)}{nl}"
     out_element += f"{child3}</{ABBR_GEN}:SeriesKey>{nl}"
 
-    # Series Attributes writing
-    if len(series_att_codes) > 0:
-        out_element += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
+    if series_att_codes:
+        att_content = ""
+        
         for k, v in data_info.items():
             if k in series_att_codes:
-                out_element += f"{child4}{__value(k, v)}{nl}"
+                is_empty = pd.isna(v) or (isinstance(v, str) and not v.strip())
+                
+                if not is_empty:
+                    att_content += f"{child4}{__value(k, v)}{nl}"
+
+        out_element += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
+        out_element += att_content
         out_element += f"{child3}</{ABBR_GEN}:Attributes>{nl}"
 
     # Obs writing
