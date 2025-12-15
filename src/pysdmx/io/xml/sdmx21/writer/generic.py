@@ -2,7 +2,17 @@
 """Module for writing SDMX-ML 2.1 Generic data messages."""
 
 from pathlib import Path
-from typing import Any, Dict, Hashable, List, Optional, Sequence, Tuple, Union
+from typing import (
+    Any,
+    Dict,
+    Hashable,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 import pandas as pd
 
@@ -377,76 +387,44 @@ def __series_processing(
 ) -> str:
     out_list: List[str] = []
     group_cols = series_codes + series_att_codes
+    groups: Iterable[Tuple[Optional[Hashable], pd.DataFrame]]
 
-    if not group_cols:
-        # No series codes - process all data as one series
-        if not data.empty:
-            obs_data = data[obs_codes + obs_att_codes].copy()
-            obs_rows = obs_data.to_dict(orient="records")
-
-            # Filter out observations with empty required dimension
-            filtered_obs = []
-            for obs in obs_rows:
-                # Check if the dimension at observation is not empty
-                dim_value = obs.get(obs_codes[0])
-                filtered_obs.append(obs)
-
-            series_dict: Dict[Hashable, Any] = {OBS: filtered_obs}
-
-            out_list.append(
-                __format_ser_str(
-                    data_info=series_dict,
-                    series_codes=series_codes,
-                    series_att_codes=series_att_codes,
-                    obs_codes=obs_codes,
-                    obs_att_codes=obs_att_codes,
-                    prettyprint=prettyprint,
-                )
-            )
+    if group_cols:
+        groups = data.groupby(by=group_cols, sort=False, dropna=False)
     else:
-        # Group by series codes and process each group
-        for _, group_data in data.groupby(
-            by=group_cols, sort=False, dropna=False
-        ):
-            # Create series dict from the group
-            series_dict = {}
+        groups = [(None, data)] if not data.empty else []
 
-            series_dict.update(group_data[series_codes].iloc[0].to_dict())
+    for _, group_data in groups:
+        series_dict: Dict[Hashable, Any] = {}
+
+        if group_cols:
+            first_row = group_data.iloc[0]
+            series_dict.update(first_row[series_codes].to_dict())
             series_dict.update(
                 {
                     k: v
-                    for k, v in group_data[series_att_codes].iloc[0].items()
+                    for k, v in first_row[series_att_codes].items()
                     if k in series_att_codes
                 }
             )
 
-            # Add observations - filter out empty required dimensions
-            obs_data = group_data[obs_codes + obs_att_codes].copy()
-            obs_rows = obs_data.to_dict(orient="records")
+        obs_df = group_data[obs_codes + obs_att_codes].copy()
 
-            # Filter out observations with empty required dimension
-            filtered_obs = []
-            for obs in obs_rows:
-                # Check if the dimension at observation is not empty
-                dim_value = obs.get(obs_codes[0])
-                if not (
-                    pd.isna(dim_value)
-                    or (isinstance(dim_value, str) and dim_value.strip() == "")
-                ):
-                    filtered_obs.append(obs)
+        key_col = obs_codes[0]
+        is_valid = obs_df[key_col].notna() & (obs_df[key_col] != "")
 
-            series_dict[OBS] = filtered_obs
+        filtered_obs = obs_df[is_valid].to_dict(orient="records")
+        series_dict[OBS] = filtered_obs
 
-            out_list.append(
-                __format_ser_str(
-                    data_info=series_dict,
-                    series_codes=series_codes,
-                    series_att_codes=series_att_codes,
-                    obs_codes=obs_codes,
-                    obs_att_codes=obs_att_codes,
-                    prettyprint=prettyprint,
-                )
-            )
+        formatted_str = __format_ser_str(
+            data_info=series_dict,
+            series_codes=series_codes,
+            series_att_codes=series_att_codes,
+            obs_codes=obs_codes,
+            obs_att_codes=obs_att_codes,
+            prettyprint=prettyprint,
+        )
+        out_list.append(formatted_str)
 
     return "".join(out_list)
 
