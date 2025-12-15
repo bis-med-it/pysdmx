@@ -1,7 +1,7 @@
 # mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 3.0 Structure Specific auxiliary functions."""
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Hashable, List, Tuple
 
 import pandas as pd
 
@@ -308,48 +308,34 @@ def __series_processing(
     prettyprint: bool = True,
 ) -> str:
     """Process series and their observations into XML string."""
+
+    def _get_valid_obs(df_subset: pd.DataFrame) -> List[Dict[Hashable, Any]]:
+        raw_obs = df_subset[obs_codes].to_dict(orient="records")
+        return [
+            obs
+            for obs in raw_obs
+            if any(
+                not (pd.isna(v) or str(v).strip() == "") for v in obs.values()
+            )
+        ]
+
     out_list: List[str] = []
 
     if series_codes:
-        # Series without observations
         for _, series_group in data.groupby(
             by=series_codes, sort=False, dropna=False
         ):
             series_attrs = series_group[series_codes].iloc[0].to_dict()
-            obs_rows = series_group[obs_codes].to_dict(orient="records")
+            obs_rows = _get_valid_obs(series_group)
 
-            processed = []
-            for obs in obs_rows:
-                has_non_empty = any(
-                    not (pd.isna(v) or str(v).strip() == "")
-                    for v in obs.values()
-                )
-                if not has_non_empty:
-                    continue
-                processed.append(obs)
-                continue
-
-            obs_rows = processed
             series_dict = {**series_attrs, OBS: obs_rows}
-
-            result = __format_ser_str(series_dict, prettyprint)
-            out_list.append(result)
-    else:
-        # No series codes
+            out_list.append(__format_ser_str(series_dict, prettyprint))
+    else:  # Plain dataset
         series_attrs = {}
-        obs_rows = data[obs_codes].to_dict(orient="records")
+        obs_rows = _get_valid_obs(data)
 
-        processed = []
-        for obs in obs_rows:
-            has_non_empty = any(
-                not (pd.isna(v) or str(v).strip() == "") for v in obs.values()
-            )
-            processed.append(obs)
-
-        obs_rows = processed
         series_dict = {OBS: obs_rows}
-        result = __format_ser_str(series_dict, prettyprint)
-        out_list.append(result)
+        out_list.append(__format_ser_str(series_dict, prettyprint))
 
     return "".join(out_list)
 
@@ -374,9 +360,7 @@ def _format_observation_attributes(
     for attribute_id in attribute_ids:
         if attribute_id in element:
             attribute = element[attribute_id]
-            is_empty = False
-
-            is_empty = attribute is None or (
+            is_empty = pd.isna(attribute) or (
                 isinstance(attribute, str) and attribute.strip() == ""
             )
 
