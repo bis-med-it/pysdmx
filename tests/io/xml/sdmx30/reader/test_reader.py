@@ -13,16 +13,20 @@ from pysdmx.model import (
     AgencyScheme,
     Code,
     Codelist,
+    ComponentMap,
     ConceptScheme,
     Contact,
     CustomType,
     CustomTypeScheme,
     Dataflow,
+    FixedValueMap,
     ItemReference,
     NamePersonalisation,
     NamePersonalisationScheme,
     Reference,
+    RepresentationMap,
     RulesetScheme,
+    StructureMap,
     TransformationScheme,
     UserDefinedOperatorScheme,
     VtlDataflowMapping,
@@ -684,3 +688,34 @@ def test_prov_agreement(samples_folder):
     assert prov_agreement.short_urn == "ProvisionAgreement=MD:TEST(1.0)"
     assert prov_agreement.dataflow == "Dataflow=MD:TEST(1.0)"
     assert prov_agreement.provider == "DataProvider=MD:DATA_PROVIDERS(1.0).MD"
+
+
+def test_maps(samples_folder):
+    data_path = samples_folder / "maps.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert len(result) == 2
+
+    rep_map = next(m for m in result if isinstance(m, RepresentationMap))
+    str_map = next(m for m in result if isinstance(m, StructureMap))
+
+    assert rep_map.id == "REPMAP_SEX"
+    assert rep_map.name == "Sex Mapping (Numeric to Alpha)"
+    assert "CL_SEX_V1" in str(rep_map.source)
+    assert "CL_SEX_V2" in str(rep_map.target)
+    assert len(rep_map.maps) == 2
+    mapping_1 = rep_map.maps[0]
+    assert mapping_1.source == "1"
+    assert mapping_1.target == "M"
+    assert str_map.id == "STRMAP_DEMO"
+    assert str_map.name == "Demographic Structure Mapping"
+    assert "DSD_DEMO_V1" in str(str_map.source)
+    assert len(str_map.maps) == 2
+    comp_map = next(m for m in str_map.maps if isinstance(m, ComponentMap))
+    assert comp_map.source == "SEX_DIM"
+    assert comp_map.target == "GENDER_DIM"
+    assert "REPMAP_SEX" in str(comp_map.values)
+    fixed_map = next(m for m in str_map.maps if isinstance(m, FixedValueMap))
+    assert fixed_map.target == "OBS_STATUS"
+    assert fixed_map.value == "A"
