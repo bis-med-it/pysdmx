@@ -297,3 +297,13 @@ VALUE_LISTS = "ValueLists"
 VALUE_LIST = "ValueList"
 VALUE_LIST_LOW = "valuelist"
 VALUE_ITEM = "ValueItem"
+
+# Mapping
+STRUCTURE_MAPS = "StructureMaps"
+STRUCTURE_MAP = "StructureMap"
+REPRESENTATION_MAPS = "RepresentationMaps"
+REPRESENTATION_MAP = "RepresentationMap"
+COMPONENT_MAPS = "ComponentMaps"
+COMPONENT_MAP = "ComponentMap"
+FIXED_VALUE_MAPS = "FixedValueMaps"
+FIXED_VALUE_MAP = "FixedValueMap"

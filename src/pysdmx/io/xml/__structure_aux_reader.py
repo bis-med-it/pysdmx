@@ -29,6 +29,8 @@ from pysdmx.io.xml.__tokens import (
     CLS,
     CODE,
     CODES_LOW,
+    COMPONENT_MAP,
+    COMPONENT_MAPS,
     COMPS,
     CON,
     CON_ID,
@@ -64,6 +66,8 @@ from pysdmx.io.xml.__tokens import (
     FACETS,
     FAX,
     FAXES,
+    FIXED_VALUE_MAP,
+    FIXED_VALUE_MAPS,
     GROUP,
     GROUP_DIM,
     GROUPS_LOW,
@@ -98,6 +102,8 @@ from pysdmx.io.xml.__tokens import (
     PROV_AGREEMENT,
     PROV_AGREEMENTS,
     REF,
+    REPRESENTATION_MAP,
+    REPRESENTATION_MAPS,
     REQUIRED,
     ROLE,
     RULE,
@@ -110,6 +116,8 @@ from pysdmx.io.xml.__tokens import (
     STR_URL_LOW,
     STR_USAGE,
     STRUCTURE,
+    STRUCTURE_MAP,
+    STRUCTURE_MAPS,
     TELEPHONE,
     TELEPHONES,
     TEXT,
@@ -152,10 +160,15 @@ from pysdmx.model import (
     AgencyScheme,
     Code,
     Codelist,
+    ComponentMap,
     Concept,
     ConceptScheme,
     DataType,
     Facets,
+    FixedValueMap,
+    RepresentationMap,
+    StructureMap,
+    ValueMap,
     VtlCodelistMapping,
     VtlConceptMapping,
 )
@@ -207,6 +220,10 @@ STRUCTURES_MAPPING = {
     UDO_SCHEME: UserDefinedOperatorScheme,
     TRANS_SCHEME: TransformationScheme,
     VTL_MAPPING_SCHEME: VtlMappingScheme,
+    STRUCTURE_MAP: StructureMap,
+    COMPONENT_MAP: ComponentMap,
+    FIXED_VALUE_MAP: FixedValueMap,
+    REPRESENTATION_MAP: RepresentationMap,
     NAME_PER_SCHEME: NamePersonalisationScheme,
     CUSTOM_TYPE_SCHEME: CustomTypeScheme,
     PROV_AGREEMENTS: ProvisionAgreement,
@@ -308,6 +325,10 @@ class StructureParser(Struct):
     rulesets: Dict[str, RulesetScheme] = {}
     udos: Dict[str, UserDefinedOperatorScheme] = {}
     vtl_mappings: Dict[str, VtlMappingScheme] = {}
+    structure_maps: Dict[str, StructureMap] = {}
+    component_maps: Dict[str, ComponentMap] = {}
+    fixed_value_maps: Dict[str, FixedValueMap] = {}
+    representation_maps: Dict[str, RepresentationMap] = {}
     name_personalisations: Dict[str, NamePersonalisationScheme] = {}
     custom_types: Dict[str, CustomTypeScheme] = {}
     transformations: Dict[str, TransformationScheme] = {}
@@ -1035,6 +1056,42 @@ class StructureParser(Struct):
             )
         return json_elem
 
+    def __format_maps(self, element: Dict[str, Any]) -> Dict[str, Any]:
+        renames = {
+            "Source": "source",
+            "Target": "target",
+            "Value": "value",
+            "SourceCodelist": "source",
+            "TargetCodelist": "target",
+            "SourceValue": "source",
+            "TargetValue": "target",
+            "RepresentationMap": "values",
+        }
+
+        for xml_key, py_key in renames.items():
+            if xml_key in element:
+                element[py_key] = element.pop(xml_key)
+
+        child_class_mapping = {
+            "ComponentMap": ComponentMap,
+            "FixedValueMap": FixedValueMap,
+            "RepresentationMapping": ValueMap,
+        }
+
+        consolidated_children = []
+
+        for xml_tag, target_class in child_class_mapping.items():
+            if xml_tag in element:
+                children_dicts = add_list(element.pop(xml_tag))
+                for child_dict in children_dicts:
+                    self.__format_maps(child_dict)
+                    consolidated_children.append(target_class(**child_dict))
+
+        if consolidated_children:
+            element["maps"] = consolidated_children
+
+        return element
+
     def __format_scheme(
         self, json_elem: Dict[str, Any], scheme: str, item: str
     ) -> Dict[str, ItemScheme]:
@@ -1116,6 +1173,7 @@ class StructureParser(Struct):
             element = self.__format_validity(element)
             element = self.__format_groups(element)
             element = self.__format_components(element)
+            element = self.__format_maps(element)
             if item == PROV_AGREEMENT:
                 element = self.__format_prov_agreement(element)
 
@@ -1299,6 +1357,34 @@ class StructureParser(Struct):
                     TRANSFORMATION,
                 ),
                 "transformations",
+            ),
+            STRUCTURE_MAPS: process_structure(
+                STRUCTURE_MAPS,
+                lambda data: self.__format_schema(
+                    data, STRUCTURE_MAP, STRUCTURE_MAP
+                ),
+                "structure_maps",
+            ),
+            COMPONENT_MAPS: process_structure(
+                COMPONENT_MAPS,
+                lambda data: self.__format_schema(
+                    data, COMPONENT_MAP, COMPONENT_MAP
+                ),
+                "component_maps",
+            ),
+            FIXED_VALUE_MAPS: process_structure(
+                FIXED_VALUE_MAPS,
+                lambda data: self.__format_schema(
+                    data, FIXED_VALUE_MAP, FIXED_VALUE_MAP
+                ),
+                "fixed_value_maps",
+            ),
+            REPRESENTATION_MAPS: process_structure(
+                REPRESENTATION_MAPS,
+                lambda data: self.__format_schema(
+                    data, REPRESENTATION_MAP, REPRESENTATION_MAP
+                ),
+                "representation_maps",
             ),
             TRANS_SCHEMES: process_structure(
                 TRANS_SCHEMES,
