@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message:Structure 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:xml="http://www.w3.org/XML/1998/namespace" 
+    xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" 
+    xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" 
+    xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common">
+    
+    <message:Header>
+        <message:ID>MAP_EXAMPLE_001</message:ID>
+        <message:Test>true</message:Test>
+        <message:Prepared>2025-05-26T12:00:00Z</message:Prepared>
+        <message:Sender id="ESTAT"/>
+        <message:Receiver id="not_supplied"/>
+    </message:Header>
+
+    <message:Structures>
+        <str:RepresentationMaps>
+            <str:RepresentationMap urn="urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=ESTAT:REPMAP_SEX(1.0)" id="REPMAP_SEX" agencyID="ESTAT" version="1.0">
+                <com:Name xml:lang="es">Sex Mapping (Numeric to Alpha)</com:Name>
+                <str:SourceCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_SEX_V1(1.0)</str:SourceCodelist>
+                <str:TargetCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_SEX_V2(2.0)</str:TargetCodelist>
+                <str:RepresentationMapping>
+                    <str:SourceValue>1</str:SourceValue>
+                    <str:TargetValue>M</str:TargetValue>
+                </str:RepresentationMapping>
+                <str:RepresentationMapping>
+                    <str:SourceValue>2</str:SourceValue>
+                    <str:TargetValue>F</str:TargetValue>
+                </str:RepresentationMapping>
+            </str:RepresentationMap>
+        </str:RepresentationMaps>
+        <str:StructureMaps>
+            <str:StructureMap urn="urn:sdmx:org.sdmx.infomodel.structuremapping.StructureMap=ESTAT:STRMAP_DEMO(1.0)" id="STRMAP_DEMO" agencyID="ESTAT" version="1.0">
+                <com:Name xml:lang="es">Demographic Structure Mapping</com:Name>
+                <str:Source>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=ESTAT:DSD_DEMO_V1(1.0)</str:Source>
+                <str:Target>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=ESTAT:DSD_DEMO_V2(2.0)</str:Target>
+                <str:ComponentMap>
+                    <str:Source>SEX_DIM</str:Source>
+                    <str:Target>GENDER_DIM</str:Target>
+                    <str:RepresentationMap>urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=ESTAT:REPMAP_SEX(1.0)</str:RepresentationMap>
+                </str:ComponentMap>
+                <str:FixedValueMap>
+                    <str:Target>OBS_STATUS</str:Target>
+                    <str:Value>A</str:Value>
+                </str:FixedValueMap>
+            </str:StructureMap>
+        </str:StructureMaps>
+    </message:Structures>
+</message:Structure>
