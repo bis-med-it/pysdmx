@@ -101,10 +101,11 @@ class Component(
     one of: *D* (for Dataset), *O* (for Observation), any string identifying a
     component ID (FREQ) or comma-separated list of component IDs
     (FREQ,REF_AREA). The latter can be used to identify the dimension, group
-    or series to which the attribute is attached. The attachment level of a
-    component may vary with the statistical domain, i.e. a component attached
-    to a series in a particular domain may be attached to, say, the dataset in
-    another domain.
+    or series to which the attribute is attached. It can also be used to 
+    identify the measure(s) to which the attribute relates, in case multiple
+    measures are defined. The attachment level of a component may vary with the
+    statistical domain, i.e. a component attached to a series in a particular
+    domain may be attached to, say, the dataset in another domain.
 
     The *codes* field indicates the expected (i.e. allowed) set of values a
     component can take within a particular domain. In addition to
@@ -128,7 +129,9 @@ class Component(
             Attributes can be attached at different levels such as
             D (for dataset-level attributes), O (for observation-level
             attributes) or a combination of dimension IDs, separated by
-            commas, for series- and group-level attributes).
+            commas, for series- and group-level attributes, as well as for
+            attributes attached to one or more measures, when multiple 
+            measures are defined).
             A post_init check makes this attribute mandatory for attributes.
         array_def: Any additional constraints for array types.
         urn: The URN of the component.
