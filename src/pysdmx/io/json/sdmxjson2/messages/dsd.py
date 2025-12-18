@@ -270,7 +270,8 @@ class JsonAttribute(Struct, frozen=True, omit_defaults=True):
         usage = "mandatory" if attribute.required else "optional"
         repr = _get_json_representation(attribute)
 
-        comps = set(attribute.attachment_level.split(","))
+        ids = attribute.attachment_level.split(",")  # type: ignore[union-attr]
+        comps = set(ids)
         mids = {m.id for m in measures}
         has_measure_rel = len(comps.intersection(mids)) > 0
         level = JsonAttributeRelationship.from_model(
@@ -281,7 +282,7 @@ class JsonAttribute(Struct, frozen=True, omit_defaults=True):
         if attribute.attachment_level == "O":
             mr = ["OBS_VALUE"]
         elif has_measure_rel:
-            mr = list(attribute.attachment_level.split(","))
+            mr = ids
         else:
             mr = None
 
