@@ -126,7 +126,10 @@ class JsonAttributeRelationship(Struct, frozen=True, omit_defaults=True):
     ) -> str:
         """Returns the attachment level."""
         if measures:
-            return "O"
+            if len(measures) == 1 and measures[0] == "OBS_VALUE":
+                return "O"
+            else:
+                return ",".join(measures)
         elif self.dimensions:
             return ",".join(self.dimensions)
         elif self.group:
