@@ -8,7 +8,7 @@ from pysdmx.api.dc.query import (
     Operator,
     TextFilter,
 )
-from pysdmx.api.qb.data import DataQuery
+from pysdmx.api.qb.data import DataContext, DataQuery
 from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import Invalid
 
@@ -651,5 +651,32 @@ def test_mult_same_comp_since_2_2_0(api_version: ApiVersion):
 
     q = DataQuery(components=mflt)
     url = q.get_url(api_version)
+
+    assert url == expected
+
+
+def test_bug_480():
+    """Fix issue #480.
+
+    This issue was reported by a colleague who noticed that component filters
+    were dropped from data queries when defaults were omitted.
+    """
+    components = TextFilter(
+        field="isced97", operator=Operator.IN, value=["ED5A", "ED5B", "ED6"]
+    )
+    query = DataQuery(
+        DataContext.DATAFLOW,
+        "ESTAT",
+        "earn_ses10_04",
+        "1.0",
+        "A.GE10.*.C.*.BE",
+        components=components,
+    )
+    expected = (
+        "/data/dataflow/ESTAT/earn_ses10_04/1.0/A.GE10.*.C.*.BE"
+        "?c[isced97]=ED5A,ED5B,ED6"
+    )
+
+    url = query.get_url(ApiVersion.V2_0_0, omit_defaults=True)
 
     assert url == expected
