@@ -51,8 +51,6 @@ class DataType(str, Enum):
     """A decimal number (4 bytes)."""
     GREGORIAN_TIME_PERIOD = "GregorianTimePeriod"
     """This is the union of YEAR, YEAR_MONTH, and DATE."""
-    INCREMENTAL = "Incremental"
-    """An integer type that increases sequentially."""
     INTEGER = "Integer"
     """A whole number (4 bytes)."""
     LONG = "Long"

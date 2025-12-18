@@ -61,12 +61,6 @@ def test_dtype_float():
     assert t == "Float"
 
 
-def test_dtype_incremental():
-    t = DataType.INCREMENTAL
-
-    assert t == "Incremental"
-
-
 def test_dtype_int():
     t = DataType.INTEGER
 
