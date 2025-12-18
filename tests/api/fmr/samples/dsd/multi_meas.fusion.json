@@ -1,0 +1,474 @@
+{
+  "meta": {
+    "id": "IREF543412",
+    "test": false,
+    "prepared": "2025-12-18T10:39:09Z",
+    "contentLanguages": [
+      "en"
+    ],
+    "sender": {
+      "id": "TEST"
+    }
+  },
+  "AgencyScheme": [
+    {
+      "id": "AGENCIES",
+      "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)",
+      "names": [
+        {
+          "locale": "en",
+          "value": "AGENCIES"
+        }
+      ],
+      "agencyId": "SDMX",
+      "version": "1.0",
+      "isFinal": false,
+      "isPartial": true,
+      "items": [
+        {
+          "id": "TEST",
+          "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).TEST",
+          "names": [
+            {
+              "locale": "en",
+              "value": "Test Agency [95]"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "ValueList": [
+    {
+      "id": "CONTRACTS",
+      "urn": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=TEST:CONTRACTS(1.0)",
+      "names": [
+        {
+          "locale": "en",
+          "value": "Contracts"
+        }
+      ],
+      "agencyId": "TEST",
+      "version": "1.0",
+      "isFinal": false,
+      "isPartial": false,
+      "items": [
+        {
+          "id": "PROD TYPE",
+          "names": [
+            {
+              "locale": "en",
+              "value": "PROD TYPE"
+            }
+          ]
+        },
+        {
+          "id": "_T",
+          "names": [
+            {
+              "locale": "en",
+              "value": "All"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "Codelist": [
+    {
+      "id": "CL_OBS_STATUS",
+      "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_OBS_STATUS(1.0)",
+      "names": [
+        {
+          "locale": "en",
+          "value": "Observation status"
+        }
+      ],
+      "agencyId": "TEST",
+      "version": "1.0",
+      "isFinal": false,
+      "isPartial": false,
+      "validityType": "standard",
+      "items": [
+        {
+          "id": "A",
+          "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_OBS_STATUS(1.0).A",
+          "names": [
+            {
+              "locale": "en",
+              "value": "Normal value"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CL_FREQ",
+      "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_FREQ(1.0)",
+      "names": [
+        {
+          "locale": "en",
+          "value": "cl"
+        }
+      ],
+      "descriptions": [
+        {
+          "locale": "en",
+          "value": "This Codelist provides a set of values indicating the \"frequency\" of the data, ie the time interval at which observations occur over a given time period."
+        }
+      ],
+      "agencyId": "TEST",
+      "version": "1.0",
+      "isFinal": false,
+      "isPartial": false,
+      "validityType": "standard",
+      "items": [
+        {
+          "id": "A",
+          "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_FREQ(1.0).A",
+          "names": [
+            {
+              "locale": "en",
+              "value": "Annual"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OPTION_TYPE",
+      "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:OPTION_TYPE(1.0)",
+      "names": [
+        {
+          "locale": "en",
+          "value": "Types of options"
+        }
+      ],
+      "agencyId": "TEST",
+      "version": "1.0",
+      "isFinal": false,
+      "isPartial": false,
+      "validityType": "standard",
+      "items": [
+        {
+          "id": "B",
+          "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:OPTION_TYPE(1.0).B",
+          "names": [
+            {
+              "locale": "en",
+              "value": "Both"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "ConceptScheme": [
+    {
+      "id": "MDD_CONCEPTS",
+      "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=TEST:MDD_CONCEPTS(1.0)",
+      "names": [
+        {
+          "locale": "en",
+          "value": "Concepts"
+        }
+      ],
+      "agencyId": "TEST",
+      "version": "1.0",
+      "isFinal": false,
+      "isPartial": true,
+      "validityType": "standard",
+      "items": [
+        {
+          "id": "FREQ",
+          "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_CONCEPTS(1.0).FREQ",
+          "names": [
+            {
+              "locale": "en",
+              "value": "Frequency"
+            }
+          ],
+          "representation": {
+            "textFormat": {
+              "textType": "String"
+            },
+            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_FREQ(1.0)"
+          }
+        },
+        {
+          "id": "TIME_PERIOD",
+          "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_CONCEPTS(1.0).TIME_PERIOD",
+          "names": [
+            {
+              "locale": "en",
+              "value": "Time Period"
+            }
+          ],
+          "representation": {
+            "textFormat": {
+              "textType": "ObservationalTimePeriod",
+              "sequence": false
+            }
+          }
+        },
+        {
+          "id": "CONTRACT",
+          "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_CONCEPTS(1.0).CONTRACT",
+          "names": [
+            {
+              "locale": "en",
+              "value": "Contract"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MDD_MEASURES",
+      "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=TEST:MDD_MEASURES(1.0)",
+      "names": [
+        {
+          "locale": "en",
+          "value": "MED Dictionary Measures"
+        }
+      ],
+      "agencyId": "TEST",
+      "version": "1.0",
+      "isFinal": false,
+      "isPartial": false,
+      "validityType": "standard",
+      "items": [
+        {
+          "id": "TO",
+          "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_MEASURES(1.0).TO",
+          "names": [
+            {
+              "locale": "en",
+              "value": "Turnover"
+            }
+          ],
+          "representation": {
+            "textFormat": {
+              "textType": "BigInteger",
+              "sequence": false
+            }
+          }
+        },
+        {
+          "id": "OI",
+          "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_MEASURES(1.0).OI",
+          "names": [
+            {
+              "locale": "en",
+              "value": "Open Interest"
+            }
+          ],
+          "representation": {
+            "textFormat": {
+              "textType": "BigInteger",
+              "sequence": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "CONCEPTS",
+      "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=TEST:CONCEPTS(1.0)",
+      "names": [
+        {
+          "locale": "en",
+          "value": "Concepts used in the OCC input files"
+        }
+      ],
+      "agencyId": "TEST",
+      "version": "1.0",
+      "isFinal": false,
+      "isPartial": true,
+      "validityType": "standard",
+      "items": [
+        {
+          "id": "TO_STATUS",
+          "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).TO_STATUS",
+          "names": [
+            {
+              "locale": "en",
+              "value": "Turnover status"
+            }
+          ]
+        },
+        {
+          "id": "OI_STATUS",
+          "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).OI_STATUS",
+          "names": [
+            {
+              "locale": "en",
+              "value": "Open interest status"
+            }
+          ]
+        },
+        {
+          "id": "OBS_CONF",
+          "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).OBS_CONF",
+          "names": [
+            {
+              "locale": "en",
+              "value": "Confidentiality"
+            }
+          ]
+        },
+        {
+          "id": "OPTION_TYPE",
+          "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).OPTION_TYPE",
+          "names": [
+            {
+              "locale": "en",
+              "value": "The type of option"
+            }
+          ],
+          "representation": {
+            "textFormat": {
+              "textType": "String"
+            },
+            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:OPTION_TYPE(1.0)"
+          }
+        }
+      ]
+    }
+  ],
+  "DataStructure": [
+    {
+      "id": "MDD",
+      "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:MDD(1.0)",
+      "names": [
+        {
+          "locale": "en",
+          "value": "MDD Schema for OCC Post Trade Statistics"
+        }
+      ],
+      "agencyId": "TEST",
+      "version": "1.0",
+      "isFinal": false,
+      "dimensionList": {
+        "dimensions": [
+          {
+            "id": "FREQ",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=TEST:MDD(1.0).FREQ",
+            "representation": {
+              "textFormat": {
+                "textType": "String"
+              },
+              "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_FREQ(1.0)"
+            },
+            "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_CONCEPTS(1.0).FREQ"
+          },
+          {
+            "id": "CONTRACT",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=TEST:MDD(1.0).CONTRACT",
+            "representation": {
+              "textFormat": {
+                "textType": "String"
+              },
+              "representation": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=TEST:CONTRACTS(1.0)"
+            },
+            "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_CONCEPTS(1.0).CONTRACT"
+          },
+          {
+            "id": "OPTION_TYPE",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=TEST:MDD(1.0).OPTION_TYPE",
+            "representation": {
+              "textFormat": {
+                "textType": "String"
+              },
+              "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:OPTION_TYPE(1.0)"
+            },
+            "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).OPTION_TYPE"
+          },
+          {
+            "id": "TIME_PERIOD",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=TEST:MDD(1.0).TIME_PERIOD",
+            "representation": {
+              "textFormat": {
+                "textType": "ObservationalTimePeriod"
+              }
+            },
+            "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_CONCEPTS(1.0).TIME_PERIOD",
+            "isTimeDimension": true
+          }
+        ]
+      },
+      "attributeList": {
+        "attributes": [
+          {
+            "id": "TO_STATUS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:MDD(1.0).TO_STATUS",
+            "representation": {
+              "minOccurs": 1,
+              "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_OBS_STATUS(1.0)"
+            },
+            "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).TO_STATUS",
+            "mandatory": false,
+            "attachmentLevel": "OBSERVATION",
+            "measureReferences": [
+              "TO"
+            ]
+          },
+          {
+            "id": "OI_STATUS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:MDD(1.0).OI_STATUS",
+            "representation": {
+              "minOccurs": 1,
+              "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_OBS_STATUS(1.0)"
+            },
+            "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).OI_STATUS",
+            "mandatory": false,
+            "attachmentLevel": "OBSERVATION",
+            "measureReferences": [
+              "OI"
+            ]
+          },
+          {
+            "id": "OBS_CONF",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:MDD(1.0).OBS_CONF",
+            "representation": {
+              "textFormat": {
+                "textType": "String"
+                }
+            },
+            "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).OBS_CONF",
+            "mandatory": false,
+            "attachmentLevel": "OBSERVATION",
+            "measureReferences": [
+              "TO",
+              "OI"
+            ]
+          }
+        ]
+      },
+      "measures": [
+        {
+          "id": "TO",
+          "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Measure=TEST:MDD(1.0).TO",
+          "representation": {
+            "textFormat": {
+              "textType": "Double"
+            }
+          },
+          "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_MEASURES(1.0).TO",
+          "mandatory": true
+        },
+        {
+          "id": "OI",
+          "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Measure=TEST:MDD(1.0).OI",
+          "representation": {
+            "textFormat": {
+              "textType": "Double"
+            }
+          },
+          "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_MEASURES(1.0).OI",
+          "mandatory": true
+        }
+      ]
+    }
+  ]
+}
