@@ -439,8 +439,8 @@
             "mandatory": false,
             "attachmentLevel": "OBSERVATION",
             "measureReferences": [
-              "TO",
-              "OI"
+              "OI",
+              "TO"
             ]
           }
         ]
