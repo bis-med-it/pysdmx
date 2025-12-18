@@ -139,15 +139,17 @@ class JsonAttributeRelationship(Struct, frozen=True, omit_defaults=True):
             return "D"
 
     @classmethod
-    def from_model(self, rel: str) -> "JsonAttributeRelationship":
+    def from_model(
+        self, rel: str, has_measure_rel: bool = False
+    ) -> "JsonAttributeRelationship":
         """Converts a pysdmx attribute relationship to an SDMX-JSON one."""
         if rel == "D":
             return JsonAttributeRelationship(dataflow={})
-        elif rel == "O":
+        elif rel == "O" or has_measure_rel:
             return JsonAttributeRelationship(observation={})
         else:
-            dims = rel.split(",")
-            return JsonAttributeRelationship(dimensions=dims)
+            comps = rel.split(",")
+            return JsonAttributeRelationship(dimensions=comps)
 
 
 class JsonDimension(Struct, frozen=True, omit_defaults=True):
@@ -260,17 +262,28 @@ class JsonAttribute(Struct, frozen=True, omit_defaults=True):
         )
 
     @classmethod
-    def from_model(self, attribute: Component) -> "JsonAttribute":
+    def from_model(
+        self, attribute: Component, measures: Sequence[Component]
+    ) -> "JsonAttribute":
         """Converts a pysdmx attribute to an SDMX-JSON one."""
         concept = _get_concept_reference(attribute)
         usage = "mandatory" if attribute.required else "optional"
-        level = JsonAttributeRelationship.from_model(
-            attribute.attachment_level  # type: ignore[arg-type]
-        )
         repr = _get_json_representation(attribute)
-        # The line below will need to be changed when we work on
-        # Measure Relationship (cf. issue #467)
-        mr = ["OBS_VALUE"] if attribute.attachment_level == "O" else None
+
+        comps = set(attribute.attachment_level.split(","))
+        mids = {m.id for m in measures}
+        has_measure_rel = len(comps.intersection(mids)) > 0
+        level = JsonAttributeRelationship.from_model(
+            attribute.attachment_level,  # type: ignore[arg-type]
+            has_measure_rel,
+        )
+
+        if attribute.attachment_level == "O":
+            mr = ["OBS_VALUE"]
+        elif has_measure_rel:
+            mr = list(attribute.attachment_level.split(","))
+        else:
+            mr = None
 
         return JsonAttribute(
             id=attribute.id,
@@ -359,12 +372,14 @@ class JsonAttributes(Struct, frozen=True, omit_defaults=True):
 
     @classmethod
     def from_model(
-        self, attributes: Sequence[Component]
+        self, attributes: Sequence[Component], measures: Sequence[Component]
     ) -> Optional["JsonAttributes"]:
         """Converts a pysdmx list of attributes to an SDMX-JSON one."""
         if len(attributes) > 0:
             return JsonAttributes(
-                attributes=[JsonAttribute.from_model(a) for a in attributes]
+                attributes=[
+                    JsonAttribute.from_model(a, measures) for a in attributes
+                ]
             )
         else:
             return None
@@ -505,7 +520,9 @@ class JsonComponents(Struct, frozen=True, omit_defaults=True):
     ) -> "JsonComponents":
         """Converts a pysdmx components list to an SDMX-JSON one."""
         dimensions = JsonDimensions.from_model(components.dimensions)
-        attributes = JsonAttributes.from_model(components.attributes)
+        attributes = JsonAttributes.from_model(
+            components.attributes, components.measures
+        )
         measures = JsonMeasures.from_model(components.measures)
         if grps is None:
             groups = []
