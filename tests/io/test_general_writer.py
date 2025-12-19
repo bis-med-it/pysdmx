@@ -151,6 +151,13 @@ def output_path(extension, tmpdir):
             True,
         ),
         (
+            Format.STRUCTURE_SDMX_ML_3_0,
+            XML_3_0_PATH,
+            "maps.xml",
+            {},
+            True,
+        ),
+        (
             Format.STRUCTURE_SDMX_JSON_2_0_0,
             JSN_2_0_PATH,
             "cat/categorisation.json",
