@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import pandas as pd
 
+from pysdmx.io._pd_utils import _should_write_value
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import (
@@ -122,7 +123,6 @@ def __write_data_generic(
 
     for short_urn, dataset in datasets.items():
         writing_validation(dataset)
-        dataset.data = dataset.data.fillna("").astype(str)
         outfile += __write_data_single_dataset(
             dataset=dataset,
             prettyprint=prettyprint,
@@ -147,20 +147,9 @@ def __write_data_single_dataset(
     Returns:
         The data in SDMX-ML 2.1 Generic format, as string.
     """
-
-    def __remove_optional_attributes_empty_data(str_to_check: str) -> str:
-        """This function removes data when optional attributes are found."""
-        for att in dataset.structure.components.attributes:
-            if not att.required:
-                to_replace = f'<{ABBR_GEN}:Value id={att.id!r} value=""/>'
-                to_replace = f"{child3}{to_replace}{nl}"
-                str_to_check = str_to_check.replace(to_replace, "")
-        return str_to_check
-
     outfile = ""
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
-    dataset.data = dataset.data.fillna("").astype(str).replace("nan", "")
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
@@ -221,9 +210,6 @@ def __write_data_single_dataset(
             prettyprint=prettyprint,
         )
 
-    # Remove optional attributes empty data
-    data = __remove_optional_attributes_empty_data(data)
-
     # Add to outfile
     outfile += data
 
@@ -259,11 +245,14 @@ def __obs_processing(
 
         if len(obs_structure[2]) > 0:
             # Obs Attributes writing
-            out += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
+            obs_att_content = ""
             for k, v in element.items():
-                if k in obs_structure[2]:
-                    out += f"{child4}{__value(k, v)}{nl}"
-            out += f"{child3}</{ABBR_GEN}:Attributes>{nl}"
+                if k in obs_structure[2] and _should_write_value(v):
+                    obs_att_content += f"{child4}{__value(k, v)}{nl}"
+            if obs_att_content:
+                out += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
+                out += obs_att_content
+                out += f"{child3}</{ABBR_GEN}:Attributes>{nl}"
 
         out += f"{child2}</{ABBR_GEN}:Obs>{nl}"
 
@@ -347,9 +336,9 @@ def __series_processing(
 ) -> str:
     def __generate_series_str() -> str:
         out_list: List[str] = []
-        data.groupby(by=series_codes + series_att_codes)[data.columns].apply(
-            lambda x: __format_dict_ser(out_list, x)
-        )
+        data.groupby(by=series_codes + series_att_codes, dropna=False)[
+            data.columns
+        ].apply(lambda x: __format_dict_ser(out_list, x))
 
         return "".join(out_list)
 
@@ -381,7 +370,7 @@ def __series_processing(
     # Getting each datapoint from data and creating dict
     data = data.sort_values(series_codes, axis=0)
     data_dict = {
-        "Series": data[series_codes]
+        "Series": data[series_codes + series_att_codes]
         .drop_duplicates()
         .reset_index(drop=True)
         .to_dict(orient="records")
@@ -417,11 +406,14 @@ def __format_ser_str(
 
     # Series Attributes writing
     if len(series_att_codes) > 0:
-        out_element += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
+        att_content = ""
         for k, v in data_info.items():
-            if k in series_att_codes:
-                out_element += f"{child4}{__value(k, v)}{nl}"
-        out_element += f"{child3}</{ABBR_GEN}:Attributes>{nl}"
+            if k in series_att_codes and _should_write_value(v):
+                att_content += f"{child4}{__value(k, v)}{nl}"
+        if att_content:
+            out_element += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
+            out_element += att_content
+            out_element += f"{child3}</{ABBR_GEN}:Attributes>{nl}"
 
     # Obs writing
     for obs in data_info["Obs"]:
@@ -433,22 +425,43 @@ def __format_ser_str(
             f"value={str(obs[obs_codes[0]])!r}/>{nl}"
         )
         # Obs Value writing
-        out_element += (
-            f"{child4}<{ABBR_GEN}:ObsValue value={str(obs_codes[1])!r}/>{nl}"
-        )
+        obs_val = str(obs[obs_codes[1]])
+        out_element += f"{child4}<{ABBR_GEN}:ObsValue value={obs_val!r}/>{nl}"
 
         # Obs Attributes writing
-        if len(obs_att_codes) > 0:
-            out_element += f"{child4}<{ABBR_GEN}:Attributes>{nl}"
-            for k, v in obs.items():
-                if k in obs_att_codes:
-                    out_element += f"{child5}{__value(k, v)}{nl}"
-            out_element += f"{child4}</{ABBR_GEN}:Attributes>{nl}"
+        out_element += __format_obs_attributes(
+            obs, obs_att_codes, child4, child5, nl
+        )
         out_element += f"{child3}</{ABBR_GEN}:Obs>{nl}"
 
     out_element += f"{child2}</{ABBR_GEN}:Series>{nl}"
 
     return out_element
+
+
+def __format_obs_attributes(
+    obs: Dict[str, Any],
+    obs_att_codes: List[str],
+    child4: str,
+    child5: str,
+    nl: str,
+) -> str:
+    if len(obs_att_codes) == 0:
+        return ""
+
+    obs_att_content = ""
+    for k, v in obs.items():
+        if k in obs_att_codes and _should_write_value(v):
+            obs_att_content += f"{child5}{__value(k, v)}{nl}"
+
+    if not obs_att_content:
+        return ""
+
+    return (
+        f"{child4}<{ABBR_GEN}:Attributes>{nl}"
+        f"{obs_att_content}"
+        f"{child4}</{ABBR_GEN}:Attributes>{nl}"
+    )
 
 
 def write(

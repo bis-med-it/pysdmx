@@ -5,6 +5,7 @@ from typing import Any, Dict, List
 
 import pandas as pd
 
+from pysdmx.io._pd_utils import _should_write_value
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import (
     ABBR_MSG,
@@ -69,9 +70,6 @@ def __write_data_structure_specific(
     outfile = ""
 
     for i, (short_urn, dataset) in enumerate(datasets.items()):
-        dataset.data = dataset.data.astype(str).replace(
-            {"nan": "", "<NA>": ""}
-        )
         outfile += __write_data_single_dataset(
             dataset=dataset,
             prettyprint=prettyprint,
@@ -102,21 +100,10 @@ def __write_data_single_dataset(
     Returns:
         The data in SDMX-ML Structure-Specific format, as string.
     """
-
-    def __remove_optional_attributes_empty_data(str_to_check: str) -> str:
-        """This function removes data when optional attributes are found."""
-        for att in dataset.structure.components.attributes:
-            if not att.required:
-                str_to_check = str_to_check.replace(f"{att.id}='' ", "")
-                str_to_check = str_to_check.replace(f'{att.id}="" ', "")
-        return str_to_check
-
     outfile = ""
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
     sdmx_type = parse_short_urn(structure_urn).id
-    # Remove nan values from DataFrame
-    dataset.data = dataset.data.fillna("").astype(str).replace("nan", "")
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
@@ -158,9 +145,6 @@ def __write_data_single_dataset(
             prettyprint=prettyprint,
         )
 
-        # Remove optional attributes empty data
-        data = __remove_optional_attributes_empty_data(data)
-
     # Adding to outfile
     outfile += data
 
@@ -181,7 +165,8 @@ def __group_processing(
 
         out_element = f"{child2}<Group xsi:type='ns1:{group_id}' "
         for k, v in data_info.items():
-            out_element += f"{k}={__escape_xml(str(v))!r} "
+            if _should_write_value(v):
+                out_element += f"{k}={__escape_xml(str(v))!r} "
         out_element += f"/>{nl}"
 
         return out_element
@@ -217,7 +202,8 @@ def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
         out = f"{child2}<Obs "
 
         for k, v in element.items():
-            out += f"{k}={__escape_xml(str(v))!r} "
+            if _should_write_value(v):
+                out += f"{k}={__escape_xml(str(v))!r} "
 
         out += f"/>{nl}"
 
@@ -239,7 +225,7 @@ def __series_processing(
     def __generate_series_str() -> str:
         """Generates the series item with its observations."""
         out_list: List[str] = []
-        data.groupby(by=series_codes)[obs_codes].apply(
+        data.groupby(by=series_codes, dropna=False)[obs_codes].apply(
             lambda x: __format_dict_ser(out_list, x)
         )
 
@@ -267,7 +253,7 @@ def __series_processing(
         out_element = f"{child2}<Series "
 
         for k, v in data_info.items():
-            if k != "Obs":
+            if k != "Obs" and _should_write_value(v):
                 out_element += f"{k}={__escape_xml(str(v))!r} "
 
         out_element += f">{nl}"
@@ -276,7 +262,8 @@ def __series_processing(
             out_element += f"{child3}<Obs "
 
             for k, v in obs.items():
-                out_element += f"{k}={__escape_xml(str(v))!r} "
+                if _should_write_value(v):
+                    out_element += f"{k}={__escape_xml(str(v))!r} "
 
             out_element += f"/>{nl}"
 

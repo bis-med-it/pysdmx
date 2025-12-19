@@ -6,6 +6,7 @@ from typing import Literal, Optional, Sequence, Union
 
 import pandas as pd
 
+from pysdmx.io._pd_utils import _validate_schema_exists
 from pysdmx.io.csv.__csv_aux_writer import __write_time_period
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
@@ -37,6 +38,9 @@ def write(
 
     Returns:
         SDMX CSV data as a string, if output_path is None.
+
+    Raises:
+        Invalid: If any dataset doesn't have a Schema defined.
     """
     # Link to pandas.to_csv documentation on sphinx:
     # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html
@@ -44,6 +48,8 @@ def write(
     # Create a copy of the dataset
     dataframes = []
     for dataset in datasets:
+        _validate_schema_exists(dataset)
+
         df: pd.DataFrame = copy(dataset.data)
 
         # Add additional attributes to the dataset
@@ -68,8 +74,6 @@ def write(
     # Concatenate the dataframes
     all_data = pd.concat(dataframes, ignore_index=True, axis=0)
 
-    # Ensure null values are represented as empty strings
-    all_data = all_data.astype(str).replace({"nan": "", "<NA>": ""})
     # If the output path is an empty string we use None
     output_path = (
         None

@@ -3,6 +3,7 @@ from typing import List, Literal, Optional, Sequence
 
 import pandas as pd
 
+from pysdmx.io._pd_utils import _validate_schema_exists
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
 from pysdmx.model.dataset import ActionType
@@ -70,6 +71,9 @@ def _write_csv_2_aux(
 ) -> List[pd.DataFrame]:
     dataframes = []
     for dataset in datasets:
+        # Validate that the dataset has a Schema defined
+        _validate_schema_exists(dataset)
+
         # Create a copy of the dataset
         df: pd.DataFrame = copy(dataset.data)
         structure_ref, unique_id = dataset.short_urn.split("=", maxsplit=1)
