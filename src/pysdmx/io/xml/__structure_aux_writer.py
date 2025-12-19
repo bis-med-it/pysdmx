@@ -884,19 +884,16 @@ def __write_representation_map(
     outfile += __export_intern_data(data)
 
     # Write Source and Target references
-    if rep_map.source:
-        outfile += (
-            f"{add_indent(indent)}<{ABBR_STR}:SourceCodelist>"
-            f"{rep_map.source}"
-            f"</{ABBR_STR}:SourceCodelist>"
-        )
-
-    if rep_map.target:
-        outfile += (
-            f"{add_indent(indent)}<{ABBR_STR}:TargetCodelist>"
-            f"{rep_map.target}"
-            f"</{ABBR_STR}:TargetCodelist>"
-        )
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:SourceCodelist>"
+        f"{rep_map.source}"
+        f"</{ABBR_STR}:SourceCodelist>"
+    )
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:TargetCodelist>"
+        f"{rep_map.target}"
+        f"</{ABBR_STR}:TargetCodelist>"
+    )
 
     # Write ValueMaps
     for value_map in rep_map.maps:
@@ -965,19 +962,16 @@ def __write_structure_map(
     outfile += __export_intern_data(data)
 
     # Write Source and Target references
-    if struct_map.source:
-        outfile += (
-            f"{add_indent(indent)}<{ABBR_STR}:Source>"
-            f"{struct_map.source}"
-            f"</{ABBR_STR}:Source>"
-        )
-
-    if struct_map.target:
-        outfile += (
-            f"{add_indent(indent)}<{ABBR_STR}:Target>"
-            f"{struct_map.target}"
-            f"</{ABBR_STR}:Target>"
-        )
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Source>"
+        f"{struct_map.source}"
+        f"</{ABBR_STR}:Source>"
+    )
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Target>"
+        f"{struct_map.target}"
+        f"</{ABBR_STR}:Target>"
+    )
 
     # Write component maps and fixed value maps
     for map_item in struct_map.maps:
