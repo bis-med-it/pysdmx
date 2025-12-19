@@ -22,10 +22,12 @@ from pysdmx.io.xml.__tokens import (
     NAME_PERS,
     PROV_AGREEMENT,
     PROV_AGREMENT,
+    REPRESENTATION_MAPS,
     RULE_SCHEMES,
     RULESETS,
     STR_USAGE,
     STRUCTURE,
+    STRUCTURE_MAPS,
     TRANS_SCHEMES,
     TRANSFORMATIONS,
     UDO_SCHEMES,
@@ -70,6 +72,8 @@ DSDS = "DataStructures"
 DATAFLOWS = "Dataflows"
 CONSTRAINTS = "Constraints"
 PROV_AGREEMENTS = "ProvisionAgreements"
+REPRESENTATION_MAPS_KEY = "RepresentationMaps"
+STRUCTURE_MAPS_KEY = "StructureMaps"
 ALL_DIM = "AllDimensions"
 
 BASE_URL_21 = "http://www.sdmx.org/resources/sdmxml/schemas/v2_1"
@@ -205,6 +209,8 @@ MSG_CONTENT_PKG_21 = OrderedDict(
         (CONCEPTS, "Concepts"),
         (DSDS, "DataStructures"),
         (CONSTRAINTS, "ContentConstraints"),
+        (REPRESENTATION_MAPS, "RepresentationMaps"),
+        (STRUCTURE_MAPS, "StructureMaps"),
         (CUSTOM_TYPES, "CustomTypes"),
         (VTLMAPPINGS, "VtlMappings"),
         (NAME_PERS, "NamePersonalisations"),
@@ -224,6 +230,8 @@ MSG_CONTENT_PKG_30 = OrderedDict(
         (CONCEPTS_SCHEMES, "ConceptSchemes"),
         (DSDS, "DataStructures"),
         (CONSTRAINTS, "ContentConstraints"),
+        (REPRESENTATION_MAPS, "RepresentationMaps"),
+        (STRUCTURE_MAPS, "StructureMaps"),
         (CUSTOM_TYPE_SCHEMES, "CustomTypeSchemes"),
         (VTLMAPPING_SCHEMES, "VtlMappingSchemes"),
         (NAME_PER_SCHEMES, "NamePersonalisationSchemes"),
