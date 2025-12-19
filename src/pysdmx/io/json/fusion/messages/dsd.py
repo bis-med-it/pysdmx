@@ -80,8 +80,14 @@ class FusionAttribute(Struct, frozen=True):
     measureReferences: Optional[Sequence[str]] = None
 
     def __derive_level(self, groups: Sequence[FusionGroup]) -> str:
-        if self.attachmentLevel == "OBSERVATION":
-            return "O"
+        if self.measureReferences:
+            if (
+                len(self.measureReferences) == 1
+                and self.measureReferences[0] == "OBS_VALUE"
+            ):
+                return "O"
+            else:
+                return ",".join(self.measureReferences)
         elif self.attachmentLevel == "DATA_SET":
             return "D"
         elif self.attachmentLevel == "GROUP":

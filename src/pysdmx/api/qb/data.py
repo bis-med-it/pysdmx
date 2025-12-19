@@ -329,6 +329,8 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
 
     def __get_short_v2_qs(self, api_version: ApiVersion) -> str:
         qs = ""
+        if self.components:
+            qs += self._create_component_filters(self.components)
         if self.updated_after:
             qs = super()._append_qs_param(
                 qs,
