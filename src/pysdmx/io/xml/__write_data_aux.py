@@ -26,6 +26,8 @@ def check_dimension_at_observation(
     for key, value in dimension_at_observation.items():
         if key not in datasets:
             raise Invalid(f"Dataset {key} not found in Message content.")
+        if value == ALL_DIM:
+            continue
         writing_validation(datasets[key])
         dataset = datasets[key]
         components = dataset.structure.components  # type: ignore[union-attr]

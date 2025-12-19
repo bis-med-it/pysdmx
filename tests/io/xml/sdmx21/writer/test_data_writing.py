@@ -216,6 +216,11 @@ def ds_with_group():
             "gen_ser.xml",
             {"DataStructure=MD:TEST(1.0)": "DIM1"},
         ),
+        (
+            Format.DATA_SDMX_ML_2_1_STR,
+            "str_all.xml",
+            {"DataStructure=MD:TEST(1.0)": "AllDimensions"},
+        ),
     ],
 )
 def test_data_write_read(
