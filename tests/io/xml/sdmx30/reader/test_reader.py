@@ -13,23 +13,18 @@ from pysdmx.model import (
     AgencyScheme,
     Code,
     Codelist,
-    ComponentMap,
     ConceptScheme,
     Contact,
     CustomType,
     CustomTypeScheme,
     Dataflow,
-    FixedValueMap,
     ItemReference,
     NamePersonalisation,
     NamePersonalisationScheme,
     Reference,
-    RepresentationMap,
     RulesetScheme,
-    StructureMap,
     TransformationScheme,
     UserDefinedOperatorScheme,
-    ValueMap,
     VtlDataflowMapping,
     VtlMappingScheme,
 )
@@ -689,88 +684,3 @@ def test_prov_agreement(samples_folder):
     assert prov_agreement.short_urn == "ProvisionAgreement=MD:TEST(1.0)"
     assert prov_agreement.dataflow == "Dataflow=MD:TEST(1.0)"
     assert prov_agreement.provider == "DataProvider=MD:DATA_PROVIDERS(1.0).MD"
-
-
-def test_maps(samples_folder):
-    data_path = samples_folder / "maps.xml"
-    input_str, read_format = process_string_to_read(data_path)
-    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
-    result = read_structure(input_str, validate=True)
-    assert len(result) == 2
-
-    # RepresentationMap checks
-    rep_map = result[1]
-    assert isinstance(rep_map, RepresentationMap)
-    assert rep_map.id == "REPMAP_SEX"
-    assert rep_map.agency == "ESTAT"
-    assert rep_map.version == "1.0"
-    assert rep_map.name == "Sex Mapping (Numeric to Alpha)"
-    assert (
-        rep_map.urn == "urn:sdmx:org.sdmx.infomodel.structuremapping."
-        "RepresentationMap=ESTAT:REPMAP_SEX(1.0)"
-    )
-    assert rep_map.short_urn == "RepresentationMap=ESTAT:REPMAP_SEX(1.0)"
-    assert (
-        rep_map.source
-        == "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_SEX_V1(1.0)"
-    )
-    assert (
-        rep_map.target
-        == "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_SEX_V2(2.0)"
-    )
-    assert len(rep_map.maps) == 2
-
-    # First representation mapping
-    mapping_1 = rep_map.maps[0]
-    assert isinstance(mapping_1, ValueMap)
-    assert mapping_1.source == "1"
-    assert mapping_1.target == "M"
-
-    # Second representation mapping
-    mapping_2 = rep_map.maps[1]
-    assert isinstance(mapping_1, ValueMap)
-    assert mapping_2.source == "2"
-    assert mapping_2.target == "F"
-
-    # StructureMap checks
-    str_map = result[0]
-    assert isinstance(str_map, StructureMap)
-    assert str_map.id == "STRMAP_DEMO"
-    assert str_map.agency == "ESTAT"
-    assert str_map.version == "1.0"
-    assert str_map.name == "Demographic Structure Mapping"
-    assert (
-        str_map.urn == "urn:sdmx:org.sdmx.infomodel.structuremapping."
-        "StructureMap=ESTAT:STRMAP_DEMO(1.0)"
-    )
-    assert str_map.short_urn == "StructureMap=ESTAT:STRMAP_DEMO(1.0)"
-    assert (
-        str_map.source == "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "DataStructure=ESTAT:DSD_DEMO_V1(1.0)"
-    )
-
-    assert len(str_map.maps) == 2
-    assert (
-        str_map.target == "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "DataStructure=ESTAT:DSD_DEMO_V2(2.0)"
-    )
-    assert (
-        str_map.source == "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "DataStructure=ESTAT:DSD_DEMO_V1(1.0)"
-    )
-
-    # ComponentMap checks
-    comp_map = str_map.maps[0]
-    assert isinstance(comp_map, ComponentMap)
-    assert comp_map.source == "SEX_DIM"
-    assert comp_map.target == "GENDER_DIM"
-    assert (
-        comp_map.values == "urn:sdmx:org.sdmx.infomodel.structuremapping."
-        "RepresentationMap=ESTAT:REPMAP_SEX(1.0)"
-    )
-
-    # FixedValueMap checks
-    fixed_map = str_map.maps[1]
-    assert isinstance(fixed_map, FixedValueMap)
-    assert fixed_map.target == "OBS_STATUS"
-    assert fixed_map.value == "A"

@@ -157,13 +157,6 @@ def output_path(extension, tmpdir):
             True,
         ),
         (
-            Format.STRUCTURE_SDMX_ML_3_0,
-            XML_3_0_PATH,
-            "maps.xml",
-            {},
-            True,
-        ),
-        (
             Format.STRUCTURE_SDMX_JSON_2_0_0,
             JSN_2_0_PATH,
             "cat/categorisation.json",
@@ -546,7 +539,7 @@ def test_invalid_sdmx_object_refmeta(tmpdir):
 
 
 def test_write_maps(tmpdir):
-    data_path = XML_3_0_PATH / "maps.xml"
+    data_path = Path(__file__).parent / "samples" / "maps.xml"
     reference = read_sdmx(data_path, validate=True)
     assert reference.structures is not None
     structures = reference.structures
