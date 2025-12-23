@@ -513,7 +513,7 @@ def test_read_maps():
 
     # Second representation mapping
     mapping_2 = rep_map.maps[1]
-    assert isinstance(mapping_1, ValueMap)
+    assert isinstance(mapping_2, ValueMap)
     assert mapping_2.source == "2"
     assert mapping_2.target == "F"
 
