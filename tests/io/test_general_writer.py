@@ -538,7 +538,14 @@ def test_invalid_sdmx_object_refmeta(tmpdir):
         )
 
 
-def test_write_maps(tmpdir):
+@pytest.mark.parametrize(
+    "format",
+    [
+        Format.STRUCTURE_SDMX_ML_3_0,
+        Format.STRUCTURE_SDMX_ML_3_1,
+    ],
+)
+def test_write_maps(tmpdir, format):
     data_path = Path(__file__).parent / "samples" / "maps.xml"
     reference = read_sdmx(data_path, validate=True)
     assert reference.structures is not None
@@ -547,7 +554,7 @@ def test_write_maps(tmpdir):
 
     out_path = tmpdir / "maps_written.xml"
     write_sdmx(
-        structures, Format.STRUCTURE_SDMX_ML_3_0, str(out_path), header=header
+        structures, sdmx_format=format, output_path=out_path, header=header
     )
     written = read_sdmx(out_path, validate=True)
 
