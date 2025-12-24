@@ -40,22 +40,17 @@ def _reading_str_series(dataset: Dict[str, Any]) -> pd.DataFrame:
     return df
 
 
-def _reading_group_data(dataset: Dict[str, Any]) -> pd.DataFrame:
+def _reading_group_data(dataset: Dict[str, Any], df: pd.DataFrame) -> pd.DataFrame:
     # Structure Specific Group Data
-    test_list = []
-    df = None
     dataset[GROUP] = add_list(dataset[GROUP])
-    for data in dataset[GROUP]:
-        test_list.append(dict(data.items()))
-        test_list, df = __process_df(test_list, df)
-    test_list, df = __process_df(test_list, df, is_end=True)
-
-    cols_to_delete = [x for x in df.columns if ":type" in x]
-    for x in cols_to_delete:
-        del df[x]
-
-    df = df.drop_duplicates(keep="first").reset_index(drop=True)
-
+    for group in dataset[GROUP]:
+        group_df = pd.DataFrame([dict(group.items())])
+        cols_to_delete = [x for x in group_df.columns if ":type" in x]
+        for x in cols_to_delete:
+            del group_df[x]
+        common_columns = list(set(df.columns).intersection(set(group_df.columns)))
+        if common_columns:
+            df = pd.merge(df, group_df, on=common_columns, how="left")
     return df
 
 
@@ -76,11 +71,7 @@ def _parse_structure_specific_data(
         # Structure Specific Series
         df = _reading_str_series(dataset)
         if GROUP in dataset:
-            df_group = _reading_group_data(dataset)
-            common_columns = list(
-                set(df.columns).intersection(set(df_group.columns))
-            )
-            df = pd.merge(df, df_group, on=common_columns, how="left")
+            df = _reading_group_data(dataset, df)
     elif OBS in dataset:
         dataset[OBS] = add_list(dataset[OBS])
         # Structure Specific All dimensions
