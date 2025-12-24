@@ -1,0 +1,687 @@
+{
+    "meta": {
+        "id": "IREF510039",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2025-12-18T09:43:22Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "TEST"
+        }
+    },
+    "data": {
+        "agencySchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "agencyscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=TEST:AGENCIES(1.0)"
+                    }
+                ],
+                "id": "AGENCIES",
+                "name": "AGENCIES",
+                "names": {
+                    "en": "AGENCIES"
+                },
+                "version": "1.0",
+                "agencyID": "SDMX",
+                "isExternalReference": false,
+                "isPartial": true,
+                "agencies": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "agency",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).TEST"
+                            }
+                        ],
+                        "id": "TEST",
+                        "name": "Test Agency [95]",
+                        "names": {
+                            "en": "Test Agency [95]"
+                        }
+                    }
+                ]
+            }
+        ],
+        "valueLists": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "valuelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=TEST:CONTRACTS(1.0)"
+                    }
+                ],
+                "id": "CONTRACTS",
+                "name": "Contracts",
+                "names": {
+                    "en": "Contracts"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "valueItems": [
+                    {
+                        "name": "PROD TYPE",
+                        "names": {
+                            "en": "PROD TYPE"
+                        },
+                        "id": "PROD TYPE"
+                    },
+                    {
+                        "name": "All",
+                        "names": {
+                            "en": "All"
+                        },
+                        "id": "_T"
+                    }
+                ]
+            }
+        ],
+        "codelists": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_OBS_STATUS(1.0)"
+                    }
+                ],
+                "id": "CL_OBS_STATUS",
+                "name": "Observation status",
+                "names": {
+                    "en": "Observation status"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isPartial": false,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_OBS_STATUS(1.0).A"
+                            }
+                        ],
+                        "id": "A",
+                        "name": "Normal value",
+                        "names": {
+                            "en": "Normal value"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_OBS_STATUS(1.0).B"
+                            }
+                        ],
+                        "id": "B",
+                        "name": "Time series break",
+                        "names": {
+                            "en": "Time series break"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_FREQ(1.0)"
+                    }
+                ],
+                "id": "CL_FREQ",
+                "name": "cl",
+                "names": {
+                    "en": "cl"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isPartial": false,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL_FREQ(1.0).A"
+                            }
+                        ],
+                        "id": "A",
+                        "name": "Annual",
+                        "names": {
+                            "en": "Annual"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:OPTION_TYPE(1.0)"
+                    }
+                ],
+                "id": "OPTION_TYPE",
+                "name": "Types of options",
+                "names": {
+                    "en": "Types of options"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isPartial": false,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:OPTION_TYPE(1.0).B"
+                            }
+                        ],
+                        "id": "B",
+                        "name": "Both",
+                        "names": {
+                            "en": "Both"
+                        }
+                    }
+                ]
+            }
+        ],
+        "conceptSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "conceptscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=TEST:MDD_CONCEPTS(1.0)"
+                    }
+                ],
+                "id": "MDD_CONCEPTS",
+                "name": "Concepts",
+                "names": {
+                    "en": "Concepts"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isPartial": true,
+                "concepts": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_CONCEPTS(1.0).FREQ"
+                            }
+                        ],
+                        "id": "FREQ",
+                        "name": "Frequency",
+                        "names": {
+                            "en": "Frequency"
+                        },
+                        "coreRepresentation": {
+                            "enumerationFormat": {
+                                "dataType": "String"
+                            },
+                            "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_FREQ(1.0)"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_CONCEPTS(1.0).TIME_PERIOD"
+                            }
+                        ],
+                        "id": "TIME_PERIOD",
+                        "name": "Time Period",
+                        "names": {
+                            "en": "Time Period"
+                        },
+                        "coreRepresentation": {
+                            "format": {
+                                "isSequence": false,
+                                "dataType": "ObservationalTimePeriod"
+                            }
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_CONCEPTS(1.0).CONTRACT"
+                            }
+                        ],
+                        "id": "CONTRACT",
+                        "name": "Contract",
+                        "names": {
+                            "en": "Contract"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "conceptscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=TEST:MDD_MEASURES(1.0)"
+                    }
+                ],
+                "id": "MDD_MEASURES",
+                "name": "Measures",
+                "names": {
+                    "en": "Measures"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isPartial": false,
+                "concepts": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_MEASURES(1.0).TO"
+                            }
+                        ],
+                        "id": "TO",
+                        "name": "Turnover",
+                        "names": {
+                            "en": "Turnover"
+                        },
+                        "coreRepresentation": {
+                            "format": {
+                                "isSequence": false,
+                                "dataType": "BigInteger"
+                            }
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_MEASURES(1.0).OI"
+                            }
+                        ],
+                        "id": "OI",
+                        "name": "Open Interest",
+                        "names": {
+                            "en": "Open Interest"
+                        },
+                        "coreRepresentation": {
+                            "format": {
+                                "isSequence": false,
+                                "dataType": "BigInteger"
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "conceptscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=TEST:CONCEPTS(1.0)"
+                    }
+                ],
+                "id": "CONCEPTS",
+                "name": "Concepts used in the input files",
+                "names": {
+                    "en": "Concepts used in the input files"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isPartial": true,
+                "concepts": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).TO_STATUS"
+                            }
+                        ],
+                        "id": "TO_STATUS",
+                        "name": "Turnover status",
+                        "names": {
+                            "en": "Turnover status"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).OI_STATUS"
+                            }
+                        ],
+                        "id": "OI_STATUS",
+                        "name": "Open interest status",
+                        "names": {
+                            "en": "Open interest status"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).OBS_CONF"
+                            }
+                        ],
+                        "id": "OBS_CONF",
+                        "name": "Confidentiality",
+                        "names": {
+                            "en": "Confidentiality"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).OPTION_TYPE"
+                            }
+                        ],
+                        "id": "OPTION_TYPE",
+                        "name": "The type of option",
+                        "names": {
+                            "en": "The type of option"
+                        },
+                        "coreRepresentation": {
+                            "enumerationFormat": {
+                                "dataType": "String"
+                            },
+                            "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:OPTION_TYPE(1.0)"
+                        }
+                    }
+                ]
+            }
+        ],
+        "dataStructures": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "datastructure",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_MM(1.0)"
+                    }
+                ],
+                "id": "TEST_MM",
+                "name": "Schema for Tests",
+                "names": {
+                    "en": "Schema for Tests"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "dataStructureComponents": {
+                    "attributeList": {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "attributedescriptor",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.AttributeDescriptor=TEST:TEST_MM(1.0).AttributeDescriptor"
+                            }
+                        ],
+                        "id": "AttributeDescriptor",
+                        "attributes": [
+                            {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "observation": {}
+                                },
+                                "measureRelationship": [
+                                    "TO"
+                                ],
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_MM(1.0).TO_STATUS"
+                                    }
+                                ],
+                                "id": "TO_STATUS",
+                                "localRepresentation": {
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_OBS_STATUS(1.0)",
+                                    "minOccurs": 1
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).TO_STATUS"
+                            },
+                            {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "observation": {}
+                                },
+                                "measureRelationship": [
+                                    "OI"
+                                ],
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_MM(1.0).OI_STATUS"
+                                    }
+                                ],
+                                "id": "OI_STATUS",
+                                "localRepresentation": {
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_OBS_STATUS(1.0)",
+                                    "minOccurs": 1
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).OI_STATUS"
+                            },
+                            {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "observation": {}
+                                },
+                                "measureRelationship": [
+                                    "OI",
+                                    "TO"
+                                ],
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_MM(1.0).OBS_CONF"
+                                    }
+                                ],
+                                "id": "OBS_CONF",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).OBS_CONF"
+                            }
+                        ]
+                    },
+                    "dimensionList": {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "dimensiondescriptor",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=TEST:TEST_MM(1.0).DimensionDescriptor"
+                            }
+                        ],
+                        "id": "DimensionDescriptor",
+                        "dimensions": [
+                            {
+                                "position": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=TEST:TEST_MM(1.0).FREQ"
+                                    }
+                                ],
+                                "id": "FREQ",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:CL_FREQ(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_CONCEPTS(1.0).FREQ"
+                            },
+                            {
+                                "position": 2,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=TEST:TEST_MM(1.0).CONTRACT"
+                                    }
+                                ],
+                                "id": "CONTRACT",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=TEST:CONTRACTS(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_CONCEPTS(1.0).CONTRACT"
+                            },
+                            {
+                                "position": 3,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=TEST:TEST_MM(1.0).OPTION_TYPE"
+                                    }
+                                ],
+                                "id": "OPTION_TYPE",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:OPTION_TYPE(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CONCEPTS(1.0).OPTION_TYPE"
+                            }
+                        ],
+                        "timeDimension": {
+                            "links": [
+                                {
+                                    "rel": "self",
+                                    "type": "timedimension",
+                                    "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                    "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=TEST:TEST_MM(1.0).TIME_PERIOD"
+                                }
+                            ],
+                            "id": "TIME_PERIOD",
+                            "localRepresentation": {
+                                "format": {
+                                    "dataType": "ObservationalTimePeriod"
+                                }
+                            },
+                            "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_CONCEPTS(1.0).TIME_PERIOD"
+                        }
+                    },
+                    "measureList": {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "measuredescriptor",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.MeasureDescriptor=TEST:TEST_MM(1.0).MeasureDescriptor"
+                            }
+                        ],
+                        "id": "MeasureDescriptor",
+                        "measures": [
+                            {
+                                "usage": "mandatory",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "measure",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Measure=TEST:TEST_MM(1.0).TO"
+                                    }
+                                ],
+                                "id": "TO",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "Double"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_MEASURES(1.0).TO"
+                            },
+                            {
+                                "usage": "mandatory",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "measure",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Measure=TEST:TEST_MM(1.0).OI"
+                                    }
+                                ],
+                                "id": "OI",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "Double"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:MDD_MEASURES(1.0).OI"
+                            }
+                        ]
+                    }
+                }
+            }
+        ]
+    }
+}
