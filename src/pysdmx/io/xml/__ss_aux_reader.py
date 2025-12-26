@@ -40,7 +40,9 @@ def _reading_str_series(dataset: Dict[str, Any]) -> pd.DataFrame:
     return df
 
 
-def _reading_group_data(dataset: Dict[str, Any], df: pd.DataFrame) -> pd.DataFrame:
+def _reading_group_data(
+    dataset: Dict[str, Any], df: pd.DataFrame
+) -> pd.DataFrame:
     # Structure Specific Group Data
     dataset[GROUP] = add_list(dataset[GROUP])
     for group in dataset[GROUP]:
@@ -48,7 +50,9 @@ def _reading_group_data(dataset: Dict[str, Any], df: pd.DataFrame) -> pd.DataFra
         cols_to_delete = [x for x in group_df.columns if ":type" in x]
         for x in cols_to_delete:
             del group_df[x]
-        common_columns = list(set(df.columns).intersection(set(group_df.columns)))
+        common_columns = list(
+            set(df.columns).intersection(set(group_df.columns))
+        )
         if common_columns:
             df = pd.merge(df, group_df, on=common_columns, how="left")
     return df
