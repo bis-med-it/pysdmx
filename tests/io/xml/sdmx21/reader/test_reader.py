@@ -113,6 +113,11 @@ def prov_agreement_urns_path():
 
 
 @pytest.fixture
+def multipel_groups_path():
+    return Path(__file__).parent / "samples" / "multiple_groups.xml"
+
+
+@pytest.fixture
 def error_str(error_304_path):
     with open(error_304_path, "r") as f:
         text = f.read()
@@ -965,3 +970,9 @@ def test_prov_agreement_urns(prov_agreement_urns_path):
     assert prov_agreement.short_urn == "ProvisionAgreement=MD:TEST(1.0)"
     assert prov_agreement.dataflow == "Dataflow=MD:TEST(1.0)"
     assert prov_agreement.provider == "DataProvider=MD:DATA_PROVIDERS(1.0).MD"
+
+
+def test_group_attributes_multiple_groups(multipel_groups_path):
+    df = read_sdmx(multipel_groups_path).data[0].data
+    assert df["UNIT"].iloc[0] == "USD"
+    assert df["UNIT"].iloc[1] == "USD"
