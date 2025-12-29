@@ -751,6 +751,11 @@ class StructureParser(Struct):
             del comp[ATT_REL]
 
         if ME_REL in comp:
+            measures = add_list(comp[ME_REL][MSR])
+            if len(measures) == 1 and measures[0] == "OBS_VALUE":
+                comp[ATT_LVL] = "O"
+            else:
+                comp[ATT_LVL] = ",".join(measures)
             del comp[ME_REL]
 
         if AS_STATUS in comp or USAGE in comp:
