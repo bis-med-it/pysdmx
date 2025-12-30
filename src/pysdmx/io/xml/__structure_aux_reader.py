@@ -767,14 +767,10 @@ class StructureParser(Struct):
                 comp[REQUIRED] = False
             del comp[status_key]
 
-        if "position" in comp:
-            del comp["position"]
-
-        if ANNOTATIONS in comp:
-            del comp[ANNOTATIONS]
-
-        if CON_ROLE in comp:
-            del comp[CON_ROLE]
+        unwanted_keys = ["position", ANNOTATIONS, CON_ROLE]
+        for key in unwanted_keys:
+            if key in comp:
+                del comp[key]
 
         return Component(**comp)
 
