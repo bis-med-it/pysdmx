@@ -495,8 +495,6 @@ def get_structure(dataset: Dataset) -> str:
     Returns:
         The structure Short URN
     """
-    if isinstance(dataset.structure, str):
-        return dataset.structure
     return dataset.structure.short_urn
 
 
