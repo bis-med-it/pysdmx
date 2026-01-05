@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.io import get_datasets, read_sdmx, write_sdmx
 from pysdmx.io.csv.sdmx10.writer import write as write_csv10
 from pysdmx.io.csv.sdmx20.writer import write as write_csv20
@@ -161,36 +162,25 @@ def test_data_rwr_no_structure(samples_folder, filename, output_format):
 
     datasets = get_datasets(data_path)
 
-    output_str = write_sdmx(datasets, sdmx_format=Format.DATA_SDMX_CSV_2_0_0)
-    datasets_2 = get_datasets(output_str)
-    assert len(datasets) == len(datasets_2), "Number of datasets mismatch"
-
-    pd.testing.assert_frame_equal(
-        datasets[0].data,
-        datasets_2[0].data,
-        check_dtype=False,
-        check_like=True,
-    )
+    # Writing without a Schema should raise an Invalid error
+    with pytest.raises(Invalid):
+        write_sdmx(datasets, sdmx_format=output_format)
 
 
 def test_read_xml_write_csv_10(xml_data_path, csv_10):
     # Read the SDMX XML data
     data = read_sdmx(xml_data_path, validate=True).data
-    # Write it to SDMX CSV 1.0 format
-    result = write_csv10(
-        data,
-    )
-    assert result == csv_10
+    # Writing without a Schema should raise an Invalid error
+    with pytest.raises(Invalid):
+        write_csv10(data)
 
 
 def test_read_xml_write_csv_20(xml_data_path, csv_20):
     # Read the SDMX XML data
     data = read_sdmx(xml_data_path, validate=True).data
-    # Write it to SDMX CSV 2.0 format
-    result = write_csv20(
-        data,
-    )
-    assert result == csv_20
+    # Writing without a Schema should raise an Invalid error
+    with pytest.raises(Invalid):
+        write_csv20(data)
 
 
 @pytest.mark.parametrize(

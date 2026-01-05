@@ -519,12 +519,12 @@ def test_write_generic_with_groups(header, ds_with_group):
     assert result == sample
 
 
-def test_data_scape_quote():
+def test_data_scape_quote(content):
     # Create dataframe with quotation mark in string
-    data = pd.DataFrame(
-        data={"A": 'quote="'}, index=pd.DatetimeIndex(["2000-1-1"])
-    )
-    dataset = PandasDataset(data=data, structure="Dataflow=Short:Urn(1.0)")
+    data = pd.DataFrame({"A": 'quote="'}, index=pd.DatetimeIndex(["2000-1-1"]))
+    dataset: PandasDataset = content["DataStructure=MD:TEST(1.0)"]
+    dataset.data = data
+
     result = write_str_spec([dataset])
     assert result is not None
     assert 'A="quote=&quot;"' in result
