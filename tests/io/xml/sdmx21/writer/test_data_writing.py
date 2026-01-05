@@ -528,3 +528,53 @@ def test_data_scape_quote(content):
     result = write_str_spec([dataset])
     assert result is not None
     assert 'A="quote=&quot;"' in result
+
+
+def test_generic_with_empty_attributes(header, content):
+    """Test that empty attributes don't generate <Attributes> section."""
+    ds: PandasDataset = content["DataStructure=MD:TEST(1.0)"]
+    # All attribute values are empty strings to test the branch where
+    # attributes exist in schema but should not be written to output
+    ds.data = pd.DataFrame(
+        {
+            "DIM1": [1, 1],
+            "DIM2": [2, 3],
+            "ATT1": ["", ""],  # Series level attr (attached to DIM1)
+            "ATT2": ["", ""],  # Obs level attr
+            "M1": [10, 11],
+        }
+    )
+    ds.attributes = {}
+
+    # ALL_DIM mode: empty obs attributes should not generate <Attributes>
+    result_all = write_gen([ds], header=header)
+    assert "<gen:Attributes>" not in result_all
+
+    # Series mode: empty series/obs attributes should not generate <Attributes>
+    result_ser = write_gen(
+        [ds],
+        header=header,
+        dimension_at_observation={"DataStructure=MD:TEST(1.0)": "DIM2"},
+    )
+    assert "<gen:Attributes>" not in result_ser
+    assert "<gen:SeriesKey>" in result_ser
+    assert "<gen:Series>" in result_ser
+    assert 'id="ATT2"' not in result_ser
+
+
+def test_str_spec_with_empty_attributes(header, ds_with_group):
+    """Test that empty attributes don't get written in structure-specific."""
+    ds: PandasDataset = ds_with_group["DataStructure=MD:TEST(1.0)"]
+    # ATT3 is a group-level attribute (attached to DIM2 which is in Group)
+    # Empty values should not appear in output as ATT3=""
+    ds.data["ATT3"] = ["", "", ""]
+    ds.attributes = {}
+
+    result = write_str_spec(
+        [ds],
+        header=header,
+        dimension_at_observation={"DataStructure=MD:TEST(1.0)": "DIM1"},
+    )
+    # Group element should exist but empty ATT3 should be omitted
+    assert "<Group" in result
+    assert 'ATT3=""' not in result
