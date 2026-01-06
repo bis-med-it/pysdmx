@@ -284,3 +284,29 @@ def test_data_write_data_structure_31_no_header(
         "datastructure.DataStructure=MD:TEST(1.0)",
         "structureID": "TEST",
     }
+
+
+def test_dimension_at_observation_all_dimensions_31(
+    header,
+    data_structure,
+):
+    result = write_str_spec(
+        datasets=[data_structure],
+        header=header,
+        prettyprint=True,
+        dimension_at_observation={
+            "DataStructure=MD:TEST(1.0)": "AllDimensions"
+        },
+    )
+    assert result is not None
+
+    dict_info = xmltodict.parse(
+        result,
+        **XML_OPTIONS,
+    )
+    structure = (
+        dict_info.get("StructureSpecificData").get("Header").get("Structure")
+    )
+
+    assert structure is not None
+    assert structure.get("dimensionAtObservation") == "AllDimensions"
