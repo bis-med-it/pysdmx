@@ -26,6 +26,26 @@ async def check_dsd_async(mock, fmr: AsyncRegistryClient, query, body):
     __check_content(dsds)
 
 
+def check_multi_meas(mock, fmr: RegistryClient, query, body):
+    """Multiple measures are extracted, including attachment level."""
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    dsds = fmr.get_data_structures("TEST", "TEST_MM", "1.0")
+
+    assert len(mock.calls) == 1
+    dsd = dsds[0]
+
+    assert len(dsd.components.attributes) == 3
+    for a in dsd.components.attributes:
+        if a.id == "TO_STATUS":
+            assert a.attachment_level == "TO"
+        elif a.id == "OI_STATUS":
+            assert a.attachment_level == "OI"
+        else:
+            assert a.id == "OBS_CONF"
+            assert a.attachment_level == "OI,TO"
+
+
 def __check_content(dsds):
     assert len(dsds) == 1
     dsd = dsds[0]

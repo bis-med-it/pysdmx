@@ -39,6 +39,7 @@ from pysdmx.model import (
     Dataflow,
     DataflowInfo,
     DataProvider,
+    DataStructureDefinition,
     Hierarchy,
     HierarchyAssociation,
     Metadataflow,
@@ -679,7 +680,7 @@ class RegistryClient(__BaseRegistryClient):
         agency: str = "*",
         id: str = "*",
         version: str = "+",
-    ) -> Sequence[Dataflow]:
+    ) -> Sequence[DataStructureDefinition]:
         """Get the data structures(s) matching the supplied parameters.
 
         Args:
@@ -1253,7 +1254,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         agency: str = "*",
         id: str = "*",
         version: str = "+",
-    ) -> Sequence[Dataflow]:
+    ) -> Sequence[DataStructureDefinition]:
         """Get the data structures(s) matching the supplied parameters.
 
         Args:

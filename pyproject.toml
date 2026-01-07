@@ -1,6 +1,6 @@
 [project]
 name = "pysdmx"
-version = "1.10.0"
+version = "1.10.1"
 description = "Your opinionated Python SDMX library"
 license = { text = "Apache-2.0" }
 readme = "README.rst"
@@ -10,7 +10,9 @@ authors = [
     { name = "Stratos Nikoloutsos", email = "<stratos.nikoloutsos@bis.org>" },
     { name = "Francisco Javier Hernandez del Caño", email = "<javier.hernandez@meaningfuldata.eu>" },
     { name = "Mateo de Lorenzo Argelés", email = "<mateo.delorenzo@meaningfuldata.eu>" },
-    { name = "Jose Antonio Franco Martin", email = "<jose.franco@meaningfuldata.eu>" }
+    { name = "Jose Antonio Franco Martin", email = "<jose.franco@meaningfuldata.eu>" },
+    { name = "Mario Cortés Ruiz", email = "<mario.cortes@meaningfuldata.eu>" }
+
 ]
 keywords = ["sdmx", "data discovery", "data retrieval", "metadata", "fmr"]
 classifiers = [

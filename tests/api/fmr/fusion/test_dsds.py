@@ -31,8 +31,26 @@ def query(fmr):
 
 
 @pytest.fixture
+def query_mm(fmr):
+    res = "/structure/datastructure/"
+    agency = "TEST"
+    id = "TEST_MM"
+    version = "1.0"
+    return (
+        f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+        "?detail=referencepartial&references=descendants"
+    )
+
+
+@pytest.fixture
 def body():
     with open("tests/api/fmr/samples/dsd/dsd.fusion.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture
+def body_mm():
+    with open("tests/api/fmr/samples/dsd/multi_meas.fusion.json", "rb") as f:
         return f.read()
 
 
@@ -45,3 +63,8 @@ def test_dsd(respx_mock, fmr, query, body):
 async def test_dsd_async(respx_mock, async_fmr, query, body):
     """get_data_structures() should return a DSD (async)."""
     await checks.check_dsd_async(respx_mock, async_fmr, query, body)
+
+
+def test_multiple_measures(respx_mock, fmr, query_mm, body_mm):
+    """Multiple measures are extracted, including attachment level."""
+    checks.check_multi_meas(respx_mock, fmr, query_mm, body_mm)

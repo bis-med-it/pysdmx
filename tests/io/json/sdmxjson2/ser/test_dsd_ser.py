@@ -330,6 +330,103 @@ def no_concept_ref():
     )
 
 
+@pytest.fixture
+def dsd_multi_meas():
+    f1 = Code("A")
+    f2 = Code("M")
+    cl = Codelist("CL_FREQ", agency="BIS", version="1.0", items=[f1, f2])
+    c1 = Component(
+        "FREQ",
+        True,
+        Role.DIMENSION,
+        Concept(
+            "FREQ",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).FREQ",
+        ),
+        DataType.ALPHA,
+        Facets(min_length=1, max_length=1),
+        local_codes=cl,
+        local_enum_ref=f"{_BASE}codelist.Codelist=BIS:CL_FREQ(1.0)",
+    )
+    c2 = Component(
+        "CUR1",
+        True,
+        Role.DIMENSION,
+        Concept(
+            "CUR1",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).CUR1",
+        ),
+        DataType.ALPHA,
+        Facets(min_length=3, max_length=3),
+    )
+    c3 = Component(
+        "CUR2",
+        True,
+        Role.DIMENSION,
+        Concept(
+            "CUR2",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).CUR2",
+        ),
+        DataType.ALPHA,
+        Facets(min_length=3, max_length=3),
+    )
+    c4 = Component(
+        "TIME_PERIOD",
+        True,
+        Role.DIMENSION,
+        Concept(
+            "TIME_PERIOD",
+            urn=f"{_BASE}conceptscheme.Concept=Z:ZZ(1.0).TIME_PERIOD",
+        ),
+        DataType.PERIOD,
+    )
+    c5 = Component(
+        "OI",
+        False,
+        Role.MEASURE,
+        ItemReference("Concept", "Z", "ZZ", "1.0", "OI"),
+        DataType.FLOAT,
+    )
+    c6 = Component(
+        "TO",
+        False,
+        Role.MEASURE,
+        ItemReference("Concept", "Z", "ZZ", "1.0", "TO"),
+        DataType.FLOAT,
+    )
+    c7 = Component(
+        "TO_STATUS",
+        True,
+        Role.ATTRIBUTE,
+        ItemReference("Concept", "Z", "ZZ", "1.0", "TO_STATUS"),
+        DataType.STRING,
+        Facets(min_length=1, max_length=1),
+        attachment_level="TO",
+    )
+    c8 = Component(
+        "OI_STATUS",
+        True,
+        Role.ATTRIBUTE,
+        ItemReference("Concept", "Z", "ZZ", "1.0", "OI_STATUS"),
+        DataType.STRING,
+        Facets(min_length=1, max_length=1),
+        attachment_level="OI",
+    )
+    c9 = Component(
+        "OBS_CONF",
+        True,
+        Role.ATTRIBUTE,
+        ItemReference("Concept", "Z", "ZZ", "1.0", "OBS_CONF"),
+        DataType.STRING,
+        Facets(min_length=1, max_length=1),
+        attachment_level="TO,OI",
+    )
+    comps = Components([c1, c2, c3, c4, c5, c6, c7, c8, c9])
+    return DataStructureDefinition(
+        "EXR", name="Exchange rates", agency="BIS", components=comps
+    )
+
+
 def test_dsd(dsd: DataStructureDefinition):
     sjson = JsonDataStructure.from_model(dsd)
 
@@ -483,3 +580,25 @@ def test_dsd_no_measures(dsd_no_measures: DataStructureDefinition):
 
     # Check the measures
     assert sjson.dataStructureComponents.measureList is None
+
+
+def test_dsd_multi_measures(dsd_multi_meas: DataStructureDefinition):
+    sjson = JsonDataStructure.from_model(dsd_multi_meas)
+
+    assert sjson.dataStructureComponents.attributeList is not None
+    assert len(sjson.dataStructureComponents.attributeList.attributes) == 3
+
+    attr1 = sjson.dataStructureComponents.attributeList.attributes[0]
+    assert attr1.id == "TO_STATUS"
+    assert attr1.attributeRelationship.observation == {}
+    assert attr1.measureRelationship == ["TO"]
+
+    attr2 = sjson.dataStructureComponents.attributeList.attributes[1]
+    assert attr2.id == "OI_STATUS"
+    assert attr2.attributeRelationship.observation == {}
+    assert attr2.measureRelationship == ["OI"]
+
+    attr3 = sjson.dataStructureComponents.attributeList.attributes[2]
+    assert attr3.id == "OBS_CONF"
+    assert attr3.attributeRelationship.observation == {}
+    assert attr3.measureRelationship == ["TO", "OI"]
