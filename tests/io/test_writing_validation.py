@@ -8,6 +8,7 @@ from pysdmx.io import get_datasets, read_sdmx, write_sdmx
 from pysdmx.io.csv.sdmx10.writer import write as write_csv10
 from pysdmx.io.csv.sdmx20.writer import write as write_csv20
 from pysdmx.io.format import Format
+from pysdmx.model.dataflow import Component, Components, Concept, Role, Schema
 
 
 @pytest.fixture
@@ -33,6 +34,26 @@ def csv_20():
 @pytest.fixture
 def samples_folder():
     return Path(__file__).parent / "samples"
+
+
+@pytest.fixture
+def schema():
+    return Schema(
+        context="dataflow",
+        agency="Short",
+        id="Urn",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="A",
+                    required=False,
+                    role=Role.MEASURE,
+                    concept=Concept(id="A"),
+                )
+            ]
+        ),
+    )
 
 
 data_params = [
@@ -167,20 +188,30 @@ def test_data_rwr_no_structure(samples_folder, filename, output_format):
         write_sdmx(datasets, sdmx_format=output_format)
 
 
-def test_read_xml_write_csv_10(xml_data_path, csv_10):
+def test_read_xml_write_csv_10(xml_data_path, csv_10, schema):
     # Read the SDMX XML data
     data = read_sdmx(xml_data_path, validate=True).data
-    # Writing without a Schema should raise an Invalid error
-    with pytest.raises(Invalid):
-        write_csv10(data)
+    for ds in data:
+        ds.structure = schema
+
+    # Write it to SDMX CSV 1.0 format
+    result = write_csv10(
+        data,
+    )
+    assert result == csv_10
 
 
-def test_read_xml_write_csv_20(xml_data_path, csv_20):
+def test_read_xml_write_csv_20(xml_data_path, csv_20, schema):
     # Read the SDMX XML data
     data = read_sdmx(xml_data_path, validate=True).data
-    # Writing without a Schema should raise an Invalid error
-    with pytest.raises(Invalid):
-        write_csv20(data)
+    for ds in data:
+        ds.structure = schema
+
+    # Write it to SDMX CSV 2.0 format
+    result = write_csv20(
+        data,
+    )
+    assert result == csv_20
 
 
 @pytest.mark.parametrize(
