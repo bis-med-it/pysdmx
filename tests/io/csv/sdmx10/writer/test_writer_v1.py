@@ -47,6 +47,71 @@ def schema(dsd_path):
 
 
 @pytest.fixture
+def schema_manual():
+    """Schema manually built without using read_sdmx for @pytest.mark.data."""
+    from pysdmx.model import Component, Components, Concept, Role, Schema
+
+    dim1_concept = Concept("DIM1", name="DIMENSION 1")
+    dim2_concept = Concept("DIM2", name="DIMENSION 2")
+    time_period_concept = Concept("TIME_PERIOD", name="TIME PERIOD")
+    att1_concept = Concept("ATT1", name="ATTRIBUTE 1")
+    att2_concept = Concept("ATT2", name="ATTRIBUTE 2")
+    obs_value_concept = Concept("OBS_VALUE", name="OBS_VALUE")
+
+    components = Components(
+        [
+            Component(
+                "DIM1",
+                required=True,
+                role=Role.DIMENSION,
+                concept=dim1_concept,
+            ),
+            Component(
+                "DIM2",
+                required=True,
+                role=Role.DIMENSION,
+                concept=dim2_concept,
+            ),
+            Component(
+                "TIME_PERIOD",
+                required=True,
+                role=Role.DIMENSION,
+                concept=time_period_concept,
+            ),
+            Component(
+                "ATT1",
+                required=False,
+                role=Role.ATTRIBUTE,
+                concept=att1_concept,
+                attachment_level="DIM1,DIM2",
+            ),
+            Component(
+                "ATT2",
+                required=False,
+                role=Role.ATTRIBUTE,
+                concept=att2_concept,
+                attachment_level="OBS_VALUE",
+            ),
+            Component(
+                "OBS_VALUE",
+                required=True,
+                role=Role.MEASURE,
+                concept=obs_value_concept,
+            ),
+        ]
+    )
+
+    return Schema(
+        context="datastructure",
+        agency="MD",
+        id="MD_TEST",
+        version="1.0",
+        components=components,
+        name="MD TEST",
+    )
+
+
+@pytest.fixture
 def csv_labels_id():
     base_path = Path(__file__).parent / "samples" / "csv_labels_id.csv"
     return str(base_path)
@@ -67,11 +132,11 @@ def csv_time_format_original():
 
 
 @pytest.mark.data
-def test_to_sdmx_csv_writing(data_path, data_path_reference, schema):
+def test_to_sdmx_csv_writing(data_path, data_path_reference, schema_manual):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),
-        structure=schema,
+        structure=schema_manual,
     )
     dataset.data = dataset.data.astype("str")
     result_sdmx_csv = write([dataset])
@@ -86,12 +151,12 @@ def test_to_sdmx_csv_writing(data_path, data_path_reference, schema):
 
 @pytest.mark.data
 def test_to_sdmx_csv_writing_to_file(
-    data_path, data_path_reference, schema, tmpdir
+    data_path, data_path_reference, schema_manual, tmpdir
 ):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),
-        structure=schema,
+        structure=schema_manual,
     )
     dataset.data = dataset.data.astype("str")
     write([dataset], output_path=tmpdir / "output.csv")
@@ -106,12 +171,12 @@ def test_to_sdmx_csv_writing_to_file(
 
 @pytest.mark.data
 def test_writer_attached_attrs(
-    data_path, data_path_reference_atch_atts, schema
+    data_path, data_path_reference_atch_atts, schema_manual
 ):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),
-        structure=schema,
+        structure=schema_manual,
     )
     dataset.data = dataset.data.astype("str")
     result_sdmx_csv = write([dataset])
@@ -177,12 +242,7 @@ def test_writer_time_format_original(
     )
 
 
-def test_writer_time_format_normalized(data_path_optional, dsd_path):
-    from pysdmx.io.reader import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_time_format_normalized(data_path_optional, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),

@@ -24,16 +24,81 @@ def schema(dsd_path):
 
 
 @pytest.fixture
-def schema_provision_agreement(schema):
+def schema_manual():
+    """Schema manually built without using read_sdmx for @pytest.mark.data."""
+    from pysdmx.model import Component, Components, Concept, Role, Schema
+
+    dim1_concept = Concept("DIM1", name="DIMENSION 1")
+    dim2_concept = Concept("DIM2", name="DIMENSION 2")
+    time_period_concept = Concept("TIME_PERIOD", name="TIME PERIOD")
+    att1_concept = Concept("ATT1", name="ATTRIBUTE 1")
+    att2_concept = Concept("ATT2", name="ATTRIBUTE 2")
+    obs_value_concept = Concept("OBS_VALUE", name="OBS_VALUE")
+
+    components = Components(
+        [
+            Component(
+                "DIM1",
+                required=True,
+                role=Role.DIMENSION,
+                concept=dim1_concept,
+            ),
+            Component(
+                "DIM2",
+                required=True,
+                role=Role.DIMENSION,
+                concept=dim2_concept,
+            ),
+            Component(
+                "TIME_PERIOD",
+                required=True,
+                role=Role.DIMENSION,
+                concept=time_period_concept,
+            ),
+            Component(
+                "ATT1",
+                required=False,
+                role=Role.ATTRIBUTE,
+                concept=att1_concept,
+                attachment_level="DIM1,DIM2",
+            ),
+            Component(
+                "ATT2",
+                required=False,
+                role=Role.ATTRIBUTE,
+                concept=att2_concept,
+                attachment_level="OBS_VALUE",
+            ),
+            Component(
+                "OBS_VALUE",
+                required=True,
+                role=Role.MEASURE,
+                concept=obs_value_concept,
+            ),
+        ]
+    )
+
+    return Schema(
+        context="datastructure",
+        agency="MD",
+        id="MD_TEST",
+        version="1.0",
+        components=components,
+        name="MD TEST",
+    )
+
+
+@pytest.fixture
+def schema_provision_agreement(schema_manual):
     from pysdmx.model import Schema
 
     return Schema(
         context="provisionagreement",
-        agency=schema.agency,
-        id=schema.id,
-        version=schema.version,
-        components=schema.components,
-        name=schema.name,
+        agency=schema_manual.agency,
+        id=schema_manual.id,
+        version=schema_manual.version,
+        components=schema_manual.components,
+        name=schema_manual.name,
     )
 
 
@@ -145,12 +210,12 @@ def test_to_sdmx_csv_writing_to_file(
 
 @pytest.mark.data
 def test_writer_attached_attrs(
-    data_path, data_path_reference_attch_atts, schema
+    data_path, data_path_reference_attch_atts, schema_manual
 ):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),
-        structure=schema,
+        structure=schema_manual,
     )
     dataset.data = dataset.data.astype(str)
     result_sdmx = write([dataset])
@@ -164,11 +229,13 @@ def test_writer_attached_attrs(
 
 
 @pytest.mark.data
-def test_writer_with_action(data_path, data_path_reference_action, schema):
+def test_writer_with_action(
+    data_path, data_path_reference_action, schema_manual
+):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),
-        structure=schema,
+        structure=schema_manual,
         action=ActionType.Replace,
     )
     dataset.data = dataset.data.astype(str)
