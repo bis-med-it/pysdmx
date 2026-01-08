@@ -19,7 +19,7 @@ NUMERIC_TYPES = {
 }
 
 
-def _validate_schema_exists(dataset: PandasDataset) -> Schema:
+def validate_schema_exists(dataset: PandasDataset) -> Schema:
     """Validates that the dataset has a Schema defined.
 
     Args:

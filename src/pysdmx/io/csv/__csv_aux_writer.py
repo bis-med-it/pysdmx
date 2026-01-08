@@ -4,8 +4,8 @@ from typing import List, Literal, Optional, Sequence
 import pandas as pd
 
 from pysdmx.io._pd_utils import (
-    _validate_schema_exists,
     transform_dataframe_for_writing,
+    validate_schema_exists,
 )
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
@@ -75,7 +75,7 @@ def _write_csv_2_aux(
     dataframes = []
     for dataset in datasets:
         # Validate that the dataset has a Schema defined
-        schema = _validate_schema_exists(dataset)
+        schema = validate_schema_exists(dataset)
 
         # Create a copy and apply null value transformation
         df: pd.DataFrame = copy(dataset.data)

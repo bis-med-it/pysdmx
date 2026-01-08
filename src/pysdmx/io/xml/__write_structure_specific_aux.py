@@ -6,8 +6,8 @@ from typing import Any, Dict, List
 import pandas as pd
 
 from pysdmx.io._pd_utils import (
-    _validate_schema_exists,
     transform_dataframe_for_writing,
+    validate_schema_exists,
 )
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import (
@@ -122,7 +122,7 @@ def __write_data_single_dataset(
         f'action="{dataset.action.value}">{nl}'
     )
     # Transform DataFrame for null value handling
-    schema = _validate_schema_exists(dataset)
+    schema = validate_schema_exists(dataset)
     transformed_data = transform_dataframe_for_writing(dataset.data, schema)
 
     data = ""

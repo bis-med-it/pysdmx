@@ -7,8 +7,8 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 import pandas as pd
 
 from pysdmx.io._pd_utils import (
-    _validate_schema_exists,
     transform_dataframe_for_writing,
+    validate_schema_exists,
 )
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
@@ -178,7 +178,7 @@ def __write_data_single_dataset(
         data += f"{child2}</{ABBR_GEN}:Attributes>{nl}"
 
     # Transform DataFrame for null value handling
-    schema = _validate_schema_exists(dataset)
+    schema = validate_schema_exists(dataset)
     transformed_data = transform_dataframe_for_writing(dataset.data, schema)
 
     if dim == ALL_DIM:

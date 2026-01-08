@@ -1,7 +1,7 @@
 from typing import Dict, Optional, Sequence
 
 from pysdmx.errors import Invalid
-from pysdmx.io._pd_utils import _validate_schema_exists
+from pysdmx.io._pd_utils import validate_schema_exists
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import ALL_DIM
 from pysdmx.model import Role, Schema
@@ -13,7 +13,7 @@ def check_content_dataset(content: Sequence[PandasDataset]) -> None:
         raise Invalid("Message Content must only contain a Dataset sequence.")
 
     for dataset in content:
-        _validate_schema_exists(dataset)
+        validate_schema_exists(dataset)
 
 
 def check_dimension_at_observation(
