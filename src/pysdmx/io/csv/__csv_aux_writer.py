@@ -4,7 +4,7 @@ from typing import List, Literal, Optional, Sequence
 import pandas as pd
 
 from pysdmx.io._pd_utils import (
-    _transform_dataframe_for_writing,
+    transform_dataframe_for_writing,
     _validate_schema_exists,
 )
 from pysdmx.io.pd import PandasDataset
@@ -79,7 +79,7 @@ def _write_csv_2_aux(
 
         # Create a copy and apply null value transformation
         df: pd.DataFrame = copy(dataset.data)
-        df = _transform_dataframe_for_writing(df, schema)
+        df = transform_dataframe_for_writing(df, schema)
 
         structure_ref, unique_id = dataset.short_urn.split("=", maxsplit=1)
 

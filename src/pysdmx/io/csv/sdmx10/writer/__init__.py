@@ -7,7 +7,7 @@ from typing import Literal, Optional, Sequence, Union
 import pandas as pd
 
 from pysdmx.io._pd_utils import (
-    _transform_dataframe_for_writing,
+    transform_dataframe_for_writing,
     _validate_schema_exists,
 )
 from pysdmx.io.csv.__csv_aux_writer import __write_time_period
@@ -55,7 +55,7 @@ def write(
 
         # Create a copy and apply null value transformation
         df: pd.DataFrame = copy(dataset.data)
-        df = _transform_dataframe_for_writing(df, schema)
+        df = transform_dataframe_for_writing(df, schema)
 
         # Add additional attributes to the dataset
         for k, v in dataset.attributes.items():

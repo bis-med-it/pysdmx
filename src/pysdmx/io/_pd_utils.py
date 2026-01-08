@@ -111,7 +111,7 @@ def _is_nullable_integer_dtype(dtype: Any) -> bool:
     )
 
 
-def _transform_dataframe_for_writing(
+def transform_dataframe_for_writing(
     df: pd.DataFrame,
     schema: Schema,
 ) -> pd.DataFrame:

@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 import pandas as pd
 
 from pysdmx.io._pd_utils import (
-    _transform_dataframe_for_writing,
+    transform_dataframe_for_writing,
     _validate_schema_exists,
 )
 from pysdmx.io.pd import PandasDataset
@@ -123,7 +123,7 @@ def __write_data_single_dataset(
     )
     # Transform DataFrame for null value handling
     schema = _validate_schema_exists(dataset)
-    transformed_data = _transform_dataframe_for_writing(dataset.data, schema)
+    transformed_data = transform_dataframe_for_writing(dataset.data, schema)
 
     data = ""
     if dim == ALL_DIM:

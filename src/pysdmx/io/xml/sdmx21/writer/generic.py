@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 import pandas as pd
 
 from pysdmx.io._pd_utils import (
-    _transform_dataframe_for_writing,
+    transform_dataframe_for_writing,
     _validate_schema_exists,
 )
 from pysdmx.io.format import Format
@@ -179,7 +179,7 @@ def __write_data_single_dataset(
 
     # Transform DataFrame for null value handling
     schema = _validate_schema_exists(dataset)
-    transformed_data = _transform_dataframe_for_writing(dataset.data, schema)
+    transformed_data = transform_dataframe_for_writing(dataset.data, schema)
 
     if dim == ALL_DIM:
         obs_structure = __generate_obs_structure(dataset)
