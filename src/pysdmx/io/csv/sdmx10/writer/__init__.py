@@ -7,8 +7,8 @@ from typing import Literal, Optional, Sequence, Union
 import pandas as pd
 
 from pysdmx.io._pd_utils import (
-    transform_dataframe_for_writing,
     _validate_schema_exists,
+    transform_dataframe_for_writing,
 )
 from pysdmx.io.csv.__csv_aux_writer import __write_time_period
 from pysdmx.io.pd import PandasDataset

@@ -4,8 +4,8 @@ from typing import List, Literal, Optional, Sequence
 import pandas as pd
 
 from pysdmx.io._pd_utils import (
-    transform_dataframe_for_writing,
     _validate_schema_exists,
+    transform_dataframe_for_writing,
 )
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema

@@ -7,8 +7,8 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 import pandas as pd
 
 from pysdmx.io._pd_utils import (
-    transform_dataframe_for_writing,
     _validate_schema_exists,
+    transform_dataframe_for_writing,
 )
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
