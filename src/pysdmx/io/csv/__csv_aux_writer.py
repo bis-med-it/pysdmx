@@ -3,7 +3,10 @@ from typing import List, Literal, Optional, Sequence
 
 import pandas as pd
 
-from pysdmx.io._pd_utils import _validate_schema_exists
+from pysdmx.io._pd_utils import (
+    _transform_dataframe_for_writing,
+    _validate_schema_exists,
+)
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
 from pysdmx.model.dataset import ActionType
@@ -72,10 +75,12 @@ def _write_csv_2_aux(
     dataframes = []
     for dataset in datasets:
         # Validate that the dataset has a Schema defined
-        _validate_schema_exists(dataset)
+        schema = _validate_schema_exists(dataset)
 
-        # Create a copy of the dataset
+        # Create a copy and apply null value transformation
         df: pd.DataFrame = copy(dataset.data)
+        df = _transform_dataframe_for_writing(df, schema)
+
         structure_ref, unique_id = dataset.short_urn.split("=", maxsplit=1)
 
         # Add additional attributes to the dataset
@@ -97,22 +102,22 @@ def _write_csv_2_aux(
 
         if time_format is not None and time_format != "original":
             __write_time_period(df, time_format)
-        if keys is not None and isinstance(dataset.structure, Schema):
-            __write_keys(df, keys, dataset.structure)
-        if labels is not None and isinstance(dataset.structure, Schema):
-            format_labels(df, labels, dataset.structure.components)
+        if keys is not None:
+            __write_keys(df, keys, schema)
+        if labels is not None:
+            format_labels(df, labels, schema.components)
             df.insert(0, "STRUCTURE", structure_ref)
             df.insert(
                 1,
                 "STRUCTURE_ID",
-                f"{unique_id}:{dataset.structure.name}"
+                f"{unique_id}:{schema.name}"
                 if labels == "both"
                 else unique_id,
             )
             action_position = 2
             if labels == "name":
                 action_position += 1
-                df.insert(2, "STRUCTURE_NAME", dataset.structure.name)
+                df.insert(2, "STRUCTURE_NAME", schema.name)
             df.insert(action_position, "ACTION", action_value)
         else:
             df.insert(0, "STRUCTURE", structure_ref)

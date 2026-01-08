@@ -6,10 +6,12 @@ from typing import Literal, Optional, Sequence, Union
 
 import pandas as pd
 
-from pysdmx.io._pd_utils import _validate_schema_exists
+from pysdmx.io._pd_utils import (
+    _transform_dataframe_for_writing,
+    _validate_schema_exists,
+)
 from pysdmx.io.csv.__csv_aux_writer import __write_time_period
 from pysdmx.io.pd import PandasDataset
-from pysdmx.model import Schema
 from pysdmx.toolkit.pd._data_utils import format_labels
 
 
@@ -48,9 +50,12 @@ def write(
     # Create a copy of the dataset
     dataframes = []
     for dataset in datasets:
-        _validate_schema_exists(dataset)
+        # Validate that the dataset has a Schema defined
+        schema = _validate_schema_exists(dataset)
 
+        # Create a copy and apply null value transformation
         df: pd.DataFrame = copy(dataset.data)
+        df = _transform_dataframe_for_writing(df, schema)
 
         # Add additional attributes to the dataset
         for k, v in dataset.attributes.items():
@@ -58,14 +63,12 @@ def write(
         structure_id = dataset.short_urn.split("=")[1]
         if time_format is not None and time_format != "original":
             __write_time_period(df, time_format)
-        if labels is not None and isinstance(dataset.structure, Schema):
-            format_labels(df, labels, dataset.structure.components)
+        if labels is not None:
+            format_labels(df, labels, schema.components)
             if labels == "id":
                 df.insert(0, "DATAFLOW", structure_id)
             else:
-                df.insert(
-                    0, "DATAFLOW", f"{structure_id}:{dataset.structure.name}"
-                )
+                df.insert(0, "DATAFLOW", f"{structure_id}:{schema.name}")
         else:
             df.insert(0, "DATAFLOW", structure_id)
 

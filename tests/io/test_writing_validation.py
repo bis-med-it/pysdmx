@@ -115,8 +115,12 @@ def test_data_rwr(samples_folder, filename, output_format):
     datasets_2 = get_datasets(output_str, structures_path)
     assert len(datasets) == len(datasets_2), "Number of datasets mismatch"
 
+    expected_data = datasets[0].data.copy()
+    # OBS_VALUE is a required numeric measure, empty strings become "NaN"
+    expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].replace("", "NaN")
+
     pd.testing.assert_frame_equal(
-        datasets[0].data,
+        expected_data,
         datasets_2[0].data,
         check_dtype=False,
         check_like=True,
@@ -230,8 +234,12 @@ def test_write_sdmx_csv_read_back(samples_folder, csv_format):
 
     assert len(datasets) == len(read_datasets), "Number of datasets mismatch"
 
+    expected_data = datasets[0].data.copy()
+    # OBS_VALUE is a required numeric measure, empty strings become "NaN"
+    expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].replace("", "NaN")
+
     pd.testing.assert_frame_equal(
-        datasets[0].data,
+        expected_data,
         read_datasets[0].data,
         check_dtype=False,
         check_like=True,

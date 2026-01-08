@@ -5,7 +5,10 @@ from typing import Any, Dict, List
 
 import pandas as pd
 
-from pysdmx.io._pd_utils import _should_write_value
+from pysdmx.io._pd_utils import (
+    _transform_dataframe_for_writing,
+    _validate_schema_exists,
+)
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import (
     ABBR_MSG,
@@ -22,30 +25,26 @@ from pysdmx.util import parse_short_urn
 
 
 def __memory_optimization_writing(
-    dataset: PandasDataset, prettyprint: bool
+    data: pd.DataFrame, prettyprint: bool
 ) -> str:
     """Memory optimization for writing data."""
     outfile = ""
-    length_ = len(dataset.data)
-    if len(dataset.data) > CHUNKSIZE:
+    length_ = len(data)
+    if length_ > CHUNKSIZE:
         previous = 0
         next_ = CHUNKSIZE
         while previous <= length_:
             # Sliding a window for efficient access to the data
             # and avoid memory issues
-            outfile += __obs_processing(
-                dataset.data.iloc[previous:next_], prettyprint
-            )
+            outfile += __obs_processing(data.iloc[previous:next_], prettyprint)
             previous = next_
             next_ += CHUNKSIZE
 
             if next_ >= length_:
-                outfile += __obs_processing(
-                    dataset.data.iloc[previous:], prettyprint
-                )
+                outfile += __obs_processing(data.iloc[previous:], prettyprint)
                 previous = next_
     else:
-        outfile += __obs_processing(dataset.data, prettyprint)
+        outfile += __obs_processing(data, prettyprint)
 
     return outfile
 
@@ -122,24 +121,28 @@ def __write_data_single_dataset(
         f"{datascope}"
         f'action="{dataset.action.value}">{nl}'
     )
+    # Transform DataFrame for null value handling
+    schema = _validate_schema_exists(dataset)
+    transformed_data = _transform_dataframe_for_writing(dataset.data, schema)
+
     data = ""
     if dim == ALL_DIM:
-        data += __memory_optimization_writing(dataset, prettyprint)
+        data += __memory_optimization_writing(transformed_data, prettyprint)
     else:
         writing_validation(dataset)
         series_codes, obs_codes, group_codes = get_codes(
             dimension_code=dim,
             structure=dataset.structure,  # type: ignore[arg-type]
-            data=dataset.data,
+            data=transformed_data,
         )
         if group_codes:
             data += __group_processing(
-                data=dataset.data,
+                data=transformed_data,
                 group_codes=group_codes,
                 prettyprint=prettyprint,
             )
         data += __series_processing(
-            data=dataset.data,
+            data=transformed_data,
             series_codes=series_codes,
             obs_codes=obs_codes,
             prettyprint=prettyprint,
@@ -165,8 +168,8 @@ def __group_processing(
 
         out_element = f"{child2}<Group xsi:type='ns1:{group_id}' "
         for k, v in data_info.items():
-            if _should_write_value(v):
-                out_element += f"{k}={__escape_xml(str(v))!r} "
+            if v is not None:
+                out_element += f"{k}={__escape_xml(v)!r} "
         out_element += f"/>{nl}"
 
         return out_element
@@ -193,7 +196,7 @@ def __group_processing(
     return "".join(out_list)
 
 
-def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
+def __obs_processing(data: pd.DataFrame,prettyprint: bool = True) -> str:
     def __format_obs_str(element: Dict[str, Any]) -> str:
         """Formats the observation as key=value pairs."""
         nl = "\n" if prettyprint else ""
@@ -202,8 +205,8 @@ def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
         out = f"{child2}<Obs "
 
         for k, v in element.items():
-            if _should_write_value(v):
-                out += f"{k}={__escape_xml(str(v))!r} "
+            if v is not None:
+                out += f"{k}={__escape_xml(v)!r} "
 
         out += f"/>{nl}"
 
@@ -253,8 +256,8 @@ def __series_processing(
         out_element = f"{child2}<Series "
 
         for k, v in data_info.items():
-            if k != "Obs" and _should_write_value(v):
-                out_element += f"{k}={__escape_xml(str(v))!r} "
+            if k != "Obs" and v is not None:
+                out_element += f"{k}={__escape_xml(v)!r} "
 
         out_element += f">{nl}"
 
@@ -262,8 +265,8 @@ def __series_processing(
             out_element += f"{child3}<Obs "
 
             for k, v in obs.items():
-                if _should_write_value(v):
-                    out_element += f"{k}={__escape_xml(str(v))!r} "
+                if v is not None:
+                    out_element += f"{k}={__escape_xml(v)!r} "
 
             out_element += f"/>{nl}"
 

@@ -389,12 +389,15 @@ def test_data_write_nullable_nulltypes():
     assert len(datasets) == 1
     data = datasets[0].data
 
-    assert data["MEASURE_REQ"].values.tolist() == ["", "1", "", ""]
-    assert data["MEASURE_OPT"].values.tolist() == ["", "2", "", ""]
+    # Null values (np.nan, None, pd.NA) are always written as "NaN"/"#N/A"
+    # Empty strings: written for required, skipped for optional
+    assert data["MEASURE_REQ"].values.tolist() == ["NaN", "1", "NaN", "NaN"]
+    assert data["MEASURE_OPT"].values.tolist() == ["NaN", "2", "NaN", "NaN"]
+    # String attributes: null values written, empty strings depend on required
     assert data["ATTR_REQ"].values.tolist() == [
-        "",
+        "#N/A",
         "value",
-        "",
-        "",
+        "#N/A",
+        "#N/A",
     ]
-    assert data["ATTR_OPT"].values.tolist() == ["", "value", "", ""]
+    assert data["ATTR_OPT"].values.tolist() == ["#N/A", "value", "#N/A", ""]

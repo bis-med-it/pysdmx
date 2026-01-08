@@ -6,7 +6,10 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import pandas as pd
 
-from pysdmx.io._pd_utils import _should_write_value
+from pysdmx.io._pd_utils import (
+    _transform_dataframe_for_writing,
+    _validate_schema_exists,
+)
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import (
@@ -74,32 +77,32 @@ def __generate_obs_structure(
 
 
 def __memory_optimization_writing(
-    dataset: PandasDataset,
+    data: pd.DataFrame,
     obs_structure: Tuple[List[str], str, List[str]],
     prettyprint: bool,
 ) -> str:
     """Memory optimization for writing data."""
     outfile = ""
-    length_ = len(dataset.data)
-    if len(dataset.data) > CHUNKSIZE:
+    length_ = len(data)
+    if length_ > CHUNKSIZE:
         previous = 0
         next_ = CHUNKSIZE
         while previous <= length_:
             # Sliding a window for efficient access to the data
             # and avoid memory issues
             outfile += __obs_processing(
-                dataset.data.iloc[previous:next_], obs_structure, prettyprint
+                data.iloc[previous:next_], obs_structure, prettyprint
             )
             previous = next_
             next_ += CHUNKSIZE
 
             if next_ >= length_:
                 outfile += __obs_processing(
-                    dataset.data.iloc[previous:], obs_structure, prettyprint
+                    data.iloc[previous:], obs_structure, prettyprint
                 )
                 previous = next_
     else:
-        outfile += __obs_processing(dataset.data, obs_structure, prettyprint)
+        outfile += __obs_processing(data, obs_structure, prettyprint)
 
     return outfile
 
@@ -174,10 +177,14 @@ def __write_data_single_dataset(
             data += f"{child3}{att}{nl}"
         data += f"{child2}</{ABBR_GEN}:Attributes>{nl}"
 
+    # Transform DataFrame for null value handling
+    schema = _validate_schema_exists(dataset)
+    transformed_data = _transform_dataframe_for_writing(dataset.data, schema)
+
     if dim == ALL_DIM:
         obs_structure = __generate_obs_structure(dataset)
         data += __memory_optimization_writing(
-            dataset=dataset,
+            data=transformed_data,
             obs_structure=obs_structure,
             prettyprint=prettyprint,
         )
@@ -185,7 +192,7 @@ def __write_data_single_dataset(
         series_codes, obs_codes, group_codes = get_codes(
             dimension_code=dim,
             structure=dataset.structure,  # type: ignore[arg-type]
-            data=dataset.data,
+            data=transformed_data,
         )
         att_codes = [att.id for att in dataset.structure.components.attributes]
         series_att_codes = [x for x in series_codes if x in att_codes]
@@ -196,13 +203,13 @@ def __write_data_single_dataset(
 
         if group_codes:
             data += __group_processing(
-                data=dataset.data,
+                data=transformed_data,
                 group_codes=group_codes,
                 prettyprint=prettyprint,
             )
 
         data += __series_processing(
-            data=dataset.data,
+            data=transformed_data,
             series_codes=series_codes,
             series_att_codes=series_att_codes,
             obs_codes=obs_codes,
@@ -233,21 +240,23 @@ def __obs_processing(
         # Obs Key writing
         out += f"{child3}<{ABBR_GEN}:ObsKey>{nl}"
         for k, v in element.items():
-            if k in obs_structure[0]:
+            if k in obs_structure[0] and v is not None:
                 out += f"{child4}{__value(k, v)}{nl}"
         out += f"{child3}</{ABBR_GEN}:ObsKey>{nl}"
 
-        # Obs Value writing
-        out += (
-            f"{child3}<{ABBR_GEN}:ObsValue "
-            f"value={str(element[obs_structure[1]])!r}/>{nl}"
-        )
+        # Obs Value writing (already transformed)
+        obs_value_id = obs_structure[1]
+        obs_value = element.get(obs_value_id)
+        if obs_value is not None:
+            out += (
+                f"{child3}<{ABBR_GEN}:ObsValue value={str(obs_value)!r}/>{nl}"
+            )
 
         if len(obs_structure[2]) > 0:
             # Obs Attributes writing
             obs_att_content = ""
             for k, v in element.items():
-                if k in obs_structure[2] and _should_write_value(v):
+                if k in obs_structure[2] and v is not None:
                     obs_att_content += f"{child4}{__value(k, v)}{nl}"
             if obs_att_content:
                 out += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
@@ -285,18 +294,17 @@ def __group_processing(
         # GroupKey block
         out_element += f"{child2}\t<{ABBR_GEN}:GroupKey>{nl}"
         for dim in dimensions:
-            out_element += (
-                f"{child2}\t\t{__value(dim, data_info.get(dim, ''))}{nl}"
-            )
+            dim_val = data_info.get(dim)
+            if dim_val is not None:
+                out_element += f"{child2}\t\t{__value(dim, dim_val)}{nl}"
         out_element += f"{child2}\t</{ABBR_GEN}:GroupKey>{nl}"
 
-        # Attributes block
-        out_element += f"{child2}\t<{ABBR_GEN}:Attributes>{nl}"
-        out_element += (
-            f"{child2}\t\t{__value(attribute, data_info.get(attribute, ''))}"
-            f"{nl}"
-        )
-        out_element += f"{child2}\t</{ABBR_GEN}:Attributes>{nl}"
+        # Attributes block (value already transformed)
+        attr_value = data_info.get(attribute)
+        if attr_value is not None:
+            out_element += f"{child2}\t<{ABBR_GEN}:Attributes>{nl}"
+            out_element += f"{child2}\t\t{__value(attribute, attr_value)}{nl}"
+            out_element += f"{child2}\t</{ABBR_GEN}:Attributes>{nl}"
 
         out_element += f"{child2}</{ABBR_GEN}:Group>{nl}"
         return out_element
@@ -400,15 +408,15 @@ def __format_ser_str(
     # Series Key writing
     out_element += f"{child3}<{ABBR_GEN}:SeriesKey>{nl}"
     for k, v in data_info.items():
-        if k in series_codes:
+        if k in series_codes and v is not None:
             out_element += f"{child4}{__value(k, v)}{nl}"
     out_element += f"{child3}</{ABBR_GEN}:SeriesKey>{nl}"
 
-    # Series Attributes writing
+    # Series Attributes writing (values already transformed)
     if len(series_att_codes) > 0:
         att_content = ""
         for k, v in data_info.items():
-            if k in series_att_codes and _should_write_value(v):
+            if k in series_att_codes and v is not None:
                 att_content += f"{child4}{__value(k, v)}{nl}"
         if att_content:
             out_element += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
@@ -420,13 +428,19 @@ def __format_ser_str(
         out_element += f"{child3}<{ABBR_GEN}:Obs>{nl}"
 
         # Obs Dimension writing
-        out_element += (
-            f"{child4}<{ABBR_GEN}:ObsDimension "
-            f"value={str(obs[obs_codes[0]])!r}/>{nl}"
-        )
-        # Obs Value writing
-        obs_val = str(obs[obs_codes[1]])
-        out_element += f"{child4}<{ABBR_GEN}:ObsValue value={obs_val!r}/>{nl}"
+        obs_dim_val = obs.get(obs_codes[0])
+        if obs_dim_val is not None:
+            out_element += (
+                f"{child4}<{ABBR_GEN}:ObsDimension "
+                f"value={str(obs_dim_val)!r}/>{nl}"
+            )
+        # Obs Value writing (already transformed)
+        obs_value_id = obs_codes[1]
+        obs_val = obs.get(obs_value_id)
+        if obs_val is not None:
+            out_element += (
+                f"{child4}<{ABBR_GEN}:ObsValue value={str(obs_val)!r}/>{nl}"
+            )
 
         # Obs Attributes writing
         out_element += __format_obs_attributes(
@@ -451,7 +465,7 @@ def __format_obs_attributes(
 
     obs_att_content = ""
     for k, v in obs.items():
-        if k in obs_att_codes and _should_write_value(v):
+        if k in obs_att_codes and v is not None:
             obs_att_content += f"{child5}{__value(k, v)}{nl}"
 
     if not obs_att_content:
