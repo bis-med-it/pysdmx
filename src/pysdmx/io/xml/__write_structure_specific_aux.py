@@ -196,7 +196,7 @@ def __group_processing(
     return "".join(out_list)
 
 
-def __obs_processing(data: pd.DataFrame,prettyprint: bool = True) -> str:
+def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
     def __format_obs_str(element: Dict[str, Any]) -> str:
         """Formats the observation as key=value pairs."""
         nl = "\n" if prettyprint else ""

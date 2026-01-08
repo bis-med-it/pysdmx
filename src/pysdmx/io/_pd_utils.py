@@ -143,7 +143,11 @@ def _transform_dataframe_for_writing(
             ) -> Optional[str]:
                 result = _get_value_to_write(v, req, dt)
                 # Format nullable integers without decimal places
-                if is_int and result is not None and result not in ("NaN", "#N/A"):
+                if (
+                    is_int
+                    and result is not None
+                    and result not in ("NaN", "#N/A")
+                ):
                     return str(int(float(result)))
 
                 return result
