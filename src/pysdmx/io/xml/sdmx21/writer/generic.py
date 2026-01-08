@@ -247,9 +247,7 @@ def __obs_processing(
         # Obs Value writing (already transformed)
         obs_value_id = obs_structure[1]
         obs_value = element[obs_value_id]
-        out += (
-            f"{child3}<{ABBR_GEN}:ObsValue value={str(obs_value)!r}/>{nl}"
-        )
+        out += f"{child3}<{ABBR_GEN}:ObsValue value={str(obs_value)!r}/>{nl}"
 
         if len(obs_structure[2]) > 0:
             # Obs Attributes writing
@@ -298,7 +296,9 @@ def __group_processing(
 
         # Attributes block
         out_element += f"{child2}\t<{ABBR_GEN}:Attributes>{nl}"
-        out_element += f"{child2}\t\t{__value(attribute, data_info[attribute])}{nl}"
+        out_element += (
+            f"{child2}\t\t{__value(attribute, data_info[attribute])}{nl}"
+        )
         out_element += f"{child2}\t</{ABBR_GEN}:Attributes>{nl}"
 
         out_element += f"{child2}</{ABBR_GEN}:Group>{nl}"
