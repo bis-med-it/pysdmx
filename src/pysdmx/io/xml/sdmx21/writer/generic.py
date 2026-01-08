@@ -240,17 +240,16 @@ def __obs_processing(
         # Obs Key writing
         out += f"{child3}<{ABBR_GEN}:ObsKey>{nl}"
         for k, v in element.items():
-            if k in obs_structure[0] and v is not None:
+            if k in obs_structure[0]:
                 out += f"{child4}{__value(k, v)}{nl}"
         out += f"{child3}</{ABBR_GEN}:ObsKey>{nl}"
 
         # Obs Value writing (already transformed)
         obs_value_id = obs_structure[1]
-        obs_value = element.get(obs_value_id)
-        if obs_value is not None:
-            out += (
-                f"{child3}<{ABBR_GEN}:ObsValue value={str(obs_value)!r}/>{nl}"
-            )
+        obs_value = element[obs_value_id]
+        out += (
+            f"{child3}<{ABBR_GEN}:ObsValue value={str(obs_value)!r}/>{nl}"
+        )
 
         if len(obs_structure[2]) > 0:
             # Obs Attributes writing
@@ -294,17 +293,13 @@ def __group_processing(
         # GroupKey block
         out_element += f"{child2}\t<{ABBR_GEN}:GroupKey>{nl}"
         for dim in dimensions:
-            dim_val = data_info.get(dim)
-            if dim_val is not None:
-                out_element += f"{child2}\t\t{__value(dim, dim_val)}{nl}"
+            out_element += f"{child2}\t\t{__value(dim, data_info[dim])}{nl}"
         out_element += f"{child2}\t</{ABBR_GEN}:GroupKey>{nl}"
 
-        # Attributes block (value already transformed)
-        attr_value = data_info.get(attribute)
-        if attr_value is not None:
-            out_element += f"{child2}\t<{ABBR_GEN}:Attributes>{nl}"
-            out_element += f"{child2}\t\t{__value(attribute, attr_value)}{nl}"
-            out_element += f"{child2}\t</{ABBR_GEN}:Attributes>{nl}"
+        # Attributes block
+        out_element += f"{child2}\t<{ABBR_GEN}:Attributes>{nl}"
+        out_element += f"{child2}\t\t{__value(attribute, data_info[attribute])}{nl}"
+        out_element += f"{child2}\t</{ABBR_GEN}:Attributes>{nl}"
 
         out_element += f"{child2}</{ABBR_GEN}:Group>{nl}"
         return out_element
@@ -328,6 +323,7 @@ def __group_processing(
             [
                 __format_group_str(record, group_id, dimensions, attribute)
                 for record in grouped_data
+                if record.get(attribute) is not None
             ]
         )
 
@@ -408,7 +404,7 @@ def __format_ser_str(
     # Series Key writing
     out_element += f"{child3}<{ABBR_GEN}:SeriesKey>{nl}"
     for k, v in data_info.items():
-        if k in series_codes and v is not None:
+        if k in series_codes:
             out_element += f"{child4}{__value(k, v)}{nl}"
     out_element += f"{child3}</{ABBR_GEN}:SeriesKey>{nl}"
 
@@ -428,19 +424,17 @@ def __format_ser_str(
         out_element += f"{child3}<{ABBR_GEN}:Obs>{nl}"
 
         # Obs Dimension writing
-        obs_dim_val = obs.get(obs_codes[0])
-        if obs_dim_val is not None:
-            out_element += (
-                f"{child4}<{ABBR_GEN}:ObsDimension "
-                f"value={str(obs_dim_val)!r}/>{nl}"
-            )
+        obs_dim_val = obs[obs_codes[0]]
+        out_element += (
+            f"{child4}<{ABBR_GEN}:ObsDimension "
+            f"value={str(obs_dim_val)!r}/>{nl}"
+        )
         # Obs Value writing (already transformed)
         obs_value_id = obs_codes[1]
-        obs_val = obs.get(obs_value_id)
-        if obs_val is not None:
-            out_element += (
-                f"{child4}<{ABBR_GEN}:ObsValue value={str(obs_val)!r}/>{nl}"
-            )
+        obs_val = obs[obs_value_id]
+        out_element += (
+            f"{child4}<{ABBR_GEN}:ObsValue value={str(obs_val)!r}/>{nl}"
+        )
 
         # Obs Attributes writing
         out_element += __format_obs_attributes(

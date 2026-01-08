@@ -168,8 +168,7 @@ def __group_processing(
 
         out_element = f"{child2}<Group xsi:type='ns1:{group_id}' "
         for k, v in data_info.items():
-            if v is not None:
-                out_element += f"{k}={__escape_xml(v)!r} "
+            out_element += f"{k}={__escape_xml(v)!r} "
         out_element += f"/>{nl}"
 
         return out_element
@@ -177,7 +176,8 @@ def __group_processing(
     out_list: List[str] = []
 
     for group in group_codes:
-        group_keys = group["dimensions"] + [group["attribute"]]
+        attribute = group["attribute"]
+        group_keys = group["dimensions"] + [attribute]
 
         grouped_data = (
             data[group_keys]
@@ -190,6 +190,7 @@ def __group_processing(
             [
                 __format_group_str(record, group["group_id"])
                 for record in grouped_data
+                if record.get(attribute) is not None
             ]
         )
 
