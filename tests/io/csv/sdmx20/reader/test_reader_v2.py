@@ -89,6 +89,11 @@ def csv_keys_both():
     return base_path
 
 
+@pytest.fixture
+def data_v2_nulls():
+    return Path(__file__).parent / "samples" / "data_v2_nulls.csv"
+
+
 def test_reading_data_v2(data_path):
     with open(data_path, "r") as f:
         infile = f.read()
@@ -248,3 +253,18 @@ def test_reading_keys_both(csv_keys_both):
     assert "OBS_KEYS" not in df.columns
 
     assert len(datasets[0].attributes) == 0
+
+
+def test_read_csv_v2_nulls(data_v2_nulls):
+    msg = read_sdmx(data_v2_nulls)
+    df = msg.data[0].data
+
+    # Check NaN value
+    row_nan = df[df["TIME_PERIOD"] == "2002"].iloc[0]
+    assert row_nan["OBS_VALUE"] == "NaN"
+    assert isinstance(row_nan["OBS_VALUE"], str)
+
+    # Check #N/A value
+    row_na = df[df["TIME_PERIOD"] == "2003"].iloc[0]
+    assert row_na["OBS_VALUE"] == "#N/A"
+    assert isinstance(row_na["OBS_VALUE"], str)

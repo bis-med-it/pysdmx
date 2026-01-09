@@ -53,7 +53,7 @@ def test_dataflow_30(samples_folder):
     num_rows = len(data)
     num_columns = data.shape[1]
     assert num_rows == 2
-    assert num_columns == 19
+    assert num_columns == 20
 
 
 def test_datastructure_30__series(samples_folder):
@@ -684,3 +684,19 @@ def test_prov_agreement(samples_folder):
     assert prov_agreement.short_urn == "ProvisionAgreement=MD:TEST(1.0)"
     assert prov_agreement.dataflow == "Dataflow=MD:TEST(1.0)"
     assert prov_agreement.provider == "DataProvider=MD:DATA_PROVIDERS(1.0).MD"
+
+
+def test_read_xml_v30_nulls(samples_folder):
+    data_path = samples_folder / "data_datastructure_3.0_nulls.xml"
+    msg = read_sdmx(data_path)
+    df = msg.data[0].data
+
+    # Check NaN value
+    row_nan = df[df["TIME_PERIOD"] == "2023-Q4"].iloc[0]
+    assert row_nan["OBS_VALUE"] == "NaN"
+    assert isinstance(row_nan["OBS_VALUE"], str)
+
+    # Check #N/A value
+    row_na = df[df["TIME_PERIOD"] == "2024-Q1"].iloc[0]
+    assert row_na["OBS_VALUE"] == "#N/A"
+    assert isinstance(row_na["OBS_VALUE"], str)

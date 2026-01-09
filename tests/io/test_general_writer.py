@@ -75,13 +75,13 @@ GEN_STRUCTURE = (
 
 @pytest.fixture
 def data_path_reference(test_path, reference_file):
-    base_path = Path(__file__).parent / test_path / "samples" / reference_file
+    base_path = Path(__file__).parent / test_path / reference_file
     return str(base_path)
 
 
 @pytest.fixture
-def reference(data_path_reference):
-    return read_sdmx(data_path_reference)
+def reference(data_path_reference, validate):
+    return read_sdmx(data_path_reference, validate=validate)
 
 
 @pytest.fixture
@@ -97,9 +97,31 @@ def dsd_path():
 
 
 @pytest.fixture
+def csv_empty_obs():
+    base_path = Path(__file__).parent / "samples" / "csv_empty_obs.csv"
+    return str(base_path)
+
+
+@pytest.fixture
+def xml_series_explicit_nulls():
+    base_path = (
+        Path(__file__).parent / "samples" / "xml_series_explicit_nulls.xml"
+    )
+    return str(base_path)
+
+
+@pytest.fixture
 def csv_optionals():
     base_path = Path(__file__).parent / "samples" / "csv_optionals.csv"
     return str(base_path)
+
+
+@pytest.fixture
+def schema_bis_der():
+    base_path = Path(__file__).parent / "samples" / "datastructure.xml"
+    msg = read_sdmx(str(base_path))
+    dsds = msg.get_data_structure_definitions()
+    return dsds[0].to_schema()
 
 
 @pytest.fixture
@@ -337,15 +359,20 @@ def output_path(extension, tmpdir):
     ],
 )
 def test_write_sdmx(
-    format_, test_path, reference_file, params, output_path, validate
+    format_,
+    params,
+    reference,
+    output_path,
+    schema_bis_der,
+    validate,
 ):
-    reference = read_sdmx(test_path / reference_file, validate=validate)
     if reference.reports:
         data = reference.reports
     elif reference.structures:
         data = reference.structures
     else:
         data = reference.data
+        data[0].structure = schema_bis_der
     if format_ == Format.DATA_SDMX_ML_2_1_GEN:
         data[0].structure = GEN_STRUCTURE[0]
     params["header"] = reference.header
@@ -368,6 +395,101 @@ def test_write_sdmx(
         assert written_content.structures == reference.structures, (
             "Structures do not match reference."
         )
+
+
+@pytest.mark.parametrize(
+    ("format_", "expected_filled_snippet", "expected_empty_snippet"),
+    [
+        (Format.DATA_SDMX_ML_2_1_STR, 'TIME_PERIOD="2020"', 'TIME_PERIOD=""'),
+        (
+            Format.DATA_SDMX_ML_2_1_GEN,
+            'id="TIME_PERIOD" value="2020"',
+            'id="TIME_PERIOD" value=""',
+        ),
+        (Format.DATA_SDMX_ML_3_0, 'TIME_PERIOD="2020"', 'TIME_PERIOD=""'),
+        (Format.DATA_SDMX_ML_3_1, 'TIME_PERIOD="2020"', 'TIME_PERIOD=""'),
+    ],
+)
+def test_csv_to_xml_empty_cells_and_series(
+    csv_empty_obs,
+    dsd_path,
+    format_,
+    expected_filled_snippet,
+    expected_empty_snippet,
+):
+    reference = read_sdmx(csv_empty_obs)
+
+    dsd_msg = read_sdmx(dsd_path)
+    schema = dsd_msg.get_data_structure_definitions()[0].to_schema()
+    for ds in reference.data:
+        ds.structure = schema
+
+    result = write_sdmx(reference.data, format_, header=reference.header)
+
+    assert expected_filled_snippet in result, (
+        f"Expected filled snippet '{expected_filled_snippet}' "
+        f"not found in {format_}"
+    )
+
+    assert expected_empty_snippet in result, (
+        f"Required empty Dimension snippet '{expected_empty_snippet}' "
+        f"not found in {format_}"
+    )
+
+    assert 'ATT2=""' not in result, (
+        "Empty optional attribute ATT2 should not be written "
+        "as literal empty string"
+    )
+    assert 'id="ATT2" value=""' not in result, (
+        "Empty optional attribute ATT2 should not be written"
+    )
+
+
+@pytest.mark.parametrize(
+    "format_",
+    [
+        Format.DATA_SDMX_CSV_1_0_0,
+        Format.DATA_SDMX_CSV_2_0_0,
+        Format.DATA_SDMX_CSV_2_1_0,
+    ],
+)
+def test_xml_to_csv_includes_collection_and_preserves_null_markers(
+    dsd_path, xml_series_explicit_nulls, format_
+):
+    reference = read_sdmx(xml_series_explicit_nulls)
+    dsd_msg = read_sdmx(str(dsd_path))
+    schema = dsd_msg.get_data_structure_definitions()[0].to_schema()
+    for ds in reference.data:
+        ds.structure = schema
+
+    result_csv_str = write_sdmx(
+        reference.data, format_, header=reference.header
+    )
+
+    df_result = pd.read_csv(
+        StringIO(result_csv_str), dtype=str, keep_default_na=False
+    )
+
+    assert "ATT1" in df_result.columns, "ATT1 column missing in CSV output"
+    assert "DIM1" in df_result.columns, "Series-level dimension DIM1 missing"
+    assert "DIM2" in df_result.columns, "Series-level dimension DIM2 missing"
+
+    att1_values = df_result["ATT1"].fillna("").tolist()
+
+    assert "X" in att1_values, "Value 'X' lost"
+    assert "Y" in att1_values, "Value 'Y' lost"
+
+    na_count = att1_values.count("#N/A")
+    assert na_count == 1, (
+        f"Expected exactly 1 '#N/A' in ATT1, found {na_count}. "
+        f"Values: {att1_values}"
+    )
+
+    dim1_values = df_result["DIM1"].tolist()
+    assert {"A", "C", "E"}.issubset(set(dim1_values)), (
+        "Series dimensions (A, C, E) not correctly "
+        "flattened to observation level"
+    )
 
 
 @pytest.mark.parametrize(
@@ -529,4 +651,30 @@ def test_invalid_sdmx_object_refmeta(tmpdir):
             ),
             sdmx_format=Format.REFMETA_SDMX_JSON_2_0_0,
             output_path=tmpdir / "output.invalid",
+        )
+
+
+@pytest.mark.parametrize(
+    "format_",
+    [
+        Format.DATA_SDMX_CSV_1_0_0,
+        Format.DATA_SDMX_CSV_2_0_0,
+        Format.DATA_SDMX_CSV_2_1_0,
+        Format.DATA_SDMX_ML_2_1_GEN,
+        Format.DATA_SDMX_ML_2_1_STR,
+        Format.DATA_SDMX_ML_3_0,
+        Format.DATA_SDMX_ML_3_1,
+    ],
+)
+def test_write_sdmx_dataset_without_structure(format_, tmpdir):
+    dataset = PandasDataset(
+        data=pd.DataFrame({"A": [1, 2, 3]}),
+        structure="DataStructure=TEST:DSD(1.0)",
+    )
+
+    with pytest.raises(Invalid, match="Dataset Structure is not a Schema"):
+        write_sdmx(
+            sdmx_objects=dataset,
+            sdmx_format=format_,
+            output_path=str(tmpdir / "output.invalid"),
         )

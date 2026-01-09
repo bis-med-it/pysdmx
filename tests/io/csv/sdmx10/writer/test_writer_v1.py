@@ -6,6 +6,7 @@ import pytest
 
 from pysdmx.io.csv.sdmx10.writer import write
 from pysdmx.io.pd import PandasDataset
+from pysdmx.model import Component, Components, Concept, DataType, Role, Schema
 
 
 @pytest.fixture
@@ -33,12 +34,6 @@ def data_path_reference_atch_atts():
 
 
 @pytest.fixture
-def dsd_path():
-    base_path = Path(__file__).parent / "samples" / "datastructure.xml"
-    return str(base_path)
-
-
-@pytest.fixture
 def csv_labels_id():
     base_path = Path(__file__).parent / "samples" / "csv_labels_id.csv"
     return str(base_path)
@@ -58,13 +53,79 @@ def csv_time_format_original():
     return str(base_path)
 
 
+@pytest.fixture
+def schema():
+    return Schema(
+        context="datastructure",
+        agency="MD",
+        id="MD_TEST",
+        version="1.0",
+        name="MD TEST",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    concept=Concept(
+                        id="DIM1", dtype=DataType.STRING, name="DIMENSION 1"
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="DIM2",
+                    concept=Concept(
+                        id="DIM2", dtype=DataType.STRING, name="DIMENSION 2"
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="TIME_PERIOD",
+                    concept=Concept(
+                        id="TIME_PERIOD",
+                        dtype=DataType.TIME,
+                        name="TIME PERIOD",
+                    ),
+                    role=Role.DIMENSION,
+                    required=True,
+                ),
+                Component(
+                    id="ATT1",
+                    concept=Concept(
+                        id="ATT1", dtype=DataType.STRING, name="ATTRIBUTE 1"
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="S",
+                ),
+                Component(
+                    id="ATT2",
+                    concept=Concept(
+                        id="ATT2", dtype=DataType.STRING, name="ATTRIBUTE 2"
+                    ),
+                    role=Role.ATTRIBUTE,
+                    required=False,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    concept=Concept(
+                        id="OBS_VALUE", dtype=DataType.STRING, name="OBS_VALUE"
+                    ),
+                    role=Role.MEASURE,
+                    required=False,
+                ),
+            ]
+        ),
+    )
+
+
 @pytest.mark.data
-def test_to_sdmx_csv_writing(data_path, data_path_reference):
-    urn = "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD:DS1(1.0)"
+def test_to_sdmx_csv_writing(data_path, data_path_reference, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),
-        structure=urn,
+        structure=schema,
     )
     dataset.data = dataset.data.astype("str")
     result_sdmx_csv = write([dataset])
@@ -78,13 +139,13 @@ def test_to_sdmx_csv_writing(data_path, data_path_reference):
 
 
 @pytest.mark.data
-def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir):
-    urn = "urn:sdmx:org.sdmx.infomodel.datastructure.DataFlow=MD:DS1(1.0)"
-
+def test_to_sdmx_csv_writing_to_file(
+    data_path, data_path_reference, tmpdir, schema
+):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path, orient="records"),
-        structure=urn,
+        structure=schema,
     )
     dataset.data = dataset.data.astype("str")
     write([dataset], output_path=tmpdir / "output.csv")
@@ -98,12 +159,13 @@ def test_to_sdmx_csv_writing_to_file(data_path, data_path_reference, tmpdir):
 
 
 @pytest.mark.data
-def test_writer_attached_attrs(data_path, data_path_reference_atch_atts):
-    urn = "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=MD:DS1(1.0)"
+def test_writer_attached_attrs(
+    data_path, data_path_reference_atch_atts, schema
+):
     dataset = PandasDataset(
         attributes={"DECIMALS": 3},
         data=pd.read_json(data_path, orient="records"),
-        structure=urn,
+        structure=schema,
     )
     dataset.data = dataset.data.astype("str")
     result_sdmx_csv = write([dataset])
@@ -116,12 +178,7 @@ def test_writer_attached_attrs(data_path, data_path_reference_atch_atts):
     )
 
 
-def test_writer_labels_id(data_path_optional, dsd_path, csv_labels_id):
-    from pysdmx.io.reader import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_labels_id(data_path_optional, csv_labels_id, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -138,12 +195,7 @@ def test_writer_labels_id(data_path_optional, dsd_path, csv_labels_id):
     )
 
 
-def test_writer_labels_both(data_path_optional, dsd_path, csv_labels_both):
-    from pysdmx.io.reader import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_labels_both(data_path_optional, csv_labels_both, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -161,13 +213,8 @@ def test_writer_labels_both(data_path_optional, dsd_path, csv_labels_both):
 
 
 def test_writer_time_format_original(
-    data_path_optional, dsd_path, csv_time_format_original
+    data_path_optional, csv_time_format_original, schema
 ):
-    from pysdmx.io.reader import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),
@@ -184,12 +231,7 @@ def test_writer_time_format_original(
     )
 
 
-def test_writer_time_format_normalized(data_path_optional, dsd_path):
-    from pysdmx.io.reader import read_sdmx
-
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_time_format_normalized(data_path_optional, schema):
     dataset = PandasDataset(
         attributes={},
         data=pd.read_json(data_path_optional, orient="records"),

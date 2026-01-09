@@ -113,6 +113,11 @@ def prov_agreement_urns_path():
 
 
 @pytest.fixture
+def gen_ser_nulls():
+    return Path(__file__).parent / "samples" / "gen_ser_nulls.xml"
+
+
+@pytest.fixture
 def error_str(error_304_path):
     with open(error_304_path, "r") as f:
         text = f.read()
@@ -474,6 +479,13 @@ def test_read_write_structure_specific_all(samples_folder):
     assert dataset.short_urn == "DataStructure=BIS:BIS_DER(1.0)"
     shape_read = dataset.data.shape
     assert shape_read == (1000, 20)
+
+    structure_path = samples_folder / "datastructure_full.xml"
+    input_str_struct, _ = process_string_to_read(structure_path)
+    structures = read_structure(input_str_struct)
+    dsd = structures[0]
+    dataset.structure = dsd.to_schema()
+
     result = write(datasets)
     # Check if it is well formed using validate=True
     datasets_written = read_sdmx(result, validate=True).data
@@ -965,3 +977,18 @@ def test_prov_agreement_urns(prov_agreement_urns_path):
     assert prov_agreement.short_urn == "ProvisionAgreement=MD:TEST(1.0)"
     assert prov_agreement.dataflow == "Dataflow=MD:TEST(1.0)"
     assert prov_agreement.provider == "DataProvider=MD:DATA_PROVIDERS(1.0).MD"
+
+
+def test_read_xml_v21_nulls(gen_ser_nulls):
+    msg = read_sdmx(gen_ser_nulls)
+    df = msg.data[0].data
+
+    # Check NaN value
+    row_nan = df[df["TIME_PERIOD"] == "2000"].iloc[0]
+    assert row_nan["OBS_VALUE"] == "NaN"
+    assert isinstance(row_nan["OBS_VALUE"], str)
+
+    # Check #N/A value
+    row_na = df[df["TIME_PERIOD"] == "2001"].iloc[0]
+    assert row_na["OBS_VALUE"] == "#N/A"
+    assert isinstance(row_na["OBS_VALUE"], str)

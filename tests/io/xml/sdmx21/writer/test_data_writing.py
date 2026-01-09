@@ -527,9 +527,96 @@ def test_write_generic_with_groups(header, ds_with_group):
 def test_data_scape_quote():
     # Create dataframe with quotation mark in string
     data = pd.DataFrame(
-        data={"A": 'quote="'}, index=pd.DatetimeIndex(["2000-1-1"])
+        data={"DIM1": [1], "A": ['quote="']},
+        index=pd.DatetimeIndex(["2000-1-1"]),
     )
-    dataset = PandasDataset(data=data, structure="Dataflow=Short:Urn(1.0)")
+    dataset = PandasDataset(
+        data=data,
+        structure=Schema(
+            context="datastructure",
+            agency="Short",
+            id="Urn",
+            version="1.0",
+            components=Components(
+                [
+                    Component(
+                        id="DIM1",
+                        role=Role.DIMENSION,
+                        concept=Concept(id="DIM1"),
+                        required=True,
+                    ),
+                    Component(
+                        id="A",
+                        role=Role.MEASURE,
+                        concept=Concept(id="A"),
+                        required=False,
+                    ),
+                ]
+            ),
+        ),
+    )
     result = write_str_spec([dataset])
     assert result is not None
     assert 'A="quote=&quot;"' in result
+
+
+def test_series_processing_single_dimension_roundtrip():
+    data = pd.DataFrame(
+        data={
+            "DIM1": [1, 2],
+            "M1": [10, 11],
+        },
+        index=pd.DatetimeIndex(["2000-1-1", "2000-1-2"]),
+    )
+    dataset = PandasDataset(
+        data=data,
+        structure=Schema(
+            context="datastructure",
+            agency="Short",
+            id="SingleDim",
+            version="1.0",
+            components=Components(
+                [
+                    Component(
+                        id="DIM1",
+                        role=Role.DIMENSION,
+                        concept=Concept(id="DIM1"),
+                        required=True,
+                    ),
+                    Component(
+                        id="M1",
+                        role=Role.MEASURE,
+                        concept=Concept(id="M1"),
+                        required=True,
+                    ),
+                ]
+            ),
+        ),
+    )
+
+    result = write_gen(
+        [dataset],
+        dimension_at_observation={dataset.structure.short_urn: "DIM1"},
+    )
+
+    assert result is not None
+    assert "ObsValue" in result
+    assert 'value="10"' in result
+    assert 'value="11"' in result
+
+
+def test_series_processing_group_cols_empty_data_empty():
+    import pysdmx.io.xml.sdmx21.writer.generic as gen
+
+    df = pd.DataFrame({"DIM1": [], "M1": []})
+
+    out = gen.__series_processing(
+        data=df,
+        series_codes=[],
+        series_att_codes=[],
+        obs_codes=["DIM1", "M1"],
+        obs_att_codes=[],
+        prettyprint=False,
+    )
+
+    assert out == ""

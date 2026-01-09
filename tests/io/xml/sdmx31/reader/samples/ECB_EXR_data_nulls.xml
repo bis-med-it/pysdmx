@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:StructureSpecificData xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/data/structurespecific" 
+								xmlns:footer="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message/footer" 
+								xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=ECB:EXR(1.0):ObsLevelDim:TIME_PERIOD" 
+								xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message" 
+								xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/common" 
+								xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+								xmlns:xml="http://www.w3.org/XML/1998/namespace" 
+								xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message https://xml.sdmx.org/3.1/SDMXMessage.xsd urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=ECB:EXR(1.0):ObsLevelDim:TIME_PERIOD ECB_EXR_Dataflow.xsd">
+    <message:Header>
+        <message:ID>IREF411123</message:ID>
+        <message:Test>false</message:Test>
+        <message:Prepared>2021-03-08T22:05:13Z</message:Prepared>
+        <message:Sender id="Unknown" />
+        <message:Receiver id="ANONYMOUS" />
+        <message:Structure structureID="ECB_EXR_1_0" namespace="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=ECB:EXR(1.0):ObsLevelDim:TIME_PERIOD" dimensionAtObservation="TIME_PERIOD">
+            <common:StructureUsage>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=ECB:EXR(1.0)</common:StructureUsage>
+
+        </message:Structure>
+        <message:DataSetAction>Information</message:DataSetAction>
+        <message:Extracted>2021-03-08T22:05:13</message:Extracted>
+        <message:ReportingBegin>1999-01-01T00:00:00</message:ReportingBegin>
+        <message:ReportingEnd>2019-01-01T23:59:59</message:ReportingEnd>
+    </message:Header>
+    <message:DataSet xsi:type="ns1:DataSetType" ss:structureRef="ECB_EXR_1_0">
+        <Series FREQ="A" CURRENCY="CAD" CURRENCY_DENOM="EUR" EXR_TYPE="SP00" EXR_SUFFIX="A" TIME_FORMAT="P1Y" COLLECTION="A" DECIMALS="4" SOURCE_AGENCY="4F0" TITLE="Canadian dollar/Euro" TITLE_COMPL="ECB reference exchange rate, Canadian dollar/Euro, 2:15 pm (C.E.T.)" UNIT="CAD" UNIT_MULT="0">
+            <Obs TIME_PERIOD="1999" OBS_VALUE="NaN" OBS_STATUS="#N/A" />
+            <Obs TIME_PERIOD="2000" OBS_VALUE="#N/A" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2001" OBS_VALUE="1.386378740157479" OBS_STATUS="A" />
+            <Obs TIME_PERIOD="2002" OBS_VALUE="1.483813725490196" OBS_STATUS="A" />
+        </Series>
+    </message:DataSet>
+</message:StructureSpecificData>

@@ -1,21 +1,21 @@
 # mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 3.0 Structure Specific auxiliary functions."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, Hashable, List, Tuple
 
 import pandas as pd
 
+from pysdmx.io._pd_utils import _validate_schema_exists
 from pysdmx.io.pd import PandasDataset
+from pysdmx.io.xml.__tokens import OBS, SERIES
 from pysdmx.io.xml.__write_aux import (
     ABBR_MSG,
     ALL_DIM,
     __escape_xml,
     get_structure,
 )
-from pysdmx.io.xml.__write_data_aux import (
-    writing_validation,
-)
 from pysdmx.io.xml.config import CHUNKSIZE
+from pysdmx.model import Schema
 from pysdmx.toolkit.pd._data_utils import get_codes
 from pysdmx.util import parse_short_urn
 
@@ -26,6 +26,9 @@ def __memory_optimization_writing(
     """Memory optimization for writing data."""
     outfile = ""
     length_ = len(dataset.data)
+
+    schema = _validate_schema_exists(dataset)
+
     if len(dataset.data) > CHUNKSIZE:
         previous = 0
         next_ = CHUNKSIZE
@@ -33,18 +36,26 @@ def __memory_optimization_writing(
             # Sliding a window for efficient access to the data
             # and avoid memory issues
             outfile += __obs_processing(
-                dataset.data.iloc[previous:next_], prettyprint
+                dataset.data.iloc[previous:next_],
+                schema,
+                prettyprint,
             )
             previous = next_
             next_ += CHUNKSIZE
 
             if next_ >= length_:
                 outfile += __obs_processing(
-                    dataset.data.iloc[previous:], prettyprint
+                    dataset.data.iloc[previous:],
+                    schema,
+                    prettyprint,
                 )
                 previous = next_
     else:
-        outfile += __obs_processing(dataset.data, prettyprint)
+        outfile += __obs_processing(
+            dataset.data,
+            schema,
+            prettyprint,
+        )
 
     return outfile
 
@@ -69,9 +80,6 @@ def __write_data_structure_specific(
     outfile = ""
 
     for i, (short_urn, dataset) in enumerate(datasets.items()):
-        dataset.data = dataset.data.astype(str).replace(
-            {"nan": "", "<NA>": ""}
-        )
         outfile += __write_data_single_dataset(
             dataset=dataset,
             prettyprint=prettyprint,
@@ -115,8 +123,6 @@ def __write_data_single_dataset(
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
     sdmx_type = parse_short_urn(structure_urn).id
-    # Remove nan values from DataFrame
-    dataset.data = dataset.data.fillna("").astype(str).replace("nan", "")
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
@@ -139,7 +145,6 @@ def __write_data_single_dataset(
     if dim == ALL_DIM:
         data += __memory_optimization_writing(dataset, prettyprint)
     else:
-        writing_validation(dataset)
         series_codes, obs_codes, group_codes = get_codes(
             dimension_code=dim,
             structure=dataset.structure,  # type: ignore[arg-type]
@@ -208,26 +213,92 @@ def __group_processing(
     return "".join(out_list)
 
 
-def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
+def __obs_processing(
+    data: pd.DataFrame,
+    structure: Schema,
+    prettyprint: bool = True,
+) -> str:
+    all_comp_ids = [comp.id for comp in structure.components]
+    required_ids = {comp.id for comp in structure.components if comp.required}
+
     def __format_obs_str(element: Dict[str, Any]) -> str:
         """Formats the observation as key=value pairs."""
         nl = "\n" if prettyprint else ""
         child2 = "\t\t" if prettyprint else ""
 
-        out = f"{child2}<Obs "
+        out = f"{child2}<{OBS} "
 
-        for k, v in element.items():
+        # Use shared function to filter attributes
+        attr_lines = _format_observation_attributes(
+            element, all_comp_ids, required_ids
+        )
+
+        for k, v in attr_lines:
             out += f"{k}={__escape_xml(str(v))!r} "
 
         out += f"/>{nl}"
 
         return out
 
-    parser = lambda x: __format_obs_str(x)  # noqa: E731
+    def parser(x: Dict[Any, Any]) -> str:
+        return __format_obs_str(x)
 
     iterator = map(parser, data.to_dict(orient="records"))
 
     return "".join(iterator)
+
+
+def __format_ser_str(
+    data_info: Dict[Any, Any], prettyprint: bool = True
+) -> str:
+    """Formats the series as key=value pairs."""
+    child2 = "\t\t" if prettyprint else ""
+    child3 = "\t\t\t" if prettyprint else ""
+    nl = "\n" if prettyprint else ""
+
+    out_element = f"{child2}<{SERIES} "
+
+    attr_parts: List[str] = []
+    for k, v in data_info.items():
+        if k != OBS:
+            # Skip empty series attributes
+            is_empty = pd.isna(v) or (isinstance(v, str) and v.strip() == "")
+            if is_empty:
+                continue
+            attr_parts.append(f"{k}={__escape_xml(str(v))!r}")
+
+    if attr_parts:
+        out_element += " ".join(attr_parts) + " "
+
+    # If there are no observations self-closing tag
+    obs_list = data_info.get(OBS, [])
+    if not obs_list:
+        out_element += f"/>{nl}"
+        return out_element
+
+    out_element += f">{nl}"
+
+    for obs in obs_list:
+        out_element += f"{child3}<{OBS} "
+
+        for k, v in obs.items():
+            # Null
+            if pd.isna(v):
+                continue
+
+            # Empty string
+            if isinstance(v, str) and v.strip() == "":
+                out_element += f'{k}="" '
+                continue
+
+            # Normal value
+            out_element += f"{k}={__escape_xml(str(v))!r} "
+
+        out_element += f"/>{nl}"
+
+    out_element += f"{child2}</{SERIES}>{nl}"
+
+    return out_element
 
 
 def __series_processing(
@@ -236,63 +307,66 @@ def __series_processing(
     obs_codes: List[str],
     prettyprint: bool = True,
 ) -> str:
-    def __generate_series_str() -> str:
-        """Generates the series item with its observations."""
-        out_list: List[str] = []
-        data.groupby(by=series_codes)[obs_codes].apply(
-            lambda x: __format_dict_ser(out_list, x)
-        )
+    """Process series and their observations into XML string."""
 
-        return "".join(out_list)
+    def _get_valid_obs(df_subset: pd.DataFrame) -> List[Dict[Hashable, Any]]:
+        raw_obs = df_subset[obs_codes].to_dict(orient="records")
+        return [
+            obs
+            for obs in raw_obs
+            if any(
+                not (pd.isna(v) or str(v).strip() == "") for v in obs.values()
+            )
+        ]
 
-    def __format_dict_ser(
-        output_list: List[str],
-        obs: Any,
-    ) -> Any:
-        """Formats the series as key=value pairs."""
-        # Creating the observation dict,
-        # we always get the first element on Series
-        # as we are grouping by it
-        data_dict["Series"][0]["Obs"] = obs.to_dict(orient="records")
-        output_list.append(__format_ser_str(data_dict["Series"][0]))
-        # We remove the data for series as it is no longer necessary
-        del data_dict["Series"][0]
+    out_list: List[str] = []
 
-    def __format_ser_str(data_info: Dict[Any, Any]) -> str:
-        """Formats the series as key=value pairs."""
-        child2 = "\t\t" if prettyprint else ""
-        child3 = "\t\t\t" if prettyprint else ""
-        nl = "\n" if prettyprint else ""
+    if series_codes:
+        for _, series_group in data.groupby(
+            by=series_codes, sort=False, dropna=False
+        ):
+            series_attrs = series_group[series_codes].iloc[0].to_dict()
+            obs_rows = _get_valid_obs(series_group)
 
-        out_element = f"{child2}<Series "
+            series_dict = {**series_attrs, OBS: obs_rows}
+            out_list.append(__format_ser_str(series_dict, prettyprint))
+    else:  # Plain dataset
+        series_attrs = {}
+        obs_rows = _get_valid_obs(data)
 
-        for k, v in data_info.items():
-            if k != "Obs":
-                out_element += f"{k}={__escape_xml(str(v))!r} "
+        series_dict = {OBS: obs_rows}
+        out_list.append(__format_ser_str(series_dict, prettyprint))
 
-        out_element += f">{nl}"
+    return "".join(out_list)
 
-        for obs in data_info["Obs"]:
-            out_element += f"{child3}<Obs "
 
-            for k, v in obs.items():
-                out_element += f"{k}={__escape_xml(str(v))!r} "
+def _format_observation_attributes(
+    element: Dict[str, Any],
+    attribute_ids: list[str],
+    required_ids: set[str],
+) -> List[Tuple[str, Any]]:
+    """Format observation attributes filtering empty optional ones.
 
-            out_element += f"/>{nl}"
+    Args:
+        element: Dictionary containing the observation data
+        attribute_ids: List of attribute IDs to process
+        required_ids: Set of attribute IDs that must be written even if empty
 
-        out_element += f"{child2}</Series>{nl}"
+    Returns:
+        List of (attribute_id, value) tuples (empty if no attributes to write)
+    """
+    attr_lines = []
 
-        return out_element
+    for attribute_id in attribute_ids:
+        if attribute_id in element:
+            attribute = element[attribute_id]
+            is_empty = pd.isna(attribute) or (
+                isinstance(attribute, str) and attribute.strip() == ""
+            )
 
-    # Getting each datapoint from data and creating dict
-    data = data.sort_values(series_codes, axis=0)
-    data_dict = {
-        "Series": data[series_codes]
-        .drop_duplicates()
-        .reset_index(drop=True)
-        .to_dict(orient="records")
-    }
+            if not is_empty:
+                attr_lines.append((attribute_id, attribute))
+            elif attribute_id in required_ids:
+                attr_lines.append((attribute_id, ""))
 
-    out = __generate_series_str()
-
-    return out
+    return attr_lines

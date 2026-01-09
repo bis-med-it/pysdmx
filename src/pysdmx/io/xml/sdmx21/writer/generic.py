@@ -2,12 +2,32 @@
 """Module for writing SDMX-ML 2.1 Generic data messages."""
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import (
+    Any,
+    Dict,
+    Hashable,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 import pandas as pd
 
+from pysdmx.io._pd_utils import _validate_schema_exists
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
+from pysdmx.io.xml.__tokens import (
+    ACTION,
+    ATTRIBUTES,
+    DATASET,
+    OBS,
+    OBS_DIM,
+    OBS_VALUE_XML_TAG,
+    STR_REF,
+)
 from pysdmx.io.xml.__write_aux import (
     ABBR_GEN,
     ABBR_MSG,
@@ -23,7 +43,11 @@ from pysdmx.io.xml.__write_data_aux import (
     check_dimension_at_observation,
     writing_validation,
 )
+from pysdmx.io.xml.__write_structure_specific_aux import (
+    _format_observation_attributes,
+)
 from pysdmx.io.xml.config import CHUNKSIZE
+from pysdmx.model import Schema
 from pysdmx.model.message import Header
 from pysdmx.toolkit.pd._data_utils import get_codes
 from pysdmx.util import parse_short_urn
@@ -31,7 +55,8 @@ from pysdmx.util import parse_short_urn
 
 def __value(id: str, value: str) -> str:
     """Write a value tag."""
-    return f"<{ABBR_GEN}:Value id={id!r} value={__escape_xml(str(value))!r}/>"
+    val_str = "" if pd.isna(value) or str(value) == "" else str(value)
+    return f"<{ABBR_GEN}:Value id={id!r} value={__escape_xml(val_str)!r}/>"
 
 
 def __generate_obs_structure(
@@ -80,6 +105,9 @@ def __memory_optimization_writing(
     """Memory optimization for writing data."""
     outfile = ""
     length_ = len(dataset.data)
+
+    schema = _validate_schema_exists(dataset)
+
     if len(dataset.data) > CHUNKSIZE:
         previous = 0
         next_ = CHUNKSIZE
@@ -87,18 +115,26 @@ def __memory_optimization_writing(
             # Sliding a window for efficient access to the data
             # and avoid memory issues
             outfile += __obs_processing(
-                dataset.data.iloc[previous:next_], obs_structure, prettyprint
+                dataset.data.iloc[previous:next_],
+                obs_structure,
+                schema,
+                prettyprint,
             )
             previous = next_
             next_ += CHUNKSIZE
 
             if next_ >= length_:
                 outfile += __obs_processing(
-                    dataset.data.iloc[previous:], obs_structure, prettyprint
+                    dataset.data.iloc[previous:],
+                    obs_structure,
+                    schema,
+                    prettyprint,
                 )
                 previous = next_
     else:
-        outfile += __obs_processing(dataset.data, obs_structure, prettyprint)
+        outfile += __obs_processing(
+            dataset.data, obs_structure, schema, prettyprint
+        )
 
     return outfile
 
@@ -122,7 +158,6 @@ def __write_data_generic(
 
     for short_urn, dataset in datasets.items():
         writing_validation(dataset)
-        dataset.data = dataset.data.fillna("").astype(str)
         outfile += __write_data_single_dataset(
             dataset=dataset,
             prettyprint=prettyprint,
@@ -152,7 +187,7 @@ def __write_data_single_dataset(
         """This function removes data when optional attributes are found."""
         for att in dataset.structure.components.attributes:
             if not att.required:
-                to_replace = f'<{ABBR_GEN}:Value id={att.id!r} value=""/>'
+                to_replace = f'<{ABBR_GEN}:Value id="{att.id}" value=""/>'
                 to_replace = f"{child3}{to_replace}{nl}"
                 str_to_check = str_to_check.replace(to_replace, "")
         return str_to_check
@@ -160,7 +195,6 @@ def __write_data_single_dataset(
     outfile = ""
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
-    dataset.data = dataset.data.fillna("").astype(str).replace("nan", "")
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
@@ -169,9 +203,9 @@ def __write_data_single_dataset(
 
     # Datasets
     outfile += (
-        f"{nl}{child1}<{ABBR_MSG}:DataSet "
-        f"structureRef={id_structure!r} "
-        f"action={dataset.action.value!r}>{nl}"
+        f"{nl}{child1}<{ABBR_MSG}:{DATASET} "
+        f"{STR_REF}={id_structure!r} "
+        f"{ACTION}={dataset.action.value!r}>{nl}"
     )
     data = ""
     # Write attached attributes
@@ -221,22 +255,25 @@ def __write_data_single_dataset(
             prettyprint=prettyprint,
         )
 
-    # Remove optional attributes empty data
-    data = __remove_optional_attributes_empty_data(data)
-
     # Add to outfile
     outfile += data
 
     outfile += f"{child1}</{ABBR_MSG}:DataSet>"
 
-    return outfile.replace("'", '"')
+    outfile = outfile.replace("'", '"')
+    outfile = __remove_optional_attributes_empty_data(outfile)
+
+    return outfile
 
 
 def __obs_processing(
     data: pd.DataFrame,
     obs_structure: Tuple[List[str], str, List[str]],
+    structure: Schema,
     prettyprint: bool = True,
 ) -> str:
+    required_ids = {comp.id for comp in structure.components if comp.required}
+
     def __format_obs_str(element: Dict[str, Any]) -> str:
         child2 = "\t\t" if prettyprint else ""
         child3 = "\t\t\t" if prettyprint else ""
@@ -252,24 +289,29 @@ def __obs_processing(
         out += f"{child3}</{ABBR_GEN}:ObsKey>{nl}"
 
         # Obs Value writing
-        out += (
-            f"{child3}<{ABBR_GEN}:ObsValue "
-            f"value={str(element[obs_structure[1]])!r}/>{nl}"
-        )
+        val = element[obs_structure[1]]
+        val_str = "" if pd.isna(val) or str(val) == "" else str(val)
+        out += f"{child3}<{ABBR_GEN}:ObsValue value={val_str!r}/>{nl}"
 
         if len(obs_structure[2]) > 0:
             # Obs Attributes writing
-            out += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
-            for k, v in element.items():
-                if k in obs_structure[2]:
+            attr_lines = _format_observation_attributes(
+                element, obs_structure[2], required_ids
+            )
+
+            # Only write Attributes block if there are attributes to write
+            if attr_lines:
+                out += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
+                for k, v in attr_lines:
                     out += f"{child4}{__value(k, v)}{nl}"
-            out += f"{child3}</{ABBR_GEN}:Attributes>{nl}"
+                out += f"{child3}</{ABBR_GEN}:Attributes>{nl}"
 
         out += f"{child2}</{ABBR_GEN}:Obs>{nl}"
 
         return out
 
-    parser = lambda x: __format_obs_str(x)  # noqa: E731
+    def parser(x: Dict[Any, Any]) -> str:
+        return __format_obs_str(x)
 
     iterator = map(parser, data.to_dict(orient="records"))
 
@@ -345,51 +387,90 @@ def __series_processing(
     obs_att_codes: List[str],
     prettyprint: bool = True,
 ) -> str:
-    def __generate_series_str() -> str:
-        out_list: List[str] = []
-        data.groupby(by=series_codes + series_att_codes)[data.columns].apply(
-            lambda x: __format_dict_ser(out_list, x)
-        )
+    out_list: List[str] = []
+    group_cols = series_codes + series_att_codes
+    groups: Iterable[Tuple[Optional[Hashable], pd.DataFrame]]
 
-        return "".join(out_list)
+    if group_cols:
+        groups = data.groupby(by=group_cols, sort=False, dropna=False)
+    else:
+        groups = [(None, data)] if not data.empty else []
 
-    def __format_dict_ser(
-        output_list: List[str],
-        group_data: Any,
-    ) -> Any:
-        obs_data = group_data[obs_codes + obs_att_codes].copy()
-        data_dict["Series"][0]["Obs"] = obs_data.to_dict(orient="records")
-        data_dict["Series"][0].update(
-            {
-                k: v
-                for k, v in group_data[series_att_codes].iloc[0].items()
-                if k in series_att_codes
-            }
-        )
-        output_list.append(
-            __format_ser_str(
-                data_info=data_dict["Series"][0],
-                series_codes=series_codes,
-                series_att_codes=series_att_codes,
-                obs_codes=obs_codes,
-                obs_att_codes=obs_att_codes,
-                prettyprint=prettyprint,
+    for _, group_data in groups:
+        series_dict: Dict[Hashable, Any] = {}
+
+        if group_cols:
+            first_row = group_data.iloc[0]
+            series_dict.update(first_row[series_codes].to_dict())
+            series_dict.update(
+                {
+                    k: v
+                    for k, v in first_row[series_att_codes].items()
+                    if k in series_att_codes
+                }
             )
+
+        obs_df = group_data[obs_codes + obs_att_codes].copy()
+
+        key_col = obs_codes[0]
+        is_valid = obs_df[key_col].notna() & (obs_df[key_col] != "")
+
+        filtered_obs = obs_df[is_valid].to_dict(orient="records")
+        series_dict[OBS] = filtered_obs
+
+        formatted_str = __format_ser_str(
+            data_info=series_dict,
+            series_codes=series_codes,
+            series_att_codes=series_att_codes,
+            obs_codes=obs_codes,
+            obs_att_codes=obs_att_codes,
+            prettyprint=prettyprint,
         )
-        del data_dict["Series"][0]
+        out_list.append(formatted_str)
 
-    # Getting each datapoint from data and creating dict
-    data = data.sort_values(series_codes, axis=0)
-    data_dict = {
-        "Series": data[series_codes]
-        .drop_duplicates()
-        .reset_index(drop=True)
-        .to_dict(orient="records")
-    }
+    return "".join(out_list)
 
-    out = __generate_series_str()
 
-    return out
+def __format_obs_value(obs_value: Any) -> str:
+    return f"<{ABBR_GEN}:{OBS_VALUE_XML_TAG} value={str(obs_value)!r}/>"
+
+
+def __format_obs_element(
+    obs: Dict[Any, Any],
+    obs_codes: List[str],
+    obs_att_codes: List[str],
+    child3: str,
+    child4: str,
+    child5: str,
+    nl: str,
+) -> str:
+    obs_element = f"{child3}<{ABBR_GEN}:{OBS}>{nl}"
+
+    # Obs Dimension writing
+    obs_element += (
+        f"{child4}<{ABBR_GEN}:{OBS_DIM} value={str(obs[obs_codes[0]])!r}/>{nl}"
+    )
+
+    # Obs Value writing
+    obs_value = obs[obs_codes[1]]
+
+    obs_value_elem = __format_obs_value(obs_value)
+    obs_element += f"{child4}{obs_value_elem}{nl}"
+
+    # Obs Attributes writing
+    if obs_att_codes:
+        att_content = ""
+
+        for k, v in obs.items():
+            if k in obs_att_codes and not pd.isna(v):
+                att_content += f"{child5}{__value(k, v)}{nl}"
+
+        obs_element += f"{child4}<{ABBR_GEN}:{ATTRIBUTES}>{nl}"
+        obs_element += att_content
+        obs_element += f"{child4}</{ABBR_GEN}:{ATTRIBUTES}>{nl}"
+
+    obs_element += f"{child3}</{ABBR_GEN}:{OBS}>{nl}"
+    return obs_element
 
 
 def __format_ser_str(
@@ -415,36 +496,25 @@ def __format_ser_str(
             out_element += f"{child4}{__value(k, v)}{nl}"
     out_element += f"{child3}</{ABBR_GEN}:SeriesKey>{nl}"
 
-    # Series Attributes writing
-    if len(series_att_codes) > 0:
-        out_element += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
+    if series_att_codes:
+        att_content = ""
+
         for k, v in data_info.items():
             if k in series_att_codes:
-                out_element += f"{child4}{__value(k, v)}{nl}"
+                is_empty = pd.isna(v) or (isinstance(v, str) and not v.strip())
+
+                if not is_empty:
+                    att_content += f"{child4}{__value(k, v)}{nl}"
+
+        out_element += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
+        out_element += att_content
         out_element += f"{child3}</{ABBR_GEN}:Attributes>{nl}"
 
     # Obs writing
     for obs in data_info["Obs"]:
-        out_element += f"{child3}<{ABBR_GEN}:Obs>{nl}"
-
-        # Obs Dimension writing
-        out_element += (
-            f"{child4}<{ABBR_GEN}:ObsDimension "
-            f"value={str(obs[obs_codes[0]])!r}/>{nl}"
+        out_element += __format_obs_element(
+            obs, obs_codes, obs_att_codes, child3, child4, child5, nl
         )
-        # Obs Value writing
-        out_element += (
-            f"{child4}<{ABBR_GEN}:ObsValue value={str(obs_codes[1])!r}/>{nl}"
-        )
-
-        # Obs Attributes writing
-        if len(obs_att_codes) > 0:
-            out_element += f"{child4}<{ABBR_GEN}:Attributes>{nl}"
-            for k, v in obs.items():
-                if k in obs_att_codes:
-                    out_element += f"{child5}{__value(k, v)}{nl}"
-            out_element += f"{child4}</{ABBR_GEN}:Attributes>{nl}"
-        out_element += f"{child3}</{ABBR_GEN}:Obs>{nl}"
 
     out_element += f"{child2}</{ABBR_GEN}:Series>{nl}"
 
