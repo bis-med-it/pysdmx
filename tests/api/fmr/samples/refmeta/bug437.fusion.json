@@ -128,7 +128,6 @@
             "structureURL": "https://webgate.ec.europa.eu/sdmxrr/rest/codelist/ESTAT/CL_BOOL_INDIC/1.0",
             "agencyId": "ESTAT",
             "version": "1.0",
-            "isFinal": true,
             "isPartial": false,
             "validityType": "standard",
             "items": [

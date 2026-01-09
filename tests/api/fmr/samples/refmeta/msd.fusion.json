@@ -121,7 +121,6 @@
             ],
             "agencyId": "IAEG-SDGs",
             "version": "1.0",
-            "isFinal": true,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -891,7 +890,6 @@
             ],
             "agencyId": "IAEG-SDGs",
             "version": "1.0",
-            "isFinal": true,
             "metadataAttributes": [
                 {
                     "id": "ADJUSTMENT",
