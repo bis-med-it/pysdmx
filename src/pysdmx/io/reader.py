@@ -80,7 +80,10 @@ def read_sdmx(  # noqa: C901
         header = read_header(input_str, validate=validate)
         # SDMX-ML 3.1 Structure
         result_structures = read_structure(input_str, validate=validate)
-    elif read_format == Format.STRUCTURE_SDMX_JSON_2_0_0:
+    elif read_format in (
+        Format.STRUCTURE_SDMX_JSON_2_0_0,
+        Format.STRUCTURE_SDMX_JSON_2_1_0,
+    ):
         from pysdmx.io.json.sdmxjson2.reader.structure import (
             read as read_struct,
         )
@@ -90,7 +93,10 @@ def read_sdmx(  # noqa: C901
         result_structures = (
             struct_msg.structures if struct_msg.structures else []
         )
-    elif read_format == Format.REFMETA_SDMX_JSON_2_0_0:
+    elif read_format in (
+        Format.REFMETA_SDMX_JSON_2_0_0,
+        Format.REFMETA_SDMX_JSON_2_1_0,
+    ):
         from pysdmx.io.json.sdmxjson2.reader.metadata import (
             read as read_refmeta,
         )
@@ -174,7 +180,10 @@ def read_sdmx(  # noqa: C901
         return Message(header=header, data=result_data)
     elif read_format == Format.REGISTRY_SDMX_ML_2_1:
         return Message(header=header, submission=result_submission)
-    elif read_format == Format.REFMETA_SDMX_JSON_2_0_0:
+    elif read_format in (
+        Format.REFMETA_SDMX_JSON_2_0_0,
+        Format.REFMETA_SDMX_JSON_2_1_0,
+    ):
         return Message(header=header, reports=reports)
     # TODO: Ensure we have changed the signature of the structure readers
     return Message(header=header, structures=result_structures)
