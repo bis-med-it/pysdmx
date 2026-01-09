@@ -22,7 +22,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "items": [
                 {
@@ -60,7 +59,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "metadataflowRef": "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=BIS:DF_CNF(1.0)",
             "metadataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.MetadataProvider=BIS:METADATA_PROVIDERS(1.0).MD",
             "targets": []

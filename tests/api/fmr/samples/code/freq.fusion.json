@@ -17,7 +17,6 @@
             ],
             "agencyId": "SDMX",
             "version": "2.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [

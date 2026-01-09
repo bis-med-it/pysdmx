@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "target": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).TWO.TWO_KID",
                 "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_FACETS_FLOW(1.0)"
             }

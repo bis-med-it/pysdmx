@@ -22,7 +22,6 @@
             ],
             "agencyId": "SDMX",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": true,
             "items": [
                 {
@@ -174,7 +173,6 @@
             ],
             "agencyId": "ESTAT",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": true,
             "validityType": "standard",
             "items": [
@@ -229,7 +227,6 @@
             ],
             "agencyId": "ESTAT",
             "version": "3.0",
-            "isFinal": false,
             "isPartial": true,
             "validityType": "standard",
             "items": [
@@ -280,7 +277,6 @@
             ],
             "agencyId": "ESTAT",
             "version": "1.2",
-            "isFinal": false,
             "metadataAttributes": [
                 {
                     "id": "CONTACT",

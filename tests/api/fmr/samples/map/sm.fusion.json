@@ -18,7 +18,6 @@
             ],
             "agencyId": "BIS.XTD",
             "version": "1.0",
-            "isFinal": false,
             "dataStructureRef": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS.XTD:MDD(1.0)"
         },
         {
@@ -39,7 +38,6 @@
             ],
             "agencyId": "BIS.XTD",
             "version": "1.0",
-            "isFinal": false,
             "dataStructureRef": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS.XTD:SRC(1.0)"
         }
     ],
@@ -55,7 +53,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:SRC(1.0)",
             "target": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:MDD(1.0)",
             "fixedInput": {
@@ -140,7 +137,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "sources": [
                 "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CONTRACTS(1.0)"
             ],
