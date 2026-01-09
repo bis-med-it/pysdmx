@@ -84,7 +84,10 @@ def _parse_structure_specific_data(
     elif OBS in dataset:
         dataset[OBS] = add_list(dataset[OBS])
         # Structure Specific All dimensions
-        df = pd.DataFrame(dataset[OBS]).replace(np.nan, "")
+        df = pd.DataFrame(dataset[OBS])
+
+    # Normalize null representations to "NaN"
+    df = df.replace({np.nan: "NaN"})
 
     urn = f"{structure_info['structure_type']}={structure_info['unique_id']}"
     action = dataset.get("action", "Information")

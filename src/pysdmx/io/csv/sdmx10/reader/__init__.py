@@ -39,7 +39,7 @@ def read(input_str: str) -> Sequence[PandasDataset]:
         )
 
     # Convert all columns to strings
-    df_csv = df_csv.astype(str).replace({"nan": "", "<NA>": ""})
+    df_csv = df_csv.astype(str).replace({"nan": "NaN", "<NA>": "NaN"})
     # Check if any column headers contain ':', indicating mode, label or text
     mode_label_text = any(":" in x for x in df_csv.columns)
 

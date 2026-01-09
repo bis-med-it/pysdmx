@@ -2,6 +2,7 @@
 
 from typing import Any, Dict, Sequence
 
+import numpy as np
 import pandas as pd
 
 from pysdmx.errors import Invalid
@@ -161,6 +162,9 @@ def __parse_generic_data(
     else:
         # Generic All Dimensions
         df = __reading_generic_all(dataset)
+
+    # Normalize null representations to "NaN"
+    df = df.replace({np.nan: "NaN"})
 
     action = dataset.get("action", "Information")
     action = ActionType(action)
