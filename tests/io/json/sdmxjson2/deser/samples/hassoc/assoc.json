@@ -36,7 +36,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "linkedHierarchy": "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS:H_OPTION_TYPE(1.0)",
                 "linkedObject": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:TEST(1.0).OPTION_TYPE",
                 "contextObject": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF_TEST(1.0)"

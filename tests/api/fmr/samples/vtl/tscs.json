@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "vtlMappings": [
                     {
@@ -71,7 +70,6 @@
                 "version": "1.0",
                 "agencyID": "SDMX",
                 "isExternalReference": false,
-                "isFinal": false,
                 "vtlVersion": "2.0",
                 "vtlMappingScheme": "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=TEST:TEST_DETAIL(1.0)",
                 "rulesetSchemes": [
@@ -132,7 +130,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "vtlVersion": "2.0",
                 "vtlMappingScheme": "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=TEST:TEST_DETAIL(1.0)",
                 "namePersonalisationScheme": "urn:sdmx:org.sdmx.infomodel.transformation.NamePersonalisationScheme=BIS.TEST:TEST_NPS(1.0)",
@@ -188,7 +185,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "vtlVersion": "2.0",
                 "isPartial": false,
                 "rulesets": [
@@ -231,7 +227,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "vtlVersion": "2.1",
                 "isPartial": false,
                 "namePersonalisations": [
@@ -274,7 +269,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "vtlVersion": "2.1",
                 "isPartial": false,
                 "customTypes": [

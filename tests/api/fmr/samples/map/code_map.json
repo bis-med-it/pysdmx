@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "source": [
                     {
                         "codelist": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ISO:CL_3166-A3(1.0)"
