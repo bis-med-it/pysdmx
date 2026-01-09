@@ -79,8 +79,8 @@ async def check_code_mapping_details(
             assert v.valid_to is None
         elif v.source == "SCG":
             assert v.target == "CS"
-            assert v.valid_from == dt(2003, 7, 23, tzinfo=tz.utc)
-            assert v.valid_to == dt(2006, 6, 1, tzinfo=tz.utc)
+            assert v.valid_from == dt(2003, 7, 23, 0, 0, 0, tzinfo=tz.utc)
+            assert v.valid_to == dt(2006, 6, 1, 21, 42, 42, tzinfo=tz.utc)
         else:
             pytest.fail(f"Unexpected mapping: {v}")
 

@@ -20,7 +20,7 @@
             "mappedRelationships": [
                 {
                     "validFrom": "2003-07-23T00:00:00Z",
-                    "validTo": "2006-06-01T00:00:00Z",
+                    "validTo": "2006-06-01T21:42:42Z",
                     "source": [
                         {
                             "value": "SCG"
