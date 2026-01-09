@@ -6774,10 +6774,9 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "type": "actual",
                 "cubeRegions": [
                     {
-                        "isIncluded": true,
+                        "include": true,
                         "keyValues": [
                             {
                                 "id": "CBS_BANK_TYPE",
