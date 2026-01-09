@@ -310,6 +310,8 @@ def test_data_write_nullable_nulltypes():
     # on windows when using pysdmx
     import numpy as np
 
+    from pysdmx.io.xml.sdmx21.writer.generic import write as write_gen
+
     # Create dataframe with various null types and data types
     data = pd.DataFrame(
         data={
@@ -382,8 +384,8 @@ def test_data_write_nullable_nulltypes():
     # this line should just make clear
     # that this is not pyarrow related
     data = data.convert_dtypes(dtype_backend="numpy_nullable")
-
     dataset = PandasDataset(data=data, structure=structure_schema)
+
     result = write_str_spec([dataset])
     datasets = get_datasets(result)
     assert len(datasets) == 1
@@ -400,4 +402,29 @@ def test_data_write_nullable_nulltypes():
         "#N/A",
         "#N/A",
     ]
-    assert data["ATTR_OPT"].values.tolist() == ["#N/A", "value", "#N/A", ""]
+    # Optional empty string is skipped during writing, read back as NaN
+    assert data["ATTR_OPT"].values.tolist() == ["#N/A", "value", "#N/A", "NaN"]
+
+    # GENERIC
+    result_gen = write_gen([dataset])
+    datasets_gen = get_datasets(result_gen)
+    assert len(datasets_gen) == 1
+    data_gen = datasets_gen[0].data
+
+    # The generic writer represents single measure values as 'OBS_VALUE'
+    # and does not include separate measure-named columns.
+    assert "MEASURE_REQ" not in data_gen.columns
+    assert "MEASURE_OPT" not in data_gen.columns
+    # Compare with the structure-specific output above to keep expectations aligned
+    assert (
+        data_gen["OBS_VALUE"].values.tolist()
+        == data["MEASURE_REQ"].values.tolist()
+    )
+    assert (
+        data_gen["ATTR_REQ"].values.tolist()
+        == data["ATTR_REQ"].values.tolist()
+    )
+    assert (
+        data_gen["ATTR_OPT"].values.tolist()
+        == data["ATTR_OPT"].values.tolist()
+    )

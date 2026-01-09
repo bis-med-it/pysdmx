@@ -169,4 +169,5 @@ def test_data_write_nullable_nulltypes():
         "#N/A",
         "#N/A",
     ]
-    assert data["ATTR_OPT"].values.tolist() == ["#N/A", "value", "#N/A", ""]
+    # Optional empty string is skipped during writing, read back as NaN
+    assert data["ATTR_OPT"].values.tolist() == ["#N/A", "value", "#N/A", "NaN"]
