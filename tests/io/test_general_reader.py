@@ -30,7 +30,7 @@ def sdmx_json():
 
 
 @pytest.fixture
-def sdmx_json_structure():
+def sdmx_json_20_structure():
     file_path = (
         Path(__file__).parent.parent
         / "api"
@@ -38,6 +38,21 @@ def sdmx_json_structure():
         / "samples"
         / "code"
         / "freq.json"
+    )
+    with open(file_path, "r") as f:
+        text = f.read()
+    return text
+
+
+@pytest.fixture
+def sdmx_json_21_structure():
+    file_path = (
+        Path(__file__).parent.parent
+        / "api"
+        / "fmr"
+        / "samples"
+        / "code"
+        / "freq_21.json"
     )
     with open(file_path, "r") as f:
         text = f.read()
@@ -403,8 +418,23 @@ def test_get_datasets_missing_attribute(samples_folder):
 
 
 @pytest.mark.json
-def test_get_json2_structure(sdmx_json_structure):
-    msg = read_sdmx(sdmx_json_structure)
+def test_get_json20_structure(sdmx_json_20_structure):
+    msg = read_sdmx(sdmx_json_20_structure)
+
+    assert isinstance(msg, Message)
+    assert msg.header is not None
+    assert len(msg.structures) == 1
+    assert isinstance(msg.structures[0], Codelist)
+    cl = msg.structures[0]
+    assert cl.id == "CL_FREQ"
+    assert cl.agency == "SDMX"
+    assert cl.version == "2.0"
+    assert len(cl.codes) == 9
+
+
+@pytest.mark.json
+def test_get_json21_structure(sdmx_json_21_structure):
+    msg = read_sdmx(sdmx_json_21_structure)
 
     assert isinstance(msg, Message)
     assert msg.header is not None
