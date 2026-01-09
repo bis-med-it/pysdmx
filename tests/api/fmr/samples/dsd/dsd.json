@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "SDMX",
                 "isExternalReference": false,
-                "isPartial": true,
                 "agencies": [
                     {
                         "links": [
@@ -93,7 +92,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": false,
                 "valueItems": [
                     {
                         "id": "A",
@@ -256,7 +254,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4020,7 +4017,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4116,7 +4112,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4152,7 +4147,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4218,7 +4212,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4299,7 +4292,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4335,7 +4327,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4371,7 +4362,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4482,7 +4472,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4683,7 +4672,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4854,7 +4842,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -5025,7 +5012,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": false,
                 "codes": [
                     {
                         "links": [
@@ -5241,7 +5227,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": false,
                 "codes": [
                     {
                         "links": [
@@ -5337,7 +5322,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -5373,7 +5357,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": false,
                 "codes": [
                     {
                         "links": [
@@ -5679,7 +5662,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -5717,7 +5699,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isPartial": true,
                 "concepts": [
                     {
                         "links": [
