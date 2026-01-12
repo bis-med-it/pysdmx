@@ -529,8 +529,9 @@ class StructureParser(Struct):
         if FACETS.lower() in rep:
             representation_info[LOCAL_FACETS_LOW] = rep.pop(FACETS.lower())
 
-    def __format_con_id(self, concept_ref: Dict[str, Any]) -> Dict[str, Any]:
-        rep = {}
+    def __format_con_id(
+        self, concept_ref: Union[str, Dict[str, Any]]
+    ) -> Dict[str, Any]:
         if isinstance(concept_ref, str):
             item_reference = parse_urn(concept_ref)
             scheme_reference = Reference(
@@ -539,6 +540,7 @@ class StructureParser(Struct):
                 id=item_reference.id,
                 version=item_reference.version,
             )
+            target_id = getattr(item_reference, "item_id", None)
         else:
             item_reference = ItemReference(
                 sdmx_type=concept_ref[CLASS],
@@ -553,21 +555,17 @@ class StructureParser(Struct):
                 id=concept_ref[PAR_ID],
                 version=concept_ref[PAR_VER],
             )
+            target_id = concept_ref[ID]
 
         concept_scheme = self.concepts.get(str(scheme_reference))
         if concept_scheme is None:
             return {CON: item_reference}
+
         for con in concept_scheme.concepts:
-            if isinstance(concept_ref, str):
-                if con.id == item_reference.item_id:
-                    rep[CON] = parse_urn(concept_ref)
-                    break
-            elif con.id == concept_ref[ID]:
-                rep[CON] = con
-                break
-        if CON not in rep:
-            return {CON: item_reference}
-        return rep
+            if con.id == target_id:
+                return {CON: con if con.urn else item_reference}
+
+        return {CON: item_reference}
 
     @staticmethod
     def __get_attachment_level(  # noqa: C901
