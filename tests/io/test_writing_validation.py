@@ -117,6 +117,9 @@ def test_data_rwr(samples_folder, filename, output_format):
 
     expected_data = datasets[0].data.copy()
     # OBS_VALUE is a required numeric measure, empty strings become "NaN"
+    # Adjust when reading from xml
+    expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].fillna("NaN")
+    # Adjust when reading from csv
     expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].replace("", "NaN")
 
     pd.testing.assert_frame_equal(
@@ -236,6 +239,9 @@ def test_write_sdmx_csv_read_back(samples_folder, csv_format):
 
     expected_data = datasets[0].data.copy()
     # OBS_VALUE is a required numeric measure, empty strings become "NaN"
+    # Adjust when reading from xml
+    expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].fillna("NaN")
+    # Adjust when reading from csv
     expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].replace("", "NaN")
 
     pd.testing.assert_frame_equal(

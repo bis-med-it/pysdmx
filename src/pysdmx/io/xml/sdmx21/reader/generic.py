@@ -58,7 +58,7 @@ def __reading_generic_groups(dataset: Dict[str, Any]) -> pd.DataFrame:
         test_list.append(keys)
         test_list, df = __process_df(test_list, df)
     test_list, df = __process_df(test_list, df, is_end=True)
-    return df
+    return df.replace(np.nan, "")
 
 
 def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
@@ -98,7 +98,7 @@ def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
 
     test_list, df = __process_df(test_list, df, is_end=True)
 
-    return df
+    return df.replace(np.nan, "")
 
 
 def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
@@ -124,7 +124,7 @@ def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
 
     test_list, df = __process_df(test_list, df, is_end=True)
 
-    return df
+    return df.replace(np.nan, "")
 
 
 def __get_at_att_gen(dataset: Dict[str, Any]) -> Dict[str, Any]:
@@ -162,9 +162,6 @@ def __parse_generic_data(
     else:
         # Generic All Dimensions
         df = __reading_generic_all(dataset)
-
-    # Normalize null representations to "NaN"
-    df = df.replace({np.nan: "NaN"})
 
     action = dataset.get("action", "Information")
     action = ActionType(action)
