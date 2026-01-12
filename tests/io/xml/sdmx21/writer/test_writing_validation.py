@@ -415,7 +415,6 @@ def test_data_write_nullable_nulltypes():
     # and does not include separate measure-named columns.
     assert "MEASURE_REQ" not in data_gen.columns
     assert "MEASURE_OPT" not in data_gen.columns
-    # Compare with the structure-specific output above to keep expectations aligned
     assert (
         data_gen["OBS_VALUE"].values.tolist()
         == data["MEASURE_REQ"].values.tolist()
