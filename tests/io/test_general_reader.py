@@ -321,7 +321,7 @@ def test_get_datasets_valid_descendants(
     assert isinstance(dataset.structure, Schema)
     assert dataset.data is not None
     assert len(dataset.data) == 1000
-    assert len(dataset.structure.artefacts) == 45
+    assert len(dataset.structure.artefacts) == 46
     assert (
         "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept="
         "BIS:BIS_CONCEPT_SCHEME(1.0)"
