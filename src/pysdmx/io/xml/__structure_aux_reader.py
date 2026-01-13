@@ -550,21 +550,12 @@ class StructureParser(Struct):
         )
 
         concept_scheme = self.concepts.get(str(scheme_reference))
-        target_short_urn = str(item_reference)
 
         if concept_scheme is None:
             return {CON: item_reference}
 
         for con in concept_scheme.concepts:
-            con_reference = ItemReference(
-                sdmx_type=item_reference.sdmx_type,
-                agency=concept_scheme.agency,
-                id=concept_scheme.id,
-                version=concept_scheme.version,
-                item_id=con.id,
-            )
-
-            if str(con_reference) == target_short_urn:
+            if con.id == item_reference.item_id:
                 return {CON: con if con.urn else item_reference}
 
         return {CON: item_reference}
