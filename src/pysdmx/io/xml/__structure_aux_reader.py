@@ -554,9 +554,20 @@ class StructureParser(Struct):
         if concept_scheme is None:
             return {CON: item_reference}
 
+        short_urn = str(item_reference)
         for con in concept_scheme.concepts:
-            if con.id == item_reference.item_id:  # type: ignore[union-attr]
-                return {CON: con if con.urn else item_reference}
+            con_short = str(
+                ItemReference(
+                    sdmx_type=item_reference.sdmx_type,
+                    agency=item_reference.agency,
+                    id=item_reference.id,
+                    version=item_reference.version,
+                    item_id=con.id,
+                )
+            )
+
+            if con_short == short_urn:
+                return {CON: con if con.urn is not None else item_reference}
 
         return {CON: item_reference}
 
