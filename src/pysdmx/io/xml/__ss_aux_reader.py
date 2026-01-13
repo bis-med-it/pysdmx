@@ -80,6 +80,7 @@ def _parse_structure_specific_data(
             common_columns = list(
                 set(df.columns).intersection(set(df_group.columns))
             )
+            df_group = df_group.drop_duplicates(common_columns, keep="first")
             df = pd.merge(df, df_group, on=common_columns, how="left")
     elif OBS in dataset:
         dataset[OBS] = add_list(dataset[OBS])
