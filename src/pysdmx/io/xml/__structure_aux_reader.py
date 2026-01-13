@@ -552,7 +552,6 @@ class StructureParser(Struct):
         concept_scheme = self.concepts.get(str(scheme_reference))
         target_short_urn = str(item_reference)
 
-
         if concept_scheme is None:
             return {CON: item_reference}
 
