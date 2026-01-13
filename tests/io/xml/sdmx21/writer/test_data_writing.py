@@ -533,3 +533,172 @@ def test_data_scape_quote(content):
     result = write_str_spec([dataset])
     assert result is not None
     assert 'A="quote=&quot;"' in result
+
+
+@pytest.fixture
+def ds_optional_attributes():
+    df = pd.DataFrame(
+        {
+            "DIM1": ["A", "B", "C", "D", "E"],
+            "DIM2": ["X", "Y", "Z", "W", "V"],
+            "OBS": [1, 2, 3, 4, 5],
+            "G_ATT": ["G1", "", "G3", None, ""],
+            "S_ATT": ["S1", "S1", "", None, ""],
+            "O_ATT": ["", "", "", "VAL", ""],
+        }
+    )
+
+    structure = Schema(
+        id="TEST_COV",
+        context="datastructure",
+        agency="MD",
+        version="1.0",
+        groups=[Group(id="Group", dimensions=["DIM1"])],
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="DIM1"),
+                    required=True,
+                ),
+                Component(
+                    id="DIM2",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="DIM2"),
+                    required=True,
+                ),
+                Component(
+                    id="OBS",
+                    role=Role.MEASURE,
+                    concept=Concept(id="OBS"),
+                    required=True,
+                ),
+                Component(
+                    id="G_ATT",
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(id="G_ATT"),
+                    attachment_level="DIM1",
+                    required=False,
+                ),
+                Component(
+                    id="S_ATT",
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(id="S_ATT"),
+                    attachment_level="DIM1",
+                    required=False,
+                ),
+                Component(
+                    id="O_ATT",
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(id="O_ATT"),
+                    attachment_level="O",
+                    required=False,
+                ),
+            ]
+        ),
+    )
+    ds = PandasDataset(data=df, structure=structure)
+    return {ds.structure.short_urn: ds}
+
+
+def test_write_generic_optional_attributes_with_groups(ds_optional_attributes):
+    ds = list(ds_optional_attributes.values())[0]
+    dim_at_obs = {ds.structure.short_urn: "DIM2"}
+
+    result = write_gen(
+        [ds],
+        dimension_at_observation=dim_at_obs,
+    )
+
+    # Groups with present values and #N/A for None
+    assert '<gen:Value id="G_ATT" value="G1"/>' in result
+    assert '<gen:Value id="G_ATT" value="G3"/>' in result
+    assert '<gen:Value id="G_ATT" value="#N/A"/>' in result
+    assert '<gen:Value id="S_ATT" value="S1"/>' in result
+
+    # Roundtrip validation
+    read_msg = read_sdmx(result, validate=True)
+    result_data = read_msg.data[0].data
+
+    # G_ATT should contain G1, G3 and '#N/A'
+    g_att_values = result_data["G_ATT"].astype(str).tolist()
+    assert "G1" in g_att_values
+    assert "G3" in g_att_values
+    assert g_att_values.count("#N/A") == 1
+
+
+def test_write_generic_all_dimensions(ds_optional_attributes):
+    """Missing optional attributes are written as "None" text in this mode."""
+    ds = list(ds_optional_attributes.values())[0]
+    dim_at_obs = {ds.structure.short_urn: "AllDimensions"}
+
+    result = write_gen(
+        [ds],
+        dimension_at_observation=dim_at_obs,
+    )
+
+    assert 'gen:Value id="G_ATT" value="None"' in result
+    assert 'gen:Value id="S_ATT" value="None"' in result
+
+    # Roundtrip validation
+    read_msg = read_sdmx(result, validate=True)
+    result_data = read_msg.data[0].data
+
+    # Verify O_ATT value "VAL" persists for DIM1="D"
+    filter = result_data["DIM1"] == "D"
+    row_d = result_data[filter]
+    assert not row_d.empty
+    assert row_d["O_ATT"].values[0] == "VAL"
+
+
+def test_write_structure_specific_optional_attributes(ds_optional_attributes):
+    ds = list(ds_optional_attributes.values())[0]
+    dim_at_obs = {ds.structure.short_urn: "DIM2"}
+
+    result = write_str_spec(
+        [ds],
+        dimension_at_observation=dim_at_obs,
+    )
+
+    assert 'O_ATT="VAL"' in result
+
+    # Roundtrip validation
+    read_msg = read_sdmx(result, validate=True)
+    result_data = read_msg.data[0].data
+
+    # Verify O_ATT value "VAL" persists
+    filter = result_data["DIM1"] == "D"
+    row_d = result_data[filter]
+    assert not row_d.empty
+    assert row_d["O_ATT"].values[0] == "VAL"
+
+
+def test_write_generic_no_groups_series_attributes(ds_optional_attributes):
+    ds = list(ds_optional_attributes.values())[0]
+
+    new_structure = Schema(
+        id=ds.structure.id,
+        agency=ds.structure.agency,
+        version=ds.structure.version,
+        context=ds.structure.context,
+        components=ds.structure.components,
+        groups=[],  # Explicitly empty groups
+    )
+    ds_no_groups = PandasDataset(data=ds.data, structure=new_structure)
+
+    dim_at_obs = {ds_no_groups.structure.short_urn: "DIM2"}
+
+    result = write_gen(
+        [ds_no_groups],
+        dimension_at_observation=dim_at_obs,
+    )
+
+    assert '<gen:Value id="S_ATT" value="S1"/>' in result
+
+    # Roundtrip validation
+    read_msg = read_sdmx(result, validate=True)
+    result_data = read_msg.data[0].data
+
+    s_att_count = result_data["S_ATT"].astype(str).tolist()
+    assert s_att_count.count("S1") == 2
