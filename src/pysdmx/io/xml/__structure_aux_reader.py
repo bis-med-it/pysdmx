@@ -534,13 +534,6 @@ class StructureParser(Struct):
     ) -> Dict[str, Any]:
         if isinstance(concept_ref, str):
             item_reference = parse_urn(concept_ref)
-            scheme_reference = Reference(
-                sdmx_type=CS,
-                agency=item_reference.agency,
-                id=item_reference.id,
-                version=item_reference.version,
-            )
-            target_id = getattr(item_reference, "item_id", None)
         else:
             item_reference = ItemReference(
                 sdmx_type=concept_ref[CLASS],
@@ -549,20 +542,30 @@ class StructureParser(Struct):
                 version=concept_ref[PAR_VER],
                 item_id=concept_ref[ID],
             )
-            scheme_reference = Reference(
-                sdmx_type=CS,
-                agency=concept_ref[AGENCY_ID],
-                id=concept_ref[PAR_ID],
-                version=concept_ref[PAR_VER],
-            )
-            target_id = concept_ref[ID]
+        scheme_reference = Reference(
+            sdmx_type=CS,
+            agency=item_reference.agency,
+            id=item_reference.id,
+            version=item_reference.version,
+        )
 
         concept_scheme = self.concepts.get(str(scheme_reference))
+        target_short_urn = str(item_reference)
+
+
         if concept_scheme is None:
             return {CON: item_reference}
 
         for con in concept_scheme.concepts:
-            if con.id == target_id:
+            con_reference = ItemReference(
+                sdmx_type=item_reference.sdmx_type,
+                agency=concept_scheme.agency,
+                id=concept_scheme.id,
+                version=concept_scheme.version,
+                item_id=con.id,
+            )
+
+            if str(con_reference) == target_short_urn:
                 return {CON: con if con.urn else item_reference}
 
         return {CON: item_reference}
