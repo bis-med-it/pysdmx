@@ -555,7 +555,7 @@ class StructureParser(Struct):
             return {CON: item_reference}
 
         for con in concept_scheme.concepts:
-            if con.id == item_reference.item_id:
+            if con.id == item_reference.item_id:  # type: ignore[union-attr]
                 return {CON: con if con.urn else item_reference}
 
         return {CON: item_reference}
