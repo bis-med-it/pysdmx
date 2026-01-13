@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:StructureSpecificData
+        xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/structurespecific"
+        xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST.AGENCY:TEST_FLOW(1.0):All:TIME_PERIOD"
+        xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+        xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<message:Header>
+		<message:ID>test</message:ID>
+		<message:Test>false</message:Test>
+		<message:Prepared>2025-01-01T00:00:00Z</message:Prepared>
+		<message:Sender id="test"/>
+		<message:Structure structureID="test"
+                namespace="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST.AGENCY:TEST_FLOW(1.0):All:TIME_PERIOD"
+                dimensionAtObservation="TIME_PERIOD">
+			<common:StructureUsage>
+				<Ref agencyID="TEST.AGENCY" id="TEST_FLOW" version="1.0"/>
+			</common:StructureUsage>
+		</message:Structure>
+		<message:DataSetAction>Replace</message:DataSetAction>
+	</message:Header>
+	<message:DataSet ss:dataScope="DataStructure" xsi:type="ns1:DataSetType"
+            ss:structureRef="test" action="Replace">
+		<Group xsi:type="ns1:GROUP_DIM1_DIM2" DIM1="A1" DIM2="B1" GATTR="G1"/>
+		<Group xsi:type="ns1:GROUP_DIM1_DIM2" DIM1="A2" DIM2="B2" GATTR="G2"/>
+		<Series DIM1="A1" DIM2="B1">
+			<Obs TIME_PERIOD="2010" OBS_VALUE="1.0"/>
+			<Obs TIME_PERIOD="2011" OBS_VALUE="2.0"/>
+		</Series>
+		<Series DIM1="A2" DIM2="B2">
+			<Obs TIME_PERIOD="2010" OBS_VALUE="3.0"/>
+			<Obs TIME_PERIOD="2011" OBS_VALUE="4.0"/>
+		</Series>
+	</message:DataSet>
+</message:StructureSpecificData>

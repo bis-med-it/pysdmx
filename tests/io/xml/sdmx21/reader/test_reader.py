@@ -118,6 +118,11 @@ def multiple_groups_path():
 
 
 @pytest.fixture
+def group_merge_two_dims_path():
+    return Path(__file__).parent / "samples" / "group_merge_two_dims.xml"
+
+
+@pytest.fixture
 def error_str(error_304_path):
     with open(error_304_path, "r") as f:
         text = f.read()
@@ -976,3 +981,17 @@ def test_group_attributes_multiple_groups(multiple_groups_path):
     df = read_sdmx(multiple_groups_path).data[0].data
     assert df["UNIT"].iloc[0] == "USD"
     assert df["UNIT"].iloc[1] == "USD"
+
+
+def test_group_merge_multiple_common_columns(group_merge_two_dims_path):
+    df = read_sdmx(group_merge_two_dims_path).data[0].data
+
+    # Expect GATTR column populated according to matching DIM1/DIM2
+    # Series with OBS_VALUE 1 should match the first group (G1)
+    row1 = df[(df["DIM1"] == "A1") & (df["DIM2"] == "B1")]
+    assert not row1.empty
+    assert row1["GATTR"].iloc[0] == "G1"
+
+    row2 = df[(df["DIM1"] == "A2") & (df["DIM2"] == "B2")]
+    assert not row2.empty
+    assert row2["GATTR"].iloc[0] == "G2"
