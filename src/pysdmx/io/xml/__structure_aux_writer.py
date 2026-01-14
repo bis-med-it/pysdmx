@@ -675,8 +675,10 @@ def __write_concept_identity(
 ) -> str:
     if isinstance(identity, ItemReference):
         ref = identity
+    elif identity.urn is not None:
+        ref = parse_item_urn(identity.urn)
     else:
-        ref = parse_item_urn(identity.urn)  # type: ignore[arg-type]
+        raise Invalid("Cannot select concept identity without URN")
 
     outfile = f"{indent}<{ABBR_STR}:{CON_ID}>"
     if references_30:

@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 from msgspec import Struct
+from msgspec.structs import asdict
 
 from pysdmx.io.xml.__tokens import (
     AGENCIES,
@@ -567,7 +568,17 @@ class StructureParser(Struct):
             )
 
             if con_short == short_urn:
-                return {CON: con if con.urn is not None else item_reference}
+                if con.urn is None:
+                    con = Concept(
+                        **{
+                            **asdict(con),
+                            "urn": (
+                                "urn:sdmx:org.sdmx.infomodel.conceptscheme."
+                                f"{short_urn}"
+                            ),
+                        }
+                    )
+                return {CON: con}
 
         return {CON: item_reference}
 
