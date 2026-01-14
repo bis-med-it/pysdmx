@@ -1178,5 +1178,7 @@ def test_concept_identity_without_urn():
         agency="TEST",
         components=Components([component]),
     )
-    with pytest.raises(Invalid, match="Cannot select concept identity without URN"):
+    with pytest.raises(
+        Invalid, match="Cannot select concept identity without URN"
+    ):
         write([dsd])
