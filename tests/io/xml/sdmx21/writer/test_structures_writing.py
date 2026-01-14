@@ -1161,3 +1161,22 @@ def test_prov_agreement(
     )
     read(result, validate=True)
     assert result == prov_agreement_sample
+
+
+def test_concept_identity_without_urn():
+    concept = Concept(id="test_concept", name="Test Concept", urn=None)
+    component = Component(
+        id="test_comp",
+        required=True,
+        role=Role.DIMENSION,
+        concept=concept,
+    )
+    dsd = DataStructureDefinition(
+        id="test_dsd",
+        name="Test DSD",
+        version="1.0",
+        agency="TEST",
+        components=Components([component]),
+    )
+    with pytest.raises(Invalid, match="Cannot select concept identity without URN"):
+        write([dsd])
