@@ -24,7 +24,6 @@
             ],
             "agencyId": "BIS.CBS",
             "version": "1.0",
-            "isFinal": false,
             "dataStructureRef": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)"
         }
     ]

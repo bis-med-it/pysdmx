@@ -24,7 +24,6 @@
                 ],
                 "agencyId": "BIS.MEDIT",
                 "version": "1.0",
-                "isFinal": false,
                 "metadataflow": "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=BIS.MEDIT:DTI(1.0)",
                 "targets": [
                     "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.MACRO:BIS_MACRO(1.0)"
@@ -69,7 +68,6 @@
                 ],
                 "agencyId": "BIS.MACRO",
                 "version": "1.0",
-                "isFinal": false,
                 "metadataflow": "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=BIS:DF_META(1.0)",
                 "targets": [
                     "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.MACRO:BIS_MACRO(1.0)"

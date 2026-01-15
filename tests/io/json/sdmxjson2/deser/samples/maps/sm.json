@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:SRC(1.0)",
                 "target": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:MDD(1.0)",
                 "datePatternMaps": [
@@ -140,7 +139,6 @@
                 "version": "1.1",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:SRC(1.0)",
                 "target": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:MDD(1.0)",
                 "datePatternMaps": [

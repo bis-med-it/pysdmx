@@ -30,7 +30,6 @@
 				"version": "1.0",
 				"agencyID": "ECB",
 				"isExternalReference": false,
-				"isFinal": false,
 				"name": "Exchange Rates",
 				"names": {
 					"en": "Exchange Rates"
@@ -269,7 +268,6 @@
 				"version": "1.0",
 				"agencyID": "ECB",
 				"isExternalReference": true,
-				"isFinal": false,
 				"name": "Economic concepts",
 				"names": {
 					"en": "Economic concepts"
@@ -340,7 +338,6 @@
 				"version": "1.0",
 				"agencyID": "ECB",
 				"isExternalReference": false,
-				"isFinal": false,
 				"name": "ECB concepts",
 				"names": {
 					"en": "ECB concepts"
@@ -493,7 +490,6 @@
 				"version": "1.0",
 				"agencyID": "ECB",
 				"isExternalReference": false,
-				"isFinal": false,
 				"name": "Frequency code list",
 				"names": {
 					"en": "Frequency code list"
@@ -564,7 +560,6 @@
 				"version": "1.0",
 				"agencyID": "ECB",
 				"isExternalReference": false,
-				"isFinal": false,
 				"name": "Currency code list",
 				"names": {
 					"en": "Currency code list"
@@ -620,7 +615,6 @@
 				"version": "1.0",
 				"agencyID": "ECB",
 				"isExternalReference": false,
-				"isFinal": false,
 				"name": "Currency code list",
 				"names": {
 					"en": "Currency code list"
@@ -659,7 +653,6 @@
 				"version": "1.0",
 				"agencyID": "ECB",
 				"isExternalReference": false,
-				"isFinal": false,
 				"name": "Exch. rate series variation code list",
 				"names": {
 					"en": "Exch. rate series variation code list"
@@ -778,7 +771,6 @@
 				"version": "1.0",
 				"agencyID": "ECB",
 				"isExternalReference": false,
-				"isFinal": false,
 				"name": "Exch. rate series variation code list",
 				"names": {
 					"en": "Exch. rate series variation code list"
@@ -899,7 +891,6 @@
 				"version": "1.0",
 				"agencyID": "SDMX",
 				"isExternalReference": false,
-				"isFinal": false,
 				"name": "SDMX Agency Scheme",
 				"names": {
 					"en": "SDMX Agency Scheme"
@@ -940,7 +931,6 @@
 				"version": "1.0",
 				"agencyID": "ECB",
 				"isExternalReference": false,
-				"isFinal": false,
 				"name": "Exchange Rates",
 				"names": {
 					"en": "Exchange Rates"
@@ -970,7 +960,6 @@
 				"version": "1.0",
 				"agencyID": "ECB",
 				"isExternalReference": false,
-				"isFinal": false,
 				"name": "Categorise: DATAFLOWECB:EXR(1.0)",
 				"names": {
 					"en": "Categorise: DATAFLOWECB:EXR(1.0)"
@@ -995,7 +984,6 @@
 				"version": "1.0",
 				"agencyID": "ECB",
 				"isExternalReference": false,
-				"isFinal": false,
 				"name": "Constraints for the EXR dataflow.",
 				"names": {
 					"en": "Constraints for the EXR dataflow."
