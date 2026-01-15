@@ -20,6 +20,7 @@ from pysdmx.model import (
     Codelist,
     Component,
     Components,
+    Concept,
     DataStructureDefinition,
     DataType,
     Facets,
@@ -32,14 +33,15 @@ from pysdmx.util import parse_item_urn
 def _find_concept(
     cs: Sequence[FusionConceptScheme],
     urn: str,
-) -> FusionConcept:
+) -> Optional[FusionConcept]:
     r = parse_item_urn(urn)
     f = [
         m
         for m in cs
         if (m.agency == r.agency and m.id == r.id and m.version == r.version)
     ]
-    return [c for c in f[0].items if c.id == r.item_id][0]
+    m = [c for c in f[0].items if c.id == r.item_id]
+    return m[0] if m else None
 
 
 def _get_representation(
@@ -112,12 +114,13 @@ class FusionAttribute(Struct, frozen=True):
         groups: Sequence[FusionGroup],
     ) -> Component:
         """Returns an attribute."""
-        c = _find_concept(cs, self.concept)
+        c = _find_concept(cs, self.concept) if cs else None
+        c = c.to_model(cls) if c else parse_item_urn(self.concept)
         dt, facets, codes, ab = _get_representation(
             self.id, self.representation, cls, cons
         )
         lvl = self.__derive_level(groups)
-        desc = c.descriptions[0].value if c.descriptions else None
+        desc = c.description if isinstance(c, Concept) else None
         if self.representation and self.representation.representation:
             local_enum_ref = self.representation.representation
         else:
@@ -126,10 +129,10 @@ class FusionAttribute(Struct, frozen=True):
             id=self.id,
             required=self.mandatory,
             role=Role.ATTRIBUTE,
-            concept=c.to_model(cls),
+            concept=c,
             local_dtype=dt,
             local_facets=facets,
-            name=c.names[0].value,
+            name=c.name if isinstance(c, Concept) else None,
             description=desc,
             local_codes=codes,
             attachment_level=lvl,
@@ -168,11 +171,12 @@ class FusionDimension(Struct, frozen=True):
         cons: Dict[str, Sequence[str]],
     ) -> Component:
         """Returns a dimension."""
-        c = _find_concept(cs, self.concept)
+        c = _find_concept(cs, self.concept) if cs else None
+        c = c.to_model(cls) if c else parse_item_urn(self.concept)
         dt, facets, codes, ab = _get_representation(
             self.id, self.representation, cls, cons
         )
-        desc = c.descriptions[0].value if c.descriptions else None
+        desc = c.description if isinstance(c, Concept) else None
         if self.representation and self.representation.representation:
             local_enum_ref = self.representation.representation
         else:
@@ -181,10 +185,10 @@ class FusionDimension(Struct, frozen=True):
             id=self.id,
             required=True,
             role=Role.DIMENSION,
-            concept=c.to_model(cls),
+            concept=c,
             local_dtype=dt,
             local_facets=facets,
-            name=c.names[0].value,
+            name=c.name if isinstance(c, Concept) else None,
             description=desc,
             local_codes=codes,
             array_def=ab,
@@ -222,11 +226,12 @@ class FusionMeasure(Struct, frozen=True):
         cons: Dict[str, Sequence[str]],
     ) -> Component:
         """Returns a measure."""
-        c = _find_concept(cs, self.concept)
+        c = _find_concept(cs, self.concept) if cs else None
+        c = c.to_model(cls) if c else parse_item_urn(self.concept)
         dt, facets, codes, ab = _get_representation(
             self.id, self.representation, cls, cons
         )
-        desc = c.descriptions[0].value if c.descriptions else None
+        desc = c.description if isinstance(c, Concept) else None
         if self.representation and self.representation.representation:
             local_enum_ref = self.representation.representation
         else:
@@ -235,10 +240,10 @@ class FusionMeasure(Struct, frozen=True):
             id=self.id,
             required=self.mandatory,
             role=Role.MEASURE,
-            concept=c.to_model(cls),
+            concept=c,
             local_dtype=dt,
             local_facets=facets,
-            name=c.names[0].value,
+            name=c.name if isinstance(c, Concept) else None,
             description=desc,
             local_codes=codes,
             array_def=ab,
