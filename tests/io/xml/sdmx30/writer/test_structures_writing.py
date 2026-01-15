@@ -351,6 +351,26 @@ def datastructure():
                     array_def=None,
                     urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=MD:ATT3(1.0).DECIMALS",
                 ),
+                Component(
+                    id="UNIT_MULT",
+                    required=True,
+                    role=Role.ATTRIBUTE,
+                    concept=ItemReference(
+                        sdmx_type="Concept",
+                        agency="MD",
+                        id="STANDALONE_CONCEPT_SCHEME",
+                        version="1.0",
+                        item_id="UNIT_MULT",
+                    ),
+                    local_dtype=DataType.STRING,
+                    local_facets=Facets(min_length="1", max_length="2"),
+                    name=None,
+                    description=None,
+                    local_codes=None,
+                    attachment_level="OBS_VALUE,OBS_VALUE1",
+                    array_def=None,
+                    urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=MD:ATT4(1.0).UNIT_MULT",
+                ),
             ]
         ),
     )
