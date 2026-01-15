@@ -171,8 +171,8 @@ class JsonDimension(Struct, frozen=True, omit_defaults=True):
         cons: Dict[str, Sequence[str]],
     ) -> Component:
         """Returns a component."""
-        c = _find_concept(cs, self.conceptIdentity) if cs else None
-        c = c.to_model(cls) if c else parse_item_urn(self.conceptIdentity)
+        m = _find_concept(cs, self.conceptIdentity) if cs else None
+        c = m.to_model(cls) if m else parse_item_urn(self.conceptIdentity)
         name = c.name if isinstance(c, Concept) else None
         desc = c.description if isinstance(c, Concept) else None
         dt, facets, codes, ab = _get_representation(
@@ -227,8 +227,8 @@ class JsonAttribute(Struct, frozen=True, omit_defaults=True):
         groups: Sequence[JsonGroup],
     ) -> Component:
         """Returns a component."""
-        c = _find_concept(cs, self.conceptIdentity) if cs else None
-        c = c.to_model(cls) if c else parse_item_urn(self.conceptIdentity)
+        m = _find_concept(cs, self.conceptIdentity) if cs else None
+        c = m.to_model(cls) if m else parse_item_urn(self.conceptIdentity)
         name = c.name if isinstance(c, Concept) else None
         desc = c.description if isinstance(c, Concept) else None
         dt, facets, codes, ab = _get_representation(
@@ -309,8 +309,8 @@ class JsonMeasure(Struct, frozen=True, omit_defaults=True):
         cons: Dict[str, Sequence[str]],
     ) -> Component:
         """Returns a component."""
-        c = _find_concept(cs, self.conceptIdentity) if cs else None
-        c = c.to_model(cls) if c else parse_item_urn(self.conceptIdentity)
+        m = _find_concept(cs, self.conceptIdentity) if cs else None
+        c = m.to_model(cls) if m else parse_item_urn(self.conceptIdentity)
         name = c.name if isinstance(c, Concept) else None
         desc = c.description if isinstance(c, Concept) else None
         dt, facets, codes, ab = _get_representation(

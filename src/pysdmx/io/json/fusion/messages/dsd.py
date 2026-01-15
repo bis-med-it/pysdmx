@@ -114,8 +114,8 @@ class FusionAttribute(Struct, frozen=True):
         groups: Sequence[FusionGroup],
     ) -> Component:
         """Returns an attribute."""
-        c = _find_concept(cs, self.concept) if cs else None
-        c = c.to_model(cls) if c else parse_item_urn(self.concept)
+        m = _find_concept(cs, self.concept) if cs else None
+        c = m.to_model(cls) if m else parse_item_urn(self.concept)
         dt, facets, codes, ab = _get_representation(
             self.id, self.representation, cls, cons
         )
@@ -171,8 +171,8 @@ class FusionDimension(Struct, frozen=True):
         cons: Dict[str, Sequence[str]],
     ) -> Component:
         """Returns a dimension."""
-        c = _find_concept(cs, self.concept) if cs else None
-        c = c.to_model(cls) if c else parse_item_urn(self.concept)
+        m = _find_concept(cs, self.concept) if cs else None
+        c = m.to_model(cls) if m else parse_item_urn(self.concept)
         dt, facets, codes, ab = _get_representation(
             self.id, self.representation, cls, cons
         )
@@ -226,8 +226,8 @@ class FusionMeasure(Struct, frozen=True):
         cons: Dict[str, Sequence[str]],
     ) -> Component:
         """Returns a measure."""
-        c = _find_concept(cs, self.concept) if cs else None
-        c = c.to_model(cls) if c else parse_item_urn(self.concept)
+        m = _find_concept(cs, self.concept) if cs else None
+        c = m.to_model(cls) if m else parse_item_urn(self.concept)
         dt, facets, codes, ab = _get_representation(
             self.id, self.representation, cls, cons
         )
