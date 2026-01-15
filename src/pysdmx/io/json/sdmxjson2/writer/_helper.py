@@ -19,7 +19,7 @@ def write_metadata_msg(
     output_path: Optional[Union[str, Path]] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
-    msg_version: Literal["2.0.0", "2.1.0"] = "2.0.0",
+    msg_version: Literal["2.0.0", "2.1"] = "2.0.0",
 ) -> Optional[str]:
     """Write metadata reports in requested SDMX-JSON version.
 
@@ -71,7 +71,7 @@ def write_structure_msg(
     output_path: Optional[Union[str, Path]] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
-    msg_version: Literal["2.0.0", "2.1.0"] = "2.0.0",
+    msg_version: Literal["2.0.0", "2.1"] = "2.0.0",
 ) -> Optional[str]:
     """Write maintainable SDMX artefacts in SDMX-JSON 2.0.0.
 

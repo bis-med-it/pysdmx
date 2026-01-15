@@ -29,5 +29,5 @@ def write(
         The JSON string if output_path is None or empty, None otherwise.
     """
     return write_structure_msg(
-        structures, output_path, prettyprint, header, "2.1.0"
+        structures, output_path, prettyprint, header, "2.1"
     )

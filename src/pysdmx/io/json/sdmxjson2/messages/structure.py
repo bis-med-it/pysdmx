@@ -341,7 +341,7 @@ class JsonStructureMessage(Struct, frozen=True, omit_defaults=True):
     def from_model(
         cls,
         message: StructureMessage,
-        msg_version: Literal["2.0.0", "2.1.0"] = "2.0.0",
+        msg_version: Literal["2.0.0", "2.1"] = "2.0.0",
     ) -> "JsonStructureMessage":
         """Creates an SDMX-JSON payload from a pysdmx StructureMessage."""
         if not message.header:

@@ -28,6 +28,4 @@ def write(
     Returns:
         The JSON string if output_path is None or empty, None otherwise.
     """
-    return write_metadata_msg(
-        reports, output_path, prettyprint, header, "2.1.0"
-    )
+    return write_metadata_msg(reports, output_path, prettyprint, header, "2.1")

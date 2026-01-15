@@ -165,7 +165,7 @@ class JsonMetadataMessage(Struct, frozen=True, omit_defaults=True):
     def from_model(
         self,
         msg: MetadataMessage,
-        msg_version: Literal["2.0.0", "2.1.0"] = "2.0.0",
+        msg_version: Literal["2.0.0", "2.1"] = "2.0.0",
     ) -> "JsonMetadataMessage":
         """Converts a pysdmx metadata message to an SDMX-JSON one."""
         if not msg.header:
