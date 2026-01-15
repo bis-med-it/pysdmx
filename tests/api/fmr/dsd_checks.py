@@ -6,7 +6,6 @@ from pysdmx.model import (
     Components,
     Concept,
     DataStructureDefinition,
-    ItemReference,
 )
 
 
