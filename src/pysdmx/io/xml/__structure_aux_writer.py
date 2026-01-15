@@ -564,10 +564,25 @@ def __write_attribute_relation(  # noqa: C901
                 f"{group_id}</{ABBR_STR}:{GROUP}>"
             )
         else:
-            for comp_name in comps_to_relate:
-                outfile += (
-                    f"{add_indent(indent)}<{ABBR_STR}:{DIM}>"
-                    f"{comp_name}</{ABBR_STR}:{DIM}>"
+            is_dimension = comps_to_relate[0] in dim_names
+            if is_dimension:
+                for comp_name in comps_to_relate:
+                    outfile += (
+                        f"{add_indent(indent)}<{ABBR_STR}:{DIM}>"
+                        f"{comp_name}</{ABBR_STR}:{DIM}>"
+                    )
+            else:
+                outfile += f"{add_indent(indent)}<{ABBR_STR}:Observation/>"
+                measure_relationship += (
+                    f"{indent}<{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
+                )
+                for comp_name in comps_to_relate:
+                    measure_relationship += (
+                        f"{add_indent(indent)}<{ABBR_STR}:{MSR}>"
+                        f"{comp_name}</{ABBR_STR}:{MSR}>"
+                    )
+                measure_relationship += (
+                    f"{indent}</{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
                 )
 
     else:
