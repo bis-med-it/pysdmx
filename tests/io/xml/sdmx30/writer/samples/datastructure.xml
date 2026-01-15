@@ -59,6 +59,19 @@
 								<str:Dataflow/>
 							</str:AttributeRelationship>
 						</str:Attribute>
+						<str:Attribute usage="mandatory" id="UNIT_MULT" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=MD:ATT4(1.0).UNIT_MULT">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MULT</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat minLength="1" maxLength="2" textType="String"/>
+							</str:LocalRepresentation>
+							<str:AttributeRelationship>
+								<str:Observation/>
+							</str:AttributeRelationship>
+							<str:MeasureRelationship>
+								<str:Measure>OBS_VALUE</str:Measure>
+								<str:Measure>OBS_VALUE1</str:Measure>
+							</str:MeasureRelationship>
+						</str:Attribute>
 					</str:AttributeList>
 					<str:MeasureList>
 						<str:Measure id="OBS_VALUE" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Measure=MD:M1(1.0).OBS_VALUE">
