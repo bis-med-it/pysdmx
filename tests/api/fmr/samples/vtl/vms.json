@@ -22,7 +22,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "vtlMappings": [
                     {

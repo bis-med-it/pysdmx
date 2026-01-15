@@ -34,7 +34,6 @@
                 "version": "1.42",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataStructureComponents": {
                     "attributeList": {
                         "links": [

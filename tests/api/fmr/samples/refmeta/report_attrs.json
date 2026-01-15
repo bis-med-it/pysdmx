@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.MEDIT",
                 "isExternalReference": false,
-                "isFinal": false,
                 "metadataflow": "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=BIS.MEDIT:DTI(1.0)",
                 "targets": [
                     "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.XTD:OCC_SRC(1.0)"

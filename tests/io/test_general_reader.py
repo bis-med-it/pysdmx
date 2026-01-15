@@ -39,7 +39,7 @@ def sdmx_json():
 
 
 @pytest.fixture
-def sdmx_json_structure():
+def sdmx_json_20_structure():
     file_path = (
         Path(__file__).parent.parent
         / "api"
@@ -54,7 +54,22 @@ def sdmx_json_structure():
 
 
 @pytest.fixture
-def sdmx_json_refmeta():
+def sdmx_json_21_structure():
+    file_path = (
+        Path(__file__).parent.parent
+        / "api"
+        / "fmr"
+        / "samples"
+        / "code"
+        / "freq_21.json"
+    )
+    with open(file_path, "r") as f:
+        text = f.read()
+    return text
+
+
+@pytest.fixture
+def sdmx_json_20_refmeta():
     file_path = (
         Path(__file__).parent.parent
         / "api"
@@ -62,6 +77,21 @@ def sdmx_json_refmeta():
         / "samples"
         / "refmeta"
         / "report.json"
+    )
+    with open(file_path, "r") as f:
+        text = f.read()
+    return text
+
+
+@pytest.fixture
+def sdmx_json_21_refmeta():
+    file_path = (
+        Path(__file__).parent.parent
+        / "api"
+        / "fmr"
+        / "samples"
+        / "refmeta"
+        / "report_21.json"
     )
     with open(file_path, "r") as f:
         text = f.read()
@@ -412,8 +442,8 @@ def test_get_datasets_missing_attribute(samples_folder):
 
 
 @pytest.mark.json
-def test_get_json2_structure(sdmx_json_structure):
-    msg = read_sdmx(sdmx_json_structure)
+def test_get_json20_structure(sdmx_json_20_structure):
+    msg = read_sdmx(sdmx_json_20_structure)
 
     assert isinstance(msg, Message)
     assert msg.header is not None
@@ -427,8 +457,38 @@ def test_get_json2_structure(sdmx_json_structure):
 
 
 @pytest.mark.json
-def test_get_json2_refmeta(sdmx_json_refmeta):
-    msg = read_sdmx(sdmx_json_refmeta, validate=False)
+def test_get_json21_structure(sdmx_json_21_structure):
+    msg = read_sdmx(sdmx_json_21_structure)
+
+    assert isinstance(msg, Message)
+    assert msg.header is not None
+    assert len(msg.structures) == 1
+    assert isinstance(msg.structures[0], Codelist)
+    cl = msg.structures[0]
+    assert cl.id == "CL_FREQ"
+    assert cl.agency == "SDMX"
+    assert cl.version == "2.0"
+    assert len(cl.codes) == 9
+
+
+@pytest.mark.json
+def test_get_json20_refmeta(sdmx_json_20_refmeta):
+    msg = read_sdmx(sdmx_json_20_refmeta, validate=False)
+
+    assert isinstance(msg, Message)
+    assert msg.header is not None
+    assert len(msg.reports) == 1
+    assert isinstance(msg.reports[0], MetadataReport)
+    rep = msg.reports[0]
+    assert rep.id == "DTI_BIS_MACRO"
+    assert rep.agency == "BIS.MEDIT"
+    assert rep.version == "1.0.42"
+    assert len(rep.attributes) == 2
+
+
+@pytest.mark.json
+def test_get_json21_refmeta(sdmx_json_21_refmeta):
+    msg = read_sdmx(sdmx_json_21_refmeta, validate=False)
 
     assert isinstance(msg, Message)
     assert msg.header is not None

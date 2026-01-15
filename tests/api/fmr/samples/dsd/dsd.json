@@ -30,8 +30,6 @@
                 "version": "1.0",
                 "agencyID": "SDMX",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": true,
                 "agencies": [
                     {
                         "links": [
@@ -76,7 +74,7 @@
                 ]
             }
         ],
-        "valuelists": [
+        "valueLists": [
             {
                 "links": [
                     {
@@ -94,18 +92,8 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": false,
                 "valueItems": [
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).A"
-                            }
-                        ],
                         "id": "A",
                         "name": "All users",
                         "names": {
@@ -113,14 +101,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).B"
-                            }
-                        ],
                         "id": "B",
                         "name": "BIS only, not for publication",
                         "names": {
@@ -128,14 +108,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).C"
-                            }
-                        ],
                         "id": "C",
                         "name": "BIS and G-10 central banks only, not for publication",
                         "names": {
@@ -143,14 +115,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).D"
-                            }
-                        ],
                         "id": "D",
                         "name": "ESCB only, not for publication",
                         "names": {
@@ -158,14 +122,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).E"
-                            }
-                        ],
                         "id": "E",
                         "name": "ECB only, not for publication",
                         "names": {
@@ -173,14 +129,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).G"
-                            }
-                        ],
                         "id": "G",
                         "name": "BIS and ESCB only, not for publication",
                         "names": {
@@ -188,14 +136,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).H"
-                            }
-                        ],
                         "id": "H",
                         "name": "BIS and ECB only, not for publication",
                         "names": {
@@ -203,14 +143,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).I"
-                            }
-                        ],
                         "id": "I",
                         "name": "BIS, ECB and Central Banks only, not for publication",
                         "names": {
@@ -218,14 +150,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).J"
-                            }
-                        ],
                         "id": "J",
                         "name": "(BIS) Low frequency free, high frequency restricted",
                         "names": {
@@ -233,14 +157,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).K"
-                            }
-                        ],
                         "id": "K",
                         "name": "Free, last value not to be published prior to embargo date",
                         "names": {
@@ -248,14 +164,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).L"
-                            }
-                        ],
                         "id": "L",
                         "name": "(BIS) High frequency free, low frequency restricted",
                         "names": {
@@ -263,14 +171,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).N"
-                            }
-                        ],
                         "id": "N",
                         "name": "(BIS) Low frequency free, high frequency ECB only",
                         "names": {
@@ -278,14 +178,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).O"
-                            }
-                        ],
                         "id": "O",
                         "name": "Commission/Eurostat only; not for publication",
                         "names": {
@@ -293,14 +185,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).P"
-                            }
-                        ],
                         "id": "P",
                         "name": "Commission/Eurostat and ECB only; not for publication",
                         "names": {
@@ -308,14 +192,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).Q"
-                            }
-                        ],
                         "id": "Q",
                         "name": "Commission/Eurostat and ESCB only; not for publication",
                         "names": {
@@ -323,14 +199,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).T"
-                            }
-                        ],
                         "id": "T",
                         "name": "BIS and IMF only; not for publication",
                         "names": {
@@ -338,14 +206,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).U"
-                            }
-                        ],
                         "id": "U",
                         "name": "ECB and EMU members only; not for publication",
                         "names": {
@@ -353,14 +213,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).W"
-                            }
-                        ],
                         "id": "W",
                         "name": "Confidential - For BIS, ECB and G10 NCBs; only named persons",
                         "names": {
@@ -368,14 +220,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).Z"
-                            }
-                        ],
                         "id": "Z",
                         "name": "Restricted - For BIS, ECB, reporting CBs; authorised individuals",
                         "names": {
@@ -383,14 +227,6 @@
                         }
                     },
                     {
-                        "links": [
-                            {
-                                "rel": "self",
-                                "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).X"
-                            }
-                        ],
                         "id": "X",
                         "name": "BIS only, free",
                         "names": {
@@ -418,8 +254,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4183,8 +4017,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4280,8 +4112,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4317,8 +4147,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4384,8 +4212,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4466,8 +4292,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4503,8 +4327,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4540,8 +4362,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4652,8 +4472,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -4854,8 +4672,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -5026,8 +4842,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -5198,8 +5012,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": false,
                 "codes": [
                     {
                         "links": [
@@ -5415,8 +5227,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": false,
                 "codes": [
                     {
                         "links": [
@@ -5512,8 +5322,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -5549,8 +5357,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": false,
                 "codes": [
                     {
                         "links": [
@@ -5856,8 +5662,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": true,
                 "codes": [
                     {
                         "links": [
@@ -5895,8 +5699,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": true,
                 "concepts": [
                     {
                         "links": [
@@ -6297,11 +6099,6 @@
                         "type": "datastructure",
                         "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)"
-                    },
-                    {
-                        "rel": "metadata",
-                        "href": "https://mms-med-fmr-dev.apps.ocp-dev.opz.bisinfo.org/sdmx/v2/metadata/metadataset/BIS.MEDIT/STI_BIS_CBS/1.0",
-                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS.MEDIT:STI_BIS_CBS(1.0)"
                     }
                 ],
                 "id": "BIS_CBS",
@@ -6316,7 +6113,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataStructureComponents": {
                     "attributeList": {
                         "links": [
@@ -6954,11 +6750,9 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
-                "type": "actual",
                 "cubeRegions": [
                     {
-                        "isIncluded": true,
+                        "include": true,
                         "keyValues": [
                             {
                                 "id": "CBS_BANK_TYPE",

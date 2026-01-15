@@ -11,7 +11,6 @@
             ],
             "agencyId": "SDMX",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": true,
             "items": [
                 {
@@ -89,7 +88,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "structureReference": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_FACETS_FLOW(1.0)",
             "categoryReference": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).TWO.TWO_KID"
         },
@@ -104,7 +102,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "structureReference": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF_1(1.0)",
             "categoryReference": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE"
         },
@@ -119,7 +116,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "structureReference": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF_3(1.0)",
             "categoryReference": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).TWO.TWO_KID"
         },
@@ -134,7 +130,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "structureReference": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF(1.0)",
             "categoryReference": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE"
         },
@@ -149,7 +144,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "structureReference": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF_2(1.0)",
             "categoryReference": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE"
         },
@@ -164,7 +158,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "structureReference": "urn:sdmx:org.sdmx.infomodel.datastructure.Codelist=SDMX:CL_FREQ(1.0)",
             "categoryReference": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE"
         }
@@ -181,7 +174,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -297,7 +289,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "dataStructureRef": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_ARRAYS_DSD(1.0)"
         },
         {
@@ -311,7 +302,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "dataStructureRef": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_ARRAYS_DSD_1(1.0)"
         },
         {
@@ -325,7 +315,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "dataStructureRef": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_ARRAYS_DSD_2(1.0)"
         },
         {
@@ -339,7 +328,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "dataStructureRef": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_ARRAYS_DSD_3(1.0)"
         },
         {
@@ -353,7 +341,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "dataStructureRef": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_FACETS_DSD(1.0)"
         }
     ]
