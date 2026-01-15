@@ -34,14 +34,17 @@ from pysdmx.model.dataflow import Group
 from pysdmx.util import parse_item_urn
 
 
-def _find_concept(cs: Sequence[JsonConceptScheme], urn: str) -> JsonConcept:
+def _find_concept(
+    cs: Sequence[JsonConceptScheme], urn: str
+) -> Optional[JsonConcept]:
     r = parse_item_urn(urn)
     f = [
         m
         for m in cs
         if (m.agency == r.agency and m.id == r.id and m.version == r.version)
     ]
-    return [c for c in f[0].concepts if c.id == r.item_id][0]
+    m = [c for c in f[0].concepts if c.id == r.item_id]
+    return m[0] if m else None
 
 
 def _get_type(repr_: JsonRepresentation) -> Optional[str]:
@@ -168,11 +171,8 @@ class JsonDimension(Struct, frozen=True, omit_defaults=True):
         cons: Dict[str, Sequence[str]],
     ) -> Component:
         """Returns a component."""
-        c = (
-            _find_concept(cs, self.conceptIdentity).to_model(cls)
-            if cs
-            else parse_item_urn(self.conceptIdentity)
-        )
+        c = _find_concept(cs, self.conceptIdentity) if cs else None
+        c = c.to_model(cls) if c else parse_item_urn(self.conceptIdentity)
         name = c.name if isinstance(c, Concept) else None
         desc = c.description if isinstance(c, Concept) else None
         dt, facets, codes, ab = _get_representation(
@@ -227,11 +227,8 @@ class JsonAttribute(Struct, frozen=True, omit_defaults=True):
         groups: Sequence[JsonGroup],
     ) -> Component:
         """Returns a component."""
-        c = (
-            _find_concept(cs, self.conceptIdentity).to_model(cls)
-            if cs
-            else parse_item_urn(self.conceptIdentity)
-        )
+        c = _find_concept(cs, self.conceptIdentity) if cs else None
+        c = c.to_model(cls) if c else parse_item_urn(self.conceptIdentity)
         name = c.name if isinstance(c, Concept) else None
         desc = c.description if isinstance(c, Concept) else None
         dt, facets, codes, ab = _get_representation(
@@ -312,11 +309,8 @@ class JsonMeasure(Struct, frozen=True, omit_defaults=True):
         cons: Dict[str, Sequence[str]],
     ) -> Component:
         """Returns a component."""
-        c = (
-            _find_concept(cs, self.conceptIdentity).to_model(cls)
-            if cs
-            else parse_item_urn(self.conceptIdentity)
-        )
+        c = _find_concept(cs, self.conceptIdentity) if cs else None
+        c = c.to_model(cls) if c else parse_item_urn(self.conceptIdentity)
         name = c.name if isinstance(c, Concept) else None
         desc = c.description if isinstance(c, Concept) else None
         dt, facets, codes, ab = _get_representation(
