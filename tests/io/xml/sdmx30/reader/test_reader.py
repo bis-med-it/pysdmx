@@ -683,3 +683,15 @@ def test_prov_agreement(samples_folder):
     assert prov_agreement.short_urn == "ProvisionAgreement=MD:TEST(1.0)"
     assert prov_agreement.dataflow == "Dataflow=MD:TEST(1.0)"
     assert prov_agreement.provider == "DataProvider=MD:DATA_PROVIDERS(1.0).MD"
+
+
+def test_read_multiple_measure_relationship(samples_folder):
+    data_path = samples_folder / "datastructure_group.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_sdmx(input_str, validate=True).structures
+    dsd = result[0]
+    assert isinstance(dsd, DataStructureDefinition)
+    attr = dsd.components.attributes[2]
+    assert attr.id == "OBS_CONF"
+    assert attr.attachment_level == "OBS_VALUE,OBS_VALUE1"
