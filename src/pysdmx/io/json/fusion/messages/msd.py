@@ -14,13 +14,9 @@ from pysdmx.io.json.fusion.messages.dsd import (
     _find_concept,
     _get_representation,
 )
-from pysdmx.model import (
-    ArrayBoundaries,
-    MetadataComponent,
-)
-from pysdmx.model import (
-    MetadataStructure as MSD,
-)
+from pysdmx.model import ArrayBoundaries, MetadataComponent
+from pysdmx.model import MetadataStructure as MSD
+from pysdmx.util import parse_item_urn
 
 
 class FusionMetadataAttribute(Struct, frozen=True):
@@ -40,7 +36,8 @@ class FusionMetadataAttribute(Struct, frozen=True):
         cls: Sequence[FusionCodelist],
     ) -> MetadataComponent:
         """Returns an attribute."""
-        c = _find_concept(cs, self.concept)
+        m = _find_concept(cs, self.concept) if cs else None
+        c = m.to_model(cls) if m else parse_item_urn(self.concept)
         dt, facets, codes, _ = _get_representation(
             self.id, self.representation, cls, {}
         )
@@ -60,7 +57,7 @@ class FusionMetadataAttribute(Struct, frozen=True):
         return MetadataComponent(
             self.id,
             is_presentational=self.presentational,  # type: ignore[arg-type]
-            concept=c.to_model(cls),
+            concept=c,
             local_dtype=dt,
             local_facets=facets,
             local_codes=codes,
