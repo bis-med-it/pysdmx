@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "vtlVersion": "2.0",
                 "isPartial": false,
                 "rulesets": [

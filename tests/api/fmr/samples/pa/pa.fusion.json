@@ -11,7 +11,6 @@
             ],
             "agencyId": "BIS.CBS",
             "version": "1.0",
-            "isFinal": false,
             "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
             "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).5B0"
         }

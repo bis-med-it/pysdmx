@@ -22,7 +22,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": true,
             "items": [
                 {
@@ -148,7 +147,6 @@
             ],
             "agencyId": "SDMX",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": true,
             "items": [
                 {
@@ -251,7 +249,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": true,
             "items": [
                 {
@@ -279,7 +276,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -496,7 +492,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -4841,7 +4836,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -4958,7 +4952,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -5075,7 +5068,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -5142,7 +5134,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -8411,7 +8402,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -8598,7 +8588,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -8695,7 +8684,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -9149,7 +9137,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -9414,7 +9401,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -9663,7 +9649,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -9958,7 +9943,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -10135,7 +10119,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -10202,7 +10185,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -10293,7 +10275,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -10500,7 +10481,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -10629,7 +10609,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": true,
             "validityType": "standard",
             "items": [
@@ -10895,7 +10874,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.0",
-            "isFinal": false,
             "dimensionList": {
                 "dimensions": [
                     {
@@ -11330,7 +11308,6 @@
             ],
             "agencyId": "BIS.CBS",
             "version": "1.0",
-            "isFinal": false,
             "dataStructureRef": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)"
         }
     ],
@@ -11346,7 +11323,6 @@
             ],
             "agencyId": "BIS.CBS",
             "version": "1.0",
-            "isFinal": false,
             "structureUsage": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
             "dataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).GR2"
         }

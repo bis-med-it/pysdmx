@@ -332,6 +332,20 @@ def output_path(extension, tmpdir):
             {},
             False,
         ),
+        (
+            Format.STRUCTURE_SDMX_JSON_2_1_0,
+            JSN_2_0_PATH,
+            "code/freq.json",
+            {},
+            True,
+        ),
+        (
+            Format.REFMETA_SDMX_JSON_2_1_0,
+            JSN_2_0_PATH,
+            "refmeta/report.json",
+            {},
+            False,
+        ),
         # False due to schema validation issues
         # in reference file from URN error in Schemas
     ],

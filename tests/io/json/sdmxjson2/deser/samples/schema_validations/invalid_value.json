@@ -26,7 +26,6 @@
         "version": "1.0",
         "agencyID": "TEST",
         "isExternalReference": false,
-        "isFinal": false,
         "dataStructureComponents": {
           "attributeList": {
             "links": [
