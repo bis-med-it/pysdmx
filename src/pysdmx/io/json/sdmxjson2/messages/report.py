@@ -1,6 +1,6 @@
 """Collection of SDMX-JSON schemas for reference metadata queries."""
 
-from typing import Any, Optional, Sequence
+from typing import Any, Literal, Optional, Sequence
 
 from msgspec import Struct
 
@@ -162,7 +162,11 @@ class JsonMetadataMessage(Struct, frozen=True, omit_defaults=True):
         return MetadataMessage(header, reports)
 
     @classmethod
-    def from_model(self, msg: MetadataMessage) -> "JsonMetadataMessage":
+    def from_model(
+        self,
+        msg: MetadataMessage,
+        msg_version: Literal["2.0.0", "2.1.0"] = "2.0.0",
+    ) -> "JsonMetadataMessage":
         """Converts a pysdmx metadata message to an SDMX-JSON one."""
         if not msg.header:
             raise errors.Invalid(
@@ -175,6 +179,6 @@ class JsonMetadataMessage(Struct, frozen=True, omit_defaults=True):
                 "SDMX-JSON metadata messages must have metadata reports.",
             )
 
-        header = JsonHeader.from_model(msg.header, "metadata")
+        header = JsonHeader.from_model(msg.header, "metadata", msg_version)
         reports = [JsonMetadataReport.from_model(r) for r in msg.reports]
         return JsonMetadataMessage(header, JsonMetadataSets(reports))
