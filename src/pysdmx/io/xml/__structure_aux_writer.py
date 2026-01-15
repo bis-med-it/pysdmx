@@ -693,7 +693,10 @@ def __write_concept_identity(
     elif identity.urn is not None:
         ref = parse_item_urn(identity.urn)
     else:
-        raise Invalid("Cannot select concept identity without URN")
+        raise Invalid(
+            f"Cannot select concept identity without URN. "
+            f"Concept id={identity.id!r}"
+        )
 
     outfile = f"{indent}<{ABBR_STR}:{CON_ID}>"
     if references_30:
