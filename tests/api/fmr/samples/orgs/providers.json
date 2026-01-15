@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "dataProviders": [
                     {

@@ -17,7 +17,6 @@
             ],
             "agencyId": "BIS",
             "version": "1.42",
-            "isFinal": false,
             "sources": [
                 "String",
                 "String",
