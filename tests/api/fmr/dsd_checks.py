@@ -15,6 +15,17 @@ def check_dsd(mock, fmr: RegistryClient, query, body):
     __check_content(dsds)
 
 
+def check_dsd_partial_cs(mock, fmr: RegistryClient, query, body):
+    """get_data_structures() return a DSD, even if concepts are missing."""
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    dsds = fmr.get_data_structures("BIS", "BIS_CBS", "1.0")
+
+    assert len(mock.calls) == 1
+
+    __check_content(dsds)
+
+
 async def check_dsd_async(mock, fmr: AsyncRegistryClient, query, body):
     """get_data_structures() should return a DSD (async)."""
     mock.get(query).mock(return_value=httpx.Response(200, content=body))
