@@ -372,9 +372,9 @@ def __series_processing(
         del data_dict["Series"][0]
 
     # Getting each datapoint from data and creating dict
-    data = data.sort_values(series_codes, axis=0)
+    data = data.sort_values(series_codes + series_att_codes, axis=0)
     data_dict = {
-        "Series": data[series_codes]
+        "Series": data[series_codes + series_att_codes]
         .drop_duplicates()
         .reset_index(drop=True)
         .to_dict(orient="records")

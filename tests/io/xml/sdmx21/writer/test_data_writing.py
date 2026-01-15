@@ -535,6 +535,34 @@ def test_data_scape_quote(content):
     assert 'A="quote=&quot;"' in result
 
 
+def test_generic_writer_varying_attributes(header, content):
+    dataset = list(content.values())[0]
+    urn = dataset.structure.short_urn
+    df_test = pd.DataFrame(
+        {
+            "DIM1": [1, 1],
+            "DIM2": [4, 5],
+            "ATT1": ["A", "B"],  # Varying attribute
+            "ATT2": [7, 8],
+            "M1": [10, 11],
+        }
+    )
+    dataset.data = df_test
+
+    result = write_gen(
+        [dataset],
+        header=header,
+        dimension_at_observation={urn: "DIM2"},
+    )
+
+    assert result is not None
+    assert "gen:Series" in result
+    assert "gen:Obs" in result
+    assert result.count("<gen:Series>") == 2
+    assert "A" in result
+    assert "B" in result
+
+
 @pytest.fixture
 def ds_optional_attributes():
     df = pd.DataFrame(
