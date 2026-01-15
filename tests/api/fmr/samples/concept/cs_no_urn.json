@@ -26,7 +26,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.MEDIT",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "codes": [
                     {
@@ -64,7 +63,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.MEDIT",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "concepts": [
                     {
