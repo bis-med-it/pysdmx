@@ -1,7 +1,13 @@
 import httpx
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
-from pysdmx.model import Component, Components, DataStructureDefinition
+from pysdmx.model import (
+    Component,
+    Components,
+    Concept,
+    DataStructureDefinition,
+    ItemReference,
+)
 
 
 def check_dsd(mock, fmr: RegistryClient, query, body):
@@ -23,7 +29,7 @@ def check_dsd_partial_cs(mock, fmr: RegistryClient, query, body):
 
     assert len(mock.calls) == 1
 
-    __check_content(dsds)
+    __check_content(dsds, True)
 
 
 async def check_dsd_async(mock, fmr: AsyncRegistryClient, query, body):
@@ -57,7 +63,7 @@ def check_multi_meas(mock, fmr: RegistryClient, query, body):
             assert a.attachment_level == "OI,TO"
 
 
-def __check_content(dsds):
+def __check_content(dsds, partial_cs: bool = False):
     assert len(dsds) == 1
     dsd = dsds[0]
     assert isinstance(dsd, DataStructureDefinition)
@@ -69,10 +75,14 @@ def __check_content(dsds):
     for comp in dsd.components:
         assert isinstance(comp, Component)
         assert comp.id is not None
-        assert comp.name is not None
+        if not partial_cs:
+            assert comp.name is not None
         assert comp.concept is not None
         assert comp.concept.id is not None
-        assert comp.id == comp.concept.id
+        if isinstance(comp.concept, Concept):
+            assert comp.id == comp.concept.id
+        else:
+            assert comp.id == comp.concept.item_id
         assert comp.required is not None
         assert comp.role is not None
         assert comp.dtype is not None
