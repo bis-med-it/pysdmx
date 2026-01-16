@@ -16,6 +16,7 @@
 
     <message:Structures>
         <str:RepresentationMaps>
+            <!-- 1-1 value mapping -->
             <str:RepresentationMap urn="urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=ESTAT:REPMAP_SEX(1.0)" id="REPMAP_SEX" agencyID="ESTAT" version="1.0">
                 <com:Name xml:lang="es">Sex Mapping (Numeric to Alpha)</com:Name>
                 <str:SourceCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_SEX_V1(1.0)</str:SourceCodelist>
@@ -29,53 +30,118 @@
                     <str:TargetValue>F</str:TargetValue>
                 </str:RepresentationMapping>
             </str:RepresentationMap>
+            <!-- N-1 value mapping: multiple SourceValue -> single TargetValue -->
+            <str:RepresentationMap urn="urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=ESTAT:REPMAP_CURR(1.0)" id="REPMAP_CURR" agencyID="ESTAT" version="1.0">
+                <com:Name xml:lang="en">Country + Local Currency to ISO Currency</com:Name>
+                <str:SourceCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_COUNTRY_LOCALCURR(1.0)</str:SourceCodelist>
+                <str:TargetCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_CURRENCY_ISO3(1.0)</str:TargetCodelist>
+                <str:RepresentationMapping>
+                    <str:SourceValue>DE</str:SourceValue>
+                    <str:SourceValue>LC</str:SourceValue>
+                    <str:TargetValue>EUR</str:TargetValue>
+                </str:RepresentationMapping>
+                <str:RepresentationMapping>
+                    <str:SourceValue>CH</str:SourceValue>
+                    <str:SourceValue>LC</str:SourceValue>
+                    <str:TargetValue>CHF</str:TargetValue>
+                </str:RepresentationMapping>
+            </str:RepresentationMap>
+            <!-- 1-N value mapping: single SourceValue -> multiple TargetValue -->
+            <str:RepresentationMap urn="urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=ESTAT:REPMAP_SERIES(1.0)" id="REPMAP_SERIES" agencyID="ESTAT" version="1.0">
+                <com:Name xml:lang="en">Series code to Indicator + Status</com:Name>
+                <str:SourceCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_SERIES_CODE(1.0)</str:SourceCodelist>
+                <str:TargetCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_INDICATOR_STATUS(1.0)</str:TargetCodelist>
+                <str:RepresentationMapping>
+                    <str:SourceValue>XMAN_Z_34</str:SourceValue>
+                    <str:TargetValue>XM</str:TargetValue>
+                    <str:TargetValue>QXR15</str:TargetValue>
+                </str:RepresentationMapping>
+                <str:RepresentationMapping>
+                    <str:SourceValue>YBOP_A_12</str:SourceValue>
+                    <str:TargetValue>YB</str:TargetValue>
+                    <str:TargetValue>OK</str:TargetValue>
+                </str:RepresentationMapping>
+            </str:RepresentationMap>
+            <!-- N-N value mapping: multiple SourceValue -> multiple TargetValue -->
+            <str:RepresentationMap urn="urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=ESTAT:REPMAP_NN(1.0)" id="REPMAP_NN" agencyID="ESTAT" version="1.0">
+                <com:Name xml:lang="en">Freq + Adjustment to Indicator + Note</com:Name>
+                <str:SourceCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_FREQ_ADJ(1.0)</str:SourceCodelist>
+                <str:TargetCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_IND_NOTE(1.0)</str:TargetCodelist>
+                <str:RepresentationMapping>
+                    <str:SourceValue>A</str:SourceValue>
+                    <str:SourceValue>N</str:SourceValue>
+                    <str:TargetValue>A_N</str:TargetValue>
+                    <str:TargetValue>Unadjusted</str:TargetValue>
+                </str:RepresentationMapping>
+                <str:RepresentationMapping>
+                    <str:SourceValue>M</str:SourceValue>
+                    <str:SourceValue>S_A1</str:SourceValue>
+                    <str:TargetValue>MON_SAX</str:TargetValue>
+                    <str:TargetValue>Seasonally adjusted</str:TargetValue>
+                </str:RepresentationMapping>
+            </str:RepresentationMap>
         </str:RepresentationMaps>
         <str:StructureMaps>
             <str:StructureMap urn="urn:sdmx:org.sdmx.infomodel.structuremapping.StructureMap=ESTAT:STRMAP_DEMO(1.0)" id="STRMAP_DEMO" agencyID="ESTAT" version="1.0">
                 <com:Name xml:lang="es">Demographic Structure Mapping</com:Name>
                 <str:Source>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=ESTAT:DSD_DEMO_V1(1.0)</str:Source>
                 <str:Target>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=ESTAT:DSD_DEMO_V2(2.0)</str:Target>
-                <str:DatePatternMap
-                    id="DPM_FIXED_ID_RESOLVE"
-                    sourcePattern="MMM yy"
-                    locale="en"
-                    resolvePeriod="startOfPeriod">
+                <!-- DatePatternMaps -->
+                <str:DatePatternMap id="DPM_FIXED_ID_RESOLVE" sourcePattern="MMM yy" locale="en" resolvePeriod="startOfPeriod">
                     <str:Source>DATE</str:Source>
                     <str:Target>TIME_PERIOD</str:Target>
                     <str:TargetFrequencyID>M</str:TargetFrequencyID>
                 </str:DatePatternMap>
-                <str:DatePatternMap
-                    sourcePattern="yyyy"
-                    locale="en">
+                <str:DatePatternMap sourcePattern="yyyy" locale="en">
                     <str:Source>YEAR</str:Source>
                     <str:Target>TIME_PERIOD</str:Target>
                     <str:TargetFrequencyID>A</str:TargetFrequencyID>
                 </str:DatePatternMap>
-                <str:DatePatternMap
-                    id="DPM_VAR_ID"
-                    sourcePattern="yyyy-MM"
-                    locale="en">
+                <str:DatePatternMap id="DPM_VAR_ID" sourcePattern="yyyy-MM" locale="en">
                     <str:Source>DATE</str:Source>
                     <str:Target>TIME_PERIOD</str:Target>
                     <str:FrequencyDimension>FREQ</str:FrequencyDimension>
                 </str:DatePatternMap>
-                <str:DatePatternMap
-                    sourcePattern="dd/MM/yyyy"
-                    locale="es"
-                    resolvePeriod="endOfPeriod">
+                <str:DatePatternMap sourcePattern="dd/MM/yyyy" locale="es" resolvePeriod="endOfPeriod">
                     <str:Source>REF_DATE</str:Source>
                     <str:Target>TIME_PERIOD</str:Target>
                     <str:FrequencyDimension>FREQ</str:FrequencyDimension>
                 </str:DatePatternMap>
+                <!-- ComponentMaps -->
+                <!-- 1-1 ComponentMap -->
                 <str:ComponentMap>
                     <str:Source>SEX_DIM</str:Source>
                     <str:Target>GENDER_DIM</str:Target>
                     <str:RepresentationMap>urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=ESTAT:REPMAP_SEX(1.0)</str:RepresentationMap>
                 </str:ComponentMap>
-                <str:ComponentMap> <!-- Implicit mapping: NO RepresentationMap -->
+                <!-- Implicit mapping: No RepresentationMap -->
+                <str:ComponentMap>
                     <str:Source>OBS_CONF</str:Source>
                     <str:Target>CONF_STATUS</str:Target>
                 </str:ComponentMap>
+                <!-- N-1 ComponentMap (two sources -> one target) -->
+                <str:ComponentMap>
+                    <str:Source>COUNTRY</str:Source>
+                    <str:Source>LOCAL_CURRENCY</str:Source>
+                    <str:Target>CURRENCY_ISO3</str:Target>
+                    <str:RepresentationMap>urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=ESTAT:REPMAP_CURR(1.0)</str:RepresentationMap>
+                </str:ComponentMap>
+                <!-- 1-N ComponentMap (one source -> two targets) -->
+                <str:ComponentMap>
+                    <str:Source>SERIES_CODE</str:Source>
+                    <str:Target>INDICATOR</str:Target>
+                    <str:Target>STATUS</str:Target>
+                    <str:RepresentationMap>urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=ESTAT:REPMAP_SERIES(1.0)</str:RepresentationMap>
+                </str:ComponentMap>
+                <!-- N-N ComponentMap (two sources -> two targets) -->
+                <str:ComponentMap>
+                    <str:Source>FREQ</str:Source>
+                    <str:Source>ADJUSTMENT</str:Source>
+                    <str:Target>INDICATOR</str:Target>
+                    <str:Target>NOTE</str:Target>
+                    <str:RepresentationMap>urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=ESTAT:REPMAP_NN(1.0)</str:RepresentationMap>
+                </str:ComponentMap>
+                <!-- FixedValueMaps must be last (per XSD order) -->
                 <str:FixedValueMap>
                     <str:Target>OBS_STATUS</str:Target>
                     <str:Value>A</str:Value>

@@ -16,6 +16,8 @@ from pysdmx.model import (
     FixedValueMap,
     ImplicitComponentMap,
     MetadataReport,
+    MultiComponentMap,
+    MultiValueMap,
     RepresentationMap,
     Schema,
     StructureMap,
@@ -543,9 +545,9 @@ def test_get_datasets_prov_agreement_no_dataflow(
 def test_read_maps():
     data_path = Path(__file__).parent / "samples" / "maps.xml"
     result = read_sdmx(data_path, validate=True)
-    assert len(result.structures) == 2
+    assert len(result.structures) == 5
 
-    # RepresentationMap checks
+    # RepresentationMap 1 - REPMAP_SEX (1-1 => ValueMap)
     rep_map = result.structures[1]
     assert isinstance(rep_map, RepresentationMap)
     assert rep_map.id == "REPMAP_SEX"
@@ -567,17 +569,73 @@ def test_read_maps():
     )
     assert len(rep_map.maps) == 2
 
-    mapping_1 = rep_map.maps[0]
-    assert isinstance(mapping_1, ValueMap)
-    assert mapping_1.source == "1"
-    assert mapping_1.target == "M"
+    m = rep_map.maps[0]
+    assert isinstance(m, ValueMap)
+    assert m.source == "1"
+    assert m.target == "M"
 
-    mapping_2 = rep_map.maps[1]
-    assert isinstance(mapping_2, ValueMap)
-    assert mapping_2.source == "2"
-    assert mapping_2.target == "F"
+    m = rep_map.maps[1]
+    assert isinstance(m, ValueMap)
+    assert m.source == "2"
+    assert m.target == "F"
 
-    # StructureMap checks
+    # RepresentationMap 2 - REPMAP_CURR (N-1 => MultiValueMap)
+    rep_map = result.structures[2]
+    assert isinstance(rep_map, RepresentationMap)
+    assert rep_map.id == "REPMAP_CURR"
+    assert rep_map.agency == "ESTAT"
+    assert rep_map.version == "1.0"
+    assert len(rep_map.maps) == 2
+
+    m = rep_map.maps[0]
+    assert isinstance(m, MultiValueMap)
+    assert list(m.source) == ["DE", "LC"]
+    assert list(m.target) == ["EUR"]
+    assert m.valid_from is None
+    assert m.valid_to is None
+
+    m = rep_map.maps[1]
+    assert isinstance(m, MultiValueMap)
+    assert list(m.source) == ["CH", "LC"]
+    assert list(m.target) == ["CHF"]
+
+    # RepresentationMap 3 - REPMAP_SERIES (1-N => MultiValueMap)
+    rep_map = result.structures[3]
+    assert isinstance(rep_map, RepresentationMap)
+    assert rep_map.id == "REPMAP_SERIES"
+    assert rep_map.agency == "ESTAT"
+    assert rep_map.version == "1.0"
+    assert len(rep_map.maps) == 2
+
+    m = rep_map.maps[0]
+    assert isinstance(m, MultiValueMap)
+    assert list(m.source) == ["XMAN_Z_34"]
+    assert list(m.target) == ["XM", "QXR15"]
+
+    m = rep_map.maps[1]
+    assert isinstance(m, MultiValueMap)
+    assert list(m.source) == ["YBOP_A_12"]
+    assert list(m.target) == ["YB", "OK"]
+
+    # RepresentationMap 4 - REPMAP_NN (N-N => MultiValueMap)
+    rep_map = result.structures[4]
+    assert isinstance(rep_map, RepresentationMap)
+    assert rep_map.id == "REPMAP_NN"
+    assert rep_map.agency == "ESTAT"
+    assert rep_map.version == "1.0"
+    assert len(rep_map.maps) == 2
+
+    m = rep_map.maps[0]
+    assert isinstance(m, MultiValueMap)
+    assert list(m.source) == ["A", "N"]
+    assert list(m.target) == ["A_N", "Unadjusted"]
+
+    m = rep_map.maps[1]
+    assert isinstance(m, MultiValueMap)
+    assert list(m.source) == ["M", "S_A1"]
+    assert list(m.target) == ["MON_SAX", "Seasonally adjusted"]
+
+    # StructureMap 0 - STRMAP_DEMO
     str_map = result.structures[0]
     assert isinstance(str_map, StructureMap)
     assert str_map.id == "STRMAP_DEMO"
@@ -593,40 +651,67 @@ def test_read_maps():
         str_map.source == "urn:sdmx:org.sdmx.infomodel.datastructure."
         "DataStructure=ESTAT:DSD_DEMO_V1(1.0)"
     )
-
-    assert len(str_map.maps) == 7
     assert (
         str_map.target == "urn:sdmx:org.sdmx.infomodel.datastructure."
         "DataStructure=ESTAT:DSD_DEMO_V2(2.0)"
     )
-    assert (
-        str_map.source == "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "DataStructure=ESTAT:DSD_DEMO_V1(1.0)"
-    )
 
-    # ComponentMap checks
-    comp_map = str_map.maps[0]
-    assert isinstance(comp_map, ComponentMap)
-    assert comp_map.source == "SEX_DIM"
-    assert comp_map.target == "GENDER_DIM"
+    assert len(str_map.maps) == 10
+
+    # 0: 1-1 ComponentMap
+    cm = str_map.maps[0]
+    assert isinstance(cm, ComponentMap)
+    assert cm.source == "SEX_DIM"
+    assert cm.target == "GENDER_DIM"
     assert (
-        comp_map.values == "urn:sdmx:org.sdmx.infomodel.structuremapping."
+        cm.values == "urn:sdmx:org.sdmx.infomodel.structuremapping."
         "RepresentationMap=ESTAT:REPMAP_SEX(1.0)"
     )
-    # ImplicitComponentMap checks
-    imp_comp_map = str_map.maps[1]
-    assert isinstance(imp_comp_map, ImplicitComponentMap)
-    assert imp_comp_map.source == "OBS_CONF"
-    assert imp_comp_map.target == "CONF_STATUS"
 
-    # FixedValueMap checks
-    fixed_map = str_map.maps[2]
+    # 1: implicit component map
+    icm = str_map.maps[1]
+    assert isinstance(icm, ImplicitComponentMap)
+    assert icm.source == "OBS_CONF"
+    assert icm.target == "CONF_STATUS"
+
+    # 2: N-1 MultiComponentMap
+    mcm = str_map.maps[2]
+    assert isinstance(mcm, MultiComponentMap)
+    assert list(mcm.source) == ["COUNTRY", "LOCAL_CURRENCY"]
+    assert list(mcm.target) == ["CURRENCY_ISO3"]
+    assert (
+        mcm.values == "urn:sdmx:org.sdmx.infomodel.structuremapping."
+        "RepresentationMap=ESTAT:REPMAP_CURR(1.0)"
+    )
+
+    # 3: 1-N MultiComponentMap
+    mcm = str_map.maps[3]
+    assert isinstance(mcm, MultiComponentMap)
+    assert list(mcm.source) == ["SERIES_CODE"]
+    assert list(mcm.target) == ["INDICATOR", "STATUS"]
+    assert (
+        mcm.values == "urn:sdmx:org.sdmx.infomodel.structuremapping."
+        "RepresentationMap=ESTAT:REPMAP_SERIES(1.0)"
+    )
+
+    # 4: N-N MultiComponentMap
+    mcm = str_map.maps[4]
+    assert isinstance(mcm, MultiComponentMap)
+    assert list(mcm.source) == ["FREQ", "ADJUSTMENT"]
+    assert list(mcm.target) == ["INDICATOR", "NOTE"]
+    assert (
+        mcm.values == "urn:sdmx:org.sdmx.infomodel.structuremapping."
+        "RepresentationMap=ESTAT:REPMAP_NN(1.0)"
+    )
+
+    # 5: FixedValueMap
+    fixed_map = str_map.maps[5]
     assert isinstance(fixed_map, FixedValueMap)
     assert fixed_map.target == "OBS_STATUS"
     assert fixed_map.value == "A"
 
-    # DatePatternMap checks
-    dpm = str_map.maps[3]
+    # 6..9: DatePatternMaps
+    dpm = str_map.maps[6]
     assert isinstance(dpm, DatePatternMap)
     assert dpm.id == "DPM_FIXED_ID_RESOLVE"
     assert dpm.source == "DATE"
@@ -636,7 +721,8 @@ def test_read_maps():
     assert dpm.locale == "en"
     assert dpm.pattern_type == "fixed"
     assert dpm.resolve_period == "startOfPeriod"
-    dpm = str_map.maps[4]
+
+    dpm = str_map.maps[7]
     assert isinstance(dpm, DatePatternMap)
     assert dpm.id is None
     assert dpm.source == "YEAR"
@@ -646,7 +732,8 @@ def test_read_maps():
     assert dpm.locale == "en"
     assert dpm.pattern_type == "fixed"
     assert dpm.resolve_period is None
-    dpm = str_map.maps[5]
+
+    dpm = str_map.maps[8]
     assert isinstance(dpm, DatePatternMap)
     assert dpm.id == "DPM_VAR_ID"
     assert dpm.source == "DATE"
@@ -656,7 +743,8 @@ def test_read_maps():
     assert dpm.locale == "en"
     assert dpm.pattern_type == "variable"
     assert dpm.resolve_period is None
-    dpm = str_map.maps[6]
+
+    dpm = str_map.maps[9]
     assert isinstance(dpm, DatePatternMap)
     assert dpm.id is None
     assert dpm.source == "REF_DATE"
