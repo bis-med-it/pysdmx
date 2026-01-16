@@ -103,6 +103,8 @@ from pysdmx.model import (
     FixedValueMap,
     Hierarchy,
     ImplicitComponentMap,
+    MultiComponentMap,
+    MultiValueMap,
     NamePersonalisation,
     NamePersonalisationScheme,
     RepresentationMap,
@@ -872,9 +874,30 @@ def __write_prov_agreement(
     return outfile
 
 
-def __write_value_map(value_map: ValueMap, indent: str) -> str:
-    """Writes a ValueMap (RepresentationMapping) to the XML file."""
+def __write_value_map(
+    value_map: Union[ValueMap, MultiValueMap], indent: str
+) -> str:
+    """Writes a ValueMap or MultiValueMap (RepresentationMapping)."""
     outfile = f"{indent}<{ABBR_STR}:RepresentationMapping>"
+
+    # MultiValueMap
+    if isinstance(value_map, MultiValueMap):
+        for s in value_map.source:
+            outfile += (
+                f"{add_indent(indent)}<{ABBR_STR}:SourceValue>"
+                f"{__escape_xml(str(s))}"
+                f"</{ABBR_STR}:SourceValue>"
+            )
+        for t in value_map.target:
+            outfile += (
+                f"{add_indent(indent)}<{ABBR_STR}:TargetValue>"
+                f"{__escape_xml(str(t))}"
+                f"</{ABBR_STR}:TargetValue>"
+            )
+        outfile += f"{indent}</{ABBR_STR}:RepresentationMapping>"
+        return outfile
+
+    # ValueMap
     outfile += (
         f"{add_indent(indent)}<{ABBR_STR}:SourceValue>"
         f"{__escape_xml(str(value_map.source))}"
@@ -886,6 +909,36 @@ def __write_value_map(value_map: ValueMap, indent: str) -> str:
         f"</{ABBR_STR}:TargetValue>"
     )
     outfile += f"{indent}</{ABBR_STR}:RepresentationMapping>"
+    return outfile
+
+
+def __write_multi_component_map(
+    comp_map: MultiComponentMap, indent: str
+) -> str:
+    """Writes a MultiComponentMap (1-n, n-1, n-n) to the XML file."""
+    outfile = f"{indent}<{ABBR_STR}:{COMPONENT_MAP}>"
+
+    for s in comp_map.source:
+        outfile += (
+            f"{add_indent(indent)}<{ABBR_STR}:Source>"
+            f"{__escape_xml(str(s))}"
+            f"</{ABBR_STR}:Source>"
+        )
+
+    for t in comp_map.target:
+        outfile += (
+            f"{add_indent(indent)}<{ABBR_STR}:Target>"
+            f"{__escape_xml(str(t))}"
+            f"</{ABBR_STR}:Target>"
+        )
+
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:RepresentationMap>"
+        f"{__escape_xml(str(comp_map.values))}"
+        f"</{ABBR_STR}:RepresentationMap>"
+    )
+
+    outfile += f"{indent}</{ABBR_STR}:{COMPONENT_MAP}>"
     return outfile
 
 
@@ -1056,7 +1109,11 @@ def __write_structure_map(
         if isinstance(map_item, DatePatternMap):
             outfile += __write_date_pattern_map(map_item, add_indent(indent))
     for map_item in struct_map.maps:
-        if isinstance(map_item, ComponentMap):
+        if isinstance(map_item, MultiComponentMap):
+            outfile += __write_multi_component_map(
+                map_item, add_indent(indent)
+            )
+        elif isinstance(map_item, ComponentMap):
             outfile += __write_component_map(
                 map_item, add_indent(indent), references_30
             )

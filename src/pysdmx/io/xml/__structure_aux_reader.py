@@ -1,7 +1,7 @@
 """Parsers for reading metadata."""
 
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional, Sequence, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Type, Union
 
 from msgspec import Struct
 
@@ -169,6 +169,8 @@ from pysdmx.model import (
     Facets,
     FixedValueMap,
     ImplicitComponentMap,
+    MultiComponentMap,
+    MultiValueMap,
     RepresentationMap,
     StructureMap,
     ValueMap,
@@ -1083,30 +1085,43 @@ class StructureParser(Struct):
             "resolvePeriod": "resolve_period",
             "TargetFrequencyID": "frequency",
             "FrequencyDimension": "frequency",
+            "validFrom": "valid_from",
+            "validTo": "valid_to",
         }
 
         for xml_key, py_key in renames.items():
             if xml_key in element:
                 element[py_key] = element.pop(xml_key)
 
-        child_class_mapping = {
+        child_class_mapping: Dict[str, Type[Any]] = {
             "ComponentMap": ComponentMap,
             "FixedValueMap": FixedValueMap,
-            "RepresentationMapping": ValueMap,
             "DatePatternMap": DatePatternMap,
+            "RepresentationMapping": ValueMap,
         }
 
-        consolidated_children = []
+        MapChild = Union[
+            ComponentMap,
+            MultiComponentMap,
+            ImplicitComponentMap,
+            FixedValueMap,
+            DatePatternMap,
+            ValueMap,
+            MultiValueMap,
+        ]
+        consolidated_children: List[MapChild] = []
 
         for xml_tag, target_class in child_class_mapping.items():
-            if xml_tag in element:
-                children_dicts = add_list(element.pop(xml_tag))
-                for child_dict in children_dicts:
-                    self.__format_maps(child_dict)
-                    if (
-                        xml_tag == "ComponentMap"
-                        and "values" not in child_dict
-                    ):
+            if xml_tag not in element:
+                continue
+
+            children_dicts = add_list(element.pop(xml_tag))
+            for child_dict in children_dicts:
+                self.__format_maps(child_dict)
+                # ComponentMap: implicit vs explicit
+                if xml_tag == "ComponentMap":
+                    # Implicit mapping (no RepresentationMap)
+                    if "values" not in child_dict:
                         consolidated_children.append(
                             ImplicitComponentMap(
                                 source=child_dict["source"],
@@ -1114,7 +1129,60 @@ class StructureParser(Struct):
                             )
                         )
                         continue
-                    consolidated_children.append(target_class(**child_dict))
+
+                    src_list = add_list(child_dict.get("source"))
+                    tgt_list = add_list(child_dict.get("target"))
+
+                    # If any side has multiplicity -> MultiComponentMap
+                    if len(src_list) != 1 or len(tgt_list) != 1:
+                        consolidated_children.append(
+                            MultiComponentMap(
+                                source=src_list,
+                                target=tgt_list,
+                                values=child_dict["values"],
+                            )
+                        )
+                        continue
+
+                    # Otherwise it's the regular 1-1 ComponentMap
+                    consolidated_children.append(
+                        ComponentMap(
+                            source=src_list[0],
+                            target=tgt_list[0],
+                            values=child_dict["values"],
+                        )
+                    )
+                    continue
+
+                # RepresentationMapping: ValueMap vs RepresentationMap
+                if xml_tag == "RepresentationMapping":
+                    src = child_dict.get("source")
+                    tgt = child_dict.get("target")
+
+                    src_list = add_list(src) if src is not None else []
+                    tgt_list = add_list(tgt) if tgt is not None else []
+
+                    # If there's multiplicity, MultiValueMap
+                    if len(src_list) != 1 or len(tgt_list) != 1:
+                        consolidated_children.append(
+                            MultiValueMap(
+                                source=src_list,
+                                target=tgt_list,
+                                valid_from=child_dict.get("valid_from"),
+                                valid_to=child_dict.get("valid_to"),
+                            )
+                        )
+                    else:
+                        consolidated_children.append(
+                            ValueMap(
+                                source=src_list[0],
+                                target=tgt_list[0],
+                                valid_from=child_dict.get("valid_from"),
+                                valid_to=child_dict.get("valid_to"),
+                            )
+                        )
+                    continue
+                consolidated_children.append(target_class(**child_dict))
 
         if consolidated_children:
             element["maps"] = consolidated_children
