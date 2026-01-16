@@ -98,6 +98,7 @@ from pysdmx.model import (
     CustomType,
     CustomTypeScheme,
     DataType,
+    DatePatternMap,
     Facets,
     FixedValueMap,
     Hierarchy,
@@ -183,6 +184,7 @@ STR_DICT_TYPE_LIST_21 = {
     Dataflow: "Dataflows",
     RepresentationMap: "RepresentationMaps",
     StructureMap: "StructureMaps",
+    DatePatternMap: "DatePatternMaps",
     CustomTypeScheme: "CustomTypes",
     VtlMappingScheme: "VtlMappings",
     NamePersonalisationScheme: "NamePersonalisations",
@@ -201,6 +203,7 @@ STR_DICT_TYPE_LIST_30 = {
     Dataflow: "Dataflows",
     RepresentationMap: "RepresentationMaps",
     StructureMap: "StructureMaps",
+    DatePatternMap: "DatePatternMaps",
     CustomTypeScheme: "CustomTypeSchemes",
     VtlMappingScheme: "VtlMappingSchemes",
     NamePersonalisationScheme: "NamePersonalisationSchemes",
@@ -963,6 +966,46 @@ def __write_fixed_value_map(fixed_map: FixedValueMap, indent: str) -> str:
     return outfile
 
 
+def __write_date_pattern_map(date_map: DatePatternMap, indent: str) -> str:
+    """Writes a DatePatternMap to the XML file."""
+    attrs = ""
+    if date_map.id is not None:
+        attrs += f' id="{__escape_xml(date_map.id)}"'
+    if date_map.resolve_period is not None:
+        attrs += f' resolvePeriod="{__escape_xml(date_map.resolve_period)}"'
+
+    attrs += f' sourcePattern="{__escape_xml(date_map.pattern)}"'
+    attrs += f' locale="{__escape_xml(date_map.locale)}"'
+
+    outfile = f"{indent}<{ABBR_STR}:DatePatternMap{attrs}>"
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Source>"
+        f"{__escape_xml(date_map.source)}"
+        f"</{ABBR_STR}:Source>"
+    )
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Target>"
+        f"{__escape_xml(date_map.target)}"
+        f"</{ABBR_STR}:Target>"
+    )
+
+    if date_map.pattern_type == "variable":
+        outfile += (
+            f"{add_indent(indent)}<{ABBR_STR}:FrequencyDimension>"
+            f"{__escape_xml(date_map.frequency)}"
+            f"</{ABBR_STR}:FrequencyDimension>"
+        )
+    else:
+        outfile += (
+            f"{add_indent(indent)}<{ABBR_STR}:TargetFrequencyID>"
+            f"{__escape_xml(date_map.frequency)}"
+            f"</{ABBR_STR}:TargetFrequencyID>"
+        )
+
+    outfile += f"{indent}</{ABBR_STR}:DatePatternMap>"
+    return outfile
+
+
 def __write_structure_map(
     struct_map: StructureMap, indent: str, references_30: bool = False
 ) -> str:
@@ -989,6 +1032,9 @@ def __write_structure_map(
     )
 
     # Write component maps and fixed value maps
+    for map_item in struct_map.maps:
+        if isinstance(map_item, DatePatternMap):
+            outfile += __write_date_pattern_map(map_item, add_indent(indent))
     for map_item in struct_map.maps:
         if isinstance(map_item, ComponentMap):
             outfile += __write_component_map(

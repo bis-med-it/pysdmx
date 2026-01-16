@@ -14,6 +14,7 @@ from pysdmx.io.xml.__tokens import (
     CONTACTS_LOW,
     CUSTOM_TYPE_SCHEMES,
     CUSTOM_TYPES,
+    DATE_PATTERN_MAPS,
     DESC_LOW,
     DFW,
     DFWS_LOW,
@@ -74,6 +75,7 @@ CONSTRAINTS = "Constraints"
 PROV_AGREEMENTS = "ProvisionAgreements"
 REPRESENTATION_MAPS_KEY = "RepresentationMaps"
 STRUCTURE_MAPS_KEY = "StructureMaps"
+DATE_PATTERN_MAP_KEY = "DatePatternMaps"
 ALL_DIM = "AllDimensions"
 
 BASE_URL_21 = "http://www.sdmx.org/resources/sdmxml/schemas/v2_1"
@@ -211,6 +213,7 @@ MSG_CONTENT_PKG_21 = OrderedDict(
         (CONSTRAINTS, "ContentConstraints"),
         (REPRESENTATION_MAPS, "RepresentationMaps"),
         (STRUCTURE_MAPS, "StructureMaps"),
+        (DATE_PATTERN_MAPS, "DatePatternMaps"),
         (CUSTOM_TYPES, "CustomTypes"),
         (VTLMAPPINGS, "VtlMappings"),
         (NAME_PERS, "NamePersonalisations"),
@@ -232,6 +235,7 @@ MSG_CONTENT_PKG_30 = OrderedDict(
         (CONSTRAINTS, "ContentConstraints"),
         (REPRESENTATION_MAPS, "RepresentationMaps"),
         (STRUCTURE_MAPS, "StructureMaps"),
+        (DATE_PATTERN_MAPS, "DatePatternMaps"),
         (CUSTOM_TYPE_SCHEMES, "CustomTypeSchemes"),
         (VTLMAPPING_SCHEMES, "VtlMappingSchemes"),
         (NAME_PER_SCHEMES, "NamePersonalisationSchemes"),

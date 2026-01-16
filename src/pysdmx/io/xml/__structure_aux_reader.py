@@ -46,6 +46,7 @@ from pysdmx.io.xml.__tokens import (
     CUSTOM_TYPE_SCHEMES,
     CUSTOM_TYPES,
     DATA_PROV,
+    DATE_PATTERN_MAP,
     DEPARTMENT,
     DESC,
     DFW,
@@ -164,6 +165,7 @@ from pysdmx.model import (
     Concept,
     ConceptScheme,
     DataType,
+    DatePatternMap,
     Facets,
     FixedValueMap,
     RepresentationMap,
@@ -223,6 +225,7 @@ STRUCTURES_MAPPING = {
     STRUCTURE_MAP: StructureMap,
     COMPONENT_MAP: ComponentMap,
     FIXED_VALUE_MAP: FixedValueMap,
+    DATE_PATTERN_MAP: DatePatternMap,
     REPRESENTATION_MAP: RepresentationMap,
     NAME_PER_SCHEME: NamePersonalisationScheme,
     CUSTOM_TYPE_SCHEME: CustomTypeScheme,
@@ -1058,6 +1061,14 @@ class StructureParser(Struct):
         return json_elem
 
     def __format_maps(self, element: Dict[str, Any]) -> Dict[str, Any]:
+        if "sourcePattern" in element:
+            if "FrequencyDimension" in element:
+                element["pattern_type"] = "variable"
+            else:  # When TargetFrequencyID
+                # DatePatternMap.pattern_type defaults value is fixed
+                # So same logic is applied here
+                element["pattern_type"] = "fixed"
+
         renames = {
             "Source": "source",
             "Target": "target",
@@ -1067,6 +1078,10 @@ class StructureParser(Struct):
             "SourceValue": "source",
             "TargetValue": "target",
             "RepresentationMap": "values",
+            "sourcePattern": "pattern",
+            "resolvePeriod": "resolve_period",
+            "TargetFrequencyID": "frequency",
+            "FrequencyDimension": "frequency",
         }
 
         for xml_key, py_key in renames.items():
@@ -1077,6 +1092,7 @@ class StructureParser(Struct):
             "ComponentMap": ComponentMap,
             "FixedValueMap": FixedValueMap,
             "RepresentationMapping": ValueMap,
+            "DatePatternMap": DatePatternMap,
         }
 
         consolidated_children = []

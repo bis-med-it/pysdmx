@@ -12,6 +12,7 @@ from pysdmx.io.reader import get_datasets
 from pysdmx.model import (
     Codelist,
     ComponentMap,
+    DatePatternMap,
     FixedValueMap,
     MetadataReport,
     RepresentationMap,
@@ -565,13 +566,11 @@ def test_read_maps():
     )
     assert len(rep_map.maps) == 2
 
-    # First representation mapping
     mapping_1 = rep_map.maps[0]
     assert isinstance(mapping_1, ValueMap)
     assert mapping_1.source == "1"
     assert mapping_1.target == "M"
 
-    # Second representation mapping
     mapping_2 = rep_map.maps[1]
     assert isinstance(mapping_2, ValueMap)
     assert mapping_2.source == "2"
@@ -594,7 +593,7 @@ def test_read_maps():
         "DataStructure=ESTAT:DSD_DEMO_V1(1.0)"
     )
 
-    assert len(str_map.maps) == 2
+    assert len(str_map.maps) == 6
     assert (
         str_map.target == "urn:sdmx:org.sdmx.infomodel.datastructure."
         "DataStructure=ESTAT:DSD_DEMO_V2(2.0)"
@@ -619,3 +618,45 @@ def test_read_maps():
     assert isinstance(fixed_map, FixedValueMap)
     assert fixed_map.target == "OBS_STATUS"
     assert fixed_map.value == "A"
+
+    # DatePatternMap checks
+    dpm = str_map.maps[2]
+    assert isinstance(dpm, DatePatternMap)
+    assert dpm.id == "DPM_FIXED_ID_RESOLVE"
+    assert dpm.source == "DATE"
+    assert dpm.target == "TIME_PERIOD"
+    assert dpm.pattern == "MMM yy"
+    assert dpm.frequency == "M"
+    assert dpm.locale == "en"
+    assert dpm.pattern_type == "fixed"
+    assert dpm.resolve_period == "startOfPeriod"
+    dpm = str_map.maps[3]
+    assert isinstance(dpm, DatePatternMap)
+    assert dpm.id is None
+    assert dpm.source == "YEAR"
+    assert dpm.target == "TIME_PERIOD"
+    assert dpm.pattern == "yyyy"
+    assert dpm.frequency == "A"
+    assert dpm.locale == "en"
+    assert dpm.pattern_type == "fixed"
+    assert dpm.resolve_period is None
+    dpm = str_map.maps[4]
+    assert isinstance(dpm, DatePatternMap)
+    assert dpm.id == "DPM_VAR_ID"
+    assert dpm.source == "DATE"
+    assert dpm.target == "TIME_PERIOD"
+    assert dpm.pattern == "yyyy-MM"
+    assert dpm.frequency == "FREQ"
+    assert dpm.locale == "en"
+    assert dpm.pattern_type == "variable"
+    assert dpm.resolve_period is None
+    dpm = str_map.maps[5]
+    assert isinstance(dpm, DatePatternMap)
+    assert dpm.id is None
+    assert dpm.source == "REF_DATE"
+    assert dpm.target == "TIME_PERIOD"
+    assert dpm.pattern == "dd/MM/yyyy"
+    assert dpm.frequency == "FREQ"
+    assert dpm.locale == "es"
+    assert dpm.pattern_type == "variable"
+    assert dpm.resolve_period == "endOfPeriod"

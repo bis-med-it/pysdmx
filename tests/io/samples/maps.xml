@@ -35,6 +35,38 @@
                 <com:Name xml:lang="es">Demographic Structure Mapping</com:Name>
                 <str:Source>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=ESTAT:DSD_DEMO_V1(1.0)</str:Source>
                 <str:Target>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=ESTAT:DSD_DEMO_V2(2.0)</str:Target>
+                <str:DatePatternMap
+                    id="DPM_FIXED_ID_RESOLVE"
+                    sourcePattern="MMM yy"
+                    locale="en"
+                    resolvePeriod="startOfPeriod">
+                    <str:Source>DATE</str:Source>
+                    <str:Target>TIME_PERIOD</str:Target>
+                    <str:TargetFrequencyID>M</str:TargetFrequencyID>
+                </str:DatePatternMap>
+                <str:DatePatternMap
+                    sourcePattern="yyyy"
+                    locale="en">
+                    <str:Source>YEAR</str:Source>
+                    <str:Target>TIME_PERIOD</str:Target>
+                    <str:TargetFrequencyID>A</str:TargetFrequencyID>
+                </str:DatePatternMap>
+                <str:DatePatternMap
+                    id="DPM_VAR_ID"
+                    sourcePattern="yyyy-MM"
+                    locale="en">
+                    <str:Source>DATE</str:Source>
+                    <str:Target>TIME_PERIOD</str:Target>
+                    <str:FrequencyDimension>FREQ</str:FrequencyDimension>
+                </str:DatePatternMap>
+                <str:DatePatternMap
+                    sourcePattern="dd/MM/yyyy"
+                    locale="es"
+                    resolvePeriod="endOfPeriod">
+                    <str:Source>REF_DATE</str:Source>
+                    <str:Target>TIME_PERIOD</str:Target>
+                    <str:FrequencyDimension>FREQ</str:FrequencyDimension>
+                </str:DatePatternMap>
                 <str:ComponentMap>
                     <str:Source>SEX_DIM</str:Source>
                     <str:Target>GENDER_DIM</str:Target>
