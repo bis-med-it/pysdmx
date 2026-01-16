@@ -14,6 +14,7 @@ from pysdmx.model import (
     ComponentMap,
     DatePatternMap,
     FixedValueMap,
+    ImplicitComponentMap,
     MetadataReport,
     RepresentationMap,
     Schema,
@@ -593,7 +594,7 @@ def test_read_maps():
         "DataStructure=ESTAT:DSD_DEMO_V1(1.0)"
     )
 
-    assert len(str_map.maps) == 6
+    assert len(str_map.maps) == 7
     assert (
         str_map.target == "urn:sdmx:org.sdmx.infomodel.datastructure."
         "DataStructure=ESTAT:DSD_DEMO_V2(2.0)"
@@ -612,15 +613,20 @@ def test_read_maps():
         comp_map.values == "urn:sdmx:org.sdmx.infomodel.structuremapping."
         "RepresentationMap=ESTAT:REPMAP_SEX(1.0)"
     )
+    # ImplicitComponentMap checks
+    imp_comp_map = str_map.maps[1]
+    assert isinstance(imp_comp_map, ImplicitComponentMap)
+    assert imp_comp_map.source == "OBS_CONF"
+    assert imp_comp_map.target == "CONF_STATUS"
 
     # FixedValueMap checks
-    fixed_map = str_map.maps[1]
+    fixed_map = str_map.maps[2]
     assert isinstance(fixed_map, FixedValueMap)
     assert fixed_map.target == "OBS_STATUS"
     assert fixed_map.value == "A"
 
     # DatePatternMap checks
-    dpm = str_map.maps[2]
+    dpm = str_map.maps[3]
     assert isinstance(dpm, DatePatternMap)
     assert dpm.id == "DPM_FIXED_ID_RESOLVE"
     assert dpm.source == "DATE"
@@ -630,7 +636,7 @@ def test_read_maps():
     assert dpm.locale == "en"
     assert dpm.pattern_type == "fixed"
     assert dpm.resolve_period == "startOfPeriod"
-    dpm = str_map.maps[3]
+    dpm = str_map.maps[4]
     assert isinstance(dpm, DatePatternMap)
     assert dpm.id is None
     assert dpm.source == "YEAR"
@@ -640,7 +646,7 @@ def test_read_maps():
     assert dpm.locale == "en"
     assert dpm.pattern_type == "fixed"
     assert dpm.resolve_period is None
-    dpm = str_map.maps[4]
+    dpm = str_map.maps[5]
     assert isinstance(dpm, DatePatternMap)
     assert dpm.id == "DPM_VAR_ID"
     assert dpm.source == "DATE"
@@ -650,7 +656,7 @@ def test_read_maps():
     assert dpm.locale == "en"
     assert dpm.pattern_type == "variable"
     assert dpm.resolve_period is None
-    dpm = str_map.maps[5]
+    dpm = str_map.maps[6]
     assert isinstance(dpm, DatePatternMap)
     assert dpm.id is None
     assert dpm.source == "REF_DATE"

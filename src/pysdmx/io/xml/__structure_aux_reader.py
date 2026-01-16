@@ -168,6 +168,7 @@ from pysdmx.model import (
     DatePatternMap,
     Facets,
     FixedValueMap,
+    ImplicitComponentMap,
     RepresentationMap,
     StructureMap,
     ValueMap,
@@ -1102,6 +1103,17 @@ class StructureParser(Struct):
                 children_dicts = add_list(element.pop(xml_tag))
                 for child_dict in children_dicts:
                     self.__format_maps(child_dict)
+                    if (
+                        xml_tag == "ComponentMap"
+                        and "values" not in child_dict
+                    ):
+                        consolidated_children.append(
+                            ImplicitComponentMap(
+                                source=child_dict["source"],
+                                target=child_dict["target"],
+                            )
+                        )
+                        continue
                     consolidated_children.append(target_class(**child_dict))
 
         if consolidated_children:

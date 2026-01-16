@@ -102,6 +102,7 @@ from pysdmx.model import (
     Facets,
     FixedValueMap,
     Hierarchy,
+    ImplicitComponentMap,
     NamePersonalisation,
     NamePersonalisationScheme,
     RepresentationMap,
@@ -949,6 +950,25 @@ def __write_component_map(
     return outfile
 
 
+def __write_implicit_component_map(
+    imp_comp_map: ImplicitComponentMap, indent: str
+) -> str:
+    """Writes an ImplicitComponentMap (no RepresentationMap)."""
+    outfile = f"{indent}<{ABBR_STR}:ComponentMap>"
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Source>"
+        f"{imp_comp_map.source}"
+        f"</{ABBR_STR}:Source>"
+    )
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Target>"
+        f"{imp_comp_map.target}"
+        f"</{ABBR_STR}:Target>"
+    )
+    outfile += f"{indent}</{ABBR_STR}:ComponentMap>"
+    return outfile
+
+
 def __write_fixed_value_map(fixed_map: FixedValueMap, indent: str) -> str:
     """Writes a FixedValueMap to the XML file."""
     outfile = f"{indent}<{ABBR_STR}:FixedValueMap>"
@@ -1039,6 +1059,10 @@ def __write_structure_map(
         if isinstance(map_item, ComponentMap):
             outfile += __write_component_map(
                 map_item, add_indent(indent), references_30
+            )
+        elif isinstance(map_item, ImplicitComponentMap):
+            outfile += __write_implicit_component_map(
+                map_item, add_indent(indent)
             )
         if isinstance(map_item, FixedValueMap):
             outfile += __write_fixed_value_map(map_item, add_indent(indent))

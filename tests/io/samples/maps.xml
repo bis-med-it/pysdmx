@@ -72,6 +72,10 @@
                     <str:Target>GENDER_DIM</str:Target>
                     <str:RepresentationMap>urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=ESTAT:REPMAP_SEX(1.0)</str:RepresentationMap>
                 </str:ComponentMap>
+                <str:ComponentMap> <!-- Implicit mapping: NO RepresentationMap -->
+                    <str:Source>OBS_CONF</str:Source>
+                    <str:Target>CONF_STATUS</str:Target>
+                </str:ComponentMap>
                 <str:FixedValueMap>
                     <str:Target>OBS_STATUS</str:Target>
                     <str:Value>A</str:Value>
