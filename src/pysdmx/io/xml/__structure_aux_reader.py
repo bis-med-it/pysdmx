@@ -1063,14 +1063,61 @@ class StructureParser(Struct):
             )
         return json_elem
 
+    def __build_component_map(
+        self, child_dict: Dict[str, Any]
+    ) -> Union[ComponentMap, MultiComponentMap, ImplicitComponentMap]:
+        if "values" not in child_dict:
+            return ImplicitComponentMap(
+                source=child_dict["source"],
+                target=child_dict["target"],
+            )
+
+        src_list = add_list(child_dict.get("source"))
+        tgt_list = add_list(child_dict.get("target"))
+
+        if len(src_list) != 1 or len(tgt_list) != 1:
+            return MultiComponentMap(
+                source=src_list,
+                target=tgt_list,
+                values=child_dict["values"],
+            )
+
+        return ComponentMap(
+            source=src_list[0],
+            target=tgt_list[0],
+            values=child_dict["values"],
+        )
+
+    def __build_representation_mapping(
+        self, child_dict: Dict[str, Any]
+    ) -> Union[ValueMap, MultiValueMap]:
+        src = child_dict.get("source")
+        tgt = child_dict.get("target")
+
+        src_list = add_list(src) if src is not None else []
+        tgt_list = add_list(tgt) if tgt is not None else []
+
+        if len(src_list) != 1 or len(tgt_list) != 1:
+            return MultiValueMap(
+                source=src_list,
+                target=tgt_list,
+                valid_from=child_dict.get("valid_from"),
+                valid_to=child_dict.get("valid_to"),
+            )
+
+        return ValueMap(
+            source=src_list[0],
+            target=tgt_list[0],
+            valid_from=child_dict.get("valid_from"),
+            valid_to=child_dict.get("valid_to"),
+        )
+
     def __format_maps(self, element: Dict[str, Any]) -> Dict[str, Any]:
         if "sourcePattern" in element:
-            if "FrequencyDimension" in element:
-                element["pattern_type"] = "variable"
-            else:  # When TargetFrequencyID
+            element["pattern_type"] = (
                 # DatePatternMap.pattern_type defaults value is fixed
-                # So same logic is applied here
-                element["pattern_type"] = "fixed"
+                "variable" if "FrequencyDimension" in element else "fixed"
+            )
 
         renames = {
             "Source": "source",
@@ -1115,74 +1162,19 @@ class StructureParser(Struct):
             if xml_tag not in element:
                 continue
 
-            children_dicts = add_list(element.pop(xml_tag))
-            for child_dict in children_dicts:
+            for child_dict in add_list(element.pop(xml_tag)):
                 self.__format_maps(child_dict)
-                # ComponentMap: implicit vs explicit
+
                 if xml_tag == "ComponentMap":
-                    # Implicit mapping (no RepresentationMap)
-                    if "values" not in child_dict:
-                        consolidated_children.append(
-                            ImplicitComponentMap(
-                                source=child_dict["source"],
-                                target=child_dict["target"],
-                            )
-                        )
-                        continue
-
-                    src_list = add_list(child_dict.get("source"))
-                    tgt_list = add_list(child_dict.get("target"))
-
-                    # If any side has multiplicity -> MultiComponentMap
-                    if len(src_list) != 1 or len(tgt_list) != 1:
-                        consolidated_children.append(
-                            MultiComponentMap(
-                                source=src_list,
-                                target=tgt_list,
-                                values=child_dict["values"],
-                            )
-                        )
-                        continue
-
-                    # Otherwise it's the regular 1-1 ComponentMap
                     consolidated_children.append(
-                        ComponentMap(
-                            source=src_list[0],
-                            target=tgt_list[0],
-                            values=child_dict["values"],
-                        )
+                        self.__build_component_map(child_dict)
                     )
-                    continue
-
-                # RepresentationMapping: ValueMap vs RepresentationMap
-                if xml_tag == "RepresentationMapping":
-                    src = child_dict.get("source")
-                    tgt = child_dict.get("target")
-
-                    src_list = add_list(src) if src is not None else []
-                    tgt_list = add_list(tgt) if tgt is not None else []
-
-                    # If there's multiplicity, MultiValueMap
-                    if len(src_list) != 1 or len(tgt_list) != 1:
-                        consolidated_children.append(
-                            MultiValueMap(
-                                source=src_list,
-                                target=tgt_list,
-                                valid_from=child_dict.get("valid_from"),
-                                valid_to=child_dict.get("valid_to"),
-                            )
-                        )
-                    else:
-                        consolidated_children.append(
-                            ValueMap(
-                                source=src_list[0],
-                                target=tgt_list[0],
-                                valid_from=child_dict.get("valid_from"),
-                                valid_to=child_dict.get("valid_to"),
-                            )
-                        )
-                    continue
-                consolidated_children.append(target_class(**child_dict))
+                elif xml_tag == "RepresentationMapping":
+                    consolidated_children.append(
+                        self.__build_representation_mapping(child_dict)
+                    )
+                else:
+                    consolidated_children.append(target_class(**child_dict))
 
         if consolidated_children:
             element["maps"] = consolidated_children
