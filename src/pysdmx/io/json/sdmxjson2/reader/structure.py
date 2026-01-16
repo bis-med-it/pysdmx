@@ -1,4 +1,4 @@
-"""Reader interface for SDMX-JSON 2.0.0 Structure messages."""
+"""Reader interface for SDMX-JSON 2.0.0 and 2.1.0 Structure messages."""
 
 import msgspec
 
@@ -11,7 +11,7 @@ from pysdmx.model.message import StructureMessage
 
 
 def read(input_str: str, validate: bool = True) -> StructureMessage:
-    """Read an SDMX-JSON 2.0.0 Structure Message.
+    """Read SDMX-JSON 2.0.0 and 2.1.0 Structure messages.
 
     Args:
         input_str: SDMX-JSON structure message to read.
@@ -34,6 +34,6 @@ def read(input_str: str, validate: bool = True) -> StructureMessage:
             "Invalid message",
             (
                 "The supplied file could not be read as SDMX-JSON 2.0.0 "
-                "structure message."
+                "or 2.1.0 structure message."
             ),
         ) from de
