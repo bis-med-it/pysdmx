@@ -34,6 +34,6 @@ def read(input_str: str, validate: bool = True) -> MetadataMessage:
             "Invalid message",
             (
                 "The supplied file could not be read as SDMX-JSON 2.0.0 "
-                "or SDMX-JSON 2.1.0 reference metadata message."
+                "or 2.1.0 reference metadata message."
             ),
         ) from de
