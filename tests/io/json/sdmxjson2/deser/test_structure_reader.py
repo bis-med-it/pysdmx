@@ -65,5 +65,7 @@ def test_structure_reader(body):
 
 
 def test_get_json2_invalid_structure():
-    with pytest.raises(Invalid, match="as SDMX-JSON 2.0.0 structure message."):
+    with pytest.raises(
+        Invalid, match="as SDMX-JSON 2.0.0 or 2.1.0 structure message."
+    ):
         read("pyproject.toml", validate=False)
