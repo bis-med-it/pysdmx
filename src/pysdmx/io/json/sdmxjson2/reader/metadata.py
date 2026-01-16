@@ -1,4 +1,4 @@
-"""Writer interface for SDMX-JSON 2.0.0 Reference Metadata messages."""
+"""Reader interface for SDMX-JSON 2.0.0 and 2.1.0 Reference Metadata."""
 
 import msgspec
 
@@ -11,7 +11,7 @@ from pysdmx.model.message import MetadataMessage
 
 
 def read(input_str: str, validate: bool = True) -> MetadataMessage:
-    """Read an SDMX-JSON 2.0.0 Metadata Message.
+    """Read SDMX-JSON 2.0.0 and 2.1.0 Metadata messages.
 
     Args:
         input_str: SDMX-JSON reference metadata message to read.
@@ -34,6 +34,6 @@ def read(input_str: str, validate: bool = True) -> MetadataMessage:
             "Invalid message",
             (
                 "The supplied file could not be read as SDMX-JSON 2.0.0 "
-                "reference metadata message."
+                "or SDMX-JSON 2.1.0 reference metadata message."
             ),
         ) from de
