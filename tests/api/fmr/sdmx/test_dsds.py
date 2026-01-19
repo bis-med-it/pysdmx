@@ -49,6 +49,12 @@ def body():
 
 
 @pytest.fixture
+def body_partial_cs():
+    with open("tests/api/fmr/samples/dsd/dsd_partial_cs.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture
 def body_mm():
     with open("tests/api/fmr/samples/dsd/multi_meas.json", "rb") as f:
         return f.read()
@@ -68,3 +74,8 @@ async def test_dsd_async(respx_mock, async_fmr, query, body):
 def test_multiple_measures(respx_mock, fmr, query_mm, body_mm):
     """Multiple measures are extracted, including attachment level."""
     checks.check_multi_meas(respx_mock, fmr, query_mm, body_mm)
+
+
+def test_dsd_partial_cs(respx_mock, fmr, query, body_partial_cs):
+    """get_data_structures() returns a DSD even if concepts are missing."""
+    checks.check_dsd_partial_cs(respx_mock, fmr, query, body_partial_cs)
