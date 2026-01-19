@@ -985,3 +985,4 @@ def test_group_merge_multiple_common_columns(multiple_groups_path):
     assert "GATTR" in row2.columns
 
     assert df["MISMATCH_ATTR"].isna().all
+    assert "ISOLATED_ATTR" not in df.columns
