@@ -53,6 +53,7 @@ numpy = [
 python = ">=3.9,<4.0"
 
 [tool.poetry.group.dev.dependencies]
+coverage = ">=7.0,!=7.13.0,<8.0"
 ruff = ">=0.13.2"
 mypy = "^1.18.2"
 pytest = "^8.3.2"
