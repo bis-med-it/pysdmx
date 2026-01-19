@@ -21,8 +21,9 @@
 	</message:Header>
 	<message:DataSet ss:dataScope="DataStructure" xsi:type="ns1:DataSetType"
             ss:structureRef="test" action="Replace">
-		<Group xsi:type="ns1:GROUP_DIM1_DIM2" DIM1="A1" DIM2="B1" GATTR="G1"/>
-		<Group xsi:type="ns1:GROUP_DIM1_DIM2" DIM1="A2" DIM2="B2" GATTR="G2"/>
+        <Group xsi:type="ns1:GROUP_DIM1_DIM2" DIM1="A1" DIM2="B1" GATTR="G1"/>
+        <Group xsi:type="ns1:GROUP_DIM1_DIM2" DIM1="A2" DIM2="B2" GATTR_2="G2"/>
+        <Group xsi:type="ns1:GROUP_DIM1" DIM1="A1" OTHER_ATTR="OTHER"/>
 		<Series DIM1="A1" DIM2="B1">
 			<Obs TIME_PERIOD="2010" OBS_VALUE="1.0"/>
 			<Obs TIME_PERIOD="2011" OBS_VALUE="2.0"/>
