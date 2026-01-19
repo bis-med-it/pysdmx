@@ -1,7 +1,7 @@
 """SDMX XML StructureSpecificData reader aux module."""
 
 import itertools
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import numpy as np
 import pandas as pd
@@ -40,23 +40,22 @@ def _reading_str_series(dataset: Dict[str, Any]) -> pd.DataFrame:
     return df
 
 
-def _reading_group_data(dataset: Dict[str, Any]) -> pd.DataFrame:
+def _reading_group_data(dataset: Dict[str, Any]) -> List[pd.DataFrame]:
     # Structure Specific Group Data
-    test_list = []
-    df = None
+    group_dfs = []
     dataset[GROUP] = add_list(dataset[GROUP])
     for data in dataset[GROUP]:
-        test_list.append(dict(data.items()))
-        test_list, df = __process_df(test_list, df)
-    test_list, df = __process_df(test_list, df, is_end=True)
+        group_dict = dict(data.items())
+        group_df = pd.DataFrame([group_dict])
 
-    cols_to_delete = [x for x in df.columns if ":type" in x]
-    for x in cols_to_delete:
-        del df[x]
+        # Remove :type columns
+        cols_to_delete = [x for x in group_df.columns if ":type" in x]
+        for x in cols_to_delete:
+            del group_df[x]
 
-    df = df.drop_duplicates(keep="first").reset_index(drop=True)
+        group_dfs.append(group_df)
 
-    return df
+    return group_dfs
 
 
 def _get_at_att_str(dataset: Dict[str, Any]) -> Dict[str, Any]:
@@ -76,12 +75,25 @@ def _parse_structure_specific_data(
         # Structure Specific Series
         df = _reading_str_series(dataset)
         if GROUP in dataset:
-            df_group = _reading_group_data(dataset)
-            common_columns = list(
-                set(df.columns).intersection(set(df_group.columns))
-            )
-            df_group = df_group.drop_duplicates(common_columns, keep="first")
-            df = pd.merge(df, df_group, on=common_columns, how="left")
+            group_dfs = _reading_group_data(dataset)
+            for group_df in group_dfs:
+                # Find non-NaN columns in this group
+                non_nan_cols = [
+                    col
+                    for col in group_df.columns
+                    if not group_df[col].isna().all()
+                ]
+
+                # Merge columns are intersection of df columns and non-NaN cols
+                merge_cols = list(
+                    set(df.columns).intersection(set(non_nan_cols))
+                )
+
+                if merge_cols:
+                    group_df = group_df.drop_duplicates(
+                        merge_cols, keep="first"
+                    )
+                    df = pd.merge(df, group_df, on=merge_cols, how="left")
     elif OBS in dataset:
         dataset[OBS] = add_list(dataset[OBS])
         # Structure Specific All dimensions
