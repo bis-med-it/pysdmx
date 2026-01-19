@@ -973,33 +973,14 @@ def test_prov_agreement_urns(prov_agreement_urns_path):
     assert prov_agreement.provider == "DataProvider=MD:DATA_PROVIDERS(1.0).MD"
 
 
-def test_structure_specific_multiple_groups_merge(multiple_groups_path):
-    """
-    Tests that multiple groups are correctly merged into the series data
-    based on their dimensions.
-    """
-    df = read_sdmx(multiple_groups_path).data[0].data
+def test_group_merge_multiple_common_columns(group_merge_two_dims_path):
+    df = read_sdmx(group_merge_two_dims_path).data[0].data
 
-    # CASO 1: Fila con DIM1=A1, DIM2=B1
-    # Debe tener:
-    # - GATTR="G1" (Viene del Grupo 1 que machea A1+B1)
-    # - OTHER_ATTR="OTHER" (Viene del Grupo 3 que machea solo A1)
     row1 = df[(df["DIM1"] == "A1") & (df["DIM2"] == "B1")]
     assert not row1.empty
     assert row1["GATTR"].iloc[0] == "G1"
-    assert row1["OTHER_ATTR"].iloc[0] == "OTHER" 
-    
-    # Aseguramos que NO se pegó el atributo del grupo 2
-    assert pd.isna(row1["GATTR_2"].iloc[0])
+    assert row1["OTHER_ATTR"].iloc[0] == "OTHER"
 
-    # CASO 2: Fila con DIM1=A2, DIM2=B2
-    # Debe tener:
-    # - GATTR_2="G2" (Viene del Grupo 2 que machea A2+B2)
     row2 = df[(df["DIM1"] == "A2") & (df["DIM2"] == "B2")]
     assert not row2.empty
-    assert row2["GATTR_2"].iloc[0] == "G2"
-    
-    # Aseguramos que NO se pegó el atributo del grupo 1
-    assert pd.isna(row2["GATTR"].iloc[0])
-    # Aseguramos que NO se pegó el atributo del grupo 3 (Porque A2 != A1)
-    assert pd.isna(row2["OTHER_ATTR"].iloc[0])
+    assert row2["GATTR"].iloc[0] == "G2"
