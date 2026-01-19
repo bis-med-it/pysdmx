@@ -973,8 +973,8 @@ def test_prov_agreement_urns(prov_agreement_urns_path):
     assert prov_agreement.provider == "DataProvider=MD:DATA_PROVIDERS(1.0).MD"
 
 
-def test_group_merge_multiple_common_columns(group_merge_two_dims_path):
-    df = read_sdmx(group_merge_two_dims_path).data[0].data
+def test_group_merge_multiple_common_columns(multiple_groups_path):
+    df = read_sdmx(multiple_groups_path).data[0].data
 
     row1 = df[(df["DIM1"] == "A1") & (df["DIM2"] == "B1")]
     assert not row1.empty
