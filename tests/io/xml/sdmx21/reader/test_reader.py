@@ -2,6 +2,8 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
 import pytest
 
 import pysdmx
@@ -973,16 +975,24 @@ def test_prov_agreement_urns(prov_agreement_urns_path):
 
 
 def test_group_merge_multiple_common_columns(multiple_groups_path):
-    df = read_sdmx(multiple_groups_path).data[0].data
+    input_str, read_format = process_string_to_read(multiple_groups_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+    result = read_sdmx(input_str, validate=True).data
+    assert result is not None
+    data = result[0].data
 
-    row1 = df[(df["DIM1"] == "A1") & (df["DIM2"] == "B1")]
-    assert not row1.empty
-    assert "GATTR" in row1.columns
-    assert "OTHER_ATTR" in row1.columns
+    expected_data = pd.DataFrame(
+        {
+            "DIM1": ["A1", "A1", "A2", "A2"],
+            "DIM2": ["B1", "B1", "B2", "B2"],
+            "TIME_PERIOD": ["2010", "2011", "2010", "2011"],
+            "OBS_VALUE": ["1.0", "2.0", "3.0", "4.0"],
+            "GATTR": ["G1", "G1", "G2", "G2"],
+            "OTHER_ATTR": ["OTHER", "OTHER", np.nan, np.nan],
+            "MISMATCH_ATTR": [np.nan, np.nan, np.nan, np.nan],
+        }
+    )
 
-    row2 = df[(df["DIM1"] == "A2") & (df["DIM2"] == "B2")]
-    assert not row2.empty
-    assert "GATTR" in row2.columns
-
-    assert df["MISMATCH_ATTR"].isna().all
-    assert "ISOLATED_ATTR" not in df.columns
+    pd.testing.assert_frame_equal(
+        data, expected_data, check_like=True, check_dtype=False
+    )
