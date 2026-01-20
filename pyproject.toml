@@ -25,9 +25,7 @@ classifiers = [
 dependencies = [
     "httpx[http2]>=0.*",
     "msgspec>=0.*",
-    "parsy>=2.1",
-    "numpy>=2.0.2,<2.1; python_version < '3.10'",
-    "numpy>=2.2.0,<2.3; python_version >= '3.10'"
+    "parsy>=2.1"
 ]
 
 [project.urls]
@@ -37,12 +35,13 @@ documentation = "https://bis-med-it.github.io/pysdmx"
 "Bug Tracker" = "https://bis-med-it.github.io/pysdmx/issues"
 
 [project.optional-dependencies]
-data = ["pandas>=2.1.4"]
+data = ["pandas>=2.1.4", "numpy>=2.0.2,<2.1; python_version < '3.10'", "numpy>=2.2.0,<2.3; python_version >= '3.10'"]
 dc = ["python-dateutil>=2.8.2"]
-vtl = ["vtlengine>=1.2,<2.0"]
+vtl = ["vtlengine>=1.2,<2.0", "numpy>=2.0.2,<2.1; python_version < '3.10'", "numpy>=2.2.0,<2.3; python_version >= '3.10'"]
 json = ["sdmxschemas>=1.0.0", "jsonschema>=4.10"]
 xml = ["lxml>=5.2", "xmltodict>=0.13", "sdmxschemas>=1.0.0"]
-all = ["lxml>=5.2", "xmltodict>=0.13", "sdmxschemas>=1.0.0", "pandas>=2.1.4", "python-dateutil>=2.8.2", "vtlengine>=1.2,<2.0"]
+all = ["lxml>=5.2", "xmltodict>=0.13", "sdmxschemas>=1.0.0", "pandas>=2.1.4", "python-dateutil>=2.8.2", "vtlengine>=1.2,<2.0", 
+       "numpy>=2.0.2,<2.1; python_version < '3.10'", "numpy>=2.2.0,<2.3; python_version >= '3.10'"]
 
 [tool.poetry]
 requires-poetry = ">=2.0"

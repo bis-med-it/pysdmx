@@ -1013,7 +1013,6 @@ description = "Fundamental package for array computing in Python"
 optional = false
 python-versions = ">=3.9"
 groups = ["main", "dev"]
-markers = "python_version == \"3.9\""
 files = [
     {file = "numpy-2.0.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:51129a29dbe56f9ca83438b706e2e69a39892b5eda6cedcb6b0c9fdc9b0d3ece"},
     {file = "numpy-2.0.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:f15975dfec0cf2239224d80e32c3170b1d168335eaedee69da84fbe9f1f9cd04"},
@@ -1061,6 +1060,7 @@ files = [
     {file = "numpy-2.0.2-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:a46288ec55ebbd58947d31d72be2c63cbf839f0a63b49cb755022310792a3385"},
     {file = "numpy-2.0.2.tar.gz", hash = "sha256:883c987dee1880e2a864ab0dc9892292582510604156762362d9326444636e78"},
 ]
+markers = {main = "python_version == \"3.9\" and (extra == \"data\" or extra == \"all\" or extra == \"vtl\")"}
 
 [[package]]
 name = "numpy"
@@ -1069,7 +1069,6 @@ description = "Fundamental package for array computing in Python"
 optional = false
 python-versions = ">=3.10"
 groups = ["main", "dev"]
-markers = "python_version >= \"3.10\""
 files = [
     {file = "numpy-2.2.6-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:b412caa66f72040e6d268491a59f2c43bf03eb6c96dd8f0307829feb7fa2b6fb"},
     {file = "numpy-2.2.6-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:8e41fd67c52b86603a91c1a505ebaef50b3314de0213461c7a6e99c9a3beff90"},
@@ -1127,6 +1126,7 @@ files = [
     {file = "numpy-2.2.6-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:d042d24c90c41b54fd506da306759e06e568864df8ec17ccc17e9e884634fd00"},
     {file = "numpy-2.2.6.tar.gz", hash = "sha256:e29554e2bef54a90aa5cc07da6ce955accb83f21ab5de01a62c8478897b264fd"},
 ]
+markers = {main = "python_version >= \"3.10\" and (extra == \"data\" or extra == \"all\" or extra == \"vtl\")", dev = "python_version >= \"3.10\""}
 
 [[package]]
 name = "packaging"
@@ -2114,14 +2114,14 @@ test = ["big-O", "importlib-resources ; python_version < \"3.9\"", "jaraco.funct
 type = ["pytest-mypy"]
 
 [extras]
-all = ["lxml", "pandas", "python-dateutil", "sdmxschemas", "vtlengine", "xmltodict"]
-data = ["pandas"]
+all = ["lxml", "numpy", "numpy", "pandas", "python-dateutil", "sdmxschemas", "vtlengine", "xmltodict"]
+data = ["numpy", "numpy", "pandas"]
 dc = ["python-dateutil"]
 json = ["jsonschema", "sdmxschemas"]
-vtl = ["vtlengine"]
+vtl = ["numpy", "numpy", "vtlengine"]
 xml = ["lxml", "sdmxschemas", "xmltodict"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "a70fa01a59a1d9a20f34d74238a1d4f58716d55e71de5cd8b3bc9fe9e087ea8d"
+content-hash = "7ccce04285e4cbd8bc66277875a6b836911857ee797a695a36a46ac69737389d"
