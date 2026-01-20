@@ -1060,7 +1060,7 @@ files = [
     {file = "numpy-2.0.2-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:a46288ec55ebbd58947d31d72be2c63cbf839f0a63b49cb755022310792a3385"},
     {file = "numpy-2.0.2.tar.gz", hash = "sha256:883c987dee1880e2a864ab0dc9892292582510604156762362d9326444636e78"},
 ]
-markers = {main = "python_version == \"3.9\" and (extra == \"data\" or extra == \"all\" or extra == \"vtl\")"}
+markers = {main = "python_version < \"3.13\" and (extra == \"data\" or extra == \"all\" or extra == \"vtl\")"}
 
 [[package]]
 name = "numpy"
@@ -1126,7 +1126,7 @@ files = [
     {file = "numpy-2.2.6-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:d042d24c90c41b54fd506da306759e06e568864df8ec17ccc17e9e884634fd00"},
     {file = "numpy-2.2.6.tar.gz", hash = "sha256:e29554e2bef54a90aa5cc07da6ce955accb83f21ab5de01a62c8478897b264fd"},
 ]
-markers = {main = "python_version >= \"3.10\" and (extra == \"data\" or extra == \"all\" or extra == \"vtl\")", dev = "python_version >= \"3.10\""}
+markers = {main = "python_version >= \"3.13\" and (extra == \"data\" or extra == \"all\" or extra == \"vtl\")", dev = "python_version >= \"3.13\""}
 
 [[package]]
 name = "packaging"
@@ -2124,4 +2124,4 @@ xml = ["lxml", "sdmxschemas", "xmltodict"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "7ccce04285e4cbd8bc66277875a6b836911857ee797a695a36a46ac69737389d"
+content-hash = "d9e061eedecfec9e3c7b2a1c83d17feddeb1ef1b51e8d001bd333d1dfd6fd1eb"
