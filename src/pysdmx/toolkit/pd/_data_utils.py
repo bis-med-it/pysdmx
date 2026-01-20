@@ -25,7 +25,7 @@ def format_labels(  # noqa: C901
         for k in df.columns:
             for component in components:
                 if component.id == k:
-                    df.rename(
+                    df.rename(  # type: ignore[call-overload, unused-ignore]
                         columns={k: component.concept.name},  # type: ignore[union-attr]
                         inplace=True,
                     )
