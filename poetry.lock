@@ -1060,7 +1060,7 @@ files = [
     {file = "numpy-2.0.2-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:a46288ec55ebbd58947d31d72be2c63cbf839f0a63b49cb755022310792a3385"},
     {file = "numpy-2.0.2.tar.gz", hash = "sha256:883c987dee1880e2a864ab0dc9892292582510604156762362d9326444636e78"},
 ]
-markers = {main = "python_version < \"3.13\" and (extra == \"data\" or extra == \"all\" or extra == \"vtl\")"}
+markers = {main = "python_version < \"3.13\" and (extra == \"data\" or extra == \"all\" or extra == \"vtl\")", dev = "python_version < \"3.13\""}
 
 [[package]]
 name = "numpy"
@@ -1248,6 +1248,7 @@ description = "Type annotations for pandas"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
+markers = "python_version < \"3.13\""
 files = [
     {file = "pandas_stubs-2.2.2.240807-py3-none-any.whl", hash = "sha256:893919ad82be4275f0d07bb47a95d08bae580d3fdea308a7acfcb3f02e76186e"},
     {file = "pandas_stubs-2.2.2.240807.tar.gz", hash = "sha256:64a559725a57a449f46225fbafc422520b7410bff9252b661a225b5559192a93"},
@@ -1264,7 +1265,7 @@ description = "Type annotations for pandas"
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
-markers = "python_version >= \"3.11\""
+markers = "python_version >= \"3.13\""
 files = [
     {file = "pandas_stubs-2.3.3.260113-py3-none-any.whl", hash = "sha256:ec070b5c576e1badf12544ae50385872f0631fc35d99d00dc598c2954ec564d3"},
     {file = "pandas_stubs-2.3.3.260113.tar.gz", hash = "sha256:076e3724bcaa73de78932b012ec64b3010463d377fa63116f4e6850643d93800"},
@@ -2154,4 +2155,4 @@ xml = ["lxml", "sdmxschemas", "xmltodict"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "0d2cd9b3f0065aeb8cb5c30e6b11a438ed6788d8ee1856e915dc97b8fd8374c0"
+content-hash = "740930b80af38944a1dc5c6bc3c63b3fa6c233e2aff616644331f51c590d2df3"
