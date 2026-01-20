@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 from msgspec import Struct
+from msgspec.structs import asdict
 
 from pysdmx.io.xml.__tokens import (
     AGENCIES,
@@ -529,16 +530,11 @@ class StructureParser(Struct):
         if FACETS.lower() in rep:
             representation_info[LOCAL_FACETS_LOW] = rep.pop(FACETS.lower())
 
-    def __format_con_id(self, concept_ref: Dict[str, Any]) -> Dict[str, Any]:
-        rep = {}
+    def __format_con_id(
+        self, concept_ref: Union[str, Dict[str, Any]]
+    ) -> Dict[str, Any]:
         if isinstance(concept_ref, str):
             item_reference = parse_urn(concept_ref)
-            scheme_reference = Reference(
-                sdmx_type=CS,
-                agency=item_reference.agency,
-                id=item_reference.id,
-                version=item_reference.version,
-            )
         else:
             item_reference = ItemReference(
                 sdmx_type=concept_ref[CLASS],
@@ -547,27 +543,44 @@ class StructureParser(Struct):
                 version=concept_ref[PAR_VER],
                 item_id=concept_ref[ID],
             )
-            scheme_reference = Reference(
-                sdmx_type=CS,
-                agency=concept_ref[AGENCY_ID],
-                id=concept_ref[PAR_ID],
-                version=concept_ref[PAR_VER],
-            )
+        scheme_reference = Reference(
+            sdmx_type=CS,
+            agency=item_reference.agency,
+            id=item_reference.id,
+            version=item_reference.version,
+        )
 
         concept_scheme = self.concepts.get(str(scheme_reference))
+
         if concept_scheme is None:
             return {CON: item_reference}
+
+        short_urn = str(item_reference)
         for con in concept_scheme.concepts:
-            if isinstance(concept_ref, str):
-                if con.id == item_reference.item_id:
-                    rep[CON] = parse_urn(concept_ref)
-                    break
-            elif con.id == concept_ref[ID]:
-                rep[CON] = con
-                break
-        if CON not in rep:
-            return {CON: item_reference}
-        return rep
+            con_short = str(
+                ItemReference(
+                    sdmx_type=item_reference.sdmx_type,
+                    agency=item_reference.agency,
+                    id=item_reference.id,
+                    version=item_reference.version,
+                    item_id=con.id,
+                )
+            )
+
+            if con_short == short_urn:
+                if con.urn is None:
+                    con = Concept(
+                        **{
+                            **asdict(con),
+                            "urn": (
+                                "urn:sdmx:org.sdmx.infomodel.conceptscheme."
+                                f"{short_urn}"
+                            ),
+                        }
+                    )
+                return {CON: con}
+
+        return {CON: item_reference}
 
     @staticmethod
     def __get_attachment_level(  # noqa: C901
