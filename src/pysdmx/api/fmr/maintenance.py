@@ -64,9 +64,7 @@ class RegistryMaintenanceClient:
             timeout: The maximum number of seconds to wait before considering
                 that a request timed out. Defaults to 10 seconds.
         """
-        if api_endpoint.endswith("/"):
-            api_endpoint = api_endpoint[0:-1]
-        self._api_endpoint = f"{api_endpoint}"
+        self._api_endpoint = self.__sanitize_endpoint(api_endpoint)
         self._user = user
         self._password = password
         self._timeout = timeout
@@ -87,7 +85,6 @@ class RegistryMaintenanceClient:
     ) -> None:
         with httpx.Client(verify=self._ssl_context) as client:
             try:
-                url = f"{endpoint}"
                 auth = httpx.BasicAuth(self._user, self._password)
                 headers = {
                     "Content-Type": "application/text",
@@ -99,7 +96,7 @@ class RegistryMaintenanceClient:
                     serializer = serializers.structure_message
                 bodyjs = self._encoder.encode(serializer.from_model(message))
                 r = client.post(
-                    url,
+                    endpoint,
                     headers=headers,
                     content=bodyjs,
                     timeout=self._timeout,
@@ -156,3 +153,11 @@ class RegistryMaintenanceClient:
         message = MetadataMessage(header=header, reports=reports)
         endpoint = f"{self._api_endpoint}/ws/secure/sdmx/v2/metadata"
         return self.__post(message, action, endpoint)
+
+    def __sanitize_endpoint(self, endpoint: str) -> str:
+        if endpoint.endswith("/"):
+            endpoint = endpoint[0:-1]
+        endpoint = endpoint.replace("/ws/secure/sdmx/v2/metadata", "")
+        endpoint = endpoint.replace("/sdmx/v2", "")
+        endpoint = endpoint.replace("/ws/secure/sdmxapi/rest", "")
+        return endpoint
