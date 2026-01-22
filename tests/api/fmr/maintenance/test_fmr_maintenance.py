@@ -35,7 +35,6 @@ def end_point_in_3() -> str:
     return "https://registry.sdmx.org/sdmx/v2"
 
 
-
 @pytest.fixture
 def end_point_out_structure() -> str:
     return "https://registry.sdmx.org/ws/secure/sdmxapi/rest"
@@ -243,6 +242,20 @@ def test_endpoint_with_old_ep(
     client = RegistryMaintenanceClient(end_point_out_structure, user, pwd)
 
     client.put_structures([structure])
+
+    assert respx_mock.calls.call_count == 1
+
+
+def test_endpoint_with_refmeta_ep(
+    respx_mock, report, end_point_out_report, user, pwd
+):
+    respx_mock.post(end_point_out_report).mock(
+        return_value=httpx.Response(200)
+    )
+
+    client = RegistryMaintenanceClient(end_point_out_report, user, pwd)
+
+    client.put_metadata_reports([report])
 
     assert respx_mock.calls.call_count == 1
 
