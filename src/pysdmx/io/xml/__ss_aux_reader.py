@@ -90,22 +90,19 @@ def _parse_structure_specific_data(
                     set(original_columns).intersection(set(non_nan_cols))
                 )
 
-                if merge_cols:
-                    group_df = group_df.drop_duplicates(
-                        merge_cols, keep="first"
-                    )
-                    df = pd.merge(
-                        df,
-                        group_df,
-                        on=merge_cols,
-                        how="left",
-                        suffixes=("", "_drop"),
-                    )
-                    for col in list(df.columns):
-                        if col.endswith("_drop"):
-                            original = col[:-5]
-                            df[original] = df[original].fillna(df[col])
-                            df.drop(col, axis=1, inplace=True)
+                group_df = group_df.drop_duplicates(merge_cols, keep="first")
+                df = pd.merge(
+                    df,
+                    group_df,
+                    on=merge_cols,
+                    how="left",
+                    suffixes=("", "_drop"),
+                )
+                for col in list(df.columns):
+                    if col.endswith("_drop"):
+                        original = col[:-5]
+                        df[original] = df[original].fillna(df[col])
+                        df.drop(col, axis=1, inplace=True)
     elif OBS in dataset:
         dataset[OBS] = add_list(dataset[OBS])
         # Structure Specific All dimensions
