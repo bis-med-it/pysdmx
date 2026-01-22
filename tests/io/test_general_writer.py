@@ -9,7 +9,13 @@ from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.writer import write_sdmx
-from pysdmx.model import Component, Components, Concept, Role, Schema
+from pysdmx.model import (
+    Component,
+    Components,
+    Concept,
+    Role,
+    Schema,
+)
 
 CSV_1_0_PATH = Path(__file__).parent / "csv" / "sdmx10" / "reader" / "samples"
 CSV_2_0_PATH = Path(__file__).parent / "csv" / "sdmx20" / "reader" / "samples"
@@ -544,3 +550,26 @@ def test_invalid_sdmx_object_refmeta(tmpdir):
             sdmx_format=Format.REFMETA_SDMX_JSON_2_0_0,
             output_path=tmpdir / "output.invalid",
         )
+
+
+@pytest.mark.parametrize(
+    "format",
+    [
+        Format.STRUCTURE_SDMX_ML_3_0,
+        Format.STRUCTURE_SDMX_ML_3_1,
+    ],
+)
+def test_write_maps(tmpdir, format):
+    data_path = Path(__file__).parent / "samples" / "maps.xml"
+    reference = read_sdmx(data_path, validate=True)
+    assert reference.structures is not None
+    structures = reference.structures
+    header = reference.header
+
+    out_path = tmpdir / "maps_written.xml"
+    write_sdmx(
+        structures, sdmx_format=format, output_path=out_path, header=header
+    )
+    written = read_sdmx(out_path, validate=True)
+
+    assert reference == written, "Written structures do not match reference."
