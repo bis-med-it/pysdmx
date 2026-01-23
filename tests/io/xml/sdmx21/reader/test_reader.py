@@ -2,6 +2,8 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
 import pytest
 
 import pysdmx
@@ -110,6 +112,11 @@ def prov_agreement_path():
 @pytest.fixture
 def prov_agreement_urns_path():
     return Path(__file__).parent / "samples" / "prov_agreement_2.1_urns.xml"
+
+
+@pytest.fixture
+def multiple_groups_path():
+    return Path(__file__).parent / "samples" / "group_merge_two_dims.xml"
 
 
 @pytest.fixture
@@ -965,3 +972,27 @@ def test_prov_agreement_urns(prov_agreement_urns_path):
     assert prov_agreement.short_urn == "ProvisionAgreement=MD:TEST(1.0)"
     assert prov_agreement.dataflow == "Dataflow=MD:TEST(1.0)"
     assert prov_agreement.provider == "DataProvider=MD:DATA_PROVIDERS(1.0).MD"
+
+
+def test_group_merge_multiple_common_columns(multiple_groups_path):
+    input_str, read_format = process_string_to_read(multiple_groups_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+    result = read_sdmx(input_str, validate=True).data
+    assert result is not None
+    data = result[0].data
+
+    expected_data = pd.DataFrame(
+        {
+            "DIM1": ["A1", "A1", "A2", "A2"],
+            "DIM2": ["B1", "B1", "B2", "B2"],
+            "TIME_PERIOD": ["2010", "2011", "2010", "2011"],
+            "OBS_VALUE": ["1.0", "2.0", "3.0", "4.0"],
+            "GATTR": ["G1", "G1", "G2", "G2"],
+            "OTHER_ATTR": ["OTHER", "OTHER", np.nan, np.nan],
+            "MISMATCH_ATTR": [np.nan, np.nan, np.nan, np.nan],
+        }
+    )
+
+    pd.testing.assert_frame_equal(
+        data, expected_data, check_like=True, check_dtype=False
+    )
