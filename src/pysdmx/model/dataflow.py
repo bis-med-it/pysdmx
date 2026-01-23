@@ -107,8 +107,8 @@ class Component(
     statistical domain, i.e. a component attached to a series in a particular
     domain may be attached to, say, the dataset in another domain.
 
-    The *codes* field indicates the expected (i.e. allowed) set of values a
-    component can take within a particular domain. In addition to
+    The *enumeration* field indicates the expected (i.e. allowed) set of
+    codes a component can take within a particular domain. In addition to
     (or instead of) a set of codes, additional details about the expected
     format may be found in the *facets* and *dtype* fields.
 

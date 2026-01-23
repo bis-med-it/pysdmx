@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "dataProviders": [
                     {
@@ -84,7 +83,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TEST"
             },
@@ -105,7 +103,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF2(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TEST"
             }

@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": true,
                 "agencies": [
                     {
@@ -82,7 +81,6 @@
                 "version": "1.0",
                 "agencyID": "SDMX",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": true,
                 "agencies": [
                     {
@@ -162,7 +160,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": true,
                 "dataProviders": [
                     {
@@ -710,7 +707,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)"
             },
             {
@@ -739,7 +735,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)"
             }
         ],
@@ -761,7 +756,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).5B0"
             },
@@ -782,7 +776,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).AT2"
             },
@@ -803,7 +796,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).AU2"
             },
@@ -824,7 +816,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).BE2"
             },
@@ -845,7 +836,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).BR2"
             },
@@ -866,7 +856,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).CA2"
             },
@@ -887,7 +876,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).CH2"
             },
@@ -908,7 +896,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).CL2"
             },
@@ -929,7 +916,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).DE2"
             },
@@ -950,7 +936,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).DK2"
             },
@@ -971,7 +956,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).ES2"
             },
@@ -992,7 +976,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).FI2"
             },
@@ -1013,7 +996,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).FR2"
             },
@@ -1034,7 +1016,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).GB2"
             },
@@ -1055,7 +1036,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).GR2"
             },
@@ -1076,7 +1056,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).HK2"
             },
@@ -1097,7 +1076,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).IE2"
             },
@@ -1118,7 +1096,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).IN2"
             },
@@ -1139,7 +1116,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).IT2"
             },
@@ -1160,7 +1136,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).JP2"
             },
@@ -1181,7 +1156,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).KR2"
             },
@@ -1202,7 +1176,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).LU2"
             },
@@ -1223,7 +1196,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).MX2"
             },
@@ -1244,7 +1216,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).NL2"
             },
@@ -1265,7 +1236,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).NO2"
             },
@@ -1286,7 +1256,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).PA6"
             },
@@ -1307,7 +1276,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).PT2"
             },
@@ -1328,7 +1296,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).SE2"
             },
@@ -1349,7 +1316,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).SG2"
             },
@@ -1370,7 +1336,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TH2"
             },
@@ -1391,7 +1356,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TR2"
             },
@@ -1412,7 +1376,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TW2"
             },
@@ -1433,7 +1396,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataflow": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)",
                 "dataProvider": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).US3"
             }

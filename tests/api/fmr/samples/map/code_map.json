@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "source": [
                     {
                         "codelist": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ISO:CL_3166-A3(1.0)"
@@ -43,8 +42,8 @@
                 ],
                 "representationMappings": [
                     {
-                        "validFrom": "2003-07-23",
-                        "validTo": "2006-06-01",
+                        "validFrom": "2003-07-23T00:00:00",
+                        "validTo": "2006-06-01T21:42:42",
                         "sourceValues": [
                             {
                                 "value": "SCG"

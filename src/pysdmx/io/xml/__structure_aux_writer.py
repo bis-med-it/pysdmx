@@ -14,6 +14,7 @@ from pysdmx.io.xml.__tokens import (
     CL,
     CL_LOW,
     CLASS,
+    COMPONENT_MAP,
     CON,
     CON_ID,
     CONDITIONAL,
@@ -52,10 +53,12 @@ from pysdmx.io.xml.__tokens import (
     POSITION,
     PROV_AGREEMENT,
     REF,
+    REPRESENTATION_MAP,
     ROLE,
     RULE,
     RULE_SCHEME,
     STR_USAGE,
+    STRUCTURE_MAP,
     TELEPHONE,
     TEXT_FORMAT,
     TEXT_TYPE,
@@ -89,21 +92,30 @@ from pysdmx.io.xml.__write_aux import (
 from pysdmx.model import (
     AgencyScheme,
     Codelist,
+    ComponentMap,
     Concept,
     ConceptScheme,
     CustomType,
     CustomTypeScheme,
     DataType,
+    DatePatternMap,
     Facets,
+    FixedValueMap,
     Hierarchy,
+    ImplicitComponentMap,
+    MultiComponentMap,
+    MultiValueMap,
     NamePersonalisation,
     NamePersonalisationScheme,
+    RepresentationMap,
     Ruleset,
     RulesetScheme,
+    StructureMap,
     Transformation,
     TransformationScheme,
     UserDefinedOperator,
     UserDefinedOperatorScheme,
+    ValueMap,
     VtlCodelistMapping,
     VtlConceptMapping,
     VtlDataflowMapping,
@@ -173,6 +185,9 @@ STR_DICT_TYPE_LIST_21 = {
     ConceptScheme: "Concepts",
     DataStructureDefinition: "DataStructures",
     Dataflow: "Dataflows",
+    RepresentationMap: "RepresentationMaps",
+    StructureMap: "StructureMaps",
+    DatePatternMap: "DatePatternMaps",
     CustomTypeScheme: "CustomTypes",
     VtlMappingScheme: "VtlMappings",
     NamePersonalisationScheme: "NamePersonalisations",
@@ -189,6 +204,9 @@ STR_DICT_TYPE_LIST_30 = {
     ConceptScheme: "ConceptSchemes",
     DataStructureDefinition: "DataStructures",
     Dataflow: "Dataflows",
+    RepresentationMap: "RepresentationMaps",
+    StructureMap: "StructureMaps",
+    DatePatternMap: "DatePatternMaps",
     CustomTypeScheme: "CustomTypeSchemes",
     VtlMappingScheme: "VtlMappingSchemes",
     NamePersonalisationScheme: "NamePersonalisationSchemes",
@@ -564,10 +582,25 @@ def __write_attribute_relation(  # noqa: C901
                 f"{group_id}</{ABBR_STR}:{GROUP}>"
             )
         else:
-            for comp_name in comps_to_relate:
-                outfile += (
-                    f"{add_indent(indent)}<{ABBR_STR}:{DIM}>"
-                    f"{comp_name}</{ABBR_STR}:{DIM}>"
+            is_dimension = comps_to_relate[0] in dim_names
+            if is_dimension:
+                for comp_name in comps_to_relate:
+                    outfile += (
+                        f"{add_indent(indent)}<{ABBR_STR}:{DIM}>"
+                        f"{comp_name}</{ABBR_STR}:{DIM}>"
+                    )
+            else:
+                outfile += f"{add_indent(indent)}<{ABBR_STR}:Observation/>"
+                measure_relationship += (
+                    f"{indent}<{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
+                )
+                for comp_name in comps_to_relate:
+                    measure_relationship += (
+                        f"{add_indent(indent)}<{ABBR_STR}:{MSR}>"
+                        f"{comp_name}</{ABBR_STR}:{MSR}>"
+                    )
+                measure_relationship += (
+                    f"{indent}</{ABBR_STR}:{MEASURE_RELATIONSHIP}>"
                 )
 
     else:
@@ -675,8 +708,13 @@ def __write_concept_identity(
 ) -> str:
     if isinstance(identity, ItemReference):
         ref = identity
+    elif identity.urn is not None:
+        ref = parse_item_urn(identity.urn)
     else:
-        ref = parse_item_urn(identity.urn)  # type: ignore[arg-type]
+        raise Invalid(
+            f"Cannot select concept identity without URN. "
+            f"Concept id={identity.id!r}"
+        )
 
     outfile = f"{indent}<{ABBR_STR}:{CON_ID}>"
     if references_30:
@@ -841,12 +879,273 @@ def __write_prov_agreement(
     return outfile
 
 
+def __write_value_map(
+    value_map: Union[ValueMap, MultiValueMap], indent: str
+) -> str:
+    """Writes a ValueMap or MultiValueMap (RepresentationMapping)."""
+    outfile = f"{indent}<{ABBR_STR}:RepresentationMapping>"
+
+    # MultiValueMap
+    if isinstance(value_map, MultiValueMap):
+        for s in value_map.source:
+            outfile += (
+                f"{add_indent(indent)}<{ABBR_STR}:SourceValue>"
+                f"{__escape_xml(str(s))}"
+                f"</{ABBR_STR}:SourceValue>"
+            )
+        for t in value_map.target:
+            outfile += (
+                f"{add_indent(indent)}<{ABBR_STR}:TargetValue>"
+                f"{__escape_xml(str(t))}"
+                f"</{ABBR_STR}:TargetValue>"
+            )
+        outfile += f"{indent}</{ABBR_STR}:RepresentationMapping>"
+        return outfile
+
+    # ValueMap
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:SourceValue>"
+        f"{__escape_xml(str(value_map.source))}"
+        f"</{ABBR_STR}:SourceValue>"
+    )
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:TargetValue>"
+        f"{__escape_xml(str(value_map.target))}"
+        f"</{ABBR_STR}:TargetValue>"
+    )
+    outfile += f"{indent}</{ABBR_STR}:RepresentationMapping>"
+    return outfile
+
+
+def __write_multi_component_map(
+    comp_map: MultiComponentMap, indent: str
+) -> str:
+    """Writes a MultiComponentMap (1-n, n-1, n-n) to the XML file."""
+    outfile = f"{indent}<{ABBR_STR}:{COMPONENT_MAP}>"
+
+    for s in comp_map.source:
+        outfile += (
+            f"{add_indent(indent)}<{ABBR_STR}:Source>"
+            f"{__escape_xml(str(s))}"
+            f"</{ABBR_STR}:Source>"
+        )
+
+    for t in comp_map.target:
+        outfile += (
+            f"{add_indent(indent)}<{ABBR_STR}:Target>"
+            f"{__escape_xml(str(t))}"
+            f"</{ABBR_STR}:Target>"
+        )
+
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:RepresentationMap>"
+        f"{__escape_xml(str(comp_map.values))}"
+        f"</{ABBR_STR}:RepresentationMap>"
+    )
+
+    outfile += f"{indent}</{ABBR_STR}:{COMPONENT_MAP}>"
+    return outfile
+
+
+def __write_representation_map(
+    rep_map: RepresentationMap, indent: str, references_30: bool = False
+) -> str:
+    """Writes a RepresentationMap to the XML file."""
+    data = __write_maintainable(rep_map, indent, references_30)
+
+    label = f"{ABBR_STR}:{REPRESENTATION_MAP}"
+    attributes = data.get("Attributes") or ""
+    attributes = attributes.replace("'", '"')
+
+    outfile = f"{indent}<{label}{attributes}>"
+    outfile += __export_intern_data(data)
+
+    # Write Source and Target references
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:SourceCodelist>"
+        f"{rep_map.source}"
+        f"</{ABBR_STR}:SourceCodelist>"
+    )
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:TargetCodelist>"
+        f"{rep_map.target}"
+        f"</{ABBR_STR}:TargetCodelist>"
+    )
+
+    # Write ValueMaps
+    for value_map in rep_map.maps:
+        outfile += __write_value_map(value_map, add_indent(indent))
+
+    outfile += f"{indent}</{label}>"
+
+    return outfile
+
+
+def __write_component_map(
+    comp_map: ComponentMap, indent: str, references_30: bool = False
+) -> str:
+    """Writes a ComponentMap to the XML file."""
+    outfile = f"{indent}<{ABBR_STR}:{COMPONENT_MAP}>"
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Source>"
+        f"{comp_map.source}"
+        f"</{ABBR_STR}:Source>"
+    )
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Target>"
+        f"{comp_map.target}"
+        f"</{ABBR_STR}:Target>"
+    )
+
+    # Write the RepresentationMap reference
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:RepresentationMap>"
+        f"{comp_map.values}"
+        f"</{ABBR_STR}:RepresentationMap>"
+    )
+
+    outfile += f"{indent}</{ABBR_STR}:{COMPONENT_MAP}>"
+    return outfile
+
+
+def __write_implicit_component_map(
+    imp_comp_map: ImplicitComponentMap, indent: str
+) -> str:
+    """Writes an ImplicitComponentMap (no RepresentationMap)."""
+    outfile = f"{indent}<{ABBR_STR}:ComponentMap>"
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Source>"
+        f"{imp_comp_map.source}"
+        f"</{ABBR_STR}:Source>"
+    )
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Target>"
+        f"{imp_comp_map.target}"
+        f"</{ABBR_STR}:Target>"
+    )
+    outfile += f"{indent}</{ABBR_STR}:ComponentMap>"
+    return outfile
+
+
+def __write_fixed_value_map(fixed_map: FixedValueMap, indent: str) -> str:
+    """Writes a FixedValueMap to the XML file."""
+    outfile = f"{indent}<{ABBR_STR}:FixedValueMap>"
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Target>"
+        f"{fixed_map.target}"
+        f"</{ABBR_STR}:Target>"
+    )
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Value>"
+        f"{__escape_xml(str(fixed_map.value))}"
+        f"</{ABBR_STR}:Value>"
+    )
+    outfile += f"{indent}</{ABBR_STR}:FixedValueMap>"
+    return outfile
+
+
+def __write_date_pattern_map(date_map: DatePatternMap, indent: str) -> str:
+    """Writes a DatePatternMap to the XML file."""
+    attrs = ""
+    if date_map.id is not None:
+        attrs += f' id="{__escape_xml(date_map.id)}"'
+    if date_map.resolve_period is not None:
+        attrs += f' resolvePeriod="{__escape_xml(date_map.resolve_period)}"'
+
+    attrs += f' sourcePattern="{__escape_xml(date_map.pattern)}"'
+    attrs += f' locale="{__escape_xml(date_map.locale)}"'
+
+    outfile = f"{indent}<{ABBR_STR}:DatePatternMap{attrs}>"
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Source>"
+        f"{__escape_xml(date_map.source)}"
+        f"</{ABBR_STR}:Source>"
+    )
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Target>"
+        f"{__escape_xml(date_map.target)}"
+        f"</{ABBR_STR}:Target>"
+    )
+
+    if date_map.pattern_type == "variable":
+        outfile += (
+            f"{add_indent(indent)}<{ABBR_STR}:FrequencyDimension>"
+            f"{__escape_xml(date_map.frequency)}"
+            f"</{ABBR_STR}:FrequencyDimension>"
+        )
+    else:
+        outfile += (
+            f"{add_indent(indent)}<{ABBR_STR}:TargetFrequencyID>"
+            f"{__escape_xml(date_map.frequency)}"
+            f"</{ABBR_STR}:TargetFrequencyID>"
+        )
+
+    outfile += f"{indent}</{ABBR_STR}:DatePatternMap>"
+    return outfile
+
+
+def __write_structure_map(
+    struct_map: StructureMap, indent: str, references_30: bool = False
+) -> str:
+    """Writes a StructureMap to the XML file."""
+    data = __write_maintainable(struct_map, indent, references_30)
+
+    label = f"{ABBR_STR}:{STRUCTURE_MAP}"
+    attributes = data.get("Attributes") or ""
+    attributes = attributes.replace("'", '"')
+
+    outfile = f"{indent}<{label}{attributes}>"
+    outfile += __export_intern_data(data)
+
+    # Write Source and Target references
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Source>"
+        f"{struct_map.source}"
+        f"</{ABBR_STR}:Source>"
+    )
+    outfile += (
+        f"{add_indent(indent)}<{ABBR_STR}:Target>"
+        f"{struct_map.target}"
+        f"</{ABBR_STR}:Target>"
+    )
+
+    # Write component maps and fixed value maps
+    for map_item in struct_map.maps:
+        if isinstance(map_item, DatePatternMap):
+            outfile += __write_date_pattern_map(map_item, add_indent(indent))
+    for map_item in struct_map.maps:
+        if isinstance(map_item, MultiComponentMap):
+            outfile += __write_multi_component_map(
+                map_item, add_indent(indent)
+            )
+        elif isinstance(map_item, ComponentMap):
+            outfile += __write_component_map(
+                map_item, add_indent(indent), references_30
+            )
+        elif isinstance(map_item, ImplicitComponentMap):
+            outfile += __write_implicit_component_map(
+                map_item, add_indent(indent)
+            )
+        if isinstance(map_item, FixedValueMap):
+            outfile += __write_fixed_value_map(map_item, add_indent(indent))
+
+    outfile += f"{indent}</{label}>"
+
+    return outfile
+
+
 def __write_scheme(  # noqa: C901
     item_scheme: Any, indent: str, scheme: str, references_30: bool = False
 ) -> str:
     """Writes the scheme to the XML file."""
     if getattr(item_scheme, "sdmx_type", None) == "valuelist":
         scheme = VALUE_LIST
+
+    if scheme == REPRESENTATION_MAP:
+        return __write_representation_map(item_scheme, indent, references_30)
+    if scheme == STRUCTURE_MAP:
+        return __write_structure_map(item_scheme, indent, references_30)
+
     label = f"{ABBR_STR}:{scheme}"
     components = ""
     data = __write_maintainable(item_scheme, indent, references_30)

@@ -1,6 +1,6 @@
 """Collection of SDMX-JSON schemas for generic structure messages."""
 
-from typing import Sequence
+from typing import Literal, Sequence
 
 from msgspec import Struct
 
@@ -338,12 +338,16 @@ class JsonStructureMessage(Struct, frozen=True, omit_defaults=True):
         return StructureMessage(header, structures)
 
     @classmethod
-    def from_model(cls, message: StructureMessage) -> "JsonStructureMessage":
+    def from_model(
+        cls,
+        message: StructureMessage,
+        msg_version: Literal["2.0.0", "2.1"] = "2.0.0",
+    ) -> "JsonStructureMessage":
         """Creates an SDMX-JSON payload from a pysdmx StructureMessage."""
         if not message.header:
             raise errors.Invalid(
                 "Invalid input", "SDMX-JSON messages must have a header."
             )
-        header = JsonHeader.from_model(message.header)
+        header = JsonHeader.from_model(message.header, msg_version=msg_version)
         structs = JsonStructures.from_model(message)
         return JsonStructureMessage(header, structs)

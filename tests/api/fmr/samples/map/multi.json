@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:EXCH1_SRC(1.0)",
                 "target": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:EXCH1_MDD(1.0)",
                 "componentMaps": [
@@ -75,7 +74,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "source": [
                     {
                         "dataType": "String"

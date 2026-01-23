@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "SDMX",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": true,
                 "agencies": [
                     {
@@ -114,7 +113,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "target": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).TWO.TWO_KID",
                 "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_FACETS_FLOW(1.0)"
             },
@@ -135,7 +133,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "target": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE",
                 "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF_1(1.0)"
             },
@@ -156,7 +153,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "target": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).TWO.TWO_KID",
                 "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF_3(1.0)"
             },
@@ -177,7 +173,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "target": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE",
                 "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF(1.0)"
             },
@@ -198,7 +193,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "target": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE",
                 "source": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=TEST:TEST_ARRAYS_DF_2(1.0)"
             },
@@ -219,7 +213,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "target": "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=TEST:TEST_CS(1.0).ONE",
                 "source": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_FREQ(1.0)"
             }
@@ -242,7 +235,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "categories": [
                     {
@@ -394,7 +386,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_ARRAYS_DSD(1.0)"
             },
             {
@@ -414,7 +405,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_ARRAYS_DSD_1(1.0)"
             },
             {
@@ -434,7 +424,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_ARRAYS_DSD_2(1.0)"
             },
             {
@@ -454,7 +443,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_ARRAYS_DSD_3(1.0)"
             },
             {
@@ -474,7 +462,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_FACETS_DSD(1.0)"
             }
         ]

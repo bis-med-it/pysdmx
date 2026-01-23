@@ -17,7 +17,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "item",
             "items": [
@@ -175,7 +174,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": true,
             "validityType": "item",
             "items": [
@@ -254,7 +252,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "formalLevels": false,
             "codes": [
                 {

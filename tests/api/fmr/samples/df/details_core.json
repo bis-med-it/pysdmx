@@ -39,7 +39,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CBS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)"
             }
         ]

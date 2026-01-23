@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "codes": [
                     {
@@ -74,7 +73,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "codes": [
                     {
@@ -143,7 +141,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.XTD",
                 "isExternalReference": false,
-                "isFinal": false,
                 "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:TEST(1.0)"
             }
         ]

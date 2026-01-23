@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "agencies": [
                     {
@@ -121,7 +120,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CMP",
                 "isExternalReference": false,
-                "isFinal": false,
                 "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_ARRAYS_DSD(1.0)"
             },
             {
@@ -141,7 +139,6 @@
                 "version": "1.0",
                 "agencyID": "BIS.CMP",
                 "isExternalReference": false,
-                "isFinal": false,
                 "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_ARRAYS_DSD_1(1.0)"
             },
             {
@@ -161,7 +158,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_ARRAYS_DSD_2(1.0)"
             }
         ]
