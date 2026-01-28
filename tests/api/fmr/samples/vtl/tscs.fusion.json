@@ -22,7 +22,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "items": [
                 {
@@ -51,7 +50,6 @@
             ],
             "agencyId": "SDMX",
             "version": "1.0",
-            "isFinal": false,
             "vtlVersion": "2.0",
             "isPartial": false,
             "items": [
@@ -95,7 +93,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "vtlVersion": "2.0",
             "isPartial": false,
             "items": [
@@ -141,7 +138,6 @@
             ],
             "agencyId": "BIS.TEST",
             "version": "1.0",
-            "isFinal": false,
             "vtlVersion": "2.1",
             "isPartial": false,
             "items": [
@@ -172,7 +168,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "vtlVersion": "2.0",
             "isPartial": false,
             "items": [
@@ -203,7 +198,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "vtlVersion": "2.1",
             "isPartial": false,
             "items": [

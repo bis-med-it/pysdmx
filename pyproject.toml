@@ -1,6 +1,6 @@
 [project]
 name = "pysdmx"
-version = "1.10.1"
+version = "1.11.0"
 description = "Your opinionated Python SDMX library"
 license = { text = "Apache-2.0" }
 readme = "README.rst"
@@ -35,12 +35,13 @@ documentation = "https://bis-med-it.github.io/pysdmx"
 "Bug Tracker" = "https://bis-med-it.github.io/pysdmx/issues"
 
 [project.optional-dependencies]
-data = ["pandas>=2.1.4"]
+data = ["pandas>=2.1.4", "numpy>=2.0.2,<2.1; python_version < '3.13'", "numpy>=2.1.0,<2.3; python_version >= '3.13'"]
 dc = ["python-dateutil>=2.8.2"]
-vtl = ["vtlengine>=1.2,<2.0"]
+vtl = ["vtlengine>=1.2,<2.0", "numpy>=2.0.2,<2.1; python_version < '3.13'", "numpy>=2.1.0,<2.3; python_version >= '3.13'"]
 json = ["sdmxschemas>=1.0.0", "jsonschema>=4.10"]
 xml = ["lxml>=5.2", "xmltodict>=0.13", "sdmxschemas>=1.0.0"]
-all = ["lxml>=5.2", "xmltodict>=0.13", "sdmxschemas>=1.0.0", "pandas>=2.1.4", "python-dateutil>=2.8.2", "vtlengine>=1.2,<2.0"]
+all = ["lxml>=5.2", "xmltodict>=0.13", "sdmxschemas>=1.0.0", "pandas>=2.1.4", "python-dateutil>=2.8.2", "vtlengine>=1.2,<2.0", 
+       "numpy>=2.0.2,<2.1; python_version < '3.13'", "numpy>=2.1.0,<2.3; python_version >= '3.13'"]
 
 [tool.poetry]
 requires-poetry = ">=2.0"
@@ -49,6 +50,7 @@ requires-poetry = ">=2.0"
 python = ">=3.9,<4.0"
 
 [tool.poetry.group.dev.dependencies]
+coverage = ">=7.0,!=7.13.0,<8.0"
 ruff = ">=0.13.2"
 mypy = "^1.18.2"
 pytest = "^8.3.2"
@@ -59,7 +61,10 @@ pyroma = "^4.2"
 lxml-stubs = "^0.5.1"
 types-xmltodict = "^0.13.0.3"
 types-python-dateutil = "^2.9.0.20240316"
-pandas-stubs = "^2.1.4.231227"
+pandas-stubs = [
+    { version = ">2.1.4.231227,<2.2.3.240901", python = "<3.13" },
+    { version = ">=2.2.3.241009", python = ">=3.13" }
+]
 types-jsonschema = "^4.25.1.20251009"
 
 [tool.poetry.group.docs.dependencies]

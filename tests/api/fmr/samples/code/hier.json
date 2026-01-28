@@ -36,7 +36,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "codes": [
                     {
@@ -256,7 +255,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": true,
                 "codes": [
                     {
@@ -370,9 +368,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
-                "isPartial": false,
-                "leveled": false,
                 "hierarchicalCodes": [
                     {
                         "links": [

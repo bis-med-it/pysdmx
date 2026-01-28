@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "codes": [
                     {
@@ -74,7 +73,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "codes": [
                     {
@@ -143,7 +141,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "hasFormalLevels": false,
                 "hierarchicalCodes": [
                     {
@@ -211,7 +208,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "linkedHierarchy": "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS:H_OPTION_TYPE(1.0)",
                 "linkedObject": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:TEST(1.0).OPTION_TYPE",
                 "contextObject": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF_TEST(1.0)"
@@ -235,7 +231,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:TEST(1.0)"
             }
         ]

@@ -29,7 +29,6 @@ from pysdmx.model import (
     VtlMappingScheme,
 )
 from pysdmx.model.dataflow import DataStructureDefinition, ProvisionAgreement
-from pysdmx.util import parse_urn
 
 
 @pytest.fixture
@@ -335,7 +334,7 @@ def test_dsd_cod_concept_ref_read(samples_folder):
     dsd = result[3]
     dimensions = dsd.components.dimensions
     dimension = dimensions[0]
-    assert dimension.concept == parse_urn(concept.urn)
+    assert dimension.concept == concept
     assert dimension.enumeration.items[0].urn == code.urn
 
 

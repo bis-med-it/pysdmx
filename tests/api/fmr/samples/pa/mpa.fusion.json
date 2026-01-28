@@ -22,7 +22,6 @@
             ],
             "agencyId": "TEST",
             "version": "1.0",
-            "isFinal": false,
             "metadataflowRef": "urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=TEST:DF_CNF(1.0)",
             "metadataproviderRef": "urn:sdmx:org.sdmx.infomodel.base.MetadataProvider=SDMX:METADATA_PROVIDERS(1.0).TEST",
             "targets": []

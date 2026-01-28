@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "SDMX",
                 "isExternalReference": false,
-                "isFinal": false,
                 "vtlVersion": "2.0",
                 "vtlMappingScheme": "urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=TEST:TEST_DETAIL(1.0)",
                 "rulesetSchemes": [

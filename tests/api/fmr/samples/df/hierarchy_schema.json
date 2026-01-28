@@ -53,7 +53,6 @@
                 "version": "1.0",
                 "agencyID": "SDMX",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": true,
                 "agencies": [
                     {
@@ -92,7 +91,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": true,
                 "codes": [
                     {
@@ -136,7 +134,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "codes": [
                     {
@@ -205,7 +202,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": true,
                 "concepts": [
                     {
@@ -322,7 +318,6 @@
                 "version": "1.0",
                 "agencyID": "BIS",
                 "isExternalReference": false,
-                "isFinal": false,
                 "dataStructureComponents": {
                     "dimensionList": {
                         "links": [

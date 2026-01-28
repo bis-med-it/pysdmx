@@ -17,7 +17,6 @@
             ],
             "agencyId": "BIS.MEDIT",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [
@@ -66,7 +65,6 @@
             ],
             "agencyId": "BIS.MEDIT",
             "version": "1.0",
-            "isFinal": false,
             "isPartial": false,
             "validityType": "standard",
             "items": [

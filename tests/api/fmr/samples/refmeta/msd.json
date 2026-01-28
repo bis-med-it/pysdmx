@@ -1083,7 +1083,7 @@
                                 ],
                                 "id": "COLL_METHOD",
                                 "localRepresentation": {
-                                    "textFormat": {
+                                    "enumerationFormat": {
                                         "dataType": "String"
                                     },
                                     "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS.MEDIT:MEDAL_INM(1.0)"

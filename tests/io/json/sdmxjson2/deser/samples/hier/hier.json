@@ -30,7 +30,6 @@
                 "version": "1.0",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "leveled": false,
                 "hierarchicalCodes": [
@@ -278,7 +277,6 @@
                 "version": "1.42",
                 "agencyID": "TEST",
                 "isExternalReference": false,
-                "isFinal": false,
                 "isPartial": false,
                 "leveled": false,
                 "hierarchicalCodes": [

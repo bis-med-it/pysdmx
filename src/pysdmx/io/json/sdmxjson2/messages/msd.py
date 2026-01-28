@@ -49,11 +49,8 @@ class JsonMetadataAttribute(Struct, frozen=True, omit_defaults=True):
         self, cs: Sequence[JsonConceptScheme], cls: Sequence[Codelist]
     ) -> MetadataComponent:
         """Returns a metadata component."""
-        c = (
-            _find_concept(cs, self.conceptIdentity).to_model(cls)
-            if cs
-            else parse_item_urn(self.conceptIdentity)
-        )
+        m = _find_concept(cs, self.conceptIdentity) if cs else None
+        c = m.to_model(cls) if m else parse_item_urn(self.conceptIdentity)
         dt, facets, codes, _ = _get_representation(
             self.id, self.localRepresentation, cls, {}
         )
