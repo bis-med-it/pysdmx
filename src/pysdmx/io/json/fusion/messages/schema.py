@@ -65,6 +65,25 @@ class FusionSchemaMessage(msgspec.Struct, frozen=True):
         mapped_grps = [
             Group(g.id, dimensions=g.dimensionReferences) for g in grps
         ]
+        keys = []
+        for dc in self.DataConstraint:
+            keys.extend(
+                dc.get_series(
+                    [
+                        d.id
+                        for d in self.DataStructure[0].dimensionList.dimensions
+                        if not d.isTimeDimension
+                    ]
+                )
+            )
+        keys = list(set(keys)) if keys else None
         return Schema(
-            context, agency, id_, comps, version, urns, groups=mapped_grps
+            context,
+            agency,
+            id_,
+            comps,
+            version,
+            urns,
+            groups=mapped_grps,
+            keys=keys,
         )
