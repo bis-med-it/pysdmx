@@ -163,6 +163,7 @@ class FusionDimension(Struct, frozen=True):
     id: str
     concept: str
     representation: Optional[FusionRepresentation] = None
+    isTimeDimension: bool = False
 
     def to_model(
         self,
