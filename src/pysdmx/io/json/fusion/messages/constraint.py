@@ -33,14 +33,10 @@ class FusionContentConstraint(Struct, frozen=True):
         if self.includeSeries:
             series = []
             for r in self.includeSeries.rows:
-                s = []
-                for d in dimensions:
-                    try:
-                        idx = self.includeSeries.dims.index(d)
-                        s.append(r[idx])
-                    except ValueError:
-                        s.append("*")
-                series.append(".".join(s))
+                s = dict.fromkeys(dimensions, "*")
+                for idx, cd in enumerate(self.includeSeries.dims):
+                    s[cd] = r[idx]
+                series.append(".".join(s.values()))
             return series
         else:
             return []

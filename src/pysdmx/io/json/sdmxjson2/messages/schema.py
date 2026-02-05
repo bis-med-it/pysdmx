@@ -45,8 +45,9 @@ class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
     ) -> Sequence[Dict[str, str]]:
         keys = []
         for ks in keysets:
-            for k in ks.keys:
-                keys.append({kv.id: kv.value for kv in k.keyValues})
+            keys.extend(
+                [{kv.id: kv.value for kv in k.keyValues} for k in ks.keys]
+            )
         return keys
 
     def __infer_keys(self, keys_dict: Dict[str, str]) -> str:
@@ -56,9 +57,7 @@ class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
                 0
             ].dataStructureComponents.dimensionList.dimensions
         ]
-        dim_values = [
-            (keys_dict[d] if d in keys_dict else "*") for d in dimensions
-        ]
+        dim_values = [keys_dict.get(d, "*") for d in dimensions]
         return ".".join(dim_values)
 
     def __process_keys(self) -> Optional[Sequence[str]]:
