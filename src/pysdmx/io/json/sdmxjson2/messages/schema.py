@@ -53,7 +53,7 @@ class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
     def __infer_keys(self, keys_dict: Dict[str, str]) -> str:
         dimensions = [
             d.id
-            for d in self.dataStructures[
+            for d in self.dataStructures[  # type: ignore[union-attr]
                 0
             ].dataStructureComponents.dimensionList.dimensions
         ]

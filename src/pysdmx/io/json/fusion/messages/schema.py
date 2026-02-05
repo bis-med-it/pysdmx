@@ -65,7 +65,7 @@ class FusionSchemaMessage(msgspec.Struct, frozen=True):
         mapped_grps = [
             Group(g.id, dimensions=g.dimensionReferences) for g in grps
         ]
-        keys = []
+        keys: List[str] = []
         for dc in self.DataConstraint:
             keys.extend(
                 dc.get_series(
@@ -76,7 +76,7 @@ class FusionSchemaMessage(msgspec.Struct, frozen=True):
                     ]
                 )
             )
-        keys = list(set(keys)) if keys else None
+        keys = list(set(keys)) if keys else None  # type: ignore[assignment]
         return Schema(
             context,
             agency,
