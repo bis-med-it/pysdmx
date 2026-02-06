@@ -487,6 +487,14 @@ class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
             if any of the artefacts listed under the artefacts
             property has been updated after the schema was
             generated, you might want to regenerate the schema.
+        name: The schema name.
+        groups: The list of groups defined in the data structure.
+        keys: The list of allowed series. This is the equivalent
+            of an SDMX KeySet. KeySets allow finer
+            restrictions than when components only (i.e. SDMX
+            CubeRegions). The values in the sequence follow
+            the SDMX-REST conventions for series wildcarding
+            (e.g. *.USD.CHF.*).
     """
 
     context: Literal["datastructure", "dataflow", "provisionagreement"]
@@ -498,6 +506,7 @@ class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     generated: datetime = datetime.now(timezone.utc)
     name: Optional[str] = None
     groups: Optional[Sequence[Group]] = None
+    keys: Optional[Sequence[str]] = None
 
     def __str__(self) -> str:
         """Custom string representation without the class name."""
