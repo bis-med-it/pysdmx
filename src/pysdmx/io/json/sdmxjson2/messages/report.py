@@ -20,6 +20,7 @@ from pysdmx.model.metadata import (
     MetadataAttribute,
     MetadataReport,
     merge_attributes,
+    unmerge_attributes,
 )
 
 
@@ -105,7 +106,7 @@ class JsonMetadataReport(ItemSchemeType, frozen=True, omit_defaults=True):
                 "SDMX-JSON metadata reports must have a name",
                 {"metadata_report": report.id},
             )
-
+        attrs = unmerge_attributes(report.attributes)
         return JsonMetadataReport(
             agency=(
                 report.agency.id
@@ -125,10 +126,7 @@ class JsonMetadataReport(ItemSchemeType, frozen=True, omit_defaults=True):
             metadataflow=report.metadataflow,
             targets=report.targets,
             attributes=tuple(
-                [
-                    JsonMetadataAttribute.from_model(a)
-                    for a in report.attributes
-                ]
+                [JsonMetadataAttribute.from_model(a) for a in attrs]
             ),
             metadataProvisionAgreement=report.metadataProvisionAgreement,
             publicationPeriod=report.publicationPeriod,
