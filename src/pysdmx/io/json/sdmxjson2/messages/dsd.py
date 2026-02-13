@@ -133,6 +133,8 @@ class JsonAttributeRelationship(Struct, frozen=True, omit_defaults=True):
                 return "O"
             else:
                 return ",".join(measures)
+        elif self.observation is not None:
+            return "O"
         elif self.dimensions:
             return ",".join(self.dimensions)
         elif self.group:
