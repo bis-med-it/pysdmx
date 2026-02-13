@@ -1,0 +1,97 @@
+{
+    "meta": {
+        "id": "IREF851005",
+        "test": false,
+        "prepared": "2026-02-13T12:18:20Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0_DEV"
+        }
+    },
+    "ConceptScheme": [
+        {
+            "id": "NM_DSD_CS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=TEST:NM_DSD_CS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Test concepts"
+                }
+            ],
+            "agencyId": "TEST",
+            "version": "1.0",
+            "isFinal": false,
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "CONTRACT_CODE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:NM_DSD_CS(1.0).CONTRACT_CODE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Contract Code"
+                        }
+                    ]
+                },
+                {
+                    "id": "MIC",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:NM_DSD_CS(1.0).MIC",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "MIC"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "DataStructure": [
+        {
+            "id": "NM_DSD",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:NM_DSD(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Test Schema"
+                }
+            ],
+            "agencyId": "TEST",
+            "version": "1.0",
+            "isFinal": false,
+            "dimensionList": {
+                "dimensions": [
+                    {
+                        "id": "CONTRACT_CODE",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=TEST:NM_DSD(1.0).CONTRACT_CODE",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String"
+                            }
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:NM_DSD_CS(1.0).CONTRACT_CODE"
+                    }
+                ]
+            },
+            "attributeList": {
+                "attributes": [
+                    {
+                        "id": "MIC",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:NM_DSD(1.0).MIC",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String"
+                            }
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:NM_DSD_CS(1.0).MIC",
+                        "mandatory": false,
+                        "attachmentLevel": "OBSERVATION"
+                    }
+                ]
+            }
+        }
+    ]
+}
