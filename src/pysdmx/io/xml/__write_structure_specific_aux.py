@@ -5,6 +5,10 @@ from typing import Any, Dict, List
 
 import pandas as pd
 
+from pysdmx.io._pd_utils import (
+    transform_dataframe_for_writing,
+    validate_schema_exists,
+)
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import (
     ABBR_MSG,
@@ -21,30 +25,26 @@ from pysdmx.util import parse_short_urn
 
 
 def __memory_optimization_writing(
-    dataset: PandasDataset, prettyprint: bool
+    data: pd.DataFrame, prettyprint: bool
 ) -> str:
     """Memory optimization for writing data."""
     outfile = ""
-    length_ = len(dataset.data)
-    if len(dataset.data) > CHUNKSIZE:
+    length_ = len(data)
+    if length_ > CHUNKSIZE:
         previous = 0
         next_ = CHUNKSIZE
         while previous <= length_:
             # Sliding a window for efficient access to the data
             # and avoid memory issues
-            outfile += __obs_processing(
-                dataset.data.iloc[previous:next_], prettyprint
-            )
+            outfile += __obs_processing(data.iloc[previous:next_], prettyprint)
             previous = next_
             next_ += CHUNKSIZE
 
             if next_ >= length_:
-                outfile += __obs_processing(
-                    dataset.data.iloc[previous:], prettyprint
-                )
+                outfile += __obs_processing(data.iloc[previous:], prettyprint)
                 previous = next_
     else:
-        outfile += __obs_processing(dataset.data, prettyprint)
+        outfile += __obs_processing(data, prettyprint)
 
     return outfile
 
@@ -69,9 +69,6 @@ def __write_data_structure_specific(
     outfile = ""
 
     for i, (short_urn, dataset) in enumerate(datasets.items()):
-        dataset.data = dataset.data.astype(str).replace(
-            {"nan": "", "<NA>": ""}
-        )
         outfile += __write_data_single_dataset(
             dataset=dataset,
             prettyprint=prettyprint,
@@ -102,21 +99,10 @@ def __write_data_single_dataset(
     Returns:
         The data in SDMX-ML Structure-Specific format, as string.
     """
-
-    def __remove_optional_attributes_empty_data(str_to_check: str) -> str:
-        """This function removes data when optional attributes are found."""
-        for att in dataset.structure.components.attributes:
-            if not att.required:
-                str_to_check = str_to_check.replace(f"{att.id}='' ", "")
-                str_to_check = str_to_check.replace(f'{att.id}="" ', "")
-        return str_to_check
-
     outfile = ""
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
     sdmx_type = parse_short_urn(structure_urn).id
-    # Remove nan values from DataFrame
-    dataset.data = dataset.data.fillna("").astype(str).replace("nan", "")
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
@@ -135,31 +121,32 @@ def __write_data_single_dataset(
         f"{datascope}"
         f'action="{dataset.action.value}">{nl}'
     )
+    # Transform DataFrame for null value handling
+    schema = validate_schema_exists(dataset)
+    transformed_data = transform_dataframe_for_writing(dataset.data, schema)
+
     data = ""
     if dim == ALL_DIM:
-        data += __memory_optimization_writing(dataset, prettyprint)
+        data += __memory_optimization_writing(transformed_data, prettyprint)
     else:
         writing_validation(dataset)
         series_codes, obs_codes, group_codes = get_codes(
             dimension_code=dim,
             structure=dataset.structure,  # type: ignore[arg-type]
-            data=dataset.data,
+            data=transformed_data,
         )
         if group_codes:
             data += __group_processing(
-                data=dataset.data,
+                data=transformed_data,
                 group_codes=group_codes,
                 prettyprint=prettyprint,
             )
         data += __series_processing(
-            data=dataset.data,
+            data=transformed_data,
             series_codes=series_codes,
             obs_codes=obs_codes,
             prettyprint=prettyprint,
         )
-
-        # Remove optional attributes empty data
-        data = __remove_optional_attributes_empty_data(data)
 
     # Adding to outfile
     outfile += data
@@ -181,7 +168,7 @@ def __group_processing(
 
         out_element = f"{child2}<Group xsi:type='ns1:{group_id}' "
         for k, v in data_info.items():
-            out_element += f"{k}={__escape_xml(str(v))!r} "
+            out_element += f"{k}={__escape_xml(v)!r} "
         out_element += f"/>{nl}"
 
         return out_element
@@ -189,7 +176,8 @@ def __group_processing(
     out_list: List[str] = []
 
     for group in group_codes:
-        group_keys = group["dimensions"] + [group["attribute"]]
+        attribute = group["attribute"]
+        group_keys = group["dimensions"] + [attribute]
 
         grouped_data = (
             data[group_keys]
@@ -202,6 +190,7 @@ def __group_processing(
             [
                 __format_group_str(record, group["group_id"])
                 for record in grouped_data
+                if record.get(attribute) is not None
             ]
         )
 
@@ -217,7 +206,8 @@ def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
         out = f"{child2}<Obs "
 
         for k, v in element.items():
-            out += f"{k}={__escape_xml(str(v))!r} "
+            if v is not None:
+                out += f"{k}={__escape_xml(v)!r} "
 
         out += f"/>{nl}"
 
@@ -239,7 +229,7 @@ def __series_processing(
     def __generate_series_str() -> str:
         """Generates the series item with its observations."""
         out_list: List[str] = []
-        data.groupby(by=series_codes)[obs_codes].apply(
+        data.groupby(by=series_codes, dropna=False)[obs_codes].apply(
             lambda x: __format_dict_ser(out_list, x)
         )
 
@@ -267,8 +257,8 @@ def __series_processing(
         out_element = f"{child2}<Series "
 
         for k, v in data_info.items():
-            if k != "Obs":
-                out_element += f"{k}={__escape_xml(str(v))!r} "
+            if k != "Obs" and v is not None:
+                out_element += f"{k}={__escape_xml(v)!r} "
 
         out_element += f">{nl}"
 
@@ -276,7 +266,8 @@ def __series_processing(
             out_element += f"{child3}<Obs "
 
             for k, v in obs.items():
-                out_element += f"{k}={__escape_xml(str(v))!r} "
+                if v is not None:
+                    out_element += f"{k}={__escape_xml(v)!r} "
 
             out_element += f"/>{nl}"
 
