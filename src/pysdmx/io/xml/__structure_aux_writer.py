@@ -16,12 +16,17 @@ from pysdmx.io.xml.__tokens import (
     CLASS,
     COMPONENT_MAP,
     CON,
+    CON_CONS,
     CON_ID,
     CONDITIONAL,
+    CONS_ATT,
     CORE_REP,
     CS,
+    CUBE_REGION,
     CUSTOM_TYPE,
     CUSTOM_TYPE_SCHEME,
+    DATA_CONS,
+    DATA_KEY_SET,
     DATA_PROV,
     DEPARTMENT,
     DFW,
@@ -37,6 +42,10 @@ from pysdmx.io.xml.__tokens import (
     GROUP_DIM,
     GROUPS_LOW,
     ID,
+    INCLUDE,
+    INCLUDED,
+    KEY,
+    KEY_VALUE,
     LOCAL_REP,
     MANDATORY,
     MANDATORY_LOW,
@@ -71,6 +80,7 @@ from pysdmx.io.xml.__tokens import (
     URN,
     URN_LOW,
     USAGE,
+    VALUE,
     VALUE_ITEM,
     VALUE_LIST,
     VALUE_LIST_LOW,
@@ -95,14 +105,18 @@ from pysdmx.model import (
     ComponentMap,
     Concept,
     ConceptScheme,
+    ConstraintAttachment,
+    CubeRegion,
     CustomType,
     CustomTypeScheme,
+    DataConstraint,
     DataType,
     DatePatternMap,
     Facets,
     FixedValueMap,
     Hierarchy,
     ImplicitComponentMap,
+    KeySet,
     MultiComponentMap,
     MultiValueMap,
     NamePersonalisation,
@@ -185,6 +199,7 @@ STR_DICT_TYPE_LIST_21 = {
     ConceptScheme: "Concepts",
     DataStructureDefinition: "DataStructures",
     Dataflow: "Dataflows",
+    DataConstraint: "Constraints",
     RepresentationMap: "RepresentationMaps",
     StructureMap: "StructureMaps",
     DatePatternMap: "DatePatternMaps",
@@ -204,6 +219,7 @@ STR_DICT_TYPE_LIST_30 = {
     ConceptScheme: "ConceptSchemes",
     DataStructureDefinition: "DataStructures",
     Dataflow: "Dataflows",
+    DataConstraint: "DataConstraints",
     RepresentationMap: "RepresentationMaps",
     StructureMap: "StructureMaps",
     DatePatternMap: "DatePatternMaps",
@@ -1134,6 +1150,216 @@ def __write_structure_map(
     return outfile
 
 
+def __write_data_provider(data_provider: str, indent: str) -> str:
+    """Writes a DataProvider reference to the XML file."""
+    outfile = f"{indent}<{ABBR_STR}:DataProvider>"
+    outfile += f"{add_indent(add_indent(indent))}<{REF} "
+    outfile += f"{ID}={data_provider!r}/>"
+    outfile += f"{indent}</{ABBR_STR}:DataProvider>"
+    return outfile
+
+
+def __write_data_structure(
+    data_structure: str, indent: str, references_30: bool = False
+) -> str:
+    """Writes a DataStructure reference to the XML file."""
+    outfile = f"{add_indent(indent)}<{ABBR_STR}:DataStructure>"
+    if references_30:
+        # SDMX 3.0: URN
+        outfile += data_structure
+    else:
+        # SDMX 2.1: Ref with attributes
+        outfile += f"{add_indent(add_indent(indent))}<{REF} "
+        ref = parse_urn(data_structure)
+        outfile += f"{AGENCY_ID}={ref.agency!r} "
+        outfile += f"{ID}={ref.id!r} "
+        outfile += f"{VERSION}={ref.version!r} "
+        outfile += f"{CLASS}={DSD!r}/>"
+    outfile += f"</{ABBR_STR}:DataStructure>"
+    return outfile
+
+
+def __write_dataflow(
+    dataflow: str, indent: str, references_30: bool = False
+) -> str:
+    """Writes a Dataflow reference to the XML file."""
+    outfile = f"{add_indent(indent)}<{ABBR_STR}:Dataflow>"
+    if references_30:
+        # SDMX 3.0: URN
+        outfile += dataflow
+    else:
+        # SDMX 2.1: Ref with attributes
+        outfile += f"{add_indent(add_indent(indent))}<{REF} "
+        ref = parse_urn(dataflow)
+        outfile += f"{AGENCY_ID}={ref.agency!r} "
+        outfile += f"{ID}={ref.id!r} "
+        outfile += f"{VERSION}={ref.version!r} "
+        outfile += f"{CLASS}={DFW!r}/>"
+    outfile += f"</{ABBR_STR}:Dataflow>"
+    return outfile
+
+
+def __write_provision_agreement(
+    provision_agreement: str, indent: str, references_30: bool = False
+) -> str:
+    """Writes a ProvisionAgreement reference to the XML file."""
+    outfile = f"{add_indent(indent)}<{ABBR_STR}:ProvisionAgreement>"
+    if references_30:
+        # SDMX 3.0: URN
+        outfile += provision_agreement
+    else:
+        # SDMX 2.1: Ref with attributes
+        outfile += f"{add_indent(add_indent(indent))}<{REF} "
+        ref = parse_urn(provision_agreement)
+        outfile += f"{AGENCY_ID}={ref.agency!r} "
+        outfile += f"{ID}={ref.id!r} "
+        outfile += f"{VERSION}={ref.version!r}/>"
+    outfile += f"</{ABBR_STR}:ProvisionAgreement>"
+    return outfile
+
+
+def __write_constraint_attachment(
+    attachment: ConstraintAttachment, indent: str, references_30: bool = False
+) -> str:
+    """Writes a ConstraintAttachment to the XML file."""
+    outfile = f"{indent}<{ABBR_STR}:{CONS_ATT}>"
+
+    # DataProvider
+    if attachment.data_provider:
+        outfile += __write_data_provider(attachment.data_provider, indent)
+
+    # DataStructures
+    if attachment.data_structures:
+        for ds in attachment.data_structures:
+            outfile += __write_data_structure(ds, indent, references_30)
+
+    # Dataflows
+    if attachment.dataflows:
+        for df in attachment.dataflows:
+            outfile += __write_dataflow(df, indent, references_30)
+
+    # ProvisionAgreements
+    if attachment.provision_agreements:
+        for pa in attachment.provision_agreements:
+            outfile += __write_provision_agreement(pa, indent, references_30)
+
+    outfile += f"{indent}</{ABBR_STR}:{CONS_ATT}>"
+    return outfile.replace("'", '"')
+
+
+def __write_cube_region(
+    region: CubeRegion, indent: str, references_30: bool = False
+) -> str:
+    """Writes a CubeRegion to the XML file."""
+    include_val = "true" if region.is_included else "false"
+
+    outfile = f"{indent}<{ABBR_STR}:{CUBE_REGION} {INCLUDE}={include_val!r}>"
+
+    # SDMX 3.0: str, SDMX 2.1: com
+    kv_prefix = ABBR_STR if references_30 else ABBR_COM
+    val_prefix = ABBR_STR if references_30 else ABBR_COM
+
+    for key_value in region.key_values:
+        outfile += f"{add_indent(indent)}"
+        outfile += f"<{kv_prefix}:{KEY_VALUE} {ID}={key_value.id!r}>"
+
+        for value in key_value.values:
+            value_tag = (
+                f"{add_indent(add_indent(indent))}<{val_prefix}:{VALUE}>"
+            )
+            value_tag += __escape_xml(str(value.value))
+            value_tag += f"</{val_prefix}:{VALUE}>"
+            outfile += value_tag
+        outfile += f"{add_indent(indent)}</{kv_prefix}:{KEY_VALUE}>"
+
+    outfile += f"{indent}</{ABBR_STR}:{CUBE_REGION}>"
+    return outfile.replace("'", '"')
+
+
+def __write_key_set(
+    key_set: KeySet, indent: str, references_30: bool = False
+) -> str:
+    """Writes a DataKeySet to the XML file."""
+    include_attr = INCLUDED
+    include_val = "true" if key_set.is_included else "false"
+
+    outfile = (
+        f"{indent}<{ABBR_STR}:{DATA_KEY_SET} {include_attr}={include_val!r}>"
+    )
+
+    # SDMX 3.0: str, SDMX 2.1: com
+    kv_prefix = ABBR_STR if references_30 else ABBR_COM
+    val_prefix = ABBR_STR if references_30 else ABBR_COM
+
+    for key in key_set.keys:
+        outfile += f"{add_indent(indent)}<{ABBR_STR}:{KEY}>"
+
+        for key_value in key.keys_values:
+            outfile += f"{add_indent(add_indent(indent))}"
+            outfile += f"<{kv_prefix}:{KEY_VALUE} {ID}={key_value.id!r}>"
+            value_tag = f"{add_indent(add_indent(add_indent(indent)))}"
+            value_tag += f"<{val_prefix}:{VALUE}>"
+            value_tag += __escape_xml(str(key_value.value))
+            value_tag += f"</{val_prefix}:{VALUE}>"
+            outfile += value_tag
+            outfile += (
+                f"{add_indent(add_indent(indent))}</{kv_prefix}:{KEY_VALUE}>"
+            )
+        outfile += f"{add_indent(indent)}</{ABBR_STR}:{KEY}>"
+
+    outfile += f"{indent}</{ABBR_STR}:{DATA_KEY_SET}>"
+    return outfile.replace("'", '"')
+
+
+def __write_data_constraint(
+    constraint: DataConstraint, indent: str, references_30: bool = False
+) -> str:
+    """Writes a DataConstraint to the XML file."""
+    # SDMX 3.0: DataConstraint, SDMX 2.1: ContentConstraint
+    constraint_type = DATA_CONS if references_30 else CON_CONS
+
+    data = __write_maintainable(constraint, indent, references_30)
+
+    # Add role attribute for SDMX 3.0 (required)
+
+    # TODO: add 'role' field to 'DataConstraint'
+    # to know which role to use (Allowed | Actual)
+    # In SDMX-JSON role is ignored and
+    # was deleted from JsonDataConstraint (PR #468)
+    if references_30:
+        data["Attributes"] += ' role="Allowed"'
+
+    label = f"{ABBR_STR}:{constraint_type}"
+    attributes = data.get("Attributes") or ""
+    attributes = attributes.replace("'", '"')
+
+    outfile = f"{indent}<{label}{attributes}>"
+    outfile += __export_intern_data(data)
+
+    # ConstraintAttachment
+    if constraint.constraint_attachment is not None:
+        outfile += __write_constraint_attachment(
+            constraint.constraint_attachment, add_indent(indent), references_30
+        )
+
+    # CubeRegions
+    if constraint.cube_regions:
+        for region in constraint.cube_regions:
+            outfile += __write_cube_region(
+                region, add_indent(indent), references_30
+            )
+
+    # DataKeySets
+    if constraint.key_sets:
+        for key_set in constraint.key_sets:
+            outfile += __write_key_set(
+                key_set, add_indent(indent), references_30
+            )
+
+    outfile += f"{indent}</{label}>"
+    return outfile
+
+
 def __write_scheme(  # noqa: C901
     item_scheme: Any, indent: str, scheme: str, references_30: bool = False
 ) -> str:
@@ -1145,6 +1371,8 @@ def __write_scheme(  # noqa: C901
         return __write_representation_map(item_scheme, indent, references_30)
     if scheme == STRUCTURE_MAP:
         return __write_structure_map(item_scheme, indent, references_30)
+    if isinstance(item_scheme, DataConstraint):
+        return __write_data_constraint(item_scheme, indent, references_30)
 
     label = f"{ABBR_STR}:{scheme}"
     components = ""
