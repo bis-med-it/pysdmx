@@ -1150,12 +1150,24 @@ def __write_structure_map(
     return outfile
 
 
-def __write_data_provider(data_provider: str, indent: str) -> str:
+def __write_data_provider(
+    data_provider: str, indent: str, references_30: bool = False
+) -> str:
     """Writes a DataProvider reference to the XML file."""
-    outfile = f"{indent}<{ABBR_STR}:DataProvider>"
-    outfile += f"{add_indent(add_indent(indent))}<{REF} "
-    outfile += f"{ID}={data_provider!r}/>"
-    outfile += f"{indent}</{ABBR_STR}:DataProvider>"
+    outfile = f"{add_indent(indent)}<{ABBR_STR}:DataProvider>"
+    if references_30:
+        # SDMX 3.0: URN
+        outfile += data_provider
+    else:
+        # SDMX 2.1: Ref with attributes
+        outfile += f"{add_indent(add_indent(indent))}<{REF} "
+        ref = parse_urn(data_provider)
+        outfile += f"{AGENCY_ID}={ref.agency!r} "
+        outfile += f"{PAR_ID}={ref.id!r} "
+        outfile += f"{PAR_VER}={ref.version!r} "
+        outfile += f"{ID}={ref.item_id!r} "
+        outfile += f"{CLASS}={DATA_PROV!r}/>"
+    outfile += f"</{ABBR_STR}:DataProvider>"
     return outfile
 
 
@@ -1226,7 +1238,9 @@ def __write_constraint_attachment(
 
     # DataProvider
     if attachment.data_provider:
-        outfile += __write_data_provider(attachment.data_provider, indent)
+        outfile += __write_data_provider(
+            attachment.data_provider, indent, references_30
+        )
 
     # DataStructures
     if attachment.data_structures:
