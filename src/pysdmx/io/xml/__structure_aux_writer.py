@@ -1167,6 +1167,8 @@ def __write_data_provider(
         outfile += f"{PAR_VER}={ref.version!r} "
         outfile += f"{ID}={ref.item_id!r} "
         outfile += f"{CLASS}={DATA_PROV!r}/>"
+        outfile += f"{add_indent(indent)}</{ABBR_STR}:DataProvider>"
+        return outfile
     outfile += f"</{ABBR_STR}:DataProvider>"
     return outfile
 
@@ -1187,6 +1189,8 @@ def __write_data_structure(
         outfile += f"{ID}={ref.id!r} "
         outfile += f"{VERSION}={ref.version!r} "
         outfile += f"{CLASS}={DSD!r}/>"
+        outfile += f"{add_indent(indent)}</{ABBR_STR}:DataStructure>"
+        return outfile
     outfile += f"</{ABBR_STR}:DataStructure>"
     return outfile
 
@@ -1207,6 +1211,8 @@ def __write_dataflow(
         outfile += f"{ID}={ref.id!r} "
         outfile += f"{VERSION}={ref.version!r} "
         outfile += f"{CLASS}={DFW!r}/>"
+        outfile += f"{add_indent(indent)}</{ABBR_STR}:Dataflow>"
+        return outfile
     outfile += f"</{ABBR_STR}:Dataflow>"
     return outfile
 
@@ -1226,6 +1232,8 @@ def __write_provision_agreement(
         outfile += f"{AGENCY_ID}={ref.agency!r} "
         outfile += f"{ID}={ref.id!r} "
         outfile += f"{VERSION}={ref.version!r}/>"
+        outfile += f"{add_indent(indent)}</{ABBR_STR}:ProvisionAgreement>"
+        return outfile
     outfile += f"</{ABBR_STR}:ProvisionAgreement>"
     return outfile
 
