@@ -1161,7 +1161,7 @@ def __write_data_provider(
     else:
         # SDMX 2.1: Ref with attributes
         outfile += f"{add_indent(add_indent(indent))}<{REF} "
-        ref = parse_urn(data_provider)
+        ref = parse_short_item_urn(data_provider)
         outfile += f"{AGENCY_ID}={ref.agency!r} "
         outfile += f"{PAR_ID}={ref.id!r} "
         outfile += f"{PAR_VER}={ref.version!r} "
