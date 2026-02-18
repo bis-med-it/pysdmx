@@ -22,11 +22,19 @@ from pysdmx.model import (
     AgencyScheme,
     Codelist,
     ConceptScheme,
+    ConstraintAttachment,
     Contact,
+    CubeKeyValue,
+    CubeRegion,
+    CubeValue,
     CustomTypeScheme,
+    DataConstraint,
+    DataKey,
+    DataKeyValue,
     DataStructureDefinition,
     FromVtlMapping,
     ItemReference,
+    KeySet,
     NamePersonalisationScheme,
     ProvisionAgreement,
     Reference,
@@ -996,3 +1004,178 @@ def test_group_merge_multiple_common_columns(multiple_groups_path):
     pd.testing.assert_frame_equal(
         data, expected_data, check_like=True, check_dtype=False
     )
+
+
+def test_constraint_with_cube_region(samples_folder):
+    data_path = samples_folder / "constraint_cube.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert result is not None
+    assert len(result) == 1
+    constraint = result[0]
+    assert isinstance(constraint, DataConstraint)
+    assert constraint.id == "TEST_CONSTRAINT_CUBE"
+    assert constraint.agency == "TEST_AGENCY"
+    assert constraint.version == "1.0"
+    assert constraint.name == "Test Constraint with Cube Region"
+    assert constraint.description == "A test constraint with cube region"
+    # Attachment
+    att = constraint.constraint_attachment
+    assert isinstance(att, ConstraintAttachment)
+    assert att.dataflows == [
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
+    ]
+    # Cube Region
+    assert len(constraint.cube_regions) == 1
+    region = constraint.cube_regions[0]
+    assert isinstance(region, CubeRegion)
+    assert region.is_included is True
+    assert len(region.key_values) == 2
+    assert isinstance(region.key_values[0], CubeKeyValue)
+    assert region.key_values[0].id == "FREQ"
+    assert isinstance(region.key_values[0].values[0], CubeValue)
+    assert [v.value for v in region.key_values[0].values] == ["M", "Q"]
+    assert region.key_values[1].id == "REF_AREA"
+    assert [v.value for v in region.key_values[1].values] == ["US", "UK"]
+
+
+def test_constraint_with_keyset(samples_folder):
+    data_path = samples_folder / "constraint_keyset.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert result is not None
+    assert len(result) == 1
+    constraint = result[0]
+    assert isinstance(constraint, DataConstraint)
+    assert constraint.id == "TEST_CONSTRAINT_KEYSET"
+    assert constraint.name == "Test Constraint with Key Set"
+    # Attachment
+    att = constraint.constraint_attachment
+    assert isinstance(att, ConstraintAttachment)
+    assert att.dataflows == [
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
+    ]
+    # Key Set
+    assert len(constraint.key_sets) == 1
+    ks = constraint.key_sets[0]
+    assert isinstance(ks, KeySet)
+    assert ks.is_included is True
+    assert len(ks.keys) == 2
+    assert isinstance(ks.keys[0], DataKey)
+    assert isinstance(ks.keys[0].keys_values[0], DataKeyValue)
+    assert ks.keys[0].keys_values[0].id == "FREQ"
+    assert ks.keys[0].keys_values[0].value == "M"
+    assert ks.keys[0].keys_values[1].id == "REF_AREA"
+    assert ks.keys[0].keys_values[1].value == "US"
+    assert ks.keys[1].keys_values[0].id == "FREQ"
+    assert ks.keys[1].keys_values[0].value == "Q"
+    assert ks.keys[1].keys_values[1].id == "REF_AREA"
+    assert ks.keys[1].keys_values[1].value == "UK"
+
+
+def test_constraint_with_data_structure(samples_folder):
+    data_path = samples_folder / "constraint_datastructure.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert result is not None
+    assert len(result) == 1
+    constraint = result[0]
+    assert isinstance(constraint, DataConstraint)
+    assert constraint.id == "TEST_CONSTRAINT_DSD"
+    assert constraint.name == "Test Constraint with Data Structure"
+    # Attachment
+    att = constraint.constraint_attachment
+    assert isinstance(att, ConstraintAttachment)
+    assert att.data_structures == [
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "DataStructure=TEST_AGENCY:TEST_DSD(1.0)"
+    ]
+    # Cube Region
+    assert len(constraint.cube_regions) == 1
+    assert isinstance(constraint.cube_regions[0], CubeRegion)
+    assert constraint.cube_regions[0].is_included is True
+    assert constraint.cube_regions[0].key_values[0].id == "FREQ"
+    assert [
+        v.value for v in constraint.cube_regions[0].key_values[0].values
+    ] == ["A"]
+
+
+def test_constraint_with_provider(samples_folder):
+    data_path = samples_folder / "constraint_provider.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert result is not None
+    assert len(result) == 1
+    constraint = result[0]
+    assert isinstance(constraint, DataConstraint)
+    assert constraint.id == "TEST_CONSTRAINT_PROV"
+    assert constraint.name == "Test Constraint with Provider"
+    # Attachment
+    att = constraint.constraint_attachment
+    assert isinstance(att, ConstraintAttachment)
+    assert (
+        att.data_provider
+        == "DataProvider=TEST_AGENCY:DATA_PROVIDERS(1.0).PROVIDER_ID"
+    )
+    # Cube Region
+    assert len(constraint.cube_regions) == 1
+    assert isinstance(constraint.cube_regions[0], CubeRegion)
+    assert constraint.cube_regions[0].key_values[0].id == "FREQ"
+    assert [
+        v.value for v in constraint.cube_regions[0].key_values[0].values
+    ] == ["M"]
+
+
+def test_constraint_with_provision_agreement(samples_folder):
+    data_path = samples_folder / "constraint_provision_agreement.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert result is not None
+    assert len(result) == 1
+    constraint = result[0]
+    assert isinstance(constraint, DataConstraint)
+    assert constraint.id == "TEST_CONSTRAINT_PA"
+    assert constraint.name == "Test Constraint with Provision Agreement"
+    # Attachment
+    att = constraint.constraint_attachment
+    assert isinstance(att, ConstraintAttachment)
+    assert att.provision_agreements == [
+        "urn:sdmx:org.sdmx.infomodel.registry."
+        "ProvisionAgreement=TEST_AGENCY:TEST_PA(1.0)"
+    ]
+    # Cube Region
+    assert len(constraint.cube_regions) == 1
+    assert isinstance(constraint.cube_regions[0], CubeRegion)
+    assert constraint.cube_regions[0].key_values[0].id == "FREQ"
+    assert [
+        v.value for v in constraint.cube_regions[0].key_values[0].values
+    ] == ["A"]
+
+
+def test_constraint_without_attachment(samples_folder):
+    data_path = samples_folder / "constraint_no_attachment.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert result is not None
+    assert len(result) == 1
+    constraint = result[0]
+    assert isinstance(constraint, DataConstraint)
+    assert constraint.id == "TEST_CONSTRAINT_NO_ATTACH"
+    assert constraint.name == "Test Constraint without Attachment"
+    assert constraint.constraint_attachment is None
+    # Cube Region
+    assert len(constraint.cube_regions) == 1
+    assert isinstance(constraint.cube_regions[0], CubeRegion)
+    assert constraint.cube_regions[0].is_included is True
+    assert constraint.cube_regions[0].key_values[0].id == "FREQ"
+    assert [
+        v.value for v in constraint.cube_regions[0].key_values[0].values
+    ] == ["Q"]
