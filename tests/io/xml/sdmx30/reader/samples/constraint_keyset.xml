@@ -33,6 +33,13 @@
 							<str:Value>UK</str:Value>
 						</str:KeyValue>
 					</str:Key>
+					<str:Key>
+						<str:Component id="OBS_STATUS">
+							<str:Value>A</str:Value>
+						</str:Component>
+					</str:Key>
+					<str:Key>
+					</str:Key>
 				</str:DataKeySet>
 			</str:DataConstraint>
 		</str:DataConstraints>

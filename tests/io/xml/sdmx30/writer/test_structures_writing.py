@@ -925,6 +925,11 @@ def constraint_with_keyset():
                         valid_from=None,
                         valid_to=None,
                     ),
+                    DataKey(
+                        keys_values=[],
+                        valid_from=None,
+                        valid_to=None,
+                    ),
                 ],
                 is_included=True,
             ),

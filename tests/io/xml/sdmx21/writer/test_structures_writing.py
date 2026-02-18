@@ -828,6 +828,10 @@ def constraint_with_cube():
                 ],
                 is_included=True,
             ),
+            CubeRegion(
+                key_values=[],
+                is_included=True,
+            ),
         ],
         key_sets=[],
     )

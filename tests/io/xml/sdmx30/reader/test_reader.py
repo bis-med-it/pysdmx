@@ -763,7 +763,7 @@ def test_constraint_with_keyset(samples_folder):
     ks = constraint.key_sets[0]
     assert isinstance(ks, KeySet)
     assert ks.is_included is True
-    assert len(ks.keys) == 2
+    assert len(ks.keys) == 4
     assert isinstance(ks.keys[0], DataKey)
     assert isinstance(ks.keys[0].keys_values[0], DataKeyValue)
     assert ks.keys[0].keys_values[0].id == "FREQ"
@@ -774,6 +774,10 @@ def test_constraint_with_keyset(samples_folder):
     assert ks.keys[1].keys_values[0].value == "Q"
     assert ks.keys[1].keys_values[1].id == "REF_AREA"
     assert ks.keys[1].keys_values[1].value == "UK"
+    # Key with Component but no KeyValue
+    assert len(ks.keys[2].keys_values) == 0
+    # Empty Key
+    assert len(ks.keys[3].keys_values) == 0
 
 
 def test_constraint_with_data_structure(samples_folder):

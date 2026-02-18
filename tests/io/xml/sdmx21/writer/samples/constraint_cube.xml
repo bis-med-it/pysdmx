@@ -28,6 +28,8 @@
 						<com:Value>UK</com:Value>
 					</com:KeyValue>
 				</str:CubeRegion>
+				<str:CubeRegion include="true">
+				</str:CubeRegion>
 			</str:ContentConstraint>
 		</str:Constraints>
 	</mes:Structures>

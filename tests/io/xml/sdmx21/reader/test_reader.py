@@ -1028,7 +1028,7 @@ def test_constraint_with_cube_region(samples_folder):
         "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
     ]
     # Cube Region
-    assert len(constraint.cube_regions) == 1
+    assert len(constraint.cube_regions) == 3
     region = constraint.cube_regions[0]
     assert isinstance(region, CubeRegion)
     assert region.is_included is True
@@ -1039,6 +1039,16 @@ def test_constraint_with_cube_region(samples_folder):
     assert [v.value for v in region.key_values[0].values] == ["M", "Q"]
     assert region.key_values[1].id == "REF_AREA"
     assert [v.value for v in region.key_values[1].values] == ["US", "UK"]
+    # CubeRegion without include attr and no KeyValue
+    region2 = constraint.cube_regions[1]
+    assert isinstance(region2, CubeRegion)
+    assert region2.is_included is True
+    assert len(region2.key_values) == 0
+    # Empty CubeRegion
+    region3 = constraint.cube_regions[2]
+    assert isinstance(region3, CubeRegion)
+    assert region3.is_included is True
+    assert len(region3.key_values) == 0
 
 
 def test_constraint_with_keyset(samples_folder):

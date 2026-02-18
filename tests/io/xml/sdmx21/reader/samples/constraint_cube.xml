@@ -28,6 +28,13 @@
 						<com:Value>UK</com:Value>
 					</com:KeyValue>
 				</str:CubeRegion>
+				<str:CubeRegion>
+					<com:Attribute id="OBS_STATUS">
+						<com:Value>A</com:Value>
+					</com:Attribute>
+				</str:CubeRegion>
+				<str:CubeRegion>
+				</str:CubeRegion>
 			</str:ContentConstraint>
 		</str:Constraints>
 	</mes:Structures>
