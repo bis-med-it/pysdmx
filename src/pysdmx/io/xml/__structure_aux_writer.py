@@ -1155,21 +1155,21 @@ def __write_data_provider(
 ) -> str:
     """Writes a DataProvider reference to the XML file."""
     outfile = f"{add_indent(indent)}<{ABBR_STR}:DataProvider>"
+    # SDMX 3.0: URN
     if references_30:
-        # SDMX 3.0: URN
         outfile += data_provider
-    else:
-        # SDMX 2.1: Ref with attributes
-        outfile += f"{add_indent(add_indent(indent))}<{REF} "
-        ref = parse_short_item_urn(data_provider)
-        outfile += f"{AGENCY_ID}={ref.agency!r} "
-        outfile += f"{PAR_ID}={ref.id!r} "
-        outfile += f"{PAR_VER}={ref.version!r} "
-        outfile += f"{ID}={ref.item_id!r} "
-        outfile += f"{CLASS}={DATA_PROV!r}/>"
-        outfile += f"{add_indent(indent)}</{ABBR_STR}:DataProvider>"
+        outfile += f"</{ABBR_STR}:DataProvider>"
         return outfile
-    outfile += f"</{ABBR_STR}:DataProvider>"
+
+    # SDMX 2.1: Ref with attributes
+    outfile += f"{add_indent(add_indent(indent))}<{REF} "
+    ref = parse_short_item_urn(data_provider)
+    outfile += f"{AGENCY_ID}={ref.agency!r} "
+    outfile += f"{PAR_ID}={ref.id!r} "
+    outfile += f"{PAR_VER}={ref.version!r} "
+    outfile += f"{ID}={ref.item_id!r} "
+    outfile += f"{CLASS}={DATA_PROV!r}/>"
+    outfile += f"{add_indent(indent)}</{ABBR_STR}:DataProvider>"
     return outfile
 
 
@@ -1178,20 +1178,20 @@ def __write_data_structure(
 ) -> str:
     """Writes a DataStructure reference to the XML file."""
     outfile = f"{add_indent(indent)}<{ABBR_STR}:DataStructure>"
+    # SDMX 3.0: URN
     if references_30:
-        # SDMX 3.0: URN
         outfile += data_structure
-    else:
-        # SDMX 2.1: Ref with attributes
-        outfile += f"{add_indent(add_indent(indent))}<{REF} "
-        ref = parse_urn(data_structure)
-        outfile += f"{AGENCY_ID}={ref.agency!r} "
-        outfile += f"{ID}={ref.id!r} "
-        outfile += f"{VERSION}={ref.version!r} "
-        outfile += f"{CLASS}={DSD!r}/>"
-        outfile += f"{add_indent(indent)}</{ABBR_STR}:DataStructure>"
+        outfile += f"</{ABBR_STR}:DataStructure>"
         return outfile
-    outfile += f"</{ABBR_STR}:DataStructure>"
+
+    # SDMX 2.1: Ref with attributes
+    outfile += f"{add_indent(add_indent(indent))}<{REF} "
+    ref = parse_urn(data_structure)
+    outfile += f"{AGENCY_ID}={ref.agency!r} "
+    outfile += f"{ID}={ref.id!r} "
+    outfile += f"{VERSION}={ref.version!r} "
+    outfile += f"{CLASS}={DSD!r}/>"
+    outfile += f"{add_indent(indent)}</{ABBR_STR}:DataStructure>"
     return outfile
 
 
@@ -1200,20 +1200,20 @@ def __write_dataflow(
 ) -> str:
     """Writes a Dataflow reference to the XML file."""
     outfile = f"{add_indent(indent)}<{ABBR_STR}:Dataflow>"
+    # SDMX 3.0: URN
     if references_30:
-        # SDMX 3.0: URN
         outfile += dataflow
-    else:
-        # SDMX 2.1: Ref with attributes
-        outfile += f"{add_indent(add_indent(indent))}<{REF} "
-        ref = parse_urn(dataflow)
-        outfile += f"{AGENCY_ID}={ref.agency!r} "
-        outfile += f"{ID}={ref.id!r} "
-        outfile += f"{VERSION}={ref.version!r} "
-        outfile += f"{CLASS}={DFW!r}/>"
-        outfile += f"{add_indent(indent)}</{ABBR_STR}:Dataflow>"
+        outfile += f"</{ABBR_STR}:Dataflow>"
         return outfile
-    outfile += f"</{ABBR_STR}:Dataflow>"
+
+    # SDMX 2.1: Ref with attributes
+    outfile += f"{add_indent(add_indent(indent))}<{REF} "
+    ref = parse_urn(dataflow)
+    outfile += f"{AGENCY_ID}={ref.agency!r} "
+    outfile += f"{ID}={ref.id!r} "
+    outfile += f"{VERSION}={ref.version!r} "
+    outfile += f"{CLASS}={DFW!r}/>"
+    outfile += f"{add_indent(indent)}</{ABBR_STR}:Dataflow>"
     return outfile
 
 
@@ -1222,19 +1222,19 @@ def __write_provision_agreement(
 ) -> str:
     """Writes a ProvisionAgreement reference to the XML file."""
     outfile = f"{add_indent(indent)}<{ABBR_STR}:ProvisionAgreement>"
+    # SDMX 3.0: URN
     if references_30:
-        # SDMX 3.0: URN
         outfile += provision_agreement
-    else:
-        # SDMX 2.1: Ref with attributes
-        outfile += f"{add_indent(add_indent(indent))}<{REF} "
-        ref = parse_urn(provision_agreement)
-        outfile += f"{AGENCY_ID}={ref.agency!r} "
-        outfile += f"{ID}={ref.id!r} "
-        outfile += f"{VERSION}={ref.version!r}/>"
-        outfile += f"{add_indent(indent)}</{ABBR_STR}:ProvisionAgreement>"
+        outfile += f"</{ABBR_STR}:ProvisionAgreement>"
         return outfile
-    outfile += f"</{ABBR_STR}:ProvisionAgreement>"
+
+    # SDMX 2.1: Ref with attributes
+    outfile += f"{add_indent(add_indent(indent))}<{REF} "
+    ref = parse_urn(provision_agreement)
+    outfile += f"{AGENCY_ID}={ref.agency!r} "
+    outfile += f"{ID}={ref.id!r} "
+    outfile += f"{VERSION}={ref.version!r}/>"
+    outfile += f"{add_indent(indent)}</{ABBR_STR}:ProvisionAgreement>"
     return outfile
 
 
