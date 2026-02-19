@@ -1,0 +1,157 @@
+{
+    "meta": {
+        "id": "IREF697392",
+        "test": false,
+        "schema": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2026-02-13T08:02:15Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "5B0_DEV"
+        }
+    },
+    "data": {
+        "conceptSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "conceptscheme",
+                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=TEST:NM_DSD_CS(1.0)"
+                    }
+                ],
+                "id": "NM_DSD_CS",
+                "name": "Test concepts",
+                "names": {
+                    "en": "Test concepts"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "isPartial": true,
+                "concepts": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:NM_DSD_CS(1.0).CONTRACT_CODE"
+                            }
+                        ],
+                        "id": "CONTRACT_CODE",
+                        "name": "Contract Code",
+                        "names": {
+                            "en": "Contract Code"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:NM_DSD_CS(1.0).MIC"
+                            }
+                        ],
+                        "id": "MIC",
+                        "name": "MIC",
+                        "names": {
+                            "en": "MIC"
+                        }
+                    }
+                ]
+            }
+        ],
+        "dataStructures": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "datastructure",
+                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:NM_DSD(1.0)"
+                    }
+                ],
+                "id": "NM_DSD",
+                "name": "Test Schema",
+                "names": {
+                    "en": "Test Schema"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "dataStructureComponents": {
+                    "attributeList": {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "attributedescriptor",
+                                "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.AttributeDescriptor=TEST:NM_DSD(1.0).AttributeDescriptor"
+                            }
+                        ],
+                        "id": "AttributeDescriptor",
+                        "attributes": [
+                            {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "observation": {}
+                                },
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:NM_DSD(1.0).MIC"
+                                    }
+                                ],
+                                "id": "MIC",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:NM_DSD_CS(1.0).MIC"
+                            }
+                        ]
+                    },
+                    "dimensionList": {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "dimensiondescriptor",
+                                "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=TEST:NM_DSD(1.0).DimensionDescriptor"
+                            }
+                        ],
+                        "id": "DimensionDescriptor",
+                        "dimensions": [
+                            {
+                                "position": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=TEST:NM_DSD(1.0).CONTRACT_CODE"
+                                    }
+                                ],
+                                "id": "CONTRACT_CODE",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:NM_DSD_CS(1.0).CONTRACT_CODE"
+                            }
+                        ]
+                    },
+                    "measureList": {}
+                }
+            }
+        ]
+    }
+}

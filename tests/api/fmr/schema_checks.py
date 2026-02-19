@@ -80,6 +80,30 @@ def check_schema(
     ]
 
 
+def check_keyset_schema(
+    mock,
+    fmr: RegistryClient,
+    query,
+    hca_query,
+    body,
+    hca_body,
+):
+    """get_schema() should return a schema."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    vc = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0")
+
+    assert len(mock.calls) == 2  # We fetch hierarchies too in this case
+
+    assert isinstance(vc, Schema)
+    assert len(vc.keys) == 2
+    for k in vc.keys:
+        assert k in ["*.*.*.*.F.L.A.A.TO1.A.*", "*.*.*.*.F.L.G.A.TO1.A.*"]
+
+
 def check_no_td(mock, fmr: RegistryClient, query, hca_query, body, hca_body):
     """Not having a time dimension works fine."""
     mock.get(hca_query).mock(

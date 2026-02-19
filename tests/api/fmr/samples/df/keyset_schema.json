@@ -1,0 +1,1937 @@
+{
+    "meta": {
+        "id": "IREF909102",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+        "prepared": "2023-07-31T08:08:32Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "FusionRegistry"
+        },
+        "links": [
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS:CBS_CPC(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS.CBS:CBS_CONSTRAINTS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CL_AVAILABILITY(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CBS_BASIS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_COLLECTION(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CONF_STATUS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CURRENCY_3POS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DECIMALS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ISSUE_MAT(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_INSTR(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_POSITION(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_SECTOR(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OBS_STATUS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ORG_VISIBILITY(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_STOCK_FLOW(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_TIME_FORMAT(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_UNIT_MULT(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS:STANDALONE_CONCEPT_SCHEME(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS:BIS_CBS(1.0)"
+            }
+        ]
+    },
+    "data": {
+        "agencySchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "agencyscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)"
+                    }
+                ],
+                "id": "AGENCIES",
+                "name": "SDMX Agency Scheme",
+                "names": {
+                    "en": "SDMX Agency Scheme"
+                },
+                "version": "1.0",
+                "agencyID": "SDMX",
+                "isExternalReference": false,
+                "isPartial": true,
+                "agencies": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "agency",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).BIS"
+                            }
+                        ],
+                        "id": "BIS",
+                        "annotations": [
+                            {
+                                "title": "xx000000",
+                                "type": "contact_uid"
+                            }
+                        ],
+                        "name": "Bank for International Settlements",
+                        "names": {
+                            "en": "Bank for International Settlements"
+                        },
+                        "description": "Bank for International Settlements",
+                        "descriptions": {
+                            "en": "Bank for International Settlements"
+                        }
+                    }
+                ]
+            }
+        ],
+        "valuelists": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CL_AVAILABILITY(1.0)"
+                    }
+                ],
+                "id": "CL_AVAILABILITY",
+                "name": "Availability",
+                "names": {
+                    "en": "Availability"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": false,
+                "valueItems": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).A"
+                            }
+                        ],
+                        "id": "A",
+                        "name": "All users",
+                        "names": {
+                            "en": "All users"
+                        }
+                    }
+                ]
+            }
+        ],
+        "codelists": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
+                    }
+                ],
+                "id": "CL_BIS_IF_REF_AREA",
+                "name": "Reference Area Code for BIS-IFS",
+                "names": {
+                    "en": "Reference Area Code for BIS-IFS"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).1C"
+                            }
+                        ],
+                        "id": "1C",
+                        "name": "International organisations",
+                        "names": {
+                            "en": "International organisations"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CBS_BASIS(1.0)"
+                    }
+                ],
+                "id": "CL_CBS_BASIS",
+                "name": "CBS basis",
+                "names": {
+                    "en": "CBS basis"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CBS_BASIS(1.0).F"
+                            }
+                        ],
+                        "id": "F",
+                        "name": "Immediate counterparty basis",
+                        "names": {
+                            "en": "Immediate counterparty basis"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_COLLECTION(1.0)"
+                    }
+                ],
+                "id": "CL_COLLECTION",
+                "name": "Collection",
+                "names": {
+                    "en": "Collection"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_COLLECTION(1.0).E"
+                            }
+                        ],
+                        "id": "E",
+                        "name": "End of period",
+                        "names": {
+                            "en": "End of period"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CONF_STATUS(1.0)"
+                    }
+                ],
+                "id": "CL_CONF_STATUS",
+                "name": "Observation confidentiality code list",
+                "names": {
+                    "en": "Observation confidentiality code list"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CONF_STATUS(1.0).F"
+                            }
+                        ],
+                        "id": "F",
+                        "name": "Free",
+                        "names": {
+                            "en": "Free"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CURRENCY_3POS(1.0)"
+                    }
+                ],
+                "id": "CL_CURRENCY_3POS",
+                "name": "Currency",
+                "names": {
+                    "en": "Currency"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CURRENCY_3POS(1.0).FC1"
+                            }
+                        ],
+                        "id": "FC1",
+                        "name": "Foreign currency",
+                        "names": {
+                            "en": "Foreign currency"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DECIMALS(1.0)"
+                    }
+                ],
+                "id": "CL_DECIMALS",
+                "name": "Decimals codelist (BIS, ECB)",
+                "names": {
+                    "en": "Decimals codelist (BIS, ECB)"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_DECIMALS(1.0).6"
+                            }
+                        ],
+                        "id": "6",
+                        "name": "Six",
+                        "names": {
+                            "en": "Six"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+                    }
+                ],
+                "id": "CL_FREQ",
+                "name": "Code list for Frequency (FREQ)",
+                "names": {
+                    "en": "Code list for Frequency (FREQ)"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).Q"
+                            }
+                        ],
+                        "id": "Q",
+                        "name": "Quarterly",
+                        "names": {
+                            "en": "Quarterly"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ISSUE_MAT(1.0)"
+                    }
+                ],
+                "id": "CL_ISSUE_MAT",
+                "name": "Issue maturity code list",
+                "names": {
+                    "en": "Issue maturity code list"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ISSUE_MAT(1.0).A"
+                            }
+                        ],
+                        "id": "A",
+                        "name": "Total (all maturities)",
+                        "names": {
+                            "en": "Total (all maturities)"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_INSTR(1.0)"
+                    }
+                ],
+                "id": "CL_L_INSTR",
+                "name": "Instrument",
+                "names": {
+                    "en": "Instrument"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_INSTR(1.0).A"
+                            }
+                        ],
+                        "id": "A",
+                        "name": "All instruments",
+                        "names": {
+                            "en": "All instruments"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_POSITION(1.0)"
+                    }
+                ],
+                "id": "CL_L_POSITION",
+                "name": "Position type",
+                "names": {
+                    "en": "Position type"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).B"
+                            }
+                        ],
+                        "id": "B",
+                        "name": "Local claims",
+                        "names": {
+                            "en": "Local claims"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_SECTOR(1.0)"
+                    }
+                ],
+                "id": "CL_L_SECTOR",
+                "name": "Counterparty Sector",
+                "names": {
+                    "en": "Counterparty Sector"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_SECTOR(1.0).A"
+                            }
+                        ],
+                        "id": "A",
+                        "name": "All sectors",
+                        "names": {
+                            "en": "All sectors"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OBS_STATUS(1.0)"
+                    }
+                ],
+                "id": "CL_OBS_STATUS",
+                "name": "Observation status codelist (BIS, ECB, Eurostat-BoP)",
+                "names": {
+                    "en": "Observation status codelist (BIS, ECB, Eurostat-BoP)"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": false,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).A"
+                            }
+                        ],
+                        "id": "A",
+                        "name": "Normal value",
+                        "names": {
+                            "en": "Normal value"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ORG_VISIBILITY(1.0)"
+                    }
+                ],
+                "id": "CL_ORG_VISIBILITY",
+                "name": "Visibility",
+                "names": {
+                    "en": "Visibility"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": false,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ORG_VISIBILITY(1.0).A"
+                            }
+                        ],
+                        "id": "A",
+                        "name": "CBs, ESRB and IMF",
+                        "names": {
+                            "en": "CBs, ESRB and IMF"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_STOCK_FLOW(1.0)"
+                    }
+                ],
+                "id": "CL_STOCK_FLOW",
+                "name": "Stock, flow",
+                "names": {
+                    "en": "Stock, flow"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_STOCK_FLOW(1.0).S"
+                            }
+                        ],
+                        "id": "S",
+                        "name": "Amounts outstanding / Stocks",
+                        "names": {
+                            "en": "Amounts outstanding / Stocks"
+                        }
+                    }
+                ]
+            },
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_UNIT_MULT(1.0)"
+                    }
+                ],
+                "id": "CL_UNIT_MULT",
+                "name": "Unit Multiplier",
+                "names": {
+                    "en": "Unit Multiplier"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_UNIT_MULT(1.0).6"
+                            }
+                        ],
+                        "id": "6",
+                        "name": "Millions",
+                        "names": {
+                            "en": "Millions"
+                        }
+                    }
+                ]
+            }
+        ],
+        "conceptSchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "conceptscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS:STANDALONE_CONCEPT_SCHEME(1.0)"
+                    }
+                ],
+                "id": "STANDALONE_CONCEPT_SCHEME",
+                "name": "Default Scheme",
+                "names": {
+                    "en": "Default Scheme"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "concepts": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_FORMAT"
+                            }
+                        ],
+                        "id": "TIME_FORMAT",
+                        "name": "Time Format",
+                        "names": {
+                            "en": "Time Format"
+                        },
+                        "coreRepresentation": {
+                            "enumerationFormat": {
+                                "maxLength": 3,
+                                "minLength": 3,
+                                "dataType": "String"
+                            },
+                            "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_TIME_FORMAT(1.0)"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).AVAILABILITY"
+                            }
+                        ],
+                        "id": "AVAILABILITY",
+                        "name": "Availability",
+                        "names": {
+                            "en": "Availability"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BANK_TYPE"
+                            }
+                        ],
+                        "id": "CBS_BANK_TYPE",
+                        "name": "CBS bank type",
+                        "names": {
+                            "en": "CBS bank type"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BASIS"
+                            }
+                        ],
+                        "id": "CBS_BASIS",
+                        "name": "CBS reporting basis",
+                        "names": {
+                            "en": "CBS reporting basis"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).COLLECTION"
+                            }
+                        ],
+                        "id": "COLLECTION",
+                        "name": "Collection Indicator",
+                        "names": {
+                            "en": "Collection Indicator"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CURR_TYPE_BOOK"
+                            }
+                        ],
+                        "id": "CURR_TYPE_BOOK",
+                        "name": "Currency type of booking location",
+                        "names": {
+                            "en": "Currency type of booking location"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DECIMALS"
+                            }
+                        ],
+                        "id": "DECIMALS",
+                        "name": "Decimals",
+                        "names": {
+                            "en": "Decimals"
+                        },
+                        "coreRepresentation": {
+                            "enumerationFormat": {
+                                "maxLength": 2,
+                                "minLength": 1,
+                                "dataType": "BigInteger"
+                            },
+                            "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DECIMALS(1.0)"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).FREQ"
+                            }
+                        ],
+                        "id": "FREQ",
+                        "name": "Frequency",
+                        "names": {
+                            "en": "Frequency"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_COUNTRY"
+                            }
+                        ],
+                        "id": "L_CP_COUNTRY",
+                        "name": "Counterparty country",
+                        "names": {
+                            "en": "Counterparty country"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_SECTOR"
+                            }
+                        ],
+                        "id": "L_CP_SECTOR",
+                        "name": "Counterparty sector",
+                        "names": {
+                            "en": "Counterparty sector"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_INSTR"
+                            }
+                        ],
+                        "id": "L_INSTR",
+                        "name": "Type of instruments",
+                        "names": {
+                            "en": "Type of instruments"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_MEASURE"
+                            }
+                        ],
+                        "id": "L_MEASURE",
+                        "name": "Measure",
+                        "names": {
+                            "en": "Measure"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_POSITION"
+                            }
+                        ],
+                        "id": "L_POSITION",
+                        "name": "Balance sheet position",
+                        "names": {
+                            "en": "Balance sheet position"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_REP_CTY"
+                            }
+                        ],
+                        "id": "L_REP_CTY",
+                        "name": "Reporting country",
+                        "names": {
+                            "en": "Reporting country"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_CONF"
+                            }
+                        ],
+                        "id": "OBS_CONF",
+                        "name": "Observation Confidentiality",
+                        "names": {
+                            "en": "Observation Confidentiality"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_PRE_BREAK"
+                            }
+                        ],
+                        "id": "OBS_PRE_BREAK",
+                        "name": "Pre-Break Observation",
+                        "names": {
+                            "en": "Pre-Break Observation"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_STATUS"
+                            }
+                        ],
+                        "id": "OBS_STATUS",
+                        "name": "Observation Status",
+                        "names": {
+                            "en": "Observation Status"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_VALUE"
+                            }
+                        ],
+                        "id": "OBS_VALUE",
+                        "name": "Observation Value",
+                        "names": {
+                            "en": "Observation Value"
+                        },
+                        "description": "Description for a measure",
+                        "descriptions": {
+                            "en": "Description for a measure"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).ORG_VISIBILITY"
+                            }
+                        ],
+                        "id": "ORG_VISIBILITY",
+                        "name": "Organisation visibility",
+                        "names": {
+                            "en": "Organisation visibility"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).REM_MATURITY"
+                            }
+                        ],
+                        "id": "REM_MATURITY",
+                        "name": "Remaining maturity",
+                        "names": {
+                            "en": "Remaining maturity"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_PERIOD"
+                            }
+                        ],
+                        "id": "TIME_PERIOD",
+                        "name": "Time period or range",
+                        "names": {
+                            "en": "Time period or range"
+                        },
+                        "description": "Description for a dimension",
+                        "descriptions": {
+                            "en": "Description for a dimension"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TITLE_GRP"
+                            }
+                        ],
+                        "id": "TITLE_GRP",
+                        "name": "Title",
+                        "names": {
+                            "en": "Title"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MEASURE"
+                            }
+                        ],
+                        "id": "UNIT_MEASURE",
+                        "name": "Unit of measure",
+                        "names": {
+                            "en": "Unit of measure"
+                        },
+                        "description": "Description for an attribute",
+                        "descriptions": {
+                            "en": "Description for an attribute"
+                        }
+                    },
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "concept",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MULT"
+                            }
+                        ],
+                        "id": "UNIT_MULT",
+                        "name": "Unit Multiplier",
+                        "names": {
+                            "en": "Unit Multiplier"
+                        }
+                    }
+                ]
+            }
+        ],
+        "dataStructures": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "datastructure",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)"
+                    },
+                    {
+                        "rel": "metadata",
+                        "href": "https://mms-med-fmr-dev.apps.ocp-dev.opz.bisinfo.org/sdmx/v2/metadata/metadataset/BIS.MEDIT/STI_BIS_CBS/1.0",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS.MEDIT:STI_BIS_CBS(1.0)"
+                    }
+                ],
+                "id": "BIS_CBS",
+                "name": "Consolidated Banking Statistics",
+                "names": {
+                    "en": "Consolidated Banking Statistics"
+                },
+                "description": "This dataflow is associated to the BIS_CBS DSD. It implements the data requirement laid out in the July 2019 IBS Reporting Guidelines | PDF version: BIS_CBS_V2020.02.19",
+                "descriptions": {
+                    "en": "This dataflow is associated to the BIS_CBS DSD. It implements the data requirement laid out in the July 2019 IBS Reporting Guidelines | PDF version: BIS_CBS_V2020.02.19"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "dataStructureComponents": {
+                    "attributeList": {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "attributedescriptor",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.AttributeDescriptor=BIS:BIS_CBS(1.0).AttributeDescriptor"
+                            }
+                        ],
+                        "id": "AttributeDescriptor",
+                        "attributes": [
+                            {
+                                "usage": "mandatory",
+                                "attributeRelationship": {
+                                    "observation": {}
+                                },
+                                "measureRelationship": [
+                                    "OBS_VALUE"
+                                ],
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).OBS_STATUS"
+                                    }
+                                ],
+                                "id": "OBS_STATUS",
+                                "localRepresentation": {
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OBS_STATUS(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_STATUS"
+                            },
+                            {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "observation": {}
+                                },
+                                "measureRelationship": [
+                                    "OBS_VALUE"
+                                ],
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).OBS_CONF"
+                                    }
+                                ],
+                                "id": "OBS_CONF",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CONF_STATUS(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_CONF"
+                            },
+                            {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "observation": {}
+                                },
+                                "measureRelationship": [
+                                    "OBS_VALUE"
+                                ],
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).OBS_PRE_BREAK"
+                                    }
+                                ],
+                                "id": "OBS_PRE_BREAK",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_PRE_BREAK"
+                            },
+                            {
+                                "usage": "mandatory",
+                                "attributeRelationship": {
+                                    "group": "Sibling"
+                                },
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).AVAILABILITY"
+                                    }
+                                ],
+                                "id": "AVAILABILITY",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CL_AVAILABILITY(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).AVAILABILITY"
+                            },
+                            {
+                                "usage": "mandatory",
+                                "attributeRelationship": {
+                                    "dimensions": [
+                                        "FREQ",
+                                        "L_MEASURE",
+                                        "L_REP_CTY",
+                                        "CBS_BANK_TYPE",
+                                        "CBS_BASIS",
+                                        "L_POSITION",
+                                        "L_INSTR",
+                                        "REM_MATURITY",
+                                        "CURR_TYPE_BOOK",
+                                        "L_CP_SECTOR",
+                                        "L_CP_COUNTRY"
+                                    ]
+                                },
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).COLLECTION"
+                                    }
+                                ],
+                                "id": "COLLECTION",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_COLLECTION(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).COLLECTION"
+                            },
+                            {
+                                "usage": "mandatory",
+                                "attributeRelationship": {
+                                    "dataflow": {}
+                                },
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).DECIMALS"
+                                    }
+                                ],
+                                "id": "DECIMALS",
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DECIMALS"
+                            },
+                            {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "dimensions": [
+                                        "FREQ",
+                                        "L_MEASURE",
+                                        "L_REP_CTY",
+                                        "CBS_BANK_TYPE",
+                                        "CBS_BASIS",
+                                        "L_POSITION",
+                                        "L_INSTR",
+                                        "REM_MATURITY",
+                                        "CURR_TYPE_BOOK",
+                                        "L_CP_SECTOR",
+                                        "L_CP_COUNTRY"
+                                    ]
+                                },
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).ORG_VISIBILITY"
+                                    }
+                                ],
+                                "id": "ORG_VISIBILITY",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ORG_VISIBILITY(1.0)",
+                                    "minOccurs": 1,
+                                    "maxOccurs": 10
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).ORG_VISIBILITY"
+                            },
+                            {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "group": "Sibling"
+                                },
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).TITLE_GRP"
+                                    }
+                                ],
+                                "id": "TITLE_GRP",
+                                "localRepresentation": {
+                                    "format": {
+                                        "maxLength": 1,
+                                        "minLength": 250,
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TITLE_GRP"
+                            },
+                            {
+                                "usage": "mandatory",
+                                "attributeRelationship": {
+                                    "dataflow": {}
+                                },
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).UNIT_MEASURE"
+                                    }
+                                ],
+                                "id": "UNIT_MEASURE",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 3,
+                                        "minLength": 3,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CURRENCY_3POS(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MEASURE"
+                            },
+                            {
+                                "usage": "mandatory",
+                                "attributeRelationship": {
+                                    "dataflow": {}
+                                },
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).UNIT_MULT"
+                                    }
+                                ],
+                                "id": "UNIT_MULT",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 2,
+                                        "minLength": 1,
+                                        "minValue": -15,
+                                        "maxValue": 15,
+                                        "dataType": "Integer"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_UNIT_MULT(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MULT"
+                            }
+                        ]
+                    },
+                    "dimensionList": {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "dimensiondescriptor",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=BIS:BIS_CBS(1.0).DimensionDescriptor"
+                            }
+                        ],
+                        "id": "DimensionDescriptor",
+                        "dimensions": [
+                            {
+                                "position": 1,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).FREQ"
+                                    }
+                                ],
+                                "id": "FREQ",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).FREQ"
+                            },
+                            {
+                                "position": 2,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_MEASURE"
+                                    }
+                                ],
+                                "id": "L_MEASURE",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_STOCK_FLOW(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_MEASURE"
+                            },
+                            {
+                                "position": 3,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_REP_CTY"
+                                    }
+                                ],
+                                "id": "L_REP_CTY",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 2,
+                                        "minLength": 2,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_REP_CTY"
+                            },
+                            {
+                                "position": 4,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).CBS_BANK_TYPE"
+                                    }
+                                ],
+                                "id": "CBS_BANK_TYPE",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 2,
+                                        "minLength": 2,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BANK_TYPE"
+                            },
+                            {
+                                "position": 5,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).CBS_BASIS"
+                                    }
+                                ],
+                                "id": "CBS_BASIS",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CBS_BASIS(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BASIS"
+                            },
+                            {
+                                "position": 6,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_POSITION"
+                                    }
+                                ],
+                                "id": "L_POSITION",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_POSITION(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_POSITION"
+                            },
+                            {
+                                "position": 7,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_INSTR"
+                                    }
+                                ],
+                                "id": "L_INSTR",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_INSTR(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_INSTR"
+                            },
+                            {
+                                "position": 8,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).REM_MATURITY"
+                                    }
+                                ],
+                                "id": "REM_MATURITY",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ISSUE_MAT(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).REM_MATURITY"
+                            },
+                            {
+                                "position": 9,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).CURR_TYPE_BOOK"
+                                    }
+                                ],
+                                "id": "CURR_TYPE_BOOK",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 3,
+                                        "minLength": 3,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CURRENCY_3POS(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CURR_TYPE_BOOK"
+                            },
+                            {
+                                "position": 10,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_CP_SECTOR"
+                                    }
+                                ],
+                                "id": "L_CP_SECTOR",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_SECTOR(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_SECTOR"
+                            },
+                            {
+                                "position": 11,
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_CP_COUNTRY"
+                                    }
+                                ],
+                                "id": "L_CP_COUNTRY",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 2,
+                                        "minLength": 2,
+                                        "dataType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_COUNTRY"
+                            }
+                        ],
+                        "timeDimension": {
+                            "links": [
+                                {
+                                    "rel": "self",
+                                    "type": "timedimension",
+                                    "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                    "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=BIS:BIS_CBS(1.0).TIME_PERIOD"
+                                }
+                            ],
+                            "id": "TIME_PERIOD",
+                            "localRepresentation": {
+                                "format": {
+                                    "dataType": "ObservationalTimePeriod"
+                                }
+                            },
+                            "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_PERIOD"
+                        }
+                    },
+                    "groups": [
+                        {
+                            "links": [
+                                {
+                                    "rel": "self",
+                                    "type": "groupdimensiondescriptor",
+                                    "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                    "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.GroupDimensionDescriptor=BIS:BIS_CBS(1.0).Sibling"
+                                }
+                            ],
+                            "id": "Sibling",
+                            "groupDimensions": [
+                                "L_MEASURE",
+                                "L_REP_CTY",
+                                "CBS_BANK_TYPE",
+                                "CBS_BASIS",
+                                "L_POSITION",
+                                "L_INSTR",
+                                "REM_MATURITY",
+                                "CURR_TYPE_BOOK",
+                                "L_CP_SECTOR",
+                                "L_CP_COUNTRY"
+                            ]
+                        }
+                    ],
+                    "measureList": {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "measuredescriptor",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.MeasureDescriptor=BIS:BIS_CBS(1.0).MeasureDescriptor"
+                            }
+                        ],
+                        "id": "MeasureDescriptor",
+                        "measures": [
+                            {
+                                "usage": "mandatory",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "primarymeasure",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Measure=BIS:BIS_CBS(1.0).OBS_VALUE"
+                                    }
+                                ],
+                                "id": "OBS_VALUE",
+                                "localRepresentation": {
+                                    "format": {
+                                        "maxLength": 15,
+                                        "minLength": 1,
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_VALUE"
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "dataConstraints": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "dataconstraint",
+                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS.CBS:ASSETSLIABILITIES(1.0)"
+                    }
+                ],
+                "id": "ASSETSLIABILITIES",
+                "name": "Constraints for the CBS Assets and Liabilities dataflow",
+                "names": {
+                    "en": "Constraints for the CBS Assets and Liabilities dataflow"
+                },
+                "version": "1.0",
+                "agencyID": "BIS.CBS",
+                "isExternalReference": false,
+                "validFrom": "2013-10-01T00:00:00",
+                "role": "Allowed",
+                "constraintAttachment": {
+                    "dataflows": [
+                        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS_AL(1.0)"
+                    ]
+                },
+                "dataKeySets": [
+                    {
+                        "isIncluded": true,
+                        "keys": [
+                            {
+                                "keyValues": [
+                                    {
+                                        "id": "CBS_BASIS",
+                                        "value": "F"
+                                    },
+                                    {
+                                        "id": "L_POSITION",
+                                        "value": "L"
+                                    },
+                                    {
+                                        "id": "L_INSTR",
+                                        "value": "A"
+                                    },
+                                    {
+                                        "id": "REM_MATURITY",
+                                        "value": "A"
+                                    },
+                                    {
+                                        "id": "CURR_TYPE_BOOK",
+                                        "value": "TO1"
+                                    },
+                                    {
+                                        "id": "L_CP_SECTOR",
+                                        "value": "A"
+                                    }
+                                ],
+                                "components": [
+                                    {
+                                        "id": "CBS_BASIS",
+                                        "values": [
+                                            {
+                                                "value": "F"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "L_POSITION",
+                                        "values": [
+                                            {
+                                                "value": "L"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "L_INSTR",
+                                        "values": [
+                                            {
+                                                "value": "A"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "REM_MATURITY",
+                                        "values": [
+                                            {
+                                                "value": "A"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "CURR_TYPE_BOOK",
+                                        "values": [
+                                            {
+                                                "value": "TO1"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "L_CP_SECTOR",
+                                        "values": [
+                                            {
+                                                "value": "A"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "keyValues": [
+                                    {
+                                        "id": "CBS_BASIS",
+                                        "value": "F"
+                                    },
+                                    {
+                                        "id": "L_POSITION",
+                                        "value": "L"
+                                    },
+                                    {
+                                        "id": "L_INSTR",
+                                        "value": "G"
+                                    },
+                                    {
+                                        "id": "REM_MATURITY",
+                                        "value": "A"
+                                    },
+                                    {
+                                        "id": "CURR_TYPE_BOOK",
+                                        "value": "TO1"
+                                    },
+                                    {
+                                        "id": "L_CP_SECTOR",
+                                        "value": "A"
+                                    }
+                                ],
+                                "components": [
+                                    {
+                                        "id": "CBS_BASIS",
+                                        "values": [
+                                            {
+                                                "value": "F"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "L_POSITION",
+                                        "values": [
+                                            {
+                                                "value": "L"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "L_INSTR",
+                                        "values": [
+                                            {
+                                                "value": "G"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "REM_MATURITY",
+                                        "values": [
+                                            {
+                                                "value": "A"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "CURR_TYPE_BOOK",
+                                        "values": [
+                                            {
+                                                "value": "TO1"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": "L_CP_SECTOR",
+                                        "values": [
+                                            {
+                                                "value": "A"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

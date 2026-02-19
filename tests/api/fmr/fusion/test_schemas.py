@@ -122,6 +122,12 @@ def body():
 
 
 @pytest.fixture
+def keyset_body():
+    with open("tests/api/fmr/samples/df/keyset_schema.fusion.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture
 def body_from_pra():
     with open("tests/api/fmr/samples/pra/schema.fusion.json", "rb") as f:
         return f.read()
@@ -205,6 +211,15 @@ def test_returns_validation_context(
     """get_validation_context() should return a schema."""
     checks.check_schema(
         respx_mock, fmr, query, no_hca_query, body, no_hca_body, True
+    )
+
+
+def test_returns_keyset_context(
+    respx_mock, fmr, query, no_hca_query, keyset_body, no_hca_body
+):
+    """get_validation_context() should return a schema."""
+    checks.check_keyset_schema(
+        respx_mock, fmr, query, no_hca_query, keyset_body, no_hca_body
     )
 
 

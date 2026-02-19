@@ -90,6 +90,8 @@ class FusionAttribute(Struct, frozen=True):
                 return "O"
             else:
                 return ",".join(self.measureReferences)
+        elif self.attachmentLevel == "OBSERVATION":
+            return "O"
         elif self.attachmentLevel == "DATA_SET":
             return "D"
         elif self.attachmentLevel == "GROUP":
@@ -163,6 +165,7 @@ class FusionDimension(Struct, frozen=True):
     id: str
     concept: str
     representation: Optional[FusionRepresentation] = None
+    isTimeDimension: bool = False
 
     def to_model(
         self,
