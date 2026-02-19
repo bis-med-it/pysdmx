@@ -511,7 +511,7 @@ class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     name: Optional[str] = None
     groups: Optional[Sequence[Group]] = None
     keys: Optional[Sequence[str]] = None
-    excluded_keys: Optional[Sequence[str]] = None 
+    excluded_keys: Optional[Sequence[str]] = None
 
     def __str__(self) -> str:
         """Custom string representation without the class name."""
