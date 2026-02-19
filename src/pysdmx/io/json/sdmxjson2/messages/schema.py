@@ -48,16 +48,13 @@ class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
     def __extract_keys_dict(
         self, keysets: Sequence[JsonKeySet], included: bool = True
     ) -> Sequence[Dict[str, str]]:
-        inc_cond = lambda ks: ks.isIncluded
-        exc_cond = lambda ks: not ks.isIncluded
-        cond = inc_cond if included else exc_cond
         keys = []
         for ks in keysets:
             keys.extend(
                 [
                     {kv.id: kv.value for kv in k.keyValues}
                     for k in ks.keys
-                    if cond(ks)
+                    if (ks.isIncluded if included else not ks.isIncluded)
                 ]
             )
         return keys
