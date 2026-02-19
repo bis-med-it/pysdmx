@@ -682,4 +682,4 @@ def test_series_format_with_series_no_obs(header):
     assert "<Series " in result
     assert "<Obs " in result
     # Series B should be "selfclosed" (no observations)
-    assert "/>" in result
+    assert '<Series DIM1="B" ATT1="b1" />' in result
