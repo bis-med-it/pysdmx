@@ -28,7 +28,12 @@ class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
 
     def to_model(
         self,
-    ) -> Tuple[Components, Optional[Sequence[Group]], Optional[Sequence[str]]]:
+    ) -> Tuple[
+        Components,
+        Optional[Sequence[Group]],
+        Optional[Sequence[str]],
+        Optional[Sequence[str]],
+    ]:
         """Returns the requested schema."""
         comps = self.dataStructures[0].dataStructureComponents
         comps, grps = comps.to_model(  # type: ignore[union-attr,assignment]
@@ -37,16 +42,23 @@ class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
             self.valuelists,
             self.dataConstraints,
         )
-        keys = self.__process_keys()
-        return comps, grps, keys  # type: ignore[return-value]
+        inc, exc = self.__process_keys()
+        return comps, grps, inc if inc else None, exc if exc else None  # type: ignore[return-value]
 
     def __extract_keys_dict(
-        self, keysets: Sequence[JsonKeySet]
+        self, keysets: Sequence[JsonKeySet], included: bool = True
     ) -> Sequence[Dict[str, str]]:
+        inc_cond = lambda ks: ks.isIncluded
+        exc_cond = lambda ks: not ks.isIncluded
+        cond = inc_cond if included else exc_cond
         keys = []
         for ks in keysets:
             keys.extend(
-                [{kv.id: kv.value for kv in k.keyValues} for k in ks.keys]
+                [
+                    {kv.id: kv.value for kv in k.keyValues}
+                    for k in ks.keys
+                    if cond(ks)
+                ]
             )
         return keys
 
@@ -60,13 +72,16 @@ class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
         dim_values = [keys_dict.get(d, "*") for d in dimensions]
         return ".".join(dim_values)
 
-    def __process_keys(self) -> Optional[Sequence[str]]:
-        keys = []
+    def __process_keys(self) -> Tuple[Sequence[str], Sequence[str]]:
+        inc_keys = []
+        exc_keys = []
         for c in self.dataConstraints:
             if c.dataKeySets:
-                keys_dicts = self.__extract_keys_dict(c.dataKeySets)
-                keys.extend([self.__infer_keys(d) for d in keys_dicts])
-        return list(set(keys))
+                inc_keys_dicts = self.__extract_keys_dict(c.dataKeySets, True)
+                exc_keys_dicts = self.__extract_keys_dict(c.dataKeySets, False)
+                inc_keys.extend([self.__infer_keys(d) for d in inc_keys_dicts])
+                exc_keys.extend([self.__infer_keys(d) for d in exc_keys_dicts])
+        return list(set(inc_keys)), list(set(exc_keys))
 
 
 class JsonSchemaMessage(msgspec.Struct, frozen=True, omit_defaults=True):
@@ -84,7 +99,7 @@ class JsonSchemaMessage(msgspec.Struct, frozen=True, omit_defaults=True):
         hierarchies: Sequence[HierarchyAssociation],
     ) -> Schema:
         """Returns the requested schema."""
-        components, groups, keys = self.data.to_model()
+        components, groups, included, excluded = self.data.to_model()
         comp_dict = {c.id: c for c in components}
         urns = [a.urn for a in self.meta.links]
         for ha in hierarchies:
@@ -109,5 +124,6 @@ class JsonSchemaMessage(msgspec.Struct, frozen=True, omit_defaults=True):
             version,
             urns,  # type: ignore[arg-type]
             groups=groups,
-            keys=keys,
+            keys=included,
+            excluded_keys=excluded,
         )
