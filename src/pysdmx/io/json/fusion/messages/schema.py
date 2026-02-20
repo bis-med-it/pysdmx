@@ -66,17 +66,18 @@ class FusionSchemaMessage(msgspec.Struct, frozen=True):
             Group(g.id, dimensions=g.dimensionReferences) for g in grps
         ]
         keys: List[str] = []
+        excluded_keys: List[str] = []
         for dc in self.DataConstraint:
-            keys.extend(
-                dc.get_series(
-                    [
-                        d.id
-                        for d in self.DataStructure[0].dimensionList.dimensions
-                        if not d.isTimeDimension
-                    ]
-                )
-            )
+            dims = [
+                d.id
+                for d in self.DataStructure[0].dimensionList.dimensions
+                if not d.isTimeDimension
+            ]
+            keys.extend(dc.get_included_series(dims))
+            excluded_keys.extend(dc.get_excluded_series(dims))
+
         keys = list(set(keys)) if keys else None  # type: ignore[assignment]
+        excluded_keys = list(set(excluded_keys)) if excluded_keys else None  # type: ignore[assignment]
         return Schema(
             context,
             agency,
@@ -86,4 +87,5 @@ class FusionSchemaMessage(msgspec.Struct, frozen=True):
             urns,
             groups=mapped_grps,
             keys=keys,
+            excluded_keys=excluded_keys,
         )
