@@ -5,11 +5,11 @@ from typing import Any, Dict, List
 
 import pandas as pd
 
+from pysdmx.errors import Invalid
 from pysdmx.io._pd_utils import (
     transform_dataframe_for_writing,
     validate_schema_exists,
 )
-from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import (
     ABBR_MSG,
@@ -143,8 +143,8 @@ def __write_data_single_dataset(
 
     data = ""
     if dim == ALL_DIM:
-        __validate_all_dimensions_data(transformed_data)
-        data += __memory_optimization_writing(dataset, prettyprint)
+        __validate_all_dimensions_data(dataset)
+        data += __memory_optimization_writing(transformed_data, prettyprint)
     else:
         writing_validation(dataset)
         series_codes, obs_codes, group_codes = get_codes(
