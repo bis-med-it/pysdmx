@@ -730,3 +730,125 @@ def test_write_generic_no_groups_series_attributes(ds_optional_attributes):
 
     s_att_count = result_data["S_ATT"].astype(str).tolist()
     assert s_att_count.count("S1") == 2
+
+
+def test_all_dimensions_with_series_only_row(header):
+    # Dataset with empty DIM2
+    ds = PandasDataset(
+        data=pd.DataFrame(
+            {
+                "DIM1": ["A", "B", "C"],
+                "DIM2": ["X", "", "Z"],  # Empty dimension
+                "ATT1": ["a1", "a2", "a3"],
+                "M1": [10, 11, 12],
+            }
+        ),
+        structure=Schema(
+            context="datastructure",
+            id="TEST",
+            agency="MD",
+            version="1.0",
+            components=Components(
+                [
+                    Component(
+                        id="DIM1",
+                        role=Role.DIMENSION,
+                        concept=Concept(id="DIM1"),
+                        required=True,
+                    ),
+                    Component(
+                        id="DIM2",
+                        role=Role.DIMENSION,
+                        concept=Concept(id="DIM2"),
+                        required=True,
+                    ),
+                    Component(
+                        id="ATT1",
+                        role=Role.ATTRIBUTE,
+                        concept=Concept(id="ATT1"),
+                        required=False,
+                        attachment_level="DIM1",
+                    ),
+                    Component(
+                        id="M1",
+                        role=Role.MEASURE,
+                        concept=Concept(id="M1"),
+                        required=True,
+                    ),
+                ]
+            ),
+        ),
+    )
+
+    with pytest.raises(
+        Invalid,
+        match="AllDimensions requires all dimensions to have values. "
+        "Dimension 'DIM2' has empty values",
+    ):
+        write_str_spec(
+            [ds],
+            header=header,
+            dimension_at_observation={ds.structure.short_urn: "AllDimensions"},
+        )
+
+
+def test_series_format_with_series_no_obs(header):
+    ds = PandasDataset(
+        data=pd.DataFrame(
+            {
+                "DIM1": ["A", "A", "B"],
+                "DIM2": ["X", "Y", ""],  # B series has no obs (empty DIM2)
+                "ATT1": ["a1", "a1", "b1"],
+                "M1": [10, 11, ""],  # B series has no measure
+            }
+        ),
+        structure=Schema(
+            context="datastructure",
+            id="TEST",
+            agency="MD",
+            version="1.0",
+            components=Components(
+                [
+                    Component(
+                        id="DIM1",
+                        role=Role.DIMENSION,
+                        concept=Concept(id="DIM1"),
+                        required=True,
+                    ),
+                    Component(
+                        id="DIM2",
+                        role=Role.DIMENSION,
+                        concept=Concept(id="DIM2"),
+                        required=True,
+                    ),
+                    Component(
+                        id="ATT1",
+                        role=Role.ATTRIBUTE,
+                        concept=Concept(id="ATT1"),
+                        required=False,
+                        attachment_level="DIM1",
+                    ),
+                    Component(
+                        id="M1",
+                        role=Role.MEASURE,
+                        concept=Concept(id="M1"),
+                        required=True,
+                    ),
+                ]
+            ),
+        ),
+    )
+
+    result = write_str_spec(
+        [ds],
+        header=header,
+        prettyprint=True,
+        dimension_at_observation={ds.structure.short_urn: "DIM2"},
+    )
+
+    assert result is not None
+    # Series A should have observations
+    assert "<Series " in result
+    assert "<Obs " in result
+    # Series B should be "selfclosed" (no observations)
+    assert '<Series DIM1="B" ATT1="b1" />' in result
