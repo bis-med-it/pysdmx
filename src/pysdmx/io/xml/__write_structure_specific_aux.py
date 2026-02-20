@@ -21,15 +21,11 @@ from pysdmx.io.xml.__write_data_aux import (
     writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
-from pysdmx.model import Schema
 from pysdmx.toolkit.pd._data_utils import get_codes
 from pysdmx.util import parse_short_urn
 
 
 def __validate_all_dimensions_data(dataset: PandasDataset) -> None:
-    if not isinstance(dataset.structure, Schema):
-        return
-
     dim_cols = [d.id for d in dataset.structure.components.dimensions]
     for col in dim_cols:
         if col not in dataset.data.columns:
