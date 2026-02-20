@@ -32,6 +32,8 @@ def __validate_all_dimensions_data(dataset: PandasDataset) -> None:
 
     dim_cols = [d.id for d in dataset.structure.components.dimensions]
     for col in dim_cols:
+        if col not in dataset.data.columns:
+            continue
         empty_rows = dataset.data[col] == ""
         if empty_rows.any():
             raise Invalid(
