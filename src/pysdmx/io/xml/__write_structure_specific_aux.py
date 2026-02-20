@@ -242,7 +242,7 @@ def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
 def __has_valid_obs(obs_list: List[Dict[str, Any]]) -> bool:
     for obs in obs_list:
         for value in obs.values():
-            if value != "":
+            if value not in ("", None, "#N/A", "NaN"):
                 return True
     return False
 
