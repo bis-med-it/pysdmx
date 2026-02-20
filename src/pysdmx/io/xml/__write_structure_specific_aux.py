@@ -5,6 +5,7 @@ from typing import Any, Dict, List
 
 import pandas as pd
 
+from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import (
     ABBR_MSG,
@@ -16,8 +17,23 @@ from pysdmx.io.xml.__write_data_aux import (
     writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
+from pysdmx.model import Schema
 from pysdmx.toolkit.pd._data_utils import get_codes
 from pysdmx.util import parse_short_urn
+
+
+def __validate_all_dimensions_data(dataset: PandasDataset) -> None:
+    if not isinstance(dataset.structure, Schema):
+        return
+
+    dim_cols = [d.id for d in dataset.structure.components.dimensions]
+    for col in dim_cols:
+        empty_rows = dataset.data[col] == ""
+        if empty_rows.any():
+            raise Invalid(
+                f"AllDimensions requires all dimensions to have values. "
+                f"Dimension '{col}' has empty values."
+            )
 
 
 def __memory_optimization_writing(
@@ -137,6 +153,7 @@ def __write_data_single_dataset(
     )
     data = ""
     if dim == ALL_DIM:
+        __validate_all_dimensions_data(dataset)
         data += __memory_optimization_writing(dataset, prettyprint)
     else:
         writing_validation(dataset)
@@ -230,6 +247,14 @@ def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
     return "".join(iterator)
 
 
+def __has_valid_obs(obs_list: List[Dict[str, Any]]) -> bool:
+    for obs in obs_list:
+        for value in obs.values():
+            if value != "":
+                return True
+    return False
+
+
 def __series_processing(
     data: pd.DataFrame,
     series_codes: List[str],
@@ -269,6 +294,10 @@ def __series_processing(
         for k, v in data_info.items():
             if k != "Obs":
                 out_element += f"{k}={__escape_xml(str(v))!r} "
+
+        # Series with no observations
+        if not __has_valid_obs(data_info.get("Obs", [])):
+            return out_element + f"/>{nl}"
 
         out_element += f">{nl}"
 
