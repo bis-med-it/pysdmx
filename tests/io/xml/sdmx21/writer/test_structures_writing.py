@@ -19,9 +19,17 @@ from pysdmx.model import (
     Codelist,
     Concept,
     ConceptScheme,
+    ConstraintAttachment,
+    CubeKeyValue,
+    CubeRegion,
+    CubeValue,
     CustomTypeScheme,
+    DataConstraint,
+    DataKey,
+    DataKeyValue,
     Facets,
     FromVtlMapping,
+    KeySet,
     NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
@@ -783,6 +791,263 @@ def prov_agreement_sample():
         return f.read()
 
 
+@pytest.fixture
+def constraint_with_cube():
+    return DataConstraint(
+        id="TEST_CONSTRAINT_CUBE",
+        name="Test Constraint with Cube Region",
+        agency="TEST_AGENCY",
+        version="1.0",
+        description="A test constraint with cube region",
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None,
+            dataflows=[
+                "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow="
+                "TEST_AGENCY:TEST_DF(1.0)"
+            ],
+            data_structures=None,
+            provision_agreements=None,
+        ),
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(
+                        id="FREQ",
+                        values=[
+                            CubeValue(value="M"),
+                            CubeValue(value="Q"),
+                        ],
+                    ),
+                    CubeKeyValue(
+                        id="REF_AREA",
+                        values=[
+                            CubeValue(value="US"),
+                            CubeValue(value="UK"),
+                        ],
+                    ),
+                ],
+                is_included=True,
+            ),
+            CubeRegion(
+                key_values=[],
+                is_included=True,
+            ),
+        ],
+        key_sets=[],
+    )
+
+
+@pytest.fixture
+def constraint_with_keyset():
+    return DataConstraint(
+        id="TEST_CONSTRAINT_KEYSET",
+        name="Test Constraint with Key Set",
+        agency="TEST_AGENCY",
+        version="1.0",
+        description="A test constraint with key set",
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None,
+            dataflows=[
+                "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow="
+                "TEST_AGENCY:TEST_DF(1.0)"
+            ],
+            data_structures=None,
+            provision_agreements=None,
+        ),
+        cube_regions=[],
+        key_sets=[
+            KeySet(
+                keys=[
+                    DataKey(
+                        keys_values=[
+                            DataKeyValue(id="FREQ", value="M"),
+                            DataKeyValue(id="REF_AREA", value="US"),
+                        ],
+                        valid_from=None,
+                        valid_to=None,
+                    ),
+                    DataKey(
+                        keys_values=[
+                            DataKeyValue(id="FREQ", value="Q"),
+                            DataKeyValue(id="REF_AREA", value="UK"),
+                        ],
+                        valid_from=None,
+                        valid_to=None,
+                    ),
+                ],
+                is_included=True,
+            ),
+        ],
+    )
+
+
+@pytest.fixture
+def constraint_cube_sample():
+    base_path = Path(__file__).parent / "samples" / "constraint_cube.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def constraint_keyset_sample():
+    base_path = Path(__file__).parent / "samples" / "constraint_keyset.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def constraint_with_data_structure():
+    return DataConstraint(
+        id="TEST_CONSTRAINT_DSD",
+        name="Test Constraint with Data Structure",
+        agency="TEST_AGENCY",
+        version="1.0",
+        description="A test constraint attached to a data structure",
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None,
+            dataflows=None,
+            data_structures=[
+                "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure="
+                "TEST_AGENCY:TEST_DSD(1.0)"
+            ],
+            provision_agreements=None,
+        ),
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(
+                        id="FREQ",
+                        values=[CubeValue(value="A")],
+                    ),
+                ],
+                is_included=True,
+            ),
+        ],
+        key_sets=[],
+    )
+
+
+@pytest.fixture
+def constraint_with_provider():
+    return DataConstraint(
+        id="TEST_CONSTRAINT_PROV",
+        name="Test Constraint with Provider",
+        agency="TEST_AGENCY",
+        version="1.0",
+        description="A test constraint attached to a provider",
+        constraint_attachment=ConstraintAttachment(
+            data_provider="DataProvider=TEST_AGENCY:DATA_PROVIDERS(1.0).PROVIDER_ID",
+            dataflows=None,
+            data_structures=None,
+            provision_agreements=None,
+        ),
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(
+                        id="FREQ",
+                        values=[CubeValue(value="M")],
+                    ),
+                ],
+                is_included=True,
+            ),
+        ],
+        key_sets=[],
+    )
+
+
+@pytest.fixture
+def constraint_datastructure_sample():
+    base_path = (
+        Path(__file__).parent / "samples" / "constraint_datastructure.xml"
+    )
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def constraint_provider_sample():
+    base_path = Path(__file__).parent / "samples" / "constraint_provider.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def constraint_with_provision_agreement():
+    return DataConstraint(
+        id="TEST_CONSTRAINT_PA",
+        name="Test Constraint with Provision Agreement",
+        agency="TEST_AGENCY",
+        version="1.0",
+        description="A test constraint attached to a provision agreement",
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None,
+            dataflows=None,
+            data_structures=None,
+            provision_agreements=[
+                "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement="
+                "TEST_AGENCY:TEST_PA(1.0)"
+            ],
+        ),
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(
+                        id="FREQ",
+                        values=[CubeValue(value="A")],
+                    ),
+                ],
+                is_included=True,
+            ),
+        ],
+        key_sets=[],
+    )
+
+
+@pytest.fixture
+def constraint_provision_agreement_sample():
+    base_path = (
+        Path(__file__).parent
+        / "samples"
+        / "constraint_provision_agreement.xml"
+    )
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def constraint_without_attachment():
+    return DataConstraint(
+        id="TEST_CONSTRAINT_NO_ATTACH",
+        name="Test Constraint without Attachment",
+        agency="TEST_AGENCY",
+        version="1.0",
+        description="A test constraint without constraint attachment",
+        constraint_attachment=None,
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(
+                        id="FREQ",
+                        values=[CubeValue(value="Q")],
+                    ),
+                ],
+                is_included=True,
+            ),
+        ],
+        key_sets=[],
+    )
+
+
+@pytest.fixture
+def constraint_no_attachment_sample():
+    base_path = (
+        Path(__file__).parent / "samples" / "constraint_no_attachment.xml"
+    )
+    with open(base_path, "r") as f:
+        return f.read()
+
+
 def test_codelist(codelist_sample, complete_header, codelist):
     content = [codelist]
     result = write(
@@ -1182,3 +1447,81 @@ def test_concept_identity_without_urn():
         Invalid, match="Cannot select concept identity without URN"
     ):
         write([dsd])
+
+
+def test_constraint_with_cube_region(
+    complete_header, constraint_with_cube, constraint_cube_sample
+):
+    content = [constraint_with_cube]
+    result = write(
+        content,
+        header=complete_header,
+    )
+    read(result, validate=True)
+    assert result == constraint_cube_sample
+
+
+def test_constraint_with_keyset(
+    complete_header, constraint_with_keyset, constraint_keyset_sample
+):
+    content = [constraint_with_keyset]
+    result = write(
+        content,
+        header=complete_header,
+    )
+    read(result, validate=True)
+    assert result == constraint_keyset_sample
+
+
+def test_constraint_with_data_structure(
+    complete_header,
+    constraint_with_data_structure,
+    constraint_datastructure_sample,
+):
+    content = [constraint_with_data_structure]
+    result = write(
+        content,
+        header=complete_header,
+    )
+    read(result, validate=True)
+    assert result == constraint_datastructure_sample
+
+
+def test_constraint_with_provider(
+    complete_header, constraint_with_provider, constraint_provider_sample
+):
+    content = [constraint_with_provider]
+    result = write(
+        content,
+        header=complete_header,
+    )
+    read(result, validate=True)
+    assert result == constraint_provider_sample
+
+
+def test_constraint_with_provision_agreement(
+    complete_header,
+    constraint_with_provision_agreement,
+    constraint_provision_agreement_sample,
+):
+    content = [constraint_with_provision_agreement]
+    result = write(
+        content,
+        header=complete_header,
+    )
+    read(result, validate=True)
+    assert result == constraint_provision_agreement_sample
+
+
+def test_constraint_without_attachment(
+    complete_header,
+    constraint_without_attachment,
+    constraint_no_attachment_sample,
+):
+    content = [constraint_without_attachment]
+    result = write(
+        content,
+        header=complete_header,
+    )
+    read(result, validate=True)
+    assert result == constraint_no_attachment_sample
