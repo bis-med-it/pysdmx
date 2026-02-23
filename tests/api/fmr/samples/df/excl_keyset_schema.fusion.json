@@ -1,0 +1,1258 @@
+{
+    "meta": {
+        "id": "IREF909102",
+        "test": false,
+        "prepared": "2023-07-31T08:08:32Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "FusionRegistry"
+        },
+        "links": [
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS:CBS_CPC(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS.CBS:CBS_CONSTRAINTS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CL_AVAILABILITY(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CBS_BASIS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_COLLECTION(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CONF_STATUS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CURRENCY_3POS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DECIMALS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ISSUE_MAT(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_INSTR(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_POSITION(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_SECTOR(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OBS_STATUS(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ORG_VISIBILITY(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_STOCK_FLOW(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_TIME_FORMAT(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_UNIT_MULT(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS:STANDALONE_CONCEPT_SCHEME(1.0)"
+            },
+            {
+                "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS:BIS_CBS(1.0)"
+            }
+        ]
+    },
+    "AgencyScheme": [
+        {
+            "id": "AGENCIES",
+            "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "SDMX Agency Scheme"
+                }
+            ],
+            "agencyId": "SDMX",
+            "version": "1.0",
+            "isPartial": true,
+            "items": [
+                {
+                    "id": "BIS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).BIS",
+                    "annotations": [
+                        {
+                            "title": "xx000000",
+                            "type": "contact_uid"
+                        }
+                    ],
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Bank for International Settlements"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Bank for International Settlements"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "ValueList": [
+        {
+            "id": "CL_AVAILABILITY",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CL_AVAILABILITY(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Availability"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": false,
+            "items": [
+                {
+                    "id": "A",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "All users"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "Codelist": [
+        {
+            "id": "CL_BIS_IF_REF_AREA",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Reference Area Code for BIS-IFS"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "1C",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).1C",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "International organisations"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_CBS_BASIS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CBS_BASIS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "CBS basis"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "F",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CBS_BASIS(1.0).F",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Immediate counterparty basis"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_COLLECTION",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_COLLECTION(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Collection"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "E",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_COLLECTION(1.0).E",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "End of period"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_CONF_STATUS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CONF_STATUS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Observation confidentiality code list"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "F",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CONF_STATUS(1.0).F",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Free"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_CURRENCY_3POS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CURRENCY_3POS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Currency"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "FC1",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CURRENCY_3POS(1.0).FC1",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Foreign currency"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_DECIMALS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DECIMALS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Decimals codelist (BIS, ECB)"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "6",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_DECIMALS(1.0).6",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Six"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_FREQ",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Code list for Frequency (FREQ)"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "Q",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).Q",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Quarterly"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_ISSUE_MAT",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ISSUE_MAT(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Issue maturity code list"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "A",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ISSUE_MAT(1.0).A",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Total (all maturities)"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_L_INSTR",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_INSTR(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Instrument"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "A",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_INSTR(1.0).A",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "All instruments"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_L_POSITION",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_POSITION(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Position type"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "B",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).B",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Local claims"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_L_SECTOR",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_SECTOR(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Counterparty Sector"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "A",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_SECTOR(1.0).A",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "All sectors"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_OBS_STATUS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OBS_STATUS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Observation status codelist (BIS, ECB, Eurostat-BoP)"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": false,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "A",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).A",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Normal value"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_ORG_VISIBILITY",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ORG_VISIBILITY(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Visibility"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": false,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "A",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ORG_VISIBILITY(1.0).A",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CBs, ESRB and IMF"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_STOCK_FLOW",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_STOCK_FLOW(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Stock, flow"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "S",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_STOCK_FLOW(1.0).S",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Amounts outstanding / Stocks"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "CL_UNIT_MULT",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_UNIT_MULT(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Unit Multiplier"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "6",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_UNIT_MULT(1.0).6",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Millions"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "ConceptScheme": [
+        {
+            "id": "STANDALONE_CONCEPT_SCHEME",
+            "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS:STANDALONE_CONCEPT_SCHEME(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Default Scheme"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "isPartial": true,
+            "validityType": "standard",
+            "items": [
+                {
+                    "id": "AVAILABILITY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).AVAILABILITY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Availability"
+                        }
+                    ]
+                },
+                {
+                    "id": "CBS_BANK_TYPE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BANK_TYPE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CBS bank type"
+                        }
+                    ]
+                },
+                {
+                    "id": "CBS_BASIS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BASIS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "CBS reporting basis"
+                        }
+                    ]
+                },
+                {
+                    "id": "COLLECTION",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).COLLECTION",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Collection Indicator"
+                        }
+                    ]
+                },
+                {
+                    "id": "CURR_TYPE_BOOK",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CURR_TYPE_BOOK",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Currency type of booking location"
+                        }
+                    ]
+                },
+                {
+                    "id": "DECIMALS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DECIMALS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Decimals"
+                        }
+                    ],
+                    "representation": {
+                        "textFormat": {
+                            "textType": "BigInteger",
+                            "minLength": 1,
+                            "maxLength": 2
+                        },
+                        "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DECIMALS(1.0)"
+                    }
+                },
+                {
+                    "id": "FREQ",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).FREQ",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Frequency"
+                        }
+                    ]
+                },
+                {
+                    "id": "L_CP_COUNTRY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_COUNTRY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Counterparty country"
+                        }
+                    ]
+                },
+                {
+                    "id": "L_CP_SECTOR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_SECTOR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Counterparty sector"
+                        }
+                    ]
+                },
+                {
+                    "id": "L_INSTR",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_INSTR",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Type of instruments"
+                        }
+                    ]
+                },
+                {
+                    "id": "L_MEASURE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_MEASURE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Measure"
+                        }
+                    ]
+                },
+                {
+                    "id": "L_POSITION",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_POSITION",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Balance sheet position"
+                        }
+                    ]
+                },
+                {
+                    "id": "L_REP_CTY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_REP_CTY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Reporting country"
+                        }
+                    ]
+                },
+                {
+                    "id": "OBS_CONF",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_CONF",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Observation Confidentiality"
+                        }
+                    ]
+                },
+                {
+                    "id": "OBS_PRE_BREAK",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_PRE_BREAK",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Pre-Break Observation"
+                        }
+                    ]
+                },
+                {
+                    "id": "OBS_STATUS",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_STATUS",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Observation Status"
+                        }
+                    ]
+                },
+                {
+                    "id": "OBS_VALUE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_VALUE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Observation Value"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Description for a measure"
+                        }
+                    ]
+                },
+                {
+                    "id": "ORG_VISIBILITY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).ORG_VISIBILITY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Organisation visibility"
+                        }
+                    ]
+                },
+                {
+                    "id": "REM_MATURITY",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).REM_MATURITY",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Remaining maturity"
+                        }
+                    ]
+                },
+                {
+                    "id": "TIME_PERIOD",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_PERIOD",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Time period or range"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Description for a dimension"
+                        }
+                    ]
+                },
+                {
+                    "id": "TITLE_GRP",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TITLE_GRP",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Title"
+                        }
+                    ]
+                },
+                {
+                    "id": "UNIT_MEASURE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MEASURE",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Unit of measure"
+                        }
+                    ],
+                    "descriptions": [
+                        {
+                            "locale": "en",
+                            "value": "Description for an attribute"
+                        }
+                    ]
+                },
+                {
+                    "id": "UNIT_MULT",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MULT",
+                    "names": [
+                        {
+                            "locale": "en",
+                            "value": "Unit Multiplier"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "DataStructure": [
+        {
+            "id": "BIS_CBS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.0)",
+            "links": [
+                {
+                    "rel": "metadata",
+                    "href": "https://mms-med-fmr-dev.apps.ocp-dev.opz.bisinfo.org/sdmx/v2/metadata/metadataset/BIS.MEDIT/STI_BIS_CBS/1.0",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS.MEDIT:STI_BIS_CBS(1.0)"
+                }
+            ],
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Consolidated Banking Statistics"
+                }
+            ],
+            "descriptions": [
+                {
+                    "locale": "en",
+                    "value": "This dataflow is associated to the BIS_CBS DSD. It implements the data requirement laid out in the July 2019 IBS Reporting Guidelines | PDF version: BIS_CBS_V2020.02.19"
+                }
+            ],
+            "agencyId": "BIS",
+            "version": "1.0",
+            "dimensionList": {
+                "dimensions": [
+                    {
+                        "id": "FREQ",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).FREQ",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).FREQ"
+                    },
+                    {
+                        "id": "L_MEASURE",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_MEASURE",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_STOCK_FLOW(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_MEASURE"
+                    },
+                    {
+                        "id": "L_REP_CTY",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_REP_CTY",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 2,
+                                "maxLength": 2
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_REP_CTY"
+                    },
+                    {
+                        "id": "CBS_BANK_TYPE",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).CBS_BANK_TYPE",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 2,
+                                "maxLength": 2
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BANK_TYPE"
+                    },
+                    {
+                        "id": "CBS_BASIS",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).CBS_BASIS",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CBS_BASIS(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BASIS"
+                    },
+                    {
+                        "id": "L_POSITION",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_POSITION",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_POSITION(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_POSITION"
+                    },
+                    {
+                        "id": "L_INSTR",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_INSTR",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_INSTR(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_INSTR"
+                    },
+                    {
+                        "id": "REM_MATURITY",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).REM_MATURITY",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ISSUE_MAT(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).REM_MATURITY"
+                    },
+                    {
+                        "id": "CURR_TYPE_BOOK",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).CURR_TYPE_BOOK",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 3,
+                                "maxLength": 3
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CURRENCY_3POS(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CURR_TYPE_BOOK"
+                    },
+                    {
+                        "id": "L_CP_SECTOR",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_CP_SECTOR",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_SECTOR(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_SECTOR"
+                    },
+                    {
+                        "id": "L_CP_COUNTRY",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_CBS(1.0).L_CP_COUNTRY",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 2,
+                                "maxLength": 2
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_COUNTRY"
+                    },
+                    {
+                        "id": "TIME_PERIOD",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=BIS:BIS_CBS(1.0).TIME_PERIOD",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "ObservationalTimePeriod"
+                            }
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_PERIOD",
+                        "isTimeDimension": true
+                    }
+                ]
+            },
+            "attributeList": {
+                "attributes": [
+                    {
+                        "id": "OBS_STATUS",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).OBS_STATUS",
+                        "representation": {
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OBS_STATUS(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_STATUS",
+                        "mandatory": true,
+                        "attachmentLevel": "OBSERVATION",
+                        "measureReferences": [
+                            "OBS_VALUE"
+                        ]
+                    },
+                    {
+                        "id": "OBS_CONF",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).OBS_CONF",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CONF_STATUS(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_CONF",
+                        "mandatory": false,
+                        "attachmentLevel": "OBSERVATION",
+                        "measureReferences": [
+                            "OBS_VALUE"
+                        ]
+                    },
+                    {
+                        "id": "OBS_PRE_BREAK",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).OBS_PRE_BREAK",
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_PRE_BREAK",
+                        "mandatory": false,
+                        "attachmentLevel": "OBSERVATION",
+                        "measureReferences": [
+                            "OBS_VALUE"
+                        ]
+                    },
+                    {
+                        "id": "AVAILABILITY",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).AVAILABILITY",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CL_AVAILABILITY(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).AVAILABILITY",
+                        "mandatory": true,
+                        "attachmentLevel": "GROUP",
+                        "attachmentGroup": "Sibling"
+                    },
+                    {
+                        "id": "COLLECTION",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).COLLECTION",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_COLLECTION(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).COLLECTION",
+                        "mandatory": true,
+                        "attachmentLevel": "DIMENSION_GROUP",
+                        "dimensionReferences": [
+                            "FREQ",
+                            "L_MEASURE",
+                            "L_REP_CTY",
+                            "CBS_BANK_TYPE",
+                            "CBS_BASIS",
+                            "L_POSITION",
+                            "L_INSTR",
+                            "REM_MATURITY",
+                            "CURR_TYPE_BOOK",
+                            "L_CP_SECTOR",
+                            "L_CP_COUNTRY"
+                        ]
+                    },
+                    {
+                        "id": "DECIMALS",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).DECIMALS",
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DECIMALS",
+                        "mandatory": true,
+                        "attachmentLevel": "DATA_SET"
+                    },
+                    {
+                        "id": "ORG_VISIBILITY",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).ORG_VISIBILITY",
+                        "representation": {
+                            "minOccurs": 1,
+                            "maxOccurs": 10,
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 1
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ORG_VISIBILITY(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).ORG_VISIBILITY",
+                        "mandatory": false,
+                        "attachmentLevel": "DIMENSION_GROUP",
+                        "dimensionReferences": [
+                            "FREQ",
+                            "L_MEASURE",
+                            "L_REP_CTY",
+                            "CBS_BANK_TYPE",
+                            "CBS_BASIS",
+                            "L_POSITION",
+                            "L_INSTR",
+                            "REM_MATURITY",
+                            "CURR_TYPE_BOOK",
+                            "L_CP_SECTOR",
+                            "L_CP_COUNTRY"
+                        ]
+                    },
+                    {
+                        "id": "TITLE_GRP",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).TITLE_GRP",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 1,
+                                "maxLength": 200
+                            }
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TITLE_GRP",
+                        "mandatory": false,
+                        "attachmentLevel": "GROUP",
+                        "attachmentGroup": "Sibling"
+                    },
+                    {
+                        "id": "UNIT_MEASURE",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).UNIT_MEASURE",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "String",
+                                "minLength": 3,
+                                "maxLength": 3
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CURRENCY_3POS(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MEASURE",
+                        "mandatory": true,
+                        "attachmentLevel": "DATA_SET"
+                    },
+                    {
+                        "id": "UNIT_MULT",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_CBS(1.0).UNIT_MULT",
+                        "representation": {
+                            "textFormat": {
+                                "textType": "Integer",
+                                "minLength": 1,
+                                "maxLength": 2,
+                                "minValue": "-15",
+                                "maxValue": "15"
+                            },
+                            "representation": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_UNIT_MULT(1.0)"
+                        },
+                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MULT",
+                        "mandatory": true,
+                        "attachmentLevel": "DATA_SET"
+                    }
+                ]
+            },
+            "measures": [
+                {
+                    "id": "OBS_VALUE",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Measure=BIS:BIS_CBS(1.0).OBS_VALUE",
+                    "representation": {
+                        "textFormat": {
+                            "textType": "String",
+                            "minLength": 1,
+                            "maxLength": 15
+                        }
+                    },
+                    "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_VALUE",
+                    "mandatory": true
+                }
+            ],
+            "groups": [
+                {
+                    "id": "Sibling",
+                    "dimensionReferences": [
+                        "L_MEASURE",
+                        "L_REP_CTY",
+                        "CBS_BANK_TYPE",
+                        "CBS_BASIS",
+                        "L_POSITION",
+                        "L_INSTR",
+                        "REM_MATURITY",
+                        "CURR_TYPE_BOOK",
+                        "L_CP_SECTOR",
+                        "L_CP_COUNTRY"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DataConstraint": [
+        {
+            "id": "ASSETSLIABILITIES",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS.CBS:ASSETSLIABILITIES(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Constraints for the CBS Assets and Liabilities dataflow"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "startDate": 1380585600000,
+            "definingDataPresent": false,
+            "type": "SeriesConstraint",
+            "attachments": [
+                "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS_AL(1.0)"
+            ],
+            "excludeSeries": {
+                "dims": [
+                    "CBS_BASIS",
+                    "L_POSITION",
+                    "L_INSTR",
+                    "REM_MATURITY",
+                    "CURR_TYPE_BOOK",
+                    "L_CP_SECTOR"
+                ],
+                "comps": [],
+                "rows": [
+                    [
+                        "F",
+                        "L",
+                        "A",
+                        "A",
+                        "TO1",
+                        "A"
+                    ],
+                    [
+                        "F",
+                        "L",
+                        "G",
+                        "A",
+                        "TO1",
+                        "A"
+                    ]
+                ]
+            }
+        }
+    ]
+}
