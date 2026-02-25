@@ -639,21 +639,21 @@ def test_write_generic_optional_attributes_with_groups(ds_optional_attributes):
         dimension_at_observation=dim_at_obs,
     )
 
-    # Groups with present values and #N/A for None
+    # Groups with present values; None for optional is skipped (not written)
     assert '<gen:Value id="G_ATT" value="G1"/>' in result
     assert '<gen:Value id="G_ATT" value="G3"/>' in result
-    assert '<gen:Value id="G_ATT" value="#N/A"/>' in result
+    assert '<gen:Value id="G_ATT" value="#N/A"/>' not in result
     assert '<gen:Value id="S_ATT" value="S1"/>' in result
 
     # Roundtrip validation
     read_msg = read_sdmx(result, validate=True)
     result_data = read_msg.data[0].data
 
-    # G_ATT should contain G1, G3 and '#N/A'
+    # G_ATT should contain G1 and G3 (None was skipped)
     g_att_values = result_data["G_ATT"].astype(str).tolist()
     assert "G1" in g_att_values
     assert "G3" in g_att_values
-    assert g_att_values.count("#N/A") == 1
+    assert "#N/A" not in g_att_values
 
 
 def test_write_generic_all_dimensions(ds_optional_attributes):

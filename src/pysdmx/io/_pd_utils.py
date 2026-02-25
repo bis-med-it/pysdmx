@@ -93,9 +93,9 @@ def _get_value_to_write(
     Returns:
         The string value to write, or None if the value should be skipped.
     """
-    # Null values are always written as their null representation
+    # Null values: write explicit null if required, skip if optional
     if _is_null_value(value):
-        return _get_null_representation(dtype)
+        return _get_null_representation(dtype) if required else None
 
     # Write required empty strings, skip for optional empty strings
     if isinstance(value, str) and value == "":

@@ -1,6 +1,6 @@
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.model import Reference
-from pysdmx.model.dataflow import Schema
+from pysdmx.model.dataflow import DataStructureDefinition, Schema
 from pysdmx.model.message import Message
 from pysdmx.util import parse_urn
 
@@ -27,16 +27,20 @@ def schema_generator(message: Message, dataset_ref: Reference) -> Schema:  # noq
             raise Invalid(
                 f"Dataflow {dataset_ref} does not have a structure defined.",
             )
-        dsd_ref = parse_urn(dataflow.structure)  # type: ignore[arg-type]
-        try:
-            dsd = message.get_data_structure_definition(str(dsd_ref))
-        except NotFound:
-            raise Invalid(
-                f"Not found referenced DataStructure {dsd_ref}"
-                f"from Dataflow {dataset_ref}. "
-                f"Please send the structures message using "
-                f"references=children to include the DataStructureDefinition.",
-            ) from None
+        if isinstance(dataflow.structure, DataStructureDefinition):
+            dsd = dataflow.structure
+        else:
+            dsd_ref = parse_urn(dataflow.structure)
+            try:
+                dsd = message.get_data_structure_definition(str(dsd_ref))
+            except NotFound:
+                raise Invalid(
+                    f"Not found referenced DataStructure {dsd_ref} "
+                    f"from Dataflow {dataset_ref}. "
+                    f"Please send the structures message using "
+                    f"references=children to include the "
+                    f"DataStructureDefinition.",
+                ) from None
         return Schema(
             context=context,  # type: ignore[arg-type]
             id=dataset_ref.id,
