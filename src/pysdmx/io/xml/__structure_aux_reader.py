@@ -1052,6 +1052,11 @@ class StructureParser(Struct):
     def __format_constraint(self, element: Dict[str, Any]) -> Dict[str, Any]:
         # role is a SDMX 3.0 attribute not present in the model
         if "role" in element:
+            if element["role"] == "Actual":
+                raise NotImplementedError(
+                    "DataConstraint with role='Actual' is not supported, "
+                    "pysdmx only supports maintainable (Allowed) constraints."
+                )
             del element["role"]
 
         # ConstraintAttachment
