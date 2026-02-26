@@ -1342,7 +1342,8 @@ def __write_data_constraint(
 
     data = __write_maintainable(constraint, indent, references_30)
 
-    # SDMX 3.0 requires role; pysdmx only supports maintainable (Allowed) constraints.
+    # SDMX 3.0 requires role,
+    # but pysdmx only supports maintainable (Allowed) constraints.
     # "Actual" constraints are deprecated in SDMX 3.1
     if references_30:
         data["Attributes"] += ' role="Allowed"'
