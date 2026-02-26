@@ -1342,12 +1342,8 @@ def __write_data_constraint(
 
     data = __write_maintainable(constraint, indent, references_30)
 
-    # Add role attribute for SDMX 3.0 (required)
-
-    # TODO: add 'role' field to 'DataConstraint'
-    # to know which role to use (Allowed | Actual)
-    # In SDMX-JSON role is ignored and
-    # was deleted from JsonDataConstraint (PR #468)
+    # SDMX 3.0 requires role; pysdmx only supports maintainable (Allowed) constraints.
+    # "Actual" constraints are deprecated in SDMX 3.1
     if references_30:
         data["Attributes"] += ' role="Allowed"'
 
