@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Receiver id="Not_Supplied"/>
+		<mes:Source>PySDMX</mes:Source>
+	</mes:Header>
+	<mes:Structures>
+		<str:Constraints>
+			<str:ContentConstraint id="TEST_CONSTRAINT_KEYSET" version="1.0" isExternalReference="false" isFinal="false" agencyID="TEST_AGENCY">
+				<com:Name xml:lang="en">Test Constraint with Key Set</com:Name>
+				<com:Description xml:lang="en">A test constraint with key set</com:Description>
+				<str:ConstraintAttachment>
+					<str:Dataflow>
+						<Ref agencyID="TEST_AGENCY" id="TEST_DF" version="1.0" class="Dataflow"/>
+					</str:Dataflow>
+				</str:ConstraintAttachment>
+				<str:DataKeySet isIncluded="true">
+					<str:Key>
+						<com:KeyValue id="FREQ">
+							<com:Value>M</com:Value>
+						</com:KeyValue>
+						<com:KeyValue id="REF_AREA">
+							<com:Value>US</com:Value>
+						</com:KeyValue>
+					</str:Key>
+					<str:Key>
+						<com:KeyValue id="FREQ">
+							<com:Value>Q</com:Value>
+						</com:KeyValue>
+						<com:KeyValue id="REF_AREA">
+							<com:Value>UK</com:Value>
+						</com:KeyValue>
+					</str:Key>
+				</str:DataKeySet>
+			</str:ContentConstraint>
+		</str:Constraints>
+	</mes:Structures>
+</mes:Structure>

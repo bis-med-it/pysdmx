@@ -34,18 +34,25 @@ from pysdmx.io.xml.__tokens import (
     COMPONENT_MAPS,
     COMPS,
     CON,
+    CON_CONS,
     CON_ID,
     CON_LOW,
     CON_ROLE,
     CON_SCHEMES,
     CONCEPTS,
+    CONS_ATT,
+    CONSTRAINTS,
     CONTACT,
     CORE_REP,
     CS,
+    CUBE_REGION,
     CUSTOM_TYPE,
     CUSTOM_TYPE_SCHEME,
     CUSTOM_TYPE_SCHEMES,
     CUSTOM_TYPES,
+    DATA_CONS,
+    DATA_CONSTRAINTS,
+    DATA_KEY_SET,
     DATA_PROV,
     DATE_PATTERN_MAP,
     DEPARTMENT,
@@ -74,12 +81,16 @@ from pysdmx.io.xml.__tokens import (
     GROUP_DIM,
     GROUPS_LOW,
     ID,
+    INCLUDE,
+    INCLUDED,
     IS_EXTERNAL_REF,
     IS_EXTERNAL_REF_LOW,
     IS_FINAL,
     IS_FINAL_LOW,
     IS_PARTIAL,
     IS_PARTIAL_LOW,
+    KEY,
+    KEY_VALUE,
     LINK,
     LOCAL_CODES_LOW,
     LOCAL_DTYPE,
@@ -145,6 +156,7 @@ from pysdmx.io.xml.__tokens import (
     VALID_FROM_LOW,
     VALID_TO,
     VALID_TO_LOW,
+    VALUE,
     VALUE_ITEM,
     VALUE_LIST,
     VALUE_LIST_LOW,
@@ -165,11 +177,19 @@ from pysdmx.model import (
     ComponentMap,
     Concept,
     ConceptScheme,
+    ConstraintAttachment,
+    CubeKeyValue,
+    CubeRegion,
+    CubeValue,
+    DataConstraint,
+    DataKey,
+    DataKeyValue,
     DataType,
     DatePatternMap,
     Facets,
     FixedValueMap,
     ImplicitComponentMap,
+    KeySet,
     MultiComponentMap,
     MultiValueMap,
     RepresentationMap,
@@ -234,6 +254,8 @@ STRUCTURES_MAPPING = {
     NAME_PER_SCHEME: NamePersonalisationScheme,
     CUSTOM_TYPE_SCHEME: CustomTypeScheme,
     PROV_AGREEMENTS: ProvisionAgreement,
+    CONSTRAINTS: DataConstraint,
+    DATA_CONSTRAINTS: DataConstraint,
 }
 ITEMS_CLASSES = {
     AGENCY: Agency,
@@ -329,6 +351,7 @@ class StructureParser(Struct):
     concepts: Dict[str, ConceptScheme] = {}
     datastructures: Dict[str, DataStructureDefinition] = {}
     dataflows: Dict[str, Dataflow] = {}
+    constraints: Dict[str, DataConstraint] = {}
     rulesets: Dict[str, RulesetScheme] = {}
     udos: Dict[str, UserDefinedOperatorScheme] = {}
     vtl_mappings: Dict[str, VtlMappingScheme] = {}
@@ -911,6 +934,163 @@ class StructureParser(Struct):
 
         return element
 
+    def __parse_data_provider(
+        self, attachment: Dict[str, Any]
+    ) -> Optional[str]:
+        if DATA_PROV not in attachment:
+            return None
+        dp_elem = attachment[DATA_PROV]
+        if isinstance(dp_elem, str):
+            # SDMX 3.0 format (direct URN)
+            return dp_elem
+        # SDMX 2.1 format (Ref element)
+        ref = dp_elem[REF]
+        ref_data_prov = ItemReference(
+            sdmx_type=ref[CLASS],
+            agency=ref[AGENCY_ID],
+            id=ref[PAR_ID],
+            version=ref[PAR_VER],
+            item_id=ref[ID],
+        )
+        return (
+            f"{ref_data_prov.sdmx_type}={ref_data_prov.agency}:"
+            f"{ref_data_prov.id}({ref_data_prov.version})"
+            f".{ref_data_prov.item_id}"
+        )
+
+    def __parse_references(
+        self, attachment: Dict[str, Any], key: str, sdmx_type: str
+    ) -> List[str]:
+        """Extracts and converts references to URNs."""
+        if key not in attachment:
+            return []
+        ref_list = add_list(attachment[key])
+
+        urns = []
+        for ref_elem in ref_list:
+            if isinstance(ref_elem, str):
+                # SDMX 3.0 format (direct URN)
+                urns.append(ref_elem)
+            else:
+                # SDMX 2.1 format
+                ref = ref_elem[REF]
+                urn = (
+                    f"urn:sdmx:org.sdmx.infomodel.{sdmx_type}="
+                    f"{ref[AGENCY_ID]}:{ref[ID]}({ref[VERSION]})"
+                )
+                urns.append(urn)
+        return urns
+
+    def __format_constraint_attachment(
+        self, attachment: Dict[str, Any]
+    ) -> ConstraintAttachment:
+        data_provider = self.__parse_data_provider(attachment)
+        dataflows = self.__parse_references(
+            attachment, DFW, "datastructure.Dataflow"
+        )
+        data_structures = self.__parse_references(
+            attachment, DSD, "datastructure.DataStructure"
+        )
+        provision_agreements = self.__parse_references(
+            attachment, PROV_AGREEMENT, "registry.ProvisionAgreement"
+        )
+
+        return ConstraintAttachment(
+            data_provider=data_provider,
+            data_structures=data_structures if data_structures else None,
+            dataflows=dataflows if dataflows else None,
+            provision_agreements=(
+                provision_agreements if provision_agreements else None
+            ),
+        )
+
+    def __format_cube_region(self, region_elem: Dict[str, Any]) -> CubeRegion:
+        if region_elem is None:
+            return CubeRegion(key_values=[], is_included=True)
+        is_included = True
+        if INCLUDE in region_elem:
+            is_included = region_elem[INCLUDE].lower() == "true"
+
+        key_values = []
+        if KEY_VALUE in region_elem:
+            kv_list = add_list(region_elem[KEY_VALUE])
+            for kv in kv_list:
+                values = []
+                value_list = add_list(kv[VALUE])
+                for v in value_list:
+                    value_text = v if isinstance(v, str) else v.get("#text", v)
+                    values.append(CubeValue(value=value_text))
+
+                key_values.append(CubeKeyValue(id=kv[ID], values=values))
+
+        return CubeRegion(key_values=key_values, is_included=is_included)
+
+    def __format_key_set(self, keyset_elem: Dict[str, Any]) -> KeySet:
+        is_included = keyset_elem[INCLUDED].lower() == "true"
+
+        keys = []
+        key_list = add_list(keyset_elem[KEY])
+        for k in key_list:
+            if k is None:
+                keys.append(DataKey(keys_values=[]))
+                continue
+            keys_values = []
+            if KEY_VALUE in k:
+                kv_list = add_list(k[KEY_VALUE])
+                for kv in kv_list:
+                    v = kv[VALUE]
+                    value_text = v if isinstance(v, str) else v.get("#text", v)
+
+                    keys_values.append(
+                        DataKeyValue(id=kv[ID], value=value_text)
+                    )
+
+            keys.append(DataKey(keys_values=keys_values))
+
+        return KeySet(keys=keys, is_included=is_included)
+
+    def __format_constraint(self, element: Dict[str, Any]) -> Dict[str, Any]:
+        # role is a SDMX 3.0 attribute not present in the model
+        if "role" in element:
+            if element["role"] == "Actual":
+                raise NotImplementedError(
+                    "DataConstraint with role='Actual' is not supported, "
+                    "pysdmx only supports maintainable (Allowed) constraints."
+                )
+            del element["role"]
+
+        # ConstraintAttachment
+        constraint_attachment = None
+        if CONS_ATT in element:
+            constraint_attachment = self.__format_constraint_attachment(
+                element[CONS_ATT]
+            )
+            del element[CONS_ATT]
+
+        # CubeRegions
+        cube_regions: List[CubeRegion] = []
+        if CUBE_REGION in element:
+            region_list = add_list(element[CUBE_REGION])
+            cube_regions.extend(
+                self.__format_cube_region(region) for region in region_list
+            )
+            del element[CUBE_REGION]
+
+        # KeySets
+        key_sets: List[KeySet] = []
+        if DATA_KEY_SET in element:
+            keyset_list = add_list(element[DATA_KEY_SET])
+            key_sets.extend(
+                self.__format_key_set(keyset) for keyset in keyset_list
+            )
+            del element[DATA_KEY_SET]
+
+        element["constraint_attachment"] = constraint_attachment
+        element["cube_regions"] = cube_regions
+        element["key_sets"] = key_sets
+
+        return element
+
     def __format_vtl(self, json_vtl: Dict[str, Any]) -> Dict[str, Any]:
         # VTL Scheme Handling
         _format_lower_key("vtlVersion", json_vtl)
@@ -1278,6 +1458,8 @@ class StructureParser(Struct):
             element = self.__format_maps(element)
             if item == PROV_AGREEMENT:
                 element = self.__format_prov_agreement(element)
+            if item in [CON_CONS, DATA_CONS]:
+                element = self.__format_constraint(element)
 
             if "xmlns" in element:
                 del element["xmlns"]
@@ -1487,6 +1669,18 @@ class StructureParser(Struct):
                     data, REPRESENTATION_MAP, REPRESENTATION_MAP
                 ),
                 "representation_maps",
+            ),
+            CONSTRAINTS: process_structure(
+                CONSTRAINTS,
+                lambda data: self.__format_schema(data, CONSTRAINTS, CON_CONS),
+                "constraints",
+            ),
+            DATA_CONSTRAINTS: process_structure(
+                DATA_CONSTRAINTS,
+                lambda data: self.__format_schema(
+                    data, DATA_CONSTRAINTS, DATA_CONS
+                ),
+                "constraints",
             ),
             TRANS_SCHEMES: process_structure(
                 TRANS_SCHEMES,
