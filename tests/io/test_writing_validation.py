@@ -3,10 +3,12 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.io import get_datasets, read_sdmx, write_sdmx
 from pysdmx.io.csv.sdmx10.writer import write as write_csv10
 from pysdmx.io.csv.sdmx20.writer import write as write_csv20
 from pysdmx.io.format import Format
+from pysdmx.model.dataflow import Component, Components, Concept, Role, Schema
 
 
 @pytest.fixture
@@ -32,6 +34,26 @@ def csv_20():
 @pytest.fixture
 def samples_folder():
     return Path(__file__).parent / "samples"
+
+
+@pytest.fixture
+def schema():
+    return Schema(
+        context="dataflow",
+        agency="Short",
+        id="Urn",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="A",
+                    required=False,
+                    role=Role.MEASURE,
+                    concept=Concept(id="A"),
+                )
+            ]
+        ),
+    )
 
 
 data_params = [
@@ -93,8 +115,15 @@ def test_data_rwr(samples_folder, filename, output_format):
     datasets_2 = get_datasets(output_str, structures_path)
     assert len(datasets) == len(datasets_2), "Number of datasets mismatch"
 
+    expected_data = datasets[0].data.copy()
+    # OBS_VALUE is a required numeric measure, empty strings become "NaN"
+    # Adjust when reading from xml
+    expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].fillna("NaN")
+    # Adjust when reading from csv
+    expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].replace("", "NaN")
+
     pd.testing.assert_frame_equal(
-        datasets[0].data,
+        expected_data,
         datasets_2[0].data,
         check_dtype=False,
         check_like=True,
@@ -161,21 +190,17 @@ def test_data_rwr_no_structure(samples_folder, filename, output_format):
 
     datasets = get_datasets(data_path)
 
-    output_str = write_sdmx(datasets, sdmx_format=Format.DATA_SDMX_CSV_2_0_0)
-    datasets_2 = get_datasets(output_str)
-    assert len(datasets) == len(datasets_2), "Number of datasets mismatch"
-
-    pd.testing.assert_frame_equal(
-        datasets[0].data,
-        datasets_2[0].data,
-        check_dtype=False,
-        check_like=True,
-    )
+    # Writing without a Schema should raise an Invalid error
+    with pytest.raises(Invalid):
+        write_sdmx(datasets, sdmx_format=output_format)
 
 
-def test_read_xml_write_csv_10(xml_data_path, csv_10):
+def test_read_xml_write_csv_10(xml_data_path, csv_10, schema):
     # Read the SDMX XML data
     data = read_sdmx(xml_data_path, validate=True).data
+    for ds in data:
+        ds.structure = schema
+
     # Write it to SDMX CSV 1.0 format
     result = write_csv10(
         data,
@@ -183,9 +208,12 @@ def test_read_xml_write_csv_10(xml_data_path, csv_10):
     assert result == csv_10
 
 
-def test_read_xml_write_csv_20(xml_data_path, csv_20):
+def test_read_xml_write_csv_20(xml_data_path, csv_20, schema):
     # Read the SDMX XML data
     data = read_sdmx(xml_data_path, validate=True).data
+    for ds in data:
+        ds.structure = schema
+
     # Write it to SDMX CSV 2.0 format
     result = write_csv20(
         data,
@@ -209,8 +237,15 @@ def test_write_sdmx_csv_read_back(samples_folder, csv_format):
 
     assert len(datasets) == len(read_datasets), "Number of datasets mismatch"
 
+    expected_data = datasets[0].data.copy()
+    # OBS_VALUE is a required numeric measure, empty strings become "NaN"
+    # Adjust when reading from xml
+    expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].fillna("NaN")
+    # Adjust when reading from csv
+    expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].replace("", "NaN")
+
     pd.testing.assert_frame_equal(
-        datasets[0].data,
+        expected_data,
         read_datasets[0].data,
         check_dtype=False,
         check_like=True,
