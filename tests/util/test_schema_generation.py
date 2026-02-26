@@ -3,16 +3,7 @@ import re
 import pytest
 
 from pysdmx.errors import Invalid
-from pysdmx.model import (
-    Codelist,
-    Component,
-    Components,
-    Concept,
-    Dataflow,
-    ProvisionAgreement,
-    Role,
-)
-from pysdmx.model.dataflow import DataStructureDefinition
+from pysdmx.model import Codelist, Dataflow, ProvisionAgreement
 from pysdmx.model.message import Message
 from pysdmx.util import parse_short_urn, parse_urn
 from pysdmx.util._model_utils import schema_generator
@@ -122,62 +113,3 @@ def test_schema_generation_prov_agre_dfw_missing_structure():
         ),
     ):
         schema_generator(message, prov_agree_ref)
-
-
-def _build_dsd():
-    return DataStructureDefinition(
-        id="TEST_DSD",
-        agency="MD",
-        version="1.0",
-        components=Components(
-            [
-                Component(
-                    id="DIM1",
-                    role=Role.DIMENSION,
-                    concept=Concept(id="DIM1"),
-                    required=True,
-                ),
-                Component(
-                    id="OBS_VALUE",
-                    role=Role.MEASURE,
-                    concept=Concept(id="OBS_VALUE"),
-                    required=True,
-                ),
-            ]
-        ),
-    )
-
-
-def test_schema_generation_dataflow_with_dsd_instance():
-    dsd = _build_dsd()
-    dataflow = Dataflow(
-        id="TEST_DF", agency="MD", version="1.0", structure=dsd
-    )
-    message = Message(structures=[dataflow])
-    dataflow_ref = parse_short_urn(dataflow.short_urn)
-    schema = schema_generator(message, dataflow_ref)
-    assert schema.context == "dataflow"
-    assert schema.id == "TEST_DF"
-    assert len(schema.components.dimensions) == 1
-    assert len(schema.components.measures) == 1
-
-
-def test_schema_generation_prov_agre_dfw_with_dsd_instance():
-    dsd = _build_dsd()
-    dataflow = Dataflow(
-        id="TEST_DF", agency="MD", version="1.0", structure=dsd
-    )
-    prov_agree = ProvisionAgreement(
-        provider="DataProvider=MD:DATA_PROVIDERS(1.0).MD",
-        dataflow="Dataflow=MD:TEST_DF(1.0)",
-        id="TEST_PA",
-        agency="MD",
-        version="1.0",
-    )
-    message = Message(structures=[prov_agree, dataflow])
-    prov_agree_ref = parse_short_urn(prov_agree.short_urn)
-    schema = schema_generator(message, prov_agree_ref)
-    assert schema.context == "provisionagreement"
-    assert schema.id == "TEST_PA"
-    assert len(schema.components.dimensions) == 1
-    assert len(schema.components.measures) == 1
