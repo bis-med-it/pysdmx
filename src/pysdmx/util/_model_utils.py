@@ -67,8 +67,7 @@ def schema_generator(
             dsd = message.get_data_structure_definition(str(dataset_ref))
         except NotFound:
             raise Invalid(
-                f"Missing DataStructure {dataset_ref} "
-                f"in structures message.",
+                f"Missing DataStructure {dataset_ref} in structures message.",
             ) from None
         return dsd.to_schema()
     elif context == "dataflow":
@@ -100,8 +99,7 @@ def schema_generator(
             dataflow = message.get_dataflow(str(dfw_ref))
         except NotFound:
             raise Invalid(
-                f"Missing Dataflow in {dataset_ref} "
-                f"structures message.",
+                f"Missing Dataflow in {dataset_ref} structures message.",
             ) from None
         dsd = _resolve_dsd(
             dataflow, message, dataset_ref, "Provision Agreement"
