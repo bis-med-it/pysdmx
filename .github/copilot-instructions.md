@@ -1,4 +1,4 @@
-# pysdmx - Claude Code Instructions
+# pysdmx - AI Coding Assistant Instructions
 
 ## Project Overview
 
@@ -68,7 +68,7 @@ Models use `msgspec.Struct` (frozen, immutable). Validation happens in `__post_i
 | `data` | pandas, numpy | DataFrame support |
 | `dc` | python-dateutil | Date/time handling |
 | `vtl` | vtlengine, numpy | VTL support |
-| `json` | sdmxschemas, jsonschema | JSON format I/O |
+| `json` | sdmxschemas, jsonschema | JSON schema validation |
 | `xml` | lxml, xmltodict, sdmxschemas | XML format I/O |
 | `all` | All of the above | Everything |
 
@@ -96,7 +96,7 @@ poetry run sphinx-build docs _site
 
 ### Markers
 
-```
+```text
 xml       — Tests that require the xml extra
 xml_data  — Tests that require both the xml and data extras
 data      — Tests that require the data extra
@@ -147,7 +147,12 @@ All errors from `ruff format` and `ruff check` MUST be fixed before committing. 
 
 - Strict mode for `src/` directory
 - All functions MUST have type annotations
-- No implicit optionals
+- `disallow_untyped_defs = true`
+- `disallow_untyped_calls = true`
+- `no_implicit_optional = true`
+- `strict_equality = true`
+- `strict_optional = true`
+- `warn_return_any = false`
 - Error codes enabled: `redundant-expr`, `truthy-bool`
 
 ### Docstrings
@@ -205,8 +210,7 @@ Labels indicate cross-cutting concerns. Use only the following:
 | `normal` | An issue of normal complexity |
 | `minor` | An issue that is easy to address |
 | `dependencies` | Pull requests that update a dependency file |
-| `Chores` | An issue affecting the CI/CD pipelines, the project setup, etc. |
-| `python` | Pull requests that update python code |
+| `chores` | An issue affecting the CI/CD pipelines, the project setup, etc. |
 
 **Never create new labels** — only use the existing set listed above.
 
@@ -236,7 +240,7 @@ Follow conventional-style messages. Examples from the project:
 
 ## Version Updates
 
-When bumping version, update `pyproject.toml` (`[project] version`) and `src/pysdmx/__init__.py` (`__version__`). Both must match.
+This project follows [Semantic Versioning (semver)](https://semver.org/). When bumping version, update `pyproject.toml` (`[project] version`) and `src/pysdmx/__init__.py` (`__version__`). Both must match.
 
 ## File Sync Rules
 
