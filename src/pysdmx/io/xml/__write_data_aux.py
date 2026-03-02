@@ -1,6 +1,7 @@
 from typing import Dict, Optional, Sequence
 
 from pysdmx.errors import Invalid
+from pysdmx.io._pd_utils import validate_schema_exists
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import ALL_DIM
 from pysdmx.model import Role, Schema
@@ -10,6 +11,9 @@ def check_content_dataset(content: Sequence[PandasDataset]) -> None:
     """Checks if the Message content is a dataset."""
     if not all(isinstance(dataset, PandasDataset) for dataset in content):
         raise Invalid("Message Content must only contain a Dataset sequence.")
+
+    for dataset in content:
+        validate_schema_exists(dataset)
 
 
 def check_dimension_at_observation(
@@ -55,15 +59,6 @@ def writing_validation(dataset: PandasDataset) -> None:
         for comp in dataset.structure.components
         if comp.role in (Role.DIMENSION, Role.MEASURE)
     ]
-    required_components.extend(
-        att.id
-        for att in dataset.structure.components.attributes
-        if (
-            att.required
-            and att.attachment_level is not None
-            and att.attachment_level != "D"
-        )
-    )
     non_required = [
         comp.id
         for comp in dataset.structure.components
