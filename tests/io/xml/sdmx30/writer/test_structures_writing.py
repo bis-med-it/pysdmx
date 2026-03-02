@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pytest
 
+from pysdmx.io import write_sdmx
+from pysdmx.io.format import Format
 from pysdmx.io.reader import read_sdmx
 from pysdmx.io.xml.sdmx30.reader.structure import read
 from pysdmx.io.xml.sdmx30.writer.structure import write
@@ -53,6 +55,7 @@ from pysdmx.model.dataflow import (
     Components,
     Dataflow,
     DataStructureDefinition,
+    Group,
     ProvisionAgreement,
     Role,
 )
@@ -1388,3 +1391,20 @@ def test_constraint_without_attachment(
     )
     read(result, validate=True)
     assert result == constraint_no_attachment_sample
+
+
+def test_write_group_without_urn(datastructure):
+    dsd_with_group = datastructure.__replace__(
+        groups=[Group(id="Sibling", dimensions=["FREQ"])],
+    )
+    result = write_sdmx(
+        [dsd_with_group],
+        sdmx_format=Format.STRUCTURE_SDMX_ML_3_0,
+    )
+    expected_urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure"
+        ".GroupDimensionDescriptor"
+        "=MD:DS(1.0).Sibling"
+    )
+    assert expected_urn in result
+    read_sdmx(result, validate=True)

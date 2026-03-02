@@ -53,6 +53,7 @@ from pysdmx.model.dataflow import (
     Components,
     Dataflow,
     DataStructureDefinition,
+    Group,
     ProvisionAgreement,
     Role,
 )
@@ -1525,3 +1526,22 @@ def test_constraint_without_attachment(
     )
     read(result, validate=True)
     assert result == constraint_no_attachment_sample
+
+
+def test_write_group_without_urn(complete_header, datastructure):
+    dsd_with_group = datastructure.__replace__(
+        groups=[Group(id="Sibling", dimensions=["FREQ"])],
+    )
+    content = [dsd_with_group]
+    result = write(
+        content,
+        header=complete_header,
+        prettyprint=True,
+    )
+    expected_urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure"
+        ".GroupDimensionDescriptor"
+        "=ESTAT:HLTH_RS_PRSHP1(7.0).Sibling"
+    )
+    assert expected_urn in result
+    read(result, validate=True)

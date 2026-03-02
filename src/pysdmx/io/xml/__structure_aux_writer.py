@@ -433,13 +433,22 @@ def __write_item(
 
 
 def __write_groups(
-    groups: list[Group], indent: str, references_30: bool = False
+    groups: list[Group],
+    indent: str,
+    dsd: DataStructureDefinition,
+    references_30: bool = False,
 ) -> str:
     out_file = ""
     for group in groups:
+        urn = group.urn
+        if urn is None:
+            urn = (
+                "urn:sdmx:org.sdmx.infomodel.datastructure"
+                ".GroupDimensionDescriptor"
+                f"={dsd.agency}:{dsd.id}({dsd.version}).{group.id}"
+            )
         out_file += (
-            f"{indent}<{ABBR_STR}:{GROUP} {URN_LOW}={group.urn!r}"
-            f" {ID}={group.id!r}>"
+            f"{indent}<{ABBR_STR}:{GROUP} {URN_LOW}={urn!r} {ID}={group.id!r}>"
         )
         for dimension in group.dimensions:
             if references_30:
@@ -482,7 +491,9 @@ def __write_components(  # noqa: C901
     out_group = ""
     groups = getattr(dsd, GROUPS_LOW, [])
     if groups is not None and len(groups) > 0:
-        out_group = __write_groups(groups, add_indent(indent), references_30)
+        out_group = __write_groups(
+            groups, add_indent(indent), dsd, references_30
+        )
 
     for comp in dsd.components:
         if comp.role == Role.DIMENSION:
