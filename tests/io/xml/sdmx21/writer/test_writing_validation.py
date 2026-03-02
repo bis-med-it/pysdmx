@@ -225,6 +225,46 @@ def test_no_measures():
         writing_validation(dataset)
 
 
+def test_missing_required_attribute_passes_validation():
+    """Required attributes missing from data should not fail.
+
+    SDMX structure-specific format supports partial updates.
+    """
+    dataset = PandasDataset(
+        data=pd.DataFrame({"DIM1": [1, 2, 3], "M1": [10, 11, 12]}),
+        structure=Schema(
+            context="datastructure",
+            agency="BIS",
+            id="BIS_DER",
+            version="1.0",
+            components=Components(
+                [
+                    Component(
+                        id="DIM1",
+                        role=Role.DIMENSION,
+                        concept=Concept(id="DIM1"),
+                        required=True,
+                    ),
+                    Component(
+                        id="ATT_REQ",
+                        role=Role.ATTRIBUTE,
+                        concept=Concept(id="ATT_REQ"),
+                        required=True,
+                        attachment_level="O",
+                    ),
+                    Component(
+                        id="M1",
+                        role=Role.MEASURE,
+                        concept=Concept(id="M1"),
+                        required=True,
+                    ),
+                ]
+            ),
+        ),
+    )
+    writing_validation(dataset)
+
+
 def test_match_columns():
     dataset = PandasDataset(
         data=pd.DataFrame(
