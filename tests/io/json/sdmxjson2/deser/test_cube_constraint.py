@@ -1,3 +1,5 @@
+import json
+
 import msgspec
 import pytest
 
@@ -47,3 +49,18 @@ def test_cube_deser(body):
             assert v.value == "N"
             assert v.valid_from is None
             assert v.valid_to is None
+
+
+def test_cube_deser_without_attachment(body):
+    data = json.loads(body)
+    constraint = data["data"]["dataConstraints"][0]
+    del constraint["constraintAttachment"]
+    modified_body = json.dumps(data).encode()
+
+    res = msgspec.json.Decoder(JsonDataConstraintMessage).decode(modified_body)
+    cubes = res.to_model()
+
+    assert len(cubes) == 1
+    cube = cubes[0]
+    assert isinstance(cube, DataConstraint)
+    assert cube.constraint_attachment is None
