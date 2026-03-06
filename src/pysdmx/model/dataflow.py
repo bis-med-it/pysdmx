@@ -490,9 +490,13 @@ class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
         name: The schema name.
         groups: The list of groups defined in the data structure.
         keys: The list of allowed series. This is the equivalent
-            of an SDMX KeySet. KeySets allow finer
-            restrictions than when components only (i.e. SDMX
+            of an SDMX inclusive KeySet. KeySets allow finer
+            restrictions than when using components only (i.e. SDMX
             CubeRegions). The values in the sequence follow
+            the SDMX-REST conventions for series wildcarding
+            (e.g. *.USD.CHF.*).
+        excluded_keys: The list of excluded series. This is the equivalent
+            of an SDMX exclusive KeySet. The values in the sequence follow
             the SDMX-REST conventions for series wildcarding
             (e.g. *.USD.CHF.*).
     """
@@ -507,6 +511,7 @@ class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     name: Optional[str] = None
     groups: Optional[Sequence[Group]] = None
     keys: Optional[Sequence[str]] = None
+    excluded_keys: Optional[Sequence[str]] = None
 
     def __str__(self) -> str:
         """Custom string representation without the class name."""

@@ -1,3 +1,4 @@
+import json
 import re
 from pathlib import Path
 from types import SimpleNamespace
@@ -99,7 +100,8 @@ def sdmx_json_21_refmeta():
     )
     with open(file_path, "r") as f:
         text = f.read()
-    return text
+    r = json.loads(text)
+    return json.dumps(r)
 
 
 @pytest.fixture

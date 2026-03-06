@@ -62,6 +62,21 @@ def check_multi_meas(mock, fmr: RegistryClient, query, body):
             assert a.attachment_level == "OI,TO"
 
 
+def check_measureless_dsd(mock, fmr: RegistryClient, query, body):
+    """Check obs-level attachment of measureless DSDs."""
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    dsds = fmr.get_data_structures("TEST", "NM_DSD", "1.0")
+
+    assert len(mock.calls) == 1
+    dsd = dsds[0]
+
+    assert len(dsd.components.attributes) == 1
+    for a in dsd.components.attributes:
+        assert a.id == "MIC"
+        assert a.attachment_level == "O"
+
+
 def __check_content(dsds, partial_cs: bool = False):
     assert len(dsds) == 1
     dsd = dsds[0]

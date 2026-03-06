@@ -82,6 +82,12 @@ def keyset_body():
 
 
 @pytest.fixture
+def excl_keyset_body():
+    with open("tests/api/fmr/samples/df/excl_keyset_schema.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture
 def no_td_body():
     with open("tests/api/fmr/samples/df/no_td.json", "rb") as f:
         return f.read()
@@ -129,21 +135,30 @@ def no_hca_body():
         return f.read()
 
 
-def test_returns_validation_context(
+def test_returns_schema(
     respx_mock, fmr, query, no_hca_query, body, no_hca_body
 ):
-    """get_validation_context() should return a schema."""
+    """get_schema() should return a schema."""
     checks.check_schema(
         respx_mock, fmr, query, no_hca_query, body, no_hca_body
     )
 
 
-def test_returns_keyset_context(
+def test_returns_inclusive_keyset(
     respx_mock, fmr, query, no_hca_query, keyset_body, no_hca_body
 ):
-    """get_validation_context() should return a schema."""
+    """get_schema() should return a schema, with inclusive keyset."""
     checks.check_keyset_schema(
         respx_mock, fmr, query, no_hca_query, keyset_body, no_hca_body
+    )
+
+
+def test_returns_exclusive_keyset(
+    respx_mock, fmr, query, no_hca_query, excl_keyset_body, no_hca_body
+):
+    """get_schema() should return a schema, with exclusive keyset."""
+    checks.check_exclusive_keyset_schema(
+        respx_mock, fmr, query, no_hca_query, excl_keyset_body, no_hca_body
     )
 
 

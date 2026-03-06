@@ -11,7 +11,7 @@ example by providing configuration details in a metadata report.
 from collections import defaultdict
 from typing import Any, Dict, Iterator, List, Optional, Sequence, Union
 
-from msgspec import Struct
+import msgspec
 
 from pysdmx.model.__base import (
     Annotation,
@@ -270,7 +270,7 @@ class MetadataProvisionAgreement(
 
 
 class MetadataAttribute(
-    Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True
+    msgspec.Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True
 ):
     """An entry in a metadata report.
 
@@ -451,3 +451,33 @@ def merge_attributes(
         val = v if len(v) > 1 else v[0]
         out.append(MetadataAttribute(k, val))
     return out
+
+
+def unmerge_attributes(
+    attrs: Sequence[MetadataAttribute],
+) -> Sequence[MetadataAttribute]:
+    """Split the multiple values of an attribute.
+
+    Args:
+        attrs: The list of attributes to be unmerged
+
+    Returns:
+        The list of (possibly unmerged) attributes
+    """
+    unmerged_attrs: List[MetadataAttribute] = []
+    for a in attrs:
+        if a.attributes:
+            unm = unmerge_attributes(a.attributes)
+            a = msgspec.structs.replace(a, attributes=unm)
+            unmerged_attrs.append(a)
+        else:
+            if isinstance(a.value, Sequence) and not isinstance(a.value, str):
+                unmerged_attrs.extend(
+                    [
+                        MetadataAttribute(a.id, v, (), a.annotations, a.format)
+                        for v in a.value
+                    ]
+                )
+            else:
+                unmerged_attrs.append(a)
+    return unmerged_attrs

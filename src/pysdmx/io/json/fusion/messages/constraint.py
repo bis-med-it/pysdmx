@@ -23,18 +23,32 @@ class FusionContentConstraint(Struct, frozen=True):
 
     includeCube: Dict[str, FusionKeyValue] = {}
     includeSeries: Optional[FusionKeySet] = None
+    excludeSeries: Optional[FusionKeySet] = None
 
     def to_map(self) -> Dict[str, Sequence[str]]:
         """Gets the list of allowed values for a component."""
         return {k: v.values for k, v in self.includeCube.items()}
 
-    def get_series(self, dimensions: List[str]) -> Sequence[str]:
-        """Get the list of series defined in the keyset."""
+    def get_included_series(self, dimensions: List[str]) -> Sequence[str]:
+        """Get the list of included series defined in the keyset."""
         if self.includeSeries:
             series = []
             for r in self.includeSeries.rows:
                 s = dict.fromkeys(dimensions, "*")
                 for idx, cd in enumerate(self.includeSeries.dims):
+                    s[cd] = r[idx]
+                series.append(".".join(s.values()))
+            return series
+        else:
+            return []
+
+    def get_excluded_series(self, dimensions: List[str]) -> Sequence[str]:
+        """Get the list of excluded series defined in the keyset."""
+        if self.excludeSeries:
+            series = []
+            for r in self.excludeSeries.rows:
+                s = dict.fromkeys(dimensions, "*")
+                for idx, cd in enumerate(self.excludeSeries.dims):
                     s[cd] = r[idx]
                 series.append(".".join(s.values()))
             return series

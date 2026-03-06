@@ -90,6 +90,8 @@ class FusionAttribute(Struct, frozen=True):
                 return "O"
             else:
                 return ",".join(self.measureReferences)
+        elif self.attachmentLevel == "OBSERVATION":
+            return "O"
         elif self.attachmentLevel == "DATA_SET":
             return "D"
         elif self.attachmentLevel == "GROUP":

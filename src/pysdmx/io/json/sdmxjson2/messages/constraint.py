@@ -183,7 +183,11 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
 
     def to_model(self) -> DataConstraint:
         """Converts a JsonDataConstraint to a pysdmx Data Constraint."""
-        at = self.constraintAttachment.to_model()  # type: ignore[union-attr]
+        at = (
+            self.constraintAttachment.to_model()
+            if self.constraintAttachment
+            else None
+        )
         return DataConstraint(
             id=self.id,
             name=self.name,

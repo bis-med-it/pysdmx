@@ -88,7 +88,7 @@ def check_keyset_schema(
     body,
     hca_body,
 ):
-    """get_schema() should return a schema."""
+    """get_schema() should return a schema, with an inclusivekeyset."""
     mock.get(hca_query).mock(
         return_value=httpx.Response(200, content=hca_body)
     )
@@ -100,7 +100,33 @@ def check_keyset_schema(
 
     assert isinstance(vc, Schema)
     assert len(vc.keys) == 2
+    assert vc.excluded_keys is None
     for k in vc.keys:
+        assert k in ["*.*.*.*.F.L.A.A.TO1.A.*", "*.*.*.*.F.L.G.A.TO1.A.*"]
+
+
+def check_exclusive_keyset_schema(
+    mock,
+    fmr: RegistryClient,
+    query,
+    hca_query,
+    body,
+    hca_body,
+):
+    """get_schema() should return a schema, with an exclusive keyset."""
+    mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    vc = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0")
+
+    assert len(mock.calls) == 2  # We fetch hierarchies too in this case
+
+    assert isinstance(vc, Schema)
+    assert vc.keys is None
+    assert len(vc.excluded_keys) == 2
+    for k in vc.excluded_keys:
         assert k in ["*.*.*.*.F.L.A.A.TO1.A.*", "*.*.*.*.F.L.G.A.TO1.A.*"]
 
 
