@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Receiver id="Not_Supplied"/>
+		<mes:Source>PySDMX</mes:Source>
+	</mes:Header>
+	<mes:Structures>
+		<str:DataConstraints>
+			<str:DataConstraint id="TEST_CONSTRAINT_PROV" version="1.0" isExternalReference="false" agencyID="TEST_AGENCY" role="Allowed">
+				<com:Name xml:lang="en">Test Constraint with Provider</com:Name>
+				<com:Description xml:lang="en">A test constraint attached to a provider</com:Description>
+				<str:ConstraintAttachment>
+					<str:DataProvider>urn:sdmx:org.sdmx.infomodel.base.DataProvider=TEST_AGENCY:DATA_PROVIDERS(1.0).PROVIDER_ID</str:DataProvider>
+				</str:ConstraintAttachment>
+				<str:CubeRegion include="true">
+					<str:KeyValue id="FREQ">
+						<str:Value>M</str:Value>
+					</str:KeyValue>
+				</str:CubeRegion>
+			</str:DataConstraint>
+		</str:DataConstraints>
+	</mes:Structures>
+</mes:Structure>

@@ -94,6 +94,7 @@ CON_SCHEMES = "ConceptSchemes"
 DSDS = "DataStructures"
 DATAFLOWS = "Dataflows"
 CONSTRAINTS = "Constraints"
+DATA_CONSTRAINTS = "DataConstraints"
 PROV_AGREEMENTS = "ProvisionAgreements"
 
 
@@ -154,6 +155,7 @@ DIM_REF = "DimensionReference"
 
 # Constraints
 CON_CONS = "ContentConstraint"
+DATA_CONS = "DataConstraint"
 CONS_ATT = "ConstraintAttachment"
 CUBE_REGION = "CubeRegion"
 CONTENT_REGION = "dataContentRegion"
@@ -163,6 +165,7 @@ DATA_KEY_SET = "DataKeySet"
 DATA_KEY_SET_LOW = "dataKeySet"
 INCLUDED = "isIncluded"
 INCLUDE = "include"
+COMPONENT = "Component"
 
 # Annotation
 ANNOTATION = "Annotation"

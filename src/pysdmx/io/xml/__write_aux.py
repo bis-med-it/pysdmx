@@ -71,6 +71,7 @@ CONCEPTS_SCHEMES = "ConceptSchemes"
 DSDS = "DataStructures"
 DATAFLOWS = "Dataflows"
 CONSTRAINTS = "Constraints"
+DATA_CONSTRAINTS = "DataConstraints"
 PROV_AGREEMENTS = "ProvisionAgreements"
 REPRESENTATION_MAPS_KEY = "RepresentationMaps"
 STRUCTURE_MAPS_KEY = "StructureMaps"
@@ -209,7 +210,7 @@ MSG_CONTENT_PKG_21 = OrderedDict(
         (CODELISTS, "Codelists"),
         (CONCEPTS, "Concepts"),
         (DSDS, "DataStructures"),
-        (CONSTRAINTS, "ContentConstraints"),
+        (CONSTRAINTS, "Constraints"),
         (REPRESENTATION_MAPS, "RepresentationMaps"),
         (STRUCTURE_MAPS, "StructureMaps"),
         (CUSTOM_TYPES, "CustomTypes"),
@@ -230,7 +231,7 @@ MSG_CONTENT_PKG_30 = OrderedDict(
         (CODELISTS, "Codelists"),
         (CONCEPTS_SCHEMES, "ConceptSchemes"),
         (DSDS, "DataStructures"),
-        (CONSTRAINTS, "ContentConstraints"),
+        (DATA_CONSTRAINTS, "DataConstraints"),
         (REPRESENTATION_MAPS, "RepresentationMaps"),
         (STRUCTURE_MAPS, "StructureMaps"),
         (CUSTOM_TYPE_SCHEMES, "CustomTypeSchemes"),

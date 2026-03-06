@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pytest
 
+from pysdmx.io import write_sdmx
+from pysdmx.io.format import Format
 from pysdmx.io.reader import read_sdmx as read_sdmx
 from pysdmx.io.xml.sdmx31.writer.structure import write
 from pysdmx.model import (
@@ -38,6 +40,7 @@ from pysdmx.model.dataflow import (
     Components,
     Dataflow,
     DataStructureDefinition,
+    Group,
     ProvisionAgreement,
     Role,
 )
@@ -736,3 +739,20 @@ def test_prov_agreement(
     )
     read_sdmx(result, validate=True)
     assert result == prov_agreement_sample
+
+
+def test_write_group_without_urn(datastructure):
+    dsd_with_group = datastructure.__replace__(
+        groups=[Group(id="Sibling", dimensions=["FREQ"])],
+    )
+    result = write_sdmx(
+        [dsd_with_group],
+        sdmx_format=Format.STRUCTURE_SDMX_ML_3_1,
+    )
+    expected_urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure"
+        ".GroupDimensionDescriptor"
+        "=MD:DS(1.0).Sibling"
+    )
+    assert expected_urn in result
+    read_sdmx(result, validate=True)
