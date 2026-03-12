@@ -157,7 +157,7 @@ def test_code_list_read(samples_folder):
     assert codelist.name == "Age"
     assert codelist.short_urn == "Codelist=SDMX:CL_AGE(1.0)"
     assert codelist.version == "1.0"
-    assert codelist.is_final is True
+    assert codelist.is_final is False
 
     assert len(codelist.items) == 5
     assert isinstance(codelist.items[0], Code)
@@ -185,6 +185,28 @@ def test_codelist_read_draft(samples_folder):
     assert len(codelist.codes) == 0
 
 
+def test_codelist_without_is_final_defaults_false(samples_folder):
+    """SDMX 3.0 has no isFinal attribute; is_final defaults to False."""
+    data_path = samples_folder / "codelists.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    result = read_structure(input_str, validate=True)
+
+    codelist = result[0]
+    assert isinstance(codelist, Codelist)
+    assert codelist.is_final is False
+
+
+def test_dataflow_without_is_final_defaults_false(samples_folder):
+    """SDMX 3.0 has no isFinal attribute; is_final defaults to False."""
+    data_path = samples_folder / "dataflow_final_version.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    result = read_structure(input_str, validate=True)
+
+    dataflow = result[0]
+    assert isinstance(dataflow, Dataflow)
+    assert dataflow.is_final is False
+
+
 def test_dataflow_read_final(samples_folder):
     data_path = samples_folder / "dataflow_final_version.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -200,7 +222,7 @@ def test_dataflow_read_final(samples_folder):
     assert dataflow.name == "NAMAIN_IDC_N df"
     assert dataflow.short_urn == "Dataflow=SDMX:NAMAIN_IDC_N(1.0)"
     assert dataflow.version == "1.0"
-    assert dataflow.is_final is True
+    assert dataflow.is_final is False
     assert dataflow.is_external_reference is False
     assert "DataStructure=ESTAT:NA_MAIN(1.6)" in dataflow.structure
 
