@@ -133,6 +133,15 @@ Additional arguments are available for SDMX-ML to:
 - Specify the dimension at observation level (using the `dimension_at_observation` argument). This is needed for Time Series
   data formats.
 
+For SDMX-ML 2.1, dedicated Time Series formats are available:
+
+- ``Format.DATA_SDMX_ML_2_1_GENTS`` — Generic Time Series (defaults ``dimension_at_observation`` to ``TIME_PERIOD``)
+- ``Format.DATA_SDMX_ML_2_1_STRTS`` — Structure Specific Time Series (defaults ``dimension_at_observation`` to ``TIME_PERIOD``)
+
+These formats produce the same output as their non-TS counterparts (``DATA_SDMX_ML_2_1_GEN`` / ``DATA_SDMX_ML_2_1_STR``
+with ``dimension_at_observation`` set to ``TIME_PERIOD``), but use the SDMX-ML 2.1 Time Series message types
+(``GenericTimeSeriesData`` / ``StructureSpecificTimeSeriesData``).
+
 
 A typical example to write data in Time Series with a custom header (pretty printed):
 
