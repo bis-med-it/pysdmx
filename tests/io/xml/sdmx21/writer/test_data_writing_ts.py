@@ -131,7 +131,7 @@ def test_structure_specific_ts_explicit_time_period(header, ts_content):
 
 def test_generic_ts_rejects_non_time_period(header, ts_content):
     dim_mapping = {"DataStructure=MD:TEST_TS(1.0)": "FREQ"}
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match="dimensionAtObservation=TIME_PERIOD"):
         write_gen_ts(
             ts_content,
             header=header,
@@ -141,7 +141,7 @@ def test_generic_ts_rejects_non_time_period(header, ts_content):
 
 def test_structure_specific_ts_rejects_non_time_period(header, ts_content):
     dim_mapping = {"DataStructure=MD:TEST_TS(1.0)": "FREQ"}
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match="dimensionAtObservation=TIME_PERIOD"):
         write_str_ts(
             ts_content,
             header=header,
@@ -154,7 +154,10 @@ def test_generic_ts_round_trip(header, ts_content):
     msg = read_sdmx(result, validate=True)
     assert msg.data is not None
     assert len(msg.data) == 1
-    assert msg.data[0].data.shape == (3, 4)
+    df = msg.data[0].data
+    assert df.shape == (3, 4)
+    assert set(df.columns) == {"FREQ", "REF_AREA", "TIME_PERIOD", "OBS_VALUE"}
+    assert set(df["REF_AREA"]) == {"US", "GB"}
 
 
 def test_structure_specific_ts_round_trip(header, ts_content):
@@ -162,7 +165,10 @@ def test_structure_specific_ts_round_trip(header, ts_content):
     msg = read_sdmx(result, validate=True)
     assert msg.data is not None
     assert len(msg.data) == 1
-    assert msg.data[0].data.shape == (3, 4)
+    df = msg.data[0].data
+    assert df.shape == (3, 4)
+    assert set(df.columns) == {"FREQ", "REF_AREA", "TIME_PERIOD", "OBS_VALUE"}
+    assert set(df["REF_AREA"]) == {"US", "GB"}
 
 
 @pytest.mark.parametrize(
@@ -179,20 +185,24 @@ def test_write_sdmx_ts_formats(header, ts_content, fmt):
         header=header,
     )
     assert result is not None
+    assert 'dimensionAtObservation="TIME_PERIOD"' in result
     msg = read_sdmx(result, validate=True)
     assert msg.data is not None
     assert len(msg.data) == 1
-    assert 'dimensionAtObservation="TIME_PERIOD"' in result
+    assert msg.data[0].data.shape == (3, 4)
 
 
-def test_generic_ts_series_structure(header, ts_content):
+def test_generic_ts_series_key_values(header, ts_content):
     result = write_gen_ts(ts_content, header=header)
-    assert "<gen:Series>" in result
     assert "<gen:SeriesKey>" in result
-    assert "<gen:ObsDimension" in result
+    assert '<gen:Value id="FREQ" value="A"/>' in result
+    assert '<gen:Value id="REF_AREA" value="US"/>' in result
+    assert '<gen:ObsDimension value="2020"/>' in result
 
 
-def test_structure_specific_ts_series_structure(header, ts_content):
+def test_structure_specific_ts_series_attributes(header, ts_content):
     result = write_str_ts(ts_content, header=header)
-    assert "<Series" in result
-    assert "TIME_PERIOD=" in result
+    assert 'FREQ="A"' in result
+    assert 'REF_AREA="US"' in result
+    assert 'TIME_PERIOD="2020"' in result
+    assert 'OBS_VALUE="100' in result
