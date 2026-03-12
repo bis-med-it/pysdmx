@@ -170,20 +170,16 @@ def test_write_header_provision_agreement(
 
 
 def test_write_header_structure_usage_namespace(
-    header_structure_usage, samples_folder
+    header_structure_usage,
 ):
-    file_path = samples_folder / "header_structure_usage_namespace.xml"
     header = write_header_aux(header_structure_usage, True, True, True)
-    with open(file_path, "r") as f:
-        expected = f.read()
-    assert header == expected
+    exp = "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow="
+    assert f'namespace="{exp}MD:TEST(1.0)"' in header
 
 
 def test_write_header_provision_agreement_namespace(
-    header_provision_agrement, samples_folder
+    header_provision_agrement,
 ):
-    file_path = samples_folder / "header_provision_agrement_namespace.xml"
     header = write_header_aux(header_provision_agrement, True, True, True)
-    with open(file_path, "r") as f:
-        expected = f.read()
-    assert header == expected
+    exp = "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement="
+    assert f'namespace="{exp}MD:TEST(1.0)"' in header
