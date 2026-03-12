@@ -223,6 +223,8 @@ def ds_with_group():
         ),
         (Format.DATA_SDMX_ML_2_1_GEN, "gen_ser.xml", "DIM1"),
         (Format.DATA_SDMX_ML_2_1_STR, "str_ser.xml", "DIM1"),
+        (Format.DATA_SDMX_ML_2_1_GEN, "gen_all.xml", "AllDimensions"),
+        (Format.DATA_SDMX_ML_2_1_STR, "str_all.xml", "AllDimensions"),
     ],
 )
 def test_data_write_read(
