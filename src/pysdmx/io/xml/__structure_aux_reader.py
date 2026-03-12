@@ -513,6 +513,7 @@ class StructureParser(Struct):
         orgs: Dict[str, Any] = {}
         json_list = add_list(json_orgs)
         for e in json_list:
+            self.__strip_agency_scheme_defaults(e)
             ag_sch = self.__format_scheme(
                 e,
                 AGENCY_SCHEME,
@@ -520,6 +521,24 @@ class StructureParser(Struct):
             )
             orgs = {**orgs, **ag_sch}
         return orgs
+
+    @staticmethod
+    def __strip_agency_scheme_defaults(
+        element: Dict[str, Any],
+    ) -> None:
+        """Remove default AgencyScheme fields before construction.
+
+        The SDMX standard defines fixed values for AgencyScheme id,
+        name, and version. Stripping them when they match the defaults
+        aligns the XML reader with the JSON reader behavior.
+        """
+        for s in add_list(element[AGENCY_SCHEME]):
+            for k, v in [("id", "AGENCIES"), ("version", "1.0")]:
+                if s.get(k) == v:
+                    del s[k]
+            name = s.get(NAME)
+            if name is not None and _extract_text(name) == "AGENCIES":
+                del s[NAME]
 
     def __format_representation(
         self, json_rep: Dict[str, Any], json_obj: Dict[str, Any]
