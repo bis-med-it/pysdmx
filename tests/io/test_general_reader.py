@@ -547,7 +547,7 @@ def test_get_datasets_prov_agreement_no_dataflow(
 def test_read_maps():
     data_path = Path(__file__).parent / "samples" / "maps.xml"
     result = read_sdmx(data_path, validate=True)
-    assert len(result.structures) == 5
+    assert len(result.structures) == 6
 
     # RepresentationMap 1 - REPMAP_SEX (1-1 => ValueMap)
     rep_map = result.structures[1]
@@ -636,6 +636,27 @@ def test_read_maps():
     assert isinstance(m, MultiValueMap)
     assert list(m.source) == ["M", "S_A1"]
     assert list(m.target) == ["MON_SAX", "Seasonally adjusted"]
+
+    # RepresentationMap 5 - RM_INDICATOR (data type source/target)
+    rep_map = result.structures[5]
+    assert isinstance(rep_map, RepresentationMap)
+    assert rep_map.id == "RM_INDICATOR"
+    assert rep_map.agency == "WB"
+    assert rep_map.version == "1.0"
+    assert rep_map.name == "Mapping Series to INDICATOR"
+    assert rep_map.source == "String"
+    assert rep_map.target == "String"
+    assert len(rep_map.maps) == 2
+
+    m = rep_map.maps[0]
+    assert isinstance(m, ValueMap)
+    assert m.source == "per_allsp.adq_ep_preT_tot"
+    assert m.target == "SPL_TR_AMT_RD"
+
+    m = rep_map.maps[1]
+    assert isinstance(m, ValueMap)
+    assert m.source == "per_allsp.adq_ep_tot"
+    assert m.target == "SPL_TR_AMT_RD"
 
     # StructureMap 0 - STRMAP_DEMO
     str_map = result.structures[0]
