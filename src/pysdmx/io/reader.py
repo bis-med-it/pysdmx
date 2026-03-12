@@ -2,12 +2,21 @@
 
 from io import BytesIO
 from pathlib import Path
-from typing import Dict, Optional, Sequence, Union, overload
+from typing import (
+    TYPE_CHECKING,
+    Dict,
+    Optional,
+    Sequence,
+    Union,
+    overload,
+)
+
+if TYPE_CHECKING:  # pragma: no cover
+    from pysdmx.io.pd import PandasDataset
 
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
-from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.dataset import Dataset
@@ -50,7 +59,7 @@ def read_sdmx(  # noqa: C901
     input_str, read_format = process_string_to_read(sdmx_document, pem=pem)
 
     header = None
-    result_data: Sequence[PandasDataset] = []
+    result_data: Sequence[Dataset] = []
     result_structures: Sequence[MaintainableArtefact] = []
     result_submission: Sequence[SubmissionResult] = []
     reports: Sequence[MetadataReport] = []
@@ -233,7 +242,7 @@ def get_datasets(  # pragma: no cover
     structure: None = None,
     validate: bool = True,
     pem: Optional[Union[str, Path]] = None,
-) -> Sequence[PandasDataset]: ...
+) -> "Sequence[PandasDataset]": ...
 
 
 @overload
@@ -242,7 +251,7 @@ def get_datasets(  # pragma: no cover
     structure: Union[str, Path, BytesIO] = ...,
     validate: bool = True,
     pem: Optional[Union[str, Path]] = None,
-) -> Sequence[PandasDataset]: ...
+) -> "Sequence[PandasDataset]": ...
 
 
 def get_datasets(
@@ -250,7 +259,7 @@ def get_datasets(
     structure: Optional[Union[str, Path, BytesIO]] = None,
     validate: bool = True,
     pem: Optional[Union[str, Path]] = None,
-) -> Sequence[PandasDataset]:
+) -> "Sequence[PandasDataset]":
     """Reads a data message and a structure message and returns a dataset.
 
     This method reads a data message and an optional structure message,
