@@ -59,7 +59,7 @@ def get_sort_clause(sort: Optional[Collection[SortBy]]) -> str:
         return ""
 
 
-def get_pagination_clause(offset: int, limit: Optional[int]) -> str:
+def get_pagination_clause(offset: int, limit: Optional[int] = None) -> str:
     """Return a string to control pagiunation of the records to be returned.
 
     Args:
@@ -70,11 +70,11 @@ def get_pagination_clause(offset: int, limit: Optional[int]) -> str:
         The OFFSET and FETCH string required to paginate results in
             SQL Server, or an empty string otherwise.
     """
+    o = offset if offset and offset > 0 else 0
     if limit:
-        o = offset if offset and offset >= 0 else 0
         return f" OFFSET {o} ROWS FETCH NEXT {limit} ROWS ONLY"
-    elif offset >= 0:
-        return f" OFFSET {offset} ROWS"
+    elif o > 0:
+        return f" OFFSET {o} ROWS"
     else:
         return ""
 
