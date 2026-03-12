@@ -388,12 +388,16 @@ def test_invalid_dimension_key(content):
 
 def test_invalid_string_dimension_at_observation(content):
     content = list(content.values())
-    with pytest.raises(Invalid):
+    with pytest.raises(
+        Invalid, match="Dimension at observation NONEXISTENT not found"
+    ):
         write_gen(
             content,
             dimension_at_observation="NONEXISTENT",
         )
-    with pytest.raises(Invalid):
+    with pytest.raises(
+        Invalid, match="Dimension at observation NONEXISTENT not found"
+    ):
         write_str_spec(
             content,
             dimension_at_observation="NONEXISTENT",
