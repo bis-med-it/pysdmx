@@ -23,7 +23,9 @@ List of formats and versions supported by the general reader:
 
 - :ref:`SDMX-ML<sdmx_ml>`
     - :ref:`SDMX-ML 2.1 Generic <sdmx_ml_21_gen_reader>`
+    - :ref:`SDMX-ML 2.1 Generic Time Series <sdmx_ml_21_gents_reader>`
     - :ref:`SDMX-ML 2.1 Structure Specific <sdmx_ml_21_spe_reader>`
+    - :ref:`SDMX-ML 2.1 Structure Specific Time Series <sdmx_ml_21_spets_reader>`
     - :ref:`SDMX-ML 2.1 Structure <sdmx_ml_21_structure_reader>`
     - :ref:`SDMX-ML 3.0 Structure Specific <sdmx_ml_30_spe_reader>`
     - :ref:`SDMX-ML 3.0 Structure <sdmx_ml_30_structure_reader>`
