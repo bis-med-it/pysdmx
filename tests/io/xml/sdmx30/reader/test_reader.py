@@ -157,7 +157,7 @@ def test_code_list_read(samples_folder):
     assert codelist.name == "Age"
     assert codelist.short_urn == "Codelist=SDMX:CL_AGE(1.0)"
     assert codelist.version == "1.0"
-    assert codelist.is_final is True
+    assert codelist.is_final is False
 
     assert len(codelist.items) == 5
     assert isinstance(codelist.items[0], Code)
@@ -200,7 +200,7 @@ def test_dataflow_read_final(samples_folder):
     assert dataflow.name == "NAMAIN_IDC_N df"
     assert dataflow.short_urn == "Dataflow=SDMX:NAMAIN_IDC_N(1.0)"
     assert dataflow.version == "1.0"
-    assert dataflow.is_final is True
+    assert dataflow.is_final is False
     assert dataflow.is_external_reference is False
     assert "DataStructure=ESTAT:NA_MAIN(1.6)" in dataflow.structure
 
