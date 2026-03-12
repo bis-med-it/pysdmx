@@ -466,7 +466,8 @@ def write(
         prettyprint: Prettyprint or not.
         header: The header to be used (generated if None).
         dimension_at_observation:
-          The mapping between the dataset and the dimension at observation.
+          The dimension at observation, either as a string applied to all
+          datasets or a dict mapping short URNs to dimension IDs.
 
     Returns:
         The XML string if path is empty, None otherwise.
