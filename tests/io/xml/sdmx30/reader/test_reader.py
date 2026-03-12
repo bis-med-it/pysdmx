@@ -185,6 +185,28 @@ def test_codelist_read_draft(samples_folder):
     assert len(codelist.codes) == 0
 
 
+def test_codelist_without_is_final_defaults_false(samples_folder):
+    """SDMX 3.0 has no isFinal attribute; is_final defaults to False."""
+    data_path = samples_folder / "codelists.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    result = read_structure(input_str, validate=True)
+
+    codelist = result[0]
+    assert isinstance(codelist, Codelist)
+    assert codelist.is_final is False
+
+
+def test_dataflow_without_is_final_defaults_false(samples_folder):
+    """SDMX 3.0 has no isFinal attribute; is_final defaults to False."""
+    data_path = samples_folder / "dataflow_final_version.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    result = read_structure(input_str, validate=True)
+
+    dataflow = result[0]
+    assert isinstance(dataflow, Dataflow)
+    assert dataflow.is_final is False
+
+
 def test_dataflow_read_final(samples_folder):
     data_path = samples_folder / "dataflow_final_version.xml"
     input_str, read_format = process_string_to_read(data_path)
