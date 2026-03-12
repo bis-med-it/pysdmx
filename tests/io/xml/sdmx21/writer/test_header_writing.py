@@ -167,3 +167,23 @@ def test_write_header_provision_agreement(
     with open(file_path, "r") as f:
         expected = f.read()
     assert header == expected
+
+
+def test_write_header_structure_usage_namespace(
+    header_structure_usage, samples_folder
+):
+    file_path = samples_folder / "header_structure_usage_namespace.xml"
+    header = write_header_aux(header_structure_usage, True, True, True)
+    with open(file_path, "r") as f:
+        expected = f.read()
+    assert header == expected
+
+
+def test_write_header_provision_agreement_namespace(
+    header_provision_agrement, samples_folder
+):
+    file_path = samples_folder / "header_provision_agrement_namespace.xml"
+    header = write_header_aux(header_provision_agrement, True, True, True)
+    with open(file_path, "r") as f:
+        expected = f.read()
+    assert header == expected
