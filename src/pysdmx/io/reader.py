@@ -8,6 +8,7 @@ from typing import (
     Optional,
     Sequence,
     Union,
+    cast,
     overload,
 )
 
@@ -308,11 +309,11 @@ def get_datasets(
         raise Invalid("No data found in the data message")
 
     if structure is None:
-        return data_msg.data  # type: ignore[return-value]
+        return cast("Sequence[PandasDataset]", data_msg.data)
     structure_msg = read_sdmx(structure, validate=validate, pem=pem)
     if structure_msg.structures is None:
         raise Invalid("No structure found in the structure message")
 
     __assign_structure_to_dataset(data_msg.data, structure_msg)
 
-    return data_msg.data  # type: ignore[return-value]
+    return cast("Sequence[PandasDataset]", data_msg.data)
