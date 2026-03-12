@@ -86,12 +86,12 @@
                 <str:SourceDataType>String</str:SourceDataType>
                 <str:TargetDataType>String</str:TargetDataType>
                 <str:RepresentationMapping>
-                    <str:SourceValue>per_allsp.adq_ep_preT_tot</str:SourceValue>
-                    <str:TargetValue>SPL_TR_AMT_RD</str:TargetValue>
+                    <str:SourceValue>SRC_A</str:SourceValue>
+                    <str:TargetValue>TGT_A</str:TargetValue>
                 </str:RepresentationMapping>
                 <str:RepresentationMapping>
-                    <str:SourceValue>per_allsp.adq_ep_tot</str:SourceValue>
-                    <str:TargetValue>SPL_TR_AMT_RD</str:TargetValue>
+                    <str:SourceValue>SRC_B</str:SourceValue>
+                    <str:TargetValue>TGT_B</str:TargetValue>
                 </str:RepresentationMapping>
             </str:RepresentationMap>
         </str:RepresentationMaps>

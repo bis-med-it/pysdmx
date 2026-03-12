@@ -650,13 +650,13 @@ def test_read_maps():
 
     m = rep_map.maps[0]
     assert isinstance(m, ValueMap)
-    assert m.source == "per_allsp.adq_ep_preT_tot"
-    assert m.target == "SPL_TR_AMT_RD"
+    assert m.source == "SRC_A"
+    assert m.target == "TGT_A"
 
     m = rep_map.maps[1]
     assert isinstance(m, ValueMap)
-    assert m.source == "per_allsp.adq_ep_tot"
-    assert m.target == "SPL_TR_AMT_RD"
+    assert m.source == "SRC_B"
+    assert m.target == "TGT_B"
 
     # StructureMap 0 - STRMAP_DEMO
     str_map = result.structures[0]
