@@ -32,7 +32,7 @@ def write(
     output_path: Optional[Union[str, Path]] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
-    dimension_at_observation: Optional[Dict[str, str]] = None,
+    dimension_at_observation: Optional[Union[str, Dict[str, str]]] = None,
 ) -> Optional[str]:
     """Write data to SDMX-ML 3.1 Structure Specific format.
 
