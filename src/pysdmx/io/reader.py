@@ -2,11 +2,12 @@
 
 from io import BytesIO
 from pathlib import Path
-from typing import Dict, Optional, Sequence, Union
+from typing import Dict, Optional, Sequence, Union, overload
 
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
+from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.dataset import Dataset
@@ -49,7 +50,7 @@ def read_sdmx(  # noqa: C901
     input_str, read_format = process_string_to_read(sdmx_document, pem=pem)
 
     header = None
-    result_data: Sequence[Dataset] = []
+    result_data: Sequence[PandasDataset] = []
     result_structures: Sequence[MaintainableArtefact] = []
     result_submission: Sequence[SubmissionResult] = []
     reports: Sequence[MetadataReport] = []
@@ -226,16 +227,34 @@ def __assign_structure_to_dataset(
         __manage_dataset_level_attributes(dataset)
 
 
+@overload
+def get_datasets(  # pragma: no cover
+    data: Union[str, Path, BytesIO],
+    structure: None = None,
+    validate: bool = True,
+    pem: Optional[Union[str, Path]] = None,
+) -> Sequence[PandasDataset]: ...
+
+
+@overload
+def get_datasets(  # pragma: no cover
+    data: Union[str, Path, BytesIO],
+    structure: Union[str, Path, BytesIO] = ...,
+    validate: bool = True,
+    pem: Optional[Union[str, Path]] = None,
+) -> Sequence[PandasDataset]: ...
+
+
 def get_datasets(
     data: Union[str, Path, BytesIO],
     structure: Optional[Union[str, Path, BytesIO]] = None,
     validate: bool = True,
     pem: Optional[Union[str, Path]] = None,
-) -> Sequence[Dataset]:
+) -> Sequence[PandasDataset]:
     """Reads a data message and a structure message and returns a dataset.
 
     This method reads a data message and an optional structure message,
-    and returns a sequence of Datasets.
+    and returns a sequence of PandasDatasets.
     Check the :ref:`formats supported <io-reader-formats-supported>`
 
     The resulting datasets will have their structure assigned,
@@ -280,11 +299,11 @@ def get_datasets(
         raise Invalid("No data found in the data message")
 
     if structure is None:
-        return data_msg.data
+        return data_msg.data  # type: ignore[return-value]
     structure_msg = read_sdmx(structure, validate=validate, pem=pem)
     if structure_msg.structures is None:
         raise Invalid("No structure found in the structure message")
 
     __assign_structure_to_dataset(data_msg.data, structure_msg)
 
-    return data_msg.data
+    return data_msg.data  # type: ignore[return-value]
