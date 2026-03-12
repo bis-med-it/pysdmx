@@ -175,7 +175,7 @@ A typical example to write data in Time Series with a custom header (pretty prin
         dimension_at_observation={"Dataflow=MD:TEST_DF(1.0)": "TIME_PERIOD"},
     )
 
-When all datasets share the same dimension at observation, a string shorthand can be used:
+When all datasets can use the same dimension at observation, a string shorthand can be used:
 
 .. code-block:: python
 
