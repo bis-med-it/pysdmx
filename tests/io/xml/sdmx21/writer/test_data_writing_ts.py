@@ -3,6 +3,7 @@ from datetime import datetime
 import pandas as pd
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx, write_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
@@ -108,24 +109,44 @@ def test_structure_specific_ts_defaults_time_period(header, ts_content):
     assert 'dimensionAtObservation="TIME_PERIOD"' in result
 
 
-def test_generic_ts_explicit_dim_at_obs(header, ts_content):
-    dim_mapping = {"DataStructure=MD:TEST_TS(1.0)": "FREQ"}
+def test_generic_ts_explicit_time_period(header, ts_content):
+    dim_mapping = {"DataStructure=MD:TEST_TS(1.0)": "TIME_PERIOD"}
     result = write_gen_ts(
         ts_content,
         header=header,
         dimension_at_observation=dim_mapping,
     )
-    assert 'dimensionAtObservation="FREQ"' in result
+    assert 'dimensionAtObservation="TIME_PERIOD"' in result
 
 
-def test_structure_specific_ts_explicit_dim_at_obs(header, ts_content):
-    dim_mapping = {"DataStructure=MD:TEST_TS(1.0)": "FREQ"}
+def test_structure_specific_ts_explicit_time_period(header, ts_content):
+    dim_mapping = {"DataStructure=MD:TEST_TS(1.0)": "TIME_PERIOD"}
     result = write_str_ts(
         ts_content,
         header=header,
         dimension_at_observation=dim_mapping,
     )
-    assert 'dimensionAtObservation="FREQ"' in result
+    assert 'dimensionAtObservation="TIME_PERIOD"' in result
+
+
+def test_generic_ts_rejects_non_time_period(header, ts_content):
+    dim_mapping = {"DataStructure=MD:TEST_TS(1.0)": "FREQ"}
+    with pytest.raises(Invalid):
+        write_gen_ts(
+            ts_content,
+            header=header,
+            dimension_at_observation=dim_mapping,
+        )
+
+
+def test_structure_specific_ts_rejects_non_time_period(header, ts_content):
+    dim_mapping = {"DataStructure=MD:TEST_TS(1.0)": "FREQ"}
+    with pytest.raises(Invalid):
+        write_str_ts(
+            ts_content,
+            header=header,
+            dimension_at_observation=dim_mapping,
+        )
 
 
 def test_generic_ts_round_trip(header, ts_content):

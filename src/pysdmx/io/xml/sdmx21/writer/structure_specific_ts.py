@@ -4,6 +4,7 @@
 from pathlib import Path
 from typing import Dict, Optional, Sequence, Union
 
+from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.sdmx21.writer.structure_specific import (
@@ -41,6 +42,18 @@ def write(
         dimension_at_observation = {
             ds.short_urn: "TIME_PERIOD" for ds in datasets
         }
+    else:
+        invalid_dims = {
+            k: v
+            for k, v in dimension_at_observation.items()
+            if v != "TIME_PERIOD"
+        }
+        if invalid_dims:
+            raise Invalid(
+                "Time Series formats require "
+                "dimensionAtObservation=TIME_PERIOD",
+                ", ".join(f"{k}={v}" for k, v in invalid_dims.items()),
+            )
 
     return _base_write(
         datasets=datasets,
