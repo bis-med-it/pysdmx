@@ -573,3 +573,31 @@ def test_write_maps(tmpdir, format):
     written = read_sdmx(out_path, validate=True)
 
     assert reference == written, "Written structures do not match reference."
+
+
+@pytest.mark.parametrize(
+    "format",
+    [
+        Format.STRUCTURE_SDMX_ML_3_0,
+        Format.STRUCTURE_SDMX_ML_3_1,
+    ],
+)
+def test_write_representation_map_datatype_tags(tmpdir, format):
+    data_path = Path(__file__).parent / "samples" / "maps.xml"
+    reference = read_sdmx(data_path, validate=True)
+
+    out_path = tmpdir / "maps_written.xml"
+    write_sdmx(
+        reference.structures,
+        sdmx_format=format,
+        output_path=out_path,
+        header=reference.header,
+    )
+    xml_content = out_path.read_text("utf-8")
+
+    # Codelist-based RepresentationMap uses SourceCodelist/TargetCodelist
+    assert "SourceCodelist>" in xml_content
+    assert "TargetCodelist>" in xml_content
+    # DataType-based RepresentationMap uses SourceDataType/TargetDataType
+    assert "SourceDataType>String</str:SourceDataType>" in xml_content
+    assert "TargetDataType>String</str:TargetDataType>" in xml_content
