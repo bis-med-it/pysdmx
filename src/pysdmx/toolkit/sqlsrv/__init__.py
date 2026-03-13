@@ -3,6 +3,8 @@
 from collections.abc import Collection
 from typing import Any, Callable, Optional, Union
 
+import msgspec
+
 from pysdmx import errors
 from pysdmx.api.dc.query import (
     BooleanFilter,
@@ -18,9 +20,11 @@ from pysdmx.api.dc.query import (
 from pysdmx.model import (
     Component,
     Components,
+    Concept,
     DataflowInfo,
     DataStructureDefinition,
     DataType,
+    Facets,
     Role,
     Schema,
 )
@@ -28,11 +32,23 @@ from pysdmx.model import (
 __SQL_ESC = '"'
 
 
+class Column(msgspec.Struct):
+    id: str
+    data_type: DataType
+    min_length: Optional[int] = None
+    max_length: Optional[int] = None
+    required: bool = False
+    indexed: bool = False
+    in_pk: bool = False
+    documentation: Optional[str] = None
+
+
 def create_table(
     structure: Union[DataflowInfo, DataStructureDefinition, Schema],
     schema_name: str = "dbo",
     table_name: Optional[str] = None,
     index_fields: Optional[Collection[str]] = None,
+    extra_columns: Optional[Collection[Column]] = None,
 ) -> str:
     """Return a CREATE statement for the supplied structure.
 
@@ -46,6 +62,8 @@ def create_table(
         index_fields: The columns for which an index should be created. If it
             is not supplied, indexes will be created for every dimension in the
             supplied structure.
+        extra_columns: Any additional column required for the table, beyond the
+            ones (i.e. the components) already defined in the structure.
 
     Returns:
         The CREATE statement for the supplied structure, as a string.
@@ -54,12 +72,18 @@ def create_table(
     kn = f"{schema_name}_"
     tn = table_name if table_name else structure.id
     cs = f"CREATE TABLE {sn}{tn} (\n"
-    comps = __order_components(structure.components)
+    comps = list(__order_components(structure.components))
+    if extra_columns:
+        comps.extend([__map_col_to_comp(col) for col in extra_columns])
     for c in comps:
         nm = f" -- {c.name}" if c.name else ""
         cs += f"    {c.id} {get_sql_data_type(c)} {__map_required(c)},{nm}\n"
     cs += f"    CONSTRAINT PK_{kn}{tn} PRIMARY KEY ("
     cs += ",".join(c.id for c in structure.components.dimensions)
+    if extra_columns:
+        extra = ",".join(c.id for c in extra_columns if c.in_pk)
+        if extra:
+            cs += f",{extra}"
     cs += ")\n"
     cs += ");\n"
     index_fields = (
@@ -67,6 +91,12 @@ def create_table(
         if index_fields
         else [c.id for c in structure.components.dimensions]
     )
+    if extra_columns:
+        index_fields.extend(
+            c.id
+            for c in extra_columns
+            if c.indexed and c.id not in index_fields
+        )
     for f in index_fields:
         cs += f"CREATE INDEX IDX_{kn}{tn}_{f} ON {sn}{tn} ({f});\n"
     return cs
@@ -415,3 +445,22 @@ def __order_components(comps: Components) -> Collection[Component]:
         )
     )
     return out
+
+
+def __map_col_to_comp(col: Column) -> Component:
+    facets = (
+        Facets(col.min_length, col.max_length)
+        if col.max_length or col.min_length
+        else None
+    )
+
+    return Component(
+        col.id,
+        col.required,
+        Role.ATTRIBUTE,
+        Concept(col.id),
+        col.data_type,
+        facets,
+        name=col.documentation,
+        attachment_level="O",
+    )
