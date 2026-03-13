@@ -1,7 +1,7 @@
 """Utility functions to ease the use of SQL Server in pysdmx processes."""
 
 from collections.abc import Collection
-from typing import Any, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 from pysdmx import errors
 from pysdmx.api.dc.query import (
@@ -15,8 +15,61 @@ from pysdmx.api.dc.query import (
     SortBy,
     TextFilter,
 )
+from pysdmx.model import (
+    Component,
+    Components,
+    DataflowInfo,
+    DataStructureDefinition,
+    DataType,
+    Role,
+    Schema,
+)
 
 __SQL_ESC = '"'
+
+
+def create_table(
+    structure: Union[DataflowInfo, DataStructureDefinition, Schema],
+    schema_name: str = "dbo",
+    table_name: Optional[str] = None,
+    index_fields: Optional[Collection[str]] = None,
+) -> str:
+    """Return a CREATE statement for the supplied structure.
+
+    Args:
+        structure: The structure for which a database table must be created.
+        schema_name: The name of the schema to which the new table belongs.
+            If it is not supplied, the table will be created in the default
+            schema.
+        table_name: The name of the table to be created. If it is not supplied,
+            the structure ID will be used as table name.
+        index_fields: The columns for which an index should be created. If it
+            is not supplied, indexes will be created for every dimension in the
+            supplied structure.
+
+    Returns:
+        The CREATE statement for the supplied structure, as a string.
+    """
+    sn = f"{schema_name}."
+    kn = f"{schema_name}_"
+    tn = table_name if table_name else structure.id
+    cs = f"CREATE TABLE {sn}{tn} (\n"
+    comps = __order_components(structure.components)
+    for c in comps:
+        nm = f" -- {c.name}" if c.name else ""
+        cs += f"    {c.id} {get_sql_data_type(c)} {__map_required(c)},{nm}\n"
+    cs += f"    CONSTRAINT PK_{kn}{tn} PRIMARY KEY ("
+    cs += ",".join(c.id for c in structure.components.dimensions)
+    cs += ")\n"
+    cs += ");\n"
+    index_fields = (
+        index_fields
+        if index_fields
+        else [c.id for c in structure.components.dimensions]
+    )
+    for f in index_fields:
+        cs += f"CREATE INDEX IDX_{kn}{tn}_{f} ON {sn}{tn} ({f});\n"
+    return cs
 
 
 def get_select_columns(columns: Optional[Collection[str]]) -> str:
@@ -116,6 +169,84 @@ def get_where_clause(
         return (s2, values)
     else:
         return ("", [])
+
+
+def get_sql_data_type(c: Component) -> str:
+    """Infer the appropriate SQL Server type for the supplied component.
+
+    This function maps the SDMX data types to the SQL Server ones, and uses
+    the max_length facet (if any), to infer the column size.
+
+    Returns:
+        The appropriate SQL Server type for the supplied component.
+    """
+    max_length = (
+        str(c.facets.max_length)
+        if c.facets and c.facets.max_length and c.facets.max_length > 0
+        else "MAX"
+    )
+    equal_length = (
+        c.facets
+        and c.facets.min_length
+        and c.facets.min_length == c.facets.max_length
+    )
+    # Numeric types
+    if c.dtype == DataType.SHORT:
+        return "SMALLINT"
+    elif c.dtype == DataType.INTEGER:
+        return "INT"
+    elif c.dtype in (DataType.LONG, DataType.COUNT):
+        return "BIGINT"
+    elif c.dtype in (DataType.BIG_INTEGER, DataType.DECIMAL):
+        return "DECIMAL(38, 18)"
+    elif c.dtype == DataType.FLOAT:
+        return "REAL"
+    elif c.dtype == DataType.DOUBLE:
+        return "FLOAT"
+    # Date / time types
+    elif c.dtype == DataType.MONTH:
+        return "TINYINT"
+    elif c.dtype == DataType.YEAR:
+        return "CHAR(4)"  # ISO 8601 year
+    elif c.dtype == DataType.DAY:
+        return "CHAR(5)"  # ISO 8601 day (---DD)
+    elif c.dtype in (
+        DataType.REP_YEAR,  # 2000-A1
+        DataType.REP_SEMESTER,  # 2000-S1
+        DataType.REP_TRIMESTER,  # 2000-T1
+        DataType.REP_QUARTER,  # 2000-Q1
+        DataType.MONTH_DAY,  # ISO 8601 month-day (--MM-DD)
+        DataType.YEAR_MONTH,  # ISO 8601 year-month (2000-01)
+    ):
+        return "CHAR(7)"
+    elif c.dtype in (DataType.REP_MONTH, DataType.REP_WEEK):
+        return "CHAR(8)"  # 2000-M01, 2000-W01
+    elif c.dtype == DataType.REP_DAY:
+        return "CHAR(9)"  # 2000-D001
+    elif c.dtype == DataType.GREGORIAN_TIME_PERIOD:
+        return "CHAR(10)"  # ISO 8601 Gregorian periods
+    elif c.dtype in (
+        DataType.STD_TIME_PERIOD,
+        DataType.PERIOD,
+        DataType.DURATION,
+    ):
+        return "NVARCHAR(50)"
+    elif c.dtype == DataType.DATE_TIME:
+        return "DATETIME2"
+    elif c.dtype == DataType.DATE:
+        return "DATE"
+    elif c.dtype == DataType.TIME:
+        return "TIME"
+    elif c.dtype == DataType.BASIC_TIME_PERIOD:
+        return "NVARCHAR(25)"
+    # All other types
+    elif c.dtype == DataType.BOOLEAN:
+        return "BIT"
+    else:
+        if equal_length:
+            return f"CHAR({max_length})"
+        else:
+            return f"NVARCHAR({max_length})"
 
 
 def __get_filter(
@@ -240,3 +371,47 @@ def __handle_not_filter(flt: NotFilter) -> tuple[str, list[Any]]:
 
 def __get_field(field: str) -> str:
     return f"{__SQL_ESC}{field}{__SQL_ESC}"
+
+
+def __map_required(c: Component) -> str:
+    return "NOT NULL" if c.role == Role.DIMENSION or c.required else "NULL"
+
+
+def __match_and_sort(
+    attrs: Components, flt: Callable
+) -> Collection[Component]:
+    return sorted([c for c in attrs if flt(c)], key=lambda x: x.id)
+
+
+def __order_components(comps: Components) -> Collection[Component]:
+    out = []
+    out.extend(comps.dimensions)
+    out.extend(comps.measures)
+    out.extend(  # Add obs-level attributes
+        __match_and_sort(
+            comps.attributes,
+            lambda c: c.attachment_level == "O"
+            or len(c.attachment_level.split(",")) == len(comps.dimensions),
+        )
+    )
+    out.extend(  # Then add series-level attributes
+        __match_and_sort(
+            comps.attributes,
+            lambda c: len(c.attachment_level.split(","))
+            == len(comps.dimensions) - 1,
+        )
+    )
+    out.extend(  # Then add group-level attributes
+        __match_and_sort(
+            comps.attributes,
+            lambda c: len(c.attachment_level.split(","))
+            < len(comps.dimensions) - 1
+            and c.attachment_level not in ["D", "O"],
+        )
+    )
+    out.extend(  # Finally, add dataflow-level attributes
+        __match_and_sort(
+            comps.attributes, lambda c: c.attachment_level.split(",") == "D"
+        )
+    )
+    return out
