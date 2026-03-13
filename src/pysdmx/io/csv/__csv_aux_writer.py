@@ -201,8 +201,11 @@ def _write_csv_2_aux(
         if partial_keys:
             if not isinstance(dataset.structure, Schema):
                 raise Invalid(
-                    "partial_keys",
-                    "A Schema is required to write partial key rows.",
+                    "Writing partial key rows requires a Schema "
+                    "as the dataset structure, but the current "
+                    "structure is a plain reference. "
+                    "Provide a Schema with component attachment "
+                    "levels to use partial_keys=True."
                 )
             df = __generate_partial_key_df(df, dataset.structure)
 

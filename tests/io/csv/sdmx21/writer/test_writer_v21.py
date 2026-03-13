@@ -124,6 +124,12 @@ def partial_keys_data():
 
 
 @pytest.fixture
+def partial_keys_schema(dsd_path):
+    dsd = read_sdmx(dsd_path).get_data_structure_definitions()[0]
+    return dsd.to_schema()
+
+
+@pytest.fixture
 def csv_partial_keys():
     base_path = Path(__file__).parent / "samples" / "csv_partial_keys.csv"
     return str(base_path)
@@ -384,14 +390,13 @@ def test_writer_time_format_normalized(data_path_optional, dsd_path):
         write([dataset], time_format="normalized")
 
 
-def test_writer_partial_keys(partial_keys_data, dsd_path, csv_partial_keys):
-    result = read_sdmx(dsd_path).get_data_structure_definitions()
-    dsd = result[0]
-    schema = dsd.to_schema()
+def test_writer_partial_keys(
+    partial_keys_data, partial_keys_schema, csv_partial_keys
+):
     dataset = PandasDataset(
         attributes={},
         data=partial_keys_data,
-        structure=schema,
+        structure=partial_keys_schema,
     )
     dataset.data = dataset.data.astype("str")
     result_sdmx_csv = write([dataset], partial_keys=True)
@@ -411,5 +416,5 @@ def test_writer_partial_keys_no_schema(partial_keys_data):
         structure="DataStructure=MD:DS1(2.0)",
     )
     dataset.data = dataset.data.astype("str")
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match="requires a Schema"):
         write([dataset], partial_keys=True)
