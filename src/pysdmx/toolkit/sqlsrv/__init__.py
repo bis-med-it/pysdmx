@@ -1,5 +1,6 @@
 """Utility functions to ease the use of SQL Server in pysdmx processes."""
 
+import re
 from collections.abc import Collection
 from typing import Any, Callable, Optional, Union
 
@@ -117,6 +118,41 @@ def create_table(
     for f in index_fields:
         cs += f"CREATE INDEX IDX_{kn}{tn}_{f} ON {sn}{tn} ({f});\n"
     return cs
+
+
+def get_select_statement(
+    table_name: str,
+    schema_name: str = "dbo",
+    filters: Optional[
+        Union[
+            BooleanFilter,
+            DateTimeFilter,
+            MultiFilter,
+            NotFilter,
+            NullFilter,
+            NumberFilter,
+            TextFilter,
+        ]
+    ] = None,
+    columns: Optional[Collection[str]] = None,
+    sort: Optional[Collection[SortBy]] = None,
+    offset: int = 0,
+    limit: Optional[int] = None,
+) -> tuple[str, list[Any]]:
+    """Return a SQL SELECT statement based on the provided input."""
+    if not __valid_identifier(schema_name) or not __valid_identifier(
+        table_name
+    ):
+        raise errors.Invalid("Invalid table or schema name")
+
+    target = f"{schema_name}.{table_name}"
+    where, values = get_where_clause(filters)
+    cols = get_select_columns(columns)
+    sc = get_sort_clause(sort)
+    pag = get_pagination_clause(offset, limit)
+
+    # It is safe to ignore S608, as the input is sanitized.
+    return f"SELECT {cols} FROM {target}{where}{sc}{pag}", values  # noqa: S608
 
 
 def get_select_columns(columns: Optional[Collection[str]]) -> str:
@@ -481,3 +517,8 @@ def __map_col_to_comp(col: Column) -> Component:
         name=col.documentation,
         attachment_level="O",
     )
+
+
+def __valid_identifier(name: str) -> bool:
+    """Validate that a string is a valid SQL identifier."""
+    return bool(re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", name))
