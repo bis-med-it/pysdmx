@@ -33,6 +33,21 @@ __SQL_ESC = '"'
 
 
 class Column(msgspec.Struct):
+    """Information about extra columns.
+
+    Attributes:
+        id: The column ID
+        data_type: The SDMX DataType of the column.
+        min_length: The minimum length of the column values.
+        max_length: The maximum length of the column values.
+        required: Whether a cell may be empty.
+        indexed: Whether the column must be indexed.
+        in_pk: Whether the column must be added to the composite
+            primary key.
+        documentation: Any information to be passed as comment to
+            the SQL CREATE TABLE statement.
+    """
+
     id: str
     data_type: DataType
     min_length: Optional[int] = None
