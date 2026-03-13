@@ -116,8 +116,10 @@ def partial_keys_schema(dsd_path):
 
 
 @pytest.fixture
-def csv_partial_keys():
-    base_path = Path(__file__).parent / "samples" / "csv_partial_keys.csv"
+def data_path_reference_partial_keys():
+    base_path = (
+        Path(__file__).parent / "samples" / "reference_partial_keys.csv"
+    )
     return str(base_path)
 
 
@@ -317,7 +319,7 @@ def test_writer_keys_both(data_path_optional, dsd_path, csv_keys_both):
 
 
 def test_writer_partial_keys(
-    partial_keys_data, partial_keys_schema, csv_partial_keys
+    partial_keys_data, partial_keys_schema, data_path_reference_partial_keys
 ):
     dataset = PandasDataset(
         attributes={},
@@ -327,7 +329,7 @@ def test_writer_partial_keys(
     dataset.data = dataset.data.astype("str")
     result_sdmx_csv = write([dataset], partial_keys=True)
     result_df = pd.read_csv(StringIO(result_sdmx_csv)).astype(str)
-    reference_df = pd.read_csv(csv_partial_keys).astype(str)
+    reference_df = pd.read_csv(data_path_reference_partial_keys).astype(str)
     pd.testing.assert_frame_equal(
         result_df.fillna("").replace("nan", ""),
         reference_df.replace("nan", ""),
