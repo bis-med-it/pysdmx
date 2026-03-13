@@ -101,10 +101,12 @@ def create_table(
             cs += f",{extra}"
     cs += ")\n"
     cs += ");\n"
-    index_fields = (
-        index_fields
-        if index_fields
-        else [c.id for c in structure.components.dimensions]
+    index_fields = list(
+        (
+            index_fields
+            if index_fields
+            else [c.id for c in structure.components.dimensions]
+        )
     )
     if extra_columns:
         index_fields.extend(
@@ -423,13 +425,13 @@ def __map_required(c: Component) -> str:
 
 
 def __match_and_sort(
-    attrs: Components, flt: Callable
+    attrs: Collection[Component], flt: Callable[[Any], bool]
 ) -> Collection[Component]:
     return sorted([c for c in attrs if flt(c)], key=lambda x: x.id)
 
 
 def __order_components(comps: Components) -> Collection[Component]:
-    out = []
+    out: list[Component] = []
     out.extend(comps.dimensions)
     out.extend(comps.measures)
     out.extend(  # Add obs-level attributes
