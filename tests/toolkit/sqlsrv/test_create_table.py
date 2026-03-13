@@ -179,3 +179,38 @@ def test_extra_columns_no_double_index(dsi):
     )
 
     assert sta == expected
+
+
+def test_extra_columns_none_in_pk(dsi):
+    expected = "CREATE TABLE dbo.TEST (\n"
+    expected += "    FREQ CHAR(1) NOT NULL, -- Frequency\n"
+    expected += "    INDICATOR CHAR(6) NOT NULL,\n"
+    expected += "    PERIOD NVARCHAR(50) NOT NULL,\n"
+    expected += "    VALUE INT NULL,\n"
+    expected += "    CONF CHAR(1) NOT NULL,\n"
+    expected += "    PRV CHAR(3) NOT NULL, -- Provider\n"
+    expected += "    LAST_UPD DATETIME2 NOT NULL,\n"
+    expected += (
+        "    CONSTRAINT PK_dbo_TEST PRIMARY KEY (FREQ,INDICATOR,PERIOD)\n"
+    )
+    expected += ");\n"
+    expected += "CREATE INDEX IDX_dbo_TEST_FREQ ON dbo.TEST (FREQ);\n"
+    expected += (
+        "CREATE INDEX IDX_dbo_TEST_INDICATOR ON dbo.TEST (INDICATOR);\n"
+    )
+    expected += "CREATE INDEX IDX_dbo_TEST_PERIOD ON dbo.TEST (PERIOD);\n"
+    extra_cols = [
+        Column(
+            "PRV",
+            DataType.ALPHA_NUM,
+            3,
+            3,
+            required=True,
+            documentation="Provider",
+        ),
+        Column("LAST_UPD", DataType.DATE_TIME, required=True),
+    ]
+
+    sta = create_table(dsi, extra_columns=extra_cols)
+
+    assert sta == expected
