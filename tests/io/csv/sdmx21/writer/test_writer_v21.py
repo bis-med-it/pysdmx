@@ -4,6 +4,8 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from pysdmx.errors import Invalid
+from pysdmx.io import read_sdmx
 from pysdmx.io.csv.sdmx21.writer import write
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model.dataset import ActionType
@@ -94,6 +96,36 @@ def csv_time_format_original():
     base_path = (
         Path(__file__).parent / "samples" / "csv_time_format_original.csv"
     )
+    return str(base_path)
+
+
+@pytest.fixture
+def partial_keys_data():
+    return pd.DataFrame(
+        [
+            {
+                "DIM1": "A",
+                "DIM2": "B",
+                "ATT1": "C",
+                "ATT2": "D",
+                "OBS_VALUE": 1,
+                "TIME_PERIOD": "2020",
+            },
+            {
+                "DIM1": "A",
+                "DIM2": "B",
+                "ATT1": "C",
+                "ATT2": "E",
+                "OBS_VALUE": 2,
+                "TIME_PERIOD": "2021",
+            },
+        ]
+    )
+
+
+@pytest.fixture
+def csv_partial_keys():
+    base_path = Path(__file__).parent / "samples" / "csv_partial_keys.csv"
     return str(base_path)
 
 
@@ -194,8 +226,6 @@ def test_writer_with_append_action(
 
 
 def test_writer_labels_id(data_path_optional, dsd_path, csv_labels_id):
-    from pysdmx.io import read_sdmx
-
     result = read_sdmx(dsd_path).get_data_structure_definitions()
     dsd = result[0]
     schema = dsd.to_schema()
@@ -216,8 +246,6 @@ def test_writer_labels_id(data_path_optional, dsd_path, csv_labels_id):
 
 
 def test_writer_labels_name(data_path_optional, dsd_path, csv_labels_name):
-    from pysdmx.io import read_sdmx
-
     result = read_sdmx(dsd_path).get_data_structure_definitions()
     dsd = result[0]
     schema = dsd.to_schema()
@@ -238,8 +266,6 @@ def test_writer_labels_name(data_path_optional, dsd_path, csv_labels_name):
 
 
 def test_writer_labels_both(data_path_optional, dsd_path, csv_labels_both):
-    from pysdmx.io import read_sdmx
-
     result = read_sdmx(dsd_path).get_data_structure_definitions()
     dsd = result[0]
     schema = dsd.to_schema()
@@ -260,8 +286,6 @@ def test_writer_labels_both(data_path_optional, dsd_path, csv_labels_both):
 
 
 def test_writer_keys_obs(data_path_optional, dsd_path, csv_keys_obs):
-    from pysdmx.io import read_sdmx
-
     result = read_sdmx(dsd_path).get_data_structure_definitions()
     dsd = result[0]
     schema = dsd.to_schema()
@@ -282,8 +306,6 @@ def test_writer_keys_obs(data_path_optional, dsd_path, csv_keys_obs):
 
 
 def test_writer_keys_series(data_path_optional, dsd_path, csv_keys_series):
-    from pysdmx.io import read_sdmx
-
     result = read_sdmx(dsd_path).get_data_structure_definitions()
     dsd = result[0]
     schema = dsd.to_schema()
@@ -304,8 +326,6 @@ def test_writer_keys_series(data_path_optional, dsd_path, csv_keys_series):
 
 
 def test_writer_keys_both(data_path_optional, dsd_path, csv_keys_both):
-    from pysdmx.io import read_sdmx
-
     result = read_sdmx(dsd_path).get_data_structure_definitions()
     dsd = result[0]
     schema = dsd.to_schema()
@@ -328,8 +348,6 @@ def test_writer_keys_both(data_path_optional, dsd_path, csv_keys_both):
 def test_writer_time_format_original(
     data_path_optional, dsd_path, csv_time_format_original
 ):
-    from pysdmx.io import read_sdmx
-
     result = read_sdmx(dsd_path).get_data_structure_definitions()
     dsd = result[0]
     schema = dsd.to_schema()
@@ -350,8 +368,6 @@ def test_writer_time_format_original(
 
 
 def test_writer_time_format_normalized(data_path_optional, dsd_path):
-    from pysdmx.io import read_sdmx
-
     result = read_sdmx(dsd_path).get_data_structure_definitions()
     dsd = result[0]
     schema = dsd.to_schema()
@@ -366,3 +382,34 @@ def test_writer_time_format_normalized(data_path_optional, dsd_path):
         match="Normalized time format is not implemented yet.",
     ):
         write([dataset], time_format="normalized")
+
+
+def test_writer_partial_keys(partial_keys_data, dsd_path, csv_partial_keys):
+    result = read_sdmx(dsd_path).get_data_structure_definitions()
+    dsd = result[0]
+    schema = dsd.to_schema()
+    dataset = PandasDataset(
+        attributes={},
+        data=partial_keys_data,
+        structure=schema,
+    )
+    dataset.data = dataset.data.astype("str")
+    result_sdmx_csv = write([dataset], partial_keys=True)
+    result_df = pd.read_csv(StringIO(result_sdmx_csv)).astype(str)
+    reference_df = pd.read_csv(csv_partial_keys).astype(str)
+    pd.testing.assert_frame_equal(
+        result_df.fillna("").replace("nan", ""),
+        reference_df.replace("nan", ""),
+    )
+
+
+@pytest.mark.data
+def test_writer_partial_keys_no_schema(partial_keys_data):
+    dataset = PandasDataset(
+        attributes={},
+        data=partial_keys_data,
+        structure="DataStructure=MD:DS1(2.0)",
+    )
+    dataset.data = dataset.data.astype("str")
+    with pytest.raises(Invalid):
+        write([dataset], partial_keys=True)
