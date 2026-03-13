@@ -139,7 +139,23 @@ def get_select_statement(
     offset: int = 0,
     limit: Optional[int] = None,
 ) -> tuple[str, list[Any]]:
-    """Return a SQL SELECT statement based on the provided input."""
+    """Return a SQL SELECT statement based on the provided input.
+
+    Args:
+        table_name: The name of the table from which to fetch data.
+        schema_name: The name of the schema to which the table belongs.
+        filters: The filters to be considered in the SQL WHERE clause.
+        columns: The columns from which to fetch data.
+        sort: How to sort data.
+        offset: The number of rows to skip before starting to return rows.
+        limit: The maximum number of rows to return after the offset.
+
+    Returns: A tuple containing:
+        - A string representing the SELECT statement corresponding to the
+            supplied input, as a prepared statement.
+        - A list of values to replace the placeholders in the prepared
+            statement.
+    """
     if not __valid_identifier(schema_name) or not __valid_identifier(
         table_name
     ):
