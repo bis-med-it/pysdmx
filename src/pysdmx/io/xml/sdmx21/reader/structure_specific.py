@@ -14,6 +14,7 @@ from pysdmx.io.xml.__ss_aux_reader import (
 from pysdmx.io.xml.__tokens import (
     STR_REF,
     STR_SPE,
+    STR_SPE_TS,
 )
 
 
@@ -25,11 +26,12 @@ def read(input_str: str, validate: bool = True) -> Sequence[PandasDataset]:
         validate: If True, the XML data will be validated against the XSD.
     """
     dict_info = parse_xml(input_str, validate=validate)
-    if STR_SPE not in dict_info:
+    msg_key = next((k for k in (STR_SPE, STR_SPE_TS) if k in dict_info), None)
+    if msg_key is None:
         raise Invalid(
             "This SDMX document is not an SDMX-ML StructureSpecificData."
         )
-    dataset_info, str_info = get_data_objects(dict_info[STR_SPE])
+    dataset_info, str_info = get_data_objects(dict_info[msg_key])
     datasets = []
     for dataset in dataset_info:
         ds = _parse_structure_specific_data(

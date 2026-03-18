@@ -115,14 +115,20 @@ def read_sdmx(  # noqa: C901
         ref_msg = read_refmeta(input_str, validate=validate)
         header = ref_msg.header
         reports = ref_msg.get_reports()
-    elif read_format == Format.DATA_SDMX_ML_2_1_GEN:
+    elif read_format in (
+        Format.DATA_SDMX_ML_2_1_GEN,
+        Format.DATA_SDMX_ML_2_1_GENTS,
+    ):
         from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 
         header = read_header(input_str, validate=validate)
-        # SDMX-ML 2.1 Generic Data
+        # SDMX-ML 2.1 Generic / Generic Time Series Data
         result_data = read_generic(input_str, validate=validate)
-    elif read_format == Format.DATA_SDMX_ML_2_1_STR:
+    elif read_format in (
+        Format.DATA_SDMX_ML_2_1_STR,
+        Format.DATA_SDMX_ML_2_1_STRTS,
+    ):
         from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.structure_specific import (
             read as read_str_spe,
@@ -182,7 +188,9 @@ def read_sdmx(  # noqa: C901
         Format.DATA_SDMX_CSV_2_0_0,
         Format.DATA_SDMX_CSV_2_1_0,
         Format.DATA_SDMX_ML_2_1_GEN,
+        Format.DATA_SDMX_ML_2_1_GENTS,
         Format.DATA_SDMX_ML_2_1_STR,
+        Format.DATA_SDMX_ML_2_1_STRTS,
         Format.DATA_SDMX_ML_3_0,
         Format.DATA_SDMX_ML_3_1,
     ):
