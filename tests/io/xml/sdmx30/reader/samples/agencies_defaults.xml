@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:Structure xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common">
+  <message:Header>
+    <message:ID>test</message:ID>
+    <message:Test>true</message:Test>
+    <message:Prepared>2025-01-01T00:00:00Z</message:Prepared>
+    <message:Sender id="TEST"/>
+    <message:Receiver id="not_supplied"/>
+  </message:Header>
+  <message:Structures>
+    <str:AgencySchemes>
+      <str:AgencyScheme isExternalReference="false" agencyID="SDMX" id="AGENCIES">
+        <com:Name xml:lang="en">AGENCIES</com:Name>
+        <str:Agency id="BIS">
+          <com:Name xml:lang="en">Bank for International Settlements</com:Name>
+        </str:Agency>
+      </str:AgencyScheme>
+    </str:AgencySchemes>
+  </message:Structures>
+</message:Structure>
