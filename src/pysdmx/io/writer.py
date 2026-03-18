@@ -89,11 +89,14 @@ def write_sdmx(
         header: Custom :class:`Header <pysdmx.model.message.Header>` to
           include in the SDMX Message (only for SDMX-ML)
         dimension_at_observation: Mapping for dimension at observation
-          (only for SDMX-ML Data formats). This is a dictionary where
-          the keys are short URNs and the values are the dimension IDs
-          that should be used as the dimension at observation for that
-          structure in the output. For example,
-          ``{"Dataflow=MD:TEST_MD(1.0)": "TIME_PERIOD"}``.
+          (only for SDMX-ML Data formats). Can be either:
+
+          - A **string** with the dimension ID to apply to all datasets
+            (e.g., ``"TIME_PERIOD"``).
+          - A **dictionary** where the keys are short URNs and the values
+            are the dimension IDs for each structure
+            (e.g., ``{"Dataflow=MD:TEST_MD(1.0)": "TIME_PERIOD"}``).
+
           Overrides the header.structure
           (if a custom header is provided).
         partial_keys: Whether to write partial key rows for

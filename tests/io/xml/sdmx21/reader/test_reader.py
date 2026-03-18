@@ -146,6 +146,36 @@ def test_agency_scheme_read(agency_scheme_path):
     assert agency_sdmx.name == "SDMX"
 
 
+def test_agency_scheme_defaults_omitted(samples_folder):
+    data_path = samples_folder / "agencies_defaults.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_structure(input_str, validate=True)
+
+    agency_scheme = result[0]
+    assert isinstance(agency_scheme, AgencyScheme)
+
+    # When id, name, and version match the SDMX standard defaults,
+    # they should use model defaults (not be explicitly set from XML),
+    # aligning XML reader behavior with JSON reader behavior.
+    assert agency_scheme.id == "AGENCIES"
+    assert agency_scheme.name == "AGENCIES"
+    assert agency_scheme.version == "1.0"
+    assert agency_scheme.agency == "SDMX"
+
+    expected = AgencyScheme(
+        is_final=agency_scheme.is_final,
+        is_external_reference=agency_scheme.is_external_reference,
+        agency="SDMX",
+        items=agency_scheme.items,
+    )
+    assert agency_scheme == expected
+    assert repr(agency_scheme) == repr(expected)
+
+    assert len(agency_scheme.items) == 1
+    assert agency_scheme.items[0].id == "BIS"
+
+
 def test_code_list_read(codelist_path):
     input_str, read_format = process_string_to_read(codelist_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1
