@@ -27,6 +27,7 @@ def write(
     prettyprint: bool = True,
     header: Optional[Header] = None,
     dimension_at_observation: Optional[Union[str, Dict[str, str]]] = None,
+    sdmx_format: Optional[Format] = None,
 ) -> Optional[str]:
     """Write data to SDMX-ML 2.1 Structure Specific format.
 
@@ -38,12 +39,13 @@ def write(
         dimension_at_observation:
           The dimension at observation, either as a string applied to all
           datasets or a dict mapping short URNs to dimension IDs.
+        sdmx_format: The SDMX format to use (defaults to Structure Specific).
 
     Returns:
         The XML string if path is empty, None otherwise.
     """
     ss_namespaces = ""
-    type_ = Format.DATA_SDMX_ML_2_1_STR
+    type_ = sdmx_format or Format.DATA_SDMX_ML_2_1_STR
 
     # Checking if we have datasets,
     # we need to ensure we can write them correctly
