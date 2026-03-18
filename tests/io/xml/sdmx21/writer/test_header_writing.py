@@ -167,3 +167,19 @@ def test_write_header_provision_agreement(
     with open(file_path, "r") as f:
         expected = f.read()
     assert header == expected
+
+
+def test_write_header_structure_usage_namespace(
+    header_structure_usage,
+):
+    header = write_header_aux(header_structure_usage, True, True, True)
+    exp = "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow="
+    assert f'namespace="{exp}MD:TEST(1.0)"' in header
+
+
+def test_write_header_provision_agreement_namespace(
+    header_provision_agrement,
+):
+    header = write_header_aux(header_provision_agrement, True, True, True)
+    exp = "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement="
+    assert f'namespace="{exp}MD:TEST(1.0)"' in header
