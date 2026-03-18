@@ -17,7 +17,9 @@ DATA_PROV = "DataProvider"
 
 # Structure Specific
 STR_SPE = "StructureSpecificData"
+STR_SPE_TS = "StructureSpecificTimeSeriesData"
 GENERIC = "GenericData"
+GENERIC_TS = "GenericTimeSeriesData"
 SERIES_KEY = "SeriesKey"
 GROUP_KEY = "GroupKey"
 ATTRIBUTES = "Attributes"
