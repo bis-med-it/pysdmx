@@ -371,7 +371,7 @@ def __reference(
             )
         else:
             namespace = (
-                f"{URN_DS_BASE}{reference.agency}:{reference.id}"
+                f"{urn_type}{reference.agency}:{reference.id}"
                 f"({reference.version})"
             )
 

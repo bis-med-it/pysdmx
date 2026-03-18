@@ -184,6 +184,19 @@ A typical example to write data in Time Series with a custom header (pretty prin
         dimension_at_observation={"Dataflow=MD:TEST_DF(1.0)": "TIME_PERIOD"},
     )
 
+When all datasets can use the same dimension at observation, a string shorthand can be used:
+
+.. code-block:: python
+
+    write_sdmx(
+        dataset,
+        output_path="output.xml",
+        sdmx_format=Format.DATA_SDMX_ML_3_0,
+        prettyprint=True,
+        header=header,
+        dimension_at_observation="TIME_PERIOD",
+    )
+
 .. _data-io-convert-tutorial:
 
 Convert between formats
