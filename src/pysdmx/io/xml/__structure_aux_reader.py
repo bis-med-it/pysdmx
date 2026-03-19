@@ -235,6 +235,13 @@ from pysdmx.model.vtl import (
 )
 from pysdmx.util import find_by_urn, is_final, parse_urn
 
+T = Any
+
+
+def _identity(x: T) -> T:
+    return x
+
+
 STRUCTURES_MAPPING = {
     CL: Codelist,
     VALUE_LIST: Codelist,
@@ -1324,7 +1331,9 @@ class StructureParser(Struct):
             "Target": "target",
             "Value": "value",
             "SourceCodelist": "source",
+            "SourceDataType": "source",
             "TargetCodelist": "target",
+            "TargetDataType": "target",
             "SourceValue": "source",
             "TargetValue": "target",
             "RepresentationMap": "values",
@@ -1335,10 +1344,15 @@ class StructureParser(Struct):
             "validFrom": "valid_from",
             "validTo": "valid_to",
         }
+        converters: Dict[str, Callable[[Any], Any]] = {
+            "SourceDataType": DataType,
+            "TargetDataType": DataType,
+        }
 
         for xml_key, py_key in renames.items():
             if xml_key in element:
-                element[py_key] = element.pop(xml_key)
+                value = element.pop(xml_key)
+                element[py_key] = converters.get(xml_key, _identity)(value)
 
         child_class_mapping: Dict[str, Type[Any]] = {
             "ComponentMap": ComponentMap,
