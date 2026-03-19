@@ -15,9 +15,7 @@ item_urn_pattern = re.compile(r"^.*\.(.*)=(.*):(.*)\((.*)\)\.(.*)$")
 short_urn_pattern = re.compile(r"^(.*)=(.*):(.*)\((.*)\)$")
 short_item_urn_pattern = re.compile(r"^(.*)=(.*):(.*)\((.*)\)\.(.*)$")
 _SEMVER_NUM = r"(0|[1-9]\d*)"
-semver_final_pattern = re.compile(
-    rf"^[1-9]\d*\.{_SEMVER_NUM}\.{_SEMVER_NUM}$"
-)
+semver_final_pattern = re.compile(rf"^[1-9]\d*\.{_SEMVER_NUM}\.{_SEMVER_NUM}$")
 
 
 def parse_urn(urn: str) -> Union[ItemReference, Reference]:
