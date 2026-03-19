@@ -2,7 +2,7 @@
 
 import re
 from collections.abc import Collection
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Literal, Optional, Union
 
 import msgspec
 
@@ -45,6 +45,7 @@ class Column(msgspec.Struct):
         indexed: Whether the column must be indexed.
         in_pk: Whether the column must be added to the composite
             primary key.
+        identity: Whether this is a SQL Server identity column
         documentation: Any information to be passed as comment to
             the SQL CREATE TABLE statement.
     """
@@ -56,6 +57,7 @@ class Column(msgspec.Struct):
     required: bool = False
     indexed: bool = False
     in_pk: bool = False
+    identity: bool = False
     documentation: Optional[str] = None
 
 
@@ -63,6 +65,7 @@ def create_table(
     structure: Union[DataflowInfo, DataStructureDefinition, Schema],
     schema_name: str = "dbo",
     table_name: Optional[str] = None,
+    pk_fields: Optional[str] = None,
     index_fields: Optional[Collection[str]] = None,
     extra_columns: Optional[Collection[Column]] = None,
 ) -> str:
@@ -75,6 +78,9 @@ def create_table(
             schema.
         table_name: The name of the table to be created. If it is not supplied,
             the structure ID will be used as table name.
+        pk_fields: The field(s) to be used for the (composite) primary key. If
+            it is not supplied, the primary key will be a composite key
+            combining the dimension values.
         index_fields: The columns for which an index should be created. If it
             is not supplied, indexes will be created for every dimension in the
             supplied structure.
@@ -95,11 +101,14 @@ def create_table(
         nm = f" -- {c.name}" if c.name else ""
         cs += f"    {c.id} {get_sql_data_type(c)} {__map_required(c)},{nm}\n"
     cs += f"    CONSTRAINT PK_{kn}{tn} PRIMARY KEY ("
-    cs += ",".join(c.id for c in structure.components.dimensions)
-    if extra_columns:
-        extra = ",".join(c.id for c in extra_columns if c.in_pk)
-        if extra:
-            cs += f",{extra}"
+    if pk_fields:
+        cs += ",".join(f for f in pk_fields)
+    else:
+        cs += ",".join(c.id for c in structure.components.dimensions)
+        if extra_columns:
+            extra = ",".join(c.id for c in extra_columns if c.in_pk)
+            if extra:
+                cs += f",{extra}"
     cs += ")\n"
     cs += ");\n"
     index_fields = list(
@@ -347,6 +356,12 @@ def get_sql_data_type(c: Component) -> str:
     # All other types
     elif c.dtype == DataType.BOOLEAN:
         return "BIT"
+    elif (
+        c.dtype == DataType.INCREMENTAL
+        and c.facets
+        and isinstance(c.facets.interval, int)
+    ):
+        return "INT"
     else:
         if equal_length:
             return f"CHAR({max_length})"
@@ -481,7 +496,18 @@ def __get_field(field: str) -> str:
 
 
 def __map_required(c: Component) -> str:
-    return "NOT NULL" if c.role == Role.DIMENSION or c.required else "NULL"
+    if (
+        c.dtype == DataType.INCREMENTAL
+        and c.facets
+        and c.facets.is_sequence
+        and isinstance(c.facets.interval, int)
+    ):
+        inc = c.facets.interval if c.facets.interval else 1
+        return f"IDENTITY(1,{inc})"
+    elif c.role == Role.DIMENSION or c.required:
+        return "NOT NULL"
+    else:
+        return "NULL"
 
 
 def __match_and_sort(
@@ -525,11 +551,10 @@ def __order_components(comps: Components) -> Collection[Component]:
 
 
 def __map_col_to_comp(col: Column) -> Component:
-    facets = (
-        Facets(col.min_length, col.max_length)
-        if col.max_length or col.min_length
-        else None
-    )
+    minl = col.min_length
+    maxl = col.max_length
+    inc = 1 if col.identity else None
+    facets = Facets(minl, maxl, interval=inc, is_sequence=col.identity)
 
     return Component(
         col.id,
