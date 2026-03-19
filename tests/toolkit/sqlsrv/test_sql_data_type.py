@@ -18,7 +18,7 @@ from pysdmx.toolkit.sqlsrv import get_sql_data_type
     ],
 )
 def test_numeric_type_mapping(data_type, expected_sql_type):
-    """Test mapping of various data types."""
+    """Test mapping of various numeric data types."""
     cmp = Component(
         "TEST",
         False,
@@ -56,7 +56,7 @@ def test_numeric_type_mapping(data_type, expected_sql_type):
     ],
 )
 def test_date_time_type_mapping(data_type, expected_sql_type):
-    """Test mapping of various data types."""
+    """Test mapping of various date and time data types."""
     cmp = Component(
         "TEST",
         False,
@@ -69,7 +69,7 @@ def test_date_time_type_mapping(data_type, expected_sql_type):
 
 
 def test_boolean_type_mapping():
-    """Test mapping of various data types."""
+    """Test mapping of boolean data types."""
     cmp = Component(
         "TEST",
         False,
@@ -79,6 +79,20 @@ def test_boolean_type_mapping():
         attachment_level="O",
     )
     assert get_sql_data_type(cmp) == "BIT"
+
+
+def test_incremental_type_mapping():
+    """Test mapping of incremental data types."""
+    cmp = Component(
+        "TEST",
+        False,
+        Role.ATTRIBUTE,
+        Concept("TEST"),
+        DataType.INCREMENTAL,
+        Facets(is_sequence=True, interval=1),
+        attachment_level="O",
+    )
+    assert get_sql_data_type(cmp) == "INT"
 
 
 @pytest.mark.parametrize(
@@ -93,7 +107,7 @@ def test_boolean_type_mapping():
     ],
 )
 def test_string_type_mapping(data_type):
-    """Test mapping of various data types."""
+    """Test mapping of miscellaneous data types."""
     cmp = Component(
         "TEST",
         False,
