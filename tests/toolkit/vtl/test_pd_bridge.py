@@ -81,8 +81,6 @@ def test_decimal_numbers(dt: DataType, required: bool, expected: str):
         (DataType.YEAR, False, "datetime64[Y]"),
         (DataType.GREGORIAN_TIME_PERIOD, True, "object"),
         (DataType.GREGORIAN_TIME_PERIOD, False, "object"),
-        (DataType.MONTH, True, "int8"),
-        (DataType.MONTH, False, "Int8"),
     ],
 )
 def test_dates(dt: DataType, required: bool, expected: str):
@@ -130,6 +128,7 @@ def test_booleans(dt: DataType, required: bool, expected: str):
         DataType.BASIC_TIME_PERIOD,
         DataType.DAY,
         DataType.DURATION,
+        DataType.MONTH,
         DataType.MONTH_DAY,
         DataType.NUMERIC,
         DataType.PERIOD,

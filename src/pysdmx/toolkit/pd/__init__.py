@@ -20,8 +20,6 @@ def __get_pd_type(dt: DataType, required: bool) -> str:  # noqa: C901
         return "float64" if required else "Float64"
     elif dt == DataType.BOOLEAN:
         return "bool" if required else "boolean"
-    elif dt == DataType.MONTH:
-        return "int8" if required else "Int8"
     elif dt == DataType.GREGORIAN_TIME_PERIOD:
         return "object"
     elif dt == DataType.DATE_TIME:
