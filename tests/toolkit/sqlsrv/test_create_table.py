@@ -140,7 +140,17 @@ def test_extra_columns(dsi):
     expected += "CREATE INDEX IDX_dbo_TEST_PERIOD ON dbo.TEST (PERIOD);\n"
     expected += "CREATE INDEX IDX_dbo_TEST_PRV ON dbo.TEST (PRV);\n"
     extra_cols = [
-        Column("PRV", DataType.ALPHA_NUM, 3, 3, True, True, True, "Provider"),
+        Column(
+            "PRV",
+            DataType.ALPHA_NUM,
+            3,
+            3,
+            True,
+            True,
+            True,
+            False,
+            "Provider",
+        ),
         Column("LAST_UPD", DataType.DATE_TIME, required=True),
     ]
 
@@ -168,7 +178,17 @@ def test_extra_columns_no_double_index(dsi):
     expected += "CREATE INDEX IDX_dbo_TEST_PERIOD ON dbo.TEST (PERIOD);\n"
     expected += "CREATE INDEX IDX_dbo_TEST_PRV ON dbo.TEST (PRV);\n"
     extra_cols = [
-        Column("PRV", DataType.ALPHA_NUM, 3, 3, True, True, True, "Provider"),
+        Column(
+            "PRV",
+            DataType.ALPHA_NUM,
+            3,
+            3,
+            True,
+            True,
+            True,
+            False,
+            "Provider",
+        ),
         Column("LAST_UPD", DataType.DATE_TIME, required=True),
     ]
 
