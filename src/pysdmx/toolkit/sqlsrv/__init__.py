@@ -45,7 +45,10 @@ class Column(msgspec.Struct):
         indexed: Whether the column must be indexed.
         in_pk: Whether the column must be added to the composite
             primary key.
-        identity: Whether this is a SQL Server identity column
+        identity: Whether this is a SQL Server identity column.
+            Used in conjunction with the pk_fields parameter of the
+            create_table function, this allows defining a primary
+            key column where values are automatically incremented.
         documentation: Any information to be passed as comment to
             the SQL CREATE TABLE statement.
     """
@@ -90,16 +93,23 @@ def create_table(
     Returns:
         The CREATE statement for the supplied structure, as a string.
     """
+    # Step 0: Prepare the fields
+    comps = list(__order_components(structure.components))
+    if extra_columns:
+        comps.extend([__map_col_to_comp(col) for col in extra_columns])
+
+    # Step 1: Output table name
     sn = f"{schema_name}."
     kn = f"{schema_name}_"
     tn = table_name if table_name else structure.id
     cs = f"CREATE TABLE {sn}{tn} (\n"
-    comps = list(__order_components(structure.components))
-    if extra_columns:
-        comps.extend([__map_col_to_comp(col) for col in extra_columns])
+
+    # Step 2: Output the field definitions
     for c in comps:
         nm = f" -- {c.name}" if c.name else ""
         cs += f"    {c.id} {get_sql_data_type(c)} {__map_required(c)},{nm}\n"
+
+    # Step 3: Output the primary key definition
     cs += f"    CONSTRAINT PK_{kn}{tn} PRIMARY KEY ("
     if pk_fields:
         cs += ",".join(f for f in pk_fields)
@@ -111,6 +121,8 @@ def create_table(
                 cs += f",{extra}"
     cs += ")\n"
     cs += ");\n"
+
+    # Step 4: Output any additional index
     index_fields = list(
         (
             index_fields
@@ -126,6 +138,8 @@ def create_table(
         )
     for f in index_fields:
         cs += f"CREATE INDEX IDX_{kn}{tn}_{f} ON {sn}{tn} ({f});\n"
+
+    # Step 5: Return the CREATE TABLE statement
     return cs
 
 
