@@ -58,6 +58,11 @@ def to_pandas_type(comp: Component) -> str:
     """
     if comp.enumeration:
         return "category"
+    elif comp.dtype == DataType.INCREMENTAL:
+        if comp.facets and isinstance(comp.facets.interval, float):
+            return "float32" if comp.required else "Float32"
+        else:
+            return "int32" if comp.required else "Int32"
     else:
         return __get_pd_type(comp.dtype, comp.required)
 

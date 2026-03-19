@@ -7,6 +7,7 @@ from pysdmx.model import (
     Components,
     Concept,
     DataType,
+    Facets,
     Role,
 )
 from pysdmx.toolkit.pd import to_pandas_schema, to_pandas_type
@@ -172,6 +173,30 @@ def test_enumeration():
     received = to_pandas_type(comp)
 
     assert received == "category"
+
+
+@pytest.mark.parametrize(
+    ("required", "value", "expected"),
+    [
+        (True, 1, "int32"),
+        (False, 1, "Int32"),
+        (True, 0.1, "float32"),
+        (False, 0.1, "Float32"),
+    ],
+)
+def test_incremental(required, value, expected):
+    comp = Component(
+        "TEST",
+        required,
+        Role.DIMENSION,
+        Concept("TEST"),
+        DataType.INCREMENTAL,
+        Facets(interval=value),
+    )
+
+    received = to_pandas_type(comp)
+
+    assert received == expected
 
 
 def test_schema():
