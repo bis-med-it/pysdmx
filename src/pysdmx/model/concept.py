@@ -56,7 +56,7 @@ class DataType(str, Enum):
     LONG = "Long"
     """A whole number (8 bytes)."""
     MONTH = "Month"
-    """A month in the ISO 8601 calendar (e.g. ``12``)."""
+    """A month in the ISO 8601 calendar (e.g. ``--12``)."""
     MONTH_DAY = "MonthDay"
     """A month day in the ISO 8601 calendar (e.g. ``--12-31``)."""
     NUMERIC = "Numeric"
