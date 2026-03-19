@@ -11,7 +11,7 @@ from pysdmx.toolkit.sqlsrv import get_sql_data_type
         (DataType.INTEGER, "INT"),
         (DataType.LONG, "BIGINT"),
         (DataType.COUNT, "BIGINT"),
-        (DataType.BIG_INTEGER, "DECIMAL(38, 18)"),
+        (DataType.BIG_INTEGER, "DECIMAL(38, 0)"),
         (DataType.DECIMAL, "DECIMAL(38, 18)"),
         (DataType.FLOAT, "REAL"),
         (DataType.DOUBLE, "FLOAT"),
@@ -33,11 +33,11 @@ def test_numeric_type_mapping(data_type, expected_sql_type):
 @pytest.mark.parametrize(
     ("data_type", "expected_sql_type"),
     [
-        (DataType.YEAR, "CHAR(4)"),
-        (DataType.MONTH, "TINYINT"),
-        (DataType.DAY, "CHAR(5)"),
-        (DataType.YEAR_MONTH, "CHAR(7)"),
-        (DataType.MONTH_DAY, "CHAR(7)"),
+        (DataType.YEAR, "VARCHAR(10)"),
+        (DataType.MONTH, "VARCHAR(10)"),
+        (DataType.DAY, "VARCHAR(11)"),
+        (DataType.YEAR_MONTH, "VARCHAR(13)"),
+        (DataType.MONTH_DAY, "VARCHAR(13)"),
         (DataType.REP_YEAR, "CHAR(7)"),
         (DataType.REP_SEMESTER, "CHAR(7)"),
         (DataType.REP_TRIMESTER, "CHAR(7)"),
@@ -45,11 +45,11 @@ def test_numeric_type_mapping(data_type, expected_sql_type):
         (DataType.REP_MONTH, "CHAR(8)"),
         (DataType.REP_WEEK, "CHAR(8)"),
         (DataType.REP_DAY, "CHAR(9)"),
-        (DataType.GREGORIAN_TIME_PERIOD, "CHAR(10)"),
-        (DataType.STD_TIME_PERIOD, "NVARCHAR(50)"),
-        (DataType.BASIC_TIME_PERIOD, "NVARCHAR(25)"),
-        (DataType.PERIOD, "NVARCHAR(50)"),
-        (DataType.DURATION, "NVARCHAR(50)"),
+        (DataType.GREGORIAN_TIME_PERIOD, "VARCHAR(16)"),
+        (DataType.STD_TIME_PERIOD, "VARCHAR(50)"),
+        (DataType.BASIC_TIME_PERIOD, "VARCHAR(25)"),
+        (DataType.PERIOD, "VARCHAR(50)"),
+        (DataType.DURATION, "VARCHAR(50)"),
         (DataType.DATE_TIME, "DATETIME2"),
         (DataType.DATE, "DATE"),
         (DataType.TIME, "TIME"),
@@ -102,7 +102,11 @@ def test_string_type_mapping(data_type):
         data_type,
         attachment_level="O",
     )
-    assert get_sql_data_type(cmp) == "NVARCHAR(MAX)"
+    assert (
+        get_sql_data_type(cmp) == "VARCHAR(MAX)"
+        if data_type == DataType.NUMERIC
+        else "NVARCHAR(MAX)"
+    )
 
 
 @pytest.mark.parametrize(

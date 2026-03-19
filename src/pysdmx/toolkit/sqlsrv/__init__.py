@@ -296,40 +296,46 @@ def get_sql_data_type(c: Component) -> str:
         return "INT"
     elif c.dtype in (DataType.LONG, DataType.COUNT):
         return "BIGINT"
-    elif c.dtype in (DataType.BIG_INTEGER, DataType.DECIMAL):
+    elif c.dtype == DataType.BIG_INTEGER:
+        return "DECIMAL(38, 0)"
+    elif c.dtype == DataType.DECIMAL:
         return "DECIMAL(38, 18)"
     elif c.dtype == DataType.FLOAT:
         return "REAL"
     elif c.dtype == DataType.DOUBLE:
         return "FLOAT"
     # Date / time types
-    elif c.dtype == DataType.MONTH:
-        return "TINYINT"
-    elif c.dtype == DataType.YEAR:
-        return "CHAR(4)"  # ISO 8601 year
-    elif c.dtype == DataType.DAY:
-        return "CHAR(5)"  # ISO 8601 day (---DD)
     elif c.dtype in (
         DataType.REP_YEAR,  # 2000-A1
         DataType.REP_SEMESTER,  # 2000-S1
         DataType.REP_TRIMESTER,  # 2000-T1
         DataType.REP_QUARTER,  # 2000-Q1
-        DataType.MONTH_DAY,  # ISO 8601 month-day (--MM-DD)
-        DataType.YEAR_MONTH,  # ISO 8601 year-month (2000-01)
     ):
         return "CHAR(7)"
     elif c.dtype in (DataType.REP_MONTH, DataType.REP_WEEK):
         return "CHAR(8)"  # 2000-M01, 2000-W01
     elif c.dtype == DataType.REP_DAY:
         return "CHAR(9)"  # 2000-D001
+    elif c.dtype in (
+        DataType.YEAR,  # ISO 8601 year
+        DataType.MONTH,  # ISO 8601 month (--MM)
+    ):
+        return "VARCHAR(10)"
+    elif c.dtype == DataType.DAY:
+        return "VARCHAR(11)"  # ISO 8601 day (---DD)
+    elif c.dtype in (
+        DataType.MONTH_DAY,  # ISO 8601 month-day (--MM-DD)
+        DataType.YEAR_MONTH,  # ISO 8601 year-month (2000-01)
+    ):
+        return "VARCHAR(13)"
     elif c.dtype == DataType.GREGORIAN_TIME_PERIOD:
-        return "CHAR(10)"  # ISO 8601 Gregorian periods
+        return "VARCHAR(16)"  # ISO 8601 Gregorian periods
     elif c.dtype in (
         DataType.STD_TIME_PERIOD,
         DataType.PERIOD,
         DataType.DURATION,
     ):
-        return "NVARCHAR(50)"
+        return "VARCHAR(50)"
     elif c.dtype == DataType.DATE_TIME:
         return "DATETIME2"
     elif c.dtype == DataType.DATE:
@@ -337,13 +343,15 @@ def get_sql_data_type(c: Component) -> str:
     elif c.dtype == DataType.TIME:
         return "TIME"
     elif c.dtype == DataType.BASIC_TIME_PERIOD:
-        return "NVARCHAR(25)"
+        return "VARCHAR(25)"
     # All other types
     elif c.dtype == DataType.BOOLEAN:
         return "BIT"
     else:
         if equal_length:
             return f"CHAR({max_length})"
+        elif c.dtype == DataType.NUMERIC:
+            return f"VARCHAR({max_length})"
         else:
             return f"NVARCHAR({max_length})"
 
