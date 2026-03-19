@@ -601,3 +601,40 @@ def test_write_representation_map_datatype_tags(tmpdir, format):
     # DataType-based RepresentationMap uses SourceDataType/TargetDataType
     assert "SourceDataType>String</str:SourceDataType>" in xml_content
     assert "TargetDataType>String</str:TargetDataType>" in xml_content
+
+
+def test_write_maps_xml_json_roundtrip(tmpdir):
+    from pysdmx.model import DataType, RepresentationMap
+
+    data_path = Path(__file__).parent / "samples" / "maps.xml"
+    from_xml = read_sdmx(data_path, validate=True)
+
+    json_path = Path(str(tmpdir)) / "maps.json"
+    write_sdmx(
+        from_xml.structures,
+        sdmx_format=Format.STRUCTURE_SDMX_JSON_2_0_0,
+        output_path=json_path,
+    )
+    from_json = read_sdmx(json_path, validate=True)
+
+    def find_rm(structures, rm_id):
+        return next(
+            s
+            for s in structures
+            if isinstance(s, RepresentationMap) and s.id == rm_id
+        )
+
+    # Codelist-based RepresentationMap round-trips correctly
+    xml_sex = find_rm(from_xml.structures, "REPMAP_SEX")
+    json_sex = find_rm(from_json.structures, "REPMAP_SEX")
+    assert xml_sex.source == json_sex.source
+    assert xml_sex.target == json_sex.target
+
+    # DataType-based RepresentationMap preserves DataType enum
+    xml_dt = find_rm(from_xml.structures, "RM_INDICATOR")
+    json_dt = find_rm(from_json.structures, "RM_INDICATOR")
+    assert isinstance(xml_dt.source, DataType)
+    assert isinstance(json_dt.source, DataType)
+    assert xml_dt.source == json_dt.source
+    assert xml_dt.target == json_dt.target
+    assert xml_dt.maps == json_dt.maps

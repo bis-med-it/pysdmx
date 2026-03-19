@@ -13,6 +13,7 @@ from pysdmx.io.reader import get_datasets
 from pysdmx.model import (
     Codelist,
     ComponentMap,
+    DataType,
     DatePatternMap,
     FixedValueMap,
     ImplicitComponentMap,
@@ -644,8 +645,8 @@ def test_read_maps():
     assert rep_map.agency == "WB"
     assert rep_map.version == "1.0"
     assert rep_map.name == "Mapping Series to INDICATOR"
-    assert rep_map.source == "String"
-    assert rep_map.target == "String"
+    assert rep_map.source == DataType.STRING
+    assert rep_map.target == DataType.STRING
     assert len(rep_map.maps) == 2
 
     m = rep_map.maps[0]
