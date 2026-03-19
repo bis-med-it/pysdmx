@@ -25,7 +25,7 @@ from pysdmx.model import (
     StructureMap,
     ValueMap,
 )
-from pysdmx.util import find_by_urn
+from pysdmx.util import find_by_urn, is_final
 
 
 class JsonSourceValue(Struct, frozen=True, omit_defaults=True):
@@ -134,6 +134,7 @@ class JsonRepresentationMap(MaintainableType, frozen=True, omit_defaults=True):
                 maps=mrs,  # type: ignore[arg-type]
                 description=self.description,
                 version=self.version,
+                is_final=is_final(self.version),
             )
         else:
             return RepresentationMap(
@@ -145,6 +146,7 @@ class JsonRepresentationMap(MaintainableType, frozen=True, omit_defaults=True):
                 maps=mrs,  # type: ignore[arg-type]
                 description=self.description,
                 version=self.version,
+                is_final=is_final(self.version),
             )
 
     @classmethod
@@ -365,6 +367,7 @@ class JsonStructureMap(MaintainableType, frozen=True, omit_defaults=True):
             version=self.version,
             annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             valid_from=self.validFrom,
             valid_to=self.validTo,
         )

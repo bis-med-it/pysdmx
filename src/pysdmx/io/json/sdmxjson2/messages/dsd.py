@@ -31,7 +31,7 @@ from pysdmx.model import (
     Role,
 )
 from pysdmx.model.dataflow import Group
-from pysdmx.util import parse_item_urn
+from pysdmx.util import is_final, parse_item_urn
 
 
 def _find_concept(
@@ -554,6 +554,7 @@ class JsonDataStructure(MaintainableType, frozen=True, omit_defaults=True):
             agency=self.agency,
             description=self.description,
             version=self.version,
+            is_final=is_final(self.version),
             annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
             valid_from=self.validFrom,
