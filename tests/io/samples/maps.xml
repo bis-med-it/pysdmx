@@ -80,6 +80,20 @@
                     <str:TargetValue>Seasonally adjusted</str:TargetValue>
                 </str:RepresentationMapping>
             </str:RepresentationMap>
+            <!-- Data type source/target (not codelist) -->
+            <str:RepresentationMap urn="urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=WB:RM_INDICATOR(1.0)" id="RM_INDICATOR" agencyID="WB" version="1.0">
+                <com:Name xml:lang="en">Mapping Series to INDICATOR</com:Name>
+                <str:SourceDataType>String</str:SourceDataType>
+                <str:TargetDataType>String</str:TargetDataType>
+                <str:RepresentationMapping>
+                    <str:SourceValue>SRC_A</str:SourceValue>
+                    <str:TargetValue>TGT_A</str:TargetValue>
+                </str:RepresentationMapping>
+                <str:RepresentationMapping>
+                    <str:SourceValue>SRC_B</str:SourceValue>
+                    <str:TargetValue>TGT_B</str:TargetValue>
+                </str:RepresentationMapping>
+            </str:RepresentationMap>
         </str:RepresentationMaps>
         <str:StructureMaps>
             <str:StructureMap urn="urn:sdmx:org.sdmx.infomodel.structuremapping.StructureMap=ESTAT:STRMAP_DEMO(1.0)" id="STRMAP_DEMO" agencyID="ESTAT" version="1.0">
