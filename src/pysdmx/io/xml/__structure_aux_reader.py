@@ -233,7 +233,7 @@ from pysdmx.model.vtl import (
     VtlDataflowMapping,
     VtlMappingScheme,
 )
-from pysdmx.util import find_by_urn, parse_urn
+from pysdmx.util import find_by_urn, is_final, parse_urn
 
 STRUCTURES_MAPPING = {
     CL: Codelist,
@@ -1399,6 +1399,8 @@ class StructureParser(Struct):
                 )
             if IS_FINAL in element:
                 element[IS_FINAL_LOW] = element.pop(IS_FINAL) == "true"
+            elif self.is_sdmx_30 and VERSION in element:
+                element[IS_FINAL_LOW] = is_final(element[VERSION])
             if IS_PARTIAL in element:
                 element[IS_PARTIAL_LOW] = element.pop(IS_PARTIAL) == "true"
             items = []
@@ -1479,6 +1481,8 @@ class StructureParser(Struct):
                 element[IS_FINAL_LOW] = (
                     str(element[IS_FINAL_LOW]).lower() == "true"
                 )
+            elif self.is_sdmx_30 and VERSION in element:
+                element[IS_FINAL_LOW] = is_final(element[VERSION])
 
             if item == DFW:
                 if isinstance(element[STRUCTURE], str):
