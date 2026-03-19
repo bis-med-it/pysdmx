@@ -2,7 +2,7 @@
 
 import re
 from collections.abc import Collection
-from typing import Any, Callable, Literal, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 import msgspec
 
