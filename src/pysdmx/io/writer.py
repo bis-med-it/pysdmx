@@ -16,8 +16,11 @@ WRITERS = {
     Format.DATA_SDMX_CSV_2_0_0: "pysdmx.io.csv.sdmx20.writer",
     Format.DATA_SDMX_CSV_2_1_0: "pysdmx.io.csv.sdmx21.writer",
     Format.DATA_SDMX_ML_2_1_GEN: "pysdmx.io.xml.sdmx21.writer.generic",
+    Format.DATA_SDMX_ML_2_1_GENTS: "pysdmx.io.xml.sdmx21.writer.generic_ts",
     Format.DATA_SDMX_ML_2_1_STR: "pysdmx.io.xml.sdmx21.writer."
     "structure_specific",
+    Format.DATA_SDMX_ML_2_1_STRTS: "pysdmx.io.xml.sdmx21.writer."
+    "structure_specific_ts",
     Format.STRUCTURE_SDMX_ML_2_1: "pysdmx.io.xml.sdmx21.writer.structure",
     Format.DATA_SDMX_ML_3_0: "pysdmx.io.xml.sdmx30.writer.structure_specific",
     Format.STRUCTURE_SDMX_ML_3_0: "pysdmx.io.xml.sdmx30.writer.structure",
@@ -89,11 +92,14 @@ def write_sdmx(
         header: Custom :class:`Header <pysdmx.model.message.Header>` to
           include in the SDMX Message (only for SDMX-ML)
         dimension_at_observation: Mapping for dimension at observation
-          (only for SDMX-ML Data formats). This is a dictionary where
-          the keys are short URNs and the values are the dimension IDs
-          that should be used as the dimension at observation for that
-          structure in the output. For example,
-          ``{"Dataflow=MD:TEST_MD(1.0)": "TIME_PERIOD"}``.
+          (only for SDMX-ML Data formats). Can be either:
+
+          - A **string** with the dimension ID to apply to all datasets
+            (e.g., ``"TIME_PERIOD"``).
+          - A **dictionary** where the keys are short URNs and the values
+            are the dimension IDs for each structure
+            (e.g., ``{"Dataflow=MD:TEST_MD(1.0)": "TIME_PERIOD"}``).
+
           Overrides the header.structure
           (if a custom header is provided).
 

@@ -56,25 +56,42 @@ def __check_json(input_str: str) -> bool:
         return False
 
 
+def __get_sdmx_ml_version(
+    flavour_check: str,
+    v21: Format,
+    v30: Format,
+    v31: Format,
+) -> Format:
+    if SCHEMA_ROOT_30 in flavour_check:
+        return v30
+    elif SCHEMA_ROOT_31 in flavour_check:
+        return v31
+    return v21
+
+
 def __get_sdmx_ml_flavour(input_str: str) -> Tuple[str, Format]:
     flavour_check = input_str[:1000].lower()
+    if ":generictimeseriesdata" in flavour_check:
+        return input_str, Format.DATA_SDMX_ML_2_1_GENTS
     if ":generic" in flavour_check:
         return input_str, Format.DATA_SDMX_ML_2_1_GEN
 
+    if ":structurespecifictimeseriesdata" in flavour_check:
+        return input_str, Format.DATA_SDMX_ML_2_1_STRTS
     if ":structurespecificdata" in flavour_check:
-        if SCHEMA_ROOT_30 in flavour_check:
-            return input_str, Format.DATA_SDMX_ML_3_0
-        elif SCHEMA_ROOT_31 in flavour_check:
-            return input_str, Format.DATA_SDMX_ML_3_1
-        else:
-            return input_str, Format.DATA_SDMX_ML_2_1_STR
+        return input_str, __get_sdmx_ml_version(
+            flavour_check,
+            Format.DATA_SDMX_ML_2_1_STR,
+            Format.DATA_SDMX_ML_3_0,
+            Format.DATA_SDMX_ML_3_1,
+        )
     if ":structure" in flavour_check:
-        if SCHEMA_ROOT_30 in flavour_check:
-            return input_str, Format.STRUCTURE_SDMX_ML_3_0
-        elif SCHEMA_ROOT_31 in flavour_check:
-            return input_str, Format.STRUCTURE_SDMX_ML_3_1
-        else:
-            return input_str, Format.STRUCTURE_SDMX_ML_2_1
+        return input_str, __get_sdmx_ml_version(
+            flavour_check,
+            Format.STRUCTURE_SDMX_ML_2_1,
+            Format.STRUCTURE_SDMX_ML_3_0,
+            Format.STRUCTURE_SDMX_ML_3_1,
+        )
     if ":registryinterface" in flavour_check:
         return input_str, Format.REGISTRY_SDMX_ML_2_1
     if ":error" in flavour_check:

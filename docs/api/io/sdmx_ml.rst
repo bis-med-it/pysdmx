@@ -36,11 +36,19 @@ specific readers for SDMX-ML are also available:
 
 .. autofunction:: pysdmx.io.xml.sdmx21.reader.generic.read
 
+.. _sdmx_ml_21_gents_reader:
+
+- DATA_SDMX_ML_2_1_GENTS -> pysdmx.io.xml.sdmx21.reader.generic (same reader as Generic)
+
 .. _sdmx_ml_21_spe_reader:
 
 - DATA_SDMX_ML_2_1_STR -> pysdmx.io.xml.sdmx21.reader.structure_specific
 
 .. autofunction:: pysdmx.io.xml.sdmx21.reader.structure_specific.read
+
+.. _sdmx_ml_21_spets_reader:
+
+- DATA_SDMX_ML_2_1_STRTS -> pysdmx.io.xml.sdmx21.reader.structure_specific (same reader as Structure Specific)
 
 .. _sdmx_ml_21_structure_reader:
 
@@ -88,11 +96,23 @@ specific writers for SDMX-ML are also available:
 
 .. autofunction:: pysdmx.io.xml.sdmx21.writer.generic.write
 
+.. _sdmx_ml_21_gents_writer:
+
+- DATA_SDMX_ML_2_1_GENTS -> pysdmx.io.xml.sdmx21.writer.generic_ts
+
+.. autofunction:: pysdmx.io.xml.sdmx21.writer.generic_ts.write
+
 .. _sdmx_ml_21_spe_writer:
 
 - DATA_SDMX_ML_2_1_STR -> pysdmx.io.xml.sdmx21.writer.structure_specific
 
 .. autofunction:: pysdmx.io.xml.sdmx21.writer.structure_specific.write
+
+.. _sdmx_ml_21_spets_writer:
+
+- DATA_SDMX_ML_2_1_STRTS -> pysdmx.io.xml.sdmx21.writer.structure_specific_ts
+
+.. autofunction:: pysdmx.io.xml.sdmx21.writer.structure_specific_ts.write
 
 .. _sdmx_ml_21_structure_writer:
 
