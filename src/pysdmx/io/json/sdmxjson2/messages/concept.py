@@ -14,6 +14,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     NameableType,
 )
 from pysdmx.model import Agency, Codelist, Concept, ConceptScheme, DataType
+from pysdmx.util import is_final
 
 
 class IsoConceptReference(msgspec.Struct, frozen=True, omit_defaults=True):
@@ -110,6 +111,7 @@ class JsonConceptScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             agency=self.agency,
             description=self.description,
             version=self.version,
+            is_final=is_final(self.version),
             items=concepts,
             annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,

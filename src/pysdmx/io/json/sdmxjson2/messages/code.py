@@ -23,7 +23,7 @@ from pysdmx.model import (
     Hierarchy,
     HierarchyAssociation,
 )
-from pysdmx.util import find_by_urn, parse_item_urn
+from pysdmx.util import find_by_urn, is_final, parse_item_urn
 
 _VAL_FMT = "%Y-%m-%dT%H:%M:%S%z"
 
@@ -145,6 +145,7 @@ class JsonCodelist(ItemSchemeType, frozen=True, omit_defaults=True):
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
+            is_final=is_final(self.version),
             valid_from=self.validFrom,
             valid_to=self.validTo,
         )
@@ -194,6 +195,7 @@ class JsonValuelist(ItemSchemeType, frozen=True, omit_defaults=True):
             annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
+            is_final=is_final(self.version),
             valid_from=self.validFrom,
             valid_to=self.validTo,
             sdmx_type="valuelist",
@@ -353,6 +355,7 @@ class JsonHierarchy(ItemSchemeType, frozen=True, omit_defaults=True):
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
+            is_final=is_final(self.version),
             valid_from=self.validFrom,
             valid_to=self.validTo,
             codes=[i.to_model(cls) for i in self.hierarchicalCodes],
@@ -436,6 +439,7 @@ class JsonHierarchyAssociation(
             version=self.version,
             annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             valid_from=self.validFrom,
             valid_to=self.validTo,
             operator=lnk[0].urn if lnk else None,
