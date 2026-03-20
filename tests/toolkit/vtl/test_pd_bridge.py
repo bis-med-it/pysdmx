@@ -7,6 +7,7 @@ from pysdmx.model import (
     Components,
     Concept,
     DataType,
+    Facets,
     Role,
 )
 from pysdmx.toolkit.pd import to_pandas_schema, to_pandas_type
@@ -81,8 +82,6 @@ def test_decimal_numbers(dt: DataType, required: bool, expected: str):
         (DataType.YEAR, False, "datetime64[Y]"),
         (DataType.GREGORIAN_TIME_PERIOD, True, "object"),
         (DataType.GREGORIAN_TIME_PERIOD, False, "object"),
-        (DataType.MONTH, True, "int8"),
-        (DataType.MONTH, False, "Int8"),
     ],
 )
 def test_dates(dt: DataType, required: bool, expected: str):
@@ -130,6 +129,7 @@ def test_booleans(dt: DataType, required: bool, expected: str):
         DataType.BASIC_TIME_PERIOD,
         DataType.DAY,
         DataType.DURATION,
+        DataType.MONTH,
         DataType.MONTH_DAY,
         DataType.NUMERIC,
         DataType.PERIOD,
@@ -173,6 +173,30 @@ def test_enumeration():
     received = to_pandas_type(comp)
 
     assert received == "category"
+
+
+@pytest.mark.parametrize(
+    ("required", "value", "expected"),
+    [
+        (True, 1, "int32"),
+        (False, 1, "Int32"),
+        (True, 0.1, "float32"),
+        (False, 0.1, "Float32"),
+    ],
+)
+def test_incremental(required, value, expected):
+    comp = Component(
+        "TEST",
+        required,
+        Role.DIMENSION,
+        Concept("TEST"),
+        DataType.INCREMENTAL,
+        Facets(interval=value),
+    )
+
+    received = to_pandas_type(comp)
+
+    assert received == expected
 
 
 def test_schema():
