@@ -210,4 +210,41 @@ class Connector(Protocol):
         """
 
 
-__all__ = ["Connector"]
+@runtime_checkable
+class BasicConnector(Protocol):
+    """A simple connector for data discovery and data retrieval.
+
+    This connector is compliant with the SDMX "data discovery and
+    data retrieval" profile.
+    """
+
+    def dataflows(
+        self, search_term: Optional[str] = None
+    ) -> Iterable[Dataflow]:
+        """Get the list of dataflows available in the connector.
+
+        Args:
+            search_term (Optional[str]): A search term. If set, any dataflow
+                containing the term in its ID, name, or description will be
+                returned.
+
+        Returns:
+            Iterable[Dataflow]: An iterable of dataflows available in the
+                connector.
+
+            - If `search_term` is set and no dataflows match it, an empty
+              iterable must be returned.
+            - If `search_term` is not set, the method must return at least
+              one dataflow.
+            - The returned iterable must not contain duplicates.
+
+            Whether the connector supports lazy evaluation (e.g. generators)
+            or materializes the result set in memory is up to the implementer.
+
+        Note:
+            Lazy evaluation (e.g., using generators) is recommended for
+            connectors that handle large datasets, but this is not required.
+        """
+
+
+__all__ = ["BasicConnector", "Connector"]
