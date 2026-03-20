@@ -192,6 +192,26 @@ def test_code_list_read(codelist_path):
     assert codelist_sdmx.items[0].name == "Units"
 
 
+def test_codelist_with_explicit_is_final(codelist_path):
+    """SDMX 2.1 supports isFinal; CL_FREQ has isFinal='true'."""
+    input_str, read_format = process_string_to_read(codelist_path)
+    codelists = read_structure(input_str, validate=True)
+
+    cl_freq = [cl for cl in codelists if cl.id == "CL_FREQ"][0]
+    assert isinstance(cl_freq, Codelist)
+    assert cl_freq.is_final is True
+
+
+def test_codelist_without_explicit_is_final(codelist_path):
+    """SDMX 2.1 without isFinal defaults to False."""
+    input_str, read_format = process_string_to_read(codelist_path)
+    codelists = read_structure(input_str, validate=True)
+
+    cl_unit = [cl for cl in codelists if cl.id == "CL_UNIT_MULT"][0]
+    assert isinstance(cl_unit, Codelist)
+    assert cl_unit.is_final is False
+
+
 def test_item_scheme_read(item_scheme_path):
     input_str, read_format = process_string_to_read(item_scheme_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1

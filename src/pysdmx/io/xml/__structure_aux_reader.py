@@ -233,7 +233,14 @@ from pysdmx.model.vtl import (
     VtlDataflowMapping,
     VtlMappingScheme,
 )
-from pysdmx.util import find_by_urn, parse_urn
+from pysdmx.util import find_by_urn, is_final, parse_urn
+
+T = Any
+
+
+def _identity(x: T) -> T:
+    return x
+
 
 STRUCTURES_MAPPING = {
     CL: Codelist,
@@ -1263,18 +1270,6 @@ class StructureParser(Struct):
                 del element[DSD_COMPS][GROUP]
         return element
 
-    def __format_is_final_30(
-        self, json_elem: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        if self.is_sdmx_30:
-            # Default version value is 1.0, in SDMX-ML 3.0 we need to set
-            # is_final as True if the version does not have an EXTENSION
-            # (see Technical Notes SDMX 3.0)
-            json_elem[IS_FINAL_LOW] = (
-                "-" not in json_elem[VERSION] if VERSION in json_elem else True
-            )
-        return json_elem
-
     def __build_component_map(
         self, child_dict: Dict[str, Any]
     ) -> Union[ComponentMap, MultiComponentMap, ImplicitComponentMap]:
@@ -1336,7 +1331,9 @@ class StructureParser(Struct):
             "Target": "target",
             "Value": "value",
             "SourceCodelist": "source",
+            "SourceDataType": "source",
             "TargetCodelist": "target",
+            "TargetDataType": "target",
             "SourceValue": "source",
             "TargetValue": "target",
             "RepresentationMap": "values",
@@ -1347,10 +1344,15 @@ class StructureParser(Struct):
             "validFrom": "valid_from",
             "validTo": "valid_to",
         }
+        converters: Dict[str, Callable[[Any], Any]] = {
+            "SourceDataType": DataType,
+            "TargetDataType": DataType,
+        }
 
         for xml_key, py_key in renames.items():
             if xml_key in element:
-                element[py_key] = element.pop(xml_key)
+                value = element.pop(xml_key)
+                element[py_key] = converters.get(xml_key, _identity)(value)
 
         child_class_mapping: Dict[str, Type[Any]] = {
             "ComponentMap": ComponentMap,
@@ -1411,6 +1413,8 @@ class StructureParser(Struct):
                 )
             if IS_FINAL in element:
                 element[IS_FINAL_LOW] = element.pop(IS_FINAL) == "true"
+            elif self.is_sdmx_30 and VERSION in element:
+                element[IS_FINAL_LOW] = is_final(element[VERSION])
             if IS_PARTIAL in element:
                 element[IS_PARTIAL_LOW] = element.pop(IS_PARTIAL) == "true"
             items = []
@@ -1433,7 +1437,6 @@ class StructureParser(Struct):
             # Dynamic creation with specific class
             if scheme == VALUE_LIST:
                 element["sdmx_type"] = VALUE_LIST_LOW
-            element = self.__format_is_final_30(element)
             result: ItemScheme = STRUCTURES_MAPPING[scheme](**element)
             elements[result.short_urn] = result
 
@@ -1492,6 +1495,8 @@ class StructureParser(Struct):
                 element[IS_FINAL_LOW] = (
                     str(element[IS_FINAL_LOW]).lower() == "true"
                 )
+            elif self.is_sdmx_30 and VERSION in element:
+                element[IS_FINAL_LOW] = is_final(element[VERSION])
 
             if item == DFW:
                 if isinstance(element[STRUCTURE], str):
@@ -1514,7 +1519,6 @@ class StructureParser(Struct):
                     structure[COMPS] = Components(structure[COMPS])
                 else:
                     structure[COMPS] = Components([])
-            structure = self.__format_is_final_30(structure)
             schemas[short_urn] = STRUCTURES_MAPPING[schema](**structure)
 
         return schemas

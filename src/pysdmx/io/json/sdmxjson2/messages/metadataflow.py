@@ -10,6 +10,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     MaintainableType,
 )
 from pysdmx.model import Agency, Metadataflow, MetadataStructure
+from pysdmx.util import is_final
 
 
 class JsonMetadataflow(MaintainableType, frozen=True, omit_defaults=True):
@@ -30,6 +31,7 @@ class JsonMetadataflow(MaintainableType, frozen=True, omit_defaults=True):
             targets=self.targets,
             annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             valid_from=self.validFrom,
             valid_to=self.validTo,
         )
