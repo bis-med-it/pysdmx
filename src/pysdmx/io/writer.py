@@ -102,6 +102,9 @@ def write_sdmx(
 
           Overrides the header.structure
           (if a custom header is provided).
+        partial_keys: Whether to write partial key rows for
+          series-level and group-level attributes
+          (only for SDMX-CSV 2.0 and 2.1 formats).
 
     Returns:
         A serialised string if output_path is an empty string, otherwise None.
@@ -179,6 +182,7 @@ def write_sdmx(
                 "labels": kwargs.get("labels"),
                 "keys": kwargs.get("keys"),
                 "time_format": kwargs.get("time_format"),
+                "partial_keys": kwargs.get("partial_keys"),
             }
             if not is_xml
             else {}
