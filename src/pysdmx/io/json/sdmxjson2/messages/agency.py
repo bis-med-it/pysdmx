@@ -11,6 +11,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
 )
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
 from pysdmx.model import Agency, AgencyScheme, DataflowRef
+from pysdmx.util import is_final
 
 
 def _sanitize_agency(agency: Agency, is_sdmx_scheme: bool) -> Agency:
@@ -56,6 +57,7 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             items=agencies,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             is_partial=self.isPartial,
             valid_from=self.validFrom,
             valid_to=self.validTo,

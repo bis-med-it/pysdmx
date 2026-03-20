@@ -13,6 +13,7 @@ from pysdmx.io.reader import get_datasets
 from pysdmx.model import (
     Codelist,
     ComponentMap,
+    DataType,
     DatePatternMap,
     FixedValueMap,
     ImplicitComponentMap,
@@ -547,7 +548,7 @@ def test_get_datasets_prov_agreement_no_dataflow(
 def test_read_maps():
     data_path = Path(__file__).parent / "samples" / "maps.xml"
     result = read_sdmx(data_path, validate=True)
-    assert len(result.structures) == 5
+    assert len(result.structures) == 6
 
     # RepresentationMap 1 - REPMAP_SEX (1-1 => ValueMap)
     rep_map = result.structures[1]
@@ -636,6 +637,27 @@ def test_read_maps():
     assert isinstance(m, MultiValueMap)
     assert list(m.source) == ["M", "S_A1"]
     assert list(m.target) == ["MON_SAX", "Seasonally adjusted"]
+
+    # RepresentationMap 5 - RM_INDICATOR (data type source/target)
+    rep_map = result.structures[5]
+    assert isinstance(rep_map, RepresentationMap)
+    assert rep_map.id == "RM_INDICATOR"
+    assert rep_map.agency == "WB"
+    assert rep_map.version == "1.0"
+    assert rep_map.name == "Mapping Series to INDICATOR"
+    assert rep_map.source == DataType.STRING
+    assert rep_map.target == DataType.STRING
+    assert len(rep_map.maps) == 2
+
+    m = rep_map.maps[0]
+    assert isinstance(m, ValueMap)
+    assert m.source == "SRC_A"
+    assert m.target == "TGT_A"
+
+    m = rep_map.maps[1]
+    assert isinstance(m, ValueMap)
+    assert m.source == "SRC_B"
+    assert m.target == "TGT_B"
 
     # StructureMap 0 - STRMAP_DEMO
     str_map = result.structures[0]

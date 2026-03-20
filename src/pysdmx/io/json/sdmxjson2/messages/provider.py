@@ -21,7 +21,7 @@ from pysdmx.model import (
     MetadataProvider,
     MetadataProviderScheme,
 )
-from pysdmx.util import parse_item_urn, parse_urn
+from pysdmx.util import is_final, parse_item_urn, parse_urn
 
 
 class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
@@ -75,6 +75,7 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             items=provs,
             annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             is_partial=self.isPartial,
             valid_from=self.validFrom,
             valid_to=self.validTo,
@@ -179,6 +180,7 @@ class JsonMetadataProviderScheme(
             items=provs,
             annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             is_partial=self.isPartial,
             valid_from=self.validFrom,
             valid_to=self.validTo,

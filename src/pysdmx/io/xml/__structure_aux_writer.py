@@ -978,6 +978,12 @@ def __write_representation_map(
     rep_map: RepresentationMap, indent: str, references_30: bool = False
 ) -> str:
     """Writes a RepresentationMap to the XML file."""
+
+    def __source_target_tag(prefix: str, value: Optional[str]) -> str:
+        if value and ("Codelist" in value or "ValueList" in value):
+            return f"{prefix}Codelist"
+        return f"{prefix}DataType"
+
     data = __write_maintainable(rep_map, indent, references_30)
 
     label = f"{ABBR_STR}:{REPRESENTATION_MAP}"
@@ -988,15 +994,17 @@ def __write_representation_map(
     outfile += __export_intern_data(data)
 
     # Write Source and Target references
+    src_tag = __source_target_tag("Source", rep_map.source)
     outfile += (
-        f"{add_indent(indent)}<{ABBR_STR}:SourceCodelist>"
+        f"{add_indent(indent)}<{ABBR_STR}:{src_tag}>"
         f"{rep_map.source}"
-        f"</{ABBR_STR}:SourceCodelist>"
+        f"</{ABBR_STR}:{src_tag}>"
     )
+    tgt_tag = __source_target_tag("Target", rep_map.target)
     outfile += (
-        f"{add_indent(indent)}<{ABBR_STR}:TargetCodelist>"
+        f"{add_indent(indent)}<{ABBR_STR}:{tgt_tag}>"
         f"{rep_map.target}"
-        f"</{ABBR_STR}:TargetCodelist>"
+        f"</{ABBR_STR}:{tgt_tag}>"
     )
 
     # Write ValueMaps
