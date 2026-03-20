@@ -25,6 +25,10 @@ class SdmxConnector(BasicConnector):
 
     This connector is an implementation of the SDMX "data discovery and
     data retrieval" API for SDMX-REST v2 web services.
+
+    In addition to being compliant with the SDMX-REST v2 API, the targeted
+    service must be able to return structural metadata in SDMX-JSON v2.0.0 and
+    data in SDMX-CSV v2.0.0.
     """
 
     def __init__(
