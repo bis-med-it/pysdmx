@@ -49,6 +49,7 @@ Your opinionated Python SDMX library.
    howto/toolkit/general
    howto/toolkit/vtl_toolkit
    howto/toolkit/pandas_toolkit
+   howto/toolkit/sqlsrv_toolkit
 
 .. toctree::
    :maxdepth: 1
