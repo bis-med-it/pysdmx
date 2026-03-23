@@ -68,7 +68,9 @@ def write(
 
     all_data = pd.concat(dataframes, ignore_index=True, axis=0)
 
-    all_data = all_data.astype(str).replace({"nan": "", "<NA>": ""})
+    all_data = all_data.astype(str).replace(
+        {"nan": "", "<NA>": "", "None": ""}
+    )
 
     # If the output path is an empty string we use None
     output_path = (

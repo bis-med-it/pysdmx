@@ -380,7 +380,9 @@ def test_writer_partial_keys_all_obs_attrs(dsd_path):
     )
     result_with = write([dataset], partial_keys=True)
     result_without = write([dataset], partial_keys=False)
-    assert result_with == result_without
+    df_with = pd.read_csv(StringIO(result_with))
+    df_without = pd.read_csv(StringIO(result_without))
+    pd.testing.assert_frame_equal(df_with, df_without, check_like=True)
 
 
 def test_writer_partial_keys_empty_attr(partial_keys_schema):

@@ -119,6 +119,32 @@ def __generate_partial_key_df(
     return pd.concat([partial_df, obs_df], ignore_index=True)
 
 
+def __reorder_columns(
+    df: pd.DataFrame,
+    schema: Schema,
+) -> pd.DataFrame:
+    """Reorder DataFrame columns by component role.
+
+    Ensures all dimensions (including the dimensionAtObservation,
+    e.g. TIME_PERIOD) are grouped together, followed by measures
+    and then attributes.
+
+    Args:
+        df: The DataFrame to reorder.
+        schema: The schema describing the data structure.
+
+    Returns:
+        The DataFrame with reordered columns.
+    """
+    comps = schema.components
+    dim_ids = [c.id for c in comps.dimensions]
+    measure_ids = [c.id for c in comps.measures]
+    attr_ids = [c.id for c in comps.attributes]
+    ordered = [c for c in dim_ids + measure_ids + attr_ids if c in df.columns]
+    remaining = [c for c in df.columns if c not in ordered]
+    return df[ordered + remaining]
+
+
 def __insert_structural_columns(
     df: pd.DataFrame,
     dataset: PandasDataset,
@@ -208,6 +234,7 @@ def _write_csv_2_aux(
                     "levels to use partial_keys=True."
                 )
             df = __generate_partial_key_df(df, dataset.structure)
+            df = __reorder_columns(df, dataset.structure)
 
         if structure_ref in ["DataStructure", "Dataflow"]:
             structure_ref = structure_ref.lower()
