@@ -1,23 +1,29 @@
 """A connector for SDMX-REST services."""
 
-from typing import NoReturn, Optional
+from typing import NoReturn, Optional, Union
 
 import msgspec
 
 from pysdmx import errors
-from pysdmx.api.dc import BasicConnector
+from pysdmx.api.dc import BasicConnector, MaintainableIdentification
 from pysdmx.api.qb import (
     ApiVersion,
+    AvailabilityFormat,
+    AvailabilityMode,
+    AvailabilityQuery,
+    DataContext,
     RestService,
     StructureDetail,
     StructureFormat,
     StructureQuery,
+    StructureReference,
     StructureType,
 )
 from pysdmx.io.json.sdmxjson2.messages import JsonDataflowsMessage
-from pysdmx.model import Agency, Dataflow, decoders
+from pysdmx.model import Agency, Dataflow, DataflowInfo, decoders
+from pysdmx.util import parse_maintainable_urn
 
-_FLOW_DEC = msgspec.json.Decoder(JsonDataflowsMessage, dec_hook=decoders)
+_FLOWS_DEC = msgspec.json.Decoder(JsonDataflowsMessage, dec_hook=decoders)
 
 
 class SdmxConnector(BasicConnector):
@@ -42,6 +48,7 @@ class SdmxConnector(BasicConnector):
             api_endpoint,
             ApiVersion.V2_0_0,
             structure_format=StructureFormat.SDMX_JSON_2_0_0,
+            avail_format=AvailabilityFormat.SDMX_JSON_2_0_0,
             pem=pem,
             timeout=timeout,
         )
@@ -58,10 +65,11 @@ class SdmxConnector(BasicConnector):
 
         Returns:
             tuple[Dataflow]: A sorted and immutable collection of dataflows
-                matching the supplied search term, if any. If a search term
-                is supplied and does not match any dataflow, an empty
-                collection will be returned. The collection is sorted by
-                agency ID, then dataflow ID and then version number.
+                matching the supplied search term, if any. For each dataflow,
+                information such as its ID, name and description is returned.
+                If a search term is supplied and does not match any dataflow,
+                an empty collection will be returned. The collection is sorted
+                by agency ID, then dataflow ID and then version number.
 
         Raises:
             errors.Invalid: In case the targeted service returns a client
@@ -79,18 +87,83 @@ class SdmxConnector(BasicConnector):
         )
         out = self.__client.structure(q)
         try:
-            flows = _FLOW_DEC.decode(out).to_model()
+            flows = _FLOWS_DEC.decode(out).to_model()
         except msgspec.MsgspecError as e:
             self.__raise_deserialization_error(e, out)
 
         if not flows:
-            self.__raise_no_dataflow_error(out)
+            url = q.get_url(ApiVersion.V2_0_0, True)
+            self.__raise_no_dataflows_error(url)
 
         if search_term:
             st = search_term.strip().lower()
             if st:
                 flows = [f for f in flows if self.__match_search_term(f, st)]
         return tuple(sorted(flows, key=self.__sort_maintainable))
+
+    def dataflow(
+        self, dataflow: Union[str, MaintainableIdentification]
+    ) -> Dataflow:
+        """Retrieve information about a dataflow.
+
+        This function provides details about a dataflow, including its
+        components, to assist in querying data effectively.
+
+        Args:
+            dataflow (Union[str, MaintainableIdentification]): Specifies the
+                dataflow to retrieve. This can be:
+                - A string representing the SDMX URN of the dataflow.
+                - An object implementing the `MaintainableIdentification`
+                  protocol (e.g., instances of `DataflowRef` or `Dataflow`).
+
+        Returns:
+            Dataflow: An object containing detailed information about
+                the requested dataflow, including:
+
+                - Basic metadata, such as the dataflow's ID and name.
+                - Metrics, such as the number of observations or period
+                  coverage (if available from the source).
+                - The expected data structure (data schema), including
+                  components, their types, and other relevant details.
+
+        Raises:
+            errors.Invalid: In case the targeted service returns a client
+                error, i.e. a status between 400 and 499.
+            errors.InternalError: In case the targeted service returns a
+                server error, i.e. a status between 500 and 599, or in case
+                the server response could not be deserialized.
+            errors.NotFound: In case the targeted service does not contain
+                the requested dataflow.
+            errors.Unavailable: In case the targeted service could not be
+                reached.
+        """
+        if isinstance(dataflow, str):
+            dataflow = parse_maintainable_urn(dataflow)
+        aid = (
+            dataflow.agency.id
+            if isinstance(dataflow.agency, Agency)
+            else dataflow.agency
+        )
+
+        q = AvailabilityQuery(
+            DataContext.DATAFLOW,
+            aid,
+            dataflow.id,
+            dataflow.version,
+            references=StructureReference.ALL,
+            mode=AvailabilityMode.EXACT,
+        )
+        try:
+            out = self.__client.availability(q)
+        except errors.NotFound:
+            url = q.get_url(ApiVersion.V2_0_0, True)
+            self.__raise_dataflow_nf_error(url)
+        try:
+            dfi = _FLOWS_DEC.decode(out).to_model()
+        except msgspec.MsgspecError as e:
+            self.__raise_deserialization_error(e, out)
+
+        return dfi[0]
 
     def __match_search_term(self, df: Dataflow, search_term: str) -> bool:
         return (
@@ -121,7 +194,7 @@ class SdmxConnector(BasicConnector):
             },
         ) from error
 
-    def __raise_no_dataflow_error(self, msg: bytes) -> NoReturn:
+    def __raise_no_dataflows_error(self, url: str) -> NoReturn:
         raise errors.NotFound(
             "No dataflows found.",
             (
@@ -131,7 +204,19 @@ class SdmxConnector(BasicConnector):
                 "from dataflows."
             ),
             {
-                "service_response": msg.decode("utf-8", errors="replace"),
-                "endpoint": self.__client._api_endpoint,
+                "url": url,
+            },
+        )
+
+    def __raise_dataflow_nf_error(self, url: str) -> NoReturn:
+        raise errors.NotFound(
+            "Requested dataflow not found.",
+            (
+                "The requested dataflow could not be found in the targeted "
+                "service. Please use the `dataflows` method of the connector "
+                "to see which dataflows are available in the service."
+            ),
+            {
+                "url": url,
             },
         )

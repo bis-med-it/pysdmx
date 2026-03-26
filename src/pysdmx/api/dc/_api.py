@@ -23,6 +23,7 @@ from pysdmx.api.dc.query import (
     TextFilter,
 )
 from pysdmx.model import (
+    Agency,
     Dataflow,
     DataflowInfo,
     DataflowRef,
@@ -211,6 +212,26 @@ class Connector(Protocol):
 
 
 @runtime_checkable
+class MaintainableIdentification(Protocol):
+    """The information necessary to identify a maintainable artefact.
+
+    This assumes the artefact type is already known.
+    """
+
+    @property
+    def agency(self) -> Union[Agency, str]:
+        """The agency maintaining the artefact."""
+
+    @property
+    def id(self) -> str:
+        """The ID of the artefact."""
+
+    @property
+    def version(self) -> str:
+        """The version of the artefact."""
+
+
+@runtime_checkable
 class BasicConnector(Protocol):
     """A simple connector for data discovery and data retrieval.
 
@@ -244,6 +265,30 @@ class BasicConnector(Protocol):
         Note:
             Lazy evaluation (e.g., using generators) is recommended for
             connectors that handle large datasets, but this is not required.
+        """
+
+    def dataflow(
+        self, dataflow: Union[str, MaintainableIdentification]
+    ) -> Dataflow:
+        """Get information about a dataflow.
+
+        Args:
+            dataflow (Union[str, MaintainableIdentification]): Either a string
+                representing the SDMX URN of the dataflow or the information
+                necessary to uniquely identify it. Classes such as
+                `DataflowRef` or `Dataflow` are examples of pysdmx classes that
+                implement the `MaintainableIdentification` protocol.
+
+        Returns:
+            Dataflow: Information about the requested dataflow.
+
+            The information includes:
+
+            - Some basic metadata about the dataflow (such as its ID and name).
+            - Some useful metrics such as the number of observations or the
+              period coverage, if this information is available in the source.
+            - The expected structure of data (i.e. the data schema), including
+              the expected columns, their types, etc.
         """
 
 
