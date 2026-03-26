@@ -1,6 +1,5 @@
 import pytest
 
-from pysdmx.errors import PysdmxError
 from pysdmx.model.__base import Annotation
 
 
