@@ -33,12 +33,11 @@ def __parse_annotation_metrics(
         obs = None
         series = None
         for a in const.annotations:
-            if a.type == "sdmx_metrics" and a.id == "obs_count" and a.title:
-                obs = int(a.title)
-            elif (
-                a.type == "sdmx_metrics" and a.id == "series_count" and a.title
-            ):
-                series = int(a.title)
+            if a.type == "sdmx_metrics" and a.title:
+                if a.id == "obs_count":
+                    obs = int(a.title)
+                else:
+                    series = int(a.title)
         return obs, series
     else:
         return None, None
