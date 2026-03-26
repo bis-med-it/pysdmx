@@ -1,8 +1,9 @@
 from copy import copy
-from typing import List, Literal, Optional, Sequence
+from typing import Dict, List, Literal, Optional, Sequence, Tuple
 
 import pandas as pd
 
+from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
 from pysdmx.model.dataset import ActionType
@@ -22,7 +23,9 @@ def __write_time_period(df: pd.DataFrame, time_format: str) -> None:
 
 
 def __write_keys(
-    df: pd.DataFrame, keys: Literal["obs", "series", "both"], schema: Schema
+    df: pd.DataFrame,
+    keys: Literal["obs", "series", "both"],
+    schema: Schema,
 ) -> None:
     """Writes the keys to the DataFrame.
 
@@ -61,13 +64,156 @@ def __write_keys(
         df.insert(0, "SERIES_KEYS", series_values)
 
 
+def __generate_partial_key_df(
+    df: pd.DataFrame,
+    schema: Schema,
+) -> pd.DataFrame:
+    """Generate partial key rows from observation data.
+
+    Transforms a flat DataFrame into one where series-level
+    and group-level attributes appear on their own rows with
+    only their attachment dimensions filled, per SDMX-CSV 2.x
+    section 1.3.
+
+    Args:
+        df: The DataFrame with observation data.
+        schema: The schema describing the data structure.
+
+    Returns:
+        A new DataFrame with partial key rows prepended
+        before observation rows.
+    """
+    partial_attr_list: List[Tuple[str, List[str]]] = []
+    for att in schema.components.attributes:
+        level = att.attachment_level
+        if level is None or level in ("O", "D") or att.id not in df.columns:
+            continue
+        dims = level.split(",")
+        partial_attr_list.append((att.id, dims))
+
+    if not partial_attr_list:
+        return df
+
+    all_columns = list(df.columns)
+    partial_attr_ids = {pa[0] for pa in partial_attr_list}
+    partial_rows: List[Dict[str, object]] = []
+
+    for attr_id, pa_dims in partial_attr_list:
+        cols = pa_dims + [attr_id]
+        sub = df[cols].drop_duplicates()
+        for _, r in sub.iterrows():
+            val = r[attr_id]
+            if str(val) in ("", "nan"):
+                continue
+            row: Dict[str, object] = dict.fromkeys(all_columns, "")
+            for d in pa_dims:
+                row[d] = r[d]
+            row[attr_id] = val
+            partial_rows.append(row)
+
+    obs_df = df.copy()
+    for attr_id in partial_attr_ids:
+        obs_df[attr_id] = ""
+
+    partial_df = pd.DataFrame(partial_rows, columns=all_columns)
+    return pd.concat([partial_df, obs_df], ignore_index=True)
+
+
+def __reorder_columns(
+    df: pd.DataFrame,
+    schema: Schema,
+) -> pd.DataFrame:
+    """Reorder DataFrame columns by component role.
+
+    Ensures all dimensions (including the dimensionAtObservation,
+    e.g. TIME_PERIOD) are grouped together, followed by measures
+    and then attributes.
+
+    Args:
+        df: The DataFrame to reorder.
+        schema: The schema describing the data structure.
+
+    Returns:
+        The DataFrame with reordered columns.
+    """
+    comps = schema.components
+    dim_ids = [c.id for c in comps.dimensions]
+    measure_ids = [c.id for c in comps.measures]
+    attr_ids = [c.id for c in comps.attributes]
+    ordered = [c for c in dim_ids + measure_ids + attr_ids if c in df.columns]
+    remaining = [c for c in df.columns if c not in ordered]
+    return df[ordered + remaining]
+
+
+def __insert_structural_columns(
+    df: pd.DataFrame,
+    dataset: PandasDataset,
+    structure_ref: str,
+    unique_id: str,
+    action_value: str,
+    labels: Optional[Literal["name", "id", "both"]],
+) -> None:
+    """Insert STRUCTURE, STRUCTURE_ID, and ACTION columns.
+
+    Args:
+        df: The DataFrame to modify.
+        dataset: The dataset being written.
+        structure_ref: The structure reference type.
+        unique_id: The unique identifier.
+        action_value: The action code.
+        labels: The label format option.
+    """
+    if labels is not None and isinstance(dataset.structure, Schema):
+        format_labels(df, labels, dataset.structure.components)
+        df.insert(0, "STRUCTURE", structure_ref)
+        df.insert(
+            1,
+            "STRUCTURE_ID",
+            f"{unique_id}:{dataset.structure.name}"
+            if labels == "both"
+            else unique_id,
+        )
+        action_position = 2
+        if labels == "name":
+            action_position += 1
+            df.insert(
+                2,
+                "STRUCTURE_NAME",
+                dataset.structure.name,
+            )
+        df.insert(action_position, "ACTION", action_value)
+    else:
+        df.insert(0, "STRUCTURE", structure_ref)
+        df.insert(1, "STRUCTURE_ID", unique_id)
+        df.insert(2, "ACTION", action_value)
+
+
 def _write_csv_2_aux(
     datasets: Sequence[PandasDataset],
     labels: Optional[Literal["name", "id", "both"]] = None,
     time_format: Optional[Literal["original", "normalized"]] = None,
     keys: Optional[Literal["obs", "series", "both"]] = None,
     references_21: bool = False,
+    partial_keys: bool = False,
 ) -> List[pd.DataFrame]:
+    """Write datasets to SDMX-CSV 2.x format.
+
+    Args:
+        datasets: List of datasets to write.
+        labels: How to write the name of the columns.
+        time_format: How to write the time period.
+        keys: to write or not the keys columns.
+        references_21: Whether to use SDMX 2.1 references.
+        partial_keys: Whether to write partial key rows
+            for series-level and group-level attributes.
+
+    Returns:
+        List of DataFrames ready for CSV output.
+
+    Raises:
+        Invalid: If partial_keys is True but the dataset
+            structure is not a Schema.
+    """
     dataframes = []
     for dataset in datasets:
         # Create a copy of the dataset
@@ -77,6 +223,18 @@ def _write_csv_2_aux(
         # Add additional attributes to the dataset
         for k, v in dataset.attributes.items():
             df[k] = v
+
+        if partial_keys:
+            if not isinstance(dataset.structure, Schema):
+                raise Invalid(
+                    "Writing partial key rows requires a Schema "
+                    "as the dataset structure, but the current "
+                    "structure is a plain reference. "
+                    "Provide a Schema with component attachment "
+                    "levels to use partial_keys=True."
+                )
+            df = __generate_partial_key_df(df, dataset.structure)
+            df = __reorder_columns(df, dataset.structure)
 
         if structure_ref in ["DataStructure", "Dataflow"]:
             structure_ref = structure_ref.lower()
@@ -95,24 +253,8 @@ def _write_csv_2_aux(
             __write_time_period(df, time_format)
         if keys is not None and isinstance(dataset.structure, Schema):
             __write_keys(df, keys, dataset.structure)
-        if labels is not None and isinstance(dataset.structure, Schema):
-            format_labels(df, labels, dataset.structure.components)
-            df.insert(0, "STRUCTURE", structure_ref)
-            df.insert(
-                1,
-                "STRUCTURE_ID",
-                f"{unique_id}:{dataset.structure.name}"
-                if labels == "both"
-                else unique_id,
-            )
-            action_position = 2
-            if labels == "name":
-                action_position += 1
-                df.insert(2, "STRUCTURE_NAME", dataset.structure.name)
-            df.insert(action_position, "ACTION", action_value)
-        else:
-            df.insert(0, "STRUCTURE", structure_ref)
-            df.insert(1, "STRUCTURE_ID", unique_id)
-            df.insert(2, "ACTION", action_value)
+        __insert_structural_columns(
+            df, dataset, structure_ref, unique_id, action_value, labels
+        )
         dataframes.append(df)
     return dataframes
