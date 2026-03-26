@@ -30,6 +30,9 @@ def test_dataflows_with_references(body):
     flow = flows[0]
     assert isinstance(flow, Dataflow)
     assert isinstance(flow.structure, DataStructureDefinition)
+    assert flow.components == flow.structure.components
+    assert flow.series_count == 42
+    assert flow.obs_count == 42000
 
 
 def test_dataflows_no_dsd_match(body_no_match):
