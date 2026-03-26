@@ -2,7 +2,18 @@
 
 from io import BytesIO
 from pathlib import Path
-from typing import Dict, Optional, Sequence, Union
+from typing import (
+    TYPE_CHECKING,
+    Dict,
+    Optional,
+    Sequence,
+    Union,
+    cast,
+    overload,
+)
+
+if TYPE_CHECKING:  # pragma: no cover
+    from pysdmx.io.pd import PandasDataset
 
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
@@ -104,14 +115,20 @@ def read_sdmx(  # noqa: C901
         ref_msg = read_refmeta(input_str, validate=validate)
         header = ref_msg.header
         reports = ref_msg.get_reports()
-    elif read_format == Format.DATA_SDMX_ML_2_1_GEN:
+    elif read_format in (
+        Format.DATA_SDMX_ML_2_1_GEN,
+        Format.DATA_SDMX_ML_2_1_GENTS,
+    ):
         from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 
         header = read_header(input_str, validate=validate)
-        # SDMX-ML 2.1 Generic Data
+        # SDMX-ML 2.1 Generic / Generic Time Series Data
         result_data = read_generic(input_str, validate=validate)
-    elif read_format == Format.DATA_SDMX_ML_2_1_STR:
+    elif read_format in (
+        Format.DATA_SDMX_ML_2_1_STR,
+        Format.DATA_SDMX_ML_2_1_STRTS,
+    ):
         from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx21.reader.structure_specific import (
             read as read_str_spe,
@@ -171,7 +188,9 @@ def read_sdmx(  # noqa: C901
         Format.DATA_SDMX_CSV_2_0_0,
         Format.DATA_SDMX_CSV_2_1_0,
         Format.DATA_SDMX_ML_2_1_GEN,
+        Format.DATA_SDMX_ML_2_1_GENTS,
         Format.DATA_SDMX_ML_2_1_STR,
+        Format.DATA_SDMX_ML_2_1_STRTS,
         Format.DATA_SDMX_ML_3_0,
         Format.DATA_SDMX_ML_3_1,
     ):
@@ -226,16 +245,34 @@ def __assign_structure_to_dataset(
         __manage_dataset_level_attributes(dataset)
 
 
+@overload
+def get_datasets(  # pragma: no cover
+    data: Union[str, Path, BytesIO],
+    structure: None = None,
+    validate: bool = True,
+    pem: Optional[Union[str, Path]] = None,
+) -> "Sequence[PandasDataset]": ...
+
+
+@overload
+def get_datasets(  # pragma: no cover
+    data: Union[str, Path, BytesIO],
+    structure: Union[str, Path, BytesIO] = ...,
+    validate: bool = True,
+    pem: Optional[Union[str, Path]] = None,
+) -> "Sequence[PandasDataset]": ...
+
+
 def get_datasets(
     data: Union[str, Path, BytesIO],
     structure: Optional[Union[str, Path, BytesIO]] = None,
     validate: bool = True,
     pem: Optional[Union[str, Path]] = None,
-) -> Sequence[Dataset]:
+) -> "Sequence[PandasDataset]":
     """Reads a data message and a structure message and returns a dataset.
 
     This method reads a data message and an optional structure message,
-    and returns a sequence of Datasets.
+    and returns a sequence of PandasDatasets.
     Check the :ref:`formats supported <io-reader-formats-supported>`
 
     The resulting datasets will have their structure assigned,
@@ -280,11 +317,11 @@ def get_datasets(
         raise Invalid("No data found in the data message")
 
     if structure is None:
-        return data_msg.data
+        return cast("Sequence[PandasDataset]", data_msg.data)
     structure_msg = read_sdmx(structure, validate=validate, pem=pem)
     if structure_msg.structures is None:
         raise Invalid("No structure found in the structure message")
 
     __assign_structure_to_dataset(data_msg.data, structure_msg)
 
-    return data_msg.data
+    return cast("Sequence[PandasDataset]", data_msg.data)

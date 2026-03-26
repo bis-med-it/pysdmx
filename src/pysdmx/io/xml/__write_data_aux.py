@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Sequence
+from typing import Dict, Optional, Sequence, Union
 
 from pysdmx.errors import Invalid
 from pysdmx.io._pd_utils import validate_schema_exists
@@ -18,13 +18,19 @@ def check_content_dataset(content: Sequence[PandasDataset]) -> None:
 
 def check_dimension_at_observation(
     datasets: Dict[str, PandasDataset],
-    dimension_at_observation: Optional[Dict[str, str]],
+    dimension_at_observation: Optional[Union[str, Dict[str, str]]],
 ) -> Dict[str, str]:
     """This function checks if the dimension at observation is valid."""
     # If dimension_at_observation is None, set it to ALL_DIM
     if dimension_at_observation is None:
         dimension_at_observation = dict.fromkeys(datasets, ALL_DIM)
         return dimension_at_observation
+
+    # If a string is passed, expand it to all datasets
+    if isinstance(dimension_at_observation, str):
+        dimension_at_observation = dict.fromkeys(
+            datasets, dimension_at_observation
+        )
 
     # Check the datasets and their dimensions are present
     for key, value in dimension_at_observation.items():

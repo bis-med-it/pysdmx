@@ -10,6 +10,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     MaintainableType,
 )
 from pysdmx.model import Agency, ProvisionAgreement
+from pysdmx.util import is_final
 
 
 class JsonProvisionAgreement(
@@ -34,6 +35,7 @@ class JsonProvisionAgreement(
             provider=self.dataProvider,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
         )
 
     @classmethod

@@ -15,6 +15,7 @@ from pysdmx.io.xml.__parse_xml import parse_xml
 from pysdmx.io.xml.__tokens import (
     ATTRIBUTES,
     GENERIC,
+    GENERIC_TS,
     GROUP,
     GROUP_KEY,
     ID,
@@ -181,9 +182,10 @@ def read(input_str: str, validate: bool = True) -> Sequence[PandasDataset]:
         validate: If True, the XML data will be validated against the XSD.
     """
     dict_info = parse_xml(input_str, validate=validate)
-    if GENERIC not in dict_info:
+    msg_key = next((k for k in (GENERIC, GENERIC_TS) if k in dict_info), None)
+    if msg_key is None:
         raise Invalid("This SDMX document is not SDMX-ML 2.1 Generic.")
-    dataset_info, str_info = get_data_objects(dict_info[GENERIC])
+    dataset_info, str_info = get_data_objects(dict_info[msg_key])
 
     datasets = []
     for dataset in dataset_info:

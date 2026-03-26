@@ -12,4 +12,6 @@ The toolkit functions does not follow any particular version of the SDMX standar
 
 :ref:`vtl_toolkit`
 
+:ref:`sqlsrv_toolkit`
+
 :ref:`pandas_toolkit`

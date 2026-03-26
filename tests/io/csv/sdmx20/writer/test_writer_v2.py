@@ -4,9 +4,12 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
 from pysdmx.io.csv.sdmx20.writer import write
 from pysdmx.io.pd import PandasDataset
+from pysdmx.model.concept import Concept
+from pysdmx.model.dataflow import Component, Components, Role, Schema
 from pysdmx.model.dataset import ActionType
 
 
@@ -165,6 +168,44 @@ def csv_keys_series():
 @pytest.fixture
 def csv_keys_both():
     base_path = Path(__file__).parent / "samples" / "csv_keys_both.csv"
+    return str(base_path)
+
+
+@pytest.fixture
+def partial_keys_data():
+    return pd.DataFrame(
+        [
+            {
+                "DIM1": "A",
+                "DIM2": "B",
+                "ATT1": "C",
+                "ATT2": "D",
+                "OBS_VALUE": 1,
+                "TIME_PERIOD": "2020",
+            },
+            {
+                "DIM1": "A",
+                "DIM2": "B",
+                "ATT1": "C",
+                "ATT2": "E",
+                "OBS_VALUE": 2,
+                "TIME_PERIOD": "2021",
+            },
+        ]
+    )
+
+
+@pytest.fixture
+def partial_keys_schema(dsd_path):
+    dsd = read_sdmx(dsd_path).get_data_structure_definitions()[0]
+    return dsd.to_schema()
+
+
+@pytest.fixture
+def data_path_reference_partial_keys():
+    base_path = (
+        Path(__file__).parent / "samples" / "reference_partial_keys.csv"
+    )
     return str(base_path)
 
 
@@ -349,3 +390,104 @@ def test_writer_keys_both(data_path_optional, schema, csv_keys_both):
         reference_df.replace("nan", ""),
         check_like=True,
     )
+
+
+def test_writer_partial_keys(
+    partial_keys_data, partial_keys_schema, data_path_reference_partial_keys
+):
+    dataset = PandasDataset(
+        attributes={},
+        data=partial_keys_data,
+        structure=partial_keys_schema,
+    )
+    dataset.data = dataset.data.astype("str")
+    result_sdmx_csv = write([dataset], partial_keys=True)
+    result_df = pd.read_csv(StringIO(result_sdmx_csv)).astype(str)
+    reference_df = pd.read_csv(data_path_reference_partial_keys).astype(str)
+    pd.testing.assert_frame_equal(
+        result_df.fillna("").replace("nan", ""),
+        reference_df.replace("nan", ""),
+    )
+
+
+def test_writer_partial_keys_all_obs_attrs(dsd_path):
+    """When all attributes are obs-level, partial_keys has no effect."""
+
+    def _comp(cid: str, role: Role, **kw: str) -> Component:
+        return Component(
+            id=cid,
+            required=role != Role.ATTRIBUTE,
+            role=role,
+            concept=Concept(id=cid),
+            **kw,
+        )
+
+    comps = Components(
+        [
+            _comp("DIM1", Role.DIMENSION),
+            _comp("DIM2", Role.DIMENSION),
+            _comp("OBS_VALUE", Role.MEASURE),
+            _comp("ATT1", Role.ATTRIBUTE, attachment_level="O"),
+            _comp("ATT2", Role.ATTRIBUTE, attachment_level="O"),
+            _comp("ATT3", Role.ATTRIBUTE, attachment_level="DIM1"),
+        ]
+    )
+    schema = Schema(
+        context="datastructure",
+        agency="MD",
+        id="MD_TEST",
+        components=comps,
+    )
+    data = pd.DataFrame(
+        [
+            {
+                "DIM1": "A",
+                "DIM2": "B",
+                "ATT1": "C",
+                "ATT2": "D",
+                "OBS_VALUE": 1,
+            }
+        ]
+    )
+    dataset = PandasDataset(
+        attributes={}, data=data.astype("str"), structure=schema
+    )
+    result_with = write([dataset], partial_keys=True)
+    result_without = write([dataset], partial_keys=False)
+    df_with = pd.read_csv(StringIO(result_with))
+    df_without = pd.read_csv(StringIO(result_without))
+    pd.testing.assert_frame_equal(df_with, df_without, check_like=True)
+
+
+def test_writer_partial_keys_empty_attr(partial_keys_schema):
+    """Partial key rows with empty attribute values are skipped."""
+    data = pd.DataFrame(
+        [
+            {
+                "DIM1": "A",
+                "DIM2": "B",
+                "ATT1": "",
+                "ATT2": "D",
+                "OBS_VALUE": 1,
+                "TIME_PERIOD": "2020",
+            }
+        ]
+    )
+    dataset = PandasDataset(
+        attributes={}, data=data.astype("str"), structure=partial_keys_schema
+    )
+    result_csv = write([dataset], partial_keys=True)
+    result_df = pd.read_csv(StringIO(result_csv))
+    assert len(result_df) == 1
+
+
+@pytest.mark.data
+def test_writer_partial_keys_no_schema(partial_keys_data):
+    dataset = PandasDataset(
+        attributes={},
+        data=partial_keys_data,
+        structure="DataStructure=MD:DS1(2.0)",
+    )
+    dataset.data = dataset.data.astype("str")
+    with pytest.raises(Invalid, match="not a Schema"):
+        write([dataset], partial_keys=True)

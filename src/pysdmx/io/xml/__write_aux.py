@@ -44,7 +44,9 @@ from pysdmx.util import parse_short_urn
 
 MESSAGE_TYPE_MAPPING = {
     Format.DATA_SDMX_ML_2_1_GEN: "GenericData",
+    Format.DATA_SDMX_ML_2_1_GENTS: "GenericTimeSeriesData",
     Format.DATA_SDMX_ML_2_1_STR: "StructureSpecificData",
+    Format.DATA_SDMX_ML_2_1_STRTS: "StructureSpecificTimeSeriesData",
     Format.STRUCTURE_SDMX_ML_2_1: "Structure",
     Format.ERROR_SDMX_ML_2_1: "Error",
     Format.REGISTRY_SDMX_ML_2_1: "RegistryInterface",
@@ -71,6 +73,7 @@ CONCEPTS_SCHEMES = "ConceptSchemes"
 DSDS = "DataStructures"
 DATAFLOWS = "Dataflows"
 CONSTRAINTS = "Constraints"
+DATA_CONSTRAINTS = "DataConstraints"
 PROV_AGREEMENTS = "ProvisionAgreements"
 REPRESENTATION_MAPS_KEY = "RepresentationMaps"
 STRUCTURE_MAPS_KEY = "StructureMaps"
@@ -127,9 +130,15 @@ def __namespaces_from_type(type_: Format) -> str:
     """
     if type_ == Format.STRUCTURE_SDMX_ML_2_1:
         return f"xmlns:{ABBR_STR}={NAMESPACES_21[ABBR_STR]!r} "
-    elif type_ == Format.DATA_SDMX_ML_2_1_STR:
+    elif type_ in (
+        Format.DATA_SDMX_ML_2_1_STR,
+        Format.DATA_SDMX_ML_2_1_STRTS,
+    ):
         return f"xmlns:{ABBR_SPE}={NAMESPACES_21[ABBR_SPE]!r} "
-    elif type_ == Format.DATA_SDMX_ML_2_1_GEN:
+    elif type_ in (
+        Format.DATA_SDMX_ML_2_1_GEN,
+        Format.DATA_SDMX_ML_2_1_GENTS,
+    ):
         return f"xmlns:{ABBR_GEN}={NAMESPACES_21[ABBR_GEN]!r} "
     elif type_ == Format.DATA_SDMX_ML_3_0:
         return f"xmlns:{ABBR_SPE}={NAMESPACES_30[ABBR_SPE]!r} "
@@ -209,7 +218,7 @@ MSG_CONTENT_PKG_21 = OrderedDict(
         (CODELISTS, "Codelists"),
         (CONCEPTS, "Concepts"),
         (DSDS, "DataStructures"),
-        (CONSTRAINTS, "ContentConstraints"),
+        (CONSTRAINTS, "Constraints"),
         (REPRESENTATION_MAPS, "RepresentationMaps"),
         (STRUCTURE_MAPS, "StructureMaps"),
         (CUSTOM_TYPES, "CustomTypes"),
@@ -230,7 +239,7 @@ MSG_CONTENT_PKG_30 = OrderedDict(
         (CODELISTS, "Codelists"),
         (CONCEPTS_SCHEMES, "ConceptSchemes"),
         (DSDS, "DataStructures"),
-        (CONSTRAINTS, "ContentConstraints"),
+        (DATA_CONSTRAINTS, "DataConstraints"),
         (REPRESENTATION_MAPS, "RepresentationMaps"),
         (STRUCTURE_MAPS, "StructureMaps"),
         (CUSTOM_TYPE_SCHEMES, "CustomTypeSchemes"),
@@ -362,7 +371,7 @@ def __reference(
             )
         else:
             namespace = (
-                f"{URN_DS_BASE}{reference.agency}:{reference.id}"
+                f"{urn_type}{reference.agency}:{reference.id}"
                 f"({reference.version})"
             )
 

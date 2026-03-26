@@ -477,7 +477,8 @@ def write(
     output_path: Optional[Union[str, Path]] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
-    dimension_at_observation: Optional[Dict[str, str]] = None,
+    dimension_at_observation: Optional[Union[str, Dict[str, str]]] = None,
+    sdmx_format: Optional[Format] = None,
 ) -> Optional[str]:
     """Write data to SDMX-ML 2.1 Generic format.
 
@@ -487,12 +488,14 @@ def write(
         prettyprint: Prettyprint or not.
         header: The header to be used (generated if None).
         dimension_at_observation:
-          The mapping between the dataset and the dimension at observation.
+          The dimension at observation, either as a string applied to all
+          datasets or a dict mapping short URNs to dimension IDs.
+        sdmx_format: The SDMX format to use (defaults to Generic).
 
     Returns:
         The XML string if path is empty, None otherwise.
     """
-    type_ = Format.DATA_SDMX_ML_2_1_GEN
+    type_ = sdmx_format or Format.DATA_SDMX_ML_2_1_GEN
 
     # Checking if we have datasets,
     # we need to ensure we can write them correctly

@@ -23,7 +23,7 @@ from pysdmx.model import (
     ItemReference,
     Reference,
 )
-from pysdmx.util import find_by_urn, parse_urn
+from pysdmx.util import find_by_urn, is_final, parse_urn
 
 
 class JsonCategorisation(
@@ -48,6 +48,7 @@ class JsonCategorisation(
             name=self.name,
             description=self.description,
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             valid_from=self.validFrom,
             valid_to=self.validTo,
             annotations=[a.to_model() for a in self.annotations],
@@ -197,6 +198,7 @@ class JsonCategoryScheme(
             version=self.version,
             items=[c.to_model(cat_flows, cat_other) for c in self.categories],
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             is_partial=self.isPartial,
             valid_from=self.validFrom,
             valid_to=self.validTo,

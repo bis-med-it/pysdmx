@@ -27,3 +27,4 @@ API Reference
    query/registration
    query/schema
    query/structure
+   query/model

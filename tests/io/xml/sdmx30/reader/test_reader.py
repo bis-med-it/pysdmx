@@ -14,11 +14,19 @@ from pysdmx.model import (
     Code,
     Codelist,
     ConceptScheme,
+    ConstraintAttachment,
     Contact,
+    CubeKeyValue,
+    CubeRegion,
+    CubeValue,
     CustomType,
     CustomTypeScheme,
+    DataConstraint,
     Dataflow,
+    DataKey,
+    DataKeyValue,
     ItemReference,
+    KeySet,
     NamePersonalisation,
     NamePersonalisationScheme,
     Reference,
@@ -135,6 +143,38 @@ def test_agency_scheme_read(samples_folder):
 
 
 @pytest.mark.xml
+def test_agency_scheme_defaults_omitted(samples_folder):
+    data_path = samples_folder / "agencies_defaults.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+
+    agency_scheme = result[0]
+    assert isinstance(agency_scheme, AgencyScheme)
+
+    # When id, name, and version match the SDMX standard defaults,
+    # they should use model defaults (not be explicitly set from XML),
+    # aligning XML reader behavior with JSON reader behavior.
+    assert agency_scheme.id == "AGENCIES"
+    assert agency_scheme.name == "AGENCIES"
+    assert agency_scheme.version == "1.0"
+    assert agency_scheme.agency == "SDMX"
+
+    expected = AgencyScheme(
+        is_final=agency_scheme.is_final,
+        is_external_reference=agency_scheme.is_external_reference,
+        agency="SDMX",
+        items=agency_scheme.items,
+    )
+    assert agency_scheme == expected
+    assert repr(agency_scheme) == repr(expected)
+
+    assert len(agency_scheme.items) == 1
+    assert agency_scheme.items[0].id == "BIS"
+    assert agency_scheme.items[0].name == "Bank for International Settlements"
+
+
+@pytest.mark.xml
 def test_code_list_read(samples_folder):
     data_path = samples_folder / "codelists.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -149,7 +189,59 @@ def test_code_list_read(samples_folder):
     assert codelist.name == "Age"
     assert codelist.short_urn == "Codelist=SDMX:CL_AGE(1.0)"
     assert codelist.version == "1.0"
+    assert codelist.is_final is False
+
+    assert len(codelist.items) == 5
+    assert isinstance(codelist.items[0], Code)
+    assert codelist.items[0].id == "Y"
+    assert codelist.items[0].name == "Year(s)"
+    assert codelist.items[1].id == "M"
+    assert codelist.items[1].name == "Month(s)"
+
+
+@pytest.mark.xml
+def test_code_list_semver_final_read(samples_folder):
+    data_path = samples_folder / "codelists_semver.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    assert len(result) == 1
+
+    assert isinstance(result[0], Codelist)
+    codelist = result[0]
+    assert codelist.agency == "SDMX"
+    assert codelist.id == "CL_AGE"
+    assert codelist.name == "Age"
+    assert codelist.short_urn == "Codelist=SDMX:CL_AGE(1.0.0)"
+    assert codelist.version == "1.0.0"
     assert codelist.is_final is True
+
+    assert len(codelist.items) == 5
+    assert isinstance(codelist.items[0], Code)
+    assert codelist.items[0].id == "Y"
+    assert codelist.items[0].name == "Year(s)"
+    assert codelist.items[1].id == "M"
+    assert codelist.items[1].name == "Month(s)"
+
+
+@pytest.mark.xml
+def test_code_list_semver_non_final_read(samples_folder):
+    data_path = samples_folder / "codelists_semver_nf.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    assert len(result) == 1
+
+    assert isinstance(result[0], Codelist)
+    codelist = result[0]
+    assert codelist.agency == "SDMX"
+    assert codelist.id == "CL_AGE"
+    assert codelist.name == "Age"
+    assert codelist.short_urn == "Codelist=SDMX:CL_AGE(1.0.0-draft)"
+    assert codelist.version == "1.0.0-draft"
+    assert codelist.is_final is False
 
     assert len(codelist.items) == 5
     assert isinstance(codelist.items[0], Code)
@@ -177,6 +269,28 @@ def test_codelist_read_draft(samples_folder):
     assert len(codelist.codes) == 0
 
 
+def test_codelist_without_is_final_defaults_false(samples_folder):
+    """SDMX 3.0 has no isFinal attribute; is_final defaults to False."""
+    data_path = samples_folder / "codelists.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    result = read_structure(input_str, validate=True)
+
+    codelist = result[0]
+    assert isinstance(codelist, Codelist)
+    assert codelist.is_final is False
+
+
+def test_dataflow_without_is_final_defaults_false(samples_folder):
+    """SDMX 3.0 has no isFinal attribute; is_final defaults to False."""
+    data_path = samples_folder / "dataflow_final_version.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    result = read_structure(input_str, validate=True)
+
+    dataflow = result[0]
+    assert isinstance(dataflow, Dataflow)
+    assert dataflow.is_final is False
+
+
 def test_dataflow_read_final(samples_folder):
     data_path = samples_folder / "dataflow_final_version.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -192,7 +306,7 @@ def test_dataflow_read_final(samples_folder):
     assert dataflow.name == "NAMAIN_IDC_N df"
     assert dataflow.short_urn == "Dataflow=SDMX:NAMAIN_IDC_N(1.0)"
     assert dataflow.version == "1.0"
-    assert dataflow.is_final is True
+    assert dataflow.is_final is False
     assert dataflow.is_external_reference is False
     assert "DataStructure=ESTAT:NA_MAIN(1.6)" in dataflow.structure
 
@@ -695,3 +809,189 @@ def test_read_multiple_measure_relationship(samples_folder):
     attr = dsd.components.attributes[2]
     assert attr.id == "OBS_CONF"
     assert attr.attachment_level == "OBS_VALUE,OBS_VALUE1"
+
+
+def test_constraint_with_cube_region(samples_folder):
+    data_path = samples_folder / "constraint_cube.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert result is not None
+    assert len(result) == 1
+    constraint = result[0]
+    assert isinstance(constraint, DataConstraint)
+    assert constraint.id == "TEST_CONSTRAINT_CUBE"
+    assert constraint.agency == "TEST_AGENCY"
+    assert constraint.version == "1.0"
+    assert constraint.name == "Test Constraint with Cube Region"
+    assert constraint.description == "A test constraint with cube region"
+    # Attachment
+    att = constraint.constraint_attachment
+    assert isinstance(att, ConstraintAttachment)
+    assert att.dataflows == [
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
+    ]
+    # Cube Region
+    assert len(constraint.cube_regions) == 1
+    region = constraint.cube_regions[0]
+    assert isinstance(region, CubeRegion)
+    assert region.is_included is True
+    assert len(region.key_values) == 2
+    assert isinstance(region.key_values[0], CubeKeyValue)
+    assert region.key_values[0].id == "FREQ"
+    assert isinstance(region.key_values[0].values[0], CubeValue)
+    assert [v.value for v in region.key_values[0].values] == ["M", "Q"]
+    assert region.key_values[1].id == "REF_AREA"
+    assert [v.value for v in region.key_values[1].values] == ["US", "UK"]
+
+
+def test_constraint_with_keyset(samples_folder):
+    data_path = samples_folder / "constraint_keyset.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert result is not None
+    assert len(result) == 1
+    constraint = result[0]
+    assert isinstance(constraint, DataConstraint)
+    assert constraint.id == "TEST_CONSTRAINT_KEYSET"
+    assert constraint.name == "Test Constraint with Key Set"
+    # Attachment
+    att = constraint.constraint_attachment
+    assert isinstance(att, ConstraintAttachment)
+    assert att.dataflows == [
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
+    ]
+    # Key Set
+    assert len(constraint.key_sets) == 1
+    ks = constraint.key_sets[0]
+    assert isinstance(ks, KeySet)
+    assert ks.is_included is True
+    assert len(ks.keys) == 4
+    assert isinstance(ks.keys[0], DataKey)
+    assert isinstance(ks.keys[0].keys_values[0], DataKeyValue)
+    assert ks.keys[0].keys_values[0].id == "FREQ"
+    assert ks.keys[0].keys_values[0].value == "M"
+    assert ks.keys[0].keys_values[1].id == "REF_AREA"
+    assert ks.keys[0].keys_values[1].value == "US"
+    assert ks.keys[1].keys_values[0].id == "FREQ"
+    assert ks.keys[1].keys_values[0].value == "Q"
+    assert ks.keys[1].keys_values[1].id == "REF_AREA"
+    assert ks.keys[1].keys_values[1].value == "UK"
+    # Key with Component but no KeyValue
+    assert len(ks.keys[2].keys_values) == 0
+    # Empty Key
+    assert len(ks.keys[3].keys_values) == 0
+
+
+def test_constraint_with_data_structure(samples_folder):
+    data_path = samples_folder / "constraint_datastructure.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert result is not None
+    assert len(result) == 1
+    constraint = result[0]
+    assert isinstance(constraint, DataConstraint)
+    assert constraint.id == "TEST_CONSTRAINT_DSD"
+    assert constraint.name == "Test Constraint with Data Structure"
+    # Attachment
+    att = constraint.constraint_attachment
+    assert isinstance(att, ConstraintAttachment)
+    assert att.data_structures == [
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "DataStructure=TEST_AGENCY:TEST_DSD(1.0)"
+    ]
+    # Cube Region
+    assert len(constraint.cube_regions) == 1
+    assert isinstance(constraint.cube_regions[0], CubeRegion)
+    assert constraint.cube_regions[0].is_included is True
+    assert constraint.cube_regions[0].key_values[0].id == "FREQ"
+    assert [
+        v.value for v in constraint.cube_regions[0].key_values[0].values
+    ] == ["A"]
+
+
+def test_constraint_with_provider(samples_folder):
+    data_path = samples_folder / "constraint_provider.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert result is not None
+    assert len(result) == 1
+    constraint = result[0]
+    assert isinstance(constraint, DataConstraint)
+    assert constraint.id == "TEST_CONSTRAINT_PROV"
+    assert constraint.name == "Test Constraint with Provider"
+    # Attachment
+    att = constraint.constraint_attachment
+    assert isinstance(att, ConstraintAttachment)
+    assert (
+        att.data_provider == "urn:sdmx:org.sdmx.infomodel.base.DataProvider="
+        "TEST_AGENCY:DATA_PROVIDERS(1.0).PROVIDER_ID"
+    )
+    # Cube Region
+    assert len(constraint.cube_regions) == 1
+    assert isinstance(constraint.cube_regions[0], CubeRegion)
+    assert constraint.cube_regions[0].key_values[0].id == "FREQ"
+    assert [
+        v.value for v in constraint.cube_regions[0].key_values[0].values
+    ] == ["M"]
+
+
+def test_constraint_with_provision_agreement(samples_folder):
+    data_path = samples_folder / "constraint_provision_agreement.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert result is not None
+    assert len(result) == 1
+    constraint = result[0]
+    assert isinstance(constraint, DataConstraint)
+    assert constraint.id == "TEST_CONSTRAINT_PA"
+    assert constraint.name == "Test Constraint with Provision Agreement"
+    # Attachment
+    att = constraint.constraint_attachment
+    assert isinstance(att, ConstraintAttachment)
+    assert att.provision_agreements == [
+        "urn:sdmx:org.sdmx.infomodel.registry."
+        "ProvisionAgreement=TEST_AGENCY:TEST_PA(1.0)"
+    ]
+    # Cube Region
+    assert len(constraint.cube_regions) == 1
+    assert isinstance(constraint.cube_regions[0], CubeRegion)
+    assert constraint.cube_regions[0].key_values[0].id == "FREQ"
+    assert [
+        v.value for v in constraint.cube_regions[0].key_values[0].values
+    ] == ["A"]
+
+
+def test_constraint_without_attachment(samples_folder):
+    data_path = samples_folder / "constraint_no_attachment.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert result is not None
+    assert len(result) == 1
+    constraint = result[0]
+    assert isinstance(constraint, DataConstraint)
+    assert constraint.id == "TEST_CONSTRAINT_NO_ATTACH"
+    assert constraint.name == "Test Constraint without Attachment"
+    assert constraint.constraint_attachment is None
+    # Cube Region
+    assert len(constraint.cube_regions) == 1
+    assert isinstance(constraint.cube_regions[0], CubeRegion)
+    assert constraint.cube_regions[0].is_included is True
+    assert constraint.cube_regions[0].key_values[0].id == "FREQ"
+    assert [
+        v.value for v in constraint.cube_regions[0].key_values[0].values
+    ] == ["Q"]
+
+
+def test_constraint_with_actual_role_raises(samples_folder):
+    data_path = samples_folder / "constraint_actual.xml"
+    input_str, _ = process_string_to_read(data_path)
+    with pytest.raises(NotImplementedError):
+        read_sdmx(input_str)

@@ -4,6 +4,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
 from pysdmx.io.csv.sdmx21.writer import write
 from pysdmx.io.pd import PandasDataset
@@ -180,6 +181,44 @@ def csv_keys_both():
 def csv_time_format_original():
     base_path = (
         Path(__file__).parent / "samples" / "csv_time_format_original.csv"
+    )
+    return str(base_path)
+
+
+@pytest.fixture
+def partial_keys_data():
+    return pd.DataFrame(
+        [
+            {
+                "DIM1": "A",
+                "DIM2": "B",
+                "ATT1": "C",
+                "ATT2": "D",
+                "OBS_VALUE": 1,
+                "TIME_PERIOD": "2020",
+            },
+            {
+                "DIM1": "A",
+                "DIM2": "B",
+                "ATT1": "C",
+                "ATT2": "E",
+                "OBS_VALUE": 2,
+                "TIME_PERIOD": "2021",
+            },
+        ]
+    )
+
+
+@pytest.fixture
+def partial_keys_schema(dsd_path):
+    dsd = read_sdmx(dsd_path).get_data_structure_definitions()[0]
+    return dsd.to_schema()
+
+
+@pytest.fixture
+def data_path_reference_partial_keys():
+    base_path = (
+        Path(__file__).parent / "samples" / "reference_partial_keys.csv"
     )
     return str(base_path)
 
@@ -419,3 +458,33 @@ def test_writer_time_format_normalized(data_path_optional, schema):
         match="Normalized time format is not implemented yet.",
     ):
         write([dataset], time_format="normalized")
+
+
+def test_writer_partial_keys(
+    partial_keys_data, partial_keys_schema, data_path_reference_partial_keys
+):
+    dataset = PandasDataset(
+        attributes={},
+        data=partial_keys_data,
+        structure=partial_keys_schema,
+    )
+    dataset.data = dataset.data.astype("str")
+    result_sdmx_csv = write([dataset], partial_keys=True)
+    result_df = pd.read_csv(StringIO(result_sdmx_csv)).astype(str)
+    reference_df = pd.read_csv(data_path_reference_partial_keys).astype(str)
+    pd.testing.assert_frame_equal(
+        result_df.fillna("").replace("nan", ""),
+        reference_df.replace("nan", ""),
+    )
+
+
+@pytest.mark.data
+def test_writer_partial_keys_no_schema(partial_keys_data):
+    dataset = PandasDataset(
+        attributes={},
+        data=partial_keys_data,
+        structure="DataStructure=MD:DS1(2.0)",
+    )
+    dataset.data = dataset.data.astype("str")
+    with pytest.raises(Invalid, match="not a Schema"):
+        write([dataset], partial_keys=True)

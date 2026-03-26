@@ -21,6 +21,7 @@ from pysdmx.model import (
     DataKeyValue,
     KeySet,
 )
+from pysdmx.util import is_final
 
 
 class JsonValue(Struct, frozen=True, omit_defaults=True):
@@ -183,7 +184,11 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
 
     def to_model(self) -> DataConstraint:
         """Converts a JsonDataConstraint to a pysdmx Data Constraint."""
-        at = self.constraintAttachment.to_model()  # type: ignore[union-attr]
+        at = (
+            self.constraintAttachment.to_model()
+            if self.constraintAttachment
+            else None
+        )
         return DataConstraint(
             id=self.id,
             name=self.name,
@@ -192,6 +197,7 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             version=self.version,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             valid_from=self.validFrom,
             valid_to=self.validTo,
             constraint_attachment=at,

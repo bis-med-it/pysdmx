@@ -30,7 +30,7 @@ from pysdmx.model.vtl import (
     VtlMapping,
     VtlMappingScheme,
 )
-from pysdmx.util import parse_urn
+from pysdmx.util import is_final, parse_urn
 
 
 class JsonCustomType(NameableType, frozen=True, omit_defaults=True):
@@ -97,6 +97,7 @@ class JsonCustomTypeScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             valid_from=self.validFrom,
             valid_to=self.validTo,
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             agency=self.agency,
             items=items,
             is_partial=self.isPartial,
@@ -195,6 +196,7 @@ class JsonNamePersonalisationScheme(
             valid_from=self.validFrom,
             valid_to=self.validTo,
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             agency=self.agency,
             items=items,
             is_partial=self.isPartial,
@@ -291,6 +293,7 @@ class JsonUserDefinedOperatorScheme(
             valid_from=self.validFrom,
             valid_to=self.validTo,
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             agency=self.agency,
             items=items,
             is_partial=self.isPartial,
@@ -446,6 +449,7 @@ class JsonRulesetScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             valid_from=self.validFrom,
             valid_to=self.validTo,
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             agency=self.agency,
             items=items,
             is_partial=self.isPartial,
@@ -713,6 +717,7 @@ class JsonVtlMappingScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             valid_from=self.validFrom,
             valid_to=self.validTo,
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             agency=self.agency,
             items=items,
             is_partial=self.isPartial,
@@ -838,6 +843,7 @@ class JsonTransformationScheme(
             valid_from=self.validFrom,
             valid_to=self.validTo,
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             agency=self.agency,
             items=items,
             is_partial=self.isPartial,

@@ -221,6 +221,10 @@ def ds_with_group():
             "str_all.xml",
             {"DataStructure=MD:TEST(1.0)": "AllDimensions"},
         ),
+        (Format.DATA_SDMX_ML_2_1_GEN, "gen_ser.xml", "DIM1"),
+        (Format.DATA_SDMX_ML_2_1_STR, "str_ser.xml", "DIM1"),
+        (Format.DATA_SDMX_ML_2_1_GEN, "gen_all.xml", "AllDimensions"),
+        (Format.DATA_SDMX_ML_2_1_STR, "str_all.xml", "AllDimensions"),
     ],
 )
 def test_data_write_read(
@@ -381,6 +385,24 @@ def test_invalid_dimension_key(content):
         write_str_spec(
             content,
             dimension_at_observation=dim_mapping,
+        )
+
+
+def test_invalid_string_dimension_at_observation(content):
+    content = list(content.values())
+    with pytest.raises(
+        Invalid, match="Dimension at observation NONEXISTENT not found"
+    ):
+        write_gen(
+            content,
+            dimension_at_observation="NONEXISTENT",
+        )
+    with pytest.raises(
+        Invalid, match="Dimension at observation NONEXISTENT not found"
+    ):
+        write_str_spec(
+            content,
+            dimension_at_observation="NONEXISTENT",
         )
 
 

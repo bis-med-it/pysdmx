@@ -24,7 +24,7 @@ from pysdmx.model import (
     MetadataComponent,
     MetadataStructure,
 )
-from pysdmx.util import parse_item_urn
+from pysdmx.util import is_final, parse_item_urn
 
 
 def _get_attr_repr(comp: MetadataComponent) -> Optional[JsonRepresentation]:
@@ -185,6 +185,7 @@ class JsonMetadataStructure(MaintainableType, frozen=True, omit_defaults=True):
             version=self.version,
             annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
+            is_final=is_final(self.version),
             valid_from=self.validFrom,
             valid_to=self.validTo,
             components=c,
