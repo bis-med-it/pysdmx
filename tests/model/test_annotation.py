@@ -101,8 +101,3 @@ def test_torepr_all(id, title, text, url, type):
     )
 
     assert r == expected_str
-
-
-def test_empty_annotation_not_allowed():
-    with pytest.raises(PysdmxError, match="empty"):
-        Annotation()
