@@ -7,6 +7,7 @@ from msgspec import Struct
 from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist, JsonValuelist
 from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptScheme
+from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
 from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     MaintainableType,
@@ -25,6 +26,46 @@ from pysdmx.model.dataflow import Group
 from pysdmx.util import is_final, parse_urn
 
 
+def __parse_annotation_metrics(
+    const: JsonDataConstraint,
+) -> tuple[Optional[int], Optional[int]]:
+    if const.annotations:
+        obs = None
+        series = None
+        for a in const.annotations:
+            if a.type == "sdmx_metrics" and a.id == "obs_count" and a.title:
+                obs = int(a.title)
+            elif (
+                a.type == "sdmx_metrics" and a.id == "series_count" and a.title
+            ):
+                series = int(a.title)
+        return obs, series
+    else:
+        return None, None
+
+
+def _extract_metrics(
+    df: "JsonDataflow", constraints: Sequence[JsonDataConstraint]
+) -> tuple[Optional[int], Optional[int]]:
+    dfurn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow="
+        f"{df.agency}:{df.id}({df.version})"
+    )
+    const = [
+        c
+        for c in constraints
+        if c.constraintAttachment
+        and c.constraintAttachment.dataflows
+        and dfurn in c.constraintAttachment.dataflows
+    ]
+    if const:
+        obs_count, series_count = __parse_annotation_metrics(const[0])
+    else:
+        obs_count = None
+        series_count = None
+    return (obs_count, series_count)
+
+
 class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a dataflow."""
 
@@ -36,6 +77,7 @@ class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
         concepts: Sequence[JsonConceptScheme] = (),
         valuelists: Sequence[JsonValuelist] = (),
         codelists: Sequence[JsonCodelist] = (),
+        constraints: Sequence[JsonDataConstraint] = (),
     ) -> Dataflow:
         """Converts a FusionDataflow to a standard dataflow."""
         dsd: Optional[Union[DataStructureDefinition, str]] = None
@@ -51,6 +93,7 @@ class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
             if len(m) == 1:
                 dsd = m[0].to_model(concepts, codelists, valuelists, ())
         dsd = dsd if dsd is not None else self.structure
+        obs_count, series_count = _extract_metrics(self, constraints)
         return Dataflow(
             id=self.id,
             agency=self.agency,
@@ -63,6 +106,8 @@ class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
             is_external_reference=self.isExternalReference,
             valid_from=self.validFrom,
             valid_to=self.validTo,
+            obs_count=obs_count,
+            series_count=series_count,
         )
 
     @classmethod
@@ -114,6 +159,7 @@ class JsonDataflows(Struct, frozen=True, omit_defaults=True):
     conceptSchemes: Sequence[JsonConceptScheme] = ()
     valuelists: Sequence[JsonValuelist] = ()
     codelists: Sequence[JsonCodelist] = ()
+    dataConstraints: Sequence[JsonDataConstraint] = ()
 
     def __filter(
         self, df: JsonDataflow, agency: str, id_: str, version: str
@@ -143,6 +189,9 @@ class JsonDataflows(Struct, frozen=True, omit_defaults=True):
                 self.dataflows,
             )
         )[0]
+
+        obs_count, series_count = _extract_metrics(df, self.dataConstraints)
+
         return DataflowInfo(
             id=df.id,
             components=components,
@@ -153,6 +202,8 @@ class JsonDataflows(Struct, frozen=True, omit_defaults=True):
             providers=prvs,
             dsd_ref=df.structure,
             groups=grps,
+            obs_count=obs_count,
+            series_count=series_count,
         )
 
     def to_generic_model(self) -> Sequence[Dataflow]:
@@ -163,6 +214,7 @@ class JsonDataflows(Struct, frozen=True, omit_defaults=True):
                 self.conceptSchemes,
                 self.valuelists,
                 self.codelists,
+                self.dataConstraints,
             )
             for df in self.dataflows
         ]
