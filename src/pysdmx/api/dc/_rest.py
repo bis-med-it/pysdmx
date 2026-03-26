@@ -20,7 +20,7 @@ from pysdmx.api.qb import (
     StructureType,
 )
 from pysdmx.io.json.sdmxjson2.messages import JsonDataflowsMessage
-from pysdmx.model import Agency, Dataflow, DataflowInfo, decoders
+from pysdmx.model import Agency, Dataflow, decoders
 from pysdmx.util import parse_maintainable_urn
 
 _FLOWS_DEC = msgspec.json.Decoder(JsonDataflowsMessage, dec_hook=decoders)
