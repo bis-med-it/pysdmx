@@ -44,6 +44,7 @@ class _CoreRestService:
         timeout: Optional[float] = 5.0,
     ):
         """Instantiate a connector to a SDMX-REST service."""
+        api_endpoint = api_endpoint.strip()
         self._api_endpoint = (
             api_endpoint[0:-1] if api_endpoint.endswith("/") else api_endpoint
         )
