@@ -143,6 +143,38 @@ def test_agency_scheme_read(samples_folder):
 
 
 @pytest.mark.xml
+def test_agency_scheme_defaults_omitted(samples_folder):
+    data_path = samples_folder / "agencies_defaults.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+
+    agency_scheme = result[0]
+    assert isinstance(agency_scheme, AgencyScheme)
+
+    # When id, name, and version match the SDMX standard defaults,
+    # they should use model defaults (not be explicitly set from XML),
+    # aligning XML reader behavior with JSON reader behavior.
+    assert agency_scheme.id == "AGENCIES"
+    assert agency_scheme.name == "AGENCIES"
+    assert agency_scheme.version == "1.0"
+    assert agency_scheme.agency == "SDMX"
+
+    expected = AgencyScheme(
+        is_final=agency_scheme.is_final,
+        is_external_reference=agency_scheme.is_external_reference,
+        agency="SDMX",
+        items=agency_scheme.items,
+    )
+    assert agency_scheme == expected
+    assert repr(agency_scheme) == repr(expected)
+
+    assert len(agency_scheme.items) == 1
+    assert agency_scheme.items[0].id == "BIS"
+    assert agency_scheme.items[0].name == "Bank for International Settlements"
+
+
+@pytest.mark.xml
 def test_code_list_read(samples_folder):
     data_path = samples_folder / "codelists.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -157,7 +189,59 @@ def test_code_list_read(samples_folder):
     assert codelist.name == "Age"
     assert codelist.short_urn == "Codelist=SDMX:CL_AGE(1.0)"
     assert codelist.version == "1.0"
+    assert codelist.is_final is False
+
+    assert len(codelist.items) == 5
+    assert isinstance(codelist.items[0], Code)
+    assert codelist.items[0].id == "Y"
+    assert codelist.items[0].name == "Year(s)"
+    assert codelist.items[1].id == "M"
+    assert codelist.items[1].name == "Month(s)"
+
+
+@pytest.mark.xml
+def test_code_list_semver_final_read(samples_folder):
+    data_path = samples_folder / "codelists_semver.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    assert len(result) == 1
+
+    assert isinstance(result[0], Codelist)
+    codelist = result[0]
+    assert codelist.agency == "SDMX"
+    assert codelist.id == "CL_AGE"
+    assert codelist.name == "Age"
+    assert codelist.short_urn == "Codelist=SDMX:CL_AGE(1.0.0)"
+    assert codelist.version == "1.0.0"
     assert codelist.is_final is True
+
+    assert len(codelist.items) == 5
+    assert isinstance(codelist.items[0], Code)
+    assert codelist.items[0].id == "Y"
+    assert codelist.items[0].name == "Year(s)"
+    assert codelist.items[1].id == "M"
+    assert codelist.items[1].name == "Month(s)"
+
+
+@pytest.mark.xml
+def test_code_list_semver_non_final_read(samples_folder):
+    data_path = samples_folder / "codelists_semver_nf.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    assert result is not None
+    assert len(result) == 1
+
+    assert isinstance(result[0], Codelist)
+    codelist = result[0]
+    assert codelist.agency == "SDMX"
+    assert codelist.id == "CL_AGE"
+    assert codelist.name == "Age"
+    assert codelist.short_urn == "Codelist=SDMX:CL_AGE(1.0.0-draft)"
+    assert codelist.version == "1.0.0-draft"
+    assert codelist.is_final is False
 
     assert len(codelist.items) == 5
     assert isinstance(codelist.items[0], Code)
@@ -185,6 +269,28 @@ def test_codelist_read_draft(samples_folder):
     assert len(codelist.codes) == 0
 
 
+def test_codelist_without_is_final_defaults_false(samples_folder):
+    """SDMX 3.0 has no isFinal attribute; is_final defaults to False."""
+    data_path = samples_folder / "codelists.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    result = read_structure(input_str, validate=True)
+
+    codelist = result[0]
+    assert isinstance(codelist, Codelist)
+    assert codelist.is_final is False
+
+
+def test_dataflow_without_is_final_defaults_false(samples_folder):
+    """SDMX 3.0 has no isFinal attribute; is_final defaults to False."""
+    data_path = samples_folder / "dataflow_final_version.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    result = read_structure(input_str, validate=True)
+
+    dataflow = result[0]
+    assert isinstance(dataflow, Dataflow)
+    assert dataflow.is_final is False
+
+
 def test_dataflow_read_final(samples_folder):
     data_path = samples_folder / "dataflow_final_version.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -200,7 +306,7 @@ def test_dataflow_read_final(samples_folder):
     assert dataflow.name == "NAMAIN_IDC_N df"
     assert dataflow.short_urn == "Dataflow=SDMX:NAMAIN_IDC_N(1.0)"
     assert dataflow.version == "1.0"
-    assert dataflow.is_final is True
+    assert dataflow.is_final is False
     assert dataflow.is_external_reference is False
     assert "DataStructure=ESTAT:NA_MAIN(1.6)" in dataflow.structure
 

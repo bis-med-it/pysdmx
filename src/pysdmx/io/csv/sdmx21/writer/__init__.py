@@ -17,6 +17,7 @@ def write(
     time_format: Optional[Literal["original", "normalized"]] = None,
     keys: Optional[Literal["obs", "series", "both"]] = None,
     output_path: Optional[Union[str, Path]] = None,
+    partial_keys: bool = False,
 ) -> Optional[str]:
     """Write data to SDMX-CSV 2.1 format.
 
@@ -44,20 +45,33 @@ def write(
             "OBS_KEY" and "SERIES_KEY".
         output_path: Path to write the data to.
           If None, the data is returned as a string.
+        partial_keys: Whether to write partial key rows
+            for series-level and group-level attributes.
 
     Returns:
         SDMX CSV data as a string, if output_path is None.
+
+    Raises:
+        Invalid: If partial_keys is True but the dataset
+            structure is not a Schema.
     """
     # Link to pandas.to_csv documentation on sphinx:
     # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html
 
     dataframes = _write_csv_2_aux(
-        datasets, labels, time_format, keys, references_21=True
+        datasets,
+        labels,
+        time_format,
+        keys,
+        references_21=True,
+        partial_keys=partial_keys,
     )
 
     all_data = pd.concat(dataframes, ignore_index=True, axis=0)
 
-    all_data = all_data.astype(str).replace({"nan": "", "<NA>": ""})
+    all_data = all_data.astype(str).replace(
+        {"nan": "", "<NA>": "", "None": ""}
+    )
 
     # If the output path is an empty string we use None
     output_path = (

@@ -14,7 +14,20 @@ Classes:
 
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Sequence, Type, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Optional,
+    Sequence,
+    Type,
+    Union,
+    cast,
+)
+
+if TYPE_CHECKING:  # pragma: no cover
+    from pysdmx.io.pd import PandasDataset
 
 from msgspec import Struct
 
@@ -413,21 +426,21 @@ class Message(StructureMessage, frozen=True):
                         "Check the docs for the proper structure on data.",
                     )
 
-    def get_datasets(self) -> Sequence[Dataset]:
+    def get_datasets(self) -> "Sequence[PandasDataset]":
         """Returns the Datasets."""
         if self.data is not None:
-            return self.data
+            return cast("Sequence[PandasDataset]", self.data)
         raise NotFound(
             "No Datasets found in data.",
             "Could not find any Datasets in content.",
         )
 
-    def get_dataset(self, short_urn: str) -> Dataset:
+    def get_dataset(self, short_urn: str) -> "PandasDataset":
         """Returns a specific Dataset."""
         if self.data is not None:
             for dataset in self.data:
                 if dataset.short_urn == short_urn:
-                    return dataset
+                    return cast("PandasDataset", dataset)
         raise NotFound(
             f"No Dataset with Short URN {short_urn} found in data.",
             "Could not find the requested Dataset.",

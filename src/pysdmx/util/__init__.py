@@ -14,6 +14,8 @@ maintainable_urn_pattern = re.compile(r"^.*\.(.*)=(.*):(.*)\((.*)\)$")
 item_urn_pattern = re.compile(r"^.*\.(.*)=(.*):(.*)\((.*)\)\.(.*)$")
 short_urn_pattern = re.compile(r"^(.*)=(.*):(.*)\((.*)\)$")
 short_item_urn_pattern = re.compile(r"^(.*)=(.*):(.*)\((.*)\)\.(.*)$")
+_SEMVER_NUM = r"(0|[1-9]\d*)"
+semver_final_pattern = re.compile(rf"^[1-9]\d*\.{_SEMVER_NUM}\.{_SEMVER_NUM}$")
 
 
 def parse_urn(urn: str) -> Union[ItemReference, Reference]:
@@ -93,6 +95,24 @@ def parse_short_item_urn(urn: str) -> ItemReference:
         raise Invalid(NF, f"{urn} does not match {short_item_urn_pattern}.")
 
 
+def is_final(version: str) -> bool:
+    """Infers finality from an SDMX 3.0 semantic version string.
+
+    In SDMX 3.0+, the isFinal attribute no longer exists. Instead,
+    a version with three numeric segments and no hyphen extension
+    (e.g. 1.0.0) is considered final, while versions with a hyphen
+    extension (e.g. 1.0.0-draft) or only two segments (e.g. 1.0)
+    are not final.
+
+    Args:
+        version: The version string to evaluate.
+
+    Returns:
+        True if the version indicates a final artefact.
+    """
+    return bool(semver_final_pattern.match(version))
+
+
 def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:
     """Returns the maintainable artefact matching the supplied urn."""
     r = parse_urn(urn)
@@ -128,6 +148,7 @@ def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:
 __all__ = [
     "convert_dpm",
     "find_by_urn",
+    "is_final",
     "parse_item_urn",
     "parse_maintainable_urn",
     "parse_urn",

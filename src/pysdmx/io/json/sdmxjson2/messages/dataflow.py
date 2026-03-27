@@ -22,7 +22,7 @@ from pysdmx.model import (
     DataStructureDefinition,
 )
 from pysdmx.model.dataflow import Group
-from pysdmx.util import parse_urn
+from pysdmx.util import is_final, parse_urn
 
 
 class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
@@ -57,6 +57,7 @@ class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
             name=self.name,
             description=self.description,
             version=self.version,
+            is_final=is_final(self.version),
             structure=dsd,
             annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,

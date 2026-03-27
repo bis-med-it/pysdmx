@@ -20,8 +20,6 @@ def __get_pd_type(dt: DataType, required: bool) -> str:  # noqa: C901
         return "float64" if required else "Float64"
     elif dt == DataType.BOOLEAN:
         return "bool" if required else "boolean"
-    elif dt == DataType.MONTH:
-        return "int8" if required else "Int8"
     elif dt == DataType.GREGORIAN_TIME_PERIOD:
         return "object"
     elif dt == DataType.DATE_TIME:
@@ -60,6 +58,11 @@ def to_pandas_type(comp: Component) -> str:
     """
     if comp.enumeration:
         return "category"
+    elif comp.dtype == DataType.INCREMENTAL:
+        if comp.facets and isinstance(comp.facets.interval, float):
+            return "float32" if comp.required else "Float32"
+        else:
+            return "int32" if comp.required else "Int32"
     else:
         return __get_pd_type(comp.dtype, comp.required)
 
