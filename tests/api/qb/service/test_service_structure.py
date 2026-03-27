@@ -28,7 +28,7 @@ def service(end_point: str, version: ApiVersion) -> RestService:
 
 @pytest.fixture
 def query() -> StructureQuery:
-    return StructureQuery(StructureType.ALL, "SDMX", "CL_FREQ")
+    return StructureQuery(StructureType.CODELIST, "SDMX", "CL_FREQ")
 
 
 @pytest.fixture
