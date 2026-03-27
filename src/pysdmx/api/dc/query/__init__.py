@@ -3,6 +3,7 @@
 from pysdmx.api.dc.query._model import (
     BooleanFilter,
     DateTimeFilter,
+    Filter,
     LogicalOperator,
     MultiFilter,
     NotFilter,
@@ -16,6 +17,7 @@ from pysdmx.api.dc.query._model import (
 __all__ = [
     "BooleanFilter",
     "DateTimeFilter",
+    "Filter",
     "LogicalOperator",
     "MultiFilter",
     "NotFilter",
