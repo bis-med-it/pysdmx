@@ -1,17 +1,23 @@
 """A connector for SDMX-REST services."""
 
-from typing import NoReturn, Optional, Union
+import csv
+import io
+from typing import Generator, NoReturn, Optional, Union
 
 import msgspec
 
 from pysdmx import errors
 from pysdmx.api.dc import BasicConnector, MaintainableIdentification
+from pysdmx.api.dc.query import MultiFilter, NumberFilter, TextFilter
+from pysdmx.api.dc.query.util import parse_query
 from pysdmx.api.qb import (
     ApiVersion,
     AvailabilityFormat,
     AvailabilityMode,
     AvailabilityQuery,
     DataContext,
+    DataFormat,
+    DataQuery,
     RestService,
     StructureDetail,
     StructureFormat,
@@ -47,6 +53,7 @@ class SdmxConnector(BasicConnector):
         self.__client = RestService(
             api_endpoint,
             ApiVersion.V2_0_0,
+            data_format=DataFormat.SDMX_CSV_2_0_0,
             structure_format=StructureFormat.SDMX_JSON_2_0_0,
             avail_format=AvailabilityFormat.SDMX_JSON_2_0_0,
             pem=pem,
@@ -159,11 +166,79 @@ class SdmxConnector(BasicConnector):
             url = q.get_url(ApiVersion.V2_0_0, True)
             self.__raise_dataflow_nf_error(url)
         try:
-            dfi = _FLOWS_DEC.decode(out).to_model()
+            if out:
+                dfi = _FLOWS_DEC.decode(out).to_model()
+            else:
+                url = q.get_url(ApiVersion.V2_0_0, True)
+                self.__raise_dataflow_nf_error(url)
         except msgspec.MsgspecError as e:
             self.__raise_deserialization_error(e, out)
 
         return dfi[0]
+
+    def data(
+        self,
+        dataflow: Union[str, MaintainableIdentification],
+        filters: Optional[
+            Union[MultiFilter, NumberFilter, TextFilter, str]
+        ] = None,
+    ) -> Generator[dict[str, int], None, None]:
+        """Get data for the selected dataflow, matching the supplied filters.
+
+        Args:
+            dataflow (Union[str, MaintainableIdentification]): The dataflow
+                from which to retrieve data. Either a string representing the
+                SDMX URN of the dataflow or the information necessary to
+                uniquely identify it. Classes such as `DataflowRef` or
+                `Dataflow` are examples of pysdmx classes that implement the
+                `MaintainableIdentification` protocol.
+            filters: The data query filters, if any. This can be a string
+                similar to a SQL WHERE clause ("AREA='UY' AND FREQ <> 'A'")
+                or a Python expression ("REF_AREA=='UY' and FREQ != 'A'") or
+                one of the various filters the `pysdmx.api.dc.query` module
+                offers, including `MultiFilter`.
+
+        Returns:
+            The requested data, if any. Data are returned as a generator of
+            observations, the observations being represented as Python
+            dictionaries.
+        """
+        if isinstance(dataflow, str):
+            dataflow = parse_maintainable_urn(dataflow)
+        aid = (
+            dataflow.agency.id
+            if isinstance(dataflow.agency, Agency)
+            else dataflow.agency
+        )
+
+        if isinstance(filters, str):
+            filters = parse_query(filters)
+
+        q = DataQuery(
+            DataContext.DATAFLOW,
+            aid,
+            dataflow.id,
+            dataflow.version,
+            components=filters,
+            obs_dimension="AllDimensions",
+        )
+
+        try:
+            out = self.__client.data(q)
+            text_stream = io.TextIOWrapper(io.BytesIO(out), encoding="utf-8")
+
+            # Use the csv.DictReader to parse the CSV data
+            reader = csv.DictReader(text_stream)
+
+            # Yield each row as a dictionary
+            for row in reader:
+                yield row
+
+            # Close the TextIOWrapper to free resources
+            text_stream.close()
+        except errors.NotFound:
+            url = q.get_url(ApiVersion.V2_0_0, True)
+            self.__raise_data_nf_error(url)
 
     def __match_search_term(self, df: Dataflow, search_term: str) -> bool:
         return (
@@ -196,7 +271,7 @@ class SdmxConnector(BasicConnector):
 
     def __raise_no_dataflows_error(self, url: str) -> NoReturn:
         raise errors.NotFound(
-            "No dataflows found.",
+            "No dataflows found",
             (
                 "No dataflows could be found in the targeted service. "
                 "This is a violation of the SDMX data discovery and data "
@@ -210,11 +285,26 @@ class SdmxConnector(BasicConnector):
 
     def __raise_dataflow_nf_error(self, url: str) -> NoReturn:
         raise errors.NotFound(
-            "Requested dataflow not found.",
+            "Requested dataflow not found",
             (
                 "The requested dataflow could not be found in the targeted "
                 "service. Please use the `dataflows` method of the connector "
-                "to see which dataflows are available in the service."
+                "to see which dataflows are available in the service. If you "
+                "have already done so, this indicates that there are no data "
+                "for the selected dataflow and, therefore, no availability "
+                "information could be found."
+            ),
+            {
+                "url": url,
+            },
+        )
+
+    def __raise_data_nf_error(self, url: str) -> NoReturn:
+        raise errors.NotFound(
+            "No data",
+            (
+                "There are no data for the selected dataflow "
+                "matching the supplied filters (if any)."
             ),
             {
                 "url": url,

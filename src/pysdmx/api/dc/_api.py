@@ -16,6 +16,7 @@ from typing import (
 from pysdmx.api.dc.query import (
     BooleanFilter,
     DateTimeFilter,
+    Filter,
     MultiFilter,
     NotFilter,
     NumberFilter,
@@ -289,6 +290,30 @@ class BasicConnector(Protocol):
               period coverage, if this information is available in the source.
             - The expected structure of data (i.e. the data schema), including
               the expected columns, their types, etc.
+        """
+
+    def data(
+        self,
+        dataflow: Union[str, MaintainableIdentification],
+        filters: Optional[Union[Filter, str]] = None,
+    ) -> Any:
+        """Get data for the selected dataflow, matching the supplied filters.
+
+        Args:
+            dataflow (Union[str, MaintainableIdentification]): The dataflow
+                from which to retrieve data. Either a string representing the
+                SDMX URN of the dataflow or the information necessary to
+                uniquely identify it. Classes such as `DataflowRef` or
+                `Dataflow` are examples of pysdmx classes that implement the
+                `MaintainableIdentification` protocol.
+            filters: The data query filters, if any. This can be a string
+                similar to a SQL WHERE clause ("AREA='UY' AND FREQ <> 'A'")
+                or a Python expression ("REF_AREA=='UY' and FREQ != 'A'") or
+                one of the various filters the `pysdmx.api.dc.query` module
+                offers, including `MultiFilter`.
+
+        Returns:
+            The requested data, if any.
         """
 
 
