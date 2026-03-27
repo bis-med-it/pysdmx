@@ -39,7 +39,7 @@ class JsonConcept(NameableType, frozen=True, omit_defaults=True):
         if repr_:
             if repr_.enumerationFormat:
                 dt = DataType(repr_.enumerationFormat.dataType)
-            elif repr_.format:
+            elif repr_.format and repr_.format.dataType:
                 dt = DataType(repr_.format.dataType)
             else:
                 dt = DataType.STRING

@@ -49,9 +49,9 @@ def _find_concept(
 
 def _get_type(repr_: JsonRepresentation) -> Optional[str]:
     t: Optional[str] = None
-    if repr_.enumerationFormat:
+    if repr_.enumerationFormat and repr_.enumerationFormat.dataType:
         t = repr_.enumerationFormat.dataType
-    elif repr_.format:
+    elif repr_.format and repr_.format.dataType:
         t = repr_.format.dataType
     if not t:
         t = "String"
