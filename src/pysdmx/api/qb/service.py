@@ -172,6 +172,14 @@ class RestService(_CoreRestService):
         ) as client:
             try:
                 query = _add_query_slash(query)
+                query = (
+                    query.replace("[", "%5B")
+                    .replace("]", "%5D")
+                    .replace(":", "%3A")
+                    .replace("+", "%2B")
+                    .replace("*", "%2A")
+                    .replace(",", "%2C")
+                )
 
                 url = f"{self._api_endpoint}{query}"
                 h = self._headers.copy()
