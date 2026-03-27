@@ -5,11 +5,5 @@ from pysdmx.api.dc._api import (
     Connector,
     MaintainableIdentification,
 )
-from pysdmx.api.dc._rest import SdmxConnector
 
-__all__ = [
-    "BasicConnector",
-    "Connector",
-    "MaintainableIdentification",
-    "SdmxConnector",
-]
+__all__ = ["BasicConnector", "Connector", "MaintainableIdentification"]
