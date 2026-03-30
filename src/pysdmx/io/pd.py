@@ -44,12 +44,13 @@ def _prepare_columns(
     """Prepare DataFrame columns for PyArrow type conversion.
 
     For non-string target dtypes, replaces empty strings with None
-    so that the conversion to numeric/date types succeeds. For
-    string target dtypes, converts object columns to Python str
-    to avoid issues with mixed-type columns.
+    so that the conversion succeeds. For string target dtypes with
+    mixed-type object columns, converts values to Python str first
+    because PyArrow cannot infer the string type from a column
+    containing both integers and strings.
 
     Args:
-        data: The DataFrame whose columns to prepare in place.
+        data: The DataFrame to modify in place.
         conversion: Mapping of column names to target ArrowDtype.
         str_dtype: The PyArrow string dtype for comparison.
     """

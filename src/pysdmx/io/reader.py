@@ -15,8 +15,6 @@ from typing import (
 if TYPE_CHECKING:  # pragma: no cover
     from pysdmx.io.pd import PandasDataset
 
-import pandas as pd
-
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
@@ -212,6 +210,8 @@ def read_sdmx(  # noqa: C901
 
 def __manage_dataset_level_attributes(dataset: Dataset) -> None:
     """Manage attributes at dataset level and remove them from data."""
+    import pandas as pd
+
     # This function requires the dataset to have a structure defined.
     dataset_level_attributes = [
         x
