@@ -3,7 +3,6 @@
 import itertools
 from typing import Any, Dict, List
 
-import numpy as np
 import pandas as pd
 
 from pysdmx.io.pd import PandasDataset
@@ -106,7 +105,7 @@ def _parse_structure_specific_data(
     elif OBS in dataset:
         dataset[OBS] = add_list(dataset[OBS])
         # Structure Specific All dimensions
-        df = pd.DataFrame(dataset[OBS]).replace(np.nan, "")
+        df = pd.DataFrame(dataset[OBS]).fillna("")
 
     urn = f"{structure_info['structure_type']}={structure_info['unique_id']}"
     action = dataset.get("action", "Information")
