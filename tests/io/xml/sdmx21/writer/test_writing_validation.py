@@ -305,18 +305,9 @@ def test_attribute_relationship_roundtrip(samples_folder):
 
 
 def test_data_write_nullable_nulltypes():
-    # Local import on numpy to avoid possible problems with C extensions
-    # on windows when using pysdmx
-    import numpy as np
-
-    # Create dataframe with nan value
-    data = pd.DataFrame(data={"A": [np.nan, 1, None, pd.NA]})
+    # Create dataframe with null values
+    data = pd.DataFrame(data={"A": [None, 1, None, pd.NA]})
     data["A"] = data["A"].astype("Int64")  # Use nullable integer type
-
-    # The backend is numpy_nullable by default,
-    # this line should just make clear
-    # that this is not pyarrow related
-    data = data.convert_dtypes(dtype_backend="numpy_nullable")
 
     dataset = PandasDataset(data=data, structure="Dataflow=Short:Urn(1.0)")
     result = write_str_spec([dataset])
