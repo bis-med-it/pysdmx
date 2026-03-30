@@ -16,6 +16,26 @@ from pysdmx.model import Schema  # noqa: E402
 from pysdmx.toolkit.pd import to_pyarrow_schema  # noqa: E402
 
 
+def stringify_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    """Convert all DataFrame columns to strings with nulls as empty strings.
+
+    Casts all columns to ``string[pyarrow]`` so that null values become
+    ``pd.NA``, fills nulls with empty strings, and converts to plain
+    Python strings.
+
+    Args:
+        df: The DataFrame to convert.
+
+    Returns:
+        A new DataFrame with all string columns and no null values.
+    """
+    if len(df.columns) == 0:
+        return df
+    str_dtype = pd.ArrowDtype(pa.string())
+    conversion = dict.fromkeys(df.columns, str_dtype)
+    return df.astype(conversion).fillna("").astype(str)
+
+
 def _prepare_columns(
     data: pd.DataFrame,
     conversion: Dict[str, pd.ArrowDtype],

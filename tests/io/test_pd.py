@@ -153,6 +153,26 @@ def test_reassign_structure_updates_dtypes():
 # --- Regression tests ---
 
 
+def test_stringify_dataframe():
+    from pysdmx.io.pd import stringify_dataframe
+
+    df = pd.DataFrame({"A": [1, None], "B": ["x", None]})
+    ds = PandasDataset(structure="Dataflow=BIS:TEST(1.0)", data=df)
+    result = stringify_dataframe(ds.data)
+    assert result["A"].tolist() == ["1", ""]
+    assert result["B"].tolist() == ["x", ""]
+    # All columns should be plain string dtype
+    assert all(result[c].dtype == "object" for c in result.columns)
+
+
+def test_stringify_dataframe_empty():
+    from pysdmx.io.pd import stringify_dataframe
+
+    df = pd.DataFrame()
+    result = stringify_dataframe(df)
+    assert result.empty
+
+
 def test_regression_509_all_none_column():
     """Regression test for #509.
 
