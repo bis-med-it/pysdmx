@@ -301,9 +301,7 @@ class JsonDatePatternMap(Struct, frozen=True, omit_defaults=True):
 
     def to_model(self) -> DatePatternMap:
         """Returns the requested date mapper."""
-        freq = (
-            self.targetFrequencyID or self.frequencyDimension
-        )
+        freq = self.targetFrequencyID or self.frequencyDimension
         typ = "fixed" if self.targetFrequencyID else "variable"
         return DatePatternMap(
             source=self.mappedComponents[0].source,

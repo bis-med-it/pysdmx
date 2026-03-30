@@ -108,9 +108,7 @@ class JsonConstraintAttachment(Struct, frozen=True, omit_defaults=True):
         """Converts a pysdmx constraint attachment to an SDMX-JSON one."""
         ds = attachment.data_structures or ()
         df = attachment.dataflows or ()
-        pa = (
-            attachment.provision_agreements or ()
-        )
+        pa = attachment.provision_agreements or ()
         return JsonConstraintAttachment(attachment.data_provider, ds, df, pa)
 
 

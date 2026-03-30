@@ -124,9 +124,7 @@ def create_table(
 
     # Step 4: Output any additional index
     index_fields = list(
-        (
-            index_fields or [c.id for c in structure.components.dimensions]
-        )
+        (index_fields or [c.id for c in structure.components.dimensions])
     )
     if extra_columns:
         index_fields.extend(

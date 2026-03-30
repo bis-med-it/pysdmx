@@ -1025,9 +1025,7 @@ class StructureParser(Struct):
             data_provider=data_provider,
             data_structures=data_structures or None,
             dataflows=dataflows or None,
-            provision_agreements=(
-                provision_agreements or None
-            ),
+            provision_agreements=(provision_agreements or None),
         )
 
     def __format_cube_region(self, region_elem: Dict[str, Any]) -> CubeRegion:
