@@ -224,9 +224,11 @@ def __manage_dataset_level_attributes(dataset: Dataset) -> None:
         if att.id not in dataset.data.columns:  # type: ignore[attr-defined]
             attached_attributes[att.id] = None
         else:
-            attached_attributes[att.id] = (
+            val = (
                 dataset.data[att.id].unique().tolist()[0]  # type: ignore[attr-defined]
             )
+            is_na = val is None or val != val  # NaN check
+            attached_attributes[att.id] = str(val) if not is_na else None
             del dataset.data[att.id]  # type: ignore[attr-defined]
     dataset.attributes = attached_attributes
 

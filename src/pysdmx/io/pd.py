@@ -1,6 +1,6 @@
 """Pandas SDMX Dataset."""
 
-from typing import Any
+from typing import Any, Dict
 
 from pysdmx.__extras_check import __check_data_extra
 from pysdmx.model.dataset import Dataset
@@ -14,6 +14,31 @@ import pyarrow as pa  # noqa: E402
 from pysdmx.errors import Invalid  # noqa: E402
 from pysdmx.model import Schema  # noqa: E402
 from pysdmx.toolkit.pd import to_pyarrow_schema  # noqa: E402
+
+
+def _prepare_columns(
+    data: pd.DataFrame,
+    conversion: Dict[str, pd.ArrowDtype],
+    str_dtype: pd.ArrowDtype,
+) -> None:
+    """Prepare DataFrame columns for PyArrow type conversion.
+
+    For non-string target dtypes, replaces empty strings with None
+    so that the conversion to numeric/date types succeeds. For
+    string target dtypes, converts object columns to Python str
+    to avoid issues with mixed-type columns.
+
+    Args:
+        data: The DataFrame whose columns to prepare in place.
+        conversion: Mapping of column names to target ArrowDtype.
+        str_dtype: The PyArrow string dtype for comparison.
+    """
+    for col, dtype in conversion.items():
+        if dtype != str_dtype:
+            data[col] = data[col].replace("", None)
+        elif data[col].dtype == object:
+            mask = data[col].notna()
+            data.loc[mask, col] = data.loc[mask, col].astype(str)
 
 
 class PandasDataset(Dataset, frozen=False, kw_only=True):
@@ -42,19 +67,22 @@ class PandasDataset(Dataset, frozen=False, kw_only=True):
 
     def _apply_dtypes(self) -> None:
         """Cast DataFrame columns to PyArrow-backed dtypes."""
-        if not hasattr(self, "data") or len(self.data.columns) == 0:
+        if (
+            not hasattr(self, "data")
+            or self.data is None  # type: ignore[redundant-expr]
+            or len(self.data.columns) == 0
+        ):
             return
 
         str_dtype = pd.ArrowDtype(pa.string())
 
         if isinstance(self.structure, Schema):
             schema_dtypes = to_pyarrow_schema(self.structure.components)
-            conversion = {}
-            for col in self.data.columns:
-                if col in schema_dtypes:
-                    conversion[col] = schema_dtypes[col]
-                else:
-                    conversion[col] = str_dtype
+            conversion = {
+                col: schema_dtypes.get(col, str_dtype)
+                for col in self.data.columns
+            }
+            _prepare_columns(self.data, conversion, str_dtype)
             try:
                 self.data = self.data.astype(conversion)
             except (ValueError, TypeError, pa.ArrowInvalid) as e:
@@ -64,4 +92,5 @@ class PandasDataset(Dataset, frozen=False, kw_only=True):
                 ) from e
         else:
             conversion = dict.fromkeys(self.data.columns, str_dtype)
+            _prepare_columns(self.data, conversion, str_dtype)
             self.data = self.data.astype(conversion)
