@@ -101,9 +101,7 @@ def read_sdmx(  # noqa: C901
 
         struct_msg = read_struct(input_str, validate=validate)
         header = struct_msg.header
-        result_structures = (
-            struct_msg.structures or []
-        )
+        result_structures = struct_msg.structures or []
     elif read_format in (
         Format.REFMETA_SDMX_JSON_2_0_0,
         Format.REFMETA_SDMX_JSON_2_1_0,
