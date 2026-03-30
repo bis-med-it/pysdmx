@@ -101,7 +101,7 @@ def create_table(
     # Step 1: Output table name
     sn = f"{schema_name}."
     kn = f"{schema_name}_"
-    tn = table_name if table_name else structure.id
+    tn = table_name or structure.id
     cs = f"CREATE TABLE {sn}{tn} (\n"
 
     # Step 2: Output the field definitions
@@ -125,9 +125,7 @@ def create_table(
     # Step 4: Output any additional index
     index_fields = list(
         (
-            index_fields
-            if index_fields
-            else [c.id for c in structure.components.dimensions]
+            index_fields or [c.id for c in structure.components.dimensions]
         )
     )
     if extra_columns:
@@ -516,7 +514,7 @@ def __map_required(c: Component) -> str:
         and c.facets.is_sequence
         and isinstance(c.facets.interval, int)
     ):
-        inc = c.facets.interval if c.facets.interval else 1
+        inc = c.facets.interval or 1
         return f"IDENTITY(1,{inc})"
     elif c.role == Role.DIMENSION or c.required:
         return "NOT NULL"
@@ -537,23 +535,27 @@ def __order_components(comps: Components) -> Collection[Component]:
     out.extend(  # Add obs-level attributes
         __match_and_sort(
             comps.attributes,
-            lambda c: c.attachment_level == "O"
-            or len(c.attachment_level.split(",")) == len(comps.dimensions),
+            lambda c: (
+                c.attachment_level == "O"
+                or len(c.attachment_level.split(",")) == len(comps.dimensions)
+            ),
         )
     )
     out.extend(  # Then add series-level attributes
         __match_and_sort(
             comps.attributes,
-            lambda c: len(c.attachment_level.split(","))
-            == len(comps.dimensions) - 1,
+            lambda c: (
+                len(c.attachment_level.split(",")) == len(comps.dimensions) - 1
+            ),
         )
     )
     out.extend(  # Then add group-level attributes
         __match_and_sort(
             comps.attributes,
-            lambda c: len(c.attachment_level.split(","))
-            < len(comps.dimensions) - 1
-            and c.attachment_level not in ["D", "O"],
+            lambda c: (
+                len(c.attachment_level.split(",")) < len(comps.dimensions) - 1
+                and c.attachment_level not in ["D", "O"]
+            ),
         )
     )
     out.extend(  # Finally, add dataflow-level attributes

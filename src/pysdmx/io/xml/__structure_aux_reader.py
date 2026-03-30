@@ -1023,10 +1023,10 @@ class StructureParser(Struct):
 
         return ConstraintAttachment(
             data_provider=data_provider,
-            data_structures=data_structures if data_structures else None,
-            dataflows=dataflows if dataflows else None,
+            data_structures=data_structures or None,
+            dataflows=dataflows or None,
             provision_agreements=(
-                provision_agreements if provision_agreements else None
+                provision_agreements or None
             ),
         )
 
