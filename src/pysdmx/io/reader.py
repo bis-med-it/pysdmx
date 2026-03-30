@@ -210,8 +210,6 @@ def read_sdmx(  # noqa: C901
 
 def __manage_dataset_level_attributes(dataset: Dataset) -> None:
     """Manage attributes at dataset level and remove them from data."""
-    import pandas as pd
-
     # This function requires the dataset to have a structure defined.
     dataset_level_attributes = [
         x
@@ -230,7 +228,7 @@ def __manage_dataset_level_attributes(dataset: Dataset) -> None:
                 dataset.data[att.id].unique().tolist()[0]  # type: ignore[attr-defined]
             )
             attached_attributes[att.id] = (
-                str(val) if not pd.isna(val) else None
+                str(val) if val is not None else None
             )
             del dataset.data[att.id]  # type: ignore[attr-defined]
     dataset.attributes = attached_attributes
