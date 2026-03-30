@@ -3,7 +3,7 @@
 from typing import Dict, Optional, Type, Union
 
 from vtlengine.API import load_datasets  # type: ignore[attr-defined]
-from vtlengine.API._InternalApi import to_vtl_json
+from vtlengine.API._InternalApi import to_vtl_json  # type: ignore[attr-defined]
 from vtlengine.DataTypes import (
     Boolean,
     Date,

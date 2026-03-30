@@ -15,6 +15,8 @@ from typing import (
 if TYPE_CHECKING:  # pragma: no cover
     from pysdmx.io.pd import PandasDataset
 
+import pandas as pd
+
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
@@ -227,8 +229,9 @@ def __manage_dataset_level_attributes(dataset: Dataset) -> None:
             val = (
                 dataset.data[att.id].unique().tolist()[0]  # type: ignore[attr-defined]
             )
-            is_na = val is None or val != val  # NaN check
-            attached_attributes[att.id] = str(val) if not is_na else None
+            attached_attributes[att.id] = (
+                str(val) if not pd.isna(val) else None
+            )
             del dataset.data[att.id]  # type: ignore[attr-defined]
     dataset.attributes = attached_attributes
 
