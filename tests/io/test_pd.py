@@ -148,3 +148,30 @@ def test_reassign_structure_updates_dtypes():
     ds.structure = schema
 
     assert ds.data["VALUE"].dtype == pd.ArrowDtype(pa.float64())
+
+
+# --- Regression tests ---
+
+
+def test_regression_509_all_none_column():
+    """Regression test for #509.
+
+    Dictionary-encoded columns with all-None values previously caused
+    ArrowNotImplementedError in the XML structure-specific writer.
+    PandasDataset now ensures all columns use well-known pyarrow types.
+    """
+    df = pd.DataFrame(
+        {
+            "DIM": ["A", "B"],
+            "OBS_VALUE": ["1.0", "2.0"],
+            "ATTR": [None, None],
+        }
+    )
+
+    ds = PandasDataset(structure="Dataflow=BIS:TEST(1.0)", data=df)
+
+    # All columns should be string[pyarrow], not dictionary
+    assert ds.data["ATTR"].dtype == pd.ArrowDtype(pa.string())
+    # Verify no ArrowNotImplementedError on string conversion
+    result = ds.data.astype(str)
+    assert result["ATTR"].tolist() == ["<NA>", "<NA>"]
