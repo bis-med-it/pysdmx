@@ -1,5 +1,7 @@
 """Pandas SDMX Dataset."""
 
+from typing import Any
+
 from pysdmx.__extras_check import __check_data_extra
 from pysdmx.model.dataset import Dataset
 
@@ -7,13 +9,59 @@ __check_data_extra()
 
 # E402 is needed here to ensure a clear message is used on missing import
 import pandas as pd  # noqa: E402
+import pyarrow as pa  # noqa: E402
+
+from pysdmx.errors import Invalid  # noqa: E402
+from pysdmx.model import Schema  # noqa: E402
+from pysdmx.toolkit.pd import to_pyarrow_schema  # noqa: E402
 
 
 class PandasDataset(Dataset, frozen=False, kw_only=True):
     """A Dataset that is backed by a Pandas DataFrame.
+
+    When a ``Schema`` is provided as the structure, the DataFrame
+    columns are automatically cast to PyArrow-backed dtypes based
+    on the component data types. When the structure is a URN string,
+    all columns are cast to ``string[pyarrow]``.
 
     Args:
         data: Pandas Dataframe to contain SDMX data.
     """
 
     data: pd.DataFrame
+
+    def __post_init__(self) -> None:
+        """Apply PyArrow dtypes after construction."""
+        self._apply_dtypes()
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        """Re-apply dtypes when structure is reassigned."""
+        super().__setattr__(name, value)
+        if name == "structure":
+            self._apply_dtypes()
+
+    def _apply_dtypes(self) -> None:
+        """Cast DataFrame columns to PyArrow-backed dtypes."""
+        if not hasattr(self, "data") or len(self.data.columns) == 0:
+            return
+
+        str_dtype = pd.ArrowDtype(pa.string())
+
+        if isinstance(self.structure, Schema):
+            schema_dtypes = to_pyarrow_schema(self.structure.components)
+            conversion = {}
+            for col in self.data.columns:
+                if col in schema_dtypes:
+                    conversion[col] = schema_dtypes[col]
+                else:
+                    conversion[col] = str_dtype
+            try:
+                self.data = self.data.astype(conversion)
+            except (ValueError, TypeError, pa.ArrowInvalid) as e:
+                raise Invalid(
+                    "Type conversion failed",
+                    f"Cannot convert DataFrame columns to PyArrow dtypes: {e}",
+                ) from e
+        else:
+            conversion = dict.fromkeys(self.data.columns, str_dtype)
+            self.data = self.data.astype(conversion)
