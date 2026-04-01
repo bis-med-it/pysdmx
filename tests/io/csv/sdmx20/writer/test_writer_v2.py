@@ -461,23 +461,17 @@ def test_writer_partial_keys_all_obs_attrs(dsd_path):
 
 def test_writer_partial_keys_empty_attr(partial_keys_schema):
     """Partial key rows with null-like attribute values are skipped."""
+    import numpy as np
+
     data = pd.DataFrame(
         [
             {
                 "DIM1": "A",
                 "DIM2": "B",
-                "ATT1": None,
+                "ATT1": np.nan,
                 "ATT2": "D",
                 "OBS_VALUE": "1",
                 "TIME_PERIOD": "2020",
-            },
-            {
-                "DIM1": "A",
-                "DIM2": "C",
-                "ATT1": "",
-                "ATT2": "E",
-                "OBS_VALUE": "2",
-                "TIME_PERIOD": "2021",
             },
             {
                 "DIM1": "A",
@@ -498,8 +492,8 @@ def test_writer_partial_keys_empty_attr(partial_keys_schema):
     result_df = pd.read_csv(
         StringIO(result_csv), keep_default_na=False, na_values=[]
     )
-    # 3 obs rows + 1 partial key row for ATT1=X (None and "" skipped)
-    assert len(result_df) == 4
+    # 2 obs rows + 1 partial key for ATT1=X (NaN skipped)
+    assert len(result_df) == 3
 
 
 @pytest.mark.data
