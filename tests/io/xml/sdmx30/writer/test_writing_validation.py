@@ -9,7 +9,15 @@ from pysdmx.io.xml.sdmx30.writer.structure import write
 from pysdmx.io.xml.sdmx30.writer.structure_specific import (
     write as write_str_spec,
 )
-from pysdmx.model import DataStructureDefinition
+from pysdmx.model import (
+    Component,
+    Components,
+    Concept,
+    DataStructureDefinition,
+    DataType,
+    Role,
+    Schema,
+)
 
 
 @pytest.fixture
@@ -68,12 +76,91 @@ def test_attribute_relationship_roundtrip(samples_folder):
 
 def test_data_write_nullable_nulltypes():
     # Create dataframe with null values
-    data = pd.DataFrame(data={"A": [None, 1, None, pd.NA]})
-    data["A"] = data["A"].astype("Int64")  # Use nullable integer type
-
-    dataset = PandasDataset(data=data, structure="Dataflow=Short:Urn(1.0)")
+    data = pd.DataFrame(
+        data={
+            "DIM1": ["X", "Y", "Z", "W"],
+            "OBS_VALUE": [None, 1, None, pd.NA],
+        }
+    )
+    data["OBS_VALUE"] = data["OBS_VALUE"].astype("Int64")
+    schema = Schema(
+        context="datastructure",
+        agency="Short",
+        id="Urn",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="DIM1"),
+                    required=True,
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    role=Role.MEASURE,
+                    concept=Concept(id="OBS_VALUE"),
+                    required=True,
+                    local_dtype=DataType.INTEGER,
+                ),
+            ]
+        ),
+    )
+    dataset = PandasDataset(data=data, structure=schema)
     result = write_str_spec([dataset])
     datasets = get_datasets(result)
     assert len(datasets) == 1
     data = datasets[0].data
-    assert data["A"].values.tolist() == ["", "1", "", ""]
+    assert data["OBS_VALUE"].values.tolist() == ["", "1", "", ""]
+
+
+def test_data_write_csv_sentinel_values():
+    """CSV sentinels: optional attrs omitted, required get sentinel."""
+    from pysdmx.io.writer import write_sdmx
+
+    data = pd.DataFrame(
+        data={
+            "DIM1": ["A", "B"],
+            "OBS_VALUE": ["#N/A", "42"],
+            "ATTR1": ["NaN", "hello"],
+        }
+    )
+    schema = Schema(
+        context="datastructure",
+        agency="TEST",
+        id="TEST_DS",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="DIM1"),
+                    required=True,
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    role=Role.MEASURE,
+                    concept=Concept(id="OBS_VALUE"),
+                    required=True,
+                ),
+                Component(
+                    id="ATTR1",
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(id="ATTR1"),
+                    required=False,
+                    attachment_level="O",
+                ),
+            ]
+        ),
+    )
+    from pysdmx.io.format import Format
+
+    dataset = PandasDataset(data=data, structure=schema)
+    result = write_sdmx([dataset], sdmx_format=Format.DATA_SDMX_ML_3_0)
+    # Sentinel values from CSV are cleaned out
+    assert "#N/A" not in result
+    assert 'ATTR1="NaN"' not in result
+    # Valid values are preserved
+    assert 'OBS_VALUE="42"' in result
+    assert 'ATTR1="hello"' in result

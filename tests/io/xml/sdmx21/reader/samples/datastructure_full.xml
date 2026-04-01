@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+               xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+               xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+               xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+    <mes:Header>
+        <mes:ID>ID</mes:ID>
+        <mes:Test>true</mes:Test>
+        <mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+        <mes:Sender id="ZZZ"/>
+        <mes:Receiver id="Not_Supplied"/>
+        <mes:Source>PySDMX</mes:Source>
+    </mes:Header>
+    <mes:Structures>
+        <str:DataStructures>
+            <str:DataStructure
+                    urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_DER(1.0)"
+                    isExternalReference="false" agencyID="BIS" id="BIS_DER"
+                    isFinal="false" version="1.0">
+                <com:Name xml:lang="en">BIS derivatives statistics</com:Name>
+                <com:Name xml:lang="es">Estadísticas de derivados del BIS
+                </com:Name>
+                <com:Description xml:lang="en"></com:Description>
+                <str:DataStructureComponents>
+                    <str:DimensionList
+                            urn="urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=BIS:BIS_DER(1.0).DimensionDescriptor"
+                            id="DimensionDescriptor">
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).FREQ" id="FREQ" position="1">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="FREQ" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_TYPE" id="DER_TYPE" position="2">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="DER_TYPE" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_INSTR" id="DER_INSTR" position="3">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="DER_INSTR" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_RISK" id="DER_RISK" position="4">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="DER_RISK" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_REP_CTY" id="DER_REP_CTY" position="5">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="DER_REP_CTY" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_SECTOR_CPY" id="DER_SECTOR_CPY" position="6">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="DER_SECTOR_CPY" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_CPC" id="DER_CPC" position="7">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="DER_CPC" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_SECTOR_UDL" id="DER_SECTOR_UDL" position="8">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="DER_SECTOR_UDL" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_CURR_LEG1" id="DER_CURR_LEG1" position="9">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="DER_CURR_LEG1" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_CURR_LEG2" id="DER_CURR_LEG2" position="10">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="DER_CURR_LEG2" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_ISSUE_MAT" id="DER_ISSUE_MAT" position="11">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="DER_ISSUE_MAT" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_RATING" id="DER_RATING" position="12">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="DER_RATING" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_EX_METHOD" id="DER_EX_METHOD" position="13">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="DER_EX_METHOD" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                        <str:Dimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_BASIS" id="DER_BASIS" position="14">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="DER_BASIS" class="Concept"/>
+                            </str:ConceptIdentity>
+                        </str:Dimension>
+                        <str:TimeDimension urn="urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=BIS:BIS_DER(1.0).TIME_PERIOD" id="TIME_PERIOD" position="15">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="TIME_PERIOD" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:LocalRepresentation>
+                                <str:TextFormat textType="ObservationalTimePeriod"/>
+                            </str:LocalRepresentation>
+                        </str:TimeDimension>
+                    </str:DimensionList>
+                    <str:AttributeList urn="urn:sdmx:org.sdmx.infomodel.datastructure.AttributeDescriptor=BIS:BIS_DER(1.0).AttributeDescriptor" id="AttributeDescriptor">
+                        <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).AVAILABILITY" assignmentStatus="Mandatory" id="AVAILABILITY">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="AVAILABILITY" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:AttributeRelationship>
+                                <str:PrimaryMeasure>
+                                    <Ref id="OBS_VALUE"/>
+                                </str:PrimaryMeasure>
+                            </str:AttributeRelationship>
+                        </str:Attribute>
+                        <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).COLLECTION" assignmentStatus="Mandatory" id="COLLECTION">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="COLLECTION" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:AttributeRelationship>
+                                <str:PrimaryMeasure>
+                                    <Ref id="OBS_VALUE"/>
+                                </str:PrimaryMeasure>
+                            </str:AttributeRelationship>
+                        </str:Attribute>
+                        <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).OBS_STATUS" assignmentStatus="Mandatory" id="OBS_STATUS">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="OBS_STATUS" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:AttributeRelationship>
+                                <str:PrimaryMeasure>
+                                    <Ref id="OBS_VALUE"/>
+                                </str:PrimaryMeasure>
+                            </str:AttributeRelationship>
+                        </str:Attribute>
+                        <str:Attribute urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).OBS_CONF" assignmentStatus="Mandatory" id="OBS_CONF">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME" package="conceptscheme" maintainableParentVersion="1.0" agencyID="BIS" id="OBS_CONF" class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:AttributeRelationship>
+                                <str:PrimaryMeasure>
+                                    <Ref id="OBS_VALUE"/>
+                                </str:PrimaryMeasure>
+                            </str:AttributeRelationship>
+                        </str:Attribute>
+                    </str:AttributeList>
+                    <str:MeasureList
+                            urn="urn:sdmx:org.sdmx.infomodel.datastructure.MeasureDescriptor=BIS:BIS_DER(1.0).MeasureDescriptor"
+                            id="MeasureDescriptor">
+                        <str:PrimaryMeasure
+                                urn="urn:sdmx:org.sdmx.infomodel.datastructure.PrimaryMeasure=BIS:BIS_DER(1.0).OBS_VALUE"
+                                id="OBS_VALUE">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="BIS_CONCEPT_SCHEME"
+                                     package="conceptscheme"
+                                     maintainableParentVersion="1.0"
+                                     agencyID="BIS" id="OBS_VALUE"
+                                     class="Concept"/>
+                            </str:ConceptIdentity>
+                            <str:LocalRepresentation>
+                                <str:TextFormat textType="BigInteger"
+                                                maxLength="15"/>
+                            </str:LocalRepresentation>
+                        </str:PrimaryMeasure>
+                    </str:MeasureList>
+                </str:DataStructureComponents>
+            </str:DataStructure>
+        </str:DataStructures>
+    </mes:Structures>
+</mes:Structure>

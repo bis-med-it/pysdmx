@@ -3,11 +3,17 @@ from typing import Dict, List, Literal, Optional, Sequence, Tuple
 
 import pandas as pd
 
-from pysdmx.errors import Invalid
+from pysdmx.io._pd_utils import (
+    transform_dataframe_for_writing,
+    validate_schema_exists,
+)
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
+from pysdmx.model.dataflow import Component, Role
 from pysdmx.model.dataset import ActionType
 from pysdmx.toolkit.pd._data_utils import format_labels, get_codes
+
+_NULL_STRINGS = frozenset(("", "nan", "None", "#N/A", "NaN"))
 
 SDMX_CSV_ACTION_MAPPER = {
     ActionType.Append: "A",
@@ -45,16 +51,12 @@ def __write_keys(
         dimension_code="", structure=schema, data=df
     )
     del obs_codes[0]
-    obs_parts = []
-    series_parts = []
-    for k, v in df.items():
-        value = v.iloc[0]
-        if k in obs_codes:
-            obs_parts.append(str(value))
-        if k in series_codes:
-            series_parts.append(str(value))
-    obs_values = ".".join(obs_parts)
-    series_values = ".".join(series_parts)
+    obs_values = ".".join(
+        str(df[k].iloc[0]) for k in obs_codes if k in df.columns
+    )
+    series_values = ".".join(
+        str(df[k].iloc[0]) for k in series_codes if k in df.columns
+    )
     if keys == "obs":
         df.insert(0, "OBS_KEYS", obs_values)
     elif keys == "series":
@@ -100,15 +102,13 @@ def __generate_partial_key_df(
 
     for attr_id, pa_dims in partial_attr_list:
         cols = pa_dims + [attr_id]
-        sub = df[cols].drop_duplicates()
-        for _, r in sub.iterrows():
-            val = r[attr_id]
-            if pd.isna(val) or str(val) == "":
-                continue
+        sub = df[cols].drop_duplicates().dropna(subset=[attr_id])
+        sub = sub[~sub[attr_id].astype(str).isin(_NULL_STRINGS)]
+        for rec in sub.to_dict(orient="records"):
             row: Dict[str, object] = dict.fromkeys(all_columns, "")
             for d in pa_dims:
-                row[d] = r[d]
-            row[attr_id] = val
+                row[d] = rec[d]
+            row[attr_id] = rec[attr_id]
             partial_rows.append(row)
 
     obs_df = df.copy()
@@ -119,30 +119,32 @@ def __generate_partial_key_df(
     return pd.concat([partial_df, obs_df], ignore_index=True)
 
 
-def __reorder_columns(
+def _reorder_columns(
     df: pd.DataFrame,
-    schema: Schema,
+    components: Sequence[Component],
 ) -> pd.DataFrame:
-    """Reorder DataFrame columns by component role.
+    """Reorder DataFrame columns following SDMX-CSV conventions.
 
-    Ensures all dimensions (including the dimensionAtObservation,
-    e.g. TIME_PERIOD) are grouped together, followed by measures
-    and then attributes.
+    Columns are ordered as: dimensions, measures, attributes.
+    Any columns not in the schema are appended at the end.
 
     Args:
         df: The DataFrame to reorder.
-        schema: The schema describing the data structure.
+        components: The schema components.
 
     Returns:
         The DataFrame with reordered columns.
     """
-    comps = schema.components
-    dim_ids = [c.id for c in comps.dimensions]
-    measure_ids = [c.id for c in comps.measures]
-    attr_ids = [c.id for c in comps.attributes]
-    ordered = [c for c in dim_ids + measure_ids + attr_ids if c in df.columns]
-    remaining = [c for c in df.columns if c not in ordered]
-    return df[ordered + remaining]
+    role_order = {Role.DIMENSION: 0, Role.MEASURE: 1, Role.ATTRIBUTE: 2}
+    schema_cols: list[str] = []
+    for role_val in sorted(role_order, key=role_order.get):  # type: ignore[arg-type]
+        schema_cols.extend(
+            comp.id
+            for comp in components
+            if comp.role == role_val and comp.id in df.columns
+        )
+    remaining = [c for c in df.columns if c not in schema_cols]
+    return df[schema_cols + remaining]
 
 
 def __insert_structural_columns(
@@ -216,8 +218,13 @@ def _write_csv_2_aux(
     """
     dataframes = []
     for dataset in datasets:
-        # Create a copy of the dataset
+        # Validate that the dataset has a Schema defined
+        schema = validate_schema_exists(dataset)
+
+        # Create a copy and apply null value transformation
         df: pd.DataFrame = copy(dataset.data)
+        df = transform_dataframe_for_writing(df, schema)
+
         structure_ref, unique_id = dataset.short_urn.split("=", maxsplit=1)
 
         # Add additional attributes to the dataset
@@ -225,16 +232,10 @@ def _write_csv_2_aux(
             df[k] = v
 
         if partial_keys:
-            if not isinstance(dataset.structure, Schema):
-                raise Invalid(
-                    "Writing partial key rows requires a Schema "
-                    "as the dataset structure, but the current "
-                    "structure is a plain reference. "
-                    "Provide a Schema with component attachment "
-                    "levels to use partial_keys=True."
-                )
-            df = __generate_partial_key_df(df, dataset.structure)
-            df = __reorder_columns(df, dataset.structure)
+            df = __generate_partial_key_df(df, schema)
+
+        # Reorder columns: dimensions, measures, attributes
+        df = _reorder_columns(df, schema.components)
 
         if structure_ref in ["DataStructure", "Dataflow"]:
             structure_ref = structure_ref.lower()
@@ -251,8 +252,8 @@ def _write_csv_2_aux(
 
         if time_format is not None and time_format != "original":
             __write_time_period(df, time_format)
-        if keys is not None and isinstance(dataset.structure, Schema):
-            __write_keys(df, keys, dataset.structure)
+        if keys is not None:
+            __write_keys(df, keys, schema)
         __insert_structural_columns(
             df, dataset, structure_ref, unique_id, action_value, labels
         )

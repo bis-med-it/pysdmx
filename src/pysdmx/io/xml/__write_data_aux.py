@@ -1,6 +1,7 @@
 from typing import Dict, Optional, Sequence, Union
 
 from pysdmx.errors import Invalid
+from pysdmx.io._pd_utils import validate_schema_exists
 from pysdmx.io.pd import PandasDataset, stringify_dataframe
 from pysdmx.io.xml.__write_aux import ALL_DIM
 from pysdmx.model import Role, Schema
@@ -10,6 +11,9 @@ def check_content_dataset(content: Sequence[PandasDataset]) -> None:
     """Checks if the Message content is a dataset."""
     if not all(isinstance(dataset, PandasDataset) for dataset in content):
         raise Invalid("Message Content must only contain a Dataset sequence.")
+
+    for dataset in content:
+        validate_schema_exists(dataset)
 
 
 def check_dimension_at_observation(
@@ -61,15 +65,6 @@ def writing_validation(dataset: PandasDataset) -> None:
         for comp in dataset.structure.components
         if comp.role in (Role.DIMENSION, Role.MEASURE)
     ]
-    required_components.extend(
-        att.id
-        for att in dataset.structure.components.attributes
-        if (
-            att.required
-            and att.attachment_level is not None
-            and att.attachment_level != "D"
-        )
-    )
     non_required = [
         comp.id
         for comp in dataset.structure.components
@@ -96,10 +91,33 @@ def writing_validation(dataset: PandasDataset) -> None:
         raise Invalid("The dataset structure must have at least one measure.")
 
 
+_CSV_SENTINELS = {"#N/A": "", "NaN": ""}
+
+
 def stringify_dataset(dataset: PandasDataset) -> None:
     """Convert all dataset DataFrame columns to strings, nulls as empty.
+
+    Also replaces CSV sentinel values (``#N/A``, ``NaN``) with empty
+    strings so that downstream transformations can re-classify them
+    based on component requirements.
 
     Args:
         dataset: The dataset whose DataFrame will be converted in place.
     """
     dataset.data = stringify_dataframe(dataset.data)
+    dataset.data = dataset.data.replace(_CSV_SENTINELS)
+
+
+_XML_SKIP_VALUES = frozenset(("", None))
+
+
+def _should_skip_xml_value(v: object) -> bool:
+    """Check if a value should be omitted from XML output.
+
+    Args:
+        v: The value to check.
+
+    Returns:
+        True if the value is empty or None.
+    """
+    return v in _XML_SKIP_VALUES
