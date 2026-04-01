@@ -103,7 +103,7 @@ def __generate_partial_key_df(
         sub = df[cols].drop_duplicates()
         for _, r in sub.iterrows():
             val = r[attr_id]
-            if pd.isna(val) or str(val) == "":
+            if pd.isna(val) or str(val) in ("", "nan"):
                 continue
             row: Dict[str, object] = dict.fromkeys(all_columns, "")
             for d in pa_dims:
