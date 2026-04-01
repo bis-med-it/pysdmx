@@ -80,11 +80,6 @@ def _get_value_to_write(
 ) -> Optional[str]:
     """Get the value to write to the output, handling null representations.
 
-    - Null value (None/np.nan/pd.NA): return "NaN" or "#N/A" based on dtype
-    - Empty string + required: return "NaN" or "#N/A" based on dtype
-    - Empty string + optional: return None (skip writing)
-    - Any other value: return it's string representation
-
     Args:
         value: The value to process.
         required: Whether the component is required.
@@ -93,14 +88,8 @@ def _get_value_to_write(
     Returns:
         The string value to write, or None if the value should be skipped.
     """
-    # Null values: write explicit null if required, skip if optional
-    if _is_null_value(value):
+    if _is_null_value(value) or value == "":
         return _get_null_representation(dtype) if required else None
-
-    # Write required empty strings, skip for optional empty strings
-    if isinstance(value, str) and value == "":
-        return _get_null_representation(dtype) if required else None
-
     return str(value)
 
 
