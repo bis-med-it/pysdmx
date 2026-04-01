@@ -56,7 +56,7 @@ def to_pandas_type(comp: Component) -> str:
         - 'string' (default for unhandled types)
         - 'bool' or 'boolean' (for boolean values)
     """
-    if comp.enumeration:
+    if comp.enum_ref:
         return "category"
     elif comp.dtype == DataType.INCREMENTAL:
         if comp.facets and isinstance(comp.facets.interval, float):
