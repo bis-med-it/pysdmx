@@ -460,25 +460,46 @@ def test_writer_partial_keys_all_obs_attrs(dsd_path):
 
 
 def test_writer_partial_keys_empty_attr(partial_keys_schema):
-    """Partial key rows with empty attribute values are skipped."""
+    """Partial key rows with null-like attribute values are skipped."""
     data = pd.DataFrame(
         [
             {
                 "DIM1": "A",
                 "DIM2": "B",
-                "ATT1": "",
+                "ATT1": None,
                 "ATT2": "D",
-                "OBS_VALUE": 1,
+                "OBS_VALUE": "1",
                 "TIME_PERIOD": "2020",
-            }
+            },
+            {
+                "DIM1": "A",
+                "DIM2": "C",
+                "ATT1": "",
+                "ATT2": "E",
+                "OBS_VALUE": "2",
+                "TIME_PERIOD": "2021",
+            },
+            {
+                "DIM1": "A",
+                "DIM2": "D",
+                "ATT1": "X",
+                "ATT2": "F",
+                "OBS_VALUE": "3",
+                "TIME_PERIOD": "2022",
+            },
         ]
     )
     dataset = PandasDataset(
-        attributes={}, data=data.astype("str"), structure=partial_keys_schema
+        attributes={},
+        data=data,
+        structure=partial_keys_schema,
     )
     result_csv = write([dataset], partial_keys=True)
-    result_df = pd.read_csv(StringIO(result_csv))
-    assert len(result_df) == 1
+    result_df = pd.read_csv(
+        StringIO(result_csv), keep_default_na=False, na_values=[]
+    )
+    # 3 obs rows + 1 partial key row for ATT1=X (None and "" skipped)
+    assert len(result_df) == 4
 
 
 @pytest.mark.data
