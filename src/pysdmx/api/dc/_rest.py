@@ -2,13 +2,13 @@
 
 import csv
 import io
-from typing import Generator, NoReturn, Optional, Union
+from typing import Any, Generator, NoReturn, Optional, Union
 
 import msgspec
 
 from pysdmx import errors
 from pysdmx.api.dc import BasicConnector, MaintainableIdentification
-from pysdmx.api.dc.query import MultiFilter, NumberFilter, TextFilter
+from pysdmx.api.dc.query import Filter
 from pysdmx.api.dc.query.util import parse_query
 from pysdmx.api.qb import (
     ApiVersion,
@@ -179,10 +179,8 @@ class SdmxConnector(BasicConnector):
     def data(
         self,
         dataflow: Union[str, MaintainableIdentification],
-        filters: Optional[
-            Union[MultiFilter, NumberFilter, TextFilter, str]
-        ] = None,
-    ) -> Generator[dict[str, int], None, None]:
+        filters: Optional[Union[Filter, str]] = None,
+    ) -> Generator[dict[str, Any], None, None]:
         """Get data for the selected dataflow, matching the supplied filters.
 
         Args:
@@ -224,18 +222,12 @@ class SdmxConnector(BasicConnector):
         )
 
         try:
-            out = self.__client.data(q)
-            text_stream = io.TextIOWrapper(io.BytesIO(out), encoding="utf-8")
-
-            # Use the csv.DictReader to parse the CSV data
-            reader = csv.DictReader(text_stream)
-
-            # Yield each row as a dictionary
+            resp = self.__client.data(q)
+            csv_string = resp.decode("utf-8")
+            csv_file = io.StringIO(csv_string)
+            reader = csv.DictReader(csv_file)
             for row in reader:
                 yield row
-
-            # Close the TextIOWrapper to free resources
-            text_stream.close()
         except errors.NotFound:
             url = q.get_url(ApiVersion.V2_0_0, True)
             self.__raise_data_nf_error(url)
