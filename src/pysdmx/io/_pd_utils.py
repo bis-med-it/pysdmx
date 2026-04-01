@@ -104,13 +104,6 @@ def _get_value_to_write(
     return str(value)
 
 
-def _is_nullable_integer_dtype(dtype: Any) -> bool:
-    """Check if the dtype is a pandas nullable integer type."""
-    return pd.api.types.is_integer_dtype(dtype) and str(dtype).startswith(
-        ("Int", "UInt")
-    )
-
-
 def transform_dataframe_for_writing(
     df: pd.DataFrame,
     schema: Schema,
@@ -132,25 +125,13 @@ def transform_dataframe_for_writing(
     df = df.copy()
     for component in schema.components:
         if component.id in df.columns:
-            col_dtype = df[component.id].dtype
-            is_nullable_int = _is_nullable_integer_dtype(col_dtype)
 
             def transform_value(
                 v: Any,
                 req: bool = component.required,
                 dt: Optional[DataType] = component.dtype,
-                is_int: bool = is_nullable_int,
             ) -> Optional[str]:
-                result = _get_value_to_write(v, req, dt)
-                # Format nullable integers without decimal places
-                if (
-                    is_int
-                    and result is not None
-                    and result not in ("NaN", "#N/A")
-                ):
-                    return str(int(float(result)))
-
-                return result
+                return _get_value_to_write(v, req, dt)
 
             df[component.id] = df[component.id].apply(transform_value)
     return df

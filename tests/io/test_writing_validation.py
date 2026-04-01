@@ -116,11 +116,14 @@ def test_data_rwr(samples_folder, filename, output_format):
     assert len(datasets) == len(datasets_2), "Number of datasets mismatch"
 
     expected_data = datasets[0].data.copy()
-    # OBS_VALUE is a required numeric measure, empty strings become "NaN"
-    # Adjust when reading from xml
-    expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].fillna("NaN")
-    # Adjust when reading from csv
-    expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].replace("", "NaN")
+    # CSV writers produce "NaN" for required numeric nulls;
+    # XML writers omit them (read back as empty string)
+    is_xml = "xml" in output_format.value
+    null_repr = "" if is_xml else "NaN"
+    expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].fillna(null_repr)
+    expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].replace(
+        {"NaN": null_repr, "": null_repr}
+    )
 
     pd.testing.assert_frame_equal(
         expected_data,
@@ -238,10 +241,8 @@ def test_write_sdmx_csv_read_back(samples_folder, csv_format):
     assert len(datasets) == len(read_datasets), "Number of datasets mismatch"
 
     expected_data = datasets[0].data.copy()
-    # OBS_VALUE is a required numeric measure, empty strings become "NaN"
-    # Adjust when reading from xml
+    # CSV writers produce "NaN" for required numeric nulls
     expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].fillna("NaN")
-    # Adjust when reading from csv
     expected_data["OBS_VALUE"] = expected_data["OBS_VALUE"].replace("", "NaN")
 
     pd.testing.assert_frame_equal(

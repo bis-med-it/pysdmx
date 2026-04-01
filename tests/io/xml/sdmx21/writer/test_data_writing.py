@@ -679,7 +679,7 @@ def test_write_generic_optional_attributes_with_groups(ds_optional_attributes):
 
 
 def test_write_generic_all_dimensions(ds_optional_attributes):
-    """Missing optional attributes are written as "None" text in this mode."""
+    """Missing optional attributes are omitted from XML output."""
     ds = list(ds_optional_attributes.values())[0]
     dim_at_obs = {ds.structure.short_urn: "AllDimensions"}
 
@@ -688,8 +688,8 @@ def test_write_generic_all_dimensions(ds_optional_attributes):
         dimension_at_observation=dim_at_obs,
     )
 
-    assert 'gen:Value id="G_ATT" value="None"' in result
-    assert 'gen:Value id="S_ATT" value="None"' in result
+    assert 'gen:Value id="G_ATT" value="None"' not in result
+    assert 'gen:Value id="S_ATT" value="None"' not in result
 
     # Roundtrip validation
     read_msg = read_sdmx(result, validate=True)

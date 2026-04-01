@@ -12,7 +12,6 @@ from pysdmx.io._pd_utils import (
 )
 from pysdmx.io.csv.__csv_aux_writer import __write_time_period
 from pysdmx.io.pd import PandasDataset, stringify_dataframe
-from pysdmx.model import Schema
 from pysdmx.toolkit.pd._data_utils import format_labels
 
 

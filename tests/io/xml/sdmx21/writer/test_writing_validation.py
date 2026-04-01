@@ -347,12 +347,165 @@ def test_attribute_relationship_roundtrip(samples_folder):
 
 def test_data_write_nullable_nulltypes():
     # Create dataframe with null values
-    data = pd.DataFrame(data={"A": [None, 1, None, pd.NA]})
-    data["A"] = data["A"].astype("Int64")  # Use nullable integer type
-
-    dataset = PandasDataset(data=data, structure="Dataflow=Short:Urn(1.0)")
+    data = pd.DataFrame(
+        data={
+            "DIM1": ["X", "Y", "Z", "W"],
+            "OBS_VALUE": [None, 1, None, pd.NA],
+        }
+    )
+    data["OBS_VALUE"] = data["OBS_VALUE"].astype("Int64")
+    schema = Schema(
+        context="datastructure",
+        agency="Short",
+        id="Urn",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="DIM1"),
+                    required=True,
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    role=Role.MEASURE,
+                    concept=Concept(id="OBS_VALUE"),
+                    required=True,
+                    local_dtype=DataType.INTEGER,
+                ),
+            ]
+        ),
+    )
+    dataset = PandasDataset(data=data, structure=schema)
     result = write_str_spec([dataset])
     datasets = get_datasets(result)
     assert len(datasets) == 1
     data = datasets[0].data
-    assert data["A"].values.tolist() == ["", "1", "", ""]
+    assert data["OBS_VALUE"].values.tolist() == ["", "1", "", ""]
+
+
+def test_data_write_csv_sentinel_values():
+    """CSV sentinels: optional attrs omitted, required get sentinel."""
+    from pysdmx.io.format import Format
+    from pysdmx.io.writer import write_sdmx
+
+    data = pd.DataFrame(
+        data={
+            "DIM1": ["A", "B"],
+            "OBS_VALUE": ["#N/A", "42"],
+            "ATTR1": ["NaN", "hello"],
+        }
+    )
+    schema = Schema(
+        context="datastructure",
+        agency="TEST",
+        id="TEST_DS",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="DIM1"),
+                    required=True,
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    role=Role.MEASURE,
+                    concept=Concept(id="OBS_VALUE"),
+                    required=True,
+                ),
+                Component(
+                    id="ATTR1",
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(id="ATTR1"),
+                    required=False,
+                    attachment_level="O",
+                ),
+            ]
+        ),
+    )
+    dataset = PandasDataset(data=data, structure=schema)
+
+    # Test structure-specific writer (SDMX-ML 2.1)
+    result_ss = write_sdmx([dataset], sdmx_format=Format.DATA_SDMX_ML_2_1_STR)
+    # Sentinel values from CSV are cleaned out
+    assert "#N/A" not in result_ss
+    assert 'ATTR1="NaN"' not in result_ss
+    # Valid values are preserved
+    assert 'OBS_VALUE="42"' in result_ss
+    assert 'ATTR1="hello"' in result_ss
+
+    # Test generic writer (SDMX-ML 2.1)
+    result_gen = write_sdmx([dataset], sdmx_format=Format.DATA_SDMX_ML_2_1_GEN)
+    # Sentinel values from CSV are cleaned out
+    assert "#N/A" not in result_gen
+    assert 'value="NaN"' not in result_gen
+    # Valid values are preserved
+    assert '<gen:ObsValue value="42"/>' in result_gen
+    assert '<gen:Value id="ATTR1" value="hello"/>' in result_gen
+
+
+def test_data_write_csv_sentinel_empty_obs_value():
+    """Empty obs value omitted from generic XML output."""
+    from pysdmx.io.format import Format
+    from pysdmx.io.writer import write_sdmx
+
+    data = pd.DataFrame(
+        data={
+            "DIM1": ["A", "A", "A"],
+            "DIM2": ["", "X", "Y"],
+            "OBS_VALUE": ["", "", "42"],
+            "S_ATT": ["s1", "s1", "s1"],
+        }
+    )
+    schema = Schema(
+        context="datastructure",
+        agency="TEST",
+        id="TEST_DS",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="DIM1"),
+                    required=True,
+                ),
+                Component(
+                    id="DIM2",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="DIM2"),
+                    required=True,
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    role=Role.MEASURE,
+                    concept=Concept(id="OBS_VALUE"),
+                    required=False,
+                ),
+                Component(
+                    id="S_ATT",
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(id="S_ATT"),
+                    required=False,
+                    attachment_level="D",
+                ),
+            ]
+        ),
+    )
+    dataset = PandasDataset(data=data, structure=schema)
+
+    # AllDimensions mode — covers empty obs value skip
+    result = write_sdmx([dataset], sdmx_format=Format.DATA_SDMX_ML_2_1_GEN)
+    assert '<gen:ObsValue value="42"/>' in result
+
+    # Series mode — covers empty obs value skip
+    dim_at_obs = {dataset.structure.short_urn: "DIM2"}
+    result_ser = write_sdmx(
+        [dataset],
+        sdmx_format=Format.DATA_SDMX_ML_2_1_GEN,
+        dimension_at_observation=dim_at_obs,
+    )
+    assert '<gen:ObsValue value="42"/>' in result_ser

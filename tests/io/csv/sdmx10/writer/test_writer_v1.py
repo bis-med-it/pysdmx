@@ -254,3 +254,73 @@ def test_writer_time_format_normalized(data_path_optional, schema):
         match="Normalized time format is not implemented yet.",
     ):
         write([dataset], time_format="normalized")
+
+
+def test_writer_nullable_integers_and_optional_nulls():
+    """Nullable integers and optional null attributes in CSV output."""
+    from pysdmx.model import (
+        Component,
+        Components,
+        Concept,
+        DataType,
+        Role,
+        Schema,
+    )
+
+    data = pd.DataFrame(
+        data={
+            "DIM1": ["A", "B", "C"],
+            "OBS_VALUE": pd.array([None, 42, 7], dtype="Int64"),
+            "ATTR_REQ": [None, "hello", None],
+            "ATTR_OPT": [None, "world", None],
+        }
+    )
+    schema = Schema(
+        context="datastructure",
+        agency="T",
+        id="T",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="DIM1"),
+                    required=True,
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    role=Role.MEASURE,
+                    concept=Concept(id="OBS_VALUE"),
+                    required=True,
+                    local_dtype=DataType.INTEGER,
+                ),
+                Component(
+                    id="ATTR_REQ",
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(id="ATTR_REQ"),
+                    required=True,
+                    attachment_level="O",
+                ),
+                Component(
+                    id="ATTR_OPT",
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(id="ATTR_OPT"),
+                    required=False,
+                    attachment_level="O",
+                ),
+            ]
+        ),
+    )
+    dataset = PandasDataset(data=data, structure=schema)
+    result = write([dataset])
+    df = pd.read_csv(StringIO(result), keep_default_na=False, na_values=[])
+    # Nullable int null → "NaN"
+    assert df["OBS_VALUE"].iloc[0] == "NaN"
+    assert df["OBS_VALUE"].iloc[1] == "42.0"
+    # Required null string attr → "#N/A"
+    assert df["ATTR_REQ"].iloc[0] == "#N/A"
+    assert df["ATTR_REQ"].iloc[1] == "hello"
+    # Optional null attr → empty string
+    assert df["ATTR_OPT"].iloc[0] == ""
+    assert df["ATTR_OPT"].iloc[1] == "world"

@@ -6,10 +6,6 @@ from typing import Any, Dict, List
 import pandas as pd
 
 from pysdmx.errors import Invalid
-from pysdmx.io._pd_utils import (
-    transform_dataframe_for_writing,
-    validate_schema_exists,
-)
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import (
     ABBR_MSG,
@@ -18,6 +14,7 @@ from pysdmx.io.xml.__write_aux import (
     get_structure,
 )
 from pysdmx.io.xml.__write_data_aux import (
+    _should_skip_xml_value,
     stringify_dataset,
     writing_validation,
 )
@@ -139,29 +136,25 @@ def __write_data_single_dataset(
         f"{datascope}"
         f'action="{dataset.action.value}">{nl}'
     )
-    # Transform DataFrame for null value handling
-    schema = validate_schema_exists(dataset)
-    transformed_data = transform_dataframe_for_writing(dataset.data, schema)
-
     data = ""
     if dim == ALL_DIM:
         __validate_all_dimensions_data(dataset)
-        data += __memory_optimization_writing(transformed_data, prettyprint)
+        data += __memory_optimization_writing(dataset.data, prettyprint)
     else:
         writing_validation(dataset)
         series_codes, obs_codes, group_codes = get_codes(
             dimension_code=dim,
             structure=dataset.structure,  # type: ignore[arg-type]
-            data=transformed_data,
+            data=dataset.data,
         )
         if group_codes:
             data += __group_processing(
-                data=transformed_data,
+                data=dataset.data,
                 group_codes=group_codes,
                 prettyprint=prettyprint,
             )
         data += __series_processing(
-            data=transformed_data,
+            data=dataset.data,
             series_codes=series_codes,
             obs_codes=obs_codes,
             prettyprint=prettyprint,
@@ -225,7 +218,7 @@ def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
         out = f"{child2}<Obs "
 
         for k, v in element.items():
-            if v is not None:
+            if not _should_skip_xml_value(v):
                 out += f"{k}={__escape_xml(v)!r} "
 
         out += f"/>{nl}"
@@ -242,7 +235,7 @@ def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
 def __has_valid_obs(obs_list: List[Dict[str, Any]]) -> bool:
     for obs in obs_list:
         for value in obs.values():
-            if value not in ("", None, "#N/A", "NaN"):
+            if not _should_skip_xml_value(value):
                 return True
     return False
 
@@ -284,7 +277,7 @@ def __series_processing(
         out_element = f"{child2}<Series "
 
         for k, v in data_info.items():
-            if k != "Obs" and v is not None:
+            if k != "Obs" and not _should_skip_xml_value(v):
                 out_element += f"{k}={__escape_xml(v)!r} "
 
         # Series with no observations
@@ -297,7 +290,7 @@ def __series_processing(
             out_element += f"{child3}<Obs "
 
             for k, v in obs.items():
-                if v is not None:
+                if not _should_skip_xml_value(v):
                     out_element += f"{k}={__escape_xml(v)!r} "
 
             out_element += f"/>{nl}"

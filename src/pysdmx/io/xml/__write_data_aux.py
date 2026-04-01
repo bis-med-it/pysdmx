@@ -91,10 +91,33 @@ def writing_validation(dataset: PandasDataset) -> None:
         raise Invalid("The dataset structure must have at least one measure.")
 
 
+_CSV_SENTINELS = {"#N/A": "", "NaN": ""}
+
+
 def stringify_dataset(dataset: PandasDataset) -> None:
     """Convert all dataset DataFrame columns to strings, nulls as empty.
+
+    Also replaces CSV sentinel values (``#N/A``, ``NaN``) with empty
+    strings so that downstream transformations can re-classify them
+    based on component requirements.
 
     Args:
         dataset: The dataset whose DataFrame will be converted in place.
     """
     dataset.data = stringify_dataframe(dataset.data)
+    dataset.data = dataset.data.replace(_CSV_SENTINELS)
+
+
+_XML_SKIP_VALUES = frozenset(("", None))
+
+
+def _should_skip_xml_value(v: object) -> bool:
+    """Check if a value should be omitted from XML output.
+
+    Args:
+        v: The value to check.
+
+    Returns:
+        True if the value is empty or None.
+    """
+    return v in _XML_SKIP_VALUES
