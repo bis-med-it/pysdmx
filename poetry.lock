@@ -1714,22 +1714,6 @@ numpy = ">=1.23.5"
 types-pytz = ">=2022.1.1"
 
 [[package]]
-name = "pandas-stubs"
-version = "3.0.0.260204"
-description = "Type annotations for pandas"
-optional = false
-python-versions = ">=3.11"
-groups = ["dev"]
-markers = "python_version >= \"3.11\""
-files = [
-    {file = "pandas_stubs-3.0.0.260204-py3-none-any.whl", hash = "sha256:5ab9e4d55a6e2752e9720828564af40d48c4f709e6a2c69b743014a6fcb6c241"},
-    {file = "pandas_stubs-3.0.0.260204.tar.gz", hash = "sha256:bf9294b76352effcffa9cb85edf0bed1339a7ec0c30b8e1ac3d66b4228f1fbc3"},
-]
-
-[package.dependencies]
-numpy = ">=1.23.5"
-
-[[package]]
 name = "parsy"
 version = "2.2"
 description = "Easy-to-use parser combinators, for parsing in pure Python"
@@ -2962,4 +2946,4 @@ xml = ["lxml", "sdmxschemas", "xmltodict"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "2f4368d4d5d5dd2fa8b4041fd9cb6cf5871189b0ea7a874d2574d17d77542946"
+content-hash = "22d91d93854315069586077c2945124e159eb7e50078514c123d014dbce3097e"
