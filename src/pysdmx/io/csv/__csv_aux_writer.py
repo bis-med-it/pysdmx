@@ -13,6 +13,8 @@ from pysdmx.model.dataflow import Component, Role
 from pysdmx.model.dataset import ActionType
 from pysdmx.toolkit.pd._data_utils import format_labels, get_codes
 
+_NULL_STRINGS = frozenset(("", "nan", "None", "#N/A", "NaN"))
+
 SDMX_CSV_ACTION_MAPPER = {
     ActionType.Append: "A",
     ActionType.Replace: "R",
@@ -103,7 +105,8 @@ def __generate_partial_key_df(
         sub = df[cols].drop_duplicates()
         for _, r in sub.iterrows():
             val = r[attr_id]
-            if pd.isna(val) or str(val) in ("", "nan"):
+            val_str = str(val)
+            if pd.isna(val) or val_str in _NULL_STRINGS:
                 continue
             row: Dict[str, object] = dict.fromkeys(all_columns, "")
             for d in pa_dims:
