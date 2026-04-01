@@ -102,16 +102,13 @@ def __generate_partial_key_df(
 
     for attr_id, pa_dims in partial_attr_list:
         cols = pa_dims + [attr_id]
-        sub = df[cols].drop_duplicates()
-        for _, r in sub.iterrows():
-            val = r[attr_id]
-            val_str = str(val)
-            if pd.isna(val) or val_str in _NULL_STRINGS:
-                continue
+        sub = df[cols].drop_duplicates().dropna(subset=[attr_id])
+        sub = sub[~sub[attr_id].astype(str).isin(_NULL_STRINGS)]
+        for rec in sub.to_dict(orient="records"):
             row: Dict[str, object] = dict.fromkeys(all_columns, "")
             for d in pa_dims:
-                row[d] = r[d]
-            row[attr_id] = val
+                row[d] = rec[d]
+            row[attr_id] = rec[attr_id]
             partial_rows.append(row)
 
     obs_df = df.copy()
