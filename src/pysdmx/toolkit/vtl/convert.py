@@ -2,8 +2,10 @@
 
 from typing import Dict, Optional, Type, Union
 
-from vtlengine.API import load_datasets  # type: ignore[attr-defined]
-from vtlengine.API._InternalApi import to_vtl_json
+from vtlengine.API import (  # type: ignore[attr-defined]
+    load_datasets,
+    to_vtl_json,
+)
 from vtlengine.DataTypes import (
     Boolean,
     Date,

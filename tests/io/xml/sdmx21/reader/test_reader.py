@@ -2,7 +2,6 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import pytest
 
@@ -1046,8 +1045,8 @@ def test_group_merge_multiple_common_columns(multiple_groups_path):
             "TIME_PERIOD": ["2010", "2011", "2010", "2011"],
             "OBS_VALUE": ["1.0", "2.0", "3.0", "4.0"],
             "GATTR": ["G1", "G1", "G2", "G2"],
-            "OTHER_ATTR": ["OTHER", "OTHER", np.nan, np.nan],
-            "MISMATCH_ATTR": [np.nan, np.nan, np.nan, np.nan],
+            "OTHER_ATTR": ["OTHER", "OTHER", None, None],
+            "MISMATCH_ATTR": [None, None, None, None],
         }
     )
 

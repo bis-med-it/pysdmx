@@ -21,6 +21,7 @@ from pysdmx.io.xml.__write_aux import (
 from pysdmx.io.xml.__write_data_aux import (
     check_content_dataset,
     check_dimension_at_observation,
+    stringify_dataset,
     writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
@@ -122,7 +123,7 @@ def __write_data_generic(
 
     for short_urn, dataset in datasets.items():
         writing_validation(dataset)
-        dataset.data = dataset.data.fillna("").astype(str)
+        stringify_dataset(dataset)
         outfile += __write_data_single_dataset(
             dataset=dataset,
             prettyprint=prettyprint,
@@ -160,7 +161,7 @@ def __write_data_single_dataset(
     outfile = ""
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
-    dataset.data = dataset.data.fillna("").astype(str).replace("nan", "")
+    stringify_dataset(dataset)
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
