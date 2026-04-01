@@ -7,9 +7,12 @@ from typing import Any, Generator, NoReturn, Optional, Union
 import msgspec
 
 from pysdmx import errors
-from pysdmx.api.dc import BasicConnector, MaintainableIdentification
+from pysdmx.api.dc import (
+    BasicConnector,
+    MaintainableIdentification,
+    prepare_basic_data_query,
+)
 from pysdmx.api.dc.query import Filter
-from pysdmx.api.dc.query.util import parse_query
 from pysdmx.api.qb import (
     ApiVersion,
     AvailabilityFormat,
@@ -17,7 +20,6 @@ from pysdmx.api.qb import (
     AvailabilityQuery,
     DataContext,
     DataFormat,
-    DataQuery,
     RestService,
     StructureDetail,
     StructureFormat,
@@ -201,25 +203,7 @@ class SdmxConnector(BasicConnector):
             observations, the observations being represented as Python
             dictionaries.
         """
-        if isinstance(dataflow, str):
-            dataflow = parse_maintainable_urn(dataflow)
-        aid = (
-            dataflow.agency.id
-            if isinstance(dataflow.agency, Agency)
-            else dataflow.agency
-        )
-
-        if isinstance(filters, str):
-            filters = parse_query(filters)
-
-        q = DataQuery(
-            DataContext.DATAFLOW,
-            aid,
-            dataflow.id,
-            dataflow.version,
-            components=filters,
-            obs_dimension="AllDimensions",
-        )
+        q = prepare_basic_data_query(dataflow, filters)
 
         try:
             resp = self.__client.data(q)
