@@ -461,14 +461,12 @@ def test_writer_partial_keys_all_obs_attrs(dsd_path):
 
 def test_writer_partial_keys_empty_attr(partial_keys_schema):
     """Partial key rows with null-like attribute values are skipped."""
-    import numpy as np
-
     data = pd.DataFrame(
         [
             {
                 "DIM1": "A",
                 "DIM2": "B",
-                "ATT1": np.nan,
+                "ATT1": pd.NA,
                 "ATT2": "D",
                 "OBS_VALUE": "1",
                 "TIME_PERIOD": "2020",
