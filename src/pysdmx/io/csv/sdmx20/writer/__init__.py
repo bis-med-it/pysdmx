@@ -8,7 +8,7 @@ import pandas as pd
 from pysdmx.io.csv.__csv_aux_writer import (
     _write_csv_2_aux,
 )
-from pysdmx.io.pd import PandasDataset
+from pysdmx.io.pd import PandasDataset, stringify_dataframe
 
 
 def write(
@@ -67,6 +67,8 @@ def write(
     )
 
     all_data = pd.concat(dataframes, ignore_index=True, axis=0)
+
+    all_data = stringify_dataframe(all_data)
 
     # If the output path is an empty string we use None
     output_path = (

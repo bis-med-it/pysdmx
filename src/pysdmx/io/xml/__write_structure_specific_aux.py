@@ -18,6 +18,7 @@ from pysdmx.io.xml.__write_aux import (
     get_structure,
 )
 from pysdmx.io.xml.__write_data_aux import (
+    stringify_dataset,
     writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
@@ -83,6 +84,7 @@ def __write_data_structure_specific(
     outfile = ""
 
     for i, (short_urn, dataset) in enumerate(datasets.items()):
+        stringify_dataset(dataset)
         outfile += __write_data_single_dataset(
             dataset=dataset,
             prettyprint=prettyprint,
@@ -117,6 +119,8 @@ def __write_data_single_dataset(
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
     sdmx_type = parse_short_urn(structure_urn).id
+    # Remove null values from DataFrame
+    stringify_dataset(dataset)
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""

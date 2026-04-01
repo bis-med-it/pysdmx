@@ -70,13 +70,14 @@ def validate_sdmx_json(input_str: str) -> None:
                 ),
                 (
                     r"""['"]?([^'"\n]+)['"]?\s+is not one of\s+\[([^\]]+)\]""",
-                    lambda m: "invalid value {!r}"
-                    " (expected one of: {})".format(
-                        m.group(1),
-                        ", ".join(
-                            s.strip().strip("'\"")
-                            for s in m.group(2).split(",")
-                        ),
+                    lambda m: (
+                        "invalid value {!r} (expected one of: {})".format(
+                            m.group(1),
+                            ", ".join(
+                                s.strip().strip("'\"")
+                                for s in m.group(2).split(",")
+                            ),
+                        )
                     ),
                 ),
                 (
@@ -85,8 +86,9 @@ def validate_sdmx_json(input_str: str) -> None:
                 ),
                 (
                     r"""does not match ['"]([^'"]+)['"]""",
-                    lambda m: f"does not match required"
-                    f" pattern {m.group(1)!r}",
+                    lambda m: (
+                        f"does not match required pattern {m.group(1)!r}"
+                    ),
                 ),
                 (
                     r"\[\]\s+is\s+too\s+short",

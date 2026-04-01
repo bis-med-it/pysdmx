@@ -11,7 +11,8 @@ from pysdmx.io._pd_utils import (
     validate_schema_exists,
 )
 from pysdmx.io.csv.__csv_aux_writer import __write_time_period
-from pysdmx.io.pd import PandasDataset
+from pysdmx.io.pd import PandasDataset, stringify_dataframe
+from pysdmx.model import Schema
 from pysdmx.toolkit.pd._data_utils import format_labels
 
 
@@ -77,6 +78,7 @@ def write(
     # Concatenate the dataframes
     all_data = pd.concat(dataframes, ignore_index=True, axis=0)
 
+    all_data = stringify_dataframe(all_data)
     # If the output path is an empty string we use None
     output_path = (
         None

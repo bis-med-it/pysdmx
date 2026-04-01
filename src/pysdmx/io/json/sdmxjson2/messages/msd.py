@@ -28,7 +28,7 @@ from pysdmx.util import is_final, parse_item_urn
 
 
 def _get_attr_repr(comp: MetadataComponent) -> Optional[JsonRepresentation]:
-    enum = comp.local_enum_ref if comp.local_enum_ref else None
+    enum = comp.local_enum_ref or None
     return JsonRepresentation.from_model(
         comp.local_dtype, enum, comp.local_facets, None
     )
