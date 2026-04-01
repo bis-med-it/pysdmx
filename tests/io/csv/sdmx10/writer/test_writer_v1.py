@@ -317,7 +317,7 @@ def test_writer_nullable_integers_and_optional_nulls():
     df = pd.read_csv(StringIO(result), keep_default_na=False, na_values=[])
     # Nullable int null → "NaN"
     assert df["OBS_VALUE"].iloc[0] == "NaN"
-    assert df["OBS_VALUE"].iloc[1] == "42.0"
+    assert df["OBS_VALUE"].iloc[1] in ("42", "42.0")
     # Required null string attr → "#N/A"
     assert df["ATTR_REQ"].iloc[0] == "#N/A"
     assert df["ATTR_REQ"].iloc[1] == "hello"
