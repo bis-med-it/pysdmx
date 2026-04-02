@@ -323,7 +323,7 @@ class BasicConnector(Protocol):
 def prepare_basic_data_query(
     dataflow: Union[str, MaintainableIdentification],
     filters: Optional[Union[Filter, str]] = None,
-):
+) -> DataQuery:
     if isinstance(dataflow, str):
         dataflow = parse_maintainable_urn(dataflow)
     aid = (

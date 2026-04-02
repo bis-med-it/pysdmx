@@ -157,10 +157,11 @@ class PandasConnector(BasicConnector):
                 f.close()
 
             # Infer read parameters (exclude SDMX columns, add data types etc.)
-            params = {"usecols": self.__include_col}
+            params: dict[str, Any] = {}
+            params["usecols"] = self.__include_col
             if apply_schema:
                 flow = self.dataflow(dataflow)
-                schema = to_pandas_schema(flow.components)
+                schema = to_pandas_schema(flow.components)  # type: ignore[arg-type]
                 params["dtype"] = schema
 
             # Read CSV and return DataFrame
