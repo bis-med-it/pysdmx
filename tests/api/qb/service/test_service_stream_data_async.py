@@ -54,7 +54,8 @@ async def test_not_found(
     )
 
     with pytest.raises(NotFound) as e:
-        await service.data(query)
+        async for _ in service.stream_data(query):
+            pass
     assert e.value.title is not None
     assert e.value.description is not None
     assert url in e.value.description
@@ -72,7 +73,8 @@ async def test_client_error(
     )
 
     with pytest.raises(Invalid) as e:
-        await service.data(query)
+        async for _ in service.stream_data(query):
+            pass
     assert e.value.title is not None
     assert e.value.description is not None
     assert url in e.value.description
@@ -90,7 +92,8 @@ async def test_service_error(
     )
 
     with pytest.raises(InternalError) as e:
-        await service.data(query)
+        async for _ in service.stream_data(query):
+            pass
     assert e.value.title is not None
     assert e.value.description is not None
     assert url in e.value.description
@@ -104,7 +107,8 @@ async def test_service_unavailable(
     respx_mock.get(url).mock(side_effect=re)
 
     with pytest.raises(Unavailable) as e:
-        await service.data(query)
+        async for _ in service.stream_data(query):
+            pass
     assert e.value.title is not None
     assert e.value.description is not None
     assert url in e.value.description
@@ -120,7 +124,8 @@ async def test_called_as_expected(
             content=body,
         )
     )
-    await service.data(query)
+    async for _ in service.stream_data(query):
+        pass
     assert route.called
     assert len(route.calls) == 1
     headers = route.calls[0].request.headers

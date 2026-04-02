@@ -117,20 +117,3 @@ def test_called_as_expected(
     headers = route.calls[0].request.headers
     assert headers["Accept"] == DataFormat.SDMX_JSON_2_0_0.value
     assert headers["Accept-Encoding"] == "gzip, deflate"
-
-
-def test_stream_called_as_expected(
-    respx_mock, service: RestService, query: DataQuery, url, body
-):
-    route = respx_mock.get(url).mock(
-        return_value=httpx.Response(
-            200,
-            content=body,
-        )
-    )
-    list(service.stream_data(query))
-    assert route.called
-    assert len(route.calls) == 1
-    headers = route.calls[0].request.headers
-    assert headers["Accept"] == DataFormat.SDMX_JSON_2_0_0.value
-    assert headers["Accept-Encoding"] == "gzip, deflate"
