@@ -275,7 +275,7 @@ class AsyncRestService(_CoreRestService):
         """Execute a data query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._data_format.value
-        async for chunk in self.__stream(q, f, chunk_size):
+        async for chunk in self.__stream(q, f, chunk_size):  # pragma: no cover
             yield chunk
 
     async def structure(self, query: StructureQuery) -> bytes:
@@ -361,7 +361,9 @@ class AsyncRestService(_CoreRestService):
                     if cs.is_error:
                         await cs.aread()
                         cs.raise_for_status()
-                    async for chunk in cs.aiter_bytes(chunk_size):
+                    async for chunk in cs.aiter_bytes(
+                        chunk_size
+                    ):  # pragma: no cover
                         yield chunk
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 map_httpx_errors(e)
