@@ -41,12 +41,7 @@ def body():
 def test_not_found(
     respx_mock, service: RestService, query: DataQuery, body, url
 ):
-    respx_mock.get(url).mock(
-        return_value=httpx.Response(
-            404,
-            content=body,
-        )
-    )
+    respx_mock.get(url).mock(return_value=httpx.Response(404, content=body))
 
     with pytest.raises(NotFound) as e:
         list(service.stream_data(query))
@@ -58,12 +53,7 @@ def test_not_found(
 def test_client_error(
     respx_mock, service: RestService, query: DataQuery, body, url
 ):
-    respx_mock.get(url).mock(
-        return_value=httpx.Response(
-            409,
-            content=body,
-        )
-    )
+    respx_mock.get(url).mock(return_value=httpx.Response(409, content=body))
 
     with pytest.raises(Invalid) as e:
         list(service.stream_data(query))
@@ -75,12 +65,7 @@ def test_client_error(
 def test_service_error(
     respx_mock, service: RestService, query: DataQuery, body, url
 ):
-    respx_mock.get(url).mock(
-        return_value=httpx.Response(
-            501,
-            content=body,
-        )
-    )
+    respx_mock.get(url).mock(return_value=httpx.Response(501, content=body))
 
     with pytest.raises(InternalError) as e:
         list(service.stream_data(query))
@@ -106,10 +91,7 @@ def test_called_as_expected(
     respx_mock, service: RestService, query: DataQuery, url, body
 ):
     route = respx_mock.get(url).mock(
-        return_value=httpx.Response(
-            200,
-            content=body,
-        )
+        return_value=httpx.Response(200, content=body)
     )
     resp = ""
     for chunk in service.stream_data(query):

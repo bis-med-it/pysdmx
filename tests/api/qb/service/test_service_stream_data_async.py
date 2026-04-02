@@ -46,12 +46,7 @@ def body():
 async def test_not_found(
     respx_mock, service: AsyncRestService, query: DataQuery, body, url
 ):
-    respx_mock.get(url).mock(
-        return_value=httpx.Response(
-            404,
-            content=body,
-        )
-    )
+    respx_mock.get(url).mock(return_value=httpx.Response(404, content=body))
 
     with pytest.raises(NotFound) as e:
         async for _ in service.stream_data(query):
@@ -65,12 +60,7 @@ async def test_not_found(
 async def test_client_error(
     respx_mock, service: AsyncRestService, query: DataQuery, body, url
 ):
-    respx_mock.get(url).mock(
-        return_value=httpx.Response(
-            409,
-            content=body,
-        )
-    )
+    respx_mock.get(url).mock(return_value=httpx.Response(409, content=body))
 
     with pytest.raises(Invalid) as e:
         async for _ in service.stream_data(query):
@@ -84,12 +74,7 @@ async def test_client_error(
 async def test_service_error(
     respx_mock, service: AsyncRestService, query: DataQuery, body, url
 ):
-    respx_mock.get(url).mock(
-        return_value=httpx.Response(
-            501,
-            content=body,
-        )
-    )
+    respx_mock.get(url).mock(return_value=httpx.Response(501, content=body))
 
     with pytest.raises(InternalError) as e:
         async for _ in service.stream_data(query):
@@ -119,10 +104,7 @@ async def test_called_as_expected(
     respx_mock, service: AsyncRestService, query: DataQuery, url, body
 ):
     route = respx_mock.get(url).mock(
-        return_value=httpx.Response(
-            200,
-            content=body,
-        )
+        return_value=httpx.Response(200, content=body)
     )
     resp = ""
     async for chunk in service.stream_data(query):
