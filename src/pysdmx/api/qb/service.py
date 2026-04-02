@@ -206,7 +206,9 @@ class RestService(_CoreRestService):
                 with client.stream(
                     "GET", url, headers=h, timeout=self._timeout
                 ) as cs:
-                    cs.raise_for_status()
+                    if cs.is_error:
+                        cs.read()
+                        cs.raise_for_status()
                     for chunk in cs.iter_bytes(chunk_size):
                         yield chunk
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
@@ -355,7 +357,9 @@ class AsyncRestService(_CoreRestService):
                 async with client.stream(
                     "GET", url, headers=h, timeout=self._timeout
                 ) as cs:
-                    cs.raise_for_status()
+                    if cs.is_error:
+                        cs.aread()
+                        cs.raise_for_status()
                     async for chunk in cs.aiter_bytes(chunk_size):
                         yield chunk
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
