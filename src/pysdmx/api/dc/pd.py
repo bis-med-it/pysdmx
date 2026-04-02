@@ -144,20 +144,29 @@ class PandasConnector(BasicConnector):
             The requested data, if any. Data are returned as Pandas data frame.
         """
         q = prepare_basic_data_query(dataflow, filters)
-        with tempfile.NamedTemporaryFile(suffix=".csv", delete=False) as f:
-            try:
-                for chunk in self.__client.stream_data(q):
+        try:
+            # Write response in chunks to temporary file
+            with tempfile.NamedTemporaryFile(
+                mode="wb", suffix=".csv", delete=False
+            ) as f:
+                for chunk in self.__client.stream_data(
+                    q, chunk_size=1_048_576
+                ):
                     f.write(chunk)
                 f.flush()
                 f.close()
-                params = {"usecols": self.__include_col}
-                if apply_schema:
-                    flow = self.dataflow(dataflow)
-                    schema = to_pandas_schema(flow.components)
-                    params["dtype"] = schema
-                return pd.read_csv(f.name, **params)
-            finally:
-                pathlib.Path(f.name).unlink()
+
+            # Infer read parameters (exclude SDMX columns, add data types etc.)
+            params = {"usecols": self.__include_col}
+            if apply_schema:
+                flow = self.dataflow(dataflow)
+                schema = to_pandas_schema(flow.components)
+                params["dtype"] = schema
+
+            # Read CSV and return DataFrame
+            return pd.read_csv(f.name, **params)
+        finally:
+            pathlib.Path(f.name).unlink()
 
     def __include_col(self, col: Any) -> bool:
         return col not in ["STRUCTURE", "STRUCTURE_ID", "ACTION"]
