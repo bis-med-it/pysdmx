@@ -126,3 +126,22 @@ async def test_called_as_expected(
     headers = route.calls[0].request.headers
     assert headers["Accept"] == DataFormat.SDMX_JSON_2_0_0.value
     assert headers["Accept-Encoding"] == "gzip, deflate"
+
+
+@pytest.mark.asyncio
+async def test_stream_called_as_expected(
+    respx_mock, service: AsyncRestService, query: DataQuery, url, body
+):
+    route = respx_mock.get(url).mock(
+        return_value=httpx.Response(
+            200,
+            content=body,
+        )
+    )
+    async for _ in service.stream_data(query):
+        pass
+    assert route.called
+    assert len(route.calls) == 1
+    headers = route.calls[0].request.headers
+    assert headers["Accept"] == DataFormat.SDMX_JSON_2_0_0.value
+    assert headers["Accept-Encoding"] == "gzip, deflate"
