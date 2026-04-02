@@ -359,7 +359,7 @@ class AsyncRestService(_CoreRestService):
                     "GET", url, headers=h, timeout=self._timeout
                 ) as cs:
                     if cs.is_error:
-                        cs.aread()
+                        await cs.aread()
                         cs.raise_for_status()
                     async for chunk in cs.aiter_bytes(chunk_size):
                         yield chunk
