@@ -23,8 +23,6 @@ from pysdmx.api.dc.query import (
     SortBy,
     TextFilter,
 )
-from pysdmx.api.dc.query.util import parse_query
-from pysdmx.api.qb import DataContext, DataQuery
 from pysdmx.model import (
     Agency,
     Dataflow,
@@ -33,7 +31,6 @@ from pysdmx.model import (
     Organisation,
     SeriesInfo,
 )
-from pysdmx.util import parse_maintainable_urn
 
 
 @runtime_checkable
@@ -320,29 +317,4 @@ class BasicConnector(Protocol):
         """
 
 
-def prepare_basic_data_query(
-    dataflow: Union[str, MaintainableIdentification],
-    filters: Optional[Union[Filter, str]] = None,
-) -> DataQuery:
-    if isinstance(dataflow, str):
-        dataflow = parse_maintainable_urn(dataflow)
-    aid = (
-        dataflow.agency.id
-        if isinstance(dataflow.agency, Agency)
-        else dataflow.agency
-    )
-
-    if isinstance(filters, str):
-        filters = parse_query(filters)
-
-    return DataQuery(
-        DataContext.DATAFLOW,
-        aid,
-        dataflow.id,
-        dataflow.version,
-        components=filters,
-        obs_dimension="AllDimensions",
-    )
-
-
-__all__ = ["BasicConnector", "Connector", "prepare_basic_data_query"]
+__all__ = ["BasicConnector", "Connector"]

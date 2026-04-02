@@ -6,13 +6,10 @@ from typing import Any, Optional, Union
 
 import pandas as pd
 
-from pysdmx.api.dc import (
-    BasicConnector,
-    MaintainableIdentification,
-    prepare_basic_data_query,
-)
+from pysdmx.api.dc import BasicConnector, MaintainableIdentification
 from pysdmx.api.dc.query import Filter
 from pysdmx.api.dc.rest import SdmxConnector
+from pysdmx.api.dc.util import prepare_basic_data_query
 from pysdmx.api.qb import ApiVersion, DataFormat, RestService
 from pysdmx.model import Dataflow
 from pysdmx.toolkit.pd import to_pandas_schema
