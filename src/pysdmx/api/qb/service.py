@@ -275,7 +275,8 @@ class AsyncRestService(_CoreRestService):
         """Execute a data query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._data_format.value
-        return self.__stream(q, f, chunk_size)
+        async for chunk in self.__stream(q, f, chunk_size):
+            yield chunk
 
     async def structure(self, query: StructureQuery) -> bytes:
         """Execute a structure query against the service."""
