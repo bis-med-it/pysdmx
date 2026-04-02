@@ -10,9 +10,9 @@ from pysdmx import errors
 from pysdmx.api.dc import (
     BasicConnector,
     MaintainableIdentification,
-    prepare_basic_data_query,
 )
 from pysdmx.api.dc.query import Filter
+from pysdmx.api.dc.util import prepare_basic_data_query
 from pysdmx.api.qb import (
     ApiVersion,
     AvailabilityFormat,
