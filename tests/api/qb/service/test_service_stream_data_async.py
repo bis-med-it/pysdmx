@@ -124,10 +124,12 @@ async def test_called_as_expected(
             content=body,
         )
     )
-    async for _ in service.stream_data(query):
-        pass
+    resp = ""
+    async for chunk in service.stream_data(query):
+        resp += chunk.decode("utf-8")
     assert route.called
     assert len(route.calls) == 1
     headers = route.calls[0].request.headers
     assert headers["Accept"] == DataFormat.SDMX_JSON_2_0_0.value
     assert headers["Accept-Encoding"] == "gzip, deflate"
+    assert len(resp) == 2908
