@@ -169,11 +169,7 @@ class SdmxConnector(BasicConnector):
             url = q.get_url(ApiVersion.V2_0_0, True)
             self.__raise_dataflow_nf_error(url)
         try:
-            if out:
-                dfi = _FLOWS_DEC.decode(out).to_model()
-            else:
-                url = q.get_url(ApiVersion.V2_0_0, True)
-                self.__raise_dataflow_nf_error(url)
+            dfi = _FLOWS_DEC.decode(out).to_model()
         except msgspec.MsgspecError as e:
             self.__raise_deserialization_error(e, out)
 
@@ -236,8 +232,7 @@ class SdmxConnector(BasicConnector):
             (
                 "The payload could not be deserialized. This likely "
                 "indicates that the service did not respond with a "
-                "valid SDMX-JSON v2.0.0 Structure message containing "
-                "dataflows."
+                "valid SDMX-JSON v2.0.0 response."
             ),
             {
                 "original_exception": str(error),
