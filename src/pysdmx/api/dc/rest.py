@@ -94,15 +94,16 @@ class SdmxConnector(BasicConnector):
         q = StructureQuery(
             StructureType.DATAFLOW, detail=StructureDetail.ALL_COMPLETE_STUBS
         )
-        out = self.__client.structure(q)
+        try:
+            out = self.__client.structure(q)
+        except errors.NotFound:
+            url = q.get_url(ApiVersion.V2_0_0, True)
+            self.__raise_no_dataflows_error(url)
+
         try:
             flows = _FLOWS_DEC.decode(out).to_model()
         except msgspec.MsgspecError as e:
             self.__raise_deserialization_error(e, out)
-
-        if not flows:
-            url = q.get_url(ApiVersion.V2_0_0, True)
-            self.__raise_no_dataflows_error(url)
 
         if search_term:
             st = search_term.strip().lower()
