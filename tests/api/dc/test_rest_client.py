@@ -3,7 +3,7 @@ import pytest
 
 from pysdmx.api.dc.rest import SdmxConnector
 from pysdmx.errors import InternalError, NotFound
-from pysdmx.model import Dataflow
+from pysdmx.model import Agency, Dataflow, DataflowRef
 
 
 @pytest.fixture
@@ -29,8 +29,21 @@ def unexpected_json():
 
 
 @pytest.fixture
+def json_availability():
+    with open(
+        "tests/io/json/sdmxjson2/deser/samples/flows/flows.json", "rb"
+    ) as f:
+        return f.read()
+
+
+@pytest.fixture
 def query_flows(host):
     return f"{host}/structure/dataflow?detail=allcompletestubs"
+
+
+@pytest.fixture
+def query_availability(host):
+    return f"{host}/availability/dataflow/BIS/CBS/1.0?references=all"
 
 
 def test_list_dataflows(respx_mock, rest_client, query_flows, json_flows):
@@ -58,7 +71,7 @@ def test_search_dataflows(respx_mock, rest_client, query_flows, json_flows):
         assert f.id == "TEST_FACETS_FLOW"
 
 
-def test_search_dataflows_empty(
+def test_search_dataflows_empty_query(
     respx_mock, rest_client, query_flows, json_flows
 ):
     respx_mock.get(query_flows).mock(
@@ -70,7 +83,7 @@ def test_search_dataflows_empty(
     assert len(flows) == 5
 
 
-def test_list_no_flows(respx_mock, rest_client, query_flows):
+def test_flows_nf(respx_mock, rest_client, query_flows):
     respx_mock.get(query_flows).mock(return_value=httpx.Response(404))
 
     with pytest.raises(NotFound):
@@ -86,3 +99,62 @@ def test_flows_deser_issue(
 
     with pytest.raises(InternalError):
         rest_client.dataflows()
+
+
+def test_availability(
+    respx_mock, rest_client, query_availability, json_availability
+):
+    respx_mock.get(query_availability).mock(
+        return_value=httpx.Response(200, content=json_availability)
+    )
+    dfref = DataflowRef("BIS", "CBS", "1.0")
+
+    flow = rest_client.dataflow(dfref)
+
+    assert isinstance(flow, Dataflow)
+
+
+def test_availability_dfstr(
+    respx_mock, rest_client, query_availability, json_availability
+):
+    respx_mock.get(query_availability).mock(
+        return_value=httpx.Response(200, content=json_availability)
+    )
+    dfref = "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:CBS(1.0)"
+
+    flow = rest_client.dataflow(dfref)
+
+    assert isinstance(flow, Dataflow)
+
+
+def test_availability_agency(
+    respx_mock, rest_client, query_availability, json_availability
+):
+    respx_mock.get(query_availability).mock(
+        return_value=httpx.Response(200, content=json_availability)
+    )
+    dfref = Dataflow("CBS", agency=Agency("BIS"))
+
+    flow = rest_client.dataflow(dfref)
+
+    assert isinstance(flow, Dataflow)
+
+
+def test_availability_nf(respx_mock, rest_client, query_availability):
+    respx_mock.get(query_availability).mock(return_value=httpx.Response(404))
+    dfref = "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:CBS(1.0)"
+
+    with pytest.raises(NotFound):
+        rest_client.dataflow(dfref)
+
+
+def test_availability_deser_issues(
+    respx_mock, rest_client, query_availability, unexpected_json
+):
+    respx_mock.get(query_availability).mock(
+        return_value=httpx.Response(200, content=unexpected_json)
+    )
+    dfref = "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:CBS(1.0)"
+
+    with pytest.raises(InternalError):
+        rest_client.dataflow(dfref)
