@@ -14,9 +14,9 @@ from typing import (
 )
 
 from pysdmx.api.dc.query import (
+    BasicFilter,
     BooleanFilter,
     DateTimeFilter,
-    Filter,
     MultiFilter,
     NotFilter,
     NumberFilter,
@@ -295,7 +295,7 @@ class BasicConnector(Protocol):
     def data(
         self,
         dataflow: Union[str, MaintainableIdentification],
-        filters: Optional[Union[Filter, str]] = None,
+        filters: Optional[Union[BasicFilter, str]] = None,
     ) -> Any:
         """Get data for the selected dataflow, matching the supplied filters.
 

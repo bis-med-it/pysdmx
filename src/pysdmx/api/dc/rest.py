@@ -11,7 +11,7 @@ from pysdmx.api.dc import (
     BasicConnector,
     MaintainableIdentification,
 )
-from pysdmx.api.dc.query import Filter
+from pysdmx.api.dc.query import BasicFilter
 from pysdmx.api.dc.util import prepare_basic_data_query
 from pysdmx.api.qb import (
     ApiVersion,
@@ -181,7 +181,7 @@ class SdmxConnector(BasicConnector):
     def data(
         self,
         dataflow: Union[str, MaintainableIdentification],
-        filters: Optional[Union[Filter, str]] = None,
+        filters: Optional[Union[BasicFilter, str]] = None,
     ) -> Generator[dict[str, Any], None, None]:
         """Get data for the selected dataflow, matching the supplied filters.
 

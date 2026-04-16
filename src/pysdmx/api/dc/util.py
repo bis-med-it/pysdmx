@@ -3,7 +3,7 @@
 from typing import Optional, Union
 
 from pysdmx.api.dc._api import MaintainableIdentification
-from pysdmx.api.dc.query import Filter
+from pysdmx.api.dc.query import BasicFilter
 from pysdmx.api.dc.query.util import parse_query
 from pysdmx.api.qb import DataContext, DataQuery
 from pysdmx.model import Agency
@@ -12,7 +12,7 @@ from pysdmx.util import parse_maintainable_urn
 
 def prepare_basic_data_query(
     dataflow: Union[str, MaintainableIdentification],
-    filters: Optional[Union[Filter, str]] = None,
+    filters: Optional[Union[BasicFilter, str]] = None,
 ) -> DataQuery:
     """Return a data query out of the supplied information."""
     if isinstance(dataflow, str):
@@ -24,13 +24,13 @@ def prepare_basic_data_query(
     )
 
     if isinstance(filters, str):
-        filters = parse_query(filters)
+        filters = parse_query(filters)  # type: ignore[assignment]
 
     return DataQuery(
         DataContext.DATAFLOW,
         aid,
         dataflow.id,
         dataflow.version,
-        components=filters,
+        components=filters,  # type: ignore[arg-type]
         obs_dimension="AllDimensions",
     )
