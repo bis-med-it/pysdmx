@@ -145,8 +145,24 @@ def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:
         )
 
 
+def experimental(cls: type) -> type:
+    """Decorator to mark a class as experimental."""
+    if isinstance(cls, type):
+        t = (
+            "Warning: This class is experimental and subject to change \n"
+            "without prior notice. It is not covered by semantic versioning \n"
+            "guarantees, and modifications to this class will not result in \n"
+            "a major version increment. Use it with caution in production \n"
+            "environments or critical processes."
+        )
+        cls.__doc__ = f"{cls.__doc__}\n\n{t}" if cls.__doc__ else t
+
+    return cls
+
+
 __all__ = [
     "convert_dpm",
+    "experimental",
     "find_by_urn",
     "is_final",
     "parse_item_urn",

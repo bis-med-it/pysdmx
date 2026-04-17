@@ -13,8 +13,10 @@ from pysdmx.api.dc.util import prepare_basic_data_query
 from pysdmx.api.qb import ApiVersion, DataFormat, RestService
 from pysdmx.model import Dataflow
 from pysdmx.toolkit.pd import to_pandas_schema
+from pysdmx.util import experimental
 
 
+@experimental
 class PandasConnector(BasicConnector):
     """A Pandas connector for data discovery and data retrieval.
 

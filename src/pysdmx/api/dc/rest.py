@@ -29,11 +29,12 @@ from pysdmx.api.qb import (
 )
 from pysdmx.io.json.sdmxjson2.messages import JsonDataflowsMessage
 from pysdmx.model import Agency, Dataflow, decoders
-from pysdmx.util import parse_maintainable_urn
+from pysdmx.util import experimental, parse_maintainable_urn
 
 _FLOWS_DEC = msgspec.json.Decoder(JsonDataflowsMessage, dec_hook=decoders)
 
 
+@experimental
 class SdmxConnector(BasicConnector):
     """An SDMX-REST connector for data discovery and data retrieval.
 

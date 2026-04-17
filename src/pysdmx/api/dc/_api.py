@@ -31,8 +31,10 @@ from pysdmx.model import (
     Organisation,
     SeriesInfo,
 )
+from pysdmx.util import experimental
 
 
+@experimental
 @runtime_checkable
 class Connector(Protocol):
     """A Connector provides access to a data source.
