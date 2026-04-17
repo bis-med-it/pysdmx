@@ -156,6 +156,7 @@ def experimental(cls: type) -> type:
             "environments or critical processes."
         )
         cls.__doc__ = f"{cls.__doc__}\n\n{t}" if cls.__doc__ else t
+        cls.is_experimental = True  # type: ignore[attr-defined]
 
     return cls
 
