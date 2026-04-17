@@ -147,7 +147,7 @@ def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:
 
 def experimental(cls: type) -> type:
     """Decorator to mark a class as experimental."""
-    if isinstance(cls, type):
+    if isinstance(cls, type):  # pragma: no cover
         t = (
             "Warning: This class is experimental and subject to change \n"
             "without prior notice. It is not covered by semantic versioning \n"
