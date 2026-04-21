@@ -1,0 +1,429 @@
+{
+    "meta": {
+        "id": "IREF667080",
+        "test": false,
+        "schema": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2026-04-21T10:18:28Z",
+        "contentLanguages": ["en"],
+        "sender": {
+            "id": "5B0_DEV"
+        }
+    },
+    "data": {
+        "dataStructures": [{
+                "links": [{
+                        "rel": "self",
+                        "type": "datastructure",
+                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=TEST:TEST_MEASURE_REL(1.0)"
+                    }
+                ],
+                "id": "TEST_MEASURE_REL",
+                "name": "Test 3.0 measure relationships",
+                "names": {
+                    "en": "Test 3.0 measure relationships"
+                },
+                "version": "1.0",
+                "agencyID": "TEST",
+                "isExternalReference": false,
+                "dataStructureComponents": {
+                    "attributeList": {
+                        "links": [{
+                                "rel": "self",
+                                "type": "attributedescriptor",
+                                "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.AttributeDescriptor=TEST:TEST_MEASURE_REL(1.0).AttributeDescriptor"
+                            }
+                        ],
+                        "id": "AttributeDescriptor",
+                        "attributes": [{
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "dataflow": {}
+                                },
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_MEASURE_REL(1.0).DATAFLOW_ATTR"
+                                    }
+                                ],
+                                "id": "DATAFLOW_ATTR",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "group": "GROUP1"
+                                },
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_MEASURE_REL(1.0).GROUP_ATTR"
+                                    }
+                                ],
+                                "id": "GROUP_ATTR",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "dimensions": ["DIM2", "DIM3"]
+                                },
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_MEASURE_REL(1.0).DIM_GROUP_ATTR"
+                                    }
+                                ],
+                                "id": "DIM_GROUP_ATTR",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "dimensions": ["DIM2"]
+                                },
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_MEASURE_REL(1.0).DIM_NOGROUP_ATTR"
+                                    }
+                                ],
+                                "id": "DIM_NOGROUP_ATTR",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "dimensions": ["DIM1", "DIM2", "DIM3"]
+                                },
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_MEASURE_REL(1.0).SERIES_ATTR"
+                                    }
+                                ],
+                                "id": "SERIES_ATTR",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "observation": {}
+                                },
+                                "measureRelationship": ["MEAS1", "MEAS2", "MEAS3"],
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_MEASURE_REL(1.0).OBS_ATTR"
+                                    }
+                                ],
+                                "id": "OBS_ATTR",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "dataflow": {}
+                                },
+                                "measureRelationship": ["MEAS1", "MEAS2"],
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_MEASURE_REL(1.0).DATAFLOW_ATTR_M"
+                                    }
+                                ],
+                                "id": "DATAFLOW_ATTR_M",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "group": "GROUP1"
+                                },
+                                "measureRelationship": ["MEAS2", "MEAS3"],
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_MEASURE_REL(1.0).GROUP_ATTR_M"
+                                    }
+                                ],
+                                "id": "GROUP_ATTR_M",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "dimensions": ["DIM2", "DIM3"]
+                                },
+                                "measureRelationship": ["MEAS1", "MEAS3"],
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_MEASURE_REL(1.0).DIM_GROUP_ATTR_M"
+                                    }
+                                ],
+                                "id": "DIM_GROUP_ATTR_M",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "dimensions": ["DIM2"]
+                                },
+                                "measureRelationship": ["MEAS1", "MEAS2"],
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_MEASURE_REL(1.0).DIM_NOGROUP_ATTR_M"
+                                    }
+                                ],
+                                "id": "DIM_NOGROUP_ATTR_M",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "dimensions": ["DIM1", "DIM2", "DIM3"]
+                                },
+                                "measureRelationship": ["MEAS2", "MEAS3"],
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_MEASURE_REL(1.0).SERIES_ATTR_M"
+                                    }
+                                ],
+                                "id": "SERIES_ATTR_M",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "observation": {}
+                                },
+                                "measureRelationship": ["MEAS1", "MEAS3"],
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=TEST:TEST_MEASURE_REL(1.0).OBS_ATTR_M"
+                                    }
+                                ],
+                                "id": "OBS_ATTR_M",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }
+                        ]
+                    },
+                    "dimensionList": {
+                        "links": [{
+                                "rel": "self",
+                                "type": "dimensiondescriptor",
+                                "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=TEST:TEST_MEASURE_REL(1.0).DimensionDescriptor"
+                            }
+                        ],
+                        "id": "DimensionDescriptor",
+                        "dimensions": [{
+                                "position": 1,
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=TEST:TEST_MEASURE_REL(1.0).DIM1"
+                                    }
+                                ],
+                                "id": "DIM1",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "position": 2,
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=TEST:TEST_MEASURE_REL(1.0).DIM2"
+                                    }
+                                ],
+                                "id": "DIM2",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "position": 3,
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=TEST:TEST_MEASURE_REL(1.0).DIM3"
+                                    }
+                                ],
+                                "id": "DIM3",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "position": 4,
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=TEST:TEST_MEASURE_REL(1.0).DIM4"
+                                    }
+                                ],
+                                "id": "DIM4",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }
+                        ]
+                    },
+                    "groups": [{
+                            "links": [{
+                                    "rel": "self",
+                                    "type": "groupdimensiondescriptor",
+                                    "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                    "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.GroupDimensionDescriptor=TEST:TEST_MEASURE_REL(1.0).GROUP1"
+                                }
+                            ],
+                            "id": "GROUP1",
+                            "groupDimensions": ["DIM2", "DIM3"]
+                        }
+                    ],
+                    "measureList": {
+                        "links": [{
+                                "rel": "self",
+                                "type": "measuredescriptor",
+                                "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.MeasureDescriptor=TEST:TEST_MEASURE_REL(1.0).MeasureDescriptor"
+                            }
+                        ],
+                        "id": "MeasureDescriptor",
+                        "measures": [{
+                                "usage": "optional",
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "measure",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Measure=TEST:TEST_MEASURE_REL(1.0).MEAS1"
+                                    }
+                                ],
+                                "id": "MEAS1",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "usage": "optional",
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "measure",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Measure=TEST:TEST_MEASURE_REL(1.0).MEAS2"
+                                    }
+                                ],
+                                "id": "MEAS2",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }, {
+                                "usage": "optional",
+                                "links": [{
+                                        "rel": "self",
+                                        "type": "measure",
+                                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Measure=TEST:TEST_MEASURE_REL(1.0).MEAS3"
+                                    }
+                                ],
+                                "id": "MEAS3",
+                                "localRepresentation": {
+                                    "format": {
+                                        "dataType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
+                            }
+                        ]
+                    }
+                }
+            }
+        ]
+    }
+}
