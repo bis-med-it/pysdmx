@@ -5,6 +5,7 @@ import pytest
 
 from pysdmx.model import (
     ArrayBoundaries,
+    AttributeRelationship,
     Component,
     Components,
     Concept,
@@ -98,6 +99,17 @@ def test_full_instantiation(
     assert len(schema.artefacts) == 2
     assert schema.artefacts == artefacts
     assert isinstance(schema.generated, datetime)
+
+
+def test_attribute_relationships(context, agency, id, components):
+    schema = Schema(context, agency, id, components)
+
+    assert schema.attribute_relationships
+    assert len(schema.attribute_relationships) == 1
+    assert (
+        schema.attribute_relationships["CONF"]
+        == AttributeRelationship.OBSERVATION
+    )
 
 
 def test_immutable(context, agency, id, components):

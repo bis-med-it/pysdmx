@@ -6,6 +6,7 @@ import pytest
 from pysdmx.model import (
     Agency,
     ArrayBoundaries,
+    AttributeRelationship,
     Component,
     Components,
     Concept,
@@ -175,6 +176,16 @@ def test_full_instantiation(
     assert ds.end_period == end
     assert ds.last_updated == upd
     assert ds.dsd_ref == dsd
+
+
+def test_attribute_relationships(id, comps, agency):
+    ds = DataflowInfo(id, comps, agency)
+
+    assert ds.attribute_relationships
+    assert len(ds.attribute_relationships) == 1
+    assert (
+        ds.attribute_relationships["CONF"] == AttributeRelationship.OBSERVATION
+    )
 
 
 def test_immutable(id, comps, agency):
