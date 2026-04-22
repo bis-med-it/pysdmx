@@ -474,6 +474,11 @@ class DataflowInfo(
             attrs.append(f"{attr}={repr(value)}")
         return f"{self.__class__.__name__}({', '.join(attrs)})"
 
+    @property
+    def attribute_relationships(self) -> dict[str, AttributeRelationship]:
+        """Infer the generic attachment level for the attributes."""
+        return _infer_attribute_relationships(self.components, self.groups)
+
 
 class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     """The allowed content within a certain context.
@@ -568,6 +573,11 @@ class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
         sdmx_type = SHORT_URN_MAPPING[self.context]
         return f"{sdmx_type}={self.agency}:{self.id}({self.version})"
 
+    @property
+    def attribute_relationships(self) -> dict[str, AttributeRelationship]:
+        """Infer the generic attachment level for the attributes."""
+        return _infer_attribute_relationships(self.components, self.groups)
+
 
 class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
     """A collection of metadata concepts.
@@ -639,28 +649,7 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
     @property
     def attribute_relationships(self) -> dict[str, AttributeRelationship]:
         """Infer the generic attachment level for the attributes."""
-        out = {}
-        dims = [d.id for d in self.components.dimensions]
-        for a in self.components.attributes:
-            if a.attachment_level == "D":
-                r = AttributeRelationship.DATAFLOW
-            elif a.attachment_level == "O":
-                r = AttributeRelationship.OBSERVATION
-            else:
-                comps = a.attachment_level.split(",")
-                mdims = [c for c in comps if c in dims]
-                if not mdims:
-                    r = AttributeRelationship.OBSERVATION
-                elif len(mdims) == len(dims) - 1:
-                    r = AttributeRelationship.SERIES
-                else:
-                    r = AttributeRelationship.DIMENSIONS
-                    for g in self.groups:
-                        if sorted(mdims) == sorted(g.dimensions):
-                            r = AttributeRelationship.GROUP
-                            break
-            out[a.id] = r
-        return out
+        return _infer_attribute_relationships(self.components, self.groups)
 
 
 class Dataflow(
@@ -681,3 +670,30 @@ class ProvisionAgreement(
 
     dataflow: str
     provider: str
+
+
+def _infer_attribute_relationships(
+    components: Components, groups: Optional[Sequence[Group]]
+) -> dict[str, AttributeRelationship]:
+    out = {}
+    dims = [d.id for d in components.dimensions]
+    for a in components.attributes:
+        if a.attachment_level == "D":
+            r = AttributeRelationship.DATAFLOW
+        elif a.attachment_level == "O":
+            r = AttributeRelationship.OBSERVATION
+        else:
+            comps = a.attachment_level.split(",")
+            mdims = [c for c in comps if c in dims]
+            if not mdims:
+                r = AttributeRelationship.OBSERVATION
+            elif len(mdims) == len(dims) - 1:
+                r = AttributeRelationship.SERIES
+            else:
+                r = AttributeRelationship.DIMENSIONS
+                for g in groups:
+                    if sorted(mdims) == sorted(g.dimensions):
+                        r = AttributeRelationship.GROUP
+                        break
+        out[a.id] = r
+    return out
