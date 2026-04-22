@@ -677,13 +677,14 @@ def _infer_attribute_relationships(
 ) -> dict[str, AttributeRelationship]:
     out = {}
     dims = [d.id for d in components.dimensions]
+    groups = groups if groups else []
     for a in components.attributes:
         if a.attachment_level == "D":
             r = AttributeRelationship.DATAFLOW
         elif a.attachment_level == "O":
             r = AttributeRelationship.OBSERVATION
         else:
-            comps = a.attachment_level.split(",")
+            comps = a.attachment_level.split(",")  # type: ignore[union-attr]
             mdims = [c for c in comps if c in dims]
             if not mdims:
                 r = AttributeRelationship.OBSERVATION
