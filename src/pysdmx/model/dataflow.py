@@ -48,17 +48,17 @@ class Role(str, Enum):
 class AttributeRelationship(int, Enum):
     """The various levels to which an attribute may relate."""
 
-    DATAFLOW = 3
-    """The attribute is attached at the dataflow-level."""
-    GROUP = 2
-    """The attribute is attached to groups."""
+    OBSERVATION = 0
+    """The attribute is attached to observations."""
     SERIES = 1
     """The attribute is attached to series."""
+    GROUP = 2
+    """The attribute is attached to groups."""
+    DATAFLOW = 3
+    """The attribute is attached at the dataflow-level."""
     DIMENSIONS = 4
     """The attribute is attached to one or more dimensions that
     correspong to neither series, no groups."""
-    OBSERVATION = 0
-    """The attribute is attached to observations."""
 
 
 class ArrayBoundaries(Struct, frozen=True, repr_omit_defaults=True):
