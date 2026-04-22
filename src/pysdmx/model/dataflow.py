@@ -677,7 +677,7 @@ def _infer_attribute_relationships(
 ) -> dict[str, AttributeRelationship]:
     out = {}
     dims = [d.id for d in components.dimensions]
-    groups = groups if groups else []
+    groups = groups or []
     for a in components.attributes:
         if a.attachment_level == "D":
             r = AttributeRelationship.DATAFLOW
