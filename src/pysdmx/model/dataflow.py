@@ -651,6 +651,11 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
         """Infer the generic attachment level for the attributes."""
         return _infer_attribute_relationships(self.components, self.groups)
 
+    @property
+    def measure_relationships(self) -> dict[str, Sequence[Component]]:
+        """Infer the measure relationships of the attributes."""
+        return _infer_measure_relationships(self.components)
+
 
 class Dataflow(
     MaintainableArtefact,
@@ -697,4 +702,19 @@ def _infer_attribute_relationships(
                         r = AttributeRelationship.GROUP
                         break
         out[a.id] = r
+    return out
+
+
+def _infer_measure_relationships(
+    components: Components,
+) -> dict[str, Sequence[Component]]:
+    out = {}
+    measures = [m.id for m in components.measures]
+    for a in components.attributes:
+        if a.attachment_level == "O":
+            out[a.id] = components.measures
+        else:
+            comps = a.attachment_level.split(",")  # type: ignore[union-attr]
+            ms = [i for i in comps if i in measures]
+            out[a.id] = [c for c in components.measures if c.id in ms]
     return out
