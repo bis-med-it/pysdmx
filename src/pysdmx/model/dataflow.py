@@ -479,6 +479,11 @@ class DataflowInfo(
         """Infer the generic attachment level for the attributes."""
         return _infer_attribute_relationships(self.components, self.groups)
 
+    @property
+    def measure_relationships(self) -> dict[str, Sequence[Component]]:
+        """Infer the measure relationships of the attributes."""
+        return _infer_measure_relationships(self.components)
+
 
 class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     """The allowed content within a certain context.
@@ -577,6 +582,11 @@ class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     def attribute_relationships(self) -> dict[str, AttributeRelationship]:
         """Infer the generic attachment level for the attributes."""
         return _infer_attribute_relationships(self.components, self.groups)
+
+    @property
+    def measure_relationships(self) -> dict[str, Sequence[Component]]:
+        """Infer the measure relationships of the attributes."""
+        return _infer_measure_relationships(self.components)
 
 
 class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
