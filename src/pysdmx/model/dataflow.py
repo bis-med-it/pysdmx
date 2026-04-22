@@ -45,6 +45,22 @@ class Role(str, Enum):
         return f"{self.__class__.__name__}.{self._name_}"
 
 
+class AttributeRelationship(int, Enum):
+    """The various levels to which an attribute may relate."""
+
+    DATAFLOW = 3
+    """The attribute is attached at the dataflow-level."""
+    GROUP = 2
+    """The attribute is attached to groups."""
+    SERIES = 1
+    """The attribute is attached to series."""
+    DIMENSIONS = 4
+    """The attribute is attached to one or more dimensions that
+    correspong to neither series, no groups."""
+    OBSERVATION = 0
+    """The attribute is attached to observations."""
+
+
 class ArrayBoundaries(Struct, frozen=True, repr_omit_defaults=True):
     """The minimum and maximum number of items in the SDMX array."""
 
@@ -619,6 +635,32 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
     def short_urn(self) -> str:
         """Returns a short URN for the data structure."""
         return f"DataStructure={self.agency}:{self.id}({self.version})"
+
+    @property
+    def attribute_relationships(self) -> dict[str, AttributeRelationship]:
+        """Infer the generic attachment level for the attributes."""
+        out = {}
+        dims = [d.id for d in self.components.dimensions]
+        for a in self.components.attributes:
+            if a.attachment_level == "D":
+                r = AttributeRelationship.DATAFLOW
+            elif a.attachment_level == "O":
+                r = AttributeRelationship.OBSERVATION
+            else:
+                comps = a.attachment_level.split(",")
+                mdims = [c for c in comps if c in dims]
+                if not mdims:
+                    r = AttributeRelationship.OBSERVATION
+                elif len(mdims) == len(dims) - 1:
+                    r = AttributeRelationship.SERIES
+                else:
+                    r = AttributeRelationship.DIMENSIONS
+                    for g in self.groups:
+                        if sorted(mdims) == sorted(g.dimensions):
+                            r = AttributeRelationship.GROUP
+                            break
+            out[a.id] = r
+        return out
 
 
 class Dataflow(
