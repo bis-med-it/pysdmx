@@ -188,6 +188,16 @@ def test_attribute_relationships(id, comps, agency):
     )
 
 
+def test_measure_relationships(id, comps, agency):
+    ds = DataflowInfo(id, comps, agency)
+
+    assert ds.measure_relationships
+    assert len(ds.measure_relationships) == 1
+    assert len(ds.measure_relationships["CONF"]) == 1
+    assert isinstance(ds.measure_relationships["CONF"][0], Component)
+    assert ds.measure_relationships["CONF"][0].id == "VALUE"
+
+
 def test_immutable(id, comps, agency):
     ds = DataflowInfo(id, comps, agency)
     with pytest.raises(AttributeError):

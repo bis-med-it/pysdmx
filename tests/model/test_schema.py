@@ -112,6 +112,16 @@ def test_attribute_relationships(context, agency, id, components):
     )
 
 
+def test_measure_relationships(context, agency, id, components):
+    schema = Schema(context, agency, id, components)
+
+    assert schema.measure_relationships
+    assert len(schema.measure_relationships) == 1
+    assert len(schema.measure_relationships["CONF"]) == 1
+    assert isinstance(schema.measure_relationships["CONF"][0], Component)
+    assert schema.measure_relationships["CONF"][0].id == "VALUE"
+
+
 def test_immutable(context, agency, id, components):
     schema = Schema(context, agency, id, components)
     with pytest.raises(AttributeError):
