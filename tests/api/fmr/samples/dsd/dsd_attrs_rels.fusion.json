@@ -3,14 +3,18 @@
         "id": "IREF611178",
         "test": false,
         "prepared": "2026-04-21T08:45:18Z",
-        "contentLanguages": ["en"],
+        "contentLanguages": [
+            "en"
+        ],
         "sender": {
             "id": "5B0_DEV"
         }
     },
-    "DataStructure": [{
+    "DataStructure": [
+        {
             "id": "TEST_MEASURE_REL",
-            "names": [{
+            "names": [
+                {
                     "locale": "en",
                     "value": "Test 3.0 measure relationships"
                 }
@@ -18,7 +22,8 @@
             "agencyId": "TEST",
             "version": "1.0",
             "dimensionList": {
-                "dimensions": [{
+                "dimensions": [
+                    {
                         "id": "DIM1",
                         "representation": {
                             "textFormat": {
@@ -26,7 +31,8 @@
                             }
                         },
                         "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
-                    }, {
+                    },
+                    {
                         "id": "DIM2",
                         "representation": {
                             "textFormat": {
@@ -34,7 +40,8 @@
                             }
                         },
                         "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
-                    }, {
+                    },
+                    {
                         "id": "DIM3",
                         "representation": {
                             "textFormat": {
@@ -42,7 +49,8 @@
                             }
                         },
                         "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP"
-                    }, {
+                    },
+                    {
                         "id": "DIM4",
                         "representation": {
                             "textFormat": {
@@ -54,7 +62,8 @@
                 ]
             },
             "attributeList": {
-                "attributes": [{
+                "attributes": [
+                    {
                         "id": "DATAFLOW_ATTR",
                         "representation": {
                             "textFormat": {
@@ -64,7 +73,8 @@
                         "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP",
                         "mandatory": false,
                         "attachmentLevel": "DATA_SET"
-                    }, {
+                    },
+                    {
                         "id": "GROUP_ATTR",
                         "representation": {
                             "textFormat": {
@@ -75,7 +85,8 @@
                         "mandatory": false,
                         "attachmentLevel": "GROUP",
                         "attachmentGroup": "GROUP1"
-                    }, {
+                    },
+                    {
                         "id": "DIM_GROUP_ATTR",
                         "representation": {
                             "textFormat": {
@@ -85,8 +96,12 @@
                         "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP",
                         "mandatory": false,
                         "attachmentLevel": "DIMENSION_GROUP",
-                        "dimensionReferences": ["DIM2", "DIM3"]
-                    }, {
+                        "dimensionReferences": [
+                            "DIM2",
+                            "DIM3"
+                        ]
+                    },
+                    {
                         "id": "DIM_NOGROUP_ATTR",
                         "representation": {
                             "textFormat": {
@@ -96,8 +111,11 @@
                         "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP",
                         "mandatory": false,
                         "attachmentLevel": "DIMENSION_GROUP",
-                        "dimensionReferences": ["DIM2"]
-                    }, {
+                        "dimensionReferences": [
+                            "DIM2"
+                        ]
+                    },
+                    {
                         "id": "SERIES_ATTR",
                         "representation": {
                             "textFormat": {
@@ -107,8 +125,13 @@
                         "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP",
                         "mandatory": false,
                         "attachmentLevel": "DIMENSION_GROUP",
-                        "dimensionReferences": ["DIM1", "DIM2", "DIM3"]
-                    }, {
+                        "dimensionReferences": [
+                            "DIM1",
+                            "DIM2",
+                            "DIM3"
+                        ]
+                    },
+                    {
                         "id": "OBS_ATTR",
                         "representation": {
                             "textFormat": {
@@ -118,18 +141,8 @@
                         "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP",
                         "mandatory": false,
                         "attachmentLevel": "OBSERVATION"
-                    }, {
-                        "id": "DATAFLOW_ATTR_M",
-                        "representation": {
-                            "textFormat": {
-                                "textType": "String"
-                            }
-                        },
-                        "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP",
-                        "mandatory": false,
-                        "attachmentLevel": "DATA_SET",
-                        "measureReferences": ["MEAS1", "MEAS2"]
-                    }, {
+                    },
+                    {
                         "id": "GROUP_ATTR_M",
                         "representation": {
                             "textFormat": {
@@ -140,8 +153,12 @@
                         "mandatory": false,
                         "attachmentLevel": "GROUP",
                         "attachmentGroup": "GROUP1",
-                        "measureReferences": ["MEAS2", "MEAS3"]
-                    }, {
+                        "measureReferences": [
+                            "MEAS2",
+                            "MEAS3"
+                        ]
+                    },
+                    {
                         "id": "DIM_GROUP_ATTR_M",
                         "representation": {
                             "textFormat": {
@@ -151,9 +168,16 @@
                         "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP",
                         "mandatory": false,
                         "attachmentLevel": "DIMENSION_GROUP",
-                        "dimensionReferences": ["DIM2", "DIM3"],
-                        "measureReferences": ["MEAS1", "MEAS3"]
-                    }, {
+                        "dimensionReferences": [
+                            "DIM2",
+                            "DIM3"
+                        ],
+                        "measureReferences": [
+                            "MEAS1",
+                            "MEAS3"
+                        ]
+                    },
+                    {
                         "id": "DIM_NOGROUP_ATTR_M",
                         "representation": {
                             "textFormat": {
@@ -163,9 +187,15 @@
                         "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP",
                         "mandatory": false,
                         "attachmentLevel": "DIMENSION_GROUP",
-                        "dimensionReferences": ["DIM2"],
-                        "measureReferences": ["MEAS1", "MEAS2"]
-                    }, {
+                        "dimensionReferences": [
+                            "DIM2"
+                        ],
+                        "measureReferences": [
+                            "MEAS1",
+                            "MEAS2"
+                        ]
+                    },
+                    {
                         "id": "SERIES_ATTR_M",
                         "representation": {
                             "textFormat": {
@@ -175,9 +205,17 @@
                         "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP",
                         "mandatory": false,
                         "attachmentLevel": "DIMENSION_GROUP",
-                        "dimensionReferences": ["DIM1", "DIM2", "DIM3"],
-                        "measureReferences": ["MEAS2", "MEAS3"]
-                    }, {
+                        "dimensionReferences": [
+                            "DIM1",
+                            "DIM2",
+                            "DIM3"
+                        ],
+                        "measureReferences": [
+                            "MEAS2",
+                            "MEAS3"
+                        ]
+                    },
+                    {
                         "id": "OBS_ATTR_M",
                         "representation": {
                             "textFormat": {
@@ -187,11 +225,15 @@
                         "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP",
                         "mandatory": false,
                         "attachmentLevel": "OBSERVATION",
-                        "measureReferences": ["MEAS1", "MEAS3"]
+                        "measureReferences": [
+                            "MEAS1",
+                            "MEAS3"
+                        ]
                     }
                 ]
             },
-            "measures": [{
+            "measures": [
+                {
                     "id": "MEAS1",
                     "representation": {
                         "textFormat": {
@@ -200,7 +242,8 @@
                     },
                     "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP",
                     "mandatory": false
-                }, {
+                },
+                {
                     "id": "MEAS2",
                     "representation": {
                         "textFormat": {
@@ -209,7 +252,8 @@
                     },
                     "concept": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS.TEST:SDMX_COMPONENTS(1.0).COMP",
                     "mandatory": false
-                }, {
+                },
+                {
                     "id": "MEAS3",
                     "representation": {
                         "textFormat": {
@@ -220,9 +264,13 @@
                     "mandatory": false
                 }
             ],
-            "groups": [{
+            "groups": [
+                {
                     "id": "GROUP1",
-                    "dimensionReferences": ["DIM2", "DIM3"]
+                    "dimensionReferences": [
+                        "DIM2",
+                        "DIM3"
+                    ]
                 }
             ]
         }
