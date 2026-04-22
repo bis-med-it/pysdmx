@@ -127,3 +127,8 @@ def test_no_measures(respx_mock, fmr, query_no_measure, body_no_measure):
 def test_attr_relationships(respx_mock, fmr, query_rels, body_rels):
     """Check attribute relationships."""
     checks.check_attr_relationships(respx_mock, fmr, query_rels, body_rels)
+
+
+def test_measure_relationships(respx_mock, fmr, query_rels, body_rels):
+    """Check measure relationships."""
+    checks.check_measure_relationships(respx_mock, fmr, query_rels, body_rels)

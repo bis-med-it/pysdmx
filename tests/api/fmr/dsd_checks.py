@@ -105,6 +105,37 @@ def check_attr_relationships(mock, fmr: RegistryClient, query, body):
         assert rels[a.id] == expected[a.id], f"Test failed for {a.id}"
 
 
+def check_measure_relationships(mock, fmr: RegistryClient, query, body):
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+    expected = {
+        "DATAFLOW_ATTR": None,
+        "GROUP_ATTR": None,
+        "DIM_GROUP_ATTR": None,
+        "DIM_NOGROUP_ATTR": None,
+        "SERIES_ATTR": None,
+        "OBS_ATTR": ["MEAS1", "MEAS2", "MEAS3"],
+        "GROUP_ATTR_M": ["MEAS2", "MEAS3"],
+        "DIM_GROUP_ATTR_M": ["MEAS1", "MEAS3"],
+        "DIM_NOGROUP_ATTR_M": ["MEAS1", "MEAS2"],
+        "SERIES_ATTR_M": ["MEAS2", "MEAS3"],
+        "OBS_ATTR_M": ["MEAS1", "MEAS3"],
+    }
+
+    dsds = fmr.get_data_structures("TEST", "TEST_MEASURE_REL", "1.0")
+
+    assert len(mock.calls) == 1
+    dsd = dsds[0]
+
+    assert len(dsd.components.attributes) == 11
+    rels = dsd.measure_relationships
+    for a in dsd.components.attributes:
+        if expected[a.id] is not None:
+            ids = [m.id for m in rels[a.id]]
+            assert sorted(ids) == sorted(expected[a.id])
+        else:
+            assert not rels[a.id]
+
+
 def __check_content(dsds, partial_cs: bool = False):
     assert len(dsds) == 1
     dsd = dsds[0]
