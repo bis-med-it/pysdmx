@@ -89,7 +89,15 @@ class FusionAttribute(Struct, frozen=True):
             ):
                 return "O"
             else:
-                return ",".join(self.measureReferences)
+                cmps = ",".join(self.measureReferences)
+                if self.dimensionReferences:
+                    cmps += ","
+                    cmps += ",".join(self.dimensionReferences)
+                elif self.attachmentGroup:
+                    cmps += ","
+                    grp = [g for g in groups if g.id == self.attachmentGroup]
+                    cmps += ",".join(grp[0].dimensionReferences)
+                return cmps
         elif self.attachmentLevel == "OBSERVATION":
             return "O"
         elif self.attachmentLevel == "DATA_SET":
@@ -321,8 +329,8 @@ class FusionDataStructure(Struct, frozen=True, rename={"agency": "agencyId"}):
 class FusionDataStructuresMessage(Struct, frozen=True, omit_defaults=True):
     """Fusion-JSON payload for /datastructure queries."""
 
-    ConceptScheme: Sequence[FusionConceptScheme]
     DataStructure: Sequence[FusionDataStructure]
+    ConceptScheme: Sequence[FusionConceptScheme] = ()
     ValueList: Sequence[FusionCodelist] = ()
     Codelist: Sequence[FusionCodelist] = ()
     DataConstraint: Sequence[FusionContentConstraint] = ()
