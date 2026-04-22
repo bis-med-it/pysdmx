@@ -7,6 +7,7 @@ from pysdmx.model import (
     Concept,
     DataStructureDefinition,
 )
+from pysdmx.model.dataflow import AttributeRelationship
 
 
 def check_dsd(mock, fmr: RegistryClient, query, body):
@@ -75,6 +76,33 @@ def check_measureless_dsd(mock, fmr: RegistryClient, query, body):
     for a in dsd.components.attributes:
         assert a.id == "MIC"
         assert a.attachment_level == "O"
+
+
+def check_attr_relationships(mock, fmr: RegistryClient, query, body):
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+    expected = {
+        "DATAFLOW_ATTR": AttributeRelationship.DATAFLOW,
+        "GROUP_ATTR": AttributeRelationship.GROUP,
+        "DIM_GROUP_ATTR": AttributeRelationship.GROUP,
+        "DIM_NOGROUP_ATTR": AttributeRelationship.DIMENSIONS,
+        "SERIES_ATTR": AttributeRelationship.SERIES,
+        "OBS_ATTR": AttributeRelationship.OBSERVATION,
+        "GROUP_ATTR_M": AttributeRelationship.GROUP,
+        "DIM_GROUP_ATTR_M": AttributeRelationship.GROUP,
+        "DIM_NOGROUP_ATTR_M": AttributeRelationship.DIMENSIONS,
+        "SERIES_ATTR_M": AttributeRelationship.SERIES,
+        "OBS_ATTR_M": AttributeRelationship.OBSERVATION,
+    }
+
+    dsds = fmr.get_data_structures("TEST", "TEST_MEASURE_REL", "1.0")
+
+    assert len(mock.calls) == 1
+    dsd = dsds[0]
+
+    assert len(dsd.components.attributes) == 11
+    rels = dsd.attribute_relationships
+    for a in dsd.components.attributes:
+        assert rels[a.id] == expected[a.id], f"Test failed for {a.id}"
 
 
 def __check_content(dsds, partial_cs: bool = False):

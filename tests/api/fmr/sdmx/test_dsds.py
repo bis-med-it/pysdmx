@@ -55,6 +55,18 @@ def query_no_measure(fmr):
 
 
 @pytest.fixture
+def query_rels(fmr):
+    res = "/structure/datastructure/"
+    agency = "TEST"
+    id = "TEST_MEASURE_REL"
+    version = "1.0"
+    return (
+        f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+        "?detail=referencepartial&references=descendants"
+    )
+
+
+@pytest.fixture
 def body():
     with open("tests/api/fmr/samples/dsd/dsd.json", "rb") as f:
         return f.read()
@@ -69,6 +81,12 @@ def body_partial_cs():
 @pytest.fixture
 def body_mm():
     with open("tests/api/fmr/samples/dsd/multi_meas.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture
+def body_rels():
+    with open("tests/api/fmr/samples/dsd/dsd_attrs_rels.json", "rb") as f:
         return f.read()
 
 
@@ -104,3 +122,8 @@ def test_no_measures(respx_mock, fmr, query_no_measure, body_no_measure):
     checks.check_measureless_dsd(
         respx_mock, fmr, query_no_measure, body_no_measure
     )
+
+
+def test_attr_relationships(respx_mock, fmr, query_rels, body_rels):
+    """Check attribute relationships."""
+    checks.check_attr_relationships(respx_mock, fmr, query_rels, body_rels)
