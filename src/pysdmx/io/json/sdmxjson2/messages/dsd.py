@@ -132,7 +132,15 @@ class JsonAttributeRelationship(Struct, frozen=True, omit_defaults=True):
             if len(measures) == 1 and measures[0] == "OBS_VALUE":
                 return "O"
             else:
-                return ",".join(measures)
+                cmps = ",".join(measures)
+                if self.dimensions:
+                    cmps += ","
+                    cmps += ",".join(self.dimensions)
+                elif self.group:
+                    grp = [g for g in groups if g.id == self.group]
+                    cmps += ","
+                    cmps += ",".join(grp[0].groupDimensions)
+                return cmps
         elif self.observation is not None:
             return "O"
         elif self.dimensions:
