@@ -284,16 +284,16 @@ class JsonAttribute(Struct, frozen=True, omit_defaults=True):
         ids = attribute.attachment_level.split(",")  # type: ignore[union-attr]
         comps = set(ids)
         mids = {m.id for m in measures}
-        measures = comps.intersection(mids)
+        found_measures = comps.intersection(mids)
         level = JsonAttributeRelationship.from_model(
             attribute.attachment_level,  # type: ignore[arg-type]
-            mids,
+            mids,  # type: ignore[arg-type]
         )
 
         if attribute.attachment_level == "O":
             mr = ["OBS_VALUE"]
-        elif measures:
-            mr = list(measures)
+        elif found_measures:
+            mr = list(found_measures)
         else:
             mr = None
 
