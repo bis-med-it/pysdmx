@@ -41,6 +41,7 @@ from pysdmx.model.constraint import (
 )
 from pysdmx.model.dataflow import (
     ArrayBoundaries,
+    AttributeRelationship,
     Component,
     Components,
     Dataflow,
@@ -159,6 +160,7 @@ __all__ = [
     "AgencyScheme",
     "Annotation",
     "ArrayBoundaries",
+    "AttributeRelationship",
     "Categorisation",
     "Category",
     "CategoryScheme",
