@@ -2,7 +2,7 @@
 
 import pathlib
 import tempfile
-from typing import Any, Optional, Union
+from typing import Any, Iterable, Optional, Union
 
 import pandas as pd
 
@@ -33,7 +33,7 @@ class PandasConnector(BasicConnector):
         self,
         api_endpoint: str,
         pem: Optional[str] = None,
-        timeout: Optional[float] = 5.0,
+        timeout: Optional[float] = 20.0,
     ):
         """Instantiate a data discovery and retrieval Pandas connector."""
         self.__conn = SdmxConnector(api_endpoint, pem, timeout)
@@ -118,6 +118,7 @@ class PandasConnector(BasicConnector):
         self,
         dataflow: Union[str, MaintainableIdentification],
         filters: Optional[Union[BasicFilter, str]] = None,
+        columns: Optional[Iterable[str]] = None,
         apply_schema: bool = True,
         infer_series_keys: bool = True,
         infer_index: bool = True,
@@ -136,6 +137,8 @@ class PandasConnector(BasicConnector):
                 or a Python expression ("REF_AREA=='UY' and FREQ != 'A'") or
                 one of the various filters the `pysdmx.api.dc.query` module
                 offers, including `MultiFilter`.
+            columns: The components (dimensions, attributes and measures) to
+                be returned.
             apply_schema: Whether to apply a schema, with data types, to the
                 data frame. In that case, the dataflow definition is retrieved
                 and applied to the data, which includes type casting of the
@@ -172,7 +175,8 @@ class PandasConnector(BasicConnector):
 
             # Infer read parameters (exclude SDMX columns, add data types etc.)
             params: dict[str, Any] = {}
-            params["usecols"] = self.__include_col
+            csv_cols = ["STRUCTURE", "STRUCTURE_ID", "ACTION"]
+            params["usecols"] = lambda c: c not in csv_cols
             flow = None
             if apply_schema:
                 flow = self.dataflow(dataflow)
@@ -202,9 +206,8 @@ class PandasConnector(BasicConnector):
                 if idxs:
                     df.set_index(idxs, inplace=True)
 
+            if columns:
+                df = df[columns]
             return df
         finally:
             pathlib.Path(f.name).unlink()
-
-    def __include_col(self, col: Any) -> bool:
-        return col not in ["STRUCTURE", "STRUCTURE_ID", "ACTION"]
