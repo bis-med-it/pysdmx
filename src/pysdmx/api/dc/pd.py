@@ -120,6 +120,7 @@ class PandasConnector(BasicConnector):
         filters: Optional[Union[BasicFilter, str]] = None,
         apply_schema: bool = True,
         infer_series_keys: bool = True,
+        infer_index: bool = True,
     ) -> pd.DataFrame:
         """Get data for the selected dataflow, matching the supplied filters.
 
@@ -146,6 +147,11 @@ class PandasConnector(BasicConnector):
                 performed if the `TIME_PERIOD` column exists in the data
                 structure. When enabled, a new column called `SERIES_KEY`
                 will be added to the DataFrame.
+            infer_index: Whether to create an index for the DataFrame.
+                This operation will only be performed if the `TIME_PERIOD`
+                column exists in the data structure. When enabled, the
+                DataFrame will be indexed using a combination of `SERIES_KEY`
+                and `TIME_PERIOD`.
 
 
         Returns:
@@ -177,7 +183,9 @@ class PandasConnector(BasicConnector):
             df = pd.read_csv(f.name, **params)
 
             # Infer series keys
-            if infer_series_keys and "TIME_PERIOD" in df.columns:
+            if (
+                infer_series_keys or infer_index
+            ) and "TIME_PERIOD" in df.columns:
                 if not flow:
                     flow = self.dataflow(dataflow)
                 dim_cols = [
@@ -185,9 +193,14 @@ class PandasConnector(BasicConnector):
                     for d in flow.components.dimensions
                     if d.id != "TIME_PERIOD"
                 ]
-                df["SERIES_KEY"] = (
-                    df[dim_cols].applymap(str).agg(".".join, axis=1)
-                )
+                df["SERIES_KEY"] = df[dim_cols].map(str).agg(".".join, axis=1)
+
+            # Add index
+            if infer_index and "TIME_PERIOD" in df.columns:
+                idxs = ["SERIES_KEY", "TIME_PERIOD"]
+                # idxs = [i for i in idxs if i and (not columns or i in columns)]
+                if idxs:
+                    df.set_index(idxs, inplace=True)
 
             return df
         finally:
