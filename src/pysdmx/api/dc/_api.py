@@ -1,6 +1,7 @@
 """API to be implemented by connectors."""
 
 from datetime import datetime
+from enum import Enum
 from typing import (
     Any,
     Generator,
@@ -319,4 +320,8 @@ class BasicConnector(Protocol):
         """
 
 
-__all__ = ["BasicConnector", "Connector"]
+class Endpoints(str, Enum):
+    BIS = "https://stats.bis.org/api/v2"
+
+
+__all__ = ["BasicConnector", "Connector", "Endpoints"]
