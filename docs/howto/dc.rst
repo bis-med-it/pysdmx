@@ -148,17 +148,18 @@ It can accept the following types of input:
 
 - **String**: A string representation of the dataflow, which can be an **SDMX URN**
   (e.g. ``urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:CBS(1.0)``) or 
-  a short notation for the dataflow, such as ``BIS:CBS(1.0)```.
+  a short notation for the dataflow, such as ``BIS:CBS(1.0)``.
 
 - **Python Object**: A Python object that has the following three properties:
-  - ``id``: The unique identifier of the dataflow.
-  - ``agency``: The agency responsible for the dataflow.
-  - ``version``: The version of the dataflow.
 
-These three properties (``id``, ``agency``, and ``version``) are the standard attributes
-used in SDMX to uniquely identify artefacts of a certain type, such as a Dataflow.
-Examples of Python objects that can be passed include ``pysdmx.Dataflow``,
-``pysdmx.DataflowInfo``, or ``pysdmx.Reference``.
+    - ``id``: The unique identifier of the dataflow.
+    - ``agency``: The agency responsible for the dataflow.
+    - ``version``: The version of the dataflow.
+
+  These three properties (``id``, ``agency``, and ``version``) are the standard attributes
+  used in SDMX to uniquely identify artefacts of a certain type, such as a Dataflow.
+  Examples of Python objects that can be passed include ``pysdmx.Dataflow``,
+  ``pysdmx.DataflowInfo``, or ``pysdmx.Reference``.
 
 Applying Query Filters
 ^^^^^^^^^^^^^^^^^^^^^^
