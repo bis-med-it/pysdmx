@@ -108,7 +108,9 @@ def test_data_query(respx_mock, client, query_data, csv_data):
     )
     dfref = Reference("Dataflow", "BIS", "BIS_DER", "1.0")
 
-    data = client.data(dfref, apply_schema=False)
+    data = client.data(
+        dfref, apply_schema=False, infer_series_keys=False, infer_index=False
+    )
 
     assert isinstance(data, pd.DataFrame)
     assert len(data) == 20
