@@ -89,7 +89,7 @@ class PandasConnector(BasicConnector):
                 dataflow to retrieve. This can be:
                 - A string representing the SDMX URN of the dataflow.
                 - An object implementing the `MaintainableIdentification`
-                  protocol (e.g., instances of `DataflowRef` or `Dataflow`).
+                protocol (e.g., instances of `DataflowRef` or `Dataflow`).
 
         Returns:
             Dataflow: An object containing detailed information about
@@ -137,7 +137,7 @@ class PandasConnector(BasicConnector):
                 similar to a SQL WHERE clause ("AREA='UY' AND FREQ <> 'A'")
                 or a Python expression ("REF_AREA=='UY' and FREQ != 'A'") or
                 one of the various filters the `pysdmx.api.dc.query` module
-                offers, including `MultiFilter`.
+                offers.
             columns: The components (dimensions, attributes and measures) to
                 be returned. If not provided, all components will be returned.
             apply_schema: Whether to apply a schema, with data types, to the
@@ -158,10 +158,9 @@ class PandasConnector(BasicConnector):
                 and `TIME_PERIOD`.
             labels: Specifies the format of category fields in the DataFrame.
                 The following options are available:
-                    - "id": Only include the code IDs (default behavior).
-                    - "name": Replace code IDs with their corresponding names.
-                    - "both": Include both the code IDs and names,
-                      formatted as "ID: Name".
+                - "id": Only include the code IDs (default behavior).
+                - "name": Replace code IDs with their corresponding names.
+                - "both": Include both the code IDs and names ("ID: Name").
 
         Returns:
             The requested data, if any. Data are returned as Pandas data frame.
