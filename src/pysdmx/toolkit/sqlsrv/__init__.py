@@ -537,23 +537,27 @@ def __order_components(comps: Components) -> Collection[Component]:
     out.extend(  # Add obs-level attributes
         __match_and_sort(
             comps.attributes,
-            lambda c: c.attachment_level == "O"
-            or len(c.attachment_level.split(",")) == len(comps.dimensions),
+            lambda c: (
+                c.attachment_level == "O"
+                or len(c.attachment_level.split(",")) == len(comps.dimensions)
+            ),
         )
     )
     out.extend(  # Then add series-level attributes
         __match_and_sort(
             comps.attributes,
-            lambda c: len(c.attachment_level.split(","))
-            == len(comps.dimensions) - 1,
+            lambda c: (
+                len(c.attachment_level.split(",")) == len(comps.dimensions) - 1
+            ),
         )
     )
     out.extend(  # Then add group-level attributes
         __match_and_sort(
             comps.attributes,
-            lambda c: len(c.attachment_level.split(","))
-            < len(comps.dimensions) - 1
-            and c.attachment_level not in ["D", "O"],
+            lambda c: (
+                len(c.attachment_level.split(",")) < len(comps.dimensions) - 1
+                and c.attachment_level not in ["D", "O"]
+            ),
         )
     )
     out.extend(  # Finally, add dataflow-level attributes
