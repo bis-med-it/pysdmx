@@ -180,7 +180,7 @@ class PandasConnector(BasicConnector):
 
             # Infer read parameters (exclude SDMX columns, add data types etc.)
             params: dict[str, Any] = {}
-            csv_cols = ["STRUCTURE", "STRUCTURE_ID", "ACTION"]
+            csv_cols = ["STRUCTURE", "STRUCTURE_ID", "ACTION", "DATAFLOW"]
             params["usecols"] = lambda c: c not in csv_cols
 
             # Fetch the flow if necessary
