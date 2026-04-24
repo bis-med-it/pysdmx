@@ -205,6 +205,16 @@ class PandasConnector(BasicConnector):
                 ]
                 df["SERIES_KEY"] = df[dim_cols].map(str).agg(".".join, axis=1)
 
+            # Select requested columns
+            if columns:
+                columns = set(columns)
+                if infer_index:
+                    columns.update(["SERIES_KEY", "TIME_PERIOD"])
+                elif infer_series_keys:
+                    columns.add("SERIES_KEY")
+                columns = list(columns)
+                df = df[columns]
+
             # Add index
             if infer_index and "TIME_PERIOD" in df.columns:
                 idxs = ["SERIES_KEY", "TIME_PERIOD"]
@@ -212,13 +222,13 @@ class PandasConnector(BasicConnector):
                 if idxs:
                     df.set_index(idxs, inplace=True)
 
-            if columns:
-                df = df[columns]
-
+            # Display appropriate labels
             if labels != "id":
                 if not flow:
                     flow = self.dataflow(dataflow)
                 df = self.__map_category_fields(df, flow, labels)
+
+            # Return requested data as a DataFrame
             return df
         finally:
             pathlib.Path(f.name).unlink()
