@@ -45,7 +45,7 @@ class JsonKeyValue(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of allowed values per component."""
 
     id: str
-    values: Sequence[JsonValue]
+    values: Sequence[JsonValue] = ()
     # Additional properties are supported in the model (include,
     # removePrefix, validFrom, validTo, timeRange) but not by the FMR.
     # Therefore, they are ignored for now.

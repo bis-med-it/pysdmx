@@ -43,15 +43,18 @@ def _find_concept(
         for m in cs
         if (m.agency == r.agency and m.id == r.id and m.version == r.version)
     ]
-    m = [c for c in f[0].concepts if c.id == r.item_id]
-    return m[0] if m else None
+    if f:
+        m = [c for c in f[0].concepts if c.id == r.item_id]
+        return m[0] if m else None
+    else:
+        return None
 
 
 def _get_type(repr_: JsonRepresentation) -> Optional[str]:
     t: Optional[str] = None
-    if repr_.enumerationFormat:
+    if repr_.enumerationFormat and repr_.enumerationFormat.dataType:
         t = repr_.enumerationFormat.dataType
-    elif repr_.format:
+    elif repr_.format and repr_.format.dataType:
         t = repr_.format.dataType
     if not t:
         t = "String"

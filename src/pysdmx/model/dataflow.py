@@ -630,6 +630,17 @@ class Dataflow(
     """A flow of data that providers will provide."""
 
     structure: Optional[Union[DataStructureDefinition, str]] = None
+    series_count: Optional[int] = None
+    obs_count: Optional[int] = None
+
+    @property
+    def components(self) -> Optional[Components]:
+        """Return the list of components for the dataflow, if known."""
+        return (
+            self.structure.components
+            if isinstance(self.structure, DataStructureDefinition)
+            else None
+        )
 
 
 class ProvisionAgreement(

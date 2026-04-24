@@ -14,6 +14,7 @@ maintainable_urn_pattern = re.compile(r"^.*\.(.*)=(.*):(.*)\((.*)\)$")
 item_urn_pattern = re.compile(r"^.*\.(.*)=(.*):(.*)\((.*)\)\.(.*)$")
 short_urn_pattern = re.compile(r"^(.*)=(.*):(.*)\((.*)\)$")
 short_item_urn_pattern = re.compile(r"^(.*)=(.*):(.*)\((.*)\)\.(.*)$")
+flow_urn_pattern = re.compile(r"^(.*):(.*)\((.*)\)$")
 _SEMVER_NUM = r"(0|[1-9]\d*)"
 semver_final_pattern = re.compile(rf"^[1-9]\d*\.{_SEMVER_NUM}\.{_SEMVER_NUM}$")
 
@@ -32,9 +33,12 @@ def parse_urn(urn: str) -> Union[ItemReference, Reference]:
                 try:
                     return parse_short_item_urn(urn)
                 except Invalid:
-                    raise Invalid(
-                        NF, "{urn} does not match any known pattern"
-                    ) from None
+                    try:
+                        return parse_flow_urn(urn)
+                    except Invalid:
+                        raise Invalid(
+                            NF, "{urn} does not match any known pattern"
+                        ) from None
 
 
 def parse_maintainable_urn(urn: str) -> Reference:
@@ -78,6 +82,20 @@ def parse_short_urn(urn: str) -> Reference:
         )
     else:
         raise Invalid(NF, f"{urn} does not match {short_urn_pattern}.")
+
+
+def parse_flow_urn(urn: str) -> Reference:
+    """Parses an SDMX short dataflow urn and returns the details."""
+    m = re.match(flow_urn_pattern, urn)
+    if m:
+        return Reference(
+            sdmx_type="Dataflow",
+            agency=m.group(1),
+            id=m.group(2),
+            version=m.group(3),
+        )
+    else:
+        raise Invalid(NF, f"{urn} does not match {flow_urn_pattern}.")
 
 
 def parse_short_item_urn(urn: str) -> ItemReference:
@@ -145,8 +163,25 @@ def find_by_urn(artefacts: Sequence[Any], urn: str) -> Any:
         )
 
 
+def experimental(cls: type) -> type:
+    """Decorator to mark a class as experimental."""
+    if isinstance(cls, type):  # pragma: no cover
+        t = (
+            "Warning: This class is experimental and subject to change \n"
+            "without prior notice. It is not covered by semantic versioning \n"
+            "guarantees, and modifications to this class will not result in \n"
+            "a major version increment. Use it with caution in production \n"
+            "environments or critical processes."
+        )
+        cls.__doc__ = f"{cls.__doc__}\n\n{t}" if cls.__doc__ else t
+        cls.is_experimental = True  # type: ignore[attr-defined]
+
+    return cls
+
+
 __all__ = [
     "convert_dpm",
+    "experimental",
     "find_by_urn",
     "is_final",
     "parse_item_urn",

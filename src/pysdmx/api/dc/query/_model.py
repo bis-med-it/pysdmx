@@ -97,6 +97,14 @@ Filter = Union[
     TextFilter,
 ]
 
+BasicFilter = Union[
+    BooleanFilter,
+    DateTimeFilter,
+    "MultiFilter",
+    NumberFilter,
+    TextFilter,
+]
+
 
 class MultiFilter(Struct, frozen=True, tag=True):
     """A combination of data filters.

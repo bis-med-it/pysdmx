@@ -28,7 +28,7 @@ def service(end_point: str, version: ApiVersion) -> AsyncRestService:
 
 @pytest.fixture
 def query() -> DataQuery:
-    return DataQuery(DataContext.ALL, "BIS", "CBS")
+    return DataQuery(DataContext.DATAFLOW, "BIS", "CBS")
 
 
 @pytest.fixture

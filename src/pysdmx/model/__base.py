@@ -38,23 +38,6 @@ class Annotation(
         """Alias to text."""
         return self.text
 
-    def __post_init__(self) -> None:
-        """Additional validation checks for Annotation."""
-        if (
-            not self.id
-            and not self.title
-            and not self.text
-            and not self.url
-            and not self.type
-        ):
-            raise Invalid(
-                "Empty annotation",
-                (
-                    "All fields of the annotation have been left empty."
-                    "Please set at least one."
-                ),
-            )
-
     def __str__(self) -> str:
         """Custom string representation without the class name."""
         processed_output = []

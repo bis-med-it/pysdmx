@@ -1,0 +1,976 @@
+{
+    "meta": {
+        "id": "IREF492159",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2026-04-16T14:20:19Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "FusionRegistry"
+        }
+    },
+    "data": {
+        "agencySchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "agencyscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)"
+                    }
+                ],
+                "id": "AGENCIES",
+                "name": "SDMX Agency Scheme",
+                "names": {
+                    "en": "SDMX Agency Scheme"
+                },
+                "version": "1.0",
+                "agencyID": "SDMX",
+                "isExternalReference": false,
+                "isFinal": false,
+                "isPartial": true,
+                "agencies": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "agency",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).BIS"
+                            },
+                            {
+                                "rel": "metadata",
+                                "href": "https://stats.bis.org/sdmx/v2/metadata/metadataset/BIS/DP_NEWS_004/1.0",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS:DP_NEWS_004(1.0)"
+                            },
+                            {
+                                "rel": "metadata",
+                                "href": "https://stats.bis.org/sdmx/v2/metadata/metadataset/BIS/DP_NEWS_001/1.0",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS:DP_NEWS_001(1.0)"
+                            },
+                            {
+                                "rel": "metadata",
+                                "href": "https://stats.bis.org/sdmx/v2/metadata/metadataset/BIS/DP_NEWS_008/1.0",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS:DP_NEWS_008(1.0)"
+                            },
+                            {
+                                "rel": "metadata",
+                                "href": "https://stats.bis.org/sdmx/v2/metadata/metadataset/BIS/DP_NEWS_000/1.0",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS:DP_NEWS_000(1.0)"
+                            },
+                            {
+                                "rel": "metadata",
+                                "href": "https://stats.bis.org/sdmx/v2/metadata/metadataset/BIS/DP_NEWS_011/1.0",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS:DP_NEWS_011(1.0)"
+                            },
+                            {
+                                "rel": "metadata",
+                                "href": "https://stats.bis.org/sdmx/v2/metadata/metadataset/BIS/DP_NEWS_003/1.0",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS:DP_NEWS_003(1.0)"
+                            },
+                            {
+                                "rel": "metadata",
+                                "href": "https://stats.bis.org/sdmx/v2/metadata/metadataset/BIS/DP_NEWS_010/1.0",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS:DP_NEWS_010(1.0)"
+                            },
+                            {
+                                "rel": "metadata",
+                                "href": "https://stats.bis.org/sdmx/v2/metadata/metadataset/BIS/DP_NEWS_006/1.0",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS:DP_NEWS_006(1.0)"
+                            },
+                            {
+                                "rel": "metadata",
+                                "href": "https://stats.bis.org/sdmx/v2/metadata/metadataset/BIS/DP_NEWS_009/1.0",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS:DP_NEWS_009(1.0)"
+                            },
+                            {
+                                "rel": "metadata",
+                                "href": "https://stats.bis.org/sdmx/v2/metadata/metadataset/BIS/DP_NEWS_005/1.0",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS:DP_NEWS_005(1.0)"
+                            },
+                            {
+                                "rel": "metadata",
+                                "href": "https://stats.bis.org/sdmx/v2/metadata/metadataset/BIS/DP_NEWS_012/1.0",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS:DP_NEWS_012(1.0)"
+                            },
+                            {
+                                "rel": "metadata",
+                                "href": "https://stats.bis.org/sdmx/v2/metadata/metadataset/BIS/DP_NEWS_002/1.0",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS:DP_NEWS_002(1.0)"
+                            },
+                            {
+                                "rel": "metadata",
+                                "href": "https://stats.bis.org/sdmx/v2/metadata/metadataset/BIS/DP_NEWS_007/1.0",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS:DP_NEWS_007(1.0)"
+                            }
+                        ],
+                        "id": "BIS",
+                        "name": "Bank for International Settlements",
+                        "names": {
+                            "en": "Bank for International Settlements"
+                        }
+                    }
+                ]
+            }
+        ],
+        "codelists": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+                    }
+                ],
+                "id": "CL_FREQ",
+                "name": "Code list for Frequency (FREQ)",
+                "names": {
+                    "en": "Code list for Frequency (FREQ)"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).Q"
+                            }
+                        ],
+                        "id": "A",
+                        "name": "Annual",
+                        "names": {
+                            "en": "Annual"
+                        }
+                    }
+                ]
+            }
+        ],
+        "dataStructures": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "datastructure",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_DER(1.0)"
+                    }
+                ],
+                "id": "BIS_DER",
+                "name": "BIS derivatives statistics",
+                "names": {
+                    "en": "BIS derivatives statistics"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isFinal": false,
+                "dataStructureComponents": {
+                    "attributeList": {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "attributedescriptor",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.AttributeDescriptor=BIS:BIS_DER(1.0).AttributeDescriptor"
+                            }
+                        ],
+                        "id": "AttributeDescriptor",
+                        "attributes": [
+                            {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "dimensions": [
+                                        "FREQ",
+                                        "DER_TYPE",
+                                        "DER_INSTR",
+                                        "DER_RISK",
+                                        "DER_REP_CTY",
+                                        "DER_SECTOR_CPY",
+                                        "DER_CPC",
+                                        "DER_SECTOR_UDL",
+                                        "DER_CURR_LEG1",
+                                        "DER_CURR_LEG2",
+                                        "DER_ISSUE_MAT",
+                                        "DER_RATING",
+                                        "DER_EX_METHOD",
+                                        "DER_BASIS"
+                                    ]
+                                },
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).TIME_FORMAT"
+                                    }
+                                ],
+                                "id": "TIME_FORMAT",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 3,
+                                        "minLength": 3,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_TIME_FORMAT(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_FORMAT"
+                            },
+                            {
+                                "usage": "mandatory",
+                                "attributeRelationship": {
+                                    "observation": {}
+                                },
+                                "measureRelationship": [
+                                    "OBS_VALUE"
+                                ],
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).OBS_STATUS"
+                                    }
+                                ],
+                                "id": "OBS_STATUS",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OBS_STATUS(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_STATUS"
+                            },
+                            {
+                                "usage": "mandatory",
+                                "attributeRelationship": {
+                                    "dimensions": [
+                                        "FREQ",
+                                        "DER_TYPE",
+                                        "DER_INSTR",
+                                        "DER_RISK",
+                                        "DER_REP_CTY",
+                                        "DER_SECTOR_CPY",
+                                        "DER_CPC",
+                                        "DER_SECTOR_UDL",
+                                        "DER_CURR_LEG1",
+                                        "DER_CURR_LEG2",
+                                        "DER_ISSUE_MAT",
+                                        "DER_RATING",
+                                        "DER_EX_METHOD",
+                                        "DER_BASIS"
+                                    ]
+                                },
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).AVAILABILITY"
+                                    }
+                                ],
+                                "id": "AVAILABILITY",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_AVAILABILITY(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).AVAILABILITY"
+                            },
+                            {
+                                "usage": "mandatory",
+                                "attributeRelationship": {
+                                    "dimensions": [
+                                        "FREQ",
+                                        "DER_TYPE",
+                                        "DER_INSTR",
+                                        "DER_RISK",
+                                        "DER_REP_CTY",
+                                        "DER_SECTOR_CPY",
+                                        "DER_CPC",
+                                        "DER_SECTOR_UDL",
+                                        "DER_CURR_LEG1",
+                                        "DER_CURR_LEG2",
+                                        "DER_ISSUE_MAT",
+                                        "DER_RATING",
+                                        "DER_EX_METHOD",
+                                        "DER_BASIS"
+                                    ]
+                                },
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).COLLECTION"
+                                    }
+                                ],
+                                "id": "COLLECTION",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_COLLECTION(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).COLLECTION"
+                            },
+                            {
+                                "usage": "mandatory",
+                                "attributeRelationship": {
+                                    "dataflow": {}
+                                },
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).DECIMALS"
+                                    }
+                                ],
+                                "id": "DECIMALS",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 2,
+                                        "textType": "Integer"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DECIMALS(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DECIMALS"
+                            },
+                            {
+                                "usage": "mandatory",
+                                "attributeRelationship": {
+                                    "dataflow": {}
+                                },
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).UNIT_MEASURE"
+                                    }
+                                ],
+                                "id": "UNIT_MEASURE",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 3,
+                                        "minLength": 3,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_UNIT(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MEASURE"
+                            },
+                            {
+                                "usage": "mandatory",
+                                "attributeRelationship": {
+                                    "dataflow": {}
+                                },
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).UNIT_MULT"
+                                    }
+                                ],
+                                "id": "UNIT_MULT",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 2,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_UNIT_MULT(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MULT"
+                            },
+                            {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "observation": {}
+                                },
+                                "measureRelationship": [
+                                    "OBS_VALUE"
+                                ],
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).OBS_CONF"
+                                    }
+                                ],
+                                "id": "OBS_CONF",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CONF_STATUS(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_CONF"
+                            },
+                            {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "observation": {}
+                                },
+                                "measureRelationship": [
+                                    "OBS_VALUE"
+                                ],
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).OBS_PRE_BREAK"
+                                    }
+                                ],
+                                "id": "OBS_PRE_BREAK",
+                                "localRepresentation": {
+                                    "format": {
+                                        "isSequence": false,
+                                        "maxLength": 15,
+                                        "textType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_PRE_BREAK"
+                            },
+                            {
+                                "usage": "optional",
+                                "attributeRelationship": {
+                                    "dimensions": [
+                                        "FREQ",
+                                        "DER_TYPE",
+                                        "DER_INSTR",
+                                        "DER_RISK",
+                                        "DER_REP_CTY",
+                                        "DER_SECTOR_CPY",
+                                        "DER_CPC",
+                                        "DER_SECTOR_UDL",
+                                        "DER_CURR_LEG1",
+                                        "DER_CURR_LEG2",
+                                        "DER_ISSUE_MAT",
+                                        "DER_RATING",
+                                        "DER_EX_METHOD",
+                                        "DER_BASIS"
+                                    ]
+                                },
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dataattribute",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataAttribute=BIS:BIS_DER(1.0).TITLE_TS"
+                                    }
+                                ],
+                                "id": "TITLE_TS",
+                                "localRepresentation": {
+                                    "format": {
+                                        "maxLength": 255,
+                                        "textType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TITLE_TS"
+                            }
+                        ]
+                    },
+                    "dimensionList": {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "dimensiondescriptor",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=BIS:BIS_DER(1.0).DimensionDescriptor"
+                            }
+                        ],
+                        "id": "DimensionDescriptor",
+                        "dimensions": [
+                            {
+                                "position": 1,
+                                "type": "Dimension",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).FREQ"
+                                    }
+                                ],
+                                "id": "FREQ",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).FREQ"
+                            },
+                            {
+                                "position": 2,
+                                "type": "Dimension",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_TYPE"
+                                    }
+                                ],
+                                "id": "DER_TYPE",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OD_TYPE(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DER_TYPE"
+                            },
+                            {
+                                "position": 3,
+                                "type": "Dimension",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_INSTR"
+                                    }
+                                ],
+                                "id": "DER_INSTR",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DER_INSTR(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DER_INSTR"
+                            },
+                            {
+                                "position": 4,
+                                "type": "Dimension",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_RISK"
+                                    }
+                                ],
+                                "id": "DER_RISK",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 1,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_MARKET_RISK(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DER_RISK"
+                            },
+                            {
+                                "position": 5,
+                                "type": "Dimension",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_REP_CTY"
+                                    }
+                                ],
+                                "id": "DER_REP_CTY",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 2,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DER_REP_CTY"
+                            },
+                            {
+                                "position": 6,
+                                "type": "Dimension",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_SECTOR_CPY"
+                                    }
+                                ],
+                                "id": "DER_SECTOR_CPY",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_SECTOR_CPY(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DER_SECTOR_CPY"
+                            },
+                            {
+                                "position": 7,
+                                "type": "Dimension",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_CPC"
+                                    }
+                                ],
+                                "id": "DER_CPC",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 2,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DER_CPC"
+                            },
+                            {
+                                "position": 8,
+                                "type": "Dimension",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_SECTOR_UDL"
+                                    }
+                                ],
+                                "id": "DER_SECTOR_UDL",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_SECTOR_UDL(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DER_SECTOR_UDL"
+                            },
+                            {
+                                "position": 9,
+                                "type": "Dimension",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_CURR_LEG1"
+                                    }
+                                ],
+                                "id": "DER_CURR_LEG1",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 3,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_UNIT(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DER_CURR_LEG1"
+                            },
+                            {
+                                "position": 10,
+                                "type": "Dimension",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_CURR_LEG2"
+                                    }
+                                ],
+                                "id": "DER_CURR_LEG2",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 3,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_UNIT(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DER_CURR_LEG2"
+                            },
+                            {
+                                "position": 11,
+                                "type": "Dimension",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_ISSUE_MAT"
+                                    }
+                                ],
+                                "id": "DER_ISSUE_MAT",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ISSUE_MAT(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DER_ISSUE_MAT"
+                            },
+                            {
+                                "position": 12,
+                                "type": "Dimension",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_RATING"
+                                    }
+                                ],
+                                "id": "DER_RATING",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_RATING(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DER_RATING"
+                            },
+                            {
+                                "position": 13,
+                                "type": "Dimension",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_EX_METHOD"
+                                    }
+                                ],
+                                "id": "DER_EX_METHOD",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_EX_METHOD(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DER_EX_METHOD"
+                            },
+                            {
+                                "position": 14,
+                                "type": "Dimension",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "dimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:BIS_DER(1.0).DER_BASIS"
+                                    }
+                                ],
+                                "id": "DER_BASIS",
+                                "localRepresentation": {
+                                    "enumerationFormat": {
+                                        "isSequence": false,
+                                        "maxLength": 1,
+                                        "minLength": 1,
+                                        "textType": "String"
+                                    },
+                                    "enumeration": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DER_BASIS(1.0)"
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DER_BASIS"
+                            }
+                        ],
+                        "timeDimensions": [
+                            {
+                                "position": 15,
+                                "type": "TimeDimension",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "timedimension",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=BIS:BIS_DER(1.0).TIME_PERIOD"
+                                    }
+                                ],
+                                "id": "TIME_PERIOD",
+                                "localRepresentation": {
+                                    "format": {
+                                        "textType": "ObservationalTimePeriod"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_PERIOD"
+                            }
+                        ]
+                    },
+                    "groups": [
+                        {
+                            "links": [
+                                {
+                                    "rel": "self",
+                                    "type": "groupdimensiondescriptor",
+                                    "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                    "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.GroupDimensionDescriptor=BIS:BIS_DER(1.0).Sibling"
+                                }
+                            ],
+                            "id": "Sibling",
+                            "groupDimensions": [
+                                "DER_TYPE",
+                                "DER_INSTR",
+                                "DER_RISK",
+                                "DER_REP_CTY",
+                                "DER_SECTOR_CPY",
+                                "DER_CPC",
+                                "DER_SECTOR_UDL",
+                                "DER_CURR_LEG1",
+                                "DER_CURR_LEG2",
+                                "DER_ISSUE_MAT",
+                                "DER_RATING",
+                                "DER_EX_METHOD",
+                                "DER_BASIS"
+                            ]
+                        }
+                    ],
+                    "measureList": {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "measuredescriptor",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.MeasureDescriptor=BIS:BIS_DER(1.0).MeasureDescriptor"
+                            }
+                        ],
+                        "id": "MeasureDescriptor",
+                        "measures": [
+                            {
+                                "usage": "optional",
+                                "links": [
+                                    {
+                                        "rel": "self",
+                                        "type": "primarymeasure",
+                                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Measure=BIS:BIS_DER(1.0).OBS_VALUE"
+                                    }
+                                ],
+                                "id": "OBS_VALUE",
+                                "localRepresentation": {
+                                    "format": {
+                                        "maxLength": 15,
+                                        "textType": "String"
+                                    }
+                                },
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_VALUE"
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "dataflows": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "dataflow",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:WS_DER_OTC_TOV(1.0)"
+                    }
+                ],
+                "id": "WS_DER_OTC_TOV",
+                "name": "OTC derivatives turnover",
+                "names": {
+                    "en": "OTC derivatives turnover"
+                },
+                "description": "OTC derivatives and FX spot - turnover",
+                "descriptions": {
+                    "en": "OTC derivatives and FX spot - turnover"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isFinal": false,
+                "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_DER(1.0)"
+            }
+        ],
+        "dataConstraints": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "dataconstraint",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS:A744BC8F-8E84-4B45-94A0-8582277BB305(1.0)"
+                    }
+                ],
+                "id": "A744BC8F-8E84-4B45-94A0-8582277BB305",
+                "annotations": [
+                    {
+                        "id": "series_count",
+                        "title": "79681",
+                        "type": "sdmx_metrics"
+                    }
+                ],
+                "name": "OTC derivatives turnover",
+                "names": {
+                    "en": "OTC derivatives turnover"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isFinal": false,
+                "role": "Actual",
+                "constraintAttachment": {
+                    "dataflows": [
+                        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:WS_DER_OTC_TOV(1.0)"
+                    ]
+                }
+            }
+        ]
+    }
+}
