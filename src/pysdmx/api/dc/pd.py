@@ -195,7 +195,7 @@ class PandasConnector(BasicConnector):
 
             # Apply schema
             if apply_schema:
-                schema = to_pandas_schema(flow.components)  # type: ignore[arg-type]
+                schema = to_pandas_schema(flow.components)  # type: ignore[union-attr,arg-type]
                 params["dtype"] = schema
 
             # Read CSV
@@ -228,7 +228,7 @@ class PandasConnector(BasicConnector):
 
             # Display appropriate labels
             if labels != "id":
-                df = self.__map_category_fields(df, flow, labels)
+                df = self.__map_category_fields(df, flow, labels)  # type: ignore[arg-type]
 
             # Return requested data as a DataFrame
             return df
