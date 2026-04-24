@@ -185,7 +185,12 @@ class PandasConnector(BasicConnector):
 
             # Fetch the flow if necessary
             flow = None
-            if apply_schema or infer_series_keys or infer_index or labels:
+            if (
+                apply_schema
+                or infer_series_keys
+                or infer_index
+                or labels != "id"
+            ):
                 flow = self.dataflow(dataflow)
 
             # Apply schema
