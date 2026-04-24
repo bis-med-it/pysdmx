@@ -200,7 +200,7 @@ class PandasConnector(BasicConnector):
                     flow = self.dataflow(dataflow)
                 dim_cols = [
                     d.id
-                    for d in flow.components.dimensions
+                    for d in flow.components.dimensions  # type: ignore[union-attr]
                     if d.id != "TIME_PERIOD"
                 ]
                 df["SERIES_KEY"] = df[dim_cols].map(str).agg(".".join, axis=1)
@@ -226,7 +226,7 @@ class PandasConnector(BasicConnector):
     def __map_category_fields(
         self, df: pd.DataFrame, flow: Dataflow, labels: Literal["name", "both"]
     ) -> pd.DataFrame:
-        for comp in flow.components:
+        for comp in flow.components:  # type: ignore[union-attr]
             field = comp.id
             if field in df.columns and comp.enumeration:
                 if labels == "name":
