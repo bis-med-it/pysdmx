@@ -183,21 +183,24 @@ class PandasConnector(BasicConnector):
             params: dict[str, Any] = {}
             csv_cols = ["STRUCTURE", "STRUCTURE_ID", "ACTION"]
             params["usecols"] = lambda c: c not in csv_cols
+
+            # Fetch the flow if necessary
             flow = None
-            if apply_schema:
+            if apply_schema or infer_series_keys or infer_index or labels:
                 flow = self.dataflow(dataflow)
+
+            # Apply schema
+            if apply_schema:
                 schema = to_pandas_schema(flow.components)  # type: ignore[arg-type]
                 params["dtype"] = schema
 
-            # Read CSV and return DataFrame
+            # Read CSV
             df = pd.read_csv(f.name, **params)
 
             # Infer series keys
             if (
                 infer_series_keys or infer_index
             ) and "TIME_PERIOD" in df.columns:
-                if not flow:
-                    flow = self.dataflow(dataflow)
                 dim_cols = [
                     d.id
                     for d in flow.components.dimensions  # type: ignore[union-attr]
@@ -207,13 +210,10 @@ class PandasConnector(BasicConnector):
 
             # Select requested columns
             if columns:
-                columns = set(columns)
-                if infer_index:
-                    columns.update(["SERIES_KEY", "TIME_PERIOD"])
-                elif infer_series_keys:
-                    columns.add("SERIES_KEY")
-                columns = list(columns)
-                df = df[columns]
+                cols = self.__get_columns(
+                    columns, infer_index, infer_series_keys
+                )
+                df = df[cols]
 
             # Add index
             if infer_index and "TIME_PERIOD" in df.columns:
@@ -224,8 +224,6 @@ class PandasConnector(BasicConnector):
 
             # Display appropriate labels
             if labels != "id":
-                if not flow:
-                    flow = self.dataflow(dataflow)
                 df = self.__map_category_fields(df, flow, labels)
 
             # Return requested data as a DataFrame
@@ -248,3 +246,16 @@ class PandasConnector(BasicConnector):
                     }
                     df[field] = df[field].map(mapping)
         return df
+
+    def __get_columns(
+        self,
+        columns: Iterable[str],
+        infer_index: bool,
+        infer_series_keys: bool,
+    ) -> Iterable[str]:
+        columns = set(columns)
+        if infer_index:
+            columns.update(["SERIES_KEY", "TIME_PERIOD"])
+        elif infer_series_keys:
+            columns.add("SERIES_KEY")
+        return list(columns)
