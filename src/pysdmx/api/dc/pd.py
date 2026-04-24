@@ -2,7 +2,7 @@
 
 import pathlib
 import tempfile
-from typing import Any, Iterable, Optional, Union
+from typing import Any, Iterable, Literal, Optional, Union
 
 import pandas as pd
 
@@ -122,6 +122,7 @@ class PandasConnector(BasicConnector):
         apply_schema: bool = True,
         infer_series_keys: bool = True,
         infer_index: bool = True,
+        labels: Literal["id", "name", "both"] = "id",
     ) -> pd.DataFrame:
         """Get data for the selected dataflow, matching the supplied filters.
 
@@ -138,7 +139,7 @@ class PandasConnector(BasicConnector):
                 one of the various filters the `pysdmx.api.dc.query` module
                 offers, including `MultiFilter`.
             columns: The components (dimensions, attributes and measures) to
-                be returned.
+                be returned. If not provided, all components will be returned.
             apply_schema: Whether to apply a schema, with data types, to the
                 data frame. In that case, the dataflow definition is retrieved
                 and applied to the data, which includes type casting of the
@@ -155,7 +156,12 @@ class PandasConnector(BasicConnector):
                 column exists in the data structure. When enabled, the
                 DataFrame will be indexed using a combination of `SERIES_KEY`
                 and `TIME_PERIOD`.
-
+            labels: Specifies the format of category fields in the DataFrame.
+                The following options are available:
+                    - "id": Only include the code IDs (default behavior).
+                    - "name": Replace code IDs with their corresponding names.
+                    - "both": Include both the code IDs and names,
+                      formatted as "ID: Name".
 
         Returns:
             The requested data, if any. Data are returned as Pandas data frame.
@@ -202,12 +208,33 @@ class PandasConnector(BasicConnector):
             # Add index
             if infer_index and "TIME_PERIOD" in df.columns:
                 idxs = ["SERIES_KEY", "TIME_PERIOD"]
-                # idxs = [i for i in idxs if i and (not columns or i in columns)]
+                idxs = [i for i in idxs if i and (not columns or i in columns)]
                 if idxs:
                     df.set_index(idxs, inplace=True)
 
             if columns:
                 df = df[columns]
+
+            if labels != "id":
+                if not flow:
+                    flow = self.dataflow(dataflow)
+                df = self.__map_category_fields(df, flow, labels)
             return df
         finally:
             pathlib.Path(f.name).unlink()
+
+    def __map_category_fields(
+        self, df: pd.DataFrame, flow: Dataflow, labels: Literal["name", "both"]
+    ) -> pd.DataFrame:
+        for comp in flow.components:
+            field = comp.id
+            if field in df.columns and comp.enumeration:
+                if labels == "name":
+                    mapping = {c.id: c.name for c in comp.enumeration}
+                    df[field] = df[field].map(mapping)
+                else:
+                    mapping = {
+                        c.id: f"{c.id}: {c.name}" for c in comp.enumeration
+                    }
+                    df[field] = df[field].map(mapping)
+        return df
