@@ -1,7 +1,7 @@
 from typing import Dict, Optional, Sequence, Union
 
 from pysdmx.errors import Invalid
-from pysdmx.io.pd import PandasDataset
+from pysdmx.io.pd import PandasDataset, stringify_dataframe
 from pysdmx.io.xml.__write_aux import ALL_DIM
 from pysdmx.model import Role, Schema
 
@@ -94,3 +94,12 @@ def writing_validation(dataset: PandasDataset) -> None:
         )
     if not dataset.structure.components.measures:
         raise Invalid("The dataset structure must have at least one measure.")
+
+
+def stringify_dataset(dataset: PandasDataset) -> None:
+    """Convert all dataset DataFrame columns to strings, nulls as empty.
+
+    Args:
+        dataset: The dataset whose DataFrame will be converted in place.
+    """
+    dataset.data = stringify_dataframe(dataset.data)

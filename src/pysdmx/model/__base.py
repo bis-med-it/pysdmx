@@ -344,7 +344,7 @@ class ItemScheme(MaintainableArtefact, frozen=True, omit_defaults=True):
         pattern = re.compile(query, re.IGNORECASE if not use_regex else 0)
 
         all_items = getattr(self, "all_items", "")
-        items = all_items if all_items else self.items
+        items = all_items or self.items
 
         return [
             item  # type: ignore[misc]
