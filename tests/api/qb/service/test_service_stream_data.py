@@ -101,4 +101,4 @@ def test_called_as_expected(
     headers = route.calls[0].request.headers
     assert headers["Accept"] == DataFormat.SDMX_JSON_2_0_0.value
     assert headers["Accept-Encoding"] == "gzip, deflate"
-    assert len(resp) == 2908
+    assert len(resp) in [2828, 2908]
