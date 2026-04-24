@@ -1,3 +1,11 @@
+.. warning::
+
+    The connectors are experimental and subject to change without
+    prior notice. They are not covered by semantic versioning
+    guarantees, and backward incompatible modifications to these
+    classes will not result in a major version increment. Use them
+    with caution in production environments or critical processes.
+
 Data discovery and retrieval
 ============================
 
@@ -7,13 +15,12 @@ functionality is formalized in the SDMX-REST "Data Discovery and
 Retrieval" profile, implemented by the pysdmx connector. Below,
 we describe the features supported by this connector.
 
-.. warning::
+.. important::
+    To use the pysdmx connectors, you need to install the
+    `pysdmx[data]` extra.
 
-    The connectors are experimental and subject to change without
-    prior notice. They are not covered by semantic versioning
-    guarantees, and backward incompatible modifications to these
-    classes will not result in a major version increment. Use them
-    with caution in production environments or critical processes.
+    Check the :ref:`installation guide <installation>` for more
+    information.
 
 Setup: Initializing the pysdmx Connector
 ----------------------------------------
