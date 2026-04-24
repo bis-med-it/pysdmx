@@ -116,6 +116,44 @@
                 ]
             }
         ],
+        "codelists": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "codelist",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+                    }
+                ],
+                "id": "CL_FREQ",
+                "name": "Code list for Frequency (FREQ)",
+                "names": {
+                    "en": "Code list for Frequency (FREQ)"
+                },
+                "version": "1.0",
+                "agencyID": "BIS",
+                "isExternalReference": false,
+                "isPartial": true,
+                "codes": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "code",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).Q"
+                            }
+                        ],
+                        "id": "A",
+                        "name": "Annual",
+                        "names": {
+                            "en": "Annual"
+                        }
+                    }
+                ]
+            }
+        ],
         "dataStructures": [
             {
                 "links": [
