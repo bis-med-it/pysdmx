@@ -26,6 +26,7 @@ Your opinionated Python SDMX library.
    :maxdepth: 1
    :caption: Data discovery
 
+   howto/dc
    howto/sdmx_rest
 
 .. toctree::
