@@ -1,10 +1,14 @@
 from datetime import datetime
 from datetime import timezone as tz
 
+import msgspec
 import pytest
 
 from pysdmx import errors
-from pysdmx.io.json.sdmxjson2.messages.dsd import JsonDataStructure
+from pysdmx.io.json.sdmxjson2.messages.dsd import (
+    JsonDataStructure,
+    JsonDataStructuresMessage,
+)
 from pysdmx.model import (
     Annotation,
     Code,
@@ -17,6 +21,7 @@ from pysdmx.model import (
     Facets,
     ItemReference,
     Role,
+    decoders,
 )
 from pysdmx.model.dataflow import Group
 
@@ -427,6 +432,12 @@ def dsd_multi_meas():
     )
 
 
+@pytest.fixture
+def body_rels():
+    with open("tests/api/fmr/samples/dsd/dsd_attrs_rels.json", "rb") as f:
+        return f.read()
+
+
 def test_dsd(dsd: DataStructureDefinition):
     sjson = JsonDataStructure.from_model(dsd)
 
@@ -601,4 +612,93 @@ def test_dsd_multi_measures(dsd_multi_meas: DataStructureDefinition):
     attr3 = sjson.dataStructureComponents.attributeList.attributes[2]
     assert attr3.id == "OBS_CONF"
     assert attr3.attributeRelationship.observation == {}
-    assert attr3.measureRelationship == ["TO", "OI"]
+    assert sorted(attr3.measureRelationship) == ["OI", "TO"]
+
+
+def test_write_attribute_measure_relationships(body_rels):
+    decoder = msgspec.json.Decoder(
+        JsonDataStructuresMessage, dec_hook=decoders
+    )
+    dsds = decoder.decode(body_rels).to_model()
+    assert len(dsds) == 1
+
+    sjson = JsonDataStructure.from_model(dsds[0])
+
+    for a in sjson.dataStructureComponents.attributeList.attributes:
+        if a.id == "DATAFLOW_ATTR":
+            assert a.attributeRelationship.dataflow == {}
+            assert a.attributeRelationship.dimensions is None
+            assert a.attributeRelationship.group is None
+            assert a.attributeRelationship.observation is None
+            assert a.measureRelationship is None
+        elif a.id in ["GROUP_ATTR", "DIM_GROUP_ATTR"]:
+            assert a.attributeRelationship.dataflow is None
+            assert a.attributeRelationship.dimensions == ["DIM2", "DIM3"]
+            assert a.attributeRelationship.group is None
+            assert a.attributeRelationship.observation is None
+            assert a.measureRelationship is None
+        elif a.id == "DIM_NOGROUP_ATTR":
+            assert a.attributeRelationship.dataflow is None
+            assert a.attributeRelationship.dimensions == ["DIM2"]
+            assert a.attributeRelationship.group is None
+            assert a.attributeRelationship.observation is None
+            assert a.measureRelationship is None
+        elif a.id == "SERIES_ATTR":
+            assert a.attributeRelationship.dataflow is None
+            assert a.attributeRelationship.dimensions == [
+                "DIM1",
+                "DIM2",
+                "DIM3",
+            ]
+            assert a.attributeRelationship.group is None
+            assert a.attributeRelationship.observation is None
+            assert a.measureRelationship is None
+        elif a.id == "OBS_ATTR":
+            assert a.attributeRelationship.dataflow is None
+            assert a.attributeRelationship.dimensions is None
+            assert a.attributeRelationship.group is None
+            assert a.attributeRelationship.observation == {}
+            assert sorted(a.measureRelationship) == ["MEAS1", "MEAS2", "MEAS3"]
+        elif a.id == "GROUP_ATTR_M":
+            # Fails
+            assert a.attributeRelationship.dataflow is None
+            assert a.attributeRelationship.dimensions == ["DIM2", "DIM3"]
+            assert a.attributeRelationship.group is None
+            assert a.attributeRelationship.observation is None
+            assert sorted(a.measureRelationship) == ["MEAS2", "MEAS3"]
+        elif a.id == "DIM_GROUP_ATTR_M":
+            # Fails
+            assert a.attributeRelationship.dataflow is None
+            assert sorted(a.attributeRelationship.dimensions) == [
+                "DIM2",
+                "DIM3",
+            ]
+            assert a.attributeRelationship.group is None
+            assert a.attributeRelationship.observation is None
+            assert sorted(a.measureRelationship) == ["MEAS1", "MEAS3"]
+        elif a.id == "DIM_NOGROUP_ATTR_M":
+            # Fails
+            assert a.attributeRelationship.dataflow is None
+            assert a.attributeRelationship.dimensions == ["DIM2"]
+            assert a.attributeRelationship.group is None
+            assert a.attributeRelationship.observation is None
+            assert sorted(a.measureRelationship) == sorted(["MEAS1", "MEAS2"])
+        elif a.id == "SERIES_ATTR_M":
+            # Fails
+            assert a.attributeRelationship.dataflow is None
+            assert a.attributeRelationship.dimensions == [
+                "DIM1",
+                "DIM2",
+                "DIM3",
+            ]
+            assert a.attributeRelationship.group is None
+            assert a.attributeRelationship.observation is None
+            assert sorted(a.measureRelationship) == ["MEAS2", "MEAS3"]
+        elif a.id == "OBS_ATTR_M":
+            assert a.attributeRelationship.dataflow is None
+            assert a.attributeRelationship.dimensions is None
+            assert a.attributeRelationship.group is None
+            assert a.attributeRelationship.observation == {}
+            assert sorted(a.measureRelationship) == ["MEAS1", "MEAS3"]
+        else:
+            pytest.fail("Unexpected attribute")
