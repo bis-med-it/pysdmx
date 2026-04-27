@@ -6,8 +6,9 @@ from pysdmx.api.dc._api import MaintainableIdentification
 from pysdmx.api.dc.query import BasicFilter
 from pysdmx.api.dc.query.util import parse_query
 from pysdmx.api.qb import DataContext, DataQuery
+from pysdmx.errors import Invalid
 from pysdmx.model import Agency
-from pysdmx.util import parse_urn
+from pysdmx.util import parse_flow_urn, parse_urn
 
 
 def prepare_basic_data_query(
@@ -16,7 +17,10 @@ def prepare_basic_data_query(
 ) -> DataQuery:
     """Return a data query out of the supplied information."""
     if isinstance(dataflow, str):
-        dataflow = parse_urn(dataflow)
+        try:
+            dataflow = parse_urn(dataflow)
+        except Invalid:
+            dataflow = parse_flow_urn(dataflow)  # type: ignore[arg-type]
     aid = (
         dataflow.agency.id
         if isinstance(dataflow.agency, Agency)

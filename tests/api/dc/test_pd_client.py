@@ -127,6 +127,52 @@ def test_data_query(
     assert "ACTION" not in data.columns
 
 
+def test_data_query_sdmx_urn(
+    respx_mock,
+    client,
+    query_availability,
+    query_data,
+    json_availability,
+    csv_data,
+):
+    respx_mock.get(query_availability).mock(
+        return_value=httpx.Response(200, content=json_availability)
+    )
+    respx_mock.get(query_data).mock(
+        return_value=httpx.Response(200, content=csv_data)
+    )
+    dfref = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:BIS_DER(1.0)"
+    )
+
+    data = client.data(dfref)
+
+    assert isinstance(data, pd.DataFrame)
+    assert len(data) == 20  # 20 observations
+
+
+def test_data_query_flow_urn(
+    respx_mock,
+    client,
+    query_availability,
+    query_data,
+    json_availability,
+    csv_data,
+):
+    respx_mock.get(query_availability).mock(
+        return_value=httpx.Response(200, content=json_availability)
+    )
+    respx_mock.get(query_data).mock(
+        return_value=httpx.Response(200, content=csv_data)
+    )
+    dfref = "BIS:BIS_DER(1.0)"
+
+    data = client.data(dfref)
+
+    assert isinstance(data, pd.DataFrame)
+    assert len(data) == 20  # 20 observations
+
+
 def test_data_query_no_schema(
     respx_mock,
     client,

@@ -29,7 +29,7 @@ from pysdmx.api.qb import (
 )
 from pysdmx.io.json.sdmxjson2.messages import JsonDataflowsMessage
 from pysdmx.model import Agency, Dataflow, decoders
-from pysdmx.util import experimental, parse_urn
+from pysdmx.util import experimental, parse_flow_urn, parse_urn
 
 _FLOWS_DEC = msgspec.json.Decoder(JsonDataflowsMessage, dec_hook=decoders)
 
@@ -149,7 +149,10 @@ class SdmxConnector(BasicConnector):
                 reached.
         """
         if isinstance(dataflow, str):
-            dataflow = parse_urn(dataflow)
+            try:
+                dataflow = parse_urn(dataflow)
+            except errors.Invalid:
+                dataflow = parse_flow_urn(dataflow)  # type: ignore[arg-type]
         aid = (
             dataflow.agency.id
             if isinstance(dataflow.agency, Agency)

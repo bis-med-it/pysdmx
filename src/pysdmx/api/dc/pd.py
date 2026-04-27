@@ -87,7 +87,8 @@ class PandasConnector(BasicConnector):
         Args:
             dataflow (Union[str, MaintainableIdentification]): Specifies the
                 dataflow to retrieve. This can be:
-                - A string representing the SDMX URN of the dataflow.
+                - A string representing the SDMX URN of the dataflow. A
+                shorthand notation (`agency:id(version)`) is also acceptable.
                 - An object implementing the `MaintainableIdentification`
                 protocol (e.g., instances of `DataflowRef` or `Dataflow`).
 
@@ -132,7 +133,8 @@ class PandasConnector(BasicConnector):
                 SDMX URN of the dataflow or the information necessary to
                 uniquely identify it. Classes such as `DataflowRef` or
                 `Dataflow` are examples of pysdmx classes that implement the
-                `MaintainableIdentification` protocol.
+                `MaintainableIdentification` protocol. In case of strings, a
+                shorthand notation (`agency:id(version)`) is also acceptable.
             filters: The data query filters, if any. This can be a string
                 similar to a SQL WHERE clause ("AREA='UY' AND FREQ <> 'A'")
                 or a Python expression ("REF_AREA=='UY' and FREQ != 'A'") or
