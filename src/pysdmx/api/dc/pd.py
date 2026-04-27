@@ -1,8 +1,13 @@
 """A Pandas connector for SDMX-REST services."""
 
+# ruff: noqa: E402
 import pathlib
 import tempfile
 from typing import Any, Iterable, Literal, Optional, Union
+
+from pysdmx.__extras_check import __check_data_extra
+
+__check_data_extra()
 
 import pandas as pd
 

@@ -29,6 +29,9 @@ jobs:
           - extra: dc
             marker: dc
             extras_to_install: "dc"
+          - extra: dc_data
+            marker: dc_data
+            extras_to_install: "dc data"
           - extra: vtl
             marker: vtl
             extras_to_install: "vtl"
@@ -69,12 +72,13 @@ jobs:
           from importlib.util import find_spec
           selected = "${{ matrix.extras_to_install }}".split()
           WANT = {
-            "data": ["pandas","dateutil"],
+            "data": ["pandas","pyarrow", "dateutil"],
             "json": ["sdmxschemas", "jsonschema"],
             "xml":  ["lxml","sdmxschemas","xmltodict"],
-            "xml-data":  ["lxml","sdmxschemas","xmltodict","pandas","dateutil"],
-            "vtl":  ["vtlengine","pandas","dateutil", "jsonschema"],
+            "xml-data":  ["lxml","sdmxschemas","xmltodict","pandas", "pyarrow", "dateutil"],
+            "vtl":  ["vtlengine","pandas", "pyarrow","dateutil", "jsonschema"],
             "dc":  ["dateutil"],
+            "dc_data":  ["dateutil", "pandas", "pyarrow"],
           }
           all_mods = {m for mods in WANT.values() for m in mods}
           must = {m for e in selected for m in WANT.get(e, [])}
