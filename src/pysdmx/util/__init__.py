@@ -33,12 +33,9 @@ def parse_urn(urn: str) -> Union[ItemReference, Reference]:
                 try:
                     return parse_short_item_urn(urn)
                 except Invalid:
-                    try:
-                        return parse_flow_urn(urn)
-                    except Invalid:
-                        raise Invalid(
-                            NF, "{urn} does not match any known pattern"
-                        ) from None
+                    raise Invalid(
+                        NF, "{urn} does not match any known pattern"
+                    ) from None
 
 
 def parse_maintainable_urn(urn: str) -> Reference:
