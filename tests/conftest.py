@@ -23,6 +23,7 @@ PATH_RULES = {
     "/tests/io/csv/sdmx21/writer/": ("data", False),
     "/tests/io/test_general_reader.py": ("data", False),
     "/tests/io/test_input_processor.py": ("data", True),
+    "/tests/api/dc/test_pd_client.py": ("data", True),
     # vtl tests
     "/tests/toolkit/vtl/": ("vtl", True),
     # noextra tests
