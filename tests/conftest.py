@@ -23,7 +23,6 @@ PATH_RULES = {
     "/tests/io/csv/sdmx21/writer/": ("data", False),
     "/tests/io/test_general_reader.py": ("data", False),
     "/tests/io/test_input_processor.py": ("data", True),
-    "/tests/api/dc/test_pd_client.py": ("data", True),
     # vtl tests
     "/tests/toolkit/vtl/": ("vtl", True),
     # noextra tests
@@ -33,6 +32,7 @@ PATH_RULES = {
     "/tests/api/qb/": ("noextra", True),
     # dc tests
     "/tests/api/dc/": ("dc", True),
+    "/tests/api/dc/test_pd_client.py": ("dc_data", True),
     # json tests
     "/tests/io/json/sdmxjson2/": ("json", True),
     "/tests/io/json/sdmxjson2/deser/test_read_validations.py": ("json", True),
