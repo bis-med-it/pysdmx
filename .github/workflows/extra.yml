@@ -18,7 +18,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: ["3.12"]
-        extra: [noextra,json,dc,vtl,data,xml,xml-data]
+        extra: [noextra,json,dc,dc_data,vtl,data,xml,xml-data]
         include:
           - extra: noextra
             marker: noextra
