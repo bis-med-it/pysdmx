@@ -18,7 +18,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: ["3.12"]
-        extra: [noextra,json,dc,dc_data,vtl,data,xml,xml-data]
+        extra: [noextra,json,dc,vtl,data,xml,xml-data]
         include:
           - extra: noextra
             marker: noextra
@@ -29,9 +29,6 @@ jobs:
           - extra: dc
             marker: dc
             extras_to_install: "dc"
-          - extra: dc_data
-            marker: dc_data
-            extras_to_install: "dc data"
           - extra: vtl
             marker: vtl
             extras_to_install: "vtl"
@@ -78,7 +75,6 @@ jobs:
             "xml-data":  ["lxml","sdmxschemas","xmltodict","pandas", "pyarrow", "dateutil"],
             "vtl":  ["vtlengine","pandas", "pyarrow","dateutil", "jsonschema"],
             "dc":  ["dateutil"],
-            "dc_data":  ["dateutil", "pandas", "pyarrow"],
           }
           all_mods = {m for mods in WANT.values() for m in mods}
           must = {m for e in selected for m in WANT.get(e, [])}

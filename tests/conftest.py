@@ -40,7 +40,7 @@ PATH_RULES = {
     "/tests/api/dc/test_sortby.py": ("dc", True),
     "/tests/api/dc/test_sql_parser.py": ("dc", True),
     "/tests/api/dc/test_util.py": ("dc", True),
-    "/tests/api/dc/test_pd_client.py": ("dc_data", True),
+    "/tests/api/dc/test_pd_client.py": ("data", True),
     # json tests
     "/tests/io/json/sdmxjson2/": ("json", True),
     "/tests/io/json/sdmxjson2/deser/test_read_validations.py": ("json", True),
