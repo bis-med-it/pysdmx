@@ -459,7 +459,7 @@ class RegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> CategoryScheme:
         """Get the category scheme matching the supplied parameters.
 
@@ -481,7 +481,7 @@ class RegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> Categorisation:
         """Get the categorisation matching the supplied parameters.
 
@@ -503,7 +503,7 @@ class RegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> ProvisionAgreement:
         """Get the provision agreement matching the supplied parameters.
 
@@ -525,7 +525,7 @@ class RegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> Codelist:
         """Get the codelist or valuelist matching the supplied parameters.
 
@@ -552,7 +552,7 @@ class RegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> ConceptScheme:
         """Get the concept scheme matching the supplied parameters.
 
@@ -614,7 +614,7 @@ class RegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
         detail: Union[
             DataflowDetails, Literal["all", "core", "providers", "schema"]
         ] = DataflowDetails.ALL,
@@ -657,7 +657,7 @@ class RegistryClient(__BaseRegistryClient):
         self,
         agency: str = "*",
         id: str = "*",
-        version: str = "+",
+        version: str = "~",
     ) -> Sequence[Dataflow]:
         """Get the dataflow(s) matching the supplied parameters.
 
@@ -679,7 +679,7 @@ class RegistryClient(__BaseRegistryClient):
         self,
         agency: str = "*",
         id: str = "*",
-        version: str = "+",
+        version: str = "~",
     ) -> Sequence[DataStructureDefinition]:
         """Get the data structures(s) matching the supplied parameters.
 
@@ -701,7 +701,7 @@ class RegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> Hierarchy:
         """Get a hierarchical list of codes.
 
@@ -722,7 +722,7 @@ class RegistryClient(__BaseRegistryClient):
         self,
         provider: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> MetadataReport:
         """Get a reference metadata report.
 
@@ -744,7 +744,7 @@ class RegistryClient(__BaseRegistryClient):
         artefact_type: str,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> Sequence[MetadataReport]:
         """Get the reference metadata reports for the supplied structure.
 
@@ -768,7 +768,7 @@ class RegistryClient(__BaseRegistryClient):
         self,
         agency: str = "*",
         id: str = "*",
-        version: str = "+",
+        version: str = "~",
     ) -> Sequence[MetadataStructure]:
         """Get the metadata structures (MSD) matching the supplied parameters.
 
@@ -790,7 +790,7 @@ class RegistryClient(__BaseRegistryClient):
         self,
         agency: str = "*",
         id: str = "*",
-        version: str = "+",
+        version: str = "~",
     ) -> Sequence[Metadataflow]:
         """Get the metadataflow(s) matching the supplied parameters.
 
@@ -812,7 +812,7 @@ class RegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> MetadataProvisionAgreement:
         """Get the metadata provision agreement matching the parameters.
 
@@ -834,7 +834,7 @@ class RegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> StructureMap:
         """Get a mapping definition (aka structure map).
 
@@ -852,7 +852,7 @@ class RegistryClient(__BaseRegistryClient):
         return super()._out(out, self.deser.mapping)
 
     def get_code_map(
-        self, agency: str, id: str, version: str = "+"
+        self, agency: str, id: str, version: str = "~"
     ) -> Union[MultiRepresentationMap, RepresentationMap]:
         """Get a code map (aka representation map).
 
@@ -871,7 +871,7 @@ class RegistryClient(__BaseRegistryClient):
         return super()._out(out, self.deser.code_map)
 
     def get_vtl_transformation_scheme(
-        self, agency: str, id: str, version: str = "+"
+        self, agency: str, id: str, version: str = "~"
     ) -> Union[MultiRepresentationMap, RepresentationMap]:
         """Get a VTL transformation scheme.
 
@@ -1028,7 +1028,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> CategoryScheme:
         """Get the category scheme matching the supplied parameters.
 
@@ -1050,7 +1050,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> Categorisation:
         """Get the categorisation matching the supplied parameters.
 
@@ -1072,7 +1072,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> ProvisionAgreement:
         """Get the provision agreement matching the supplied parameters.
 
@@ -1094,7 +1094,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> Codelist:
         """Get the codes from the codelist matching the supplied parameters.
 
@@ -1121,7 +1121,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> ConceptScheme:
         """Get the concept scheme matching the supplied parameters.
 
@@ -1183,7 +1183,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
         detail: Union[
             DataflowDetails, Literal["all", "core", "providers", "schema"]
         ] = DataflowDetails.ALL,
@@ -1231,7 +1231,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         self,
         agency: str = "*",
         id: str = "*",
-        version: str = "+",
+        version: str = "~",
     ) -> Sequence[Dataflow]:
         """Get the dataflow(s) matching the supplied parameters.
 
@@ -1253,7 +1253,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         self,
         agency: str = "*",
         id: str = "*",
-        version: str = "+",
+        version: str = "~",
     ) -> Sequence[DataStructureDefinition]:
         """Get the data structures(s) matching the supplied parameters.
 
@@ -1275,7 +1275,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> Hierarchy:
         """Get a hierarchical list of codes.
 
@@ -1296,7 +1296,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         self,
         provider: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> MetadataReport:
         """Get a reference metadata report.
 
@@ -1318,7 +1318,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         artefact_type: str,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> Sequence[MetadataReport]:
         """Get the reference metadata reports for the supplied structure.
 
@@ -1342,7 +1342,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         self,
         agency: str = "*",
         id: str = "*",
-        version: str = "+",
+        version: str = "~",
     ) -> Sequence[MetadataStructure]:
         """Get the metadata structures (MSD) matching the supplied parameters.
 
@@ -1364,7 +1364,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         self,
         agency: str = "*",
         id: str = "*",
-        version: str = "+",
+        version: str = "~",
     ) -> Sequence[Metadataflow]:
         """Get the metadataflow(s) matching the supplied parameters.
 
@@ -1386,7 +1386,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> MetadataProvisionAgreement:
         """Get the metadata provision agreement matching the parameters.
 
@@ -1408,7 +1408,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         self,
         agency: str,
         id: str,
-        version: str = "+",
+        version: str = "~",
     ) -> StructureMap:
         """Get a mapping definition (aka structure map).
 
@@ -1426,7 +1426,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         return super()._out(out, self.deser.mapping)
 
     async def get_code_map(
-        self, agency: str, id: str, version: str = "+"
+        self, agency: str, id: str, version: str = "~"
     ) -> Union[MultiRepresentationMap, RepresentationMap]:
         """Get a code map (aka representation map).
 
@@ -1445,7 +1445,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         return super()._out(out, self.deser.code_map)
 
     async def get_vtl_transformation_scheme(
-        self, agency: str, id: str, version: str = "+"
+        self, agency: str, id: str, version: str = "~"
     ) -> Union[MultiRepresentationMap, RepresentationMap]:
         """Get a VTL transformation scheme.
 
