@@ -13,7 +13,7 @@ from pysdmx.model.dataflow import Component, Role
 from pysdmx.model.dataset import ActionType
 from pysdmx.toolkit.pd._data_utils import format_labels, get_codes
 
-_NULL_STRINGS = frozenset(("", "nan", "None", "#N/A", "NaN"))
+_NULL_STRINGS = frozenset(("", "nan", "None"))
 
 SDMX_CSV_ACTION_MAPPER = {
     ActionType.Append: "A",

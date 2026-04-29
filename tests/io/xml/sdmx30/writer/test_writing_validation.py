@@ -114,8 +114,8 @@ def test_data_write_nullable_nulltypes():
     assert data["OBS_VALUE"].values.tolist() == ["", "1", "", ""]
 
 
-def test_data_write_csv_sentinel_values():
-    """CSV sentinels: optional attrs omitted, required get sentinel."""
+def test_data_write_explicit_null_sentinels_preserved():
+    """SDMX 3.0 ``#N/A`` and ``NaN`` explicit-null sentinels round-trip."""
     from pysdmx.io.writer import write_sdmx
 
     data = pd.DataFrame(
@@ -158,9 +158,7 @@ def test_data_write_csv_sentinel_values():
 
     dataset = PandasDataset(data=data, structure=schema)
     result = write_sdmx([dataset], sdmx_format=Format.DATA_SDMX_ML_3_0)
-    # Sentinel values from CSV are cleaned out
-    assert "#N/A" not in result
-    assert 'ATTR1="NaN"' not in result
-    # Valid values are preserved
+    assert 'OBS_VALUE="#N/A"' in result
+    assert 'ATTR1="NaN"' in result
     assert 'OBS_VALUE="42"' in result
     assert 'ATTR1="hello"' in result

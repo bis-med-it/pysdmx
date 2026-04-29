@@ -385,8 +385,8 @@ def test_data_write_nullable_nulltypes():
     assert data["OBS_VALUE"].values.tolist() == ["", "1", "", ""]
 
 
-def test_data_write_csv_sentinel_values():
-    """CSV sentinels: optional attrs omitted, required get sentinel."""
+def test_data_write_explicit_null_sentinels_preserved():
+    """SDMX 3.0 ``#N/A`` and ``NaN`` explicit-null sentinels round-trip."""
     from pysdmx.io.format import Format
     from pysdmx.io.writer import write_sdmx
 
@@ -428,21 +428,15 @@ def test_data_write_csv_sentinel_values():
     )
     dataset = PandasDataset(data=data, structure=schema)
 
-    # Test structure-specific writer (SDMX-ML 2.1)
     result_ss = write_sdmx([dataset], sdmx_format=Format.DATA_SDMX_ML_2_1_STR)
-    # Sentinel values from CSV are cleaned out
-    assert "#N/A" not in result_ss
-    assert 'ATTR1="NaN"' not in result_ss
-    # Valid values are preserved
+    assert 'OBS_VALUE="#N/A"' in result_ss
+    assert 'ATTR1="NaN"' in result_ss
     assert 'OBS_VALUE="42"' in result_ss
     assert 'ATTR1="hello"' in result_ss
 
-    # Test generic writer (SDMX-ML 2.1)
     result_gen = write_sdmx([dataset], sdmx_format=Format.DATA_SDMX_ML_2_1_GEN)
-    # Sentinel values from CSV are cleaned out
-    assert "#N/A" not in result_gen
-    assert 'value="NaN"' not in result_gen
-    # Valid values are preserved
+    assert '<gen:ObsValue value="#N/A"/>' in result_gen
+    assert '<gen:Value id="ATTR1" value="NaN"/>' in result_gen
     assert '<gen:ObsValue value="42"/>' in result_gen
     assert '<gen:Value id="ATTR1" value="hello"/>' in result_gen
 

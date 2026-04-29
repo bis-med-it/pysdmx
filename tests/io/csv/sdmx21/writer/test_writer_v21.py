@@ -478,6 +478,48 @@ def test_writer_partial_keys(
     )
 
 
+def test_writer_partial_keys_explicit_null_sentinel(partial_keys_schema):
+    """``#N/A`` (explicit-null sentinel) is preserved in partial keys."""
+    data = pd.DataFrame(
+        [
+            {
+                "DIM1": "A",
+                "DIM2": "B",
+                "ATT1": "#N/A",
+                "ATT2": "D",
+                "OBS_VALUE": "1",
+                "TIME_PERIOD": "2020",
+            },
+            {
+                "DIM1": "A",
+                "DIM2": "B",
+                "ATT1": "#N/A",
+                "ATT2": "E",
+                "OBS_VALUE": "2",
+                "TIME_PERIOD": "2021",
+            },
+        ]
+    )
+    dataset = PandasDataset(
+        attributes={},
+        data=data,
+        structure=partial_keys_schema,
+    )
+    result_csv = write([dataset], partial_keys=True)
+    result_df = pd.read_csv(
+        StringIO(result_csv), keep_default_na=False, na_values=[]
+    )
+    assert len(result_df) == 3
+    partial_rows = result_df[result_df["ATT1"] == "#N/A"]
+    assert len(partial_rows) == 1
+    assert partial_rows.iloc[0]["OBS_VALUE"] == ""
+    assert partial_rows.iloc[0]["TIME_PERIOD"] == ""
+    assert partial_rows.iloc[0]["DIM1"] == "A"
+    assert partial_rows.iloc[0]["DIM2"] == "B"
+    obs_rows = result_df[result_df["OBS_VALUE"] != ""]
+    assert len(obs_rows) == 2
+
+
 @pytest.mark.data
 def test_writer_partial_keys_no_schema(partial_keys_data):
     dataset = PandasDataset(
