@@ -177,7 +177,7 @@ Raises:
 
 ### CI Pipeline (3 OS × 5 Python versions)
 
-- **Matrix**: ubuntu-latest, windows-latest, macos-latest × Python 3.9, 3.10, 3.11, 3.12, 3.13
+- **Matrix**: ubuntu-latest, windows-latest, macos-latest × Python 3.10, 3.11, 3.12, 3.13
 - **Steps**: ruff format check → ruff check → mypy → pytest (100% coverage) → coverage report
 - **Fail-fast**: disabled (all matrix combinations run)
 
