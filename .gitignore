@@ -5,6 +5,7 @@
 # Ignore virtual environment
 py2-env/
 py3-env/
+.venv/
 
 # Ignore jupyter checkpoints
 */.ipynb_checkpoints/
@@ -44,4 +45,3 @@ coverage-report.xml
 qa/
 dist/
 .env
-.venv/
