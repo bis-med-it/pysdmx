@@ -44,3 +44,4 @@ coverage-report.xml
 qa/
 dist/
 .env
+.venv/
