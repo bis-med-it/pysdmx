@@ -55,7 +55,7 @@ class FusionDataflowMessage(Struct, frozen=True):
         id_: str,
         version: str,
     ) -> bool:
-        if version != "+" and version != "latest":
+        if version != "~" and version != "latest":
             return (
                 df.agency == agency and df.id == id_ and df.version == version
             )

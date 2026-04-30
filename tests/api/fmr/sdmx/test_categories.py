@@ -25,7 +25,7 @@ def query(fmr):
     id = "TEST_CS"
     d = "detail=referencepartial"
     r = "references=parentsandsiblings"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/+?{d}&{r}"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}?{d}&{r}"
 
 
 @pytest.fixture
