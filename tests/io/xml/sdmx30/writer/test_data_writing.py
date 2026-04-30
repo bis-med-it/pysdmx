@@ -424,3 +424,71 @@ def test_write_data_with_groups(header, ds_with_group):
     )
 
     assert result == sample
+
+
+def test_explicit_null_sentinels_preserved_in_xml_output():
+    """SDMX 3.0 ``#N/A`` and ``NaN`` sentinels are kept on Series and Obs."""
+    from pysdmx.io.format import Format
+    from pysdmx.io.writer import write_sdmx
+
+    schema = Schema(
+        context="datastructure",
+        agency="TEST",
+        id="TEST_DS",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="DIM1"),
+                    required=True,
+                ),
+                Component(
+                    id="TIME_PERIOD",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="TIME_PERIOD"),
+                    required=True,
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    role=Role.MEASURE,
+                    concept=Concept(id="OBS_VALUE"),
+                    required=True,
+                ),
+                Component(
+                    id="S_ATT",
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(id="S_ATT"),
+                    required=False,
+                    attachment_level="DIM1",
+                ),
+                Component(
+                    id="O_ATT",
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(id="O_ATT"),
+                    required=False,
+                    attachment_level="O",
+                ),
+            ]
+        ),
+    )
+    data = pd.DataFrame(
+        {
+            "DIM1": ["A", "A"],
+            "TIME_PERIOD": ["2003", "2004"],
+            "OBS_VALUE": ["NaN", "42"],
+            "S_ATT": ["#N/A", "#N/A"],
+            "O_ATT": ["", "#N/A"],
+        }
+    )
+    dataset = PandasDataset(data=data, structure=schema)
+    xml_out = write_sdmx(
+        [dataset],
+        sdmx_format=Format.DATA_SDMX_ML_3_0,
+        dimension_at_observation="TIME_PERIOD",
+    )
+    assert 'S_ATT="#N/A"' in xml_out
+    assert 'OBS_VALUE="NaN"' in xml_out
+    assert 'OBS_VALUE="42"' in xml_out
+    assert 'O_ATT="#N/A"' in xml_out

@@ -118,7 +118,7 @@ class JsonDataflows(Struct, frozen=True, omit_defaults=True):
     def __filter(
         self, df: JsonDataflow, agency: str, id_: str, version: str
     ) -> bool:
-        if version != "+" and version != "latest":
+        if version != "~" and version != "latest":
             return (
                 df.agency == agency and df.id == id_ and df.version == version
             )

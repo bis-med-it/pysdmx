@@ -21,6 +21,7 @@ def __check_dc_extra() -> None:
 def __check_data_extra() -> None:
     try:
         import pandas  # noqa: F401
+        import pyarrow  # noqa: F401
     except ImportError:
         raise ImportError(
             ERROR_MESSAGE.format(

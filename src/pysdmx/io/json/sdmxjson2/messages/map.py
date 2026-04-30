@@ -206,7 +206,7 @@ class JsonFixedValueMap(Struct, frozen=True, omit_defaults=True):
     def to_model(self) -> FixedValueMap:
         """Returns the requested fixed value map."""
         located_in = "source" if self.source else "target"
-        target = self.target if self.target else self.source
+        target = self.target or self.source
         return FixedValueMap(
             target,  # type: ignore[arg-type]
             self.values[0],
@@ -301,11 +301,7 @@ class JsonDatePatternMap(Struct, frozen=True, omit_defaults=True):
 
     def to_model(self) -> DatePatternMap:
         """Returns the requested date mapper."""
-        freq = (
-            self.targetFrequencyID
-            if self.targetFrequencyID
-            else self.frequencyDimension
-        )
+        freq = self.targetFrequencyID or self.frequencyDimension
         typ = "fixed" if self.targetFrequencyID else "variable"
         return DatePatternMap(
             source=self.mappedComponents[0].source,

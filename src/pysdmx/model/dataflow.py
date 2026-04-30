@@ -45,6 +45,22 @@ class Role(str, Enum):
         return f"{self.__class__.__name__}.{self._name_}"
 
 
+class AttributeRelationship(int, Enum):
+    """The various levels to which an attribute may relate."""
+
+    OBSERVATION = 0
+    """The attribute is attached to observations."""
+    SERIES = 1
+    """The attribute is attached to series."""
+    GROUP = 2
+    """The attribute is attached to groups."""
+    DATAFLOW = 3
+    """The attribute is attached at the dataflow-level."""
+    DIMENSIONS = 4
+    """The attribute is attached to one or more dimensions that
+    correspong to neither series, no groups."""
+
+
 class ArrayBoundaries(Struct, frozen=True, repr_omit_defaults=True):
     """The minimum and maximum number of items in the SDMX array."""
 
@@ -458,6 +474,16 @@ class DataflowInfo(
             attrs.append(f"{attr}={repr(value)}")
         return f"{self.__class__.__name__}({', '.join(attrs)})"
 
+    @property
+    def attribute_relationships(self) -> dict[str, AttributeRelationship]:
+        """Infer the generic attachment level for the attributes."""
+        return _infer_attribute_relationships(self.components, self.groups)
+
+    @property
+    def measure_relationships(self) -> dict[str, Sequence[Component]]:
+        """Infer the measure relationships of the attributes."""
+        return _infer_measure_relationships(self.components)
+
 
 class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     """The allowed content within a certain context.
@@ -552,6 +578,16 @@ class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
         sdmx_type = SHORT_URN_MAPPING[self.context]
         return f"{sdmx_type}={self.agency}:{self.id}({self.version})"
 
+    @property
+    def attribute_relationships(self) -> dict[str, AttributeRelationship]:
+        """Infer the generic attachment level for the attributes."""
+        return _infer_attribute_relationships(self.components, self.groups)
+
+    @property
+    def measure_relationships(self) -> dict[str, Sequence[Component]]:
+        """Infer the measure relationships of the attributes."""
+        return _infer_measure_relationships(self.components)
+
 
 class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
     """A collection of metadata concepts.
@@ -620,6 +656,16 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
         """Returns a short URN for the data structure."""
         return f"DataStructure={self.agency}:{self.id}({self.version})"
 
+    @property
+    def attribute_relationships(self) -> dict[str, AttributeRelationship]:
+        """Infer the generic attachment level for the attributes."""
+        return _infer_attribute_relationships(self.components, self.groups)
+
+    @property
+    def measure_relationships(self) -> dict[str, Sequence[Component]]:
+        """Infer the measure relationships of the attributes."""
+        return _infer_measure_relationships(self.components)
+
 
 class Dataflow(
     MaintainableArtefact,
@@ -639,3 +685,46 @@ class ProvisionAgreement(
 
     dataflow: str
     provider: str
+
+
+def _infer_attribute_relationships(
+    components: Components, groups: Optional[Sequence[Group]]
+) -> dict[str, AttributeRelationship]:
+    out = {}
+    dims = [d.id for d in components.dimensions]
+    groups = groups or []
+    for a in components.attributes:
+        if a.attachment_level == "D":
+            r = AttributeRelationship.DATAFLOW
+        elif a.attachment_level == "O":
+            r = AttributeRelationship.OBSERVATION
+        else:
+            comps = a.attachment_level.split(",")  # type: ignore[union-attr]
+            mdims = [c for c in comps if c in dims]
+            if not mdims:
+                r = AttributeRelationship.OBSERVATION
+            elif len(mdims) == len(dims) - 1:
+                r = AttributeRelationship.SERIES
+            else:
+                r = AttributeRelationship.DIMENSIONS
+                for g in groups:
+                    if sorted(mdims) == sorted(g.dimensions):
+                        r = AttributeRelationship.GROUP
+                        break
+        out[a.id] = r
+    return out
+
+
+def _infer_measure_relationships(
+    components: Components,
+) -> dict[str, Sequence[Component]]:
+    out = {}
+    measures = [m.id for m in components.measures]
+    for a in components.attributes:
+        if a.attachment_level == "O":
+            out[a.id] = components.measures
+        else:
+            comps = a.attachment_level.split(",")  # type: ignore[union-attr]
+            ms = [i for i in comps if i in measures]
+            out[a.id] = [c for c in components.measures if c.id in ms]
+    return out

@@ -43,7 +43,7 @@ class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
             self.dataConstraints,
         )
         inc, exc = self.__process_keys()
-        return comps, grps, inc if inc else None, exc if exc else None  # type: ignore[return-value]
+        return comps, grps, inc or None, exc or None  # type: ignore[return-value]
 
     def __extract_keys_dict(
         self, keysets: Sequence[JsonKeySet], included: bool = True

@@ -101,9 +101,7 @@ def read_sdmx(  # noqa: C901
 
         struct_msg = read_struct(input_str, validate=validate)
         header = struct_msg.header
-        result_structures = (
-            struct_msg.structures if struct_msg.structures else []
-        )
+        result_structures = struct_msg.structures or []
     elif read_format in (
         Format.REFMETA_SDMX_JSON_2_0_0,
         Format.REFMETA_SDMX_JSON_2_1_0,
@@ -224,9 +222,10 @@ def __manage_dataset_level_attributes(dataset: Dataset) -> None:
         if att.id not in dataset.data.columns:  # type: ignore[attr-defined]
             attached_attributes[att.id] = None
         else:
-            attached_attributes[att.id] = (
+            val = (
                 dataset.data[att.id].unique().tolist()[0]  # type: ignore[attr-defined]
             )
+            attached_attributes[att.id] = str(val) if val is not None else None
             del dataset.data[att.id]  # type: ignore[attr-defined]
     dataset.attributes = attached_attributes
 

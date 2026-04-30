@@ -55,7 +55,7 @@ class JsonAnnotation(msgspec.Struct, frozen=True, omit_defaults=True):
             title=self.title,
             type=self.type,
             url=url,
-            text=self.value if self.value else self.text,
+            text=self.value or self.text,
         )
 
     @classmethod
@@ -299,7 +299,7 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
             test=self.test,
             prepared=self.prepared,
             sender=self.sender,
-            receiver=self.receivers if self.receivers else (),
+            receiver=self.receivers or (),
         )
 
     @classmethod
@@ -325,6 +325,6 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
             header.prepared,
             header.sender,
             header.test,
-            receivers=header.receiver if header.receiver else None,
+            receivers=header.receiver or None,
             schema=schema,
         )

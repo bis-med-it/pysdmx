@@ -165,7 +165,7 @@ class FusionTimePatternMap(Struct, frozen=True):
 
     def to_model(self) -> DatePatternMap:
         """Returns the requested date mapper."""
-        freq = self.freqId if self.freqId else self.freqDim
+        freq = self.freqId or self.freqDim
         typ = "fixed" if self.freqId else "variable"
         return DatePatternMap(
             self.source,

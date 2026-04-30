@@ -95,7 +95,7 @@ class CoreQuery(msgspec.Struct, frozen=True, omit_defaults=True):
         if value or (not isinstance(value, bool) and value == 0):
             if qs:
                 qs += "&"
-            qs += f"{field}={disp_value if disp_value else value}"
+            qs += f"{field}={disp_value or value}"
         return qs
 
     @abstractmethod

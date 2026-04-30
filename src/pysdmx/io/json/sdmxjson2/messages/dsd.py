@@ -103,7 +103,7 @@ def _get_concept_reference(
 def _get_json_representation(
     comp: Union[Component, MetadataComponent],
 ) -> Optional[JsonRepresentation]:
-    enum = comp.local_enum_ref if comp.local_enum_ref else None
+    enum = comp.local_enum_ref or None
     return JsonRepresentation.from_model(
         comp.local_dtype, enum, comp.local_facets, comp.array_def
     )
@@ -132,7 +132,15 @@ class JsonAttributeRelationship(Struct, frozen=True, omit_defaults=True):
             if len(measures) == 1 and measures[0] == "OBS_VALUE":
                 return "O"
             else:
-                return ",".join(measures)
+                cmps = ",".join(measures)
+                if self.dimensions:
+                    cmps += ","
+                    cmps += ",".join(self.dimensions)
+                elif self.group:
+                    grp = [g for g in groups if g.id == self.group]
+                    cmps += ","
+                    cmps += ",".join(grp[0].groupDimensions)
+                return cmps
         elif self.observation is not None:
             return "O"
         elif self.dimensions:
@@ -145,16 +153,20 @@ class JsonAttributeRelationship(Struct, frozen=True, omit_defaults=True):
 
     @classmethod
     def from_model(
-        self, rel: str, has_measure_rel: bool = False
+        self,
+        rel: str,
+        measures: Sequence[str],
     ) -> "JsonAttributeRelationship":
         """Converts a pysdmx attribute relationship to an SDMX-JSON one."""
+        comps = rel.split(",")
+        dims = [i for i in comps if i not in measures]
+        dims_r = dims or None
         if rel == "D":
             return JsonAttributeRelationship(dataflow={})
-        elif rel == "O" or has_measure_rel:
+        elif rel == "O" or not dims:
             return JsonAttributeRelationship(observation={})
         else:
-            comps = rel.split(",")
-            return JsonAttributeRelationship(dimensions=comps)
+            return JsonAttributeRelationship(dimensions=dims_r)
 
 
 class JsonDimension(Struct, frozen=True, omit_defaults=True):
@@ -272,16 +284,16 @@ class JsonAttribute(Struct, frozen=True, omit_defaults=True):
         ids = attribute.attachment_level.split(",")  # type: ignore[union-attr]
         comps = set(ids)
         mids = {m.id for m in measures}
-        has_measure_rel = len(comps.intersection(mids)) > 0
+        found_measures = comps.intersection(mids)
         level = JsonAttributeRelationship.from_model(
             attribute.attachment_level,  # type: ignore[arg-type]
-            has_measure_rel,
+            mids,  # type: ignore[arg-type]
         )
 
         if attribute.attachment_level == "O":
             mr = ["OBS_VALUE"]
-        elif has_measure_rel:
-            mr = ids
+        elif found_measures:
+            mr = list(found_measures)
         else:
             mr = None
 
