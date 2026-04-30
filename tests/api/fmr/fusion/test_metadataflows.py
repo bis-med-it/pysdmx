@@ -23,9 +23,7 @@ def async_fmr() -> AsyncRegistryClient:
 @pytest.fixture
 def query(fmr: RegistryClient) -> str:
     res = "/structure/metadataflow"
-    all = "*"
-    latest = "+"
-    return f"{fmr.api_endpoint}{res}/{all}/{all}/{latest}/"
+    return f"{fmr.api_endpoint}{res}/"
 
 
 @pytest.fixture
