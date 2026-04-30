@@ -26,7 +26,7 @@ def query(fmr):
     agency = "TEST"
     id = "HCL_ELEMENT"
     qst = "detail=referencepartial&references=codelist"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/+?{qst}"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}?{qst}"
 
 
 @pytest.fixture

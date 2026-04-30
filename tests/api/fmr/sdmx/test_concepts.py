@@ -23,7 +23,7 @@ def query(fmr):
     res = "/structure/conceptscheme/"
     agency = "BIS.MEDIT"
     id = "MEDIT_CS"
-    return f"{fmr.api_endpoint}{res}{agency}/{id}/+?references=codelist"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}?references=codelist"
 
 
 @pytest.fixture
