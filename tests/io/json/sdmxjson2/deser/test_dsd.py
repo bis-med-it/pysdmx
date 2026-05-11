@@ -2,7 +2,13 @@ import msgspec
 import pytest
 
 from pysdmx.io.json.sdmxjson2.messages import JsonDataStructuresMessage
-from pysdmx.model import Component, Components, DataStructureDefinition
+from pysdmx.model import (
+    Component,
+    Components,
+    Concept,
+    DataStructureDefinition,
+    ItemReference,
+)
 
 
 @pytest.fixture
@@ -17,6 +23,14 @@ def body():
 def body_two_cubes():
     with open(
         "tests/io/json/sdmxjson2/deser/samples/dsd/dsd_two_cubes.json", "rb"
+    ) as f:
+        return f.read()
+
+
+@pytest.fixture
+def body_missing_cs():
+    with open(
+        "tests/io/json/sdmxjson2/deser/samples/dsd/dsd_missing_cs.json", "rb"
     ) as f:
         return f.read()
 
@@ -63,3 +77,17 @@ def test_dsd_two_cubes(body_two_cubes):
             assert len(comp.enumeration) == 249
         elif comp.id == "CURR_TYPE_BOOK":
             assert len(comp.enumeration) == 4
+
+
+def test_dsd_missing_cs(body_missing_cs):
+    res = msgspec.json.Decoder(JsonDataStructuresMessage).decode(
+        body_missing_cs
+    )
+    dsds = res.to_model()
+
+    assert len(dsds) == 1
+    dsd = dsds[0]
+    tf = dsd.components["TIME_FORMAT"]
+    assert isinstance(tf.concept, ItemReference)
+    freq = dsd.components["FREQ"]
+    assert isinstance(freq.concept, Concept)

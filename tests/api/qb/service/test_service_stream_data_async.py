@@ -1,13 +1,13 @@
 import httpx
 import pytest
 
-from pysdmx.api.qb.service import AsyncRestService
-from pysdmx.api.qb.structure import (
-    StructureFormat,
-    StructureQuery,
-    StructureType,
+from pysdmx.api.qb import (
+    ApiVersion,
+    AsyncRestService,
+    DataContext,
+    DataFormat,
+    DataQuery,
 )
-from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 
 
@@ -27,12 +27,12 @@ def service(end_point: str, version: ApiVersion) -> AsyncRestService:
 
 
 @pytest.fixture
-def query() -> StructureQuery:
-    return StructureQuery(StructureType.CODELIST, "SDMX", "CL_FREQ")
+def query() -> DataQuery:
+    return DataQuery(DataContext.DATAFLOW, "BIS", "CBS")
 
 
 @pytest.fixture
-def url(end_point: str, query: StructureQuery, version: ApiVersion) -> str:
+def url(end_point: str, query: DataQuery, version: ApiVersion) -> str:
     return f"{end_point}{query.get_url(version, True)}/"
 
 
@@ -44,17 +44,13 @@ def body():
 
 @pytest.mark.asyncio
 async def test_not_found(
-    respx_mock, service: AsyncRestService, query: StructureQuery, body, url
+    respx_mock, service: AsyncRestService, query: DataQuery, body, url
 ):
-    respx_mock.get(url).mock(
-        return_value=httpx.Response(
-            404,
-            content=body,
-        )
-    )
+    respx_mock.get(url).mock(return_value=httpx.Response(404, content=body))
 
     with pytest.raises(NotFound) as e:
-        await service.structure(query)
+        async for _ in service.stream_data(query):
+            pass
     assert e.value.title is not None
     assert e.value.description is not None
     assert url in e.value.description
@@ -62,17 +58,13 @@ async def test_not_found(
 
 @pytest.mark.asyncio
 async def test_client_error(
-    respx_mock, service: AsyncRestService, query: StructureQuery, body, url
+    respx_mock, service: AsyncRestService, query: DataQuery, body, url
 ):
-    respx_mock.get(url).mock(
-        return_value=httpx.Response(
-            409,
-            content=body,
-        )
-    )
+    respx_mock.get(url).mock(return_value=httpx.Response(409, content=body))
 
     with pytest.raises(Invalid) as e:
-        await service.structure(query)
+        async for _ in service.stream_data(query):
+            pass
     assert e.value.title is not None
     assert e.value.description is not None
     assert url in e.value.description
@@ -80,17 +72,13 @@ async def test_client_error(
 
 @pytest.mark.asyncio
 async def test_service_error(
-    respx_mock, service: AsyncRestService, query: StructureQuery, body, url
+    respx_mock, service: AsyncRestService, query: DataQuery, body, url
 ):
-    respx_mock.get(url).mock(
-        return_value=httpx.Response(
-            501,
-            content=body,
-        )
-    )
+    respx_mock.get(url).mock(return_value=httpx.Response(501, content=body))
 
     with pytest.raises(InternalError) as e:
-        await service.structure(query)
+        async for _ in service.stream_data(query):
+            pass
     assert e.value.title is not None
     assert e.value.description is not None
     assert url in e.value.description
@@ -98,13 +86,14 @@ async def test_service_error(
 
 @pytest.mark.asyncio
 async def test_service_unavailable(
-    respx_mock, service: AsyncRestService, query: StructureQuery, url
+    respx_mock, service: AsyncRestService, query: DataQuery, url
 ):
     re = httpx.RequestError("Bad day")
     respx_mock.get(url).mock(side_effect=re)
 
     with pytest.raises(Unavailable) as e:
-        await service.structure(query)
+        async for _ in service.stream_data(query):
+            pass
     assert e.value.title is not None
     assert e.value.description is not None
     assert url in e.value.description
@@ -112,17 +101,17 @@ async def test_service_unavailable(
 
 @pytest.mark.asyncio
 async def test_called_as_expected(
-    respx_mock, service: AsyncRestService, query: StructureQuery, url, body
+    respx_mock, service: AsyncRestService, query: DataQuery, url, body
 ):
     route = respx_mock.get(url).mock(
-        return_value=httpx.Response(
-            200,
-            content=body,
-        )
+        return_value=httpx.Response(200, content=body)
     )
-    await service.structure(query)
+    resp = ""
+    async for chunk in service.stream_data(query):
+        resp += chunk.decode("utf-8")
     assert route.called
     assert len(route.calls) == 1
     headers = route.calls[0].request.headers
-    assert headers["Accept"] == StructureFormat.SDMX_JSON_2_0_0.value
+    assert headers["Accept"] == DataFormat.SDMX_JSON_2_0_0.value
     assert headers["Accept-Encoding"] == "gzip, deflate"
+    assert len(resp) in [2828, 2908]

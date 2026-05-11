@@ -8,6 +8,8 @@ from typing import Annotated, Any, Optional, Sequence, Union
 import msgspec
 
 from pysdmx.api.dc.query import (
+    BooleanFilter,
+    DateTimeFilter,
     LogicalOperator,
     MultiFilter,
     NumberFilter,
@@ -183,7 +185,14 @@ class _CoreDataQuery(CoreQuery, frozen=True, omit_defaults=True):
         return f"/{resource}/{a}{k}"
 
     def _create_component_filters(
-        self, components: Union[MultiFilter, NumberFilter, TextFilter]
+        self,
+        components: Union[
+            BooleanFilter,
+            DateTimeFilter,
+            MultiFilter,
+            NumberFilter,
+            TextFilter,
+        ],
     ) -> str:
         if isinstance(components, MultiFilter):
             if components.operator == LogicalOperator.OR:
@@ -269,7 +278,14 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
     resource_id: Union[str, Sequence[str]] = REST_ALL
     version: Union[str, Sequence[str]] = REST_ALL
     key: Union[str, Sequence[str]] = REST_ALL
-    components: Union[MultiFilter, None, NumberFilter, TextFilter] = None
+    components: Union[
+        BooleanFilter,
+        DateTimeFilter,
+        MultiFilter,
+        None,
+        NumberFilter,
+        TextFilter,
+    ] = None
     updated_after: Optional[datetime] = None
     first_n_obs: Optional[Annotated[int, msgspec.Meta(gt=0)]] = None
     last_n_obs: Optional[Annotated[int, msgspec.Meta(gt=0)]] = None
@@ -579,7 +595,9 @@ def __map_operator(op: Operator, value: Any) -> str:
     return out
 
 
-def _create_component_filter(flt: Union[NumberFilter, TextFilter]) -> str:
+def _create_component_filter(
+    flt: Union[BooleanFilter, DateTimeFilter, NumberFilter, TextFilter],
+) -> str:
     fld = flt.field
     val = flt.value
     if flt.operator in [Operator.LIKE, Operator.NOT_LIKE]:
@@ -612,7 +630,10 @@ def _create_component_filter(flt: Union[NumberFilter, TextFilter]) -> str:
 
 
 def _create_component_mult_filter(
-    comp: str, flts: Sequence[Union[NumberFilter, TextFilter]]
+    comp: str,
+    flts: Sequence[
+        Union[BooleanFilter, DateTimeFilter, NumberFilter, TextFilter]
+    ],
 ) -> str:
     cstr = [_create_component_filter(f) for f in flts]
     fstr = [s.replace(f"c[{comp}]=", "") for s in cstr]
