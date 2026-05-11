@@ -37,9 +37,9 @@ class JsonConcept(NameableType, frozen=True, omit_defaults=True):
         """Converts a JsonConcept to a standard concept."""
         repr_ = self.coreRepresentation
         if repr_:
-            if repr_.enumerationFormat:
+            if repr_.enumerationFormat and repr_.enumerationFormat.dataType:
                 dt = DataType(repr_.enumerationFormat.dataType)
-            elif repr_.format:
+            elif repr_.format and repr_.format.dataType:
                 dt = DataType(repr_.format.dataType)
             else:
                 dt = DataType.STRING

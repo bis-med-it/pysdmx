@@ -12,6 +12,69 @@
         }
     },
     "data": {
+        "agencySchemes": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "agencyscheme",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)"
+                    }
+                ],
+                "id": "AGENCIES",
+                "name": "SDMX Agency Scheme",
+                "names": {
+                    "en": "SDMX Agency Scheme"
+                },
+                "version": "1.0",
+                "agencyID": "SDMX",
+                "isExternalReference": false,
+                "isPartial": true,
+                "agencies": [
+                    {
+                        "links": [
+                            {
+                                "rel": "self",
+                                "type": "agency",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).BIS"
+                            }
+                        ],
+                        "id": "BIS",
+                        "annotations": [
+                            {
+                                "title": "xx000000",
+                                "type": "contact_uid"
+                            }
+                        ],
+                        "name": "Bank for International Settlements",
+                        "names": {
+                            "en": "Bank for International Settlements"
+                        },
+                        "description": "Bank for International Settlements",
+                        "descriptions": {
+                            "en": "Bank for International Settlements"
+                        },
+                        "contacts": [
+                            {
+                                "name": "Support",
+                                "names": {
+                                    "en": "Support"
+                                },
+                                "role": "Support",
+                                "roles": {
+                                    "en": "Support"
+                                },
+                                "emails": [
+                                    "statistics@bis.org"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
         "valuelists": [
             {
                 "links": [
@@ -6272,7 +6335,7 @@
                                     }
                                 ],
                                 "id": "TIME_FORMAT",
-                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_FORMAT"
+                                "conceptIdentity": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(2.0).TIME_FORMAT"
                             },
                             {
                                 "usage": "mandatory",
@@ -6851,113 +6914,6 @@
                         ]
                     }
                 }
-            }
-        ],
-        "dataflows": [
-            {
-                "id": "CBS",
-                "name": "CBS dataflow",
-                "names": {
-                    "en": "CBS dataflow"
-                },
-                "version": "1.0",
-                "agencyID": "BIS",
-                "isExternalReference": false,
-                "structure": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_CBS(1.1)"
-            }
-        ],
-        "dataConstraints": [
-            {
-                "links": [
-                    {
-                        "rel": "self",
-                        "type": "dataconstraint",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
-                        "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS:BIS_CBS(1.0)"
-                    }
-                ],
-                "id": "BIS_CBS",
-                "name": "Restrictions for Components",
-                "names": {
-                    "en": "Restrictions for Components"
-                },
-                "version": "1.0",
-                "agencyID": "BIS",
-                "isExternalReference": false,
-                "type": "actual",
-                "constraintAttachment": {
-                    "dataflows": [
-                        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:CBS(1.0)"
-                    ]
-                },
-                "cubeRegions": [
-                    {
-                        "isIncluded": true,
-                        "keyValues": [
-                            {
-                                "id": "CBS_BANK_TYPE",
-                                "values": [
-                                    {
-                                        "value": "4C"
-                                    },
-                                    {
-                                        "value": "4D"
-                                    }
-                                ]
-                            },
-                            {
-                                "id": "L_REP_CTY",
-                                "values": [
-                                    {
-                                        "value": "AT"
-                                    },
-                                    {
-                                        "value": "AU"
-                                    },
-                                    {
-                                        "value": "BE"
-                                    }
-                                ]
-                            },
-                            {
-                                "id": "L_CP_COUNTRY",
-                                "values": [
-                                    {
-                                        "value": "1C"
-                                    },
-                                    {
-                                        "value": "1N"
-                                    },
-                                    {
-                                        "value": "1W"
-                                    }
-                                ]
-                            },
-                            {
-                                "id": "UNIT_MEASURE",
-                                "values": [
-                                    {
-                                        "value": "USD"
-                                    }
-                                ]
-                            },
-                            {
-                                "id": "CURR_TYPE_BOOK",
-                                "values": [
-                                    {
-                                        "value": "FC1"
-                                    },
-                                    {
-                                        "value": "LC1"
-                                    },
-                                    {
-                                        "value": "TO1"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
             }
         ]
     }
