@@ -1,6 +1,7 @@
 """API to be implemented by connectors."""
 
 from datetime import datetime
+from enum import Enum
 from typing import (
     Any,
     Generator,
@@ -14,6 +15,7 @@ from typing import (
 )
 
 from pysdmx.api.dc.query import (
+    BasicFilter,
     BooleanFilter,
     DateTimeFilter,
     MultiFilter,
@@ -23,14 +25,17 @@ from pysdmx.api.dc.query import (
     TextFilter,
 )
 from pysdmx.model import (
+    Agency,
     Dataflow,
     DataflowInfo,
     DataflowRef,
     Organisation,
     SeriesInfo,
 )
+from pysdmx.util import experimental
 
 
+@experimental
 @runtime_checkable
 class Connector(Protocol):
     """A Connector provides access to a data source.
@@ -210,4 +215,113 @@ class Connector(Protocol):
         """
 
 
-__all__ = ["Connector"]
+@runtime_checkable
+class MaintainableIdentification(Protocol):
+    """The information necessary to identify a maintainable artefact.
+
+    This assumes the artefact type is already known.
+    """
+
+    @property
+    def agency(self) -> Union[Agency, str]:
+        """The agency maintaining the artefact."""
+
+    @property
+    def id(self) -> str:
+        """The ID of the artefact."""
+
+    @property
+    def version(self) -> str:
+        """The version of the artefact."""
+
+
+@runtime_checkable
+class BasicConnector(Protocol):
+    """A simple connector for data discovery and data retrieval.
+
+    This connector is compliant with the SDMX "data discovery and
+    data retrieval" profile.
+    """
+
+    def dataflows(
+        self, search_term: Optional[str] = None
+    ) -> Iterable[Dataflow]:
+        """Get the list of dataflows available in the connector.
+
+        Args:
+            search_term (Optional[str]): A search term. If set, any dataflow
+                containing the term in its ID, name, or description will be
+                returned.
+
+        Returns:
+            Iterable[Dataflow]: An iterable of dataflows available in the
+                connector.
+
+            - If `search_term` is set and no dataflows match it, an empty
+              iterable must be returned.
+            - If `search_term` is not set, the method must return at least
+              one dataflow.
+            - The returned iterable must not contain duplicates.
+
+            Whether the connector supports lazy evaluation (e.g. generators)
+            or materializes the result set in memory is up to the implementer.
+
+        Note:
+            Lazy evaluation (e.g., using generators) is recommended for
+            connectors that handle large datasets, but this is not required.
+        """
+
+    def dataflow(
+        self, dataflow: Union[str, MaintainableIdentification]
+    ) -> Dataflow:
+        """Get information about a dataflow.
+
+        Args:
+            dataflow (Union[str, MaintainableIdentification]): Either a string
+                representing the SDMX URN of the dataflow or the information
+                necessary to uniquely identify it. Classes such as
+                `DataflowRef` or `Dataflow` are examples of pysdmx classes that
+                implement the `MaintainableIdentification` protocol.
+
+        Returns:
+            Dataflow: Information about the requested dataflow.
+
+            The information includes:
+
+            - Some basic metadata about the dataflow (such as its ID and name).
+            - Some useful metrics such as the number of observations or the
+              period coverage, if this information is available in the source.
+            - The expected structure of data (i.e. the data schema), including
+              the expected columns, their types, etc.
+        """
+
+    def data(
+        self,
+        dataflow: Union[str, MaintainableIdentification],
+        filters: Optional[Union[BasicFilter, str]] = None,
+    ) -> Any:
+        """Get data for the selected dataflow, matching the supplied filters.
+
+        Args:
+            dataflow (Union[str, MaintainableIdentification]): The dataflow
+                from which to retrieve data. Either a string representing the
+                SDMX URN of the dataflow or the information necessary to
+                uniquely identify it. Classes such as `DataflowRef` or
+                `Dataflow` are examples of pysdmx classes that implement the
+                `MaintainableIdentification` protocol.
+            filters: The data query filters, if any. This can be a string
+                similar to a SQL WHERE clause ("AREA='UY' AND FREQ <> 'A'")
+                or a Python expression ("REF_AREA=='UY' and FREQ != 'A'") or
+                one of the various filters the `pysdmx.api.dc.query` module
+                offers, including `MultiFilter`.
+
+        Returns:
+            The requested data, if any.
+        """
+
+
+class Endpoints(str, Enum):
+    BIS = "https://stats.bis.org/api/v2"
+
+
+__all__ = ["BasicConnector", "Connector", "Endpoints"]

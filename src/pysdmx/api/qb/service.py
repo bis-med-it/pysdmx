@@ -1,6 +1,6 @@
 """Connector to SDMX-REST and GDS-REST services."""
 
-from typing import NoReturn, Optional, Union
+from typing import AsyncGenerator, Generator, NoReturn, Optional, Union
 
 import httpx
 
@@ -44,6 +44,7 @@ class _CoreRestService:
         timeout: Optional[float] = 5.0,
     ):
         """Instantiate a connector to a SDMX-REST service."""
+        api_endpoint = api_endpoint.strip()
         self._api_endpoint = (
             api_endpoint[0:-1] if api_endpoint.endswith("/") else api_endpoint
         )
@@ -121,6 +122,14 @@ class RestService(_CoreRestService):
         f = self._data_format.value
         return self.__fetch(q, f)
 
+    def stream_data(
+        self, query: DataQuery, chunk_size: int = 8192
+    ) -> Generator[bytes, None, None]:
+        """Execute a data query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._data_format.value
+        yield from self.__stream(q, f, chunk_size)
+
     def structure(self, query: StructureQuery) -> bytes:
         """Execute a structure query against the service."""
         q = query.get_url(self._api_version, True)
@@ -171,6 +180,7 @@ class RestService(_CoreRestService):
         ) as client:
             try:
                 query = _add_query_slash(query)
+                query = _sanitize_query(query)
 
                 url = f"{self._api_endpoint}{query}"
                 h = self._headers.copy()
@@ -178,6 +188,29 @@ class RestService(_CoreRestService):
                 r = client.get(url, headers=h, timeout=self._timeout)
                 r.raise_for_status()
                 return r.content
+            except (httpx.RequestError, httpx.HTTPStatusError) as e:
+                map_httpx_errors(e)
+
+    def __stream(
+        self, query: str, format: str, chunk_size: int
+    ) -> Generator[bytes, None, None]:
+        with httpx.Client(
+            verify=self._ssl_context, follow_redirects=True
+        ) as client:
+            try:
+                query = _add_query_slash(query)
+                query = _sanitize_query(query)
+                url = f"{self._api_endpoint}{query}"
+                h = self._headers.copy()
+                h["Accept"] = format
+                with client.stream(
+                    "GET", url, headers=h, timeout=self._timeout
+                ) as cs:
+                    if cs.is_error:
+                        cs.read()
+                        cs.raise_for_status()
+                    for chunk in cs.iter_bytes(chunk_size):
+                        yield chunk
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 map_httpx_errors(e)
 
@@ -236,6 +269,15 @@ class AsyncRestService(_CoreRestService):
         out = await self.__fetch(q, f)
         return out
 
+    async def stream_data(
+        self, query: DataQuery, chunk_size: int = 8192
+    ) -> AsyncGenerator[bytes, None]:
+        """Execute a data query against the service."""
+        q = query.get_url(self._api_version, True)
+        f = self._data_format.value
+        async for chunk in self.__stream(q, f, chunk_size):  # pragma: no cover
+            yield chunk
+
     async def structure(self, query: StructureQuery) -> bytes:
         """Execute a structure query against the service."""
         q = query.get_url(self._api_version, True)
@@ -291,13 +333,38 @@ class AsyncRestService(_CoreRestService):
         ) as client:
             try:
                 query = _add_query_slash(query)
-
+                query = _sanitize_query(query)
                 url = f"{self._api_endpoint}{query}"
                 h = self._headers.copy()
                 h["Accept"] = format
                 r = await client.get(url, headers=h, timeout=self._timeout)
                 r.raise_for_status()
                 return r.content
+            except (httpx.RequestError, httpx.HTTPStatusError) as e:
+                map_httpx_errors(e)
+
+    async def __stream(
+        self, query: str, format: str, chunk_size: int
+    ) -> AsyncGenerator[bytes, None]:
+        async with httpx.AsyncClient(
+            verify=self._ssl_context, follow_redirects=True
+        ) as client:
+            try:
+                query = _add_query_slash(query)
+                query = _sanitize_query(query)
+                url = f"{self._api_endpoint}{query}"
+                h = self._headers.copy()
+                h["Accept"] = format
+                async with client.stream(
+                    "GET", url, headers=h, timeout=self._timeout
+                ) as cs:
+                    if cs.is_error:
+                        await cs.aread()
+                        cs.raise_for_status()
+                    async for chunk in cs.aiter_bytes(
+                        chunk_size
+                    ):  # pragma: no cover
+                        yield chunk
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 map_httpx_errors(e)
 
@@ -348,6 +415,17 @@ def _add_query_slash(query: str) -> str:
     if "?" not in query and "#" not in query and not query.endswith("/"):
         query += "/"
     return query
+
+
+def _sanitize_query(query: str) -> str:
+    return (
+        query.replace("[", "%5B")
+        .replace("]", "%5D")
+        .replace(":", "%3A")
+        .replace("+", "%2B")
+        .replace("*", "%2A")
+        .replace(",", "%2C")
+    )
 
 
 class GdsRestService(_CoreGdsRestService):
