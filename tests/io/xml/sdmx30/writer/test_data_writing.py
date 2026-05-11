@@ -492,3 +492,65 @@ def test_explicit_null_sentinels_preserved_in_xml_output():
     assert 'OBS_VALUE="NaN"' in xml_out
     assert 'OBS_VALUE="42"' in xml_out
     assert 'O_ATT="#N/A"' in xml_out
+
+
+def test_str_spec_series_attr_only_row_merges_with_obs_30():
+    """Issue #588: SDMX-ML 3.0 series-attr-only row must merge with obs."""
+    from pysdmx.io.format import Format
+    from pysdmx.io.writer import write_sdmx
+
+    schema = Schema(
+        context="datastructure",
+        agency="TEST",
+        id="TEST_DS",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="DIM1"),
+                    required=True,
+                ),
+                Component(
+                    id="TIME_PERIOD",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="TIME_PERIOD"),
+                    required=True,
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    role=Role.MEASURE,
+                    concept=Concept(id="OBS_VALUE"),
+                    required=True,
+                ),
+                Component(
+                    id="S_ATT",
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(id="S_ATT"),
+                    required=False,
+                    attachment_level="DIM1",
+                ),
+            ]
+        ),
+    )
+    data = pd.DataFrame(
+        {
+            "DIM1": ["A", "A", "A"],
+            "TIME_PERIOD": ["", "2003", "2004"],
+            "OBS_VALUE": ["", "NaN", "42"],
+            "S_ATT": ["#N/A", "", ""],
+        }
+    )
+    dataset = PandasDataset(data=data, structure=schema)
+    xml_out = write_sdmx(
+        [dataset],
+        sdmx_format=Format.DATA_SDMX_ML_3_0,
+        dimension_at_observation="TIME_PERIOD",
+    )
+    assert xml_out is not None
+    assert xml_out.count("<Series ") == 1
+    assert 'S_ATT="#N/A"' in xml_out
+    assert xml_out.count("<Obs ") == 2
+    assert 'TIME_PERIOD="2003"' in xml_out
+    assert 'TIME_PERIOD="2004"' in xml_out

@@ -339,9 +339,12 @@ def __series_processing(
 ) -> str:
     def __generate_series_str() -> str:
         out_list: List[str] = []
-        data.groupby(by=series_codes + series_att_codes, dropna=False)[
-            data.columns
-        ].apply(lambda x: __format_dict_ser(out_list, x))
+        # Group by dimensions only; series-level attributes are derived per
+        # group below so that rows where the attribute was left empty do
+        # not split the series into multiple <Series> elements.
+        data.groupby(by=series_codes, dropna=False)[data.columns].apply(
+            lambda x: __format_dict_ser(out_list, x)
+        )
 
         return "".join(out_list)
 
@@ -351,13 +354,13 @@ def __series_processing(
     ) -> Any:
         obs_data = group_data[obs_codes + obs_att_codes].copy()
         data_dict["Series"][0]["Obs"] = obs_data.to_dict(orient="records")
-        data_dict["Series"][0].update(
-            {
-                k: v
-                for k, v in group_data[series_att_codes].iloc[0].items()
-                if k in series_att_codes
-            }
-        )
+        # Derive each series-attached attribute value: first non-empty in
+        # the group (rows are stable-sorted on dimensions above).
+        for att in series_att_codes:
+            data_dict["Series"][0][att] = next(
+                (v for v in group_data[att] if not _should_skip_xml_value(v)),
+                "",
+            )
         output_list.append(
             __format_ser_str(
                 data_info=data_dict["Series"][0],
@@ -370,10 +373,11 @@ def __series_processing(
         )
         del data_dict["Series"][0]
 
-    # Getting each datapoint from data and creating dict
-    data = data.sort_values(series_codes + series_att_codes, axis=0)
+    # Getting each datapoint from data and creating dict.
+    # Dedup by dimensions only so that one entry exists per dimension key.
+    data = data.sort_values(series_codes, axis=0)
     data_dict = {
-        "Series": data[series_codes + series_att_codes]
+        "Series": data[series_codes]
         .drop_duplicates()
         .reset_index(drop=True)
         .to_dict(orient="records")
