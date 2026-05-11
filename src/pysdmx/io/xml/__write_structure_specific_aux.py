@@ -1,7 +1,7 @@
 # mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 3.0 Structure Specific auxiliary functions."""
 
-from typing import Any, Dict, Iterable, List
+from typing import Any, Dict, List
 
 import pandas as pd
 
@@ -14,6 +14,7 @@ from pysdmx.io.xml.__write_aux import (
     get_structure,
 )
 from pysdmx.io.xml.__write_data_aux import (
+    _first_non_empty,
     _should_skip_xml_value,
     stringify_dataset,
     writing_validation,
@@ -21,20 +22,6 @@ from pysdmx.io.xml.__write_data_aux import (
 from pysdmx.io.xml.config import CHUNKSIZE
 from pysdmx.toolkit.pd._data_utils import get_codes
 from pysdmx.util import parse_short_urn
-
-
-def _first_non_empty(values: Iterable[Any]) -> Any:
-    """Return the first value that is not skip-worthy, or an empty string.
-
-    Used to collapse rows of a series-attached or group-attached attribute
-    where the same logical value may be carried by only one of the rows
-    (e.g. a "series-attribute row" in SDMX-CSV) and left empty on the
-    others.
-    """
-    return next(
-        (v for v in values if not _should_skip_xml_value(v)),
-        "",
-    )
 
 
 def __validate_all_dimensions_data(dataset: PandasDataset) -> None:
@@ -290,45 +277,24 @@ def __series_processing(
     obs_att_codes: List[str],
     prettyprint: bool = True,
 ) -> str:
-    def __format_dict_ser(
-        output_list: List[str],
-        group_data: Any,
-    ) -> Any:
-        """Formats the series as key=value pairs."""
-        # Derive each series-attached attribute value: first non-empty in
-        # the group (rows are stable-sorted on dimensions above).
-        for att in series_att_codes:
-            data_dict["Series"][0][att] = _first_non_empty(group_data[att])
-        # Keep only rows that represent a real observation (non-empty
-        # observation dimension). The remaining rows are "series-attr-only"
-        # rows whose information has already been folded into the series.
-        obs_dim = obs_codes[0]
-        obs_rows = group_data[~group_data[obs_dim].map(_should_skip_xml_value)]
-        data_dict["Series"][0]["Obs"] = obs_rows[
-            obs_codes + obs_att_codes
-        ].to_dict(orient="records")
-        output_list.append(
-            __format_ser_str(data_dict["Series"][0], prettyprint)
-        )
-        # We remove the data for series as it is no longer necessary
-        del data_dict["Series"][0]
+    """Format one <Series> per dimension key, deriving series attributes.
 
-    # Getting each datapoint from data and creating dict.
-    # Dedup by dimensions only so that one entry exists per dimension key.
-    data = data.sort_values(series_codes, axis=0)
-    data_dict = {
-        "Series": data[series_codes]
-        .drop_duplicates()
-        .reset_index(drop=True)
-        .to_dict(orient="records")
-    }
-
-    # Group by dimensions only; series-level attributes are derived per
-    # group below so that rows where the attribute was left empty do
-    # not split the series into multiple <Series> elements.
+    Group by dimensions only so that rows where a series-attached
+    attribute was left empty do not split the series into multiple
+    <Series> elements. Each attribute is set to the first non-empty
+    value found across the group's rows. Rows whose observation
+    dimension is empty (series-attribute-only rows) are excluded from
+    the obs list.
+    """
+    obs_dim = obs_codes[0]
     out_list: List[str] = []
-    data.groupby(by=series_codes, dropna=False)[
-        obs_codes + obs_att_codes + series_att_codes
-    ].apply(lambda x: __format_dict_ser(out_list, x))
-
+    for keys, group_data in data.groupby(by=series_codes, dropna=False):
+        record: Dict[str, Any] = dict(zip(series_codes, keys))
+        for att in series_att_codes:
+            record[att] = _first_non_empty(group_data[att])
+        obs_rows = group_data[~group_data[obs_dim].map(_should_skip_xml_value)]
+        record["Obs"] = obs_rows[obs_codes + obs_att_codes].to_dict(
+            orient="records"
+        )
+        out_list.append(__format_ser_str(record, prettyprint))
     return "".join(out_list)

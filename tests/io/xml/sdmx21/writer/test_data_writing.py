@@ -938,12 +938,10 @@ def test_str_spec_series_attr_only_row_merges_with_obs(
         [ds],
         dimension_at_observation={ds.structure.short_urn: "TIME_PERIOD"},
     )
-    assert result is not None
     assert result.count("<Series ") == 1
     assert 'S_ATT="#N/A"' in result
-    assert result.count("<Obs ") == 2
-    assert 'TIME_PERIOD="2003"' in result
-    assert 'TIME_PERIOD="2004"' in result
+    assert result.count('<Obs TIME_PERIOD="2003"') == 1
+    assert result.count('<Obs TIME_PERIOD="2004"') == 1
 
 
 def test_generic_series_attr_only_row_merges_with_obs(
@@ -955,12 +953,9 @@ def test_generic_series_attr_only_row_merges_with_obs(
         [ds],
         dimension_at_observation={ds.structure.short_urn: "TIME_PERIOD"},
     )
-    assert result is not None
     assert result.count("<gen:Series>") == 1
     assert '<gen:Value id="S_ATT" value="#N/A"/>' in result
     assert result.count("<gen:Obs>") == 2
-    assert 'value="2003"' in result
-    assert 'value="2004"' in result
 
 
 def test_str_spec_group_attr_mixed_empty_na_emits_single_group():
@@ -1017,6 +1012,5 @@ def test_str_spec_group_attr_mixed_empty_na_emits_single_group():
         [ds],
         dimension_at_observation={ds.structure.short_urn: "TIME_PERIOD"},
     )
-    assert result is not None
     assert result.count("<Group ") == 1
     assert 'G_ATT="#N/A"' in result

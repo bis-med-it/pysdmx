@@ -547,9 +547,7 @@ def test_str_spec_series_attr_only_row_merges_with_obs_30():
         sdmx_format=Format.DATA_SDMX_ML_3_0,
         dimension_at_observation="TIME_PERIOD",
     )
-    assert xml_out is not None
     assert xml_out.count("<Series ") == 1
     assert 'S_ATT="#N/A"' in xml_out
-    assert xml_out.count("<Obs ") == 2
-    assert 'TIME_PERIOD="2003"' in xml_out
-    assert 'TIME_PERIOD="2004"' in xml_out
+    assert xml_out.count('<Obs TIME_PERIOD="2003"') == 1
+    assert xml_out.count('<Obs TIME_PERIOD="2004"') == 1

@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Sequence, Union
+from typing import Any, Dict, Iterable, Optional, Sequence, Union
 
 from pysdmx.errors import Invalid
 from pysdmx.io._pd_utils import validate_schema_exists
@@ -113,3 +113,17 @@ def _should_skip_xml_value(v: object) -> bool:
         True if the value is empty or None.
     """
     return v in _XML_SKIP_VALUES
+
+
+def _first_non_empty(values: Iterable[Any]) -> Any:
+    """Return the first value that is not skip-worthy, or an empty string.
+
+    Used to collapse rows of a series-attached or group-attached
+    attribute where the same logical value may be carried by only one of
+    the rows (e.g. a "series-attribute row" in SDMX-CSV) and left empty
+    on the others.
+    """
+    return next(
+        (v for v in values if not _should_skip_xml_value(v)),
+        "",
+    )
