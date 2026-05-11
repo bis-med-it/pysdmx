@@ -2958,4 +2958,4 @@ xml = ["lxml", "sdmxschemas", "xmltodict"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "8795ce7b60066a44024f9a1bb433024f4867e58603329e47c16abe0edc712ffd"
+content-hash = "f1552b1cc39bd1c7747ab078f26be208803171d23e7f416a5e44200847ee7320"
