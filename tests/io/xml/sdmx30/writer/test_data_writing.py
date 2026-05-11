@@ -7,7 +7,9 @@ import pytest
 import xmltodict
 
 import pysdmx
+from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
+from pysdmx.io.writer import write_sdmx
 from pysdmx.io.xml.sdmx30.writer.structure_specific import (
     write as write_str_spec,
 )
@@ -496,9 +498,6 @@ def test_explicit_null_sentinels_preserved_in_xml_output():
 
 def test_str_spec_series_attr_only_row_merges_with_obs_30():
     """Issue #588: SDMX-ML 3.0 series-attr-only row must merge with obs."""
-    from pysdmx.io.format import Format
-    from pysdmx.io.writer import write_sdmx
-
     schema = Schema(
         context="datastructure",
         agency="TEST",
