@@ -1,5 +1,6 @@
 """Collection of Fusion-JSON schemas for dataflow queries."""
 
+import re
 from typing import List, Optional, Sequence
 
 from msgspec import Struct
@@ -17,6 +18,7 @@ from pysdmx.model import (
     Dataflow as DF,
 )
 from pysdmx.model.dataflow import Group
+from pysdmx.util import semver_final_pattern
 
 
 class FusionDataflow(Struct, frozen=True, rename={"agency": "agencyId"}):
@@ -56,9 +58,15 @@ class FusionDataflowMessage(Struct, frozen=True):
         id_: str,
         version: str,
     ) -> bool:
-        if version != "~" and version != "latest":
+        if version not in ["~", "+", "latest"]:
             return (
                 df.agency == agency and df.id == id_ and df.version == version
+            )
+        elif version == "+":
+            return (
+                df.agency == agency
+                and df.id == id_
+                and bool(semver_final_pattern.fullmatch(df.version))
             )
         else:
             return df.agency == agency and df.id == id_

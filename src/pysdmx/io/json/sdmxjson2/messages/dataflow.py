@@ -23,7 +23,7 @@ from pysdmx.model import (
     DataStructureDefinition,
 )
 from pysdmx.model.dataflow import Group
-from pysdmx.util import is_final, parse_urn
+from pysdmx.util import is_final, parse_urn, semver_final_pattern
 
 
 def __parse_annotation_metrics(
@@ -163,9 +163,15 @@ class JsonDataflows(Struct, frozen=True, omit_defaults=True):
     def __filter(
         self, df: JsonDataflow, agency: str, id_: str, version: str
     ) -> bool:
-        if version != "~" and version != "latest":
+        if version not in ["~", "+", "latest"]:
             return (
                 df.agency == agency and df.id == id_ and df.version == version
+            )
+        elif version == "+":
+            return (
+                df.agency == agency
+                and df.id == id_
+                and bool(semver_final_pattern.fullmatch(df.version))
             )
         else:
             return df.agency == agency and df.id == id_
