@@ -102,7 +102,7 @@ def check_dataflow_info_plus_version(
     assert route1.called
     assert route2.called
     assert route3.called
-    __check_dsi(dsi)
+    __check_dsi(dsi, True)
 
 
 def check_dataflow_info_plus_version_no_match(
@@ -251,14 +251,17 @@ async def check_async_core_dataflow_info(
     __check_core_dsi(dsi)
 
 
-def __check_dsi(dsi):
+def __check_dsi(dsi, is_semver: bool = False):
     assert isinstance(dsi, DataflowInfo)
     assert isinstance(dsi.agency, Organisation)
     assert dsi.agency.id == "BIS.CBS"
     assert dsi.id == "CBS"
     assert dsi.name == "Consolidated Banking Statistics"
     assert dsi.description == "This dataflow is associated to the BIS_CBS DSD."
-    assert dsi.version == "1.0"
+    if is_semver:
+        assert dsi.version == "1.0.0"
+    else:
+        assert dsi.version == "1.0"
     assert len(dsi.providers) == 33
     for p in dsi.providers:
         assert isinstance(p, Organisation)
