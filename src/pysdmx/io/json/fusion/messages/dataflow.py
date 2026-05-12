@@ -1,6 +1,5 @@
 """Collection of Fusion-JSON schemas for dataflow queries."""
 
-import re
 from typing import List, Optional, Sequence
 
 from msgspec import Struct
