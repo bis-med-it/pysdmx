@@ -182,12 +182,21 @@ class JsonDataflows(Struct, frozen=True, omit_defaults=True):
         prvs: List[DataProvider] = []
         for dps in self.dataProviderSchemes:
             prvs.extend(dps.dataProviders)
-        df = list(
+        dfs = list(
             filter(
                 lambda df: self.__filter(df, agency, id_, version),
                 self.dataflows,
             )
-        )[0]
+        )
+
+        if not dfs:
+            raise errors.NotFound(
+                "No matching dataflow",
+                "No matching dataflow was found in the message",
+                {"agency": agency, "id": id, "version": version},
+            )
+
+        df = dfs[0]
 
         obs_count, series_count = _extract_metrics(df, self.dataConstraints)
 

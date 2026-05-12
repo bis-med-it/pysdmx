@@ -4,6 +4,7 @@ from typing import List, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.fusion.messages.core import FusionString
 from pysdmx.io.json.fusion.messages.org import FusionProviderScheme
 from pysdmx.model import (
@@ -74,12 +75,22 @@ class FusionDataflowMessage(Struct, frozen=True):
         prvs: List[DataProvider] = []
         for dps in self.DataProviderScheme:
             prvs.extend(dps.to_model([]))
-        df = list(
+        dfs = list(
             filter(
                 lambda df: self.__filter(df, agency, id_, version),
                 self.Dataflow,
             )
-        )[0]
+        )
+
+        if not dfs:
+            raise errors.NotFound(
+                "No matching dataflow",
+                "No matching dataflow was found in the message",
+                {"agency": agency, "id": id, "version": version},
+            )
+
+        df = dfs[0]
+
         return DataflowInfo(
             id=df.id,
             components=components,
