@@ -76,12 +76,12 @@ def check_dataflow_info_no_version(
     __check_dsi(dsi)
 
 
-def check_dataflow_info_plus_version_no_match(
+def check_dataflow_info_plus_version(
     mock,
     fmr: RegistryClient,
     schema_query,
     schema_body,
-    dataflow_query_no_version,
+    dataflow_query,
     dataflow_body,
     hca_query,
     hca_body,
@@ -93,7 +93,36 @@ def check_dataflow_info_plus_version_no_match(
     route2 = mock.get(schema_query).mock(
         return_value=httpx.Response(200, content=schema_body)
     )
-    route3 = mock.get(dataflow_query_no_version).mock(
+    route3 = mock.get(dataflow_query).mock(
+        return_value=httpx.Response(200, content=dataflow_body)
+    )
+
+    dsi = fmr.get_dataflow_details("BIS.CBS", "CBS", "+")
+
+    assert route1.called
+    assert route2.called
+    assert route3.called
+    __check_dsi(dsi)
+
+
+def check_dataflow_info_plus_version_no_match(
+    mock,
+    fmr: RegistryClient,
+    schema_query,
+    schema_body,
+    dataflow_query,
+    dataflow_body,
+    hca_query,
+    hca_body,
+):
+    """get_schema() should return a schema."""
+    route1 = mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
+    route2 = mock.get(schema_query).mock(
+        return_value=httpx.Response(200, content=schema_body)
+    )
+    route3 = mock.get(dataflow_query).mock(
         return_value=httpx.Response(200, content=dataflow_body)
     )
 
