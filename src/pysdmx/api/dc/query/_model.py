@@ -97,14 +97,6 @@ Filter = Union[
     TextFilter,
 ]
 
-BasicFilter = Union[
-    BooleanFilter,
-    DateTimeFilter,
-    "MultiFilter",
-    NumberFilter,
-    TextFilter,
-]
-
 
 class MultiFilter(Struct, frozen=True, tag=True):
     """A combination of data filters.
@@ -127,6 +119,15 @@ class NotFilter(Struct, frozen=True, tag=True):
     """A filter matching anything but the supplied filter."""
 
     filter: Filter
+
+
+BasicFilter = Union[
+    BooleanFilter,
+    DateTimeFilter,
+    MultiFilter,
+    NumberFilter,
+    TextFilter,
+]
 
 
 __all__ = [
