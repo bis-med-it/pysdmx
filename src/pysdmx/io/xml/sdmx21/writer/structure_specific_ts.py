@@ -18,7 +18,7 @@ def write(
     output_path: Optional[Union[str, Path]] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
-    dimension_at_observation: Optional[Dict[str, str]] = None,
+    dimension_at_observation: Optional[Union[str, Dict[str, str]]] = None,
 ) -> Optional[str]:
     """Write data to SDMX-ML 2.1 Structure Specific Time Series format.
 
@@ -32,8 +32,9 @@ def write(
         prettyprint: Prettyprint or not.
         header: The header to be used (generated if None).
         dimension_at_observation:
-          The mapping between the dataset and the dimension at observation.
-          Defaults to TIME_PERIOD for all datasets.
+          The dimension at observation, either as a string applied to all
+          datasets or a dict mapping short URNs to dimension IDs. Defaults
+          to TIME_PERIOD for all datasets.
 
     Returns:
         The XML string if path is empty, None otherwise.
@@ -42,18 +43,19 @@ def write(
         dimension_at_observation = {
             ds.short_urn: "TIME_PERIOD" for ds in datasets
         }
-    else:
-        invalid_dims = {
-            k: v
-            for k, v in dimension_at_observation.items()
-            if v != "TIME_PERIOD"
+    elif isinstance(dimension_at_observation, str):
+        dimension_at_observation = {
+            ds.short_urn: dimension_at_observation for ds in datasets
         }
-        if invalid_dims:
-            raise Invalid(
-                "Time Series formats require "
-                "dimensionAtObservation=TIME_PERIOD",
-                ", ".join(f"{k}={v}" for k, v in invalid_dims.items()),
-            )
+
+    invalid_dims = {
+        k: v for k, v in dimension_at_observation.items() if v != "TIME_PERIOD"
+    }
+    if invalid_dims:
+        raise Invalid(
+            "Time Series formats require dimensionAtObservation=TIME_PERIOD",
+            ", ".join(f"{k}={v}" for k, v in invalid_dims.items()),
+        )
 
     return _base_write(
         datasets=datasets,
