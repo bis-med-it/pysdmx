@@ -42,6 +42,7 @@ jobs:
             python3-pytest-mock \
             python3-antlr4 \
             python3-networkx \
+            python3-psutil \
             python3-sqlglot
 
       - name: Install pip-only dependencies
