@@ -14,8 +14,8 @@ from pysdmx.io.xml.__write_aux import (
     get_structure,
 )
 from pysdmx.io.xml.__write_data_aux import (
-    _first_non_empty,
     _should_skip_xml_value,
+    _single_non_empty_or_raise,
     stringify_dataset,
     writing_validation,
 )
@@ -198,12 +198,17 @@ def __group_processing(
     for group in group_codes:
         attribute = group["attribute"]
         dimensions = group["dimensions"]
-        # Aggregate by group dimensions only; take the first non-empty
+        # Aggregate by group dimensions only; take the unique non-empty
         # attribute value per group so that rows where the attribute was
         # left empty do not collide with rows carrying the real value.
+        # Conflicting non-empty values raise ``Invalid``.
         aggregated = data.groupby(by=dimensions, dropna=False, as_index=False)[
             attribute
-        ].agg(_first_non_empty)
+        ].agg(
+            lambda s, _att=attribute: _single_non_empty_or_raise(
+                s, _att, "group"
+            )
+        )
 
         out_list.extend(
             __format_group_str(record, group["group_id"])
@@ -281,17 +286,19 @@ def __series_processing(
 
     Group by dimensions only so that rows where a series-attached
     attribute was left empty do not split the series into multiple
-    <Series> elements. Each attribute is set to the first non-empty
-    value found across the group's rows. Rows whose observation
-    dimension is empty (series-attribute-only rows) are excluded from
-    the obs list.
+    <Series> elements. Each attribute is set to the unique non-empty
+    value found across the group's rows; conflicting non-empty values
+    raise ``Invalid``. Rows whose observation dimension is empty
+    (series-attribute-only rows) are excluded from the obs list.
     """
     obs_dim = obs_codes[0]
     out_list: List[str] = []
     for keys, group_data in data.groupby(by=series_codes, dropna=False):
         record: Dict[str, Any] = dict(zip(series_codes, keys))
         for att in series_att_codes:
-            record[att] = _first_non_empty(group_data[att])
+            record[att] = _single_non_empty_or_raise(
+                group_data[att], att, "series"
+            )
         obs_rows = group_data[~group_data[obs_dim].map(_should_skip_xml_value)]
         record["Obs"] = obs_rows[obs_codes + obs_att_codes].to_dict(
             orient="records"

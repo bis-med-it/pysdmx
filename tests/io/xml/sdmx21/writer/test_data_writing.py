@@ -560,23 +560,51 @@ def test_data_scape_quote(content):
 def test_generic_writer_varying_attributes(header, content):
     """Regression guard for #500 with #588's consolidation semantics.
 
-    Varying series-attached attribute values must not crash the generic
-    writer. By SDMX semantics a series-attached attribute is constant
-    across the series, so the writer emits one <gen:Series> per series
-    key, with the first non-empty attribute value.
+    A series-attached attribute is constant across the series by SDMX
+    semantics, so two different non-empty values across rows of the same
+    series key are invalid input. The writer must surface this as a
+    clean ``Invalid`` rather than crashing (the original #500 guard) or
+    silently picking one value.
     """
     dataset = list(content.values())[0]
     urn = dataset.structure.short_urn
-    df_test = pd.DataFrame(
+    dataset.data = pd.DataFrame(
         {
             "DIM1": [1, 1],
             "DIM2": [4, 5],
-            "ATT1": ["A", "B"],  # Varying attribute (malformed input)
+            "ATT1": ["A", "B"],  # series-attached, conflicting -> invalid
             "ATT2": [7, 8],
             "M1": [10, 11],
         }
     )
-    dataset.data = df_test
+
+    with pytest.raises(Invalid, match="conflicting values"):
+        write_gen(
+            [dataset],
+            header=header,
+            dimension_at_observation={urn: "DIM2"},
+        )
+
+
+def test_generic_writer_series_attr_sparse_merges(header, content):
+    """A series-attached attribute carried by only one row must merge.
+
+    When one row of a series carries the attribute and the others leave
+    it empty, the writer must collapse them into a single
+    ``<gen:Series>`` carrying the attribute, with both observations
+    underneath.
+    """
+    dataset = list(content.values())[0]
+    urn = dataset.structure.short_urn
+    dataset.data = pd.DataFrame(
+        {
+            "DIM1": [1, 1],
+            "DIM2": [4, 5],
+            "ATT1": ["A", ""],
+            "ATT2": [7, 8],
+            "M1": [10, 11],
+        }
+    )
 
     result = write_gen(
         [dataset],
@@ -932,7 +960,11 @@ def ds_series_attr_only_row():
 def test_str_spec_series_attr_only_row_merges_with_obs(
     ds_series_attr_only_row,
 ):
-    """Issue #588: a series-attr-only row must merge with its obs rows."""
+    """Issue #588: a series-attr-only row must collapse into one ``<Series>``.
+
+    The attribute is carried on the ``<Series>`` element itself; the
+    obs rows appear underneath without it.
+    """
     ds = ds_series_attr_only_row
     result = write_str_spec(
         [ds],
@@ -947,7 +979,11 @@ def test_str_spec_series_attr_only_row_merges_with_obs(
 def test_generic_series_attr_only_row_merges_with_obs(
     ds_series_attr_only_row,
 ):
-    """Issue #588: generic writer must merge series-attr-only row with obs."""
+    """Issue #588: generic writer must emit one ``<gen:Series>``.
+
+    The series-attached attribute appears as a ``<gen:Value>`` on the
+    series element; the obs rows appear underneath.
+    """
     ds = ds_series_attr_only_row
     result = write_gen(
         [ds],

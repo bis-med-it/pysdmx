@@ -19,8 +19,8 @@ from pysdmx.io.xml.__write_aux import (
     get_structure,
 )
 from pysdmx.io.xml.__write_data_aux import (
-    _first_non_empty,
     _should_skip_xml_value,
+    _single_non_empty_or_raise,
     check_content_dataset,
     check_dimension_at_observation,
     stringify_dataset,
@@ -342,14 +342,17 @@ def __series_processing(
 
     Group by dimensions only so that rows where a series-attached
     attribute was left empty do not split the series into multiple
-    <gen:Series> elements. Each attribute is set to the first non-empty
-    value found across the group's rows.
+    <gen:Series> elements. Each attribute is set to the unique
+    non-empty value found across the group's rows; conflicting
+    non-empty values raise ``Invalid``.
     """
     out_list: List[str] = []
     for keys, group_data in data.groupby(by=series_codes, dropna=False):
         record: Dict[str, Any] = dict(zip(series_codes, keys))
         for att in series_att_codes:
-            record[att] = _first_non_empty(group_data[att])
+            record[att] = _single_non_empty_or_raise(
+                group_data[att], att, "series"
+            )
         record["Obs"] = group_data[obs_codes + obs_att_codes].to_dict(
             orient="records"
         )

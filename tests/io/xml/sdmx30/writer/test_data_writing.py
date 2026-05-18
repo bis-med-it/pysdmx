@@ -497,7 +497,11 @@ def test_explicit_null_sentinels_preserved_in_xml_output():
 
 
 def test_str_spec_series_attr_only_row_merges_with_obs_30():
-    """Issue #588: SDMX-ML 3.0 series-attr-only row must merge with obs."""
+    """Issue #588: SDMX-ML 3.0 series-attr-only row must collapse.
+
+    The writer must emit a single ``<Series>`` element carrying the
+    series-attached attribute, with the obs rows underneath.
+    """
     schema = Schema(
         context="datastructure",
         agency="TEST",
