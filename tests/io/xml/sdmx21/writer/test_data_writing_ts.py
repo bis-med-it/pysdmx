@@ -149,6 +149,48 @@ def test_structure_specific_ts_rejects_non_time_period(header, ts_content):
         )
 
 
+def test_generic_ts_accepts_time_period_string(header, ts_content):
+    """Issue #589: string shortcut "TIME_PERIOD" must be accepted."""
+    result = write_gen_ts(
+        ts_content,
+        header=header,
+        dimension_at_observation="TIME_PERIOD",
+    )
+    assert 'dimensionAtObservation="TIME_PERIOD"' in result
+
+
+def test_structure_specific_ts_accepts_time_period_string(header, ts_content):
+    """Issue #589: string shortcut "TIME_PERIOD" must be accepted."""
+    result = write_str_ts(
+        ts_content,
+        header=header,
+        dimension_at_observation="TIME_PERIOD",
+    )
+    assert 'dimensionAtObservation="TIME_PERIOD"' in result
+
+
+def test_generic_ts_rejects_non_time_period_string(header, ts_content):
+    """Issue #589: string shortcut other than TIME_PERIOD must raise."""
+    with pytest.raises(Invalid, match="dimensionAtObservation=TIME_PERIOD"):
+        write_gen_ts(
+            ts_content,
+            header=header,
+            dimension_at_observation="FREQ",
+        )
+
+
+def test_structure_specific_ts_rejects_non_time_period_string(
+    header, ts_content
+):
+    """Issue #589: string shortcut other than TIME_PERIOD must raise."""
+    with pytest.raises(Invalid, match="dimensionAtObservation=TIME_PERIOD"):
+        write_str_ts(
+            ts_content,
+            header=header,
+            dimension_at_observation="FREQ",
+        )
+
+
 def test_generic_ts_round_trip(header, ts_content):
     result = write_gen_ts(ts_content, header=header)
     msg = read_sdmx(result, validate=True)
