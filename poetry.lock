@@ -2574,37 +2574,37 @@ zstd = ["backports-zstd (>=1.0.0) ; python_version < \"3.14\""]
 
 [[package]]
 name = "vtlengine"
-version = "1.8.0rc2"
+version = "1.8.0"
 description = "Run and Validate VTL Scripts"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
 markers = "extra == \"vtl\" or extra == \"all\""
 files = [
-    {file = "vtlengine-1.8.0rc2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:b7e4bf8c80e59d6f360327742af95ab1964644097de0a59fe1441a64d3faae8e"},
-    {file = "vtlengine-1.8.0rc2-cp310-cp310-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:bb9eefe2408d73eb52719056a8fb28ce4e4467cf4f7a948f5ce5c87efc71b422"},
-    {file = "vtlengine-1.8.0rc2-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:9df09aa37f33bd3cd24f8a64fadf4344086f4f6c989af29d7d91435c5438392a"},
-    {file = "vtlengine-1.8.0rc2-cp310-cp310-win_amd64.whl", hash = "sha256:819e090420698a332b2eb52f1a8c97a92667c3951b1ea4b9673f6fc1f460c50a"},
-    {file = "vtlengine-1.8.0rc2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:14f3197ea5dfa8ae1a02f70e91d890c5bcca9a9e5b5a2046af463e9259a82d94"},
-    {file = "vtlengine-1.8.0rc2-cp311-cp311-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:a693f8e46b152152846b147c989f0bcd6c15bda4c0e91554bcc7d2e05cad3d0d"},
-    {file = "vtlengine-1.8.0rc2-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:ae99a4505910273402b6975630b10378909a60f4081fe6ab9a259d184da2ce47"},
-    {file = "vtlengine-1.8.0rc2-cp311-cp311-win_amd64.whl", hash = "sha256:238fc0ac6b21aa3422a1f65308aad75cccf0e8ab86ea7bea99c0440a3189d6b6"},
-    {file = "vtlengine-1.8.0rc2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:aeb594a19196c87546683624befd01c7084d65952ed5125a8b79a8cb9122703c"},
-    {file = "vtlengine-1.8.0rc2-cp312-cp312-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:9a680ecccce66ac416901d8a4ad52701118a2399a0959012e5e0fdbde5db15fd"},
-    {file = "vtlengine-1.8.0rc2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:30e6c236c1156279367b023a9b9e8c5f1501833a441fef2672693bceb50904ad"},
-    {file = "vtlengine-1.8.0rc2-cp312-cp312-win_amd64.whl", hash = "sha256:8cb7babd24c447d4fd6827087f905d8251899d006be7cf56b7dad8ba8693c80b"},
-    {file = "vtlengine-1.8.0rc2-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:0aaa896103029e438fb550cecb23949683e3dfedfa71f553d20ee09850cecdb8"},
-    {file = "vtlengine-1.8.0rc2-cp313-cp313-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:0de890c8b19dff01e7a1c2ad9e27cd7cc10c4d03aea84c08f065fee95a9e88e5"},
-    {file = "vtlengine-1.8.0rc2-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:033c35f1c1a09bf237df6e072ee2652e19a2a4ea18e7f84cbfde76bf94283680"},
-    {file = "vtlengine-1.8.0rc2-cp313-cp313-win_amd64.whl", hash = "sha256:efb29dfdbcd751c3484be72a9d9034d6f9006b43973dccf4bf7cbb5e10c44474"},
-    {file = "vtlengine-1.8.0rc2-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:addee61bc57d39818d2f298a419eb418e906bcaa44cec073dfc9a8599a3c43ff"},
-    {file = "vtlengine-1.8.0rc2-cp314-cp314-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:00c713c50ccca8d4739faa9cbef02a2f80210841374898886c1a6106ef7e3328"},
-    {file = "vtlengine-1.8.0rc2-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:48a2536249158005a7541617b68c2893a15ab5b25a137049385dae7071f72024"},
-    {file = "vtlengine-1.8.0rc2-cp314-cp314-win_amd64.whl", hash = "sha256:09384789d174a64c4e33104babc0fde43504e70ba6feb9b667ffdae260a875f5"},
-    {file = "vtlengine-1.8.0rc2-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:9e40228f15d296729ee40f592f570ddab9dd0e597ec18f980a797aa779c92757"},
-    {file = "vtlengine-1.8.0rc2-cp39-cp39-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:0fab2b2d64e0284ae32d91bcf81a7c3e828a30ada475ad18edad75ce4abe26bf"},
-    {file = "vtlengine-1.8.0rc2-cp39-cp39-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:f1f77eee1282336a51ec3ce16f4002a9d32e18c03f49d6d029b6ef3c70201b30"},
-    {file = "vtlengine-1.8.0rc2-cp39-cp39-win_amd64.whl", hash = "sha256:66b4c31f9f19dc652bb961207dab19c6856fcf259bfb643973441febf4deed0c"},
+    {file = "vtlengine-1.8.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:7dfa335ed9bc84a0d209dd5380ca445f3a718187ba70751b0930b26d89e8f1cf"},
+    {file = "vtlengine-1.8.0-cp310-cp310-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:6bddb06ae710d6cb1ed1dd27462a989c9522b02a7b637485f783e810a699b467"},
+    {file = "vtlengine-1.8.0-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:40d326bee9b557b6302f913fe42cc306511e9f767a186fdd8cc7b4bff1546750"},
+    {file = "vtlengine-1.8.0-cp310-cp310-win_amd64.whl", hash = "sha256:8b7dfa8190a1650b66ffda341146780d673d9ca021cb79ab0bb8e34c5e11198c"},
+    {file = "vtlengine-1.8.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:ae0033b63ff924934a11e3b1a59aa246da3906e371ba337e3c6b18d699d2cfc1"},
+    {file = "vtlengine-1.8.0-cp311-cp311-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:495f5fe481feb6ee77e33160d5f4652fa26e9f48544750442d7628e03a44ad58"},
+    {file = "vtlengine-1.8.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:dd81074f5372ef5f15f2ce4fd04d2c54eae71a147cf202756b67d79ab2ca7c1d"},
+    {file = "vtlengine-1.8.0-cp311-cp311-win_amd64.whl", hash = "sha256:de7a338b09e2df162d7590536c6a1ea49c93ad0e35ddd91ca572a9eb0df9ce85"},
+    {file = "vtlengine-1.8.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:16469c62b983541bfa81580d2d50f6e0bcfd9b50ff2a4818f765bd5dd9927be1"},
+    {file = "vtlengine-1.8.0-cp312-cp312-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:1276e2064d8835c0f62e5b7559b6cb5d5242735c661850a89db48f3c00710709"},
+    {file = "vtlengine-1.8.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:5a22112ce1fc06bcc1d4fe78f5299eea61d76c3111571fead56ea1f472c22e60"},
+    {file = "vtlengine-1.8.0-cp312-cp312-win_amd64.whl", hash = "sha256:5e6aae1df8f72663d509be21bb65c7535dc9767a6f4c6eaeb7e8e971aa82bada"},
+    {file = "vtlengine-1.8.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:c8047ff0fb386294c63a3da38c1017593dfdb696a4164d7db9e3bad0f354c75f"},
+    {file = "vtlengine-1.8.0-cp313-cp313-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:c8aa35beae85e2a3ab76d53f9d8e43a88719a326611d0e90b4bc2efb5be9e5da"},
+    {file = "vtlengine-1.8.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:6d25779d92b073b61088d049f21a42290178d01318992eae6dd22cb57704df83"},
+    {file = "vtlengine-1.8.0-cp313-cp313-win_amd64.whl", hash = "sha256:aa2f300184a915c448d0e80073d6030954604f44bbbd7010abec774388cc7604"},
+    {file = "vtlengine-1.8.0-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:cda0094707f707c733a2f9f4a7becbad6cb9c91c3a51833d9c84f8817e6f17ee"},
+    {file = "vtlengine-1.8.0-cp314-cp314-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:69edeefdef73886b64728cefdde93a5cdd1cf287fb3ba30191a408c65c932b00"},
+    {file = "vtlengine-1.8.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:ab2a0ab4b6814e175bdb0b2d5facfdfb7b445db2d13490b12e9199d3d130c941"},
+    {file = "vtlengine-1.8.0-cp314-cp314-win_amd64.whl", hash = "sha256:a4872dbf82d3e33389824c1cad0a5c4531596c4e453c2cad893c827b1fbc04b3"},
+    {file = "vtlengine-1.8.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:96a25c80aed4b61e186749caebcc057cdfd4fe8fd8de02cde3e93f087b4f3deb"},
+    {file = "vtlengine-1.8.0-cp39-cp39-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:0bd543fe640218dff39fa0c84141d27293fba94f0dcb0398bf1fdf2eaa6f43a9"},
+    {file = "vtlengine-1.8.0-cp39-cp39-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:e4085634146461d98db25e704874f4f7ce985acafc62de05c8b43e67de972024"},
+    {file = "vtlengine-1.8.0-cp39-cp39-win_amd64.whl", hash = "sha256:2e332fc858f362e646c835a54862712b3f8396136238fe9a928b14bbcf811fbe"},
 ]
 
 [package.dependencies]
@@ -2669,4 +2669,4 @@ xml = ["lxml", "sdmxschemas", "xmltodict"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "b9531618e44452f9c485082e08264a48ca150ea3ec9d26c9afc0abd8e9f9c627"
+content-hash = "6b8acfd2fa5b489c8d3e3a76b7924e207b9063bf00b1cf8bc444c1f410a2d596"
