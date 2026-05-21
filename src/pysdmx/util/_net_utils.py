@@ -37,3 +37,34 @@ def map_httpx_errors(
             f"The query was `{q}`. The error message was: `{e}`."
         )
         raise errors.Unavailable("Connection error", msg) from e
+
+
+class BearerAuth(httpx.Auth):
+    """Authenticate requests using a bearer access token.
+
+    This auth class adds an ``Authorization`` header with the value
+    ``Bearer <token>`` to outgoing HTTP requests.
+
+    Args:
+        token: The bearer access token to send with each request.
+    """
+
+    def __init__(self, token: str):
+        """Initialize bearer-token authentication.
+
+        Args:
+            token: The bearer access token to send with each request.
+        """
+        self._token = token
+
+    def auth_flow(self, request: httpx.Request):
+        """Apply bearer-token authentication to an outgoing request.
+
+        Args:
+            request: The HTTP request being prepared by ``httpx``.
+
+        Yields:
+            The modified request including the ``Authorization`` header.
+        """
+        request.headers["Authorization"] = f"Bearer {self._token}"
+        yield request
