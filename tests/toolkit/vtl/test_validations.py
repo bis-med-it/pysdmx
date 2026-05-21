@@ -200,7 +200,7 @@ def test_invalid_ruleset_definition():
         ruleset_scope="variable",
     )
     with pytest.raises(
-        Invalid, match="Invalid ruleset definition: Not valid VTL Syntax"
+        Invalid, match="Invalid ruleset definition: VTL syntax error"
     ):
         _ruleset_validation(ruleset)
 
@@ -367,7 +367,7 @@ def test_invalid_udo_definition():
                 end operator""",
     )
     with pytest.raises(
-        Invalid, match="Invalid operator definition: Not valid VTL Syntax"
+        Invalid, match="Invalid operator definition: VTL syntax error"
     ):
         _user_defined_operator_validation(udo)
 
@@ -470,7 +470,7 @@ def test_invalid_transformation_expression():
     )
     with pytest.raises(
         Invalid,
-        match="Invalid transformation definition: Not valid VTL Syntax",
+        match="Invalid transformation definition: VTL syntax error",
     ):
         _transformation_validations(transformation)
 

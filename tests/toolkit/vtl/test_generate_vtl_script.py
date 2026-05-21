@@ -243,7 +243,7 @@ def test_generate_invalid_vtl():
     )
     with pytest.raises(
         Invalid,
-        match="Invalid transformation definition: Not valid VTL Syntax",
+        match="Invalid transformation definition: VTL syntax error",
     ):
         generate_vtl_script(ts, model_validation=True)
 
