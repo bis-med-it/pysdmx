@@ -20,6 +20,7 @@ from pysdmx.io.xml.__write_aux import (
 )
 from pysdmx.io.xml.__write_data_aux import (
     _should_skip_xml_value,
+    _single_non_empty_or_raise,
     check_content_dataset,
     check_dimension_at_observation,
     stringify_dataset,
@@ -337,30 +338,27 @@ def __series_processing(
     obs_att_codes: List[str],
     prettyprint: bool = True,
 ) -> str:
-    def __generate_series_str() -> str:
-        out_list: List[str] = []
-        data.groupby(by=series_codes + series_att_codes, dropna=False)[
-            data.columns
-        ].apply(lambda x: __format_dict_ser(out_list, x))
+    """Format one <gen:Series> per dimension key, deriving series attrs.
 
-        return "".join(out_list)
-
-    def __format_dict_ser(
-        output_list: List[str],
-        group_data: Any,
-    ) -> Any:
-        obs_data = group_data[obs_codes + obs_att_codes].copy()
-        data_dict["Series"][0]["Obs"] = obs_data.to_dict(orient="records")
-        data_dict["Series"][0].update(
-            {
-                k: v
-                for k, v in group_data[series_att_codes].iloc[0].items()
-                if k in series_att_codes
-            }
+    Group by dimensions only so that rows where a series-attached
+    attribute was left empty do not split the series into multiple
+    <gen:Series> elements. Each attribute is set to the unique
+    non-empty value found across the group's rows; conflicting
+    non-empty values raise ``Invalid``.
+    """
+    out_list: List[str] = []
+    for keys, group_data in data.groupby(by=series_codes, dropna=False):
+        record: Dict[str, Any] = dict(zip(series_codes, keys))
+        for att in series_att_codes:
+            record[att] = _single_non_empty_or_raise(
+                group_data[att], att, "series"
+            )
+        record["Obs"] = group_data[obs_codes + obs_att_codes].to_dict(
+            orient="records"
         )
-        output_list.append(
+        out_list.append(
             __format_ser_str(
-                data_info=data_dict["Series"][0],
+                data_info=record,
                 series_codes=series_codes,
                 series_att_codes=series_att_codes,
                 obs_codes=obs_codes,
@@ -368,20 +366,7 @@ def __series_processing(
                 prettyprint=prettyprint,
             )
         )
-        del data_dict["Series"][0]
-
-    # Getting each datapoint from data and creating dict
-    data = data.sort_values(series_codes + series_att_codes, axis=0)
-    data_dict = {
-        "Series": data[series_codes + series_att_codes]
-        .drop_duplicates()
-        .reset_index(drop=True)
-        .to_dict(orient="records")
-    }
-
-    out = __generate_series_str()
-
-    return out
+    return "".join(out_list)
 
 
 def __format_ser_str(

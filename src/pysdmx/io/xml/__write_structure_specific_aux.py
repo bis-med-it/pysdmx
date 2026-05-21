@@ -15,6 +15,7 @@ from pysdmx.io.xml.__write_aux import (
 )
 from pysdmx.io.xml.__write_data_aux import (
     _should_skip_xml_value,
+    _single_non_empty_or_raise,
     stringify_dataset,
     writing_validation,
 )
@@ -147,6 +148,11 @@ def __write_data_single_dataset(
             structure=dataset.structure,  # type: ignore[arg-type]
             data=dataset.data,
         )
+        att_codes = [att.id for att in dataset.structure.components.attributes]
+        series_att_codes = [x for x in series_codes if x in att_codes]
+        obs_att_codes = [x for x in obs_codes if x in att_codes]
+        series_codes = [x for x in series_codes if x not in series_att_codes]
+        obs_codes = [x for x in obs_codes if x not in obs_att_codes]
         if group_codes:
             data += __group_processing(
                 data=dataset.data,
@@ -156,7 +162,9 @@ def __write_data_single_dataset(
         data += __series_processing(
             data=dataset.data,
             series_codes=series_codes,
+            series_att_codes=series_att_codes,
             obs_codes=obs_codes,
+            obs_att_codes=obs_att_codes,
             prettyprint=prettyprint,
         )
 
@@ -189,21 +197,23 @@ def __group_processing(
 
     for group in group_codes:
         attribute = group["attribute"]
-        group_keys = group["dimensions"] + [attribute]
-
-        grouped_data = (
-            data[group_keys]
-            .drop_duplicates()
-            .reset_index(drop=True)
-            .to_dict(orient="records")
+        dimensions = group["dimensions"]
+        # Aggregate by group dimensions only; take the unique non-empty
+        # attribute value per group so that rows where the attribute was
+        # left empty do not collide with rows carrying the real value.
+        # Conflicting non-empty values raise ``Invalid``.
+        aggregated = data.groupby(by=dimensions, dropna=False, as_index=False)[
+            attribute
+        ].agg(
+            lambda s, _att=attribute: _single_non_empty_or_raise(
+                s, _att, "group"
+            )
         )
 
         out_list.extend(
-            [
-                __format_group_str(record, group["group_id"])
-                for record in grouped_data
-                if record.get(attribute) is not None
-            ]
+            __format_group_str(record, group["group_id"])
+            for record in aggregated.to_dict(orient="records")
+            if not _should_skip_xml_value(record.get(attribute))
         )
 
     return "".join(out_list)
@@ -232,82 +242,66 @@ def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
     return "".join(iterator)
 
 
-def __has_valid_obs(obs_list: List[Dict[str, Any]]) -> bool:
-    for obs in obs_list:
-        for value in obs.values():
-            if not _should_skip_xml_value(value):
-                return True
-    return False
+def __format_ser_str(data_info: Dict[Any, Any], prettyprint: bool) -> str:
+    """Formats the series as key=value pairs."""
+    child2 = "\t\t" if prettyprint else ""
+    child3 = "\t\t\t" if prettyprint else ""
+    nl = "\n" if prettyprint else ""
+
+    out_element = f"{child2}<Series "
+
+    for k, v in data_info.items():
+        if k != "Obs" and not _should_skip_xml_value(v):
+            out_element += f"{k}={__escape_xml(v)!r} "
+
+    # Series with no observations
+    if not data_info.get("Obs"):
+        return out_element + f"/>{nl}"
+
+    out_element += f">{nl}"
+
+    for obs in data_info["Obs"]:
+        out_element += f"{child3}<Obs "
+
+        for k, v in obs.items():
+            if not _should_skip_xml_value(v):
+                out_element += f"{k}={__escape_xml(v)!r} "
+
+        out_element += f"/>{nl}"
+
+    out_element += f"{child2}</Series>{nl}"
+
+    return out_element
 
 
 def __series_processing(
     data: pd.DataFrame,
     series_codes: List[str],
+    series_att_codes: List[str],
     obs_codes: List[str],
+    obs_att_codes: List[str],
     prettyprint: bool = True,
 ) -> str:
-    def __generate_series_str() -> str:
-        """Generates the series item with its observations."""
-        out_list: List[str] = []
-        data.groupby(by=series_codes, dropna=False)[obs_codes].apply(
-            lambda x: __format_dict_ser(out_list, x)
+    """Format one <Series> per dimension key, deriving series attributes.
+
+    Group by dimensions only so that rows where a series-attached
+    attribute was left empty do not split the series into multiple
+    <Series> elements. Each attribute is set to the unique non-empty
+    value found across the group's rows; conflicting non-empty values
+    raise ``Invalid``. Rows whose observation dimension is empty
+    (series-attribute-only rows) are excluded from the obs list.
+    """
+    obs_dim = obs_codes[0]
+    out_list: List[str] = []
+    for keys, group_data in data.groupby(by=series_codes, dropna=False):
+        record: Dict[str, Any] = dict(zip(series_codes, keys))
+        for att in series_att_codes:
+            record[att] = _single_non_empty_or_raise(
+                group_data[att], att, "series"
+            )
+        obs_rows = group_data[~group_data[obs_dim].map(_should_skip_xml_value)]
+        record["Obs"] = obs_rows[obs_codes + obs_att_codes].to_dict(
+            orient="records"
         )
-
-        return "".join(out_list)
-
-    def __format_dict_ser(
-        output_list: List[str],
-        obs: Any,
-    ) -> Any:
-        """Formats the series as key=value pairs."""
-        # Creating the observation dict,
-        # we always get the first element on Series
-        # as we are grouping by it
-        data_dict["Series"][0]["Obs"] = obs.to_dict(orient="records")
-        output_list.append(__format_ser_str(data_dict["Series"][0]))
-        # We remove the data for series as it is no longer necessary
-        del data_dict["Series"][0]
-
-    def __format_ser_str(data_info: Dict[Any, Any]) -> str:
-        """Formats the series as key=value pairs."""
-        child2 = "\t\t" if prettyprint else ""
-        child3 = "\t\t\t" if prettyprint else ""
-        nl = "\n" if prettyprint else ""
-
-        out_element = f"{child2}<Series "
-
-        for k, v in data_info.items():
-            if k != "Obs" and not _should_skip_xml_value(v):
-                out_element += f"{k}={__escape_xml(v)!r} "
-
-        # Series with no observations
-        if not __has_valid_obs(data_info.get("Obs", [])):
-            return out_element + f"/>{nl}"
-
-        out_element += f">{nl}"
-
-        for obs in data_info["Obs"]:
-            out_element += f"{child3}<Obs "
-
-            for k, v in obs.items():
-                if not _should_skip_xml_value(v):
-                    out_element += f"{k}={__escape_xml(v)!r} "
-
-            out_element += f"/>{nl}"
-
-        out_element += f"{child2}</Series>{nl}"
-
-        return out_element
-
-    # Getting each datapoint from data and creating dict
-    data = data.sort_values(series_codes, axis=0)
-    data_dict = {
-        "Series": data[series_codes]
-        .drop_duplicates()
-        .reset_index(drop=True)
-        .to_dict(orient="records")
-    }
-
-    out = __generate_series_str()
-
-    return out
+        out_list.append(__format_ser_str(record, prettyprint))
+    return "".join(out_list)

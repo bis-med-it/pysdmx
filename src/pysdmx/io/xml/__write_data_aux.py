@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Sequence, Union
+from typing import Any, Dict, Iterable, Optional, Sequence, Union
 
 from pysdmx.errors import Invalid
 from pysdmx.io._pd_utils import validate_schema_exists
@@ -113,3 +113,40 @@ def _should_skip_xml_value(v: object) -> bool:
         True if the value is empty or None.
     """
     return v in _XML_SKIP_VALUES
+
+
+def _single_non_empty_or_raise(
+    values: Iterable[Any],
+    attribute: str,
+    context: str = "series",
+) -> Any:
+    """Return the unique non-empty value across rows of a series or group.
+
+    Used to collapse rows of a series-attached or group-attached
+    attribute where the same logical value may be carried by only one of
+    the rows (e.g. a "series-attribute row" in SDMX-CSV) and left empty
+    on the others. A series- or group-attached attribute must be
+    constant within its scope, so a conflict between two non-empty
+    values is a violation of the SDMX information model rather than an
+    ambiguity for the writer to resolve.
+
+    Args:
+        values: Values for the attribute across rows of one group.
+        attribute: The attribute id, used in the error message.
+        context: ``"series"`` or ``"group"``, used in the error message.
+
+    Returns:
+        The single non-empty value, or an empty string if all values
+        are empty or skip-worthy.
+
+    Raises:
+        Invalid: If ``values`` contains more than one distinct non-empty
+            value.
+    """
+    distinct = {v for v in values if not _should_skip_xml_value(v)}
+    if len(distinct) > 1:
+        raise Invalid(
+            f"Attribute {attribute!r} has conflicting values "
+            f"{sorted(distinct)!r} across rows of the same {context}."
+        )
+    return next(iter(distinct), "")
