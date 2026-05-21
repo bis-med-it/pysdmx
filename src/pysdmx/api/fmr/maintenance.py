@@ -6,7 +6,7 @@ from typing import Optional, Sequence, Union
 import httpx
 import msgspec
 
-from pysdmx.errors import InternalError
+from pysdmx.errors import Unauthorized
 from pysdmx.io.json.sdmxjson2.writer import serializers
 from pysdmx.model import MetadataReport
 from pysdmx.model.__base import MaintainableArtefact
@@ -85,7 +85,7 @@ class RegistryMaintenanceClient:
                 that a request timed out. Defaults to 60 seconds.
 
         Raises:
-            InternalError: If neither ``access_token`` nor both ``user`` and
+            Unauthorized: If neither ``access_token`` nor both ``user`` and
                 ``password`` are provided.
         """
         self._api_endpoint = self.__sanitize_endpoint(api_endpoint)
@@ -95,11 +95,11 @@ class RegistryMaintenanceClient:
         self._timeout = timeout
 
         if self._access_token is None and not (self._user and self._password):
-            raise InternalError(
+            raise Unauthorized(
                 "Missing authentication",
                 (
                     "Authentication requires either access_token or both "
-                    "user and password."
+                    "user and password, but none were provided."
                 ),
             )
 
