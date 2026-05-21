@@ -36,6 +36,15 @@ def schema_query_no_version(fmr):
 
 
 @pytest.fixture
+def schema_query_plus_version(fmr):
+    res = "/schema/dataflow/"
+    agency = "BIS.CBS"
+    id = "CBS"
+    version = "%2B"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}/"
+
+
+@pytest.fixture
 def no_hca_query(fmr):
     res = "/structure/dataflow/"
     agency = "BIS.CBS"
@@ -59,9 +68,15 @@ def no_hca_query_no_version(fmr):
 
 
 @pytest.fixture
-def no_hca_body():
-    with open("tests/api/fmr/samples/df/no_hca.json", "rb") as f:
-        return f.read()
+def no_hca_query_plus_version(fmr):
+    res = "/structure/dataflow/"
+    agency = "BIS.CBS"
+    id = "CBS"
+    version = "%2B"
+    return (
+        f"{fmr.api_endpoint}{res}{agency}/{id}/{version}"
+        "?references=all&detail=referencepartial"
+    )
 
 
 @pytest.fixture
@@ -84,6 +99,17 @@ def dataflow_query_no_version(fmr):
 
 
 @pytest.fixture
+def dataflow_query_plus_version(fmr):
+    res = "/structure/dataflow/"
+    agency = "BIS.CBS"
+    id = "CBS"
+    version = "%2B"
+    qst = "detail=referencepartial&references=parentsandsiblings"
+
+    return f"{fmr.api_endpoint}{res}{agency}/{id}/{version}?{qst}"
+
+
+@pytest.fixture
 def core_dataflow_query(fmr):
     res = "/structure/dataflow/"
     agency = "BIS.CBS"
@@ -94,14 +120,38 @@ def core_dataflow_query(fmr):
 
 
 @pytest.fixture
+def no_hca_body():
+    with open("tests/api/fmr/samples/df/no_hca.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture
+def no_hca_body_plus():
+    with open("tests/api/fmr/samples/df/no_hca_plus.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture
 def schema_body():
     with open("tests/api/fmr/samples/df/schema.json", "rb") as f:
         return f.read()
 
 
 @pytest.fixture
+def schema_body_plus():
+    with open("tests/api/fmr/samples/df/schema_plus.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture
 def dataflow_body():
     with open("tests/api/fmr/samples/df/details.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture
+def dataflow_body_plus():
+    with open("tests/api/fmr/samples/df/details_plus.json", "rb") as f:
         return f.read()
 
 
@@ -153,6 +203,52 @@ def test_returns_dataflow_no_version(
         dataflow_query_no_version,
         dataflow_body,
         no_hca_query_no_version,
+        no_hca_body,
+    )
+
+
+def test_dataflow_info_plus_version(
+    respx_mock,
+    fmr,
+    schema_query_plus_version,
+    schema_body_plus,
+    dataflow_query_plus_version,
+    dataflow_body_plus,
+    no_hca_query_plus_version,
+    no_hca_body_plus,
+):
+    """get_dataflow_details() with + matches semver version."""
+    checks.check_dataflow_info_plus_version(
+        respx_mock,
+        fmr,
+        schema_query_plus_version,
+        schema_body_plus,
+        dataflow_query_plus_version,
+        dataflow_body_plus,
+        no_hca_query_plus_version,
+        no_hca_body_plus,
+    )
+
+
+def test_dataflow_info_plus_version_no_match(
+    respx_mock,
+    fmr,
+    schema_query_plus_version,
+    schema_body,
+    dataflow_query_plus_version,
+    dataflow_body,
+    no_hca_query_plus_version,
+    no_hca_body,
+):
+    """get_dataflow_details() with no match for plus returns NotFound."""
+    checks.check_dataflow_info_plus_version_no_match(
+        respx_mock,
+        fmr,
+        schema_query_plus_version,
+        schema_body,
+        dataflow_query_plus_version,
+        dataflow_body,
+        no_hca_query_plus_version,
         no_hca_body,
     )
 
