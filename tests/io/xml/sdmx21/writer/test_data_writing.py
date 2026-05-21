@@ -558,18 +558,53 @@ def test_data_scape_quote(content):
 
 
 def test_generic_writer_varying_attributes(header, content):
+    """Regression guard for #500 with #588's consolidation semantics.
+
+    A series-attached attribute is constant across the series by SDMX
+    semantics, so two different non-empty values across rows of the same
+    series key are invalid input. The writer must surface this as a
+    clean ``Invalid`` rather than crashing (the original #500 guard) or
+    silently picking one value.
+    """
     dataset = list(content.values())[0]
     urn = dataset.structure.short_urn
-    df_test = pd.DataFrame(
+    dataset.data = pd.DataFrame(
         {
             "DIM1": [1, 1],
             "DIM2": [4, 5],
-            "ATT1": ["A", "B"],  # Varying attribute
+            "ATT1": ["A", "B"],  # series-attached, conflicting -> invalid
             "ATT2": [7, 8],
             "M1": [10, 11],
         }
     )
-    dataset.data = df_test
+
+    with pytest.raises(Invalid, match="conflicting values"):
+        write_gen(
+            [dataset],
+            header=header,
+            dimension_at_observation={urn: "DIM2"},
+        )
+
+
+def test_generic_writer_series_attr_sparse_merges(header, content):
+    """A series-attached attribute carried by only one row must merge.
+
+    When one row of a series carries the attribute and the others leave
+    it empty, the writer must collapse them into a single
+    ``<gen:Series>`` carrying the attribute, with both observations
+    underneath.
+    """
+    dataset = list(content.values())[0]
+    urn = dataset.structure.short_urn
+    dataset.data = pd.DataFrame(
+        {
+            "DIM1": [1, 1],
+            "DIM2": [4, 5],
+            "ATT1": ["A", ""],
+            "ATT2": [7, 8],
+            "M1": [10, 11],
+        }
+    )
 
     result = write_gen(
         [dataset],
@@ -578,11 +613,9 @@ def test_generic_writer_varying_attributes(header, content):
     )
 
     assert result is not None
-    assert "gen:Series" in result
-    assert "gen:Obs" in result
-    assert result.count("<gen:Series>") == 2
-    assert "A" in result
-    assert "B" in result
+    assert result.count("<gen:Series>") == 1
+    assert result.count("<gen:Obs>") == 2
+    assert '<gen:Value id="ATT1" value="A"/>' in result
 
 
 @pytest.fixture
@@ -874,3 +907,146 @@ def test_series_format_with_series_no_obs(header):
     assert "<Obs " in result
     # Series B should be "selfclosed" (no observations)
     assert '<Series DIM1="B" ATT1="b1" />' in result
+
+
+@pytest.fixture
+def ds_series_attr_only_row():
+    schema = Schema(
+        context="datastructure",
+        agency="MD",
+        id="TEST",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="DIM1"),
+                    required=True,
+                ),
+                Component(
+                    id="TIME_PERIOD",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="TIME_PERIOD"),
+                    required=True,
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    role=Role.MEASURE,
+                    concept=Concept(id="OBS_VALUE"),
+                    required=True,
+                ),
+                Component(
+                    id="S_ATT",
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(id="S_ATT"),
+                    required=False,
+                    attachment_level="DIM1",
+                ),
+            ]
+        ),
+    )
+    data = pd.DataFrame(
+        {
+            "DIM1": ["A", "A", "A"],
+            "TIME_PERIOD": ["", "2003", "2004"],
+            "OBS_VALUE": ["", "NaN", "42"],
+            "S_ATT": ["#N/A", "", ""],
+        }
+    )
+    return PandasDataset(data=data, structure=schema)
+
+
+def test_str_spec_series_attr_only_row_merges_with_obs(
+    ds_series_attr_only_row,
+):
+    """Issue #588: a series-attr-only row must collapse into one ``<Series>``.
+
+    The attribute is carried on the ``<Series>`` element itself; the
+    obs rows appear underneath without it.
+    """
+    ds = ds_series_attr_only_row
+    result = write_str_spec(
+        [ds],
+        dimension_at_observation={ds.structure.short_urn: "TIME_PERIOD"},
+    )
+    assert result.count("<Series ") == 1
+    assert 'S_ATT="#N/A"' in result
+    assert result.count('<Obs TIME_PERIOD="2003"') == 1
+    assert result.count('<Obs TIME_PERIOD="2004"') == 1
+
+
+def test_generic_series_attr_only_row_merges_with_obs(
+    ds_series_attr_only_row,
+):
+    """Issue #588: generic writer must emit one ``<gen:Series>``.
+
+    The series-attached attribute appears as a ``<gen:Value>`` on the
+    series element; the obs rows appear underneath.
+    """
+    ds = ds_series_attr_only_row
+    result = write_gen(
+        [ds],
+        dimension_at_observation={ds.structure.short_urn: "TIME_PERIOD"},
+    )
+    assert result.count("<gen:Series>") == 1
+    assert '<gen:Value id="S_ATT" value="#N/A"/>' in result
+    assert result.count("<gen:Obs>") == 2
+
+
+def test_str_spec_group_attr_mixed_empty_na_emits_single_group():
+    """Group-attached attribute with mixed empty/"#N/A" rows (issue #588).
+
+    The writer must emit exactly one <Group> element carrying "#N/A".
+    """
+    schema = Schema(
+        context="datastructure",
+        agency="MD",
+        id="TEST",
+        version="1.0",
+        groups=[Group(id="Sibling", dimensions=["DIM1"])],
+        components=Components(
+            [
+                Component(
+                    id="DIM1",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="DIM1"),
+                    required=True,
+                ),
+                Component(
+                    id="TIME_PERIOD",
+                    role=Role.DIMENSION,
+                    concept=Concept(id="TIME_PERIOD"),
+                    required=True,
+                ),
+                Component(
+                    id="OBS_VALUE",
+                    role=Role.MEASURE,
+                    concept=Concept(id="OBS_VALUE"),
+                    required=True,
+                ),
+                Component(
+                    id="G_ATT",
+                    role=Role.ATTRIBUTE,
+                    concept=Concept(id="G_ATT"),
+                    required=False,
+                    attachment_level="DIM1",
+                ),
+            ]
+        ),
+    )
+    data = pd.DataFrame(
+        {
+            "DIM1": ["A", "A", "A"],
+            "TIME_PERIOD": ["", "2003", "2004"],
+            "OBS_VALUE": ["", "1", "2"],
+            "G_ATT": ["#N/A", "", ""],
+        }
+    )
+    ds = PandasDataset(data=data, structure=schema)
+    result = write_str_spec(
+        [ds],
+        dimension_at_observation={ds.structure.short_urn: "TIME_PERIOD"},
+    )
+    assert result.count("<Group ") == 1
+    assert 'G_ATT="#N/A"' in result
