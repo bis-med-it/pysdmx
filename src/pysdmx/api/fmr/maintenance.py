@@ -125,7 +125,7 @@ class RegistryMaintenanceClient:
         if self._access_token is not None:
             return BearerAuth(self._access_token)
 
-        return httpx.BasicAuth(self._user, self._password)
+        return httpx.BasicAuth(self._user, self._password)  # type: ignore[arg-type]
 
     def __post(
         self,

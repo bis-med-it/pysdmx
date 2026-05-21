@@ -1,4 +1,4 @@
-from typing import NoReturn, Union
+from typing import Generator, NoReturn, Union
 
 import httpx
 
@@ -57,7 +57,9 @@ class BearerAuth(httpx.Auth):
         """
         self._token = token
 
-    def auth_flow(self, request: httpx.Request):
+    def auth_flow(
+        self, request: httpx.Request
+    ) -> Generator[httpx.Request, httpx.Response, None]:
         """Apply bearer-token authentication to an outgoing request.
 
         Args:
