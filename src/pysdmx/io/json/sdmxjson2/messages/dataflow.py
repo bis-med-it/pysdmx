@@ -23,7 +23,7 @@ from pysdmx.model import (
     DataStructureDefinition,
 )
 from pysdmx.model.dataflow import Group
-from pysdmx.util import is_final, parse_urn
+from pysdmx.util import is_final, parse_urn, semver_final_pattern
 
 
 def __parse_annotation_metrics(
@@ -163,9 +163,15 @@ class JsonDataflows(Struct, frozen=True, omit_defaults=True):
     def __filter(
         self, df: JsonDataflow, agency: str, id_: str, version: str
     ) -> bool:
-        if version != "~" and version != "latest":
+        if version not in ["~", "+", "latest"]:
             return (
                 df.agency == agency and df.id == id_ and df.version == version
+            )
+        elif version == "+":
+            return (
+                df.agency == agency
+                and df.id == id_
+                and bool(semver_final_pattern.fullmatch(df.version))
             )
         else:
             return df.agency == agency and df.id == id_
@@ -182,12 +188,21 @@ class JsonDataflows(Struct, frozen=True, omit_defaults=True):
         prvs: List[DataProvider] = []
         for dps in self.dataProviderSchemes:
             prvs.extend(dps.dataProviders)
-        df = list(
+        dfs = list(
             filter(
                 lambda df: self.__filter(df, agency, id_, version),
                 self.dataflows,
             )
-        )[0]
+        )
+
+        if not dfs:
+            raise errors.NotFound(
+                "No matching dataflow",
+                "No matching dataflow was found in the message",
+                {"agency": agency, "id": id, "version": version},
+            )
+
+        df = dfs[0]
 
         obs_count, series_count = _extract_metrics(df, self.dataConstraints)
 

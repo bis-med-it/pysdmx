@@ -1,5 +1,7 @@
 import httpx
+import pytest
 
+from pysdmx import errors
 from pysdmx.api.fmr import AsyncRegistryClient, DataflowDetails, RegistryClient
 from pysdmx.io.format import Format
 from pysdmx.model import Component, Components, DataflowInfo, Organisation
@@ -72,6 +74,64 @@ def check_dataflow_info_no_version(
     assert route2.called
     assert route3.called
     __check_dsi(dsi)
+
+
+def check_dataflow_info_plus_version(
+    mock,
+    fmr: RegistryClient,
+    schema_query,
+    schema_body,
+    dataflow_query,
+    dataflow_body,
+    hca_query,
+    hca_body,
+):
+    """get_schema() should return a schema."""
+    route1 = mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
+    route2 = mock.get(schema_query).mock(
+        return_value=httpx.Response(200, content=schema_body)
+    )
+    route3 = mock.get(dataflow_query).mock(
+        return_value=httpx.Response(200, content=dataflow_body)
+    )
+
+    dsi = fmr.get_dataflow_details("BIS.CBS", "CBS", "+")
+
+    assert route1.called
+    assert route2.called
+    assert route3.called
+    __check_dsi(dsi, True)
+
+
+def check_dataflow_info_plus_version_no_match(
+    mock,
+    fmr: RegistryClient,
+    schema_query,
+    schema_body,
+    dataflow_query,
+    dataflow_body,
+    hca_query,
+    hca_body,
+):
+    """get_schema() should return a schema."""
+    route1 = mock.get(hca_query).mock(
+        return_value=httpx.Response(200, content=hca_body)
+    )
+    route2 = mock.get(schema_query).mock(
+        return_value=httpx.Response(200, content=schema_body)
+    )
+    route3 = mock.get(dataflow_query).mock(
+        return_value=httpx.Response(200, content=dataflow_body)
+    )
+
+    with pytest.raises(errors.NotFound):
+        fmr.get_dataflow_details("BIS.CBS", "CBS", "+")
+
+    assert route1.called
+    assert route2.called
+    assert route3.called
 
 
 def check_core_dataflow_info(
@@ -191,14 +251,17 @@ async def check_async_core_dataflow_info(
     __check_core_dsi(dsi)
 
 
-def __check_dsi(dsi):
+def __check_dsi(dsi, is_semver: bool = False):
     assert isinstance(dsi, DataflowInfo)
     assert isinstance(dsi.agency, Organisation)
     assert dsi.agency.id == "BIS.CBS"
     assert dsi.id == "CBS"
     assert dsi.name == "Consolidated Banking Statistics"
     assert dsi.description == "This dataflow is associated to the BIS_CBS DSD."
-    assert dsi.version == "1.0"
+    if is_semver:
+        assert dsi.version == "1.0.0"
+    else:
+        assert dsi.version == "1.0"
     assert len(dsi.providers) == 33
     for p in dsi.providers:
         assert isinstance(p, Organisation)

@@ -4,6 +4,7 @@ from typing import List, Optional, Sequence
 
 from msgspec import Struct
 
+from pysdmx import errors
 from pysdmx.io.json.fusion.messages.core import FusionString
 from pysdmx.io.json.fusion.messages.org import FusionProviderScheme
 from pysdmx.model import (
@@ -16,6 +17,7 @@ from pysdmx.model import (
     Dataflow as DF,
 )
 from pysdmx.model.dataflow import Group
+from pysdmx.util import semver_final_pattern
 
 
 class FusionDataflow(Struct, frozen=True, rename={"agency": "agencyId"}):
@@ -55,9 +57,15 @@ class FusionDataflowMessage(Struct, frozen=True):
         id_: str,
         version: str,
     ) -> bool:
-        if version != "~" and version != "latest":
+        if version not in ["~", "+", "latest"]:
             return (
                 df.agency == agency and df.id == id_ and df.version == version
+            )
+        elif version == "+":
+            return (
+                df.agency == agency
+                and df.id == id_
+                and bool(semver_final_pattern.fullmatch(df.version))
             )
         else:
             return df.agency == agency and df.id == id_
@@ -74,12 +82,22 @@ class FusionDataflowMessage(Struct, frozen=True):
         prvs: List[DataProvider] = []
         for dps in self.DataProviderScheme:
             prvs.extend(dps.to_model([]))
-        df = list(
+        dfs = list(
             filter(
                 lambda df: self.__filter(df, agency, id_, version),
                 self.Dataflow,
             )
-        )[0]
+        )
+
+        if not dfs:
+            raise errors.NotFound(
+                "No matching dataflow",
+                "No matching dataflow was found in the message",
+                {"agency": agency, "id": id, "version": version},
+            )
+
+        df = dfs[0]
+
         return DataflowInfo(
             id=df.id,
             components=components,
