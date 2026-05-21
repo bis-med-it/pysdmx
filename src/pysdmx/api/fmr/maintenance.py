@@ -6,6 +6,7 @@ from typing import Optional, Sequence, Union
 import httpx
 import msgspec
 
+from pysdmx.errors import InternalError
 from pysdmx.io.json.sdmxjson2.writer import serializers
 from pysdmx.model import MetadataReport
 from pysdmx.model.__base import MaintainableArtefact
@@ -14,7 +15,7 @@ from pysdmx.model.message import (
     MetadataMessage,
     StructureMessage,
 )
-from pysdmx.util._net_utils import map_httpx_errors
+from pysdmx.util._net_utils import BearerAuth, map_httpx_errors
 
 
 class StructureAction(Enum):
@@ -42,13 +43,27 @@ class StructureAction(Enum):
 
 
 class RegistryMaintenanceClient:
-    """EXPERIMENTAL: A client to update metadata in the FMR."""
+    """EXPERIMENTAL: A client to update metadata in the FMR.
+
+    The client supports two authentication modes:
+
+    - Bearer token authentication via ``access_token``
+    - HTTP Basic authentication via ``user`` and ``password``
+
+    If ``access_token`` is provided, it takes precedence over ``user`` and
+    ``password``.
+
+    The client does not obtain or refresh OIDC/OAuth2 tokens itself. It is the
+    responsibility of the caller to acquire a valid access token from their
+    authentication provider and pass it to this client.
+    """
 
     def __init__(
         self,
         api_endpoint: str,
-        user: str,
-        password: str,
+        user: Optional[str] = None,
+        password: Optional[str] = None,
+        access_token: Optional[str] = None,
         pem: Optional[str] = None,
         timeout: float = 60.0,
     ):
@@ -56,18 +71,38 @@ class RegistryMaintenanceClient:
 
         Args:
             api_endpoint: The endpoint of the targeted service.
-            user: Username for authentication.
-            password: Password for authentication.
+            user: Username for HTTP Basic authentication. Optional if
+                ``access_token`` is provided.
+            password: Password for HTTP Basic authentication. Optional if
+                ``access_token`` is provided.
+            access_token: Bearer access token to use for authentication. If
+                provided, it takes precedence over ``user`` and ``password``.
+                The caller is responsible for obtaining this token.
             pem: In case the service exposed a certificate created by an
                 unknown certificate authority, you can pass a pem file for
                 this authority using this parameter.
             timeout: The maximum number of seconds to wait before considering
-                that a request timed out. Defaults to 10 seconds.
+                that a request timed out. Defaults to 60 seconds.
+
+        Raises:
+            InternalError: If neither ``access_token`` nor both ``user`` and
+                ``password`` are provided.
         """
         self._api_endpoint = self.__sanitize_endpoint(api_endpoint)
         self._user = user
         self._password = password
+        self._access_token = access_token
         self._timeout = timeout
+
+        if self._access_token is None and not (self._user and self._password):
+            raise InternalError(
+                "Missing authentication",
+                (
+                    "Authentication requires either access_token or both "
+                    "user and password."
+                ),
+            )
+
         self._ssl_context = (
             httpx.create_ssl_context(
                 verify=pem,
@@ -77,6 +112,21 @@ class RegistryMaintenanceClient:
         )
         self._encoder = msgspec.json.Encoder()
 
+    def __build_auth(self) -> httpx.Auth:
+        """Build the authentication strategy for outgoing requests.
+
+        Returns:
+            An ``httpx.Auth`` instance.
+
+        Notes:
+            If ``access_token`` is set, bearer-token authentication is used
+            and takes precedence over ``user`` and ``password``.
+        """
+        if self._access_token is not None:
+            return BearerAuth(self._access_token)
+
+        return httpx.BasicAuth(self._user, self._password)
+
     def __post(
         self,
         message: Union[MetadataMessage, StructureMessage],
@@ -85,7 +135,7 @@ class RegistryMaintenanceClient:
     ) -> None:
         with httpx.Client(verify=self._ssl_context) as client:
             try:
-                auth = httpx.BasicAuth(self._user, self._password)
+                auth = self.__build_auth()
                 headers = {
                     "Content-Type": "application/text",
                     "Action": action.value,
