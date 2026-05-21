@@ -114,7 +114,7 @@ def __parse_structure(
             structure_info = struct[PROV_AGREMENT]
             sdmx_type = PROV_AGREMENT
 
-        if REF in structure_info:
+        if isinstance(structure_info, dict) and REF in structure_info:
             reference = structure_info[REF]
             agency_id = reference[AGENCY_ID]
             structure_id = reference[ID]

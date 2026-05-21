@@ -688,7 +688,7 @@ class StructureParser(Struct):
                         else ""
                     )
         elif GROUP in attribute:
-            if REF in attribute[GROUP]:
+            if isinstance(attribute[GROUP], dict) and REF in attribute[GROUP]:
                 group_id = attribute[GROUP][REF][ID]
             else:
                 group_id = attribute[GROUP]
@@ -790,7 +790,9 @@ class StructureParser(Struct):
         return json_elem
 
     def __format_dataflow(
-        self, json_rep: Dict[str, Any], json_obj: Dict[str, Any]
+        self,
+        json_rep: Union[str, Dict[str, Any]],
+        json_obj: Dict[str, Any],
     ) -> None:
         json_obj[DFW_ALIAS_LOW] = json_obj.pop(ALIAS_LOW)
         if isinstance(json_rep, str):
@@ -807,7 +809,7 @@ class StructureParser(Struct):
                 "version": json_rep[REF][VERSION],
             }
         json_obj[DFW_LOW] = DataflowRef(**dataflow_ref)
-        if REF in json_rep:
+        if isinstance(json_rep, dict) and REF in json_rep:
             json_rep.pop(REF)
         json_obj.pop(DFW)
         if self.dataflows:
@@ -825,7 +827,7 @@ class StructureParser(Struct):
 
         if LINK in comp:
             del comp[LINK]
-        if REF in comp[CON_ID]:
+        if isinstance(comp[CON_ID], dict) and REF in comp[CON_ID]:
             concept_id = self.__format_con_id(comp[CON_ID][REF])
         else:
             concept_id = self.__format_con_id(comp[CON_ID])
@@ -935,7 +937,7 @@ class StructureParser(Struct):
             del element[DFW]
 
         ref_data_prov: Union[Reference, ItemReference]
-        if REF in element[DATA_PROV]:
+        if isinstance(element[DATA_PROV], dict) and REF in element[DATA_PROV]:
             data_prov = element[DATA_PROV][REF]
             ref_data_prov = ItemReference(
                 sdmx_type=data_prov[CLASS],
