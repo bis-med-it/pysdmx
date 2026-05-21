@@ -391,6 +391,28 @@ def test_structure_ref_urn(samples_folder):
     assert dataset.short_urn == "DataStructure=BIS:BIS_DER(1.0)"
 
 
+def test_data_structure_concept_id_with_ref(samples_folder):
+    """Regression test for issue #596.
+
+    Concepts whose id contains the substring "Ref" (e.g. ReferentieDatum)
+    are referenced via a <Ref/> child in SDMX 2.1. The isinstance guard
+    around the dict dispatch must still take the dict branch here.
+    """
+    data_path = samples_folder / "datastructure_concept_id_with_ref.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_structure(input_str, validate=True)
+    dsd = result[0]
+    dim = next(c for c in dsd.components if c.id == "REFERENTIE_DATUM")
+    assert dim.concept == ItemReference(
+        sdmx_type="Concept",
+        agency="MD",
+        id="STANDALONE_CONCEPT_SCHEME",
+        version="1.0",
+        item_id="ReferentieDatum",
+    )
+
+
 def test_partial_datastructure(samples_folder):
     data_path = samples_folder / "partial_datastructure.xml"
     input_str, read_format = process_string_to_read(data_path)
