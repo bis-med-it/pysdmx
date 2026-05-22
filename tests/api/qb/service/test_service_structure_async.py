@@ -1,13 +1,13 @@
 import httpx
 import pytest
 
-from pysdmx.api.qb import (
-    ApiVersion,
-    AsyncRestService,
+from pysdmx.api.qb.service import AsyncRestService
+from pysdmx.api.qb.structure import (
     StructureFormat,
     StructureQuery,
     StructureType,
 )
+from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 
 
@@ -28,7 +28,7 @@ def service(end_point: str, version: ApiVersion) -> AsyncRestService:
 
 @pytest.fixture
 def query() -> StructureQuery:
-    return StructureQuery(StructureType.ALL, "SDMX", "CL_FREQ")
+    return StructureQuery(StructureType.CODELIST, "SDMX", "CL_FREQ")
 
 
 @pytest.fixture

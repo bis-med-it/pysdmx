@@ -121,6 +121,15 @@ class NotFilter(Struct, frozen=True, tag=True):
     filter: Filter
 
 
+BasicFilter = Union[
+    BooleanFilter,
+    DateTimeFilter,
+    MultiFilter,
+    NumberFilter,
+    TextFilter,
+]
+
+
 __all__ = [
     "BooleanFilter",
     "DateTimeFilter",

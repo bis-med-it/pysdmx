@@ -58,3 +58,10 @@ def test_match_short_item():
     assert m.id == "CL_FREQ"
     assert m.version == "1.0"
     assert m.item_id == "A"
+
+
+def test_short_dataflow_no_match():
+    df = "BIS:CBS(1.0)"
+
+    with pytest.raises(Invalid):
+        parse_urn(df)

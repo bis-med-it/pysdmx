@@ -460,6 +460,27 @@ def test_data_structure_metadata(samples_folder):
     assert result is not None
 
 
+def test_data_structure_concept_id_with_ref(samples_folder):
+    """Regression test for issue #596.
+
+    ConceptIdentity URNs whose item id contains the substring "Ref"
+    (e.g. ReferentieDatum) must not be treated as a dict <Ref/> child.
+    """
+    data_path = samples_folder / "datastructure_concept_id_with_ref.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+    dsd = result[0]
+    dim = next(c for c in dsd.components if c.id == "REFERENTIE_DATUM")
+    assert dim.concept == ItemReference(
+        sdmx_type="Concept",
+        agency="MD",
+        id="STANDALONE_CONCEPT_SCHEME",
+        version="1.0",
+        item_id="ReferentieDatum",
+    )
+
+
 def test_data_structure_with_link_codelist(samples_folder):
     data_path = samples_folder / "datastructure_complete_with_link.xml"
     with open(data_path, "r", encoding="utf-8") as file:

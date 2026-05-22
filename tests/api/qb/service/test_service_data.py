@@ -1,13 +1,9 @@
 import httpx
 import pytest
 
-from pysdmx.api.qb import (
-    ApiVersion,
-    DataContext,
-    DataFormat,
-    DataQuery,
-    RestService,
-)
+from pysdmx.api.qb.data import DataContext, DataFormat, DataQuery
+from pysdmx.api.qb.service import RestService
+from pysdmx.api.qb.util import ApiVersion
 from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 
 
@@ -28,7 +24,7 @@ def service(end_point: str, version: ApiVersion) -> RestService:
 
 @pytest.fixture
 def query() -> DataQuery:
-    return DataQuery(DataContext.ALL, "BIS", "CBS")
+    return DataQuery(DataContext.DATAFLOW, "BIS", "CBS")
 
 
 @pytest.fixture

@@ -39,23 +39,24 @@ jobs:
             python3-jsonschema \
             python3-pytest \
             python3-pytest-asyncio \
-            python3-antlr4 \
+            python3-pytest-mock \
             python3-networkx \
+            python3-psutil \
             python3-sqlglot
 
       - name: Install pip-only dependencies
         run: |
           pip install --no-dependencies --break-system-packages \
-            sdmxschemas \
-            parsy \
-            msgspec \
-            respx  # Needed for tests
+            sdmxschemas==1.0.0 \
+            parsy==2.2 \
+            msgspec==0.20.0 \
+            respx==0.23.1  # Needed for tests
 
-      - name: Install pip dependencies (vltengine, duckdb, pyarrow)
+      - name: Install pip dependencies (duckdb, pyarrow, vtlengine)
         run: |
-          pip install --no-dependencies --break-system-packages vtlengine==1.6.3
           pip install --break-system-packages --force-reinstall --no-dependencies duckdb
           pip install --break-system-packages --force-reinstall --no-dependencies pyarrow
+          pip install --no-dependencies --break-system-packages vtlengine==1.8.0rc2
 
       - name: Install package
         run: |

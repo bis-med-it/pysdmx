@@ -31,7 +31,16 @@ PATH_RULES = {
     "/tests/api/gds/": ("noextra", True),
     "/tests/api/qb/": ("noextra", True),
     # dc tests
-    "/tests/api/dc/": ("dc", True),
+    "/tests/api/dc/test_model.py": ("dc", True),
+    "/tests/api/dc/test_multi_filters.py": ("dc", True),
+    "/tests/api/dc/test_parser.py": ("dc", True),
+    "/tests/api/dc/test_parsing_model.py": ("dc", True),
+    "/tests/api/dc/test_py_parser.py": ("dc", True),
+    "/tests/api/dc/test_rest_client.py": ("dc", True),
+    "/tests/api/dc/test_sortby.py": ("dc", True),
+    "/tests/api/dc/test_sql_parser.py": ("dc", True),
+    "/tests/api/dc/test_util.py": ("dc", True),
+    "/tests/api/dc/test_pd_client.py": ("data", True),
     # json tests
     "/tests/io/json/sdmxjson2/": ("json", True),
     "/tests/io/json/sdmxjson2/deser/test_read_validations.py": ("json", True),
