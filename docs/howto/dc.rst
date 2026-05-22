@@ -15,6 +15,11 @@ functionality is formalized in the SDMX-REST "Data Discovery and
 Retrieval" profile, implemented by the pysdmx connector. Below,
 we describe the features supported by this connector.
 
+.. note::
+    For the AI agent-oriented version of this guide, see
+    ``.agents/skills/data-discovery-and-retrieval/SKILL.md``
+    in the repository root.
+
 .. important::
     To use the pysdmx connectors, you need to install the
     `pysdmx[data]` extra.
