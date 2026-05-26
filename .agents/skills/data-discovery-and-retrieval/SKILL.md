@@ -1,16 +1,16 @@
 ---
 name: data-discovery-and-retrieval
-description: Enable clients to discover and retrieve available datasets from a service. This is a three-step process: 1) Discover the datasets available in the source to identify those of interest, 2) Gather detailed information about a dataset to understand how to query it effectively, and 3) Download data as a pandas data frame.
+description: Discover and retrieve SDMX datasets from a service. Use this skill when the user wants to find available datasets, learn more about a dataset (e.g. inspect dimensions and codes), map natural-language requests to valid data filters, and download results as a pandas DataFrame, even if they do not explicitly mention SDMX.
 ---
-# Data Discovery and Retrieval Skill
+# SDMX Data Discovery and Retrieval
 
 ## Goal
 
 Use `pysdmx` connectors implementing the SDMX-REST **Data Discovery and
 Retrieval** profile to:
 
-1. Discover available datasets.
-2. Inspect a selected dataset to build effective queries.
+1. Discover available dataflows (datasets).
+2. Inspect a selected dataflow to build effective queries.
 3. Retrieve filtered data as a pandas DataFrame.
 
 ## Prerequisites
@@ -76,7 +76,7 @@ for f in flows:
 
 ### Step 2: Inspect one dataset (`dataflow`)
 
-Fetch details for a selected flow. `flows[0]` is only one convenient way
+Fetch details for a selected dataflow. `flows[0]` is only one convenient way
 to choose a candidate from discovery results.
 
 `dataflow(...)` accepts any valid maintainable identification, such as:
@@ -304,7 +304,7 @@ When an agent is asked to discover and retrieve data, use this sequence:
 
 1. Initialize `PandasConnector` from `Endpoints`.
 2. Call `dataflows(search_term)` if user intent includes a topic.
-3. Select one candidate flow and call `dataflow(...)`.
+3. Select one candidate dataflow and call `dataflow(...)`.
 4. Inspect dimensions and propose valid filter values.
 5. Retrieve a constrained sample with `data(...)`.
 6. Only then expand scope (more columns, broader filters, or full pull).
