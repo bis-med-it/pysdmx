@@ -76,6 +76,11 @@ def pwd():
 
 
 @pytest.fixture
+def access_token():
+    return "my-token"
+
+
+@pytest.fixture
 def header():
     return Header(test=True, sender=Organisation("5B0"))
 
@@ -202,6 +207,72 @@ def test_report_maintenance_header(
     assert msg.header.test is True
     assert msg.header.prepared is not None
     assert msg.header.sender.id == "5B0"
+
+
+def test_report_maintenance_access_token(
+    respx_mock, report, end_point_in, end_point_out_report, access_token
+):
+    respx_mock.post(end_point_out_report).mock(
+        return_value=httpx.Response(200)
+    )
+
+    client = RegistryMaintenanceClient(end_point_in, access_token=access_token)
+
+    client.put_metadata_reports([report])
+
+    assert respx_mock.calls.call_count == 1
+    request = respx_mock.calls[0].request
+
+    # Check header
+    assert "Action" in request.headers
+    assert request.headers["Action"] == "Replace"
+    assert "Authorization" in request.headers
+    assert request.headers["Authorization"] == f"Bearer {access_token}"
+
+    # Check content
+    msg = (
+        msgspec.json.Decoder(JsonMetadataMessage)
+        .decode(request.content)
+        .to_model()
+    )
+    assert len(msg.reports) == 1
+    assert msg.reports[0] == report
+    assert msg.header.id is not None
+    assert msg.header.test is False
+    assert msg.header.prepared is not None
+    assert msg.header.sender.id == "ZZZ"
+
+
+def test_report_maintenance_access_token_has_priority(
+    respx_mock,
+    report,
+    end_point_in,
+    end_point_out_report,
+    user,
+    pwd,
+    access_token,
+):
+    respx_mock.post(end_point_out_report).mock(
+        return_value=httpx.Response(200)
+    )
+
+    client = RegistryMaintenanceClient(
+        end_point_in, user, pwd, access_token=access_token
+    )
+
+    client.put_metadata_reports([report])
+
+    assert respx_mock.calls.call_count == 1
+    request = respx_mock.calls[0].request
+
+    # Check header
+    assert "Authorization" in request.headers
+    assert request.headers["Authorization"] == f"Bearer {access_token}"
+
+
+def test_invalid_auth_configuration(end_point_in):
+    with pytest.raises(errors.Unauthorized):
+        RegistryMaintenanceClient(end_point_in)
 
 
 def test_endpoint_ending(
