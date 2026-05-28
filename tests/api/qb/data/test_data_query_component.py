@@ -767,3 +767,25 @@ def test_bug_480():
     url = query.get_url(ApiVersion.V2_0_0, omit_defaults=True)
 
     assert url == expected
+
+
+def test_bug_606():
+    """Fix issue #606.
+
+    Reproduce condition when a DateTimeFilter query fails with an error but
+    shouldn't.
+    """
+    from pysdmx.api.dc.util import parse_query
+
+    qs = "FREQ = 'M' AND LAST_UPDATED >= '2018-01-01T23:59:59+00:00'"
+    flts = parse_query(qs)
+    dq = DataQuery(
+        DataContext.DATAFLOW, "BIS", "WS_CBPOL", "1.0", components=flts
+    )
+    expected = (
+        "/data/dataflow/BIS/WS_CBPOL/1.0?"
+        "c[FREQ]=M&c[TIME_PERIOD]=ge:2018-01-01T23:59:59+00:00"
+    )
+    url = dq.get_url(ApiVersion.V2_0_0, True)
+
+    assert url == expected
