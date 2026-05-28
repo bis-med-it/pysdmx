@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 import pytest
 
 from pysdmx.api.dc.query import (
@@ -775,12 +777,16 @@ def test_bug_606():
     Reproduce condition when a DateTimeFilter query fails with an error but
     shouldn't.
     """
-    from pysdmx.api.dc.util import parse_query
+    f1 = TextFilter("FREQ", Operator.EQUALS, "M")
+    f2 = DateTimeFilter(
+        "LAST_UPDATED",
+        Operator.GREATER_THAN_OR_EQUAL,
+        datetime(2018, 1, 1, 23, 59, 59, tzinfo=timezone.utc),
+    )
+    mf = MultiFilter([f1, f2])
 
-    qs = "FREQ = 'M' AND LAST_UPDATED >= '2018-01-01T23:59:59+00:00'"
-    flts = parse_query(qs)
     dq = DataQuery(
-        DataContext.DATAFLOW, "BIS", "WS_CBPOL", "1.0", components=flts
+        DataContext.DATAFLOW, "BIS", "WS_CBPOL", "1.0", components=mf
     )
     expected = (
         "/data/dataflow/BIS/WS_CBPOL/1.0?"
