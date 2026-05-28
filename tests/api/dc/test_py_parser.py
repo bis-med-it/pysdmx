@@ -216,9 +216,9 @@ def test_multiple_filters():
     fld1 = "REF_AREA"
     op1 = _PythonCoreOperator.EQUALS
     val1 = "UY"
-    fld2 = "TIME_PERIOD"
+    fld2 = "LAST_UPDATED"
     op2 = _PythonCoreOperator.GREATER_THAN_OR_EQUAL
-    val2 = "2020-01-01"
+    val2 = "2020-01-01T23:42:59.420+00:00"
     flt = f"{fld1}{op1.value}{val1!r} and {fld2} {op2.value} {val2!r}"
 
     resp = py_parser.parse(flt)
@@ -237,8 +237,34 @@ def test_multiple_filters():
             assert rf.value.year == 2020
             assert rf.value.month == 1
             assert rf.value.day == 1
-            assert rf.value.hour == 0
-            assert rf.value.minute == 0
-            assert rf.value.second == 0
-            assert rf.value.microsecond == 0
+            assert rf.value.hour == 23
+            assert rf.value.minute == 42
+            assert rf.value.second == 59
+            assert rf.value.microsecond == 420000
             assert rf.value.tzinfo == timezone.utc
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "2020-01-01",  # Daily or Business frequency
+        "2020-W01",  # Weekly frequency
+        "2020-01",  # Monthly frequency
+        "2020-Q1",  # Quarterly frequency
+        "2020-S1",  # Semi-annual frequency
+        "2020-H1",  # Semi-annual frequency (old code)
+        "2020",  # Annual frequency
+    ],
+)
+def test_period_formats(value):
+    field = "TIME_PERIOD"
+    operator = _PythonCoreOperator.GREATER_THAN_OR_EQUAL
+    flt = f"{field} {operator.value} {value!r}"
+
+    resp = py_parser.parse(flt)
+
+    assert isinstance(resp, TextFilter)
+    assert resp.field == field
+    assert resp.operator == Operator.GREATER_THAN_OR_EQUAL
+    assert isinstance(resp.value, str)
+    assert resp.value == value
