@@ -38,12 +38,10 @@ def test_sql_query():
             assert flt.operator == Operator.NOT_EQUALS
             assert flt.value == "A"
         elif idx == 2:
-            assert isinstance(flt, DateTimeFilter)
+            assert isinstance(flt, TextFilter)
             assert flt.field == "TIME_PERIOD"
             assert flt.operator == Operator.GREATER_THAN_OR_EQUAL
-            assert flt.value.year == 2024
-            assert flt.value.month == 1
-            assert flt.value.day == 1
+            assert flt.value == "2024-01-01"
         elif idx == 3:
             assert isinstance(flt, TextFilter)
             assert flt.field == "OBS_STATUS"
@@ -94,12 +92,10 @@ def test_py_query():
             assert flt.operator == Operator.NOT_EQUALS
             assert flt.value == "A"
         elif idx == 2:
-            assert isinstance(flt, DateTimeFilter)
+            assert isinstance(flt, TextFilter)
             assert flt.field == "TIME_PERIOD"
             assert flt.operator == Operator.GREATER_THAN_OR_EQUAL
-            assert flt.value.year == 2024
-            assert flt.value.month == 1
-            assert flt.value.day == 1
+            assert flt.value == "2024-01-01"
         elif idx == 3:
             assert isinstance(flt, TextFilter)
             assert flt.field == "OBS_STATUS"
