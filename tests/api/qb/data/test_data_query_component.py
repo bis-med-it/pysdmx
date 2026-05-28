@@ -784,7 +784,7 @@ def test_bug_606():
     )
     expected = (
         "/data/dataflow/BIS/WS_CBPOL/1.0?"
-        "c[FREQ]=M&c[TIME_PERIOD]=ge:2018-01-01T23:59:59+00:00"
+        "c[FREQ]=M&c[LAST_UPDATED]=ge:2018-01-01T23:59:59+00:00"
     )
     url = dq.get_url(ApiVersion.V2_0_0, True)
 
