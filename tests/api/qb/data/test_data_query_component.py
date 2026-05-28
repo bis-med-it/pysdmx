@@ -1,6 +1,7 @@
 import pytest
 
 from pysdmx.api.dc.query import (
+    DateTimeFilter,
     LogicalOperator,
     MultiFilter,
     NotFilter,
@@ -531,6 +532,92 @@ def test_one_number_between_since_2_2_0(api_version: ApiVersion):
     flt = NumberFilter("OBS_VALUE", Operator.BETWEEN, [2, 8])
     expected = (
         "/data/*/*/*/*/*?c[OBS_VALUE]=ge:2+le:8"
+        "&attributes=dsd&measures=all&includeHistory=false&offset=0"
+    )
+
+    q = DataQuery(components=flt)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
+)
+def test_one_datetime(api_version: ApiVersion):
+    flt = DateTimeFilter(
+        "TIME_PERIOD", Operator.GREATER_THAN, "2026-01-01T00:00:00Z"
+    )
+    expected = (
+        "/data/*/*/*/*/*?c[TIME_PERIOD]=gt:2026-01-01T00:00:00Z"
+        "&attributes=dsd&measures=all&includeHistory=false"
+    )
+
+    q = DataQuery(components=flt)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+def test_one_datetime_since_2_2_0(api_version: ApiVersion):
+    flt = DateTimeFilter(
+        "TIME_PERIOD", Operator.GREATER_THAN, "2026-01-01T00:00:00Z"
+    )
+    expected = (
+        "/data/*/*/*/*/*?c[TIME_PERIOD]=gt:2026-01-01T00:00:00Z"
+        "&attributes=dsd&measures=all&includeHistory=false&offset=0"
+    )
+
+    q = DataQuery(components=flt)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
+)
+def test_datetime_between(api_version: ApiVersion):
+    flt = DateTimeFilter(
+        "TIME_PERIOD",
+        Operator.BETWEEN,
+        ["2026-01-01T00:00:00Z", "2026-12-31T23:59:59Z"],
+    )
+    expected = (
+        "/data/*/*/*/*/*?c[TIME_PERIOD]=ge:2026-01-01T00:00:00Z+le:2026-12-31T23:59:59Z"
+        "&attributes=dsd&measures=all&includeHistory=false"
+    )
+
+    q = DataQuery(components=flt)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+def test_datetime_between_since_2_2_0(api_version: ApiVersion):
+    flt = DateTimeFilter(
+        "TIME_PERIOD",
+        Operator.BETWEEN,
+        ["2026-01-01T00:00:00Z", "2026-12-31T23:59:59Z"],
+    )
+    expected = (
+        "/data/*/*/*/*/*?c[TIME_PERIOD]=ge:2026-01-01T00:00:00Z+le:2026-12-31T23:59:59Z"
         "&attributes=dsd&measures=all&includeHistory=false&offset=0"
     )
 
