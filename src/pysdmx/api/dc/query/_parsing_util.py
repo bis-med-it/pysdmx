@@ -53,6 +53,8 @@ def __map_string(input: str) -> Union[_DateTime, _String]:
         dt = dateutil.parser.parse(rec)
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=timezone.utc)
+        elif dt.utcoffset() == timezone.utc.utcoffset(dt):
+            dt = dt.astimezone(timezone.utc)
         return _DateTime(dt)
     except dateutil.parser.ParserError:
         return _String(rec)
