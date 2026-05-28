@@ -614,11 +614,11 @@ def _create_component_filter(
         val = _format_component_value(val).replace("%", "")
         return f"c[{fld}]={op}:{val}"
     elif flt.operator == Operator.IN:
-        return f"c[{fld}]={','.join(_format_component_value(v) for v in val)}"
+        return f"c[{fld}]={','.join(_format_component_value(v) for v in val)}"  # type: ignore[union-attr]
     elif flt.operator == Operator.BETWEEN:
         return (
-            f"c[{fld}]=ge:{_format_component_value(val[0])}"
-            f"+le:{_format_component_value(val[1])}"
+            f"c[{fld}]=ge:{_format_component_value(val[0])}"  # type: ignore[index]
+            f"+le:{_format_component_value(val[1])}"  # type: ignore[index]
         )
     elif flt.operator in [
         Operator.EQUALS,
