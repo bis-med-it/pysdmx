@@ -33,6 +33,44 @@ conn = PandasConnector(Endpoints.BIS)
 The connector requires a service entry point URL for data and metadata.
 Use `Endpoints` whenever possible.
 
+### If the user asks for a statistical domain but not for a specific service
+
+When the caller asks a general discovery question such as "Where can I find
+data about exchange rates?", do not assume a single service.
+
+Instead:
+
+1. Iterate over every member of `pysdmx.api.dc.Endpoints`.
+2. For each endpoint, construct a `PandasConnector`.
+3. Call `dataflows(search_term)` on that connector.
+4. Return every matching dataflow across all services.
+
+The search term should be matched using the connector's built-in
+`dataflows(search_term)` behavior, which checks whether the term appears in a
+dataflow's `id`, `name`, or `description`.
+
+Example:
+
+```python
+from pysdmx.api.dc import Endpoints
+from pysdmx.api.dc.pd import PandasConnector
+
+search_term = "exchange rates"
+matches = []
+
+for endpoint in Endpoints:
+  conn = PandasConnector(endpoint)
+  flows = conn.dataflows(search_term)
+  matches.extend((endpoint.name, flow) for flow in flows)
+
+for service_name, flow in matches:
+  print(service_name, flow.id, flow.name)
+```
+
+Only skip this cross-service iteration when the user explicitly names a
+specific provider or service, or when they supply a concrete SDMX-REST base
+URL.
+
 ### If `Endpoints` does not contain the requested service
 
 When the caller requests a service that is not present in `Endpoints`:
@@ -73,6 +111,10 @@ print(f"Found {len(flows)} dataflows.")
 for f in flows:
     print(f.short_urn)
 ```
+
+If the user is exploring a topic rather than a known service, repeat this
+search for every endpoint in `Endpoints` and aggregate the results before
+presenting candidate datasets.
 
 ### Step 2: Inspect one dataset (`dataflow`)
 
