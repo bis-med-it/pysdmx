@@ -127,3 +127,10 @@ def test_parse_error():
         parse_query("blah")
     assert e.value.title == "Unparseable query"
     assert "blah" in e.value.description
+
+
+def test_wrong_datetime():
+    with pytest.raises(Invalid) as e:
+        parse_query("LAST_UPDATED > '2020-13-01T23:42'")
+    assert e.value.title == "Invalid input"
+    assert "Invalid datetime format" in e.value.description
