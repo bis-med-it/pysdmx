@@ -202,7 +202,10 @@ class _CoreDataQuery(CoreQuery, frozen=True, omit_defaults=True):
                 )
             flts_by_comp = defaultdict(list)
             for f in components.filters:
-                if isinstance(f, (NumberFilter, TextFilter)):
+                if isinstance(
+                    f,
+                    (BooleanFilter, DateTimeFilter, NumberFilter, TextFilter),
+                ):
                     flts_by_comp[f.field].append(f)
                 else:
                     raise Invalid(
