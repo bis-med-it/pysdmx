@@ -1,3 +1,4 @@
+import re
 from datetime import timezone
 from typing import Sequence, Union
 
@@ -18,6 +19,12 @@ from pysdmx.api.dc.query._parsing_model import (
     _Filter,
     _Number,
     _String,
+)
+
+_ISO_DATETIME = re.compile(
+    r"^\d{4}-\d{2}-\d{2}[Tt]\d{2}:\d{2}"
+    r"(?::\d{2}(?:\.\d+)?)?"
+    r"(?:Z|[+-]\d{2}:?\d{2})?$"
 )
 
 
@@ -49,6 +56,8 @@ def __map_string(input: str) -> Union[_DateTime, _String]:
     import dateutil.parser
 
     rec = input[1:-1]
+    if _ISO_DATETIME.fullmatch(rec) is None:
+        return _String(rec)
     try:
         dt = dateutil.parser.parse(rec)
         if dt.tzinfo is None:
