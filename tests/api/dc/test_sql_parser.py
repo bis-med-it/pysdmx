@@ -299,3 +299,31 @@ def test_period_formats(value):
     assert resp.operator == Operator.GREATER_THAN_OR_EQUAL
     assert isinstance(resp.value, str)
     assert resp.value == value
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "2020-01-01T23:42",
+        "2020-01-01t23:42",
+        "2020-01-01T23:42:59",
+        "2020-01-01T23:42:59.420",
+        "2020-01-01T23:42:59.123456",
+        "2020-01-01T23:42:59.1234567+00:00",
+        "2020-01-01T23:42Z",
+        "2020-01-01T23:42+00:00",
+        "2020-01-01T23:42+0000",
+        "2020-01-01T23:42:59.420+01:00",
+    ],
+)
+def test_datetime_formats(value):
+    field = "LAST_UPDATED"
+    operator = _CoreOperator.GREATER_THAN_OR_EQUAL
+    flt = f"{field} {operator.value} {value!r}"
+
+    resp = sql_parser.parse(flt)
+
+    assert isinstance(resp, DateTimeFilter)
+    assert resp.field == field
+    assert resp.operator == Operator.GREATER_THAN_OR_EQUAL
+    assert isinstance(resp.value, datetime)
