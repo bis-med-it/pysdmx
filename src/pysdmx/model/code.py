@@ -198,6 +198,7 @@ class HierarchicalCode(
             attrs.append(f"{attr}={repr(value)}")
         return f"{self.__class__.__name__}({', '.join(attrs)})"
 
+
 class LevelType(NameableArtefact, frozen=True, omit_defaults=True):
     """A level in a hierarchy.
 
