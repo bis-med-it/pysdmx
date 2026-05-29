@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "id": "IREF486628",
+    "test": false,
+    "prepared": "2026-05-29T09:57:41Z",
+    "contentLanguages": [
+      "en"
+    ],
+    "sender": {
+      "id": "5B0"
+    }
+  },
+  "Hierarchy": [
+    {
+      "id": "TEST_LEVELS",
+      "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS.TEST:TEST_LEVELS(1.0)",
+      "names": [
+        {
+          "locale": "en",
+          "value": "Test hierarchy levels"
+        }
+      ],
+      "agencyId": "BIS.TEST",
+      "version": "1.0",
+      "isFinal": false,
+      "formalLevels": true,
+      "levels": [
+        {
+          "id": "0",
+          "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Level=BIS.TEST:TEST_LEVELS(1.0).0",
+          "names": [
+            {
+              "locale": "en",
+              "value": "Divisions"
+            }
+          ]
+        },
+        {
+          "id": "1",
+          "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Level=BIS.TEST:TEST_LEVELS(1.0).1",
+          "names": [
+            {
+              "locale": "en",
+              "value": "Groups"
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Level=BIS.TEST:TEST_LEVELS(1.0).3",
+          "names": [
+            {
+              "locale": "en",
+              "value": "Classes"
+            }
+          ]
+        }
+      ],
+      "codes": [
+        {
+          "id": "CL_COICOP",
+          "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=BIS.TEST:TEST_LEVELS(1.0).CL_COICOP",
+          "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COICOP(1.1).CP00",
+          "codes": [
+            {
+              "id": "CP01",
+              "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=BIS.TEST:TEST_LEVELS(1.0).CL_COICOP.CP01",
+              "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COICOP(1.1).CP01",
+              "codes": [
+                {
+                  "id": "CP011",
+                  "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=BIS.TEST:TEST_LEVELS(1.0).CL_COICOP.CP01.CP011",
+                  "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COICOP(1.1).CP011"
+                }
+              ]
+            },
+            {
+              "id": "CP04",
+              "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=BIS.TEST:TEST_LEVELS(1.0).CL_COICOP.CP04",
+              "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COICOP(1.1).CP04",
+              "codes": [
+                {
+                  "id": "CP041",
+                  "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=BIS.TEST:TEST_LEVELS(1.0).CL_COICOP.CP04.CP041",
+                  "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COICOP(1.1).CP041"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
