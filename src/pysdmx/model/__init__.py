@@ -27,6 +27,7 @@ from pysdmx.model.code import (
     HierarchicalCode,
     Hierarchy,
     HierarchyAssociation,
+    LevelType,
 )
 from pysdmx.model.concept import Concept, ConceptScheme, DataType, Facets
 from pysdmx.model.constraint import (
@@ -200,6 +201,7 @@ __all__ = [
     "ImplicitComponentMap",
     "ItemReference",
     "KeySet",
+    "LevelType",
     "MetadataAttribute",
     "MetadataComponent",
     "Metadataflow",
