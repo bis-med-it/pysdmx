@@ -17,21 +17,20 @@ representation of hierarchical relationships to hierarchies only.
 """
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Iterator, Literal, Optional, Sequence, Union
+from typing import Iterator, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
 from pysdmx.model.__base import (
     Agency,
     Annotation,
+    DataType,
+    Facets,
     Item,
     ItemScheme,
     MaintainableArtefact,
     NameableArtefact,
 )
-
-if TYPE_CHECKING:
-    from pysdmx.model.concept import DataType, Facets
 
 
 class Code(Item, frozen=True, omit_defaults=True):
@@ -199,7 +198,6 @@ class HierarchicalCode(
             attrs.append(f"{attr}={repr(value)}")
         return f"{self.__class__.__name__}({', '.join(attrs)})"
 
-
 class LevelType(NameableArtefact, frozen=True, omit_defaults=True):
     """A level in a hierarchy.
 
@@ -214,8 +212,8 @@ class LevelType(NameableArtefact, frozen=True, omit_defaults=True):
     """
 
     level: Optional["LevelType"] = None
-    dtype: Optional["DataType"] = None
-    facets: Optional["Facets"] = None
+    dtype: Optional[DataType] = None
+    facets: Optional[Facets] = None
 
 
 class Hierarchy(
