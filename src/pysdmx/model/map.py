@@ -265,6 +265,51 @@ class MultiRepresentationMap(
     target: Sequence[str] = []
     maps: Sequence[MultiValueMap] = []
 
+    def __post_init__(self) -> None:
+        """Validate the multi representation map."""
+        super().__post_init__()
+
+        if not self.maps:
+            return
+
+        if not self.source:
+            raise Invalid(
+                "Validation Error",
+                (
+                    "MultiRepresentationMap source is required when "
+                    "maps are set."
+                ),
+            )
+
+        if not self.target:
+            raise Invalid(
+                "Validation Error",
+                (
+                    "MultiRepresentationMap target is required when "
+                    "maps are set."
+                ),
+            )
+
+        first_map = self.maps[0]
+
+        if len(self.source) != len(first_map.source):
+            raise Invalid(
+                "Validation Error",
+                (
+                    "MultiRepresentationMap source must contain the "
+                    "same number of entries as the first map source."
+                ),
+            )
+
+        if len(self.target) != len(first_map.target):
+            raise Invalid(
+                "Validation Error",
+                (
+                    "MultiRepresentationMap target must contain the "
+                    "same number of entries as the first map target."
+                ),
+            )
+
     @property
     def short_urn(self) -> str:
         """Returns the short URN for the MultiRepresentationMap."""

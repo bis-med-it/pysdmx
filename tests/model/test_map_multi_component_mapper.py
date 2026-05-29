@@ -29,8 +29,8 @@ def values():
         id="RM_ID",
         name="Map ISO2 to ISO3",
         agency="BIS",
-        source="SRC_CL",
-        target="TGT_CL",
+        source=["SRC_CL1", "SRC_CL2"],
+        target=["TGT_CL"],
         maps=vms,
     )
 
@@ -65,8 +65,8 @@ def test_not_equal(source, target, values):
             id="RM_ID1",
             name="Map ISO2 to ISO3",
             agency="BIS",
-            source="SRC_CL1",
-            target="TGT_CL1",
+            source=["SRC_CL1", "SRC_CL2"],
+            target=["TGT_CL1"],
             maps=[],
         ),
     )
