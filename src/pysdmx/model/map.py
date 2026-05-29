@@ -11,6 +11,25 @@ from pysdmx.model.__base import Agency, MaintainableArtefact
 from pysdmx.util._date_pattern_map import convert_dpm
 
 
+def _raise_missing_map_side(map_type: str, side: str) -> None:
+    """Raise a standardized missing-side validation error."""
+    raise Invalid(
+        "Validation Error",
+        f"{map_type} {side} is required when maps are set.",
+    )
+
+
+def _raise_map_side_length_error(map_type: str, side: str) -> None:
+    """Raise a standardized side-length validation error."""
+    raise Invalid(
+        "Validation Error",
+        (
+            f"{map_type} {side} must contain the same number of entries "
+            f"as the first map {side}."
+        ),
+    )
+
+
 class _BaseMap(
     Struct,
     frozen=True,
@@ -273,41 +292,21 @@ class MultiRepresentationMap(
             return
 
         if not self.source:
-            raise Invalid(
-                "Validation Error",
-                (
-                    "MultiRepresentationMap source is required when "
-                    "maps are set."
-                ),
-            )
+            _raise_missing_map_side("MultiRepresentationMap", "source")
 
         if not self.target:
-            raise Invalid(
-                "Validation Error",
-                (
-                    "MultiRepresentationMap target is required when "
-                    "maps are set."
-                ),
-            )
+            _raise_missing_map_side("MultiRepresentationMap", "target")
 
         first_map = self.maps[0]
 
         if len(self.source) != len(first_map.source):
-            raise Invalid(
-                "Validation Error",
-                (
-                    "MultiRepresentationMap source must contain the "
-                    "same number of entries as the first map source."
-                ),
+            _raise_map_side_length_error(
+                "MultiRepresentationMap", "source"
             )
 
         if len(self.target) != len(first_map.target):
-            raise Invalid(
-                "Validation Error",
-                (
-                    "MultiRepresentationMap target must contain the "
-                    "same number of entries as the first map target."
-                ),
+            _raise_map_side_length_error(
+                "MultiRepresentationMap", "target"
             )
 
     @property
@@ -387,16 +386,10 @@ class RepresentationMap(MaintainableArtefact, frozen=True, omit_defaults=True):
             return
 
         if self.source is None:
-            raise Invalid(
-                "Validation Error",
-                "RepresentationMap source is required when maps are set.",
-            )
+            _raise_missing_map_side("RepresentationMap", "source")
 
         if self.target is None:
-            raise Invalid(
-                "Validation Error",
-                "RepresentationMap target is required when maps are set.",
-            )
+            _raise_missing_map_side("RepresentationMap", "target")
 
     def __iter__(
         self,
