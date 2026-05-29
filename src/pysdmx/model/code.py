@@ -27,7 +27,9 @@ from pysdmx.model.__base import (
     Item,
     ItemScheme,
     MaintainableArtefact,
+    NameableArtefact,
 )
+from pysdmx.model.concept import DataType, Facets
 
 
 class Code(Item, frozen=True, omit_defaults=True):
@@ -147,6 +149,12 @@ class HierarchicalCode(
         codes: The child codes.
         annotations: Annotations attached to the code.
         urn: The URN of the code.
+        level: Level references a formal level defined within the hierarchy
+            which defines this hierarchical code. This is only necessary if
+            the nesting depth of the hierarchical code does not correspond to
+            the nesting depth of the level to which it belongs. Otherwise, the
+            code is assumed to exist at the level in which the nesting depth of
+            the level matches the nesting depth of the code.
     """
 
     id: str
@@ -159,6 +167,7 @@ class HierarchicalCode(
     codes: Sequence["HierarchicalCode"] = ()
     annotations: Sequence[Annotation] = ()
     urn: Optional[str] = None
+    level: Optional[str] = None
 
     def __iter__(self) -> Iterator["HierarchicalCode"]:
         """Return an iterator over the list of codes."""
@@ -187,6 +196,24 @@ class HierarchicalCode(
                 continue
             attrs.append(f"{attr}={repr(value)}")
         return f"{self.__class__.__name__}({', '.join(attrs)})"
+
+
+class LevelType(NameableArtefact, frozen=True, omit_defaults=True):
+    """A level in a hierarchy.
+
+    Level is defined as a group where codes can be characterised by homogeneous
+    coding, and where the parent of each code in the group is at the same
+    higher level of the hierarchy.
+
+    Attributes:
+        level: The next level down in the hierarchy.
+        dtype: The level's data type (string, number, etc.).
+        facets: Additional details such as the level's minimum length.
+    """
+
+    level: Optional["LevelType"] = None
+    dtype: Optional[DataType] = None
+    facets: Optional[Facets] = None
 
 
 class Hierarchy(
@@ -219,11 +246,22 @@ class Hierarchy(
             representing a sum. This can then be used for validation purposes,
             to check that A = B + C.
         is_partial: Whether the hierarchy is partial.
+        has_formal_levels: If true, this indicates a hierarchy where the
+            structure is arranged in levels of detail from the broadest to the
+            most detailed level.
+        level: In a formally leveled hierarchy, Level describes a group of
+            codes which are characterised by homogeneous coding, and where the
+            parent of each code in the group is at the same higher level of the
+            hierarchy. In a value based hierarchy Level describes information
+            about the codes at the specified nesting level. This structure is
+            recursive to indicate the hierarchy of the levels.
     """
 
     codes: Sequence[HierarchicalCode] = ()
     operator: Optional[str] = None
     is_partial: bool = True
+    has_formal_levels: bool = False
+    level: Optional[LevelType] = None
 
     def __iter__(self) -> Iterator[HierarchicalCode]:
         """Return an iterator over the list of codes."""
