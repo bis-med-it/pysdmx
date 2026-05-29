@@ -6,6 +6,7 @@ from typing import Any, Iterator, Literal, Optional, Sequence, Tuple, Union
 
 from msgspec import Struct
 
+from pysdmx.errors import Invalid
 from pysdmx.model.__base import Agency, MaintainableArtefact
 from pysdmx.util._date_pattern_map import convert_dpm
 
@@ -332,6 +333,25 @@ class RepresentationMap(MaintainableArtefact, frozen=True, omit_defaults=True):
     source: Optional[str] = None
     target: Optional[str] = None
     maps: Sequence[ValueMap] = []
+
+    def __post_init__(self) -> None:
+        """Validate the representation map."""
+        super().__post_init__()
+
+        if not self.maps:
+            return
+
+        if self.source is None:
+            raise Invalid(
+                "Validation Error",
+                "RepresentationMap source is required when maps are set.",
+            )
+
+        if self.target is None:
+            raise Invalid(
+                "Validation Error",
+                "RepresentationMap target is required when maps are set.",
+            )
 
     def __iter__(
         self,

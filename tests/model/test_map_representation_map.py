@@ -4,6 +4,7 @@ from typing import Iterable, Sized
 import msgspec
 import pytest
 
+from pysdmx import errors
 from pysdmx.model import RepresentationMap, ValueMap, decoders, encoders
 
 
@@ -161,3 +162,25 @@ def test_serialization(
         ser
     )
     assert out == rm
+
+
+def test_empty_maps_allow_missing_source_and_target(id, name, agency):
+    sm = RepresentationMap(id=id, name=name, agency=agency)
+
+    assert sm.source is None
+    assert sm.target is None
+    assert sm.maps == []
+
+
+def test_missing_source(id, name, agency, target, mappings):
+    with pytest.raises(errors.Invalid, match="source is required"):
+        RepresentationMap(
+            id=id, name=name, agency=agency, target=target, maps=mappings
+        )
+
+
+def test_missing_target(id, name, agency, source, mappings):
+    with pytest.raises(errors.Invalid, match="target is required"):
+        RepresentationMap(
+            id=id, name=name, agency=agency, source=source, maps=mappings
+        )
