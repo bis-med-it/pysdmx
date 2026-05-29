@@ -300,14 +300,10 @@ class MultiRepresentationMap(
         first_map = self.maps[0]
 
         if len(self.source) != len(first_map.source):
-            _raise_map_side_length_error(
-                "MultiRepresentationMap", "source"
-            )
+            _raise_map_side_length_error("MultiRepresentationMap", "source")
 
         if len(self.target) != len(first_map.target):
-            _raise_map_side_length_error(
-                "MultiRepresentationMap", "target"
-            )
+            _raise_map_side_length_error("MultiRepresentationMap", "target")
 
     @property
     def short_urn(self) -> str:
