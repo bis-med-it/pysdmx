@@ -38,12 +38,10 @@ def test_sql_query():
             assert flt.operator == Operator.NOT_EQUALS
             assert flt.value == "A"
         elif idx == 2:
-            assert isinstance(flt, DateTimeFilter)
+            assert isinstance(flt, TextFilter)
             assert flt.field == "TIME_PERIOD"
             assert flt.operator == Operator.GREATER_THAN_OR_EQUAL
-            assert flt.value.year == 2024
-            assert flt.value.month == 1
-            assert flt.value.day == 1
+            assert flt.value == "2024-01-01"
         elif idx == 3:
             assert isinstance(flt, TextFilter)
             assert flt.field == "OBS_STATUS"
@@ -94,12 +92,10 @@ def test_py_query():
             assert flt.operator == Operator.NOT_EQUALS
             assert flt.value == "A"
         elif idx == 2:
-            assert isinstance(flt, DateTimeFilter)
+            assert isinstance(flt, TextFilter)
             assert flt.field == "TIME_PERIOD"
             assert flt.operator == Operator.GREATER_THAN_OR_EQUAL
-            assert flt.value.year == 2024
-            assert flt.value.month == 1
-            assert flt.value.day == 1
+            assert flt.value == "2024-01-01"
         elif idx == 3:
             assert isinstance(flt, TextFilter)
             assert flt.field == "OBS_STATUS"
@@ -131,3 +127,10 @@ def test_parse_error():
         parse_query("blah")
     assert e.value.title == "Unparseable query"
     assert "blah" in e.value.description
+
+
+def test_wrong_datetime():
+    with pytest.raises(Invalid) as e:
+        parse_query("LAST_UPDATED > '2020-13-01T23:42'")
+    assert e.value.title == "Invalid input"
+    assert "Invalid datetime format" in e.value.description
