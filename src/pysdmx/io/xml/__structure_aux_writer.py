@@ -96,6 +96,7 @@ from pysdmx.io.xml.__write_aux import (
     MSG_CONTENT_PKG_21,
     MSG_CONTENT_PKG_30,
     __escape_xml,
+    __escape_xml_vtl,
     __to_lower_camel_case,
     add_indent,
 )
@@ -1653,7 +1654,7 @@ def _write_vtl(  # noqa: C901
             label = f"{ABBR_STR}:{RULE}"
             data += f"{add_indent(indent)}<{ABBR_STR}:RulesetDefinition>"
             data += (
-                f"{__escape_xml(item_or_scheme.ruleset_definition)}"
+                f"{__escape_xml_vtl(item_or_scheme.ruleset_definition)}"
                 f"</{ABBR_STR}:RulesetDefinition>"
             )
             attrib += (
@@ -1665,7 +1666,7 @@ def _write_vtl(  # noqa: C901
             label = f"{ABBR_STR}:{TRANSFORMATION}"
             data += f"{add_indent(indent)}<{ABBR_STR}:Expression>"
             data += (
-                f"{__escape_xml(item_or_scheme.expression)}"
+                f"{__escape_xml_vtl(item_or_scheme.expression)}"
                 f"</{ABBR_STR}:Expression>"
             )
             data += f"{add_indent(indent)}<{ABBR_STR}:Result>"
@@ -1678,7 +1679,7 @@ def _write_vtl(  # noqa: C901
             label = f"{ABBR_STR}:{UDO}"
             data += f"{add_indent(indent)}<{ABBR_STR}:OperatorDefinition>"
             data += (
-                f"{__escape_xml(item_or_scheme.operator_definition)}"
+                f"{__escape_xml_vtl(item_or_scheme.operator_definition)}"
                 f"</{ABBR_STR}:OperatorDefinition>"
             )
         if isinstance(item_or_scheme, VtlDataflowMapping):
