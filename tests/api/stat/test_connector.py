@@ -103,3 +103,86 @@ def test_schema(respx_mock, client, struct_url, structure_xml):
     assert isinstance(schema, Schema)
     assert schema.short_urn == "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"
     assert len(schema.components) == 26
+
+
+@pytest.fixture
+def data_csv():
+    with open("tests/io/samples/data_v1.csv", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture
+def data_url(host):
+    return f"{host}/data/dataflow/BIS/WEBSTATS_DER_DATAFLOW/1.0"
+
+
+def test_dataset(
+    respx_mock, client, struct_url, data_url, structure_xml, data_csv
+):
+    from pysdmx.io.pd import PandasDataset
+
+    respx_mock.get(url__startswith=struct_url).mock(
+        return_value=httpx.Response(200, content=structure_xml)
+    )
+    respx_mock.get(url__startswith=data_url).mock(
+        return_value=httpx.Response(200, content=data_csv)
+    )
+
+    ds = client.dataset("BIS", "WEBSTATS_DER_DATAFLOW", "1.0")
+
+    assert isinstance(ds, PandasDataset)
+    assert isinstance(ds.structure, Schema)
+    assert ds.structure.short_urn == "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"
+    assert len(ds.data) == 1000
+    assert "DECIMALS" in ds.attributes
+
+
+def test_dataset_structure_matches_schema(
+    respx_mock, client, struct_url, data_url, structure_xml, data_csv
+):
+    respx_mock.get(url__startswith=struct_url).mock(
+        return_value=httpx.Response(200, content=structure_xml)
+    )
+    respx_mock.get(url__startswith=data_url).mock(
+        return_value=httpx.Response(200, content=data_csv)
+    )
+
+    schema = client.schema("BIS", "WEBSTATS_DER_DATAFLOW", "1.0")
+    ds = client.dataset("BIS", "WEBSTATS_DER_DATAFLOW", "1.0")
+
+    assert ds.structure.short_urn == schema.short_urn
+    assert [c.id for c in ds.structure.components] == [
+        c.id for c in schema.components
+    ]
+
+
+def test_dataset_with_string_filter(
+    respx_mock, client, struct_url, data_url, structure_xml, data_csv
+):
+    respx_mock.get(url__startswith=struct_url).mock(
+        return_value=httpx.Response(200, content=structure_xml)
+    )
+    data_route = respx_mock.get(url__startswith=data_url).mock(
+        return_value=httpx.Response(200, content=data_csv)
+    )
+
+    client.dataset("BIS", "WEBSTATS_DER_DATAFLOW", "1.0", filters="FREQ = 'A'")
+
+    requested_url = str(data_route.calls.last.request.url)
+    assert "c%5BFREQ%5D=A" in requested_url
+
+
+def test_dataset_with_key(
+    respx_mock, client, struct_url, data_url, structure_xml, data_csv
+):
+    respx_mock.get(url__startswith=struct_url).mock(
+        return_value=httpx.Response(200, content=structure_xml)
+    )
+    data_route = respx_mock.get(url__startswith=data_url).mock(
+        return_value=httpx.Response(200, content=data_csv)
+    )
+
+    client.dataset("BIS", "WEBSTATS_DER_DATAFLOW", "1.0", key="A.U.A.B.5J")
+
+    requested_url = str(data_route.calls.last.request.url)
+    assert "/WEBSTATS_DER_DATAFLOW/1.0/A.U.A.B.5J" in requested_url

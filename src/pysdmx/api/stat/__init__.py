@@ -4,14 +4,18 @@ from __future__ import annotations
 
 from enum import Enum
 from io import BytesIO
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from msgspec import structs
 
 from pysdmx import errors
+from pysdmx.api.dc.query import BasicFilter
+from pysdmx.api.dc.query.util import parse_query
 from pysdmx.api.qb import (
     ApiVersion,
+    DataContext,
     DataFormat,
+    DataQuery,
     RestService,
     StructureDetail,
     StructureFormat,
@@ -19,11 +23,14 @@ from pysdmx.api.qb import (
     StructureReference,
     StructureType,
 )
-from pysdmx.io import read_sdmx
+from pysdmx.io import get_datasets, read_sdmx
 from pysdmx.model import Dataflow, DataStructureDefinition, Schema
 from pysdmx.model.message import Message
 from pysdmx.util import experimental, parse_short_urn
 from pysdmx.util._model_utils import schema_generator
+
+if TYPE_CHECKING:  # pragma: no cover
+    from pysdmx.io.pd import PandasDataset
 
 
 class StatEndpoints(str, Enum):
@@ -169,6 +176,57 @@ class StatConnector:
         _, msg = self._fetch_structure(agency, id, version)
         flow = self._find_dataflow(msg, agency, id, version)
         return schema_generator(msg, parse_short_urn(flow.short_urn))
+
+    def dataset(
+        self,
+        agency: str,
+        id: str,
+        version: str,
+        key: str = "*",
+        filters: Optional[Union[BasicFilter, str]] = None,
+    ) -> "PandasDataset":
+        """Get data for a dataflow as a typed Pandas dataset.
+
+        The data are retrieved as SDMX-CSV 1.0.0 and combined with the
+        dataflow's SDMX-ML 2.1 structure so the returned dataset carries
+        a resolved ``Schema`` and PyArrow-backed column types.
+
+        Args:
+            agency: The agency maintaining the dataflow.
+            id: The dataflow ID.
+            version: The dataflow version.
+            key: The dimension key identifying the slice of the cube
+                (e.g. ``A.U.A.B.5J``). ``*`` (default) returns all series.
+            filters: Optional component filters, as a string
+                ("FREQ = 'A'") or a filter object from
+                ``pysdmx.api.dc.query``.
+
+        Returns:
+            The requested data as a ``PandasDataset`` with its schema.
+
+        Raises:
+            errors.NotFound: If no data or dataflow is returned.
+            errors.Invalid: If the service returns a client error.
+            errors.Unavailable: If the service cannot be reached.
+        """
+        components = (
+            parse_query(filters) if isinstance(filters, str) else filters
+        )
+        dq = DataQuery(
+            DataContext.DATAFLOW,
+            agency,
+            id,
+            version,
+            key=key,
+            components=components,  # type: ignore[arg-type]
+            obs_dimension="AllDimensions",
+        )
+        data = self._svc.data(dq)
+        raw_struct, _ = self._fetch_structure(agency, id, version)
+        datasets = get_datasets(
+            BytesIO(data), BytesIO(raw_struct), validate=False
+        )
+        return datasets[0]
 
 
 __all__ = ["StatConnector", "StatEndpoints"]
