@@ -190,6 +190,34 @@ def check_hcode_details_no_cl(mock, fmr: RegistryClient, query, body):
             assert not hc.codes
 
 
+def check_hierarchy_levels(mock, fmr: RegistryClient, query, body):
+    """Hierarchies may define formal levels."""
+    mock.get(query).mock(
+        return_value=httpx.Response(
+            200,
+            content=body,
+        )
+    )
+
+    h = fmr.get_hierarchy("BIS.TEST", "TEST_LEVELS")
+
+    assert h.has_formal_levels is True
+    assert h.level is not None
+    assert h.level.id == "0"
+    assert h.level.name == "Divisions"
+
+    level_1 = h.level.level
+    assert level_1 is not None
+    assert level_1.id == "1"
+    assert level_1.name == "Groups"
+
+    level_3 = level_1.level
+    assert level_3 is not None
+    assert level_3.id == "3"
+    assert level_3.name == "Classes"
+    assert level_3.level is None
+
+
 def __check_core_info(codes: Sequence[HierarchicalCode]):
     for code in codes:
         assert code.id is not None

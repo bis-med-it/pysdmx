@@ -9,7 +9,8 @@ from pysdmx.io.json.fusion.messages.core import (
     FusionRepresentation,
     FusionString,
 )
-from pysdmx.model.concept import Concept, DataType
+from pysdmx.model.__base import DataType
+from pysdmx.model.concept import Concept
 from pysdmx.model.concept import ConceptScheme as CS
 
 

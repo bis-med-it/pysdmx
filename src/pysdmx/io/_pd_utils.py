@@ -4,7 +4,7 @@ import pandas as pd
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
-from pysdmx.model.concept import DataType
+from pysdmx.model import DataType
 from pysdmx.model.dataflow import Schema
 
 NUMERIC_TYPES = {
