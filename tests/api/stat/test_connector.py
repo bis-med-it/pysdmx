@@ -186,3 +186,70 @@ def test_dataset_with_key(
 
     requested_url = str(data_route.calls.last.request.url)
     assert "/WEBSTATS_DER_DATAFLOW/1.0/A.U.A.B.5J" in requested_url
+
+
+def test_accept_headers(
+    respx_mock, client, struct_url, data_url, structure_xml, data_csv
+):
+    s = respx_mock.get(url__startswith=struct_url).mock(
+        return_value=httpx.Response(200, content=structure_xml)
+    )
+    d = respx_mock.get(url__startswith=data_url).mock(
+        return_value=httpx.Response(200, content=data_csv)
+    )
+
+    client.dataset("BIS", "WEBSTATS_DER_DATAFLOW", "1.0")
+
+    assert (
+        s.calls.last.request.headers["Accept"]
+        == "application/vnd.sdmx.structure+xml;version=2.1"
+    )
+    assert (
+        d.calls.last.request.headers["Accept"]
+        == "application/vnd.sdmx.data+csv;version=1.0.0"
+    )
+
+
+def test_dataset_with_filter_object(
+    respx_mock, client, struct_url, data_url, structure_xml, data_csv
+):
+    from pysdmx.api.dc.query import Operator, TextFilter
+
+    respx_mock.get(url__startswith=struct_url).mock(
+        return_value=httpx.Response(200, content=structure_xml)
+    )
+    data_route = respx_mock.get(url__startswith=data_url).mock(
+        return_value=httpx.Response(200, content=data_csv)
+    )
+
+    client.dataset(
+        "BIS",
+        "WEBSTATS_DER_DATAFLOW",
+        "1.0",
+        filters=TextFilter("FREQ", Operator.EQUALS, "A"),
+    )
+
+    assert "c%5BFREQ%5D=A" in str(data_route.calls.last.request.url)
+
+
+def test_oecd_shaped_query_url():
+    from pysdmx.api.qb import (
+        StructureDetail,
+        StructureQuery,
+        StructureReference,
+        StructureType,
+    )
+
+    q = StructureQuery(
+        StructureType.DATAFLOW,
+        "OECD.SDD.TPS",
+        "DSD_G20_PRICES@DF_G20_PRICES",
+        "1.0",
+        detail=StructureDetail.FULL,
+        references=StructureReference.DESCENDANTS,
+    )
+    url = q.get_url(ApiVersion.V2_0_0, True)
+    assert url == (
+        "/structure/dataflow/OECD.SDD.TPS/"
+        "DSD_G20_PRICES@DF_G20_PRICES/1.0?references=descendants"
+    )
