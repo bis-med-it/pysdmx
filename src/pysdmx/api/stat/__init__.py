@@ -3,21 +3,39 @@
 from __future__ import annotations
 
 from enum import Enum
+from io import BytesIO
 from typing import Optional, Union
 
+from msgspec import structs
+
+from pysdmx import errors
 from pysdmx.api.qb import (
     ApiVersion,
     DataFormat,
     RestService,
+    StructureDetail,
     StructureFormat,
+    StructureQuery,
+    StructureReference,
+    StructureType,
 )
+from pysdmx.io import read_sdmx
+from pysdmx.model import Dataflow, DataStructureDefinition
+from pysdmx.model.message import Message
 from pysdmx.util import experimental
 
 
 class StatEndpoints(str, Enum):
-    """Known .Stat Suite SDMX-REST v2 entry points."""
+    """Known .Stat Suite SDMX-REST v2 entry points.
+
+    Each entry is verified to expose the SDMX-REST v2 API and to serve
+    structural metadata as SDMX-ML 2.1.
+    """
 
     OECD = "https://sdmx.oecd.org/public/rest/v2"
+    ILO = "https://sdmx.ilo.org/rest/v2"
+    ABS = "https://data.api.abs.gov.au/rest/v2"
+    PACIFIC = "https://stats-sdmx-disseminate.pacificdata.org/rest/v2"
 
 
 @experimental
@@ -59,6 +77,73 @@ class StatConnector:
             timeout=timeout,
             pem=pem,
         )
+
+    def _fetch_structure(
+        self, agency: str, id: str, version: str
+    ) -> tuple[bytes, Message]:
+        """Fetch the SDMX-ML 2.1 structure (with descendants)."""
+        q = StructureQuery(
+            StructureType.DATAFLOW,
+            agency,
+            id,
+            version,
+            detail=StructureDetail.FULL,
+            references=StructureReference.DESCENDANTS,
+        )
+        raw = self._svc.structure(q)
+        msg = read_sdmx(BytesIO(raw), validate=False)
+        return raw, msg
+
+    def _find_dataflow(
+        self, msg: Message, agency: str, id: str, version: str
+    ) -> Dataflow:
+        """Return the Dataflow contained in a structure message."""
+        for artefact in msg.structures or []:
+            if isinstance(artefact, Dataflow) and artefact.id == id:
+                return artefact
+        raise errors.NotFound(
+            "Dataflow not found",
+            (
+                f"No dataflow {agency}:{id}({version}) was returned by "
+                "the service. Verify the agency, id and version."
+            ),
+        )
+
+    def _find_dsd(self, msg: Message) -> DataStructureDefinition:
+        """Return the data structure definition in a structure message."""
+        for artefact in msg.structures or []:
+            if isinstance(artefact, DataStructureDefinition):
+                return artefact
+        raise errors.NotFound(
+            "Data structure not found",
+            "The structure message did not include a data structure "
+            "definition. Re-run the structure query with references.",
+        )
+
+    def dataflow(self, agency: str, id: str, version: str) -> Dataflow:
+        """Get the dataflow matching the supplied identification.
+
+        The dataflow's data structure definition is grafted onto the
+        returned object so that ``Dataflow.components`` is populated; a
+        plain parse leaves ``structure`` as a URN and ``components`` None.
+
+        Args:
+            agency: The agency maintaining the dataflow.
+            id: The dataflow ID.
+            version: The dataflow version.
+
+        Returns:
+            The dataflow, including its components (from the DSD).
+
+        Raises:
+            errors.NotFound: If the dataflow or its DSD is not returned.
+            errors.Invalid: If the service returns a client error.
+            errors.Unavailable: If the service cannot be reached.
+        """
+        _, msg = self._fetch_structure(agency, id, version)
+        flow = self._find_dataflow(msg, agency, id, version)
+        dsd = self._find_dsd(msg)
+        return structs.replace(flow, structure=dsd)
 
 
 __all__ = ["StatConnector", "StatEndpoints"]
