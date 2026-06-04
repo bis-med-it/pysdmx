@@ -19,6 +19,7 @@ from pysdmx.model import (
     ImplicitComponentMap,
     MetadataReport,
     MultiComponentMap,
+    MultiRepresentationMap,
     MultiValueMap,
     RepresentationMap,
     Schema,
@@ -582,12 +583,21 @@ def test_read_maps():
     assert m.source == "2"
     assert m.target == "F"
 
-    # RepresentationMap 2 - REPMAP_CURR (N-1 => MultiValueMap)
+    # MultiRepresentationMap - REPMAP_CURR (N-1 => MultiValueMap)
     rep_map = result.structures[2]
-    assert isinstance(rep_map, RepresentationMap)
+    assert isinstance(rep_map, MultiRepresentationMap)
     assert rep_map.id == "REPMAP_CURR"
     assert rep_map.agency == "ESTAT"
     assert rep_map.version == "1.0"
+    assert list(rep_map.source) == [
+        "urn:sdmx:org.sdmx.infomodel.codelist."
+        "Codelist=ESTAT:CL_COUNTRY_LOCALCURR(1.0)",
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_CURRENCY(1.0)",
+    ]
+    assert list(rep_map.target) == [
+        "urn:sdmx:org.sdmx.infomodel.codelist."
+        "Codelist=ESTAT:CL_CURRENCY_ISO3(1.0)"
+    ]
     assert len(rep_map.maps) == 2
 
     m = rep_map.maps[0]
@@ -602,12 +612,22 @@ def test_read_maps():
     assert list(m.source) == ["CH", "LC"]
     assert list(m.target) == ["CHF"]
 
-    # RepresentationMap 3 - REPMAP_SERIES (1-N => MultiValueMap)
+    # MultiRepresentationMap - REPMAP_SERIES (1-N => MultiValueMap)
     rep_map = result.structures[3]
-    assert isinstance(rep_map, RepresentationMap)
+    assert isinstance(rep_map, MultiRepresentationMap)
     assert rep_map.id == "REPMAP_SERIES"
     assert rep_map.agency == "ESTAT"
     assert rep_map.version == "1.0"
+    assert list(rep_map.source) == [
+        "urn:sdmx:org.sdmx.infomodel.codelist."
+        "Codelist=ESTAT:CL_SERIES_CODE(1.0)"
+    ]
+    assert list(rep_map.target) == [
+        "urn:sdmx:org.sdmx.infomodel.codelist."
+        "Codelist=ESTAT:CL_INDICATOR_STATUS(1.0)",
+        "urn:sdmx:org.sdmx.infomodel.codelist."
+        "Codelist=ESTAT:CL_INDICATOR_STATUS2(1.0)",
+    ]
     assert len(rep_map.maps) == 2
 
     m = rep_map.maps[0]
@@ -620,12 +640,22 @@ def test_read_maps():
     assert list(m.source) == ["YBOP_A_12"]
     assert list(m.target) == ["YB", "OK"]
 
-    # RepresentationMap 4 - REPMAP_NN (N-N => MultiValueMap)
+    # MultiRepresentationMap - REPMAP_NN (N-N => MultiValueMap)
     rep_map = result.structures[4]
-    assert isinstance(rep_map, RepresentationMap)
+    assert isinstance(rep_map, MultiRepresentationMap)
     assert rep_map.id == "REPMAP_NN"
     assert rep_map.agency == "ESTAT"
     assert rep_map.version == "1.0"
+    assert list(rep_map.source) == [
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_FREQ_ADJ(1.0)",
+        "urn:sdmx:org.sdmx.infomodel.codelist."
+        "Codelist=ESTAT:CL_FREQ_ADJ2(1.0)",
+    ]
+    assert list(rep_map.target) == [
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_IND_NOTE(1.0)",
+        "urn:sdmx:org.sdmx.infomodel.codelist."
+        "Codelist=ESTAT:CL_IND_NOTE2(1.0)",
+    ]
     assert len(rep_map.maps) == 2
 
     m = rep_map.maps[0]
@@ -778,3 +808,21 @@ def test_read_maps():
     assert dpm.locale == "es"
     assert dpm.pattern_type == "variable"
     assert dpm.resolve_period == "endOfPeriod"
+
+
+def test_read_multi_datatype_representation_map():
+    data_path = Path(__file__).parent / "samples" / "maps_datatype_multi.xml"
+    result = read_sdmx(data_path, validate=True)
+    assert len(result.structures) == 1
+
+    rep_map = result.structures[0]
+    assert isinstance(rep_map, MultiRepresentationMap)
+    assert rep_map.id == "REPMAP_DT_NN"
+    assert list(rep_map.source) == [DataType.STRING, DataType.INTEGER]
+    assert list(rep_map.target) == [DataType.STRING, DataType.INTEGER]
+    assert len(rep_map.maps) == 2
+
+    m = rep_map.maps[0]
+    assert isinstance(m, MultiValueMap)
+    assert list(m.source) == ["A", "1"]
+    assert list(m.target) == ["X", "9"]

@@ -617,7 +617,11 @@ def test_write_representation_map_datatype_tags(tmpdir, format):
 
 
 def test_write_maps_xml_json_roundtrip(tmpdir):
-    from pysdmx.model import DataType, RepresentationMap
+    from pysdmx.model import (
+        DataType,
+        MultiRepresentationMap,
+        RepresentationMap,
+    )
 
     data_path = Path(__file__).parent / "samples" / "maps.xml"
     from_xml = read_sdmx(data_path, validate=True)
@@ -634,7 +638,8 @@ def test_write_maps_xml_json_roundtrip(tmpdir):
         return next(
             s
             for s in structures
-            if isinstance(s, RepresentationMap) and s.id == rm_id
+            if isinstance(s, (RepresentationMap, MultiRepresentationMap))
+            and s.id == rm_id
         )
 
     # Codelist-based RepresentationMap round-trips correctly
@@ -651,3 +656,45 @@ def test_write_maps_xml_json_roundtrip(tmpdir):
     assert xml_dt.source == json_dt.source
     assert xml_dt.target == json_dt.target
     assert xml_dt.maps == json_dt.maps
+
+    # MultiRepresentationMap (N-N) round-trips correctly
+    xml_nn = find_rm(from_xml.structures, "REPMAP_NN")
+    json_nn = find_rm(from_json.structures, "REPMAP_NN")
+    assert isinstance(xml_nn, MultiRepresentationMap)
+    assert isinstance(json_nn, MultiRepresentationMap)
+    assert list(xml_nn.source) == list(json_nn.source)
+    assert list(xml_nn.target) == list(json_nn.target)
+    assert xml_nn.maps == json_nn.maps
+
+
+@pytest.mark.parametrize(
+    "format",
+    [
+        Format.STRUCTURE_SDMX_ML_3_0,
+        Format.STRUCTURE_SDMX_ML_3_1,
+    ],
+)
+def test_write_multi_datatype_representation_map(tmpdir, format):
+    from pysdmx.model import DataType, MultiRepresentationMap
+
+    data_path = Path(__file__).parent / "samples" / "maps_datatype_multi.xml"
+    reference = read_sdmx(data_path, validate=True)
+
+    out_path = tmpdir / "maps_dt_written.xml"
+    write_sdmx(
+        reference.structures,
+        sdmx_format=format,
+        output_path=out_path,
+        header=reference.header,
+    )
+    written = read_sdmx(out_path, validate=True)
+
+    assert reference == written
+    rep_map = written.structures[0]
+    assert isinstance(rep_map, MultiRepresentationMap)
+    assert list(rep_map.source) == [DataType.STRING, DataType.INTEGER]
+    assert list(rep_map.target) == [DataType.STRING, DataType.INTEGER]
+
+    xml_content = out_path.read_text("utf-8")
+    assert xml_content.count("<str:SourceDataType>") == 2
+    assert xml_content.count("<str:TargetDataType>") == 2
