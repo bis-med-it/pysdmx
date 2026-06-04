@@ -96,6 +96,7 @@ from pysdmx.io.xml.__write_aux import (
     MSG_CONTENT_PKG_21,
     MSG_CONTENT_PKG_30,
     __escape_xml,
+    __escape_xml_vtl,
     __to_lower_camel_case,
     add_indent,
 )
@@ -118,6 +119,7 @@ from pysdmx.model import (
     ImplicitComponentMap,
     KeySet,
     MultiComponentMap,
+    MultiRepresentationMap,
     MultiValueMap,
     NamePersonalisation,
     NamePersonalisationScheme,
@@ -201,6 +203,7 @@ STR_DICT_TYPE_LIST_21 = {
     Dataflow: "Dataflows",
     DataConstraint: "Constraints",
     RepresentationMap: "RepresentationMaps",
+    MultiRepresentationMap: "RepresentationMaps",
     StructureMap: "StructureMaps",
     DatePatternMap: "DatePatternMaps",
     CustomTypeScheme: "CustomTypes",
@@ -221,6 +224,7 @@ STR_DICT_TYPE_LIST_30 = {
     Dataflow: "Dataflows",
     DataConstraint: "DataConstraints",
     RepresentationMap: "RepresentationMaps",
+    MultiRepresentationMap: "RepresentationMaps",
     StructureMap: "StructureMaps",
     DatePatternMap: "DatePatternMaps",
     CustomTypeScheme: "CustomTypeSchemes",
@@ -975,9 +979,11 @@ def __write_multi_component_map(
 
 
 def __write_representation_map(
-    rep_map: RepresentationMap, indent: str, references_30: bool = False
+    rep_map: Union[RepresentationMap, MultiRepresentationMap],
+    indent: str,
+    references_30: bool = False,
 ) -> str:
-    """Writes a RepresentationMap to the XML file."""
+    """Writes a (multi) representation map to the XML file."""
 
     def __source_target_tag(prefix: str, value: Optional[str]) -> str:
         if value and ("Codelist" in value or "ValueList" in value):
@@ -993,19 +999,29 @@ def __write_representation_map(
     outfile = f"{indent}<{label}{attributes}>"
     outfile += __export_intern_data(data)
 
-    # Write Source and Target references
-    src_tag = __source_target_tag("Source", rep_map.source)
-    outfile += (
-        f"{add_indent(indent)}<{ABBR_STR}:{src_tag}>"
-        f"{rep_map.source}"
-        f"</{ABBR_STR}:{src_tag}>"
-    )
-    tgt_tag = __source_target_tag("Target", rep_map.target)
-    outfile += (
-        f"{add_indent(indent)}<{ABBR_STR}:{tgt_tag}>"
-        f"{rep_map.target}"
-        f"</{ABBR_STR}:{tgt_tag}>"
-    )
+    # Write Source and Target references (one element per codelist/datatype)
+    sources: Sequence[Optional[str]]
+    targets: Sequence[Optional[str]]
+    if isinstance(rep_map, MultiRepresentationMap):
+        sources = rep_map.source
+        targets = rep_map.target
+    else:
+        sources = [rep_map.source]
+        targets = [rep_map.target]
+    for source in sources:
+        src_tag = __source_target_tag("Source", source)
+        outfile += (
+            f"{add_indent(indent)}<{ABBR_STR}:{src_tag}>"
+            f"{source}"
+            f"</{ABBR_STR}:{src_tag}>"
+        )
+    for target in targets:
+        tgt_tag = __source_target_tag("Target", target)
+        outfile += (
+            f"{add_indent(indent)}<{ABBR_STR}:{tgt_tag}>"
+            f"{target}"
+            f"</{ABBR_STR}:{tgt_tag}>"
+        )
 
     # Write ValueMaps
     for value_map in rep_map.maps:
@@ -1405,7 +1421,7 @@ def __write_scheme(  # noqa: C901
     if getattr(item_scheme, "sdmx_type", None) == "valuelist":
         scheme = VALUE_LIST
 
-    if scheme == REPRESENTATION_MAP:
+    if isinstance(item_scheme, (RepresentationMap, MultiRepresentationMap)):
         return __write_representation_map(item_scheme, indent, references_30)
     if scheme == STRUCTURE_MAP:
         return __write_structure_map(item_scheme, indent, references_30)
@@ -1653,7 +1669,7 @@ def _write_vtl(  # noqa: C901
             label = f"{ABBR_STR}:{RULE}"
             data += f"{add_indent(indent)}<{ABBR_STR}:RulesetDefinition>"
             data += (
-                f"{__escape_xml(item_or_scheme.ruleset_definition)}"
+                f"{__escape_xml_vtl(item_or_scheme.ruleset_definition)}"
                 f"</{ABBR_STR}:RulesetDefinition>"
             )
             attrib += (
@@ -1665,7 +1681,7 @@ def _write_vtl(  # noqa: C901
             label = f"{ABBR_STR}:{TRANSFORMATION}"
             data += f"{add_indent(indent)}<{ABBR_STR}:Expression>"
             data += (
-                f"{__escape_xml(item_or_scheme.expression)}"
+                f"{__escape_xml_vtl(item_or_scheme.expression)}"
                 f"</{ABBR_STR}:Expression>"
             )
             data += f"{add_indent(indent)}<{ABBR_STR}:Result>"
@@ -1678,7 +1694,7 @@ def _write_vtl(  # noqa: C901
             label = f"{ABBR_STR}:{UDO}"
             data += f"{add_indent(indent)}<{ABBR_STR}:OperatorDefinition>"
             data += (
-                f"{__escape_xml(item_or_scheme.operator_definition)}"
+                f"{__escape_xml_vtl(item_or_scheme.operator_definition)}"
                 f"</{ABBR_STR}:OperatorDefinition>"
             )
         if isinstance(item_or_scheme, VtlDataflowMapping):

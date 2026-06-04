@@ -531,3 +531,11 @@ def __escape_xml(value: str) -> str:
     final_value = escape(value)
     final_value = re.sub(r'(?<!\w)"(?!\w)', "&quot;", final_value)
     return final_value
+
+
+def __escape_xml_vtl(value: str) -> str:
+    # Also escape single quotes: VTL code bodies are subject to the
+    # structure writer's blanket single-to-double quote replacement,
+    # which would otherwise turn identifier escapes such as
+    # 'errorlevel' into string literals.
+    return __escape_xml(value).replace("'", "&apos;")
