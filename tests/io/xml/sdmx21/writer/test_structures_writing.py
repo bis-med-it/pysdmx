@@ -1239,6 +1239,107 @@ def test_writer_transformation_scheme_structure(
     assert structure == transformation_sample
 
 
+def test_writer_transformation_single_quoted_identifier(complete_header):
+    # Reserved VTL keywords used as identifiers must stay single-quoted
+    # (e.g. 'errorlevel'); the writer must not turn that escape into a
+    # "errorlevel" string literal (issue #615).
+    expression = (
+        "check_datapoint(ds, dp_ruleset) [calc errorcode := errorcode, "
+        "'errorlevel' := errorlevel]"
+    )
+    scheme = TransformationScheme(
+        id="TEST_TS",
+        urn="urn:sdmx:org.sdmx.infomodel.transformation."
+        "TransformationScheme=MD:TEST_TS(1.0)",
+        name="Testing TS",
+        version="1.0",
+        agency="MD",
+        items=[
+            Transformation(
+                id="TEST_Tr",
+                urn="urn:sdmx:org.sdmx.infomodel.transformation."
+                "Transformation=MD:TEST_TS(1.0).TEST_Tr",
+                name="Validation",
+                expression=expression,
+                is_persistent=False,
+                result="validation_result",
+            )
+        ],
+        is_partial=False,
+        vtl_version="2.0",
+    )
+
+    structure = write([scheme], header=complete_header, prettyprint=True)
+
+    assert "&apos;errorlevel&apos;" in structure
+    assert '"errorlevel"' not in structure
+
+    # The single-quoted identifier must round-trip back unchanged.
+    read_result = read(structure, validate=True)
+    assert read_result[0].items[0].expression == expression
+
+
+def test_writer_ruleset_udo_single_quoted_identifier(complete_header):
+    # The same escaping applies to ruleset and operator definitions.
+    ruleset_definition = (
+        "define datapoint ruleset r1 (variable 'errorlevel' as E) is "
+        "myrule: when E > 0 then E > 0 end datapoint ruleset;"
+    )
+    operator_definition = (
+        "define operator op1 (ds dataset) returns dataset is "
+        "ds['errorlevel' = 1] end operator;"
+    )
+    ruleset_scheme = RulesetScheme(
+        id="TEST_RS",
+        urn="urn:sdmx:org.sdmx.infomodel.transformation."
+        "RulesetScheme=MD:TEST_RS(1.0)",
+        name="RS",
+        version="1.0",
+        agency="MD",
+        items=[
+            Ruleset(
+                id="R1",
+                urn="urn:sdmx:org.sdmx.infomodel.transformation."
+                "Ruleset=MD:TEST_RS(1.0).R1",
+                name="R1",
+                ruleset_definition=ruleset_definition,
+                ruleset_scope="variable",
+                ruleset_type="datapoint",
+            )
+        ],
+        is_partial=False,
+        vtl_version="2.0",
+    )
+    udo_scheme = UserDefinedOperatorScheme(
+        id="TEST_UDO",
+        urn="urn:sdmx:org.sdmx.infomodel.transformation."
+        "UserDefinedOperatorScheme=MD:TEST_UDO(1.0)",
+        name="UDO",
+        version="1.0",
+        agency="MD",
+        items=[
+            UserDefinedOperator(
+                id="OP1",
+                urn="urn:sdmx:org.sdmx.infomodel.transformation."
+                "UserDefinedOperator=MD:TEST_UDO(1.0).OP1",
+                name="OP1",
+                operator_definition=operator_definition,
+            )
+        ],
+        is_partial=False,
+        vtl_version="2.0",
+    )
+
+    structure = write(
+        [ruleset_scheme, udo_scheme],
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    assert structure.count("&apos;errorlevel&apos;") == 2
+    assert '"errorlevel"' not in structure
+
+
 def test_writer_ruleset_scheme_structure(
     complete_header, ruleset_scheme_structure, ruleset_sample
 ):
