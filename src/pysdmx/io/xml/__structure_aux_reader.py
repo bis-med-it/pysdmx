@@ -191,6 +191,7 @@ from pysdmx.model import (
     ImplicitComponentMap,
     KeySet,
     MultiComponentMap,
+    MultiRepresentationMap,
     MultiValueMap,
     RepresentationMap,
     StructureMap,
@@ -240,6 +241,13 @@ T = Any
 
 def _identity(x: T) -> T:
     return x
+
+
+def _convert(converter: Callable[[Any], Any], value: Any) -> Any:
+    """Applies a converter to a value, or to each item if it is a list."""
+    if isinstance(value, list):
+        return [converter(v) for v in value]
+    return converter(value)
 
 
 STRUCTURES_MAPPING = {
@@ -365,7 +373,9 @@ class StructureParser(Struct):
     structure_maps: Dict[str, StructureMap] = {}
     component_maps: Dict[str, ComponentMap] = {}
     fixed_value_maps: Dict[str, FixedValueMap] = {}
-    representation_maps: Dict[str, RepresentationMap] = {}
+    representation_maps: Dict[
+        str, Union[RepresentationMap, MultiRepresentationMap]
+    ] = {}
     name_personalisations: Dict[str, NamePersonalisationScheme] = {}
     custom_types: Dict[str, CustomTypeScheme] = {}
     transformations: Dict[str, TransformationScheme] = {}
@@ -1295,6 +1305,21 @@ class StructureParser(Struct):
             values=child_dict["values"],
         )
 
+    def __build_representation_map(
+        self, structure: Dict[str, Any]
+    ) -> Union[RepresentationMap, MultiRepresentationMap]:
+        src_list = add_list(structure.get("source"))
+        tgt_list = add_list(structure.get("target"))
+
+        if len(src_list) != 1 or len(tgt_list) != 1:
+            structure["source"] = src_list
+            structure["target"] = tgt_list
+            return MultiRepresentationMap(**structure)
+
+        structure["source"] = src_list[0]
+        structure["target"] = tgt_list[0]
+        return RepresentationMap(**structure)
+
     def __build_representation_mapping(
         self, child_dict: Dict[str, Any]
     ) -> Union[ValueMap, MultiValueMap]:
@@ -1352,7 +1377,9 @@ class StructureParser(Struct):
         for xml_key, py_key in renames.items():
             if xml_key in element:
                 value = element.pop(xml_key)
-                element[py_key] = converters.get(xml_key, _identity)(value)
+                element[py_key] = _convert(
+                    converters.get(xml_key, _identity), value
+                )
 
         child_class_mapping: Dict[str, Type[Any]] = {
             "ComponentMap": ComponentMap,
@@ -1519,7 +1546,10 @@ class StructureParser(Struct):
                     structure[COMPS] = Components(structure[COMPS])
                 else:
                     structure[COMPS] = Components([])
-            schemas[short_urn] = STRUCTURES_MAPPING[schema](**structure)
+            if schema == REPRESENTATION_MAP:
+                schemas[short_urn] = self.__build_representation_map(structure)
+            else:
+                schemas[short_urn] = STRUCTURES_MAPPING[schema](**structure)
 
         return schemas
 
