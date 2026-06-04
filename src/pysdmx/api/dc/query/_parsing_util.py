@@ -1,8 +1,10 @@
+import re
 from datetime import timezone
 from typing import Sequence, Union
 
 from parsy import digit, regex, string  # type: ignore[import-untyped]
 
+from pysdmx import errors
 from pysdmx.__extras_check import __check_dc_extra
 from pysdmx.api.dc.query._model import (
     DateTimeFilter,
@@ -18,6 +20,12 @@ from pysdmx.api.dc.query._parsing_model import (
     _Filter,
     _Number,
     _String,
+)
+
+_ISO_DATETIME = re.compile(
+    r"^\d{4}-\d{2}-\d{2}[Tt]\d{2}:\d{2}"
+    r"(?::\d{2}(?:\.\d+)?)?"
+    r"(?:Z|[+-]\d{2}:?\d{2})?$"
 )
 
 
@@ -49,13 +57,20 @@ def __map_string(input: str) -> Union[_DateTime, _String]:
     import dateutil.parser
 
     rec = input[1:-1]
+    if _ISO_DATETIME.fullmatch(rec) is None:
+        return _String(rec)
     try:
         dt = dateutil.parser.parse(rec)
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=timezone.utc)
+        elif dt.utcoffset() == timezone.utc.utcoffset(dt):
+            dt = dt.astimezone(timezone.utc)
         return _DateTime(dt)
-    except dateutil.parser.ParserError:
-        return _String(rec)
+    except dateutil.parser.ParserError as pe:
+        raise errors.Invalid(
+            "Invalid input",
+            f"Invalid datetime format: {rec!r}. Expected ISO 8601 format.",
+        ) from pe
 
 
 def _to_response(filters: Sequence[_Filter]) -> Filter:
