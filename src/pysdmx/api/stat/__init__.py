@@ -20,9 +20,10 @@ from pysdmx.api.qb import (
     StructureType,
 )
 from pysdmx.io import read_sdmx
-from pysdmx.model import Dataflow, DataStructureDefinition
+from pysdmx.model import Dataflow, DataStructureDefinition, Schema
 from pysdmx.model.message import Message
-from pysdmx.util import experimental
+from pysdmx.util import experimental, parse_short_urn
+from pysdmx.util._model_utils import schema_generator
 
 
 class StatEndpoints(str, Enum):
@@ -144,6 +145,30 @@ class StatConnector:
         flow = self._find_dataflow(msg, agency, id, version)
         dsd = self._find_dsd(msg)
         return structs.replace(flow, structure=dsd)
+
+    def schema(self, agency: str, id: str, version: str) -> Schema:
+        """Get the data validity schema for a dataflow.
+
+        The schema is derived from the dataflow's data structure
+        definition, as .Stat Suite services do not expose the
+        SDMX-REST ``/schema`` endpoint.
+
+        Args:
+            agency: The agency maintaining the dataflow.
+            id: The dataflow ID.
+            version: The dataflow version.
+
+        Returns:
+            The dataflow-context schema (components and their types).
+
+        Raises:
+            errors.NotFound: If the dataflow is not returned.
+            errors.Invalid: If the service returns a client error.
+            errors.Unavailable: If the service cannot be reached.
+        """
+        _, msg = self._fetch_structure(agency, id, version)
+        flow = self._find_dataflow(msg, agency, id, version)
+        return schema_generator(msg, parse_short_urn(flow.short_urn))
 
 
 __all__ = ["StatConnector", "StatEndpoints"]

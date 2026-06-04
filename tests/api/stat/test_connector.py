@@ -4,7 +4,7 @@ import pytest
 from pysdmx.api.qb import ApiVersion, DataFormat, StructureFormat
 from pysdmx.api.stat import StatConnector, StatEndpoints
 from pysdmx.errors import NotFound
-from pysdmx.model import Dataflow
+from pysdmx.model import Dataflow, Schema
 
 
 @pytest.fixture
@@ -91,3 +91,15 @@ def test_stat_endpoints_are_v2_bases():
     for endpoint in StatEndpoints:
         assert endpoint.value.startswith("https://")
         assert endpoint.value.endswith("/rest/v2")
+
+
+def test_schema(respx_mock, client, struct_url, structure_xml):
+    respx_mock.get(url__startswith=struct_url).mock(
+        return_value=httpx.Response(200, content=structure_xml)
+    )
+
+    schema = client.schema("BIS", "WEBSTATS_DER_DATAFLOW", "1.0")
+
+    assert isinstance(schema, Schema)
+    assert schema.short_urn == "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"
+    assert len(schema.components) == 26
