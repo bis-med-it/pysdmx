@@ -34,11 +34,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class StatEndpoints(str, Enum):
-    """Known .Stat Suite SDMX-REST v2 entry points.
-
-    Each entry is verified to expose the SDMX-REST v2 API and to serve
-    structural metadata as SDMX-ML 2.1.
-    """
+    """Known .Stat Suite SDMX-REST v2 entry points."""
 
     OECD = "https://sdmx.oecd.org/public/rest/v2"
     ILO = "https://sdmx.ilo.org/rest/v2"
@@ -86,11 +82,11 @@ class StatConnector:
             pem=pem,
         )
 
-    def _fetch_structure(
+    def _structure_query(
         self, agency: str, id: str, version: str
-    ) -> tuple[bytes, Message]:
-        """Fetch the SDMX-ML 2.1 structure (with descendants)."""
-        q = StructureQuery(
+    ) -> StructureQuery:
+        """Build the structure query for a dataflow (with descendants)."""
+        return StructureQuery(
             StructureType.DATAFLOW,
             agency,
             id,
@@ -98,16 +94,20 @@ class StatConnector:
             detail=StructureDetail.FULL,
             references=StructureReference.DESCENDANTS,
         )
+
+    def _fetch_structure(self, agency: str, id: str, version: str) -> Message:
+        """Fetch and parse the SDMX-ML 2.1 structure (with descendants)."""
+        q = self._structure_query(agency, id, version)
         raw = self._svc.structure(q)
-        msg = read_sdmx(BytesIO(raw), validate=False)
-        return raw, msg
+        return read_sdmx(BytesIO(raw), validate=False)
 
     def _find_dataflow(
         self, msg: Message, agency: str, id: str, version: str
     ) -> Dataflow:
-        """Return the Dataflow contained in a structure message."""
+        """Return the requested Dataflow from a structure message."""
+        target = f"Dataflow={agency}:{id}({version})"
         for artefact in msg.structures or []:
-            if isinstance(artefact, Dataflow) and artefact.id == id:
+            if isinstance(artefact, Dataflow) and artefact.short_urn == target:
                 return artefact
         raise errors.NotFound(
             "Dataflow not found",
@@ -146,9 +146,10 @@ class StatConnector:
         Raises:
             errors.NotFound: If the dataflow or its DSD is not returned.
             errors.Invalid: If the service returns a client error.
+            errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
-        _, msg = self._fetch_structure(agency, id, version)
+        msg = self._fetch_structure(agency, id, version)
         flow = self._find_dataflow(msg, agency, id, version)
         dsd = self._find_dsd(msg)
         return structs.replace(flow, structure=dsd)
@@ -171,9 +172,10 @@ class StatConnector:
         Raises:
             errors.NotFound: If the dataflow is not returned.
             errors.Invalid: If the service returns a client error.
+            errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
-        _, msg = self._fetch_structure(agency, id, version)
+        msg = self._fetch_structure(agency, id, version)
         flow = self._find_dataflow(msg, agency, id, version)
         return schema_generator(msg, parse_short_urn(flow.short_urn))
 
@@ -207,8 +209,10 @@ class StatConnector:
         Raises:
             errors.NotFound: If no data or dataflow is returned.
             errors.Invalid: If the service returns a client error.
+            errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
+        # Like prepare_basic_data_query (api/dc/util.py) but with key support.
         components = (
             parse_query(filters) if isinstance(filters, str) else filters
         )
@@ -222,7 +226,8 @@ class StatConnector:
             obs_dimension="AllDimensions",
         )
         data = self._svc.data(dq)
-        raw_struct, _ = self._fetch_structure(agency, id, version)
+        sq = self._structure_query(agency, id, version)
+        raw_struct = self._svc.structure(sq)
         datasets = get_datasets(
             BytesIO(data), BytesIO(raw_struct), validate=False
         )

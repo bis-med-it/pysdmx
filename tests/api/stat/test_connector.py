@@ -186,6 +186,7 @@ def test_dataset_with_key(
 
     requested_url = str(data_route.calls.last.request.url)
     assert "/WEBSTATS_DER_DATAFLOW/1.0/A.U.A.B.5J" in requested_url
+    assert "dimensionAtObservation=AllDimensions" in requested_url
 
 
 def test_accept_headers(
@@ -232,24 +233,16 @@ def test_dataset_with_filter_object(
     assert "c%5BFREQ%5D=A" in str(data_route.calls.last.request.url)
 
 
-def test_oecd_shaped_query_url():
-    from pysdmx.api.qb import (
-        StructureDetail,
-        StructureQuery,
-        StructureReference,
-        StructureType,
-    )
+def test_dataflow_builds_oecd_url(respx_mock, client, structure_xml):
+    route = respx_mock.get(
+        url__startswith=f"{client._svc._api_endpoint}/structure/dataflow/"
+    ).mock(return_value=httpx.Response(200, content=structure_xml))
 
-    q = StructureQuery(
-        StructureType.DATAFLOW,
-        "OECD.SDD.TPS",
-        "DSD_G20_PRICES@DF_G20_PRICES",
-        "1.0",
-        detail=StructureDetail.FULL,
-        references=StructureReference.DESCENDANTS,
-    )
-    url = q.get_url(ApiVersion.V2_0_0, True)
-    assert url == (
-        "/structure/dataflow/OECD.SDD.TPS/"
-        "DSD_G20_PRICES@DF_G20_PRICES/1.0?references=descendants"
-    )
+    with pytest.raises(NotFound, match="Dataflow not found"):
+        client.dataflow("OECD.SDD.TPS", "DSD_G20_PRICES@DF_G20_PRICES", "1.0")
+
+    url = str(route.calls.last.request.url)
+    assert "/structure/dataflow/OECD.SDD.TPS/" in url
+    assert "DSD_G20_PRICES" in url
+    assert "DF_G20_PRICES" in url
+    assert "references=descendants" in url
