@@ -261,3 +261,79 @@ def test_build_key_unknown_dimension(client, structure_xml):
 
     with pytest.raises(Invalid, match="Unknown dimension"):
         client._build_key(dsd, {"NOT_A_DIM": "X"})
+
+
+@pytest.fixture
+def oecd_client():
+    return StatConnector(StatEndpoints.OECD)
+
+
+@pytest.fixture
+def oecd_structure():
+    path = "tests/api/stat/samples/oecd_g20_prices_structure.xml"
+    with open(path, "rb") as f:
+        return f.read()
+
+
+@pytest.fixture
+def oecd_data():
+    with open("tests/api/stat/samples/oecd_g20_prices_data.csv", "rb") as f:
+        return f.read()
+
+
+def test_oecd_real_dataflow(respx_mock, oecd_client, oecd_structure):
+    ep = oecd_client._svc._api_endpoint
+    spath = f"{ep}/structure/dataflow/OECD.SDD.TPS/DSD_G20_PRICES"
+    respx_mock.get(url__startswith=spath).mock(
+        return_value=httpx.Response(200, content=oecd_structure)
+    )
+
+    flow = oecd_client.dataflow(
+        "OECD.SDD.TPS", "DSD_G20_PRICES@DF_G20_PRICES", "1.0"
+    )
+
+    assert flow.short_urn == (
+        "Dataflow=OECD.SDD.TPS:DSD_G20_PRICES@DF_G20_PRICES(1.0)"
+    )
+    assert flow.components is not None
+    assert "REF_AREA" in [d.id for d in flow.components.dimensions]
+
+
+def test_oecd_real_schema(respx_mock, oecd_client, oecd_structure):
+    ep = oecd_client._svc._api_endpoint
+    spath = f"{ep}/structure/dataflow/OECD.SDD.TPS/DSD_G20_PRICES"
+    respx_mock.get(url__startswith=spath).mock(
+        return_value=httpx.Response(200, content=oecd_structure)
+    )
+
+    schema = oecd_client.schema(
+        "OECD.SDD.TPS", "DSD_G20_PRICES@DF_G20_PRICES", "1.0"
+    )
+
+    assert schema.short_urn == (
+        "Dataflow=OECD.SDD.TPS:DSD_G20_PRICES@DF_G20_PRICES(1.0)"
+    )
+    assert len(schema.components) == 15
+
+
+def test_oecd_real_dataset(respx_mock, oecd_client, oecd_structure, oecd_data):
+    ep = oecd_client._svc._api_endpoint
+    spath = f"{ep}/structure/dataflow/OECD.SDD.TPS/DSD_G20_PRICES"
+    dpath = f"{ep}/data/dataflow/OECD.SDD.TPS/DSD_G20_PRICES"
+    respx_mock.get(url__startswith=spath).mock(
+        return_value=httpx.Response(200, content=oecd_structure)
+    )
+    respx_mock.get(url__startswith=dpath).mock(
+        return_value=httpx.Response(200, content=oecd_data)
+    )
+
+    ds = oecd_client.dataset(
+        "OECD.SDD.TPS",
+        "DSD_G20_PRICES@DF_G20_PRICES",
+        "1.0",
+        key="CHN.A.N.CPI.PA._T.N.GY",
+    )
+
+    assert isinstance(ds.structure, Schema)
+    assert len(ds.data) == 41
+    assert sorted(ds.data["REF_AREA"].unique()) == ["CHN"]

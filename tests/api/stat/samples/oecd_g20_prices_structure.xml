@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--NSI Web Service v8.19.8.0-->
+<message:Structure xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:structure="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+  <message:Header>
+    <message:ID>IDREF6698</message:ID>
+    <message:Test>false</message:Test>
+    <message:Prepared>2026-06-08T12:44:34.8854787+02:00</message:Prepared>
+    <message:Sender id="Unknown" />
+    <message:Receiver id="Unknown" />
+  </message:Header>
+  <message:Structures>
+    <structure:Dataflows>
+      <structure:Dataflow id="DSD_G20_PRICES@DF_G20_PRICES" agencyID="OECD.SDD.TPS" version="1.0" isFinal="true">
+        <common:Annotations>
+          <common:Annotation>
+            <common:AnnotationType>NonProductionDataflow</common:AnnotationType>
+            <common:AnnotationText xml:lang="en">true</common:AnnotationText>
+          </common:Annotation>
+          <common:Annotation id="@SDMX">
+            <common:AnnotationTitle>OBS_STATUS=A,ADJUSTMENT=N,TRANSFORMATION=_Z,UNIT_MULT=0,REF_AREA=WXOECD</common:AnnotationTitle>
+            <common:AnnotationType>NOT_DISPLAYED</common:AnnotationType>
+          </common:Annotation>
+          <common:Annotation id="@SDMX">
+            <common:AnnotationTitle>COMBINED_MEASURE</common:AnnotationTitle>
+            <common:AnnotationType>LAYOUT_ROW_SECTION</common:AnnotationType>
+          </common:Annotation>
+          <common:Annotation id="@SDMX">
+            <common:AnnotationTitle>FREQ=M,UNIT_MEASURE=PA,LASTNPERIODS=13</common:AnnotationTitle>
+            <common:AnnotationType>DEFAULT</common:AnnotationType>
+          </common:Annotation>
+          <common:Annotation>
+            <common:AnnotationTitle>COMBINED_MEASURE:MEASURE,METHODOLOGY,TRANSFORMATION;COMBINED_UNIT_MEASURE:UNIT_MEASURE,UNIT_MULT,ADJUSTMENT,BASE_PER</common:AnnotationTitle>
+            <common:AnnotationType>COMBINED_CONCEPTS</common:AnnotationType>
+            <common:AnnotationText xml:lang="en">COMBINED_MEASURE:Measure;COMBINED_UNIT_MEASURE:Unit of measure</common:AnnotationText>
+            <common:AnnotationText xml:lang="fr">COMBINED_MEASURE:Measure;COMBINED_UNIT_MEASURE:Unité de mesure</common:AnnotationText>
+          </common:Annotation>
+        </common:Annotations>
+        <common:Name xml:lang="en">G20 - Consumer price indices, all items</common:Name>
+        <common:Name xml:lang="fr">G20 - Indices des prix à la consommation, global</common:Name>
+        <common:Description xml:lang="en">&lt;p style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:0cm;font-size:15px;font-family:"Calibri",sans-serif;background:white;'&gt;&lt;span style="color:black;"&gt;This dataset contains statistics on Consumer Price Indices - all items, for G20 countries and for the G20 as a whole.&amp;nbsp;&lt;/span&gt;&lt;/p&gt;&lt;p style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:0cm;font-size:15px;font-family:"Calibri",sans-serif;background:white;'&gt;&lt;span style="color:black;"&gt;The G20 area consists of the following economies: Argentina, Australia, Brazil, Canada, China, France, Germany, India, Indonesia, Italy, Japan, Korea, Mexico, the Russian Federation, Saudi Arabia, South Africa, T&amp;uuml;rkiye, the United Kingdom, the United States, the African Union and the European Union.&amp;nbsp;&lt;/span&gt;&lt;/p&gt;&lt;p style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;margin-left:0cm;font-size:15px;font-family:"Calibri",sans-serif;background:white;'&gt;&lt;span style="color:black;"&gt;The CPI aggregate for G20 area is calculated for the headline indicator only (CPI/HICP All items). It reflects national CPIs for all G20 countries (with the exception of T&amp;uuml;rkiye and the United Kingdom) that are not part of the EU while it reflects the HICPs for the EU, its Member States, for T&amp;uuml;rkiye and the United Kingdom. It is an annual chain-linked Laspeyres-type indices, calculated taking the sixteen individual country members of the G20 (other than France, Germany, and Italy) plus the EU as an aggregate. The G20 aggregate does not include African Union countries, except for South Africa.</common:Description>
+        <common:Description xml:lang="fr">&lt;p style='margin:0cm;font-size:15px;font-family:"Calibri",sans-serif;'&gt;Cet ensemble de donn&amp;eacute;es contient des informations sur les indices de prix &amp;agrave; la consommation (IPCs, global), pour les pays du G20 et le G20 dans son ensemble.&lt;/p&gt;
+&lt;p style='margin:0cm;font-size:15px;font-family:"Calibri",sans-serif;'&gt;Le G20 comprend les membres suivants : Afrique du Sud, Allemagne, Arabie saoudite, Argentine, Australie, Br&amp;eacute;sil, Canada, Chine, Cor&amp;eacute;e, &amp;Eacute;tats-Unis, F&amp;eacute;d&amp;eacute;ration de Russie, France, Inde, Indon&amp;eacute;sie, Italie, Japon, Mexique, Royaume-Uni, T&amp;uuml;rkiye, Union africaine et Union europ&amp;eacute;enne.&amp;nbsp;&lt;/p&gt;
+&lt;p style='margin:0cm;font-size:15px;font-family:"Calibri",sans-serif;'&gt;L&amp;rsquo;agr&amp;eacute;gat du G20 est calcul&amp;eacute; uniquement pour l&amp;rsquo;indicateur global (IPC/IPCH global). Il correspond aux IPCs nationaux pour tous les pays du G20 (&amp;agrave; l&amp;rsquo;exception du Royaume-Uni et de la T&amp;uuml;rkiye) qui ne sont pas membres de l&amp;rsquo;UE, tandis qu&amp;rsquo;il correspond aux IPCHs pour l&amp;rsquo;UE, ses &amp;Eacute;tats membres, le Royaume-Uni et la T&amp;uuml;rkiye.&lt;/p&gt;
+&lt;p style='margin:0cm;font-size:15px;font-family:"Calibri",sans-serif;'&gt;Il s&amp;rsquo;agit d&amp;rsquo;un indice annuel cha&amp;icirc;n&amp;eacute; de type Laspeyres, calcul&amp;eacute; en agr&amp;eacute;geant les indices des seize pays membres du G20 (&amp;agrave; l&amp;rsquo;exception de la France, de l&amp;rsquo;Allemagne et de l&amp;rsquo;Italie) et l&amp;rsquo;agr&amp;eacute;gat de l&amp;rsquo;UE. L&amp;rsquo;agr&amp;eacute;gat du G20 n&amp;rsquo;inclut pas les pays de l&amp;rsquo;Union africaine, &amp;agrave; l&amp;rsquo;exception de l&amp;rsquo;Afrique du Sud.&lt;/p&gt;</common:Description>
+        <structure:Structure>
+          <Ref id="DSD_G20_PRICES" version="1.0" agencyID="OECD.SDD.TPS" package="datastructure" class="DataStructure" />
+        </structure:Structure>
+      </structure:Dataflow>
+    </structure:Dataflows>
+    <structure:DataStructures>
+      <structure:DataStructure id="DSD_G20_PRICES" agencyID="OECD.SDD.TPS" version="1.0" isFinal="true">
+        <common:Annotations>
+          <common:Annotation>
+            <common:AnnotationTitle>urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataStructure=OECD:MSD_REF_METADATA(1.0)</common:AnnotationTitle>
+            <common:AnnotationType>METADATA</common:AnnotationType>
+          </common:Annotation>
+        </common:Annotations>
+        <common:Name xml:lang="en">G20 consumer price indices DSD</common:Name>
+        <structure:DataStructureComponents>
+          <structure:DimensionList id="DimensionDescriptor">
+            <structure:Dimension id="REF_AREA" position="1">
+              <structure:ConceptIdentity>
+                <Ref id="REF_AREA" maintainableParentID="PRI_CONCEPTS" maintainableParentVersion="1.0" agencyID="OECD.SDD.TPS" package="conceptscheme" class="Concept" />
+              </structure:ConceptIdentity>
+              <structure:LocalRepresentation>
+                <structure:Enumeration>
+                  <Ref id="CL_AREA" version="1.1" agencyID="OECD" package="codelist" class="Codelist" />
+                </structure:Enumeration>
+              </structure:LocalRepresentation>
+            </structure:Dimension>
+            <structure:Dimension id="FREQ" position="2">
+              <structure:ConceptIdentity>
+                <Ref id="FREQ" maintainableParentID="PRI_CONCEPTS" maintainableParentVersion="1.0" agencyID="OECD.SDD.TPS" package="conceptscheme" class="Concept" />
+              </structure:ConceptIdentity>
+              <structure:LocalRepresentation>
+                <structure:Enumeration>
+                  <Ref id="CL_FREQ" version="2.1" agencyID="SDMX" package="codelist" class="Codelist" />
+                </structure:Enumeration>
+              </structure:LocalRepresentation>
+            </structure:Dimension>
+            <structure:Dimension id="METHODOLOGY" position="3">
+              <structure:ConceptIdentity>
+                <Ref id="METHODOLOGY" maintainableParentID="PRI_CONCEPTS" maintainableParentVersion="1.0" agencyID="OECD.SDD.TPS" package="conceptscheme" class="Concept" />
+              </structure:ConceptIdentity>
+              <structure:LocalRepresentation>
+                <structure:Enumeration>
+                  <Ref id="CL_METHODOLOGY_PRI" version="1.0" agencyID="OECD.SDD.TPS" package="codelist" class="Codelist" />
+                </structure:Enumeration>
+              </structure:LocalRepresentation>
+            </structure:Dimension>
+            <structure:Dimension id="MEASURE" position="4">
+              <structure:ConceptIdentity>
+                <Ref id="MEASURE" maintainableParentID="PRI_CONCEPTS" maintainableParentVersion="1.0" agencyID="OECD.SDD.TPS" package="conceptscheme" class="Concept" />
+              </structure:ConceptIdentity>
+              <structure:LocalRepresentation>
+                <structure:Enumeration>
+                  <Ref id="CL_MEASURE_PRI" version="1.0" agencyID="OECD.SDD.TPS" package="codelist" class="Codelist" />
+                </structure:Enumeration>
+              </structure:LocalRepresentation>
+            </structure:Dimension>
+            <structure:Dimension id="UNIT_MEASURE" position="5">
+              <structure:ConceptIdentity>
+                <Ref id="UNIT_MEASURE" maintainableParentID="PRI_CONCEPTS" maintainableParentVersion="1.0" agencyID="OECD.SDD.TPS" package="conceptscheme" class="Concept" />
+              </structure:ConceptIdentity>
+              <structure:LocalRepresentation>
+                <structure:Enumeration>
+                  <Ref id="CL_UNIT_MEASURE" version="1.7" agencyID="OECD" package="codelist" class="Codelist" />
+                </structure:Enumeration>
+              </structure:LocalRepresentation>
+            </structure:Dimension>
+            <structure:Dimension id="EXPENDITURE" position="6">
+              <structure:ConceptIdentity>
+                <Ref id="EXPENDITURE" maintainableParentID="PRI_CONCEPTS" maintainableParentVersion="1.0" agencyID="OECD.SDD.TPS" package="conceptscheme" class="Concept" />
+              </structure:ConceptIdentity>
+              <structure:LocalRepresentation>
+                <structure:Enumeration>
+                  <Ref id="CL_COICOP_99" version="1.1" agencyID="OECD" package="codelist" class="Codelist" />
+                </structure:Enumeration>
+              </structure:LocalRepresentation>
+            </structure:Dimension>
+            <structure:Dimension id="ADJUSTMENT" position="7">
+              <structure:ConceptIdentity>
+                <Ref id="ADJUSTMENT" maintainableParentID="PRI_CONCEPTS" maintainableParentVersion="1.0" agencyID="OECD.SDD.TPS" package="conceptscheme" class="Concept" />
+              </structure:ConceptIdentity>
+              <structure:LocalRepresentation>
+                <structure:Enumeration>
+                  <Ref id="CL_ADJUSTMENT" version="1.0" agencyID="OECD" package="codelist" class="Codelist" />
+                </structure:Enumeration>
+              </structure:LocalRepresentation>
+            </structure:Dimension>
+            <structure:Dimension id="TRANSFORMATION" position="8">
+              <structure:ConceptIdentity>
+                <Ref id="TRANSFORMATION" maintainableParentID="PRI_CONCEPTS" maintainableParentVersion="1.0" agencyID="OECD.SDD.TPS" package="conceptscheme" class="Concept" />
+              </structure:ConceptIdentity>
+              <structure:LocalRepresentation>
+                <structure:Enumeration>
+                  <Ref id="CL_TRANSFORMATION" version="1.0" agencyID="OECD" package="codelist" class="Codelist" />
+                </structure:Enumeration>
+              </structure:LocalRepresentation>
+            </structure:Dimension>
+            <structure:TimeDimension id="TIME_PERIOD" position="9">
+              <structure:ConceptIdentity>
+                <Ref id="TIME_PERIOD" maintainableParentID="PRI_CONCEPTS" maintainableParentVersion="1.0" agencyID="OECD.SDD.TPS" package="conceptscheme" class="Concept" />
+              </structure:ConceptIdentity>
+              <structure:LocalRepresentation>
+                <structure:TextFormat textType="ObservationalTimePeriod" />
+              </structure:LocalRepresentation>
+            </structure:TimeDimension>
+          </structure:DimensionList>
+          <structure:AttributeList id="AttributeDescriptor">
+            <structure:Attribute id="OBS_STATUS" assignmentStatus="Mandatory">
+              <structure:ConceptIdentity>
+                <Ref id="OBS_STATUS" maintainableParentID="PRI_CONCEPTS" maintainableParentVersion="1.0" agencyID="OECD.SDD.TPS" package="conceptscheme" class="Concept" />
+              </structure:ConceptIdentity>
+              <structure:LocalRepresentation>
+                <structure:Enumeration>
+                  <Ref id="CL_OBS_STATUS" version="2.2" agencyID="SDMX" package="codelist" class="Codelist" />
+                </structure:Enumeration>
+              </structure:LocalRepresentation>
+              <structure:AttributeRelationship>
+                <structure:PrimaryMeasure>
+                  <Ref id="OBS_VALUE" />
+                </structure:PrimaryMeasure>
+              </structure:AttributeRelationship>
+            </structure:Attribute>
+            <structure:Attribute id="UNIT_MULT" assignmentStatus="Conditional">
+              <structure:ConceptIdentity>
+                <Ref id="UNIT_MULT" maintainableParentID="PRI_CONCEPTS" maintainableParentVersion="1.0" agencyID="OECD.SDD.TPS" package="conceptscheme" class="Concept" />
+              </structure:ConceptIdentity>
+              <structure:LocalRepresentation>
+                <structure:Enumeration>
+                  <Ref id="CL_UNIT_MULT" version="1.1" agencyID="SDMX" package="codelist" class="Codelist" />
+                </structure:Enumeration>
+              </structure:LocalRepresentation>
+              <structure:AttributeRelationship>
+                <structure:None />
+              </structure:AttributeRelationship>
+            </structure:Attribute>
+            <structure:Attribute id="BASE_PER" assignmentStatus="Conditional">
+              <structure:ConceptIdentity>
+                <Ref id="BASE_PER" maintainableParentID="PRI_CONCEPTS" maintainableParentVersion="1.0" agencyID="OECD.SDD.TPS" package="conceptscheme" class="Concept" />
+              </structure:ConceptIdentity>
+              <structure:AttributeRelationship>
+                <structure:Dimension>
+                  <Ref id="UNIT_MEASURE" />
+                </structure:Dimension>
+              </structure:AttributeRelationship>
+            </structure:Attribute>
+            <structure:Attribute id="DURABILITY" assignmentStatus="Conditional">
+              <structure:ConceptIdentity>
+                <Ref id="DURABILITY" maintainableParentID="PRI_CONCEPTS" maintainableParentVersion="1.0" agencyID="OECD.SDD.TPS" package="conceptscheme" class="Concept" />
+              </structure:ConceptIdentity>
+              <structure:LocalRepresentation>
+                <structure:Enumeration>
+                  <Ref id="CL_DURABILITY" version="1.0" agencyID="OECD.SDD.TPS" package="codelist" class="Codelist" />
+                </structure:Enumeration>
+              </structure:LocalRepresentation>
+              <structure:AttributeRelationship>
+                <structure:Dimension>
+                  <Ref id="EXPENDITURE" />
+                </structure:Dimension>
+              </structure:AttributeRelationship>
+            </structure:Attribute>
+            <structure:Attribute id="DECIMALS" assignmentStatus="Conditional">
+              <structure:ConceptIdentity>
+                <Ref id="DECIMALS" maintainableParentID="PRI_CONCEPTS" maintainableParentVersion="1.0" agencyID="OECD.SDD.TPS" package="conceptscheme" class="Concept" />
+              </structure:ConceptIdentity>
+              <structure:LocalRepresentation>
+                <structure:Enumeration>
+                  <Ref id="CL_DECIMALS" version="1.0" agencyID="SDMX" package="codelist" class="Codelist" />
+                </structure:Enumeration>
+              </structure:LocalRepresentation>
+              <structure:AttributeRelationship>
+                <structure:Dimension>
+                  <Ref id="REF_AREA" />
+                </structure:Dimension>
+                <structure:Dimension>
+                  <Ref id="FREQ" />
+                </structure:Dimension>
+                <structure:Dimension>
+                  <Ref id="METHODOLOGY" />
+                </structure:Dimension>
+                <structure:Dimension>
+                  <Ref id="MEASURE" />
+                </structure:Dimension>
+                <structure:Dimension>
+                  <Ref id="UNIT_MEASURE" />
+                </structure:Dimension>
+                <structure:Dimension>
+                  <Ref id="EXPENDITURE" />
+                </structure:Dimension>
+                <structure:Dimension>
+                  <Ref id="ADJUSTMENT" />
+                </structure:Dimension>
+                <structure:Dimension>
+                  <Ref id="TRANSFORMATION" />
+                </structure:Dimension>
+              </structure:AttributeRelationship>
+            </structure:Attribute>
+          </structure:AttributeList>
+          <structure:MeasureList id="MeasureDescriptor">
+            <structure:PrimaryMeasure id="OBS_VALUE">
+              <structure:ConceptIdentity>
+                <Ref id="OBS_VALUE" maintainableParentID="PRI_CONCEPTS" maintainableParentVersion="1.0" agencyID="OECD.SDD.TPS" package="conceptscheme" class="Concept" />
+              </structure:ConceptIdentity>
+              <structure:LocalRepresentation>
+                <structure:TextFormat textType="Double" />
+              </structure:LocalRepresentation>
+            </structure:PrimaryMeasure>
+          </structure:MeasureList>
+        </structure:DataStructureComponents>
+      </structure:DataStructure>
+    </structure:DataStructures>
+  </message:Structures>
+</message:Structure>
