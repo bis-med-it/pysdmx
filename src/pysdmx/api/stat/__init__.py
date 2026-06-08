@@ -4,13 +4,11 @@ from __future__ import annotations
 
 from enum import Enum
 from io import BytesIO
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Mapping, Optional, Union
 
 from msgspec import structs
 
 from pysdmx import errors
-from pysdmx.api.dc.query import BasicFilter
-from pysdmx.api.dc.query.util import parse_query
 from pysdmx.api.qb import (
     ApiVersion,
     DataContext,
@@ -128,6 +126,20 @@ class StatConnector:
             "definition. Re-run the structure query with references.",
         )
 
+    def _build_key(
+        self, dsd: DataStructureDefinition, filters: Mapping[str, str]
+    ) -> str:
+        """Build a positional series key from dimension filters."""
+        dims = [d for d in dsd.components.dimensions if d.id != "TIME_PERIOD"]
+        unknown = sorted(f for f in filters if f not in {d.id for d in dims})
+        if unknown:
+            valid = sorted(d.id for d in dims)
+            raise errors.Invalid(
+                "Invalid filter",
+                f"Unknown dimension(s): {unknown}. Valid: {valid}.",
+            )
+        return ".".join(filters.get(d.id, "*") for d in dims)
+
     def dataflow(self, agency: str, id: str, version: str) -> Dataflow:
         """Get the dataflow matching the supplied identification.
 
@@ -184,54 +196,56 @@ class StatConnector:
         agency: str,
         id: str,
         version: str,
-        key: str = "*",
-        filters: Optional[Union[BasicFilter, str]] = None,
+        key: Optional[str] = None,
+        filters: Optional[Mapping[str, str]] = None,
     ) -> "PandasDataset":
         """Get data for a dataflow as a typed Pandas dataset.
 
-        The data are retrieved as SDMX-CSV 1.0.0 and combined with the
-        dataflow's SDMX-ML 2.1 structure so the returned dataset carries
-        a resolved ``Schema`` and PyArrow-backed column types.
+        Filter the data either with ``filters`` (a mapping of dimension
+        ID to a single value, resolved to a positional series key using
+        the data structure) or with a raw positional ``key``. .Stat
+        services key on one value per dimension; for multiple values
+        issue separate requests.
 
         Args:
             agency: The agency maintaining the dataflow.
             id: The dataflow ID.
             version: The dataflow version.
-            key: The dimension key identifying the slice of the cube
-                (e.g. ``A.U.A.B.5J``). ``*`` (default) returns all series.
-            filters: Optional component filters, as a string
-                ("FREQ = 'A'") or a filter object from
-                ``pysdmx.api.dc.query``.
+            key: A raw positional series key (dimensions in DSD order,
+                ``.``-separated, ``*`` to wildcard a dimension).
+            filters: A mapping of dimension ID to a single value, e.g.
+                ``{"REF_AREA": "CHN", "FREQ": "M"}``.
 
         Returns:
             The requested data as a ``PandasDataset`` with its schema.
 
         Raises:
+            errors.Invalid: If both ``key`` and ``filters`` are supplied,
+                or a filter targets an unknown dimension.
             errors.NotFound: If no data or dataflow is returned.
-            errors.Invalid: If the service returns a client error.
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
-        # Like prepare_basic_data_query (api/dc/util.py) but with key support.
-        components = (
-            parse_query(filters) if isinstance(filters, str) else filters
-        )
+        if key is not None and filters is not None:
+            raise errors.Invalid(
+                "Invalid query",
+                "Provide either 'key' or 'filters', not both.",
+            )
+        q = self._structure_query(agency, id, version)
+        raw = self._svc.structure(q)
+        if filters is not None:
+            dsd = self._find_dsd(read_sdmx(BytesIO(raw), validate=False))
+            key = self._build_key(dsd, filters)
         dq = DataQuery(
             DataContext.DATAFLOW,
             agency,
             id,
             version,
-            key=key,
-            components=components,  # type: ignore[arg-type]
+            key=key or "*",
             obs_dimension="AllDimensions",
         )
         data = self._svc.data(dq)
-        sq = self._structure_query(agency, id, version)
-        raw_struct = self._svc.structure(sq)
-        datasets = get_datasets(
-            BytesIO(data), BytesIO(raw_struct), validate=False
-        )
-        return datasets[0]
+        return get_datasets(BytesIO(data), BytesIO(raw), validate=False)[0]
 
 
 __all__ = ["StatConnector", "StatEndpoints"]

@@ -1,9 +1,12 @@
+from io import BytesIO
+
 import httpx
 import pytest
 
 from pysdmx.api.qb import ApiVersion, DataFormat, StructureFormat
 from pysdmx.api.stat import StatConnector, StatEndpoints
-from pysdmx.errors import NotFound
+from pysdmx.errors import Invalid, NotFound
+from pysdmx.io import read_sdmx
 from pysdmx.model import Dataflow, Schema
 
 
@@ -156,22 +159,6 @@ def test_dataset_structure_matches_schema(
     ]
 
 
-def test_dataset_with_string_filter(
-    respx_mock, client, struct_url, data_url, structure_xml, data_csv
-):
-    respx_mock.get(url__startswith=struct_url).mock(
-        return_value=httpx.Response(200, content=structure_xml)
-    )
-    data_route = respx_mock.get(url__startswith=data_url).mock(
-        return_value=httpx.Response(200, content=data_csv)
-    )
-
-    client.dataset("BIS", "WEBSTATS_DER_DATAFLOW", "1.0", filters="FREQ = 'A'")
-
-    requested_url = str(data_route.calls.last.request.url)
-    assert "c%5BFREQ%5D=A" in requested_url
-
-
 def test_dataset_with_key(
     respx_mock, client, struct_url, data_url, structure_xml, data_csv
 ):
@@ -211,28 +198,6 @@ def test_accept_headers(
     )
 
 
-def test_dataset_with_filter_object(
-    respx_mock, client, struct_url, data_url, structure_xml, data_csv
-):
-    from pysdmx.api.dc.query import Operator, TextFilter
-
-    respx_mock.get(url__startswith=struct_url).mock(
-        return_value=httpx.Response(200, content=structure_xml)
-    )
-    data_route = respx_mock.get(url__startswith=data_url).mock(
-        return_value=httpx.Response(200, content=data_csv)
-    )
-
-    client.dataset(
-        "BIS",
-        "WEBSTATS_DER_DATAFLOW",
-        "1.0",
-        filters=TextFilter("FREQ", Operator.EQUALS, "A"),
-    )
-
-    assert "c%5BFREQ%5D=A" in str(data_route.calls.last.request.url)
-
-
 def test_dataflow_builds_oecd_url(respx_mock, client, structure_xml):
     route = respx_mock.get(
         url__startswith=f"{client._svc._api_endpoint}/structure/dataflow/"
@@ -246,3 +211,53 @@ def test_dataflow_builds_oecd_url(respx_mock, client, structure_xml):
     assert "DSD_G20_PRICES" in url
     assert "DF_G20_PRICES" in url
     assert "references=descendants" in url
+
+
+def test_dataset_with_filters(
+    respx_mock, client, struct_url, data_url, structure_xml, data_csv
+):
+    respx_mock.get(url__startswith=struct_url).mock(
+        return_value=httpx.Response(200, content=structure_xml)
+    )
+    data_route = respx_mock.get(url__startswith=data_url).mock(
+        return_value=httpx.Response(200, content=data_csv)
+    )
+
+    client.dataset(
+        "BIS", "WEBSTATS_DER_DATAFLOW", "1.0", filters={"FREQ": "A"}
+    )
+
+    url = str(data_route.calls.last.request.url)
+    assert "c%5B" not in url  # not the (OECD-ignored) c[] component filter
+    assert "/WEBSTATS_DER_DATAFLOW/1.0/A." in url  # FREQ=A is key position 1
+
+
+def test_dataset_key_and_filters_conflict(client):
+    with pytest.raises(Invalid, match="not both"):
+        client.dataset(
+            "BIS",
+            "WEBSTATS_DER_DATAFLOW",
+            "1.0",
+            key="A",
+            filters={"FREQ": "A"},
+        )
+
+
+def test_build_key(client, structure_xml):
+    msg = read_sdmx(BytesIO(structure_xml), validate=False)
+    dsd = client._find_dsd(msg)
+
+    key = client._build_key(dsd, {"FREQ": "A", "DER_REP_CTY": "CH"})
+
+    parts = key.split(".")
+    assert parts[0] == "A"  # FREQ is the first dimension
+    assert "CH" in parts  # DER_REP_CTY filtered
+    assert set(parts) <= {"A", "CH", "*"}
+
+
+def test_build_key_unknown_dimension(client, structure_xml):
+    msg = read_sdmx(BytesIO(structure_xml), validate=False)
+    dsd = client._find_dsd(msg)
+
+    with pytest.raises(Invalid, match="Unknown dimension"):
+        client._build_key(dsd, {"NOT_A_DIM": "X"})

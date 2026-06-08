@@ -60,6 +60,10 @@ Retrieving the artefacts
 
     # The data as a typed PandasDataset, with its schema attached
     dataset = conn.dataset(
-        agency, flow_id, version, filters="REF_AREA = 'CHN'"
+        agency, flow_id, version, filters={"REF_AREA": "CHN"}
     )
     print(dataset.data.head())
+
+Filter by dimension with ``filters`` (a mapping of dimension ID to a
+single value, resolved to a positional key) or pass a raw positional
+``key`` directly. .Stat services key on one value per dimension.
