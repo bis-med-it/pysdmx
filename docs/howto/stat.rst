@@ -53,13 +53,13 @@ Retrieving the artefacts
     version = "1.0"
 
     # The dataflow, with components resolved from its data structure
-    flow = conn.dataflow(agency, flow_id, version)
+    flow = conn.fetch_dataflow(agency, flow_id, version)
 
     # The schema: components, data types and allowed values
-    schema = conn.schema(agency, flow_id, version)
+    schema = conn.fetch_schema(agency, flow_id, version)
 
     # The data as a typed PandasDataset, with its schema attached
-    dataset = conn.dataset(
+    dataset = conn.fetch_dataset(
         agency, flow_id, version, filters={"REF_AREA": "CHN"}
     )
     print(dataset.data.head())

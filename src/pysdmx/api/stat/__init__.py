@@ -4,11 +4,12 @@ from __future__ import annotations
 
 from enum import Enum
 from io import BytesIO
-from typing import TYPE_CHECKING, Mapping, Optional, Union
+from typing import TYPE_CHECKING, Mapping, NoReturn, Optional
 
 from msgspec import structs
 
 from pysdmx import errors
+from pysdmx.api.dc.rest import SdmxConnector
 from pysdmx.api.qb import (
     ApiVersion,
     DataContext,
@@ -32,24 +33,35 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class StatEndpoints(str, Enum):
-    """Known .Stat Suite SDMX-REST v2 entry points."""
+    """Public .Stat Suite SDMX-REST v2 entry points.
+
+    Each entry is verified to serve structural metadata as SDMX-ML 2.1
+    over the SDMX-REST v2 API. Other .Stat deployments can be used by
+    passing their entry-point URL directly.
+    """
 
     OECD = "https://sdmx.oecd.org/public/rest/v2"
     ILO = "https://sdmx.ilo.org/rest/v2"
     ABS = "https://data.api.abs.gov.au/rest/v2"
     PACIFIC = "https://stats-sdmx-disseminate.pacificdata.org/rest/v2"
+    STATEC = "https://lustat.statec.lu/rest/v2"
 
 
 @experimental
-class StatConnector:
+class StatConnector(SdmxConnector):
     """Download connector for .Stat Suite SDMX-REST v2 services.
 
     .Stat Suite deployments (e.g. OECD dotStatSuite) serve structural
     metadata as SDMX-ML 2.1 and data as SDMX-CSV, and do not expose the
-    SDMX-REST ``/schema`` endpoint. This connector retrieves a single
-    SDMX-ML 2.1 structure message (with descendants) plus SDMX-CSV 1.0.0
-    data, and relies on pysdmx's native readers to produce a ``Dataflow``,
-    a ``Schema`` and a ``PandasDataset``.
+    SDMX-REST ``/schema`` endpoint. The ``fetch_*`` methods retrieve a
+    single SDMX-ML 2.1 structure message (with descendants) plus
+    SDMX-CSV 1.0.0 data, and rely on pysdmx's native readers to produce
+    a ``Dataflow``, a ``Schema`` and a ``PandasDataset``.
+
+    This connector inherits :class:`pysdmx.api.dc.rest.SdmxConnector`.
+    Its inherited ``dataflow``/``dataflows``/``data`` methods assume
+    SDMX-JSON and are disabled here; use ``fetch_dataflow``/
+    ``fetch_schema``/``fetch_dataset`` instead.
 
     Obtain the ``agency``, ``id`` and ``version`` of a dataflow from the
     OECD Data Explorer (https://data-explorer.oecd.org) via its
@@ -58,7 +70,7 @@ class StatConnector:
 
     def __init__(
         self,
-        api_endpoint: Union[str, StatEndpoints] = StatEndpoints.OECD,
+        api_endpoint: str = StatEndpoints.OECD,
         pem: Optional[str] = None,
         timeout: Optional[float] = 20.0,
     ) -> None:
@@ -71,6 +83,7 @@ class StatConnector:
                 for services using a self-signed certificate.
             timeout: Maximum number of seconds to wait per request.
         """
+        super().__init__(api_endpoint, pem=pem, timeout=timeout)
         self._svc = RestService(
             api_endpoint,
             ApiVersion.V2_0_0,
@@ -140,7 +153,7 @@ class StatConnector:
             )
         return ".".join(filters.get(d.id, "*") for d in dims)
 
-    def dataflow(self, agency: str, id: str, version: str) -> Dataflow:
+    def fetch_dataflow(self, agency: str, id: str, version: str) -> Dataflow:
         """Get the dataflow matching the supplied identification.
 
         The dataflow's data structure definition is grafted onto the
@@ -166,7 +179,7 @@ class StatConnector:
         dsd = self._find_dsd(msg)
         return structs.replace(flow, structure=dsd)
 
-    def schema(self, agency: str, id: str, version: str) -> Schema:
+    def fetch_schema(self, agency: str, id: str, version: str) -> Schema:
         """Get the data validity schema for a dataflow.
 
         The schema is derived from the dataflow's data structure
@@ -191,7 +204,7 @@ class StatConnector:
         flow = self._find_dataflow(msg, agency, id, version)
         return schema_generator(msg, parse_short_urn(flow.short_urn))
 
-    def dataset(
+    def fetch_dataset(
         self,
         agency: str,
         id: str,
@@ -246,6 +259,17 @@ class StatConnector:
         )
         data = self._svc.data(dq)
         return get_datasets(BytesIO(data), BytesIO(raw), validate=False)[0]
+
+    def _unsupported(self, *args: object, **kwargs: object) -> NoReturn:
+        """Reject an inherited SDMX-JSON method (use ``fetch_*``)."""
+        raise errors.NotImplemented(
+            "Not supported by .Stat",
+            "The inherited SDMX-JSON methods do not work against .Stat "
+            "services. Use fetch_dataflow / fetch_schema / fetch_dataset.",
+        )
+
+    # The inherited SDMX-JSON methods do not work against .Stat services.
+    dataflow = dataflows = data = _unsupported
 
 
 __all__ = ["StatConnector", "StatEndpoints"]

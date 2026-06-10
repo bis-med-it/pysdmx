@@ -83,6 +83,23 @@ def test_init_accepts_endpoint_enum():
     assert conn._svc._api_endpoint == StatEndpoints.OECD.value
 
 
+def test_is_a_sdmx_connector(client):
+    from pysdmx.api.dc.rest import SdmxConnector
+
+    assert isinstance(client, SdmxConnector)
+
+
+def test_inherited_json_methods_disabled(client):
+    from pysdmx.errors import NotImplemented as NotImpl
+
+    with pytest.raises(NotImpl, match="fetch_"):
+        client.dataflow("x")
+    with pytest.raises(NotImpl, match="fetch_"):
+        client.dataflows()
+    with pytest.raises(NotImpl, match="fetch_"):
+        client.data("x")
+
+
 def test_stat_endpoints_are_v2_bases():
     assert len(StatEndpoints) >= 4
     for endpoint in StatEndpoints:
@@ -90,10 +107,10 @@ def test_stat_endpoints_are_v2_bases():
         assert endpoint.value.endswith("/rest/v2")
 
 
-def test_dataflow(respx_mock, client, struct_url, structure_xml):
+def test_fetch_dataflow(respx_mock, client, struct_url, structure_xml):
     _mock(respx_mock, struct_url, structure_xml)
 
-    flow = client.dataflow(*BIS_FLOW)
+    flow = client.fetch_dataflow(*BIS_FLOW)
 
     assert isinstance(flow, Dataflow)
     assert flow.short_urn == BIS_URN
@@ -103,7 +120,7 @@ def test_dataflow(respx_mock, client, struct_url, structure_xml):
     assert [m.id for m in flow.components.measures] == ["OBS_VALUE"]
 
 
-def test_dataflow_not_found(respx_mock, client, structure_no_flow_xml):
+def test_fetch_dataflow_not_found(respx_mock, client, structure_no_flow_xml):
     _mock(
         respx_mock,
         f"{client._svc._api_endpoint}/structure/dataflow/",
@@ -111,7 +128,7 @@ def test_dataflow_not_found(respx_mock, client, structure_no_flow_xml):
     )
 
     with pytest.raises(NotFound, match="Dataflow not found"):
-        client.dataflow("BIS", "BIS_DER", "1.0")
+        client.fetch_dataflow("BIS", "BIS_DER", "1.0")
 
 
 def test_find_dsd_missing(client):
@@ -123,17 +140,17 @@ def test_find_dsd_missing(client):
         client._find_dsd(msg)
 
 
-def test_schema(respx_mock, client, struct_url, structure_xml):
+def test_fetch_schema(respx_mock, client, struct_url, structure_xml):
     _mock(respx_mock, struct_url, structure_xml)
 
-    schema = client.schema(*BIS_FLOW)
+    schema = client.fetch_schema(*BIS_FLOW)
 
     assert isinstance(schema, Schema)
     assert schema.short_urn == BIS_URN
     assert len(schema.components) == 26
 
 
-def test_dataset(
+def test_fetch_dataset(
     respx_mock, client, struct_url, data_url, structure_xml, data_csv
 ):
     from pysdmx.io.pd import PandasDataset
@@ -141,7 +158,7 @@ def test_dataset(
     _mock(respx_mock, struct_url, structure_xml)
     _mock(respx_mock, data_url, data_csv)
 
-    ds = client.dataset(*BIS_FLOW)
+    ds = client.fetch_dataset(*BIS_FLOW)
 
     assert isinstance(ds, PandasDataset)
     assert isinstance(ds.structure, Schema)
@@ -150,14 +167,14 @@ def test_dataset(
     assert "DECIMALS" in ds.attributes
 
 
-def test_dataset_structure_matches_schema(
+def test_fetch_dataset_structure_matches_schema(
     respx_mock, client, struct_url, data_url, structure_xml, data_csv
 ):
     _mock(respx_mock, struct_url, structure_xml)
     _mock(respx_mock, data_url, data_csv)
 
-    schema = client.schema(*BIS_FLOW)
-    ds = client.dataset(*BIS_FLOW)
+    schema = client.fetch_schema(*BIS_FLOW)
+    ds = client.fetch_dataset(*BIS_FLOW)
 
     assert ds.structure.short_urn == schema.short_urn
     assert [c.id for c in ds.structure.components] == [
@@ -165,13 +182,13 @@ def test_dataset_structure_matches_schema(
     ]
 
 
-def test_dataset_with_key(
+def test_fetch_dataset_with_key(
     respx_mock, client, struct_url, data_url, structure_xml, data_csv
 ):
     _mock(respx_mock, struct_url, structure_xml)
     route = _mock(respx_mock, data_url, data_csv)
 
-    client.dataset(*BIS_FLOW, key="A.U.A.B.5J")
+    client.fetch_dataset(*BIS_FLOW, key="A.U.A.B.5J")
 
     url = str(route.calls.last.request.url)
     assert "/WEBSTATS_DER_DATAFLOW/1.0/A.U.A.B.5J" in url
@@ -184,7 +201,7 @@ def test_accept_headers(
     s = _mock(respx_mock, struct_url, structure_xml)
     d = _mock(respx_mock, data_url, data_csv)
 
-    client.dataset(*BIS_FLOW)
+    client.fetch_dataset(*BIS_FLOW)
 
     assert (
         s.calls.last.request.headers["Accept"]
@@ -196,7 +213,7 @@ def test_accept_headers(
     )
 
 
-def test_dataflow_builds_oecd_url(respx_mock, client, structure_xml):
+def test_fetch_dataflow_builds_oecd_url(respx_mock, client, structure_xml):
     route = _mock(
         respx_mock,
         f"{client._svc._api_endpoint}/structure/dataflow/",
@@ -204,7 +221,7 @@ def test_dataflow_builds_oecd_url(respx_mock, client, structure_xml):
     )
 
     with pytest.raises(NotFound, match="Dataflow not found"):
-        client.dataflow(*OECD_FLOW)
+        client.fetch_dataflow(*OECD_FLOW)
 
     url = str(route.calls.last.request.url)
     assert "/structure/dataflow/OECD.SDD.TPS/" in url
@@ -213,22 +230,22 @@ def test_dataflow_builds_oecd_url(respx_mock, client, structure_xml):
     assert "references=descendants" in url
 
 
-def test_dataset_with_filters(
+def test_fetch_dataset_with_filters(
     respx_mock, client, struct_url, data_url, structure_xml, data_csv
 ):
     _mock(respx_mock, struct_url, structure_xml)
     route = _mock(respx_mock, data_url, data_csv)
 
-    client.dataset(*BIS_FLOW, filters={"FREQ": "A"})
+    client.fetch_dataset(*BIS_FLOW, filters={"FREQ": "A"})
 
     url = str(route.calls.last.request.url)
     assert "c%5B" not in url  # not the (OECD-ignored) c[] component filter
     assert "/WEBSTATS_DER_DATAFLOW/1.0/A." in url  # FREQ=A is key position 1
 
 
-def test_dataset_key_and_filters_conflict(client):
+def test_fetch_dataset_key_and_filters_conflict(client):
     with pytest.raises(Invalid, match="not both"):
-        client.dataset(*BIS_FLOW, key="A", filters={"FREQ": "A"})
+        client.fetch_dataset(*BIS_FLOW, key="A", filters={"FREQ": "A"})
 
 
 def test_build_key(client, structure_xml):
@@ -270,7 +287,7 @@ def test_oecd_real_dataflow(respx_mock, oecd_client, oecd_structure):
     ep = oecd_client._svc._api_endpoint
     _mock(respx_mock, f"{ep}/structure/dataflow/OECD.SDD.TPS", oecd_structure)
 
-    flow = oecd_client.dataflow(*OECD_FLOW)
+    flow = oecd_client.fetch_dataflow(*OECD_FLOW)
 
     assert flow.short_urn == OECD_URN
     assert flow.components is not None
@@ -281,7 +298,7 @@ def test_oecd_real_schema(respx_mock, oecd_client, oecd_structure):
     ep = oecd_client._svc._api_endpoint
     _mock(respx_mock, f"{ep}/structure/dataflow/OECD.SDD.TPS", oecd_structure)
 
-    schema = oecd_client.schema(*OECD_FLOW)
+    schema = oecd_client.fetch_schema(*OECD_FLOW)
 
     assert schema.short_urn == OECD_URN
     assert len(schema.components) == 15
@@ -292,7 +309,7 @@ def test_oecd_real_dataset(respx_mock, oecd_client, oecd_structure, oecd_data):
     _mock(respx_mock, f"{ep}/structure/dataflow/OECD.SDD.TPS", oecd_structure)
     _mock(respx_mock, f"{ep}/data/dataflow/OECD.SDD.TPS", oecd_data)
 
-    ds = oecd_client.dataset(*OECD_FLOW, key="CHN.A.N.CPI.PA._T.N.GY")
+    ds = oecd_client.fetch_dataset(*OECD_FLOW, key="CHN.A.N.CPI.PA._T.N.GY")
 
     assert isinstance(ds.structure, Schema)
     assert len(ds.data) == 41
