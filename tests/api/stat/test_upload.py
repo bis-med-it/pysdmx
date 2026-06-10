@@ -4,7 +4,12 @@ import httpx
 import pytest
 
 from pysdmx.api.stat import StatUploader
-from pysdmx.errors import InternalError, Invalid, Unauthorized
+from pysdmx.errors import (
+    InternalError,
+    Invalid,
+    Unauthorized,
+    Unavailable,
+)
 from pysdmx.io import get_datasets
 from pysdmx.model import Code, Codelist
 
@@ -144,6 +149,11 @@ def test_submit_uploads_structure_then_data(
     assert request_id == "REQ-456"  # returns the data request id
     assert struct.called
     assert data.called
+    # The structure must be submitted before the data.
+    assert [str(c.request.url) for c in respx_mock.calls] == [
+        STRUCT_URL,
+        IMPORT_URL,
+    ]
 
 
 def test_submission_status_gets_with_auth(respx_mock, uploader):
@@ -180,3 +190,30 @@ def test_fetch_token_bad_credentials_raises(respx_mock):
 
     with pytest.raises(Invalid):
         StatUploader.fetch_token(AUTH_URL, "c", "user", "wrong")
+
+
+def test_submit_structure_unreachable_raises_unavailable(
+    respx_mock, uploader, codelist
+):
+    respx_mock.post(STRUCT_URL).mock(side_effect=httpx.ConnectError("boom"))
+
+    with pytest.raises(Unavailable):
+        uploader.submit_structure(codelist)
+
+
+def test_fetch_token_missing_access_token_raises(respx_mock):
+    respx_mock.post(AUTH_URL).mock(
+        return_value=httpx.Response(200, json={"error": "invalid_client"})
+    )
+
+    with pytest.raises(Invalid, match="token response"):
+        StatUploader.fetch_token(AUTH_URL, "c", "user", "pw")
+
+
+def test_fetch_token_non_json_response_raises(respx_mock):
+    respx_mock.post(AUTH_URL).mock(
+        return_value=httpx.Response(200, text="<html>oops</html>")
+    )
+
+    with pytest.raises(Invalid, match="token response"):
+        StatUploader.fetch_token(AUTH_URL, "c", "user", "pw")

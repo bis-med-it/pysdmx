@@ -349,6 +349,7 @@ class StatUploader:
         url: str,
         content: Optional[str] = None,
         content_type: Optional[str] = None,
+        params: Optional[Mapping[str, str]] = None,
     ) -> str:
         """Send an authenticated request; return the response text.
 
@@ -357,6 +358,8 @@ class StatUploader:
             url: The absolute request URL.
             content: An optional request body.
             content_type: The optional ``Content-Type`` header value.
+            params: Optional query-string parameters (URL-encoded by
+                the client).
 
         Returns:
             The response body as text.
@@ -383,6 +386,7 @@ class StatUploader:
                     method,
                     url,
                     content=content,
+                    params=params,
                     headers=headers,
                     auth=BearerAuth(self._token),
                     timeout=self._timeout,
@@ -496,8 +500,8 @@ class StatUploader:
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
-        url = f"{self._transfer}/status/request?id={request_id}"
-        return self._request("GET", url)
+        url = f"{self._transfer}/status/request"
+        return self._request("GET", url, params={"id": request_id})
 
     @staticmethod
     def fetch_token(
@@ -539,10 +543,20 @@ class StatUploader:
                     timeout=60.0,
                 )
                 r.raise_for_status()
-                token: str = r.json()["access_token"]
-                return token
+                data = r.json()
+                token: str = data["access_token"]
         except (httpx.RequestError, httpx.HTTPStatusError) as e:
+            # A rejected grant (e.g. 401 bad credentials) maps to a
+            # client Invalid here, unlike _request where a rejected token
+            # raises Unauthorized.
             map_httpx_errors(e)
+        except (KeyError, TypeError, ValueError) as e:
+            raise errors.Invalid(
+                "Invalid token response",
+                "The token endpoint did not return a valid "
+                f"'access_token'. The query was `{token_url}`.",
+            ) from e
+        return token
 
 
 __all__ = ["StatConnector", "StatEndpoints", "StatUploader"]
