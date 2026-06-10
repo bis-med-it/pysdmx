@@ -16,5 +16,8 @@ API Reference
 .. autoclass:: pysdmx.api.stat.StatConnector
     :members:
 
+.. autoclass:: pysdmx.api.stat.StatUploader
+    :members:
+
 .. autoclass:: pysdmx.api.stat.StatEndpoints
     :members:
