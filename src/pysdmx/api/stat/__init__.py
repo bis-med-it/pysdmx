@@ -22,6 +22,7 @@ from pysdmx.api.qb import (
     StructureReference,
     StructureType,
 )
+from pysdmx.api.stat.upload import StatUploader
 from pysdmx.io import get_datasets, read_sdmx
 from pysdmx.model import Dataflow, DataStructureDefinition, Schema
 from pysdmx.model.message import Message
@@ -272,4 +273,4 @@ class StatConnector(SdmxConnector):
     dataflow = dataflows = data = _unsupported
 
 
-__all__ = ["StatConnector", "StatEndpoints"]
+__all__ = ["StatConnector", "StatEndpoints", "StatUploader"]
