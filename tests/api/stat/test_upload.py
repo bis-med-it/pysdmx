@@ -12,6 +12,8 @@ NSI = "https://nsi.test/rest"
 TRANSFER = "https://transfer.test"
 STRUCT_URL = f"{NSI}/rest/structure"
 IMPORT_URL = f"{TRANSFER}/import/sdmxFile"
+STATUS_URL = f"{TRANSFER}/status/request"
+AUTH_URL = "https://kc.test/protocol/openid-connect/token"
 
 _IO_SAMPLES = Path(__file__).parent.parent.parent / "io" / "samples"
 DATA_CSV = _IO_SAMPLES / "data_v1.csv"
@@ -125,3 +127,56 @@ def test_submit_data_posts_sdmx_csv_and_returns_request_id(
     )
     # SDMX-CSV 2.0 carries the STRUCTURE/STRUCTURE_ID/ACTION columns.
     assert "STRUCTURE" in req.content.decode()
+
+
+def test_submit_uploads_structure_then_data(
+    respx_mock, uploader, codelist, dataset
+):
+    struct = respx_mock.post(STRUCT_URL).mock(
+        return_value=httpx.Response(200, text="structOK")
+    )
+    data = respx_mock.post(IMPORT_URL).mock(
+        return_value=httpx.Response(200, text="REQ-456")
+    )
+
+    request_id = uploader.submit(codelist, dataset)
+
+    assert request_id == "REQ-456"  # returns the data request id
+    assert struct.called
+    assert data.called
+
+
+def test_submission_status_gets_with_auth(respx_mock, uploader):
+    route = respx_mock.get(url__startswith=STATUS_URL).mock(
+        return_value=httpx.Response(200, text="Completed")
+    )
+
+    status = uploader.submission_status("REQ-456")
+
+    assert status == "Completed"
+    req = route.calls.last.request
+    assert req.headers["Authorization"] == "Bearer TKN"
+    assert "id=REQ-456" in str(req.url)
+
+
+def test_fetch_token_password_grant(respx_mock):
+    route = respx_mock.post(AUTH_URL).mock(
+        return_value=httpx.Response(200, json={"access_token": "NEW"})
+    )
+
+    result = StatUploader.fetch_token(AUTH_URL, "my-client", "user", "secret")
+
+    assert result == "NEW"
+    form = route.calls.last.request.content.decode()
+    assert "grant_type=password" in form
+    assert "client_id=my-client" in form
+    assert "username=user" in form
+
+
+def test_fetch_token_bad_credentials_raises(respx_mock):
+    respx_mock.post(AUTH_URL).mock(
+        return_value=httpx.Response(401, text="invalid_grant")
+    )
+
+    with pytest.raises(Invalid):
+        StatUploader.fetch_token(AUTH_URL, "c", "user", "wrong")

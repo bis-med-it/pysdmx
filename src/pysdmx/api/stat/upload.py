@@ -180,3 +180,94 @@ class StatUploader:
         return self._request(
             "POST", f"{self._transfer}/import/sdmxFile", body, _DATA_CT
         )
+
+    def submit(
+        self,
+        structures: Union[MaintainableArtefact, Sequence[Any]],
+        dataset: Union[Dataset, Sequence[Dataset]],
+    ) -> str:
+        """Submit the structure(s) first, then the data.
+
+        .Stat Suite requires a dataflow's structure to exist before its
+        data can be loaded, so the structure is submitted synchronously
+        and only then is the (asynchronous) data submission started.
+
+        Args:
+            structures: The structural metadata to submit first.
+            dataset: The data to submit once the structure is in place.
+
+        Returns:
+            The async data submission request id.
+
+        Raises:
+            errors.Unauthorized: If the token is missing or rejected.
+            errors.Invalid: If the service returns a client error.
+            errors.InternalError: If the service returns a server error.
+            errors.Unavailable: If the service cannot be reached.
+        """
+        self.submit_structure(structures)
+        return self.submit_data(dataset)
+
+    def submission_status(self, request_id: str) -> str:
+        """Poll the status of an asynchronous data submission.
+
+        Args:
+            request_id: The request id returned by :meth:`submit_data`
+                or :meth:`submit`.
+
+        Returns:
+            The Transfer service status response as text.
+
+        Raises:
+            errors.Unauthorized: If the token is missing or rejected.
+            errors.Invalid: If the service returns a client error.
+            errors.InternalError: If the service returns a server error.
+            errors.Unavailable: If the service cannot be reached.
+        """
+        url = f"{self._transfer}/status/request?id={request_id}"
+        return self._request("GET", url)
+
+    @staticmethod
+    def fetch_token(
+        token_url: str, client_id: str, username: str, password: str
+    ) -> str:
+        """Obtain a bearer token via the Keycloak password grant.
+
+        Performs the OAuth2 resource-owner password-credentials grant
+        against the instance's Keycloak token endpoint. The instance must
+        have "Direct Access Grants" enabled for the client.
+
+        Args:
+            token_url: The Keycloak token endpoint
+                (``.../protocol/openid-connect/token``).
+            client_id: The OAuth2 client id.
+            username: The account user name.
+            password: The account password.
+
+        Returns:
+            The access token.
+
+        Raises:
+            errors.Invalid: If the token endpoint rejects the request
+                (e.g. bad credentials) or returns another client error.
+            errors.InternalError: If the token endpoint returns a server
+                error.
+            errors.Unavailable: If the token endpoint cannot be reached.
+        """
+        try:
+            with httpx.Client() as client:
+                r = client.post(
+                    token_url,
+                    data={
+                        "grant_type": "password",
+                        "client_id": client_id,
+                        "username": username,
+                        "password": password,
+                    },
+                    timeout=60.0,
+                )
+                r.raise_for_status()
+                token: str = r.json()["access_token"]
+                return token
+        except (httpx.RequestError, httpx.HTTPStatusError) as e:
+            map_httpx_errors(e)
