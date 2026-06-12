@@ -106,7 +106,12 @@ def __get_pa_type(dt: DataType) -> pa.DataType:  # noqa: C901
         return pa.int64()
     elif dt == DataType.FLOAT:
         return pa.float32()
-    elif dt == DataType.DOUBLE or dt == DataType.DECIMAL:
+    elif dt in [
+        DataType.DOUBLE,
+        DataType.DECIMAL,
+        DataType.EXC_VAL_RANGE,
+        DataType.INC_VAL_RANGE,
+    ]:
         return pa.float64()
     elif dt == DataType.BOOLEAN:
         return pa.bool_()
