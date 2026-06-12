@@ -317,7 +317,11 @@ def get_sql_data_type(c: Component) -> str:
         return "BIGINT"
     elif c.dtype == DataType.BIG_INTEGER:
         return "DECIMAL(38, 0)"
-    elif c.dtype == DataType.DECIMAL:
+    elif c.dtype in [
+        DataType.DECIMAL,
+        DataType.INC_VAL_RANGE,
+        DataType.EXC_VAL_RANGE,
+    ]:
         return "DECIMAL(38, 18)"
     elif c.dtype == DataType.FLOAT:
         return "REAL"
@@ -350,7 +354,9 @@ def get_sql_data_type(c: Component) -> str:
     elif c.dtype == DataType.GREGORIAN_TIME_PERIOD:
         return "VARCHAR(16)"  # ISO 8601 Gregorian periods
     elif c.dtype in (
+        DataType.TIME_RANGE,
         DataType.STD_TIME_PERIOD,
+        DataType.REP_TIME_PERIOD,
         DataType.PERIOD,
         DataType.DURATION,
     ):

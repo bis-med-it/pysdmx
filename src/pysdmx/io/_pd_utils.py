@@ -16,6 +16,8 @@ NUMERIC_TYPES = {
     DataType.INTEGER,
     DataType.LONG,
     DataType.SHORT,
+    DataType.INC_VAL_RANGE,
+    DataType.EXC_VAL_RANGE,
 }
 
 
