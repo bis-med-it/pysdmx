@@ -32,7 +32,7 @@ def token():
 
 @pytest.fixture
 def uploader(token):
-    return StatUploader(NSI, TRANSFER, token=token)
+    return StatUploader(NSI, TRANSFER, dataspace="design", token=token)
 
 
 @pytest.fixture
@@ -115,23 +115,54 @@ def test_submit_structure_server_error_raises_internal(
         uploader.submit_structure(codelist)
 
 
-def test_submit_data_posts_sdmx_csv_and_returns_request_id(
+def test_submit_structure_partial_failure_raises(
+    respx_mock, uploader, codelist
+):
+    respx_mock.post(STRUCT_URL).mock(
+        return_value=httpx.Response(207, text="<SubmitStructureResponse/>")
+    )
+
+    with pytest.raises(Invalid, match="[Pp]artial"):
+        uploader.submit_structure(codelist)
+
+
+def test_submit_data_uploads_multipart_with_dataspace(
     respx_mock, uploader, dataset
 ):
     route = respx_mock.post(IMPORT_URL).mock(
-        return_value=httpx.Response(200, text="REQ-123")
+        return_value=httpx.Response(
+            200, json={"success": True, "requestId": 42}
+        )
     )
 
-    request_id = uploader.submit_data(dataset)
+    result = uploader.submit_data(dataset)
 
-    assert request_id == "REQ-123"
+    assert "42" in result  # the raw OperationResult body is returned
     req = route.calls.last.request
     assert req.headers["Authorization"] == "Bearer TKN"
-    assert req.headers["Content-Type"] == (
-        "application/vnd.sdmx.data+csv;version=2.0.0"
+    assert req.headers["Content-Type"].startswith("multipart/form-data")
+    body = req.content.decode()
+    assert 'name="file"' in body  # the SDMX-CSV file part
+    assert 'name="dataspace"' in body
+    assert "design" in body  # the default data space
+    assert "STRUCTURE" in body  # SDMX-CSV 2.0 file content
+
+
+def test_submit_data_dataspace_override(respx_mock, uploader, dataset):
+    route = respx_mock.post(IMPORT_URL).mock(
+        return_value=httpx.Response(200, json={"requestId": 1})
     )
-    # SDMX-CSV 2.0 carries the STRUCTURE/STRUCTURE_ID/ACTION columns.
-    assert "STRUCTURE" in req.content.decode()
+
+    uploader.submit_data(dataset, dataspace="otherspace")
+
+    assert "otherspace" in route.calls.last.request.content.decode()
+
+
+def test_submit_data_without_dataspace_raises(token, dataset):
+    up = StatUploader(NSI, TRANSFER, token=token)  # no data space
+
+    with pytest.raises(Invalid, match="data space"):
+        up.submit_data(dataset)
 
 
 def test_submit_uploads_structure_then_data(
@@ -141,12 +172,12 @@ def test_submit_uploads_structure_then_data(
         return_value=httpx.Response(200, text="structOK")
     )
     data = respx_mock.post(IMPORT_URL).mock(
-        return_value=httpx.Response(200, text="REQ-456")
+        return_value=httpx.Response(200, json={"requestId": 7})
     )
 
-    request_id = uploader.submit(codelist, dataset)
+    result = uploader.submit(codelist, dataset)
 
-    assert request_id == "REQ-456"  # returns the data request id
+    assert "7" in result  # returns the data-submission response
     assert struct.called
     assert data.called
     # The structure must be submitted before the data.
@@ -156,17 +187,21 @@ def test_submit_uploads_structure_then_data(
     ]
 
 
-def test_submission_status_gets_with_auth(respx_mock, uploader):
-    route = respx_mock.get(url__startswith=STATUS_URL).mock(
-        return_value=httpx.Response(200, text="Completed")
+def test_submission_status_posts_dataspace_and_id(respx_mock, uploader):
+    route = respx_mock.post(STATUS_URL).mock(
+        return_value=httpx.Response(
+            200, json={"executionStatus": "Completed", "outcome": "Success"}
+        )
     )
 
     status = uploader.submission_status("REQ-456")
 
-    assert status == "Completed"
+    assert "Completed" in status
     req = route.calls.last.request
     assert req.headers["Authorization"] == "Bearer TKN"
-    assert "id=REQ-456" in str(req.url)
+    form = req.content.decode()
+    assert "dataspace=design" in form
+    assert "id=REQ-456" in form
 
 
 def test_fetch_token_password_grant(respx_mock):

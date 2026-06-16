@@ -73,8 +73,9 @@ Uploading
 
 Submitting structures and data requires a **writable** .Stat Suite
 instance and an OAuth2 / Keycloak bearer token. .Stat splits submission
-across two services: structures go to the NSI web service, data to the
-Transfer service.
+across two services: structures go to the NSI web service, while data is
+uploaded to the Transfer service, scoped to a **data space** and
+processed asynchronously.
 
 .. code-block:: python
 
@@ -91,18 +92,30 @@ Transfer service.
     uploader = StatUploader(
         nsi_endpoint="https://my.stat/nsi/rest",
         transfer_endpoint="https://my.stat/transfer",
+        dataspace="design",          # the target .Stat data space
         token=token,
     )
 
     # Structure first, then data (data submission is asynchronous)
-    request_id = uploader.submit(dataflow, dataset)
+    response = uploader.submit(dataflow, dataset)
 
-    # Poll the asynchronous data submission until done
+    # `submit`/`submit_data` return the Transfer OperationResult, which
+    # carries the integer transaction id (reported as `requestId`). Poll
+    # the ImportSummary until its executionStatus is "Completed", then
+    # check its "outcome" to confirm success.
+    request_id = ...  # the requestId read from `response`
     print(uploader.submission_status(request_id))
 
 The ``dataset`` passed to ``submit``/``submit_data`` must be
 Schema-backed — for example one returned by
 :meth:`~pysdmx.api.stat.StatConnector.fetch_dataset` or by
 :func:`pysdmx.io.get_datasets`. The SDMX *action*
-(Append/Replace/Merge/Delete) is carried by the objects and encoded by
-``write_sdmx``.
+(Append/Replace/Merge/Delete) is carried inside the file (the SDMX-CSV
+2.0 ``ACTION`` column, or the SDMX-ML dataset action), not as a request
+parameter.
+
+.. note::
+    Structure submission can report a per-artefact failure inside the
+    ``SubmitStructureResponse`` body even on an HTTP 200; a partial
+    failure (HTTP 207) is raised as :class:`~pysdmx.errors.Invalid`.
+    Inspect the returned body to confirm the outcome.

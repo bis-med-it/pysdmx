@@ -294,17 +294,21 @@ _DATA_CT = "application/vnd.sdmx.data+csv;version=2.0.0"
 class StatUploader:
     """Submit structures and data to a .Stat Suite service.
 
-    .Stat Suite splits submission across two services: structural
-    metadata goes to the NSI web service (``POST /rest/structure``,
-    SDMX-ML 2.1) and data goes to the Transfer service
-    (``POST /import/sdmxFile``, SDMX-CSV 2.0, asynchronous). Both require
+    .Stat Suite splits submission across two services. Structural
+    metadata goes to the **NSI web service**
+    (``POST {nsi}/rest/structure``, SDMX-ML 2.1). Data goes to the
+    **Transfer service** as a ``multipart/form-data`` upload
+    (``POST {transfer}/import/sdmxFile``, file field ``file``) scoped to
+    a **data space**; it is asynchronous and returns a transaction id
+    polled via ``POST {transfer}/status/request``. Both services require
     an OAuth2 / Keycloak bearer token. Payloads are built with pysdmx's
     :func:`pysdmx.io.write_sdmx`.
 
-    Data submission is asynchronous: it returns a request id that can be
-    polled with :meth:`submission_status`. The targeted dataflow's
-    structure must already exist before its data is loaded, so use
-    :meth:`submit` (structure first, then data) for a new dataflow.
+    The SDMX action (Append/Replace/Merge/Delete) is carried inside the
+    submitted file (the SDMX-CSV 2.0 ``ACTION`` column, or the SDMX-ML
+    dataset action), not as a request parameter. A dataflow's structure
+    must exist before its data is loaded, so use :meth:`submit`
+    (structure first, then data) for a new dataflow.
 
     This class is standalone (it does not inherit
     :class:`pysdmx.api.dc.rest.SdmxConnector`): submission needs
@@ -316,6 +320,7 @@ class StatUploader:
         self,
         nsi_endpoint: str,
         transfer_endpoint: str,
+        dataspace: Optional[str] = None,
         token: Optional[str] = None,
         pem: Optional[str] = None,
         timeout: Optional[float] = 60.0,
@@ -327,6 +332,10 @@ class StatUploader:
                 structure submission (host of ``/rest/structure``).
             transfer_endpoint: The Transfer service entry point used for
                 data submission (host of ``/import/sdmxFile``).
+            dataspace: The default .Stat data space that data submission
+                and status polling target (e.g. ``"design"``). May be
+                overridden per call; one of the two is required by those
+                operations.
             token: An OAuth2 bearer token. Required for every submission
                 and status call; obtain one with :meth:`fetch_token`.
             pem: Optional PEM file with trusted certificate authorities,
@@ -335,6 +344,7 @@ class StatUploader:
         """
         self._nsi = nsi_endpoint.rstrip("/")
         self._transfer = transfer_endpoint.rstrip("/")
+        self._dataspace = dataspace
         self._token = token
         self._ssl = (
             httpx.create_ssl_context(verify=pem)
@@ -343,26 +353,47 @@ class StatUploader:
         )
         self._timeout = timeout
 
-    def _request(
+    def _resolve_dataspace(self, dataspace: Optional[str]) -> str:
+        """Return the per-call or default data space, or raise."""
+        space = dataspace if dataspace is not None else self._dataspace
+        if space is None:
+            raise errors.Invalid(
+                "Missing data space",
+                "A data space is required for .Stat data submission and "
+                "status polling. Pass dataspace=... to the method or the "
+                "constructor.",
+            )
+        return space
+
+    def _send(
         self,
         method: str,
         url: str,
+        *,
         content: Optional[str] = None,
         content_type: Optional[str] = None,
-        params: Optional[Mapping[str, str]] = None,
-    ) -> str:
-        """Send an authenticated request; return the response text.
+        data: Optional[Mapping[str, str]] = None,
+        files: Optional[Mapping[str, Any]] = None,
+    ) -> httpx.Response:
+        """Send an authenticated request; return the response.
+
+        Each call uses one body style: a raw ``content`` body (with
+        ``content_type``), or form ``data`` optionally combined with
+        multipart ``files`` (the client sets the content type itself).
 
         Args:
             method: The HTTP method (``POST`` or ``GET``).
             url: The absolute request URL.
-            content: An optional request body.
-            content_type: The optional ``Content-Type`` header value.
-            params: Optional query-string parameters (URL-encoded by
-                the client).
+            content: An optional raw request body.
+            content_type: The ``Content-Type`` for a raw ``content``
+                body. Omit for form/multipart requests so the client can
+                set it (with the multipart boundary).
+            data: Optional form fields (URL-encoded, or multipart when
+                combined with ``files``).
+            files: Optional multipart file parts.
 
         Returns:
-            The response body as text.
+            The successful HTTP response.
 
         Raises:
             errors.Unauthorized: If no token was configured, or the
@@ -386,7 +417,8 @@ class StatUploader:
                     method,
                     url,
                     content=content,
-                    params=params,
+                    data=data,
+                    files=files,
                     headers=headers,
                     auth=BearerAuth(self._token),
                     timeout=self._timeout,
@@ -398,7 +430,7 @@ class StatUploader:
                         f"({r.status_code}). The request was `{url}`.",
                     )
                 r.raise_for_status()
-                return r.text
+                return r
         except (httpx.RequestError, httpx.HTTPStatusError) as e:
             map_httpx_errors(e)
 
@@ -415,52 +447,83 @@ class StatUploader:
                 ``Dataflow``) or a sequence of maintainable artefacts.
 
         Returns:
-            The service response body as text.
+            The NSI ``SubmitStructureResponse`` body (SDMX-ML). Inspect
+            it for the per-artefact outcome: the service can report a
+            failure inside the body even on an HTTP 200 response.
 
         Raises:
             errors.Unauthorized: If the token is missing or rejected.
-            errors.Invalid: If the service returns a client error.
+            errors.Invalid: If the service returns a client error, or
+                reports a partial failure (HTTP 207 Multi-Status).
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
         body = write_sdmx(structures, Format.STRUCTURE_SDMX_ML_2_1)
-        return self._request(
-            "POST", f"{self._nsi}/rest/structure", body, _STRUCTURE_CT
+        r = self._send(
+            "POST",
+            f"{self._nsi}/rest/structure",
+            content=body,
+            content_type=_STRUCTURE_CT,
         )
+        if r.status_code == 207:
+            raise errors.Invalid(
+                "Partial structure submission",
+                "The service reported a partial failure (HTTP 207). "
+                f"Response: {r.text}",
+            )
+        return r.text
 
-    def submit_data(self, dataset: Union[Dataset, Sequence[Dataset]]) -> str:
+    def submit_data(
+        self,
+        dataset: Union[Dataset, Sequence[Dataset]],
+        dataspace: Optional[str] = None,
+    ) -> str:
         """Submit data to the Transfer service.
 
         The dataset is serialized to SDMX-CSV 2.0 with :func:`write_sdmx`
-        and posted to ``{transfer}/import/sdmxFile``. The dataset must be
-        Schema-backed (e.g. produced by ``StatConnector.fetch_dataset``
-        or ``pysdmx.io.get_datasets``); a dataset whose structure is a
-        bare URN cannot be written as SDMX-CSV 2.0.
+        and uploaded as a ``multipart/form-data`` request (file field
+        ``file``, plus the required ``dataspace`` field) to
+        ``{transfer}/import/sdmxFile``. The dataset must be Schema-backed
+        (e.g. produced by ``StatConnector.fetch_dataset`` or
+        ``pysdmx.io.get_datasets``); a dataset whose structure is a bare
+        URN cannot be written as SDMX-CSV 2.0. The per-row action is
+        taken from the SDMX-CSV 2.0 ``ACTION`` column.
 
-        Submission is asynchronous: the returned request id can be polled
-        with :meth:`submission_status`.
+        Submission is asynchronous: the response is the Transfer
+        ``OperationResult`` (JSON), whose transaction id (an integer,
+        reported as ``requestId``) is passed to
+        :meth:`submission_status`.
 
         Args:
             dataset: A Schema-backed dataset, or a sequence of them.
+            dataspace: The target data space; defaults to the one set on
+                the connector.
 
         Returns:
-            The async submission request id (the service response text).
+            The raw ``OperationResult`` response body.
 
         Raises:
             errors.Unauthorized: If the token is missing or rejected.
-            errors.Invalid: If the service returns a client error.
+            errors.Invalid: If no data space is set, or the service
+                returns a client error.
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
-        body = write_sdmx(dataset, Format.DATA_SDMX_CSV_2_0_0)
-        return self._request(
-            "POST", f"{self._transfer}/import/sdmxFile", body, _DATA_CT
+        space = self._resolve_dataspace(dataspace)
+        body = write_sdmx(dataset, Format.DATA_SDMX_CSV_2_0_0) or ""
+        r = self._send(
+            "POST",
+            f"{self._transfer}/import/sdmxFile",
+            data={"dataspace": space},
+            files={"file": ("data.csv", body, _DATA_CT)},
         )
+        return r.text
 
     def submit(
         self,
         structures: Union[MaintainableArtefact, Sequence[Any]],
         dataset: Union[Dataset, Sequence[Dataset]],
+        dataspace: Optional[str] = None,
     ) -> str:
         """Submit the structure(s) first, then the data.
 
@@ -471,37 +534,57 @@ class StatUploader:
         Args:
             structures: The structural metadata to submit first.
             dataset: The data to submit once the structure is in place.
+            dataspace: The target data space for the data; defaults to
+                the one set on the connector.
 
         Returns:
-            The async data submission request id.
+            The raw data-submission ``OperationResult`` response body.
 
         Raises:
             errors.Unauthorized: If the token is missing or rejected.
-            errors.Invalid: If the service returns a client error.
+            errors.Invalid: If no data space is set, or the service
+                returns a client error.
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
         self.submit_structure(structures)
-        return self.submit_data(dataset)
+        return self.submit_data(dataset, dataspace=dataspace)
 
-    def submission_status(self, request_id: str) -> str:
+    def submission_status(
+        self, request_id: str, dataspace: Optional[str] = None
+    ) -> str:
         """Poll the status of an asynchronous data submission.
 
+        Issues ``POST {transfer}/status/request`` with the ``dataspace``
+        and ``id`` form fields.
+
         Args:
-            request_id: The request id returned by :meth:`submit_data`
-                or :meth:`submit`.
+            request_id: The transaction id returned by
+                :meth:`submit_data` or :meth:`submit`.
+            dataspace: The data space the request was submitted to;
+                defaults to the one set on the connector.
 
         Returns:
-            The Transfer service status response as text.
+            The raw Transfer ``ImportSummary`` response body (JSON). Read
+            its ``executionStatus`` (Queued/InProgress/Completed/...) and
+            ``outcome`` (Success/Warning/Error/None) fields: a
+            ``Completed`` status still requires checking ``outcome`` to
+            confirm the submission actually succeeded.
 
         Raises:
             errors.Unauthorized: If the token is missing or rejected.
-            errors.Invalid: If the service returns a client error.
+            errors.Invalid: If no data space is set, or the service
+                returns a client error.
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
-        url = f"{self._transfer}/status/request"
-        return self._request("GET", url, params={"id": request_id})
+        space = self._resolve_dataspace(dataspace)
+        r = self._send(
+            "POST",
+            f"{self._transfer}/status/request",
+            data={"dataspace": space, "id": request_id},
+        )
+        return r.text
 
     @staticmethod
     def fetch_token(
