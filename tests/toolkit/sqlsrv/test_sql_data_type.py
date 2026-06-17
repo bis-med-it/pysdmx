@@ -13,6 +13,8 @@ from pysdmx.toolkit.sqlsrv import get_sql_data_type
         (DataType.COUNT, "BIGINT"),
         (DataType.BIG_INTEGER, "DECIMAL(38, 0)"),
         (DataType.DECIMAL, "DECIMAL(38, 18)"),
+        (DataType.INC_VAL_RANGE, "DECIMAL(38, 18)"),
+        (DataType.EXC_VAL_RANGE, "DECIMAL(38, 18)"),
         (DataType.FLOAT, "REAL"),
         (DataType.DOUBLE, "FLOAT"),
     ],
@@ -49,7 +51,9 @@ def test_numeric_type_mapping(data_type, expected_sql_type):
         (DataType.STD_TIME_PERIOD, "VARCHAR(50)"),
         (DataType.BASIC_TIME_PERIOD, "VARCHAR(25)"),
         (DataType.PERIOD, "VARCHAR(50)"),
+        (DataType.REP_TIME_PERIOD, "VARCHAR(50)"),
         (DataType.DURATION, "VARCHAR(50)"),
+        (DataType.TIME_RANGE, "VARCHAR(50)"),
         (DataType.DATE_TIME, "DATETIME2"),
         (DataType.DATE, "DATE"),
         (DataType.TIME, "TIME"),
@@ -104,6 +108,7 @@ def test_incremental_type_mapping():
         DataType.STRING,
         DataType.URI,
         DataType.XHTML,
+        DataType.GEO_INFO,
     ],
 )
 def test_string_type_mapping(data_type):

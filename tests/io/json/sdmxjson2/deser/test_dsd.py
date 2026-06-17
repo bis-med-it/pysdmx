@@ -7,6 +7,7 @@ from pysdmx.model import (
     Components,
     Concept,
     DataStructureDefinition,
+    DataType,
     ItemReference,
 )
 
@@ -31,6 +32,14 @@ def body_two_cubes():
 def body_missing_cs():
     with open(
         "tests/io/json/sdmxjson2/deser/samples/dsd/dsd_missing_cs.json", "rb"
+    ) as f:
+        return f.read()
+
+
+@pytest.fixture
+def body_bug_617():
+    with open(
+        "tests/io/json/sdmxjson2/deser/samples/dsd/bug_617.json", "rb"
     ) as f:
         return f.read()
 
@@ -91,3 +100,13 @@ def test_dsd_missing_cs(body_missing_cs):
     assert isinstance(tf.concept, ItemReference)
     freq = dsd.components["FREQ"]
     assert isinstance(freq.concept, Concept)
+
+
+def test_bug_617(body_bug_617):
+    res = msgspec.json.Decoder(JsonDataStructuresMessage).decode(body_bug_617)
+    dsds = res.to_model()
+
+    assert len(dsds) == 1
+    dsd = dsds[0]
+    bp = dsd.components["BASE_PER"]
+    assert bp.dtype == DataType.REP_TIME_PERIOD
