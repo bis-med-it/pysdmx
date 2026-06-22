@@ -14,6 +14,7 @@ from pysdmx.model import (
     Codelist,
     ConceptScheme,
     Hierarchy,
+    HierarchyAssociation,
     NamePersonalisationScheme,
     RulesetScheme,
     TransformationScheme,
@@ -84,6 +85,32 @@ def test_hierarchy_levels_31(samples_folder):
     assert hierarchy.level.level.level is None
     assert hierarchy.codes[0].level == "1"
     assert hierarchy.codes[1].level is None
+
+
+def test_hierarchy_association_31(samples_folder):
+    data_path = samples_folder / "hierarchy_association.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    structures = read_sdmx(input_str, validate=True).structures
+    write = write_structure(structures=structures, prettyprint=True)
+    result = read_sdmx(write, validate=True).structures
+    assert len(result) == 2
+    ha1 = result[0]
+    assert isinstance(ha1, HierarchyAssociation)
+    assert ha1.id == "HA1"
+    assert (
+        ha1.hierarchy
+        == "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS:H1(1.0)"
+    )
+    assert (
+        ha1.component_ref == "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dimension=BIS:DSD(1.0).FREQ"
+    )
+    assert (
+        ha1.context_ref
+        == "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF(1.0)"
+    )
+    assert result[1].context_ref == ""
 
 
 def test_concept_scheme_31(samples_folder):

@@ -46,6 +46,7 @@ from pysdmx.io.xml.__tokens import (
     CONS_ATT,
     CONSTRAINTS,
     CONTACT,
+    CONTEXT_OBJECT,
     CORE_REP,
     CS,
     CUBE_REGION,
@@ -89,6 +90,8 @@ from pysdmx.io.xml.__tokens import (
     HIERARCHICAL_CODELISTS,
     HIERARCHIES,
     HIERARCHY,
+    HIERARCHY_ASSOCIATION,
+    HIERARCHY_ASSOCIATIONS,
     ID,
     INCLUDE,
     INCLUDED,
@@ -104,6 +107,8 @@ from pysdmx.io.xml.__tokens import (
     LEVEL,
     LEVELED,
     LINK,
+    LINKED_HIERARCHY,
+    LINKED_OBJECT,
     LOCAL_CODES_LOW,
     LOCAL_DTYPE,
     LOCAL_FACETS_LOW,
@@ -202,6 +207,7 @@ from pysdmx.model import (
     FixedValueMap,
     HierarchicalCode,
     Hierarchy,
+    HierarchyAssociation,
     ImplicitComponentMap,
     KeySet,
     LevelType,
@@ -1684,6 +1690,45 @@ class StructureParser(Struct):
                 elements[hierarchy.short_urn] = hierarchy
         return elements
 
+    def __format_hierarchy_association(
+        self, json_has: Dict[str, Any]
+    ) -> Dict[str, HierarchyAssociation]:
+        """Formats SDMX-ML 3.0/3.1 HierarchyAssociations into the model."""
+        elements: Dict[str, HierarchyAssociation] = {}
+        for element in add_list(json_has[HIERARCHY_ASSOCIATION]):
+            element = self.__format_annotations(element)
+            element = self.__format_name_description(element)
+            element = self.__format_urls(element)
+            element = self.__format_agency(element)
+            element = self.__format_validity(element)
+            if IS_EXTERNAL_REF in element:
+                element[IS_EXTERNAL_REF_LOW] = (
+                    element.pop(IS_EXTERNAL_REF) == "true"
+                )
+            context = (
+                _extract_text(element[CONTEXT_OBJECT])
+                if CONTEXT_OBJECT in element
+                else ""
+            )
+            version = element.get(VERSION, "1.0")
+            ha = HierarchyAssociation(
+                id=element[ID],
+                name=element.get(NAME.lower()),
+                description=element.get(DESC.lower()),
+                agency=element[AGENCY.lower()],
+                version=version,
+                valid_from=element.get(VALID_FROM_LOW),
+                valid_to=element.get(VALID_TO_LOW),
+                annotations=tuple(element.get(ANNOTATIONS.lower(), ())),
+                is_external_reference=element.get(IS_EXTERNAL_REF_LOW, False),
+                is_final=is_final(version),
+                hierarchy=_extract_text(element[LINKED_HIERARCHY]),
+                component_ref=_extract_text(element[LINKED_OBJECT]),
+                context_ref=context,
+            )
+            elements[ha.short_urn] = ha
+        return elements
+
     def __format_schema(  # noqa: C901
         self, json_element: Dict[str, Any], schema: str, item: str
     ) -> Dict[str, Any]:
@@ -1816,6 +1861,10 @@ class StructureParser(Struct):
             HIERARCHICAL_CODELISTS: process_structure(
                 HIERARCHICAL_CODELISTS,
                 self.__format_hierarchical_codelist,
+            ),
+            HIERARCHY_ASSOCIATIONS: process_structure(
+                HIERARCHY_ASSOCIATIONS,
+                self.__format_hierarchy_association,
             ),
             CON_SCHEMES: process_structure(
                 CON_SCHEMES,

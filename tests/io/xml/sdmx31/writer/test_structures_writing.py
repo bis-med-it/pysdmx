@@ -21,6 +21,7 @@ from pysdmx.model import (
     FromVtlMapping,
     HierarchicalCode,
     Hierarchy,
+    HierarchyAssociation,
     LevelType,
     Ruleset,
     RulesetScheme,
@@ -695,6 +696,61 @@ def test_hierarchy(complete_header, hierarchy_with_levels):
     assert re_read.level.level.name == "Group"
     assert re_read.codes[0].level == "1"
     assert re_read.codes[0].codes[0].id == "A1"
+
+
+def test_hierarchy_association(complete_header):
+    ha = HierarchyAssociation(
+        id="HA1",
+        name="Association 1",
+        agency="BIS",
+        version="1.0",
+        hierarchy=Hierarchy(id="H1", name="H", agency="BIS", version="1.0"),
+        component_ref=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure."
+            "Dimension=BIS:DSD(1.0).FREQ"
+        ),
+        context_ref=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF(1.0)"
+        ),
+    )
+    result = write([ha], header=complete_header, prettyprint=True)
+    assert "<str:HierarchyAssociations>" in result
+    assert (
+        "<str:LinkedHierarchy>"
+        "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS:H1(1.0)"
+        "</str:LinkedHierarchy>" in result
+    )
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert isinstance(re_read, HierarchyAssociation)
+    assert (
+        re_read.hierarchy
+        == "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS:H1(1.0)"
+    )
+
+
+def test_hierarchy_association_no_hierarchy(complete_header):
+    ha = HierarchyAssociation(
+        id="HA1",
+        name="Association 1",
+        agency="BIS",
+        version="1.0",
+        component_ref="urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dimension=BIS:DSD(1.0).FREQ",
+    )
+    with pytest.raises(Invalid, match="must reference a hierarchy"):
+        write([ha], header=complete_header, prettyprint=True)
+
+
+def test_hierarchy_association_no_component(complete_header):
+    ha = HierarchyAssociation(
+        id="HA1",
+        name="Association 1",
+        agency="BIS",
+        version="1.0",
+        hierarchy="urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS:H1(1.0)",
+    )
+    with pytest.raises(Invalid, match="must reference a component"):
+        write([ha], header=complete_header, prettyprint=True)
 
 
 def test_hierarchy_level_no_name(complete_header):

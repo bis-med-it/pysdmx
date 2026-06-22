@@ -317,6 +317,11 @@ INCLUDED_CODELIST = "IncludedCodelist"
 CODELIST_ALIAS_REF = "CodelistAliasRef"
 CODE_ID = "CodeID"
 ALIAS = "alias"
+HIERARCHY_ASSOCIATIONS = "HierarchyAssociations"
+HIERARCHY_ASSOCIATION = "HierarchyAssociation"
+LINKED_HIERARCHY = "LinkedHierarchy"
+LINKED_OBJECT = "LinkedObject"
+CONTEXT_OBJECT = "ContextObject"
 
 # Mapping
 STRUCTURE_MAPS = "StructureMaps"
