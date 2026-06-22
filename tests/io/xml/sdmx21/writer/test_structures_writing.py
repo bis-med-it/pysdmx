@@ -251,6 +251,35 @@ def test_hierarchy_21_no_levels(complete_header):
     )
 
 
+def test_hierarchy_21_metadata_round_trip(complete_header):
+    hierarchy = Hierarchy(
+        id="H1",
+        name="Hierarchy 1",
+        description="My description",
+        agency="BIS",
+        version="1.0",
+        valid_from=datetime(2021, 1, 1),
+        valid_to=datetime(2021, 12, 31),
+        annotations=[Annotation(id="AN1", title="anno")],
+        codes=[
+            HierarchicalCode(
+                id="A",
+                urn=(
+                    "urn:sdmx:org.sdmx.infomodel.codelist."
+                    "Code=BIS:CL_FREQ(1.0).A"
+                ),
+            ),
+        ],
+    )
+    result = write([hierarchy], header=complete_header, prettyprint=True)
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read.name == "Hierarchy 1"
+    assert re_read.description == "My description"
+    assert re_read.valid_from == datetime(2021, 1, 1)
+    assert re_read.valid_to == datetime(2021, 12, 31)
+    assert re_read.annotations[0].id == "AN1"
+
+
 def test_hierarchy_21_name_with_apostrophe(complete_header):
     hierarchy = Hierarchy(
         id="H4",

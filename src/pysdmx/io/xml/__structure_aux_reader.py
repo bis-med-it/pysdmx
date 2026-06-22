@@ -1641,12 +1641,15 @@ class StructureParser(Struct):
     def __format_inner_hierarchy(
         self,
         inner: Dict[str, Any],
-        agency: str,
-        version: str,
+        meta: Dict[str, Any],
         aliases: Dict[str, str],
     ) -> Hierarchy:
-        """Formats an SDMX-ML 2.1 inner <Hierarchy> into the model."""
-        inner = self.__format_annotations(inner)
+        """Formats an SDMX-ML 2.1 inner <Hierarchy> into the model.
+
+        The wrapping codelist (the maintainable) carries the agency,
+        version, validity, annotations and description, so those are taken
+        from ``meta``; the inner element supplies the id, name and codes.
+        """
         inner = self.__format_name_description(inner)
         has_formal_levels = inner.pop(LEVELED, "false") == "true"
         level = self.__format_level(inner[LEVEL]) if LEVEL in inner else None
@@ -1658,12 +1661,18 @@ class StructureParser(Struct):
             if HIERARCHICAL_CODE in inner
             else []
         )
+        version = meta["version"]
         return Hierarchy(
             id=inner[ID],
             name=inner.get(NAME.lower()),
-            description=inner.get(DESC.lower()),
-            agency=agency,
+            description=meta["description"],
+            agency=meta["agency"],
             version=version,
+            valid_from=meta["valid_from"],
+            valid_to=meta["valid_to"],
+            annotations=meta["annotations"],
+            is_external_reference=meta["is_external_reference"],
+            is_final=is_final(version),
             has_formal_levels=has_formal_levels,
             level=level,
             codes=tuple(codes),
@@ -1675,18 +1684,29 @@ class StructureParser(Struct):
         """Formats SDMX-ML 2.1 HierarchicalCodelists into the model.
 
         Each inner ``<Hierarchy>`` becomes a separate pysdmx ``Hierarchy``,
-        inheriting the agency and version of the wrapping codelist.
+        inheriting the maintainable metadata (agency, version, validity,
+        description, annotations) of the wrapping codelist.
         """
         elements: Dict[str, Hierarchy] = {}
         for hcl in add_list(json_hcls[HIERARCHICAL_CODELIST]):
             aliases = self.__format_codelist_aliases(hcl)
+            hcl = self.__format_annotations(hcl)
+            hcl = self.__format_name_description(hcl)
             hcl = self.__format_agency(hcl)
-            agency = hcl[AGENCY.lower()]
-            version = hcl.get(VERSION, "1.0")
+            hcl = self.__format_validity(hcl)
+            if IS_EXTERNAL_REF in hcl:
+                hcl[IS_EXTERNAL_REF_LOW] = hcl.pop(IS_EXTERNAL_REF) == "true"
+            meta = {
+                "agency": hcl[AGENCY.lower()],
+                "version": hcl.get(VERSION, "1.0"),
+                "description": hcl.get(DESC.lower()),
+                "valid_from": hcl.get(VALID_FROM_LOW),
+                "valid_to": hcl.get(VALID_TO_LOW),
+                "is_external_reference": hcl.get(IS_EXTERNAL_REF_LOW, False),
+                "annotations": tuple(hcl.get(ANNOTATIONS.lower(), ())),
+            }
             for inner in add_list(hcl.get(HIERARCHY, [])):
-                hierarchy = self.__format_inner_hierarchy(
-                    inner, agency, version, aliases
-                )
+                hierarchy = self.__format_inner_hierarchy(inner, meta, aliases)
                 elements[hierarchy.short_urn] = hierarchy
         return elements
 
