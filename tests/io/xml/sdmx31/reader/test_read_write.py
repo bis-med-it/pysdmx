@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -12,6 +13,7 @@ from pysdmx.io.xml.sdmx30.writer.structure_specific import (
 from pysdmx.model import (
     Codelist,
     ConceptScheme,
+    Hierarchy,
     NamePersonalisationScheme,
     RulesetScheme,
     TransformationScheme,
@@ -34,6 +36,54 @@ def test_codelist_31(samples_folder):
     result = read_sdmx(write, validate=True).structures
     codelist = result[0]
     assert isinstance(codelist, Codelist)
+
+
+def test_hierarchy_31(samples_folder):
+    data_path = samples_folder / "hierarchy.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    structures = read_sdmx(input_str, validate=True).structures
+    write = write_structure(structures=structures, prettyprint=True)
+    result = read_sdmx(write, validate=True).structures
+    hierarchy = result[0]
+    assert isinstance(hierarchy, Hierarchy)
+    assert hierarchy.id == "H1"
+    assert hierarchy.agency == "BIS"
+    assert hierarchy.version == "1.0"
+    assert hierarchy.has_formal_levels is False
+    assert hierarchy.level is None
+    assert len(hierarchy.codes) == 2
+    code_a = hierarchy.codes[0]
+    assert (
+        code_a.urn
+        == "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).A"
+    )
+    assert len(code_a.codes) == 1
+    assert code_a.codes[0].id == "A1"
+    code_b = hierarchy.codes[1]
+    assert code_b.rel_valid_from == datetime(2021, 1, 1)
+    assert code_b.rel_valid_to == datetime(2021, 12, 31)
+
+
+def test_hierarchy_levels_31(samples_folder):
+    data_path = samples_folder / "hierarchy_levels.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    structures = read_sdmx(input_str, validate=True).structures
+    write = write_structure(structures=structures, prettyprint=True)
+    result = read_sdmx(write, validate=True).structures
+    hierarchy = result[0]
+    assert isinstance(hierarchy, Hierarchy)
+    assert hierarchy.has_formal_levels is True
+    assert hierarchy.level is not None
+    assert hierarchy.level.id == "0"
+    assert hierarchy.level.name == "Division"
+    assert hierarchy.level.description == "Top level"
+    assert hierarchy.level.level.id == "1"
+    assert hierarchy.level.level.name == "Group"
+    assert hierarchy.level.level.level is None
+    assert hierarchy.codes[0].level == "1"
+    assert hierarchy.codes[1].level is None
 
 
 def test_concept_scheme_31(samples_folder):

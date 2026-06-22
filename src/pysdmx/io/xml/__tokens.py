@@ -303,6 +303,21 @@ VALUE_LIST = "ValueList"
 VALUE_LIST_LOW = "valuelist"
 VALUE_ITEM = "ValueItem"
 
+# Hierarchy
+HIERARCHIES = "Hierarchies"
+HIERARCHICAL_CODELISTS = "HierarchicalCodelists"
+HIERARCHICAL_CODELIST = "HierarchicalCodelist"
+HIERARCHY = "Hierarchy"
+HIERARCHICAL_CODE = "HierarchicalCode"
+LEVEL = "Level"
+CODING_FORMAT = "CodingFormat"
+HAS_FORMAL_LEVELS = "hasFormalLevels"
+LEVELED = "leveled"
+INCLUDED_CODELIST = "IncludedCodelist"
+CODELIST_ALIAS_REF = "CodelistAliasRef"
+CODE_ID = "CodeID"
+ALIAS = "alias"
+
 # Mapping
 STRUCTURE_MAPS = "StructureMaps"
 STRUCTURE_MAP = "StructureMap"

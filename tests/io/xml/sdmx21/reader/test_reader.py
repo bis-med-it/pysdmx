@@ -32,6 +32,7 @@ from pysdmx.model import (
     DataKeyValue,
     DataStructureDefinition,
     FromVtlMapping,
+    Hierarchy,
     ItemReference,
     KeySet,
     NamePersonalisationScheme,
@@ -84,6 +85,66 @@ def estat_data_path():
 @pytest.fixture
 def samples_folder():
     return Path(__file__).parent / "samples"
+
+
+@pytest.mark.xml
+def test_hierarchy_21(samples_folder):
+    data_path = samples_folder / "hierarchy.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+    hierarchy = result[0]
+    assert isinstance(hierarchy, Hierarchy)
+    assert hierarchy.id == "H1"
+    assert hierarchy.agency == "BIS"
+    assert hierarchy.version == "1.0"
+    assert hierarchy.has_formal_levels is True
+    assert hierarchy.level is not None
+    assert hierarchy.level.id == "0"
+    assert hierarchy.level.name == "Division"
+    assert hierarchy.level.level.id == "1"
+    assert hierarchy.level.level.name == "Group"
+    assert hierarchy.level.level.level is None
+    assert len(hierarchy.codes) == 1
+    code_a = hierarchy.codes[0]
+    assert code_a.id == "A"
+    assert (
+        code_a.urn
+        == "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).A"
+    )
+    assert code_a.level == "1"
+    assert len(code_a.codes) == 1
+    assert code_a.codes[0].id == "A1"
+    assert (
+        code_a.codes[0].urn
+        == "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).M"
+    )
+
+
+@pytest.mark.xml
+def test_hierarchy_alias_21(samples_folder):
+    data_path = samples_folder / "hierarchy_alias.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+    hierarchy = result[0]
+    assert isinstance(hierarchy, Hierarchy)
+    assert hierarchy.id == "H2"
+    assert hierarchy.agency == "BIS"
+    assert hierarchy.has_formal_levels is False
+    assert hierarchy.level is None
+    assert len(hierarchy.codes) == 1
+    code_a = hierarchy.codes[0]
+    assert code_a.id == "A"
+    assert (
+        code_a.urn
+        == "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).A"
+    )
+    assert code_a.codes[0].id == "A1"
+    assert (
+        code_a.codes[0].urn
+        == "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).M"
+    )
 
 
 @pytest.fixture
