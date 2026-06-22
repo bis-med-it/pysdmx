@@ -698,6 +698,36 @@ def test_hierarchy(complete_header, hierarchy_with_levels):
     assert re_read.codes[0].codes[0].id == "A1"
 
 
+def test_hierarchy_with_annotations(complete_header):
+    hierarchy = Hierarchy(
+        id="H1",
+        name="Hierarchy 1",
+        agency="BIS",
+        version="1.0",
+        has_formal_levels=True,
+        level=LevelType(
+            id="0",
+            name="Division",
+            annotations=[Annotation(id="LA", title="Level annotation")],
+        ),
+        codes=[
+            HierarchicalCode(
+                id="A",
+                urn=(
+                    "urn:sdmx:org.sdmx.infomodel.codelist."
+                    "Code=BIS:CL_FREQ(1.0).A"
+                ),
+                annotations=[Annotation(id="CA", text="Code annotation")],
+            ),
+        ],
+    )
+    result = write([hierarchy], header=complete_header, prettyprint=True)
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read.level.annotations[0].id == "LA"
+    assert re_read.codes[0].annotations[0].id == "CA"
+    assert re_read.codes[0].annotations[0].text == "Code annotation"
+
+
 def test_hierarchy_association(complete_header):
     ha = HierarchyAssociation(
         id="HA1",
