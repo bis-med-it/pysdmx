@@ -178,7 +178,7 @@ def hierarchy_with_levels():
             name="Division",
             level=LevelType(id="1", name="Group"),
         ),
-        codes=[
+        codes=(
             HierarchicalCode(
                 id="A",
                 urn=(
@@ -186,7 +186,7 @@ def hierarchy_with_levels():
                     "Code=BIS:CL_FREQ(1.0).A"
                 ),
                 level="1",
-                codes=[
+                codes=(
                     HierarchicalCode(
                         id="A1",
                         urn=(
@@ -194,9 +194,9 @@ def hierarchy_with_levels():
                             "Code=BIS:CL_FREQ(1.0).M"
                         ),
                     ),
-                ],
+                ),
             ),
-        ],
+        ),
     )
 
 
@@ -208,19 +208,7 @@ def test_hierarchy_21_round_trip(complete_header, hierarchy_with_levels):
     assert "<str:HierarchicalCodelist " in result
     assert 'leveled="true"' in result
     re_read = read_sdmx(result, validate=True).structures[0]
-    assert isinstance(re_read, Hierarchy)
-    assert re_read.id == "H1"
-    assert re_read.agency == "BIS"
-    assert re_read.has_formal_levels is True
-    assert re_read.level.id == "0"
-    assert re_read.level.level.name == "Group"
-    code_a = re_read.codes[0]
-    assert (
-        code_a.urn
-        == "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).A"
-    )
-    assert code_a.level == "1"
-    assert code_a.codes[0].id == "A1"
+    assert re_read == hierarchy_with_levels
 
 
 def test_hierarchy_21_no_levels(complete_header):
@@ -229,7 +217,7 @@ def test_hierarchy_21_no_levels(complete_header):
         name="Flat hierarchy",
         agency="BIS",
         version="1.0",
-        codes=[
+        codes=(
             HierarchicalCode(
                 id="A",
                 urn=(
@@ -237,18 +225,12 @@ def test_hierarchy_21_no_levels(complete_header):
                     "Code=BIS:CL_FREQ(1.0).A"
                 ),
             ),
-        ],
+        ),
     )
     result = write([hierarchy], header=complete_header, prettyprint=True)
     assert 'leveled="false"' in result
     re_read = read_sdmx(result, validate=True).structures[0]
-    assert isinstance(re_read, Hierarchy)
-    assert re_read.has_formal_levels is False
-    assert re_read.level is None
-    assert (
-        re_read.codes[0].urn
-        == "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).A"
-    )
+    assert re_read == hierarchy
 
 
 def test_hierarchy_21_metadata_round_trip(complete_header):
@@ -260,8 +242,8 @@ def test_hierarchy_21_metadata_round_trip(complete_header):
         version="1.0",
         valid_from=datetime(2021, 1, 1),
         valid_to=datetime(2021, 12, 31),
-        annotations=[Annotation(id="AN1", title="anno")],
-        codes=[
+        annotations=(Annotation(id="AN1", title="anno"),),
+        codes=(
             HierarchicalCode(
                 id="A",
                 urn=(
@@ -269,15 +251,11 @@ def test_hierarchy_21_metadata_round_trip(complete_header):
                     "Code=BIS:CL_FREQ(1.0).A"
                 ),
             ),
-        ],
+        ),
     )
     result = write([hierarchy], header=complete_header, prettyprint=True)
     re_read = read_sdmx(result, validate=True).structures[0]
-    assert re_read.name == "Hierarchy 1"
-    assert re_read.description == "My description"
-    assert re_read.valid_from == datetime(2021, 1, 1)
-    assert re_read.valid_to == datetime(2021, 12, 31)
-    assert re_read.annotations[0].id == "AN1"
+    assert re_read == hierarchy
 
 
 def test_hierarchy_21_name_with_apostrophe(complete_header):

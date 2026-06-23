@@ -1,4 +1,3 @@
-from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -46,24 +45,8 @@ def test_hierarchy_31(samples_folder):
     structures = read_sdmx(input_str, validate=True).structures
     write = write_structure(structures=structures, prettyprint=True)
     result = read_sdmx(write, validate=True).structures
-    hierarchy = result[0]
-    assert isinstance(hierarchy, Hierarchy)
-    assert hierarchy.id == "H1"
-    assert hierarchy.agency == "BIS"
-    assert hierarchy.version == "1.0"
-    assert hierarchy.has_formal_levels is False
-    assert hierarchy.level is None
-    assert len(hierarchy.codes) == 2
-    code_a = hierarchy.codes[0]
-    assert (
-        code_a.urn
-        == "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).A"
-    )
-    assert len(code_a.codes) == 1
-    assert code_a.codes[0].id == "A1"
-    code_b = hierarchy.codes[1]
-    assert code_b.rel_valid_from == datetime(2021, 1, 1)
-    assert code_b.rel_valid_to == datetime(2021, 12, 31)
+    assert isinstance(result[0], Hierarchy)
+    assert result == structures
 
 
 def test_hierarchy_levels_31(samples_folder):
@@ -73,18 +56,8 @@ def test_hierarchy_levels_31(samples_folder):
     structures = read_sdmx(input_str, validate=True).structures
     write = write_structure(structures=structures, prettyprint=True)
     result = read_sdmx(write, validate=True).structures
-    hierarchy = result[0]
-    assert isinstance(hierarchy, Hierarchy)
-    assert hierarchy.has_formal_levels is True
-    assert hierarchy.level is not None
-    assert hierarchy.level.id == "0"
-    assert hierarchy.level.name == "Division"
-    assert hierarchy.level.description == "Top level"
-    assert hierarchy.level.level.id == "1"
-    assert hierarchy.level.level.name == "Group"
-    assert hierarchy.level.level.level is None
-    assert hierarchy.codes[0].level == "1"
-    assert hierarchy.codes[1].level is None
+    assert isinstance(result[0], Hierarchy)
+    assert result == structures
 
 
 def test_hierarchy_association_31(samples_folder):
@@ -95,22 +68,8 @@ def test_hierarchy_association_31(samples_folder):
     write = write_structure(structures=structures, prettyprint=True)
     result = read_sdmx(write, validate=True).structures
     assert len(result) == 2
-    ha1 = result[0]
-    assert isinstance(ha1, HierarchyAssociation)
-    assert ha1.id == "HA1"
-    assert (
-        ha1.hierarchy
-        == "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS:H1(1.0)"
-    )
-    assert (
-        ha1.component_ref == "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "Dimension=BIS:DSD(1.0).FREQ"
-    )
-    assert (
-        ha1.context_ref
-        == "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF(1.0)"
-    )
-    assert result[1].context_ref == ""
+    assert isinstance(result[0], HierarchyAssociation)
+    assert result == structures
 
 
 def test_concept_scheme_31(samples_folder):

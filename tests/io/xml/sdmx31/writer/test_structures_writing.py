@@ -653,7 +653,7 @@ def hierarchy_with_levels():
             name="Division",
             level=LevelType(id="1", name="Group"),
         ),
-        codes=[
+        codes=(
             HierarchicalCode(
                 id="A",
                 urn=(
@@ -661,7 +661,7 @@ def hierarchy_with_levels():
                     "Code=BIS:CL_FREQ(1.0).A"
                 ),
                 level="1",
-                codes=[
+                codes=(
                     HierarchicalCode(
                         id="A1",
                         urn=(
@@ -669,7 +669,7 @@ def hierarchy_with_levels():
                             "Code=BIS:CL_FREQ(1.0).M"
                         ),
                     ),
-                ],
+                ),
             ),
             HierarchicalCode(
                 id="B",
@@ -678,7 +678,7 @@ def hierarchy_with_levels():
                     "Code=BIS:CL_FREQ(1.0).Q"
                 ),
             ),
-        ],
+        ),
     )
 
 
@@ -691,11 +691,7 @@ def test_hierarchy(complete_header, hierarchy_with_levels):
     assert '<str:Level id="0">' in result
     assert '<str:Level id="1">' in result
     re_read = read_sdmx(result, validate=True).structures[0]
-    assert isinstance(re_read, Hierarchy)
-    assert re_read.has_formal_levels is True
-    assert re_read.level.level.name == "Group"
-    assert re_read.codes[0].level == "1"
-    assert re_read.codes[0].codes[0].id == "A1"
+    assert re_read == hierarchy_with_levels
 
 
 def test_hierarchy_with_annotations(complete_header):
@@ -708,24 +704,22 @@ def test_hierarchy_with_annotations(complete_header):
         level=LevelType(
             id="0",
             name="Division",
-            annotations=[Annotation(id="LA", title="Level annotation")],
+            annotations=(Annotation(id="LA", title="Level annotation"),),
         ),
-        codes=[
+        codes=(
             HierarchicalCode(
                 id="A",
                 urn=(
                     "urn:sdmx:org.sdmx.infomodel.codelist."
                     "Code=BIS:CL_FREQ(1.0).A"
                 ),
-                annotations=[Annotation(id="CA", text="Code annotation")],
+                annotations=(Annotation(id="CA", text="Code annotation"),),
             ),
-        ],
+        ),
     )
     result = write([hierarchy], header=complete_header, prettyprint=True)
     re_read = read_sdmx(result, validate=True).structures[0]
-    assert re_read.level.annotations[0].id == "LA"
-    assert re_read.codes[0].annotations[0].id == "CA"
-    assert re_read.codes[0].annotations[0].text == "Code annotation"
+    assert re_read == hierarchy
 
 
 def test_hierarchy_association(complete_header):
