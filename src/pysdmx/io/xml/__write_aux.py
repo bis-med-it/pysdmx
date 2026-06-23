@@ -68,6 +68,9 @@ ORGS = "OrganisationSchemes"
 AGC = "AgencySchemes"
 AGENCIES = "AgencyScheme"
 CODELISTS = "Codelists"
+HIERARCHIES = "Hierarchies"
+HIERARCHY_ASSOCIATIONS = "HierarchyAssociations"
+HIERARCHICAL_CODELISTS = "HierarchicalCodelists"
 CONCEPTS = "Concepts"
 CONCEPTS_SCHEMES = "ConceptSchemes"
 DSDS = "DataStructures"
@@ -216,6 +219,7 @@ MSG_CONTENT_PKG_21 = OrderedDict(
         (DATAFLOWS, "Dataflows"),
         (PROV_AGREEMENTS, "ProvisionAgreements"),
         (CODELISTS, "Codelists"),
+        (HIERARCHICAL_CODELISTS, "HierarchicalCodelists"),
         (CONCEPTS, "Concepts"),
         (DSDS, "DataStructures"),
         (CONSTRAINTS, "Constraints"),
@@ -237,6 +241,8 @@ MSG_CONTENT_PKG_30 = OrderedDict(
         (DATAFLOWS, "Dataflows"),
         (PROV_AGREEMENTS, "ProvisionAgreements"),
         (CODELISTS, "Codelists"),
+        (HIERARCHIES, "Hierarchies"),
+        (HIERARCHY_ASSOCIATIONS, "HierarchyAssociations"),
         (CONCEPTS_SCHEMES, "ConceptSchemes"),
         (DSDS, "DataStructures"),
         (DATA_CONSTRAINTS, "DataConstraints"),

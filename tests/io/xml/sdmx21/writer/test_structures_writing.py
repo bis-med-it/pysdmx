@@ -29,7 +29,10 @@ from pysdmx.model import (
     DataKeyValue,
     Facets,
     FromVtlMapping,
+    HierarchicalCode,
+    Hierarchy,
     KeySet,
+    LevelType,
     NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
@@ -160,6 +163,120 @@ def complete_header():
         ),
         source="PySDMX",
     )
+
+
+@pytest.fixture
+def hierarchy_with_levels():
+    return Hierarchy(
+        id="H1",
+        name="Hierarchy 1",
+        agency="BIS",
+        version="1.0",
+        has_formal_levels=True,
+        level=LevelType(
+            id="0",
+            name="Division",
+            level=LevelType(id="1", name="Group"),
+        ),
+        codes=(
+            HierarchicalCode(
+                id="A",
+                urn=(
+                    "urn:sdmx:org.sdmx.infomodel.codelist."
+                    "Code=BIS:CL_FREQ(1.0).A"
+                ),
+                level="1",
+                codes=(
+                    HierarchicalCode(
+                        id="A1",
+                        urn=(
+                            "urn:sdmx:org.sdmx.infomodel.codelist."
+                            "Code=BIS:CL_FREQ(1.0).M"
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
+def test_hierarchy_21_round_trip(complete_header, hierarchy_with_levels):
+    result = write(
+        [hierarchy_with_levels], header=complete_header, prettyprint=True
+    )
+    assert "<str:HierarchicalCodelists>" in result
+    assert "<str:HierarchicalCodelist " in result
+    assert 'leveled="true"' in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == hierarchy_with_levels
+
+
+def test_hierarchy_21_no_levels(complete_header):
+    hierarchy = Hierarchy(
+        id="H3",
+        name="Flat hierarchy",
+        agency="BIS",
+        version="1.0",
+        codes=(
+            HierarchicalCode(
+                id="A",
+                urn=(
+                    "urn:sdmx:org.sdmx.infomodel.codelist."
+                    "Code=BIS:CL_FREQ(1.0).A"
+                ),
+            ),
+        ),
+    )
+    result = write([hierarchy], header=complete_header, prettyprint=True)
+    assert 'leveled="false"' in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == hierarchy
+
+
+def test_hierarchy_21_metadata_round_trip(complete_header):
+    hierarchy = Hierarchy(
+        id="H1",
+        name="Hierarchy 1",
+        description="My description",
+        agency="BIS",
+        version="1.0",
+        valid_from=datetime(2021, 1, 1),
+        valid_to=datetime(2021, 12, 31),
+        annotations=(Annotation(id="AN1", title="anno"),),
+        codes=(
+            HierarchicalCode(
+                id="A",
+                urn=(
+                    "urn:sdmx:org.sdmx.infomodel.codelist."
+                    "Code=BIS:CL_FREQ(1.0).A"
+                ),
+            ),
+        ),
+    )
+    result = write([hierarchy], header=complete_header, prettyprint=True)
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == hierarchy
+
+
+def test_hierarchy_21_name_with_apostrophe(complete_header):
+    hierarchy = Hierarchy(
+        id="H4",
+        name="Côte d'Ivoire groups",
+        agency="BIS",
+        version="1.0",
+        codes=[
+            HierarchicalCode(
+                id="A",
+                urn=(
+                    "urn:sdmx:org.sdmx.infomodel.codelist."
+                    "Code=BIS:CL_FREQ(1.0).A"
+                ),
+            ),
+        ],
+    )
+    result = write([hierarchy], header=complete_header, prettyprint=True)
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read.name == "Côte d'Ivoire groups"
 
 
 @pytest.fixture

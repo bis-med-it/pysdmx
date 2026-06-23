@@ -14,12 +14,14 @@ from pysdmx.io.xml.__tokens import (
     CL,
     CL_LOW,
     CLASS,
+    CODE,
     COMPONENT_MAP,
     CON,
     CON_CONS,
     CON_ID,
     CONDITIONAL,
     CONS_ATT,
+    CONTEXT_OBJECT,
     CORE_REP,
     CS,
     CUBE_REGION,
@@ -41,11 +43,20 @@ from pysdmx.io.xml.__tokens import (
     GROUP,
     GROUP_DIM,
     GROUPS_LOW,
+    HAS_FORMAL_LEVELS,
+    HIERARCHICAL_CODE,
+    HIERARCHICAL_CODELIST,
+    HIERARCHY,
+    HIERARCHY_ASSOCIATION,
     ID,
     INCLUDE,
     INCLUDED,
     KEY,
     KEY_VALUE,
+    LEVEL,
+    LEVELED,
+    LINKED_HIERARCHY,
+    LINKED_OBJECT,
     LOCAL_REP,
     MANDATORY,
     MANDATORY_LOW,
@@ -115,9 +126,12 @@ from pysdmx.model import (
     DatePatternMap,
     Facets,
     FixedValueMap,
+    HierarchicalCode,
     Hierarchy,
+    HierarchyAssociation,
     ImplicitComponentMap,
     KeySet,
+    LevelType,
     MultiComponentMap,
     MultiRepresentationMap,
     MultiValueMap,
@@ -198,6 +212,7 @@ STR_TYPES = Union[
 STR_DICT_TYPE_LIST_21 = {
     AgencyScheme: "OrganisationSchemes",
     Codelist: "Codelists",
+    Hierarchy: "HierarchicalCodelists",
     ConceptScheme: "Concepts",
     DataStructureDefinition: "DataStructures",
     Dataflow: "Dataflows",
@@ -219,6 +234,8 @@ STR_DICT_TYPE_LIST_21 = {
 STR_DICT_TYPE_LIST_30 = {
     AgencyScheme: "AgencySchemes",
     Codelist: "Codelists",
+    Hierarchy: "Hierarchies",
+    HierarchyAssociation: "HierarchyAssociations",
     ConceptScheme: "ConceptSchemes",
     DataStructureDefinition: "DataStructures",
     Dataflow: "Dataflows",
@@ -237,7 +254,9 @@ STR_DICT_TYPE_LIST_30 = {
 }
 
 
-def __write_annotable(annotable: AnnotableArtefact, indent: str) -> str:
+def __write_annotable(
+    annotable: Union[AnnotableArtefact, HierarchicalCode], indent: str
+) -> str:
     """Writes the annotations to the XML file."""
     if len(annotable.annotations) == 0:
         return ""
@@ -1414,6 +1433,179 @@ def __write_data_constraint(
     return outfile
 
 
+def __write_code_reference(urn: str, indent: str, references_30: bool) -> str:
+    """Writes a <str:Code> reference (URN text in 3.x, <Ref> in 2.1)."""
+    label = f"{ABBR_STR}:{CODE}"
+    if references_30:
+        return f"{indent}<{label}>{urn}</{label}>"
+    ref = parse_item_urn(urn)
+    outfile = f"{indent}<{label}>"
+    outfile += f"{add_indent(indent)}<{REF} "
+    outfile += f"{AGENCY_ID}={ref.agency!r} "
+    outfile += f"{CLASS}={CODE!r} "
+    outfile += f"{ID}={ref.item_id!r} "
+    outfile += f"{PAR_ID}={ref.id!r} "
+    outfile += f"{PAR_VER}={ref.version!r} "
+    outfile += f"{PACKAGE}={CL_LOW!r}/>"
+    outfile += f"{indent}</{label}>"
+    return outfile.replace("'", '"')
+
+
+def __write_code_level_ref(
+    level: str, indent: str, references_30: bool
+) -> str:
+    """Writes a per-code <str:Level> (id text in 3.x, <Ref id> in 2.1)."""
+    label = f"{ABBR_STR}:{LEVEL}"
+    if references_30:
+        return f"{indent}<{label}>{level}</{label}>"
+    outfile = f"{indent}<{label}>"
+    outfile += f"{add_indent(indent)}<{REF} {ID}={level!r}/>"
+    outfile += f"{indent}</{label}>"
+    return outfile.replace("'", '"')
+
+
+def __write_level(level: LevelType, indent: str) -> str:
+    """Recursively writes a <str:Level> element (SDMX-ML 2.1/3.0/3.1)."""
+    if not level.name:
+        raise Invalid(
+            "Invalid input",
+            "SDMX-ML hierarchy levels must have a name",
+            {"level": level.id},
+        )
+    data = __write_nameable(level, add_indent(indent))
+    label = f"{ABBR_STR}:{LEVEL}"
+    attributes = (data.get("Attributes") or "").replace("'", '"')
+    outfile = f"{indent}<{label}{attributes}>"
+    outfile += __export_intern_data(data)
+    if level.level is not None:
+        outfile += __write_level(level.level, add_indent(indent))
+    outfile += f"{indent}</{label}>"
+    return outfile
+
+
+def __write_hierarchical_code(
+    code: HierarchicalCode, indent: str, references_30: bool = False
+) -> str:
+    """Recursively writes a <str:HierarchicalCode> element."""
+    if not code.urn:
+        raise Invalid(
+            "Invalid input",
+            "SDMX-ML hierarchical codes must reference a code urn",
+            {"code": code.id},
+        )
+    attrs = f" {ID}={code.id!r}"
+    if code.rel_valid_from is not None:
+        valid_from = code.rel_valid_from.strftime("%Y-%m-%dT%H:%M:%S")
+        attrs += f" validFrom={valid_from!r}"
+    if code.rel_valid_to is not None:
+        valid_to = code.rel_valid_to.strftime("%Y-%m-%dT%H:%M:%S")
+        attrs += f" validTo={valid_to!r}"
+    attrs = attrs.replace("'", '"')
+    label = f"{ABBR_STR}:{HIERARCHICAL_CODE}"
+    child = add_indent(indent)
+    outfile = f"{indent}<{label}{attrs}>"
+    outfile += __write_annotable(code, child)
+    outfile += __write_code_reference(code.urn, child, references_30)
+    for sub_code in code.codes:
+        outfile += __write_hierarchical_code(sub_code, child, references_30)
+    if code.level is not None:
+        outfile += __write_code_level_ref(code.level, child, references_30)
+    outfile += f"{indent}</{label}>"
+    return outfile
+
+
+def __write_hierarchy(
+    hierarchy: Hierarchy, indent: str, references_30: bool = True
+) -> str:
+    """Writes a <str:Hierarchy> (SDMX-ML 3.0/3.1) to the XML file."""
+    data = __write_maintainable(hierarchy, indent, references_30)
+    data["Attributes"] += (
+        f" {HAS_FORMAL_LEVELS}={str(hierarchy.has_formal_levels).lower()!r}"
+    )
+    label = f"{ABBR_STR}:{HIERARCHY}"
+    attributes = (data.get("Attributes") or "").replace("'", '"')
+    outfile = f"{indent}<{label}{attributes}>"
+    outfile += __export_intern_data(data)
+    if hierarchy.level is not None:
+        outfile += __write_level(hierarchy.level, add_indent(indent))
+    for code in hierarchy.codes:
+        outfile += __write_hierarchical_code(
+            code, add_indent(indent), references_30
+        )
+    outfile += f"{indent}</{label}>"
+    return outfile
+
+
+def __write_hierarchical_codelist(hierarchy: Hierarchy, indent: str) -> str:
+    """Writes an SDMX-ML 2.1 <str:HierarchicalCodelist> for a Hierarchy.
+
+    The pysdmx ``Hierarchy`` (a maintainable) is wrapped in a 2.1
+    ``HierarchicalCodelist`` containing a single inner ``<Hierarchy>``.
+    """
+    data = __write_maintainable(hierarchy, indent, references_30=False)
+    hcl_label = f"{ABBR_STR}:{HIERARCHICAL_CODELIST}"
+    attributes = (data.get("Attributes") or "").replace("'", '"')
+    outfile = f"{indent}<{hcl_label}{attributes}>"
+    outfile += __export_intern_data(data)
+
+    h_indent = add_indent(indent)
+    h_label = f"{ABBR_STR}:{HIERARCHY}"
+    leveled = str(hierarchy.has_formal_levels).lower()
+    h_attrs = f" {ID}={hierarchy.id!r} {LEVELED}={leveled!r}".replace("'", '"')
+    outfile += f"{h_indent}<{h_label}{h_attrs}>"
+    name = __escape_xml(str(hierarchy.name))
+    outfile += (
+        f'{add_indent(h_indent)}<{ABBR_COM}:Name xml:lang="en">'
+        f"{name}</{ABBR_COM}:Name>"
+    )
+    for code in hierarchy.codes:
+        outfile += __write_hierarchical_code(
+            code, add_indent(h_indent), references_30=False
+        )
+    if hierarchy.level is not None:
+        outfile += __write_level(hierarchy.level, add_indent(h_indent))
+    outfile += f"{h_indent}</{h_label}>"
+    outfile += f"{indent}</{hcl_label}>"
+    return outfile
+
+
+def __write_hierarchy_association(
+    ha: HierarchyAssociation, indent: str, references_30: bool = True
+) -> str:
+    """Writes a <str:HierarchyAssociation> (SDMX-ML 3.0/3.1)."""
+    if ha.hierarchy is None:
+        raise Invalid(
+            "Invalid input",
+            "SDMX-ML hierarchy associations must reference a hierarchy",
+            {"hierarchy_association": ha.id},
+        )
+    if not ha.component_ref:
+        raise Invalid(
+            "Invalid input",
+            "SDMX-ML hierarchy associations must reference a component",
+            {"hierarchy_association": ha.id},
+        )
+    data = __write_maintainable(ha, indent, references_30)
+    label = f"{ABBR_STR}:{HIERARCHY_ASSOCIATION}"
+    attributes = (data.get("Attributes") or "").replace("'", '"')
+    outfile = f"{indent}<{label}{attributes}>"
+    outfile += __export_intern_data(data)
+    child = add_indent(indent)
+    if isinstance(ha.hierarchy, Hierarchy):
+        href = f"urn:sdmx:org.sdmx.infomodel.codelist.{ha.hierarchy.short_urn}"
+    else:
+        href = ha.hierarchy
+    linked_h = f"{ABBR_STR}:{LINKED_HIERARCHY}"
+    linked_o = f"{ABBR_STR}:{LINKED_OBJECT}"
+    outfile += f"{child}<{linked_h}>{href}</{linked_h}>"
+    outfile += f"{child}<{linked_o}>{ha.component_ref}</{linked_o}>"
+    if ha.context_ref:
+        context = f"{ABBR_STR}:{CONTEXT_OBJECT}"
+        outfile += f"{child}<{context}>{ha.context_ref}</{context}>"
+    outfile += f"{indent}</{label}>"
+    return outfile
+
+
 def __write_scheme(  # noqa: C901
     item_scheme: Any, indent: str, scheme: str, references_30: bool = False
 ) -> str:
@@ -1427,6 +1619,16 @@ def __write_scheme(  # noqa: C901
         return __write_structure_map(item_scheme, indent, references_30)
     if isinstance(item_scheme, DataConstraint):
         return __write_data_constraint(item_scheme, indent, references_30)
+    if isinstance(item_scheme, Hierarchy):
+        return (
+            __write_hierarchy(item_scheme, indent, references_30)
+            if references_30
+            else __write_hierarchical_codelist(item_scheme, indent)
+        )
+    if isinstance(item_scheme, HierarchyAssociation):
+        return __write_hierarchy_association(
+            item_scheme, indent, references_30
+        )
 
     label = f"{ABBR_STR}:{scheme}"
     components = ""
