@@ -202,7 +202,10 @@ class _CoreDataQuery(CoreQuery, frozen=True, omit_defaults=True):
                 )
             flts_by_comp = defaultdict(list)
             for f in components.filters:
-                if isinstance(f, (NumberFilter, TextFilter)):
+                if isinstance(
+                    f,
+                    (BooleanFilter, DateTimeFilter, NumberFilter, TextFilter),
+                ):
                     flts_by_comp[f.field].append(f)
                 else:
                     raise Invalid(
@@ -595,6 +598,12 @@ def __map_operator(op: Operator, value: Any) -> str:
     return out
 
 
+def _format_component_value(value: Any) -> str:
+    if isinstance(value, datetime):
+        return value.isoformat("T", "seconds")
+    return str(value)
+
+
 def _create_component_filter(
     flt: Union[BooleanFilter, DateTimeFilter, NumberFilter, TextFilter],
 ) -> str:
@@ -602,12 +611,15 @@ def _create_component_filter(
     val = flt.value
     if flt.operator in [Operator.LIKE, Operator.NOT_LIKE]:
         op = __map_operator(flt.operator, val)
-        val = str(val).replace("%", "")
+        val = _format_component_value(val).replace("%", "")
         return f"c[{fld}]={op}:{val}"
     elif flt.operator == Operator.IN:
-        return f"c[{fld}]={','.join(val)}"  # type: ignore[arg-type]
+        return f"c[{fld}]={','.join(_format_component_value(v) for v in val)}"  # type: ignore[union-attr]
     elif flt.operator == Operator.BETWEEN:
-        return f"c[{fld}]=ge:{val[0]}+le:{val[1]}"  # type: ignore[index]
+        return (
+            f"c[{fld}]=ge:{_format_component_value(val[0])}"  # type: ignore[index]
+            f"+le:{_format_component_value(val[1])}"  # type: ignore[index]
+        )
     elif flt.operator in [
         Operator.EQUALS,
         Operator.NOT_EQUALS,
@@ -621,7 +633,7 @@ def _create_component_filter(
         op = __map_operator(flt.operator, val)
         if op:
             op += ":"
-        return f"c[{fld}]={op}{val}"
+        return f"c[{fld}]={op}{_format_component_value(val)}"
     else:
         raise Invalid(
             "Validation Error",

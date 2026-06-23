@@ -34,6 +34,7 @@
             <str:RepresentationMap urn="urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=ESTAT:REPMAP_CURR(1.0)" id="REPMAP_CURR" agencyID="ESTAT" version="1.0">
                 <com:Name xml:lang="en">Country + Local Currency to ISO Currency</com:Name>
                 <str:SourceCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_COUNTRY_LOCALCURR(1.0)</str:SourceCodelist>
+                <str:SourceCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_CURRENCY(1.0)</str:SourceCodelist>
                 <str:TargetCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_CURRENCY_ISO3(1.0)</str:TargetCodelist>
                 <str:RepresentationMapping>
                     <str:SourceValue>DE</str:SourceValue>
@@ -51,6 +52,7 @@
                 <com:Name xml:lang="en">Series code to Indicator + Status</com:Name>
                 <str:SourceCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_SERIES_CODE(1.0)</str:SourceCodelist>
                 <str:TargetCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_INDICATOR_STATUS(1.0)</str:TargetCodelist>
+                <str:TargetCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_INDICATOR_STATUS2(1.0)</str:TargetCodelist>
                 <str:RepresentationMapping>
                     <str:SourceValue>XMAN_Z_34</str:SourceValue>
                     <str:TargetValue>XM</str:TargetValue>
@@ -66,7 +68,9 @@
             <str:RepresentationMap urn="urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=ESTAT:REPMAP_NN(1.0)" id="REPMAP_NN" agencyID="ESTAT" version="1.0">
                 <com:Name xml:lang="en">Freq + Adjustment to Indicator + Note</com:Name>
                 <str:SourceCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_FREQ_ADJ(1.0)</str:SourceCodelist>
+                <str:SourceCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_FREQ_ADJ2(1.0)</str:SourceCodelist>
                 <str:TargetCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_IND_NOTE(1.0)</str:TargetCodelist>
+                <str:TargetCodelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ESTAT:CL_IND_NOTE2(1.0)</str:TargetCodelist>
                 <str:RepresentationMapping>
                     <str:SourceValue>A</str:SourceValue>
                     <str:SourceValue>N</str:SourceValue>

@@ -15,13 +15,15 @@ import msgspec
 
 from pysdmx.model.__base import (
     Annotation,
+    DataType,
+    Facets,
     IdentifiableArtefact,
     ItemReference,
     MaintainableArtefact,
     Reference,
 )
 from pysdmx.model.code import Codelist, Hierarchy
-from pysdmx.model.concept import Concept, DataType, Facets
+from pysdmx.model.concept import Concept
 from pysdmx.model.dataflow import ArrayBoundaries
 from pysdmx.model.dataset import ActionType
 

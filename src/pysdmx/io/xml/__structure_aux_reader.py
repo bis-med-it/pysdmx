@@ -11,6 +11,7 @@ from pysdmx.io.xml.__tokens import (
     AGENCY,
     AGENCY_ID,
     AGENCY_SCHEME,
+    ALIAS,
     ALIAS_LOW,
     ANNOTATION,
     ANNOTATION_TEXT,
@@ -29,6 +30,8 @@ from pysdmx.io.xml.__tokens import (
     CLASS,
     CLS,
     CODE,
+    CODE_ID,
+    CODELIST_ALIAS_REF,
     CODES_LOW,
     COMPONENT_MAP,
     COMPONENT_MAPS,
@@ -43,6 +46,7 @@ from pysdmx.io.xml.__tokens import (
     CONS_ATT,
     CONSTRAINTS,
     CONTACT,
+    CONTEXT_OBJECT,
     CORE_REP,
     CS,
     CUBE_REGION,
@@ -80,9 +84,18 @@ from pysdmx.io.xml.__tokens import (
     GROUP,
     GROUP_DIM,
     GROUPS_LOW,
+    HAS_FORMAL_LEVELS,
+    HIERARCHICAL_CODE,
+    HIERARCHICAL_CODELIST,
+    HIERARCHICAL_CODELISTS,
+    HIERARCHIES,
+    HIERARCHY,
+    HIERARCHY_ASSOCIATION,
+    HIERARCHY_ASSOCIATIONS,
     ID,
     INCLUDE,
     INCLUDED,
+    INCLUDED_CODELIST,
     IS_EXTERNAL_REF,
     IS_EXTERNAL_REF_LOW,
     IS_FINAL,
@@ -91,7 +104,11 @@ from pysdmx.io.xml.__tokens import (
     IS_PARTIAL_LOW,
     KEY,
     KEY_VALUE,
+    LEVEL,
+    LEVELED,
     LINK,
+    LINKED_HIERARCHY,
+    LINKED_OBJECT,
     LOCAL_CODES_LOW,
     LOCAL_DTYPE,
     LOCAL_FACETS_LOW,
@@ -188,9 +205,14 @@ from pysdmx.model import (
     DatePatternMap,
     Facets,
     FixedValueMap,
+    HierarchicalCode,
+    Hierarchy,
+    HierarchyAssociation,
     ImplicitComponentMap,
     KeySet,
+    LevelType,
     MultiComponentMap,
+    MultiRepresentationMap,
     MultiValueMap,
     RepresentationMap,
     StructureMap,
@@ -240,6 +262,13 @@ T = Any
 
 def _identity(x: T) -> T:
     return x
+
+
+def _convert(converter: Callable[[Any], Any], value: Any) -> Any:
+    """Applies a converter to a value, or to each item if it is a list."""
+    if isinstance(value, list):
+        return [converter(v) for v in value]
+    return converter(value)
 
 
 STRUCTURES_MAPPING = {
@@ -365,7 +394,9 @@ class StructureParser(Struct):
     structure_maps: Dict[str, StructureMap] = {}
     component_maps: Dict[str, ComponentMap] = {}
     fixed_value_maps: Dict[str, FixedValueMap] = {}
-    representation_maps: Dict[str, RepresentationMap] = {}
+    representation_maps: Dict[
+        str, Union[RepresentationMap, MultiRepresentationMap]
+    ] = {}
     name_personalisations: Dict[str, NamePersonalisationScheme] = {}
     custom_types: Dict[str, CustomTypeScheme] = {}
     transformations: Dict[str, TransformationScheme] = {}
@@ -1295,6 +1326,21 @@ class StructureParser(Struct):
             values=child_dict["values"],
         )
 
+    def __build_representation_map(
+        self, structure: Dict[str, Any]
+    ) -> Union[RepresentationMap, MultiRepresentationMap]:
+        src_list = add_list(structure.get("source"))
+        tgt_list = add_list(structure.get("target"))
+
+        if len(src_list) != 1 or len(tgt_list) != 1:
+            structure["source"] = src_list
+            structure["target"] = tgt_list
+            return MultiRepresentationMap(**structure)
+
+        structure["source"] = src_list[0]
+        structure["target"] = tgt_list[0]
+        return RepresentationMap(**structure)
+
     def __build_representation_mapping(
         self, child_dict: Dict[str, Any]
     ) -> Union[ValueMap, MultiValueMap]:
@@ -1352,7 +1398,9 @@ class StructureParser(Struct):
         for xml_key, py_key in renames.items():
             if xml_key in element:
                 value = element.pop(xml_key)
-                element[py_key] = converters.get(xml_key, _identity)(value)
+                element[py_key] = _convert(
+                    converters.get(xml_key, _identity), value
+                )
 
         child_class_mapping: Dict[str, Type[Any]] = {
             "ComponentMap": ComponentMap,
@@ -1442,6 +1490,265 @@ class StructureParser(Struct):
 
         return elements
 
+    def __format_level(self, level_elem: Dict[str, Any]) -> LevelType:
+        """Recursively formats a Level element into a LevelType."""
+        level_elem = self.__format_annotations(level_elem)
+        level_elem = self.__format_name_description(level_elem)
+        child = (
+            self.__format_level(level_elem[LEVEL])
+            if LEVEL in level_elem
+            else None
+        )
+        return LevelType(
+            id=level_elem[ID],
+            name=level_elem.get(NAME.lower()),
+            description=level_elem.get(DESC.lower()),
+            annotations=tuple(level_elem.get(ANNOTATIONS.lower(), ())),
+            level=child,
+        )
+
+    @staticmethod
+    def __urn_from_code_ref(ref: Dict[str, Any]) -> str:
+        """Builds a code URN from an SDMX-ML 2.1 <Code> reference."""
+        return (
+            "urn:sdmx:org.sdmx.infomodel.codelist.Code="
+            f"{ref[AGENCY_ID]}:{ref[PAR_ID]}({ref[PAR_VER]}).{ref[ID]}"
+        )
+
+    def __format_code_ref(
+        self, hc_elem: Dict[str, Any], aliases: Dict[str, str]
+    ) -> str:
+        """Resolves the referenced code URN (text, <Ref> or alias forms)."""
+        if CODE in hc_elem:
+            code_val = hc_elem[CODE]
+            if isinstance(code_val, dict):
+                return self.__urn_from_code_ref(code_val[REF])
+            return _extract_text(code_val)
+        alias = _extract_text(hc_elem[CODELIST_ALIAS_REF])
+        code_id = str(hc_elem[CODE_ID][REF][ID])
+        return f"{aliases[alias]}.{code_id}"
+
+    @staticmethod
+    def __format_level_ref(level_val: Any) -> str:
+        """Resolves a per-code level id (text or <Ref> forms)."""
+        if isinstance(level_val, dict):
+            return str(level_val[REF][ID])
+        return _extract_text(level_val)
+
+    def __format_hierarchical_code(
+        self,
+        hc_elem: Dict[str, Any],
+        aliases: Optional[Dict[str, str]] = None,
+    ) -> HierarchicalCode:
+        """Formats a HierarchicalCode element into the model."""
+        aliases = aliases or {}
+        hc_elem = self.__format_annotations(hc_elem)
+        children = (
+            [
+                self.__format_hierarchical_code(child, aliases)
+                for child in add_list(hc_elem[HIERARCHICAL_CODE])
+            ]
+            if HIERARCHICAL_CODE in hc_elem
+            else []
+        )
+        rel_valid_from = (
+            datetime.fromisoformat(hc_elem[VALID_FROM])
+            if VALID_FROM in hc_elem
+            else None
+        )
+        rel_valid_to = (
+            datetime.fromisoformat(hc_elem[VALID_TO])
+            if VALID_TO in hc_elem
+            else None
+        )
+        level = (
+            self.__format_level_ref(hc_elem[LEVEL])
+            if LEVEL in hc_elem
+            else None
+        )
+        return HierarchicalCode(
+            id=hc_elem[ID],
+            rel_valid_from=rel_valid_from,
+            rel_valid_to=rel_valid_to,
+            codes=tuple(children),
+            annotations=tuple(hc_elem.get(ANNOTATIONS.lower(), ())),
+            urn=self.__format_code_ref(hc_elem, aliases),
+            level=level,
+        )
+
+    def __format_hierarchy(
+        self, json_hierarchies: Dict[str, Any]
+    ) -> Dict[str, Hierarchy]:
+        """Formats the hierarchies (SDMX-ML 3.0/3.1) into the model."""
+        elements: Dict[str, Hierarchy] = {}
+        for element in add_list(json_hierarchies[HIERARCHY]):
+            element = self.__format_annotations(element)
+            element = self.__format_name_description(element)
+            element = self.__format_urls(element)
+            element = self.__format_agency(element)
+            element = self.__format_validity(element)
+            if IS_EXTERNAL_REF in element:
+                element[IS_EXTERNAL_REF_LOW] = (
+                    element.pop(IS_EXTERNAL_REF) == "true"
+                )
+            has_formal_levels = (
+                element.pop(HAS_FORMAL_LEVELS, "false") == "true"
+            )
+            level = (
+                self.__format_level(element[LEVEL])
+                if LEVEL in element
+                else None
+            )
+            codes = (
+                [
+                    self.__format_hierarchical_code(child)
+                    for child in add_list(element[HIERARCHICAL_CODE])
+                ]
+                if HIERARCHICAL_CODE in element
+                else []
+            )
+            version = element.get(VERSION, "1.0")
+            hierarchy = Hierarchy(
+                id=element[ID],
+                name=element.get(NAME.lower()),
+                description=element.get(DESC.lower()),
+                agency=element[AGENCY.lower()],
+                version=version,
+                valid_from=element.get(VALID_FROM_LOW),
+                valid_to=element.get(VALID_TO_LOW),
+                annotations=tuple(element.get(ANNOTATIONS.lower(), ())),
+                is_external_reference=element.get(IS_EXTERNAL_REF_LOW, False),
+                is_final=is_final(version),
+                has_formal_levels=has_formal_levels,
+                level=level,
+                codes=tuple(codes),
+            )
+            elements[hierarchy.short_urn] = hierarchy
+        return elements
+
+    @staticmethod
+    def __format_codelist_aliases(hcl: Dict[str, Any]) -> Dict[str, str]:
+        """Maps each IncludedCodelist alias to a code-URN prefix."""
+        aliases: Dict[str, str] = {}
+        for incl in add_list(hcl.get(INCLUDED_CODELIST, [])):
+            ref = incl[REF]
+            aliases[incl[ALIAS]] = (
+                "urn:sdmx:org.sdmx.infomodel.codelist.Code="
+                f"{ref[AGENCY_ID]}:{ref[ID]}({ref.get(VERSION, '1.0')})"
+            )
+        return aliases
+
+    def __format_inner_hierarchy(
+        self,
+        inner: Dict[str, Any],
+        meta: Dict[str, Any],
+        aliases: Dict[str, str],
+    ) -> Hierarchy:
+        """Formats an SDMX-ML 2.1 inner <Hierarchy> into the model.
+
+        The wrapping codelist (the maintainable) carries the agency,
+        version, validity, annotations and description, so those are taken
+        from ``meta``; the inner element supplies the id, name and codes.
+        """
+        inner = self.__format_name_description(inner)
+        has_formal_levels = inner.pop(LEVELED, "false") == "true"
+        level = self.__format_level(inner[LEVEL]) if LEVEL in inner else None
+        codes = (
+            [
+                self.__format_hierarchical_code(child, aliases)
+                for child in add_list(inner[HIERARCHICAL_CODE])
+            ]
+            if HIERARCHICAL_CODE in inner
+            else []
+        )
+        version = meta["version"]
+        return Hierarchy(
+            id=inner[ID],
+            name=inner.get(NAME.lower()),
+            description=meta["description"],
+            agency=meta["agency"],
+            version=version,
+            valid_from=meta["valid_from"],
+            valid_to=meta["valid_to"],
+            annotations=meta["annotations"],
+            is_external_reference=meta["is_external_reference"],
+            is_final=is_final(version),
+            has_formal_levels=has_formal_levels,
+            level=level,
+            codes=tuple(codes),
+        )
+
+    def __format_hierarchical_codelist(
+        self, json_hcls: Dict[str, Any]
+    ) -> Dict[str, Hierarchy]:
+        """Formats SDMX-ML 2.1 HierarchicalCodelists into the model.
+
+        Each inner ``<Hierarchy>`` becomes a separate pysdmx ``Hierarchy``,
+        inheriting the maintainable metadata (agency, version, validity,
+        description, annotations) of the wrapping codelist.
+        """
+        elements: Dict[str, Hierarchy] = {}
+        for hcl in add_list(json_hcls[HIERARCHICAL_CODELIST]):
+            aliases = self.__format_codelist_aliases(hcl)
+            hcl = self.__format_annotations(hcl)
+            hcl = self.__format_name_description(hcl)
+            hcl = self.__format_agency(hcl)
+            hcl = self.__format_validity(hcl)
+            if IS_EXTERNAL_REF in hcl:
+                hcl[IS_EXTERNAL_REF_LOW] = hcl.pop(IS_EXTERNAL_REF) == "true"
+            meta = {
+                "agency": hcl[AGENCY.lower()],
+                "version": hcl.get(VERSION, "1.0"),
+                "description": hcl.get(DESC.lower()),
+                "valid_from": hcl.get(VALID_FROM_LOW),
+                "valid_to": hcl.get(VALID_TO_LOW),
+                "is_external_reference": hcl.get(IS_EXTERNAL_REF_LOW, False),
+                "annotations": tuple(hcl.get(ANNOTATIONS.lower(), ())),
+            }
+            for inner in add_list(hcl.get(HIERARCHY, [])):
+                hierarchy = self.__format_inner_hierarchy(inner, meta, aliases)
+                elements[hierarchy.short_urn] = hierarchy
+        return elements
+
+    def __format_hierarchy_association(
+        self, json_has: Dict[str, Any]
+    ) -> Dict[str, HierarchyAssociation]:
+        """Formats SDMX-ML 3.0/3.1 HierarchyAssociations into the model."""
+        elements: Dict[str, HierarchyAssociation] = {}
+        for element in add_list(json_has[HIERARCHY_ASSOCIATION]):
+            element = self.__format_annotations(element)
+            element = self.__format_name_description(element)
+            element = self.__format_urls(element)
+            element = self.__format_agency(element)
+            element = self.__format_validity(element)
+            if IS_EXTERNAL_REF in element:
+                element[IS_EXTERNAL_REF_LOW] = (
+                    element.pop(IS_EXTERNAL_REF) == "true"
+                )
+            context = (
+                _extract_text(element[CONTEXT_OBJECT])
+                if CONTEXT_OBJECT in element
+                else ""
+            )
+            version = element.get(VERSION, "1.0")
+            ha = HierarchyAssociation(
+                id=element[ID],
+                name=element.get(NAME.lower()),
+                description=element.get(DESC.lower()),
+                agency=element[AGENCY.lower()],
+                version=version,
+                valid_from=element.get(VALID_FROM_LOW),
+                valid_to=element.get(VALID_TO_LOW),
+                annotations=tuple(element.get(ANNOTATIONS.lower(), ())),
+                is_external_reference=element.get(IS_EXTERNAL_REF_LOW, False),
+                is_final=is_final(version),
+                hierarchy=_extract_text(element[LINKED_HIERARCHY]),
+                component_ref=_extract_text(element[LINKED_OBJECT]),
+                context_ref=context,
+            )
+            elements[ha.short_urn] = ha
+        return elements
+
     def __format_schema(  # noqa: C901
         self, json_element: Dict[str, Any], schema: str, item: str
     ) -> Dict[str, Any]:
@@ -1519,7 +1826,10 @@ class StructureParser(Struct):
                     structure[COMPS] = Components(structure[COMPS])
                 else:
                     structure[COMPS] = Components([])
-            schemas[short_urn] = STRUCTURES_MAPPING[schema](**structure)
+            if schema == REPRESENTATION_MAP:
+                schemas[short_urn] = self.__build_representation_map(structure)
+            else:
+                schemas[short_urn] = STRUCTURES_MAPPING[schema](**structure)
 
         return schemas
 
@@ -1563,6 +1873,18 @@ class StructureParser(Struct):
                     data, VALUE_LIST, VALUE_ITEM
                 ),
                 "valuelists",
+            ),
+            HIERARCHIES: process_structure(
+                HIERARCHIES,
+                self.__format_hierarchy,
+            ),
+            HIERARCHICAL_CODELISTS: process_structure(
+                HIERARCHICAL_CODELISTS,
+                self.__format_hierarchical_codelist,
+            ),
+            HIERARCHY_ASSOCIATIONS: process_structure(
+                HIERARCHY_ASSOCIATIONS,
+                self.__format_hierarchy_association,
             ),
             CON_SCHEMES: process_structure(
                 CON_SCHEMES,

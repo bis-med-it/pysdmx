@@ -1,6 +1,9 @@
+from datetime import datetime, timezone
+
 import pytest
 
 from pysdmx.api.dc.query import (
+    DateTimeFilter,
     LogicalOperator,
     MultiFilter,
     NotFilter,
@@ -548,6 +551,92 @@ def test_one_number_between_since_2_2_0(api_version: ApiVersion):
         if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
     ),
 )
+def test_one_datetime(api_version: ApiVersion):
+    flt = DateTimeFilter(
+        "TIME_PERIOD", Operator.GREATER_THAN, "2026-01-01T00:00:00Z"
+    )
+    expected = (
+        "/data/*/*/*/*/*?c[TIME_PERIOD]=gt:2026-01-01T00:00:00Z"
+        "&attributes=dsd&measures=all&includeHistory=false"
+    )
+
+    q = DataQuery(components=flt)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+def test_one_datetime_since_2_2_0(api_version: ApiVersion):
+    flt = DateTimeFilter(
+        "TIME_PERIOD", Operator.GREATER_THAN, "2026-01-01T00:00:00Z"
+    )
+    expected = (
+        "/data/*/*/*/*/*?c[TIME_PERIOD]=gt:2026-01-01T00:00:00Z"
+        "&attributes=dsd&measures=all&includeHistory=false&offset=0"
+    )
+
+    q = DataQuery(components=flt)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
+)
+def test_datetime_between(api_version: ApiVersion):
+    flt = DateTimeFilter(
+        "TIME_PERIOD",
+        Operator.BETWEEN,
+        ["2026-01-01T00:00:00Z", "2026-12-31T23:59:59Z"],
+    )
+    expected = (
+        "/data/*/*/*/*/*?c[TIME_PERIOD]=ge:2026-01-01T00:00:00Z+le:2026-12-31T23:59:59Z"
+        "&attributes=dsd&measures=all&includeHistory=false"
+    )
+
+    q = DataQuery(components=flt)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_2_0)
+)
+def test_datetime_between_since_2_2_0(api_version: ApiVersion):
+    flt = DateTimeFilter(
+        "TIME_PERIOD",
+        Operator.BETWEEN,
+        ["2026-01-01T00:00:00Z", "2026-12-31T23:59:59Z"],
+    )
+    expected = (
+        "/data/*/*/*/*/*?c[TIME_PERIOD]=ge:2026-01-01T00:00:00Z+le:2026-12-31T23:59:59Z"
+        "&attributes=dsd&measures=all&includeHistory=false&offset=0"
+    )
+
+    q = DataQuery(components=flt)
+    url = q.get_url(api_version)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
+)
 def test_mult_filters(api_version: ApiVersion):
     flt1 = TextFilter("COUNTRY", Operator.IN, value=["AR", "UY"])
     flt2 = TextFilter("PERIOD", Operator.GREATER_THAN_OR_EQUAL, "2024")
@@ -678,5 +767,31 @@ def test_bug_480():
     )
 
     url = query.get_url(ApiVersion.V2_0_0, omit_defaults=True)
+
+    assert url == expected
+
+
+def test_bug_606():
+    """Fix issue #606.
+
+    Reproduce condition when a DateTimeFilter query fails with an error but
+    shouldn't.
+    """
+    f1 = TextFilter("FREQ", Operator.EQUALS, "M")
+    f2 = DateTimeFilter(
+        "LAST_UPDATED",
+        Operator.GREATER_THAN_OR_EQUAL,
+        datetime(2018, 1, 1, 23, 59, 59, tzinfo=timezone.utc),
+    )
+    mf = MultiFilter([f1, f2])
+
+    dq = DataQuery(
+        DataContext.DATAFLOW, "BIS", "WS_CBPOL", "1.0", components=mf
+    )
+    expected = (
+        "/data/dataflow/BIS/WS_CBPOL/1.0?"
+        "c[FREQ]=M&c[LAST_UPDATED]=ge:2018-01-01T23:59:59+00:00"
+    )
+    url = dq.get_url(ApiVersion.V2_0_0, True)
 
     assert url == expected

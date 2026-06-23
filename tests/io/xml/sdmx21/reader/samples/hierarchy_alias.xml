@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xmlns:xml="http://www.w3.org/XML/1998/namespace"
+				xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+				xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+				xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+				xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+    <mes:Header>
+        <mes:ID>IREF1</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2021-03-08T17:49:35Z</mes:Prepared>
+        <mes:Sender id="Unknown" />
+        <mes:Receiver id="not_supplied" /></mes:Header>
+    <mes:Structures>
+        <str:HierarchicalCodelists>
+            <str:HierarchicalCodelist agencyID="BIS" id="HCL2" version="1.0">
+                <com:Name xml:lang="en">Aliased codelist</com:Name>
+                <str:IncludedCodelist alias="FREQ">
+                    <Ref agencyID="BIS" id="CL_FREQ" version="1.0" package="codelist" class="Codelist" />
+                </str:IncludedCodelist>
+                <str:Hierarchy id="H2" leveled="false">
+                    <com:Name xml:lang="en">Aliased hierarchy</com:Name>
+                    <str:HierarchicalCode id="A">
+                        <str:CodelistAliasRef>FREQ</str:CodelistAliasRef>
+                        <str:CodeID>
+                            <Ref id="A" />
+                        </str:CodeID>
+                        <str:HierarchicalCode id="A1">
+                            <str:CodelistAliasRef>FREQ</str:CodelistAliasRef>
+                            <str:CodeID>
+                                <Ref id="M" />
+                            </str:CodeID>
+                        </str:HierarchicalCode>
+                    </str:HierarchicalCode>
+                </str:Hierarchy>
+            </str:HierarchicalCodelist>
+        </str:HierarchicalCodelists>
+    </mes:Structures>
+</mes:Structure>
