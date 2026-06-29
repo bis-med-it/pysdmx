@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message https://registry.sdmx.org/schemas/v3_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Receiver id="Not_Supplied"/>
+		<mes:Source>PySDMX</mes:Source>
+	</mes:Header>
+	<mes:Structures>
+		<str:DataProviderSchemes>
+			<str:DataProviderScheme id="DATA_PROVIDERS" urn="urn:sdmx:org.sdmx.infomodel.base.DataProviderScheme=MD:DATA_PROVIDERS(1.0)" isExternalReference="false" agencyID="MD" isPartial="false">
+				<com:Name xml:lang="en">MD Data Provider Scheme</com:Name>
+				<str:DataProvider id="DP1">
+					<com:Name xml:lang="en">Data Provider 1</com:Name>
+					<str:Contact>
+						<com:Name>CONTACT</com:Name>
+						<str:Department>DEPARTMENT</str:Department>
+						<str:Role>ROLE</str:Role>
+						<str:URI>http://dp.md.org</str:URI>
+						<str:Email>dp.test@md.org</str:Email>
+					</str:Contact>
+				</str:DataProvider>
+			</str:DataProviderScheme>
+		</str:DataProviderSchemes>
+		<str:DataConsumerSchemes>
+			<str:DataConsumerScheme id="DATA_CONSUMERS" urn="urn:sdmx:org.sdmx.infomodel.base.DataConsumerScheme=MD:DATA_CONSUMERS(1.0)" isExternalReference="false" agencyID="MD" isPartial="false">
+				<com:Name xml:lang="en">MD Data Consumer Scheme</com:Name>
+				<str:DataConsumer id="DC1">
+					<com:Name xml:lang="en">Data Consumer 1</com:Name>
+				</str:DataConsumer>
+			</str:DataConsumerScheme>
+		</str:DataConsumerSchemes>
+		<str:MetadataProviderSchemes>
+			<str:MetadataProviderScheme id="METADATA_PROVIDERS" urn="urn:sdmx:org.sdmx.infomodel.base.MetadataProviderScheme=MD:METADATA_PROVIDERS(1.0)" isExternalReference="false" agencyID="MD" isPartial="false">
+				<com:Name xml:lang="en">MD Metadata Provider Scheme</com:Name>
+				<str:MetadataProvider id="MP1">
+					<com:Name xml:lang="en">Metadata Provider 1</com:Name>
+				</str:MetadataProvider>
+			</str:MetadataProviderScheme>
+		</str:MetadataProviderSchemes>
+	</mes:Structures>
+</mes:Structure>

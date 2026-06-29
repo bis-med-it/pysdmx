@@ -20,13 +20,18 @@ from pysdmx.model import (
     Concept,
     ConceptScheme,
     ConstraintAttachment,
+    Contact,
     CubeKeyValue,
     CubeRegion,
     CubeValue,
     CustomTypeScheme,
     DataConstraint,
+    DataConsumer,
+    DataConsumerScheme,
     DataKey,
     DataKeyValue,
+    DataProvider,
+    DataProviderScheme,
     Facets,
     FromVtlMapping,
     HierarchicalCode,
@@ -163,6 +168,71 @@ def complete_header():
         ),
         source="PySDMX",
     )
+
+
+@pytest.fixture
+def data_provider_scheme():
+    return DataProviderScheme(
+        urn=(
+            "urn:sdmx:org.sdmx.infomodel.base.DataProviderScheme="
+            "MD:DATA_PROVIDERS(1.0)"
+        ),
+        name="MD Data Provider Scheme",
+        agency="MD",
+        items=[
+            DataProvider(
+                id="DP1",
+                name="Data Provider 1",
+                contacts=[
+                    Contact(
+                        name="CONTACT",
+                        department="DEPARTMENT",
+                        role="ROLE",
+                        uris=["http://dp.md.org"],
+                        emails=["dp.test@md.org"],
+                    )
+                ],
+            ),
+        ],
+    )
+
+
+@pytest.fixture
+def data_consumer_scheme():
+    return DataConsumerScheme(
+        urn=(
+            "urn:sdmx:org.sdmx.infomodel.base.DataConsumerScheme="
+            "MD:DATA_CONSUMERS(1.0)"
+        ),
+        name="MD Data Consumer Scheme",
+        agency="MD",
+        items=[DataConsumer(id="DC1", name="Data Consumer 1")],
+    )
+
+
+@pytest.fixture
+def organisation_schemes_sample():
+    base_path = Path(__file__).parent / "samples" / "organisation_schemes.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+def test_organisation_schemes(
+    header,
+    data_provider_scheme,
+    data_consumer_scheme,
+    organisation_schemes_sample,
+):
+
+    content = [data_provider_scheme, data_consumer_scheme]
+    result = write(content, header=header, prettyprint=True)
+    assert result == organisation_schemes_sample
+
+    parsed = read(result, validate=True)
+    by_type = {type(s): s for s in parsed}
+    assert set(by_type) == {DataProviderScheme, DataConsumerScheme}
+    assert by_type[DataProviderScheme] == data_provider_scheme
+    assert by_type[DataConsumerScheme] == data_consumer_scheme
 
 
 @pytest.fixture

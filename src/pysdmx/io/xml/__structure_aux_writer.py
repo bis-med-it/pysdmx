@@ -122,6 +122,8 @@ from pysdmx.model import (
     CustomType,
     CustomTypeScheme,
     DataConstraint,
+    DataConsumerScheme,
+    DataProviderScheme,
     DataType,
     DatePatternMap,
     Facets,
@@ -132,6 +134,7 @@ from pysdmx.model import (
     ImplicitComponentMap,
     KeySet,
     LevelType,
+    MetadataProviderScheme,
     MultiComponentMap,
     MultiRepresentationMap,
     MultiValueMap,
@@ -162,6 +165,7 @@ from pysdmx.model.__base import (
     ItemScheme,
     MaintainableArtefact,
     NameableArtefact,
+    Organisation,
     Reference,
     VersionableArtefact,
 )
@@ -209,8 +213,17 @@ STR_TYPES = Union[
     TransformationScheme,
 ]
 
+ORGANISATION_SCHEMES = (
+    AgencyScheme,
+    DataProviderScheme,
+    DataConsumerScheme,
+    MetadataProviderScheme,
+)
+
 STR_DICT_TYPE_LIST_21 = {
     AgencyScheme: "OrganisationSchemes",
+    DataProviderScheme: "OrganisationSchemes",
+    DataConsumerScheme: "OrganisationSchemes",
     Codelist: "Codelists",
     Hierarchy: "HierarchicalCodelists",
     ConceptScheme: "Concepts",
@@ -233,6 +246,9 @@ STR_DICT_TYPE_LIST_21 = {
 
 STR_DICT_TYPE_LIST_30 = {
     AgencyScheme: "AgencySchemes",
+    DataProviderScheme: "DataProviderSchemes",
+    DataConsumerScheme: "DataConsumerSchemes",
+    MetadataProviderScheme: "MetadataProviderSchemes",
     Codelist: "Codelists",
     Hierarchy: "Hierarchies",
     HierarchyAssociation: "HierarchyAssociations",
@@ -347,7 +363,7 @@ def __write_versionable(
     """Writes the VersionableArtefact to the XML file."""
     outfile = __write_nameable(versionable, add_indent(indent))
 
-    if not (references_30 and isinstance(versionable, AgencyScheme)):
+    if not (references_30 and isinstance(versionable, ORGANISATION_SCHEMES)):
         outfile["Attributes"] += f" version={versionable.version!r}"
 
     if versionable.valid_from is not None:
@@ -373,7 +389,9 @@ def __write_maintainable(
         f" isExternalReference="
         f"{str(maintainable.is_external_reference).lower()!r}"
     )
-    if not references_30 and not (isinstance(maintainable, AgencyScheme)):
+    if not references_30 and not isinstance(
+        maintainable, ORGANISATION_SCHEMES
+    ):
         outfile["Attributes"] += (
             f" isFinal={str(maintainable.is_final).lower()!r}"
         )
@@ -431,7 +449,7 @@ def __write_item(
     attributes = data["Attributes"].replace("'", '"')
     outfile = f"{indent}<{head}{attributes}>"
     outfile += __export_intern_data(data)
-    if isinstance(item, Agency) and len(item.contacts) > 0:
+    if isinstance(item, Organisation) and len(item.contacts) > 0:
         for contact in item.contacts:
             outfile += __write_contact(contact, add_indent(indent))
     if isinstance(item, Concept) and (
