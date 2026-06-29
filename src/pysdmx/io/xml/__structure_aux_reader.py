@@ -56,8 +56,13 @@ from pysdmx.io.xml.__tokens import (
     CUSTOM_TYPES,
     DATA_CONS,
     DATA_CONSTRAINTS,
+    DATA_CONSUMER,
+    DATA_CONSUMER_SCHEME,
+    DATA_CONSUMER_SCHEMES,
     DATA_KEY_SET,
     DATA_PROV,
+    DATA_PROVIDER_SCHEME,
+    DATA_PROVIDER_SCHEMES,
     DATE_PATTERN_MAP,
     DEPARTMENT,
     DESC,
@@ -119,6 +124,9 @@ from pysdmx.io.xml.__tokens import (
     ME_REL,
     MEASURE,
     METADATA,
+    METADATA_PROVIDER,
+    METADATA_PROVIDER_SCHEME,
+    METADATA_PROVIDER_SCHEMES,
     MSR,
     NAME,
     NAME_PER,
@@ -199,8 +207,10 @@ from pysdmx.model import (
     CubeRegion,
     CubeValue,
     DataConstraint,
+    DataConsumerScheme,
     DataKey,
     DataKeyValue,
+    DataProviderScheme,
     DataType,
     DatePatternMap,
     Facets,
@@ -211,6 +221,7 @@ from pysdmx.model import (
     ImplicitComponentMap,
     KeySet,
     LevelType,
+    MetadataProviderScheme,
     MultiComponentMap,
     MultiRepresentationMap,
     MultiValueMap,
@@ -224,10 +235,13 @@ from pysdmx.model.__base import (
     Agency,
     Annotation,
     Contact,
+    DataConsumer,
     DataflowRef,
+    DataProvider,
     Item,
     ItemReference,
     ItemScheme,
+    MetadataProvider,
     Reference,
 )
 from pysdmx.model.dataflow import (
@@ -275,6 +289,9 @@ STRUCTURES_MAPPING = {
     CL: Codelist,
     VALUE_LIST: Codelist,
     AGENCY_SCHEME: AgencyScheme,
+    DATA_PROVIDER_SCHEME: DataProviderScheme,
+    DATA_CONSUMER_SCHEME: DataConsumerScheme,
+    METADATA_PROVIDER_SCHEME: MetadataProviderScheme,
     CS: ConceptScheme,
     DFWS: Dataflow,
     DSDS: DataStructureDefinition,
@@ -295,6 +312,9 @@ STRUCTURES_MAPPING = {
 }
 ITEMS_CLASSES = {
     AGENCY: Agency,
+    DATA_PROV: DataProvider,
+    DATA_CONSUMER: DataConsumer,
+    METADATA_PROVIDER: MetadataProvider,
     CODE: Code,
     VALUE_ITEM: Code,
     CON: Concept,
@@ -307,6 +327,26 @@ ITEMS_CLASSES = {
     NAME_PER: NamePersonalisation,
     CUSTOM_TYPE: CustomType,
 }
+
+# Organisation schemes: (scheme token, item token, parser attribute,
+# default id/name). They share the same parsing logic but are stored
+# in dedicated attributes. In SDMX-ML 2.1 they all live inside a single
+# OrganisationSchemes container; in 3.0/3.1 each has its own container.
+ORG_SCHEMES = (
+    (AGENCY_SCHEME, AGENCY, "agencies", "AGENCIES"),
+    (DATA_PROVIDER_SCHEME, DATA_PROV, "data_providers", "DATA_PROVIDERS"),
+    (DATA_CONSUMER_SCHEME, DATA_CONSUMER, "data_consumers", "DATA_CONSUMERS"),
+    (
+        METADATA_PROVIDER_SCHEME,
+        METADATA_PROVIDER,
+        "metadata_providers",
+        "METADATA_PROVIDERS",
+    ),
+)
+
+# Item tokens for the members of an organisation scheme. Contacts can be
+# attached to any of them.
+ORG_ITEMS = (AGENCY, DATA_PROV, DATA_CONSUMER, METADATA_PROVIDER)
 
 COMP_TYPES = [DIM, ATT, MEASURE, MSR, GROUP_DIM]
 
@@ -382,6 +422,9 @@ class StructureParser(Struct):
     """StructureParser class for SDMX-ML."""
 
     agencies: Dict[str, AgencyScheme] = {}
+    data_providers: Dict[str, DataProviderScheme] = {}
+    data_consumers: Dict[str, DataConsumerScheme] = {}
+    metadata_providers: Dict[str, MetadataProviderScheme] = {}
     codelists: Dict[str, Codelist] = {}
     valuelists: Dict[str, Codelist] = {}
     concepts: Dict[str, ConceptScheme] = {}
@@ -548,34 +591,40 @@ class StructureParser(Struct):
         return element
 
     def __format_orgs(self, json_orgs: Dict[str, Any]) -> Dict[str, Any]:
+        """Parses the organisation schemes in an organisations container.
+
+        Handles both the single SDMX-ML 2.1 OrganisationSchemes container
+        (which may hold agency, data provider and data consumer schemes)
+        and the per-type SDMX-ML 3.0/3.1 containers. Each scheme type is
+        stored in its dedicated attribute and merged into the result.
+        """
         orgs: Dict[str, Any] = {}
-        json_list = add_list(json_orgs)
-        for e in json_list:
-            self.__strip_agency_scheme_defaults(e)
-            ag_sch = self.__format_scheme(
-                e,
-                AGENCY_SCHEME,
-                AGENCY,
-            )
-            orgs = {**orgs, **ag_sch}
+        for e in add_list(json_orgs):
+            for scheme, item, attr, default_id in ORG_SCHEMES:
+                if scheme not in e:
+                    continue
+                self.__strip_org_scheme_defaults(e, scheme, default_id)
+                formatted = self.__format_scheme(e, scheme, item)
+                setattr(self, attr, {**getattr(self, attr), **formatted})
+                orgs = {**orgs, **formatted}
         return orgs
 
     @staticmethod
-    def __strip_agency_scheme_defaults(
-        element: Dict[str, Any],
+    def __strip_org_scheme_defaults(
+        element: Dict[str, Any], scheme: str, default_id: str
     ) -> None:
-        """Remove default AgencyScheme fields before construction.
+        """Remove default organisation-scheme fields before construction.
 
-        The SDMX standard defines fixed values for AgencyScheme id,
-        name, and version. Stripping them when they match the defaults
-        aligns the XML reader with the JSON reader behavior.
+        The SDMX standard defines fixed values for the id, name, and
+        version of organisation schemes. Stripping them when they match
+        the defaults aligns the XML reader with the JSON reader behavior.
         """
-        for s in add_list(element[AGENCY_SCHEME]):
-            for k, v in [("id", "AGENCIES"), ("version", "1.0")]:
+        for s in add_list(element[scheme]):
+            for k, v in [("id", default_id), ("version", "1.0")]:
                 if s.get(k) == v:
                     del s[k]
             name = s.get(NAME)
-            if name is not None and _extract_text(name) == "AGENCIES":
+            if name is not None and _extract_text(name) == default_id:
                 del s[NAME]
 
     def __format_representation(
@@ -1245,7 +1294,7 @@ class StructureParser(Struct):
     ) -> Item:
         item_json_info = self.__format_annotations(item_json_info)
         item_json_info = self.__format_name_description(item_json_info)
-        if CONTACT in item_json_info and item_name_class == AGENCY:
+        if CONTACT in item_json_info and item_name_class in ORG_ITEMS:
             item_json_info[CONTACT] = add_list(item_json_info[CONTACT])
             contacts = [
                 self.__format_contact(e) for e in item_json_info[CONTACT]
@@ -1858,9 +1907,16 @@ class StructureParser(Struct):
             return {}
 
         structures = {
-            ORGS: process_structure(ORGS, self.__format_orgs, "agencies"),
-            AGENCIES: process_structure(
-                AGENCIES, self.__format_orgs, "agencies"
+            ORGS: process_structure(ORGS, self.__format_orgs),
+            AGENCIES: process_structure(AGENCIES, self.__format_orgs),
+            DATA_PROVIDER_SCHEMES: process_structure(
+                DATA_PROVIDER_SCHEMES, self.__format_orgs
+            ),
+            DATA_CONSUMER_SCHEMES: process_structure(
+                DATA_CONSUMER_SCHEMES, self.__format_orgs
+            ),
+            METADATA_PROVIDER_SCHEMES: process_structure(
+                METADATA_PROVIDER_SCHEMES, self.__format_orgs
             ),
             CLS: process_structure(
                 CLS,

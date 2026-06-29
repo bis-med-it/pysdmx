@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common">
+  <message:Header>
+    <message:ID>12345</message:ID>
+    <message:Test>true</message:Test>
+    <message:Prepared>2025-05-26T11:58:47Z</message:Prepared>
+    <message:Sender id="Unknown"/>
+    <message:Receiver id="not_supplied"/>
+  </message:Header>
+  <message:Structures>
+    <str:AgencySchemes>
+      <str:AgencyScheme isExternalReference="false" agencyID="MD" id="AGENCIES">
+        <com:Name xml:lang="en">MD Agency Scheme</com:Name>
+        <str:Agency id="AG">
+          <com:Name xml:lang="en">AGENCY</com:Name>
+        </str:Agency>
+      </str:AgencyScheme>
+    </str:AgencySchemes>
+    <str:DataProviderSchemes>
+      <str:DataProviderScheme isExternalReference="false" agencyID="MD" id="DATA_PROVIDERS">
+        <com:Name xml:lang="en">MD Data Provider Scheme</com:Name>
+        <str:DataProvider id="DP1">
+          <com:Name xml:lang="en">Data Provider 1</com:Name>
+          <str:Contact>
+            <com:Name xml:lang="en">CONTACT</com:Name>
+            <str:Department xml:lang="en">DEPARTMENT</str:Department>
+            <str:Role xml:lang="en">ROLE</str:Role>
+            <str:URI>http://dp.md.org</str:URI>
+            <str:Email>dp.test@md.org</str:Email>
+          </str:Contact>
+        </str:DataProvider>
+      </str:DataProviderScheme>
+    </str:DataProviderSchemes>
+    <str:DataConsumerSchemes>
+      <str:DataConsumerScheme isExternalReference="false" agencyID="MD" id="DATA_CONSUMERS">
+        <com:Name xml:lang="en">MD Data Consumer Scheme</com:Name>
+        <str:DataConsumer id="DC1">
+          <com:Name xml:lang="en">Data Consumer 1</com:Name>
+        </str:DataConsumer>
+      </str:DataConsumerScheme>
+    </str:DataConsumerSchemes>
+    <str:MetadataProviderSchemes>
+      <str:MetadataProviderScheme isExternalReference="false" agencyID="MD" id="METADATA_PROVIDERS">
+        <com:Name xml:lang="en">MD Metadata Provider Scheme</com:Name>
+        <str:MetadataProvider id="MP1">
+          <com:Name xml:lang="en">Metadata Provider 1</com:Name>
+        </str:MetadataProvider>
+      </str:MetadataProviderScheme>
+    </str:MetadataProviderSchemes>
+</message:Structures></message:Structure>

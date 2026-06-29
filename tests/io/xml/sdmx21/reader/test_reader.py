@@ -28,8 +28,12 @@ from pysdmx.model import (
     CubeValue,
     CustomTypeScheme,
     DataConstraint,
+    DataConsumer,
+    DataConsumerScheme,
     DataKey,
     DataKeyValue,
+    DataProvider,
+    DataProviderScheme,
     DataStructureDefinition,
     FromVtlMapping,
     Hierarchy,
@@ -234,6 +238,34 @@ def test_agency_scheme_defaults_omitted(samples_folder):
 
     assert len(agency_scheme.items) == 1
     assert agency_scheme.items[0].id == "BIS"
+
+
+def test_organisation_schemes_read(samples_folder):
+    data_path = samples_folder / "organisation_schemes.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_structure(input_str, validate=True)
+
+    by_type = {type(s): s for s in result}
+    assert set(by_type) == {
+        AgencyScheme,
+        DataProviderScheme,
+        DataConsumerScheme,
+    }
+
+    dps = by_type[DataProviderScheme]
+    assert dps.id == "DATA_PROVIDERS"
+    assert dps.agency == "SDMX"
+    assert isinstance(dps.items[0], DataProvider)
+    assert dps.items[0].id == "DP1"
+    contact = dps.items[0].contacts[0]
+    assert contact.name == "CONTACT"
+    assert contact.role == "ROLE"
+
+    dcs = by_type[DataConsumerScheme]
+    assert dcs.id == "DATA_CONSUMERS"
+    assert isinstance(dcs.items[0], DataConsumer)
+    assert dcs.items[0].id == "DC1"
 
 
 def test_code_list_read(codelist_path):

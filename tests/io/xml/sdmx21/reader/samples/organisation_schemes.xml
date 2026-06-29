@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message:Structure xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                   xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+                   xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <message:Header>
+        <message:ID>SDMX_COG</message:ID>
+        <message:Test>false</message:Test>
+        <message:Prepared>2010-11-13T08:00:33+08:00</message:Prepared>
+        <message:Sender id="SDMX"/>
+    </message:Header>
+    <message:Structures>
+        <str:OrganisationSchemes>
+            <str:AgencyScheme isExternalReference="false" agencyID="SDMX" id="AGENCIES" isFinal="false" version="1.0">
+                <com:Name xml:lang="en">SDMX Agency Scheme</com:Name>
+                <str:Agency id="SDMX">
+                    <com:Name xml:lang="en">SDMX</com:Name>
+                </str:Agency>
+            </str:AgencyScheme>
+            <str:DataProviderScheme isExternalReference="false" agencyID="SDMX" id="DATA_PROVIDERS" isFinal="false" version="1.0">
+                <com:Name xml:lang="en">SDMX Data Provider Scheme</com:Name>
+                <str:DataProvider id="DP1">
+                    <com:Name xml:lang="en">Data Provider 1</com:Name>
+                    <str:Contact>
+                        <com:Name xml:lang="en">CONTACT</com:Name>
+                        <str:Department xml:lang="en">DEPARTMENT</str:Department>
+                        <str:Role xml:lang="en">ROLE</str:Role>
+                        <str:URI>http://dp.sdmx.org</str:URI>
+                        <str:Email>dp.test@sdmx.org</str:Email>
+                    </str:Contact>
+                </str:DataProvider>
+            </str:DataProviderScheme>
+            <str:DataConsumerScheme isExternalReference="false" agencyID="SDMX" id="DATA_CONSUMERS" isFinal="false" version="1.0">
+                <com:Name xml:lang="en">SDMX Data Consumer Scheme</com:Name>
+                <str:DataConsumer id="DC1">
+                    <com:Name xml:lang="en">Data Consumer 1</com:Name>
+                </str:DataConsumer>
+            </str:DataConsumerScheme>
+        </str:OrganisationSchemes>
+    </message:Structures>
+</message:Structure>

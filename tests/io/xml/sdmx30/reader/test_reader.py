@@ -23,12 +23,18 @@ from pysdmx.model import (
     CustomType,
     CustomTypeScheme,
     DataConstraint,
+    DataConsumer,
+    DataConsumerScheme,
     Dataflow,
     DataKey,
     DataKeyValue,
+    DataProvider,
+    DataProviderScheme,
     Hierarchy,
     ItemReference,
     KeySet,
+    MetadataProvider,
+    MetadataProviderScheme,
     NamePersonalisation,
     NamePersonalisationScheme,
     Reference,
@@ -219,6 +225,42 @@ def test_agency_scheme_defaults_omitted(samples_folder):
     assert len(agency_scheme.items) == 1
     assert agency_scheme.items[0].id == "BIS"
     assert agency_scheme.items[0].name == "Bank for International Settlements"
+
+
+@pytest.mark.xml
+def test_organisation_schemes_read(samples_folder):
+    data_path = samples_folder / "organisation_schemes.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+
+    by_type = {type(s): s for s in result}
+    assert set(by_type) == {
+        AgencyScheme,
+        DataProviderScheme,
+        DataConsumerScheme,
+        MetadataProviderScheme,
+    }
+
+    dps = by_type[DataProviderScheme]
+    assert dps.id == "DATA_PROVIDERS"
+    assert dps.agency == "MD"
+    assert isinstance(dps.items[0], DataProvider)
+    assert dps.items[0].id == "DP1"
+    contact = dps.items[0].contacts[0]
+    assert contact.name == "CONTACT"
+    assert contact.role == "ROLE"
+    assert contact.emails == ["dp.test@md.org"]
+
+    dcs = by_type[DataConsumerScheme]
+    assert dcs.id == "DATA_CONSUMERS"
+    assert isinstance(dcs.items[0], DataConsumer)
+    assert dcs.items[0].id == "DC1"
+
+    mps = by_type[MetadataProviderScheme]
+    assert mps.id == "METADATA_PROVIDERS"
+    assert isinstance(mps.items[0], MetadataProvider)
+    assert mps.items[0].id == "MP1"
 
 
 @pytest.mark.xml
