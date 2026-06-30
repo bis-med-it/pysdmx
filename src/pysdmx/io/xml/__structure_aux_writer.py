@@ -360,9 +360,9 @@ def __write_versionable(
     """Writes the VersionableArtefact to the XML file."""
     outfile = __write_nameable(versionable, add_indent(indent))
 
-    # In SDMX-ML 3.0/3.1 the AgencyScheme version is fixed and the
-    # Categorisation version attribute is prohibited (3.1), so it is
-    # omitted in both cases.
+    # In SDMX-ML 3.0/3.1 the AgencyScheme version is fixed. The
+    # Categorisation version is optional in 3.0 and prohibited in 3.1;
+    # it is omitted for both (references_30).
     version_less = references_30 and isinstance(
         versionable, (AgencyScheme, Categorisation)
     )

@@ -999,6 +999,22 @@ def test_categorisation_31_round_trip(complete_header):
     assert re_read == categorisation
 
 
+def test_categorisation_31_codelist_source_round_trip(complete_header):
+    # A non-Dataflow (Codelist) source must round-trip via the 3.1
+    # reference-as-URN form.
+    categorisation = Categorisation(
+        id="CAT2",
+        name="Categorisation 2",
+        agency="BIS",
+        source="Codelist=BIS:CL_FREQ(1.0.0)",
+        target="Category=BIS:CS1(1.0.0).OTHER",
+    )
+    result = write([categorisation], header=complete_header, prettyprint=True)
+    assert "codelist.Codelist=BIS:CL_FREQ(1.0.0)" in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == categorisation
+
+
 def test_category_scheme_31_enrichment_round_trip(complete_header):
     cs = CategoryScheme(
         id="CS1",
@@ -1031,5 +1047,8 @@ def test_category_scheme_31_enrichment_round_trip(complete_header):
     re_cs = next(s for s in re_read if isinstance(s, CategoryScheme))
     top = re_cs["TOP"]
     assert len(top.dataflows) == 1
-    assert isinstance(top.dataflows[0], Dataflow)
+    assert isinstance(top.dataflows[0], DataflowRef)
+    assert top.dataflows[0].agency == "BIS"
     assert top.dataflows[0].id == "DF1"
+    assert top.dataflows[0].version == "1.0.0"
+    assert top.dataflows[0].name == "Dataflow 1"

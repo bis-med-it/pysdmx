@@ -30,7 +30,6 @@ from pysdmx.model import (
     CubeValue,
     CustomTypeScheme,
     DataConstraint,
-    Dataflow,
     DataflowRef,
     DataKey,
     DataKeyValue,
@@ -1368,11 +1367,15 @@ def test_category_scheme_21_enrichment(samples_folder):
     result = read_sdmx(input_str, validate=True).structures
     cs = next(s for s in result if isinstance(s, CategoryScheme))
     # CAT1 links Dataflow BIS:DF1 -> Category LEAF; the dataflow is in the
-    # message, so it is resolved to the actual Dataflow object.
+    # message, so a DataflowRef carrying its name is built (matching the
+    # SDMX-JSON behaviour).
     leaf = cs["TOP.MID.LEAF"]
     assert len(leaf.dataflows) == 1
-    assert isinstance(leaf.dataflows[0], Dataflow)
+    assert isinstance(leaf.dataflows[0], DataflowRef)
+    assert leaf.dataflows[0].agency == "BIS"
     assert leaf.dataflows[0].id == "DF1"
+    assert leaf.dataflows[0].version == "1.0"
+    assert leaf.dataflows[0].name == "Dataflow 1"
     assert not leaf.other_references
     # CAT2 links Codelist BIS:CL_FREQ -> Category OTHER -> other_references
     other = cs["OTHER"]
@@ -1424,6 +1427,6 @@ def test_category_scheme_21_enrichment_edge_cases(samples_folder):
     assert not schemes["CS4"]["Y"].dataflows
     assert not schemes["CS4"]["Y"].other_references
     # CAT4 targets a category scheme that is absent from the message; it is
-    # silently skipped during enrichment but still parsed as a artefact.
+    # silently skipped during enrichment but still parsed as an artefact.
     cats = {c.id: c for c in result if isinstance(c, Categorisation)}
     assert cats["CAT4"].target == "Category=BIS:CS_ABSENT(1.0).Z"

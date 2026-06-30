@@ -387,8 +387,108 @@ def test_category_scheme_21_enrichment_round_trip(complete_header):
     re_cs = next(s for s in re_read if isinstance(s, CategoryScheme))
     top = re_cs["TOP"]
     assert len(top.dataflows) == 1
-    assert isinstance(top.dataflows[0], Dataflow)
+    assert isinstance(top.dataflows[0], DataflowRef)
+    assert top.dataflows[0].agency == "BIS"
     assert top.dataflows[0].id == "DF1"
+    assert top.dataflows[0].version == "1.0"
+    assert top.dataflows[0].name == "Dataflow 1"
+
+
+def test_category_annotations_21_round_trip(complete_header):
+    # Annotations on both a top-level and a nested category must survive
+    # a write/read cycle, including when the category is enriched.
+    cs = CategoryScheme(
+        id="CS1",
+        name="Category Scheme 1",
+        agency="BIS",
+        version="1.0",
+        items=(
+            Category(
+                id="TOP",
+                name="Top",
+                annotations=(Annotation(id="A_TOP", title="top anno"),),
+                categories=(
+                    Category(
+                        id="LEAF",
+                        name="Leaf",
+                        annotations=(
+                            Annotation(id="A_LEAF", title="leaf anno"),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+    categorisation = Categorisation(
+        id="CAT1",
+        name="Categorisation 1",
+        agency="BIS",
+        version="1.0",
+        source="Codelist=BIS:CL_FREQ(1.0)",
+        target="Category=BIS:CS1(1.0).TOP.LEAF",
+    )
+    result = write(
+        [cs, categorisation], header=complete_header, prettyprint=True
+    )
+    re_read = read_sdmx(result, validate=True).structures
+    re_cs = next(s for s in re_read if isinstance(s, CategoryScheme))
+    top = re_cs["TOP"]
+    assert top.annotations == (Annotation(id="A_TOP", title="top anno"),)
+    leaf = re_cs["TOP.LEAF"]
+    assert leaf.annotations == (Annotation(id="A_LEAF", title="leaf anno"),)
+
+
+def test_category_multiple_categorisations_same_category_21(complete_header):
+    # Two categorisations targeting the SAME category must accumulate
+    # both dataflows in that category's dataflows.
+    cs = CategoryScheme(
+        id="CS1",
+        name="Category Scheme 1",
+        agency="BIS",
+        version="1.0",
+        items=(Category(id="TOP", name="Top"),),
+    )
+    df1 = Dataflow(
+        id="DF1",
+        name="Dataflow 1",
+        agency="BIS",
+        version="1.0",
+        structure="DataStructure=BIS:DSD1(1.0)",
+    )
+    df2 = Dataflow(
+        id="DF2",
+        name="Dataflow 2",
+        agency="BIS",
+        version="1.0",
+        structure="DataStructure=BIS:DSD1(1.0)",
+    )
+    cat1 = Categorisation(
+        id="CAT1",
+        name="Categorisation 1",
+        agency="BIS",
+        version="1.0",
+        source="Dataflow=BIS:DF1(1.0)",
+        target="Category=BIS:CS1(1.0).TOP",
+    )
+    cat2 = Categorisation(
+        id="CAT2",
+        name="Categorisation 2",
+        agency="BIS",
+        version="1.0",
+        source="Dataflow=BIS:DF2(1.0)",
+        target="Category=BIS:CS1(1.0).TOP",
+    )
+    result = write(
+        [cs, df1, df2, cat1, cat2],
+        header=complete_header,
+        prettyprint=True,
+    )
+    re_read = read_sdmx(result, validate=True).structures
+    re_cs = next(s for s in re_read if isinstance(s, CategoryScheme))
+    top = re_cs["TOP"]
+    assert len(top.dataflows) == 2
+    assert all(isinstance(d, DataflowRef) for d in top.dataflows)
+    assert {d.id for d in top.dataflows} == {"DF1", "DF2"}
 
 
 @pytest.fixture

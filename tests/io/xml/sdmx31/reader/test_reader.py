@@ -13,6 +13,7 @@ from pysdmx.model import (
     CategoryScheme,
     Codelist,
     ConceptScheme,
+    DataflowRef,
     Hierarchy,
     HierarchyAssociation,
     NamePersonalisationScheme,
@@ -316,8 +317,11 @@ def test_category_scheme_31_enrichment(samples_folder):
     cs = next(s for s in result if isinstance(s, CategoryScheme))
     leaf = cs["TOP.MID.LEAF"]
     assert len(leaf.dataflows) == 1
-    assert isinstance(leaf.dataflows[0], Dataflow)
+    assert isinstance(leaf.dataflows[0], DataflowRef)
+    assert leaf.dataflows[0].agency == "BIS"
     assert leaf.dataflows[0].id == "DF1"
+    assert leaf.dataflows[0].version == "1.0.0"
+    assert leaf.dataflows[0].name == "Dataflow 1"
     other = cs["OTHER"]
     assert len(other.other_references) == 1
     assert isinstance(other.other_references[0], Reference)

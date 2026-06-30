@@ -2207,7 +2207,7 @@ class StructureParser(Struct):
         self,
         category: Category,
         parent_path: str,
-        flows: Dict[str, List[Union[Dataflow, DataflowRef]]],
+        flows: Dict[str, List[DataflowRef]],
         others: Dict[str, List[Union[ItemReference, Reference]]],
     ) -> Category:
         """Rebuilds a category attaching the categorised references.
@@ -2241,7 +2241,7 @@ class StructureParser(Struct):
         """
         if not category_schemes or not self.categorisations:
             return
-        flows: Dict[str, Dict[str, List[Union[Dataflow, DataflowRef]]]] = {}
+        flows: Dict[str, Dict[str, List[DataflowRef]]] = {}
         others: Dict[
             str, Dict[str, List[Union[ItemReference, Reference]]]
         ] = {}
@@ -2280,15 +2280,28 @@ class StructureParser(Struct):
 
     def __resolve_dataflow(
         self, source: Union[Reference, ItemReference]
-    ) -> Union[Dataflow, DataflowRef]:
-        """Resolves a dataflow reference to a Dataflow or DataflowRef.
+    ) -> DataflowRef:
+        """Resolves a dataflow reference to a DataflowRef.
 
-        If the referenced dataflow is present in the message it is
-        returned as-is; otherwise a lightweight ``DataflowRef`` is built.
+        This mirrors the SDMX-JSON behaviour, which always emits a
+        ``DataflowRef``. If the referenced dataflow is present in the
+        message, the resolved flow's name is carried over; otherwise a
+        lightweight ``DataflowRef`` (without a name) is built.
         """
         urn = f"Dataflow={source.agency}:{source.id}({source.version})"
         if urn in self.dataflows:
-            return self.dataflows[urn]
+            flow = self.dataflows[urn]
+            agency = (
+                flow.agency.id
+                if isinstance(flow.agency, Agency)
+                else flow.agency
+            )
+            return DataflowRef(
+                agency=agency,
+                id=flow.id,
+                version=flow.version,
+                name=flow.name,
+            )
         return DataflowRef(
             agency=source.agency,
             id=source.id,
