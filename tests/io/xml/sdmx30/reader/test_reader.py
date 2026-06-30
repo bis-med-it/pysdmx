@@ -23,12 +23,19 @@ from pysdmx.model import (
     CustomType,
     CustomTypeScheme,
     DataConstraint,
+    DataConsumer,
+    DataConsumerScheme,
     Dataflow,
+    DataflowRef,
     DataKey,
     DataKeyValue,
+    DataProvider,
+    DataProviderScheme,
     Hierarchy,
     ItemReference,
     KeySet,
+    MetadataProvider,
+    MetadataProviderScheme,
     NamePersonalisation,
     NamePersonalisationScheme,
     Reference,
@@ -187,6 +194,58 @@ def test_agency_scheme_read(samples_folder):
     contact = agency.contacts[0]
     assert contact.name == "CONTACT"
     assert contact.role == "ROLE"
+
+
+@pytest.mark.xml
+def test_org_schemes_read(samples_folder):
+    data_path = samples_folder / "org_schemes.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+
+    by_type = {type(s): s for s in result}
+    assert set(by_type) == {
+        DataProviderScheme,
+        DataConsumerScheme,
+        MetadataProviderScheme,
+    }
+
+    dps = by_type[DataProviderScheme]
+    assert dps.agency == "MD"
+    provider = dps.items[0]
+    assert isinstance(provider, DataProvider)
+    assert provider.id == "DP"
+    assert provider.description == "DATA PROVIDER"
+    assert (
+        provider.urn == "urn:sdmx:org.sdmx.infomodel.base.DataProvider"
+        "=MD:DATA_PROVIDERS(1.0).DP"
+    )
+    assert provider.contacts[0].name == "CONTACT"
+    assert provider.contacts[0].emails == ["dp.test@md.org"]
+
+    dcs = by_type[DataConsumerScheme]
+    assert isinstance(dcs.items[0], DataConsumer)
+    assert dcs.items[0].id == "DC"
+
+    mps = by_type[MetadataProviderScheme]
+    assert isinstance(mps.items[0], MetadataProvider)
+    assert mps.items[0].id == "MP"
+
+
+@pytest.mark.xml
+def test_provider_scheme_enrichment_read(samples_folder):
+    data_path = samples_folder / "provider_scheme_enrichment.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+
+    schemes = [s for s in result if isinstance(s, DataProviderScheme)]
+    assert len(schemes) == 1
+    provider = schemes[0].items[0]
+    assert provider.id == "MD"
+    assert provider.dataflows == [
+        DataflowRef(id="TEST", agency="MD", version="1.0")
+    ]
 
 
 @pytest.mark.xml

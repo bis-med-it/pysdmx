@@ -66,6 +66,9 @@ ANNOTATIONS = "Annotations"
 STRUCTURES = "Structures"
 ORGS = "OrganisationSchemes"
 AGC = "AgencySchemes"
+DATA_PROVIDER_SCHEMES = "DataProviderSchemes"
+DATA_CONSUMER_SCHEMES = "DataConsumerSchemes"
+METADATA_PROVIDER_SCHEMES = "MetadataProviderSchemes"
 AGENCIES = "AgencyScheme"
 CODELISTS = "Codelists"
 HIERARCHIES = "Hierarchies"
@@ -238,6 +241,9 @@ MSG_CONTENT_PKG_21 = OrderedDict(
 MSG_CONTENT_PKG_30 = OrderedDict(
     [
         (AGC, "AgencySchemes"),
+        (DATA_PROVIDER_SCHEMES, "DataProviderSchemes"),
+        (DATA_CONSUMER_SCHEMES, "DataConsumerSchemes"),
+        (METADATA_PROVIDER_SCHEMES, "MetadataProviderSchemes"),
         (DATAFLOWS, "Dataflows"),
         (PROV_AGREEMENTS, "ProvisionAgreements"),
         (CODELISTS, "Codelists"),
