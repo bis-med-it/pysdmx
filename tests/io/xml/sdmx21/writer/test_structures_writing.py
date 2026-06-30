@@ -38,6 +38,8 @@ from pysdmx.model import (
     Hierarchy,
     KeySet,
     LevelType,
+    MetadataProvider,
+    MetadataProviderScheme,
     NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
@@ -233,6 +235,17 @@ def test_organisation_schemes(
     assert set(by_type) == {DataProviderScheme, DataConsumerScheme}
     assert by_type[DataProviderScheme] == data_provider_scheme
     assert by_type[DataConsumerScheme] == data_consumer_scheme
+
+
+def test_unsupported_type_raises_invalid(header):
+    # MetadataProviderScheme has no SDMX-ML 2.1 representation.
+    mps = MetadataProviderScheme(
+        agency="MD",
+        name="MD Metadata Provider Scheme",
+        items=[MetadataProvider(id="MP1", name="Metadata Provider 1")],
+    )
+    with pytest.raises(Invalid, match="MetadataProviderScheme"):
+        write([mps], header=header, prettyprint=True)
 
 
 @pytest.fixture

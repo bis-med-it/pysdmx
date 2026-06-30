@@ -344,9 +344,9 @@ ORG_SCHEMES = (
     ),
 )
 
-# Item tokens for the members of an organisation scheme. Contacts can be
-# attached to any of them.
-ORG_ITEMS = (AGENCY, DATA_PROV, DATA_CONSUMER, METADATA_PROVIDER)
+# Item tokens for the members of an organisation scheme (derived from
+# ORG_SCHEMES). Contacts can be attached to any of them.
+ORG_ITEMS = tuple(item for _, item, _, _ in ORG_SCHEMES)
 
 COMP_TYPES = [DIM, ATT, MEASURE, MSR, GROUP_DIM]
 

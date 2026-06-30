@@ -1828,6 +1828,39 @@ def __export_intern_data(data: Dict[str, Any]) -> str:
     return outfile
 
 
+def group_structures(
+    elements: Dict[str, MaintainableArtefact],
+    type_list: Dict[Any, str],
+) -> Dict[str, Dict[str, MaintainableArtefact]]:
+    """Groups maintainable artefacts by their SDMX-ML container element.
+
+    Args:
+        elements: The artefacts to write, keyed by short URN.
+        type_list: Maps each artefact type to its container element name
+            for the target SDMX-ML version.
+
+    Returns:
+        The artefacts grouped by container element name.
+
+    Raises:
+        Invalid: If an artefact type has no representation in the target
+            SDMX-ML version.
+    """
+    content: Dict[str, Dict[str, MaintainableArtefact]] = {}
+    for urn, element in elements.items():
+        try:
+            list_ = type_list[type(element)]
+        except KeyError:
+            raise Invalid(
+                "Invalid input",
+                f"{type(element).__name__} cannot be written as the "
+                "requested SDMX-ML version.",
+                {"structure": urn},
+            ) from None
+        content.setdefault(list_, {})[urn] = element
+    return content
+
+
 def __write_structures(
     content: Dict[str, Any], prettyprint: bool, references_30: bool = False
 ) -> str:

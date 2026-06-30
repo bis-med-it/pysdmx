@@ -9,10 +9,17 @@ from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
 from pysdmx.io.xml.sdmx31.reader.structure import read as read_structure
 from pysdmx.model import (
+    AgencyScheme,
     Codelist,
     ConceptScheme,
+    DataConsumer,
+    DataConsumerScheme,
+    DataProvider,
+    DataProviderScheme,
     Hierarchy,
     HierarchyAssociation,
+    MetadataProvider,
+    MetadataProviderScheme,
     NamePersonalisationScheme,
     RulesetScheme,
     TransformationScheme,
@@ -28,6 +35,42 @@ from pysdmx.model.dataflow import (
 @pytest.fixture
 def samples_folder():
     return Path(__file__).parent / "samples"
+
+
+@pytest.mark.xml
+def test_organisation_schemes_read_31(samples_folder):
+    data_path = samples_folder / "organisation_schemes.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    result = read_structure(input_str, validate=True)
+
+    by_type = {type(s): s for s in result}
+    assert set(by_type) == {
+        AgencyScheme,
+        DataProviderScheme,
+        DataConsumerScheme,
+        MetadataProviderScheme,
+    }
+
+    dps = by_type[DataProviderScheme]
+    assert dps.id == "DATA_PROVIDERS"
+    assert dps.agency == "MD"
+    assert isinstance(dps.items[0], DataProvider)
+    assert dps.items[0].id == "DP1"
+    contact = dps.items[0].contacts[0]
+    assert contact.name == "CONTACT"
+    assert contact.role == "ROLE"
+    assert contact.emails == ["dp.test@md.org"]
+
+    dcs = by_type[DataConsumerScheme]
+    assert dcs.id == "DATA_CONSUMERS"
+    assert isinstance(dcs.items[0], DataConsumer)
+    assert dcs.items[0].id == "DC1"
+
+    mps = by_type[MetadataProviderScheme]
+    assert mps.id == "METADATA_PROVIDERS"
+    assert isinstance(mps.items[0], MetadataProvider)
+    assert mps.items[0].id == "MP1"
 
 
 @pytest.mark.xml
