@@ -9,11 +9,14 @@ from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
 from pysdmx.io.xml.sdmx31.reader.structure import read as read_structure
 from pysdmx.model import (
+    Categorisation,
+    CategoryScheme,
     Codelist,
     ConceptScheme,
     Hierarchy,
     HierarchyAssociation,
     NamePersonalisationScheme,
+    Reference,
     RulesetScheme,
     TransformationScheme,
     VtlMappingScheme,
@@ -284,3 +287,52 @@ def test_prov_agreement(samples_folder):
     assert prov_agreement.short_urn == "ProvisionAgreement=MD:TEST(1.0)"
     assert prov_agreement.dataflow == "Dataflow=MD:TEST(1.0)"
     assert prov_agreement.provider == "DataProvider=MD:DATA_PROVIDERS(1.0).MD"
+
+
+@pytest.mark.xml
+def test_category_scheme_31(samples_folder):
+    data_path = samples_folder / "category_scheme.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    result = read_sdmx(input_str, validate=True).structures
+    cs = next(s for s in result if isinstance(s, CategoryScheme))
+    assert cs.id == "CS1"
+    assert cs.agency == "BIS"
+    assert cs.version == "1.0.0"
+    assert cs.is_final is True
+    assert cs.items[0].id == "TOP"
+    assert cs.items[0].categories[0].id == "MID"
+    assert cs.items[0].categories[0].categories[0].id == "LEAF"
+    assert cs["TOP.MID.LEAF"].id == "LEAF"
+    assert len(cs) == 4
+    assert {c.id for c in cs.all_items} == {"TOP", "MID", "LEAF", "OTHER"}
+
+
+@pytest.mark.xml
+def test_category_scheme_31_enrichment(samples_folder):
+    data_path = samples_folder / "category_scheme.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=True).structures
+    cs = next(s for s in result if isinstance(s, CategoryScheme))
+    leaf = cs["TOP.MID.LEAF"]
+    assert len(leaf.dataflows) == 1
+    assert isinstance(leaf.dataflows[0], Dataflow)
+    assert leaf.dataflows[0].id == "DF1"
+    other = cs["OTHER"]
+    assert len(other.other_references) == 1
+    assert isinstance(other.other_references[0], Reference)
+    assert other.other_references[0].id == "CL_FREQ"
+
+
+@pytest.mark.xml
+def test_categorisation_31(samples_folder):
+    data_path = samples_folder / "category_scheme.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=True).structures
+    cats = [s for s in result if isinstance(s, Categorisation)]
+    assert len(cats) == 2
+    by_id = {c.id: c for c in cats}
+    assert by_id["CAT1"].source == "Dataflow=BIS:DF1(1.0.0)"
+    assert by_id["CAT1"].target == "Category=BIS:CS1(1.0.0).TOP.MID.LEAF"
+    assert by_id["CAT2"].source == "Codelist=BIS:CL_FREQ(1.0.0)"
+    assert by_id["CAT2"].target == "Category=BIS:CS1(1.0.0).OTHER"

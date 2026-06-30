@@ -12,6 +12,9 @@ from pysdmx.io.xml.sdmx30.writer.structure import write
 from pysdmx.model import (
     Agency,
     AgencyScheme,
+    Categorisation,
+    Category,
+    CategoryScheme,
     Code,
     Codelist,
     Concept,
@@ -1408,3 +1411,108 @@ def test_write_group_without_urn(datastructure):
     )
     assert expected_urn in result
     read_sdmx(result, validate=True)
+
+
+@pytest.fixture
+def category_scheme_nested_30():
+    return CategoryScheme(
+        id="CS1",
+        name="Category Scheme 1",
+        description="A scheme",
+        agency="BIS",
+        version="1.0.0",
+        is_final=True,
+        items=(
+            Category(
+                id="TOP",
+                name="Top",
+                categories=(
+                    Category(
+                        id="MID",
+                        name="Middle",
+                        categories=(Category(id="LEAF", name="Leaf"),),
+                    ),
+                ),
+            ),
+            Category(id="OTHER", name="Other"),
+        ),
+    )
+
+
+def test_category_scheme_30_round_trip(
+    complete_header, category_scheme_nested_30
+):
+    result = write(
+        [category_scheme_nested_30], header=complete_header, prettyprint=True
+    )
+    assert "<str:CategorySchemes>" in result
+    assert "<str:CategoryScheme " in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == category_scheme_nested_30
+
+
+def test_category_scheme_30_name_with_apostrophe(complete_header):
+    cs = CategoryScheme(
+        id="CS2",
+        name="Schemes",
+        agency="BIS",
+        version="1.0.0",
+        is_final=True,
+        items=(Category(id="C", name="Côte d'Ivoire"),),
+    )
+    result = write([cs], header=complete_header, prettyprint=True)
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == cs
+    assert re_read.items[0].name == "Côte d'Ivoire"
+
+
+def test_categorisation_30_round_trip(complete_header):
+    categorisation = Categorisation(
+        id="CAT1",
+        name="Categorisation 1",
+        agency="BIS",
+        source="Dataflow=BIS:DF1(1.0.0)",
+        target="Category=BIS:CS1(1.0.0).TOP.MID.LEAF",
+    )
+    result = write([categorisation], header=complete_header, prettyprint=True)
+    assert "<str:Categorisations>" in result
+    assert "<str:Source>" in result
+    assert "<str:Target>" in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == categorisation
+
+
+def test_category_scheme_30_enrichment_round_trip(complete_header):
+    cs = CategoryScheme(
+        id="CS1",
+        name="Category Scheme 1",
+        agency="BIS",
+        version="1.0.0",
+        is_final=True,
+        items=(Category(id="TOP", name="Top"),),
+    )
+    dataflow = Dataflow(
+        id="DF1",
+        name="Dataflow 1",
+        agency="BIS",
+        version="1.0.0",
+        structure="DataStructure=BIS:DSD1(1.0.0)",
+    )
+    categorisation = Categorisation(
+        id="CAT1",
+        name="Categorisation 1",
+        agency="BIS",
+        source="Dataflow=BIS:DF1(1.0.0)",
+        target="Category=BIS:CS1(1.0.0).TOP",
+    )
+    result = write(
+        [cs, dataflow, categorisation],
+        header=complete_header,
+        prettyprint=True,
+    )
+    re_read = read_sdmx(result, validate=True).structures
+    re_cs = next(s for s in re_read if isinstance(s, CategoryScheme))
+    top = re_cs["TOP"]
+    assert len(top.dataflows) == 1
+    assert isinstance(top.dataflows[0], Dataflow)
+    assert top.dataflows[0].id == "DF1"

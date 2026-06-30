@@ -78,6 +78,8 @@ DATAFLOWS = "Dataflows"
 CONSTRAINTS = "Constraints"
 DATA_CONSTRAINTS = "DataConstraints"
 PROV_AGREEMENTS = "ProvisionAgreements"
+CATEGORY_SCHEMES = "CategorySchemes"
+CATEGORISATIONS = "Categorisations"
 REPRESENTATION_MAPS_KEY = "RepresentationMaps"
 STRUCTURE_MAPS_KEY = "StructureMaps"
 DATE_PATTERN_MAP_KEY = "DatePatternMaps"
@@ -217,6 +219,8 @@ MSG_CONTENT_PKG_21 = OrderedDict(
     [
         (ORGS, "OrganisationSchemes"),
         (DATAFLOWS, "Dataflows"),
+        (CATEGORY_SCHEMES, "CategorySchemes"),
+        (CATEGORISATIONS, "Categorisations"),
         (PROV_AGREEMENTS, "ProvisionAgreements"),
         (CODELISTS, "Codelists"),
         (HIERARCHICAL_CODELISTS, "HierarchicalCodelists"),
@@ -238,6 +242,8 @@ MSG_CONTENT_PKG_21 = OrderedDict(
 MSG_CONTENT_PKG_30 = OrderedDict(
     [
         (AGC, "AgencySchemes"),
+        (CATEGORISATIONS, "Categorisations"),
+        (CATEGORY_SCHEMES, "CategorySchemes"),
         (DATAFLOWS, "Dataflows"),
         (PROV_AGREEMENTS, "ProvisionAgreements"),
         (CODELISTS, "Codelists"),

@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Sequence, Type, Union
 
 from msgspec import Struct
-from msgspec.structs import asdict
+from msgspec.structs import asdict, replace
 
 from pysdmx.io.xml.__tokens import (
     AGENCIES,
@@ -25,6 +25,11 @@ from pysdmx.io.xml.__tokens import (
     ATT_LVL,
     ATT_REL,
     ATTACH_GROUP,
+    CATEGORISATION,
+    CATEGORISATIONS,
+    CATEGORY,
+    CATEGORY_SCHEME,
+    CATEGORY_SCHEMES,
     CL,
     CL_LOW,
     CLASS,
@@ -142,12 +147,14 @@ from pysdmx.io.xml.__tokens import (
     RULESETS,
     SER_URL,
     SER_URL_LOW,
+    SOURCE,
     STR_URL,
     STR_URL_LOW,
     STR_USAGE,
     STRUCTURE,
     STRUCTURE_MAP,
     STRUCTURE_MAPS,
+    TARGET,
     TELEPHONE,
     TELEPHONES,
     TEXT,
@@ -189,6 +196,9 @@ from pysdmx.io.xml.__tokens import (
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (
     AgencyScheme,
+    Categorisation,
+    Category,
+    CategoryScheme,
     Code,
     Codelist,
     ComponentMap,
@@ -292,11 +302,14 @@ STRUCTURES_MAPPING = {
     PROV_AGREEMENTS: ProvisionAgreement,
     CONSTRAINTS: DataConstraint,
     DATA_CONSTRAINTS: DataConstraint,
+    CATEGORY_SCHEME: CategoryScheme,
+    CATEGORISATION: Categorisation,
 }
 ITEMS_CLASSES = {
     AGENCY: Agency,
     CODE: Code,
     VALUE_ITEM: Code,
+    CATEGORY: Category,
     CON: Concept,
     RULE: Ruleset,
     UDO: UserDefinedOperator,
@@ -400,6 +413,8 @@ class StructureParser(Struct):
     name_personalisations: Dict[str, NamePersonalisationScheme] = {}
     custom_types: Dict[str, CustomTypeScheme] = {}
     transformations: Dict[str, TransformationScheme] = {}
+    category_schemes: Dict[str, CategoryScheme] = {}
+    categorisations: Dict[str, Categorisation] = {}
     is_sdmx_30: bool = False
 
     def __format_contact(self, json_contact: Dict[str, Any]) -> Contact:
@@ -1490,6 +1505,139 @@ class StructureParser(Struct):
 
         return elements
 
+    def __format_category(self, element: Dict[str, Any]) -> Category:
+        """Recursively formats a Category element into the model.
+
+        The dataflows and other references attached to the category are
+        left empty here; they are filled in by the categorisation
+        enrichment post-pass in ``format_structures``.
+        """
+        element = self.__format_annotations(element)
+        element = self.__format_name_description(element)
+        children = (
+            [
+                self.__format_category(child)
+                for child in add_list(element[CATEGORY])
+            ]
+            if CATEGORY in element
+            else []
+        )
+        return Category(
+            id=element[ID],
+            name=element.get(NAME.lower()),
+            description=element.get(DESC.lower()),
+            categories=tuple(children),
+            annotations=tuple(element.get(ANNOTATIONS.lower(), ())),
+        )
+
+    def __format_category_scheme(
+        self, json_elem: Dict[str, Any]
+    ) -> Dict[str, CategoryScheme]:
+        """Formats CategorySchemes into the model."""
+        elements: Dict[str, CategoryScheme] = {}
+        for element in add_list(json_elem[CATEGORY_SCHEME]):
+            element = self.__format_annotations(element)
+            element = self.__format_name_description(element)
+            element = self.__format_urls(element)
+            if IS_EXTERNAL_REF in element:
+                element[IS_EXTERNAL_REF_LOW] = (
+                    element.pop(IS_EXTERNAL_REF) == "true"
+                )
+            if IS_FINAL in element:
+                element[IS_FINAL_LOW] = element.pop(IS_FINAL) == "true"
+            elif self.is_sdmx_30 and VERSION in element:
+                element[IS_FINAL_LOW] = is_final(element[VERSION])
+            if IS_PARTIAL in element:
+                element[IS_PARTIAL_LOW] = element.pop(IS_PARTIAL) == "true"
+            items = (
+                tuple(
+                    self.__format_category(cat)
+                    for cat in add_list(element[CATEGORY])
+                )
+                if CATEGORY in element
+                else ()
+            )
+            element.pop(CATEGORY, None)
+            element["items"] = items
+            element = self.__format_agency(element)
+            element = self.__format_validity(element)
+            if "xmlns" in element:
+                del element["xmlns"]
+            result = CategoryScheme(**element)
+            elements[result.short_urn] = result
+        return elements
+
+    @staticmethod
+    def __categorisation_ref(ref_elem: Any, maintainable: bool) -> str:
+        """Resolves a categorisation Source/Target reference.
+
+        Handles the 3.0/3.1 direct-URN string, the ``<URN>`` element
+        form and the 2.1 ``<Ref>`` form. The output is the short-URN
+        string stored in ``Categorisation.source``/``.target``.
+
+        Args:
+            ref_elem: The Source or Target element.
+            maintainable: Whether the reference is to a maintainable
+                artefact (Source) or to an item (Target).
+
+        Returns:
+            The short-URN string representation of the reference.
+        """
+        ref: Union[Reference, ItemReference]
+        if isinstance(ref_elem, dict) and REF in ref_elem:
+            data = ref_elem[REF]
+            if maintainable:
+                ref = Reference(
+                    sdmx_type=data[CLASS],
+                    agency=data[AGENCY_ID],
+                    id=data[ID],
+                    version=data.get(VERSION, "1.0"),
+                )
+            else:
+                ref = ItemReference(
+                    sdmx_type=data[CLASS],
+                    agency=data[AGENCY_ID],
+                    id=data[PAR_ID],
+                    version=data.get(PAR_VER, "1.0"),
+                    item_id=data[ID],
+                )
+        elif isinstance(ref_elem, dict) and URN in ref_elem:
+            ref = parse_urn(ref_elem[URN])
+        else:
+            ref = parse_urn(ref_elem)
+        return str(ref)
+
+    def __format_categorisation(
+        self, json_elem: Dict[str, Any]
+    ) -> Dict[str, Categorisation]:
+        """Formats Categorisations into the model."""
+        elements: Dict[str, Categorisation] = {}
+        for element in add_list(json_elem[CATEGORISATION]):
+            element = self.__format_annotations(element)
+            element = self.__format_name_description(element)
+            element = self.__format_urls(element)
+            if IS_EXTERNAL_REF in element:
+                element[IS_EXTERNAL_REF_LOW] = (
+                    element.pop(IS_EXTERNAL_REF) == "true"
+                )
+            if IS_FINAL in element:
+                element[IS_FINAL_LOW] = element.pop(IS_FINAL) == "true"
+            elif self.is_sdmx_30 and VERSION in element:
+                element[IS_FINAL_LOW] = is_final(element[VERSION])
+            element["source"] = self.__categorisation_ref(
+                element.pop(SOURCE), maintainable=True
+            )
+            element["target"] = self.__categorisation_ref(
+                element.pop(TARGET), maintainable=False
+            )
+            element = self.__format_agency(element)
+            element = self.__format_validity(element)
+            if "xmlns" in element:
+                del element["xmlns"]
+            result = Categorisation(**element)
+            elements[result.short_urn] = result
+        return elements
+
     def __format_level(self, level_elem: Dict[str, Any]) -> LevelType:
         """Recursively formats a Level element into a LevelType."""
         level_elem = self.__format_annotations(level_elem)
@@ -1912,6 +2060,16 @@ class StructureParser(Struct):
                     data, PROV_AGREEMENTS, PROV_AGREEMENT
                 ),
             ),
+            CATEGORY_SCHEMES: process_structure(
+                CATEGORY_SCHEMES,
+                self.__format_category_scheme,
+                "category_schemes",
+            ),
+            CATEGORISATIONS: process_structure(
+                CATEGORISATIONS,
+                self.__format_categorisation,
+                "categorisations",
+            ),
             VTLMAPPINGS: process_structure(
                 VTLMAPPINGS,
                 lambda data: self.__format_scheme(
@@ -2037,9 +2195,102 @@ class StructureParser(Struct):
                 "transformations",
             ),
         }
+        self.__enrich_category_schemes(structures.get(CATEGORY_SCHEMES, {}))
         return [
             compound
             for value in structures.values()
             if value
             for compound in value.values()
         ]
+
+    def __rebuild_category(
+        self,
+        category: Category,
+        parent_path: str,
+        flows: Dict[str, List[Union[Dataflow, DataflowRef]]],
+        others: Dict[str, List[Union[ItemReference, Reference]]],
+    ) -> Category:
+        """Rebuilds a category attaching the categorised references.
+
+        The category tree is immutable, so a new tree is built by path.
+        """
+        path = f"{parent_path}.{category.id}" if parent_path else category.id
+        return Category(
+            id=category.id,
+            name=category.name,
+            description=category.description,
+            annotations=category.annotations,
+            categories=tuple(
+                self.__rebuild_category(child, path, flows, others)
+                for child in category.categories
+            ),
+            dataflows=tuple(flows.get(path, ())),
+            other_references=tuple(others.get(path, ())),
+        )
+
+    def __enrich_category_schemes(
+        self, category_schemes: Dict[str, CategoryScheme]
+    ) -> None:
+        """Attaches categorised dataflows/references to category schemes.
+
+        This mirrors the SDMX-JSON behaviour: each categorisation whose
+        target is a category in one of the schemes contributes either a
+        dataflow (when the source is a dataflow) or a reference to the
+        targeted category. As the model is immutable, the affected
+        category trees are rebuilt in place.
+        """
+        if not category_schemes or not self.categorisations:
+            return
+        flows: Dict[str, Dict[str, List[Union[Dataflow, DataflowRef]]]] = {}
+        others: Dict[
+            str, Dict[str, List[Union[ItemReference, Reference]]]
+        ] = {}
+        for cat in self.categorisations.values():
+            target = parse_urn(cat.target)
+            scheme_urn = (
+                f"CategoryScheme={target.agency}:{target.id}({target.version})"
+            )
+            if scheme_urn not in category_schemes:
+                continue
+            path = cat.target[cat.target.find(")") + 2 :]
+            source = parse_urn(cat.source)
+            if source.sdmx_type == "Dataflow":
+                flow = self.__resolve_dataflow(source)
+                flows.setdefault(scheme_urn, {}).setdefault(path, []).append(
+                    flow
+                )
+            else:
+                others.setdefault(scheme_urn, {}).setdefault(path, []).append(
+                    source
+                )
+        for urn, scheme in list(category_schemes.items()):
+            scheme_flows = flows.get(urn, {})
+            scheme_others = others.get(urn, {})
+            if not scheme_flows and not scheme_others:
+                continue
+            category_schemes[urn] = replace(
+                scheme,
+                items=tuple(
+                    self.__rebuild_category(
+                        cat, "", scheme_flows, scheme_others
+                    )
+                    for cat in scheme.items
+                ),
+            )
+
+    def __resolve_dataflow(
+        self, source: Union[Reference, ItemReference]
+    ) -> Union[Dataflow, DataflowRef]:
+        """Resolves a dataflow reference to a Dataflow or DataflowRef.
+
+        If the referenced dataflow is present in the message it is
+        returned as-is; otherwise a lightweight ``DataflowRef`` is built.
+        """
+        urn = f"Dataflow={source.agency}:{source.id}({source.version})"
+        if urn in self.dataflows:
+            return self.dataflows[urn]
+        return DataflowRef(
+            agency=source.agency,
+            id=source.id,
+            version=source.version,
+        )
