@@ -39,6 +39,8 @@ from pysdmx.model import (
     Hierarchy,
     KeySet,
     LevelType,
+    MetadataProvider,
+    MetadataProviderScheme,
     NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
@@ -305,6 +307,17 @@ def test_provider_scheme_enrichment_21_round_trip(complete_header):
     # The agency scheme is preserved unchanged.
     re_agency = next(s for s in re_read if isinstance(s, AgencyScheme))
     assert re_agency == agency_scheme
+
+
+def test_unsupported_type_raises_invalid(header):
+    # MetadataProviderScheme has no SDMX-ML 2.1 representation.
+    mps = MetadataProviderScheme(
+        agency="MD",
+        name="MD Metadata Provider Scheme",
+        items=[MetadataProvider(id="MP1", name="Metadata Provider 1")],
+    )
+    with pytest.raises(Invalid, match="MetadataProviderScheme"):
+        write([mps], header=header, prettyprint=True)
 
 
 def test_hierarchy_21_no_levels(complete_header):
