@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from pysdmx.errors import Invalid
+from pysdmx.errors import NotImplemented as NotImplementedError_
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
@@ -31,6 +32,7 @@ from pysdmx.model import (
     KeySet,
     Metadataflow,
     MetadataProvisionAgreement,
+    MetadataReport,
     MetadataStructure,
     NamePersonalisation,
     NamePersonalisationScheme,
@@ -42,6 +44,7 @@ from pysdmx.model import (
     VtlMappingScheme,
 )
 from pysdmx.model.dataflow import DataStructureDefinition, ProvisionAgreement
+from pysdmx.model.dataset import ActionType
 
 
 @pytest.fixture
@@ -1177,3 +1180,121 @@ def test_metadata_family_refs_30(samples_folder):
     assert mpa.metadata_provider == (
         "MetadataProvider=BIS:METADATA_PROVIDERS(1.0).PROV2"
     )
+
+
+@pytest.mark.xml
+def test_generic_metadata_30(samples_folder):
+    data_path = samples_folder / "generic_metadata.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.REFMETA_SDMX_ML_3_0
+    msg = read_sdmx(input_str, validate=True)
+    reports = msg.get_reports()
+    assert len(reports) == 1
+    report = reports[0]
+    assert isinstance(report, MetadataReport)
+    assert report.id == "RPT1"
+    assert report.name == "Report 1"
+    assert report.agency == "BIS"
+    assert report.version == "1.0"
+    assert report.metadataflow == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "Metadataflow=BIS:MDF_TEST(1.0)"
+    )
+    assert report.targets == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF(1.0)",
+    )
+    # reportingBeginDate / reportingEndDate map to reportingBegin / End
+    assert report.action == ActionType.Replace
+    assert report.publicationYear == "2021"
+    assert report.reportingBegin == "2020-01-01"
+    assert report.reportingEnd == "2020-12-31"
+
+    # Recursion + dotted lookup + single vs. multiple values
+    assert len(report) == 4
+    assert report["CONTACT.NAME"].value == "John Doe"
+    assert report["CONTACT.EMAIL"].value == [
+        "john@example.org",
+        "doe@example.org",
+    ]
+    assert report["NOTE"].value == "A single note"
+
+
+@pytest.mark.xml
+def test_generic_metadata_mpa_choice_30(samples_folder):
+    data_path = samples_folder / "generic_metadata_mpa.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.REFMETA_SDMX_ML_3_0
+    report = read_sdmx(input_str, validate=True).get_reports()[0]
+    assert report.metadataProvisionAgreement == (
+        "urn:sdmx:org.sdmx.infomodel.registry."
+        "MetadataProvisionAgreement=BIS:MPA_TEST(1.0)"
+    )
+    assert report.metadataflow == ""
+    assert report["NOTE"].value == "Reported against a provision agreement"
+
+
+@pytest.mark.xml
+def test_generic_metadata_detection_regression():
+    # GenericMetadata must be detected as REFMETA, not generic DATA.
+    doc = (
+        '<?xml version="1.0"?>'
+        "<mes:GenericMetadata "
+        'xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v3_0/message">'
+        "</mes:GenericMetadata>"
+    )
+    _, read_format = process_string_to_read(doc)
+    assert read_format == Format.REFMETA_SDMX_ML_3_0
+
+
+@pytest.mark.xml
+def test_generic_metadata_21_not_implemented():
+    # There is no SDMX-ML 2.1 reference metadata format in pysdmx.
+    doc = (
+        '<?xml version="1.0"?>'
+        "<mes:GenericMetadata "
+        'xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v2_1/message">'
+        "</mes:GenericMetadata>"
+    )
+    with pytest.raises(NotImplementedError_):
+        process_string_to_read(doc)
+
+
+@pytest.mark.xml
+def test_generic_metadata_reader_rejects_structure(samples_folder):
+    from pysdmx.io.xml.sdmx30.reader.metadata import read as read_refmeta
+
+    # A structure document is not a GenericMetadata message.
+    data_path = samples_folder / "metadata_family.xml"
+    with open(data_path, "r") as f:
+        text = f.read()
+    with pytest.raises(Invalid, match="not SDMX-ML GenericMetadata"):
+        read_refmeta(text, validate=True)
+
+
+@pytest.mark.xml
+def test_generic_metadata_empty_set():
+    from pysdmx.io.xml.sdmx30.reader.metadata import read as read_refmeta
+
+    # A GenericMetadata message with no MetadataSet yields no reports.
+    doc = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        "<mes:GenericMetadata "
+        'xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v3_0/message" '
+        'xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v3_0/common">'
+        "<mes:Header>"
+        "<mes:ID>test</mes:ID>"
+        "<mes:Test>true</mes:Test>"
+        "<mes:Prepared>2021-01-01T10:00:00Z</mes:Prepared>"
+        '<mes:Sender id="ZZZ"/>'
+        '<mes:Structure structureID="MDS1">'
+        "<com:Structure>urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "MetadataStructure=BIS:MSD(1.0)</com:Structure>"
+        "</mes:Structure>"
+        "</mes:Header>"
+        "</mes:GenericMetadata>"
+    )
+    assert read_refmeta(doc, validate=True) == []

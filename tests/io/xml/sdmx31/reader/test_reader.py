@@ -313,3 +313,21 @@ def test_metadata_family_31(samples_folder):
     assert len(mpas) == 1
     assert isinstance(mpas[0], MetadataProvisionAgreement)
     assert mpas[0].metadataflow == "Metadataflow=BIS:MDF_TEST(1.0)"
+
+
+@pytest.mark.xml
+def test_generic_metadata_31(samples_folder):
+    data_path = samples_folder / "generic_metadata.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.REFMETA_SDMX_ML_3_1
+    reports = read_sdmx(input_str, validate=True).get_reports()
+    assert len(reports) == 1
+    report = reports[0]
+    assert report.id == "RPT1"
+    assert report.reportingBegin == "2020-01-01"
+    # SDMX-ML 3.1 expresses multiple values as repeated <Attribute> elements
+    assert report["CONTACT.EMAIL"].value == [
+        "john@example.org",
+        "doe@example.org",
+    ]
+    assert report["NOTE"].value == "A single note"

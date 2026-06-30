@@ -54,6 +54,8 @@ MESSAGE_TYPE_MAPPING = {
     Format.STRUCTURE_SDMX_ML_3_0: "Structure",
     Format.DATA_SDMX_ML_3_1: "StructureSpecificData",
     Format.STRUCTURE_SDMX_ML_3_1: "Structure",
+    Format.REFMETA_SDMX_ML_3_0: "GenericMetadata",
+    Format.REFMETA_SDMX_ML_3_1: "GenericMetadata",
 }
 
 ABBR_MSG = "mes"
@@ -61,6 +63,7 @@ ABBR_GEN = "gen"
 ABBR_COM = "com"
 ABBR_STR = "str"
 ABBR_SPE = "ss"
+ABBR_META = "metadata"
 
 ANNOTATIONS = "Annotations"
 STRUCTURES = "Structures"
@@ -105,6 +108,7 @@ NAMESPACES_30 = {
     ABBR_COM: f"{BASE_URL_30}/common",
     ABBR_STR: f"{BASE_URL_30}/structure",
     ABBR_SPE: f"{BASE_URL_30}/data/structurespecific",
+    ABBR_META: f"{BASE_URL_30}/metadata/generic",
 }
 
 BASE_URL_31 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_1"
@@ -115,6 +119,7 @@ NAMESPACES_31 = {
     ABBR_COM: f"{BASE_URL_31}/common",
     ABBR_STR: f"{BASE_URL_31}/structure",
     ABBR_SPE: f"{BASE_URL_31}/data/structurespecific",
+    ABBR_META: f"{BASE_URL_31}/metadata/generic",
 }
 
 URN_DS_BASE = "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure="
@@ -154,6 +159,10 @@ def __namespaces_from_type(type_: Format) -> str:
         return f"xmlns:{ABBR_SPE}={NAMESPACES_31[ABBR_SPE]!r} "
     elif type_ == Format.STRUCTURE_SDMX_ML_3_1:
         return f"xmlns:{ABBR_STR}={NAMESPACES_31[ABBR_STR]!r} "
+    elif type_ == Format.REFMETA_SDMX_ML_3_0:
+        return f"xmlns:{ABBR_META}={NAMESPACES_30[ABBR_META]!r} "
+    elif type_ == Format.REFMETA_SDMX_ML_3_1:
+        return f"xmlns:{ABBR_META}={NAMESPACES_31[ABBR_META]!r} "
     else:
         raise NotImplemented(f"{type_} not implemented")
 
@@ -179,6 +188,7 @@ def create_namespaces(
     if (
         type_ == Format.DATA_SDMX_ML_3_0
         or type_ == Format.STRUCTURE_SDMX_ML_3_0
+        or type_ == Format.REFMETA_SDMX_ML_3_0
     ):
         outfile += f"xmlns:xsi={NAMESPACES_30['xsi']!r} "
         outfile += f"xmlns:{ABBR_MSG}={NAMESPACES_30[ABBR_MSG]!r} "
@@ -192,6 +202,7 @@ def create_namespaces(
     elif (
         type_ == Format.DATA_SDMX_ML_3_1
         or type_ == Format.STRUCTURE_SDMX_ML_3_1
+        or type_ == Format.REFMETA_SDMX_ML_3_1
     ):
         outfile += f"xmlns:xsi={NAMESPACES_31['xsi']!r} "
         outfile += f"xmlns:{ABBR_MSG}={NAMESPACES_31[ABBR_MSG]!r} "

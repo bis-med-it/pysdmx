@@ -13,6 +13,7 @@ from pysdmx.io.xml.__tokens import (
     DIM_OBS,
     DSD,
     GENERIC,
+    GENERIC_METADATA,
     GENERIC_TS,
     HEADER,
     HEADER_ID,
@@ -205,7 +206,14 @@ def read(
         The header of the SDMX message.
     """
     dict_info = parse_xml(input_str, validate)
-    possible_keys = [STR_SPE, STR_SPE_TS, GENERIC, GENERIC_TS, STRUCTURE]
+    possible_keys = [
+        STR_SPE,
+        STR_SPE_TS,
+        GENERIC,
+        GENERIC_TS,
+        STRUCTURE,
+        GENERIC_METADATA,
+    ]
     selected_key = next((key for key in possible_keys if key in dict_info))
     if HEADER not in dict_info[selected_key]:
         return None
