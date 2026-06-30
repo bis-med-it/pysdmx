@@ -331,6 +331,11 @@ LINKED_HIERARCHY = "LinkedHierarchy"
 LINKED_OBJECT = "LinkedObject"
 CONTEXT_OBJECT = "ContextObject"
 
+# Metadata (metadataflow, metadata provision agreement)
+METADATAFLOW = "Metadataflow"
+MPA = "MetadataProvisionAgreement"
+MPAS = "MetadataProvisionAgreements"
+
 # Mapping
 STRUCTURE_MAPS = "StructureMaps"
 STRUCTURE_MAP = "StructureMap"

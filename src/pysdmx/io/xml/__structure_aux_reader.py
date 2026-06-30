@@ -10,6 +10,7 @@ from typing import (
     Optional,
     Sequence,
     Set,
+    Tuple,
     Type,
     Union,
 )
@@ -138,6 +139,9 @@ from pysdmx.io.xml.__tokens import (
     METADATA_PROVIDER,
     METADATA_PROVIDER_SCHEME,
     METADATA_PROVIDER_SCHEMES,
+    METADATAFLOW,
+    MPA,
+    MPAS,
     MSR,
     NAME,
     NAME_PER,
@@ -236,6 +240,7 @@ from pysdmx.model import (
     LevelType,
     MetadataProvider,
     MetadataProviderScheme,
+    MetadataProvisionAgreement,
     MultiComponentMap,
     MultiRepresentationMap,
     MultiValueMap,
@@ -280,7 +285,13 @@ from pysdmx.model.vtl import (
     VtlDataflowMapping,
     VtlMappingScheme,
 )
-from pysdmx.util import find_by_urn, is_final, parse_urn
+from pysdmx.util import (
+    find_by_urn,
+    is_final,
+    parse_item_urn,
+    parse_short_item_urn,
+    parse_urn,
+)
 
 T = Any
 
@@ -318,6 +329,7 @@ STRUCTURES_MAPPING = {
     NAME_PER_SCHEME: NamePersonalisationScheme,
     CUSTOM_TYPE_SCHEME: CustomTypeScheme,
     PROV_AGREEMENTS: ProvisionAgreement,
+    MPAS: MetadataProvisionAgreement,
     CONSTRAINTS: DataConstraint,
     DATA_CONSTRAINTS: DataConstraint,
 }
@@ -434,6 +446,7 @@ class StructureParser(Struct):
     concepts: Dict[str, ConceptScheme] = {}
     datastructures: Dict[str, DataStructureDefinition] = {}
     dataflows: Dict[str, Dataflow] = {}
+    metadata_provision_agreements: Dict[str, MetadataProvisionAgreement] = {}
     constraints: Dict[str, DataConstraint] = {}
     rulesets: Dict[str, RulesetScheme] = {}
     udos: Dict[str, UserDefinedOperatorScheme] = {}
@@ -637,42 +650,44 @@ class StructureParser(Struct):
 
     @staticmethod
     def __provider_dataflows(
-        provision_agreements: Sequence[ProvisionAgreement],
+        agreements: Sequence[Tuple[str, str]],
     ) -> Dict[str, Set[DataflowRef]]:
         """Maps "agency:provider_id" to the set of provided dataflows.
 
         Mirrors the SDMX-JSON behavior where the dataflows attached to a
-        (metadata) provider are derived from the provision agreements.
+        (metadata) provider are derived from the (metadata) provision
+        agreements. Each agreement is supplied as a
+        ``(flow_urn, provider_urn)`` pair so the same logic serves both
+        data and metadata provision agreements.
         """
         paprs: Dict[str, Set[DataflowRef]] = defaultdict(set)
-        for pa in provision_agreements:
-            df = parse_urn(pa.dataflow)
-            ref = parse_urn(pa.provider)
+        for flow_urn, provider_urn in agreements:
+            df = parse_urn(flow_urn)
+            ref = parse_short_item_urn(provider_urn)
             df_ref = DataflowRef(
                 id=df.id, agency=df.agency, version=df.version
             )
-            paprs[f"{ref.agency}:{ref.item_id}"].add(df_ref)  # type: ignore[union-attr]
+            paprs[f"{ref.agency}:{ref.item_id}"].add(df_ref)
         return paprs
 
     def __enrich_provider_schemes(
         self,
         schemes: Dict[str, ItemScheme],
-        provision_agreements: Sequence[ProvisionAgreement],
+        scheme_type: Type[ItemScheme],
+        agreements: Sequence[Tuple[str, str]],
     ) -> Dict[str, ItemScheme]:
-        """Populates provider dataflows from the provision agreements.
+        """Populates provider dataflows from the (metadata) agreements.
 
-        Rebuilds each data/metadata provider scheme so that every
+        Rebuilds each provider scheme of ``scheme_type`` so that every
         provider item carries the dataflows it provides, as derived from
-        the supplied provision agreements.
+        the supplied ``(flow_urn, provider_urn)`` agreement pairs.
         """
-        if not schemes or not provision_agreements:
+        if not schemes or not agreements:
             return schemes
-        paprs = self.__provider_dataflows(provision_agreements)
+        paprs = self.__provider_dataflows(agreements)
         enriched: Dict[str, ItemScheme] = {}
         for urn, scheme in schemes.items():
-            if not isinstance(
-                scheme, (DataProviderScheme, MetadataProviderScheme)
-            ):
+            if not isinstance(scheme, scheme_type):
                 enriched[urn] = scheme
                 continue
             agency = scheme.agency
@@ -1097,6 +1112,35 @@ class StructureParser(Struct):
         element["dataflow"] = dfw
         element["provider"] = provider
 
+        return element
+
+    def __format_metadata_prov_agreement(
+        self, element: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Formats a MetadataProvisionAgreement into model keys.
+
+        Mirrors ``__format_prov_agreement`` but the children are a
+        ``<str:Metadataflow>`` and a ``<str:MetadataProvider>`` (an
+        organisation item, hence an item-style short URN). The MPA construct
+        only exists in SDMX-ML 3.x, where references are URN text.
+        """
+        ref_flow = parse_urn(element[METADATAFLOW])
+        metadataflow = (
+            f"{ref_flow.sdmx_type}={ref_flow.agency}:"
+            f"{ref_flow.id}({ref_flow.version})"
+        )
+        del element[METADATAFLOW]
+
+        ref_provider = parse_item_urn(element[METADATA_PROVIDER])
+        metadata_provider = (
+            f"{ref_provider.sdmx_type}={ref_provider.agency}:"
+            f"{ref_provider.id}({ref_provider.version})"
+            f".{ref_provider.item_id}"
+        )
+        del element[METADATA_PROVIDER]
+
+        element[METADATAFLOW.lower()] = metadataflow
+        element["metadata_provider"] = metadata_provider
         return element
 
     def __parse_data_provider(
@@ -1890,9 +1934,14 @@ class StructureParser(Struct):
             element = self.__format_validity(element)
             element = self.__format_groups(element)
             element = self.__format_components(element)
-            element = self.__format_maps(element)
+            # The MPA must not go through the mapping renames (which would
+            # rename its <str:Target>-style children to "target").
+            if item != MPA:
+                element = self.__format_maps(element)
             if item == PROV_AGREEMENT:
                 element = self.__format_prov_agreement(element)
+            if item == MPA:
+                element = self.__format_metadata_prov_agreement(element)
             if item in [CON_CONS, DATA_CONS]:
                 element = self.__format_constraint(element)
 
@@ -2042,6 +2091,11 @@ class StructureParser(Struct):
                     data, PROV_AGREEMENTS, PROV_AGREEMENT
                 ),
             ),
+            MPAS: process_structure(
+                MPAS,
+                lambda data: self.__format_schema(data, MPAS, MPA),
+                "metadata_provision_agreements",
+            ),
             VTLMAPPINGS: process_structure(
                 VTLMAPPINGS,
                 lambda data: self.__format_scheme(
@@ -2167,14 +2221,35 @@ class StructureParser(Struct):
                 "transformations",
             ),
         }
-        # Enrich (metadata) provider schemes with the dataflows derived
-        # from the parsed provision agreements (SDMX-JSON parity).
-        provision_agreements = list(structures[PROV_AGREEMENTS].values())
-        for key in (ORGS, DATA_PROVIDER_SCHEMES, METADATA_PROVIDER_SCHEMES):
-            if structures[key]:
-                structures[key] = self.__enrich_provider_schemes(
-                    structures[key], provision_agreements
-                )
+        # Enrich provider schemes with the dataflows derived from the
+        # parsed provision agreements (SDMX-JSON parity). Data provider
+        # schemes derive from ProvisionAgreements while metadata provider
+        # schemes derive from MetadataProvisionAgreements; both scheme
+        # types may also live together inside the 2.1 OrganisationSchemes
+        # wrapper, so the type-filtered enrichment is run over that bucket
+        # as well.
+        data_pas = [
+            (pa.dataflow, pa.provider)
+            for pa in structures[PROV_AGREEMENTS].values()
+        ]
+        metadata_pas = [
+            (mpa.metadataflow, mpa.metadata_provider)
+            for mpa in structures[MPAS].values()
+        ]
+        enrichments = (
+            (DataProviderScheme, data_pas),
+            (MetadataProviderScheme, metadata_pas),
+        )
+        for key in (
+            ORGS,
+            DATA_PROVIDER_SCHEMES,
+            METADATA_PROVIDER_SCHEMES,
+        ):
+            for scheme_type, agreements in enrichments:
+                if structures[key]:
+                    structures[key] = self.__enrich_provider_schemes(
+                        structures[key], scheme_type, agreements
+                    )
         return [
             compound
             for value in structures.values()

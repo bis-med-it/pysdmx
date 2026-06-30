@@ -20,6 +20,7 @@ from pysdmx.model import (
     HierarchyAssociation,
     MetadataProvider,
     MetadataProviderScheme,
+    MetadataProvisionAgreement,
     NamePersonalisationScheme,
     RulesetScheme,
     TransformationScheme,
@@ -90,6 +91,30 @@ def test_provider_scheme_enrichment_31(samples_folder):
     assert provider.dataflows == [
         DataflowRef(id="TEST", agency="MD", version="1.0")
     ]
+
+
+@pytest.mark.xml
+def test_metadata_provider_scheme_enrichment_31(samples_folder):
+    data_path = samples_folder / "metadata_provider_scheme_enrichment.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    result = read_structure(input_str, validate=True)
+
+    mpas = [s for s in result if isinstance(s, MetadataProvisionAgreement)]
+    assert len(mpas) == 1
+    assert mpas[0].metadataflow == "Metadataflow=MD:MDF_TEST(1.0)"
+    assert (
+        mpas[0].metadata_provider
+        == "MetadataProvider=MD:METADATA_PROVIDERS(1.0).MP1"
+    )
+
+    schemes = [s for s in result if isinstance(s, MetadataProviderScheme)]
+    assert len(schemes) == 1
+    providers = {p.id: p for p in schemes[0].items}
+    assert providers["MP1"].dataflows == [
+        DataflowRef(id="MDF_TEST", agency="MD", version="1.0")
+    ]
+    assert providers["MP2"].dataflows == []
 
 
 @pytest.mark.xml

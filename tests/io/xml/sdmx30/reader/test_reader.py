@@ -36,6 +36,7 @@ from pysdmx.model import (
     KeySet,
     MetadataProvider,
     MetadataProviderScheme,
+    MetadataProvisionAgreement,
     NamePersonalisation,
     NamePersonalisationScheme,
     Reference,
@@ -246,6 +247,35 @@ def test_provider_scheme_enrichment_read(samples_folder):
     assert provider.dataflows == [
         DataflowRef(id="TEST", agency="MD", version="1.0")
     ]
+
+
+@pytest.mark.xml
+def test_metadata_provider_scheme_enrichment_read(samples_folder):
+    data_path = samples_folder / "metadata_provider_scheme_enrichment.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+
+    # The MetadataProvisionAgreement is parsed into the model.
+    mpas = [s for s in result if isinstance(s, MetadataProvisionAgreement)]
+    assert len(mpas) == 1
+    mpa = mpas[0]
+    assert mpa.short_urn == "MetadataProvisionAgreement=MD:MPA_TEST(1.0)"
+    assert mpa.metadataflow == "Metadataflow=MD:MDF_TEST(1.0)"
+    assert (
+        mpa.metadata_provider
+        == "MetadataProvider=MD:METADATA_PROVIDERS(1.0).MP1"
+    )
+
+    # The metadata provider named by the MPA is enriched with its
+    # metadataflow; the one not referenced by any MPA stays empty.
+    schemes = [s for s in result if isinstance(s, MetadataProviderScheme)]
+    assert len(schemes) == 1
+    providers = {p.id: p for p in schemes[0].items}
+    assert providers["MP1"].dataflows == [
+        DataflowRef(id="MDF_TEST", agency="MD", version="1.0")
+    ]
+    assert providers["MP2"].dataflows == []
 
 
 @pytest.mark.xml
