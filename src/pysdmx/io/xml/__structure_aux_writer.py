@@ -999,6 +999,22 @@ def __write_metadata_attribute(
     are derived from the ``array_def``, mirroring
     ``JsonMetadataAttribute.from_model``. MSDs only exist in SDMX-ML 3.x,
     where references are URN text.
+
+    Known limitation: only array cardinality (``maxOccurs > 1``, carried by
+    ``array_def``) is emitted. The model does not represent single-occurrence
+    ``minOccurs`` (``0`` vs ``1`` with ``maxOccurs <= 1``), so when an
+    attribute has no ``array_def`` no ``minOccurs`` is written and it defaults
+    to ``1``. An optional attribute read with ``minOccurs="0"`` is therefore
+    not preserved across read -> write (see ``__array_def`` in the reader and
+    ``test_msd_minoccurs_zero_not_preserved_known_limitation``). This matches
+    the JSON reader's model-level limitation; note that the SDMX-JSON writer
+    diverges in form -- it emits ``minOccurs``/``maxOccurs`` as ``null`` when
+    there is no ``array_def`` -- but neither format preserves a non-array
+    ``minOccurs="0"``.
+
+    ``isPresentational`` and ``array_def`` are emitted independently: a
+    presentational attribute may also carry an array definition, and both
+    must be written when present.
     """
     label = f"{ABBR_STR}:{METADATA_ATT}"
     attrs = f" {ID}={component.id!r}"
@@ -1010,7 +1026,7 @@ def __write_metadata_attribute(
             max_occurs = str(component.array_def.max_size)
         attrs += f" {MIN_OCCURS}={str(min_occurs)!r}"
         attrs += f" {MAX_OCCURS}={max_occurs!r}"
-    elif component.is_presentational:
+    if component.is_presentational:
         attrs += f" {IS_PRESENTATIONAL}={'true'!r}"
     attrs = attrs.replace("'", '"')
 

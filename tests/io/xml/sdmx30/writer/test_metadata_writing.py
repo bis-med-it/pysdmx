@@ -166,6 +166,46 @@ def test_generic_metadata_no_metadataflow_raises():
 
 
 @pytest.mark.xml
+def test_generic_metadata_no_targets_raises(complete_header):
+    # The MetadataSetType XSD requires at least one <Target> once the
+    # flow/MPA element is written. A report defaulting targets=() would
+    # otherwise emit XSD-invalid XML.
+    report = MetadataReport(
+        id="RPT",
+        name="No targets",
+        agency="BIS",
+        version="1.0",
+        metadataflow=MDF_URN,
+        targets=(),
+        attributes=(MetadataAttribute(id="NOTE", value="x"),),
+    )
+    with pytest.raises(
+        Invalid, match="at least one target and at least one attribute"
+    ):
+        write([report], header=complete_header, prettyprint=True)
+
+
+@pytest.mark.xml
+def test_generic_metadata_no_attributes_raises(complete_header):
+    # The MetadataSetType XSD requires at least one <Attribute> once the
+    # flow/MPA element is written. A report defaulting attributes=() would
+    # otherwise emit XSD-invalid XML.
+    report = MetadataReport(
+        id="RPT",
+        name="No attributes",
+        agency="BIS",
+        version="1.0",
+        metadataflow=MDF_URN,
+        targets=(DF_TARGET,),
+        attributes=(),
+    )
+    with pytest.raises(
+        Invalid, match="at least one target and at least one attribute"
+    ):
+        write([report], header=complete_header, prettyprint=True)
+
+
+@pytest.mark.xml
 def test_generic_metadata_no_name_raises(complete_header):
     report = MetadataReport(
         id="RPT", agency="BIS", version="1.0", metadataflow=MDF_URN

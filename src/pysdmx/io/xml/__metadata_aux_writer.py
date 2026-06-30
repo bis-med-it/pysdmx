@@ -119,6 +119,18 @@ def __write_metadata_set(report: MetadataReport, indent: str) -> str:
             {"metadata_report": report.id},
         )
 
+    # Once the flow/MPA element is written, the 3.0/3.1 MetadataSetType XSD
+    # requires at least one <Target> and at least one <Attribute>. A
+    # programmatically-built report defaults targets/attributes to empty, so
+    # guard explicitly to avoid silently emitting XSD-invalid XML.
+    if not report.targets or not report.attributes:
+        raise Invalid(
+            "Invalid input",
+            "SDMX-ML metadata reports must have at least one target and at "
+            "least one attribute.",
+            {"metadata_report": report.id},
+        )
+
     for target in report.targets:
         outfile += (
             f"{child}<{ABBR_META}:{TARGET}>{target}</{ABBR_META}:{TARGET}>"

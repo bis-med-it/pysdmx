@@ -1138,7 +1138,19 @@ class StructureParser(Struct):
 
         Mirrors ``JsonMetadataAttribute.to_model``: an array definition is
         only created when the attribute is genuinely multi-valued
-        (``maxOccurs`` is ``unbounded`` or greater than 1).
+        (``maxOccurs`` is ``unbounded`` or greater than 1). Only array
+        cardinality (``maxOccurs > 1``) is carried by the model via
+        ``array_def``.
+
+        Known limitation: the model's ``array_def`` / ``ArrayBoundaries``
+        only represents real arrays, so single-occurrence ``minOccurs``
+        (i.e. ``0`` vs ``1``, with ``maxOccurs <= 1``) is not represented in
+        the model and is therefore not preserved across a read -> write
+        cycle: an optional attribute (``minOccurs="0"``) is read as ``None``
+        here and the writer omits ``minOccurs``, defaulting it back to ``1``.
+        This is consistent with the JSON reader, which has the same
+        model-level limitation. See ``test_msd_minoccurs_zero_not_preserved
+        _known_limitation`` for the pinned behavior.
         """
         min_occurs = int(att_elem.get(MIN_OCCURS, 1))
         max_raw = att_elem.get(MAX_OCCURS, 1)
