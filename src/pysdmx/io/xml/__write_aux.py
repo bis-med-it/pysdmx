@@ -78,6 +78,9 @@ DATAFLOWS = "Dataflows"
 CONSTRAINTS = "Constraints"
 DATA_CONSTRAINTS = "DataConstraints"
 PROV_AGREEMENTS = "ProvisionAgreements"
+METADATAFLOWS = "Metadataflows"
+MSDS = "MetadataStructures"
+MPAS = "MetadataProvisionAgreements"
 REPRESENTATION_MAPS_KEY = "RepresentationMaps"
 STRUCTURE_MAPS_KEY = "StructureMaps"
 DATE_PATTERN_MAP_KEY = "DatePatternMaps"
@@ -217,6 +220,9 @@ MSG_CONTENT_PKG_21 = OrderedDict(
     [
         (ORGS, "OrganisationSchemes"),
         (DATAFLOWS, "Dataflows"),
+        (METADATAFLOWS, "Metadataflows"),
+        (MPAS, "MetadataProvisionAgreements"),
+        (MSDS, "MetadataStructures"),
         (PROV_AGREEMENTS, "ProvisionAgreements"),
         (CODELISTS, "Codelists"),
         (HIERARCHICAL_CODELISTS, "HierarchicalCodelists"),
@@ -239,7 +245,10 @@ MSG_CONTENT_PKG_30 = OrderedDict(
     [
         (AGC, "AgencySchemes"),
         (DATAFLOWS, "Dataflows"),
+        (METADATAFLOWS, "Metadataflows"),
         (PROV_AGREEMENTS, "ProvisionAgreements"),
+        (MPAS, "MetadataProvisionAgreements"),
+        (MSDS, "MetadataStructures"),
         (CODELISTS, "Codelists"),
         (HIERARCHIES, "Hierarchies"),
         (HIERARCHY_ASSOCIATIONS, "HierarchyAssociations"),

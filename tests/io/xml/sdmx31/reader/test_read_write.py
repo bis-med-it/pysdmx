@@ -9,11 +9,15 @@ from pysdmx.io.xml.sdmx30.writer.structure import write as write_structure
 from pysdmx.io.xml.sdmx30.writer.structure_specific import (
     write as write_str_spe,
 )
+from pysdmx.io.xml.sdmx31.writer.structure import write as write_structure_31
 from pysdmx.model import (
     Codelist,
     ConceptScheme,
     Hierarchy,
     HierarchyAssociation,
+    Metadataflow,
+    MetadataProvisionAgreement,
+    MetadataStructure,
     NamePersonalisationScheme,
     RulesetScheme,
     TransformationScheme,
@@ -166,3 +170,21 @@ def test_dataflow_31(samples_folder):
     result = read_sdmx(write, validate=True).structures
     dataflow = result[0]
     assert isinstance(dataflow, Dataflow)
+
+
+def test_metadata_family_round_trip_31(samples_folder):
+    data_path = samples_folder / "metadata_family.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    structures = read_sdmx(input_str, validate=True).structures
+    written = write_structure_31(structures=structures, prettyprint=True)
+    result = read_sdmx(written, validate=True).structures
+    by_in = {s.short_urn: s for s in structures}
+    by_out = {s.short_urn: s for s in result}
+    assert set(by_in) == set(by_out)
+    for urn, original in by_in.items():
+        assert by_out[urn] == original
+    types = {type(s) for s in result}
+    assert Metadataflow in types
+    assert MetadataStructure in types
+    assert MetadataProvisionAgreement in types
