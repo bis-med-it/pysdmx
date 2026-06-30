@@ -31,11 +31,11 @@ from pysdmx.model import (
     DataProvider,
     DataProviderScheme,
     DataType,
-    MetadataProvider,
-    MetadataProviderScheme,
     Facets,
     FromVtlMapping,
     KeySet,
+    MetadataProvider,
+    MetadataProviderScheme,
     NamePersonalisation,
     NamePersonalisationScheme,
     Ruleset,
@@ -790,9 +790,7 @@ def agency_sample():
 
 @pytest.fixture
 def organisation_schemes_sample():
-    base_path = (
-        Path(__file__).parent / "samples" / "organisation_schemes.xml"
-    )
+    base_path = Path(__file__).parent / "samples" / "organisation_schemes.xml"
     with open(base_path, "r") as f:
         return f.read()
 

@@ -156,7 +156,6 @@ from pysdmx.model import (
     VtlScheme,
 )
 from pysdmx.model.__base import (
-    Agency,
     AnnotableArtefact,
     Contact,
     IdentifiableArtefact,

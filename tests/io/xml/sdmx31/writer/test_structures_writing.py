@@ -139,9 +139,7 @@ def metadata_provider_scheme():
 
 @pytest.fixture
 def organisation_schemes_sample():
-    base_path = (
-        Path(__file__).parent / "samples" / "organisation_schemes.xml"
-    )
+    base_path = Path(__file__).parent / "samples" / "organisation_schemes.xml"
     with open(base_path, "r") as f:
         return f.read()
 
