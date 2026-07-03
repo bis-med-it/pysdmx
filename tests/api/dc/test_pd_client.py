@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 from pysdmx.api.dc.pd import PandasConnector
+from pysdmx.api.dc.query import Operator, TextFilter
 from pysdmx.model import Dataflow, Reference
 
 
@@ -100,6 +101,40 @@ def test_dataflow(client, mock_dataflow, dataflow):
     flow = client.dataflow(ref)
 
     assert flow == dataflow
+    assert mock_dataflow.call_count == 1
+    assert len(mock_dataflow.call_args.args) == 2
+    assert mock_dataflow.call_args.args[0] == ref
+    assert mock_dataflow.call_args.args[1] is None
+    assert not mock_dataflow.call_args.kwargs
+
+
+def test_dataflow_with_filter_object(client, mock_dataflow, dataflow):
+    mock_dataflow.return_value = dataflow
+    ref = Reference("Dataflow", "BIS", "CBS", "1.0")
+    flt = TextFilter("FREQ", Operator.EQUALS, "M")
+
+    flow = client.dataflow(ref, filters=flt)
+
+    assert flow == dataflow
+    assert mock_dataflow.call_count == 1
+    assert len(mock_dataflow.call_args.args) == 2
+    assert mock_dataflow.call_args.args[0] == ref
+    assert mock_dataflow.call_args.args[1] == flt
+    assert not mock_dataflow.call_args.kwargs
+
+
+def test_dataflow_with_filter_string(client, mock_dataflow, dataflow):
+    mock_dataflow.return_value = dataflow
+    ref = Reference("Dataflow", "BIS", "CBS", "1.0")
+
+    flow = client.dataflow(ref, filters="FREQ='M'")
+
+    assert flow == dataflow
+    assert mock_dataflow.call_count == 1
+    assert len(mock_dataflow.call_args.args) == 2
+    assert mock_dataflow.call_args.args[0] == ref
+    assert mock_dataflow.call_args.args[1] == "FREQ='M'"
+    assert not mock_dataflow.call_args.kwargs
 
 
 def test_data_query(
