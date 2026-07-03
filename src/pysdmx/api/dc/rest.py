@@ -129,11 +129,15 @@ class SdmxConnector(BasicConnector):
                 - A string representing the SDMX URN of the dataflow.
                 - An object implementing the `MaintainableIdentification`
                   protocol (e.g., instances of `DataflowRef` or `Dataflow`).
-            filters: The data query filters, if any. This can be a string
-                similar to a SQL WHERE clause ("AREA='UY' AND FREQ <> 'A'")
-                or a Python expression ("REF_AREA=='UY' and FREQ != 'A'") or
-                one of the various filters the `pysdmx.api.dc.query` module
-                offers, including `MultiFilter`.
+            filters: Filters used to scope the data availability
+                information for the selected dataflow. If not supplied,
+                information about the full dataflow is returned. If
+                supplied, information about the matching subset is
+                returned. This can be a string similar to a SQL WHERE
+                clause ("AREA='UY' AND FREQ <> 'A'") or a Python expression
+                ("REF_AREA=='UY' and FREQ != 'A'") or one of the various
+                filters the `pysdmx.api.dc.query` module offers, including
+                `MultiFilter`.
 
         Returns:
             Dataflow: An object containing detailed information about
