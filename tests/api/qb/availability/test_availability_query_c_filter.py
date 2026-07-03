@@ -38,6 +38,19 @@ def test_availability_unsupported_operator(api_version: ApiVersion):
 @pytest.mark.parametrize(
     "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
 )
+def test_availability_one_text_comp_eq_short(api_version: ApiVersion):
+    flt = TextFilter("FREQ", Operator.EQUALS, "M")
+    expected = "/availability?c[FREQ]=M"
+
+    q = AvailabilityQuery(components=flt)
+    url = q.get_url(api_version, True)
+
+    assert url == expected
+
+
+@pytest.mark.parametrize(
+    "api_version", (v for v in ApiVersion if v >= ApiVersion.V2_0_0)
+)
 def test_availability_one_text_comp_eq(api_version: ApiVersion):
     flt = TextFilter("FREQ", Operator.EQUALS, "M")
     expected = "/availability/*/*/*/*/*/*?c[FREQ]=M&references=none&mode=exact"
