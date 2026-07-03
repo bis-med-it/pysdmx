@@ -4,6 +4,7 @@ import pytest
 
 from pysdmx.api.dc.pd import PandasConnector
 from pysdmx.api.dc.query import Operator, TextFilter
+from pysdmx.errors import InternalError
 from pysdmx.model import Dataflow, Reference
 
 
@@ -494,3 +495,19 @@ def test_data_query_no_schema_query(respx_mock, client, query_data, csv_data):
     )
 
     assert len(data) == 20  # 20 observations
+
+
+def test_data_query_tempfile_creation_error(client, mocker):
+    mocker.patch(
+        "tempfile.NamedTemporaryFile",
+        side_effect=OSError("cannot create temporary file"),
+    )
+    dfref = Reference("Dataflow", "BIS", "BIS_DER", "1.0")
+
+    with pytest.raises(InternalError, match="Unexpected I/O issue"):
+        client.data(
+            dfref,
+            infer_index=False,
+            infer_series_keys=False,
+            apply_schema=False,
+        )

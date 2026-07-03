@@ -11,6 +11,7 @@ __check_data_extra()
 
 import pandas as pd
 
+from pysdmx import errors
 from pysdmx.api.dc import BasicConnector, MaintainableIdentification
 from pysdmx.api.dc.query import BasicFilter
 from pysdmx.api.dc.rest import SdmxConnector
@@ -184,17 +185,10 @@ class PandasConnector(BasicConnector):
             The requested data, if any. Data are returned as Pandas data frame.
         """
         q = prepare_basic_data_query(dataflow, filters)
+        temp_path: Optional[pathlib.Path] = None
         try:
             # Write response in chunks to temporary file
-            with tempfile.NamedTemporaryFile(
-                mode="wb", suffix=".csv", delete=False
-            ) as f:
-                for chunk in self.__client.stream_data(
-                    q, chunk_size=1_048_576
-                ):
-                    f.write(chunk)
-                f.flush()
-                f.close()
+            temp_path = self.__write_temp_csv(q)
 
             # Infer read parameters (exclude SDMX columns, add data types etc.)
             params: dict[str, Any] = {}
@@ -217,7 +211,7 @@ class PandasConnector(BasicConnector):
                 params["dtype"] = schema
 
             # Read CSV
-            df = pd.read_csv(f.name, **params)
+            df = pd.read_csv(temp_path, **params)
 
             # Infer series keys
             if (
@@ -251,7 +245,32 @@ class PandasConnector(BasicConnector):
             # Return requested data as a DataFrame
             return df
         finally:
-            pathlib.Path(f.name).unlink()
+            if temp_path:
+                temp_path.unlink(missing_ok=True)
+
+    def __write_temp_csv(self, query: Any) -> pathlib.Path:
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="wb", suffix=".csv", delete=False
+            ) as f:
+                temp_path = pathlib.Path(f.name)
+                for chunk in self.__client.stream_data(
+                    query, chunk_size=1_048_576
+                ):
+                    f.write(chunk)
+                f.flush()
+                return temp_path
+        except OSError as error:
+            raise errors.InternalError(
+                "Unexpected I/O issue",
+                (
+                    "An internal I/O error occurred while creating a "
+                    "temporary file to process SDMX-CSV data."
+                ),
+                {
+                    "original_exception": str(error),
+                },
+            ) from error
 
     def __map_category_fields(
         self, df: pd.DataFrame, flow: Dataflow, labels: Literal["name", "both"]
