@@ -12,6 +12,7 @@ from pysdmx.api.dc import (
     MaintainableIdentification,
 )
 from pysdmx.api.dc.query import BasicFilter
+from pysdmx.api.dc.query.util import parse_query
 from pysdmx.api.dc.util import prepare_basic_data_query
 from pysdmx.api.qb import (
     ApiVersion,
@@ -113,7 +114,9 @@ class SdmxConnector(BasicConnector):
         return tuple(sorted(flows, key=self.__sort_maintainable))
 
     def dataflow(
-        self, dataflow: Union[str, MaintainableIdentification]
+        self,
+        dataflow: Union[str, MaintainableIdentification],
+        filters: Optional[Union[BasicFilter, str]] = None,
     ) -> Dataflow:
         """Retrieve information about a dataflow.
 
@@ -126,6 +129,11 @@ class SdmxConnector(BasicConnector):
                 - A string representing the SDMX URN of the dataflow.
                 - An object implementing the `MaintainableIdentification`
                   protocol (e.g., instances of `DataflowRef` or `Dataflow`).
+            filters: The data query filters, if any. This can be a string
+                similar to a SQL WHERE clause ("AREA='UY' AND FREQ <> 'A'")
+                or a Python expression ("REF_AREA=='UY' and FREQ != 'A'") or
+                one of the various filters the `pysdmx.api.dc.query` module
+                offers, including `MultiFilter`.
 
         Returns:
             Dataflow: An object containing detailed information about
@@ -159,11 +167,15 @@ class SdmxConnector(BasicConnector):
             else dataflow.agency
         )
 
+        if isinstance(filters, str):
+            filters = parse_query(filters)  # type: ignore[assignment]
+
         q = AvailabilityQuery(
             DataContext.DATAFLOW,
             aid,
             dataflow.id,
             dataflow.version,
+            components=filters,  # type: ignore[arg-type]
             references=StructureReference.ALL,
             mode=AvailabilityMode.EXACT,
         )

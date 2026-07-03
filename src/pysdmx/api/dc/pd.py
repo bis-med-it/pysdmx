@@ -82,7 +82,9 @@ class PandasConnector(BasicConnector):
         return self.__conn.dataflows(search_term)
 
     def dataflow(
-        self, dataflow: Union[str, MaintainableIdentification]
+        self,
+        dataflow: Union[str, MaintainableIdentification],
+        filters: Optional[Union[BasicFilter, str]] = None,
     ) -> Dataflow:
         """Retrieve information about a dataflow.
 
@@ -96,6 +98,11 @@ class PandasConnector(BasicConnector):
                 shorthand notation (`agency:id(version)`) is also acceptable.
                 - An object implementing the `MaintainableIdentification`
                 protocol (e.g., instances of `DataflowRef` or `Dataflow`).
+            filters: The data query filters, if any. This can be a string
+                similar to a SQL WHERE clause ("AREA='UY' AND FREQ <> 'A'")
+                or a Python expression ("REF_AREA=='UY' and FREQ != 'A'") or
+                one of the various filters the `pysdmx.api.dc.query` module
+                offers, including `MultiFilter`.
 
         Returns:
             Dataflow: An object containing detailed information about
@@ -118,7 +125,7 @@ class PandasConnector(BasicConnector):
             errors.Unavailable: In case the targeted service could not be
                 reached.
         """
-        return self.__conn.dataflow(dataflow)
+        return self.__conn.dataflow(dataflow, filters)
 
     def data(
         self,

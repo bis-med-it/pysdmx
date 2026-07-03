@@ -272,7 +272,9 @@ class BasicConnector(Protocol):
         """
 
     def dataflow(
-        self, dataflow: Union[str, MaintainableIdentification]
+        self,
+        dataflow: Union[str, MaintainableIdentification],
+        filters: Optional[Union[BasicFilter, str]] = None,
     ) -> Dataflow:
         """Get information about a dataflow.
 
@@ -282,6 +284,11 @@ class BasicConnector(Protocol):
                 necessary to uniquely identify it. Classes such as
                 `DataflowRef` or `Dataflow` are examples of pysdmx classes that
                 implement the `MaintainableIdentification` protocol.
+            filters: The data query filters, if any. This can be a string
+                similar to a SQL WHERE clause ("AREA='UY' AND FREQ <> 'A'")
+                or a Python expression ("REF_AREA=='UY' and FREQ != 'A'") or
+                one of the various filters the `pysdmx.api.dc.query` module
+                offers, including `MultiFilter`.
 
         Returns:
             Dataflow: Information about the requested dataflow.
