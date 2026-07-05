@@ -1593,6 +1593,27 @@ class StructureParser(Struct):
 
         return element
 
+    @staticmethod
+    def __prefix_agency_ids(agencies: List[Item], owner: str) -> List[Item]:
+        """Reconstructs owner-prefixed sub-agency ids (mirrors SDMX-JSON).
+
+        SDMX-ML stores the local sub-agency id, whereas pysdmx (like the
+        SDMX-JSON ``__add_owner``) keeps it as ``owner.local`` unless the
+        scheme owner is ``SDMX``. Rebuilding the prefixed id lets an agency
+        scheme read from SDMX-ML match the same scheme read from SDMX-JSON.
+        Top-level ("SDMX"-owned) agencies keep their local id.
+
+        Args:
+            agencies: The agency items parsed from SDMX-ML.
+            owner: The agency id of the enclosing AgencyScheme.
+
+        Returns:
+            The agency items with owner-prefixed ids where applicable.
+        """
+        if owner == "SDMX":
+            return agencies
+        return [replace(a, id=f"{owner}.{a.id}") for a in agencies]
+
     def __format_scheme(
         self, json_elem: Dict[str, Any], scheme: str, item: str
     ) -> Dict[str, ItemScheme]:
@@ -1625,6 +1646,8 @@ class StructureParser(Struct):
                     ]
                 )
                 del element[item]
+            if scheme == AGENCY_SCHEME:
+                items = self.__prefix_agency_ids(items, element[AGENCY_ID])
             element["items"] = items
             element = self.__format_agency(element)
             element = self.__format_validity(element)

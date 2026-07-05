@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from pysdmx.errors import Invalid, NotImplemented
-from pysdmx.io import read_sdmx
+from pysdmx.io import read_sdmx, write_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.__tokens import CON
@@ -1872,3 +1872,37 @@ def test_write_group_without_urn(complete_header, datastructure):
     )
     assert expected_urn in result
     read(result, validate=True)
+
+
+@pytest.mark.parametrize(
+    "sdmx_format",
+    [
+        Format.STRUCTURE_SDMX_ML_2_1,
+        Format.STRUCTURE_SDMX_ML_3_0,
+        Format.STRUCTURE_SDMX_ML_3_1,
+    ],
+)
+def test_json_agency_scheme_roundtrip_uses_local_ids(sdmx_format):
+    # An AgencyScheme owned by "BIS" stores its sub-agency ids as
+    # "BIS.DST"/"BIS.CMP" in the model (mirroring the SDMX-JSON reader),
+    # but SDMX-ML must serialize the local ids ("DST"/"CMP") to satisfy
+    # the SDMX id pattern. Reading the file back must reconstruct the
+    # owner-prefixed ids so the round-trip reproduces the JSON model.
+    json_path = (
+        Path(__file__).parents[4]
+        / "api"
+        / "fmr"
+        / "samples"
+        / "orgs"
+        / "agencies.json"
+    )
+    jp = read_sdmx(str(json_path))
+    result = write_sdmx(jp.get_agency_schemes(), sdmx_format)
+
+    assert 'id="DST"' in result
+    assert 'id="CMP"' in result
+    assert 'id="BIS.DST"' not in result
+    assert 'id="BIS.CMP"' not in result
+
+    xp = read_sdmx(result, validate=True)
+    assert jp.get_agency_schemes() == xp.get_agency_schemes()

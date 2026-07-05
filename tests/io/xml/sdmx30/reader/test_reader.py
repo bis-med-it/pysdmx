@@ -8,6 +8,7 @@ from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
 from pysdmx.io.reader import read_sdmx as reader
+from pysdmx.io.writer import write_sdmx
 from pysdmx.io.xml.sdmx30.reader.structure import read as read_structure
 from pysdmx.model import (
     Agency,
@@ -183,7 +184,10 @@ def test_agency_scheme_read(samples_folder):
 
     assert isinstance(agency_scheme.items[0], Agency)
     agency = agency_scheme.items[0]
-    assert agency.id == "AG"
+    # The scheme owner ("MD") is not "SDMX", so the sub-agency id is stored
+    # as "owner.local" ("MD.AG"), mirroring the SDMX-JSON reader. The XML
+    # itself carries only the local id ("AG").
+    assert agency.id == "MD.AG"
     assert agency.name == "AGENCY"
     assert agency.description == "AGENCY"
     assert (
@@ -195,6 +199,32 @@ def test_agency_scheme_read(samples_folder):
     contact = agency.contacts[0]
     assert contact.name == "CONTACT"
     assert contact.role == "ROLE"
+
+
+@pytest.mark.xml
+@pytest.mark.parametrize(
+    "sdmx_format",
+    [
+        Format.STRUCTURE_SDMX_ML_2_1,
+        Format.STRUCTURE_SDMX_ML_3_0,
+        Format.STRUCTURE_SDMX_ML_3_1,
+    ],
+)
+def test_non_sdmx_agency_scheme_roundtrip(samples_folder, sdmx_format):
+    # A non-"SDMX"-owned AgencyScheme ("MD") stores its sub-agency id as
+    # "MD.AG"; the SDMX-ML id and URN must use the local part ("AG"), and
+    # reading back must reconstruct the owner-prefixed id so the round-trip
+    # is stable.
+    original = read_sdmx(str(samples_folder / "agencies.xml"))
+    assert original.get_agency_schemes()[0].items[0].id == "MD.AG"
+
+    result = write_sdmx(original.get_agency_schemes(), sdmx_format)
+    assert 'id="AG"' in result
+    assert 'id="MD.AG"' not in result
+    assert "Agency=MD:AGENCIES(1.0).AG" in result
+
+    reparsed = read_sdmx(result, validate=True)
+    assert original.get_agency_schemes() == reparsed.get_agency_schemes()
 
 
 @pytest.mark.xml
