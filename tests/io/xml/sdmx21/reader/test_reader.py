@@ -1397,16 +1397,26 @@ def test_categorisation_21(samples_folder):
     cats = [s for s in result if isinstance(s, Categorisation)]
     assert len(cats) == 2
     by_id = {c.id: c for c in cats}
-    # Ref form (CAT1)
+    # Ref form (CAT1). Source/Target are stored as full URNs, matching
+    # the canonical form produced by the SDMX-JSON reader.
     cat1 = by_id["CAT1"]
     assert cat1.agency == "BIS"
     assert cat1.version == "1.0"
-    assert cat1.source == "Dataflow=BIS:DF1(1.0)"
-    assert cat1.target == "Category=BIS:CS1(1.0).TOP.MID.LEAF"
+    assert cat1.source == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0)"
+    )
+    assert cat1.target == (
+        "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+        "Category=BIS:CS1(1.0).TOP.MID.LEAF"
+    )
     # URN-inside-element form (CAT2)
     cat2 = by_id["CAT2"]
-    assert cat2.source == "Codelist=BIS:CL_FREQ(1.0)"
-    assert cat2.target == "Category=BIS:CS1(1.0).OTHER"
+    assert cat2.source == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+    )
+    assert cat2.target == (
+        "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=BIS:CS1(1.0).OTHER"
+    )
 
 
 @pytest.mark.xml
@@ -1429,4 +1439,7 @@ def test_category_scheme_21_enrichment_edge_cases(samples_folder):
     # CAT4 targets a category scheme that is absent from the message; it is
     # silently skipped during enrichment but still parsed as an artefact.
     cats = {c.id: c for c in result if isinstance(c, Categorisation)}
-    assert cats["CAT4"].target == "Category=BIS:CS_ABSENT(1.0).Z"
+    assert cats["CAT4"].target == (
+        "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+        "Category=BIS:CS_ABSENT(1.0).Z"
+    )

@@ -350,7 +350,18 @@ def test_categorisation_21_round_trip(complete_header):
     assert "<str:Target>" in result
     assert "isPartial" not in result
     re_read = read_sdmx(result, validate=True).structures[0]
-    assert re_read == categorisation
+    # The short input URNs are canonicalised to full URNs on read,
+    # matching the SDMX-JSON reader.
+    assert re_read == categorisation.__replace__(
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0).TOP.MID.LEAF"
+        ),
+        annotations=[],
+    )
 
 
 def test_category_scheme_21_enrichment_round_trip(complete_header):

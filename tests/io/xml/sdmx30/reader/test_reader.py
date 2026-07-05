@@ -1120,8 +1120,18 @@ def test_categorisation_30(samples_folder):
     by_id = {c.id: c for c in cats}
     cat1 = by_id["CAT1"]
     assert cat1.is_final is True
-    assert cat1.source == "Dataflow=BIS:DF1(1.0.0)"
-    assert cat1.target == "Category=BIS:CS1(1.0.0).TOP.MID.LEAF"
+    assert cat1.source == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0.0)"
+    )
+    assert cat1.target == (
+        "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+        "Category=BIS:CS1(1.0.0).TOP.MID.LEAF"
+    )
     cat2 = by_id["CAT2"]
-    assert cat2.source == "Codelist=BIS:CL_FREQ(1.0.0)"
-    assert cat2.target == "Category=BIS:CS1(1.0.0).OTHER"
+    assert cat2.source == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0.0)"
+    )
+    assert cat2.target == (
+        "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+        "Category=BIS:CS1(1.0.0).OTHER"
+    )

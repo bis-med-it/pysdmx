@@ -182,6 +182,8 @@ from pysdmx.model.dataflow import (
     Role,
 )
 from pysdmx.util import (
+    create_full_urn,
+    get_package,
     parse_item_urn,
     parse_short_item_urn,
     parse_short_urn,
@@ -1625,28 +1627,6 @@ def __write_hierarchy_association(
     return outfile
 
 
-_PACKAGE_BY_TYPE = {
-    "Dataflow": "datastructure",
-    "DataStructure": "datastructure",
-    "Metadataflow": "metadatastructure",
-    "MetadataStructure": "metadatastructure",
-    "Codelist": "codelist",
-    "ConceptScheme": "conceptscheme",
-    "Concept": "conceptscheme",
-    "CategoryScheme": "categoryscheme",
-    "Category": "categoryscheme",
-    "Agency": "base",
-    "AgencyScheme": "base",
-    "DataProvider": "base",
-    "DataConsumer": "base",
-}
-
-
-def _package_for(sdmx_type: str) -> str:
-    """Returns the SDMX package name for an artefact type."""
-    return _PACKAGE_BY_TYPE.get(sdmx_type, "base")
-
-
 def __write_category(
     category: Category, indent: str, references_30: bool = False
 ) -> str:
@@ -1689,6 +1669,32 @@ def __write_category_scheme(
     return outfile
 
 
+def _parse_categorisation_ref(
+    value: str, item: bool
+) -> Union[Reference, ItemReference]:
+    """Parses a Categorisation Source/Target URN (full or short).
+
+    The stored value may be a full ``urn:sdmx:...`` URN (as produced by
+    the SDMX-JSON reader) or a short URN (``Class=agency:id(version)``,
+    optionally suffixed with an item id). Full URNs are parsed with
+    :func:`parse_urn`; short URNs with :func:`parse_short_urn` (source /
+    maintainable) or :func:`parse_short_item_urn` (target / item).
+
+    Args:
+        value: The Source or Target URN string.
+        item: Whether the reference points to an item (Target) rather
+            than to a maintainable artefact (Source).
+
+    Returns:
+        The parsed reference with a clean ``sdmx_type``.
+    """
+    if value.startswith("urn:sdmx:"):
+        return parse_urn(value)
+    if item:
+        return parse_short_item_urn(value)
+    return parse_short_urn(value)
+
+
 def __write_categorisation_ref(
     ref: Union[Reference, ItemReference],
     tag: str,
@@ -1697,19 +1703,10 @@ def __write_categorisation_ref(
 ) -> str:
     """Writes a categorisation Source/Target reference element."""
     label = f"{ABBR_STR}:{tag}"
-    package = _package_for(ref.sdmx_type)
     if references_30:
-        urn = (
-            f"urn:sdmx:org.sdmx.infomodel.{package}.{ref}"
-            if isinstance(ref, Reference)
-            else (
-                "urn:sdmx:org.sdmx.infomodel."
-                f"{package}.{ref.sdmx_type}={ref.agency}:"
-                f"{ref.id}({ref.version}).{ref.item_id}"
-            )
-        )
-        outfile = f"{indent}<{label}>{urn}</{label}>"
+        outfile = f"{indent}<{label}>{create_full_urn(ref)}</{label}>"
     else:
+        package = get_package(ref.sdmx_type)
         if isinstance(ref, Reference):
             ref_tag = (
                 f"{add_indent(indent)}<{REF} "
@@ -1744,8 +1741,8 @@ def __write_categorisation(
     attributes = data["Attributes"].replace("'", '"')
     outfile = f"{indent}<{label}{attributes}>"
     outfile += __export_intern_data(data)
-    source = parse_short_urn(categorisation.source)
-    target = parse_short_item_urn(categorisation.target)
+    source = _parse_categorisation_ref(categorisation.source, item=False)
+    target = _parse_categorisation_ref(categorisation.target, item=True)
     outfile += __write_categorisation_ref(
         source, SOURCE, add_indent(indent), references_30
     )

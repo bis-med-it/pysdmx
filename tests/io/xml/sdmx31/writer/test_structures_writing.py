@@ -996,7 +996,18 @@ def test_categorisation_31_round_trip(complete_header):
         "version=" not in result.split("<str:Categorisation ")[1].split(">")[0]
     )
     re_read = read_sdmx(result, validate=True).structures[0]
-    assert re_read == categorisation
+    # The short input URNs are canonicalised to full URNs on read,
+    # matching the SDMX-JSON reader.
+    assert re_read == categorisation.__replace__(
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0.0).TOP.MID.LEAF"
+        ),
+        annotations=[],
+    )
 
 
 def test_categorisation_31_codelist_source_round_trip(complete_header):
@@ -1012,7 +1023,16 @@ def test_categorisation_31_codelist_source_round_trip(complete_header):
     result = write([categorisation], header=complete_header, prettyprint=True)
     assert "codelist.Codelist=BIS:CL_FREQ(1.0.0)" in result
     re_read = read_sdmx(result, validate=True).structures[0]
-    assert re_read == categorisation
+    assert re_read == categorisation.__replace__(
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0.0).OTHER"
+        ),
+        annotations=[],
+    )
 
 
 def test_category_scheme_31_enrichment_round_trip(complete_header):

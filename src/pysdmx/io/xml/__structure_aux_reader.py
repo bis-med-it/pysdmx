@@ -265,7 +265,7 @@ from pysdmx.model.vtl import (
     VtlDataflowMapping,
     VtlMappingScheme,
 )
-from pysdmx.util import find_by_urn, is_final, parse_urn
+from pysdmx.util import create_full_urn, find_by_urn, is_final, parse_urn
 
 T = Any
 
@@ -1572,8 +1572,10 @@ class StructureParser(Struct):
         """Resolves a categorisation Source/Target reference.
 
         Handles the 3.0/3.1 direct-URN string, the ``<URN>`` element
-        form and the 2.1 ``<Ref>`` form. The output is the short-URN
-        string stored in ``Categorisation.source``/``.target``.
+        form and the 2.1 ``<Ref>`` form. The output is the full URN
+        string stored in ``Categorisation.source``/``.target``, matching
+        the canonical form produced by the SDMX-JSON reader so that
+        categorisations round-trip across formats.
 
         Args:
             ref_elem: The Source or Target element.
@@ -1581,7 +1583,7 @@ class StructureParser(Struct):
                 artefact (Source) or to an item (Target).
 
         Returns:
-            The short-URN string representation of the reference.
+            The full URN string representation of the reference.
         """
         ref: Union[Reference, ItemReference]
         if isinstance(ref_elem, dict) and REF in ref_elem:
@@ -1605,7 +1607,7 @@ class StructureParser(Struct):
             ref = parse_urn(ref_elem[URN])
         else:
             ref = parse_urn(ref_elem)
-        return str(ref)
+        return create_full_urn(ref)
 
     def __format_categorisation(
         self, json_elem: Dict[str, Any]
@@ -1634,6 +1636,10 @@ class StructureParser(Struct):
             element = self.__format_validity(element)
             if "xmlns" in element:
                 del element["xmlns"]
+            # Align with the SDMX-JSON reader, which always stores
+            # annotations as a list, so categorisations compare equal
+            # across formats even when no annotations are present.
+            element.setdefault(ANNOTATIONS.lower(), [])
             result = Categorisation(**element)
             elements[result.short_urn] = result
         return elements

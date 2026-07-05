@@ -336,7 +336,17 @@ def test_categorisation_31(samples_folder):
     cats = [s for s in result if isinstance(s, Categorisation)]
     assert len(cats) == 2
     by_id = {c.id: c for c in cats}
-    assert by_id["CAT1"].source == "Dataflow=BIS:DF1(1.0.0)"
-    assert by_id["CAT1"].target == "Category=BIS:CS1(1.0.0).TOP.MID.LEAF"
-    assert by_id["CAT2"].source == "Codelist=BIS:CL_FREQ(1.0.0)"
-    assert by_id["CAT2"].target == "Category=BIS:CS1(1.0.0).OTHER"
+    assert by_id["CAT1"].source == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0.0)"
+    )
+    assert by_id["CAT1"].target == (
+        "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+        "Category=BIS:CS1(1.0.0).TOP.MID.LEAF"
+    )
+    assert by_id["CAT2"].source == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0.0)"
+    )
+    assert by_id["CAT2"].target == (
+        "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+        "Category=BIS:CS1(1.0.0).OTHER"
+    )
