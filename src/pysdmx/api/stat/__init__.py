@@ -568,6 +568,60 @@ class StatUploader:
             structs.replace(dataset, action=ActionType.Delete), dataspace
         )
 
+    def delete_structure(
+        self,
+        artefacts: Union[
+            MaintainableArtefact,
+            str,
+            Sequence[Union[MaintainableArtefact, str]],
+        ],
+    ) -> list[str]:
+        """Delete structural artefact(s) from the NSI web service.
+
+        Each artefact is deleted with
+        ``DELETE {nsi}/rest/{type}/{agency}/{id}/{version}`` (the type
+        segment is the lower-cased SDMX type). Accepts a maintainable
+        artefact, a short-URN string (e.g.
+        ``"DataConstraint=MD:CR_A_DF(1.0)"``), or a sequence of either;
+        a sequence is deleted **in order**, so pass dependents first.
+
+        .Stat dependencies: a data import auto-creates an actual content
+        constraint ``CR_A_<dataflow>``. To remove a dataflow, first
+        :meth:`delete_data`, then delete that constraint, then the
+        dataflow, its DSD and concept scheme (a wrong order yields a
+        ``409``/:class:`~pysdmx.errors.Invalid`).
+
+        Args:
+            artefacts: The artefact(s) or short URN(s) to delete.
+
+        Returns:
+            The service response bodies, one per artefact, in order.
+
+        Raises:
+            errors.Unauthorized: If the token is missing or rejected.
+            errors.Invalid: If the service returns a client error (e.g.
+                a ``409`` because a dependent artefact still references
+                it).
+            errors.NotFound: If an artefact does not exist.
+            errors.InternalError: If the service returns a server error.
+            errors.Unavailable: If the service cannot be reached.
+        """
+        items = (
+            [artefacts]
+            if isinstance(artefacts, str) or hasattr(artefacts, "short_urn")
+            else list(artefacts)
+        )
+        responses = []
+        for item in items:
+            urn = item if isinstance(item, str) else item.short_urn
+            ref = parse_short_urn(urn)
+            url = (
+                f"{self._nsi}/rest/{ref.sdmx_type.lower()}"
+                f"/{ref.agency}/{ref.id}/{ref.version}"
+            )
+            responses.append(self._send("DELETE", url).text)
+        return responses
+
     def submit(
         self,
         structures: Union[MaintainableArtefact, Sequence[Any]],

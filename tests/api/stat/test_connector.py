@@ -4,11 +4,15 @@ from pathlib import Path
 import httpx
 import pytest
 
+from pysdmx.api.dc.rest import SdmxConnector
 from pysdmx.api.qb import ApiVersion, DataFormat, StructureFormat
 from pysdmx.api.stat import StatConnector, StatEndpoints
 from pysdmx.errors import Invalid, NotFound
+from pysdmx.errors import NotImplemented as NotImpl
 from pysdmx.io import read_sdmx
+from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Dataflow, Schema
+from pysdmx.model.message import Message
 
 # --- Sample fixture files ----------------------------------------------------
 _IO_SAMPLES = Path(__file__).parent.parent.parent / "io" / "samples"
@@ -84,14 +88,10 @@ def test_init_accepts_endpoint_enum():
 
 
 def test_is_a_sdmx_connector(client):
-    from pysdmx.api.dc.rest import SdmxConnector
-
     assert isinstance(client, SdmxConnector)
 
 
 def test_inherited_json_methods_disabled(client):
-    from pysdmx.errors import NotImplemented as NotImpl
-
     with pytest.raises(NotImpl, match="fetch_"):
         client.dataflow("x")
     with pytest.raises(NotImpl, match="fetch_"):
@@ -132,8 +132,6 @@ def test_fetch_dataflow_not_found(respx_mock, client, structure_no_flow_xml):
 
 
 def test_find_dsd_missing(client):
-    from pysdmx.model.message import Message
-
     msg = Message(structures=[Dataflow("DF", agency="BIS", version="1.0")])
 
     with pytest.raises(NotFound, match="Data structure not found"):
@@ -153,8 +151,6 @@ def test_fetch_schema(respx_mock, client, struct_url, structure_xml):
 def test_fetch_dataset(
     respx_mock, client, struct_url, data_url, structure_xml, data_csv
 ):
-    from pysdmx.io.pd import PandasDataset
-
     _mock(respx_mock, struct_url, structure_xml)
     _mock(respx_mock, data_url, data_csv)
 

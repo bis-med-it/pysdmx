@@ -7,11 +7,19 @@ from pysdmx.api.stat import StatUploader
 from pysdmx.errors import (
     InternalError,
     Invalid,
+    NotFound,
     Unauthorized,
     Unavailable,
 )
 from pysdmx.io import get_datasets
-from pysdmx.model import Code, Codelist
+from pysdmx.model import (
+    Code,
+    Codelist,
+    Components,
+    ConceptScheme,
+    Dataflow,
+    DataStructureDefinition,
+)
 
 NSI = "https://nsi.test/rest"
 TRANSFER = "https://transfer.test"
@@ -276,3 +284,75 @@ def test_delete_data_without_dataspace_raises(token, dataset):
 
     with pytest.raises(Invalid, match="data space"):
         up.delete_data(dataset)
+
+
+def test_delete_structure_single_artefact(respx_mock, uploader):
+    url = f"{NSI}/rest/dataflow/MD/DF_X/1.0"
+    route = respx_mock.delete(url).mock(
+        return_value=httpx.Response(200, text="<deleted/>")
+    )
+
+    out = uploader.delete_structure(
+        Dataflow(id="DF_X", agency="MD", version="1.0", name="x")
+    )
+
+    assert out == ["<deleted/>"]
+    assert route.calls.last.request.headers["Authorization"] == "Bearer TKN"
+
+
+def test_delete_structure_urn_string_and_type_segment(respx_mock, uploader):
+    url = f"{NSI}/rest/dataconstraint/MD/CR_A_DF_X/1.0"
+    respx_mock.delete(url).mock(return_value=httpx.Response(204))
+
+    out = uploader.delete_structure("DataConstraint=MD:CR_A_DF_X(1.0)")
+
+    assert out == [""]  # 204 No Content -> empty body
+
+
+def test_delete_structure_sequence_in_order(respx_mock, uploader):
+    dsd_url = f"{NSI}/rest/datastructure/MD/DSD_X/1.0"
+    cs_url = f"{NSI}/rest/conceptscheme/MD/CS_X/1.0"
+    respx_mock.delete(dsd_url).mock(return_value=httpx.Response(200, text="d"))
+    respx_mock.delete(cs_url).mock(return_value=httpx.Response(200, text="c"))
+
+    dsd = DataStructureDefinition(
+        id="DSD_X",
+        agency="MD",
+        version="1.0",
+        name="x",
+        components=Components([]),
+    )
+    cs = ConceptScheme(id="CS_X", agency="MD", version="1.0", name="x")
+    out = uploader.delete_structure([dsd, cs])
+
+    assert out == ["d", "c"]
+    assert [str(c.request.url) for c in respx_mock.calls] == [dsd_url, cs_url]
+
+
+def test_delete_structure_conflict_raises_invalid(respx_mock, uploader):
+    url = f"{NSI}/rest/dataflow/MD/DF_X/1.0"
+    respx_mock.delete(url).mock(
+        return_value=httpx.Response(409, text="still referenced")
+    )
+
+    with pytest.raises(Invalid):
+        uploader.delete_structure(
+            Dataflow(id="DF_X", agency="MD", version="1.0", name="x")
+        )
+
+
+def test_delete_structure_not_found_raises(respx_mock, uploader):
+    url = f"{NSI}/rest/dataflow/MD/DF_X/1.0"
+    respx_mock.delete(url).mock(return_value=httpx.Response(404))
+
+    with pytest.raises(NotFound):
+        uploader.delete_structure("Dataflow=MD:DF_X(1.0)")
+
+
+def test_delete_structure_without_token_raises():
+    up = StatUploader(NSI, TRANSFER)  # no token
+
+    with pytest.raises(Unauthorized, match="Missing token"):
+        up.delete_structure(
+            Dataflow(id="DF_X", agency="MD", version="1.0", name="x")
+        )
