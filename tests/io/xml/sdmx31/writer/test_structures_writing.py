@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.io import write_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.reader import read_sdmx as read_sdmx
@@ -18,6 +19,10 @@ from pysdmx.model import (
     DataType,
     Facets,
     FromVtlMapping,
+    HierarchicalCode,
+    Hierarchy,
+    HierarchyAssociation,
+    LevelType,
     Ruleset,
     RulesetScheme,
     ToVtlMapping,
@@ -633,6 +638,168 @@ def test_codelist(complete_header, codelist, codelist_sample):
         prettyprint=True,
     )
     assert result == codelist_sample
+
+
+@pytest.fixture
+def hierarchy_with_levels():
+    return Hierarchy(
+        id="H1",
+        name="Hierarchy 1",
+        agency="BIS",
+        version="1.0",
+        has_formal_levels=True,
+        level=LevelType(
+            id="0",
+            name="Division",
+            level=LevelType(id="1", name="Group"),
+        ),
+        codes=(
+            HierarchicalCode(
+                id="A",
+                urn=(
+                    "urn:sdmx:org.sdmx.infomodel.codelist."
+                    "Code=BIS:CL_FREQ(1.0).A"
+                ),
+                level="1",
+                codes=(
+                    HierarchicalCode(
+                        id="A1",
+                        urn=(
+                            "urn:sdmx:org.sdmx.infomodel.codelist."
+                            "Code=BIS:CL_FREQ(1.0).M"
+                        ),
+                    ),
+                ),
+            ),
+            HierarchicalCode(
+                id="B",
+                urn=(
+                    "urn:sdmx:org.sdmx.infomodel.codelist."
+                    "Code=BIS:CL_FREQ(1.0).Q"
+                ),
+            ),
+        ),
+    )
+
+
+def test_hierarchy(complete_header, hierarchy_with_levels):
+    result = write(
+        [hierarchy_with_levels], header=complete_header, prettyprint=True
+    )
+    assert "<str:Hierarchies>" in result
+    assert 'hasFormalLevels="true"' in result
+    assert '<str:Level id="0">' in result
+    assert '<str:Level id="1">' in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == hierarchy_with_levels
+
+
+def test_hierarchy_with_annotations(complete_header):
+    hierarchy = Hierarchy(
+        id="H1",
+        name="Hierarchy 1",
+        agency="BIS",
+        version="1.0",
+        has_formal_levels=True,
+        level=LevelType(
+            id="0",
+            name="Division",
+            annotations=(Annotation(id="LA", title="Level annotation"),),
+        ),
+        codes=(
+            HierarchicalCode(
+                id="A",
+                urn=(
+                    "urn:sdmx:org.sdmx.infomodel.codelist."
+                    "Code=BIS:CL_FREQ(1.0).A"
+                ),
+                annotations=(Annotation(id="CA", text="Code annotation"),),
+            ),
+        ),
+    )
+    result = write([hierarchy], header=complete_header, prettyprint=True)
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == hierarchy
+
+
+def test_hierarchy_association(complete_header):
+    ha = HierarchyAssociation(
+        id="HA1",
+        name="Association 1",
+        agency="BIS",
+        version="1.0",
+        hierarchy=Hierarchy(id="H1", name="H", agency="BIS", version="1.0"),
+        component_ref=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure."
+            "Dimension=BIS:DSD(1.0).FREQ"
+        ),
+        context_ref=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF(1.0)"
+        ),
+    )
+    result = write([ha], header=complete_header, prettyprint=True)
+    assert "<str:HierarchyAssociations>" in result
+    assert (
+        "<str:LinkedHierarchy>"
+        "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS:H1(1.0)"
+        "</str:LinkedHierarchy>" in result
+    )
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert isinstance(re_read, HierarchyAssociation)
+    assert (
+        re_read.hierarchy
+        == "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS:H1(1.0)"
+    )
+
+
+def test_hierarchy_association_no_hierarchy(complete_header):
+    ha = HierarchyAssociation(
+        id="HA1",
+        name="Association 1",
+        agency="BIS",
+        version="1.0",
+        component_ref="urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dimension=BIS:DSD(1.0).FREQ",
+    )
+    with pytest.raises(Invalid, match="must reference a hierarchy"):
+        write([ha], header=complete_header, prettyprint=True)
+
+
+def test_hierarchy_association_no_component(complete_header):
+    ha = HierarchyAssociation(
+        id="HA1",
+        name="Association 1",
+        agency="BIS",
+        version="1.0",
+        hierarchy="urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS:H1(1.0)",
+    )
+    with pytest.raises(Invalid, match="must reference a component"):
+        write([ha], header=complete_header, prettyprint=True)
+
+
+def test_hierarchy_level_no_name(complete_header):
+    hierarchy = Hierarchy(
+        id="H1",
+        name="H",
+        agency="BIS",
+        version="1.0",
+        has_formal_levels=True,
+        level=LevelType(id="0"),
+    )
+    with pytest.raises(Invalid, match="hierarchy levels must have a name"):
+        write([hierarchy], header=complete_header, prettyprint=True)
+
+
+def test_hierarchy_code_no_urn(complete_header):
+    hierarchy = Hierarchy(
+        id="H1",
+        name="H",
+        agency="BIS",
+        version="1.0",
+        codes=[HierarchicalCode(id="A")],
+    )
+    with pytest.raises(Invalid, match="must reference a code urn"):
+        write([hierarchy], header=complete_header, prettyprint=True)
 
 
 def test_concept(complete_header, concept, concept_sample):

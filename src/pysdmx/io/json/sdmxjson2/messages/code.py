@@ -22,6 +22,7 @@ from pysdmx.model import (
     HierarchicalCode,
     Hierarchy,
     HierarchyAssociation,
+    LevelType,
 )
 from pysdmx.util import find_by_urn, is_final, parse_item_urn
 
@@ -254,6 +255,7 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
 
     id: str
     code: str
+    level: Optional[str] = None
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
     annotations: Optional[Sequence[JsonAnnotation]] = None
@@ -292,16 +294,17 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
         else:
             annotations = []
         return HierarchicalCode(
-            code.id,
-            name,
-            description,
-            code.valid_from,
-            code.valid_to,
-            vf,
-            vt,
-            codes,
-            tuple(annotations),
-            self.code,
+            id=code.id,
+            name=name,
+            description=description,
+            valid_from=code.valid_from,
+            valid_to=code.valid_to,
+            rel_valid_from=vf,
+            rel_valid_to=vt,
+            codes=tuple(codes),
+            annotations=tuple(annotations),
+            urn=self.code,
+            level=self.level,
         )
 
     @classmethod
@@ -329,6 +332,7 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
         return JsonHierarchicalCode(
             id=hid,  # type: ignore[arg-type]
             code=code.urn,
+            level=code.level,
             validFrom=code.rel_valid_from,
             validTo=code.rel_valid_to,
             annotations=tuple(annotations) if annotations else None,
@@ -338,9 +342,52 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
         )
 
 
+class JsonLevel(NameableType, frozen=True, omit_defaults=True):
+    """SDMX-JSON payload for hierarchy levels."""
+
+    level: Optional["JsonLevel"] = None
+
+    def to_model(self) -> LevelType:
+        """Converts a JsonLevel to a hierarchy level."""
+        return LevelType(
+            id=self.id,
+            name=self.name,
+            description=self.description,
+            annotations=tuple(a.to_model() for a in self.annotations),
+            level=self.level.to_model() if self.level else None,
+        )
+
+    @classmethod
+    def from_model(self, level: LevelType) -> "JsonLevel":
+        """Converts a pysdmx hierarchy level to an SDMX-JSON one."""
+        if not level.name:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON hierarchy levels must have a name",
+                {"level": level.id},
+            )
+
+        return JsonLevel(
+            id=level.id,
+            name=level.name,
+            description=level.description,
+            annotations=tuple(
+                JsonAnnotation.from_model(annotation)
+                for annotation in level.annotations
+            ),
+            level=(
+                JsonLevel.from_model(level.level)
+                if level.level is not None
+                else None
+            ),
+        )
+
+
 class JsonHierarchy(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a hierarchy."""
 
+    hasFormalLevels: bool = False
+    level: Optional[JsonLevel] = None
     hierarchicalCodes: Sequence[JsonHierarchicalCode] = ()
 
     def to_model(self, codelists: Sequence[JsonCodelist]) -> Hierarchy:
@@ -356,9 +403,11 @@ class JsonHierarchy(ItemSchemeType, frozen=True, omit_defaults=True):
             is_external_reference=self.isExternalReference,
             is_partial=self.isPartial,
             is_final=is_final(self.version),
+            has_formal_levels=self.hasFormalLevels,
+            level=self.level.to_model() if self.level else None,
             valid_from=self.validFrom,
             valid_to=self.validTo,
-            codes=[i.to_model(cls) for i in self.hierarchicalCodes],
+            codes=tuple(i.to_model(cls) for i in self.hierarchicalCodes),
         )
 
     @classmethod
@@ -384,6 +433,8 @@ class JsonHierarchy(ItemSchemeType, frozen=True, omit_defaults=True):
             ),
             isExternalReference=h.is_external_reference,
             isPartial=h.is_partial,
+            hasFormalLevels=h.has_formal_levels,
+            level=JsonLevel.from_model(h.level) if h.level else None,
             validFrom=h.valid_from,
             validTo=h.valid_to,
         )

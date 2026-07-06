@@ -39,6 +39,21 @@ def body_no_cl():
         return f.read()
 
 
+@pytest.fixture
+def query_levels(fmr):
+    res = "/structure/hierarchy/"
+    agency = "BIS.TEST"
+    id = "TEST_LEVELS"
+    qst = "detail=referencepartial&references=codelist"
+    return f"{fmr.api_endpoint}{res}{agency}/{id}?{qst}"
+
+
+@pytest.fixture
+def body_levels():
+    with open("tests/api/fmr/samples/code/hierlev.json", "rb") as f:
+        return f.read()
+
+
 def test_returns_hierarchy(respx_mock, fmr, query, body):
     """get_hierarchy() should return a hierarchy."""
     checks.check_hierarchy(respx_mock, fmr, query, body)
@@ -53,6 +68,13 @@ async def test_hcode_have_core_info(respx_mock, async_fmr, query, body):
 def test_hcode_have_details(respx_mock, fmr, query, body):
     """Hierarchical codes may have extended information."""
     checks.check_hcode_details(respx_mock, fmr, query, body)
+
+
+def test_hierarchy_has_formal_levels(
+    respx_mock, fmr, query_levels, body_levels
+):
+    """Hierarchies may define formal levels."""
+    checks.check_hierarchy_levels(respx_mock, fmr, query_levels, body_levels)
 
 
 def test_hcode_have_no_details(respx_mock, fmr, query, body_no_cl):

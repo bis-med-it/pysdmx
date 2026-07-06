@@ -15,6 +15,8 @@ from pysdmx.model.__base import (
     DataConsumer,
     DataflowRef,
     DataProvider,
+    DataType,
+    Facets,
     ItemReference,
     MetadataProvider,
     Organisation,
@@ -27,8 +29,9 @@ from pysdmx.model.code import (
     HierarchicalCode,
     Hierarchy,
     HierarchyAssociation,
+    LevelType,
 )
-from pysdmx.model.concept import Concept, ConceptScheme, DataType, Facets
+from pysdmx.model.concept import Concept, ConceptScheme
 from pysdmx.model.constraint import (
     ConstraintAttachment,
     CubeKeyValue,
@@ -200,6 +203,7 @@ __all__ = [
     "ImplicitComponentMap",
     "ItemReference",
     "KeySet",
+    "LevelType",
     "MetadataAttribute",
     "MetadataComponent",
     "Metadataflow",

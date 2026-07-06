@@ -1,0 +1,150 @@
+{
+  "meta": {
+    "id": "IREF485563",
+    "test": false,
+    "schema": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+    "prepared": "2026-05-29T09:55:51Z",
+    "contentLanguages": [
+      "en"
+    ],
+    "sender": {
+      "id": "5B0"
+    }
+  },
+  "data": {
+    "hierarchies": [
+      {
+        "links": [
+          {
+            "rel": "self",
+            "type": "hierarchy",
+            "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS.TEST:TEST_LEVELS(1.0)"
+          }
+        ],
+        "id": "TEST_LEVELS",
+        "name": "Test hierarchy levels",
+        "names": {
+          "en": "Test hierarchy levels"
+        },
+        "version": "1.0",
+        "agencyID": "BIS.TEST",
+        "isExternalReference": false,
+        "hasFormalLevels": true,
+        "hierarchicalCodes": [
+          {
+            "links": [
+              {
+                "rel": "self",
+                "type": "hierarchicalcode",
+                "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=BIS.TEST:TEST_LEVELS(1.0).CL_COICOP"
+              }
+            ],
+            "id": "CL_COICOP",
+            "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COICOP(1.1).CP00",
+            "hierarchicalCodes": [
+              {
+                "links": [
+                  {
+                    "rel": "self",
+                    "type": "hierarchicalcode",
+                    "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=BIS.TEST:TEST_LEVELS(1.0).CL_COICOP.CP01"
+                  }
+                ],
+                "id": "CP01",
+                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COICOP(1.1).CP01",
+                "hierarchicalCodes": [
+                  {
+                    "links": [
+                      {
+                        "rel": "self",
+                        "type": "hierarchicalcode",
+                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=BIS.TEST:TEST_LEVELS(1.0).CL_COICOP.CP01.CP011"
+                      }
+                    ],
+                    "id": "CP011",
+                    "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COICOP(1.1).CP011"
+                  }
+                ]
+              },
+              {
+                "links": [
+                  {
+                    "rel": "self",
+                    "type": "hierarchicalcode",
+                    "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                    "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=BIS.TEST:TEST_LEVELS(1.0).CL_COICOP.CP04"
+                  }
+                ],
+                "id": "CP04",
+                "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COICOP(1.1).CP04",
+                "hierarchicalCodes": [
+                  {
+                    "links": [
+                      {
+                        "rel": "self",
+                        "type": "hierarchicalcode",
+                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchicalCode=BIS.TEST:TEST_LEVELS(1.0).CL_COICOP.CP04.CP041"
+                      }
+                    ],
+                    "id": "CP041",
+                    "code": "urn:sdmx:org.sdmx.infomodel.codelist.Code=ESTAT:CL_COICOP(1.1).CP041"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "level": {
+          "links": [
+            {
+              "rel": "self",
+              "type": "level",
+              "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+              "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Level=BIS.TEST:TEST_LEVELS(1.0).0"
+            }
+          ],
+          "id": "0",
+          "name": "Divisions",
+          "names": {
+            "en": "Divisions"
+          },
+          "level": {
+            "links": [
+              {
+                "rel": "self",
+                "type": "level",
+                "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Level=BIS.TEST:TEST_LEVELS(1.0).1"
+              }
+            ],
+            "id": "1",
+            "name": "Groups",
+            "names": {
+              "en": "Groups"
+            },
+            "level": {
+              "links": [
+                {
+                  "rel": "self",
+                  "type": "level",
+                  "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                  "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Level=BIS.TEST:TEST_LEVELS(1.0).3"
+                }
+              ],
+              "id": "3",
+              "name": "Classes",
+              "names": {
+                "en": "Classes"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

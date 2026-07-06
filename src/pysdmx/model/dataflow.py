@@ -18,12 +18,14 @@ from pysdmx.errors import Invalid
 from pysdmx.model.__base import (
     Agency,
     DataProvider,
+    DataType,
+    Facets,
     IdentifiableArtefact,
     ItemReference,
     MaintainableArtefact,
 )
 from pysdmx.model.code import Codelist, Hierarchy
-from pysdmx.model.concept import Concept, DataType, Facets
+from pysdmx.model.concept import Concept
 
 
 class Role(str, Enum):

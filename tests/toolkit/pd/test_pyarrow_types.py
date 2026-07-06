@@ -26,6 +26,8 @@ from pysdmx.toolkit.pd import to_pyarrow_schema, to_pyarrow_type
         (DataType.FLOAT, pa.float32()),
         (DataType.DOUBLE, pa.float64()),
         (DataType.DECIMAL, pa.float64()),
+        (DataType.EXC_VAL_RANGE, pa.float64()),
+        (DataType.INC_VAL_RANGE, pa.float64()),
         (DataType.BOOLEAN, pa.bool_()),
         (DataType.MONTH, pa.int8()),
         (DataType.DATE, pa.date32()),

@@ -22,8 +22,7 @@ from vtlengine.Model import Role as VTLRole
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
-from pysdmx.model import Component, Components, Concept, Reference
-from pysdmx.model.concept import DataType
+from pysdmx.model import Component, Components, Concept, DataType, Reference
 from pysdmx.model.dataflow import Role, Schema
 
 # VTL to SDMX type mapping

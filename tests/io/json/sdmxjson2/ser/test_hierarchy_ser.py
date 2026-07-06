@@ -5,7 +5,13 @@ import pytest
 
 from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.code import JsonHierarchy
-from pysdmx.model import Agency, Annotation, HierarchicalCode, Hierarchy
+from pysdmx.model import (
+    Agency,
+    Annotation,
+    HierarchicalCode,
+    Hierarchy,
+    LevelType,
+)
 
 
 @pytest.fixture
@@ -55,6 +61,46 @@ def hierarchy_no_name():
     return Hierarchy("CL_FREQ", agency="BIS")
 
 
+@pytest.fixture
+def hierarchy_with_levels():
+    hc = HierarchicalCode(
+        "A",
+        urn="urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:Z(1.0).V",
+        level="1",
+    )
+    return Hierarchy(
+        "H1",
+        name="Hierarchy 1",
+        agency="BIS",
+        version="1.1",
+        codes=[hc],
+        has_formal_levels=True,
+        level=LevelType(
+            id="0",
+            name="Division",
+            level=LevelType(id="1", name="Group"),
+        ),
+    )
+
+
+@pytest.fixture
+def hierarchy_with_level_no_name():
+    hc = HierarchicalCode(
+        "A",
+        urn="urn:sdmx:org.sdmx.infomodel.codelist.Codelist=TEST:Z(1.0).V",
+        level="1",
+    )
+    return Hierarchy(
+        "H1",
+        name="Hierarchy 1",
+        agency="BIS",
+        version="1.1",
+        codes=[hc],
+        has_formal_levels=True,
+        level=LevelType(id="0", name="Division", level=LevelType(id="1")),
+    )
+
+
 def test_hierarchy(hierarchy: Hierarchy):
     sjson = JsonHierarchy.from_model(hierarchy)
 
@@ -90,3 +136,26 @@ def test_hierarchy_org(hierarchy_org: Hierarchy):
 def test_hierarchy_no_name(hierarchy_no_name):
     with pytest.raises(errors.Invalid, match="must have a name"):
         JsonHierarchy.from_model(hierarchy_no_name)
+
+
+def test_hierarchy_with_levels(hierarchy_with_levels: Hierarchy):
+    sjson = JsonHierarchy.from_model(hierarchy_with_levels)
+
+    assert sjson.hasFormalLevels is True
+    assert sjson.level is not None
+    assert sjson.level.id == "0"
+    assert sjson.level.name == "Division"
+    assert sjson.level.level is not None
+    assert sjson.level.level.id == "1"
+    assert sjson.level.level.name == "Group"
+    assert sjson.level.level.level is None
+    assert sjson.hierarchicalCodes[0].level == "1"
+
+
+def test_hierarchy_with_level_no_name(
+    hierarchy_with_level_no_name: Hierarchy,
+):
+    with pytest.raises(
+        errors.Invalid, match="hierarchy levels must have a name"
+    ):
+        JsonHierarchy.from_model(hierarchy_with_level_no_name)

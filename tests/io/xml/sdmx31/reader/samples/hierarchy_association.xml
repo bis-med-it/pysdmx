@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xmlns:xml="http://www.w3.org/XML/1998/namespace"
+				xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message"
+				xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/structure"
+				xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/common"
+				xsi:schemaLocation="http://xmlschema.sdmx.org/resources/sdmxml/schemas/v3_1/message https://xml.sdmx.org/3.1/SDMXMessage.xsd">
+    <mes:Header>
+        <mes:ID>IREF1</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2021-03-08T17:49:35Z</mes:Prepared>
+        <mes:Sender id="Unknown" />
+        <mes:Receiver id="not_supplied" /></mes:Header>
+    <mes:Structures>
+        <str:HierarchyAssociations>
+            <str:HierarchyAssociation agencyID="BIS" id="HA1" version="1.0">
+                <com:Name xml:lang="en">Association 1</com:Name>
+                <str:LinkedHierarchy>urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS:H1(1.0)</str:LinkedHierarchy>
+                <str:LinkedObject>urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:DSD(1.0).FREQ</str:LinkedObject>
+                <str:ContextObject>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF(1.0)</str:ContextObject>
+            </str:HierarchyAssociation>
+            <str:HierarchyAssociation agencyID="BIS" id="HA2" version="1.0">
+                <com:Name xml:lang="en">Association 2</com:Name>
+                <str:LinkedHierarchy>urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS:H2(1.0)</str:LinkedHierarchy>
+                <str:LinkedObject>urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=BIS:DSD(1.0).REF_AREA</str:LinkedObject>
+            </str:HierarchyAssociation>
+        </str:HierarchyAssociations>
+    </mes:Structures>
+</mes:Structure>
