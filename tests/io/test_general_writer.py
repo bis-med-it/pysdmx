@@ -710,16 +710,18 @@ PA_PATH = JSN_2_0_PATH / "pa"
 )
 def test_metadata_structure_json_to_xml_roundtrip(tmpdir, sdmx_format):
     # An MSD read from SDMX-JSON resolves each component's concept to a full
-    # Concept (the ConceptScheme is in the message). Writing the MSD to
-    # SDMX-ML must serialise the referenced ConceptScheme alongside it so the
-    # concepts resolve again on read-back, letting the MSD round-trip
-    # unchanged and matching the SDMX-JSON reader.
+    # Concept because the referenced ConceptScheme is present in the message.
+    # Writing the MSD together with that ConceptScheme to SDMX-ML lets the
+    # concepts resolve again on read-back, so the MSD round-trips unchanged --
+    # exactly as the SDMX-JSON reader resolves them (no writer-side fabrication
+    # of the scheme).
     from_json = read_sdmx(REFMETA_PATH / "msd.json")
     json_msds = from_json.get_metadata_structures()
     assert json_msds[0].components[0].concept.name is not None
 
+    structures = [*json_msds, *from_json.get_concept_schemes()]
     out_path = Path(str(tmpdir)) / "msd.xml"
-    write_sdmx(json_msds, sdmx_format=sdmx_format, output_path=str(out_path))
+    write_sdmx(structures, sdmx_format=sdmx_format, output_path=str(out_path))
 
     from_xml = read_sdmx(out_path, validate=True)
     assert json_msds == from_xml.get_metadata_structures()

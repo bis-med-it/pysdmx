@@ -1593,64 +1593,6 @@ def test_metadata_provision_agreement_30(
 
 
 @pytest.mark.xml
-def test_metadata_structure_30_concept_scheme_reconstructed(complete_header):
-    # An MSD whose components carry resolved Concept objects gets the
-    # referenced ConceptScheme reconstructed and written alongside it, so the
-    # concepts resolve again on read-back.
-    concept = Concept(
-        id="C1",
-        urn=(
-            "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:CS(1.0).C1"
-        ),
-        name="Concept 1",
-    )
-    msd = MetadataStructure(
-        id="M",
-        name="n",
-        agency="BIS",
-        version="1.0",
-        components=(MetadataComponent(id="C1", concept=concept),),
-    )
-    result = write([msd], header=complete_header, prettyprint=True)
-    assert result.count("<str:ConceptScheme ") == 1
-    re_read = read_sdmx(result, validate=True)
-    re_comp = re_read.get_metadata_structures()[0].components[0]
-    assert isinstance(re_comp.concept, Concept)
-    assert re_comp.concept.name == "Concept 1"
-
-
-@pytest.mark.xml
-def test_metadata_structure_30_concept_scheme_not_duplicated(complete_header):
-    # When the referenced ConceptScheme is already among the structures, it
-    # is not reconstructed/duplicated (the real scheme is kept).
-    concept = Concept(
-        id="C1",
-        urn=(
-            "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:CS(1.0).C1"
-        ),
-        name="Concept 1",
-    )
-    msd = MetadataStructure(
-        id="M",
-        name="n",
-        agency="BIS",
-        version="1.0",
-        components=(MetadataComponent(id="C1", concept=concept),),
-    )
-    scheme = ConceptScheme(
-        id="CS",
-        name="Real Concept Scheme",
-        agency="BIS",
-        version="1.0",
-        items=(concept,),
-    )
-    result = write([msd, scheme], header=complete_header, prettyprint=True)
-    # Only the real scheme is written, not a reconstructed duplicate.
-    assert result.count("<str:ConceptScheme ") == 1
-    assert "Real Concept Scheme" in result
-
-
-@pytest.mark.xml
 def test_metadata_refs_30_short_urns_canonicalized(complete_header):
     # A model built with short URNs must be written as full URNs (2.1 Ref /
     # 3.x URN), matching the canonical form stored by the readers.

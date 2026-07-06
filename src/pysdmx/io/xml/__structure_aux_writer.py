@@ -1159,54 +1159,6 @@ def __write_metadata_prov_agreement(
     return outfile.replace("'", '"')
 
 
-def add_metadata_concept_schemes(
-    elements: Dict[str, Any],
-) -> None:
-    """Adds ConceptSchemes referenced by MSD resolved concepts to ``elements``.
-
-    When a MetadataStructure's components carry resolved :class:`Concept`
-    objects (as produced by the SDMX-JSON reader, and by the SDMX-ML reader
-    when the ConceptScheme is in the message), the referenced scheme is
-    serialised alongside the MSD so a reader can resolve the concepts again
-    on read-back. This keeps a stand-alone MSD self-contained and lets it
-    round-trip unchanged, matching the SDMX-JSON reader's concept resolution.
-
-    ``elements`` is keyed by short URN; schemes already present are left
-    untouched. The scheme is only reconstructed from concepts that expose a
-    URN (needed to derive the owning scheme).
-    """
-    collected: Dict[str, Dict[str, Concept]] = {}
-    refs: Dict[str, Union[Reference, ItemReference]] = {}
-
-    def visit(components: Sequence[MetadataComponent]) -> None:
-        for component in components:
-            concept = component.concept
-            if isinstance(concept, Concept) and concept.urn:
-                ref = parse_urn(concept.urn)
-                scheme_urn = (
-                    f"ConceptScheme={ref.agency}:{ref.id}({ref.version})"
-                )
-                collected.setdefault(scheme_urn, {})[concept.id] = concept
-                refs[scheme_urn] = ref
-            visit(component.components)
-
-    for element in list(elements.values()):
-        if isinstance(element, MetadataStructure):
-            visit(element.components)
-
-    for scheme_urn, concepts in collected.items():
-        if scheme_urn in elements:
-            continue
-        ref = refs[scheme_urn]
-        elements[scheme_urn] = ConceptScheme(
-            id=ref.id,
-            agency=ref.agency,
-            version=ref.version,
-            name=ref.id,
-            items=tuple(concepts.values()),
-        )
-
-
 def __write_value_map(
     value_map: Union[ValueMap, MultiValueMap], indent: str
 ) -> str:
