@@ -1,8 +1,9 @@
 """Module for writing metadata to XML files."""
 
 from collections import OrderedDict
-from copy import copy
 from typing import Any, Dict, Optional, Sequence, Union
+
+from msgspec.structs import replace
 
 from pysdmx.errors import Invalid
 from pysdmx.io.xml.__tokens import (
@@ -198,6 +199,15 @@ ROLE_MAPPING = {
     Role.MEASURE: MEASURE,
 }
 
+# Organisation schemes have a fixed id, version and finality in the SDMX
+# information model, so those attributes are not serialized for them.
+ORG_SCHEMES = (
+    AgencyScheme,
+    DataProviderScheme,
+    DataConsumerScheme,
+    MetadataProviderScheme,
+)
+
 STR_TYPES = Union[
     ItemScheme,
     Codelist,
@@ -211,13 +221,6 @@ STR_TYPES = Union[
     UserDefinedOperatorScheme,
     TransformationScheme,
 ]
-
-ORGANISATION_SCHEMES = (
-    AgencyScheme,
-    DataProviderScheme,
-    DataConsumerScheme,
-    MetadataProviderScheme,
-)
 
 STR_DICT_TYPE_LIST_21 = {
     AgencyScheme: "OrganisationSchemes",
@@ -362,7 +365,7 @@ def __write_versionable(
     """Writes the VersionableArtefact to the XML file."""
     outfile = __write_nameable(versionable, add_indent(indent))
 
-    if not (references_30 and isinstance(versionable, ORGANISATION_SCHEMES)):
+    if not (references_30 and isinstance(versionable, ORG_SCHEMES)):
         outfile["Attributes"] += f" version={versionable.version!r}"
 
     if versionable.valid_from is not None:
@@ -388,9 +391,7 @@ def __write_maintainable(
         f" isExternalReference="
         f"{str(maintainable.is_external_reference).lower()!r}"
     )
-    if not references_30 and not isinstance(
-        maintainable, ORGANISATION_SCHEMES
-    ):
+    if not references_30 and not (isinstance(maintainable, ORG_SCHEMES)):
         outfile["Attributes"] += (
             f" isFinal={str(maintainable.is_final).lower()!r}"
         )
@@ -470,6 +471,37 @@ def __write_item(
         outfile += f"{add_indent(indent)}</{ABBR_STR}:{CORE_REP}>"
     outfile += f"{indent}</{head}>"
     return outfile
+
+
+def __localize_agency_item(
+    item: Item, owner: str, references_30: bool
+) -> Item:
+    """Returns an agency item carrying its local (unprefixed) SDMX-ML id.
+
+    pysdmx stores a sub-agency id as ``owner.local`` (mirroring the
+    SDMX-JSON reader) unless the scheme owner is ``SDMX``. SDMX-ML expects
+    the local id instead (the owner is carried by the enclosing
+    AgencyScheme and the dotted id would violate the SDMX id pattern), so
+    the owner prefix is stripped here. For SDMX-ML 3.0/3.1 the agency URN,
+    when present, is rebuilt with the same local id so it stays consistent
+    with the id attribute.
+
+    Args:
+        item: The agency item to serialize.
+        owner: The agency id of the enclosing AgencyScheme.
+        references_30: Whether the target format is SDMX-ML 3.0/3.1.
+
+    Returns:
+        The agency item with a local id (and a matching URN when needed).
+    """
+    local_id = item.id if owner == "SDMX" else item.id.rsplit(".", 1)[-1]
+    new_urn = item.urn
+    if references_30 and item.urn is not None:
+        new_urn = (
+            "urn:sdmx:org.sdmx.infomodel.base.Agency="
+            f"{owner}:AGENCIES(1.0).{local_id}"
+        )
+    return replace(item, id=local_id, urn=new_urn)
 
 
 def __write_groups(
@@ -1706,18 +1738,14 @@ def __write_scheme(  # noqa: C901
         NAME_PER_SCHEME,
         PROV_AGREEMENT,
     ]:
+        owner = (
+            parse_short_urn(item_scheme.short_urn).agency
+            if scheme == AGENCY_SCHEME
+            else ""
+        )
         for item in item_scheme.items:
-            if (
-                scheme == AGENCY_SCHEME
-                and item.urn is not None
-                and references_30
-            ):
-                agency_id = parse_short_urn(item_scheme.short_urn).agency
-                item = copy(
-                    item.__replace__(
-                        urn=f"urn:sdmx:org.sdmx.infomodel.base.Agency={agency_id}:AGENCIES(1.0).{item.id}"
-                    )
-                )
+            if scheme == AGENCY_SCHEME:
+                item = __localize_agency_item(item, owner, references_30)
             outfile += __write_item(
                 item, add_indent(indent), scheme, references_30
             )

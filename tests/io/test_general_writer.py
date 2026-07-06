@@ -698,3 +698,31 @@ def test_write_multi_datatype_representation_map(tmpdir, format):
     xml_content = out_path.read_text("utf-8")
     assert xml_content.count("<str:SourceDataType>") == 2
     assert xml_content.count("<str:TargetDataType>") == 2
+
+
+@pytest.mark.parametrize(
+    "sdmx_format",
+    [
+        Format.STRUCTURE_SDMX_ML_2_1,
+        Format.STRUCTURE_SDMX_ML_3_0,
+        Format.STRUCTURE_SDMX_ML_3_1,
+    ],
+)
+def test_json_agency_scheme_roundtrip_uses_local_ids(sdmx_format):
+    # An AgencyScheme owned by "BIS" stores its sub-agency ids as
+    # "BIS.DST"/"BIS.CMP" in the model (mirroring the SDMX-JSON reader),
+    # but SDMX-ML must serialize the local ids ("DST"/"CMP") to satisfy
+    # the SDMX id pattern. Reading the file back must reconstruct the
+    # owner-prefixed ids so the round-trip reproduces the JSON model.
+    # This lives here (not under tests/io/xml/) because reading SDMX-JSON
+    # pulls in the json extra, so it must run with all extras installed.
+    jp = read_sdmx(JSN_2_0_PATH / "orgs" / "agencies.json")
+    result = write_sdmx(jp.get_agency_schemes(), sdmx_format)
+
+    assert 'id="DST"' in result
+    assert 'id="CMP"' in result
+    assert 'id="BIS.DST"' not in result
+    assert 'id="BIS.CMP"' not in result
+
+    xp = read_sdmx(result, validate=True)
+    assert jp.get_agency_schemes() == xp.get_agency_schemes()

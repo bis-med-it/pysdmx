@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<message:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/common">
+  <message:Header>
+    <message:ID>12345</message:ID>
+    <message:Test>true</message:Test>
+    <message:Prepared>2025-05-26T11:58:47Z</message:Prepared>
+    <message:Sender id="Unknown"/>
+    <message:Receiver id="not_supplied"/>
+  </message:Header>
+  <message:Structures>
+    <str:MetadataProviderSchemes>
+      <str:MetadataProviderScheme urn="urn:sdmx:org.sdmx.infomodel.base.MetadataProviderScheme=MD:METADATA_PROVIDERS(1.0)" isExternalReference="false" agencyID="MD" id="METADATA_PROVIDERS" isPartial="false">
+        <com:Name xml:lang="en">MD Metadata Provider Scheme</com:Name>
+        <str:MetadataProvider urn="urn:sdmx:org.sdmx.infomodel.base.MetadataProvider=MD:METADATA_PROVIDERS(1.0).MP1" id="MP1">
+          <com:Name xml:lang="en">METADATA PROVIDER 1</com:Name>
+        </str:MetadataProvider>
+        <str:MetadataProvider urn="urn:sdmx:org.sdmx.infomodel.base.MetadataProvider=MD:METADATA_PROVIDERS(1.0).MP2" id="MP2">
+          <com:Name xml:lang="en">METADATA PROVIDER 2</com:Name>
+        </str:MetadataProvider>
+      </str:MetadataProviderScheme>
+    </str:MetadataProviderSchemes>
+    <str:MetadataProvisionAgreements>
+      <str:MetadataProvisionAgreement urn="urn:sdmx:org.sdmx.infomodel.registry.MetadataProvisionAgreement=MD:MPA_TEST(1.0)" isExternalReference="false" agencyID="MD" id="MPA_TEST" version="1.0">
+        <com:Name xml:lang="en">TEST MPA</com:Name>
+        <str:Metadataflow>urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=MD:MDF_TEST(1.0)</str:Metadataflow>
+        <str:MetadataProvider>urn:sdmx:org.sdmx.infomodel.base.MetadataProvider=MD:METADATA_PROVIDERS(1.0).MP1</str:MetadataProvider>
+      </str:MetadataProvisionAgreement>
+    </str:MetadataProvisionAgreements>
+  </message:Structures>
+</message:Structure>

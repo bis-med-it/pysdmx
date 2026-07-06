@@ -15,6 +15,7 @@ from pysdmx.io.xml.sdmx21.writer.error import write as write_err
 from pysdmx.io.xml.sdmx21.writer.structure import write
 from pysdmx.model import (
     Agency,
+    AgencyScheme,
     Code,
     Codelist,
     Concept,
@@ -173,82 +174,6 @@ def complete_header():
 
 
 @pytest.fixture
-def data_provider_scheme():
-    return DataProviderScheme(
-        urn=(
-            "urn:sdmx:org.sdmx.infomodel.base.DataProviderScheme="
-            "MD:DATA_PROVIDERS(1.0)"
-        ),
-        name="MD Data Provider Scheme",
-        agency="MD",
-        items=[
-            DataProvider(
-                id="DP1",
-                name="Data Provider 1",
-                contacts=[
-                    Contact(
-                        name="CONTACT",
-                        department="DEPARTMENT",
-                        role="ROLE",
-                        uris=["http://dp.md.org"],
-                        emails=["dp.test@md.org"],
-                    )
-                ],
-            ),
-        ],
-    )
-
-
-@pytest.fixture
-def data_consumer_scheme():
-    return DataConsumerScheme(
-        urn=(
-            "urn:sdmx:org.sdmx.infomodel.base.DataConsumerScheme="
-            "MD:DATA_CONSUMERS(1.0)"
-        ),
-        name="MD Data Consumer Scheme",
-        agency="MD",
-        items=[DataConsumer(id="DC1", name="Data Consumer 1")],
-    )
-
-
-@pytest.fixture
-def organisation_schemes_sample():
-    base_path = Path(__file__).parent / "samples" / "organisation_schemes.xml"
-    with open(base_path, "r") as f:
-        return f.read()
-
-
-def test_organisation_schemes(
-    header,
-    data_provider_scheme,
-    data_consumer_scheme,
-    organisation_schemes_sample,
-):
-
-    content = [data_provider_scheme, data_consumer_scheme]
-    result = write(content, header=header, prettyprint=True)
-    assert result == organisation_schemes_sample
-
-    parsed = read(result, validate=True)
-    by_type = {type(s): s for s in parsed}
-    assert set(by_type) == {DataProviderScheme, DataConsumerScheme}
-    assert by_type[DataProviderScheme] == data_provider_scheme
-    assert by_type[DataConsumerScheme] == data_consumer_scheme
-
-
-def test_unsupported_type_raises_invalid(header):
-    # MetadataProviderScheme has no SDMX-ML 2.1 representation.
-    mps = MetadataProviderScheme(
-        agency="MD",
-        name="MD Metadata Provider Scheme",
-        items=[MetadataProvider(id="MP1", name="Metadata Provider 1")],
-    )
-    with pytest.raises(Invalid, match="MetadataProviderScheme"):
-        write([mps], header=header, prettyprint=True)
-
-
-@pytest.fixture
 def hierarchy_with_levels():
     return Hierarchy(
         id="H1",
@@ -292,6 +217,107 @@ def test_hierarchy_21_round_trip(complete_header, hierarchy_with_levels):
     assert 'leveled="true"' in result
     re_read = read_sdmx(result, validate=True).structures[0]
     assert re_read == hierarchy_with_levels
+
+
+def test_org_schemes_21_round_trip(complete_header):
+    agency_scheme = AgencyScheme(
+        agency="SDMX",
+        items=[Agency(id="SDMX", name="SDMX")],
+    )
+    provider_scheme = DataProviderScheme(
+        agency="BIS",
+        items=[DataProvider(id="5B0", name="BIS")],
+    )
+    consumer_scheme = DataConsumerScheme(
+        agency="SDMX",
+        items=[DataConsumer(id="ECB", name="European Central Bank")],
+    )
+    content = [agency_scheme, provider_scheme, consumer_scheme]
+    result = write(content, header=complete_header, prettyprint=True)
+    # In SDMX-ML 2.1 all organisation schemes share a single container.
+    assert result.count("<str:OrganisationSchemes>") == 1
+    assert "<str:DataProviderScheme " in result
+    assert "<str:DataConsumerScheme " in result
+    re_read = read_sdmx(result, validate=True).structures
+    by_type = {type(s): s for s in re_read}
+    assert by_type[AgencyScheme] == agency_scheme
+    assert by_type[DataProviderScheme] == provider_scheme
+    assert by_type[DataConsumerScheme] == consumer_scheme
+
+
+def test_provider_scheme_contacts_21_round_trip(complete_header):
+    provider_scheme = DataProviderScheme(
+        agency="BIS",
+        items=[
+            DataProvider(
+                id="5B0",
+                name="BIS",
+                contacts=[
+                    Contact(
+                        name="Stats",
+                        department="STATS",
+                        role="Provider",
+                        emails=["stats@bis.org"],
+                        uris=["http://www.bis.org"],
+                    )
+                ],
+            )
+        ],
+    )
+    result = write([provider_scheme], header=complete_header, prettyprint=True)
+    assert "<str:Contact>" in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == provider_scheme
+
+
+def test_provider_scheme_enrichment_21_round_trip(complete_header):
+    provider_scheme = DataProviderScheme(
+        agency="BIS",
+        items=[
+            DataProvider(
+                id="TEST",
+                name="Test Organisation",
+                dataflows=[DataflowRef(id="DF1", agency="BIS", version="1.0")],
+            )
+        ],
+    )
+    # An AgencyScheme shares the OrganisationSchemes wrapper but must be
+    # left untouched by the dataflow enrichment.
+    agency_scheme = AgencyScheme(
+        agency="SDMX",
+        items=[Agency(id="SDMX", name="SDMX")],
+    )
+    provision_agreement = ProvisionAgreement(
+        id="PA1",
+        name="PA1",
+        agency="BIS",
+        version="1.0",
+        dataflow="Dataflow=BIS:DF1(1.0)",
+        provider="DataProvider=BIS:DATA_PROVIDERS(1.0).TEST",
+    )
+    content = [agency_scheme, provider_scheme, provision_agreement]
+    result = write(content, header=complete_header, prettyprint=True)
+    re_read = read_sdmx(result, validate=True).structures
+    scheme = next(s for s in re_read if isinstance(s, DataProviderScheme))
+    # The dataflows are re-derived from the provision agreement on read.
+    assert scheme.items[0].dataflows == [
+        DataflowRef(id="DF1", agency="BIS", version="1.0")
+    ]
+    assert scheme == provider_scheme
+    # The agency scheme is preserved unchanged.
+    re_agency = next(s for s in re_read if isinstance(s, AgencyScheme))
+    assert re_agency == agency_scheme
+
+
+def test_unsupported_type_raises_invalid(header):
+    # MetadataProviderScheme has no SDMX-ML 2.1 representation.
+    mps = MetadataProviderScheme(
+        agency="MD",
+        name="MD Metadata Provider Scheme",
+        items=[MetadataProvider(id="MP1", name="Metadata Provider 1")],
+    )
+    with pytest.raises(Invalid, match="MetadataProviderScheme"):
+        write([mps], header=header, prettyprint=True)
 
 
 def test_hierarchy_21_no_levels(complete_header):

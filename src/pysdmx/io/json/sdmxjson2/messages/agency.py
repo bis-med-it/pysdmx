@@ -31,7 +31,11 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True, omit_defaults=True):
         self, owner: str, a: Agency, dfowners: Dict[str, Set[DataflowRef]]
     ) -> Agency:
         oid = f"{owner}.{a.id}" if owner != "SDMX" else a.id
-        flows = list(dfowners[oid]) if dfowners else []
+        # Use the model default (an empty tuple) when the agency has no
+        # dataflows, so that an agency read from SDMX-JSON compares equal
+        # to the same agency read from SDMX-ML (which has no way to attach
+        # dataflows to an agency). This also matches ``_sanitize_agency``.
+        flows: Sequence[DataflowRef] = list(dfowners[oid]) if dfowners else ()
         return Agency(
             id=oid,
             name=a.name,

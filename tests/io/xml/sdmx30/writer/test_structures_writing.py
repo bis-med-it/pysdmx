@@ -212,59 +212,6 @@ def agency():
 
 
 @pytest.fixture
-def data_provider_scheme():
-    return DataProviderScheme(
-        urn=(
-            "urn:sdmx:org.sdmx.infomodel.base.DataProviderScheme="
-            "MD:DATA_PROVIDERS(1.0)"
-        ),
-        name="MD Data Provider Scheme",
-        agency="MD",
-        items=[
-            DataProvider(
-                id="DP1",
-                name="Data Provider 1",
-                contacts=[
-                    Contact(
-                        name="CONTACT",
-                        department="DEPARTMENT",
-                        role="ROLE",
-                        uris=["http://dp.md.org"],
-                        emails=["dp.test@md.org"],
-                    )
-                ],
-            ),
-        ],
-    )
-
-
-@pytest.fixture
-def data_consumer_scheme():
-    return DataConsumerScheme(
-        urn=(
-            "urn:sdmx:org.sdmx.infomodel.base.DataConsumerScheme="
-            "MD:DATA_CONSUMERS(1.0)"
-        ),
-        name="MD Data Consumer Scheme",
-        agency="MD",
-        items=[DataConsumer(id="DC1", name="Data Consumer 1")],
-    )
-
-
-@pytest.fixture
-def metadata_provider_scheme():
-    return MetadataProviderScheme(
-        urn=(
-            "urn:sdmx:org.sdmx.infomodel.base.MetadataProviderScheme="
-            "MD:METADATA_PROVIDERS(1.0)"
-        ),
-        name="MD Metadata Provider Scheme",
-        agency="MD",
-        items=[MetadataProvider(id="MP1", name="Metadata Provider 1")],
-    )
-
-
-@pytest.fixture
 def datastructure():
     return DataStructureDefinition(
         id="DS",
@@ -789,13 +736,6 @@ def agency_sample():
 
 
 @pytest.fixture
-def organisation_schemes_sample():
-    base_path = Path(__file__).parent / "samples" / "organisation_schemes.xml"
-    with open(base_path, "r") as f:
-        return f.read()
-
-
-@pytest.fixture
 def datastructure_sample():
     base_path = Path(__file__).parent / "samples" / "datastructure.xml"
     with open(base_path, "r") as f:
@@ -1215,36 +1155,65 @@ def test_agency(complete_header, agency, agency_sample):
     assert result == agency_sample
 
 
-def test_organisation_schemes(
-    complete_header,
-    data_provider_scheme,
-    data_consumer_scheme,
-    metadata_provider_scheme,
-    organisation_schemes_sample,
-):
-    content = [
-        data_provider_scheme,
-        data_consumer_scheme,
-        metadata_provider_scheme,
-    ]
-    result = write(
-        content,
-        header=complete_header,
-        prettyprint=True,
+def test_org_schemes_30_round_trip(complete_header):
+    provider_scheme = DataProviderScheme(
+        agency="MD",
+        items=[
+            DataProvider(
+                id="DP",
+                name="DATA PROVIDER",
+                contacts=[Contact(name="Stats", emails=["dp.test@md.org"])],
+            )
+        ],
     )
-    assert result == organisation_schemes_sample
+    consumer_scheme = DataConsumerScheme(
+        agency="MD",
+        items=[DataConsumer(id="DC", name="DATA CONSUMER")],
+    )
+    metadata_scheme = MetadataProviderScheme(
+        agency="MD",
+        items=[MetadataProvider(id="MP", name="METADATA PROVIDER")],
+    )
+    content = [provider_scheme, consumer_scheme, metadata_scheme]
+    result = write(content, header=complete_header, prettyprint=True)
+    # In SDMX-ML 3.0 each organisation scheme has its own container.
+    assert "<str:DataProviderSchemes>" in result
+    assert "<str:DataConsumerSchemes>" in result
+    assert "<str:MetadataProviderSchemes>" in result
+    re_read = read_sdmx(result, validate=True).structures
+    by_type = {type(s): s for s in re_read}
+    assert by_type[DataProviderScheme] == provider_scheme
+    assert by_type[DataConsumerScheme] == consumer_scheme
+    assert by_type[MetadataProviderScheme] == metadata_scheme
 
-    # The output must be valid and round-trip back to the same model.
-    parsed = read(result, validate=True)
-    assert {type(s) for s in parsed} == {
-        DataProviderScheme,
-        DataConsumerScheme,
-        MetadataProviderScheme,
-    }
-    by_type = {type(s): s for s in parsed}
-    assert by_type[DataProviderScheme] == data_provider_scheme
-    assert by_type[DataConsumerScheme] == data_consumer_scheme
-    assert by_type[MetadataProviderScheme] == metadata_provider_scheme
+
+def test_provider_scheme_enrichment_30_round_trip(complete_header):
+    provider_scheme = DataProviderScheme(
+        agency="MD",
+        items=[
+            DataProvider(
+                id="MD",
+                name="DATA PROVIDER",
+                dataflows=[DataflowRef(id="TEST", agency="MD", version="1.0")],
+            )
+        ],
+    )
+    provision_agreement = ProvisionAgreement(
+        id="TEST",
+        name="TEST",
+        agency="MD",
+        version="1.0",
+        dataflow="Dataflow=MD:TEST(1.0)",
+        provider="DataProvider=MD:DATA_PROVIDERS(1.0).MD",
+    )
+    content = [provider_scheme, provision_agreement]
+    result = write(content, header=complete_header, prettyprint=True)
+    re_read = read_sdmx(result, validate=True).structures
+    scheme = next(s for s in re_read if isinstance(s, DataProviderScheme))
+    assert scheme.items[0].dataflows == [
+        DataflowRef(id="TEST", agency="MD", version="1.0")
+    ]
+    assert scheme == provider_scheme
 
 
 def test_datastructure(complete_header, datastructure, datastructure_sample):
