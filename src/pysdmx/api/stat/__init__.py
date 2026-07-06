@@ -287,7 +287,10 @@ class StatConnector(SdmxConnector):
 
 
 _STRUCTURE_CT = "application/vnd.sdmx.structure+xml;version=2.1"
-_DATA_CT = "application/vnd.sdmx.data+csv;version=2.0.0"
+# The Transfer /import/sdmxFile file part must declare a plain file
+# content-type from the service's whitelist (it auto-detects the SDMX
+# format from the bytes); the SDMX-CSV media type is rejected there.
+_DATA_FILE_CT = "text/csv"
 
 
 @experimental
@@ -330,8 +333,11 @@ class StatUploader:
         Args:
             nsi_endpoint: The NSI web service entry point used for
                 structure submission (host of ``/rest/structure``).
-            transfer_endpoint: The Transfer service entry point used for
-                data submission (host of ``/import/sdmxFile``).
+            transfer_endpoint: The Transfer service entry point,
+                INCLUDING the API-version segment, e.g.
+                ``https://transfer-demo.siscc.org/3`` (the service
+                versions its routes: ``/3/import/sdmxFile``,
+                ``/3/status/request``).
             dataspace: The default .Stat data space that data submission
                 and status polling target (e.g. ``"design"``). May be
                 overridden per call; one of the two is required by those
@@ -515,7 +521,7 @@ class StatUploader:
             "POST",
             f"{self._transfer}/import/sdmxFile",
             data={"dataspace": space},
-            files={"file": ("data.csv", body, _DATA_CT)},
+            files={"file": ("data.csv", body, _DATA_FILE_CT)},
         )
         return r.text
 

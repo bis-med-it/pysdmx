@@ -81,7 +81,9 @@ processed asynchronously.
 
     from pysdmx.api.stat import StatUploader
 
-    # Obtain a token (Keycloak password grant)
+    # Obtain a token. `fetch_token` uses the Keycloak password grant,
+    # which requires the client to have "Direct Access Grants" enabled
+    # and to authenticate a *local* Keycloak account:
     token = StatUploader.fetch_token(
         "https://my.stat/auth/realms/<realm>/protocol/openid-connect/token",
         client_id="my-client",
@@ -91,7 +93,8 @@ processed asynchronously.
 
     uploader = StatUploader(
         nsi_endpoint="https://my.stat/nsi/rest",
-        transfer_endpoint="https://my.stat/transfer",
+        # The Transfer endpoint includes the API-version segment:
+        transfer_endpoint="https://my.stat/transfer/3",
         dataspace="design",          # the target .Stat data space
         token=token,
     )
@@ -113,6 +116,12 @@ Schema-backed — for example one returned by
 (Append/Replace/Merge/Delete) is carried inside the file (the SDMX-CSV
 2.0 ``ACTION`` column, or the SDMX-ML dataset action), not as a request
 parameter.
+
+.. note::
+    Deployments that authenticate through a federated identity provider
+    (e.g. GitHub, ADFS) cannot use the password grant. Obtain a bearer
+    token through the browser flow (for example the Transfer service's
+    Swagger "Authorize" button) and pass it as ``token=``.
 
 .. note::
     Structure submission can report a per-artefact failure inside the
