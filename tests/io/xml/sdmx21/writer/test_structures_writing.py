@@ -340,8 +340,13 @@ def test_categorisation_21_round_trip(complete_header):
         name="Categorisation 1",
         agency="BIS",
         version="1.0",
-        source="Dataflow=BIS:DF1(1.0)",
-        target="Category=BIS:CS1(1.0).TOP.MID.LEAF",
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0).TOP.MID.LEAF"
+        ),
     )
     result = write([categorisation], header=complete_header, prettyprint=True)
     assert "<str:Categorisations>" in result
@@ -350,18 +355,8 @@ def test_categorisation_21_round_trip(complete_header):
     assert "<str:Target>" in result
     assert "isPartial" not in result
     re_read = read_sdmx(result, validate=True).structures[0]
-    # The short input URNs are canonicalised to full URNs on read,
-    # matching the SDMX-JSON reader.
-    assert re_read == categorisation.__replace__(
-        source=(
-            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0)"
-        ),
-        target=(
-            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
-            "Category=BIS:CS1(1.0).TOP.MID.LEAF"
-        ),
-        annotations=[],
-    )
+    # Full URNs round-trip unchanged; only annotations default to [].
+    assert re_read == categorisation.__replace__(annotations=[])
 
 
 def test_category_scheme_21_enrichment_round_trip(complete_header):
@@ -384,8 +379,13 @@ def test_category_scheme_21_enrichment_round_trip(complete_header):
         name="Categorisation 1",
         agency="BIS",
         version="1.0",
-        source="Dataflow=BIS:DF1(1.0)",
-        target="Category=BIS:CS1(1.0).TOP",
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0).TOP"
+        ),
     )
     result = write(
         [cs, dataflow, categorisation],
@@ -435,8 +435,13 @@ def test_category_annotations_21_round_trip(complete_header):
         name="Categorisation 1",
         agency="BIS",
         version="1.0",
-        source="Codelist=BIS:CL_FREQ(1.0)",
-        target="Category=BIS:CS1(1.0).TOP.LEAF",
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0).TOP.LEAF"
+        ),
     )
     result = write(
         [cs, categorisation], header=complete_header, prettyprint=True
@@ -478,16 +483,26 @@ def test_category_multiple_categorisations_same_category_21(complete_header):
         name="Categorisation 1",
         agency="BIS",
         version="1.0",
-        source="Dataflow=BIS:DF1(1.0)",
-        target="Category=BIS:CS1(1.0).TOP",
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0).TOP"
+        ),
     )
     cat2 = Categorisation(
         id="CAT2",
         name="Categorisation 2",
         agency="BIS",
         version="1.0",
-        source="Dataflow=BIS:DF2(1.0)",
-        target="Category=BIS:CS1(1.0).TOP",
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF2(1.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0).TOP"
+        ),
     )
     result = write(
         [cs, df1, df2, cat1, cat2],

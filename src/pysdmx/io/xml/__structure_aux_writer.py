@@ -182,8 +182,6 @@ from pysdmx.model.dataflow import (
     Role,
 )
 from pysdmx.util import (
-    create_full_urn,
-    get_package,
     parse_item_urn,
     parse_short_item_urn,
     parse_short_urn,
@@ -1669,64 +1667,53 @@ def __write_category_scheme(
     return outfile
 
 
-def _parse_categorisation_ref(
-    value: str, item: bool
-) -> Union[Reference, ItemReference]:
-    """Parses a Categorisation Source/Target URN (full or short).
-
-    The stored value may be a full ``urn:sdmx:...`` URN (as produced by
-    the SDMX-JSON reader) or a short URN (``Class=agency:id(version)``,
-    optionally suffixed with an item id). Full URNs are parsed with
-    :func:`parse_urn`; short URNs with :func:`parse_short_urn` (source /
-    maintainable) or :func:`parse_short_item_urn` (target / item).
-
-    Args:
-        value: The Source or Target URN string.
-        item: Whether the reference points to an item (Target) rather
-            than to a maintainable artefact (Source).
-
-    Returns:
-        The parsed reference with a clean ``sdmx_type``.
-    """
-    if value.startswith("urn:sdmx:"):
-        return parse_urn(value)
-    if item:
-        return parse_short_item_urn(value)
-    return parse_short_urn(value)
-
-
 def __write_categorisation_ref(
-    ref: Union[Reference, ItemReference],
+    value: str,
     tag: str,
     indent: str,
     references_30: bool,
 ) -> str:
-    """Writes a categorisation Source/Target reference element."""
+    """Writes a categorisation Source/Target reference element.
+
+    ``value`` is the stored full URN (``Categorisation.source`` or
+    ``.target``). For SDMX-ML 3.0/3.1 it is emitted verbatim; for 2.1 it
+    is decomposed into a ``<Ref>`` element, with the package taken from
+    the URN segment immediately preceding the class.
+
+    Args:
+        value: The full URN of the referenced artefact.
+        tag: The wrapping element name (``Source`` or ``Target``).
+        indent: The current indentation string.
+        references_30: Whether to use the SDMX 3.0/3.1 URN form.
+
+    Returns:
+        The serialised Source/Target element.
+    """
     label = f"{ABBR_STR}:{tag}"
     if references_30:
-        outfile = f"{indent}<{label}>{create_full_urn(ref)}</{label}>"
+        return f"{indent}<{label}>{value}</{label}>"
+    ref = parse_urn(value)
+    package = value.split("=", 1)[0].rsplit(".", 2)[-2]
+    if isinstance(ref, Reference):
+        ref_tag = (
+            f"{add_indent(indent)}<{REF} "
+            f"{AGENCY_ID}={ref.agency!r} "
+            f"{ID}={ref.id!r} "
+            f"{VERSION}={ref.version!r} "
+            f"{PACKAGE}={package!r} "
+            f"{CLASS}={ref.sdmx_type!r}/>"
+        )
     else:
-        package = get_package(ref.sdmx_type)
-        if isinstance(ref, Reference):
-            ref_tag = (
-                f"{add_indent(indent)}<{REF} "
-                f"{AGENCY_ID}={ref.agency!r} "
-                f"{ID}={ref.id!r} "
-                f"{VERSION}={ref.version!r} "
-                f"{PACKAGE}={package!r} "
-                f"{CLASS}={ref.sdmx_type!r}/>"
-            )
-        else:
-            ref_tag = (
-                f"{add_indent(indent)}<{REF} "
-                f"{AGENCY_ID}={ref.agency!r} "
-                f"{PAR_ID}={ref.id!r} "
-                f"{PAR_VER}={ref.version!r} "
-                f"{ID}={ref.item_id!r} "
-                f"{PACKAGE}={package!r} "
-                f"{CLASS}={ref.sdmx_type!r}/>"
-            )
-        outfile = f"{indent}<{label}>{ref_tag}{indent}</{label}>"
+        ref_tag = (
+            f"{add_indent(indent)}<{REF} "
+            f"{AGENCY_ID}={ref.agency!r} "
+            f"{PAR_ID}={ref.id!r} "
+            f"{PAR_VER}={ref.version!r} "
+            f"{ID}={ref.item_id!r} "
+            f"{PACKAGE}={package!r} "
+            f"{CLASS}={ref.sdmx_type!r}/>"
+        )
+    outfile = f"{indent}<{label}>{ref_tag}{indent}</{label}>"
     return outfile.replace("'", '"')
 
 
@@ -1741,13 +1728,11 @@ def __write_categorisation(
     attributes = data["Attributes"].replace("'", '"')
     outfile = f"{indent}<{label}{attributes}>"
     outfile += __export_intern_data(data)
-    source = _parse_categorisation_ref(categorisation.source, item=False)
-    target = _parse_categorisation_ref(categorisation.target, item=True)
     outfile += __write_categorisation_ref(
-        source, SOURCE, add_indent(indent), references_30
+        categorisation.source, SOURCE, add_indent(indent), references_30
     )
     outfile += __write_categorisation_ref(
-        target, TARGET, add_indent(indent), references_30
+        categorisation.target, TARGET, add_indent(indent), references_30
     )
     outfile += f"{indent}</{label}>"
     return outfile

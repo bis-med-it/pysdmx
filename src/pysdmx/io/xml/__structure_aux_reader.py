@@ -132,6 +132,7 @@ from pysdmx.io.xml.__tokens import (
     NAME_PERS,
     OBSERVATION,
     ORGS,
+    PACKAGE,
     PAR_ID,
     PAR_VER,
     PROV_AGREEMENT,
@@ -265,7 +266,7 @@ from pysdmx.model.vtl import (
     VtlDataflowMapping,
     VtlMappingScheme,
 )
-from pysdmx.util import create_full_urn, find_by_urn, is_final, parse_urn
+from pysdmx.util import find_by_urn, is_final, parse_urn
 
 T = Any
 
@@ -1585,29 +1586,24 @@ class StructureParser(Struct):
         Returns:
             The full URN string representation of the reference.
         """
-        ref: Union[Reference, ItemReference]
         if isinstance(ref_elem, dict) and REF in ref_elem:
             data = ref_elem[REF]
+            # The package and class are attributes on the Ref itself, so
+            # the full URN is built directly from the reference's data.
+            base = (
+                "urn:sdmx:org.sdmx.infomodel."
+                f"{data[PACKAGE]}.{data[CLASS]}={data[AGENCY_ID]}:"
+            )
             if maintainable:
-                ref = Reference(
-                    sdmx_type=data[CLASS],
-                    agency=data[AGENCY_ID],
-                    id=data[ID],
-                    version=data.get(VERSION, "1.0"),
-                )
-            else:
-                ref = ItemReference(
-                    sdmx_type=data[CLASS],
-                    agency=data[AGENCY_ID],
-                    id=data[PAR_ID],
-                    version=data.get(PAR_VER, "1.0"),
-                    item_id=data[ID],
-                )
-        elif isinstance(ref_elem, dict) and URN in ref_elem:
-            ref = parse_urn(ref_elem[URN])
-        else:
-            ref = parse_urn(ref_elem)
-        return create_full_urn(ref)
+                return f"{base}{data[ID]}({data.get(VERSION, '1.0')})"
+            return (
+                f"{base}{data[PAR_ID]}({data.get(PAR_VER, '1.0')}).{data[ID]}"
+            )
+        # The <URN> element and 3.0/3.1 plain-string forms already carry
+        # the full URN, so it is returned as-is.
+        if isinstance(ref_elem, dict) and URN in ref_elem:
+            return str(ref_elem[URN])
+        return str(ref_elem)
 
     def __format_categorisation(
         self, json_elem: Dict[str, Any]
