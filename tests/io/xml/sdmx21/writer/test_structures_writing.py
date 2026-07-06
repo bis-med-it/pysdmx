@@ -1896,7 +1896,10 @@ def test_json_agency_scheme_roundtrip_uses_local_ids(sdmx_format):
         / "orgs"
         / "agencies.json"
     )
-    jp = read_sdmx(str(json_path))
+    # validate=False so this xml-marked test doesn't require the json extra
+    # (JSON-schema validation) under the xml-only CI job; the meaningful
+    # schema validation happens on the SDMX-ML read-back below.
+    jp = read_sdmx(str(json_path), validate=False)
     result = write_sdmx(jp.get_agency_schemes(), sdmx_format)
 
     assert 'id="DST"' in result
