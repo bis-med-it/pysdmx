@@ -274,7 +274,13 @@ from pysdmx.model.vtl import (
     VtlDataflowMapping,
     VtlMappingScheme,
 )
-from pysdmx.util import find_by_urn, is_final, parse_urn
+from pysdmx.util import (
+    create_full_urn,
+    find_by_urn,
+    is_final,
+    parse_short_urn,
+    parse_urn,
+)
 
 T = Any
 
@@ -1025,16 +1031,20 @@ class StructureParser(Struct):
 
         Mirrors the Dataflow handling: the ``<str:Structure>`` reference is
         resolved into the field ``structure`` (the resolved MetadataStructure
-        object if available, otherwise its short URN), and the repeatable
+        object if available, otherwise its full URN), and the repeatable
         ``<str:Target>`` elements are collected into ``targets``.
+
+        ``reference_str`` is the short URN (used as the lookup key, since
+        ``self.metadatastructures`` is keyed by ``short_urn``). When the MSD
+        is not present in the message the field falls back to the canonical
+        full URN, matching the form stored by the SDMX-JSON reader.
         """
         if STRUCTURE in element:
             del element[STRUCTURE]
-        resolved: Optional[Union[MetadataStructure, str]] = reference_str
-        if reference_str is not None and self.metadatastructures:
-            resolved = self.metadatastructures.get(
-                reference_str, reference_str
-            )
+        resolved: Optional[Union[MetadataStructure, str]] = None
+        if reference_str is not None:
+            full_urn = create_full_urn(parse_short_urn(reference_str))
+            resolved = self.metadatastructures.get(reference_str, full_urn)
         element[STRUCTURE.lower()] = resolved
         targets = (
             [_extract_text(t) for t in add_list(element[TARGET])]
@@ -1052,26 +1062,19 @@ class StructureParser(Struct):
 
         Mirrors ``__format_prov_agreement`` but the children are a
         ``<str:Metadataflow>`` and a ``<str:MetadataProvider>`` (an
-        organisation item, hence an item-style short URN). The MPA construct
-        only exists in SDMX-ML 3.x, where references are URN text.
+        organisation item, hence an item-style reference). The MPA construct
+        only exists in SDMX-ML 3.x, where references are URN text. Both
+        references are stored as canonical full URNs, matching the form
+        stored by the SDMX-JSON reader.
         """
         ref_flow = parse_urn(element[METADATAFLOW])
-        metadataflow = (
-            f"{ref_flow.sdmx_type}={ref_flow.agency}:"
-            f"{ref_flow.id}({ref_flow.version})"
-        )
         del element[METADATAFLOW]
 
         ref_provider = parse_urn(element[METADATA_PROVIDER])
-        metadata_provider = (
-            f"{ref_provider.sdmx_type}={ref_provider.agency}:"
-            f"{ref_provider.id}({ref_provider.version})"
-            f".{ref_provider.item_id}"  # type: ignore[union-attr]
-        )
         del element[METADATA_PROVIDER]
 
-        element[METADATAFLOW.lower()] = metadataflow
-        element["metadata_provider"] = metadata_provider
+        element[METADATAFLOW.lower()] = create_full_urn(ref_flow)
+        element["metadata_provider"] = create_full_urn(ref_provider)
         return element
 
     def __format_metadata_attribute(

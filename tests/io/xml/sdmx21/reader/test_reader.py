@@ -1341,7 +1341,11 @@ def test_metadataflow_21(samples_folder):
     assert isinstance(flow, Metadataflow)
     assert flow.id == "MDF_TEST"
     assert flow.agency == "BIS"
-    # Unresolved structure reference (MSD not present in document)
-    assert flow.structure == "MetadataStructure=BIS:MSD_TEST(1.0)"
+    # Unresolved structure reference (MSD not present in document): the
+    # reader stores the canonical full URN, matching the SDMX-JSON reader.
+    assert flow.structure == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "MetadataStructure=BIS:MSD_TEST(1.0)"
+    )
     # SDMX-ML 2.1 metadataflows do not carry targets
     assert flow.targets == ()

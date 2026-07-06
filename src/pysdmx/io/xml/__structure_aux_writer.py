@@ -189,6 +189,8 @@ from pysdmx.model.dataflow import (
     Role,
 )
 from pysdmx.util import (
+    create_full_urn,
+    get_package,
     parse_item_urn,
     parse_short_item_urn,
     parse_short_urn,
@@ -955,6 +957,33 @@ def __write_prov_agreement(
     return outfile
 
 
+def _parse_metadata_ref(
+    value: str, item: bool
+) -> Union[Reference, ItemReference]:
+    """Parses a metadata-family reference URN (full or short).
+
+    The stored value may be a full ``urn:sdmx:...`` URN (as produced by the
+    SDMX-JSON and SDMX-ML readers) or a short URN
+    (``Class=agency:id(version)``, optionally suffixed with an item id).
+    Full URNs are parsed with :func:`parse_urn`; short URNs with
+    :func:`parse_short_urn` (maintainable) or :func:`parse_short_item_urn`
+    (item).
+
+    Args:
+        value: The reference URN string.
+        item: Whether the reference points to an item rather than to a
+            maintainable artefact.
+
+    Returns:
+        The parsed reference with a clean ``sdmx_type``.
+    """
+    if value.startswith("urn:sdmx:"):
+        return parse_urn(value)
+    if item:
+        return parse_short_item_urn(value)
+    return parse_short_urn(value)
+
+
 def __write_metadata_structure_ref(
     structure: Union[MetadataStructure, str],
     indent: str,
@@ -963,27 +992,26 @@ def __write_metadata_structure_ref(
     """Writes a Metadataflow ``<str:Structure>`` reference to an MSD.
 
     The reference is a URN text in SDMX-ML 3.x and a ``<Ref>`` element in
-    SDMX-ML 2.1. The package is ``metadatastructure``.
+    SDMX-ML 2.1. The package is ``metadatastructure``. The model value may be
+    a resolved MetadataStructure, a full URN or a short URN.
     """
     if isinstance(structure, MetadataStructure):
-        ref = parse_short_urn(structure.short_urn)
+        ref: Union[Reference, ItemReference] = parse_short_urn(
+            structure.short_urn
+        )
     else:
-        ref = parse_short_urn(structure)
+        ref = _parse_metadata_ref(structure, item=False)
     outfile = f"{indent}<{ABBR_STR}:Structure>"
     if references_30:
-        outfile += (
-            f"urn:sdmx:org.sdmx.infomodel.metadatastructure.{MSD}="
-            f"{ref.agency}:{ref.id}({ref.version})"
-            f"</{ABBR_STR}:Structure>"
-        )
+        outfile += f"{create_full_urn(ref)}</{ABBR_STR}:Structure>"
     else:
         outfile += (
             f"{add_indent(indent)}<{REF} "
-            f'{PACKAGE}="metadatastructure" '
+            f"{PACKAGE}={get_package(ref.sdmx_type)!r} "
             f"{AGENCY_ID}={ref.agency!r} "
             f"{ID}={ref.id!r} "
             f"{VERSION}={ref.version!r} "
-            f"{CLASS}={MSD!r}/>"
+            f"{CLASS}={ref.sdmx_type!r}/>"
         )
         outfile += f"{indent}</{ABBR_STR}:Structure>"
     return outfile.replace("'", '"')
@@ -1117,25 +1145,66 @@ def __write_metadata_prov_agreement(
 
     Mirrors ``__write_prov_agreement`` but the children are a
     ``<str:Metadataflow>`` and a ``<str:MetadataProvider>`` (an organisation
-    item, hence an item-style short URN, package ``base``). The MPA construct
-    only exists in SDMX-ML 3.x, where references are URN text.
+    item, package ``base``). The MPA construct only exists in SDMX-ML 3.x,
+    where references are URN text. The model values may be full or short URNs.
     """
-    ref_flow = parse_short_urn(metadataflow)
-    ref_provider = parse_short_item_urn(metadata_provider)
+    ref_flow = _parse_metadata_ref(metadataflow, item=False)
+    ref_provider = _parse_metadata_ref(metadata_provider, item=True)
     outfile = f"{indent}<{ABBR_STR}:{METADATAFLOW}>"
-    outfile += (
-        f"urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow="
-        f"{ref_flow.agency}:{ref_flow.id}({ref_flow.version})"
-        f"</{ABBR_STR}:{METADATAFLOW}>"
-    )
+    outfile += f"{create_full_urn(ref_flow)}</{ABBR_STR}:{METADATAFLOW}>"
     outfile += f"{indent}<{ABBR_STR}:{METADATA_PROVIDER}>"
     outfile += (
-        f"urn:sdmx:org.sdmx.infomodel.base.MetadataProvider="
-        f"{ref_provider.agency}:{ref_provider.id}"
-        f"({ref_provider.version}).{ref_provider.item_id}"
-        f"</{ABBR_STR}:{METADATA_PROVIDER}>"
+        f"{create_full_urn(ref_provider)}</{ABBR_STR}:{METADATA_PROVIDER}>"
     )
     return outfile.replace("'", '"')
+
+
+def add_metadata_concept_schemes(
+    elements: Dict[str, Any],
+) -> None:
+    """Adds ConceptSchemes referenced by MSD resolved concepts to ``elements``.
+
+    When a MetadataStructure's components carry resolved :class:`Concept`
+    objects (as produced by the SDMX-JSON reader, and by the SDMX-ML reader
+    when the ConceptScheme is in the message), the referenced scheme is
+    serialised alongside the MSD so a reader can resolve the concepts again
+    on read-back. This keeps a stand-alone MSD self-contained and lets it
+    round-trip unchanged, matching the SDMX-JSON reader's concept resolution.
+
+    ``elements`` is keyed by short URN; schemes already present are left
+    untouched. The scheme is only reconstructed from concepts that expose a
+    URN (needed to derive the owning scheme).
+    """
+    collected: Dict[str, Dict[str, Concept]] = {}
+    refs: Dict[str, Union[Reference, ItemReference]] = {}
+
+    def visit(components: Sequence[MetadataComponent]) -> None:
+        for component in components:
+            concept = component.concept
+            if isinstance(concept, Concept) and concept.urn:
+                ref = parse_urn(concept.urn)
+                scheme_urn = (
+                    f"ConceptScheme={ref.agency}:{ref.id}({ref.version})"
+                )
+                collected.setdefault(scheme_urn, {})[concept.id] = concept
+                refs[scheme_urn] = ref
+            visit(component.components)
+
+    for element in list(elements.values()):
+        if isinstance(element, MetadataStructure):
+            visit(element.components)
+
+    for scheme_urn, concepts in collected.items():
+        if scheme_urn in elements:
+            continue
+        ref = refs[scheme_urn]
+        elements[scheme_urn] = ConceptScheme(
+            id=ref.id,
+            agency=ref.agency,
+            version=ref.version,
+            name=ref.id,
+            items=tuple(concepts.values()),
+        )
 
 
 def __write_value_map(

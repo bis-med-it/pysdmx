@@ -1139,8 +1139,12 @@ def test_metadata_provision_agreement_30(metadata_family_msg):
     mpa = mpas[0]
     assert isinstance(mpa, MetadataProvisionAgreement)
     assert mpa.id == "MPA_TEST"
-    assert mpa.metadataflow == "Metadataflow=BIS:MDF_TEST(1.0)"
+    assert mpa.metadataflow == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "Metadataflow=BIS:MDF_TEST(1.0)"
+    )
     assert mpa.metadata_provider == (
+        "urn:sdmx:org.sdmx.infomodel.base."
         "MetadataProvider=BIS:METADATA_PROVIDERS(1.0).PROV1"
     )
 
@@ -1176,8 +1180,12 @@ def test_metadata_family_refs_30(samples_folder):
 
     # MetadataProvisionAgreement referenced by URN
     mpa = msg.get_metadata_provision_agreements()[0]
-    assert mpa.metadataflow == "Metadataflow=BIS:MDF_NO_STRUCTURE(1.0)"
+    assert mpa.metadataflow == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "Metadataflow=BIS:MDF_NO_STRUCTURE(1.0)"
+    )
     assert mpa.metadata_provider == (
+        "urn:sdmx:org.sdmx.infomodel.base."
         "MetadataProvider=BIS:METADATA_PROVIDERS(1.0).PROV2"
     )
 

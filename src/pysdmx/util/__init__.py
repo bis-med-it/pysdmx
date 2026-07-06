@@ -110,6 +110,52 @@ def parse_short_item_urn(urn: str) -> ItemReference:
         raise Invalid(NF, f"{urn} does not match {short_item_urn_pattern}.")
 
 
+_PACKAGE_BY_TYPE = {
+    "Dataflow": "datastructure",
+    "DataStructure": "datastructure",
+    "Metadataflow": "metadatastructure",
+    "MetadataStructure": "metadatastructure",
+    "Codelist": "codelist",
+    "ConceptScheme": "conceptscheme",
+    "Concept": "conceptscheme",
+    "CategoryScheme": "categoryscheme",
+    "Category": "categoryscheme",
+    "Agency": "base",
+    "AgencyScheme": "base",
+    "DataProvider": "base",
+    "DataConsumer": "base",
+}
+
+
+def get_package(sdmx_type: str) -> str:
+    """Returns the SDMX package name for a (clean) artefact type.
+
+    Args:
+        sdmx_type: The artefact type (e.g. ``Dataflow``, ``Category``).
+
+    Returns:
+        The package the artefact type belongs to (e.g. ``datastructure``).
+        Unknown types default to ``base``.
+    """
+    return _PACKAGE_BY_TYPE.get(sdmx_type, "base")
+
+
+def create_full_urn(ref: Union[ItemReference, Reference]) -> str:
+    """Builds a full SDMX URN from a parsed reference.
+
+    Handles both maintainable references (:class:`Reference`) and item
+    references (:class:`ItemReference`); the package is derived from the
+    reference's ``sdmx_type``.
+
+    Args:
+        ref: The parsed reference.
+
+    Returns:
+        The full ``urn:sdmx:org.sdmx.infomodel.<package>.<short_urn>`` URN.
+    """
+    return f"urn:sdmx:org.sdmx.infomodel.{get_package(ref.sdmx_type)}.{ref}"
+
+
 def is_final(version: str) -> bool:
     """Infers finality from an SDMX 3.0 semantic version string.
 
@@ -178,8 +224,10 @@ def experimental(cls: type) -> type:
 
 __all__ = [
     "convert_dpm",
+    "create_full_urn",
     "experimental",
     "find_by_urn",
+    "get_package",
     "is_final",
     "parse_item_urn",
     "parse_maintainable_urn",

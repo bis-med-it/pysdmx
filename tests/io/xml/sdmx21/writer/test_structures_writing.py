@@ -1775,7 +1775,10 @@ def test_metadataflow_21_round_trip(complete_header):
         name="Test Metadataflow",
         agency="BIS",
         version="1.0",
-        structure="MetadataStructure=BIS:MSD_TEST(1.0)",
+        structure=(
+            "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+            "MetadataStructure=BIS:MSD_TEST(1.0)"
+        ),
         targets=(),
     )
     result = write([metadataflow], header=complete_header, prettyprint=True)

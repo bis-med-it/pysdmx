@@ -312,7 +312,10 @@ def test_metadata_family_31(samples_folder):
     mpas = msg.get_metadata_provision_agreements()
     assert len(mpas) == 1
     assert isinstance(mpas[0], MetadataProvisionAgreement)
-    assert mpas[0].metadataflow == "Metadataflow=BIS:MDF_TEST(1.0)"
+    assert mpas[0].metadataflow == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "Metadataflow=BIS:MDF_TEST(1.0)"
+    )
 
 
 @pytest.mark.xml

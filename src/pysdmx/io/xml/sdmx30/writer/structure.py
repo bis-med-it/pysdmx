@@ -7,6 +7,7 @@ from pysdmx.io.format import Format
 from pysdmx.io.xml.__structure_aux_writer import (
     STR_DICT_TYPE_LIST_30,
     __write_structures,
+    add_metadata_concept_schemes,
 )
 from pysdmx.io.xml.__write_aux import (
     __write_header,
@@ -36,6 +37,7 @@ def write(
     """
     type_ = Format.STRUCTURE_SDMX_ML_3_0
     elements = {structure.short_urn: structure for structure in structures}
+    add_metadata_concept_schemes(elements)
     if header is None:
         header = Header()
 

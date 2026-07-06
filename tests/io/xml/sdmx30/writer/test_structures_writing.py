@@ -1487,7 +1487,10 @@ def metadataflow():
         name="Test Metadataflow",
         agency="BIS",
         version="1.0",
-        structure="MetadataStructure=BIS:MSD_TEST(1.0)",
+        structure=(
+            "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+            "MetadataStructure=BIS:MSD_TEST(1.0)"
+        ),
         targets=("urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=*:*(*)",),
     )
 
@@ -1499,8 +1502,12 @@ def metadata_provision_agreement():
         name="Test MPA",
         agency="BIS",
         version="1.0",
-        metadataflow="Metadataflow=BIS:MDF_TEST(1.0)",
+        metadataflow=(
+            "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+            "Metadataflow=BIS:MDF_TEST(1.0)"
+        ),
         metadata_provider=(
+            "urn:sdmx:org.sdmx.infomodel.base."
             "MetadataProvider=BIS:METADATA_PROVIDERS(1.0).PROV1"
         ),
     )
@@ -1532,7 +1539,7 @@ def test_metadataflow_30(complete_header, metadataflow):
     ) in result
     assert "<str:Target>" in result
     re_read = read_sdmx(result, validate=True).structures[0]
-    # Without an MSD in the document, the structure stays a short URN string
+    # Without an MSD in the document, the structure stays a full URN string
     assert re_read == metadataflow
 
 
@@ -1583,3 +1590,89 @@ def test_metadata_provision_agreement_30(
     assert "<str:MetadataProvider>" in result
     re_read = read_sdmx(result, validate=True).structures[0]
     assert re_read == metadata_provision_agreement
+
+
+@pytest.mark.xml
+def test_metadata_structure_30_concept_scheme_reconstructed(complete_header):
+    # An MSD whose components carry resolved Concept objects gets the
+    # referenced ConceptScheme reconstructed and written alongside it, so the
+    # concepts resolve again on read-back.
+    concept = Concept(
+        id="C1",
+        urn=(
+            "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:CS(1.0).C1"
+        ),
+        name="Concept 1",
+    )
+    msd = MetadataStructure(
+        id="M",
+        name="n",
+        agency="BIS",
+        version="1.0",
+        components=(MetadataComponent(id="C1", concept=concept),),
+    )
+    result = write([msd], header=complete_header, prettyprint=True)
+    assert result.count("<str:ConceptScheme ") == 1
+    re_read = read_sdmx(result, validate=True)
+    re_comp = re_read.get_metadata_structures()[0].components[0]
+    assert isinstance(re_comp.concept, Concept)
+    assert re_comp.concept.name == "Concept 1"
+
+
+@pytest.mark.xml
+def test_metadata_structure_30_concept_scheme_not_duplicated(complete_header):
+    # When the referenced ConceptScheme is already among the structures, it
+    # is not reconstructed/duplicated (the real scheme is kept).
+    concept = Concept(
+        id="C1",
+        urn=(
+            "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:CS(1.0).C1"
+        ),
+        name="Concept 1",
+    )
+    msd = MetadataStructure(
+        id="M",
+        name="n",
+        agency="BIS",
+        version="1.0",
+        components=(MetadataComponent(id="C1", concept=concept),),
+    )
+    scheme = ConceptScheme(
+        id="CS",
+        name="Real Concept Scheme",
+        agency="BIS",
+        version="1.0",
+        items=(concept,),
+    )
+    result = write([msd, scheme], header=complete_header, prettyprint=True)
+    # Only the real scheme is written, not a reconstructed duplicate.
+    assert result.count("<str:ConceptScheme ") == 1
+    assert "Real Concept Scheme" in result
+
+
+@pytest.mark.xml
+def test_metadata_refs_30_short_urns_canonicalized(complete_header):
+    # A model built with short URNs must be written as full URNs (2.1 Ref /
+    # 3.x URN), matching the canonical form stored by the readers.
+    mpa = MetadataProvisionAgreement(
+        id="MPA",
+        name="n",
+        agency="BIS",
+        version="1.0",
+        metadataflow="Metadataflow=BIS:MDF(1.0)",
+        metadata_provider="MetadataProvider=BIS:METADATA_PROVIDERS(1.0).PROV",
+    )
+    result = write([mpa], header=complete_header, prettyprint=True)
+    assert (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "Metadataflow=BIS:MDF(1.0)"
+    ) in result
+    assert (
+        "urn:sdmx:org.sdmx.infomodel.base."
+        "MetadataProvider=BIS:METADATA_PROVIDERS(1.0).PROV"
+    ) in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read.metadataflow == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "Metadataflow=BIS:MDF(1.0)"
+    )
