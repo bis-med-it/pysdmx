@@ -36,7 +36,7 @@ from pysdmx.io.format import Format
 from pysdmx.io.writer import write_sdmx
 from pysdmx.model import Dataflow, DataStructureDefinition, Schema
 from pysdmx.model.__base import MaintainableArtefact
-from pysdmx.model.dataset import Dataset
+from pysdmx.model.dataset import ActionType, Dataset
 from pysdmx.model.message import Message
 from pysdmx.util import experimental, parse_short_urn
 from pysdmx.util._model_utils import schema_generator
@@ -479,6 +479,27 @@ class StatUploader:
             )
         return r.text
 
+    def _import_data(
+        self,
+        dataset: Union[Dataset, Sequence[Dataset]],
+        dataspace: Optional[str],
+    ) -> str:
+        """Upload a dataset to the Transfer service (shared transport).
+
+        Serializes to SDMX-CSV 2.0 and posts it as a multipart file to
+        ``{transfer}/import/sdmxFile``. The per-row action (I/M/R/D) is
+        taken from the dataset's ``action``.
+        """
+        space = self._resolve_dataspace(dataspace)
+        body = write_sdmx(dataset, Format.DATA_SDMX_CSV_2_0_0) or ""
+        r = self._send(
+            "POST",
+            f"{self._transfer}/import/sdmxFile",
+            data={"dataspace": space},
+            files={"file": ("data.csv", body, _DATA_FILE_CT)},
+        )
+        return r.text
+
     def submit_data(
         self,
         dataset: Union[Dataset, Sequence[Dataset]],
@@ -515,15 +536,37 @@ class StatUploader:
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
-        space = self._resolve_dataspace(dataspace)
-        body = write_sdmx(dataset, Format.DATA_SDMX_CSV_2_0_0) or ""
-        r = self._send(
-            "POST",
-            f"{self._transfer}/import/sdmxFile",
-            data={"dataspace": space},
-            files={"file": ("data.csv", body, _DATA_FILE_CT)},
+        return self._import_data(dataset, dataspace)
+
+    def delete_data(
+        self, dataset: Dataset, dataspace: Optional[str] = None
+    ) -> str:
+        """Delete data by submitting it with the SDMX Delete action.
+
+        The dataset's observations are uploaded to the Transfer service
+        as SDMX-CSV 2.0 with ``ACTION=D`` per row, which deletes the
+        matching observations. Asynchronous, like :meth:`submit_data`.
+
+        Args:
+            dataset: A Schema-backed dataset whose observations (keys)
+                should be deleted.
+            dataspace: The target data space; defaults to the one set on
+                the connector.
+
+        Returns:
+            The raw ``OperationResult`` response body (with the request
+            id), pollable with :meth:`submission_status`.
+
+        Raises:
+            errors.Unauthorized: If the token is missing or rejected.
+            errors.Invalid: If no data space is set, or the service
+                returns a client error.
+            errors.InternalError: If the service returns a server error.
+            errors.Unavailable: If the service cannot be reached.
+        """
+        return self._import_data(
+            structs.replace(dataset, action=ActionType.Delete), dataspace
         )
-        return r.text
 
     def submit(
         self,

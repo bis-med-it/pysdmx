@@ -252,3 +252,27 @@ def test_fetch_token_non_json_response_raises(respx_mock):
 
     with pytest.raises(Invalid, match="token response"):
         StatUploader.fetch_token(AUTH_URL, "c", "user", "pw")
+
+
+def test_delete_data_uploads_action_d(respx_mock, uploader, dataset):
+    route = respx_mock.post(IMPORT_URL).mock(
+        return_value=httpx.Response(200, json={"requestId": 9})
+    )
+
+    result = uploader.delete_data(dataset)
+
+    assert "9" in result
+    req = route.calls.last.request
+    assert req.headers["Authorization"] == "Bearer TKN"
+    assert req.headers["Content-Type"].startswith("multipart/form-data")
+    body = req.content.decode()
+    assert 'name="file"' in body
+    assert 'name="dataspace"' in body
+    assert ",D," in body  # SDMX-CSV 2.0 ACTION column = D (Delete)
+
+
+def test_delete_data_without_dataspace_raises(token, dataset):
+    up = StatUploader(NSI, TRANSFER, token=token)  # no data space
+
+    with pytest.raises(Invalid, match="data space"):
+        up.delete_data(dataset)
