@@ -355,8 +355,8 @@ def test_categorisation_21_round_trip(complete_header):
     assert "<str:Target>" in result
     assert "isPartial" not in result
     re_read = read_sdmx(result, validate=True).structures[0]
-    # Full URNs round-trip unchanged; only annotations default to [].
-    assert re_read == categorisation.__replace__(annotations=[])
+    # Full URNs round-trip unchanged.
+    assert re_read == categorisation
 
 
 def test_category_scheme_21_enrichment_round_trip(complete_header):

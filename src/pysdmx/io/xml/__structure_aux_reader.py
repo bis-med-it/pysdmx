@@ -1632,10 +1632,6 @@ class StructureParser(Struct):
             element = self.__format_validity(element)
             if "xmlns" in element:
                 del element["xmlns"]
-            # Align with the SDMX-JSON reader, which always stores
-            # annotations as a list, so categorisations compare equal
-            # across formats even when no annotations are present.
-            element.setdefault(ANNOTATIONS.lower(), [])
             result = Categorisation(**element)
             elements[result.short_urn] = result
         return elements

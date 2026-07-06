@@ -51,7 +51,7 @@ class JsonCategorisation(
             is_final=is_final(self.version),
             valid_from=self.validFrom,
             valid_to=self.validTo,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple(a.to_model() for a in self.annotations),
         )
 
     @classmethod

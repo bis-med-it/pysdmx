@@ -1484,8 +1484,8 @@ def test_categorisation_30_round_trip(complete_header):
     assert "<str:Source>" in result
     assert "<str:Target>" in result
     re_read = read_sdmx(result, validate=True).structures[0]
-    # Full URNs round-trip unchanged; only annotations default to [].
-    assert re_read == categorisation.__replace__(annotations=[])
+    # Full URNs round-trip unchanged.
+    assert re_read == categorisation
 
 
 def test_categorisation_30_codelist_source_round_trip(complete_header):
@@ -1506,7 +1506,7 @@ def test_categorisation_30_codelist_source_round_trip(complete_header):
     result = write([categorisation], header=complete_header, prettyprint=True)
     assert "codelist.Codelist=BIS:CL_FREQ(1.0.0)" in result
     re_read = read_sdmx(result, validate=True).structures[0]
-    assert re_read == categorisation.__replace__(annotations=[])
+    assert re_read == categorisation
 
 
 def test_category_scheme_30_enrichment_round_trip(complete_header):
