@@ -275,10 +275,8 @@ from pysdmx.model.vtl import (
     VtlMappingScheme,
 )
 from pysdmx.util import (
-    create_full_urn,
     find_by_urn,
     is_final,
-    parse_short_urn,
     parse_urn,
 )
 
@@ -1043,7 +1041,13 @@ class StructureParser(Struct):
             del element[STRUCTURE]
         resolved: Optional[Union[MetadataStructure, str]] = None
         if reference_str is not None:
-            full_urn = create_full_urn(parse_short_urn(reference_str))
+            # The structure is always an MSD: the package is fixed to
+            # ``metadatastructure`` and ``reference_str`` already carries the
+            # ``MetadataStructure=...`` short URN.
+            full_urn = (
+                f"urn:sdmx:org.sdmx.infomodel."
+                f"metadatastructure.{reference_str}"
+            )
             resolved = self.metadatastructures.get(reference_str, full_urn)
         element[STRUCTURE.lower()] = resolved
         targets = (
@@ -1067,14 +1071,11 @@ class StructureParser(Struct):
         references are stored as canonical full URNs, matching the form
         stored by the SDMX-JSON reader.
         """
-        ref_flow = parse_urn(element[METADATAFLOW])
-        del element[METADATAFLOW]
-
-        ref_provider = parse_urn(element[METADATA_PROVIDER])
-        del element[METADATA_PROVIDER]
-
-        element[METADATAFLOW.lower()] = create_full_urn(ref_flow)
-        element["metadata_provider"] = create_full_urn(ref_provider)
+        # The MPA only exists in SDMX-ML 3.x, where both children are full
+        # URN text, so the values are stored as-is (the metadataflow is in
+        # the ``metadatastructure`` package, the provider in ``base``).
+        element[METADATAFLOW.lower()] = element.pop(METADATAFLOW)
+        element["metadata_provider"] = element.pop(METADATA_PROVIDER)
         return element
 
     def __format_metadata_attribute(

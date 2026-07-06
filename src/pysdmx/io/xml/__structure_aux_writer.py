@@ -189,8 +189,6 @@ from pysdmx.model.dataflow import (
     Role,
 )
 from pysdmx.util import (
-    create_full_urn,
-    get_package,
     parse_item_urn,
     parse_short_item_urn,
     parse_short_urn,
@@ -957,33 +955,6 @@ def __write_prov_agreement(
     return outfile
 
 
-def _parse_metadata_ref(
-    value: str, item: bool
-) -> Union[Reference, ItemReference]:
-    """Parses a metadata-family reference URN (full or short).
-
-    The stored value may be a full ``urn:sdmx:...`` URN (as produced by the
-    SDMX-JSON and SDMX-ML readers) or a short URN
-    (``Class=agency:id(version)``, optionally suffixed with an item id).
-    Full URNs are parsed with :func:`parse_urn`; short URNs with
-    :func:`parse_short_urn` (maintainable) or :func:`parse_short_item_urn`
-    (item).
-
-    Args:
-        value: The reference URN string.
-        item: Whether the reference points to an item rather than to a
-            maintainable artefact.
-
-    Returns:
-        The parsed reference with a clean ``sdmx_type``.
-    """
-    if value.startswith("urn:sdmx:"):
-        return parse_urn(value)
-    if item:
-        return parse_short_item_urn(value)
-    return parse_short_urn(value)
-
-
 def __write_metadata_structure_ref(
     structure: Union[MetadataStructure, str],
     indent: str,
@@ -992,26 +963,31 @@ def __write_metadata_structure_ref(
     """Writes a Metadataflow ``<str:Structure>`` reference to an MSD.
 
     The reference is a URN text in SDMX-ML 3.x and a ``<Ref>`` element in
-    SDMX-ML 2.1. The package is ``metadatastructure``. The model value may be
-    a resolved MetadataStructure, a full URN or a short URN.
+    SDMX-ML 2.1. The referenced artefact is always a MetadataStructure, so
+    the package (``metadatastructure``) and class (``MetadataStructure``)
+    are fixed. The model value may be a resolved MetadataStructure or its
+    full URN.
     """
     if isinstance(structure, MetadataStructure):
         ref: Union[Reference, ItemReference] = parse_short_urn(
             structure.short_urn
         )
     else:
-        ref = _parse_metadata_ref(structure, item=False)
+        ref = parse_urn(structure)
     outfile = f"{indent}<{ABBR_STR}:Structure>"
     if references_30:
-        outfile += f"{create_full_urn(ref)}</{ABBR_STR}:Structure>"
+        outfile += (
+            f"urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataStructure={ref.agency}:{ref.id}({ref.version})"
+            f"</{ABBR_STR}:Structure>"
+        )
     else:
         outfile += (
             f"{add_indent(indent)}<{REF} "
-            f"{PACKAGE}={get_package(ref.sdmx_type)!r} "
+            f'{PACKAGE}="metadatastructure" '
             f"{AGENCY_ID}={ref.agency!r} "
             f"{ID}={ref.id!r} "
             f"{VERSION}={ref.version!r} "
-            f"{CLASS}={ref.sdmx_type!r}/>"
+            f'{CLASS}="MetadataStructure"/>'
         )
         outfile += f"{indent}</{ABBR_STR}:Structure>"
     return outfile.replace("'", '"')
@@ -1144,19 +1120,16 @@ def __write_metadata_prov_agreement(
     """Writes the MPA children (Metadataflow + MetadataProvider).
 
     Mirrors ``__write_prov_agreement`` but the children are a
-    ``<str:Metadataflow>`` and a ``<str:MetadataProvider>`` (an organisation
-    item, package ``base``). The MPA construct only exists in SDMX-ML 3.x,
-    where references are URN text. The model values may be full or short URNs.
+    ``<str:Metadataflow>`` (package ``metadatastructure``) and a
+    ``<str:MetadataProvider>`` (an organisation item, package ``base``). The
+    MPA construct only exists in SDMX-ML 3.x, where references are URN text,
+    so the model already holds the full URNs and they are emitted as-is.
     """
-    ref_flow = _parse_metadata_ref(metadataflow, item=False)
-    ref_provider = _parse_metadata_ref(metadata_provider, item=True)
     outfile = f"{indent}<{ABBR_STR}:{METADATAFLOW}>"
-    outfile += f"{create_full_urn(ref_flow)}</{ABBR_STR}:{METADATAFLOW}>"
+    outfile += f"{metadataflow}</{ABBR_STR}:{METADATAFLOW}>"
     outfile += f"{indent}<{ABBR_STR}:{METADATA_PROVIDER}>"
-    outfile += (
-        f"{create_full_urn(ref_provider)}</{ABBR_STR}:{METADATA_PROVIDER}>"
-    )
-    return outfile.replace("'", '"')
+    outfile += f"{metadata_provider}</{ABBR_STR}:{METADATA_PROVIDER}>"
+    return outfile
 
 
 def __write_value_map(

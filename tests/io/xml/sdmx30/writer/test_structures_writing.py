@@ -1590,31 +1590,3 @@ def test_metadata_provision_agreement_30(
     assert "<str:MetadataProvider>" in result
     re_read = read_sdmx(result, validate=True).structures[0]
     assert re_read == metadata_provision_agreement
-
-
-@pytest.mark.xml
-def test_metadata_refs_30_short_urns_canonicalized(complete_header):
-    # A model built with short URNs must be written as full URNs (2.1 Ref /
-    # 3.x URN), matching the canonical form stored by the readers.
-    mpa = MetadataProvisionAgreement(
-        id="MPA",
-        name="n",
-        agency="BIS",
-        version="1.0",
-        metadataflow="Metadataflow=BIS:MDF(1.0)",
-        metadata_provider="MetadataProvider=BIS:METADATA_PROVIDERS(1.0).PROV",
-    )
-    result = write([mpa], header=complete_header, prettyprint=True)
-    assert (
-        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
-        "Metadataflow=BIS:MDF(1.0)"
-    ) in result
-    assert (
-        "urn:sdmx:org.sdmx.infomodel.base."
-        "MetadataProvider=BIS:METADATA_PROVIDERS(1.0).PROV"
-    ) in result
-    re_read = read_sdmx(result, validate=True).structures[0]
-    assert re_read.metadataflow == (
-        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
-        "Metadataflow=BIS:MDF(1.0)"
-    )
