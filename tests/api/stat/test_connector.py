@@ -310,3 +310,27 @@ def test_oecd_real_dataset(respx_mock, oecd_client, oecd_structure, oecd_data):
     assert isinstance(ds.structure, Schema)
     assert len(ds.data) == 41
     assert sorted(ds.data["REF_AREA"].unique()) == ["CHN"]
+
+
+def test_authenticated_read_sends_bearer(
+    respx_mock, struct_url, structure_xml
+):
+    bearer = "TKN"
+    conn = StatConnector(HOST, token=bearer)
+    route = _mock(respx_mock, struct_url, structure_xml)
+
+    conn.fetch_dataflow(*BIS_FLOW)
+
+    assert (
+        route.calls.last.request.headers["Authorization"] == f"Bearer {bearer}"
+    )
+
+
+def test_anonymous_read_has_no_bearer(
+    respx_mock, client, struct_url, structure_xml
+):
+    route = _mock(respx_mock, struct_url, structure_xml)
+
+    client.fetch_dataflow(*BIS_FLOW)
+
+    assert "Authorization" not in route.calls.last.request.headers

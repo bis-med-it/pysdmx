@@ -85,6 +85,7 @@ class StatConnector(SdmxConnector):
     def __init__(
         self,
         api_endpoint: str = StatEndpoints.OECD,
+        token: Optional[str] = None,
         pem: Optional[str] = None,
         timeout: Optional[float] = 20.0,
     ) -> None:
@@ -93,6 +94,8 @@ class StatConnector(SdmxConnector):
         Args:
             api_endpoint: The SDMX-REST v2 entry point. Defaults to the
                 OECD public service.
+            token: An optional OAuth2 bearer token, for reading
+                access-controlled dataspaces. Anonymous when omitted.
             pem: Optional PEM file with trusted certificate authorities,
                 for services using a self-signed certificate.
             timeout: Maximum number of seconds to wait per request.
@@ -106,6 +109,8 @@ class StatConnector(SdmxConnector):
             timeout=timeout,
             pem=pem,
         )
+        if token:
+            self._svc._headers["Authorization"] = f"Bearer {token}"
 
     def _structure_query(
         self, agency: str, id: str, version: str
