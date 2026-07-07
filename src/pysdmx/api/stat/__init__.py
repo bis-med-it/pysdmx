@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+import re
 from enum import Enum
 from io import BytesIO
 from typing import (
@@ -15,7 +17,7 @@ from typing import (
 )
 
 import httpx
-from msgspec import structs
+from msgspec import Struct, structs
 
 from pysdmx import errors
 from pysdmx.api.dc.rest import SdmxConnector
@@ -58,6 +60,90 @@ _TIME_DTYPES = frozenset(
         DataType.REP_TIME_PERIOD,
     }
 )
+
+
+class SubmissionResult(Struct, frozen=True, repr_omit_defaults=True):
+    """Outcome of a .Stat data submission or status poll.
+
+    Attributes:
+        success: Whether the operation succeeded.
+        message: The service message (or raw body when not JSON).
+        request_id: The async transaction id, when known.
+        execution_status: The status poll's execution status, if any.
+        outcome: The status poll's outcome, if any.
+        logs: Any log lines returned by a status poll.
+    """
+
+    success: bool
+    message: str = ""
+    request_id: Optional[int] = None
+    execution_status: Optional[str] = None
+    outcome: Optional[str] = None
+    logs: tuple[str, ...] = ()
+
+
+class StructureSubmissionResult(Struct, frozen=True, repr_omit_defaults=True):
+    """Outcome of a .Stat structure submission or deletion.
+
+    Attributes:
+        success: True when every reported artefact code is 200/201.
+        messages: The per-artefact messages the service returned.
+    """
+
+    success: bool
+    messages: tuple[str, ...] = ()
+
+
+def _submission_from_import(text: str) -> SubmissionResult:
+    """Parse a Transfer ``OperationResult`` (import/delete ack)."""
+    try:
+        payload = json.loads(text)
+    except ValueError:
+        return SubmissionResult(success=False, message=text.strip())
+    data = payload if isinstance(payload, dict) else {}
+    lower = {k.lower(): v for k, v in data.items()}
+    message = str(lower.get("message") or "")
+    rid = re.search(r"ID\s+(\d+)", message)
+    return SubmissionResult(
+        success=bool(lower.get("success", True)),
+        message=message,
+        request_id=int(rid.group(1)) if rid else None,
+    )
+
+
+def _submission_from_status(text: str) -> SubmissionResult:
+    """Parse a Transfer ``ImportSummary`` (status poll)."""
+    try:
+        payload = json.loads(text)
+    except ValueError:
+        return SubmissionResult(success=False, message=text.strip())
+    if not isinstance(payload, dict):
+        return SubmissionResult(success=False, message=text.strip())
+    lower = {k.lower(): v for k, v in payload.items()}
+    outcome = lower.get("outcome")
+    logs = tuple(
+        str(e.get("message") or e) if isinstance(e, dict) else str(e)
+        for e in (lower.get("logs") or [])
+    )
+    return SubmissionResult(
+        success=outcome == "Success",
+        message=str(outcome or lower.get("executionstatus") or ""),
+        request_id=lower.get("requestid"),
+        execution_status=lower.get("executionstatus"),
+        outcome=outcome,
+        logs=logs,
+    )
+
+
+def _structure_result(text: str) -> StructureSubmissionResult:
+    """Parse an NSIWS ``SubmitStructureResponse`` error envelope."""
+    pairs = re.findall(
+        r'code="(\d+)"[^>]*>\s*<[^>]*Text[^>]*>(.*?)</', text, re.DOTALL
+    )
+    return StructureSubmissionResult(
+        success=all(c in {"200", "201"} for c, _ in pairs),
+        messages=tuple(t.strip() for _, t in pairs),
+    )
 
 
 class StatEndpoints(str, Enum):
@@ -803,4 +889,10 @@ class StatUploader:
         return token
 
 
-__all__ = ["StatConnector", "StatEndpoints", "StatUploader"]
+__all__ = [
+    "StatConnector",
+    "StatEndpoints",
+    "StatUploader",
+    "StructureSubmissionResult",
+    "SubmissionResult",
+]

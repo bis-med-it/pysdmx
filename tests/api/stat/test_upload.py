@@ -3,7 +3,14 @@ from pathlib import Path
 import httpx
 import pytest
 
-from pysdmx.api.stat import StatUploader
+from pysdmx.api.stat import (
+    StatUploader,
+    StructureSubmissionResult,
+    SubmissionResult,
+    _structure_result,
+    _submission_from_import,
+    _submission_from_status,
+)
 from pysdmx.errors import (
     InternalError,
     Invalid,
@@ -361,3 +368,63 @@ def test_delete_structure_without_token_raises():
 def test_delete_structure_bad_urn_raises_clear(uploader):
     with pytest.raises(Invalid, match="short URN"):
         uploader.delete_structure("not-a-urn")
+
+
+def test_parse_import_operation_result():
+    r = _submission_from_import(
+        '{"success": true, "message": "The request with ID 42 was ok."}'
+    )
+    assert r.success is True
+    assert r.request_id == 42
+
+
+def test_parse_import_non_json():
+    r = _submission_from_import("boom")
+    assert r.success is False
+    assert r.request_id is None
+
+
+def test_parse_status_summary():
+    r = _submission_from_status(
+        '{"requestId": 7, "executionStatus": "Completed",'
+        ' "outcome": "Success", "logs": [{"message": "done"}]}'
+    )
+    assert r.success is True
+    assert (r.request_id, r.execution_status, r.outcome) == (
+        7,
+        "Completed",
+        "Success",
+    )
+    assert r.logs == ("done",)
+
+
+def test_parse_status_non_dict():
+    assert _submission_from_status("[]").success is False
+
+
+def test_parse_status_non_json():
+    assert _submission_from_status("boom").success is False
+
+
+def test_parse_structure_response_success_and_failure():
+    ok = _structure_result(
+        '<m:Error><m:ErrorMessage code="201">'
+        "<c:Text>Created: X was inserted.</c:Text></m:ErrorMessage></m:Error>"
+    )
+    assert ok.success is True
+    assert ok.messages == ("Created: X was inserted.",)
+
+    bad = _structure_result(
+        '<m:Error><m:ErrorMessage code="411">'
+        "<c:Text>Failure: bad.</c:Text></m:ErrorMessage></m:Error>"
+    )
+    assert bad.success is False
+
+    assert _structure_result("").success is True  # e.g. 204 empty body
+
+
+def test_submission_result_is_frozen():
+    assert isinstance(SubmissionResult(success=True), SubmissionResult)
+    assert isinstance(
+        StructureSubmissionResult(success=True), StructureSubmissionResult
+    )
