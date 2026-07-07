@@ -127,4 +127,48 @@ parameter.
     Structure submission can report a per-artefact failure inside the
     ``SubmitStructureResponse`` body even on an HTTP 200; a partial
     failure (HTTP 207) is raised as :class:`~pysdmx.errors.Invalid`.
+
+.. note::
+    Submitted (and deleted) content must use an **agency you are
+    authorized to maintain**. On the SIS-CC demo that agency is ``MD``;
+    everything under other agency IDs is read-only. The agency is taken
+    from the artefacts and datasets you pass, so build them under your
+    writable agency.
+
+Deleting
+--------
+
+Deletion mirrors submission and needs the same bearer token. Delete
+observations by uploading them with the SDMX *Delete* action, and delete
+structures with :meth:`~pysdmx.api.stat.StatUploader.delete_structure`.
+
+.. code-block:: python
+
+    # Delete observations (SDMX-CSV ACTION=D under the hood)
+    uploader.delete_data(dataset)
+
+    # Delete structures. A data import auto-creates an actual content
+    # constraint (CR_A_<dataflow>); tear down in dependency order:
+    uploader.delete_structure([
+        "DataConstraint=MD:CR_A_DF_EXAMPLE(1.0)",
+        "Dataflow=MD:DF_EXAMPLE(1.0)",
+        "DataStructure=MD:DSD_EXAMPLE(1.0)",
+        "ConceptScheme=MD:CS_EXAMPLE(1.0)",
+    ])
+
+``delete_structure`` accepts maintainable artefacts or short-URN strings,
+and deletes them in the order given — pass dependents first, or a
+still-referenced artefact yields :class:`~pysdmx.errors.Invalid` (HTTP
+409).
+
+Reading access-controlled dataspaces
+-------------------------------------
+
+``StatConnector`` reads anonymously by default. For deployments that
+require authentication, pass a bearer ``token``:
+
+.. code-block:: python
+
+    conn = StatConnector(StatEndpoints.OECD, token=my_token)
+    flow = conn.fetch_dataflow(agency, flow_id, version)
     Inspect the returned body to confirm the outcome.
