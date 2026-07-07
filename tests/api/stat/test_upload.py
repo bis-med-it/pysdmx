@@ -141,26 +141,26 @@ def test_submit_structure_partial_failure_raises(
         uploader.submit_structure(codelist)
 
 
-def test_submit_data_uploads_multipart_with_dataspace(
-    respx_mock, uploader, dataset
-):
+def test_submit_data_returns_submission_result(respx_mock, uploader, dataset):
     route = respx_mock.post(IMPORT_URL).mock(
         return_value=httpx.Response(
-            200, json={"success": True, "requestId": 42}
+            200, json={"success": True, "message": "request with ID 42 ok"}
         )
     )
 
     result = uploader.submit_data(dataset)
 
-    assert "42" in result  # the raw OperationResult body is returned
+    assert isinstance(result, SubmissionResult)
+    assert result.success is True
+    assert result.request_id == 42
     req = route.calls.last.request
     assert req.headers["Authorization"] == "Bearer TKN"
     assert req.headers["Content-Type"].startswith("multipart/form-data")
     body = req.content.decode()
-    assert 'name="file"' in body  # the SDMX-CSV file part
+    assert 'name="file"' in body
     assert 'name="dataspace"' in body
-    assert "design" in body  # the default data space
-    assert "STRUCTURE" in body  # SDMX-CSV 2.0 file content
+    assert "design" in body
+    assert "STRUCTURE" in body
 
 
 def test_submit_data_dataspace_override(respx_mock, uploader, dataset):
@@ -192,7 +192,7 @@ def test_submit_uploads_structure_then_data(
 
     result = uploader.submit(codelist, dataset)
 
-    assert "7" in result  # returns the data-submission response
+    assert result.request_id == 7  # returns the data-submission response
     assert struct.called
     assert data.called
     # The structure must be submitted before the data.
@@ -276,7 +276,7 @@ def test_delete_data_uploads_action_d(respx_mock, uploader, dataset):
 
     result = uploader.delete_data(dataset)
 
-    assert "9" in result
+    assert result.request_id == 9
     req = route.calls.last.request
     assert req.headers["Authorization"] == "Bearer TKN"
     assert req.headers["Content-Type"].startswith("multipart/form-data")
@@ -284,6 +284,17 @@ def test_delete_data_uploads_action_d(respx_mock, uploader, dataset):
     assert 'name="file"' in body
     assert 'name="dataspace"' in body
     assert ",D," in body  # SDMX-CSV 2.0 ACTION column = D (Delete)
+
+
+def test_delete_data_accepts_sequence(respx_mock, uploader, dataset):
+    route = respx_mock.post(IMPORT_URL).mock(
+        return_value=httpx.Response(200, json={"requestId": 1})
+    )
+
+    result = uploader.delete_data([dataset, dataset])
+
+    assert isinstance(result, SubmissionResult)
+    assert ",D," in route.calls.last.request.content.decode()
 
 
 def test_delete_data_without_dataspace_raises(token, dataset):

@@ -107,7 +107,7 @@ def _submission_from_import(text: str) -> SubmissionResult:
     return SubmissionResult(
         success=bool(lower.get("success", True)),
         message=message,
-        request_id=int(rid.group(1)) if rid else None,
+        request_id=int(rid.group(1)) if rid else lower.get("requestid"),
     )
 
 
@@ -613,13 +613,8 @@ class StatUploader:
         self,
         dataset: Union[Dataset, Sequence[Dataset]],
         dataspace: Optional[str],
-    ) -> str:
-        """Upload a dataset to the Transfer service (shared transport).
-
-        Serializes to SDMX-CSV 2.0 and posts it as a multipart file to
-        ``{transfer}/import/sdmxFile``. The per-row action (I/M/R/D) is
-        taken from the dataset's ``action``.
-        """
+    ) -> SubmissionResult:
+        """Upload dataset(s) to the Transfer service (shared transport)."""
         space = self._resolve_dataspace(dataspace)
         body = write_sdmx(dataset, Format.DATA_SDMX_CSV_2_0_0) or ""
         r = self._send(
@@ -628,13 +623,13 @@ class StatUploader:
             data={"dataspace": space},
             files={"file": ("data.csv", body, _DATA_FILE_CT)},
         )
-        return r.text
+        return _submission_from_import(r.text)
 
     def submit_data(
         self,
         dataset: Union[Dataset, Sequence[Dataset]],
         dataspace: Optional[str] = None,
-    ) -> str:
+    ) -> SubmissionResult:
         """Submit data to the Transfer service.
 
         The dataset is serialized to SDMX-CSV 2.0 with :func:`write_sdmx`
@@ -646,9 +641,8 @@ class StatUploader:
         URN cannot be written as SDMX-CSV 2.0. The per-row action is
         taken from the SDMX-CSV 2.0 ``ACTION`` column.
 
-        Submission is asynchronous: the response is the Transfer
-        ``OperationResult`` (JSON), whose transaction id (an integer,
-        reported as ``requestId``) is passed to
+        Submission is asynchronous: the returned ``SubmissionResult``
+        carries the transaction id (``request_id``) to pass to
         :meth:`submission_status`.
 
         Args:
@@ -657,7 +651,10 @@ class StatUploader:
                 the connector.
 
         Returns:
-            The raw ``OperationResult`` response body.
+            A :class:`SubmissionResult` with the acknowledgement
+            ``success``, the service ``message``, and the ``request_id``
+            (the async transaction id) to poll with
+            :meth:`submission_status`.
 
         Raises:
             errors.Unauthorized: If the token is missing or rejected.
@@ -669,8 +666,10 @@ class StatUploader:
         return self._import_data(dataset, dataspace)
 
     def delete_data(
-        self, dataset: Dataset, dataspace: Optional[str] = None
-    ) -> str:
+        self,
+        dataset: Union[Dataset, Sequence[Dataset]],
+        dataspace: Optional[str] = None,
+    ) -> SubmissionResult:
         """Delete data by submitting it with the SDMX Delete action.
 
         The dataset's observations are uploaded to the Transfer service
@@ -678,14 +677,16 @@ class StatUploader:
         matching observations. Asynchronous, like :meth:`submit_data`.
 
         Args:
-            dataset: A Schema-backed dataset whose observations (keys)
-                should be deleted.
+            dataset: A Schema-backed dataset (or a sequence of them)
+                whose observations (keys) should be deleted.
             dataspace: The target data space; defaults to the one set on
                 the connector.
 
         Returns:
-            The raw ``OperationResult`` response body (with the request
-            id), pollable with :meth:`submission_status`.
+            A :class:`SubmissionResult` with the acknowledgement
+            ``success``, the service ``message``, and the ``request_id``
+            (the async transaction id) to poll with
+            :meth:`submission_status`.
 
         Raises:
             errors.Unauthorized: If the token is missing or rejected.
@@ -694,8 +695,12 @@ class StatUploader:
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
+        datasets = [dataset] if isinstance(dataset, Dataset) else list(dataset)
+        marked = [
+            structs.replace(d, action=ActionType.Delete) for d in datasets
+        ]
         return self._import_data(
-            structs.replace(dataset, action=ActionType.Delete), dataspace
+            marked if len(marked) > 1 else marked[0], dataspace
         )
 
     def delete_structure(
@@ -771,7 +776,7 @@ class StatUploader:
         structures: Union[MaintainableArtefact, Sequence[Any]],
         dataset: Union[Dataset, Sequence[Dataset]],
         dataspace: Optional[str] = None,
-    ) -> str:
+    ) -> SubmissionResult:
         """Submit the structure(s) first, then the data.
 
         .Stat Suite requires a dataflow's structure to exist before its
@@ -785,7 +790,8 @@ class StatUploader:
                 the one set on the connector.
 
         Returns:
-            The raw data-submission ``OperationResult`` response body.
+            The data submission's :class:`SubmissionResult` (with the
+            ``request_id`` to poll with :meth:`submission_status`).
 
         Raises:
             errors.Unauthorized: If the token is missing or rejected.
