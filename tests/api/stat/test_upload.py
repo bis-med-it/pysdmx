@@ -356,3 +356,8 @@ def test_delete_structure_without_token_raises():
         up.delete_structure(
             Dataflow(id="DF_X", agency="MD", version="1.0", name="x")
         )
+
+
+def test_delete_structure_bad_urn_raises_clear(uploader):
+    with pytest.raises(Invalid, match="short URN"):
+        uploader.delete_structure("not-a-urn")

@@ -11,7 +11,16 @@ from pysdmx.errors import Invalid, NotFound
 from pysdmx.errors import NotImplemented as NotImpl
 from pysdmx.io import read_sdmx
 from pysdmx.io.pd import PandasDataset
-from pysdmx.model import Dataflow, Schema
+from pysdmx.model import (
+    Component,
+    Components,
+    Concept,
+    Dataflow,
+    DataStructureDefinition,
+    Role,
+    Schema,
+)
+from pysdmx.model.__base import DataType
 from pysdmx.model.message import Message
 
 # --- Sample fixture files ----------------------------------------------------
@@ -334,3 +343,50 @@ def test_anonymous_read_has_no_bearer(
     client.fetch_dataflow(*BIS_FLOW)
 
     assert "Authorization" not in route.calls.last.request.headers
+
+
+def test_fetch_dataflow_lenient_version(respx_mock, client, structure_xml):
+    # The BIS structure declares version 1.0; requesting 1.0.0 (as a
+    # service that normalises the version would answer) must still
+    # resolve to the sole returned dataflow.
+    _mock(
+        respx_mock,
+        f"{HOST}/structure/dataflow/BIS/WEBSTATS_DER_DATAFLOW",
+        structure_xml,
+    )
+
+    flow = client.fetch_dataflow("BIS", "WEBSTATS_DER_DATAFLOW", "1.0.0")
+
+    assert flow.short_urn == BIS_URN  # the returned 1.0 dataflow
+
+
+def test_build_key_rejects_reserved_value(client, structure_xml):
+    dsd = client._find_dsd(read_sdmx(BytesIO(structure_xml), validate=False))
+
+    with pytest.raises(Invalid, match="reserved key character"):
+        client._build_key(dsd, {"FREQ": "A+B"})
+
+
+def test_build_key_excludes_time_dim_by_dtype(client):
+    def dim(cid: str, dtype: DataType) -> Component:
+        return Component(
+            id=cid,
+            required=True,
+            role=Role.DIMENSION,
+            concept=Concept(id=cid, name=cid),
+            local_dtype=dtype,
+        )
+
+    dsd = DataStructureDefinition(
+        id="D",
+        agency="MD",
+        version="1.0",
+        name="x",
+        components=Components(
+            [dim("REF_AREA", DataType.STRING), dim("TIME", DataType.PERIOD)]
+        ),
+    )
+
+    # "TIME" is period-typed, so it is excluded despite its non-standard
+    # id, leaving REF_AREA as the sole positional key component.
+    assert client._build_key(dsd, {"REF_AREA": "ES"}) == "ES"

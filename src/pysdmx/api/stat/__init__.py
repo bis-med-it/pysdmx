@@ -35,7 +35,7 @@ from pysdmx.io import get_datasets, read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.writer import write_sdmx
 from pysdmx.model import Dataflow, DataStructureDefinition, Schema
-from pysdmx.model.__base import MaintainableArtefact
+from pysdmx.model.__base import DataType, MaintainableArtefact
 from pysdmx.model.dataset import ActionType, Dataset
 from pysdmx.model.message import Message
 from pysdmx.util import experimental, parse_short_urn
@@ -44,6 +44,20 @@ from pysdmx.util._net_utils import BearerAuth, map_httpx_errors
 
 if TYPE_CHECKING:  # pragma: no cover
     from pysdmx.io.pd import PandasDataset
+
+# SDMX time-period data types, used to detect the time dimension (which
+# is excluded from a positional series key) without hard-coding its id.
+_TIME_DTYPES = frozenset(
+    {
+        DataType.PERIOD,
+        DataType.TIME,
+        DataType.TIME_RANGE,
+        DataType.STD_TIME_PERIOD,
+        DataType.BASIC_TIME_PERIOD,
+        DataType.GREGORIAN_TIME_PERIOD,
+        DataType.REP_TIME_PERIOD,
+    }
+)
 
 
 class StatEndpoints(str, Enum):
@@ -134,11 +148,24 @@ class StatConnector(SdmxConnector):
     def _find_dataflow(
         self, msg: Message, agency: str, id: str, version: str
     ) -> Dataflow:
-        """Return the requested Dataflow from a structure message."""
-        target = f"Dataflow={agency}:{id}({version})"
-        for artefact in msg.structures or []:
-            if isinstance(artefact, Dataflow) and artefact.short_urn == target:
+        """Return the requested Dataflow from a structure message.
+
+        Matches on agency and id; the version is treated leniently, so a
+        service that normalises the version (e.g. ``1.0`` -> ``1.0.0``)
+        or a wildcard request (``~``, ``+``) still resolves to the sole
+        returned dataflow.
+        """
+        prefix = f"Dataflow={agency}:{id}("
+        matches = [
+            a
+            for a in msg.structures or []
+            if isinstance(a, Dataflow) and a.short_urn.startswith(prefix)
+        ]
+        for artefact in matches:
+            if artefact.short_urn == f"{prefix}{version})":
                 return artefact
+        if len(matches) == 1:
+            return matches[0]
         raise errors.NotFound(
             "Dataflow not found",
             (
@@ -162,7 +189,11 @@ class StatConnector(SdmxConnector):
         self, dsd: DataStructureDefinition, filters: Mapping[str, str]
     ) -> str:
         """Build a positional series key from dimension filters."""
-        dims = [d for d in dsd.components.dimensions if d.id != "TIME_PERIOD"]
+        dims = [
+            d
+            for d in dsd.components.dimensions
+            if d.id != "TIME_PERIOD" and d.local_dtype not in _TIME_DTYPES
+        ]
         unknown = sorted(f for f in filters if f not in {d.id for d in dims})
         if unknown:
             valid = sorted(d.id for d in dims)
@@ -170,6 +201,14 @@ class StatConnector(SdmxConnector):
                 "Invalid filter",
                 f"Unknown dimension(s): {unknown}. Valid: {valid}.",
             )
+        for dim, value in filters.items():
+            if any(c in value for c in ".+*"):
+                raise errors.Invalid(
+                    "Invalid filter value",
+                    f"Value {value!r} for dimension {dim!r} contains a "
+                    "reserved key character ('.', '+' or '*'). Pass one "
+                    "plain code value per dimension.",
+                )
         return ".".join(filters.get(d.id, "*") for d in dims)
 
     def fetch_dataflow(self, agency: str, id: str, version: str) -> Dataflow:
@@ -626,7 +665,14 @@ class StatUploader:
         responses = []
         for item in items:
             urn = item if isinstance(item, str) else item.short_urn
-            ref = parse_short_urn(urn)
+            try:
+                ref = parse_short_urn(urn)
+            except errors.Invalid as exc:
+                raise errors.Invalid(
+                    "Invalid artefact reference",
+                    "Expected a short URN like 'Dataflow=MD:DF(1.0)'; "
+                    f"got {urn!r}.",
+                ) from exc
             url = (
                 f"{self._nsi}/rest/{ref.sdmx_type.lower()}"
                 f"/{ref.agency}/{ref.id}/{ref.version}"
