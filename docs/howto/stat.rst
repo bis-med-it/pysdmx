@@ -171,4 +171,3 @@ require authentication, pass a bearer ``token``:
 
     conn = StatConnector(StatEndpoints.OECD, token=my_token)
     flow = conn.fetch_dataflow(agency, flow_id, version)
-    Inspect the returned body to confirm the outcome.

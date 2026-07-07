@@ -85,20 +85,20 @@ class StatConnector(SdmxConnector):
     def __init__(
         self,
         api_endpoint: str = StatEndpoints.OECD,
-        token: Optional[str] = None,
         pem: Optional[str] = None,
         timeout: Optional[float] = 20.0,
+        token: Optional[str] = None,
     ) -> None:
         """Instantiate a .Stat Suite download connector.
 
         Args:
             api_endpoint: The SDMX-REST v2 entry point. Defaults to the
                 OECD public service.
-            token: An optional OAuth2 bearer token, for reading
-                access-controlled dataspaces. Anonymous when omitted.
             pem: Optional PEM file with trusted certificate authorities,
                 for services using a self-signed certificate.
             timeout: Maximum number of seconds to wait per request.
+            token: An optional OAuth2 bearer token, for reading
+                access-controlled dataspaces. Anonymous when omitted.
         """
         super().__init__(api_endpoint, pem=pem, timeout=timeout)
         self._svc = RestService(
@@ -599,6 +599,13 @@ class StatUploader:
         Args:
             artefacts: The artefact(s) or short URN(s) to delete.
 
+        Deletion is fail-fast: on the first error the exception is
+        raised and an indeterminate prefix of the sequence may already
+        have been deleted (re-run with the remaining artefacts). The NSI
+        signals a delete failure with an HTTP status (mapped above)
+        rather than an in-body error, but callers may still inspect the
+        returned bodies.
+
         Returns:
             The service response bodies, one per artefact, in order.
 
@@ -613,7 +620,7 @@ class StatUploader:
         """
         items = (
             [artefacts]
-            if isinstance(artefacts, str) or hasattr(artefacts, "short_urn")
+            if isinstance(artefacts, (str, MaintainableArtefact))
             else list(artefacts)
         )
         responses = []
