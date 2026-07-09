@@ -726,3 +726,45 @@ def test_json_agency_scheme_roundtrip_uses_local_ids(sdmx_format):
 
     xp = read_sdmx(result, validate=True)
     assert jp.get_agency_schemes() == xp.get_agency_schemes()
+
+
+@pytest.mark.parametrize(
+    "sdmx_format",
+    [
+        Format.STRUCTURE_SDMX_ML_2_1,
+        Format.STRUCTURE_SDMX_ML_3_0,
+        Format.STRUCTURE_SDMX_ML_3_1,
+    ],
+)
+def test_json_data_provider_scheme_roundtrip(sdmx_format):
+    # A DataProviderScheme read from SDMX-JSON must survive a
+    # JSON -> SDMX-ML -> read round-trip unchanged. Regression test for the
+    # scheme-level annotations being read as a list from SDMX-JSON but a
+    # tuple from SDMX-ML, which broke equality (see PR #629 review).
+    jp = read_sdmx(JSN_2_0_PATH / "orgs" / "providers.json")
+    result = write_sdmx(jp.get_data_provider_schemes(), sdmx_format)
+
+    xp = read_sdmx(result, validate=True)
+    assert jp.get_data_provider_schemes() == xp.get_data_provider_schemes()
+
+
+@pytest.mark.parametrize(
+    "sdmx_format",
+    [
+        Format.STRUCTURE_SDMX_ML_3_0,
+        Format.STRUCTURE_SDMX_ML_3_1,
+    ],
+)
+def test_json_metadata_provider_scheme_roundtrip(sdmx_format):
+    # MetadataProviderScheme is absent from the SDMX-ML 2.1
+    # OrganisationSchemes content model, so the round-trip is only
+    # exercised for 3.0/3.1. Same scheme-level annotations regression as
+    # the data provider scheme above.
+    jp = read_sdmx(JSN_2_0_PATH / "orgs" / "metadata_providers.json")
+    result = write_sdmx(jp.get_metadata_provider_schemes(), sdmx_format)
+
+    xp = read_sdmx(result, validate=True)
+    assert (
+        jp.get_metadata_provider_schemes()
+        == xp.get_metadata_provider_schemes()
+    )
