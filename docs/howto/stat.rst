@@ -68,6 +68,15 @@ Filter by dimension with ``filters`` (a mapping of dimension ID to a
 single value, resolved to a positional key) or pass a raw positional
 ``key`` directly. .Stat services key on one value per dimension.
 
+.. note::
+    ``filters`` accepts a **single code per dimension**. Multi-value
+    selections (``ES+FR``), wildcards (``*``) and hierarchical operators
+    (``.``) are not supported — passing a value that contains ``+``,
+    ``*`` or ``.``, or an unknown dimension id, raises
+    :class:`~pysdmx.errors.Invalid`. To combine several values, issue one
+    request per value and concatenate the results. Dimensions you omit
+    default to a wildcard, and time dimensions are dropped from the key.
+
 Uploading
 ---------
 
@@ -194,3 +203,9 @@ The connectors take different URL forms:
   (structures are posted to ``{nsi}/rest/structure``) and the Transfer
   service **including its API-version segment**, e.g.
   ``https://my.stat/transfer/3``.
+
+The ``StatEndpoints`` enum lists ready-made **read** bases for known
+public deployments; it does not apply to ``StatUploader``, which takes
+raw URLs (writable hosts are deployment-specific). When round-tripping,
+the ``StatConnector`` read base is usually the NSI host with ``/rest/v2``
+appended, e.g. ``StatConnector(f"{nsi}/rest/v2", token=token)``.
