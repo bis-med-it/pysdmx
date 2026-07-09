@@ -286,9 +286,7 @@ class PandasConnector(BasicConnector):
                 },
             ) from error
 
-    def __cleanup_temp_file(
-        self, temp_path: Optional[pathlib.Path]
-    ) -> None:
+    def __cleanup_temp_file(self, temp_path: Optional[pathlib.Path]) -> None:
         if temp_path is not None:
             with contextlib.suppress(OSError):
                 temp_path.unlink(missing_ok=True)
