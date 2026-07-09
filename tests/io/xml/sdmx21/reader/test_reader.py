@@ -11,6 +11,7 @@ from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.__tokens import OBS_DIM, OBS_VALUE_ID
+from pysdmx.io.xml.header import __parse_prepared as parse_prepared
 from pysdmx.io.xml.sdmx21.reader.error import read as read_error
 from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
@@ -874,6 +875,26 @@ def test_header_xmlns(samples_folder):
     assert result.structure == {
         "Dataflow=OECD.SDD.STES:DSD_STES@DF_CLI(4.1)": "TIME_PERIOD"
     }
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        # .NET/.Stat "tick" precision (7 digits): truncated to microseconds.
+        (
+            "2026-06-08T12:44:34.8854787+02:00",
+            "2026-06-08T12:44:34.885478+02:00",
+        ),
+        # 4 fractional digits also break fromisoformat on Python < 3.11.
+        ("2026-01-01T00:00:00.1234+00:00", "2026-01-01T00:00:00.123400+00:00"),
+        # 6 digits with a trailing Z.
+        ("2026-01-01T00:00:00.123456Z", "2026-01-01T00:00:00.123456+00:00"),
+        # No fractional seconds at all.
+        ("2025-12-18T10:39:09Z", "2025-12-18T10:39:09+00:00"),
+    ],
+)
+def test_parse_prepared_fractional_seconds(raw, expected):
+    assert parse_prepared(raw) == datetime.fromisoformat(expected)
 
 
 def test_vtl_data_flow_mapping_reader(samples_folder):

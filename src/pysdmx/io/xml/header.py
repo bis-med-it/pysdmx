@@ -1,5 +1,6 @@
 """SDMX 2.1 XML Header reader module."""
 
+import re
 import warnings
 from datetime import datetime
 from typing import Any, Dict, Optional, Union
@@ -155,9 +156,21 @@ def __parse_dataset_action(
         return ActionType(dataset_action)
 
 
+_FRACTIONAL_SECONDS = re.compile(r"\.(\d+)")
+
+
 def __parse_prepared(prepared: str) -> datetime:
-    """Parses the prepared date of the SDMX message."""
-    return datetime.fromisoformat(prepared.replace("Z", "+00:00"))
+    """Parses the prepared date of the SDMX message.
+
+    The fractional seconds are normalised to six digits before parsing:
+    .NET-based services (e.g. the .Stat Suite) emit seven-digit "tick"
+    precision, which ``datetime.fromisoformat`` rejects on Python < 3.11.
+    """
+    prepared = prepared.replace("Z", "+00:00")
+    prepared = _FRACTIONAL_SECONDS.sub(
+        lambda m: "." + m.group(1)[:6].ljust(6, "0"), prepared, count=1
+    )
+    return datetime.fromisoformat(prepared)
 
 
 def __parse_header(header: Dict[str, Any]) -> Header:
