@@ -1,6 +1,7 @@
 """A Pandas connector for SDMX-REST services."""
 
 # ruff: noqa: E402
+import contextlib
 import pathlib
 import tempfile
 from typing import Any, Iterable, Literal, Optional, Union
@@ -245,10 +246,10 @@ class PandasConnector(BasicConnector):
             # Return requested data as a DataFrame
             return df
         finally:
-            if temp_path:
-                temp_path.unlink(missing_ok=True)
+            self.__cleanup_temp_file(temp_path)
 
     def __write_temp_csv(self, query: Any) -> pathlib.Path:
+        temp_path: Optional[pathlib.Path] = None
         try:
             with tempfile.NamedTemporaryFile(
                 mode="wb", suffix=".csv", delete=False
@@ -260,7 +261,20 @@ class PandasConnector(BasicConnector):
                     f.write(chunk)
                 f.flush()
                 return temp_path
-        except OSError as error:
+        except BaseException as error:
+            self.__cleanup_temp_file(temp_path)
+
+            # Preserve control-flow exceptions after cleanup.
+            if isinstance(
+                error, (KeyboardInterrupt, SystemExit, GeneratorExit)
+            ):
+                raise
+
+            # Keep domain errors unchanged to preserve their semantics.
+            if isinstance(error, errors.PysdmxError):
+                raise
+
+            # Map any remaining unexpected failure to a pysdmx error.
             raise errors.InternalError(
                 "Unexpected I/O issue",
                 (
@@ -271,6 +285,13 @@ class PandasConnector(BasicConnector):
                     "original_exception": str(error),
                 },
             ) from error
+
+    def __cleanup_temp_file(
+        self, temp_path: Optional[pathlib.Path]
+    ) -> None:
+        if temp_path is not None:
+            with contextlib.suppress(OSError):
+                temp_path.unlink(missing_ok=True)
 
     def __map_category_fields(
         self, df: pd.DataFrame, flow: Dataflow, labels: Literal["name", "both"]
