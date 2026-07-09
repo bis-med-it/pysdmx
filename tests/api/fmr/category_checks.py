@@ -131,6 +131,36 @@ def __check_core_info(categories: Sequence[Category]):
             __check_core_info(cat.categories)
 
 
+def check_category_container_types(mock, fmr: RegistryClient, query, body):
+    """Category sequence fields must be tuples, the model default.
+
+    Using tuples keeps the reader output consistent with the SDMX-ML
+    reader and the model default, so a category scheme round-trips
+    unchanged across formats (a tuple and a list never compare equal).
+    """
+    mock.get(query).mock(
+        return_value=httpx.Response(
+            200,
+            content=body,
+        )
+    )
+
+    cs = fmr.get_categories("TEST", "TEST_CS")
+
+    assert isinstance(cs.categories, tuple)
+    assert isinstance(cs.annotations, tuple)
+    __check_container_types(cs.categories)
+
+
+def __check_container_types(categories: Sequence[Category]):
+    for cat in categories:
+        assert isinstance(cat.categories, tuple)
+        assert isinstance(cat.dataflows, tuple)
+        assert isinstance(cat.other_references, tuple)
+        assert isinstance(cat.annotations, tuple)
+        __check_container_types(cat.categories)
+
+
 def check_empty(mock, fmr: RegistryClient, query, body):
     """Can handle empty messages."""
     mock.get(query).mock(

@@ -730,3 +730,31 @@ def test_categorisation_full_urn_json_to_xml_roundtrip(tmpdir, sdmx_format):
 
     from_xml = read_sdmx(out_path, validate=True)
     assert from_json.get_categorisations() == from_xml.get_categorisations()
+
+
+@pytest.mark.parametrize(
+    "sdmx_format",
+    [
+        Format.STRUCTURE_SDMX_ML_2_1,
+        Format.STRUCTURE_SDMX_ML_3_0,
+        Format.STRUCTURE_SDMX_ML_3_1,
+    ],
+)
+def test_category_scheme_json_to_xml_roundtrip(tmpdir, sdmx_format):
+    # A category scheme read from SDMX-JSON must round-trip through
+    # SDMX-ML (2.1/3.0/3.1) unchanged. The SDMX-JSON reader must build
+    # the category containers (items, sub-categories, annotations) as
+    # tuples -- the model default that the SDMX-ML reader also uses --
+    # so the re-read scheme compares equal to the original.
+    json_path = JSN_2_0_PATH / "cat" / "cs.json"
+    from_json = read_sdmx(json_path)
+
+    out_path = Path(str(tmpdir)) / "cs.xml"
+    write_sdmx(
+        from_json.get_category_schemes(),
+        sdmx_format=sdmx_format,
+        output_path=str(out_path),
+    )
+
+    from_xml = read_sdmx(out_path, validate=True)
+    assert from_json.get_category_schemes() == from_xml.get_category_schemes()

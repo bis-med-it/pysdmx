@@ -91,7 +91,7 @@ class JsonCategory(NameableType, frozen=True, omit_defaults=True):
         self, cni: str, cf: Dict[str, list[Dataflow]]
     ) -> Sequence[DataflowRef]:
         if cni in cf:
-            return [
+            return tuple(
                 DataflowRef(
                     (
                         df.agency.id
@@ -103,7 +103,7 @@ class JsonCategory(NameableType, frozen=True, omit_defaults=True):
                     df.name,
                 )
                 for df in cf[cni]
-            ]
+            )
         else:
             return ()
 
@@ -116,15 +116,15 @@ class JsonCategory(NameableType, frozen=True, omit_defaults=True):
         """Converts a FusionCode to a standard code."""
         cni = f"{parent_id}.{self.id}" if parent_id else self.id
         dataflows = self.__add_flows(cni, cat_flows)
-        others = cat_other.get(cni, ())
+        others = tuple(cat_other.get(cni, ()))
         return Category(
             id=self.id,
             name=self.name,
             description=self.description,
-            categories=[
+            categories=tuple(
                 c.to_model(cat_flows, cat_other, cni) for c in self.categories
-            ],
-            annotations=[a.to_model() for a in self.annotations],
+            ),
+            annotations=tuple(a.to_model() for a in self.annotations),
             dataflows=dataflows,
             other_references=others,
         )
@@ -196,13 +196,15 @@ class JsonCategoryScheme(
             agency=self.agency,
             description=self.description,
             version=self.version,
-            items=[c.to_model(cat_flows, cat_other) for c in self.categories],
+            items=tuple(
+                c.to_model(cat_flows, cat_other) for c in self.categories
+            ),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             is_partial=self.isPartial,
             valid_from=self.validFrom,
             valid_to=self.validTo,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple(a.to_model() for a in self.annotations),
         )
 
     @classmethod
