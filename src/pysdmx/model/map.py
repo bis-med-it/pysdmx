@@ -6,8 +6,28 @@ from typing import Any, Iterator, Literal, Optional, Sequence, Tuple, Union
 
 from msgspec import Struct
 
+from pysdmx.errors import Invalid
 from pysdmx.model.__base import Agency, MaintainableArtefact
 from pysdmx.util._date_pattern_map import convert_dpm
+
+
+def _raise_missing_map_side(map_type: str, side: str) -> None:
+    """Raise a standardized missing-side validation error."""
+    raise Invalid(
+        "Validation Error",
+        f"{map_type} {side} is required when maps are set.",
+    )
+
+
+def _raise_map_side_length_error(map_type: str, side: str) -> None:
+    """Raise a standardized side-length validation error."""
+    raise Invalid(
+        "Validation Error",
+        (
+            f"{map_type} {side} must contain the same number of entries "
+            f"as the first map {side}."
+        ),
+    )
 
 
 class _BaseMap(
@@ -264,6 +284,27 @@ class MultiRepresentationMap(
     target: Sequence[str] = []
     maps: Sequence[MultiValueMap] = []
 
+    def __post_init__(self) -> None:
+        """Validate the multi representation map."""
+        super().__post_init__()
+
+        if not self.maps:
+            return
+
+        if not self.source:
+            _raise_missing_map_side("MultiRepresentationMap", "source")
+
+        if not self.target:
+            _raise_missing_map_side("MultiRepresentationMap", "target")
+
+        first_map = self.maps[0]
+
+        if len(self.source) != len(first_map.source):
+            _raise_map_side_length_error("MultiRepresentationMap", "source")
+
+        if len(self.target) != len(first_map.target):
+            _raise_map_side_length_error("MultiRepresentationMap", "target")
+
     @property
     def short_urn(self) -> str:
         """Returns the short URN for the MultiRepresentationMap."""
@@ -332,6 +373,19 @@ class RepresentationMap(MaintainableArtefact, frozen=True, omit_defaults=True):
     source: Optional[str] = None
     target: Optional[str] = None
     maps: Sequence[ValueMap] = []
+
+    def __post_init__(self) -> None:
+        """Validate the representation map."""
+        super().__post_init__()
+
+        if not self.maps:
+            return
+
+        if self.source is None:
+            _raise_missing_map_side("RepresentationMap", "source")
+
+        if self.target is None:
+            _raise_missing_map_side("RepresentationMap", "target")
 
     def __iter__(
         self,

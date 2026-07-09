@@ -12,6 +12,8 @@ from pysdmx.io.xml.sdmx30.writer.structure_specific import (
 from pysdmx.model import (
     Codelist,
     ConceptScheme,
+    Hierarchy,
+    HierarchyAssociation,
     NamePersonalisationScheme,
     RulesetScheme,
     TransformationScheme,
@@ -34,6 +36,40 @@ def test_codelist_31(samples_folder):
     result = read_sdmx(write, validate=True).structures
     codelist = result[0]
     assert isinstance(codelist, Codelist)
+
+
+def test_hierarchy_31(samples_folder):
+    data_path = samples_folder / "hierarchy.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    structures = read_sdmx(input_str, validate=True).structures
+    write = write_structure(structures=structures, prettyprint=True)
+    result = read_sdmx(write, validate=True).structures
+    assert isinstance(result[0], Hierarchy)
+    assert result == structures
+
+
+def test_hierarchy_levels_31(samples_folder):
+    data_path = samples_folder / "hierarchy_levels.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    structures = read_sdmx(input_str, validate=True).structures
+    write = write_structure(structures=structures, prettyprint=True)
+    result = read_sdmx(write, validate=True).structures
+    assert isinstance(result[0], Hierarchy)
+    assert result == structures
+
+
+def test_hierarchy_association_31(samples_folder):
+    data_path = samples_folder / "hierarchy_association.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    structures = read_sdmx(input_str, validate=True).structures
+    write = write_structure(structures=structures, prettyprint=True)
+    result = read_sdmx(write, validate=True).structures
+    assert len(result) == 2
+    assert isinstance(result[0], HierarchyAssociation)
+    assert result == structures
 
 
 def test_concept_scheme_31(samples_folder):

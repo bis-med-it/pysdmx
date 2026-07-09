@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xmlns:xml="http://www.w3.org/XML/1998/namespace"
+				xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message"
+				xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure"
+				xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common"
+				xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://xml.sdmx.org/3.0/SDMXMessage.xsd">
+    <mes:Header>
+        <mes:ID>IREF1</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2021-03-08T17:49:35Z</mes:Prepared>
+        <mes:Sender id="Unknown" />
+        <mes:Receiver id="not_supplied" /></mes:Header>
+    <mes:Structures>
+        <str:Hierarchies>
+            <str:Hierarchy agencyID="BIS" id="H2" version="1.0" hasFormalLevels="true">
+                <com:Name xml:lang="en">Hierarchy with levels</com:Name>
+                <str:Level id="0">
+                    <com:Name xml:lang="en">Division</com:Name>
+                    <com:Description xml:lang="en">Top level</com:Description>
+                    <str:Level id="1">
+                        <com:Name xml:lang="en">Group</com:Name>
+                    </str:Level>
+                </str:Level>
+                <str:HierarchicalCode id="A">
+                    <str:Code>urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).A</str:Code>
+                    <str:Level>1</str:Level>
+                </str:HierarchicalCode>
+                <str:HierarchicalCode id="B">
+                    <str:Code>urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).Q</str:Code>
+                </str:HierarchicalCode>
+            </str:Hierarchy>
+        </str:Hierarchies>
+    </mes:Structures>
+</mes:Structure>

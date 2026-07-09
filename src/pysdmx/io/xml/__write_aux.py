@@ -68,6 +68,9 @@ ORGS = "OrganisationSchemes"
 AGC = "AgencySchemes"
 AGENCIES = "AgencyScheme"
 CODELISTS = "Codelists"
+HIERARCHIES = "Hierarchies"
+HIERARCHY_ASSOCIATIONS = "HierarchyAssociations"
+HIERARCHICAL_CODELISTS = "HierarchicalCodelists"
 CONCEPTS = "Concepts"
 CONCEPTS_SCHEMES = "ConceptSchemes"
 DSDS = "DataStructures"
@@ -216,6 +219,7 @@ MSG_CONTENT_PKG_21 = OrderedDict(
         (DATAFLOWS, "Dataflows"),
         (PROV_AGREEMENTS, "ProvisionAgreements"),
         (CODELISTS, "Codelists"),
+        (HIERARCHICAL_CODELISTS, "HierarchicalCodelists"),
         (CONCEPTS, "Concepts"),
         (DSDS, "DataStructures"),
         (CONSTRAINTS, "Constraints"),
@@ -237,6 +241,8 @@ MSG_CONTENT_PKG_30 = OrderedDict(
         (DATAFLOWS, "Dataflows"),
         (PROV_AGREEMENTS, "ProvisionAgreements"),
         (CODELISTS, "Codelists"),
+        (HIERARCHIES, "Hierarchies"),
+        (HIERARCHY_ASSOCIATIONS, "HierarchyAssociations"),
         (CONCEPTS_SCHEMES, "ConceptSchemes"),
         (DSDS, "DataStructures"),
         (DATA_CONSTRAINTS, "DataConstraints"),
@@ -531,3 +537,11 @@ def __escape_xml(value: str) -> str:
     final_value = escape(value)
     final_value = re.sub(r'(?<!\w)"(?!\w)', "&quot;", final_value)
     return final_value
+
+
+def __escape_xml_vtl(value: str) -> str:
+    # Also escape single quotes: VTL code bodies are subject to the
+    # structure writer's blanket single-to-double quote replacement,
+    # which would otherwise turn identifier escapes such as
+    # 'errorlevel' into string literals.
+    return __escape_xml(value).replace("'", "&apos;")

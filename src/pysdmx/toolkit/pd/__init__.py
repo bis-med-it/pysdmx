@@ -15,7 +15,12 @@ def __get_pd_type(dt: DataType, required: bool) -> str:  # noqa: C901
         return "int32" if required else "Int32"
     elif dt == DataType.LONG or dt == DataType.COUNT:
         return "int64" if required else "Int64"
-    elif dt == DataType.BIG_INTEGER or dt == DataType.DECIMAL:
+    elif dt in [
+        DataType.BIG_INTEGER,
+        DataType.DECIMAL,
+        DataType.EXC_VAL_RANGE,
+        DataType.INC_VAL_RANGE,
+    ]:
         return "object"
     elif dt == DataType.FLOAT:
         return "float32" if required else "Float32"
@@ -101,7 +106,12 @@ def __get_pa_type(dt: DataType) -> pa.DataType:  # noqa: C901
         return pa.int64()
     elif dt == DataType.FLOAT:
         return pa.float32()
-    elif dt == DataType.DOUBLE or dt == DataType.DECIMAL:
+    elif dt in [
+        DataType.DOUBLE,
+        DataType.DECIMAL,
+        DataType.EXC_VAL_RANGE,
+        DataType.INC_VAL_RANGE,
+    ]:
         return pa.float64()
     elif dt == DataType.BOOLEAN:
         return pa.bool_()

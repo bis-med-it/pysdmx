@@ -3,6 +3,7 @@ from typing import Iterable, Sized
 import msgspec
 import pytest
 
+from pysdmx import errors
 from pysdmx.model import (
     MultiRepresentationMap,
     MultiValueMap,
@@ -162,3 +163,54 @@ def test_serialization(
         MultiRepresentationMap, dec_hook=decoders
     ).decode(ser)
     assert out == rm
+
+
+def test_empty_maps_allow_missing_source_and_target(id, name, agency):
+    sm = MultiRepresentationMap(id=id, name=name, agency=agency)
+
+    assert sm.source == []
+    assert sm.target == []
+    assert sm.maps == []
+
+
+def test_missing_source(id, name, agency, target, mappings):
+    with pytest.raises(errors.Invalid, match="source is required"):
+        MultiRepresentationMap(
+            id=id, name=name, agency=agency, target=target, maps=mappings
+        )
+
+
+def test_missing_target(id, name, agency, source, mappings):
+    with pytest.raises(errors.Invalid, match="target is required"):
+        MultiRepresentationMap(
+            id=id, name=name, agency=agency, source=source, maps=mappings
+        )
+
+
+def test_invalid_source_length(id, name, agency, target, mappings):
+    with pytest.raises(errors.Invalid, match="same number of entries"):
+        MultiRepresentationMap(
+            id=id,
+            name=name,
+            agency=agency,
+            source=[
+                "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL1(1.0)"
+            ],
+            target=target,
+            maps=mappings,
+        )
+
+
+def test_invalid_target_length(id, name, agency, source, mappings):
+    with pytest.raises(errors.Invalid, match="same number of entries"):
+        MultiRepresentationMap(
+            id=id,
+            name=name,
+            agency=agency,
+            source=source,
+            target=[
+                "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL3(1.0)",
+                "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL4(1.0)",
+            ],
+            maps=mappings,
+        )

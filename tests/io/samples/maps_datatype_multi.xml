@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message:Structure
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message"
+    xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure"
+    xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common">
+
+    <message:Header>
+        <message:ID>MAP_DT_MULTI_001</message:ID>
+        <message:Test>true</message:Test>
+        <message:Prepared>2025-05-26T12:00:00Z</message:Prepared>
+        <message:Sender id="ESTAT"/>
+        <message:Receiver id="not_supplied"/>
+    </message:Header>
+
+    <message:Structures>
+        <str:RepresentationMaps>
+            <!-- Multi representation map with data type source/target -->
+            <str:RepresentationMap urn="urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=ESTAT:REPMAP_DT_NN(1.0)" id="REPMAP_DT_NN" agencyID="ESTAT" version="1.0">
+                <com:Name xml:lang="en">Multi data type mapping</com:Name>
+                <str:SourceDataType>String</str:SourceDataType>
+                <str:SourceDataType>Integer</str:SourceDataType>
+                <str:TargetDataType>String</str:TargetDataType>
+                <str:TargetDataType>Integer</str:TargetDataType>
+                <str:RepresentationMapping>
+                    <str:SourceValue>A</str:SourceValue>
+                    <str:SourceValue>1</str:SourceValue>
+                    <str:TargetValue>X</str:TargetValue>
+                    <str:TargetValue>9</str:TargetValue>
+                </str:RepresentationMapping>
+                <str:RepresentationMapping>
+                    <str:SourceValue>B</str:SourceValue>
+                    <str:SourceValue>2</str:SourceValue>
+                    <str:TargetValue>Y</str:TargetValue>
+                    <str:TargetValue>8</str:TargetValue>
+                </str:RepresentationMapping>
+            </str:RepresentationMap>
+        </str:RepresentationMaps>
+    </message:Structures>
+</message:Structure>

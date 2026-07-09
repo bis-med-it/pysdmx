@@ -15,6 +15,7 @@ from pysdmx.model import (
     Annotation,
     Code,
     HierarchicalCode,
+    LevelType,
 )
 from pysdmx.model import (
     Codelist as CL,
@@ -114,6 +115,7 @@ class FusionHierarchicalCode(Struct, frozen=True):
 
     id: str
     code: str
+    level: Optional[str] = None
     validFrom: Optional[int] = None
     validTo: Optional[int] = None
     codes: Sequence["FusionHierarchicalCode"] = ()
@@ -141,7 +143,17 @@ class FusionHierarchicalCode(Struct, frozen=True):
 
     def to_model(self, codelists: Sequence[CL]) -> HierarchicalCode:
         """Converts a FusionHierarchicalCode to a hierachical code."""
-        code = self.__find_code(codelists, self.code)
+        if codelists:
+            code = self.__find_code(codelists, self.code)
+            name = code.name
+            description = code.description
+            urn = code.urn
+        else:
+            r = parse_item_urn(self.code)
+            code = Code(r.item_id)
+            name = None
+            description = None
+            urn = self.code
         rvf = self.__convert_epoch(self.validFrom) if self.validFrom else None
         rvt = self.__convert_epoch(self.validTo) if self.validTo else None
         codes = [c.to_model(codelists) for c in self.codes]
@@ -157,15 +169,35 @@ class FusionHierarchicalCode(Struct, frozen=True):
             annotations = []
         return HierarchicalCode(
             code.id,
-            code.name,
-            code.description,
+            name,
+            description,
             code.valid_from,
             code.valid_to,
             rvf,
             rvt,
             codes,
             tuple(annotations),
-            code.urn,
+            urn,
+            self.level,
+        )
+
+
+class FusionLevel(Struct, frozen=True):
+    """Fusion-JSON payload for hierarchy levels."""
+
+    id: str
+    names: Sequence[FusionString] = ()
+    descriptions: Sequence[FusionString] = ()
+
+    def to_model(self, level: Optional[LevelType] = None) -> LevelType:
+        """Converts a FusionLevel to a hierarchy level."""
+        return LevelType(
+            id=self.id,
+            name=self.names[0].value if self.names else None,
+            description=(
+                self.descriptions[0].value if self.descriptions else None
+            ),
+            level=level,
         )
 
 
@@ -177,7 +209,15 @@ class FusionHierarchy(Struct, frozen=True, rename={"agency": "agencyId"}):
     agency: str
     descriptions: Sequence[FusionString] = ()
     version: str = "1.0"
+    formalLevels: bool = False
+    levels: Sequence[FusionLevel] = ()
     codes: Sequence[FusionHierarchicalCode] = ()
+
+    def __get_levels(self) -> Optional[LevelType]:
+        level = None
+        for fusion_level in reversed(self.levels):
+            level = fusion_level.to_model(level)
+        return level
 
     def to_model(self, codelists: Sequence[CL]) -> HCL:
         """Converts a FusionHierarchy to a standard hierarchy."""
@@ -189,6 +229,8 @@ class FusionHierarchy(Struct, frozen=True, rename={"agency": "agencyId"}):
                 self.descriptions[0].value if self.descriptions else None
             ),
             version=self.version,
+            has_formal_levels=self.formalLevels,
+            level=self.__get_levels(),
             codes=[i.to_model(codelists) for i in self.codes],
         )
 

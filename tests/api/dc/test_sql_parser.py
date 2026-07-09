@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Sequence
 
 import pytest
@@ -36,7 +36,7 @@ def boolean_value() -> bool:
 
 @pytest.fixture
 def datetime_value() -> str:
-    return "2024-05-23"
+    return "2024-05-23T10:42:21+00:00"
 
 
 @pytest.fixture
@@ -56,7 +56,7 @@ def int_values() -> Sequence[int]:
 
 @pytest.fixture
 def datetime_values() -> Sequence[str]:
-    return ["2024-05-01", "2024-05-23"]
+    return ["2024-05-01T10:42:21+00:00", "2024-05-23T10:42:21+00:00"]
 
 
 @pytest.mark.parametrize("operator", _CoreOperator._member_map_.values())
@@ -269,14 +269,61 @@ def test_multiple_filters():
             assert rf.operator == Operator[op1.name]
             assert rf.value == val1
         else:
-            assert isinstance(rf, DateTimeFilter)
+            assert isinstance(rf, TextFilter)
             assert rf.field == fld2
             assert rf.operator == Operator[op2.name]
-            assert rf.value.year == 2020
-            assert rf.value.month == 1
-            assert rf.value.day == 1
-            assert rf.value.hour == 0
-            assert rf.value.minute == 0
-            assert rf.value.second == 0
-            assert rf.value.microsecond == 0
-            assert rf.value.tzinfo == timezone.utc
+            assert rf.value == val2
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "2020-01-01",  # Daily or Business frequency
+        "2020-W01",  # Weekly frequency
+        "2020-01",  # Monthly frequency
+        "2020-Q1",  # Quarterly frequency
+        "2020-S1",  # Semi-annual frequency
+        "2020-H1",  # Semi-annual frequency (old code)
+        "2020",  # Annual frequency
+    ],
+)
+def test_period_formats(value):
+    field = "TIME_PERIOD"
+    operator = _CoreOperator.GREATER_THAN_OR_EQUAL
+    flt = f"{field} {operator.value} {value!r}"
+
+    resp = sql_parser.parse(flt)
+
+    assert isinstance(resp, TextFilter)
+    assert resp.field == field
+    assert resp.operator == Operator.GREATER_THAN_OR_EQUAL
+    assert isinstance(resp.value, str)
+    assert resp.value == value
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "2020-01-01T23:42",
+        "2020-01-01t23:42",
+        "2020-01-01T23:42:59",
+        "2020-01-01T23:42:59.420",
+        "2020-01-01T23:42:59.123456",
+        "2020-01-01T23:42:59.1234567+00:00",
+        "2020-01-01T23:42Z",
+        "2020-01-01T23:42+00:00",
+        "2020-01-01T23:42+0000",
+        "2020-01-01T23:42:59.420+01:00",
+    ],
+)
+def test_datetime_formats(value):
+    field = "LAST_UPDATED"
+    operator = _CoreOperator.GREATER_THAN_OR_EQUAL
+    flt = f"{field} {operator.value} {value!r}"
+
+    resp = sql_parser.parse(flt)
+
+    assert isinstance(resp, DateTimeFilter)
+    assert resp.field == field
+    assert resp.operator == Operator.GREATER_THAN_OR_EQUAL
+    assert isinstance(resp.value, datetime)

@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xmlns:xml="http://www.w3.org/XML/1998/namespace"
+				xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+				xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+				xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+				xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+    <mes:Header>
+        <mes:ID>IREF1</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2021-03-08T17:49:35Z</mes:Prepared>
+        <mes:Sender id="Unknown" />
+        <mes:Receiver id="not_supplied" /></mes:Header>
+    <mes:Structures>
+        <str:HierarchicalCodelists>
+            <str:HierarchicalCodelist agencyID="BIS" id="HCL1" version="1.0">
+                <com:Name xml:lang="en">Hierarchical codelist</com:Name>
+                <str:Hierarchy id="H1" leveled="true">
+                    <com:Name xml:lang="en">Hierarchy 1</com:Name>
+                    <str:HierarchicalCode id="A">
+                        <str:Code>
+                            <Ref agencyID="BIS" maintainableParentID="CL_FREQ" maintainableParentVersion="1.0" id="A" package="codelist" class="Code" />
+                        </str:Code>
+                        <str:HierarchicalCode id="A1">
+                            <str:Code>
+                                <Ref agencyID="BIS" maintainableParentID="CL_FREQ" maintainableParentVersion="1.0" id="M" package="codelist" class="Code" />
+                            </str:Code>
+                        </str:HierarchicalCode>
+                        <str:Level>
+                            <Ref id="1" />
+                        </str:Level>
+                    </str:HierarchicalCode>
+                    <str:Level id="0">
+                        <com:Name xml:lang="en">Division</com:Name>
+                        <str:Level id="1">
+                            <com:Name xml:lang="en">Group</com:Name>
+                        </str:Level>
+                    </str:Level>
+                </str:Hierarchy>
+            </str:HierarchicalCodelist>
+        </str:HierarchicalCodelists>
+    </mes:Structures>
+</mes:Structure>
