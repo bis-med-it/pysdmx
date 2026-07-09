@@ -1,6 +1,7 @@
 import httpx
 import pytest
 
+from pysdmx.api.dc.query import Operator, TextFilter
 from pysdmx.api.dc.rest import SdmxConnector
 from pysdmx.errors import InternalError, NotFound
 from pysdmx.model import Agency, Dataflow, DataflowRef
@@ -50,6 +51,11 @@ def query_flows(host):
 @pytest.fixture
 def query_availability(host):
     return f"{host}/availability/dataflow/BIS/CBS/1.0?references=all"
+
+
+@pytest.fixture
+def query_availability_filtered(host):
+    return f"{host}/availability/dataflow/BIS/CBS/1.0?c[FREQ]=M&references=all"
 
 
 @pytest.fixture
@@ -150,6 +156,40 @@ def test_availability_agency(
     dfref = Dataflow("CBS", agency=Agency("BIS"))
 
     flow = rest_client.dataflow(dfref)
+
+    assert isinstance(flow, Dataflow)
+
+
+def test_availability_with_filters(
+    respx_mock,
+    rest_client,
+    query_availability_filtered,
+    json_availability,
+):
+    respx_mock.get(query_availability_filtered).mock(
+        return_value=httpx.Response(200, content=json_availability)
+    )
+    dfref = DataflowRef("BIS", "CBS", "1.0")
+
+    flow = rest_client.dataflow(
+        dfref, filters=TextFilter("FREQ", Operator.EQUALS, "M")
+    )
+
+    assert isinstance(flow, Dataflow)
+
+
+def test_availability_with_string_filters(
+    respx_mock,
+    rest_client,
+    query_availability_filtered,
+    json_availability,
+):
+    respx_mock.get(query_availability_filtered).mock(
+        return_value=httpx.Response(200, content=json_availability)
+    )
+    dfref = DataflowRef("BIS", "CBS", "1.0")
+
+    flow = rest_client.dataflow(dfref, filters="FREQ='M'")
 
     assert isinstance(flow, Dataflow)
 
