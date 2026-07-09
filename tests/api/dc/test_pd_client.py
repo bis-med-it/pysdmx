@@ -1,10 +1,13 @@
+import pathlib
+import tempfile
+
 import httpx
 import pandas as pd
 import pytest
 
 from pysdmx.api.dc.pd import PandasConnector
 from pysdmx.api.dc.query import Operator, TextFilter
-from pysdmx.errors import InternalError
+from pysdmx.errors import InternalError, NotFound
 from pysdmx.model import Dataflow, Reference
 
 
@@ -511,3 +514,75 @@ def test_data_query_tempfile_creation_error(client, mocker):
             infer_series_keys=False,
             apply_schema=False,
         )
+
+
+@pytest.fixture
+def temp_file_creator(tmp_path):
+    created_paths = []
+    named_temp_file = tempfile.NamedTemporaryFile
+
+    def create_temp_file(*args, **kwargs):
+        handle = named_temp_file(*args, dir=tmp_path, **kwargs)
+        created_paths.append(pathlib.Path(handle.name))
+        return handle
+
+    return create_temp_file, created_paths
+
+
+@pytest.mark.parametrize(
+    (
+        "raised_error",
+        "expected_error",
+        "error_match",
+    ),
+    [
+        (
+            OSError("cannot write temporary file"),
+            InternalError,
+            "Unexpected I/O issue",
+        ),
+        (
+            NotFound("No data", "The requested data were not found."),
+            NotFound,
+            None,
+        ),
+        (KeyboardInterrupt(), KeyboardInterrupt, None),
+    ],
+    ids=[
+        "maps-unexpected-error",
+        "reraises-pysdmx-error",
+        "reraises-keyboard-interrupt",
+    ],
+)
+def test_write_temp_csv_error_handling_and_cleanup(
+    client,
+    mocker,
+    temp_file_creator,
+    raised_error,
+    expected_error,
+    error_match,
+):
+    create_temp_file, created_paths = temp_file_creator
+
+    def fail_stream(*args, **kwargs):
+        raise raised_error
+
+    mocker.patch("tempfile.NamedTemporaryFile", side_effect=create_temp_file)
+    mocker.patch.object(
+        client._PandasConnector__client,
+        "stream_data",
+        side_effect=fail_stream,
+    )
+
+    if error_match:
+        with pytest.raises(expected_error, match=error_match) as exc_info:
+            client._PandasConnector__write_temp_csv(object())
+    else:
+        with pytest.raises(expected_error) as exc_info:
+            client._PandasConnector__write_temp_csv(object())
+
+    if error_match is None:
+        assert exc_info.value is raised_error
+
+    assert len(created_paths) == 1
+    assert not created_paths[0].exists()
