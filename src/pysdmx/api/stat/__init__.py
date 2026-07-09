@@ -572,7 +572,7 @@ class StatUploader:
 
     def submit_structure(
         self, structures: Union[MaintainableArtefact, Sequence[Any]]
-    ) -> str:
+    ) -> StructureSubmissionResult:
         """Submit structural metadata to the NSI web service.
 
         The artefact(s) are serialized to SDMX-ML 2.1 with
@@ -583,14 +583,15 @@ class StatUploader:
                 ``Dataflow``) or a sequence of maintainable artefacts.
 
         Returns:
-            The NSI ``SubmitStructureResponse`` body (SDMX-ML). Inspect
-            it for the per-artefact outcome: the service can report a
-            failure inside the body even on an HTTP 200 response.
+            A :class:`StructureSubmissionResult` parsed from the NSI
+            ``SubmitStructureResponse`` body. A per-artefact failure
+            surfaces as ``success=False`` (with the service messages),
+            not as an exception: the service can report a failure inside
+            the body even on an HTTP 200 response.
 
         Raises:
             errors.Unauthorized: If the token is missing or rejected.
-            errors.Invalid: If the service returns a client error, or
-                reports a partial failure (HTTP 207 Multi-Status).
+            errors.Invalid: If the service returns a client error.
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
@@ -601,13 +602,7 @@ class StatUploader:
             content=body,
             content_type=_STRUCTURE_CT,
         )
-        if r.status_code == 207:
-            raise errors.Invalid(
-                "Partial structure submission",
-                "The service reported a partial failure (HTTP 207). "
-                f"Response: {r.text}",
-            )
-        return r.text
+        return _structure_result(r.text)
 
     def _import_data(
         self,
@@ -795,12 +790,19 @@ class StatUploader:
 
         Raises:
             errors.Unauthorized: If the token is missing or rejected.
-            errors.Invalid: If no data space is set, or the service
-                returns a client error.
+            errors.Invalid: If the structure submission was not
+                successful (the data is then not submitted), if no data
+                space is set, or the service returns a client error.
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
-        self.submit_structure(structures)
+        result = self.submit_structure(structures)
+        if not result.success:
+            raise errors.Invalid(
+                "Structure submission failed",
+                "The structure was not accepted, so the data was not "
+                f"submitted: {'; '.join(result.messages)}",
+            )
         return self.submit_data(dataset, dataspace=dataspace)
 
     def submission_status(

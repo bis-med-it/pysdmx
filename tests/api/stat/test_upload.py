@@ -73,20 +73,26 @@ def test_init_stores_endpoints_and_token():
     assert up._token is None
 
 
-def test_submit_structure_posts_sdmx_ml(respx_mock, uploader, codelist):
+def test_submit_structure_returns_result(respx_mock, uploader, codelist):
     route = respx_mock.post(STRUCT_URL).mock(
-        return_value=httpx.Response(200, text="structOK")
+        return_value=httpx.Response(
+            200,
+            text='<m:Error><m:ErrorMessage code="201">'
+            "<c:Text>Created: CL_TEST was inserted.</c:Text>"
+            "</m:ErrorMessage></m:Error>",
+        )
     )
 
     result = uploader.submit_structure(codelist)
 
-    assert result == "structOK"
+    assert isinstance(result, StructureSubmissionResult)
+    assert result.success is True
     req = route.calls.last.request
     assert req.headers["Authorization"] == "Bearer TKN"
     assert req.headers["Content-Type"] == (
         "application/vnd.sdmx.structure+xml;version=2.1"
     )
-    assert "CL_TEST" in req.content.decode()  # serialized to SDMX-ML
+    assert "CL_TEST" in req.content.decode()
 
 
 def test_submit_structure_without_token_raises(codelist):
@@ -130,15 +136,20 @@ def test_submit_structure_server_error_raises_internal(
         uploader.submit_structure(codelist)
 
 
-def test_submit_structure_partial_failure_raises(
-    respx_mock, uploader, codelist
-):
+def test_submit_structure_in_body_failure(respx_mock, uploader, codelist):
     respx_mock.post(STRUCT_URL).mock(
-        return_value=httpx.Response(207, text="<SubmitStructureResponse/>")
+        return_value=httpx.Response(
+            200,
+            text='<m:Error><m:ErrorMessage code="411">'
+            "<c:Text>Failure: bad reference.</c:Text>"
+            "</m:ErrorMessage></m:Error>",
+        )
     )
 
-    with pytest.raises(Invalid, match="[Pp]artial"):
-        uploader.submit_structure(codelist)
+    result = uploader.submit_structure(codelist)
+
+    assert result.success is False
+    assert result.messages == ("Failure: bad reference.",)
 
 
 def test_submit_data_returns_submission_result(respx_mock, uploader, dataset):
@@ -184,7 +195,11 @@ def test_submit_uploads_structure_then_data(
     respx_mock, uploader, codelist, dataset
 ):
     struct = respx_mock.post(STRUCT_URL).mock(
-        return_value=httpx.Response(200, text="structOK")
+        return_value=httpx.Response(
+            200,
+            text='<m:Error><m:ErrorMessage code="201">'
+            "<c:Text>Created.</c:Text></m:ErrorMessage></m:Error>",
+        )
     )
     data = respx_mock.post(IMPORT_URL).mock(
         return_value=httpx.Response(200, json={"requestId": 7})
@@ -200,6 +215,26 @@ def test_submit_uploads_structure_then_data(
         STRUCT_URL,
         IMPORT_URL,
     ]
+
+
+def test_submit_stops_on_structure_failure(
+    respx_mock, uploader, codelist, dataset
+):
+    respx_mock.post(STRUCT_URL).mock(
+        return_value=httpx.Response(
+            200,
+            text='<m:Error><m:ErrorMessage code="411">'
+            "<c:Text>bad</c:Text></m:ErrorMessage></m:Error>",
+        )
+    )
+    data = respx_mock.post(IMPORT_URL).mock(
+        return_value=httpx.Response(200, json={"requestId": 1})
+    )
+
+    with pytest.raises(Invalid, match="[Ss]tructure"):
+        uploader.submit(codelist, dataset)
+
+    assert not data.called  # data not attempted when the structure fails
 
 
 def test_submission_status_posts_dataspace_and_id(respx_mock, uploader):
