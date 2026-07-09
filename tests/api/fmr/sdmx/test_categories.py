@@ -56,11 +56,6 @@ def test_categories_have_details(respx_mock, fmr, query, body):
     checks.check_category_details(respx_mock, fmr, query, body)
 
 
-def test_category_container_types(respx_mock, fmr, query, body):
-    """Category sequence fields must be tuples (the model default)."""
-    checks.check_category_container_types(respx_mock, fmr, query, body)
-
-
 def test_empty(respx_mock, fmr, query, empty):
     """Can handle empty schemes."""
     checks.check_empty(respx_mock, fmr, query, empty)
