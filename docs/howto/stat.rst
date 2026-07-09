@@ -100,14 +100,17 @@ processed asynchronously.
     )
 
     # Structure first, then data (data submission is asynchronous)
-    response = uploader.submit(dataflow, dataset)
+    result = uploader.submit(dataflow, dataset)  # SubmissionResult
 
-    # `submit`/`submit_data` return the Transfer OperationResult, which
-    # carries the integer transaction id (reported as `requestId`). Poll
-    # the ImportSummary until its executionStatus is "Completed", then
-    # check its "outcome" to confirm success.
-    request_id = ...  # the requestId read from `response`
-    print(uploader.submission_status(request_id))
+    # Poll to completion, then check the outcome
+    final = uploader.submission_status(result.request_id, wait=True)
+    print(final.execution_status, final.outcome)
+
+``submit``/``submit_data`` return a ``SubmissionResult`` whose
+``request_id`` identifies the asynchronous transaction; feed it to
+``submission_status`` to obtain the final ``execution_status`` and
+``outcome``. Pass ``wait=True`` to poll until the transaction reaches a
+terminal state (tune the loop with ``interval`` and ``attempts``).
 
 The ``dataset`` passed to ``submit``/``submit_data`` must be
 Schema-backed — for example one returned by
@@ -121,12 +124,17 @@ parameter.
     Deployments that authenticate through a federated identity provider
     (e.g. GitHub, ADFS) cannot use the password grant. Obtain a bearer
     token through the browser flow (for example the Transfer service's
-    Swagger "Authorize" button) and pass it as ``token=``.
+    Swagger "Authorize" button) and pass it as ``token=``. Use
+    ``StatUploader.refresh_token(...)`` to renew a bearer token from a
+    refresh token without re-authenticating.
 
 .. note::
-    Structure submission can report a per-artefact failure inside the
-    ``SubmitStructureResponse`` body even on an HTTP 200; a partial
-    failure (HTTP 207) is raised as :class:`~pysdmx.errors.Invalid`.
+    ``submit_structure`` returns a ``StructureSubmissionResult``
+    (``.success`` / ``.messages``) and reports a per-artefact failure in
+    that body rather than raising. ``submit`` is the convenience wrapper
+    that submits the structures and then the data; it raises
+    :class:`~pysdmx.errors.Invalid` if the structure step does not
+    succeed.
 
 .. note::
     Submitted (and deleted) content must use an **agency you are
@@ -159,7 +167,10 @@ structures with :meth:`~pysdmx.api.stat.StatUploader.delete_structure`.
 ``delete_structure`` accepts maintainable artefacts or short-URN strings,
 and deletes them in the order given — pass dependents first, or a
 still-referenced artefact yields :class:`~pysdmx.errors.Invalid` (HTTP
-409).
+409). It returns one ``StructureSubmissionResult`` per artefact (check
+each ``.success``). Like ``submit_structure``, both report a logical
+(in-body) failure through ``.success`` / ``.messages`` rather than
+raising.
 
 Reading access-controlled dataspaces
 -------------------------------------
@@ -171,3 +182,15 @@ require authentication, pass a bearer ``token``:
 
     conn = StatConnector(StatEndpoints.OECD, token=my_token)
     flow = conn.fetch_dataflow(agency, flow_id, version)
+
+Endpoints
+---------
+
+The connectors take different URL forms:
+
+- ``StatConnector(api_endpoint=…)`` — the SDMX-REST **v2** base, e.g.
+  ``https://my.stat/rest/v2``.
+- ``StatUploader(nsi_endpoint=…, transfer_endpoint=…)`` — the NSI host
+  (structures are posted to ``{nsi}/rest/structure``) and the Transfer
+  service **including its API-version segment**, e.g.
+  ``https://my.stat/transfer/3``.

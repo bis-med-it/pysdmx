@@ -23,13 +23,10 @@ Defaults target the SIS-CC public demo; override with the env vars
 from __future__ import annotations
 
 import os
-import re
-import time
 
 import pandas as pd
 
 from pysdmx.api.stat import StatConnector, StatUploader
-from pysdmx.errors import InternalError
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import (
     Component,
@@ -146,16 +143,13 @@ def main() -> None:
     uploader = StatUploader(NSI, TRANSFER, dataspace=SPACE, token=token)
 
     print("1/4 submit_structure ->", f"{NSI}/rest/structure")
-    try:
-        # NSIWS reports success inside <ErrorMessage code="201">.
-        print(uploader.submit_structure(msg.structures)[:600])
-    except InternalError as err:
-        print(
-            "  server error (the structure may already exist):", str(err)[:150]
-        )
+    structure = uploader.submit_structure(msg.structures)
+    print("  success:", structure.success, "|", "; ".join(structure.messages))
 
     print("2/4 read the dataflow back via StatConnector")
-    flow = StatConnector(f"{NSI}/rest/v2").fetch_dataflow(AGENCY, DF_ID, "1.0")
+    flow = StatConnector(f"{NSI}/rest/v2", token=token).fetch_dataflow(
+        AGENCY, DF_ID, "1.0"
+    )
     print(
         "  read back:",
         flow.short_urn,
@@ -164,25 +158,12 @@ def main() -> None:
     )
 
     print("3/4 submit_data -> Transfer /import/sdmxFile")
-    response = uploader.submit_data(dataset)
-    print("  ", response[:300])
+    result = uploader.submit_data(dataset)
+    print("  request id:", result.request_id)
 
     print("4/4 poll submission_status until terminal")
-    match = re.search(r"ID\s+(\d+)", response) or re.search(
-        r"(\d{3,})", response
-    )
-    if not match:
-        raise SystemExit("Could not find a request id in the response.")
-    request_id = match.group(1)
-    for _ in range(20):
-        status = uploader.submission_status(request_id)
-        print("  ->", status[:200])
-        if any(
-            s in status
-            for s in ("Completed", "Failed", "TimedOut", "Canceled")
-        ):
-            break
-        time.sleep(3)
+    final = uploader.submission_status(result.request_id, wait=True)
+    print("  ->", final.execution_status, "/", final.outcome)
 
 
 if __name__ == "__main__":

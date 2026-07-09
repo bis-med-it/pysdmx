@@ -237,21 +237,53 @@ def test_submit_stops_on_structure_failure(
     assert not data.called  # data not attempted when the structure fails
 
 
-def test_submission_status_posts_dataspace_and_id(respx_mock, uploader):
+def test_submission_status_returns_result(respx_mock, uploader):
     route = respx_mock.post(STATUS_URL).mock(
         return_value=httpx.Response(
             200, json={"executionStatus": "Completed", "outcome": "Success"}
         )
     )
 
-    status = uploader.submission_status("REQ-456")
+    result = uploader.submission_status("REQ-456")
 
-    assert "Completed" in status
+    assert result.execution_status == "Completed"
+    assert result.success is True
     req = route.calls.last.request
     assert req.headers["Authorization"] == "Bearer TKN"
     form = req.content.decode()
     assert "dataspace=design" in form
     assert "id=REQ-456" in form
+
+
+def test_submission_status_wait_polls_until_terminal(respx_mock, uploader):
+    respx_mock.post(STATUS_URL).mock(
+        side_effect=[
+            httpx.Response(200, json={"executionStatus": "InProgress"}),
+            httpx.Response(
+                200,
+                json={"executionStatus": "Completed", "outcome": "Success"},
+            ),
+        ]
+    )
+
+    result = uploader.submission_status("REQ-1", wait=True, interval=0)
+
+    assert result.execution_status == "Completed"
+    assert result.success is True
+
+
+def test_submission_status_wait_exhausts_attempts(respx_mock, uploader):
+    respx_mock.post(STATUS_URL).mock(
+        return_value=httpx.Response(
+            200, json={"executionStatus": "InProgress"}
+        )
+    )
+
+    result = uploader.submission_status(
+        "REQ-1", wait=True, interval=0, attempts=1
+    )
+
+    assert result.execution_status == "InProgress"
 
 
 def test_fetch_token_password_grant(respx_mock):
@@ -304,6 +336,33 @@ def test_fetch_token_non_json_response_raises(respx_mock):
         StatUploader.fetch_token(AUTH_URL, "c", "user", "pw")
 
 
+def test_fetch_token_includes_secret_and_scope(respx_mock):
+    route = respx_mock.post(AUTH_URL).mock(
+        return_value=httpx.Response(200, json={"access_token": "T"})
+    )
+
+    cred = "s"
+    StatUploader.fetch_token(
+        AUTH_URL, "c", "u", "p", client_secret=cred, scope="openid"
+    )
+
+    form = route.calls.last.request.content.decode()
+    assert "client_secret=s" in form
+    assert "scope=openid" in form
+
+
+def test_refresh_token(respx_mock):
+    route = respx_mock.post(AUTH_URL).mock(
+        return_value=httpx.Response(200, json={"access_token": "NEW"})
+    )
+
+    assert StatUploader.refresh_token(AUTH_URL, "c", "rtok") == "NEW"
+
+    form = route.calls.last.request.content.decode()
+    assert "grant_type=refresh_token" in form
+    assert "refresh_token=rtok" in form
+
+
 def test_delete_data_uploads_action_d(respx_mock, uploader, dataset):
     route = respx_mock.post(IMPORT_URL).mock(
         return_value=httpx.Response(200, json={"requestId": 9})
@@ -349,7 +408,7 @@ def test_delete_structure_single_artefact(respx_mock, uploader):
         Dataflow(id="DF_X", agency="MD", version="1.0", name="x")
     )
 
-    assert out == ["<deleted/>"]
+    assert [r.success for r in out] == [True]
     assert route.calls.last.request.headers["Authorization"] == "Bearer TKN"
 
 
@@ -359,7 +418,7 @@ def test_delete_structure_urn_string_and_type_segment(respx_mock, uploader):
 
     out = uploader.delete_structure("DataConstraint=MD:CR_A_DF_X(1.0)")
 
-    assert out == [""]  # 204 No Content -> empty body
+    assert out[0].success is True  # 204 No Content -> empty body
 
 
 def test_delete_structure_sequence_in_order(respx_mock, uploader):
@@ -378,7 +437,7 @@ def test_delete_structure_sequence_in_order(respx_mock, uploader):
     cs = ConceptScheme(id="CS_X", agency="MD", version="1.0", name="x")
     out = uploader.delete_structure([dsd, cs])
 
-    assert out == ["d", "c"]
+    assert [r.success for r in out] == [True, True]
     assert [str(c.request.url) for c in respx_mock.calls] == [dsd_url, cs_url]
 
 

@@ -33,6 +33,7 @@ PATH_RULES = {
     # stat connector tests (need xml for SDMX-ML 2.1 + data for PandasDataset)
     "/tests/api/stat/test_connector.py": ("xml_data", True),
     "/tests/api/stat/test_upload.py": ("xml_data", True),
+    "/tests/api/stat/test_integration.py": ("xml_data", True),
     # dc tests
     "/tests/api/dc/test_model.py": ("dc", True),
     "/tests/api/dc/test_multi_filters.py": ("dc", True),

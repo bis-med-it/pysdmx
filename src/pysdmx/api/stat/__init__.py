@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from enum import Enum
 from io import BytesIO
 from typing import (
@@ -208,9 +209,8 @@ class StatConnector(SdmxConnector):
             structure_format=StructureFormat.SDMX_ML_2_1,
             timeout=timeout,
             pem=pem,
+            token=token,
         )
-        if token:
-            self._svc._headers["Authorization"] = f"Bearer {token}"
 
     def _structure_query(
         self, agency: str, id: str, version: str
@@ -705,7 +705,7 @@ class StatUploader:
             str,
             Sequence[Union[MaintainableArtefact, str]],
         ],
-    ) -> list[str]:
+    ) -> list[StructureSubmissionResult]:
         """Delete structural artefact(s) from the NSI web service.
 
         Each artefact is deleted with
@@ -732,7 +732,8 @@ class StatUploader:
         returned bodies.
 
         Returns:
-            The service response bodies, one per artefact, in order.
+            The parsed :class:`StructureSubmissionResult` for each
+            artefact, in order.
 
         Raises:
             errors.Unauthorized: If the token is missing or rejected.
@@ -763,7 +764,7 @@ class StatUploader:
                 f"{self._nsi}/rest/{ref.sdmx_type.lower()}"
                 f"/{ref.agency}/{ref.id}/{ref.version}"
             )
-            responses.append(self._send("DELETE", url).text)
+            responses.append(_structure_result(self._send("DELETE", url).text))
         return responses
 
     def submit(
@@ -806,25 +807,33 @@ class StatUploader:
         return self.submit_data(dataset, dataspace=dataspace)
 
     def submission_status(
-        self, request_id: str, dataspace: Optional[str] = None
-    ) -> str:
+        self,
+        request_id: str,
+        dataspace: Optional[str] = None,
+        *,
+        wait: bool = False,
+        interval: float = 3.0,
+        attempts: int = 20,
+    ) -> SubmissionResult:
         """Poll the status of an asynchronous data submission.
 
         Issues ``POST {transfer}/status/request`` with the ``dataspace``
         and ``id`` form fields.
 
         Args:
-            request_id: The transaction id returned by
-                :meth:`submit_data` or :meth:`submit`.
+            request_id: The transaction id returned by :meth:`submit_data`
+                or :meth:`submit`.
             dataspace: The data space the request was submitted to;
                 defaults to the one set on the connector.
+            wait: When True, poll until the ``execution_status`` is
+                terminal (Completed/Failed/TimedOut/Canceled) or
+                ``attempts`` is reached.
+            interval: Seconds between polls when ``wait`` is True.
+            attempts: Maximum number of polls when ``wait`` is True.
 
         Returns:
-            The raw Transfer ``ImportSummary`` response body (JSON). Read
-            its ``executionStatus`` (Queued/InProgress/Completed/...) and
-            ``outcome`` (Success/Warning/Error/None) fields: a
-            ``Completed`` status still requires checking ``outcome`` to
-            confirm the submission actually succeeded.
+            The parsed :class:`SubmissionResult` (its ``execution_status``
+            and ``outcome`` tell you whether the async job succeeded).
 
         Raises:
             errors.Unauthorized: If the token is missing or rejected.
@@ -834,59 +843,39 @@ class StatUploader:
             errors.Unavailable: If the service cannot be reached.
         """
         space = self._resolve_dataspace(dataspace)
-        r = self._send(
-            "POST",
-            f"{self._transfer}/status/request",
-            data={"dataspace": space, "id": request_id},
-        )
-        return r.text
+        terminal = {"Completed", "Failed", "TimedOut", "Canceled"}
+        result = SubmissionResult(success=False)
+        for _ in range(attempts if wait else 1):
+            r = self._send(
+                "POST",
+                f"{self._transfer}/status/request",
+                data={"dataspace": space, "id": request_id},
+            )
+            result = _submission_from_status(r.text)
+            if not wait or result.execution_status in terminal:
+                return result
+            time.sleep(interval)
+        return result
 
     @staticmethod
-    def fetch_token(
-        token_url: str, client_id: str, username: str, password: str
+    def _token_request(
+        token_url: str, data: Mapping[str, Optional[str]]
     ) -> str:
-        """Obtain a bearer token via the Keycloak password grant.
-
-        Performs the OAuth2 resource-owner password-credentials grant
-        against the instance's Keycloak token endpoint. The instance must
-        have "Direct Access Grants" enabled for the client.
-
-        Args:
-            token_url: The Keycloak token endpoint
-                (``.../protocol/openid-connect/token``).
-            client_id: The OAuth2 client id.
-            username: The account user name.
-            password: The account password.
-
-        Returns:
-            The access token.
-
-        Raises:
-            errors.Invalid: If the token endpoint rejects the request
-                (e.g. bad credentials) or returns another client error.
-            errors.InternalError: If the token endpoint returns a server
-                error.
-            errors.Unavailable: If the token endpoint cannot be reached.
-        """
+        """POST an OAuth2 token request and return the access token."""
         try:
             with httpx.Client() as client:
                 r = client.post(
                     token_url,
-                    data={
-                        "grant_type": "password",
-                        "client_id": client_id,
-                        "username": username,
-                        "password": password,
-                    },
+                    data={k: v for k, v in data.items() if v},
                     timeout=60.0,
                 )
                 r.raise_for_status()
-                data = r.json()
-                token: str = data["access_token"]
+                token: str = r.json()["access_token"]
+                return token
         except (httpx.RequestError, httpx.HTTPStatusError) as e:
-            # A rejected grant (e.g. 401 bad credentials) maps to a
-            # client Invalid here, unlike _request where a rejected token
-            # raises Unauthorized.
+            # A rejected grant (e.g. 401 bad credentials) maps to a client
+            # Invalid here, unlike _send where a rejected token raises
+            # Unauthorized.
             map_httpx_errors(e)
         except (KeyError, TypeError, ValueError) as e:
             raise errors.Invalid(
@@ -894,7 +883,89 @@ class StatUploader:
                 "The token endpoint did not return a valid "
                 f"'access_token'. The query was `{token_url}`.",
             ) from e
-        return token
+
+    @staticmethod
+    def fetch_token(
+        token_url: str,
+        client_id: str,
+        username: str,
+        password: str,
+        *,
+        client_secret: str = "",
+        scope: Optional[str] = None,
+    ) -> str:
+        """Obtain a bearer token via the Keycloak password grant.
+
+        The client must have "Direct Access Grants" enabled; federated
+        (e.g. GitHub) identities cannot use this grant — obtain a token
+        through the browser instead.
+
+        Args:
+            token_url: The Keycloak token endpoint.
+            client_id: The OAuth2 client id.
+            username: The account user name.
+            password: The account password.
+            client_secret: The client secret, for confidential clients.
+            scope: An optional OAuth2 scope.
+
+        Returns:
+            The access token.
+
+        Raises:
+            errors.Invalid: If the endpoint rejects the request or returns
+                no valid access token.
+            errors.InternalError: If the endpoint returns a server error.
+            errors.Unavailable: If the endpoint cannot be reached.
+        """
+        return StatUploader._token_request(
+            token_url,
+            {
+                "grant_type": "password",
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "username": username,
+                "password": password,
+                "scope": scope,
+            },
+        )
+
+    @staticmethod
+    def refresh_token(
+        token_url: str,
+        client_id: str,
+        refresh_token: str,
+        *,
+        client_secret: str = "",
+        scope: Optional[str] = None,
+    ) -> str:
+        """Obtain a fresh bearer token from a refresh token.
+
+        Args:
+            token_url: The Keycloak token endpoint.
+            client_id: The OAuth2 client id.
+            refresh_token: A valid refresh token.
+            client_secret: The client secret, for confidential clients.
+            scope: An optional OAuth2 scope.
+
+        Returns:
+            The new access token.
+
+        Raises:
+            errors.Invalid: If the endpoint rejects the request or returns
+                no valid access token.
+            errors.InternalError: If the endpoint returns a server error.
+            errors.Unavailable: If the endpoint cannot be reached.
+        """
+        return StatUploader._token_request(
+            token_url,
+            {
+                "grant_type": "refresh_token",
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "refresh_token": refresh_token,
+                "scope": scope,
+            },
+        )
 
 
 __all__ = [
