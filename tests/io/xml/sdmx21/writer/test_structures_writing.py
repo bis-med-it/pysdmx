@@ -2131,11 +2131,39 @@ def test_constraint_time_range_roundtrip_21():
         ],
     )
     out = write_sdmx(dc, Format.STRUCTURE_SDMX_ML_2_1, prettyprint=True)
-    assert "TimeRange" in out
-    assert "StartPeriod" in out
+    assert "<com:TimeRange>" in out
+    assert "<com:StartPeriod " in out
     kv = read_sdmx(out).get_data_constraints()[0].cube_regions[0].key_values[0]
     assert kv.time_range.start_period.period == "2020"
+    assert kv.time_range.start_period.is_inclusive is True
     assert kv.time_range.end_period.is_inclusive is False
+
+
+def test_constraint_keyvalue_validity_omitted_21():
+    dc = DataConstraint(
+        id="KV",
+        name="kv",
+        agency="AG",
+        version="1.0",
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(
+                        id="FREQ",
+                        values=[CubeValue(value="A")],
+                        valid_from=datetime(2020, 1, 1),
+                        valid_to=datetime(2021, 1, 1),
+                    )
+                ]
+            )
+        ],
+    )
+    out = write_sdmx(dc, Format.STRUCTURE_SDMX_ML_2_1, prettyprint=True)
+    assert "validFrom" not in out
+    assert "validTo" not in out
+    kv = read_sdmx(out).get_data_constraints()[0].cube_regions[0].key_values[0]
+    assert kv.valid_from is None
+    assert kv.valid_to is None
 
 
 def test_write_group_without_urn(complete_header, datastructure):
