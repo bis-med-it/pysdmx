@@ -1,4 +1,5 @@
 import re
+from operator import attrgetter
 from pathlib import Path
 
 import msgspec
@@ -15,9 +16,13 @@ from pysdmx.io.xml.sdmx31.writer.structure import write as write_structure_31
 from pysdmx.model import (
     Codelist,
     ConceptScheme,
+    DataConsumerScheme,
+    DataflowRef,
+    DataProviderScheme,
     Hierarchy,
     HierarchyAssociation,
     Metadataflow,
+    MetadataProviderScheme,
     MetadataProvisionAgreement,
     MetadataStructure,
     NamePersonalisationScheme,
@@ -91,6 +96,47 @@ def test_concept_scheme_31(samples_folder):
     result = read_sdmx(write, validate=True).structures
     concept_scheme = result[0]
     assert isinstance(concept_scheme, ConceptScheme)
+
+
+def test_org_schemes_31(samples_folder):
+    data_path = samples_folder / "org_schemes.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    structures = read_sdmx(input_str, validate=True).structures
+    write = write_structure(structures=structures, prettyprint=True)
+    # Each organisation scheme is written in its own dedicated container.
+    assert "<str:DataProviderSchemes>" in write
+    assert "<str:DataConsumerSchemes>" in write
+    assert "<str:MetadataProviderSchemes>" in write
+    result = read_sdmx(write, validate=True).structures
+    by_type = {type(s): s for s in result}
+    assert set(by_type) == {
+        DataProviderScheme,
+        DataConsumerScheme,
+        MetadataProviderScheme,
+    }
+    # The provider scheme carries a contact that survives the round-trip.
+    provider = by_type[DataProviderScheme].items[0]
+    assert provider.contacts[0].emails == ["dp.test@md.org"]
+    key = attrgetter("short_urn")
+    assert sorted(result, key=key) == sorted(structures, key=key)
+
+
+def test_provider_scheme_enrichment_31(samples_folder):
+    data_path = samples_folder / "provider_scheme_enrichment.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    structures = read_sdmx(input_str, validate=True).structures
+    write = write_structure(structures=structures, prettyprint=True)
+    result = read_sdmx(write, validate=True).structures
+    provider = next(
+        s for s in result if isinstance(s, DataProviderScheme)
+    ).items[0]
+    assert provider.dataflows == [
+        DataflowRef(id="TEST", agency="MD", version="1.0")
+    ]
+    key = attrgetter("short_urn")
+    assert sorted(result, key=key) == sorted(structures, key=key)
 
 
 def test_data_dataflow_31(samples_folder):

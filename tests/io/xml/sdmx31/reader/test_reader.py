@@ -9,14 +9,24 @@ from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
 from pysdmx.io.xml.sdmx31.reader.structure import read as read_structure
 from pysdmx.model import (
+    Categorisation,
+    CategoryScheme,
     Codelist,
     ConceptScheme,
+    DataConsumer,
+    DataConsumerScheme,
+    DataflowRef,
+    DataProvider,
+    DataProviderScheme,
     Hierarchy,
     HierarchyAssociation,
     Metadataflow,
+    MetadataProvider,
+    MetadataProviderScheme,
     MetadataProvisionAgreement,
     MetadataStructure,
     NamePersonalisationScheme,
+    Reference,
     RulesetScheme,
     TransformationScheme,
     VtlMappingScheme,
@@ -44,6 +54,75 @@ def test_codelist_31(samples_folder):
     assert codelist.id == "CL_AGE"
     assert codelist.agency == "SDMX"
     assert len(codelist.items) == 5
+
+
+@pytest.mark.xml
+def test_org_schemes_31(samples_folder):
+    data_path = samples_folder / "org_schemes.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    result = read_structure(input_str, validate=True)
+
+    by_type = {type(s): s for s in result}
+    assert set(by_type) == {
+        DataProviderScheme,
+        DataConsumerScheme,
+        MetadataProviderScheme,
+    }
+
+    dps = by_type[DataProviderScheme]
+    provider = dps.items[0]
+    assert isinstance(provider, DataProvider)
+    assert provider.id == "DP"
+    assert provider.contacts[0].emails == ["dp.test@md.org"]
+
+    assert isinstance(by_type[DataConsumerScheme].items[0], DataConsumer)
+    assert isinstance(
+        by_type[MetadataProviderScheme].items[0], MetadataProvider
+    )
+
+
+@pytest.mark.xml
+def test_provider_scheme_enrichment_31(samples_folder):
+    data_path = samples_folder / "provider_scheme_enrichment.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    result = read_structure(input_str, validate=True)
+
+    schemes = [s for s in result if isinstance(s, DataProviderScheme)]
+    assert len(schemes) == 1
+    provider = schemes[0].items[0]
+    assert provider.id == "MD"
+    assert provider.dataflows == [
+        DataflowRef(id="TEST", agency="MD", version="1.0")
+    ]
+
+
+@pytest.mark.xml
+def test_metadata_provider_scheme_enrichment_31(samples_folder):
+    data_path = samples_folder / "metadata_provider_scheme_enrichment.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    result = read_structure(input_str, validate=True)
+
+    mpas = [s for s in result if isinstance(s, MetadataProvisionAgreement)]
+    assert len(mpas) == 1
+    assert mpas[0].metadataflow == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "Metadataflow=MD:MDF_TEST(1.0)"
+    )
+    assert mpas[0].metadata_provider == (
+        "urn:sdmx:org.sdmx.infomodel.base."
+        "MetadataProvider=MD:METADATA_PROVIDERS(1.0).MP1"
+    )
+
+    schemes = [s for s in result if isinstance(s, MetadataProviderScheme)]
+    assert len(schemes) == 1
+    providers = {p.id: p for p in schemes[0].items}
+    assert providers["MP1"].dataflows == [
+        DataflowRef(id="MDF_TEST", agency="MD", version="1.0")
+    ]
+    assert providers["MP2"].dataflows == []
 
 
 @pytest.mark.xml
@@ -334,3 +413,65 @@ def test_generic_metadata_31(samples_folder):
         "doe@example.org",
     ]
     assert report["NOTE"].value == "A single note"
+
+
+@pytest.mark.xml
+def test_category_scheme_31(samples_folder):
+    data_path = samples_folder / "category_scheme.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    result = read_sdmx(input_str, validate=True).structures
+    cs = next(s for s in result if isinstance(s, CategoryScheme))
+    assert cs.id == "CS1"
+    assert cs.agency == "BIS"
+    assert cs.version == "1.0.0"
+    assert cs.is_final is True
+    assert cs.items[0].id == "TOP"
+    assert cs.items[0].categories[0].id == "MID"
+    assert cs.items[0].categories[0].categories[0].id == "LEAF"
+    assert cs["TOP.MID.LEAF"].id == "LEAF"
+    assert len(cs) == 4
+    assert {c.id for c in cs.all_items} == {"TOP", "MID", "LEAF", "OTHER"}
+
+
+@pytest.mark.xml
+def test_category_scheme_31_enrichment(samples_folder):
+    data_path = samples_folder / "category_scheme.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=True).structures
+    cs = next(s for s in result if isinstance(s, CategoryScheme))
+    leaf = cs["TOP.MID.LEAF"]
+    assert len(leaf.dataflows) == 1
+    assert isinstance(leaf.dataflows[0], DataflowRef)
+    assert leaf.dataflows[0].agency == "BIS"
+    assert leaf.dataflows[0].id == "DF1"
+    assert leaf.dataflows[0].version == "1.0.0"
+    assert leaf.dataflows[0].name == "Dataflow 1"
+    other = cs["OTHER"]
+    assert len(other.other_references) == 1
+    assert isinstance(other.other_references[0], Reference)
+    assert other.other_references[0].id == "CL_FREQ"
+
+
+@pytest.mark.xml
+def test_categorisation_31(samples_folder):
+    data_path = samples_folder / "category_scheme.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=True).structures
+    cats = [s for s in result if isinstance(s, Categorisation)]
+    assert len(cats) == 2
+    by_id = {c.id: c for c in cats}
+    assert by_id["CAT1"].source == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0.0)"
+    )
+    assert by_id["CAT1"].target == (
+        "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+        "Category=BIS:CS1(1.0.0).TOP.MID.LEAF"
+    )
+    assert by_id["CAT2"].source == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0.0)"
+    )
+    assert by_id["CAT2"].target == (
+        "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+        "Category=BIS:CS1(1.0.0).OTHER"
+    )

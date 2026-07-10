@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns:xml="http://www.w3.org/XML/1998/namespace"
+                xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+                xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+                xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+    <mes:Header>
+        <mes:ID>IREF1</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2021-03-08T17:49:35Z</mes:Prepared>
+        <mes:Sender id="Unknown" />
+        <mes:Receiver id="not_supplied" /></mes:Header>
+    <mes:Structures>
+        <str:CategorySchemes>
+            <str:CategoryScheme xmlns:extra="http://example.com/extra" agencyID="BIS" id="CS3" version="1.0">
+                <com:Name xml:lang="en">Category Scheme 3</com:Name>
+                <str:Category id="X">
+                    <com:Name xml:lang="en">X</com:Name>
+                </str:Category>
+            </str:CategoryScheme>
+            <str:CategoryScheme agencyID="BIS" id="CS4" version="1.0">
+                <com:Name xml:lang="en">Category Scheme 4</com:Name>
+                <str:Category id="Y">
+                    <com:Name xml:lang="en">Y</com:Name>
+                </str:Category>
+            </str:CategoryScheme>
+        </str:CategorySchemes>
+        <str:Categorisations>
+            <str:Categorisation xmlns:extra="http://example.com/extra" agencyID="BIS" id="CAT3" version="1.0">
+                <com:Name xml:lang="en">Categorisation 3</com:Name>
+                <str:Source>
+                    <Ref agencyID="BIS" id="DFX" version="1.0" class="Dataflow" package="datastructure" />
+                </str:Source>
+                <str:Target>
+                    <Ref agencyID="BIS" maintainableParentID="CS3" maintainableParentVersion="1.0" id="X" class="Category" package="categoryscheme" />
+                </str:Target>
+            </str:Categorisation>
+            <str:Categorisation agencyID="BIS" id="CAT4" version="1.0">
+                <com:Name xml:lang="en">Categorisation 4</com:Name>
+                <str:Source>
+                    <Ref agencyID="BIS" id="DF2" version="1.0" class="Dataflow" package="datastructure" />
+                </str:Source>
+                <str:Target>
+                    <Ref agencyID="BIS" maintainableParentID="CS_ABSENT" maintainableParentVersion="1.0" id="Z" class="Category" package="categoryscheme" />
+                </str:Target>
+            </str:Categorisation>
+        </str:Categorisations>
+    </mes:Structures>
+</mes:Structure>

@@ -69,6 +69,9 @@ ANNOTATIONS = "Annotations"
 STRUCTURES = "Structures"
 ORGS = "OrganisationSchemes"
 AGC = "AgencySchemes"
+DATA_PROVIDER_SCHEMES = "DataProviderSchemes"
+DATA_CONSUMER_SCHEMES = "DataConsumerSchemes"
+METADATA_PROVIDER_SCHEMES = "MetadataProviderSchemes"
 AGENCIES = "AgencyScheme"
 CODELISTS = "Codelists"
 HIERARCHIES = "Hierarchies"
@@ -84,6 +87,8 @@ PROV_AGREEMENTS = "ProvisionAgreements"
 METADATAFLOWS = "Metadataflows"
 MSDS = "MetadataStructures"
 MPAS = "MetadataProvisionAgreements"
+CATEGORY_SCHEMES = "CategorySchemes"
+CATEGORISATIONS = "Categorisations"
 REPRESENTATION_MAPS_KEY = "RepresentationMaps"
 STRUCTURE_MAPS_KEY = "StructureMaps"
 DATE_PATTERN_MAP_KEY = "DatePatternMaps"
@@ -234,6 +239,8 @@ MSG_CONTENT_PKG_21 = OrderedDict(
         (METADATAFLOWS, "Metadataflows"),
         (MPAS, "MetadataProvisionAgreements"),
         (MSDS, "MetadataStructures"),
+        (CATEGORY_SCHEMES, "CategorySchemes"),
+        (CATEGORISATIONS, "Categorisations"),
         (PROV_AGREEMENTS, "ProvisionAgreements"),
         (CODELISTS, "Codelists"),
         (HIERARCHICAL_CODELISTS, "HierarchicalCodelists"),
@@ -255,6 +262,11 @@ MSG_CONTENT_PKG_21 = OrderedDict(
 MSG_CONTENT_PKG_30 = OrderedDict(
     [
         (AGC, "AgencySchemes"),
+        (DATA_PROVIDER_SCHEMES, "DataProviderSchemes"),
+        (DATA_CONSUMER_SCHEMES, "DataConsumerSchemes"),
+        (METADATA_PROVIDER_SCHEMES, "MetadataProviderSchemes"),
+        (CATEGORISATIONS, "Categorisations"),
+        (CATEGORY_SCHEMES, "CategorySchemes"),
         (DATAFLOWS, "Dataflows"),
         (METADATAFLOWS, "Metadataflows"),
         (PROV_AGREEMENTS, "ProvisionAgreements"),

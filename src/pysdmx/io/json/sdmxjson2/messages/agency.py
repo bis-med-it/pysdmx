@@ -31,7 +31,7 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True, omit_defaults=True):
         self, owner: str, a: Agency, dfowners: Dict[str, Set[DataflowRef]]
     ) -> Agency:
         oid = f"{owner}.{a.id}" if owner != "SDMX" else a.id
-        flows = list(dfowners[oid]) if dfowners else []
+        flows: Sequence[DataflowRef] = list(dfowners[oid]) if dfowners else ()
         return Agency(
             id=oid,
             name=a.name,
