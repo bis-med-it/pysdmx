@@ -30,9 +30,13 @@ from pysdmx.model import (
     CubeValue,
     CustomTypeScheme,
     DataConstraint,
+    DataConsumer,
+    DataConsumerScheme,
     DataflowRef,
     DataKey,
     DataKeyValue,
+    DataProvider,
+    DataProviderScheme,
     DataStructureDefinition,
     FromVtlMapping,
     Hierarchy,
@@ -237,6 +241,71 @@ def test_agency_scheme_defaults_omitted(samples_folder):
 
     assert len(agency_scheme.items) == 1
     assert agency_scheme.items[0].id == "BIS"
+
+
+def test_data_provider_scheme_read(samples_folder):
+    data_path = samples_folder / "data_provider_scheme.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_structure(input_str, validate=True)
+    assert isinstance(result[0], DataProviderScheme)
+
+    scheme = result[0]
+    assert scheme.agency == "BIS"
+    assert scheme.id == "DATA_PROVIDERS"
+    assert len(scheme.items) == 1
+    provider = scheme.items[0]
+    assert isinstance(provider, DataProvider)
+    assert provider.id == "5B0"
+    assert provider.name == "Bank for International Settlements"
+
+
+def test_org_schemes_mixed_read(samples_folder):
+    data_path = samples_folder / "org_schemes_mixed.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_structure(input_str, validate=True)
+
+    by_type = {type(s): s for s in result}
+    # MetadataProviderScheme does not exist in SDMX-ML 2.1, so only the
+    # agency, data provider and data consumer schemes may share the
+    # OrganisationSchemes wrapper.
+    assert set(by_type) == {
+        AgencyScheme,
+        DataProviderScheme,
+        DataConsumerScheme,
+    }
+
+    agency_scheme = by_type[AgencyScheme]
+    assert agency_scheme.items[0].id == "SDMX"
+
+    dps = by_type[DataProviderScheme]
+    assert dps.agency == "BIS"
+    provider = dps.items[0]
+    assert isinstance(provider, DataProvider)
+    assert provider.id == "5B0"
+    assert len(provider.contacts) == 1
+    assert provider.contacts[0].name == "Statistics Department"
+    assert provider.contacts[0].emails == ["stats@bis.org"]
+
+    dcs = by_type[DataConsumerScheme]
+    assert isinstance(dcs.items[0], DataConsumer)
+    assert dcs.items[0].id == "ECB"
+
+
+def test_provider_scheme_enrichment_read(samples_folder):
+    data_path = samples_folder / "provider_scheme_enrichment.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_structure(input_str, validate=True)
+
+    schemes = [s for s in result if isinstance(s, DataProviderScheme)]
+    assert len(schemes) == 1
+    provider = schemes[0].items[0]
+    assert provider.id == "TEST"
+    assert provider.dataflows == [
+        DataflowRef(id="DF1", agency="BIS", version="1.0")
+    ]
 
 
 def test_code_list_read(codelist_path):

@@ -1,7 +1,19 @@
 """Parsers for reading metadata."""
 
+from collections import defaultdict
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional, Sequence, Type, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    Type,
+    Union,
+)
 
 from msgspec import Struct
 from msgspec.structs import asdict, replace
@@ -61,8 +73,13 @@ from pysdmx.io.xml.__tokens import (
     CUSTOM_TYPES,
     DATA_CONS,
     DATA_CONSTRAINTS,
+    DATA_CONSUMER,
+    DATA_CONSUMER_SCHEME,
+    DATA_CONSUMER_SCHEMES,
     DATA_KEY_SET,
     DATA_PROV,
+    DATA_PROVIDER_SCHEME,
+    DATA_PROVIDER_SCHEMES,
     DATE_PATTERN_MAP,
     DEPARTMENT,
     DESC,
@@ -124,6 +141,12 @@ from pysdmx.io.xml.__tokens import (
     ME_REL,
     MEASURE,
     METADATA,
+    METADATA_PROVIDER,
+    METADATA_PROVIDER_SCHEME,
+    METADATA_PROVIDER_SCHEMES,
+    METADATAFLOW,
+    MPA,
+    MPAS,
     MSR,
     NAME,
     NAME_PER,
@@ -210,8 +233,12 @@ from pysdmx.model import (
     CubeRegion,
     CubeValue,
     DataConstraint,
+    DataConsumer,
+    DataConsumerScheme,
     DataKey,
     DataKeyValue,
+    DataProvider,
+    DataProviderScheme,
     DataType,
     DatePatternMap,
     Facets,
@@ -222,6 +249,9 @@ from pysdmx.model import (
     ImplicitComponentMap,
     KeySet,
     LevelType,
+    MetadataProvider,
+    MetadataProviderScheme,
+    MetadataProvisionAgreement,
     MultiComponentMap,
     MultiRepresentationMap,
     MultiValueMap,
@@ -266,7 +296,13 @@ from pysdmx.model.vtl import (
     VtlDataflowMapping,
     VtlMappingScheme,
 )
-from pysdmx.util import find_by_urn, is_final, parse_urn
+from pysdmx.util import (
+    find_by_urn,
+    is_final,
+    parse_item_urn,
+    parse_short_item_urn,
+    parse_urn,
+)
 
 T = Any
 
@@ -286,6 +322,9 @@ STRUCTURES_MAPPING = {
     CL: Codelist,
     VALUE_LIST: Codelist,
     AGENCY_SCHEME: AgencyScheme,
+    DATA_PROVIDER_SCHEME: DataProviderScheme,
+    METADATA_PROVIDER_SCHEME: MetadataProviderScheme,
+    DATA_CONSUMER_SCHEME: DataConsumerScheme,
     CS: ConceptScheme,
     DFWS: Dataflow,
     DSDS: DataStructureDefinition,
@@ -301,6 +340,7 @@ STRUCTURES_MAPPING = {
     NAME_PER_SCHEME: NamePersonalisationScheme,
     CUSTOM_TYPE_SCHEME: CustomTypeScheme,
     PROV_AGREEMENTS: ProvisionAgreement,
+    MPAS: MetadataProvisionAgreement,
     CONSTRAINTS: DataConstraint,
     DATA_CONSTRAINTS: DataConstraint,
     CATEGORY_SCHEME: CategoryScheme,
@@ -308,6 +348,9 @@ STRUCTURES_MAPPING = {
 }
 ITEMS_CLASSES = {
     AGENCY: Agency,
+    DATA_PROV: DataProvider,
+    METADATA_PROVIDER: MetadataProvider,
+    DATA_CONSUMER: DataConsumer,
     CODE: Code,
     VALUE_ITEM: Code,
     CATEGORY: Category,
@@ -320,6 +363,19 @@ ITEMS_CLASSES = {
     VTL_CON_MAPP: VtlConceptMapping,
     NAME_PER: NamePersonalisation,
     CUSTOM_TYPE: CustomType,
+}
+
+# Item-class tokens whose items are Organisations (and may carry contacts).
+ORG_ITEM_CLASSES = (AGENCY, DATA_PROV, METADATA_PROVIDER, DATA_CONSUMER)
+
+# Organisation scheme tokens mapped to their item tokens. In SDMX-ML 2.1 all
+# of these schemes may appear together inside a single OrganisationSchemes
+# wrapper.
+ORG_SCHEME_ITEMS = {
+    AGENCY_SCHEME: AGENCY,
+    DATA_PROVIDER_SCHEME: DATA_PROV,
+    DATA_CONSUMER_SCHEME: DATA_CONSUMER,
+    METADATA_PROVIDER_SCHEME: METADATA_PROVIDER,
 }
 
 COMP_TYPES = [DIM, ATT, MEASURE, MSR, GROUP_DIM]
@@ -396,11 +452,15 @@ class StructureParser(Struct):
     """StructureParser class for SDMX-ML."""
 
     agencies: Dict[str, AgencyScheme] = {}
+    data_provider_schemes: Dict[str, DataProviderScheme] = {}
+    metadata_provider_schemes: Dict[str, MetadataProviderScheme] = {}
+    data_consumer_schemes: Dict[str, DataConsumerScheme] = {}
     codelists: Dict[str, Codelist] = {}
     valuelists: Dict[str, Codelist] = {}
     concepts: Dict[str, ConceptScheme] = {}
     datastructures: Dict[str, DataStructureDefinition] = {}
     dataflows: Dict[str, Dataflow] = {}
+    metadata_provision_agreements: Dict[str, MetadataProvisionAgreement] = {}
     constraints: Dict[str, DataConstraint] = {}
     rulesets: Dict[str, RulesetScheme] = {}
     udos: Dict[str, UserDefinedOperatorScheme] = {}
@@ -564,16 +624,21 @@ class StructureParser(Struct):
         return element
 
     def __format_orgs(self, json_orgs: Dict[str, Any]) -> Dict[str, Any]:
+        """Formats the SDMX-ML 2.1 OrganisationSchemes wrapper.
+
+        In SDMX-ML 2.1 every organisation scheme (agency, data provider,
+        data consumer and metadata provider schemes) is nested inside a
+        single ``OrganisationSchemes`` wrapper, so the wrapper may hold
+        several scheme types at once. Each present type is dispatched to
+        the generic scheme parser.
+        """
         orgs: Dict[str, Any] = {}
         json_list = add_list(json_orgs)
         for e in json_list:
             self.__strip_agency_scheme_defaults(e)
-            ag_sch = self.__format_scheme(
-                e,
-                AGENCY_SCHEME,
-                AGENCY,
-            )
-            orgs = {**orgs, **ag_sch}
+            for scheme, item in ORG_SCHEME_ITEMS.items():
+                if scheme in e:
+                    orgs = {**orgs, **self.__format_scheme(e, scheme, item)}
         return orgs
 
     @staticmethod
@@ -584,8 +649,13 @@ class StructureParser(Struct):
 
         The SDMX standard defines fixed values for AgencyScheme id,
         name, and version. Stripping them when they match the defaults
-        aligns the XML reader with the JSON reader behavior.
+        aligns the XML reader with the JSON reader behavior. Only the
+        AgencyScheme is stripped: the other organisation schemes have
+        different defaults and are left untouched (matching the JSON
+        reader).
         """
+        if AGENCY_SCHEME not in element:
+            return
         for s in add_list(element[AGENCY_SCHEME]):
             for k, v in [("id", "AGENCIES"), ("version", "1.0")]:
                 if s.get(k) == v:
@@ -593,6 +663,57 @@ class StructureParser(Struct):
             name = s.get(NAME)
             if name is not None and _extract_text(name) == "AGENCIES":
                 del s[NAME]
+
+    @staticmethod
+    def __provider_dataflows(
+        agreements: Sequence[Tuple[str, str]],
+    ) -> Dict[str, Set[DataflowRef]]:
+        """Maps "agency:provider_id" to the set of provided dataflows.
+
+        Mirrors the SDMX-JSON behavior where the dataflows attached to a
+        (metadata) provider are derived from the (metadata) provision
+        agreements. Each agreement is supplied as a
+        ``(flow_urn, provider_urn)`` pair so the same logic serves both
+        data and metadata provision agreements.
+        """
+        paprs: Dict[str, Set[DataflowRef]] = defaultdict(set)
+        for flow_urn, provider_urn in agreements:
+            df = parse_urn(flow_urn)
+            ref = parse_short_item_urn(provider_urn)
+            df_ref = DataflowRef(
+                id=df.id, agency=df.agency, version=df.version
+            )
+            paprs[f"{ref.agency}:{ref.item_id}"].add(df_ref)
+        return paprs
+
+    def __enrich_provider_schemes(
+        self,
+        schemes: Dict[str, ItemScheme],
+        scheme_type: Type[ItemScheme],
+        agreements: Sequence[Tuple[str, str]],
+    ) -> Dict[str, ItemScheme]:
+        """Populates provider dataflows from the (metadata) agreements.
+
+        Rebuilds each provider scheme of ``scheme_type`` so that every
+        provider item carries the dataflows it provides, as derived from
+        the supplied ``(flow_urn, provider_urn)`` agreement pairs.
+        """
+        if not schemes or not agreements:
+            return schemes
+        paprs = self.__provider_dataflows(agreements)
+        enriched: Dict[str, ItemScheme] = {}
+        for urn, scheme in schemes.items():
+            if not isinstance(scheme, scheme_type):
+                enriched[urn] = scheme
+                continue
+            agency = scheme.agency
+            agency_id = agency.id if isinstance(agency, Agency) else agency
+            items = [
+                replace(item, dataflows=list(paprs[f"{agency_id}:{item.id}"]))
+                for item in scheme.items
+            ]
+            enriched[urn] = replace(scheme, items=items)
+        return enriched
 
     def __format_representation(
         self, json_rep: Dict[str, Any], json_obj: Dict[str, Any]
@@ -1009,6 +1130,35 @@ class StructureParser(Struct):
 
         return element
 
+    def __format_metadata_prov_agreement(
+        self, element: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Formats a MetadataProvisionAgreement into model keys.
+
+        Mirrors ``__format_prov_agreement`` but the children are a
+        ``<str:Metadataflow>`` and a ``<str:MetadataProvider>`` (an
+        organisation item, hence an item-style short URN). The MPA construct
+        only exists in SDMX-ML 3.x, where references are URN text.
+        """
+        ref_flow = parse_urn(element[METADATAFLOW])
+        metadataflow = (
+            f"{ref_flow.sdmx_type}={ref_flow.agency}:"
+            f"{ref_flow.id}({ref_flow.version})"
+        )
+        del element[METADATAFLOW]
+
+        ref_provider = parse_item_urn(element[METADATA_PROVIDER])
+        metadata_provider = (
+            f"{ref_provider.sdmx_type}={ref_provider.agency}:"
+            f"{ref_provider.id}({ref_provider.version})"
+            f".{ref_provider.item_id}"
+        )
+        del element[METADATA_PROVIDER]
+
+        element[METADATAFLOW.lower()] = metadataflow
+        element["metadata_provider"] = metadata_provider
+        return element
+
     def __parse_data_provider(
         self, attachment: Dict[str, Any]
     ) -> Optional[str]:
@@ -1261,7 +1411,7 @@ class StructureParser(Struct):
     ) -> Item:
         item_json_info = self.__format_annotations(item_json_info)
         item_json_info = self.__format_name_description(item_json_info)
-        if CONTACT in item_json_info and item_name_class == AGENCY:
+        if CONTACT in item_json_info and item_name_class in ORG_ITEM_CLASSES:
             item_json_info[CONTACT] = add_list(item_json_info[CONTACT])
             contacts = [
                 self.__format_contact(e) for e in item_json_info[CONTACT]
@@ -1459,6 +1609,27 @@ class StructureParser(Struct):
 
         return element
 
+    @staticmethod
+    def __prefix_agency_ids(agencies: List[Item], owner: str) -> List[Item]:
+        """Reconstructs owner-prefixed sub-agency ids (mirrors SDMX-JSON).
+
+        SDMX-ML stores the local sub-agency id, whereas pysdmx (like the
+        SDMX-JSON ``__add_owner``) keeps it as ``owner.local`` unless the
+        scheme owner is ``SDMX``. Rebuilding the prefixed id lets an agency
+        scheme read from SDMX-ML match the same scheme read from SDMX-JSON.
+        Top-level ("SDMX"-owned) agencies keep their local id.
+
+        Args:
+            agencies: The agency items parsed from SDMX-ML.
+            owner: The agency id of the enclosing AgencyScheme.
+
+        Returns:
+            The agency items with owner-prefixed ids where applicable.
+        """
+        if owner == "SDMX":
+            return agencies
+        return [replace(a, id=f"{owner}.{a.id}") for a in agencies]
+
     def __format_scheme(
         self, json_elem: Dict[str, Any], scheme: str, item: str
     ) -> Dict[str, ItemScheme]:
@@ -1491,6 +1662,8 @@ class StructureParser(Struct):
                     ]
                 )
                 del element[item]
+            if scheme == AGENCY_SCHEME:
+                items = self.__prefix_agency_ids(items, element[AGENCY_ID])
             element["items"] = items
             element = self.__format_agency(element)
             element = self.__format_validity(element)
@@ -1930,9 +2103,14 @@ class StructureParser(Struct):
             element = self.__format_validity(element)
             element = self.__format_groups(element)
             element = self.__format_components(element)
-            element = self.__format_maps(element)
+            # The MPA must not go through the mapping renames (which would
+            # rename its <str:Target>-style children to "target").
+            if item != MPA:
+                element = self.__format_maps(element)
             if item == PROV_AGREEMENT:
                 element = self.__format_prov_agreement(element)
+            if item == MPA:
+                element = self.__format_metadata_prov_agreement(element)
             if item in [CON_CONS, DATA_CONS]:
                 element = self.__format_constraint(element)
 
@@ -2004,9 +2182,33 @@ class StructureParser(Struct):
             return {}
 
         structures = {
-            ORGS: process_structure(ORGS, self.__format_orgs, "agencies"),
+            # SDMX-ML 2.1: a single wrapper holding every organisation
+            # scheme type, so it is not stored into the AgencyScheme-typed
+            # attribute to avoid mixing types.
+            ORGS: process_structure(ORGS, self.__format_orgs),
             AGENCIES: process_structure(
                 AGENCIES, self.__format_orgs, "agencies"
+            ),
+            DATA_PROVIDER_SCHEMES: process_structure(
+                DATA_PROVIDER_SCHEMES,
+                lambda data: self.__format_scheme(
+                    data, DATA_PROVIDER_SCHEME, DATA_PROV
+                ),
+                "data_provider_schemes",
+            ),
+            METADATA_PROVIDER_SCHEMES: process_structure(
+                METADATA_PROVIDER_SCHEMES,
+                lambda data: self.__format_scheme(
+                    data, METADATA_PROVIDER_SCHEME, METADATA_PROVIDER
+                ),
+                "metadata_provider_schemes",
+            ),
+            DATA_CONSUMER_SCHEMES: process_structure(
+                DATA_CONSUMER_SCHEMES,
+                lambda data: self.__format_scheme(
+                    data, DATA_CONSUMER_SCHEME, DATA_CONSUMER
+                ),
+                "data_consumer_schemes",
             ),
             CLS: process_structure(
                 CLS,
@@ -2067,6 +2269,11 @@ class StructureParser(Struct):
                 CATEGORISATIONS,
                 self.__format_categorisation,
                 "categorisations",
+            ),
+            MPAS: process_structure(
+                MPAS,
+                lambda data: self.__format_schema(data, MPAS, MPA),
+                "metadata_provision_agreements",
             ),
             VTLMAPPINGS: process_structure(
                 VTLMAPPINGS,
@@ -2194,6 +2401,35 @@ class StructureParser(Struct):
             ),
         }
         self.__enrich_category_schemes(structures.get(CATEGORY_SCHEMES, {}))
+        # Enrich provider schemes with the dataflows derived from the
+        # parsed provision agreements (SDMX-JSON parity). Data provider
+        # schemes derive from ProvisionAgreements while metadata provider
+        # schemes derive from MetadataProvisionAgreements; both scheme
+        # types may also live together inside the 2.1 OrganisationSchemes
+        # wrapper, so the type-filtered enrichment is run over that bucket
+        # as well.
+        data_pas = [
+            (pa.dataflow, pa.provider)
+            for pa in structures[PROV_AGREEMENTS].values()
+        ]
+        metadata_pas = [
+            (mpa.metadataflow, mpa.metadata_provider)
+            for mpa in structures[MPAS].values()
+        ]
+        enrichments = (
+            (DataProviderScheme, data_pas),
+            (MetadataProviderScheme, metadata_pas),
+        )
+        for key in (
+            ORGS,
+            DATA_PROVIDER_SCHEMES,
+            METADATA_PROVIDER_SCHEMES,
+        ):
+            for scheme_type, agreements in enrichments:
+                if structures[key]:
+                    structures[key] = self.__enrich_provider_schemes(
+                        structures[key], scheme_type, agreements
+                    )
         return [
             compound
             for value in structures.values()

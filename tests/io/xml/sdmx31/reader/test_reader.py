@@ -13,9 +13,16 @@ from pysdmx.model import (
     CategoryScheme,
     Codelist,
     ConceptScheme,
+    DataConsumer,
+    DataConsumerScheme,
     DataflowRef,
+    DataProvider,
+    DataProviderScheme,
     Hierarchy,
     HierarchyAssociation,
+    MetadataProvider,
+    MetadataProviderScheme,
+    MetadataProvisionAgreement,
     NamePersonalisationScheme,
     Reference,
     RulesetScheme,
@@ -45,6 +52,72 @@ def test_codelist_31(samples_folder):
     assert codelist.id == "CL_AGE"
     assert codelist.agency == "SDMX"
     assert len(codelist.items) == 5
+
+
+@pytest.mark.xml
+def test_org_schemes_31(samples_folder):
+    data_path = samples_folder / "org_schemes.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    result = read_structure(input_str, validate=True)
+
+    by_type = {type(s): s for s in result}
+    assert set(by_type) == {
+        DataProviderScheme,
+        DataConsumerScheme,
+        MetadataProviderScheme,
+    }
+
+    dps = by_type[DataProviderScheme]
+    provider = dps.items[0]
+    assert isinstance(provider, DataProvider)
+    assert provider.id == "DP"
+    assert provider.contacts[0].emails == ["dp.test@md.org"]
+
+    assert isinstance(by_type[DataConsumerScheme].items[0], DataConsumer)
+    assert isinstance(
+        by_type[MetadataProviderScheme].items[0], MetadataProvider
+    )
+
+
+@pytest.mark.xml
+def test_provider_scheme_enrichment_31(samples_folder):
+    data_path = samples_folder / "provider_scheme_enrichment.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    result = read_structure(input_str, validate=True)
+
+    schemes = [s for s in result if isinstance(s, DataProviderScheme)]
+    assert len(schemes) == 1
+    provider = schemes[0].items[0]
+    assert provider.id == "MD"
+    assert provider.dataflows == [
+        DataflowRef(id="TEST", agency="MD", version="1.0")
+    ]
+
+
+@pytest.mark.xml
+def test_metadata_provider_scheme_enrichment_31(samples_folder):
+    data_path = samples_folder / "metadata_provider_scheme_enrichment.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    result = read_structure(input_str, validate=True)
+
+    mpas = [s for s in result if isinstance(s, MetadataProvisionAgreement)]
+    assert len(mpas) == 1
+    assert mpas[0].metadataflow == "Metadataflow=MD:MDF_TEST(1.0)"
+    assert (
+        mpas[0].metadata_provider
+        == "MetadataProvider=MD:METADATA_PROVIDERS(1.0).MP1"
+    )
+
+    schemes = [s for s in result if isinstance(s, MetadataProviderScheme)]
+    assert len(schemes) == 1
+    providers = {p.id: p for p in schemes[0].items}
+    assert providers["MP1"].dataflows == [
+        DataflowRef(id="MDF_TEST", agency="MD", version="1.0")
+    ]
+    assert providers["MP2"].dataflows == []
 
 
 @pytest.mark.xml

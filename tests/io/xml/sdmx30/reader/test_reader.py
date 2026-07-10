@@ -8,6 +8,7 @@ from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
 from pysdmx.io.reader import read_sdmx as reader
+from pysdmx.io.writer import write_sdmx
 from pysdmx.io.xml.sdmx30.reader.structure import read as read_structure
 from pysdmx.model import (
     Agency,
@@ -25,13 +26,20 @@ from pysdmx.model import (
     CustomType,
     CustomTypeScheme,
     DataConstraint,
+    DataConsumer,
+    DataConsumerScheme,
     Dataflow,
     DataflowRef,
     DataKey,
     DataKeyValue,
+    DataProvider,
+    DataProviderScheme,
     Hierarchy,
     ItemReference,
     KeySet,
+    MetadataProvider,
+    MetadataProviderScheme,
+    MetadataProvisionAgreement,
     NamePersonalisation,
     NamePersonalisationScheme,
     Reference,
@@ -178,7 +186,10 @@ def test_agency_scheme_read(samples_folder):
 
     assert isinstance(agency_scheme.items[0], Agency)
     agency = agency_scheme.items[0]
-    assert agency.id == "AG"
+    # The scheme owner ("MD") is not "SDMX", so the sub-agency id is stored
+    # as "owner.local" ("MD.AG"), mirroring the SDMX-JSON reader. The XML
+    # itself carries only the local id ("AG").
+    assert agency.id == "MD.AG"
     assert agency.name == "AGENCY"
     assert agency.description == "AGENCY"
     assert (
@@ -190,6 +201,113 @@ def test_agency_scheme_read(samples_folder):
     contact = agency.contacts[0]
     assert contact.name == "CONTACT"
     assert contact.role == "ROLE"
+
+
+@pytest.mark.xml
+@pytest.mark.parametrize(
+    "sdmx_format",
+    [
+        Format.STRUCTURE_SDMX_ML_2_1,
+        Format.STRUCTURE_SDMX_ML_3_0,
+        Format.STRUCTURE_SDMX_ML_3_1,
+    ],
+)
+def test_non_sdmx_agency_scheme_roundtrip(samples_folder, sdmx_format):
+    # A non-"SDMX"-owned AgencyScheme ("MD") stores its sub-agency id as
+    # "MD.AG"; the SDMX-ML id and URN must use the local part ("AG"), and
+    # reading back must reconstruct the owner-prefixed id so the round-trip
+    # is stable.
+    original = read_sdmx(str(samples_folder / "agencies.xml"))
+    assert original.get_agency_schemes()[0].items[0].id == "MD.AG"
+
+    result = write_sdmx(original.get_agency_schemes(), sdmx_format)
+    assert 'id="AG"' in result
+    assert 'id="MD.AG"' not in result
+    assert "Agency=MD:AGENCIES(1.0).AG" in result
+
+    reparsed = read_sdmx(result, validate=True)
+    assert original.get_agency_schemes() == reparsed.get_agency_schemes()
+
+
+@pytest.mark.xml
+def test_org_schemes_read(samples_folder):
+    data_path = samples_folder / "org_schemes.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+
+    by_type = {type(s): s for s in result}
+    assert set(by_type) == {
+        DataProviderScheme,
+        DataConsumerScheme,
+        MetadataProviderScheme,
+    }
+
+    dps = by_type[DataProviderScheme]
+    assert dps.agency == "MD"
+    provider = dps.items[0]
+    assert isinstance(provider, DataProvider)
+    assert provider.id == "DP"
+    assert provider.description == "DATA PROVIDER"
+    assert (
+        provider.urn == "urn:sdmx:org.sdmx.infomodel.base.DataProvider"
+        "=MD:DATA_PROVIDERS(1.0).DP"
+    )
+    assert provider.contacts[0].name == "CONTACT"
+    assert provider.contacts[0].emails == ["dp.test@md.org"]
+
+    dcs = by_type[DataConsumerScheme]
+    assert isinstance(dcs.items[0], DataConsumer)
+    assert dcs.items[0].id == "DC"
+
+    mps = by_type[MetadataProviderScheme]
+    assert isinstance(mps.items[0], MetadataProvider)
+    assert mps.items[0].id == "MP"
+
+
+@pytest.mark.xml
+def test_provider_scheme_enrichment_read(samples_folder):
+    data_path = samples_folder / "provider_scheme_enrichment.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+
+    schemes = [s for s in result if isinstance(s, DataProviderScheme)]
+    assert len(schemes) == 1
+    provider = schemes[0].items[0]
+    assert provider.id == "MD"
+    assert provider.dataflows == [
+        DataflowRef(id="TEST", agency="MD", version="1.0")
+    ]
+
+
+@pytest.mark.xml
+def test_metadata_provider_scheme_enrichment_read(samples_folder):
+    data_path = samples_folder / "metadata_provider_scheme_enrichment.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    result = read_structure(input_str, validate=True)
+
+    # The MetadataProvisionAgreement is parsed into the model.
+    mpas = [s for s in result if isinstance(s, MetadataProvisionAgreement)]
+    assert len(mpas) == 1
+    mpa = mpas[0]
+    assert mpa.short_urn == "MetadataProvisionAgreement=MD:MPA_TEST(1.0)"
+    assert mpa.metadataflow == "Metadataflow=MD:MDF_TEST(1.0)"
+    assert (
+        mpa.metadata_provider
+        == "MetadataProvider=MD:METADATA_PROVIDERS(1.0).MP1"
+    )
+
+    # The metadata provider named by the MPA is enriched with its
+    # metadataflow; the one not referenced by any MPA stays empty.
+    schemes = [s for s in result if isinstance(s, MetadataProviderScheme)]
+    assert len(schemes) == 1
+    providers = {p.id: p for p in schemes[0].items}
+    assert providers["MP1"].dataflows == [
+        DataflowRef(id="MDF_TEST", agency="MD", version="1.0")
+    ]
+    assert providers["MP2"].dataflows == []
 
 
 @pytest.mark.xml
