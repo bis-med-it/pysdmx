@@ -34,6 +34,7 @@ from pysdmx.model.code import (
 from pysdmx.model.concept import Concept, ConceptScheme
 from pysdmx.model.constraint import (
     ConstraintAttachment,
+    ConstraintRole,
     CubeKeyValue,
     CubeRegion,
     CubeValue,
@@ -177,6 +178,7 @@ __all__ = [
     "Concept",
     "ConceptScheme",
     "ConstraintAttachment",
+    "ConstraintRole",
     "Contact",
     "CubeKeyValue",
     "CubeRegion",

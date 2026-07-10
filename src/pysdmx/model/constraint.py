@@ -1,6 +1,7 @@
 """Model for SDMX Data Constraints."""
 
 from datetime import datetime
+from enum import Enum
 from typing import Optional, Sequence
 
 from msgspec import Struct
@@ -61,9 +62,19 @@ class KeySet(Struct, frozen=True, omit_defaults=True):
     is_included: bool
 
 
+class ConstraintRole(str, Enum):
+    """Whether a data constraint defines allowed or actual content."""
+
+    ALLOWED = "Allowed"
+    """The constraint defines the content allowed by the structure."""
+    ACTUAL = "Actual"
+    """The constraint describes the data actually present."""
+
+
 class DataConstraint(MaintainableArtefact, frozen=True, omit_defaults=True):
     """A data constraint, defining the allowed or available values."""
 
+    role: ConstraintRole = ConstraintRole.ALLOWED
     constraint_attachment: Optional[ConstraintAttachment] = None
     cube_regions: Sequence[CubeRegion] = ()
     key_sets: Sequence[KeySet] = ()
