@@ -28,6 +28,8 @@ Your opinionated Python SDMX library.
 
    howto/dc
    howto/stat
+   howto/fmr_to_stat
+   howto/stat_fmr_sync
    howto/sdmx_rest
 
 .. toctree::
