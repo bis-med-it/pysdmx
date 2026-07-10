@@ -13,6 +13,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
 from pysdmx.model import (
     Agency,
     ConstraintAttachment,
+    ConstraintRole,
     CubeKeyValue,
     CubeRegion,
     CubeValue,
@@ -174,6 +175,7 @@ class JsonKeySet(Struct, frozen=True, omit_defaults=True):
 class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a content constraint."""
 
+    role: Optional[str] = None
     constraintAttachment: Optional[JsonConstraintAttachment] = None
     cubeRegions: Optional[Sequence[JsonCubeRegion]] = None
     dataKeySets: Optional[Sequence[JsonKeySet]] = None
@@ -196,6 +198,11 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             is_final=is_final(self.version),
             valid_from=self.validFrom,
             valid_to=self.validTo,
+            role=(
+                ConstraintRole(self.role)
+                if self.role
+                else ConstraintRole.ALLOWED
+            ),
             constraint_attachment=at,
             cube_regions=[r.to_model() for r in self.cubeRegions]
             if self.cubeRegions
@@ -246,6 +253,7 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             isExternalReference=cons.is_external_reference,
             validFrom=cons.valid_from,
             validTo=cons.valid_to,
+            role=cons.role.value,
             constraintAttachment=JsonConstraintAttachment.from_model(
                 cons.constraint_attachment
             ),
