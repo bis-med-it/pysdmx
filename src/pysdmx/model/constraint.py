@@ -17,11 +17,43 @@ class CubeValue(Struct, frozen=True, omit_defaults=True):
     valid_to: Optional[datetime] = None
 
 
+class TimePeriodBoundary(Struct, frozen=True, omit_defaults=True):
+    """One end of a cube-region time range, with inclusivity."""
+
+    period: str
+    is_inclusive: bool = True
+
+
+class CubeTimeRange(Struct, frozen=True, omit_defaults=True):
+    """A time range for a cube region's time dimension.
+
+    Mirrors the SDMX TimeRange: a period before, a period after, or a
+    start/end range. Only the relevant boundaries are set.
+    """
+
+    before_period: Optional[TimePeriodBoundary] = None
+    after_period: Optional[TimePeriodBoundary] = None
+    start_period: Optional[TimePeriodBoundary] = None
+    end_period: Optional[TimePeriodBoundary] = None
+
+
 class CubeKeyValue(Struct, frozen=True, omit_defaults=True):
-    """The list of values for a cube's component."""
+    """The list of values (or a time range) for a cube's component.
+
+    Attributes:
+        id: The referenced component (e.g. a dimension).
+        values: The set of allowed/excluded values.
+        time_range: A time range, for a time dimension (mutually
+            exclusive with values in SDMX-ML).
+        valid_from: Start of the validity period (SDMX-ML 3.0/3.1 only).
+        valid_to: End of the validity period (SDMX-ML 3.0/3.1 only).
+    """
 
     id: str
-    values: Sequence[CubeValue]
+    values: Sequence[CubeValue] = ()
+    time_range: Optional[CubeTimeRange] = None
+    valid_from: Optional[datetime] = None
+    valid_to: Optional[datetime] = None
 
 
 class CubeRegion(Struct, frozen=True, omit_defaults=True):
