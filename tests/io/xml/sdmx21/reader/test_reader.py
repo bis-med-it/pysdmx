@@ -1211,6 +1211,28 @@ def test_constraint_with_cube_region(samples_folder):
     assert len(region3.key_values) == 0
 
 
+def test_constraint_actual_type_and_time_range(samples_folder):
+    # A real .Stat/.NET graph (references=all) carries type="Actual"
+    # constraints whose cube region mixes enumerated key-values with a
+    # TimeRange. The Actual/Allowed marker is dropped and the TimeRange
+    # key-value is skipped (the simplified model represents neither).
+    data_path = samples_folder / "constraint_actual_timerange.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=False).get_data_constraints()
+    assert result is not None
+    assert len(result) == 1
+    constraint = result[0]
+    assert isinstance(constraint, DataConstraint)
+    assert constraint.id == "CR_A_TEST_DF"
+    assert len(constraint.cube_regions) == 1
+    region = constraint.cube_regions[0]
+    # Only the enumerated FREQ key-value survives; TIME_PERIOD is skipped.
+    assert len(region.key_values) == 1
+    assert region.key_values[0].id == "FREQ"
+    assert [v.value for v in region.key_values[0].values] == ["A"]
+
+
 def test_constraint_with_keyset(samples_folder):
     data_path = samples_folder / "constraint_keyset.xml"
     input_str, read_format = process_string_to_read(data_path)
