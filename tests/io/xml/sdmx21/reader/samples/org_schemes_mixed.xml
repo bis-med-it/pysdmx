@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message:Structure xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                   xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+                   xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <message:Header>
+        <message:ID>test</message:ID>
+        <message:Test>true</message:Test>
+        <message:Prepared>2025-01-01T00:00:00Z</message:Prepared>
+        <message:Sender id="TEST"/>
+    </message:Header>
+    <message:Structures>
+        <str:OrganisationSchemes>
+            <str:AgencyScheme urn="urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)"
+                              isExternalReference="false" agencyID="SDMX" id="AGENCIES" isFinal="false" version="1.0">
+                <com:Name xml:lang="en">SDMX Agency Scheme</com:Name>
+                <str:Agency urn="urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX" id="SDMX">
+                    <com:Name xml:lang="en">SDMX</com:Name>
+                </str:Agency>
+            </str:AgencyScheme>
+            <str:DataProviderScheme urn="urn:sdmx:org.sdmx.infomodel.base.DataProviderScheme=BIS:DATA_PROVIDERS(1.0)"
+                                    isExternalReference="false" agencyID="BIS" id="DATA_PROVIDERS" isFinal="false" version="1.0">
+                <com:Name xml:lang="en">Data Provider Scheme</com:Name>
+                <str:DataProvider urn="urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).5B0" id="5B0">
+                    <com:Name xml:lang="en">Bank for International Settlements</com:Name>
+                    <str:Contact>
+                        <com:Name xml:lang="en">Statistics Department</com:Name>
+                        <str:Department xml:lang="en">STATS</str:Department>
+                        <str:Role xml:lang="en">Data Provider</str:Role>
+                        <str:URI>http://www.bis.org</str:URI>
+                        <str:Email>stats@bis.org</str:Email>
+                    </str:Contact>
+                </str:DataProvider>
+            </str:DataProviderScheme>
+            <str:DataConsumerScheme urn="urn:sdmx:org.sdmx.infomodel.base.DataConsumerScheme=SDMX:DATA_CONSUMERS(1.0)"
+                                    isExternalReference="false" agencyID="SDMX" id="DATA_CONSUMERS" isFinal="false" version="1.0">
+                <com:Name xml:lang="en">Data Consumer Scheme</com:Name>
+                <str:DataConsumer urn="urn:sdmx:org.sdmx.infomodel.base.DataConsumer=SDMX:DATA_CONSUMERS(1.0).ECB" id="ECB">
+                    <com:Name xml:lang="en">European Central Bank</com:Name>
+                </str:DataConsumer>
+            </str:DataConsumerScheme>
+        </str:OrganisationSchemes>
+    </message:Structures>
+</message:Structure>
