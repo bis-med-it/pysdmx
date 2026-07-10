@@ -20,10 +20,10 @@ FMR. The full runnable script is
 List both sides
 ---------------
 
-Both services expose the SDMX-REST v2 structure API, so a single
-``StructureType.ALL`` stub query lists all the ``MD`` structures on each,
-and :func:`~pysdmx.io.read_sdmx` turns the response into comparable
-short-URNs:
+Both services expose the SDMX-REST v2 structure API. Not every service
+accepts the all-types ``structure/*/{agency}`` form (``.Stat`` returns
+HTTP 422), so the helper queries each maintainable type in turn and
+collects comparable short-URNs via :func:`~pysdmx.io.read_sdmx`:
 
 .. code-block:: python
 
@@ -37,24 +37,39 @@ short-URNs:
         StructureQuery,
         StructureType,
     )
+    from pysdmx.errors import Invalid, NotFound
     from pysdmx.io import read_sdmx
+
+    TYPES = (
+        StructureType.CODELIST, StructureType.CONCEPT_SCHEME,
+        StructureType.DATA_STRUCTURE, StructureType.DATAFLOW,
+        StructureType.DATA_CONSTRAINT,
+    )
 
     def list_md_urns(base, token):
         svc = RestService(
-            base,
-            ApiVersion.V2_0_0,
-            structure_format=StructureFormat.SDMX_ML_2_1,
-            token=token,
+            base, ApiVersion.V2_0_0,
+            structure_format=StructureFormat.SDMX_ML_2_1, token=token,
         )
-        query = StructureQuery(
-            StructureType.ALL, "MD", detail=StructureDetail.ALL_STUBS
-        )
-        msg = read_sdmx(BytesIO(svc.structure(query)), validate=False)
-        return {s.short_urn for s in msg.structures or []}
+        urns = set()
+        for stype in TYPES:
+            q = StructureQuery(stype, "MD", detail=StructureDetail.ALL_STUBS)
+            try:
+                msg = read_sdmx(BytesIO(svc.structure(q)), validate=False)
+            except (Invalid, NotFound):
+                continue  # no artefacts of this type
+            urns |= {s.short_urn for s in msg.structures or []}
+        return urns
 
     fmr_urns = list_md_urns(FMR_ENDPOINT, fmr_token)
     stat_urns = list_md_urns(f"{NSI}/rest/v2", dotstat_token)
     extras = stat_urns - fmr_urns  # present in .Stat, absent in FMR
+
+.. warning::
+    ``--apply`` deletes from ``.Stat`` everything under ``MD`` that is not
+    in the FMR, so the FMR must be the **complete** source of truth for
+    that agency. Pointing at a partial FMR would delete legitimate
+    structures. Always inspect the dry-run output first.
 
 Delete the extras in dependency order
 --------------------------------------

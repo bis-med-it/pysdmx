@@ -41,6 +41,7 @@ from pysdmx.api.qb import (
     StructureType,
 )
 from pysdmx.api.stat import StatUploader
+from pysdmx.errors import Invalid, NotFound
 from pysdmx.io import read_sdmx
 
 AGENCY = os.environ.get("DOTSTAT_AGENCY", "MD")
@@ -64,6 +65,17 @@ _DELETE_ORDER = {
 }
 
 
+# Not every service supports the all-types 'structure/*/{agency}' form
+# (.Stat returns HTTP 422), so list each maintainable type explicitly.
+_TYPES = (
+    StructureType.CODELIST,
+    StructureType.CONCEPT_SCHEME,
+    StructureType.DATA_STRUCTURE,
+    StructureType.DATAFLOW,
+    StructureType.DATA_CONSTRAINT,
+)
+
+
 def list_md_urns(base: str, token: str | None) -> set[str]:
     """Return the short-URNs of every MD structure at an SDMX-REST base."""
     svc = RestService(
@@ -72,13 +84,17 @@ def list_md_urns(base: str, token: str | None) -> set[str]:
         structure_format=StructureFormat.SDMX_ML_2_1,
         token=token,
     )
-    query = StructureQuery(
-        StructureType.ALL,
-        AGENCY,
-        detail=StructureDetail.ALL_STUBS,
-    )
-    msg = read_sdmx(BytesIO(svc.structure(query)), validate=False)
-    return {s.short_urn for s in msg.structures or []}
+    urns: set[str] = set()
+    for stype in _TYPES:
+        query = StructureQuery(stype, AGENCY, detail=StructureDetail.ALL_STUBS)
+        try:
+            msg = read_sdmx(BytesIO(svc.structure(query)), validate=False)
+        except (Invalid, NotFound):
+            # A type with no artefacts may 404 or return an empty,
+            # unparseable body; treat it as "none of that type".
+            continue
+        urns |= {s.short_urn for s in msg.structures or []}
+    return urns
 
 
 def _delete_rank(urn: str) -> int:

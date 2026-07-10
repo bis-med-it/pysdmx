@@ -200,12 +200,16 @@ def main() -> None:
     graph = download_from_fmr()
     structures = list(graph.structures or [])
     print("  downloaded:", [s.short_urn for s in structures])
+    # A references=all graph also carries cross-agency artefacts (e.g. the
+    # SDMX agency scheme) that .Stat will not let us write; re-publish only
+    # the artefacts under our own agency.
+    own = [s for s in structures if getattr(s, "agency", None) == AGENCY]
 
     print("3/4 submit the downloaded structures to .Stat")
     uploader = StatUploader(
         NSI, TRANSFER, dataspace=SPACE, token=os.environ["DOTSTAT_TOKEN"]
     )
-    result = uploader.submit_structure(structures)
+    result = uploader.submit_structure(own)
     print("  success:", result.success, "|", "; ".join(result.messages))
 
     print("4/4 upload data and poll to completion")
