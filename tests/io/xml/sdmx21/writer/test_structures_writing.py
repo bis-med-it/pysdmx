@@ -16,6 +16,9 @@ from pysdmx.io.xml.sdmx21.writer.structure import write
 from pysdmx.model import (
     Agency,
     AgencyScheme,
+    Categorisation,
+    Category,
+    CategoryScheme,
     Code,
     Codelist,
     Concept,
@@ -386,6 +389,241 @@ def test_hierarchy_21_name_with_apostrophe(complete_header):
     result = write([hierarchy], header=complete_header, prettyprint=True)
     re_read = read_sdmx(result, validate=True).structures[0]
     assert re_read.name == "Côte d'Ivoire groups"
+
+
+@pytest.fixture
+def category_scheme_nested():
+    return CategoryScheme(
+        id="CS1",
+        name="Category Scheme 1",
+        description="A scheme",
+        agency="BIS",
+        version="1.0",
+        items=(
+            Category(
+                id="TOP",
+                name="Top",
+                categories=(
+                    Category(
+                        id="MID",
+                        name="Middle",
+                        categories=(Category(id="LEAF", name="Leaf"),),
+                    ),
+                ),
+            ),
+            Category(id="OTHER", name="Other"),
+        ),
+    )
+
+
+def test_category_scheme_21_round_trip(
+    complete_header, category_scheme_nested
+):
+    result = write(
+        [category_scheme_nested], header=complete_header, prettyprint=True
+    )
+    assert "<str:CategorySchemes>" in result
+    assert "<str:CategoryScheme " in result
+    assert "<str:Category " in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == category_scheme_nested
+
+
+def test_category_scheme_21_name_with_apostrophe(complete_header):
+    cs = CategoryScheme(
+        id="CS2",
+        name="Schemes",
+        agency="BIS",
+        version="1.0",
+        items=(Category(id="C", name="Côte d'Ivoire"),),
+    )
+    result = write([cs], header=complete_header, prettyprint=True)
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == cs
+    assert re_read.items[0].name == "Côte d'Ivoire"
+
+
+def test_categorisation_21_round_trip(complete_header):
+    categorisation = Categorisation(
+        id="CAT1",
+        name="Categorisation 1",
+        agency="BIS",
+        version="1.0",
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0).TOP.MID.LEAF"
+        ),
+    )
+    result = write([categorisation], header=complete_header, prettyprint=True)
+    assert "<str:Categorisations>" in result
+    assert "<str:Categorisation " in result
+    assert "<str:Source>" in result
+    assert "<str:Target>" in result
+    assert "isPartial" not in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    # Full URNs round-trip unchanged.
+    assert re_read == categorisation
+
+
+def test_category_scheme_21_enrichment_round_trip(complete_header):
+    cs = CategoryScheme(
+        id="CS1",
+        name="Category Scheme 1",
+        agency="BIS",
+        version="1.0",
+        items=[Category(id="TOP", name="Top")],
+    )
+    dataflow = Dataflow(
+        id="DF1",
+        name="Dataflow 1",
+        agency="BIS",
+        version="1.0",
+        structure="DataStructure=BIS:DSD1(1.0)",
+    )
+    categorisation = Categorisation(
+        id="CAT1",
+        name="Categorisation 1",
+        agency="BIS",
+        version="1.0",
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0).TOP"
+        ),
+    )
+    result = write(
+        [cs, dataflow, categorisation],
+        header=complete_header,
+        prettyprint=True,
+    )
+    # The dataflow must NOT be inlined inside the category scheme: it is
+    # re-derived from the Categorisation on read.
+    re_read = read_sdmx(result, validate=True).structures
+    re_cs = next(s for s in re_read if isinstance(s, CategoryScheme))
+    top = re_cs["TOP"]
+    assert len(top.dataflows) == 1
+    assert isinstance(top.dataflows[0], DataflowRef)
+    assert top.dataflows[0].agency == "BIS"
+    assert top.dataflows[0].id == "DF1"
+    assert top.dataflows[0].version == "1.0"
+    assert top.dataflows[0].name == "Dataflow 1"
+
+
+def test_category_annotations_21_round_trip(complete_header):
+    # Annotations on both a top-level and a nested category must survive
+    # a write/read cycle, including when the category is enriched.
+    cs = CategoryScheme(
+        id="CS1",
+        name="Category Scheme 1",
+        agency="BIS",
+        version="1.0",
+        items=(
+            Category(
+                id="TOP",
+                name="Top",
+                annotations=(Annotation(id="A_TOP", title="top anno"),),
+                categories=(
+                    Category(
+                        id="LEAF",
+                        name="Leaf",
+                        annotations=(
+                            Annotation(id="A_LEAF", title="leaf anno"),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+    categorisation = Categorisation(
+        id="CAT1",
+        name="Categorisation 1",
+        agency="BIS",
+        version="1.0",
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0).TOP.LEAF"
+        ),
+    )
+    result = write(
+        [cs, categorisation], header=complete_header, prettyprint=True
+    )
+    re_read = read_sdmx(result, validate=True).structures
+    re_cs = next(s for s in re_read if isinstance(s, CategoryScheme))
+    top = re_cs["TOP"]
+    assert top.annotations == (Annotation(id="A_TOP", title="top anno"),)
+    leaf = re_cs["TOP.LEAF"]
+    assert leaf.annotations == (Annotation(id="A_LEAF", title="leaf anno"),)
+
+
+def test_category_multiple_categorisations_same_category_21(complete_header):
+    # Two categorisations targeting the SAME category must accumulate
+    # both dataflows in that category's dataflows.
+    cs = CategoryScheme(
+        id="CS1",
+        name="Category Scheme 1",
+        agency="BIS",
+        version="1.0",
+        items=(Category(id="TOP", name="Top"),),
+    )
+    df1 = Dataflow(
+        id="DF1",
+        name="Dataflow 1",
+        agency="BIS",
+        version="1.0",
+        structure="DataStructure=BIS:DSD1(1.0)",
+    )
+    df2 = Dataflow(
+        id="DF2",
+        name="Dataflow 2",
+        agency="BIS",
+        version="1.0",
+        structure="DataStructure=BIS:DSD1(1.0)",
+    )
+    cat1 = Categorisation(
+        id="CAT1",
+        name="Categorisation 1",
+        agency="BIS",
+        version="1.0",
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0).TOP"
+        ),
+    )
+    cat2 = Categorisation(
+        id="CAT2",
+        name="Categorisation 2",
+        agency="BIS",
+        version="1.0",
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF2(1.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0).TOP"
+        ),
+    )
+    result = write(
+        [cs, df1, df2, cat1, cat2],
+        header=complete_header,
+        prettyprint=True,
+    )
+    re_read = read_sdmx(result, validate=True).structures
+    re_cs = next(s for s in re_read if isinstance(s, CategoryScheme))
+    top = re_cs["TOP"]
+    assert len(top.dataflows) == 2
+    assert all(isinstance(d, DataflowRef) for d in top.dataflows)
+    assert {d.id for d in top.dataflows} == {"DF1", "DF2"}
 
 
 @pytest.fixture
