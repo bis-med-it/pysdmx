@@ -191,6 +191,41 @@ Matching policy for agents:
 The connector returns values for which data actually exist (not every
 theoretical codelist value), which helps avoid empty queries.
 
+#### Filter availability information with `dataflow(..., filters=...)`
+
+When a dataflow is large, inspect availability for a targeted subset first.
+`dataflow` accepts a `filters` parameter that scopes the returned
+availability information:
+
+- `filters=None` (default): return availability for the full dataflow.
+- `filters` set: return availability for the matching subset only
+  (that is, values that remain available after applying filters).
+
+Use this to narrow candidate codes before constructing the final
+`data(...)` query.
+
+Example with filter objects:
+
+```python
+from pysdmx.api.dc.query import MultiFilter, Operator, TextFilter
+
+f1 = TextFilter("L_POSITION", Operator.EQUALS, "D")
+f2 = TextFilter("L_REP_CTY", Operator.EQUALS, "CH")
+mf = MultiFilter([f1, f2])
+
+cbs_subset = conn.dataflow(cbs, mf)
+
+for d in cbs_subset.components.dimensions:
+    print(d.id, [c.id for c in (d.enumeration or [])])
+```
+
+`filters` follows the same syntax accepted by `data(...)` queries:
+
+- query filter objects from `pysdmx.api.dc.query` (for example `MultiFilter`)
+- SQL-style strings (for example `"L_POSITION = 'D' AND L_REP_CTY = 'CH'"`)
+- Python boolean expressions (for example
+  `"L_POSITION == 'D' and L_REP_CTY == 'CH'"`)
+
 ### Step 3: Retrieve data (`data`)
 
 The `data` method requires `dataflow` and returns a DataFrame when using
@@ -347,13 +382,17 @@ When an agent is asked to discover and retrieve data, use this sequence:
 1. Initialize `PandasConnector` from `Endpoints`.
 2. Call `dataflows(search_term)` if user intent includes a topic.
 3. Select one candidate dataflow and call `dataflow(...)`.
-4. Inspect dimensions and propose valid filter values.
-5. Retrieve a constrained sample with `data(...)`.
-6. Only then expand scope (more columns, broader filters, or full pull).
+4. If needed, call `dataflow(..., filters=...)` to scope availability to
+  the subset implied by user intent.
+5. Inspect dimensions and propose valid filter values.
+6. Retrieve a constrained sample with `data(...)`.
+7. Only then expand scope (more columns, broader filters, or full pull).
 
 ### Safety and efficiency defaults for agents
 
 - Start with targeted filters to avoid huge DataFrames.
+- Use `dataflow(..., filters=...)` to validate remaining available values
+  before broad retrieval.
 - Request only needed columns via `columns` when possible.
 - Keep `labels="id"` unless human-readable output is explicitly required.
 - Prefer schema-applied dtypes unless downstream logic needs raw strings.
@@ -371,6 +410,11 @@ conn = PandasConnector(Endpoints.BIS)
 
 flows = conn.dataflows("banking")
 target = conn.dataflow(flows[0])
+
+subset = conn.dataflow(
+    target,
+    "L_POSITION = 'D' AND L_REP_CTY = 'CH'",
+)
 
 df = conn.data(
     target,
