@@ -33,6 +33,15 @@ conn = PandasConnector(Endpoints.BIS)
 The connector requires a service entry point URL for data and metadata.
 Use `Endpoints` whenever possible.
 
+Efficiency rule:
+
+- Prefer one `dataflows()` call per service and filter the returned
+  dataflows locally by checking the user terms against each dataflow's
+  `id`, `name`, and `description`.
+- Only call `dataflow(...)` for the locally matched candidates.
+- If no direct dataflow match is found, then inspect `dataflow(...)`
+  metadata more broadly to search component and code labels.
+
 ### If the user asks for a statistical domain but not for a specific service
 
 When the caller asks a general discovery question such as "Where can I find
@@ -112,9 +121,41 @@ for f in flows:
     print(f.short_urn)
 ```
 
+When the service is already known, agents should usually prefer a single
+unfiltered `dataflows()` call, then perform local matching on the returned
+objects instead of issuing multiple `dataflows(search_term)` calls for
+synonyms or related phrases.
+
+Example:
+
+```python
+flows = conn.dataflows()
+terms = ["exchange rate", "swiss franc", "dollar"]
+
+matches = []
+for flow in flows:
+  text = " ".join(
+    [
+      flow.id,
+      str(flow.name or ""),
+      str(flow.description or ""),
+    ]
+  ).lower()
+  if any(term in text for term in terms):
+    matches.append(flow)
+```
+
 If the user is exploring a topic rather than a known service, repeat this
 search for every endpoint in `Endpoints` and aggregate the results before
 presenting candidate datasets.
+
+Do not rely only on `dataflows(search_term)` for the final answer. Some
+topics are represented by dimension or code labels inside broader dataflows,
+while the dataflow ID/name/description may not contain the user phrase.
+After direct matches are found, call `dataflow(...)` only for those matched
+dataflows first. Only if that direct pass fails should you inspect broader
+domain matches (for example "banking" for instrument-level banking concepts)
+and search their component and code metadata.
 
 ### Step 2: Inspect one dataset (`dataflow`)
 
@@ -188,12 +229,30 @@ Matching policy for agents:
    match on code `name`/`description`.
 3. If multiple code matches remain in the same component, keep all of
    them and build a multi-value filter for that component.
-4. Ask a disambiguation question only when the target component itself
+4. For phrases such as "in Switzerland", inspect every dimension whose
+  available codes contain the target country code (for example `CH`), not
+  only common country dimension names. Report whether the match is a
+  reporting country, counterparty country, reference area, currency, or
+  another role when the component metadata makes this clear.
+5. Ask a disambiguation question only when the target component itself
    is ambiguous.
-5. If no match is found, report which concept could not be mapped.
+6. If no match is found, report which concept could not be mapped.
 
 The connector returns values for which data actually exist (not every
 theoretical codelist value), which helps avoid empty queries.
+
+Important distinction for agents:
+
+- `dataflow(...)` returns availability-backed values (codes with data).
+- A code may still be valid in the full codelist even when it is absent
+  from `dataflow(...).components[...].enumeration`.
+
+Interpretation rule:
+
+1. If a code is missing from availability, treat it as "no available data
+  for the current scope" (not automatically "invalid code").
+2. If users ask about a specific code label, verify against structural
+  metadata/codelists before concluding it does not exist.
 
 #### Filter availability information with `dataflow(..., filters=...)`
 
@@ -387,17 +446,26 @@ If `columns` is omitted, all DSD-defined components are included.
 When an agent is asked to discover and retrieve data, use this sequence:
 
 1. Initialize `PandasConnector` from `Endpoints`.
-2. Call `dataflows(search_term)` if user intent includes a topic.
-3. Select one candidate dataflow and call `dataflow(...)`.
-4. If needed, call `dataflow(..., filters=...)` to scope availability to
-  the subset implied by user intent.
-5. Inspect dimensions and propose valid filter values.
-6. Retrieve a constrained sample with `data(...)`.
-7. Only then expand scope (more columns, broader filters, or full pull).
+2. Call `dataflows()` once for the selected service.
+3. Match the user's terms locally against each returned dataflow's `id`,
+  `name`, and `description`.
+4. Call `dataflow(...)` for the directly matched candidates.
+5. Only if no direct candidate works, inspect broader domain candidates and
+  search component and code `id`, `name`, and `description` fields for
+   the user's concepts.
+6. If needed, call `dataflow(..., filters=...)` to scope availability to
+   the subset implied by user intent.
+7. Inspect dimensions and propose valid filter values.
+8. Retrieve a constrained sample with `data(...)`.
+9. Only then expand scope (more columns, broader filters, or full pull).
 
 ### Safety and efficiency defaults for agents
 
 - Start with targeted filters to avoid huge DataFrames.
+- Prefer one `dataflows()` request per service and local term matching over
+  repeated `dataflows(search_term)` requests for synonyms.
+- Search component and code labels in candidate dataflows before concluding
+  that no data exist for a topic.
 - Use `dataflow(..., filters=...)` to validate remaining available values
   before broad retrieval.
 - Compare `obs_count` and `series_count` between full and filtered
