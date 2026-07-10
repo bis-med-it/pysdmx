@@ -135,7 +135,7 @@ def build_structure() -> Message:
         agency=AGENCY,
         version="1.0",
         name="pysdmx FMR dataflow",
-        structure=dsd.short_urn,
+        structure=dsd,
     )
     return Message(structures=[cs, dsd, df])
 

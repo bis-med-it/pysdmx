@@ -897,6 +897,19 @@ def test_parse_prepared_fractional_seconds(raw, expected):
     assert parse_prepared(raw) == datetime.fromisoformat(expected)
 
 
+def test_dataflow_stub_without_structure(samples_folder):
+    # An allstubs listing returns dataflows without their DSD reference;
+    # the reader must not assume a Structure element is present.
+    data_path = samples_folder / "dataflow_no_structure.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=False).structures
+    assert result is not None
+    df = result[0]
+    assert df.short_urn == "Dataflow=MD:DF_STUB(1.0)"
+    assert df.structure is None
+
+
 def test_vtl_data_flow_mapping_reader(samples_folder):
     data_path = samples_folder / "vtl_dataflow_mapping.xml"
     input_str, read_format = process_string_to_read(data_path)

@@ -27,6 +27,14 @@ exactly what is forwarded to .Stat.
     **writable** .Stat Suite instance. Everything is created under the
     agency you are authorised to maintain (``MD`` on the SIS-CC demo).
 
+.. note::
+    The FMR rejects structures whose maintenance agency is unknown, so
+    the target agency must already exist in the ``SDMX:AGENCIES`` scheme.
+    Register it once (e.g. submit an
+    :class:`~pysdmx.model.organisation.AgencyScheme` containing an
+    :class:`~pysdmx.model.Agency` with ``StructureAction.Merge``) before
+    running this tutorial. The SIS-CC demo already has ``MD``.
+
 Authentication
 --------------
 

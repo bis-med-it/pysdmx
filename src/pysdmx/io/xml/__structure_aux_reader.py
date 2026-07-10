@@ -1806,7 +1806,7 @@ class StructureParser(Struct):
             elif self.is_sdmx_30 and VERSION in element:
                 element[IS_FINAL_LOW] = is_final(element[VERSION])
 
-            if item == DFW:
+            if item == DFW and STRUCTURE in element:
                 if isinstance(element[STRUCTURE], str):
                     ref_obj = parse_urn(element[STRUCTURE])
                     reference_str = (
