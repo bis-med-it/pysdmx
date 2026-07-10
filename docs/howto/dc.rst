@@ -112,16 +112,21 @@ Basic information
 ^^^^^^^^^^^^^^^^^
 
 You can print details about the dataflow, such as its name
-and the number of series it contains:
+and availability metrics, if provided by the source:
 
 .. code-block:: python
 
     print(f"Name: {cbs.name}")
+    print(f"Number of observations: {cbs.obs_count}")
     print(f"Number of series: {cbs.series_count}")
 
     # Output:
     # Name: Consolidated banking
+    # Number of observations: 15239872
     # Number of series: 227004
+
+These metrics are useful to estimate how large a query result could be.
+If the source does not provide them, they may be missing.
 
 Querying dimensions
 ^^^^^^^^^^^^^^^^^^^
@@ -167,6 +172,11 @@ For example, to inspect only Swiss cross-border claims:
     mf = MultiFilter([f1, f2])
 
     cbs_subset = conn.dataflow(cbs, mf)
+
+    print(f"Full flow observations: {cbs.obs_count}")
+    print(f"Full flow series: {cbs.series_count}")
+    print(f"Subset observations: {cbs_subset.obs_count}")
+    print(f"Subset series: {cbs_subset.series_count}")
 
     for d in cbs_subset.components.dimensions:
         dv = [c.id for c in d.enumeration]

@@ -140,8 +140,12 @@ Inspect basic metadata:
 
 ```python
 print(f"Name: {cbs.name}")
+print(f"Number of observations: {cbs.obs_count}")
 print(f"Number of series: {cbs.series_count}")
 ```
+
+Use `obs_count` and `series_count` (when available) as early size signals.
+If either metric is large, tighten filters before pulling data.
 
 Inspect queryable dimensions and available values:
 
@@ -214,6 +218,9 @@ f2 = TextFilter("L_REP_CTY", Operator.EQUALS, "CH")
 mf = MultiFilter([f1, f2])
 
 cbs_subset = conn.dataflow(cbs, mf)
+
+print("Full metrics:", cbs.obs_count, cbs.series_count)
+print("Subset metrics:", cbs_subset.obs_count, cbs_subset.series_count)
 
 for d in cbs_subset.components.dimensions:
     print(d.id, [c.id for c in (d.enumeration or [])])
@@ -393,6 +400,8 @@ When an agent is asked to discover and retrieve data, use this sequence:
 - Start with targeted filters to avoid huge DataFrames.
 - Use `dataflow(..., filters=...)` to validate remaining available values
   before broad retrieval.
+- Compare `obs_count` and `series_count` between full and filtered
+  availability to decide whether additional narrowing is needed.
 - Request only needed columns via `columns` when possible.
 - Keep `labels="id"` unless human-readable output is explicitly required.
 - Prefer schema-applied dtypes unless downstream logic needs raw strings.
