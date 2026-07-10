@@ -229,6 +229,7 @@ from pysdmx.model import (
     Concept,
     ConceptScheme,
     ConstraintAttachment,
+    ConstraintRole,
     CubeKeyValue,
     CubeRegion,
     CubeValue,
@@ -1273,14 +1274,17 @@ class StructureParser(Struct):
         return KeySet(keys=keys, is_included=is_included)
 
     def __format_constraint(self, element: Dict[str, Any]) -> Dict[str, Any]:
-        # role is a SDMX 3.0 attribute not present in the model
+        # Role: SDMX 3.0 uses 'role' (required); SDMX 2.1 uses 'type'
+        # (optional, default "Actual" per the schema).
+        role_val = None
         if "role" in element:
-            if element["role"] == "Actual":
-                raise NotImplementedError(
-                    "DataConstraint with role='Actual' is not supported, "
-                    "pysdmx only supports maintainable (Allowed) constraints."
-                )
-            del element["role"]
+            role_val = element.pop("role")
+        if TYPE in element:
+            role_val = element.pop(TYPE)
+        if role_val is not None:
+            element["role"] = ConstraintRole(role_val)
+        elif not self.is_sdmx_30:
+            element["role"] = ConstraintRole.ACTUAL
 
         # ConstraintAttachment
         constraint_attachment = None

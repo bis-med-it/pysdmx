@@ -24,6 +24,7 @@ from pysdmx.model import (
     Codelist,
     ConceptScheme,
     ConstraintAttachment,
+    ConstraintRole,
     Contact,
     CubeKeyValue,
     CubeRegion,
@@ -1400,6 +1401,20 @@ def test_constraint_without_attachment(samples_folder):
     assert [
         v.value for v in constraint.cube_regions[0].key_values[0].values
     ] == ["Q"]
+
+
+def test_constraint_role_allowed_21(samples_folder):
+    data_path = samples_folder / "constraint_allowed.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert result[0].role == ConstraintRole.ALLOWED
+
+
+def test_constraint_type_absent_defaults_actual_21(samples_folder):
+    data_path = samples_folder / "constraint_actual.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert result[0].role == ConstraintRole.ACTUAL
 
 
 @pytest.mark.xml
