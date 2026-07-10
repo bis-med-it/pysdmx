@@ -1464,11 +1464,12 @@ def __write_data_constraint(
 
     data = __write_maintainable(constraint, indent, references_30)
 
-    # SDMX 3.0 requires role,
-    # but pysdmx only supports maintainable (Allowed) constraints.
-    # "Actual" constraints are deprecated in SDMX 3.1
+    # SDMX 3.0/3.1 requires 'role'; SDMX 2.1 uses 'type' (which defaults
+    # to "Actual" when omitted, so it is always written explicitly).
     if references_30:
-        data["Attributes"] += ' role="Allowed"'
+        data["Attributes"] += f' role="{constraint.role.value}"'
+    else:
+        data["Attributes"] += f' type="{constraint.role.value}"'
 
     label = f"{ABBR_STR}:{constraint_type}"
     attributes = data.get("Attributes") or ""

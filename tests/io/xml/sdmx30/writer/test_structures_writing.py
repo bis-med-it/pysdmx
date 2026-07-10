@@ -20,6 +20,7 @@ from pysdmx.model import (
     Concept,
     ConceptScheme,
     ConstraintAttachment,
+    ConstraintRole,
     Contact,
     CubeKeyValue,
     CubeRegion,
@@ -1462,6 +1463,20 @@ def test_constraint_without_attachment(
     )
     read(result, validate=True)
     assert result == constraint_no_attachment_sample
+
+
+def test_constraint_actual_role_roundtrip_30():
+    dc = DataConstraint(
+        id="RT",
+        name="rt",
+        agency="AG",
+        version="1.0",
+        role=ConstraintRole.ACTUAL,
+    )
+    out = write_sdmx(dc, Format.STRUCTURE_SDMX_ML_3_0, prettyprint=True)
+    assert 'role="Actual"' in out
+    back = read_sdmx(out).get_data_constraints()[0]
+    assert back.role == ConstraintRole.ACTUAL
 
 
 def test_write_group_without_urn(datastructure):
