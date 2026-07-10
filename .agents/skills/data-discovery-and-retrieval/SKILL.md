@@ -163,6 +163,11 @@ cbs_subset = conn.dataflow(cbs, "L_POSITION = 'D' AND L_REP_CTY = 'CH'")
 print(cbs_subset.series_count)
 ```
 
+If the user asks only whether data are available, stop at `dataflow(...)`
+once availability for the requested subset has been established. Do not call
+`data(...)` unless the user also asks to retrieve observations or unless
+additional validation is necessary.
+
 The same filter formats accepted by `data(...)` work here as well:
 
 - query filter objects from `pysdmx.api.dc.query`
@@ -195,13 +200,24 @@ Important parser note:
 
 Date cutoff note:
 
+- Prefer pushing date/time filters such as `TIME_PERIOD >= '2020-Q1'`
+  down to the service first, both for `dataflow(...)` and `data(...)`,
+  when the targeted service is known or expected to support them.
 - Date/datetime comparisons in string queries may not be supported for
   all datasets/connectors.
-- When unsupported, retrieve constrained data first (for example by
-  dimensions) and then apply time filtering in pandas.
+- If the service rejects the query, ignores the date constraint, or returns
+  inconsistent results, fall back to retrieving the narrowest safe subset
+  first (for example by non-time dimensions) and then apply time filtering
+  in pandas.
 
 ```python
-df = conn.data(cbs, "FREQ = 'M' AND REF_AREA = 'RU'")
+query = "FREQ = 'M' AND REF_AREA = 'RU' AND TIME_PERIOD >= '2018-01'"
+
+try:
+    df = conn.data(cbs, query)
+except Exception:
+    df = conn.data(cbs, "FREQ = 'M' AND REF_AREA = 'RU'")
+
 df = df[df["TIME_PERIOD"] >= "2018-01"]
 ```
 
@@ -258,14 +274,20 @@ When an agent is asked to discover and retrieve data, use this sequence:
 3. Match the user's terms locally against each returned dataflow's `id`,
   `name`, and `description`.
 4. Call `dataflow(...)` for the directly matched candidates.
-5. Only if no direct candidate works, inspect broader domain candidates and
+5. If the question is availability-only, use `dataflow(..., filters=...)`
+  to answer it and stop there.
+6. Only if no direct candidate works, inspect broader domain candidates and
   search component and code `id`, `name`, and `description` fields for
    the user's concepts.
-6. If needed, call `dataflow(..., filters=...)` to scope availability to
+7. If needed, call `dataflow(..., filters=...)` to scope availability to
    the subset implied by user intent.
-7. Inspect dimensions and propose valid filter values.
-8. Retrieve a constrained sample with `data(...)`.
-9. Only then expand scope (more columns, broader filters, or full pull).
+8. Inspect dimensions and propose valid filter values.
+9. When retrieving observations, push down time filters first if the
+  service is known or expected to support them.
+10. Retrieve a constrained sample with `data(...)`.
+11. If time-filter pushdown fails or behaves incorrectly, retry with the
+  narrowest non-time subset and apply the time cutoff locally.
+12. Only then expand scope (more columns, broader filters, or full pull).
 
 ### Safety and efficiency defaults for agents
 
@@ -276,8 +298,13 @@ When an agent is asked to discover and retrieve data, use this sequence:
   that no data exist for a topic.
 - Use `dataflow(..., filters=...)` to validate remaining available values
   before broad retrieval.
+- For availability-only questions, answer from `dataflow(...)` and avoid
+  `data(...)` unless observation retrieval is explicitly requested.
 - Compare `obs_count` and `series_count` between full and filtered
   availability to decide whether additional narrowing is needed.
+- Prefer server-side time-filter pushdown when supported, but fall back to
+  local pandas filtering if the service does not support date comparisons
+  correctly.
 - Request only needed columns via `columns` when possible.
 - Keep `labels="id"` unless human-readable output is explicitly required.
 - Prefer schema-applied dtypes unless downstream logic needs raw strings.
