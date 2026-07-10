@@ -106,6 +106,8 @@ DATAFLOWS = "Dataflows"
 CONSTRAINTS = "Constraints"
 DATA_CONSTRAINTS = "DataConstraints"
 PROV_AGREEMENTS = "ProvisionAgreements"
+CATEGORY_SCHEMES = "CategorySchemes"
+CATEGORISATIONS = "Categorisations"
 
 
 # Individual
@@ -121,6 +123,10 @@ CON = "Concept"
 CON_LOW = "concept"
 DSD = "DataStructure"
 DSD_LOW = "datastructure"
+CATEGORY_SCHEME = "CategoryScheme"
+CATEGORY = "Category"
+CATEGORISATION = "Categorisation"
+TARGET = "Target"
 
 # DSD components
 DSD_COMPS = "DataStructureComponents"

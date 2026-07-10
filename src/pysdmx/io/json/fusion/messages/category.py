@@ -63,7 +63,7 @@ class FusionCategory(Struct, frozen=True):
         self, cni: str, cf: Dict[str, list[DF]]
     ) -> Sequence[DataflowRef]:
         if cni in cf:
-            return [
+            return tuple(
                 DataflowRef(
                     (
                         df.agency.id
@@ -75,7 +75,7 @@ class FusionCategory(Struct, frozen=True):
                     df.name,
                 )
                 for df in cf[cni]
-            ]
+            )
         else:
             return ()
 
@@ -89,14 +89,14 @@ class FusionCategory(Struct, frozen=True):
         description = self.descriptions[0].value if self.descriptions else None
         cni = f"{parent_id}.{self.id}" if parent_id else self.id
         dataflows = self.__add_flows(cni, cat_flows)
-        others = cat_other.get(cni, ())
+        others = tuple(cat_other.get(cni, ()))
         return Category(
             id=self.id,
             name=self.names[0].value,
             description=description,
-            categories=[
+            categories=tuple(
                 c.to_model(cat_flows, cat_other, cni) for c in self.items
-            ],
+            ),
             dataflows=dataflows,
             other_references=others,
         )
@@ -147,7 +147,7 @@ class FusionCategoryScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
             agency=self.agency,
             description=description,
             version=self.version,
-            items=[c.to_model(cat_flows, cat_others) for c in self.items],
+            items=tuple(c.to_model(cat_flows, cat_others) for c in self.items),
         )
 
 

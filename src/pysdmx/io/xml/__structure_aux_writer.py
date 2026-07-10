@@ -12,6 +12,9 @@ from pysdmx.io.xml.__tokens import (
     AS_STATUS,
     ATT,
     ATT_REL,
+    CATEGORISATION,
+    CATEGORY,
+    CATEGORY_SCHEME,
     CL,
     CL_LOW,
     CLASS,
@@ -78,8 +81,10 @@ from pysdmx.io.xml.__tokens import (
     ROLE,
     RULE,
     RULE_SCHEME,
+    SOURCE,
     STR_USAGE,
     STRUCTURE_MAP,
+    TARGET,
     TELEPHONE,
     TEXT_FORMAT,
     TEXT_TYPE,
@@ -114,6 +119,9 @@ from pysdmx.io.xml.__write_aux import (
 )
 from pysdmx.model import (
     AgencyScheme,
+    Categorisation,
+    Category,
+    CategoryScheme,
     Codelist,
     ComponentMap,
     Concept,
@@ -220,6 +228,7 @@ STR_TYPES = Union[
     RulesetScheme,
     UserDefinedOperatorScheme,
     TransformationScheme,
+    Categorisation,
 ]
 
 STR_DICT_TYPE_LIST_21 = {
@@ -243,6 +252,8 @@ STR_DICT_TYPE_LIST_21 = {
     UserDefinedOperatorScheme: "UserDefinedOperators",
     TransformationScheme: "Transformations",
     ProvisionAgreement: "ProvisionAgreements",
+    CategoryScheme: "CategorySchemes",
+    Categorisation: "Categorisations",
 }
 
 
@@ -269,6 +280,8 @@ STR_DICT_TYPE_LIST_30 = {
     UserDefinedOperatorScheme: "UserDefinedOperatorSchemes",
     TransformationScheme: "TransformationSchemes",
     ProvisionAgreement: "ProvisionAgreements",
+    CategoryScheme: "CategorySchemes",
+    Categorisation: "Categorisations",
 }
 
 
@@ -365,7 +378,13 @@ def __write_versionable(
     """Writes the VersionableArtefact to the XML file."""
     outfile = __write_nameable(versionable, add_indent(indent))
 
-    if not (references_30 and isinstance(versionable, ORG_SCHEMES)):
+    # In SDMX-ML 3.0/3.1 the organisation scheme version is fixed. The
+    # Categorisation version is optional in 3.0 and prohibited in 3.1;
+    # it is omitted for both (references_30).
+    version_less = references_30 and isinstance(
+        versionable, (*ORG_SCHEMES, Categorisation)
+    )
+    if not version_less:
         outfile["Attributes"] += f" version={versionable.version!r}"
 
     if versionable.valid_from is not None:
@@ -1655,6 +1674,119 @@ def __write_hierarchy_association(
     return outfile
 
 
+def __write_category(
+    category: Category, indent: str, references_30: bool = False
+) -> str:
+    """Writes a <str:Category>, recursing into nested categories.
+
+    The category's dataflows and other references are NOT serialised:
+    they are represented by separate Categorisation artefacts and are
+    re-derived on read.
+    """
+    head = f"{ABBR_STR}:{CATEGORY}"
+    data = __write_nameable(category, add_indent(indent))
+    attributes = data["Attributes"].replace("'", '"')
+    outfile = f"{indent}<{head}{attributes}>"
+    outfile += __export_intern_data(data)
+    for child in category.categories:
+        outfile += __write_category(child, add_indent(indent), references_30)
+    outfile += f"{indent}</{head}>"
+    return outfile
+
+
+def __write_category_scheme(
+    category_scheme: CategoryScheme,
+    indent: str,
+    references_30: bool = False,
+) -> str:
+    """Writes a <str:CategoryScheme> with its nested categories."""
+    label = f"{ABBR_STR}:{CATEGORY_SCHEME}"
+    data = __write_maintainable(category_scheme, indent, references_30)
+    data["Attributes"] += (
+        f" isPartial={str(category_scheme.is_partial).lower()!r}"
+    )
+    attributes = data["Attributes"].replace("'", '"')
+    outfile = f"{indent}<{label}{attributes}>"
+    outfile += __export_intern_data(data)
+    for category in category_scheme.items:
+        outfile += __write_category(
+            category, add_indent(indent), references_30
+        )
+    outfile += f"{indent}</{label}>"
+    return outfile
+
+
+def __write_categorisation_ref(
+    value: str,
+    tag: str,
+    indent: str,
+    references_30: bool,
+) -> str:
+    """Writes a categorisation Source/Target reference element.
+
+    ``value`` is the stored full URN (``Categorisation.source`` or
+    ``.target``). For SDMX-ML 3.0/3.1 it is emitted verbatim; for 2.1 it
+    is decomposed into a ``<Ref>`` element, with the package taken from
+    the URN segment immediately preceding the class.
+
+    Args:
+        value: The full URN of the referenced artefact.
+        tag: The wrapping element name (``Source`` or ``Target``).
+        indent: The current indentation string.
+        references_30: Whether to use the SDMX 3.0/3.1 URN form.
+
+    Returns:
+        The serialised Source/Target element.
+    """
+    label = f"{ABBR_STR}:{tag}"
+    if references_30:
+        return f"{indent}<{label}>{value}</{label}>"
+    ref = parse_urn(value)
+    package = value.split("=", 1)[0].rsplit(".", 2)[-2]
+    if isinstance(ref, Reference):
+        ref_tag = (
+            f"{add_indent(indent)}<{REF} "
+            f"{AGENCY_ID}={ref.agency!r} "
+            f"{ID}={ref.id!r} "
+            f"{VERSION}={ref.version!r} "
+            f"{PACKAGE}={package!r} "
+            f"{CLASS}={ref.sdmx_type!r}/>"
+        )
+    else:
+        ref_tag = (
+            f"{add_indent(indent)}<{REF} "
+            f"{AGENCY_ID}={ref.agency!r} "
+            f"{PAR_ID}={ref.id!r} "
+            f"{PAR_VER}={ref.version!r} "
+            f"{ID}={ref.item_id!r} "
+            f"{PACKAGE}={package!r} "
+            f"{CLASS}={ref.sdmx_type!r}/>"
+        )
+    outfile = f"{indent}<{label}>{ref_tag}{indent}</{label}>"
+    return outfile.replace("'", '"')
+
+
+def __write_categorisation(
+    categorisation: Categorisation,
+    indent: str,
+    references_30: bool = False,
+) -> str:
+    """Writes a <str:Categorisation> (Source + Target references)."""
+    label = f"{ABBR_STR}:{CATEGORISATION}"
+    data = __write_maintainable(categorisation, indent, references_30)
+    attributes = data["Attributes"].replace("'", '"')
+    outfile = f"{indent}<{label}{attributes}>"
+    outfile += __export_intern_data(data)
+    outfile += __write_categorisation_ref(
+        categorisation.source, SOURCE, add_indent(indent), references_30
+    )
+    outfile += __write_categorisation_ref(
+        categorisation.target, TARGET, add_indent(indent), references_30
+    )
+    outfile += f"{indent}</{label}>"
+    return outfile
+
+
 def __write_scheme(  # noqa: C901
     item_scheme: Any, indent: str, scheme: str, references_30: bool = False
 ) -> str:
@@ -1678,6 +1810,10 @@ def __write_scheme(  # noqa: C901
         return __write_hierarchy_association(
             item_scheme, indent, references_30
         )
+    if scheme == CATEGORY_SCHEME:
+        return __write_category_scheme(item_scheme, indent, references_30)
+    if isinstance(item_scheme, Categorisation):
+        return __write_categorisation(item_scheme, indent, references_30)
 
     label = f"{ABBR_STR}:{scheme}"
     components = ""
