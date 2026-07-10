@@ -28,6 +28,7 @@ from pysdmx.model import (
     Contact,
     CubeKeyValue,
     CubeRegion,
+    CubeTimeRange,
     CubeValue,
     CustomTypeScheme,
     DataConstraint,
@@ -48,6 +49,7 @@ from pysdmx.model import (
     NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
+    TimePeriodBoundary,
     ToVtlMapping,
     Transformation,
     TransformationScheme,
@@ -2106,6 +2108,34 @@ def test_constraint_actual_role_roundtrip_21():
     assert 'type="Actual"' in out
     back = read_sdmx(out).get_data_constraints()[0]
     assert back.role == ConstraintRole.ACTUAL
+
+
+def test_constraint_time_range_roundtrip_21():
+    dc = DataConstraint(
+        id="TR",
+        name="tr",
+        agency="AG",
+        version="1.0",
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(
+                        id="TIME_PERIOD",
+                        time_range=CubeTimeRange(
+                            start_period=TimePeriodBoundary("2020", True),
+                            end_period=TimePeriodBoundary("2024", False),
+                        ),
+                    )
+                ]
+            )
+        ],
+    )
+    out = write_sdmx(dc, Format.STRUCTURE_SDMX_ML_2_1, prettyprint=True)
+    assert "TimeRange" in out
+    assert "StartPeriod" in out
+    kv = read_sdmx(out).get_data_constraints()[0].cube_regions[0].key_values[0]
+    assert kv.time_range.start_period.period == "2020"
+    assert kv.time_range.end_period.is_inclusive is False
 
 
 def test_write_group_without_urn(complete_header, datastructure):
