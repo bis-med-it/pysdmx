@@ -1,13 +1,13 @@
 ---
 name: data-discovery-and-retrieval
-description: Discover and retrieve SDMX datasets from a service. Use this skill when the user wants to find available datasets, learn more about a dataset (e.g. inspect dimensions and codes), map natural-language requests to valid data filters, and download results as a pandas DataFrame, even if they do not explicitly mention SDMX.
+description: Use when the user wants to find datasets, identify the right dataflow, inspect dimensions or codes, map natural-language requests to SDMX filters, or download data as a pandas DataFrame from SDMX-REST services.
 ---
 # SDMX Data Discovery and Retrieval
 
 ## Goal
 
-Use `pysdmx` connectors implementing the SDMX-REST **Data Discovery and
-Retrieval** profile to:
+Use `pysdmx` connectors implementing the SDMX-REST data discovery and
+retrieval profile to:
 
 1. Discover available dataflows (datasets).
 2. Inspect a selected dataflow to build effective queries.
@@ -17,11 +17,11 @@ Retrieval** profile to:
 
 - Install extra dependencies: `pysdmx[data]`
 
-## Connector Setup
+## Setup
 
-`pysdmx` provides a DataFrame-oriented connector, `pysdmx.api.dc.pd.PandasConnector`. 
+Use the DataFrame-oriented connector, `pysdmx.api.dc.pd.PandasConnector`.
 
-Example setup:
+Minimal setup:
 
 ```python
 from pysdmx.api.dc import Endpoints
@@ -30,17 +30,19 @@ from pysdmx.api.dc.pd import PandasConnector
 conn = PandasConnector(Endpoints.BIS)
 ```
 
-The connector requires a service entry point URL for data and metadata.
-Use `Endpoints` whenever possible.
+If the requested service is not present in `Endpoints`, initialize the
+connector with a SDMX-REST v2 base URL string directly.
 
-Efficiency rule:
+## Discovery Strategy
 
-- Prefer one `dataflows()` call per service and filter the returned
-  dataflows locally by checking the user terms against each dataflow's
-  `id`, `name`, and `description`.
-- Only call `dataflow(...)` for the locally matched candidates.
-- If no direct dataflow match is found, then inspect `dataflow(...)`
-  metadata more broadly to search component and code labels.
+Prefer this order:
+
+1. Call `dataflows()` once for the selected service.
+2. Match the user terms locally against each dataflow's `id`, `name`, and
+   `description`.
+3. Call `dataflow(...)` only for the directly matched candidates.
+4. Only if that direct pass fails, inspect broader candidate dataflows and
+   search component and code metadata.
 
 ### If the user asks for a statistical domain but not for a specific service
 
@@ -51,135 +53,53 @@ Instead:
 
 1. Iterate over every member of `pysdmx.api.dc.Endpoints`.
 2. For each endpoint, construct a `PandasConnector`.
-3. Call `dataflows(search_term)` on that connector.
-4. Return every matching dataflow across all services.
-
-The search term should be matched using the connector's built-in
-`dataflows(search_term)` behavior, which checks whether the term appears in a
-dataflow's `id`, `name`, or `description`.
-
-Example:
-
-```python
-from pysdmx.api.dc import Endpoints
-from pysdmx.api.dc.pd import PandasConnector
-
-search_term = "exchange rates"
-matches = []
-
-for endpoint in Endpoints:
-  conn = PandasConnector(endpoint)
-  flows = conn.dataflows(search_term)
-  matches.extend((endpoint.name, flow) for flow in flows)
-
-for service_name, flow in matches:
-  print(service_name, flow.id, flow.name)
-```
+3. Call `dataflows()` once on that connector.
+4. Match the user terms locally against the returned dataflows.
+5. Return every matching dataflow across all services.
 
 Only skip this cross-service iteration when the user explicitly names a
 specific provider or service, or when they supply a concrete SDMX-REST base
 URL.
 
-### If `Endpoints` does not contain the requested service
-
-When the caller requests a service that is not present in `Endpoints`:
-
-1. Ask for the SDMX-REST v2 API base URL (for example,
-  `https://example.org/api/v2`).
-2. Initialize `PandasConnector` with that URL string directly.
-
-Example fallback setup:
-
-```python
-from pysdmx.api.dc.pd import PandasConnector
-
-service_url = "https://example.org/api/v2"
-conn = PandasConnector(service_url)
-
-flows = conn.dataflows()
-```
-
 ## Workflow
 
-### Step 1: Discover available datasets (`dataflows`)
+### Step 1: Discover candidate dataflows
 
-List all available dataflows:
-
-```python
-flows = conn.dataflows()
-print(f"Found {len(flows)} dataflows.")
-for f in flows:
-    print(f.short_urn)
-```
-
-Filter by a term (matches ID, name, or description):
-
-```python
-flows = conn.dataflows("banking")
-print(f"Found {len(flows)} dataflows.")
-for f in flows:
-    print(f.short_urn)
-```
-
-When the service is already known, agents should usually prefer a single
-unfiltered `dataflows()` call, then perform local matching on the returned
-objects instead of issuing multiple `dataflows(search_term)` calls for
-synonyms or related phrases.
-
-Example:
+Use one unfiltered `dataflows()` call when the service is already known:
 
 ```python
 flows = conn.dataflows()
 terms = ["exchange rate", "swiss franc", "dollar"]
-
 matches = []
+
 for flow in flows:
-  text = " ".join(
-    [
-      flow.id,
-      str(flow.name or ""),
-      str(flow.description or ""),
-    ]
-  ).lower()
-  if any(term in text for term in terms):
-    matches.append(flow)
+    text = " ".join(
+        [
+            flow.id,
+            str(flow.name or ""),
+            str(flow.description or ""),
+        ]
+    ).lower()
+    if any(term in text for term in terms):
+        matches.append(flow)
 ```
 
-If the user is exploring a topic rather than a known service, repeat this
-search for every endpoint in `Endpoints` and aggregate the results before
-presenting candidate datasets.
+Do not stop here. Some concepts are represented only by component or code
+labels inside broader dataflows.
 
-Do not rely only on `dataflows(search_term)` for the final answer. Some
-topics are represented by dimension or code labels inside broader dataflows,
-while the dataflow ID/name/description may not contain the user phrase.
-After direct matches are found, call `dataflow(...)` only for those matched
-dataflows first. Only if that direct pass fails should you inspect broader
-domain matches (for example "banking" for instrument-level banking concepts)
-and search their component and code metadata.
+### Step 2: Inspect candidate dataflows
 
-### Step 2: Inspect one dataset (`dataflow`)
+`dataflow(...)` accepts:
 
-Fetch details for a selected dataflow. `flows[0]` is only one convenient way
-to choose a candidate from discovery results.
-
-`dataflow(...)` accepts any valid maintainable identification, such as:
-
-- A discovered object (for example, one item from `conn.dataflows()`).
+- A discovered object from `conn.dataflows()`.
 - A short string form like `"BIS:CBS(1.0)"`.
 - A URN string.
 - Any object exposing `id`, `agency`, and `version`.
 
-Examples:
+Inspect the candidate:
 
 ```python
 cbs = conn.dataflow(flows[0])
-
-cbs2 = conn.dataflow("BIS:CBS(1.0)")
-```
-
-Inspect basic metadata:
-
-```python
 print(f"Name: {cbs.name}")
 print(f"Number of observations: {cbs.obs_count}")
 print(f"Number of series: {cbs.series_count}")
@@ -188,38 +108,16 @@ print(f"Number of series: {cbs.series_count}")
 Use `obs_count` and `series_count` (when available) as early size signals.
 If either metric is large, tighten filters before pulling data.
 
-Inspect queryable dimensions and available values:
+Inspect dimensions and available values:
 
 ```python
 for d in cbs.components.dimensions:
-    dv = [c.id for c in d.enumeration]
+    dv = [c.id for c in (d.enumeration or []) if c is not None]
     print(f"{d.id}: {','.join(dv)}.")
 ```
 
-Build a semantic lookup from components and codes before filtering.
-In SDMX, both components and codes can carry `id`, `name`, and
-`description`, so agents should use these fields to translate user intent.
-
-```python
-dimension_catalog = []
-for dim in cbs.components.dimensions:
-    codes = [
-        {
-            "id": code.id,
-            "name": (code.name or ""),
-            "description": (code.description or ""),
-        }
-        for code in (dim.enumeration or [])
-    ]
-    dimension_catalog.append(
-        {
-            "id": dim.id,
-            "name": (dim.name or ""),
-            "description": (dim.description or ""),
-            "codes": codes,
-        }
-    )
-```
+Translate user intent by searching component and code `id`, `name`, and
+`description` fields.
 
 Matching policy for agents:
 
@@ -230,31 +128,25 @@ Matching policy for agents:
 3. If multiple code matches remain in the same component, keep all of
    them and build a multi-value filter for that component.
 4. For phrases such as "in Switzerland", inspect every dimension whose
-  available codes contain the target country code (for example `CH`), not
-  only common country dimension names. Report whether the match is a
-  reporting country, counterparty country, reference area, currency, or
-  another role when the component metadata makes this clear.
+   available codes contain the target country code (for example `CH`), not
+   only common country dimension names. Report whether the match is a
+   reporting country, counterparty country, reference area, currency, or
+   another role when the component metadata makes this clear.
 5. Ask a disambiguation question only when the target component itself
    is ambiguous.
 6. If no match is found, report which concept could not be mapped.
 
-The connector returns values for which data actually exist (not every
-theoretical codelist value), which helps avoid empty queries.
+Availability rule:
 
-Important distinction for agents:
-
-- `dataflow(...)` returns availability-backed values (codes with data).
+- `dataflow(...)` returns availability-backed values, that is, values for
+  which data actually exist in the current scope.
 - A code may still be valid in the full codelist even when it is absent
   from `dataflow(...).components[...].enumeration`.
+- If a user asks about a specific label or code and it is missing from
+  availability, verify against structural metadata before concluding that it
+  does not exist.
 
-Interpretation rule:
-
-1. If a code is missing from availability, treat it as "no available data
-  for the current scope" (not automatically "invalid code").
-2. If users ask about a specific code label, verify against structural
-  metadata/codelists before concluding it does not exist.
-
-#### Filter availability information with `dataflow(..., filters=...)`
+Scope availability when needed:
 
 When a dataflow is large, inspect availability for a targeted subset first.
 `dataflow` accepts a `filters` parameter that scopes the returned
@@ -264,67 +156,28 @@ availability information:
 - `filters` set: return availability for the matching subset only
   (that is, values that remain available after applying filters).
 
-Use this to narrow candidate codes before constructing the final
-`data(...)` query.
-
-Example with filter objects:
+Example:
 
 ```python
-from pysdmx.api.dc.query import MultiFilter, Operator, TextFilter
-
-f1 = TextFilter("L_POSITION", Operator.EQUALS, "D")
-f2 = TextFilter("L_REP_CTY", Operator.EQUALS, "CH")
-mf = MultiFilter([f1, f2])
-
-cbs_subset = conn.dataflow(cbs, mf)
-
-print("Full metrics:", cbs.obs_count, cbs.series_count)
-print("Subset metrics:", cbs_subset.obs_count, cbs_subset.series_count)
-
-for d in cbs_subset.components.dimensions:
-    print(d.id, [c.id for c in (d.enumeration or [])])
+cbs_subset = conn.dataflow(cbs, "L_POSITION = 'D' AND L_REP_CTY = 'CH'")
+print(cbs_subset.series_count)
 ```
 
-`filters` follows the same syntax accepted by `data(...)` queries:
+The same filter formats accepted by `data(...)` work here as well:
 
-- query filter objects from `pysdmx.api.dc.query` (for example `MultiFilter`)
-- SQL-style strings (for example `"L_POSITION = 'D' AND L_REP_CTY = 'CH'"`)
-- Python boolean expressions (for example
-  `"L_POSITION == 'D' and L_REP_CTY == 'CH'"`)
+- query filter objects from `pysdmx.api.dc.query`
+- SQL-style strings
+- Python boolean expressions
 
-### Step 3: Retrieve data (`data`)
+### Step 3: Retrieve data
 
 The `data` method requires `dataflow` and returns a DataFrame when using
 `PandasConnector`.
 
-#### `dataflow` parameter
+Translate natural language intent into `component_id = code_id` filters
+using Step 2 metadata.
 
-Accepted formats:
-
-- String:
-  - SDMX URN, e.g.
-    `urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:CBS(1.0)`
-  - short form, e.g. `BIS:CBS(1.0)`
-- Python object exposing:
-  - `id`
-  - `agency`
-  - `version`
-
-Typical accepted objects include `pysdmx.Dataflow`,
-`pysdmx.DataflowInfo`, and `pysdmx.Reference`.
-
-#### Translate natural language intent into SDMX filters
-
-Before calling `data(...)`, map user phrasing to concrete
-`component_id=code_id` pairs using Step 2 metadata.
-
-Example intent: "daily effective exchange rates for the Swiss franc"
-
-- `daily` -> component `FREQ`, code `D`
-- `effective exchange rate` -> component `EXR_TYPE`, code `SP00`
-- `Swiss franc` -> component `CUR`, code `CHF`
-
-Resulting query:
+Example:
 
 ```python
 query = "FREQ = 'D' AND EXR_TYPE = 'SP00' AND CUR = 'CHF'"
@@ -333,20 +186,12 @@ df = conn.data(cbs, query)
 
 If a phrase matches multiple codes in one component (for example,
 multiple currencies), include all matched codes using `IN`.
-For example: `CUR IN ('CHF','EUR')`.
 
 Important parser note:
 
 - Query strings currently support conjunctions (`AND`) between clauses.
 - Do not generate `OR` in query strings.
 - For multiple values of the same component, use `IN (...)` instead.
-
-Example:
-
-```python
-query = "FREQ = 'D' AND REF_AREA IN ('CH','XM')"
-df = conn.data(cbs, query)
-```
 
 Date cutoff note:
 
@@ -360,21 +205,6 @@ df = conn.data(cbs, "FREQ = 'M' AND REF_AREA = 'RU'")
 df = df[df["TIME_PERIOD"] >= "2018-01"]
 ```
 
-#### Apply query filters
-
-Example with explicit filter objects:
-
-```python
-from pysdmx.api.dc.query import MultiFilter, Operator, TextFilter
-
-f1 = TextFilter("L_POSITION", Operator.EQUALS, "D")
-f2 = TextFilter("L_REP_CTY", Operator.EQUALS, "CH")
-mf = MultiFilter([f1, f2])
-
-df = conn.data(cbs, mf)
-print(df)
-```
-
 Default behavior:
 
 - `infer_index=True` (index inferred from series key and time period)
@@ -385,49 +215,27 @@ Disable either when needed:
 ```python
 df = conn.data(
     cbs,
-    mf,
+    "L_POSITION = 'D' AND L_REP_CTY = 'CH'",
     infer_index=False,
     infer_series_keys=False,
 )
 ```
 
-#### Alternative query formats
-
-The same filter can be passed as:
-
-- SQL-style string: `"L_POSITION = 'D' AND L_REP_CTY = 'CH'"`
-- Python-style boolean expression:
-  `"L_POSITION == 'D' and L_REP_CTY == 'CH'"`
-
-```python
-df = conn.data(cbs, "L_POSITION = 'D' AND L_REP_CTY = 'CH'")
-```
-
-#### Data types and schema application
-
 By default, dtypes are applied from the DSD schema (`apply_schema=True`).
 Disable if needed:
 
 ```python
-df = conn.data(cbs, mf, apply_schema=False)
+df = conn.data(cbs, "L_POSITION = 'D' AND L_REP_CTY = 'CH'", apply_schema=False)
 print(df.dtypes)
 ```
 
 Coded components are represented as categorical data by default.
-
-#### Label representation for coded fields
 
 Use `labels` to control rendered category values:
 
 - `id` (default): code IDs only.
 - `name`: replace IDs with names.
 - `both`: `ID: Name`.
-
-```python
-df = conn.data(cbs, "L_POSITION = 'D' AND L_REP_CTY = 'CH'", labels="name")
-```
-
-#### Select specific output columns
 
 Use `columns` to reduce output size and focus on required fields:
 
@@ -485,16 +293,17 @@ from pysdmx.api.dc.pd import PandasConnector
 
 conn = PandasConnector(Endpoints.BIS)
 
-flows = conn.dataflows("banking")
-target = conn.dataflow(flows[0])
+flows = conn.dataflows()
+target = next(f for f in flows if "banking" in str(f.name).lower())
+detail = conn.dataflow(target)
 
 subset = conn.dataflow(
-    target,
+    detail,
     "L_POSITION = 'D' AND L_REP_CTY = 'CH'",
 )
 
 df = conn.data(
-    target,
+    detail,
     "L_POSITION = 'D' AND L_REP_CTY = 'CH'",
     columns=["OBS_VALUE", "OBS_STATUS"],
 )
