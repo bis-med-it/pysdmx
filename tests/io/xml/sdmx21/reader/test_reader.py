@@ -28,6 +28,7 @@ from pysdmx.model import (
     Contact,
     CubeKeyValue,
     CubeRegion,
+    CubeTimeRange,
     CubeValue,
     CustomTypeScheme,
     DataConstraint,
@@ -1415,6 +1416,22 @@ def test_constraint_type_absent_defaults_actual_21(samples_folder):
     input_str, _ = process_string_to_read(data_path)
     result = read_sdmx(input_str, validate=True).get_data_constraints()
     assert result[0].role == ConstraintRole.ACTUAL
+
+
+def test_constraint_with_time_range_21(samples_folder):
+    data_path = samples_folder / "constraint_time_range.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    region = result[0].cube_regions[0]
+    freq, time = region.key_values
+    assert [v.value for v in freq.values] == ["A"]
+    assert time.id == "TIME_PERIOD"
+    assert time.values == ()
+    assert isinstance(time.time_range, CubeTimeRange)
+    assert time.time_range.start_period.period == "1989-01-01T00:00:00"
+    assert time.time_range.start_period.is_inclusive is True
+    assert time.time_range.end_period.period == "2024-12-31T00:00:00"
+    assert time.time_range.end_period.is_inclusive is False
 
 
 @pytest.mark.xml

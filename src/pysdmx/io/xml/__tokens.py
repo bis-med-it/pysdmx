@@ -182,6 +182,12 @@ DATA_KEY_SET_LOW = "dataKeySet"
 INCLUDED = "isIncluded"
 INCLUDE = "include"
 COMPONENT = "Component"
+TIME_RANGE = "TimeRange"
+BEFORE_PERIOD = "BeforePeriod"
+AFTER_PERIOD = "AfterPeriod"
+START_PERIOD = "StartPeriod"
+END_PERIOD = "EndPeriod"
+IS_INCLUSIVE = "isInclusive"
 
 # Annotation
 ANNOTATION = "Annotation"
