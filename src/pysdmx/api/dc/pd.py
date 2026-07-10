@@ -1,6 +1,7 @@
 """A Pandas connector for SDMX-REST services."""
 
 # ruff: noqa: E402
+import contextlib
 import pathlib
 import tempfile
 from typing import Any, Iterable, Literal, Optional, Union
@@ -11,6 +12,7 @@ __check_data_extra()
 
 import pandas as pd
 
+from pysdmx import errors
 from pysdmx.api.dc import BasicConnector, MaintainableIdentification
 from pysdmx.api.dc.query import BasicFilter
 from pysdmx.api.dc.rest import SdmxConnector
@@ -82,7 +84,9 @@ class PandasConnector(BasicConnector):
         return self.__conn.dataflows(search_term)
 
     def dataflow(
-        self, dataflow: Union[str, MaintainableIdentification]
+        self,
+        dataflow: Union[str, MaintainableIdentification],
+        filters: Optional[Union[BasicFilter, str]] = None,
     ) -> Dataflow:
         """Retrieve information about a dataflow.
 
@@ -96,6 +100,15 @@ class PandasConnector(BasicConnector):
                 shorthand notation (`agency:id(version)`) is also acceptable.
                 - An object implementing the `MaintainableIdentification`
                 protocol (e.g., instances of `DataflowRef` or `Dataflow`).
+            filters: Filters used to scope the data availability
+                information for the selected dataflow. If not supplied,
+                information about the full dataflow is returned. If
+                supplied, information about the matching subset is
+                returned. This can be a string similar to a SQL WHERE
+                clause ("AREA='UY' AND FREQ <> 'A'") or a Python expression
+                ("REF_AREA=='UY' and FREQ != 'A'") or one of the various
+                filters the `pysdmx.api.dc.query` module offers, including
+                `MultiFilter`.
 
         Returns:
             Dataflow: An object containing detailed information about
@@ -118,7 +131,7 @@ class PandasConnector(BasicConnector):
             errors.Unavailable: In case the targeted service could not be
                 reached.
         """
-        return self.__conn.dataflow(dataflow)
+        return self.__conn.dataflow(dataflow, filters)
 
     def data(
         self,
@@ -173,17 +186,10 @@ class PandasConnector(BasicConnector):
             The requested data, if any. Data are returned as Pandas data frame.
         """
         q = prepare_basic_data_query(dataflow, filters)
+        temp_path: Optional[pathlib.Path] = None
         try:
             # Write response in chunks to temporary file
-            with tempfile.NamedTemporaryFile(
-                mode="wb", suffix=".csv", delete=False
-            ) as f:
-                for chunk in self.__client.stream_data(
-                    q, chunk_size=1_048_576
-                ):
-                    f.write(chunk)
-                f.flush()
-                f.close()
+            temp_path = self.__write_temp_csv(q)
 
             # Infer read parameters (exclude SDMX columns, add data types etc.)
             params: dict[str, Any] = {}
@@ -206,7 +212,7 @@ class PandasConnector(BasicConnector):
                 params["dtype"] = schema
 
             # Read CSV
-            df = pd.read_csv(f.name, **params)
+            df = pd.read_csv(temp_path, **params)
 
             # Infer series keys
             if (
@@ -240,7 +246,50 @@ class PandasConnector(BasicConnector):
             # Return requested data as a DataFrame
             return df
         finally:
-            pathlib.Path(f.name).unlink()
+            self.__cleanup_temp_file(temp_path)
+
+    def __write_temp_csv(self, query: Any) -> pathlib.Path:
+        temp_path: Optional[pathlib.Path] = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="wb", suffix=".csv", delete=False
+            ) as f:
+                temp_path = pathlib.Path(f.name)
+                for chunk in self.__client.stream_data(
+                    query, chunk_size=1_048_576
+                ):
+                    f.write(chunk)
+                f.flush()
+                return temp_path
+        except BaseException as error:
+            self.__cleanup_temp_file(temp_path)
+
+            # Preserve control-flow exceptions after cleanup.
+            if isinstance(
+                error, (KeyboardInterrupt, SystemExit, GeneratorExit)
+            ):
+                raise
+
+            # Keep domain errors unchanged to preserve their semantics.
+            if isinstance(error, errors.PysdmxError):
+                raise
+
+            # Map any remaining unexpected failure to a pysdmx error.
+            raise errors.InternalError(
+                "Unexpected I/O issue",
+                (
+                    "An internal I/O error occurred while creating a "
+                    "temporary file to process SDMX-CSV data."
+                ),
+                {
+                    "original_exception": str(error),
+                },
+            ) from error
+
+    def __cleanup_temp_file(self, temp_path: Optional[pathlib.Path]) -> None:
+        if temp_path is not None:
+            with contextlib.suppress(OSError):
+                temp_path.unlink(missing_ok=True)
 
     def __map_category_fields(
         self, df: pd.DataFrame, flow: Dataflow, labels: Literal["name", "both"]
