@@ -94,7 +94,10 @@ def test_constraint_time_range_round_trip(constraint_time_range):
 
     encoded = msgspec.json.encode(sjson)
     assert b'"timeRange"' in encoded
-    assert b'"values"' not in encoded
+    # msgspec omits the empty ``values`` on newer versions but emits
+    # ``"values":[]`` on the msgspec that ships for Python 3.10; either way
+    # it must never carry populated values alongside a time range.
+    assert b'"values":[{' not in encoded
 
     back = msgspec.json.Decoder(JsonDataConstraint).decode(encoded)
     constraint = back.to_model()
