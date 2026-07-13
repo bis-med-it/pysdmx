@@ -1421,7 +1421,7 @@ def test_constraint_role_actual_21(samples_folder):
 def test_constraint_type_absent_defaults_actual_21(samples_folder):
     # SDMX 2.1 ContentConstraint '@type' defaults to "Actual" per the XSD,
     # so a constraint that omits it is read as an Actual constraint.
-    data_path = samples_folder / "constraint_cube.xml"
+    data_path = samples_folder / "constraint_no_type.xml"
     input_str, _ = process_string_to_read(data_path)
     result = read_sdmx(input_str, validate=True).get_data_constraints()
     assert result[0].role == ConstraintRole.ACTUAL
