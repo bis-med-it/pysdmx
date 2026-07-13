@@ -10,7 +10,7 @@
 	</mes:Header>
 	<mes:Structures>
 		<str:Constraints>
-			<str:ContentConstraint id="TEST_ACTUAL" version="1.0" isExternalReference="false" isFinal="false" agencyID="TEST_AGENCY">
+			<str:ContentConstraint id="TEST_ACTUAL" version="1.0" isExternalReference="false" isFinal="false" agencyID="TEST_AGENCY" type="Actual">
 				<com:Name xml:lang="en">Actual constraint</com:Name>
 				<str:CubeRegion include="true">
 					<com:KeyValue id="FREQ">
