@@ -2041,15 +2041,15 @@ files = [
 
 [[package]]
 name = "sdmxschemas"
-version = "1.0.0"
+version = "1.1.0"
 description = "Python wrapper for SDMX Schemas"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
 markers = "extra == \"json\" or extra == \"xml\" or extra == \"all\""
 files = [
-    {file = "sdmxschemas-1.0.0-py3-none-any.whl", hash = "sha256:044953e162ae65fb676bf7bdd8b60a13c4d8d975dd0a298a3a0c56cc756583bf"},
-    {file = "sdmxschemas-1.0.0.tar.gz", hash = "sha256:9d0ea6075084daa23dad7414434f797e3ff55c281f04f3ef354fc82ca1d517e4"},
+    {file = "sdmxschemas-1.1.0-py3-none-any.whl", hash = "sha256:c5bcb91dcf477b157c00d6da940c5629477ae6514011ad866e3baed74ce68793"},
+    {file = "sdmxschemas-1.1.0.tar.gz", hash = "sha256:0cca5165b4c10c0ad3a29e1ae4e1b18645dd376f2cc057da408b5f54f4bceb06"},
 ]
 
 [[package]]
@@ -2669,4 +2669,4 @@ xml = ["lxml", "sdmxschemas", "xmltodict"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "ba1c7ede89b2dedab021030e188f659d13088e07e5e96bdbfbbd15084357fdc0"
+content-hash = "2af4467a9facecc414c8de8938ed609ddae9f629ce2a045044f1c9b468d17916"
