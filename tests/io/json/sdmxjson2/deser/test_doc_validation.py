@@ -20,20 +20,25 @@ FREQ_21 = (
 )
 
 
+def _load(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def test_schema_for_selects_21_structure():
     url = "https://json.sdmx.org/2.1/sdmx-json-structure-schema.json"
     schema = _schema_for({"meta": {"schema": url}})
-    assert schema == json.loads(SDMX_JSON_21_STRUCTURE_PATH.read_text())
+    assert schema == _load(SDMX_JSON_21_STRUCTURE_PATH)
 
 
 def test_schema_for_selects_20_structure():
     url = "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json"
     schema = _schema_for({"meta": {"schema": url}})
-    assert schema == json.loads(SDMX_JSON_20_STRUCTURE_PATH.read_text())
+    assert schema == _load(SDMX_JSON_20_STRUCTURE_PATH)
 
 
 def test_21_structure_validates_against_21_schema():
     # A real 2.1 message must validate against the 2.1 schema. Its ``prepared``
     # is a date-time; the 2.1 schema types it as ``oneOf(date-time, date)``,
     # which only resolves correctly because the format checker is enabled.
-    assert read_structure(FREQ_21.read_text(), validate=True) is not None
+    text = FREQ_21.read_text(encoding="utf-8")
+    assert read_structure(text, validate=True) is not None
