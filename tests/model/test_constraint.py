@@ -28,6 +28,12 @@ def test_constraint_role_values_match_sdmx():
     assert ConstraintRole("Actual") is ConstraintRole.ACTUAL
 
 
+def test_constraint_role_str_and_repr():
+    assert str(ConstraintRole.ALLOWED) == "Allowed"
+    assert str(ConstraintRole.ACTUAL) == "Actual"
+    assert repr(ConstraintRole.ACTUAL) == "ConstraintRole.ACTUAL"
+
+
 def test_cube_key_value_defaults():
     kv = CubeKeyValue(id="FREQ")
     assert kv.values == ()

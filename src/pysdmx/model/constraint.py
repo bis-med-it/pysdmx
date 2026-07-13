@@ -102,6 +102,14 @@ class ConstraintRole(str, Enum):
     ACTUAL = "Actual"
     """The constraint describes the data actually present."""
 
+    def __str__(self) -> str:
+        """Return the constraint role as a string."""
+        return self.name.capitalize()
+
+    def __repr__(self) -> str:
+        """Constraint role string representation."""
+        return f"{self.__class__.__name__}.{self._name_}"
+
 
 class DataConstraint(MaintainableArtefact, frozen=True, omit_defaults=True):
     """A data constraint, defining the allowed or available values."""
