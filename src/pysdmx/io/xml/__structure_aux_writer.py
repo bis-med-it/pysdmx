@@ -1503,7 +1503,10 @@ def __write_key_set(
 
 
 def __write_data_constraint(
-    constraint: DataConstraint, indent: str, references_30: bool = False
+    constraint: DataConstraint,
+    indent: str,
+    references_30: bool = False,
+    references_31: bool = False,
 ) -> str:
     """Writes a DataConstraint to the XML file."""
     # SDMX 3.0: DataConstraint, SDMX 2.1: ContentConstraint
@@ -1511,12 +1514,14 @@ def __write_data_constraint(
 
     data = __write_maintainable(constraint, indent, references_30)
 
-    # SDMX 3.0/3.1 requires 'role'; SDMX 2.1 uses 'type' (which defaults
-    # to "Actual" when omitted, so it is always written explicitly).
-    if references_30:
-        data["Attributes"] += f' role="{constraint.role.value}"'
-    else:
+    # SDMX 2.1 uses 'type' (defaults to "Actual" when omitted, so it is
+    # always written); SDMX 3.0 uses a required 'role'; SDMX 3.1 removed
+    # the attribute (a DataConstraint is always the allowed values), so
+    # the role is kept in the model only for 2.1/3.0 compatibility.
+    if not references_30:
         data["Attributes"] += f' type="{constraint.role.value}"'
+    elif not references_31:
+        data["Attributes"] += f' role="{constraint.role.value}"'
 
     label = f"{ABBR_STR}:{constraint_type}"
     attributes = data.get("Attributes") or ""
@@ -1836,7 +1841,11 @@ def __write_categorisation(
 
 
 def __write_scheme(  # noqa: C901
-    item_scheme: Any, indent: str, scheme: str, references_30: bool = False
+    item_scheme: Any,
+    indent: str,
+    scheme: str,
+    references_30: bool = False,
+    references_31: bool = False,
 ) -> str:
     """Writes the scheme to the XML file."""
     if getattr(item_scheme, "sdmx_type", None) == "valuelist":
@@ -1847,7 +1856,9 @@ def __write_scheme(  # noqa: C901
     if scheme == STRUCTURE_MAP:
         return __write_structure_map(item_scheme, indent, references_30)
     if isinstance(item_scheme, DataConstraint):
-        return __write_data_constraint(item_scheme, indent, references_30)
+        return __write_data_constraint(
+            item_scheme, indent, references_30, references_31
+        )
     if isinstance(item_scheme, Hierarchy):
         return (
             __write_hierarchy(item_scheme, indent, references_30)
@@ -1970,6 +1981,7 @@ def __write_metadata_element(
     key: str,
     prettyprint: object,
     references_30: bool = False,
+    references_31: bool = False,
 ) -> str:
     """Writes the metadata element to the XML file.
 
@@ -1978,6 +1990,7 @@ def __write_metadata_element(
         key: The key to be used
         prettyprint: Prettyprint or not
         references_30: Whether to use SDMX 3.0 references
+        references_31: Whether the target format is SDMX-ML 3.1
 
     Returns:
         A string with the metadata element
@@ -2000,7 +2013,11 @@ def __write_metadata_element(
                 else element.__class__.__name__
             )
             outfile += __write_scheme(
-                element, add_indent(base_indent), item, references_30
+                element,
+                add_indent(base_indent),
+                item,
+                references_30,
+                references_31,
             )
 
         outfile += f"{base_indent}</{ABBR_STR}:{scheme}>"
@@ -2074,7 +2091,10 @@ def group_structures(
 
 
 def __write_structures(
-    content: Dict[str, Any], prettyprint: bool, references_30: bool = False
+    content: Dict[str, Any],
+    prettyprint: bool,
+    references_30: bool = False,
+    references_31: bool = False,
 ) -> str:
     """Writes the structures to the XML file.
 
@@ -2082,6 +2102,7 @@ def __write_structures(
         content: The Message Content to be written
         prettyprint: Prettyprint or not
         references_30: Whether to use SDMX 3.0 references
+        references_31: Whether the target format is SDMX-ML 3.1
 
     Returns:
         A string with the structures
@@ -2093,7 +2114,7 @@ def __write_structures(
     msg_content = MSG_CONTENT_PKG_30 if references_30 else MSG_CONTENT_PKG_21
     for key in msg_content:
         outfile += __write_metadata_element(
-            content, key, prettyprint, references_30
+            content, key, prettyprint, references_30, references_31
         )
 
     outfile += f"{nl}{child1}</{ABBR_MSG}:Structures>"

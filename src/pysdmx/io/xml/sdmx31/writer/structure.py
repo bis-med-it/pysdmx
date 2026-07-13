@@ -47,7 +47,9 @@ def write(
     # Generating the header
     outfile += __write_header(header, prettyprint, data_message=False)
     # Writing the content
-    outfile += __write_structures(content, prettyprint, references_30=True)
+    outfile += __write_structures(
+        content, prettyprint, references_30=True, references_31=True
+    )
 
     outfile += get_end_message(type_, prettyprint)
 
