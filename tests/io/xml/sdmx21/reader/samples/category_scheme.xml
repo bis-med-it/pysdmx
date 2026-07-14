@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns:xml="http://www.w3.org/XML/1998/namespace"
+                xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+                xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+                xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+    <mes:Header>
+        <mes:ID>IREF1</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2021-03-08T17:49:35Z</mes:Prepared>
+        <mes:Sender id="Unknown" />
+        <mes:Receiver id="not_supplied" /></mes:Header>
+    <mes:Structures>
+        <str:Dataflows>
+            <str:Dataflow agencyID="BIS" id="DF1" version="1.0">
+                <com:Name xml:lang="en">Dataflow 1</com:Name>
+                <str:Structure>
+                    <Ref agencyID="BIS" id="DSD1" version="1.0" class="DataStructure" package="datastructure" />
+                </str:Structure>
+            </str:Dataflow>
+        </str:Dataflows>
+        <str:CategorySchemes>
+            <str:CategoryScheme agencyID="BIS" id="CS1" version="1.0" isFinal="false">
+                <com:Name xml:lang="en">Category Scheme 1</com:Name>
+                <com:Description xml:lang="en">A scheme</com:Description>
+                <str:Category id="TOP">
+                    <com:Name xml:lang="en">Top</com:Name>
+                    <str:Category id="MID">
+                        <com:Name xml:lang="en">Middle</com:Name>
+                        <str:Category id="LEAF">
+                            <com:Name xml:lang="en">Leaf</com:Name>
+                        </str:Category>
+                    </str:Category>
+                </str:Category>
+                <str:Category id="OTHER">
+                    <com:Name xml:lang="en">Other</com:Name>
+                </str:Category>
+            </str:CategoryScheme>
+        </str:CategorySchemes>
+        <str:Categorisations>
+            <str:Categorisation agencyID="BIS" id="CAT1" version="1.0" isFinal="false">
+                <com:Name xml:lang="en">Categorisation 1</com:Name>
+                <str:Source>
+                    <Ref agencyID="BIS" id="DF1" version="1.0" class="Dataflow" package="datastructure" />
+                </str:Source>
+                <str:Target>
+                    <Ref agencyID="BIS" maintainableParentID="CS1" maintainableParentVersion="1.0" id="TOP.MID.LEAF" class="Category" package="categoryscheme" />
+                </str:Target>
+            </str:Categorisation>
+            <str:Categorisation agencyID="BIS" id="CAT2" version="1.0" isFinal="false">
+                <com:Name xml:lang="en">Categorisation 2</com:Name>
+                <str:Source>
+                    <URN>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)</URN>
+                </str:Source>
+                <str:Target>
+                    <URN>urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=BIS:CS1(1.0).OTHER</URN>
+                </str:Target>
+            </str:Categorisation>
+        </str:Categorisations>
+    </mes:Structures>
+</mes:Structure>

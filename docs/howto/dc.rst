@@ -15,6 +15,11 @@ functionality is formalized in the SDMX-REST "Data Discovery and
 Retrieval" profile, implemented by the pysdmx connector. Below,
 we describe the features supported by this connector.
 
+.. note::
+    For the AI agent-oriented version of this guide, see
+    ``.agents/skills/data-discovery-and-retrieval/SKILL.md``
+    in the repository root.
+
 .. important::
     To use the pysdmx connectors, you need to install the
     `pysdmx[data]` extra.
@@ -107,16 +112,21 @@ Basic information
 ^^^^^^^^^^^^^^^^^
 
 You can print details about the dataflow, such as its name
-and the number of series it contains:
+and availability metrics, if provided by the source:
 
 .. code-block:: python
 
     print(f"Name: {cbs.name}")
+    print(f"Number of observations: {cbs.obs_count}")
     print(f"Number of series: {cbs.series_count}")
 
     # Output:
     # Name: Consolidated banking
+    # Number of observations: 15239872
     # Number of series: 227004
+
+These metrics are useful to estimate how large a query result could be.
+If the source does not provide them, they may be missing.
 
 Querying dimensions
 ^^^^^^^^^^^^^^^^^^^
@@ -138,6 +148,44 @@ values:
 Rather than returning all theoretically possible values from the codelist
 for each dimension, the connector only provides values for which data
 actually exist, reducing the risk of executing queries that yield no results.
+
+Filtering availability information
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When exploring a large dataflow, you may want to focus on a specific subset
+of the data first. You can do this by supplying ``filters`` to the
+``dataflow`` method.
+
+With ``filters=None`` (the default), the connector returns availability
+information for the full dataflow. With filters set, it returns availability
+information for the matching subset only (that is, the values that remain
+available once filters are applied).
+
+For example, to inspect only Swiss cross-border claims:
+
+.. code-block:: python
+
+    from pysdmx.api.dc.query import MultiFilter, Operator, TextFilter
+
+    f1 = TextFilter("L_POSITION", Operator.EQUALS, "D")
+    f2 = TextFilter("L_REP_CTY", Operator.EQUALS, "CH")
+    mf = MultiFilter([f1, f2])
+
+    cbs_subset = conn.dataflow(cbs, mf)
+
+    print(f"Full flow observations: {cbs.obs_count}")
+    print(f"Full flow series: {cbs.series_count}")
+    print(f"Subset observations: {cbs_subset.obs_count}")
+    print(f"Subset series: {cbs_subset.series_count}")
+
+    for d in cbs_subset.components.dimensions:
+        dv = [c.id for c in d.enumeration]
+        print(f"{d.id}: {','.join(dv)}.")
+
+The filter syntax is the same as for ``data`` queries (see
+:ref:`Applying Query Filters <dc-applying-query-filters>`): you can
+pass query filter objects (as above), SQL-like strings, or Python
+boolean expressions.
 
 Data Retrieval: Download Data
 -----------------------------
@@ -167,6 +215,8 @@ It can accept the following types of input:
   used in SDMX to uniquely identify artefacts of a certain type, such as a Dataflow.
   Examples of Python objects that can be passed include ``pysdmx.Dataflow``,
   ``pysdmx.DataflowInfo``, or ``pysdmx.Reference``.
+
+.. _dc-applying-query-filters:
 
 Applying Query Filters
 ^^^^^^^^^^^^^^^^^^^^^^

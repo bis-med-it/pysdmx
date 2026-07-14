@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message:Structure xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                   xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+                   xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <message:Header>
+        <message:ID>test</message:ID>
+        <message:Test>true</message:Test>
+        <message:Prepared>2025-01-01T00:00:00Z</message:Prepared>
+        <message:Sender id="TEST"/>
+    </message:Header>
+    <message:Structures>
+        <str:OrganisationSchemes>
+            <str:DataProviderScheme urn="urn:sdmx:org.sdmx.infomodel.base.DataProviderScheme=BIS:DATA_PROVIDERS(1.0)"
+                                    isExternalReference="false" agencyID="BIS" id="DATA_PROVIDERS" isFinal="false" version="1.0">
+                <com:Name xml:lang="en">Data Provider Scheme</com:Name>
+                <str:DataProvider urn="urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).5B0" id="5B0">
+                    <com:Name xml:lang="en">Bank for International Settlements</com:Name>
+                </str:DataProvider>
+            </str:DataProviderScheme>
+        </str:OrganisationSchemes>
+    </message:Structures>
+</message:Structure>

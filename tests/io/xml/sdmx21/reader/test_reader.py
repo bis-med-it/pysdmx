@@ -19,6 +19,8 @@ from pysdmx.io.xml.sdmx21.reader.submission import read as read_sub
 from pysdmx.io.xml.sdmx21.writer.structure_specific import write
 from pysdmx.model import (
     AgencyScheme,
+    Categorisation,
+    CategoryScheme,
     Codelist,
     ConceptScheme,
     ConstraintAttachment,
@@ -28,8 +30,13 @@ from pysdmx.model import (
     CubeValue,
     CustomTypeScheme,
     DataConstraint,
+    DataConsumer,
+    DataConsumerScheme,
+    DataflowRef,
     DataKey,
     DataKeyValue,
+    DataProvider,
+    DataProviderScheme,
     DataStructureDefinition,
     FromVtlMapping,
     Hierarchy,
@@ -234,6 +241,71 @@ def test_agency_scheme_defaults_omitted(samples_folder):
 
     assert len(agency_scheme.items) == 1
     assert agency_scheme.items[0].id == "BIS"
+
+
+def test_data_provider_scheme_read(samples_folder):
+    data_path = samples_folder / "data_provider_scheme.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_structure(input_str, validate=True)
+    assert isinstance(result[0], DataProviderScheme)
+
+    scheme = result[0]
+    assert scheme.agency == "BIS"
+    assert scheme.id == "DATA_PROVIDERS"
+    assert len(scheme.items) == 1
+    provider = scheme.items[0]
+    assert isinstance(provider, DataProvider)
+    assert provider.id == "5B0"
+    assert provider.name == "Bank for International Settlements"
+
+
+def test_org_schemes_mixed_read(samples_folder):
+    data_path = samples_folder / "org_schemes_mixed.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_structure(input_str, validate=True)
+
+    by_type = {type(s): s for s in result}
+    # MetadataProviderScheme does not exist in SDMX-ML 2.1, so only the
+    # agency, data provider and data consumer schemes may share the
+    # OrganisationSchemes wrapper.
+    assert set(by_type) == {
+        AgencyScheme,
+        DataProviderScheme,
+        DataConsumerScheme,
+    }
+
+    agency_scheme = by_type[AgencyScheme]
+    assert agency_scheme.items[0].id == "SDMX"
+
+    dps = by_type[DataProviderScheme]
+    assert dps.agency == "BIS"
+    provider = dps.items[0]
+    assert isinstance(provider, DataProvider)
+    assert provider.id == "5B0"
+    assert len(provider.contacts) == 1
+    assert provider.contacts[0].name == "Statistics Department"
+    assert provider.contacts[0].emails == ["stats@bis.org"]
+
+    dcs = by_type[DataConsumerScheme]
+    assert isinstance(dcs.items[0], DataConsumer)
+    assert dcs.items[0].id == "ECB"
+
+
+def test_provider_scheme_enrichment_read(samples_folder):
+    data_path = samples_folder / "provider_scheme_enrichment.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_structure(input_str, validate=True)
+
+    schemes = [s for s in result if isinstance(s, DataProviderScheme)]
+    assert len(schemes) == 1
+    provider = schemes[0].items[0]
+    assert provider.id == "TEST"
+    assert provider.dataflows == [
+        DataflowRef(id="DF1", agency="BIS", version="1.0")
+    ]
 
 
 def test_code_list_read(codelist_path):
@@ -1328,3 +1400,115 @@ def test_constraint_without_attachment(samples_folder):
     assert [
         v.value for v in constraint.cube_regions[0].key_values[0].values
     ] == ["Q"]
+
+
+@pytest.mark.xml
+def test_category_scheme_21(samples_folder):
+    data_path = samples_folder / "category_scheme.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+    schemes = [s for s in result if isinstance(s, CategoryScheme)]
+    assert len(schemes) == 1
+    cs = schemes[0]
+    assert cs.id == "CS1"
+    assert cs.agency == "BIS"
+    assert cs.version == "1.0"
+    assert cs.name == "Category Scheme 1"
+    assert cs.description == "A scheme"
+    # Recursion: TOP -> MID -> LEAF (3 deep)
+    assert cs.items[0].id == "TOP"
+    assert cs.items[0].categories[0].id == "MID"
+    assert cs.items[0].categories[0].categories[0].id == "LEAF"
+    # Dotted lookup
+    assert cs["TOP.MID.LEAF"].id == "LEAF"
+    assert cs["OTHER"].id == "OTHER"
+    # Recursive count: TOP, MID, LEAF, OTHER
+    assert len(cs) == 4
+    assert len(cs.all_items) == 4
+    assert {c.id for c in cs.all_items} == {"TOP", "MID", "LEAF", "OTHER"}
+
+
+@pytest.mark.xml
+def test_category_scheme_21_enrichment(samples_folder):
+    data_path = samples_folder / "category_scheme.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=True).structures
+    cs = next(s for s in result if isinstance(s, CategoryScheme))
+    # CAT1 links Dataflow BIS:DF1 -> Category LEAF; the dataflow is in the
+    # message, so a DataflowRef carrying its name is built (matching the
+    # SDMX-JSON behaviour).
+    leaf = cs["TOP.MID.LEAF"]
+    assert len(leaf.dataflows) == 1
+    assert isinstance(leaf.dataflows[0], DataflowRef)
+    assert leaf.dataflows[0].agency == "BIS"
+    assert leaf.dataflows[0].id == "DF1"
+    assert leaf.dataflows[0].version == "1.0"
+    assert leaf.dataflows[0].name == "Dataflow 1"
+    assert not leaf.other_references
+    # CAT2 links Codelist BIS:CL_FREQ -> Category OTHER -> other_references
+    other = cs["OTHER"]
+    assert not other.dataflows
+    assert len(other.other_references) == 1
+    ref = other.other_references[0]
+    assert isinstance(ref, Reference)
+    assert ref.sdmx_type == "Codelist"
+    assert ref.agency == "BIS"
+    assert ref.id == "CL_FREQ"
+    assert ref.version == "1.0"
+
+
+@pytest.mark.xml
+def test_categorisation_21(samples_folder):
+    data_path = samples_folder / "category_scheme.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=True).structures
+    cats = [s for s in result if isinstance(s, Categorisation)]
+    assert len(cats) == 2
+    by_id = {c.id: c for c in cats}
+    # Ref form (CAT1). Source/Target are stored as full URNs, matching
+    # the canonical form produced by the SDMX-JSON reader.
+    cat1 = by_id["CAT1"]
+    assert cat1.agency == "BIS"
+    assert cat1.version == "1.0"
+    assert cat1.source == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0)"
+    )
+    assert cat1.target == (
+        "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+        "Category=BIS:CS1(1.0).TOP.MID.LEAF"
+    )
+    # URN-inside-element form (CAT2)
+    cat2 = by_id["CAT2"]
+    assert cat2.source == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+    )
+    assert cat2.target == (
+        "urn:sdmx:org.sdmx.infomodel.categoryscheme.Category=BIS:CS1(1.0).OTHER"
+    )
+
+
+@pytest.mark.xml
+def test_category_scheme_21_enrichment_edge_cases(samples_folder):
+    data_path = samples_folder / "category_scheme_refs.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=True).structures
+    schemes = {s.id: s for s in result if isinstance(s, CategoryScheme)}
+    # CS3 has no isFinal attribute and an extra xmlns declaration.
+    assert schemes["CS3"].is_final is False
+    # CAT3 references a dataflow that is NOT present in the message, so a
+    # lightweight DataflowRef is built instead of a full Dataflow.
+    x = schemes["CS3"]["X"]
+    assert len(x.dataflows) == 1
+    assert isinstance(x.dataflows[0], DataflowRef)
+    assert x.dataflows[0].id == "DFX"
+    # CS4 is not targeted by any categorisation, so it stays untouched.
+    assert not schemes["CS4"]["Y"].dataflows
+    assert not schemes["CS4"]["Y"].other_references
+    # CAT4 targets a category scheme that is absent from the message; it is
+    # silently skipped during enrichment but still parsed as an artefact.
+    cats = {c.id: c for c in result if isinstance(c, Categorisation)}
+    assert cats["CAT4"].target == (
+        "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+        "Category=BIS:CS_ABSENT(1.0).Z"
+    )
