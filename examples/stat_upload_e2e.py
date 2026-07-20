@@ -146,16 +146,9 @@ def main() -> None:
     structure = uploader.submit_structure(msg.structures)
     print("  success:", structure.success, "|", "; ".join(structure.messages))
 
-    print("2/4 read the dataflow back via StatConnector")
-    flow = StatConnector(f"{NSI}/rest/v2", token=token).fetch_dataflow(
-        AGENCY, DF_ID, "1.0"
-    )
-    print(
-        "  read back:",
-        flow.short_urn,
-        "| components:",
-        None if flow.components is None else len(flow.components),
-    )
+    print("2/4 read the structure back via StatConnector")
+    raw = StatConnector(f"{NSI}/rest/v2").fetch_structure(AGENCY, DF_ID, "1.0")
+    print("  read back:", len(raw), "bytes of SDMX-ML")
 
     print("3/4 submit_data -> Transfer /import/sdmxFile")
     result = uploader.submit_data(dataset)

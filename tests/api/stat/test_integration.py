@@ -39,7 +39,7 @@ def test_stat_round_trip():
     ex = _load_example()
     token = os.environ["DOTSTAT_TOKEN"]
     up = StatUploader(ex.NSI, ex.TRANSFER, dataspace=ex.SPACE, token=token)
-    conn = StatConnector(f"{ex.NSI}/rest/v2", token=token)
+    conn = StatConnector(f"{ex.NSI}/rest/v2")  # reads are anonymous
     msg = ex.build_structure()
     ds = ex.build_dataset(msg)
     ag, df, dsd, cs = ex.AGENCY, ex.DF_ID, ex.DSD_ID, ex.CS_ID
@@ -70,4 +70,4 @@ def test_stat_round_trip():
         ]
     )
     with pytest.raises((NotFound, Invalid)):
-        conn.fetch_dataflow(ag, df, "1.0")
+        conn.fetch_structure(ag, df, "1.0")

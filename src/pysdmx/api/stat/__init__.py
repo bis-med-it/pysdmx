@@ -11,7 +11,6 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Mapping,
-    NoReturn,
     Optional,
     Sequence,
     Union,
@@ -21,7 +20,6 @@ import httpx
 from msgspec import Struct, structs
 
 from pysdmx import errors
-from pysdmx.api.dc.rest import SdmxConnector
 from pysdmx.api.qb import (
     ApiVersion,
     DataContext,
@@ -34,33 +32,16 @@ from pysdmx.api.qb import (
     StructureReference,
     StructureType,
 )
-from pysdmx.io import get_datasets, read_sdmx
+from pysdmx.io import get_datasets
 from pysdmx.io.format import Format
 from pysdmx.io.writer import write_sdmx
-from pysdmx.model import Dataflow, DataStructureDefinition, Schema
-from pysdmx.model.__base import DataType, MaintainableArtefact
+from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.dataset import ActionType, Dataset
-from pysdmx.model.message import Message
 from pysdmx.util import experimental, parse_short_urn
-from pysdmx.util._model_utils import schema_generator
 from pysdmx.util._net_utils import BearerAuth, map_httpx_errors
 
 if TYPE_CHECKING:  # pragma: no cover
     from pysdmx.io.pd import PandasDataset
-
-# SDMX time-period data types, used to detect the time dimension (which
-# is excluded from a positional series key) without hard-coding its id.
-_TIME_DTYPES = frozenset(
-    {
-        DataType.PERIOD,
-        DataType.TIME,
-        DataType.TIME_RANGE,
-        DataType.STD_TIME_PERIOD,
-        DataType.BASIC_TIME_PERIOD,
-        DataType.GREGORIAN_TIME_PERIOD,
-        DataType.REP_TIME_PERIOD,
-    }
-)
 
 
 class SubmissionResult(Struct, frozen=True, repr_omit_defaults=True):
@@ -148,35 +129,61 @@ def _structure_result(text: str) -> StructureSubmissionResult:
 
 
 class StatEndpoints(str, Enum):
-    """Public .Stat Suite SDMX-REST v2 entry points.
+    """Known .Stat Suite deployments.
 
-    Each entry is verified to serve structural metadata as SDMX-ML 2.1
-    over the SDMX-REST v2 API. Other .Stat deployments can be used by
-    passing their entry-point URL directly.
+    The first group are **verified** SDMX-REST v2 base URLs, ready to
+    pass to :class:`StatConnector`. The second group are the
+    deployments' Data Explorer (UI) URLs, listed for reference only --
+    they are **not** confirmed SDMX-REST endpoints, so pass the actual
+    REST base to :class:`StatConnector` if one of them does not resolve.
     """
 
+    # Verified SDMX-REST v2 base URLs.
     OECD = "https://sdmx.oecd.org/public/rest/v2"
     ILO = "https://sdmx.ilo.org/rest/v2"
     ABS = "https://data.api.abs.gov.au/rest/v2"
     PACIFIC = "https://stats-sdmx-disseminate.pacificdata.org/rest/v2"
     STATEC = "https://lustat.statec.lu/rest/v2"
+    SIMEL_SV = "https://disseminatesimel.mtps.gob.sv/rest/v2"
+
+    # Other known deployments -- Data Explorer URLs, NOT confirmed
+    # SDMX-REST bases (adjust to the deployment's REST endpoint before
+    # use). Listed for reference.
+    INE_CHILE = "https://de.ine.gob.cl/"
+    CAMSTAT = "http://camstat.nis.gov.kh/"
+    FAO = "https://de-public-statsuite.fao.org/"
+    FCSC_UAE = "https://uaestat.fcsc.gov.ae/"
+    NBB = "https://dataexplorer.nbb.be/"
+    SNZ = "https://explore.data.stats.govt.nz/"
+    MALDIVES = "https://data.statisticsmaldives.gov.mv/"
+    MALTA = "https://statdb.nso.gov.mt/"
+    THAI_NSO = "https://stathub.nso.go.th/"
+    UNESCAP = "https://dataexplorer.unescap.org/"
+    SIMEL_UY = "https://de-mtss.simel.mtss.gub.uy/"
+    STATCAN_CCEI = "https://de-ccei.statcan.gc.ca/"
+    STATCAN_CITH = "https://de-cith.statcan.gc.ca/"
+    ELSTAT = "https://explore.statistics.gr/"
+    SAMOA = "https://data.sbs.gov.ws/"
+    FIJI = "https://data.statsfiji.gov.fj/"
+    BOTSWANA_LMO = "https://de.lmis.hrdc.org.bw/"
+    UGANDA_LMIS = "https://de.lmis.mglsd.go.ug/"
+    SWISS_FSO = "https://stats.swiss/"
 
 
 @experimental
-class StatConnector(SdmxConnector):
+class StatConnector:
     """Download connector for .Stat Suite SDMX-REST v2 services.
 
-    .Stat Suite deployments (e.g. OECD dotStatSuite) serve structural
-    metadata as SDMX-ML 2.1 and data as SDMX-CSV, and do not expose the
-    SDMX-REST ``/schema`` endpoint. The ``fetch_*`` methods retrieve a
-    single SDMX-ML 2.1 structure message (with descendants) plus
-    SDMX-CSV 1.0.0 data, and rely on pysdmx's native readers to produce
-    a ``Dataflow``, a ``Schema`` and a ``PandasDataset``.
+    .Stat Suite deployments serve structural metadata as SDMX-ML 2.1
+    and data as SDMX-CSV, and do not expose the SDMX-REST ``/schema``
+    endpoint. Three ``fetch_*`` methods download the raw structure
+    message (:meth:`fetch_structure`), the raw data
+    (:meth:`fetch_data`), and -- combining both through pysdmx's native
+    :func:`~pysdmx.io.get_datasets` -- a typed ``PandasDataset``
+    (:meth:`fetch_dataset`).
 
-    This connector inherits :class:`pysdmx.api.dc.rest.SdmxConnector`.
-    Its inherited ``dataflow``/``dataflows``/``data`` methods assume
-    SDMX-JSON and are disabled here; use ``fetch_dataflow``/
-    ``fetch_schema``/``fetch_dataset`` instead.
+    It wraps a :class:`pysdmx.api.qb.RestService` (anonymous, SDMX-ML
+    2.1 structures + SDMX-CSV data); reads need no token.
 
     Obtain the ``agency``, ``id`` and ``version`` of a dataflow from the
     OECD Data Explorer (https://data-explorer.oecd.org) via its
@@ -188,7 +195,6 @@ class StatConnector(SdmxConnector):
         api_endpoint: str = StatEndpoints.OECD,
         pem: Optional[str] = None,
         timeout: Optional[float] = 20.0,
-        token: Optional[str] = None,
     ) -> None:
         """Instantiate a .Stat Suite download connector.
 
@@ -198,10 +204,7 @@ class StatConnector(SdmxConnector):
             pem: Optional PEM file with trusted certificate authorities,
                 for services using a self-signed certificate.
             timeout: Maximum number of seconds to wait per request.
-            token: An optional OAuth2 bearer token, for reading
-                access-controlled dataspaces. Anonymous when omitted.
         """
-        super().__init__(api_endpoint, pem=pem, timeout=timeout)
         self._svc = RestService(
             api_endpoint,
             ApiVersion.V2_0_0,
@@ -209,14 +212,31 @@ class StatConnector(SdmxConnector):
             structure_format=StructureFormat.SDMX_ML_2_1,
             timeout=timeout,
             pem=pem,
-            token=token,
         )
 
-    def _structure_query(
-        self, agency: str, id: str, version: str
-    ) -> StructureQuery:
-        """Build the structure query for a dataflow (with descendants)."""
-        return StructureQuery(
+    def fetch_structure(self, agency: str, id: str, version: str) -> bytes:
+        """Download the SDMX-ML 2.1 structure message for a dataflow.
+
+        The dataflow is retrieved with its descendants (data structure,
+        concept schemes, codelists, constraints), the way .Stat serves
+        structures. Parse the result with
+        :func:`~pysdmx.io.read_sdmx`.
+
+        Args:
+            agency: The agency maintaining the dataflow.
+            id: The dataflow ID.
+            version: The dataflow version.
+
+        Returns:
+            The raw SDMX-ML 2.1 structure message.
+
+        Raises:
+            errors.NotFound: If the dataflow is not found.
+            errors.Invalid: If the service returns a client error.
+            errors.InternalError: If the service returns a server error.
+            errors.Unavailable: If the service cannot be reached.
+        """
+        query = StructureQuery(
             StructureType.DATAFLOW,
             agency,
             id,
@@ -224,196 +244,71 @@ class StatConnector(SdmxConnector):
             detail=StructureDetail.FULL,
             references=StructureReference.DESCENDANTS,
         )
+        return self._svc.structure(query)
 
-    def _fetch_structure(self, agency: str, id: str, version: str) -> Message:
-        """Fetch and parse the SDMX-ML 2.1 structure (with descendants)."""
-        q = self._structure_query(agency, id, version)
-        raw = self._svc.structure(q)
-        return read_sdmx(BytesIO(raw), validate=False)
-
-    def _find_dataflow(
-        self, msg: Message, agency: str, id: str, version: str
-    ) -> Dataflow:
-        """Return the requested Dataflow from a structure message.
-
-        Matches on agency and id; the version is treated leniently, so a
-        service that normalises the version (e.g. ``1.0`` -> ``1.0.0``)
-        or a wildcard request (``~``, ``+``) still resolves to the sole
-        returned dataflow.
-        """
-        prefix = f"Dataflow={agency}:{id}("
-        matches = [
-            a
-            for a in msg.structures or []
-            if isinstance(a, Dataflow) and a.short_urn.startswith(prefix)
-        ]
-        for artefact in matches:
-            if artefact.short_urn == f"{prefix}{version})":
-                return artefact
-        if len(matches) == 1:
-            return matches[0]
-        raise errors.NotFound(
-            "Dataflow not found",
-            (
-                f"No dataflow {agency}:{id}({version}) was returned by "
-                "the service. Verify the agency, id and version."
-            ),
-        )
-
-    def _find_dsd(self, msg: Message) -> DataStructureDefinition:
-        """Return the data structure definition in a structure message."""
-        for artefact in msg.structures or []:
-            if isinstance(artefact, DataStructureDefinition):
-                return artefact
-        raise errors.NotFound(
-            "Data structure not found",
-            "The structure message did not include a data structure "
-            "definition. Re-run the structure query with references.",
-        )
-
-    def _build_key(
-        self, dsd: DataStructureDefinition, filters: Mapping[str, str]
-    ) -> str:
-        """Build a positional series key from dimension filters."""
-        dims = [
-            d
-            for d in dsd.components.dimensions
-            if d.id != "TIME_PERIOD" and d.local_dtype not in _TIME_DTYPES
-        ]
-        unknown = sorted(f for f in filters if f not in {d.id for d in dims})
-        if unknown:
-            valid = sorted(d.id for d in dims)
-            raise errors.Invalid(
-                "Invalid filter",
-                f"Unknown dimension(s): {unknown}. Valid: {valid}.",
-            )
-        for dim, value in filters.items():
-            if any(c in value for c in ".+*"):
-                raise errors.Invalid(
-                    "Invalid filter value",
-                    f"Value {value!r} for dimension {dim!r} contains a "
-                    "reserved key character ('.', '+' or '*'). Pass one "
-                    "plain code value per dimension.",
-                )
-        return ".".join(filters.get(d.id, "*") for d in dims)
-
-    def fetch_dataflow(self, agency: str, id: str, version: str) -> Dataflow:
-        """Get the dataflow matching the supplied identification.
-
-        The dataflow's data structure definition is grafted onto the
-        returned object so that ``Dataflow.components`` is populated; a
-        plain parse leaves ``structure`` as a URN and ``components`` None.
+    def fetch_data(
+        self, agency: str, id: str, version: str, key: str = "*"
+    ) -> bytes:
+        """Download the SDMX-CSV data for a dataflow.
 
         Args:
             agency: The agency maintaining the dataflow.
             id: The dataflow ID.
             version: The dataflow version.
+            key: A positional series key (dimensions in data-structure
+                order, ``.``-separated; ``*`` wildcards a dimension).
+                Defaults to ``"*"`` (the whole dataflow).
 
         Returns:
-            The dataflow, including its components (from the DSD).
+            The raw SDMX-CSV data message.
 
         Raises:
-            errors.NotFound: If the dataflow or its DSD is not returned.
+            errors.NotFound: If no data is found.
             errors.Invalid: If the service returns a client error.
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
-        msg = self._fetch_structure(agency, id, version)
-        flow = self._find_dataflow(msg, agency, id, version)
-        dsd = self._find_dsd(msg)
-        return structs.replace(flow, structure=dsd)
-
-    def fetch_schema(self, agency: str, id: str, version: str) -> Schema:
-        """Get the data validity schema for a dataflow.
-
-        The schema is derived from the dataflow's data structure
-        definition, as .Stat Suite services do not expose the
-        SDMX-REST ``/schema`` endpoint.
-
-        Args:
-            agency: The agency maintaining the dataflow.
-            id: The dataflow ID.
-            version: The dataflow version.
-
-        Returns:
-            The dataflow-context schema (components and their types).
-
-        Raises:
-            errors.NotFound: If the dataflow is not returned.
-            errors.Invalid: If the service returns a client error.
-            errors.InternalError: If the service returns a server error.
-            errors.Unavailable: If the service cannot be reached.
-        """
-        msg = self._fetch_structure(agency, id, version)
-        flow = self._find_dataflow(msg, agency, id, version)
-        return schema_generator(msg, parse_short_urn(flow.short_urn))
+        query = DataQuery(
+            DataContext.DATAFLOW,
+            agency,
+            id,
+            version,
+            key=key,
+            obs_dimension="AllDimensions",
+        )
+        return self._svc.data(query)
 
     def fetch_dataset(
-        self,
-        agency: str,
-        id: str,
-        version: str,
-        key: Optional[str] = None,
-        filters: Optional[Mapping[str, str]] = None,
+        self, agency: str, id: str, version: str, key: str = "*"
     ) -> "PandasDataset":
         """Get data for a dataflow as a typed Pandas dataset.
 
-        Filter the data either with ``filters`` (a mapping of dimension
-        ID to a single value, resolved to a positional series key using
-        the data structure) or with a raw positional ``key``. .Stat
-        services key on one value per dimension; for multiple values
-        issue separate requests.
+        Downloads the structure and the data (via
+        :meth:`fetch_structure` and :meth:`fetch_data`) and combines them
+        with pysdmx's native :func:`~pysdmx.io.get_datasets`, which
+        attaches the schema to the data.
 
         Args:
             agency: The agency maintaining the dataflow.
             id: The dataflow ID.
             version: The dataflow version.
-            key: A raw positional series key (dimensions in DSD order,
-                ``.``-separated, ``*`` to wildcard a dimension).
-            filters: A mapping of dimension ID to a single value, e.g.
-                ``{"REF_AREA": "CHN", "FREQ": "M"}``.
+            key: A positional series key (see :meth:`fetch_data`).
 
         Returns:
             The requested data as a ``PandasDataset`` with its schema.
 
         Raises:
-            errors.Invalid: If both ``key`` and ``filters`` are supplied,
-                or a filter targets an unknown dimension.
             errors.NotFound: If no data or dataflow is returned.
+            errors.Invalid: If the service returns a client error.
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
-        if key is not None and filters is not None:
-            raise errors.Invalid(
-                "Invalid query",
-                "Provide either 'key' or 'filters', not both.",
-            )
-        q = self._structure_query(agency, id, version)
-        raw = self._svc.structure(q)
-        if filters is not None:
-            dsd = self._find_dsd(read_sdmx(BytesIO(raw), validate=False))
-            key = self._build_key(dsd, filters)
-        dq = DataQuery(
-            DataContext.DATAFLOW,
-            agency,
-            id,
-            version,
-            key=key or "*",
-            obs_dimension="AllDimensions",
+        structure = self.fetch_structure(agency, id, version)
+        data = self.fetch_data(agency, id, version, key)
+        datasets = get_datasets(
+            BytesIO(data), BytesIO(structure), validate=False
         )
-        data = self._svc.data(dq)
-        return get_datasets(BytesIO(data), BytesIO(raw), validate=False)[0]
-
-    def _unsupported(self, *args: object, **kwargs: object) -> NoReturn:
-        """Reject an inherited SDMX-JSON method (use ``fetch_*``)."""
-        raise errors.NotImplemented(
-            "Not supported by .Stat",
-            "The inherited SDMX-JSON methods do not work against .Stat "
-            "services. Use fetch_dataflow / fetch_schema / fetch_dataset.",
-        )
-
-    # The inherited SDMX-JSON methods do not work against .Stat services.
-    dataflow = dataflows = data = _unsupported
+        return datasets[0]
 
 
 _STRUCTURE_CT = "application/vnd.sdmx.structure+xml;version=2.1"

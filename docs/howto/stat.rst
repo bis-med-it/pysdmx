@@ -52,30 +52,26 @@ Retrieving the artefacts
     flow_id = "DSD_G20_PRICES@DF_G20_PRICES"
     version = "1.0"
 
-    # The dataflow, with components resolved from its data structure
-    flow = conn.fetch_dataflow(agency, flow_id, version)
+    # The raw SDMX-ML 2.1 structure message (dataflow + descendants)
+    structure = conn.fetch_structure(agency, flow_id, version)
 
-    # The schema: components, data types and allowed values
-    schema = conn.fetch_schema(agency, flow_id, version)
+    # The raw SDMX-CSV data (optionally keyed)
+    data = conn.fetch_data(agency, flow_id, version, key="CHN.A.N.CPI.PA")
 
-    # The data as a typed PandasDataset, with its schema attached
+    # The data as a typed PandasDataset -- structure + data combined
+    # through pysdmx's native get_datasets, with the schema attached
     dataset = conn.fetch_dataset(
-        agency, flow_id, version, filters={"REF_AREA": "CHN"}
+        agency, flow_id, version, key="CHN.A.N.CPI.PA"
     )
     print(dataset.data.head())
 
-Filter by dimension with ``filters`` (a mapping of dimension ID to a
-single value, resolved to a positional key) or pass a raw positional
-``key`` directly. .Stat services key on one value per dimension.
-
-.. note::
-    ``filters`` accepts a **single code per dimension**. Multi-value
-    selections (``ES+FR``), wildcards (``*``) and hierarchical operators
-    (``.``) are not supported — passing a value that contains ``+``,
-    ``*`` or ``.``, or an unknown dimension id, raises
-    :class:`~pysdmx.errors.Invalid`. To combine several values, issue one
-    request per value and concatenate the results. Dimensions you omit
-    default to a wildcard, and time dimensions are dropped from the key.
+``fetch_structure`` and ``fetch_data`` return the **raw** SDMX messages
+(bytes); parse them with :func:`~pysdmx.io.read_sdmx` if needed.
+``fetch_dataset`` composes the two via
+:func:`~pysdmx.io.get_datasets`. Select data with a positional ``key``
+(dimensions in data-structure order, ``.``-separated; ``*`` wildcards a
+dimension; defaults to the whole dataflow). .Stat services key on one
+value per dimension; for multiple values issue separate requests.
 
 Uploading
 ---------
@@ -181,17 +177,6 @@ each ``.success``). Like ``submit_structure``, both report a logical
 (in-body) failure through ``.success`` / ``.messages`` rather than
 raising.
 
-Reading access-controlled dataspaces
--------------------------------------
-
-``StatConnector`` reads anonymously by default. For deployments that
-require authentication, pass a bearer ``token``:
-
-.. code-block:: python
-
-    conn = StatConnector(StatEndpoints.OECD, token=my_token)
-    flow = conn.fetch_dataflow(agency, flow_id, version)
-
 Endpoints
 ---------
 
@@ -208,4 +193,4 @@ The ``StatEndpoints`` enum lists ready-made **read** bases for known
 public deployments; it does not apply to ``StatUploader``, which takes
 raw URLs (writable hosts are deployment-specific). When round-tripping,
 the ``StatConnector`` read base is usually the NSI host with ``/rest/v2``
-appended, e.g. ``StatConnector(f"{nsi}/rest/v2", token=token)``.
+appended, e.g. ``StatConnector(f"{nsi}/rest/v2")`` (reads are anonymous).
