@@ -21,3 +21,17 @@ API Reference
 
 .. autoclass:: pysdmx.api.stat.StatEndpoints
     :members:
+
+Authentication
+--------------
+Token-acquisition flows for the .Stat Suite APIs. Each class takes the
+realm (authority) URL, runs its OAuth2 flow, and exposes ``get_token()``.
+
+.. autoclass:: pysdmx.api.stat.authentication.KeycloakDeviceAuthentication
+    :members: get_token, is_authenticated, refresh_token
+
+.. autoclass:: pysdmx.api.stat.authentication.ClientCredentialsAuthentication
+    :members: get_token, is_authenticated, refresh_token
+
+.. autoclass:: pysdmx.api.stat.authentication.KeycloakAuthentication
+    :members: get_token, is_authenticated, refresh_token

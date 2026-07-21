@@ -34,7 +34,6 @@ TRANSFER = "https://transfer.test"
 STRUCT_URL = f"{NSI}/rest/structure"
 IMPORT_URL = f"{TRANSFER}/import/sdmxFile"
 STATUS_URL = f"{TRANSFER}/status/request"
-AUTH_URL = "https://kc.test/protocol/openid-connect/token"
 
 _IO_SAMPLES = Path(__file__).parent.parent.parent / "io" / "samples"
 DATA_CSV = _IO_SAMPLES / "data_v1.csv"
@@ -315,29 +314,6 @@ def test_submission_status_wait_exhausts_attempts(respx_mock, uploader):
     assert result.execution_status == "InProgress"
 
 
-def test_fetch_token_password_grant(respx_mock):
-    route = respx_mock.post(AUTH_URL).mock(
-        return_value=httpx.Response(200, json={"access_token": "NEW"})
-    )
-
-    result = StatUploader.fetch_token(AUTH_URL, "my-client", "user", "secret")
-
-    assert result == "NEW"
-    form = route.calls.last.request.content.decode()
-    assert "grant_type=password" in form
-    assert "client_id=my-client" in form
-    assert "username=user" in form
-
-
-def test_fetch_token_bad_credentials_raises(respx_mock):
-    respx_mock.post(AUTH_URL).mock(
-        return_value=httpx.Response(401, text="invalid_grant")
-    )
-
-    with pytest.raises(Invalid):
-        StatUploader.fetch_token(AUTH_URL, "c", "user", "wrong")
-
-
 def test_submit_structure_unreachable_raises_unavailable(
     respx_mock, uploader, codelist
 ):
@@ -345,51 +321,6 @@ def test_submit_structure_unreachable_raises_unavailable(
 
     with pytest.raises(Unavailable):
         uploader.submit_structure(codelist)
-
-
-def test_fetch_token_missing_access_token_raises(respx_mock):
-    respx_mock.post(AUTH_URL).mock(
-        return_value=httpx.Response(200, json={"error": "invalid_client"})
-    )
-
-    with pytest.raises(Invalid, match="token response"):
-        StatUploader.fetch_token(AUTH_URL, "c", "user", "pw")
-
-
-def test_fetch_token_non_json_response_raises(respx_mock):
-    respx_mock.post(AUTH_URL).mock(
-        return_value=httpx.Response(200, text="<html>oops</html>")
-    )
-
-    with pytest.raises(Invalid, match="token response"):
-        StatUploader.fetch_token(AUTH_URL, "c", "user", "pw")
-
-
-def test_fetch_token_includes_secret_and_scope(respx_mock):
-    route = respx_mock.post(AUTH_URL).mock(
-        return_value=httpx.Response(200, json={"access_token": "T"})
-    )
-
-    cred = "s"
-    StatUploader.fetch_token(
-        AUTH_URL, "c", "u", "p", client_secret=cred, scope="openid"
-    )
-
-    form = route.calls.last.request.content.decode()
-    assert "client_secret=s" in form
-    assert "scope=openid" in form
-
-
-def test_refresh_token(respx_mock):
-    route = respx_mock.post(AUTH_URL).mock(
-        return_value=httpx.Response(200, json={"access_token": "NEW"})
-    )
-
-    assert StatUploader.refresh_token(AUTH_URL, "c", "rtok") == "NEW"
-
-    form = route.calls.last.request.content.decode()
-    assert "grant_type=refresh_token" in form
-    assert "refresh_token=rtok" in form
 
 
 def test_delete_data_uploads_action_d(respx_mock, uploader, dataset):

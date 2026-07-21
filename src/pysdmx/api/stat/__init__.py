@@ -361,7 +361,9 @@ class StatUploader:
                 overridden per call; one of the two is required by those
                 operations.
             token: An OAuth2 bearer token. Required for every submission
-                and status call; obtain one with :meth:`fetch_token`.
+                and status call; obtain one via a flow in
+                :mod:`pysdmx.api.stat.authentication` (e.g.
+                ``KeycloakDeviceAuthentication(...).get_token()``).
             pem: Optional PEM file with trusted certificate authorities,
                 for services using a self-signed certificate.
             timeout: Maximum number of seconds to wait per request.
@@ -430,7 +432,8 @@ class StatUploader:
             raise errors.Unauthorized(
                 "Missing token",
                 "A bearer token is required for .Stat submission "
-                "operations. Pass token=... or use fetch_token().",
+                "operations. Pass token=..., e.g. obtained from a flow "
+                "in pysdmx.api.stat.authentication.",
             )
         headers = {"Content-Type": content_type} if content_type else {}
         try:
@@ -769,116 +772,6 @@ class StatUploader:
                 return result
             time.sleep(interval)
         return result
-
-    @staticmethod
-    def _token_request(
-        token_url: str, data: Mapping[str, Optional[str]]
-    ) -> str:
-        """POST an OAuth2 token request and return the access token."""
-        try:
-            with httpx.Client() as client:
-                r = client.post(
-                    token_url,
-                    data={k: v for k, v in data.items() if v},
-                    timeout=60.0,
-                )
-                r.raise_for_status()
-                token: str = r.json()["access_token"]
-                return token
-        except (httpx.RequestError, httpx.HTTPStatusError) as e:
-            # A rejected grant (e.g. 401 bad credentials) maps to a client
-            # Invalid here, unlike _send where a rejected token raises
-            # Unauthorized.
-            map_httpx_errors(e)
-        except (KeyError, TypeError, ValueError) as e:
-            raise errors.Invalid(
-                "Invalid token response",
-                "The token endpoint did not return a valid "
-                f"'access_token'. The query was `{token_url}`.",
-            ) from e
-
-    @staticmethod
-    def fetch_token(
-        token_url: str,
-        client_id: str,
-        username: str,
-        password: str,
-        *,
-        client_secret: str = "",
-        scope: Optional[str] = None,
-    ) -> str:
-        """Obtain a bearer token via the Keycloak password grant.
-
-        The client must have "Direct Access Grants" enabled; federated
-        (e.g. GitHub) identities cannot use this grant — obtain a token
-        through the browser instead.
-
-        Args:
-            token_url: The Keycloak token endpoint.
-            client_id: The OAuth2 client id.
-            username: The account user name.
-            password: The account password.
-            client_secret: The client secret, for confidential clients.
-            scope: An optional OAuth2 scope.
-
-        Returns:
-            The access token.
-
-        Raises:
-            errors.Invalid: If the endpoint rejects the request or returns
-                no valid access token.
-            errors.InternalError: If the endpoint returns a server error.
-            errors.Unavailable: If the endpoint cannot be reached.
-        """
-        return StatUploader._token_request(
-            token_url,
-            {
-                "grant_type": "password",
-                "client_id": client_id,
-                "client_secret": client_secret,
-                "username": username,
-                "password": password,
-                "scope": scope,
-            },
-        )
-
-    @staticmethod
-    def refresh_token(
-        token_url: str,
-        client_id: str,
-        refresh_token: str,
-        *,
-        client_secret: str = "",
-        scope: Optional[str] = None,
-    ) -> str:
-        """Obtain a fresh bearer token from a refresh token.
-
-        Args:
-            token_url: The Keycloak token endpoint.
-            client_id: The OAuth2 client id.
-            refresh_token: A valid refresh token.
-            client_secret: The client secret, for confidential clients.
-            scope: An optional OAuth2 scope.
-
-        Returns:
-            The new access token.
-
-        Raises:
-            errors.Invalid: If the endpoint rejects the request or returns
-                no valid access token.
-            errors.InternalError: If the endpoint returns a server error.
-            errors.Unavailable: If the endpoint cannot be reached.
-        """
-        return StatUploader._token_request(
-            token_url,
-            {
-                "grant_type": "refresh_token",
-                "client_id": client_id,
-                "client_secret": client_secret,
-                "refresh_token": refresh_token,
-                "scope": scope,
-            },
-        )
 
 
 __all__ = [

@@ -85,22 +85,22 @@ processed asynchronously.
 .. code-block:: python
 
     from pysdmx.api.stat import StatUploader
+    from pysdmx.api.stat.authentication import KeycloakDeviceAuthentication
 
-    # Obtain a token. `fetch_token` uses the Keycloak password grant,
-    # which requires the client to have "Direct Access Grants" enabled
-    # and to authenticate a *local* Keycloak account:
-    token = StatUploader.fetch_token(
-        "https://my.stat/auth/realms/<realm>/protocol/openid-connect/token",
-        client_id="my-client",
-        username="user",
-        password="secret",
+    # Acquire a bearer token. The interactive device flow signs in through
+    # any browser, so it works with federated logins (e.g. GitHub) and
+    # public clients. get_token() prints a URL and a short code, then
+    # waits for the sign-in to finish:
+    auth = KeycloakDeviceAuthentication(
+        "https://keycloak.siscc.org/realms/OECD",
     )
+    token = auth.get_token()
 
     uploader = StatUploader(
         nsi_endpoint="https://my.stat/nsi/rest",
         # The Transfer endpoint includes the API-version segment:
         transfer_endpoint="https://my.stat/transfer/3",
-        dataspace="design",          # the target .Stat data space
+        dataspace="staging:SIS-CC-stable",   # the target .Stat data space
         token=token,
     )
 
@@ -126,12 +126,19 @@ Schema-backed — for example one returned by
 parameter.
 
 .. note::
-    Deployments that authenticate through a federated identity provider
-    (e.g. GitHub, ADFS) cannot use the password grant. Obtain a bearer
-    token through the browser flow (for example the Transfer service's
-    Swagger "Authorize" button) and pass it as ``token=``. Use
-    ``StatUploader.refresh_token(...)`` to renew a bearer token from a
-    refresh token without re-authenticating.
+    :mod:`pysdmx.api.stat.authentication` offers one class per OAuth2
+    flow, each taking the realm (authority) URL and exposing
+    ``get_token()`` (which re-runs the flow when the token has expired):
+    :class:`~pysdmx.api.stat.authentication.KeycloakDeviceAuthentication`
+    (interactive device flow — the only option for federated logins such
+    as GitHub or ADFS),
+    :class:`~pysdmx.api.stat.authentication.ClientCredentialsAuthentication`
+    (machine-to-machine, with a client id, secret and service account),
+    and :class:`~pysdmx.api.stat.authentication.KeycloakAuthentication`
+    (resource-owner password grant, for local Keycloak accounts only).
+    Alternatively, pass any bearer token obtained elsewhere (for example
+    the Transfer service's Swagger "Authorize" button) directly as
+    ``token=``.
 
 .. note::
     ``submit_structure`` returns a ``StructureSubmissionResult``

@@ -34,6 +34,9 @@ PATH_RULES = {
     "/tests/api/stat/test_connector.py": ("xml_data", True),
     "/tests/api/stat/test_upload.py": ("xml_data", True),
     "/tests/api/stat/test_integration.py": ("xml_data", True),
+    # authentication needs no extra, but importing the stat package pulls
+    # the io stack, so gate it with the siblings for a consistent collect.
+    "/tests/api/stat/test_authentication.py": ("xml_data", True),
     # dc tests
     "/tests/api/dc/test_model.py": ("dc", True),
     "/tests/api/dc/test_multi_filters.py": ("dc", True),
