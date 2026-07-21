@@ -464,7 +464,7 @@ class StatUploader:
     def submit_structure(
         self,
         structures: Union[MaintainableArtefact, Sequence[Any]],
-        structure_format: Format = Format.STRUCTURE_SDMX_ML_2_1,
+        structure_format: Format = Format.STRUCTURE_SDMX_JSON_2_0_0,
     ) -> StructureSubmissionResult:
         """Submit structural metadata to the NSI web service.
 
@@ -476,11 +476,13 @@ class StatUploader:
             structures: A maintainable artefact (e.g. a ``Codelist`` or
                 ``Dataflow``) or a sequence of maintainable artefacts.
             structure_format: The SDMX structure format to serialize to.
-                One of the SDMX-ML (``STRUCTURE_SDMX_ML_2_1`` / ``3_0`` /
-                ``3_1``) or SDMX-JSON (``STRUCTURE_SDMX_JSON_2_0_0`` /
-                ``2_1_0``) writers. Defaults to SDMX-ML 2.1 -- the format
-                every .Stat deployment is known to accept; other formats
-                depend on the deployment.
+                Defaults to SDMX-JSON 2.0 -- the only format whose writer
+                covers **every** SDMX artefact type (the SDMX-ML writers
+                cannot serialize category schemes, categorisations,
+                organisation schemes or the metadata artefacts). Override
+                with an SDMX-ML format (``STRUCTURE_SDMX_ML_2_1`` / ``3_0``
+                / ``3_1``) or ``STRUCTURE_SDMX_JSON_2_1_0`` for a
+                deployment that requires it.
 
         Returns:
             A :class:`StructureSubmissionResult` parsed from the NSI
@@ -490,12 +492,25 @@ class StatUploader:
             the body even on an HTTP 200 response.
 
         Raises:
+            errors.Invalid: If an artefact type cannot be serialized in
+                ``structure_format``, or the service returns a client
+                error.
             errors.Unauthorized: If the token is missing or rejected.
-            errors.Invalid: If the service returns a client error.
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
-        body = write_sdmx(structures, structure_format)
+        try:
+            body = write_sdmx(structures, structure_format)
+        except KeyError as e:
+            bad = e.args[0] if e.args else structure_format
+            name = getattr(bad, "__name__", str(bad))
+            raise errors.Invalid(
+                "Unsupported structure format",
+                f"{name} cannot be serialized as "
+                f"'{structure_format.value}'. Use "
+                "structure_format=Format.STRUCTURE_SDMX_JSON_2_0_0, "
+                "whose writer supports every SDMX artefact type.",
+            ) from e
         r = self._send(
             "POST",
             f"{self._nsi}/rest/structure",

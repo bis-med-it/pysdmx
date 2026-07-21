@@ -21,6 +21,8 @@ from pysdmx.errors import (
 from pysdmx.io import get_datasets
 from pysdmx.io.format import Format
 from pysdmx.model import (
+    Category,
+    CategoryScheme,
     Code,
     Codelist,
     Components,
@@ -89,9 +91,11 @@ def test_submit_structure_returns_result(respx_mock, uploader, codelist):
     assert result.success is True
     req = route.calls.last.request
     assert req.headers["Authorization"] == "Bearer TKN"
-    assert req.headers["Content-Type"] == (
-        "application/vnd.sdmx.structure+xml;version=2.1"
+    # default format is SDMX-JSON 2.0 (covers every artefact type)
+    assert (
+        req.headers["Content-Type"] == Format.STRUCTURE_SDMX_JSON_2_0_0.value
     )
+    assert req.content.decode().lstrip().startswith("{")  # JSON, not XML
     assert "CL_TEST" in req.content.decode()
 
 
@@ -189,15 +193,31 @@ def test_submit_structure_format_selection(respx_mock, uploader, codelist):
         return_value=httpx.Response(200, text="<x/>")
     )
 
+    # override the JSON default with an SDMX-ML format
     uploader.submit_structure(
-        codelist, structure_format=Format.STRUCTURE_SDMX_JSON_2_0_0
+        codelist, structure_format=Format.STRUCTURE_SDMX_ML_2_1
     )
 
     req = route.calls.last.request
-    assert (
-        req.headers["Content-Type"] == Format.STRUCTURE_SDMX_JSON_2_0_0.value
+    assert req.headers["Content-Type"] == Format.STRUCTURE_SDMX_ML_2_1.value
+    assert req.content.decode().lstrip().startswith("<")  # XML, not JSON
+
+
+def test_submit_structure_unsupported_format_raises(uploader):
+    # a CategoryScheme cannot be written as SDMX-ML; the bare KeyError from
+    # the writer is surfaced as a clear Invalid pointing at SDMX-JSON
+    cs = CategoryScheme(
+        id="CAT",
+        agency="MD",
+        version="1.0",
+        name="cat",
+        items=[Category(id="C1", name="c1")],
     )
-    assert req.content.decode().lstrip().startswith("{")  # JSON, not XML
+
+    with pytest.raises(Invalid, match="cannot be serialized"):
+        uploader.submit_structure(
+            cs, structure_format=Format.STRUCTURE_SDMX_ML_2_1
+        )
 
 
 def test_submit_data_ml_format(respx_mock, uploader, dataset):

@@ -149,6 +149,15 @@ parameter.
     succeed.
 
 .. note::
+    ``submit_structure`` serializes to **SDMX-JSON 2.0 by default** --
+    the only format whose writer covers every SDMX artefact type (the
+    SDMX-ML writers cannot serialize category schemes, categorisations,
+    organisation schemes or the metadata artefacts). Override with
+    ``structure_format=`` for a deployment that requires SDMX-ML; a type
+    that cannot be written in the chosen format raises a clear
+    :class:`~pysdmx.errors.Invalid`.
+
+.. note::
     Submitted (and deleted) content must use an **agency you are
     authorized to maintain**. On the SIS-CC demo that agency is ``MD``;
     everything under other agency IDs is read-only. The agency is taken
