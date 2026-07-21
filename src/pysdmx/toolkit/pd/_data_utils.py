@@ -34,8 +34,8 @@ def format_labels(  # noqa: C901
             v = df[k]
             for component in components:
                 if component.id == k:
-                    df[f"{k}:{component.concept.name}"] = v.apply(  # type: ignore[union-attr]
-                        lambda x: f"{x}:{x}"
+                    df[f"{k}: {component.concept.name}"] = v.apply(  # type: ignore[union-attr]
+                        lambda x: f"{x}: {x}"
                     )
                     df.drop(columns=[k], inplace=True)
 

@@ -68,7 +68,7 @@ def write(
             if labels == "id":
                 df.insert(0, "DATAFLOW", structure_id)
             else:
-                df.insert(0, "DATAFLOW", f"{structure_id}:{schema.name}")
+                df.insert(0, "DATAFLOW", f"{structure_id}: {schema.name}")
         else:
             df.insert(0, "DATAFLOW", structure_id)
 

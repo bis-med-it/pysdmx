@@ -31,6 +31,12 @@ def csv_labels_both():
     return base_path
 
 
+@pytest.fixture
+def data_path_datetime():
+    base_path = Path(__file__).parent / "samples" / "data_v1_datetime.csv"
+    return base_path
+
+
 def test_reading_data_v1(data_path):
     with open(data_path, "r") as f:
         infile = f.read()
@@ -88,3 +94,11 @@ def test_reading_labels_both(csv_labels_both):
     assert df.at[0, "ATT1"] == "C"
     assert len(df) == 1
     assert "DATAFLOW" not in df.columns
+
+
+def test_reading_full_datetime_not_trimmed(data_path_datetime):
+    with open(data_path_datetime, "r") as f:
+        infile = f.read()
+    datasets = read(infile)
+    df = datasets[0].data
+    assert df.at[0, "EMBARGO_TIME"] == "2025-12-19T14:30:00Z"

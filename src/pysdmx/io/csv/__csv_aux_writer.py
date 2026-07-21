@@ -171,7 +171,7 @@ def __insert_structural_columns(
         df.insert(
             1,
             "STRUCTURE_ID",
-            f"{unique_id}:{dataset.structure.name}"
+            f"{unique_id}: {dataset.structure.name}"
             if labels == "both"
             else unique_id,
         )

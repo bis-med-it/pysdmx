@@ -12,23 +12,33 @@ from pysdmx.io.xml.sdmx30.writer.structure import write
 from pysdmx.model import (
     Agency,
     AgencyScheme,
+    Categorisation,
+    Category,
+    CategoryScheme,
     Code,
     Codelist,
     Concept,
     ConceptScheme,
     ConstraintAttachment,
+    Contact,
     CubeKeyValue,
     CubeRegion,
     CubeValue,
     CustomType,
     CustomTypeScheme,
     DataConstraint,
+    DataConsumer,
+    DataConsumerScheme,
     DataKey,
     DataKeyValue,
+    DataProvider,
+    DataProviderScheme,
     DataType,
     Facets,
     FromVtlMapping,
     KeySet,
+    MetadataProvider,
+    MetadataProviderScheme,
     NamePersonalisation,
     NamePersonalisationScheme,
     Ruleset,
@@ -1148,6 +1158,67 @@ def test_agency(complete_header, agency, agency_sample):
     assert result == agency_sample
 
 
+def test_org_schemes_30_round_trip(complete_header):
+    provider_scheme = DataProviderScheme(
+        agency="MD",
+        items=[
+            DataProvider(
+                id="DP",
+                name="DATA PROVIDER",
+                contacts=[Contact(name="Stats", emails=["dp.test@md.org"])],
+            )
+        ],
+    )
+    consumer_scheme = DataConsumerScheme(
+        agency="MD",
+        items=[DataConsumer(id="DC", name="DATA CONSUMER")],
+    )
+    metadata_scheme = MetadataProviderScheme(
+        agency="MD",
+        items=[MetadataProvider(id="MP", name="METADATA PROVIDER")],
+    )
+    content = [provider_scheme, consumer_scheme, metadata_scheme]
+    result = write(content, header=complete_header, prettyprint=True)
+    # In SDMX-ML 3.0 each organisation scheme has its own container.
+    assert "<str:DataProviderSchemes>" in result
+    assert "<str:DataConsumerSchemes>" in result
+    assert "<str:MetadataProviderSchemes>" in result
+    re_read = read_sdmx(result, validate=True).structures
+    by_type = {type(s): s for s in re_read}
+    assert by_type[DataProviderScheme] == provider_scheme
+    assert by_type[DataConsumerScheme] == consumer_scheme
+    assert by_type[MetadataProviderScheme] == metadata_scheme
+
+
+def test_provider_scheme_enrichment_30_round_trip(complete_header):
+    provider_scheme = DataProviderScheme(
+        agency="MD",
+        items=[
+            DataProvider(
+                id="MD",
+                name="DATA PROVIDER",
+                dataflows=[DataflowRef(id="TEST", agency="MD", version="1.0")],
+            )
+        ],
+    )
+    provision_agreement = ProvisionAgreement(
+        id="TEST",
+        name="TEST",
+        agency="MD",
+        version="1.0",
+        dataflow="Dataflow=MD:TEST(1.0)",
+        provider="DataProvider=MD:DATA_PROVIDERS(1.0).MD",
+    )
+    content = [provider_scheme, provision_agreement]
+    result = write(content, header=complete_header, prettyprint=True)
+    re_read = read_sdmx(result, validate=True).structures
+    scheme = next(s for s in re_read if isinstance(s, DataProviderScheme))
+    assert scheme.items[0].dataflows == [
+        DataflowRef(id="TEST", agency="MD", version="1.0")
+    ]
+    assert scheme == provider_scheme
+
+
 def test_datastructure(complete_header, datastructure, datastructure_sample):
     content = [datastructure]
     result = write(
@@ -1408,3 +1479,143 @@ def test_write_group_without_urn(datastructure):
     )
     assert expected_urn in result
     read_sdmx(result, validate=True)
+
+
+@pytest.fixture
+def category_scheme_nested_30():
+    return CategoryScheme(
+        id="CS1",
+        name="Category Scheme 1",
+        description="A scheme",
+        agency="BIS",
+        version="1.0.0",
+        is_final=True,
+        items=(
+            Category(
+                id="TOP",
+                name="Top",
+                categories=(
+                    Category(
+                        id="MID",
+                        name="Middle",
+                        categories=(Category(id="LEAF", name="Leaf"),),
+                    ),
+                ),
+            ),
+            Category(id="OTHER", name="Other"),
+        ),
+    )
+
+
+def test_category_scheme_30_round_trip(
+    complete_header, category_scheme_nested_30
+):
+    result = write(
+        [category_scheme_nested_30], header=complete_header, prettyprint=True
+    )
+    assert "<str:CategorySchemes>" in result
+    assert "<str:CategoryScheme " in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == category_scheme_nested_30
+
+
+def test_category_scheme_30_name_with_apostrophe(complete_header):
+    cs = CategoryScheme(
+        id="CS2",
+        name="Schemes",
+        agency="BIS",
+        version="1.0.0",
+        is_final=True,
+        items=(Category(id="C", name="Côte d'Ivoire"),),
+    )
+    result = write([cs], header=complete_header, prettyprint=True)
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == cs
+    assert re_read.items[0].name == "Côte d'Ivoire"
+
+
+def test_categorisation_30_round_trip(complete_header):
+    categorisation = Categorisation(
+        id="CAT1",
+        name="Categorisation 1",
+        agency="BIS",
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0.0).TOP.MID.LEAF"
+        ),
+    )
+    result = write([categorisation], header=complete_header, prettyprint=True)
+    assert "<str:Categorisations>" in result
+    assert "<str:Source>" in result
+    assert "<str:Target>" in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    # Full URNs round-trip unchanged.
+    assert re_read == categorisation
+
+
+def test_categorisation_30_codelist_source_round_trip(complete_header):
+    # A non-Dataflow (Codelist) source must round-trip via the 3.0
+    # reference-as-URN form.
+    categorisation = Categorisation(
+        id="CAT2",
+        name="Categorisation 2",
+        agency="BIS",
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0.0).OTHER"
+        ),
+    )
+    result = write([categorisation], header=complete_header, prettyprint=True)
+    assert "codelist.Codelist=BIS:CL_FREQ(1.0.0)" in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == categorisation
+
+
+def test_category_scheme_30_enrichment_round_trip(complete_header):
+    cs = CategoryScheme(
+        id="CS1",
+        name="Category Scheme 1",
+        agency="BIS",
+        version="1.0.0",
+        is_final=True,
+        items=(Category(id="TOP", name="Top"),),
+    )
+    dataflow = Dataflow(
+        id="DF1",
+        name="Dataflow 1",
+        agency="BIS",
+        version="1.0.0",
+        structure="DataStructure=BIS:DSD1(1.0.0)",
+    )
+    categorisation = Categorisation(
+        id="CAT1",
+        name="Categorisation 1",
+        agency="BIS",
+        source=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF1(1.0.0)"
+        ),
+        target=(
+            "urn:sdmx:org.sdmx.infomodel.categoryscheme."
+            "Category=BIS:CS1(1.0.0).TOP"
+        ),
+    )
+    result = write(
+        [cs, dataflow, categorisation],
+        header=complete_header,
+        prettyprint=True,
+    )
+    re_read = read_sdmx(result, validate=True).structures
+    re_cs = next(s for s in re_read if isinstance(s, CategoryScheme))
+    top = re_cs["TOP"]
+    assert len(top.dataflows) == 1
+    assert isinstance(top.dataflows[0], DataflowRef)
+    assert top.dataflows[0].agency == "BIS"
+    assert top.dataflows[0].id == "DF1"
+    assert top.dataflows[0].version == "1.0.0"
+    assert top.dataflows[0].name == "Dataflow 1"

@@ -21,14 +21,13 @@ from pysdmx.errors import (
 from pysdmx.io import get_datasets
 from pysdmx.io.format import Format
 from pysdmx.model import (
-    Category,
-    CategoryScheme,
     Code,
     Codelist,
     Components,
     ConceptScheme,
     Dataflow,
     DataStructureDefinition,
+    MetadataReport,
 )
 
 NSI = "https://nsi.test/rest"
@@ -204,19 +203,13 @@ def test_submit_structure_format_selection(respx_mock, uploader, codelist):
 
 
 def test_submit_structure_unsupported_format_raises(uploader):
-    # a CategoryScheme cannot be written as SDMX-ML; the bare KeyError from
-    # the writer is surfaced as a clear Invalid pointing at SDMX-JSON
-    cs = CategoryScheme(
-        id="CAT",
-        agency="MD",
-        version="1.0",
-        name="cat",
-        items=[Category(id="C1", name="c1")],
-    )
+    # the metadata artefacts cannot be written as SDMX-ML; write_sdmx
+    # raises Invalid, which submit_structure surfaces unchanged
+    report = MetadataReport(id="MR", agency="MD", version="1.0", name="mr")
 
-    with pytest.raises(Invalid, match="cannot be serialized"):
+    with pytest.raises(Invalid, match="cannot be written"):
         uploader.submit_structure(
-            cs, structure_format=Format.STRUCTURE_SDMX_ML_2_1
+            report, structure_format=Format.STRUCTURE_SDMX_ML_2_1
         )
 
 

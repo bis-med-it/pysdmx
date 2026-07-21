@@ -7,6 +7,8 @@ from typing import Optional, Sequence, Union
 import msgspec
 
 from pysdmx.api.dc.query import (
+    BooleanFilter,
+    DateTimeFilter,
     MultiFilter,
     NumberFilter,
     TextFilter,
@@ -88,7 +90,14 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
     version: Union[str, Sequence[str]] = REST_ALL
     key: Union[str, Sequence[str]] = REST_ALL
     component_id: Union[str, Sequence[str]] = REST_ALL
-    components: Union[MultiFilter, None, NumberFilter, TextFilter] = None
+    components: Union[
+        BooleanFilter,
+        DateTimeFilter,
+        MultiFilter,
+        None,
+        NumberFilter,
+        TextFilter,
+    ] = None
     updated_after: Optional[datetime] = None
     references: Union[StructureReference, Sequence[StructureReference]] = (
         StructureReference.NONE
@@ -157,6 +166,8 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
 
     def __get_short_v2_qs(self) -> str:
         qs = ""
+        if self.components:
+            qs += self._create_component_filters(self.components)
         if self.updated_after:
             qs = super()._append_qs_param(
                 qs,

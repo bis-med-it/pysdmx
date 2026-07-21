@@ -90,6 +90,14 @@ STRUCTURES = "Structures"
 ORGS = "OrganisationSchemes"
 AGENCIES = "AgencySchemes"
 AGENCY_SCHEME = "AgencyScheme"
+DATA_PROVIDER_SCHEME = "DataProviderScheme"
+DATA_PROVIDER_SCHEMES = "DataProviderSchemes"
+METADATA_PROVIDER_SCHEME = "MetadataProviderScheme"
+METADATA_PROVIDER_SCHEMES = "MetadataProviderSchemes"
+DATA_CONSUMER_SCHEME = "DataConsumerScheme"
+DATA_CONSUMER_SCHEMES = "DataConsumerSchemes"
+METADATA_PROVIDER = "MetadataProvider"
+DATA_CONSUMER = "DataConsumer"
 CODELISTS = "Codelists"
 CONCEPTS = "Concepts"
 CON_SCHEMES = "ConceptSchemes"
@@ -98,6 +106,8 @@ DATAFLOWS = "Dataflows"
 CONSTRAINTS = "Constraints"
 DATA_CONSTRAINTS = "DataConstraints"
 PROV_AGREEMENTS = "ProvisionAgreements"
+CATEGORY_SCHEMES = "CategorySchemes"
+CATEGORISATIONS = "Categorisations"
 
 
 # Individual
@@ -113,6 +123,10 @@ CON = "Concept"
 CON_LOW = "concept"
 DSD = "DataStructure"
 DSD_LOW = "datastructure"
+CATEGORY_SCHEME = "CategoryScheme"
+CATEGORY = "Category"
+CATEGORISATION = "Categorisation"
+TARGET = "Target"
 
 # DSD components
 DSD_COMPS = "DataStructureComponents"
@@ -322,6 +336,11 @@ HIERARCHY_ASSOCIATION = "HierarchyAssociation"
 LINKED_HIERARCHY = "LinkedHierarchy"
 LINKED_OBJECT = "LinkedObject"
 CONTEXT_OBJECT = "ContextObject"
+
+# Metadata (metadataflow, metadata provision agreement)
+METADATAFLOW = "Metadataflow"
+MPA = "MetadataProvisionAgreement"
+MPAS = "MetadataProvisionAgreements"
 
 # Mapping
 STRUCTURE_MAPS = "StructureMaps"
