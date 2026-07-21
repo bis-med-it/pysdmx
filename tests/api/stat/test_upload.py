@@ -19,6 +19,7 @@ from pysdmx.errors import (
     Unavailable,
 )
 from pysdmx.io import get_datasets
+from pysdmx.io.format import Format
 from pysdmx.model import (
     Code,
     Codelist,
@@ -182,6 +183,34 @@ def test_submit_data_dataspace_override(respx_mock, uploader, dataset):
     uploader.submit_data(dataset, dataspace="otherspace")
 
     assert "otherspace" in route.calls.last.request.content.decode()
+
+
+def test_submit_structure_format_selection(respx_mock, uploader, codelist):
+    route = respx_mock.post(STRUCT_URL).mock(
+        return_value=httpx.Response(200, text="<x/>")
+    )
+
+    uploader.submit_structure(
+        codelist, structure_format=Format.STRUCTURE_SDMX_JSON_2_0_0
+    )
+
+    req = route.calls.last.request
+    assert (
+        req.headers["Content-Type"] == Format.STRUCTURE_SDMX_JSON_2_0_0.value
+    )
+    assert req.content.decode().lstrip().startswith("{")  # JSON, not XML
+
+
+def test_submit_data_ml_format(respx_mock, uploader, dataset):
+    route = respx_mock.post(IMPORT_URL).mock(
+        return_value=httpx.Response(200, json={"requestId": 7})
+    )
+
+    uploader.submit_data(dataset, data_format=Format.DATA_SDMX_ML_2_1_STR)
+
+    body = route.calls.last.request.content.decode()
+    assert 'filename="data.xml"' in body
+    assert "text/xml" in body
 
 
 def test_submit_data_without_dataspace_raises(token, dataset):

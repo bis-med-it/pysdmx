@@ -311,13 +311,6 @@ class StatConnector:
         return datasets[0]
 
 
-_STRUCTURE_CT = "application/vnd.sdmx.structure+xml;version=2.1"
-# The Transfer /import/sdmxFile file part must declare a plain file
-# content-type from the service's whitelist (it auto-detects the SDMX
-# format from the bytes); the SDMX-CSV media type is rejected there.
-_DATA_FILE_CT = "text/csv"
-
-
 @experimental
 class StatUploader:
     """Submit structures and data to a .Stat Suite service.
@@ -466,16 +459,25 @@ class StatUploader:
             map_httpx_errors(e)
 
     def submit_structure(
-        self, structures: Union[MaintainableArtefact, Sequence[Any]]
+        self,
+        structures: Union[MaintainableArtefact, Sequence[Any]],
+        structure_format: Format = Format.STRUCTURE_SDMX_ML_2_1,
     ) -> StructureSubmissionResult:
         """Submit structural metadata to the NSI web service.
 
-        The artefact(s) are serialized to SDMX-ML 2.1 with
-        :func:`write_sdmx` and posted to ``{nsi}/rest/structure``.
+        The artefact(s) are serialized with :func:`write_sdmx` and posted
+        to ``{nsi}/rest/structure``. The ``Content-Type`` is taken from
+        ``structure_format``.
 
         Args:
             structures: A maintainable artefact (e.g. a ``Codelist`` or
                 ``Dataflow``) or a sequence of maintainable artefacts.
+            structure_format: The SDMX structure format to serialize to.
+                One of the SDMX-ML (``STRUCTURE_SDMX_ML_2_1`` / ``3_0`` /
+                ``3_1``) or SDMX-JSON (``STRUCTURE_SDMX_JSON_2_0_0`` /
+                ``2_1_0``) writers. Defaults to SDMX-ML 2.1 -- the format
+                every .Stat deployment is known to accept; other formats
+                depend on the deployment.
 
         Returns:
             A :class:`StructureSubmissionResult` parsed from the NSI
@@ -490,12 +492,12 @@ class StatUploader:
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
-        body = write_sdmx(structures, Format.STRUCTURE_SDMX_ML_2_1)
+        body = write_sdmx(structures, structure_format)
         r = self._send(
             "POST",
             f"{self._nsi}/rest/structure",
             content=body,
-            content_type=_STRUCTURE_CT,
+            content_type=structure_format.value,
         )
         return _structure_result(r.text)
 
@@ -503,15 +505,23 @@ class StatUploader:
         self,
         dataset: Union[Dataset, Sequence[Dataset]],
         dataspace: Optional[str],
+        data_format: Format,
     ) -> SubmissionResult:
         """Upload dataset(s) to the Transfer service (shared transport)."""
         space = self._resolve_dataspace(dataspace)
-        body = write_sdmx(dataset, Format.DATA_SDMX_CSV_2_0_0) or ""
+        body = write_sdmx(dataset, data_format) or ""
+        # The Transfer file part must declare a plain content-type from
+        # the service's whitelist (it auto-detects the SDMX format from
+        # the bytes); the SDMX media types are rejected there.
+        if "csv" in data_format.value:
+            filename, file_ct = "data.csv", "text/csv"
+        else:
+            filename, file_ct = "data.xml", "text/xml"
         r = self._send(
             "POST",
             f"{self._transfer}/import/sdmxFile",
             data={"dataspace": space},
-            files={"file": ("data.csv", body, _DATA_FILE_CT)},
+            files={"file": (filename, body, file_ct)},
         )
         return _submission_from_import(r.text)
 
@@ -519,17 +529,18 @@ class StatUploader:
         self,
         dataset: Union[Dataset, Sequence[Dataset]],
         dataspace: Optional[str] = None,
+        data_format: Format = Format.DATA_SDMX_CSV_2_0_0,
     ) -> SubmissionResult:
         """Submit data to the Transfer service.
 
-        The dataset is serialized to SDMX-CSV 2.0 with :func:`write_sdmx`
-        and uploaded as a ``multipart/form-data`` request (file field
-        ``file``, plus the required ``dataspace`` field) to
-        ``{transfer}/import/sdmxFile``. The dataset must be Schema-backed
-        (e.g. produced by ``StatConnector.fetch_dataset`` or
-        ``pysdmx.io.get_datasets``); a dataset whose structure is a bare
-        URN cannot be written as SDMX-CSV 2.0. The per-row action is
-        taken from the SDMX-CSV 2.0 ``ACTION`` column.
+        The dataset is serialized with :func:`write_sdmx` and uploaded as
+        a ``multipart/form-data`` request (file field ``file``, plus the
+        required ``dataspace`` field) to ``{transfer}/import/sdmxFile``.
+        The dataset must be Schema-backed (e.g. produced by
+        ``StatConnector.fetch_dataset`` or ``pysdmx.io.get_datasets``); a
+        dataset whose structure is a bare URN cannot be written. The
+        per-row/per-dataset action is taken from the file (the SDMX-CSV
+        2.0 ``ACTION`` column, or the SDMX-ML dataset action).
 
         Submission is asynchronous: the returned ``SubmissionResult``
         carries the transaction id (``request_id``) to pass to
@@ -539,6 +550,10 @@ class StatUploader:
             dataset: A Schema-backed dataset, or a sequence of them.
             dataspace: The target data space; defaults to the one set on
                 the connector.
+            data_format: The SDMX data format to serialize to -- an
+                SDMX-CSV (``DATA_SDMX_CSV_1_0_0`` / ``2_0_0`` / ``2_1_0``)
+                or SDMX-ML 2.1/3.0/3.1 data writer. Defaults to SDMX-CSV
+                2.0; the Transfer service auto-detects the format.
 
         Returns:
             A :class:`SubmissionResult` with the acknowledgement
@@ -553,7 +568,7 @@ class StatUploader:
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
-        return self._import_data(dataset, dataspace)
+        return self._import_data(dataset, dataspace, data_format)
 
     def delete_data(
         self,
@@ -589,8 +604,11 @@ class StatUploader:
         marked = [
             structs.replace(d, action=ActionType.Delete) for d in datasets
         ]
+        # Delete always uses SDMX-CSV 2.0 (the per-row ACTION column).
         return self._import_data(
-            marked if len(marked) > 1 else marked[0], dataspace
+            marked if len(marked) > 1 else marked[0],
+            dataspace,
+            Format.DATA_SDMX_CSV_2_0_0,
         )
 
     def delete_structure(
