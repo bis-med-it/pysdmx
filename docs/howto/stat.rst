@@ -85,27 +85,41 @@ processed asynchronously.
 .. code-block:: python
 
     from pysdmx.api.stat import StatUploader
-    from pysdmx.api.stat.authentication import KeycloakDeviceAuthentication
-
-    # Acquire a bearer token. The interactive device flow signs in through
-    # any browser, so it works with federated logins (e.g. GitHub) and
-    # public clients. get_token() prints a URL and a short code, then
-    # waits for the sign-in to finish:
-    auth = KeycloakDeviceAuthentication(
-        "https://keycloak.siscc.org/realms/OECD",
+    from pysdmx.api.stat.authentication import (
+        ClientCredentialsAuthentication,
+        KeycloakAuthentication,
+        KeycloakDeviceAuthentication,
     )
-    token = auth.get_token()
+
+    authority = "https://keycloak.example/realms/<realm>"
+
+    # Pick ONE of the three flows; each exposes get_token():
+
+    # 1. Interactive device flow (browser sign-in) -- the only option for
+    #    federated logins such as GitHub or ADFS. Prints a URL + short
+    #    code and waits for the sign-in to finish.
+    auth = KeycloakDeviceAuthentication(authority, client_id="app")
+
+    # 2. Machine-to-machine (confidential client + service account):
+    # auth = ClientCredentialsAuthentication(
+    #     authority, client_id="my-client", client_secret="...",
+    # )
+
+    # 3. Resource-owner password grant (local Keycloak accounts only):
+    # auth = KeycloakAuthentication(
+    #     authority, user="alice", password="...", client_id="app",
+    # )
 
     uploader = StatUploader(
         nsi_endpoint="https://my.stat/nsi/rest",
         # The Transfer endpoint includes the API-version segment:
         transfer_endpoint="https://my.stat/transfer/3",
-        dataspace="staging:SIS-CC-stable",   # the target .Stat data space
-        token=token,
+        dataspace="<data-space>",   # the target .Stat data space
+        token=auth.get_token(),     # or any bearer token you already have
     )
 
     # Structure first, then data (data submission is asynchronous)
-    result = uploader.submit(dataflow, dataset)  # SubmissionResult
+    result = uploader.submit(structures=dataflow, dataset=dataset)
 
     # Poll to completion, then check the outcome
     final = uploader.submission_status(result.request_id, wait=True)
@@ -158,10 +172,10 @@ parameter.
 
 .. note::
     Submitted (and deleted) content must use an **agency you are
-    authorized to maintain**. On the SIS-CC demo that agency is ``MD``;
-    everything under other agency IDs is read-only. The agency is taken
-    from the artefacts and datasets you pass, so build them under your
-    writable agency.
+    authorized to maintain** on the target instance (the agency must
+    exist in the ``SDMX:AGENCIES`` scheme). The agency is taken from the
+    artefacts and datasets you pass, so build them under your writable
+    agency.
 
 Deleting
 --------

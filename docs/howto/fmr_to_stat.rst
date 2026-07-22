@@ -8,10 +8,9 @@ Publishing structures from FMR to .Stat
 
 This tutorial moves structural metadata from a **Fusion Metadata
 Registry (FMR)** to a **.Stat Suite** instance, end to end, using
-pysdmx. The full runnable script is
-`examples/fmr_to_stat.py <https://github.com/bis-med-it/pysdmx/blob/main/examples/fmr_to_stat.py>`_.
+pysdmx.
 
-The pipeline, under the mock agency ``MD``:
+The pipeline, under an agency you are authorised to maintain:
 
 1. author a minimal structure graph (ConceptScheme + DSD + Dataflow);
 2. upload it to the FMR;
@@ -19,28 +18,22 @@ The pipeline, under the mock agency ``MD``:
 4. submit the downloaded structures and a tiny dataset to .Stat.
 
 Downloading with ``references=all`` is deliberate: it returns the whole
-dependency graph and exercises the SDMX-ML readers on it, and it is
-exactly what is forwarded to .Stat.
+dependency graph, which is exactly what is forwarded to .Stat.
 
 .. important::
-    Requires the ``pysdmx[data,xml]`` extras, a **writable** FMR, and a
-    **writable** .Stat Suite instance. Everything is created under the
-    agency you are authorised to maintain (``MD`` on the SIS-CC demo).
-
-.. note::
-    The FMR rejects structures whose maintenance agency is unknown, so
-    the target agency must already exist in the ``SDMX:AGENCIES`` scheme.
-    Register it once (e.g. submit an
-    :class:`~pysdmx.model.organisation.AgencyScheme` containing an
-    :class:`~pysdmx.model.Agency` with ``StructureAction.Merge``) before
-    running this tutorial. The SIS-CC demo already has ``MD``.
+    Requires a **writable** FMR and a **writable** .Stat Suite instance.
+    Moving *structures* needs only the base ``pysdmx`` package (they are
+    exchanged as SDMX-JSON); the ``data`` extra (``pysdmx[data]``) is
+    needed only for the final dataset-upload step. The target agency
+    must already exist in the ``SDMX:AGENCIES`` scheme -- the FMR rejects
+    structures whose maintenance agency is unknown.
 
 Authentication
 --------------
 
 The FMR maintenance client takes either a bearer ``access_token`` or
-HTTP Basic ``user``/``password``; .Stat takes a bearer ``token``. The
-script reads them from the environment:
+HTTP Basic ``user``/``password``; .Stat takes a bearer ``token``. Read
+them from the environment:
 
 .. code-block:: bash
 
@@ -53,7 +46,8 @@ Upload to the FMR
 
 :class:`~pysdmx.api.fmr.maintenance.RegistryMaintenanceClient` posts the
 artefacts to the FMR. ``Replace`` adds new artefacts and overwrites
-existing ones:
+existing ones. Authenticate with a bearer token **or** HTTP Basic
+credentials:
 
 .. code-block:: python
 
@@ -62,8 +56,18 @@ existing ones:
         StructureAction,
     )
 
-    client = RegistryMaintenanceClient(FMR_ENDPOINT, access_token=token)
-    client.put_structures(structures, action=StructureAction.Replace)
+    # with a bearer token ...
+    client = RegistryMaintenanceClient(
+        api_endpoint=FMR_ENDPOINT, access_token=FMR_TOKEN
+    )
+    # ... or with HTTP Basic credentials:
+    # client = RegistryMaintenanceClient(
+    #     api_endpoint=FMR_ENDPOINT, user=FMR_USER, password=FMR_PASSWORD
+    # )
+
+    client.put_structures(
+        structures=structures, action=StructureAction.Replace
+    )
 
 Download from the FMR (references=all)
 --------------------------------------
@@ -87,17 +91,19 @@ with ``references=all`` returns the full graph, which
     )
     from pysdmx.io import read_sdmx
 
+    agency_id = "<your-agency>"
+
     svc = RestService(
-        FMR_ENDPOINT,
-        ApiVersion.V2_0_0,
-        structure_format=StructureFormat.SDMX_ML_2_1,
-        token=token,
+        api_endpoint=FMR_ENDPOINT,
+        api_version=ApiVersion.V2_0_0,
+        structure_format=StructureFormat.SDMX_JSON_2_0_0,
+        token=FMR_TOKEN,
     )
     query = StructureQuery(
-        StructureType.DATAFLOW,
-        "MD",
-        "DF_PYSDMX_FMR",
-        "1.0",
+        artefact_type=StructureType.DATAFLOW,
+        agency_id=agency_id,
+        resource_id="DF_PYSDMX_FMR",
+        version="1.0",
         detail=StructureDetail.FULL,
         references=StructureReference.ALL,
     )
@@ -113,10 +119,15 @@ the asynchronous import to completion:
 
     from pysdmx.api.stat import StatUploader
 
-    uploader = StatUploader(NSI, TRANSFER, dataspace=SPACE, token=token)
-    uploader.submit_structure(graph.structures)
+    uploader = StatUploader(
+        nsi_endpoint=NSI,
+        transfer_endpoint=TRANSFER,
+        dataspace=SPACE,
+        token=DOTSTAT_TOKEN,
+    )
+    uploader.submit_structure(structures=graph.structures)
 
-    imported = uploader.submit_data(dataset)
+    imported = uploader.submit_data(dataset=dataset)
     final = uploader.submission_status(imported.request_id, wait=True)
     print(final.execution_status, final.outcome)
 

@@ -7,15 +7,15 @@ Reconciling .Stat against FMR
 =============================
 
 This tutorial treats the **FMR** as the source of truth and prunes a
-**.Stat Suite** instance to match it: it lists every ``MD`` structure on
-both sides and deletes from .Stat the ones that no longer exist in the
-FMR. The full runnable script is
-`examples/stat_fmr_sync.py <https://github.com/bis-med-it/pysdmx/blob/main/examples/stat_fmr_sync.py>`_.
+**.Stat Suite** instance to match it: for a chosen agency it lists every
+structure on both sides and deletes from .Stat the ones that no longer
+exist in the FMR.
 
 .. important::
-    Requires the ``pysdmx[data,xml]`` extras and a **writable** .Stat
-    Suite instance (the FMR is only read). The script is **safe by
-    default** -- without ``--apply`` it just prints what it would delete.
+    Requires a **writable** .Stat Suite instance (the FMR is only read).
+    Structures are exchanged as SDMX-JSON, so the base ``pysdmx`` package
+    is enough -- no extras needed. Compute the difference first and
+    inspect it before running the deletion loop.
 
 List both sides
 ---------------
@@ -40,20 +40,28 @@ collects comparable short-URNs via :func:`~pysdmx.io.read_sdmx`:
     from pysdmx.errors import Invalid, NotFound
     from pysdmx.io import read_sdmx
 
+    agency_id = "<your-agency>"
+
     TYPES = (
         StructureType.CODELIST, StructureType.CONCEPT_SCHEME,
         StructureType.DATA_STRUCTURE, StructureType.DATAFLOW,
         StructureType.DATA_CONSTRAINT,
     )
 
-    def list_md_urns(base, token):
+    def list_urns(base, token):
         svc = RestService(
-            base, ApiVersion.V2_0_0,
-            structure_format=StructureFormat.SDMX_ML_2_1, token=token,
+            api_endpoint=base,
+            api_version=ApiVersion.V2_0_0,
+            structure_format=StructureFormat.SDMX_JSON_2_0_0,
+            token=token,
         )
         urns = set()
         for stype in TYPES:
-            q = StructureQuery(stype, "MD", detail=StructureDetail.ALL_STUBS)
+            q = StructureQuery(
+                artefact_type=stype,
+                agency_id=agency_id,
+                detail=StructureDetail.ALL_STUBS,
+            )
             try:
                 msg = read_sdmx(BytesIO(svc.structure(q)), validate=False)
             except (Invalid, NotFound):
@@ -61,15 +69,15 @@ collects comparable short-URNs via :func:`~pysdmx.io.read_sdmx`:
             urns |= {s.short_urn for s in msg.structures or []}
         return urns
 
-    fmr_urns = list_md_urns(FMR_ENDPOINT, fmr_token)
-    stat_urns = list_md_urns(f"{NSI}/rest/v2", dotstat_token)
+    fmr_urns = list_urns(FMR_ENDPOINT, fmr_token)
+    stat_urns = list_urns(f"{NSI}/rest/v2", dotstat_token)
     extras = stat_urns - fmr_urns  # present in .Stat, absent in FMR
 
 .. warning::
-    ``--apply`` deletes from ``.Stat`` everything under ``MD`` that is not
-    in the FMR, so the FMR must be the **complete** source of truth for
-    that agency. Pointing at a partial FMR would delete legitimate
-    structures. Always inspect the dry-run output first.
+    Deleting ``extras`` removes from ``.Stat`` everything for that agency
+    that is not in the FMR, so the FMR must be the **complete** source of
+    truth for it. Pointing at a partial FMR would delete legitimate
+    structures. Always inspect ``extras`` first.
 
 Delete the extras in dependency order
 --------------------------------------
@@ -89,25 +97,34 @@ dataflow. Rank the short-URNs by type, then hand them to
         "Dataflow": 2, "DataStructure": 3,
         "ConceptScheme": 4, "Codelist": 5,
     }
-    ordered = sorted(extras, key=lambda u: ORDER.get(u.split("=", 1)[0], 99))
+    ordered = sorted(
+        extras, key=lambda u: ORDER.get(u.split("=", 1)[0], 99)
+    )
 
-    uploader = StatUploader(NSI, TRANSFER, dataspace=SPACE, token=dotstat_token)
+    uploader = StatUploader(
+        nsi_endpoint=NSI,
+        transfer_endpoint=TRANSFER,
+        dataspace=SPACE,
+        token=dotstat_token,
+    )
     for result in uploader.delete_structure(ordered):
-        print("ok" if result.success else "FAILED", "; ".join(result.messages))
+        state = "ok" if result.success else "FAILED"
+        print(state, "; ".join(result.messages))
 
 ``delete_structure`` returns one
 :class:`~pysdmx.api.stat.StructureSubmissionResult` per artefact, so a
 logical failure surfaces as ``success=False`` rather than an exception.
 
-Run it
-------
+Configuration
+-------------
+
+The snippets read the FMR and .Stat endpoints and bearer tokens from the
+environment:
 
 .. code-block:: bash
 
     export FMR_ENDPOINT="https://my.fmr/sdmx/v2"
-    export DOTSTAT_TOKEN="eyJ..."
-    poetry run python examples/stat_fmr_sync.py           # dry run
-    poetry run python examples/stat_fmr_sync.py --apply   # delete
+    export DOTSTAT_TOKEN="eyJ..."  # a fresh .Stat bearer token
 
 See :doc:`publishing structures from FMR to .Stat <fmr_to_stat>` for the
 forward direction.

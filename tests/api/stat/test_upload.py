@@ -1,6 +1,5 @@
-from pathlib import Path
-
 import httpx
+import pandas as pd
 import pytest
 
 from pysdmx.api.stat import (
@@ -18,27 +17,28 @@ from pysdmx.errors import (
     Unauthorized,
     Unavailable,
 )
-from pysdmx.io import get_datasets
 from pysdmx.io.format import Format
+from pysdmx.io.pd import PandasDataset
 from pysdmx.model import (
     Code,
     Codelist,
+    Component,
     Components,
+    Concept,
     ConceptScheme,
     Dataflow,
     DataStructureDefinition,
     MetadataReport,
+    Role,
+    Schema,
 )
+from pysdmx.model.__base import DataType
 
 NSI = "https://nsi.test/rest"
 TRANSFER = "https://transfer.test"
 STRUCT_URL = f"{NSI}/rest/structure"
 IMPORT_URL = f"{TRANSFER}/import/sdmxFile"
 STATUS_URL = f"{TRANSFER}/status/request"
-
-_IO_SAMPLES = Path(__file__).parent.parent.parent / "io" / "samples"
-DATA_CSV = _IO_SAMPLES / "data_v1.csv"
-STRUCTURE_XML = _IO_SAMPLES / "dataflow_structure_children.xml"
 
 
 @pytest.fixture
@@ -64,7 +64,52 @@ def codelist():
 
 @pytest.fixture
 def dataset():
-    return get_datasets(str(DATA_CSV), str(STRUCTURE_XML), validate=False)[0]
+    # a small Schema-backed dataset built in-code (no sample files)
+    concepts = [
+        Concept(id="REF_AREA", name="Reference area"),
+        Concept(id="TIME_PERIOD", name="Time period"),
+        Concept(id="OBS_VALUE", name="Observation value"),
+    ]
+    components = Components(
+        [
+            Component(
+                id="REF_AREA",
+                required=True,
+                role=Role.DIMENSION,
+                concept=concepts[0],
+                local_dtype=DataType.STRING,
+            ),
+            Component(
+                id="TIME_PERIOD",
+                required=True,
+                role=Role.DIMENSION,
+                concept=concepts[1],
+                local_dtype=DataType.PERIOD,
+            ),
+            Component(
+                id="OBS_VALUE",
+                required=False,
+                role=Role.MEASURE,
+                concept=concepts[2],
+                local_dtype=DataType.DOUBLE,
+            ),
+        ]
+    )
+    schema = Schema(
+        context="dataflow",
+        agency="TEST",
+        id="DF",
+        version="1.0",
+        components=components,
+    )
+    data = pd.DataFrame(
+        {
+            "REF_AREA": ["ES", "FR"],
+            "TIME_PERIOD": ["2024", "2024"],
+            "OBS_VALUE": [1.0, 2.0],
+        }
+    )
+    return PandasDataset(structure=schema, data=data)
 
 
 def test_init_stores_endpoints_and_token():
