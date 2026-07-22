@@ -40,28 +40,22 @@ def read(input_str: str) -> Sequence[PandasDataset]:
 
     # Convert all columns to strings
     df_csv = df_csv.astype(str).replace({"nan": "NaN", "<NA>": "NaN"})
-    # Check if any column headers contain ':', indicating mode, label or text
-    mode_label_text = any(":" in x for x in df_csv.columns)
-
-    # if values in the columns contain ':', split them
-    for col in df_csv.columns[1:]:
-        df_csv[col] = (
-            df_csv[col]
-            .astype(str)
-            .apply(lambda x: x.split(":")[0] if ":" in x else x)
-        )
+    # A ': ' in a header marks a labelled column, since labels are
+    # written with a ': ' separator
+    mode_label_text = any(": " in x for x in df_csv.columns)
 
     # Determine the id column based on the SDMX-CSV version
     id_column = "DATAFLOW"
 
     # If mode, label or text is present, modify the DataFrame
     if mode_label_text:
-        # Split the ID column to remove mode, label or text
-        df_csv[id_column] = df_csv[id_column].map(lambda x: x.split(": ")[0])
-        # Split the other columns to remove mode, label, or text
-        sequence = 1
-        for x in df_csv.columns[sequence:]:
-            df_csv[x.split(":")[0]] = df_csv[x].map(
+        # Strip the label from every labelled column (identified by a ': ' in
+        # its header). Labels use a ': ' (colon-space) separator and codes
+        # never contain spaces, so a bare ':' inside a value (e.g. a full
+        # datetime) is preserved. The structure id label is stripped later,
+        # in __generate_dataset_from_sdmx_csv.
+        for x in [col for col in df_csv.columns if ": " in col]:
+            df_csv[x.split(": ")[0]] = df_csv[x].map(
                 lambda x: x.split(": ", 2)[0], na_action="ignore"
             )
             # Delete the original columns

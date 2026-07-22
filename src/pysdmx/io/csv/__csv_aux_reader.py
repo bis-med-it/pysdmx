@@ -69,8 +69,10 @@ def __generate_dataset_from_sdmx_csv(  # noqa: C901
         structure_type = data["STRUCTURE"].iloc[0]
         # Drop 'STRUCTURE' and 'STRUCTURE_ID' columns from DataFrame
         df_csv = data.drop(["STRUCTURE", "STRUCTURE_ID"], axis=1)
-        if structure_id.count(":") == 2:
-            structure_id = ":".join(structure_id.split(":")[:2])
+        # Strip the label (name) from the structure id, if present. Labels
+        # use a ': ' separator and codes never contain spaces.
+        if structure_id.count(": ") == 1:
+            structure_id = structure_id.split(": ")[0]
         if structure_type == "DataStructure".lower():
             urn = f"DataStructure={structure_id}"
         elif structure_type == "Dataflow".lower():
@@ -86,8 +88,10 @@ def __generate_dataset_from_sdmx_csv(  # noqa: C901
     else:
         # For SDMX-CSV version 1, use 'DATAFLOW' column as the structure id
         structure_id = data["DATAFLOW"].iloc[0]
-        if structure_id.count(":") == 2:
-            structure_id = ":".join(structure_id.split(":")[:2])
+        # Strip the label (name) from the structure id, if present. Labels
+        # use a ': ' separator and codes never contain spaces.
+        if structure_id.count(": ") == 1:
+            structure_id = structure_id.split(": ")[0]
         # Drop 'DATAFLOW' column from DataFrame
         df_csv = data.drop(["DATAFLOW"], axis=1)
 
