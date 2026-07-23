@@ -5,7 +5,11 @@ import httpx
 import pytest
 
 from pysdmx.api.qb import ApiVersion, DataFormat, StructureFormat
-from pysdmx.api.stat import StatConnector, StatEndpoints
+from pysdmx.api.stat import (
+    StatAsyncConnector,
+    StatConnector,
+    StatEndpoints,
+)
 from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 from pysdmx.io import get_datasets, read_sdmx
 from pysdmx.io.format import Format
@@ -481,3 +485,114 @@ def test_fetch_data_connection_error(respx_mock, client):
     )
     with pytest.raises(Unavailable):
         client.fetch_data(*OECD_FLOW)
+
+
+# --- Async connector (StatAsyncConnector) ------------------------------------
+@pytest.fixture
+def aclient():
+    return StatAsyncConnector(HOST)
+
+
+def test_async_init_is_async_registry_client():
+    from pysdmx.api.fmr import AsyncRegistryClient
+
+    conn = StatAsyncConnector(HOST)
+    assert isinstance(conn, AsyncRegistryClient)
+    assert conn._svc._api_endpoint == HOST
+
+
+@pytest.mark.asyncio
+async def test_async_get_structures(aclient, structs_mock):
+    dfs = await aclient.get_dataflows("TEST")
+    assert all(isinstance(x, Dataflow) for x in dfs)
+    dsds = await aclient.get_data_structures("TEST")
+    assert all(isinstance(x, DataStructureDefinition) for x in dsds)
+    assert isinstance(await aclient.get_codes("TEST", "CL"), Codelist)
+    assert isinstance(await aclient.get_concepts("TEST", "CS"), ConceptScheme)
+    assert isinstance(
+        await aclient.get_categories("TEST", "CATS"), CategoryScheme
+    )
+    assert isinstance(
+        await aclient.get_categorisation("TEST", "CATN"), Categorisation
+    )
+    assert isinstance(
+        await aclient.get_provision_agreement("TEST", "PA"),
+        ProvisionAgreement,
+    )
+    assert isinstance(await aclient.get_hierarchy("TEST", "H"), Hierarchy)
+
+
+@pytest.mark.asyncio
+async def test_async_get_schemes_and_maps(aclient, structs_mock):
+    assert list(await aclient.get_agencies("TEST"))
+    assert list(await aclient.get_providers("TEST"))
+    assert list(await aclient.get_metadata_providers("TEST"))
+    mds = await aclient.get_metadata_structures("TEST")
+    assert all(isinstance(x, MetadataStructure) for x in mds)
+    mdfs = await aclient.get_metadataflows("TEST")
+    assert all(isinstance(x, Metadataflow) for x in mdfs)
+    assert isinstance(
+        await aclient.get_metadata_provision_agreement("TEST", "MPA"),
+        MetadataProvisionAgreement,
+    )
+    assert isinstance(await aclient.get_mapping("TEST", "SM"), StructureMap)
+    assert isinstance(
+        await aclient.get_code_map("TEST", "RM"),
+        (RepresentationMap, MultiRepresentationMap),
+    )
+    assert isinstance(
+        await aclient.get_vtl_transformation_scheme("TEST", "TS"),
+        TransformationScheme,
+    )
+
+
+@pytest.mark.asyncio
+async def test_async_get_not_found(aclient, respx_mock):
+    body = write_sdmx(
+        Codelist(
+            id="CL",
+            agency="A",
+            version="1.0",
+            name="c",
+            items=[Code(id="X", name="x")],
+        ),
+        Format.STRUCTURE_SDMX_JSON_2_0_0,
+    ).encode()
+    _mock(respx_mock, STRUCT_PREFIX, body)
+    with pytest.raises(NotFound):
+        await aclient.get_concepts("A", "MISSING")
+
+
+@pytest.mark.parametrize(
+    "call",
+    [
+        lambda c: c.get_schema("dataflow", "A", "DF", "1.0"),
+        lambda c: c.get_dataflow_details("A", "DF", "1.0"),
+        lambda c: c.get_report("P", "R", "1.0"),
+        lambda c: c.get_reports("dataflow", "A", "DF", "1.0"),
+    ],
+)
+@pytest.mark.asyncio
+async def test_async_unsupported_raise_invalid(aclient, call):
+    with pytest.raises(Invalid, match="Not available"):
+        await call(aclient)
+
+
+@pytest.mark.asyncio
+async def test_async_fetch_data(respx_mock, aclient):
+    data = OECD_DATA.read_bytes()
+    route = _mock(respx_mock, DATA_PREFIX, data)
+    out = await aclient.fetch_data(*OECD_FLOW, key=OECD_KEY)
+    assert out == data
+    assert f"/1.0/{OECD_KEY}" in str(route.calls.last.request.url)
+
+
+@pytest.mark.asyncio
+async def test_async_fetch_dataset(respx_mock, aclient):
+    structure = OECD_STRUCTURE.read_bytes()
+    data = OECD_DATA.read_bytes()
+    _mock(respx_mock, STRUCT_PREFIX, structure)
+    _mock(respx_mock, DATA_PREFIX, data)
+    ds = await aclient.fetch_dataset(*OECD_FLOW)
+    assert isinstance(ds, PandasDataset)
+    assert isinstance(ds.structure, Schema)

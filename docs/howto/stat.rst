@@ -81,6 +81,21 @@ The ``get_*`` methods return the same model objects as
 dimension; defaults to the whole dataflow). .Stat services key on one
 value per dimension; for multiple values issue separate requests.
 
+Asynchronous access
+-------------------
+
+:class:`pysdmx.api.stat.StatAsyncConnector` is the ``async`` counterpart
+(inheriting :class:`~pysdmx.api.fmr.AsyncRegistryClient`); its ``get_*``,
+``fetch_data`` and ``fetch_dataset`` methods are coroutines:
+
+.. code-block:: python
+
+    from pysdmx.api.stat import StatAsyncConnector
+
+    conn = StatAsyncConnector()
+    flows = await conn.get_dataflows(agency, flow_id, version)
+    dataset = await conn.fetch_dataset(agency, flow_id, version)
+
 Uploading
 ---------
 
