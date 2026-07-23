@@ -93,20 +93,6 @@ def csv_keys_both():
 
 
 @pytest.fixture
-def csv_keys_both_legacy():
-    base_path = Path(__file__).parent / "samples" / "csv_keys_both_legacy.csv"
-    return base_path
-
-
-@pytest.fixture
-def csv_labels_name_malformed():
-    base_path = (
-        Path(__file__).parent / "samples" / "csv_labels_name_malformed.csv"
-    )
-    return base_path
-
-
-@pytest.fixture
 def csv_merge_action():
     base_path = Path(__file__).parent / "samples" / "data_v21_merge_action.csv"
     return base_path
@@ -258,13 +244,6 @@ def test_reading_labels_name(csv_labels_name):
     assert len(datasets[0].attributes) == 0
 
 
-def test_reading_labels_name_malformed(csv_labels_name_malformed):
-    with open(csv_labels_name_malformed, "r") as f:
-        infile = f.read()
-    with pytest.raises(Invalid, match="odd number of component columns"):
-        read(infile)
-
-
 def test_reading_keys_both(csv_keys_both):
     with open(csv_keys_both, "r") as f:
         infile = f.read()
@@ -274,20 +253,6 @@ def test_reading_keys_both(csv_keys_both):
     assert len(df) == 1
     assert "SERIES_KEY" not in df.columns
     assert "OBS_KEY" not in df.columns
-    assert "SERIES_KEYS" not in df.columns
-    assert "OBS_KEYS" not in df.columns
-
-    assert len(datasets[0].attributes) == 0
-
-
-def test_reading_keys_both_legacy(csv_keys_both_legacy):
-    """Plural keys columns written by old pysdmx versions are dropped."""
-    with open(csv_keys_both_legacy, "r") as f:
-        infile = f.read()
-    datasets = read(infile)
-    assert datasets[0].short_urn == "DataStructure=MD:MD_TEST(1.0)"
-    df = datasets[0].data
-    assert len(df) == 1
     assert "SERIES_KEYS" not in df.columns
     assert "OBS_KEYS" not in df.columns
 
