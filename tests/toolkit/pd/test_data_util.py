@@ -90,6 +90,33 @@ def test_write_labels_id(data_path_optional_names, dsd_path):
     assert "TIME_PERIOD" in data.columns
 
 
+def test_format_drop_labels_name_roundtrip(data_path_optional, dsd_path):
+    result = read_sdmx(dsd_path).get_data_structure_definitions()
+    dsd = result[0]
+    original = pd.read_json(data_path_optional, orient="records").astype(str)
+
+    data = original.copy()
+    format_labels(data, labels="name", components=dsd.components)
+    # The writer adds STRUCTURE_NAME, which drop_labels uses to detect
+    # the labels=name format
+    data.insert(0, "STRUCTURE_NAME", "MD TEST")
+    data = drop_labels(data)
+
+    pd.testing.assert_frame_equal(data, original)
+
+
+def test_format_drop_labels_both_roundtrip(data_path_optional, dsd_path):
+    result = read_sdmx(dsd_path).get_data_structure_definitions()
+    dsd = result[0]
+    original = pd.read_json(data_path_optional, orient="records").astype(str)
+
+    data = original.copy()
+    format_labels(data, labels="both", components=dsd.components)
+    data = drop_labels(data)
+
+    pd.testing.assert_frame_equal(data, original)
+
+
 def test_drop_labels_both_format():
     df = pd.DataFrame(
         {
