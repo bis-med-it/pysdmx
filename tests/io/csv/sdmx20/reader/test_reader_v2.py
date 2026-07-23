@@ -238,6 +238,15 @@ def test_reading_labels_name(csv_labels_name):
     datasets = read(infile)
     assert datasets[0].short_urn == "DataStructure=MD:MD_TEST(1.0)"
     df = datasets[0].data
+    assert list(df.columns) == [
+        "DIM1",
+        "DIM2",
+        "ATT1",
+        "ATT2",
+        "OBS_VALUE",
+        "TIME_PERIOD",
+    ]
+    assert df.iloc[0].tolist() == ["A", "B", "C", "D", "1", "2020"]
     assert len(df) == 1
     assert "STRUCTURE_NAME" not in df.columns
     assert len(datasets[0].attributes) == 0
@@ -250,6 +259,8 @@ def test_reading_keys_both(csv_keys_both):
     assert datasets[0].short_urn == "DataStructure=MD:MD_TEST(1.0)"
     df = datasets[0].data
     assert len(df) == 1
+    assert "SERIES_KEY" not in df.columns
+    assert "OBS_KEY" not in df.columns
     assert "SERIES_KEYS" not in df.columns
     assert "OBS_KEYS" not in df.columns
 

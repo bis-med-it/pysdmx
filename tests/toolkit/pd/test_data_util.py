@@ -3,7 +3,9 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
+from pysdmx.toolkit.pd import drop_labels
 from pysdmx.toolkit.pd._data_utils import format_labels
 
 
@@ -29,14 +31,35 @@ def test_write_labels_name(data_path_optional, dsd_path):
     result = read_sdmx(dsd_path).get_data_structure_definitions()
     dsd = result[0]
     data = pd.read_json(data_path_optional, orient="records")
+    data["EXTRA"] = "x"
 
     format_labels(data, labels="name", components=dsd.components)
-    assert "DIMENSION 1" in data.columns
-    assert "DIMENSION 2" in data.columns
-    assert "ATTRIBUTE 1" in data.columns
-    assert "ATTRIBUTE 2" in data.columns
-    assert "OBS VALUE" in data.columns
-    assert "TIME PERIOD" in data.columns
+    assert list(data.columns) == [
+        "DIM1",
+        "DIMENSION 1",
+        "DIM2",
+        "DIMENSION 2",
+        "ATT1",
+        "ATTRIBUTE 1",
+        "ATT2",
+        "ATTRIBUTE 2",
+        "OBS_VALUE",
+        "OBS VALUE",
+        "TIME_PERIOD",
+        "TIME PERIOD",
+        "EXTRA",
+    ]
+    assert (data["DIMENSION 1"] == data["DIM1"]).all()
+
+
+def test_write_labels_name_duplicated(data_path_optional, dsd_path):
+    result = read_sdmx(dsd_path).get_data_structure_definitions()
+    dsd = result[0]
+    data = pd.read_json(data_path_optional, orient="records")
+    data["DIMENSION 1"] = "x"
+
+    with pytest.raises(Invalid, match="DIMENSION 1"):
+        format_labels(data, labels="name", components=dsd.components)
 
 
 def test_write_labels_both(data_path_optional, dsd_path):
@@ -65,3 +88,61 @@ def test_write_labels_id(data_path_optional_names, dsd_path):
     assert "ATT2" in data.columns
     assert "OBS_VALUE" in data.columns
     assert "TIME_PERIOD" in data.columns
+
+
+def test_drop_labels_both_format():
+    df = pd.DataFrame(
+        {
+            "DIM1: DIMENSION 1": ["A: Value A"],
+            "OBS_VALUE": ["12.4"],
+            "EMBARGO_TIME": ["2025-12-19T14:30:00Z"],
+        }
+    )
+    df = drop_labels(df)
+    assert "DIM1" in df.columns
+    assert df.at[0, "DIM1"] == "A"
+    assert df.at[0, "OBS_VALUE"] == "12.4"
+    assert df.at[0, "EMBARGO_TIME"] == "2025-12-19T14:30:00Z"
+
+
+def test_drop_labels_name_format():
+    df = pd.DataFrame(
+        {
+            "STRUCTURE": ["dataflow"],
+            "STRUCTURE_ID": ["MD:MD_TEST(1.0)"],
+            "STRUCTURE_NAME": ["MD TEST"],
+            "ACTION": ["I"],
+            "DIM1": ["A"],
+            "DIMENSION 1": ["Value A"],
+            "OBS_VALUE": ["12.4"],
+            "Observation value": [""],
+        }
+    )
+    df = drop_labels(df)
+    assert list(df.columns) == [
+        "STRUCTURE",
+        "STRUCTURE_ID",
+        "ACTION",
+        "DIM1",
+        "OBS_VALUE",
+    ]
+    assert df.at[0, "DIM1"] == "A"
+
+
+def test_drop_labels_name_format_malformed():
+    df = pd.DataFrame(
+        {
+            "STRUCTURE_NAME": ["MD TEST"],
+            "DIM1": ["A"],
+            "DIMENSION 1": ["Value A"],
+            "OBS_VALUE": ["12.4"],
+        }
+    )
+    with pytest.raises(Invalid, match="odd number of component columns"):
+        drop_labels(df)
+
+
+def test_drop_labels_no_labels():
+    df = pd.DataFrame({"DIM1": ["A"], "OBS_VALUE": ["12.4"]})
+    result = drop_labels(df)
+    assert list(result.columns) == ["DIM1", "OBS_VALUE"]
