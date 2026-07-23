@@ -14,8 +14,6 @@ _LABELS_NAME_FIXED_COLUMNS = frozenset(
         "ACTION",
         "SERIES_KEY",
         "OBS_KEY",
-        "SERIES_KEYS",
-        "OBS_KEYS",
         "DATAFLOW",
     )
 )
@@ -65,8 +63,7 @@ def format_labels(  # noqa: C901
                 "Concept names must be unique and different from the "
                 "component ids.",
             )
-        # Insert from the right so pending positions are not shifted
-        # by earlier inserts.
+        # Insert from the right so pending positions are not shifted.
         for position in range(len(df.columns) - 1, -1, -1):
             col = df.columns[position]
             if col in names:
@@ -98,7 +95,9 @@ def drop_labels(df: pd.DataFrame) -> pd.DataFrame:
 
     - labels=both: labelled columns are detected by a ': '
       (colon-space) separator in their header. Headers and cells are
-      reduced to the id part before the separator.
+      reduced to the id part before the separator. Ids never contain
+      spaces, so values with a bare ':' (e.g. full datetimes) are
+      preserved.
     - labels=name (SDMX-CSV 2.x): detected by the presence of the
       STRUCTURE_NAME column. Each component column is directly followed
       by a column with its localised name; those name columns and
@@ -118,10 +117,6 @@ def drop_labels(df: pd.DataFrame) -> pd.DataFrame:
             pairing is broken.
     """
     if any(": " in col for col in df.columns):
-        # Strip the label from every labelled column (identified by a
-        # ': ' in its header). Labels use a ': ' (colon-space) separator
-        # and codes never contain spaces, so a bare ':' inside a value
-        # (e.g. a full datetime) is preserved.
         for x in [col for col in df.columns if ": " in col]:
             df[x.split(": ")[0]] = df[x].map(
                 lambda x: x.split(": ", 2)[0], na_action="ignore"

@@ -41,8 +41,6 @@ def read(input_str: str) -> Sequence[PandasDataset]:
 
     # Convert all columns to strings
     df_csv = df_csv.astype(str).replace({"nan": "NaN", "<NA>": "NaN"})
-    # Strip the labels, if any, keeping only the ids. The structure id
-    # label is stripped later, in __generate_dataset_from_sdmx_csv.
     df_csv = drop_labels(df_csv)
 
     # Determine the id column based on the SDMX-CSV version

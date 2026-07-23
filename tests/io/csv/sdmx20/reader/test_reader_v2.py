@@ -261,8 +261,6 @@ def test_reading_keys_both(csv_keys_both):
     assert len(df) == 1
     assert "SERIES_KEY" not in df.columns
     assert "OBS_KEY" not in df.columns
-    assert "SERIES_KEYS" not in df.columns
-    assert "OBS_KEYS" not in df.columns
 
     assert len(datasets[0].attributes) == 0
 

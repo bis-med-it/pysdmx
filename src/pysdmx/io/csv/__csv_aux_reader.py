@@ -55,13 +55,7 @@ def __generate_dataset_from_sdmx_csv(  # noqa: C901
                     "Cannot have more than one value on ACTION column, "
                     "or 2 if D is present",
                 )
-        # Remove the keys columns, if any (SERIES_KEY/OBS_KEY as per the
-        # SDMX-CSV spec, plus the legacy plural forms written by
-        # previous pysdmx versions)
-        data = data.drop(
-            columns=["SERIES_KEY", "OBS_KEY", "SERIES_KEYS", "OBS_KEYS"],
-            errors="ignore",
-        )
+        data = data.drop(columns=["SERIES_KEY", "OBS_KEY"], errors="ignore")
 
         # For SDMX-CSV version 2, use 'STRUCTURE_ID'
         # column as the structure id and 'STRUCTURE' as the structure type
