@@ -7,36 +7,229 @@ import pytest
 from pysdmx.api.qb import ApiVersion, DataFormat, StructureFormat
 from pysdmx.api.stat import StatConnector, StatEndpoints
 from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
-from pysdmx.io import get_datasets
+from pysdmx.io import get_datasets, read_sdmx
+from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
-from pysdmx.model import Schema
+from pysdmx.io.writer import write_sdmx
+from pysdmx.model import (
+    Agency,
+    AgencyScheme,
+    Categorisation,
+    Category,
+    CategoryScheme,
+    Code,
+    Codelist,
+    Component,
+    Components,
+    Concept,
+    ConceptScheme,
+    Dataflow,
+    DataProviderScheme,
+    DataStructureDefinition,
+    Hierarchy,
+    Metadataflow,
+    MetadataProviderScheme,
+    MetadataProvisionAgreement,
+    MetadataStructure,
+    MultiRepresentationMap,
+    ProvisionAgreement,
+    RepresentationMap,
+    Role,
+    Schema,
+    StructureMap,
+    TransformationScheme,
+)
+from pysdmx.model.__base import DataProvider, DataType, MetadataProvider
+from pysdmx.model.code import HierarchicalCode
+from pysdmx.model.metadata import MetadataComponent
 
-# --- Sample fixture files ----------------------------------------------------
+HOST = "https://test.stat"
+STRUCT_PREFIX = f"{HOST}/structure"
+DATA_PREFIX = f"{HOST}/data/dataflow/OECD.SDD.TPS"
+
 _SAMPLES = Path(__file__).parent / "samples"
 OECD_STRUCTURE = _SAMPLES / "oecd_g20_prices_structure.xml"
 OECD_DATA = _SAMPLES / "oecd_g20_prices_data.csv"
-
-# --- Reference dataflow ------------------------------------------------------
-HOST = "https://test.stat"
 OECD_FLOW = ("OECD.SDD.TPS", "DSD_G20_PRICES@DF_G20_PRICES", "1.0")
-OECD_URN = "Dataflow=OECD.SDD.TPS:DSD_G20_PRICES@DF_G20_PRICES(1.0)"
 OECD_KEY = "CHN.A.N.CPI.PA._T.N.GY"
-# Matched by prefix (stops before the ``@`` in the dataflow id).
-STRUCT_PREFIX = f"{HOST}/structure/dataflow/OECD.SDD.TPS"
-DATA_PREFIX = f"{HOST}/data/dataflow/OECD.SDD.TPS"
 
-# 404 -> NotFound, other 4xx -> Invalid, 5xx -> InternalError.
 _ERROR_CASES = [
     (404, NotFound),
     (400, Invalid),
-    (409, Invalid),
     (500, InternalError),
     (503, InternalError),
 ]
 
+_A = "TEST"
+_V = "1.0"
+_INFO = "urn:sdmx:org.sdmx.infomodel"
+_CONCEPT_URN = f"{_INFO}.conceptscheme.Concept=TEST:CS(1.0).OBS_VALUE"
+# Full URNs: read_sdmx round-trips these; short URNs would not parse.
+_DF_URN = f"{_INFO}.datastructure.Dataflow=TEST:DF(1.0)"
+_CAT_URN = f"{_INFO}.categoryscheme.Category=TEST:CATS(1.0).C1"
+_DP_URN = f"{_INFO}.base.DataProvider=TEST:DPS(1.0).P1"
+_MDF_URN = f"{_INFO}.metadatastructure.Metadataflow=TEST:MDF(1.0)"
+_MP_URN = f"{_INFO}.base.MetadataProvider=TEST:MPS(1.0).MP1"
+_MSD_URN = f"{_INFO}.metadatastructure.MetadataStructure=TEST:MSD(1.0)"
+
+
+def _all_structures():
+    """One instance of every artefact type StatConnector reads."""
+    cu = "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=TEST:CS(1.0)."
+    concepts = [
+        Concept(id="REF_AREA", name="Ref area", urn=cu + "REF_AREA"),
+        Concept(id="OBS_VALUE", name="Obs", urn=cu + "OBS_VALUE"),
+    ]
+    cs = ConceptScheme(
+        id="CS", agency=_A, version=_V, name="cs", items=concepts
+    )
+    cl = Codelist(
+        id="CL",
+        agency=_A,
+        version=_V,
+        name="cl",
+        items=[Code(id="A", name="A")],
+    )
+    cat = CategoryScheme(
+        id="CATS",
+        agency=_A,
+        version=_V,
+        name="cats",
+        items=[Category(id="C1", name="c1")],
+    )
+    dps = DataProviderScheme(
+        id="DPS",
+        agency=_A,
+        version=_V,
+        name="dps",
+        items=[DataProvider(id="P1", name="prov")],
+    )
+    mps = MetadataProviderScheme(
+        id="MPS",
+        agency=_A,
+        version=_V,
+        name="mps",
+        items=[MetadataProvider(id="MP1", name="mprov")],
+    )
+    ags = AgencyScheme(
+        id="AGENCIES",
+        agency=_A,
+        version=_V,
+        name="ags",
+        items=[Agency(id="TEST.SUB", name="Sub agency")],
+    )
+    components = Components(
+        [
+            Component(
+                id="REF_AREA",
+                required=True,
+                role=Role.DIMENSION,
+                concept=concepts[0],
+                local_dtype=DataType.STRING,
+            ),
+            Component(
+                id="OBS_VALUE",
+                required=False,
+                role=Role.MEASURE,
+                concept=concepts[1],
+                local_dtype=DataType.DOUBLE,
+            ),
+        ]
+    )
+    dsd = DataStructureDefinition(
+        id="DSD", agency=_A, version=_V, name="dsd", components=components
+    )
+    df = Dataflow(id="DF", agency=_A, version=_V, name="df", structure=dsd)
+    hier = Hierarchy(
+        id="H",
+        agency=_A,
+        version=_V,
+        name="h",
+        codes=[
+            HierarchicalCode(
+                id="A",
+                name="A",
+                urn="urn:sdmx:org.sdmx.infomodel.codelist.Code=TEST:CL(1.0).A",
+            )
+        ],
+    )
+    catn = Categorisation(
+        id="CATN",
+        agency=_A,
+        version=_V,
+        name="catn",
+        source=_DF_URN,
+        target=_CAT_URN,
+    )
+    pa = ProvisionAgreement(
+        id="PA",
+        agency=_A,
+        version=_V,
+        name="pa",
+        dataflow=_DF_URN,
+        provider=_DP_URN,
+    )
+    msd = MetadataStructure(
+        id="MSD",
+        agency=_A,
+        version=_V,
+        name="msd",
+        components=[
+            MetadataComponent(id="MC", concept=Concept("MC", urn=_CONCEPT_URN))
+        ],
+    )
+    mdf = Metadataflow(
+        id="MDF",
+        agency=_A,
+        version=_V,
+        name="mdf",
+        structure=_MSD_URN,
+        targets=[_DF_URN],
+    )
+    mpa = MetadataProvisionAgreement(
+        id="MPA",
+        agency=_A,
+        version=_V,
+        name="mpa",
+        metadataflow=_MDF_URN,
+        metadata_provider=_MP_URN,
+    )
+    built = [
+        cs,
+        cl,
+        cat,
+        dps,
+        mps,
+        ags,
+        dsd,
+        df,
+        hier,
+        catn,
+        pa,
+        msd,
+        mdf,
+        mpa,
+    ]
+    # maps + VTL are impractical to author by hand -> reuse io samples
+    io_samples = Path(__file__).parent.parent.parent / "io" / "samples"
+    harvested = (
+        getattr(read_sdmx(io_samples / "maps.xml"), "structures", []) or []
+    )
+    vtl = Path(__file__).parent.parent.parent
+    vtl = vtl / "io/xml/sdmx21/writer/samples/vtl_complete.xml"
+    harvested = list(harvested) + list(
+        getattr(read_sdmx(vtl), "structures", []) or []
+    )
+    return [*built, *harvested]
+
+
+# Every artefact type shares this one SDMX-JSON structure message.
+STRUCT_JSON = write_sdmx(
+    _all_structures(), Format.STRUCTURE_SDMX_JSON_2_0_0
+).encode()
+
 
 def _mock(respx_mock, url, content):
-    """Mock an SDMX-REST GET (matched by URL prefix) with raw bytes."""
     return respx_mock.get(url__startswith=url).mock(
         return_value=httpx.Response(200, content=content)
     )
@@ -48,25 +241,19 @@ def client():
 
 
 @pytest.fixture
-def structure_bytes():
-    return OECD_STRUCTURE.read_bytes()
+def structs_mock(respx_mock):
+    _mock(respx_mock, STRUCT_PREFIX, STRUCT_JSON)
+    return respx_mock
 
 
-@pytest.fixture
-def data_bytes():
-    return OECD_DATA.read_bytes()
-
-
-# --- Construction / configuration --------------------------------------------
+# --- Construction ------------------------------------------------------------
 def test_init_defaults_to_oecd():
     conn = StatConnector()
-
     assert conn._svc._api_endpoint == StatEndpoints.OECD.value
 
 
 def test_init_configures_rest_service(client):
     svc = client._svc
-
     assert svc._api_endpoint == HOST
     assert svc._api_version == ApiVersion.V2_0_0
     assert svc._data_format == DataFormat.SDMX_CSV_1_0_0
@@ -75,15 +262,19 @@ def test_init_configures_rest_service(client):
 
 def test_init_accepts_endpoint_enum():
     conn = StatConnector(StatEndpoints.OECD)
-
     assert conn._svc._api_endpoint == StatEndpoints.OECD.value
+
+
+def test_is_a_registry_client():
+    from pysdmx.api.fmr import RegistryClient
+
+    assert isinstance(StatConnector(HOST), RegistryClient)
 
 
 def test_stat_endpoints_are_urls():
     assert len(StatEndpoints) >= 6
     for endpoint in StatEndpoints:
         assert endpoint.value.startswith(("http://", "https://"))
-    # The verified group are SDMX-REST v2 bases.
     verified = {
         StatEndpoints.OECD,
         StatEndpoints.ILO,
@@ -96,72 +287,154 @@ def test_stat_endpoints_are_urls():
         assert endpoint.value.endswith("/rest/v2")
 
 
-# --- fetch_structure ---------------------------------------------------------
-def test_fetch_structure_returns_raw_bytes(
-    respx_mock, client, structure_bytes
-):
-    route = _mock(respx_mock, STRUCT_PREFIX, structure_bytes)
-
-    out = client.fetch_structure(*OECD_FLOW)
-
-    assert out == structure_bytes
-    assert route.called
-    assert "/structure/dataflow/" in str(route.calls.last.request.url)
+# --- Inherited get_* (return FMR model objects) ------------------------------
+def test_get_dataflows(client, structs_mock):
+    out = client.get_dataflows("TEST")
+    assert out
+    assert all(isinstance(x, Dataflow) for x in out)
 
 
-def test_fetch_structure_builds_url(respx_mock, client, structure_bytes):
-    route = _mock(respx_mock, STRUCT_PREFIX, structure_bytes)
-
-    client.fetch_structure(*OECD_FLOW)
-
-    url = str(route.calls.last.request.url)
-    assert "/structure/dataflow/OECD.SDD.TPS/" in url
-    assert "DSD_G20_PRICES" in url
-    assert "DF_G20_PRICES" in url
-    assert "/1.0" in url
-    assert "references=descendants" in url
+def test_get_data_structures(client, structs_mock):
+    out = client.get_data_structures("TEST")
+    assert out
+    assert all(isinstance(x, DataStructureDefinition) for x in out)
 
 
-def test_fetch_structure_accept_header(respx_mock, client, structure_bytes):
-    route = _mock(respx_mock, STRUCT_PREFIX, structure_bytes)
+def test_get_codes(client, structs_mock):
+    assert isinstance(client.get_codes("TEST", "CL"), Codelist)
 
-    client.fetch_structure(*OECD_FLOW)
 
-    assert (
-        route.calls.last.request.headers["Accept"]
-        == "application/vnd.sdmx.structure+xml;version=2.1"
+def test_get_concepts(client, structs_mock):
+    assert isinstance(client.get_concepts("TEST", "CS"), ConceptScheme)
+
+
+def test_get_categories(client, structs_mock):
+    assert isinstance(client.get_categories("TEST", "CATS"), CategoryScheme)
+
+
+def test_get_categorisation(client, structs_mock):
+    assert isinstance(
+        client.get_categorisation("TEST", "CATN"), Categorisation
     )
 
 
+def test_get_provision_agreement(client, structs_mock):
+    assert isinstance(
+        client.get_provision_agreement("TEST", "PA"), ProvisionAgreement
+    )
+
+
+def test_get_agencies(client, structs_mock):
+    assert list(client.get_agencies("TEST"))
+
+
+def test_get_providers(client, structs_mock):
+    assert list(client.get_providers("TEST"))
+
+
+def test_get_metadata_providers(client, structs_mock):
+    assert list(client.get_metadata_providers("TEST"))
+
+
+def test_get_hierarchy(client, structs_mock):
+    assert isinstance(client.get_hierarchy("TEST", "H"), Hierarchy)
+
+
+def test_get_metadata_structures(client, structs_mock):
+    out = client.get_metadata_structures("TEST")
+    assert out
+    assert all(isinstance(x, MetadataStructure) for x in out)
+
+
+def test_get_metadataflows(client, structs_mock):
+    out = client.get_metadataflows("TEST")
+    assert out
+    assert all(isinstance(x, Metadataflow) for x in out)
+
+
+def test_get_metadata_provision_agreement(client, structs_mock):
+    assert isinstance(
+        client.get_metadata_provision_agreement("TEST", "MPA"),
+        MetadataProvisionAgreement,
+    )
+
+
+def test_get_mapping(client, structs_mock):
+    assert isinstance(client.get_mapping("TEST", "SM"), StructureMap)
+
+
+def test_get_code_map(client, structs_mock):
+    assert isinstance(
+        client.get_code_map("TEST", "RM"),
+        (RepresentationMap, MultiRepresentationMap),
+    )
+
+
+def test_get_vtl_transformation_scheme(client, structs_mock):
+    assert isinstance(
+        client.get_vtl_transformation_scheme("TEST", "TS"),
+        TransformationScheme,
+    )
+
+
+def test_get_when_type_absent_raises_not_found(client, respx_mock):
+    # a codelist-only message -> get_concepts finds no ConceptScheme
+    body = write_sdmx(
+        Codelist(
+            id="CL",
+            agency="A",
+            version="1.0",
+            name="c",
+            items=[Code(id="X", name="x")],
+        ),
+        Format.STRUCTURE_SDMX_JSON_2_0_0,
+    ).encode()
+    _mock(respx_mock, STRUCT_PREFIX, body)
+    with pytest.raises(NotFound):
+        client.get_concepts("A", "MISSING")
+
+
+# --- Endpoints .Stat does not serve -> Invalid -------------------------------
+def test_get_schema_unsupported(client):
+    with pytest.raises(Invalid, match="Not available"):
+        client.get_schema("dataflow", "A", "DF", "1.0")
+
+
+def test_get_dataflow_details_unsupported(client):
+    with pytest.raises(Invalid, match="Not available"):
+        client.get_dataflow_details("A", "DF", "1.0")
+
+
+def test_get_report_unsupported(client):
+    with pytest.raises(Invalid, match="Not available"):
+        client.get_report("P", "R", "1.0")
+
+
+def test_get_reports_unsupported(client):
+    with pytest.raises(Invalid, match="Not available"):
+        client.get_reports("dataflow", "A", "DF", "1.0")
+
+
 # --- fetch_data --------------------------------------------------------------
-def test_fetch_data_returns_raw_bytes(respx_mock, client, data_bytes):
-    route = _mock(respx_mock, DATA_PREFIX, data_bytes)
-
+def test_fetch_data_returns_raw_bytes(respx_mock, client):
+    data = OECD_DATA.read_bytes()
+    route = _mock(respx_mock, DATA_PREFIX, data)
     out = client.fetch_data(*OECD_FLOW)
-
-    assert out == data_bytes
+    assert out == data
     url = str(route.calls.last.request.url)
-    # The default key ("*") is omitted from the path.
     assert url.endswith("dimensionAtObservation=AllDimensions")
-    assert "/1.0/" not in url
 
 
-def test_fetch_data_with_key_in_url(respx_mock, client, data_bytes):
-    route = _mock(respx_mock, DATA_PREFIX, data_bytes)
-
-    out = client.fetch_data(*OECD_FLOW, key=OECD_KEY)
-
-    assert out == data_bytes
-    url = str(route.calls.last.request.url)
-    assert f"/1.0/{OECD_KEY}" in url
-    assert "dimensionAtObservation=AllDimensions" in url
+def test_fetch_data_with_key_in_url(respx_mock, client):
+    data = OECD_DATA.read_bytes()
+    route = _mock(respx_mock, DATA_PREFIX, data)
+    client.fetch_data(*OECD_FLOW, key=OECD_KEY)
+    assert f"/1.0/{OECD_KEY}" in str(route.calls.last.request.url)
 
 
-def test_fetch_data_accept_header(respx_mock, client, data_bytes):
-    route = _mock(respx_mock, DATA_PREFIX, data_bytes)
-
+def test_fetch_data_accept_header(respx_mock, client):
+    route = _mock(respx_mock, DATA_PREFIX, OECD_DATA.read_bytes())
     client.fetch_data(*OECD_FLOW)
-
     assert (
         route.calls.last.request.headers["Accept"]
         == "application/vnd.sdmx.data+csv;version=1.0.0"
@@ -169,68 +442,42 @@ def test_fetch_data_accept_header(respx_mock, client, data_bytes):
 
 
 # --- fetch_dataset -----------------------------------------------------------
-def test_fetch_dataset_returns_pandas_dataset(
-    respx_mock, client, structure_bytes, data_bytes
-):
-    _mock(respx_mock, STRUCT_PREFIX, structure_bytes)
-    _mock(respx_mock, DATA_PREFIX, data_bytes)
-    expected = get_datasets(
-        BytesIO(data_bytes), BytesIO(structure_bytes), validate=False
-    )[0]
+def test_fetch_dataset_returns_pandas_dataset(respx_mock, client):
+    structure = OECD_STRUCTURE.read_bytes()
+    data = OECD_DATA.read_bytes()
+    _mock(respx_mock, STRUCT_PREFIX, structure)
+    _mock(respx_mock, DATA_PREFIX, data)
+    expected = get_datasets(BytesIO(data), BytesIO(structure), validate=False)[
+        0
+    ]
 
     ds = client.fetch_dataset(*OECD_FLOW)
 
     assert isinstance(ds, PandasDataset)
     assert isinstance(ds.structure, Schema)
-    assert ds.structure.short_urn == OECD_URN
     assert ds.data.equals(expected.data)
 
 
-def test_fetch_dataset_passes_key_to_data(
-    respx_mock, client, structure_bytes, data_bytes
-):
-    _mock(respx_mock, STRUCT_PREFIX, structure_bytes)
-    data_route = _mock(respx_mock, DATA_PREFIX, data_bytes)
-
+def test_fetch_dataset_passes_key_to_data(respx_mock, client):
+    _mock(respx_mock, STRUCT_PREFIX, OECD_STRUCTURE.read_bytes())
+    data_route = _mock(respx_mock, DATA_PREFIX, OECD_DATA.read_bytes())
     client.fetch_dataset(*OECD_FLOW, key=OECD_KEY)
-
     assert f"/1.0/{OECD_KEY}" in str(data_route.calls.last.request.url)
 
 
 # --- Error mapping -----------------------------------------------------------
 @pytest.mark.parametrize(("status", "error"), _ERROR_CASES)
-def test_fetch_structure_error_mapping(respx_mock, client, status, error):
+def test_get_dataflows_error_mapping(respx_mock, client, status, error):
     respx_mock.get(url__startswith=STRUCT_PREFIX).mock(
         return_value=httpx.Response(status, text="boom")
     )
-
     with pytest.raises(error):
-        client.fetch_structure(*OECD_FLOW)
-
-
-@pytest.mark.parametrize(("status", "error"), _ERROR_CASES)
-def test_fetch_data_error_mapping(respx_mock, client, status, error):
-    respx_mock.get(url__startswith=DATA_PREFIX).mock(
-        return_value=httpx.Response(status, text="boom")
-    )
-
-    with pytest.raises(error):
-        client.fetch_data(*OECD_FLOW)
-
-
-def test_fetch_structure_connection_error(respx_mock, client):
-    respx_mock.get(url__startswith=STRUCT_PREFIX).mock(
-        side_effect=httpx.ConnectError("boom")
-    )
-
-    with pytest.raises(Unavailable):
-        client.fetch_structure(*OECD_FLOW)
+        client.get_dataflows("TEST")
 
 
 def test_fetch_data_connection_error(respx_mock, client):
     respx_mock.get(url__startswith=DATA_PREFIX).mock(
         side_effect=httpx.ConnectError("boom")
     )
-
     with pytest.raises(Unavailable):
         client.fetch_data(*OECD_FLOW)

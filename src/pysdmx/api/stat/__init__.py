@@ -10,7 +10,9 @@ from io import BytesIO
 from typing import (
     TYPE_CHECKING,
     Any,
+    Literal,
     Mapping,
+    NoReturn,
     Optional,
     Sequence,
     Union,
@@ -20,21 +22,43 @@ import httpx
 from msgspec import Struct, structs
 
 from pysdmx import errors
+from pysdmx.api.fmr import DataflowDetails, RegistryClient
 from pysdmx.api.qb import (
     ApiVersion,
     DataContext,
     DataFormat,
     DataQuery,
     RestService,
+    SchemaContext,
     StructureDetail,
     StructureFormat,
     StructureQuery,
     StructureReference,
     StructureType,
 )
-from pysdmx.io import get_datasets
+from pysdmx.io import get_datasets, read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.writer import write_sdmx
+from pysdmx.model import (
+    AgencyScheme,
+    Categorisation,
+    CategoryScheme,
+    Codelist,
+    ConceptScheme,
+    Dataflow,
+    DataProviderScheme,
+    DataStructureDefinition,
+    Hierarchy,
+    Metadataflow,
+    MetadataProviderScheme,
+    MetadataProvisionAgreement,
+    MetadataStructure,
+    MultiRepresentationMap,
+    ProvisionAgreement,
+    RepresentationMap,
+    StructureMap,
+    TransformationScheme,
+)
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.dataset import ActionType, Dataset
 from pysdmx.util import experimental, parse_short_urn
@@ -42,6 +66,13 @@ from pysdmx.util._net_utils import BearerAuth, map_httpx_errors
 
 if TYPE_CHECKING:  # pragma: no cover
     from pysdmx.io.pd import PandasDataset
+    from pysdmx.model import (
+        Agency,
+        DataflowInfo,
+        DataProvider,
+        MetadataReport,
+        Schema,
+    )
 
 
 class SubmissionResult(Struct, frozen=True, repr_omit_defaults=True):
@@ -171,19 +202,18 @@ class StatEndpoints(str, Enum):
 
 
 @experimental
-class StatConnector:
-    """Download connector for .Stat Suite SDMX-REST v2 services.
+class StatConnector(RegistryClient):
+    """Read connector for .Stat Suite SDMX-REST v2 services.
 
-    .Stat Suite deployments serve structural metadata as SDMX-ML 2.1
-    and data as SDMX-CSV, and do not expose the SDMX-REST ``/schema``
-    endpoint. Three ``fetch_*`` methods download the raw structure
-    message (:meth:`fetch_structure`), the raw data
-    (:meth:`fetch_data`), and -- combining both through pysdmx's native
-    :func:`~pysdmx.io.get_datasets` -- a typed ``PandasDataset``
-    (:meth:`fetch_dataset`).
+    Inherits :class:`~pysdmx.api.fmr.RegistryClient`, so its ``get_*``
+    methods return the same model objects -- but it reads .Stat's
+    SDMX-ML 2.1 and parses it with :func:`~pysdmx.io.read_sdmx` (the FMR
+    client's JSON deserializers do not apply). Structure types or
+    endpoints .Stat does not serve raise :class:`~pysdmx.errors.Invalid`.
 
-    It wraps a :class:`pysdmx.api.qb.RestService` (anonymous, SDMX-ML
-    2.1 structures + SDMX-CSV data); reads need no token.
+    Adds .Stat-specific data retrieval, which the FMR client does not
+    offer: :meth:`fetch_data` (raw SDMX-CSV) and :meth:`fetch_dataset`
+    (a typed ``PandasDataset``). Reads are anonymous.
 
     Obtain the ``agency``, ``id`` and ``version`` of a dataflow from the
     OECD Data Explorer (https://data-explorer.oecd.org) via its
@@ -194,9 +224,9 @@ class StatConnector:
         self,
         api_endpoint: str = StatEndpoints.OECD,
         pem: Optional[str] = None,
-        timeout: Optional[float] = 20.0,
+        timeout: float = 20.0,
     ) -> None:
-        """Instantiate a .Stat Suite download connector.
+        """Instantiate a .Stat Suite read connector.
 
         Args:
             api_endpoint: The SDMX-REST v2 entry point. Defaults to the
@@ -205,8 +235,13 @@ class StatConnector:
                 for services using a self-signed certificate.
             timeout: Maximum number of seconds to wait per request.
         """
+        super().__init__(
+            api_endpoint, StructureFormat.SDMX_JSON_2_0_0, pem, timeout
+        )
+        # .Stat serves SDMX-ML 2.1 structures + SDMX-CSV data; parse with
+        # read_sdmx rather than the inherited (JSON) deserializers.
         self._svc = RestService(
-            api_endpoint,
+            self.api_endpoint,
             ApiVersion.V2_0_0,
             data_format=DataFormat.SDMX_CSV_1_0_0,
             structure_format=StructureFormat.SDMX_ML_2_1,
@@ -214,37 +249,185 @@ class StatConnector:
             pem=pem,
         )
 
-    def fetch_structure(self, agency: str, id: str, version: str) -> bytes:
-        """Download the SDMX-ML 2.1 structure message for a dataflow.
+    def _structures(self, query: StructureQuery) -> Sequence[Any]:
+        """Fetch a structure query and parse it into model artefacts."""
+        raw = self._svc.structure(query)
+        return read_sdmx(BytesIO(raw), validate=False).structures or ()
 
-        The dataflow is retrieved with its descendants (data structure,
-        concept schemes, codelists, constraints), the way .Stat serves
-        structures. Parse the result with
-        :func:`~pysdmx.io.read_sdmx`.
-
-        Args:
-            agency: The agency maintaining the dataflow.
-            id: The dataflow ID.
-            version: The dataflow version.
-
-        Returns:
-            The raw SDMX-ML 2.1 structure message.
-
-        Raises:
-            errors.NotFound: If the dataflow is not found.
-            errors.Invalid: If the service returns a client error.
-            errors.InternalError: If the service returns a server error.
-            errors.Unavailable: If the service cannot be reached.
-        """
-        query = StructureQuery(
-            StructureType.DATAFLOW,
-            agency,
-            id,
-            version,
-            detail=StructureDetail.FULL,
-            references=StructureReference.DESCENDANTS,
+    def _one(self, query: StructureQuery, typ: Any) -> Any:
+        for artefact in self._structures(query):
+            if isinstance(artefact, typ):
+                return artefact
+        raise errors.NotFound(
+            "Artefact not found",
+            "The service returned no matching artefact.",
         )
-        return self._svc.structure(query)
+
+    def _many(self, query: StructureQuery, typ: Any) -> Any:
+        return [a for a in self._structures(query) if isinstance(a, typ)]
+
+    @staticmethod
+    def _unsupported(name: str) -> NoReturn:
+        raise errors.Invalid(
+            "Not available on .Stat",
+            f"'{name}' is not served by .Stat Suite deployments.",
+        )
+
+    def get_agencies(self, agency: str) -> Sequence["Agency"]:
+        """Get the sub-agencies for the supplied agency."""
+        scheme = self._one(self._agencies_q(agency), AgencyScheme)
+        return scheme.items
+
+    def get_providers(
+        self, agency: str, with_flows: bool = False
+    ) -> Sequence["DataProvider"]:
+        """Get the data providers for the supplied agency."""
+        query = self._providers_q(agency, with_flows)
+        return self._one(query, DataProviderScheme).items
+
+    def get_metadata_providers(
+        self, agency: str, with_flows: bool = False
+    ) -> Sequence["DataProvider"]:
+        """Get the metadata providers for the supplied agency."""
+        query = self._metadata_providers_q(agency, with_flows)
+        return self._one(query, MetadataProviderScheme).items
+
+    def get_categories(
+        self, agency: str, id: str, version: str = "~"
+    ) -> CategoryScheme:
+        """Get the category scheme matching the parameters."""
+        query = self._categories_q(agency, id, version)
+        return self._one(query, CategoryScheme)
+
+    def get_categorisation(
+        self, agency: str, id: str, version: str = "~"
+    ) -> Categorisation:
+        """Get the categorisation matching the parameters."""
+        query = self._categorisation_q(agency, id, version)
+        return self._one(query, Categorisation)
+
+    def get_provision_agreement(
+        self, agency: str, id: str, version: str = "~"
+    ) -> ProvisionAgreement:
+        """Get the provision agreement matching the parameters."""
+        query = self._pa_q(agency, id, version)
+        return self._one(query, ProvisionAgreement)
+
+    def get_codes(
+        self, agency: str, id: str, version: str = "~"
+    ) -> Codelist:
+        """Get the codelist matching the parameters."""
+        return self._one(self._codes_cl_q(agency, id, version), Codelist)
+
+    def get_concepts(
+        self, agency: str, id: str, version: str = "~"
+    ) -> ConceptScheme:
+        """Get the concept scheme matching the parameters."""
+        return self._one(
+            self._concepts_q(agency, id, version), ConceptScheme
+        )
+
+    def get_schema(
+        self,
+        context: Union[
+            SchemaContext,
+            Literal["dataflow", "datastructure", "provisionagreement"],
+        ],
+        agency: str,
+        id: str,
+        version: str,
+    ) -> "Schema":
+        """Not served by .Stat (no SDMX-REST ``/schema`` endpoint)."""
+        self._unsupported("get_schema")
+
+    def get_dataflow_details(
+        self,
+        agency: str,
+        id: str,
+        version: str = "~",
+        detail: Union[
+            DataflowDetails,
+            Literal["all", "core", "providers", "schema"],
+        ] = DataflowDetails.ALL,
+    ) -> "DataflowInfo":
+        """Not served by .Stat."""
+        self._unsupported("get_dataflow_details")
+
+    def get_dataflows(
+        self, agency: str = "*", id: str = "*", version: str = "~"
+    ) -> Sequence[Dataflow]:
+        """Get the dataflow(s) matching the parameters."""
+        return self._many(self._dataflows_q(agency, id, version), Dataflow)
+
+    def get_data_structures(
+        self, agency: str = "*", id: str = "*", version: str = "~"
+    ) -> Sequence[DataStructureDefinition]:
+        """Get the data structure(s) matching the parameters."""
+        query = self._data_structures_q(agency, id, version)
+        return self._many(query, DataStructureDefinition)
+
+    def get_hierarchy(
+        self, agency: str, id: str, version: str = "~"
+    ) -> Hierarchy:
+        """Get the hierarchy matching the parameters."""
+        return self._one(self._hierarchy_q(agency, id, version), Hierarchy)
+
+    def get_report(
+        self, provider: str, id: str, version: str = "~"
+    ) -> "MetadataReport":
+        """Not served by .Stat."""
+        self._unsupported("get_report")
+
+    def get_reports(
+        self,
+        artefact_type: str,
+        agency: str,
+        id: str,
+        version: str = "~",
+    ) -> Sequence["MetadataReport"]:
+        """Not served by .Stat."""
+        self._unsupported("get_reports")
+
+    def get_metadata_structures(
+        self, agency: str = "*", id: str = "*", version: str = "~"
+    ) -> Sequence[MetadataStructure]:
+        """Get the metadata structure(s) matching the parameters."""
+        query = self._msds_q(agency, id, version)
+        return self._many(query, MetadataStructure)
+
+    def get_metadataflows(
+        self, agency: str = "*", id: str = "*", version: str = "~"
+    ) -> Sequence[Metadataflow]:
+        """Get the metadataflow(s) matching the parameters."""
+        query = self._metadataflows_q(agency, id, version)
+        return self._many(query, Metadataflow)
+
+    def get_metadata_provision_agreement(
+        self, agency: str, id: str, version: str = "~"
+    ) -> MetadataProvisionAgreement:
+        """Get the metadata provision agreement matching the parameters."""
+        query = self._mpa_q(agency, id, version)
+        return self._one(query, MetadataProvisionAgreement)
+
+    def get_mapping(
+        self, agency: str, id: str, version: str = "~"
+    ) -> StructureMap:
+        """Get the structure map matching the parameters."""
+        return self._one(self._mapping_q(agency, id, version), StructureMap)
+
+    def get_code_map(
+        self, agency: str, id: str, version: str = "~"
+    ) -> Union[MultiRepresentationMap, RepresentationMap]:
+        """Get the representation map matching the parameters."""
+        query = self._code_map_q(agency, id, version)
+        return self._one(query, (MultiRepresentationMap, RepresentationMap))
+
+    def get_vtl_transformation_scheme(
+        self, agency: str, id: str, version: str = "~"
+    ) -> Union[MultiRepresentationMap, RepresentationMap]:
+        """Get the VTL transformation scheme matching the parameters."""
+        query = self._vtl_ts_q(agency, id, version)
+        return self._one(query, TransformationScheme)
 
     def fetch_data(
         self, agency: str, id: str, version: str, key: str = "*"
@@ -283,10 +466,9 @@ class StatConnector:
     ) -> "PandasDataset":
         """Get data for a dataflow as a typed Pandas dataset.
 
-        Downloads the structure and the data (via
-        :meth:`fetch_structure` and :meth:`fetch_data`) and combines them
-        with pysdmx's native :func:`~pysdmx.io.get_datasets`, which
-        attaches the schema to the data.
+        Downloads the dataflow's structure (with descendants) and its
+        data, then combines them with pysdmx's native
+        :func:`~pysdmx.io.get_datasets`, which attaches the schema.
 
         Args:
             agency: The agency maintaining the dataflow.
@@ -303,7 +485,15 @@ class StatConnector:
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
-        structure = self.fetch_structure(agency, id, version)
+        struct_query = StructureQuery(
+            StructureType.DATAFLOW,
+            agency,
+            id,
+            version,
+            detail=StructureDetail.FULL,
+            references=StructureReference.DESCENDANTS,
+        )
+        structure = self._svc.structure(struct_query)
         data = self.fetch_data(agency, id, version, key)
         datasets = get_datasets(
             BytesIO(data), BytesIO(structure), validate=False

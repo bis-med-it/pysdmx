@@ -14,10 +14,16 @@ Many statistical organisations disseminate SDMX data through the
 others). These deployments expose the SDMX-REST v2 API, serving
 structural metadata as SDMX-ML 2.1 and data as SDMX-CSV.
 
-The :class:`pysdmx.api.stat.StatConnector` is tuned to that profile.
-For a given dataflow it retrieves three artefacts: the ``Dataflow``
-(with its components), the ``Schema``, and the data as a typed
-``PandasDataset``.
+The :class:`pysdmx.api.stat.StatConnector` **inherits the Fusion
+Metadata Registry client** (:class:`~pysdmx.api.fmr.RegistryClient`),
+so its ``get_*`` methods return the same model objects --
+``get_dataflows`` returns ``Dataflow`` objects, ``get_codes`` a
+``Codelist``, and so on. It reads .Stat's SDMX-ML and parses it with
+:func:`~pysdmx.io.read_sdmx`. Endpoints .Stat does not serve (e.g.
+``get_schema`` -- there is no ``/schema`` endpoint -- or reference
+metadata) raise :class:`~pysdmx.errors.Invalid`. On top, it adds data
+retrieval the registry client does not offer: ``fetch_data`` (raw
+SDMX-CSV) and ``fetch_dataset`` (a typed ``PandasDataset``).
 
 .. important::
     To use the ``StatConnector``, install the ``pysdmx[data,xml]``
@@ -43,8 +49,8 @@ You can find the ``agency``, ``id`` and ``version`` of a dataflow in
 the `OECD Data Explorer <https://data-explorer.oecd.org>`_ via its
 "Developer API" button.
 
-Retrieving the artefacts
-------------------------
+Retrieving structures and data
+------------------------------
 
 .. code-block:: python
 
@@ -52,22 +58,24 @@ Retrieving the artefacts
     flow_id = "DSD_G20_PRICES@DF_G20_PRICES"
     version = "1.0"
 
-    # The raw SDMX-ML 2.1 structure message (dataflow + descendants)
-    structure = conn.fetch_structure(agency, flow_id, version)
+    # Structures as model objects (the inherited FMR get_* methods)
+    flows = conn.get_dataflows(agency, flow_id, version)  # [Dataflow]
+    dsds = conn.get_data_structures(agency, "DSD_G20_PRICES", version)
+    freq = conn.get_codes("SDMX", "CL_FREQ")              # a Codelist
 
     # The raw SDMX-CSV data (optionally keyed)
     data = conn.fetch_data(agency, flow_id, version, key="CHN.A.N.CPI.PA")
 
-    # The data as a typed PandasDataset -- structure + data combined
-    # through pysdmx's native get_datasets, with the schema attached
+    # ...or the data as a typed PandasDataset -- structure + data
+    # combined through pysdmx's native get_datasets, schema attached:
     dataset = conn.fetch_dataset(
         agency, flow_id, version, key="CHN.A.N.CPI.PA"
     )
     print(dataset.data.head())
 
-``fetch_structure`` and ``fetch_data`` return the **raw** SDMX messages
-(bytes); parse them with :func:`~pysdmx.io.read_sdmx` if needed.
-``fetch_dataset`` composes the two via
+The ``get_*`` methods return the same model objects as
+:class:`~pysdmx.api.fmr.RegistryClient`. ``fetch_data`` returns the
+**raw** SDMX-CSV bytes; ``fetch_dataset`` composes structure + data via
 :func:`~pysdmx.io.get_datasets`. Select data with a positional ``key``
 (dimensions in data-structure order, ``.``-separated; ``*`` wildcards a
 dimension; defaults to the whole dataflow). .Stat services key on one
