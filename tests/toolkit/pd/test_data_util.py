@@ -1,3 +1,4 @@
+from io import StringIO
 from pathlib import Path
 
 import pandas as pd
@@ -7,6 +8,25 @@ from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
 from pysdmx.toolkit.pd import drop_labels
 from pysdmx.toolkit.pd._data_utils import format_labels
+
+# labels=name example from the SDMX-CSV 2.0.0 field guide: each id
+# column directly precedes its localised name column; the name cell is
+# empty when the value has no localised name (OBS_VALUE) and repeats
+# the value for time periods (DIM_3).
+SDMX_CSV_20_LABELS_NAME = (
+    "STRUCTURE,STRUCTURE_ID,STRUCTURE_NAME,ACTION,"
+    "DIM_1,Dimension 1,DIM_2,Dimension 2,DIM_3,Dimension 3,"
+    "OBS_VALUE,Observation value,ATTR_1,Attribute 1\n"
+    "dataflow,ESTAT:NA_MAIN(1.6.0),National Accounts Main Aggregates,I,"
+    "A,Value A,B,Value B,2014-01,2014-01,12.4,,Y,Yes\n"
+)
+
+# labels=both example from the SDMX-CSV 1.0 field guide
+SDMX_CSV_10_LABELS_BOTH = (
+    "DATAFLOW,DIM_1: Dimension 1,DIM_2: Dimension 2,OBS_VALUE\n"
+    "ESTAT:NA_MAIN(1.6): National Accounts Main Aggregates,"
+    "A: Value A,B: Value B,12.4\n"
+)
 
 
 @pytest.fixture
@@ -120,40 +140,85 @@ def test_format_drop_labels_both_roundtrip(data_path_optional, dsd_path):
 def test_drop_labels_both_format():
     df = pd.DataFrame(
         {
-            "DIM1: DIMENSION 1": ["A: Value A"],
+            "DIM_1: Dimension 1": ["A: Value A"],
             "OBS_VALUE": ["12.4"],
-            "EMBARGO_TIME": ["2025-12-19T14:30:00Z"],
+            "EMBARGO_TIME: Embargo time": ["2025-12-19T14:30:00Z"],
         }
     )
     df = drop_labels(df)
-    assert "DIM1" in df.columns
-    assert df.at[0, "DIM1"] == "A"
+    assert df.at[0, "DIM_1"] == "A"
     assert df.at[0, "OBS_VALUE"] == "12.4"
+    # A bare ':' inside a value (e.g. a full datetime) is preserved
     assert df.at[0, "EMBARGO_TIME"] == "2025-12-19T14:30:00Z"
 
 
-def test_drop_labels_name_format():
-    df = pd.DataFrame(
-        {
-            "STRUCTURE": ["dataflow"],
-            "STRUCTURE_ID": ["MD:MD_TEST(1.0)"],
-            "STRUCTURE_NAME": ["MD TEST"],
-            "ACTION": ["I"],
-            "DIM1": ["A"],
-            "DIMENSION 1": ["Value A"],
-            "OBS_VALUE": ["12.4"],
-            "Observation value": [""],
-        }
+def test_drop_labels_both_format_v1_field_guide():
+    df = pd.read_csv(StringIO(SDMX_CSV_10_LABELS_BOTH))
+    df = drop_labels(df)
+    assert df.at[0, "DIM_1"] == "A"
+    assert df.at[0, "DIM_2"] == "B"
+    assert df.at[0, "OBS_VALUE"] == 12.4
+    # The label on the structure id cell is stripped by the CSV
+    # readers, not by drop_labels
+    assert (
+        df.at[0, "DATAFLOW"]
+        == "ESTAT:NA_MAIN(1.6): National Accounts Main Aggregates"
     )
+
+
+def test_drop_labels_name_format():
+    df = pd.read_csv(StringIO(SDMX_CSV_20_LABELS_NAME), keep_default_na=False)
     df = drop_labels(df)
     assert list(df.columns) == [
         "STRUCTURE",
         "STRUCTURE_ID",
         "ACTION",
-        "DIM1",
+        "DIM_1",
+        "DIM_2",
+        "DIM_3",
+        "OBS_VALUE",
+        "ATTR_1",
+    ]
+    assert df.iloc[0].tolist() == [
+        "dataflow",
+        "ESTAT:NA_MAIN(1.6.0)",
+        "I",
+        "A",
+        "B",
+        "2014-01",
+        12.4,
+        "Y",
+    ]
+
+
+def test_drop_labels_name_format_with_keys():
+    df = pd.DataFrame(
+        {
+            "STRUCTURE": ["dataflow"],
+            "STRUCTURE_ID": ["ESTAT:NA_MAIN(1.6.0)"],
+            "STRUCTURE_NAME": ["National Accounts Main Aggregates"],
+            "ACTION": ["I"],
+            "SERIES_KEY": ["A.B"],
+            "OBS_KEY": ["A.B.2014-01"],
+            "DIM_1": ["A"],
+            "Dimension 1": ["Value A"],
+            "OBS_VALUE": ["12.4"],
+            "Observation value": [""],
+        }
+    )
+    df = drop_labels(df)
+    # The keys columns have no name column and do not break the
+    # id/name pairing
+    assert list(df.columns) == [
+        "STRUCTURE",
+        "STRUCTURE_ID",
+        "ACTION",
+        "SERIES_KEY",
+        "OBS_KEY",
+        "DIM_1",
         "OBS_VALUE",
     ]
-    assert df.at[0, "DIM1"] == "A"
+    assert df.at[0, "DIM_1"] == "A"
 
 
 def test_drop_labels_name_format_malformed():
