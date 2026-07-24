@@ -1512,3 +1512,14 @@ def test_category_scheme_21_enrichment_edge_cases(samples_folder):
         "urn:sdmx:org.sdmx.infomodel.categoryscheme."
         "Category=BIS:CS_ABSENT(1.0).Z"
     )
+
+
+def test_dataflow_stub_without_structure(samples_folder):
+    data_path = samples_folder / "dataflow_no_structure.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=False).structures
+    assert result is not None
+    df = result[0]
+    assert df.short_urn == "Dataflow=MD:DF_STUB(1.0)"
+    assert df.structure is None
