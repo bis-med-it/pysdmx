@@ -1179,11 +1179,19 @@ def test_constraint_without_attachment(samples_folder):
     ] == ["Q"]
 
 
-def test_constraint_with_actual_role_raises(samples_folder):
+def test_constraint_with_actual_role_read_as_plain(samples_folder):
     data_path = samples_folder / "constraint_actual.xml"
     input_str, _ = process_string_to_read(data_path)
-    with pytest.raises(NotImplementedError):
-        read_sdmx(input_str)
+    result = read_sdmx(input_str).get_data_constraints()
+    assert result is not None
+    assert len(result) == 1
+    constraint = result[0]
+    assert isinstance(constraint, DataConstraint)
+    assert constraint.id == "TEST_CONSTRAINT_ACTUAL"
+    assert constraint.cube_regions[0].key_values[0].id == "FREQ"
+    assert [
+        v.value for v in constraint.cube_regions[0].key_values[0].values
+    ] == ["M"]
 
 
 @pytest.mark.xml

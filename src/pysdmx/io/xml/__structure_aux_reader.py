@@ -1238,6 +1238,8 @@ class StructureParser(Struct):
         if KEY_VALUE in region_elem:
             kv_list = add_list(region_elem[KEY_VALUE])
             for kv in kv_list:
+                if VALUE not in kv:
+                    continue
                 values = []
                 value_list = add_list(kv[VALUE])
                 for v in value_list:
@@ -1273,14 +1275,8 @@ class StructureParser(Struct):
         return KeySet(keys=keys, is_included=is_included)
 
     def __format_constraint(self, element: Dict[str, Any]) -> Dict[str, Any]:
-        # role is a SDMX 3.0 attribute not present in the model
-        if "role" in element:
-            if element["role"] == "Actual":
-                raise NotImplementedError(
-                    "DataConstraint with role='Actual' is not supported, "
-                    "pysdmx only supports maintainable (Allowed) constraints."
-                )
-            del element["role"]
+        element.pop("role", None)
+        element.pop(TYPE, None)
 
         # ConstraintAttachment
         constraint_attachment = None
