@@ -3,7 +3,8 @@
 
 Overview
 --------
-The ``StatConnector`` retrieves dataflows, schemas and data (as Pandas
+The ``StatConnector`` retrieves structural metadata (dataflows, data
+structures, codelists, concept schemes and more) and data (as Pandas
 datasets) from SDMX .Stat Suite services such as the OECD dotStatSuite.
 
 **This connector is experimental and subject to change without prior
@@ -16,7 +17,7 @@ API Reference
 .. autoclass:: pysdmx.api.stat.StatConnector
     :members:
 
-.. autoclass:: pysdmx.api.stat.StatAsyncConnector
+.. autoclass:: pysdmx.api.stat.AsyncStatConnector
     :members:
 
 .. autoclass:: pysdmx.api.stat.StatUploader

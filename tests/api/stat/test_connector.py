@@ -6,7 +6,7 @@ import pytest
 
 from pysdmx.api.qb import ApiVersion, DataFormat, StructureFormat
 from pysdmx.api.stat import (
-    StatAsyncConnector,
+    AsyncStatConnector,
     StatConnector,
     StatEndpoints,
 )
@@ -487,16 +487,16 @@ def test_fetch_data_connection_error(respx_mock, client):
         client.fetch_data(*OECD_FLOW)
 
 
-# --- Async connector (StatAsyncConnector) ------------------------------------
+# --- Async connector (AsyncStatConnector) ------------------------------------
 @pytest.fixture
 def aclient():
-    return StatAsyncConnector(HOST)
+    return AsyncStatConnector(HOST)
 
 
 def test_async_init_is_async_registry_client():
     from pysdmx.api.fmr import AsyncRegistryClient
 
-    conn = StatAsyncConnector(HOST)
+    conn = AsyncStatConnector(HOST)
     assert isinstance(conn, AsyncRegistryClient)
     assert conn._svc._api_endpoint == HOST
 
@@ -596,3 +596,24 @@ async def test_async_fetch_dataset(respx_mock, aclient):
     ds = await aclient.fetch_dataset(*OECD_FLOW)
     assert isinstance(ds, PandasDataset)
     assert isinstance(ds.structure, Schema)
+
+
+@pytest.mark.parametrize(("status", "error"), _ERROR_CASES)
+@pytest.mark.asyncio
+async def test_async_get_dataflows_error_mapping(
+    respx_mock, aclient, status, error
+):
+    respx_mock.get(url__startswith=STRUCT_PREFIX).mock(
+        return_value=httpx.Response(status, text="boom")
+    )
+    with pytest.raises(error):
+        await aclient.get_dataflows("TEST")
+
+
+@pytest.mark.asyncio
+async def test_async_fetch_data_connection_error(respx_mock, aclient):
+    respx_mock.get(url__startswith=DATA_PREFIX).mock(
+        side_effect=httpx.ConnectError("boom")
+    )
+    with pytest.raises(Unavailable):
+        await aclient.fetch_data(*OECD_FLOW)

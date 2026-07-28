@@ -84,15 +84,15 @@ value per dimension; for multiple values issue separate requests.
 Asynchronous access
 -------------------
 
-:class:`pysdmx.api.stat.StatAsyncConnector` is the ``async`` counterpart
+:class:`pysdmx.api.stat.AsyncStatConnector` is the ``async`` counterpart
 (inheriting :class:`~pysdmx.api.fmr.AsyncRegistryClient`); its ``get_*``,
 ``fetch_data`` and ``fetch_dataset`` methods are coroutines:
 
 .. code-block:: python
 
-    from pysdmx.api.stat import StatAsyncConnector
+    from pysdmx.api.stat import AsyncStatConnector
 
-    conn = StatAsyncConnector()
+    conn = AsyncStatConnector()
     flows = await conn.get_dataflows(agency, flow_id, version)
     dataset = await conn.fetch_dataset(agency, flow_id, version)
 

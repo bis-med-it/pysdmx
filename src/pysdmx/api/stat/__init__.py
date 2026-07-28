@@ -165,45 +165,48 @@ def _structure_result(text: str) -> StructureSubmissionResult:
 
 
 class StatEndpoints(str, Enum):
-    """Known .Stat Suite deployments.
+    """Known .Stat Suite deployments, as SDMX-REST v2 base URLs.
 
-    The first group are **verified** SDMX-REST v2 base URLs, ready to
-    pass to :class:`StatConnector`. The second group are the
-    deployments' Data Explorer (UI) URLs, listed for reference only --
-    they are **not** confirmed SDMX-REST endpoints, so pass the actual
-    REST base to :class:`StatConnector` if one of them does not resolve.
+    Each value is the deployment's **SDMX-REST v2 API base** -- not its
+    Data Explorer web UI -- ready to pass to :class:`StatConnector`. The
+    first group is anonymously readable. The second group points at a
+    real endpoint that needs one extra step (an API key, a valid TLS
+    certificate, or the service's backend to be up), noted per entry;
+    passing it as-is will not work until that condition is met.
+
+    All base URLs were confirmed live against each deployment's
+    ``structure/dataflow`` endpoint; the second group needs its noted
+    prerequisite before it returns data.
     """
 
-    # Verified SDMX-REST v2 base URLs.
+    # Verified public SDMX-REST v2 bases (anonymous reads).
     OECD = "https://sdmx.oecd.org/public/rest/v2"
     ILO = "https://sdmx.ilo.org/rest/v2"
     ABS = "https://data.api.abs.gov.au/rest/v2"
     PACIFIC = "https://stats-sdmx-disseminate.pacificdata.org/rest/v2"
     STATEC = "https://lustat.statec.lu/rest/v2"
     SIMEL_SV = "https://disseminatesimel.mtps.gob.sv/rest/v2"
+    INE_CHILE = "https://sdmx.ine.gob.cl/rest/v2"
+    FAO = "https://nsi-release-ro-statsuite.fao.org/rest/v2"
+    NBB = "https://nsidisseminate-stat.nbb.be/rest/v2"
+    STATCAN_CCEI = "https://energy-information.canada.ca/sdmx/rest/v2"
+    STATCAN_CITH = (
+        "https://api.statcan.gc.ca/stcshared-partagestc/sdmx/rest/v2"
+    )
+    SAMOA = "https://data-sdmx-disseminate.sbs.gov.ws/rest/v2"
+    FIJI = "https://data-sdmx-disseminate.statsfiji.gov.fj/rest/v2"
+    THAI_NSO = "https://ns1-stathub.nso.go.th/rest/v2"
+    SWISS_FSO = "https://disseminate.stats.swiss/rest/v2"
 
-    # Other known deployments -- Data Explorer URLs, NOT confirmed
-    # SDMX-REST bases (adjust to the deployment's REST endpoint before
-    # use). Listed for reference.
-    INE_CHILE = "https://de.ine.gob.cl/"
-    CAMSTAT = "http://camstat.nis.gov.kh/"
-    FAO = "https://de-public-statsuite.fao.org/"
-    FCSC_UAE = "https://uaestat.fcsc.gov.ae/"
-    NBB = "https://dataexplorer.nbb.be/"
-    SNZ = "https://explore.data.stats.govt.nz/"
-    MALDIVES = "https://data.statisticsmaldives.gov.mv/"
-    MALTA = "https://statdb.nso.gov.mt/"
-    THAI_NSO = "https://stathub.nso.go.th/"
-    UNESCAP = "https://dataexplorer.unescap.org/"
-    SIMEL_UY = "https://de-mtss.simel.mtss.gub.uy/"
-    STATCAN_CCEI = "https://de-ccei.statcan.gc.ca/"
-    STATCAN_CITH = "https://de-cith.statcan.gc.ca/"
-    ELSTAT = "https://explore.statistics.gr/"
-    SAMOA = "https://data.sbs.gov.ws/"
-    FIJI = "https://data.statsfiji.gov.fj/"
-    BOTSWANA_LMO = "https://de.lmis.hrdc.org.bw/"
-    UGANDA_LMIS = "https://de.lmis.mglsd.go.ug/"
-    SWISS_FSO = "https://stats.swiss/"
+    # Real SDMX-REST v2 base, but not anonymously usable as-is.
+    # Stats NZ requires an ``Ocp-Apim-Subscription-Key`` request header
+    # (register at portal.apis.stats.govt.nz).
+    SNZ = "https://api.data.stats.govt.nz/rest/v2"
+    # ELSTAT's NSI backend is frequently unavailable (HTTP 500).
+    ELSTAT = "https://explore.statistics.gr/elstat-design/rest/v2"
+    # Botswana serves SDMX but its TLS certificate has expired; pass
+    # ``pem=`` (or otherwise trust the host) to read it.
+    BOTSWANA_LMO = "https://sdmx.lmis.hrdc.org.bw/rest/v2"
 
 
 @experimental
@@ -1270,7 +1273,7 @@ class StatUploader:
 
 
 __all__ = [
-    "StatAsyncConnector",
+    "AsyncStatConnector",
     "StatConnector",
     "StatEndpoints",
     "StatUploader",
