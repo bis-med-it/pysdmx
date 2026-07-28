@@ -503,7 +503,7 @@ class StatConnector(RegistryClient):
 
 
 @experimental
-class StatAsyncConnector(AsyncRegistryClient):
+class AsyncStatConnector(AsyncRegistryClient):
     """Asynchronous read connector for .Stat Suite SDMX-REST v2 services.
 
     The async counterpart of :class:`StatConnector`: inherits
