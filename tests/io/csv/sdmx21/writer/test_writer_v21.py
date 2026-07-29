@@ -6,6 +6,7 @@ import pytest
 
 from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
+from pysdmx.io.csv.sdmx21.reader import read as read_csv
 from pysdmx.io.csv.sdmx21.writer import write
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model.dataset import ActionType
@@ -530,3 +531,63 @@ def test_writer_partial_keys_no_schema(partial_keys_data):
     dataset.data = dataset.data.astype("str")
     with pytest.raises(Invalid, match="not a Schema"):
         write([dataset], partial_keys=True)
+
+
+@pytest.mark.parametrize("labels", [None, "id", "both"])
+def test_roundtrip_full_datetime(labels):
+    """A full datetime attribute survives a write/read roundtrip."""
+    from pysdmx.model import Component, Components, Concept, Role, Schema
+
+    schema = Schema(
+        context="datastructure",
+        agency="MD",
+        id="MD_TEST",
+        version="1.0",
+        name="MD TEST",
+        components=Components(
+            [
+                Component(
+                    "DIM1",
+                    required=True,
+                    role=Role.DIMENSION,
+                    concept=Concept("DIM1", name="DIMENSION 1"),
+                ),
+                Component(
+                    "TIME_PERIOD",
+                    required=True,
+                    role=Role.DIMENSION,
+                    concept=Concept("TIME_PERIOD", name="TIME PERIOD"),
+                ),
+                Component(
+                    "OBS_VALUE",
+                    required=True,
+                    role=Role.MEASURE,
+                    concept=Concept("OBS_VALUE", name="OBS_VALUE"),
+                ),
+                Component(
+                    "EMBARGO_TIME",
+                    required=False,
+                    role=Role.ATTRIBUTE,
+                    concept=Concept("EMBARGO_TIME", name="EMBARGO TIME"),
+                    attachment_level="O",
+                ),
+            ]
+        ),
+    )
+    data = pd.DataFrame(
+        [
+            {
+                "DIM1": "A",
+                "TIME_PERIOD": "1999-01",
+                "OBS_VALUE": 1,
+                "EMBARGO_TIME": "2025-12-19T14:30:00Z",
+            }
+        ]
+    ).astype(str)
+    dataset = PandasDataset(attributes={}, data=data, structure=schema)
+
+    result_csv = write([dataset], labels=labels)
+    back = read_csv(result_csv)[0].data
+
+    assert back.at[0, "EMBARGO_TIME"] == "2025-12-19T14:30:00Z"
+    assert back.at[0, "DIM1"] == "A"

@@ -45,12 +45,12 @@ def test_write_labels_both(data_path_optional, dsd_path):
     data = pd.read_json(data_path_optional, orient="records")
 
     format_labels(data, labels="both", components=dsd.components)
-    assert "DIM1:DIMENSION 1" in data.columns
-    assert "DIM2:DIMENSION 2" in data.columns
-    assert "ATT1:ATTRIBUTE 1" in data.columns
-    assert "ATT2:ATTRIBUTE 2" in data.columns
-    assert "OBS_VALUE:OBS VALUE" in data.columns
-    assert "TIME_PERIOD:TIME PERIOD" in data.columns
+    assert "DIM1: DIMENSION 1" in data.columns
+    assert "DIM2: DIMENSION 2" in data.columns
+    assert "ATT1: ATTRIBUTE 1" in data.columns
+    assert "ATT2: ATTRIBUTE 2" in data.columns
+    assert "OBS_VALUE: OBS VALUE" in data.columns
+    assert "TIME_PERIOD: TIME PERIOD" in data.columns
 
 
 def test_write_labels_id(data_path_optional_names, dsd_path):

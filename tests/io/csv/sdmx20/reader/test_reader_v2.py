@@ -14,6 +14,12 @@ def data_path():
 
 
 @pytest.fixture
+def data_path_datetime():
+    base_path = Path(__file__).parent / "samples" / "data_v2_datetime.csv"
+    return base_path
+
+
+@pytest.fixture
 def data_path_exception():
     base_path = Path(__file__).parent / "samples" / "data_v2_exception.csv"
     return base_path
@@ -248,3 +254,11 @@ def test_reading_keys_both(csv_keys_both):
     assert "OBS_KEYS" not in df.columns
 
     assert len(datasets[0].attributes) == 0
+
+
+def test_reading_full_datetime_not_trimmed(data_path_datetime):
+    with open(data_path_datetime, "r") as f:
+        infile = f.read()
+    datasets = read(infile)
+    df = datasets[0].data
+    assert df.at[0, "EMBARGO_TIME"] == "2025-12-19T14:30:00Z"
