@@ -134,7 +134,7 @@ processed asynchronously.
     # )
 
     uploader = StatUploader(
-        nsi_endpoint="https://my.stat/nsi/rest",
+        nsi_endpoint="https://my.stat/nsi",
         # The Transfer endpoint includes the API-version segment:
         transfer_endpoint="https://my.stat/transfer/3",
         dataspace="<data-space>",   # the target .Stat data space
