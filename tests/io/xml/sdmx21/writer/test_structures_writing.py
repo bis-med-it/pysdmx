@@ -1612,6 +1612,70 @@ def test_writer_dataflow(complete_header, dataflow):
     assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result
 
 
+def test_writer_dataflow_with_dsd_object(complete_header):
+    dsd = DataStructureDefinition(
+        id="DSD_X",
+        agency="MD",
+        version="1.0",
+        name="x",
+        components=Components([]),
+    )
+    dataflow = Dataflow(
+        id="DF_X",
+        agency="MD",
+        version="1.0",
+        name="x",
+        structure=dsd,
+    )
+
+    result = write(
+        [dataflow],
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    assert (
+        '<Ref package="datastructure" agencyID="MD" '
+        'id="DSD_X" version="1.0" class="DataStructure"/>' in result
+    )
+
+
+def test_writer_dataflow_without_structure(complete_header):
+    dataflow = Dataflow(
+        id="DF_X",
+        agency="MD",
+        version="1.0",
+        name="x",
+    )
+
+    result = write(
+        [dataflow],
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    assert "str:Structure" not in result
+    assert 'id="DF_X"' in result
+
+
+def test_write_read_dataflow_without_structure(complete_header):
+    dataflow = Dataflow(
+        id="DF_X",
+        agency="MD",
+        version="1.0",
+        name="x",
+    )
+
+    write_result = write(
+        [dataflow],
+        header=complete_header,
+        prettyprint=True,
+    )
+    read_result = read(write_result, validate=True)
+
+    assert read_result == [dataflow]
+
+
 def test_read_write(read_write_sample, read_write_header):
     content, read_format = process_string_to_read(read_write_sample)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1

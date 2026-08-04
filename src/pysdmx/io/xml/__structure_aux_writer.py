@@ -928,9 +928,15 @@ def __write_enumeration(
 
 
 def __write_structure(
-    item: str, indent: str, references_30: bool = False
+    item: Optional[Union[str, DataStructureDefinition]],
+    indent: str,
+    references_30: bool = False,
 ) -> str:
     """Writes the dataflow structure to the XML file."""
+    if item is None:
+        return ""
+    if isinstance(item, DataStructureDefinition):
+        item = item.short_urn
     ref = parse_short_urn(item)
     outfile = f"{indent}<{ABBR_STR}:Structure>"
     if references_30:

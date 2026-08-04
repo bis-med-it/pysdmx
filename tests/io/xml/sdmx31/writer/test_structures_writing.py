@@ -847,6 +847,52 @@ def test_dataflow(
     assert result == structures_dataflow_sample
 
 
+def test_dataflow_with_dsd_object(complete_header):
+    dsd = DataStructureDefinition(
+        id="DSD_X",
+        agency="MD",
+        version="1.0",
+        name="x",
+        components=Components([]),
+    )
+    dataflow = Dataflow(
+        id="DF_X",
+        agency="MD",
+        version="1.0",
+        name="x",
+        structure=dsd,
+    )
+
+    result = write(
+        [dataflow],
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    assert (
+        "<str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure."
+        "DataStructure=MD:DSD_X(1.0)</str:Structure>" in result
+    )
+
+
+def test_dataflow_without_structure(complete_header):
+    dataflow = Dataflow(
+        id="DF_X",
+        agency="MD",
+        version="1.0",
+        name="x",
+    )
+
+    result = write(
+        [dataflow],
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    assert "str:Structure" not in result
+    assert 'id="DF_X"' in result
+
+
 def test_transformation_scheme(
     complete_header,
     transformation_scheme_structure,
