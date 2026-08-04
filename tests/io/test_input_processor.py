@@ -1,9 +1,10 @@
+import json
 from io import BytesIO
 from pathlib import Path
 
 import pytest
 
-from pysdmx.errors import Invalid
+from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
@@ -43,6 +44,20 @@ def invalid_xml():
 @pytest.fixture
 def invalid_message_xml():
     path = Path(__file__).parent / "samples" / "invalid_message.xml"
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+@pytest.fixture
+def one_line_jsondata():
+    path = Path(__file__).parent / "samples" / "one_line_jsondata.json"
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+@pytest.fixture
+def structure_json():
+    path = Path(__file__).parent / "samples" / "bis_der.json"
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
@@ -134,6 +149,44 @@ def test_process_string_to_read_invalid_allowed_error(invalid_message_xml):
 def test_invalid_xml_flavour():
     with pytest.raises(Invalid):
         process_string_to_read("<?xmlAAAA")
+
+
+def test_process_string_to_read_one_line_json_data(one_line_jsondata):
+    # Issue #658: a one-line SDMX-JSON message has enough commas and
+    # quotes to be misdetected as SDMX-CSV
+    assert "\n" not in one_line_jsondata.strip()
+    with pytest.raises(
+        NotImplemented,
+        match="This flavour of SDMX-JSON is not supported.",
+    ):
+        process_string_to_read(one_line_jsondata)
+
+
+def test_process_string_to_read_one_line_json_structure(structure_json):
+    one_line = json.dumps(json.loads(structure_json))
+    infile, read_format = process_string_to_read(one_line)
+    assert infile == one_line
+    assert read_format == Format.STRUCTURE_SDMX_JSON_2_0_0
+
+
+def test_process_string_to_read_one_line_xml_no_declaration():
+    # XML without the optional <?xml declaration must not be
+    # misdetected as SDMX-CSV either
+    one_line = (
+        '<mes:Structure xmlns:mes="http://www.sdmx.org/resources/'
+        'sdmxml/schemas/v2_1/message">'
+        '<Name xml:lang="en">Euro, US dollar, yen</Name>'
+        "</mes:Structure>"
+    )
+    with pytest.raises(Invalid, match=r"Cannot parse input as SDMX\.$"):
+        process_string_to_read(one_line)
+
+
+def test_process_string_to_read_single_line_one_comma():
+    # Sniffs as CSV dialect, but a single line with a single comma is
+    # not enough to be considered SDMX-CSV
+    with pytest.raises(Invalid, match=r"Cannot parse input as SDMX\.$"):
+        process_string_to_read('"a","b"')
 
 
 def test_process_large_csv(large_csv_1, large_csv_2):
