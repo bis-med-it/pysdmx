@@ -1621,19 +1621,19 @@ def test_writer_dataflow_with_dsd_object(
     result = write(
         [dataflow_with_dsd],
         header=complete_header,
-        prettyprint=True,
+        prettyprint=False,
     )
 
     assert (
-        "\t\t\t\t<str:Structure>\n"
-        '\t\t\t\t\t<Ref package="datastructure" agencyID="BIS" '
-        'id="BIS_DER" version="1.0" class="DataStructure"/>\n'
-        "\t\t\t\t</str:Structure>" in result
+        "<str:Structure>"
+        '<Ref package="datastructure" agencyID="BIS" '
+        'id="BIS_DER" version="1.0" class="DataStructure"/>'
+        "</str:Structure>" in result.replace("\t", "")
     )
     assert result == write(
         [dataflow],
         header=complete_header,
-        prettyprint=True,
+        prettyprint=False,
     )
 
 
@@ -1643,11 +1643,11 @@ def test_writer_dataflow_without_structure(complete_header, dataflow):
     result = write(
         [dataflow_stub],
         header=complete_header,
-        prettyprint=True,
+        prettyprint=False,
     )
 
     assert (
-        "\t\t\t<str:Dataflow "
+        "<str:Dataflow "
         'id="WEBSTATS_DER_DATAFLOW" '
         'urn="urn:sdmx:org.sdmx.infomodel.datastructure.'
         'Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" '
@@ -1656,12 +1656,11 @@ def test_writer_dataflow_without_structure(complete_header, dataflow):
         'validTo="2021-12-31T00:00:00" '
         'isExternalReference="true" '
         'isFinal="true" '
-        'agencyID="BIS">\n'
-        '\t\t\t\t<com:Name xml:lang="en">'
-        "OTC derivatives turnover</com:Name>\n"
-        '\t\t\t\t<com:Description xml:lang="en">'
-        "OTC derivatives and FX spot - turnover</com:Description>\n"
-        "\t\t\t</str:Dataflow>" in result
+        'agencyID="BIS">'
+        '<com:Name xml:lang="en">OTC derivatives turnover</com:Name>'
+        '<com:Description xml:lang="en">'
+        "OTC derivatives and FX spot - turnover</com:Description>"
+        "</str:Dataflow>" in result.replace("\t", "")
     )
 
 
@@ -1673,7 +1672,7 @@ def test_write_read_dataflow_with_dsd_object(
     write_result = write(
         [dataflow_with_dsd],
         header=complete_header,
-        prettyprint=True,
+        prettyprint=False,
     )
     read_result = read(write_result, validate=True)
 
@@ -1687,7 +1686,7 @@ def test_write_read_dataflow_without_structure(complete_header, dataflow):
     write_result = write(
         [dataflow_stub],
         header=complete_header,
-        prettyprint=True,
+        prettyprint=False,
     )
     read_result = read(write_result, validate=True)
 

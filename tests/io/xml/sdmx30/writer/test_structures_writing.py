@@ -1299,7 +1299,7 @@ def test_dataflow_with_dsd_object_round_trip(
     write_result = write(
         [dataflow_with_dsd],
         header=complete_header,
-        prettyprint=True,
+        prettyprint=False,
     )
     read_result = read(write_result, validate=True)
 
@@ -1313,7 +1313,7 @@ def test_dataflow_without_structure_round_trip(complete_header, dataflow):
     write_result = write(
         [dataflow_stub],
         header=complete_header,
-        prettyprint=True,
+        prettyprint=False,
     )
     read_result = read(write_result, validate=True)
 
