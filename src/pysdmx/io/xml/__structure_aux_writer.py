@@ -933,9 +933,9 @@ def __write_structure(
     references_30: bool = False,
 ) -> str:
     """Writes the dataflow structure to the XML file."""
-    if isinstance(item, DataStructureDefinition):
-        item = item.short_urn
-    ref = parse_short_urn(item)
+    ref = parse_short_urn(
+        item.short_urn if isinstance(item, DataStructureDefinition) else item
+    )
     outfile = f"{indent}<{ABBR_STR}:Structure>"
     if references_30:
         outfile += (
