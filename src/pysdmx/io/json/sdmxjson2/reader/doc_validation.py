@@ -14,19 +14,39 @@ from sdmxschemas import (
 from sdmxschemas import (
     SDMX_JSON_20_STRUCTURE_PATH as SCHEMA_PATH_JSON20_STRUCTURE,
 )
+from sdmxschemas import SDMX_JSON_21_DATA_PATH as SCHEMA_PATH_JSON21_DATA
+from sdmxschemas import (
+    SDMX_JSON_21_METADATA_PATH as SCHEMA_PATH_JSON21_METADATA,
+)
+from sdmxschemas import (
+    SDMX_JSON_21_STRUCTURE_PATH as SCHEMA_PATH_JSON21_STRUCTURE,
+)
 
 from pysdmx import errors
 
-_SCHEMA_FILES: Mapping[str, Path] = {
-    "structure": SCHEMA_PATH_JSON20_STRUCTURE,
-    "metadata": SCHEMA_PATH_JSON20_METADATA,
-    "data": SCHEMA_PATH_JSON20_DATA,
+# SDMX-JSON schema files by message version then message type. The 2.0 and 2.1
+# schema files share the same file name (only the directory differs), so the
+# version must be selected before matching the type against ``meta.schema``.
+_SCHEMA_FILES: Mapping[str, Mapping[str, Path]] = {
+    "2.0": {
+        "structure": SCHEMA_PATH_JSON20_STRUCTURE,
+        "metadata": SCHEMA_PATH_JSON20_METADATA,
+        "data": SCHEMA_PATH_JSON20_DATA,
+    },
+    "2.1": {
+        "structure": SCHEMA_PATH_JSON21_STRUCTURE,
+        "metadata": SCHEMA_PATH_JSON21_METADATA,
+        "data": SCHEMA_PATH_JSON21_DATA,
+    },
 }
 
 
 def _schema_for(instance: Mapping[str, Any]) -> dict[str, Any]:
-    schema_url = instance.get("meta", {}).get("schema")
-    p = next(p for p in _SCHEMA_FILES.values() if p.name in schema_url)
+    schema_url = instance.get("meta", {}).get("schema", "")
+    version = "2.1" if "2.1" in schema_url else "2.0"
+    p = next(
+        p for p in _SCHEMA_FILES[version].values() if p.name in schema_url
+    )
     with p.open("r", encoding="utf-8") as f:
         schema = json.load(f)
     return schema
@@ -42,7 +62,9 @@ def validate_sdmx_json(input_str: str) -> None:
     """
     instance = json.loads(input_str)
     schema = _schema_for(instance)
-    validator = Draft202012Validator(schema)
+    validator = Draft202012Validator(
+        schema, format_checker=Draft202012Validator.FORMAT_CHECKER
+    )
 
     failures = sorted(
         validator.iter_errors(instance),

@@ -26,10 +26,11 @@ def write(
           Must have the same components.
         labels: How to write the name of the columns.
             If None, only the IDs are written.
-            if "id", the names are written as ID only.
-            if "name", a colum called "STRUCTURE_NAME" is
-            added after struture ID.
-            If "both", the names are witten as id:Name.
+            If "id", only the IDs are written.
+            If "name", a column called "STRUCTURE_NAME" is added
+            after STRUCTURE_ID and a column with the localised name
+            of the component is added after each component column.
+            If "both", the names are written as "id: Name".
         time_format: How to write the time period.
             If None, the time period is not modified.
             If "original", the time period is written as it
@@ -53,7 +54,8 @@ def write(
 
     Raises:
         Invalid: If partial_keys is True but the dataset
-            structure is not a Schema.
+            structure is not a Schema, or if labels="name" would
+            produce duplicated column names.
     """
     # Link to pandas.to_csv documentation on sphinx:
     # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html

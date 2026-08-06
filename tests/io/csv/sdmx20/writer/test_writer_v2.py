@@ -318,6 +318,7 @@ def test_writer_labels_name(data_path_optional, schema, csv_labels_name):
     result_sdmx_csv = write([dataset], labels="name")
     result_df = pd.read_csv(StringIO(result_sdmx_csv)).astype(str)
     reference_df = pd.read_csv(csv_labels_name).astype(str)
+    assert list(result_df.columns) == list(reference_df.columns)
     pd.testing.assert_frame_equal(
         result_df.fillna("").replace("nan", ""),
         reference_df.replace("nan", ""),
@@ -549,7 +550,7 @@ def test_writer_partial_keys_no_schema(partial_keys_data):
         write([dataset], partial_keys=True)
 
 
-@pytest.mark.parametrize("labels", [None, "id", "both"])
+@pytest.mark.parametrize("labels", [None, "id", "both", "name"])
 def test_roundtrip_full_datetime(labels):
     """A full datetime attribute survives a write/read roundtrip."""
     schema = Schema(
@@ -576,7 +577,7 @@ def test_roundtrip_full_datetime(labels):
                     "OBS_VALUE",
                     required=True,
                     role=Role.MEASURE,
-                    concept=Concept("OBS_VALUE", name="OBS_VALUE"),
+                    concept=Concept("OBS_VALUE", name="Observation value"),
                 ),
                 Component(
                     "EMBARGO_TIME",
