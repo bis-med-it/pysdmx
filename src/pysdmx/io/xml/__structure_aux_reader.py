@@ -19,6 +19,7 @@ from msgspec import Struct
 from msgspec.structs import asdict, replace
 
 from pysdmx.io.xml.__tokens import (
+    AFTER_PERIOD,
     AGENCIES,
     AGENCY,
     AGENCY_ID,
@@ -37,6 +38,7 @@ from pysdmx.io.xml.__tokens import (
     ATT_LVL,
     ATT_REL,
     ATTACH_GROUP,
+    BEFORE_PERIOD,
     CATEGORISATION,
     CATEGORISATIONS,
     CATEGORY,
@@ -96,6 +98,7 @@ from pysdmx.io.xml.__tokens import (
     DTYPE,
     EMAIL,
     EMAILS,
+    END_PERIOD,
     ENUM,
     ENUM_FORMAT,
     FACETS,
@@ -122,6 +125,7 @@ from pysdmx.io.xml.__tokens import (
     IS_EXTERNAL_REF_LOW,
     IS_FINAL,
     IS_FINAL_LOW,
+    IS_INCLUSIVE,
     IS_PARTIAL,
     IS_PARTIAL_LOW,
     KEY,
@@ -172,6 +176,7 @@ from pysdmx.io.xml.__tokens import (
     SER_URL,
     SER_URL_LOW,
     SOURCE,
+    START_PERIOD,
     STR_URL,
     STR_URL_LOW,
     STR_USAGE,
@@ -185,6 +190,7 @@ from pysdmx.io.xml.__tokens import (
     TEXT_FORMAT,
     TEXT_TYPE,
     TIME_DIM,
+    TIME_RANGE,
     TITLE,
     TRANS_SCHEME,
     TRANS_SCHEMES,
@@ -229,8 +235,10 @@ from pysdmx.model import (
     Concept,
     ConceptScheme,
     ConstraintAttachment,
+    ConstraintRole,
     CubeKeyValue,
     CubeRegion,
+    CubeTimeRange,
     CubeValue,
     DataConstraint,
     DataConsumer,
@@ -257,6 +265,7 @@ from pysdmx.model import (
     MultiValueMap,
     RepresentationMap,
     StructureMap,
+    TimePeriodBoundary,
     ValueMap,
     VtlCodelistMapping,
     VtlConceptMapping,
@@ -1234,19 +1243,56 @@ class StructureParser(Struct):
         if INCLUDE in region_elem:
             is_included = region_elem[INCLUDE].lower() == "true"
 
-        key_values = []
+        key_values: List[CubeKeyValue] = []
         if KEY_VALUE in region_elem:
-            kv_list = add_list(region_elem[KEY_VALUE])
-            for kv in kv_list:
-                values = []
-                value_list = add_list(kv[VALUE])
-                for v in value_list:
-                    value_text = v if isinstance(v, str) else v.get("#text", v)
-                    values.append(CubeValue(value=value_text))
-
-                key_values.append(CubeKeyValue(id=kv[ID], values=values))
+            key_values.extend(
+                self.__format_cube_key_value(kv)
+                for kv in add_list(region_elem[KEY_VALUE])
+            )
 
         return CubeRegion(key_values=key_values, is_included=is_included)
+
+    def __format_cube_key_value(self, kv: Dict[str, Any]) -> CubeKeyValue:
+        values = []
+        time_range = None
+        if VALUE in kv:
+            for v in add_list(kv[VALUE]):
+                value_text = v if isinstance(v, str) else v.get("#text", v)
+                values.append(CubeValue(value=value_text))
+        if TIME_RANGE in kv:
+            time_range = self.__format_time_range(kv[TIME_RANGE])
+
+        valid_from = kv.get(VALID_FROM)
+        valid_to = kv.get(VALID_TO)
+        return CubeKeyValue(
+            id=kv[ID],
+            values=tuple(values),
+            time_range=time_range,
+            valid_from=(
+                datetime.fromisoformat(valid_from) if valid_from else None
+            ),
+            valid_to=datetime.fromisoformat(valid_to) if valid_to else None,
+        )
+
+    def __format_time_range(self, tr: Dict[str, Any]) -> CubeTimeRange:
+        def boundary(
+            elem: Any,
+        ) -> Optional[TimePeriodBoundary]:
+            if elem is None:
+                return None
+            if isinstance(elem, str):
+                return TimePeriodBoundary(period=elem)
+            incl = elem.get(IS_INCLUSIVE, "true").lower() == "true"
+            return TimePeriodBoundary(
+                period=elem.get("#text"), is_inclusive=incl
+            )
+
+        return CubeTimeRange(
+            before_period=boundary(tr.get(BEFORE_PERIOD)),
+            after_period=boundary(tr.get(AFTER_PERIOD)),
+            start_period=boundary(tr.get(START_PERIOD)),
+            end_period=boundary(tr.get(END_PERIOD)),
+        )
 
     def __format_key_set(self, keyset_elem: Dict[str, Any]) -> KeySet:
         is_included = keyset_elem[INCLUDED].lower() == "true"
@@ -1273,14 +1319,17 @@ class StructureParser(Struct):
         return KeySet(keys=keys, is_included=is_included)
 
     def __format_constraint(self, element: Dict[str, Any]) -> Dict[str, Any]:
-        # role is a SDMX 3.0 attribute not present in the model
+        # Role: SDMX 3.0 uses 'role' (required); SDMX 2.1 uses 'type'
+        # (optional, default "Actual" per the schema).
+        role_val = None
         if "role" in element:
-            if element["role"] == "Actual":
-                raise NotImplementedError(
-                    "DataConstraint with role='Actual' is not supported, "
-                    "pysdmx only supports maintainable (Allowed) constraints."
-                )
-            del element["role"]
+            role_val = element.pop("role")
+        if TYPE in element:
+            role_val = element.pop(TYPE)
+        if role_val is not None:
+            element["role"] = ConstraintRole(role_val)
+        elif not self.is_sdmx_30:
+            element["role"] = ConstraintRole.ACTUAL
 
         # ConstraintAttachment
         constraint_attachment = None

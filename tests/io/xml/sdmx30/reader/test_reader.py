@@ -19,9 +19,11 @@ from pysdmx.model import (
     Codelist,
     ConceptScheme,
     ConstraintAttachment,
+    ConstraintRole,
     Contact,
     CubeKeyValue,
     CubeRegion,
+    CubeTimeRange,
     CubeValue,
     CustomType,
     CustomTypeScheme,
@@ -1179,11 +1181,38 @@ def test_constraint_without_attachment(samples_folder):
     ] == ["Q"]
 
 
-def test_constraint_with_actual_role_raises(samples_folder):
+def test_constraint_with_actual_role(samples_folder):
     data_path = samples_folder / "constraint_actual.xml"
     input_str, _ = process_string_to_read(data_path)
-    with pytest.raises(NotImplementedError):
-        read_sdmx(input_str)
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert len(result) == 1
+    assert result[0].role == ConstraintRole.ACTUAL
+
+
+def test_constraint_role_absent_30_defaults_allowed(samples_folder):
+    # role is required by the SDMX 3.0 schema, so this document is
+    # intentionally not schema-valid; it exercises the defensive
+    # fallback to the model default (ALLOWED) when role is missing.
+    data_path = samples_folder / "constraint_role_absent.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=False).get_data_constraints()
+    assert len(result) == 1
+    assert result[0].role == ConstraintRole.ALLOWED
+
+
+def test_constraint_with_time_range_30(samples_folder):
+    from datetime import datetime
+
+    data_path = samples_folder / "constraint_time_range.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    region = result[0].cube_regions[0]
+    freq = region.key_values[0]
+    time = region.key_values[1]
+    assert freq.valid_from == datetime(2020, 1, 1)
+    assert freq.valid_to == datetime(2024, 1, 1)
+    assert isinstance(time.time_range, CubeTimeRange)
+    assert time.time_range.start_period.period == "1989-01-01T00:00:00"
 
 
 @pytest.mark.xml

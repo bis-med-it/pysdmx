@@ -7,11 +7,13 @@ from msgspec.structs import replace
 
 from pysdmx.errors import Invalid
 from pysdmx.io.xml.__tokens import (
+    AFTER_PERIOD,
     AGENCY_ID,
     AGENCY_SCHEME,
     AS_STATUS,
     ATT,
     ATT_REL,
+    BEFORE_PERIOD,
     CATEGORISATION,
     CATEGORY,
     CATEGORY_SCHEME,
@@ -41,6 +43,7 @@ from pysdmx.io.xml.__tokens import (
     DSD,
     DSD_COMPS,
     EMAIL,
+    END_PERIOD,
     ENUM,
     ENUM_FORMAT,
     FAX,
@@ -55,6 +58,7 @@ from pysdmx.io.xml.__tokens import (
     ID,
     INCLUDE,
     INCLUDED,
+    IS_INCLUSIVE,
     KEY,
     KEY_VALUE,
     LEVEL,
@@ -82,6 +86,7 @@ from pysdmx.io.xml.__tokens import (
     RULE,
     RULE_SCHEME,
     SOURCE,
+    START_PERIOD,
     STR_USAGE,
     STRUCTURE_MAP,
     TARGET,
@@ -89,6 +94,7 @@ from pysdmx.io.xml.__tokens import (
     TEXT_FORMAT,
     TEXT_TYPE,
     TIME_DIM,
+    TIME_RANGE,
     TRANS_SCHEME,
     TRANSFORMATION,
     UDO,
@@ -97,6 +103,8 @@ from pysdmx.io.xml.__tokens import (
     URN,
     URN_LOW,
     USAGE,
+    VALID_FROM,
+    VALID_TO,
     VALUE,
     VALUE_ITEM,
     VALUE_LIST,
@@ -128,6 +136,7 @@ from pysdmx.model import (
     ConceptScheme,
     ConstraintAttachment,
     CubeRegion,
+    CubeTimeRange,
     CustomType,
     CustomTypeScheme,
     DataConstraint,
@@ -1395,6 +1404,28 @@ def __write_constraint_attachment(
     return outfile.replace("'", '"')
 
 
+def __write_time_range(
+    time_range: CubeTimeRange, indent: str, prefix: str
+) -> str:
+    """Writes a cube-region TimeRange to the XML file."""
+    outfile = f"{indent}<{prefix}:{TIME_RANGE}>"
+    boundaries = (
+        (BEFORE_PERIOD, time_range.before_period),
+        (AFTER_PERIOD, time_range.after_period),
+        (START_PERIOD, time_range.start_period),
+        (END_PERIOD, time_range.end_period),
+    )
+    for name, boundary in boundaries:
+        if boundary is not None:
+            incl = "true" if boundary.is_inclusive else "false"
+            outfile += f"{add_indent(indent)}"
+            outfile += f"<{prefix}:{name} {IS_INCLUSIVE}={incl!r}>"
+            outfile += __escape_xml(str(boundary.period))
+            outfile += f"</{prefix}:{name}>"
+    outfile += f"{indent}</{prefix}:{TIME_RANGE}>"
+    return outfile
+
+
 def __write_cube_region(
     region: CubeRegion, indent: str, references_30: bool = False
 ) -> str:
@@ -1408,16 +1439,32 @@ def __write_cube_region(
     val_prefix = ABBR_STR if references_30 else ABBR_COM
 
     for key_value in region.key_values:
-        outfile += f"{add_indent(indent)}"
-        outfile += f"<{kv_prefix}:{KEY_VALUE} {ID}={key_value.id!r}>"
+        kv_attrs = f" {ID}={key_value.id!r}"
+        # validFrom/validTo on a cube KeyValue are 3.0/3.1 only.
+        if references_30 and key_value.valid_from is not None:
+            vf = key_value.valid_from.strftime("%Y-%m-%dT%H:%M:%S")
+            kv_attrs += f" {VALID_FROM}={vf!r}"
+        if references_30 and key_value.valid_to is not None:
+            vt = key_value.valid_to.strftime("%Y-%m-%dT%H:%M:%S")
+            kv_attrs += f" {VALID_TO}={vt!r}"
 
-        for value in key_value.values:
-            value_tag = (
-                f"{add_indent(add_indent(indent))}<{val_prefix}:{VALUE}>"
+        outfile += f"{add_indent(indent)}"
+        outfile += f"<{kv_prefix}:{KEY_VALUE}{kv_attrs}>"
+
+        if key_value.time_range is not None:
+            outfile += __write_time_range(
+                key_value.time_range,
+                add_indent(add_indent(indent)),
+                val_prefix,
             )
-            value_tag += __escape_xml(str(value.value))
-            value_tag += f"</{val_prefix}:{VALUE}>"
-            outfile += value_tag
+        else:
+            for value in key_value.values:
+                value_tag = (
+                    f"{add_indent(add_indent(indent))}<{val_prefix}:{VALUE}>"
+                )
+                value_tag += __escape_xml(str(value.value))
+                value_tag += f"</{val_prefix}:{VALUE}>"
+                outfile += value_tag
         outfile += f"{add_indent(indent)}</{kv_prefix}:{KEY_VALUE}>"
 
     outfile += f"{indent}</{ABBR_STR}:{CUBE_REGION}>"
@@ -1460,7 +1507,10 @@ def __write_key_set(
 
 
 def __write_data_constraint(
-    constraint: DataConstraint, indent: str, references_30: bool = False
+    constraint: DataConstraint,
+    indent: str,
+    references_30: bool = False,
+    references_31: bool = False,
 ) -> str:
     """Writes a DataConstraint to the XML file."""
     # SDMX 3.0: DataConstraint, SDMX 2.1: ContentConstraint
@@ -1468,11 +1518,14 @@ def __write_data_constraint(
 
     data = __write_maintainable(constraint, indent, references_30)
 
-    # SDMX 3.0 requires role,
-    # but pysdmx only supports maintainable (Allowed) constraints.
-    # "Actual" constraints are deprecated in SDMX 3.1
-    if references_30:
-        data["Attributes"] += ' role="Allowed"'
+    # SDMX 2.1 uses 'type' (defaults to "Actual" when omitted, so it is
+    # always written); SDMX 3.0 uses a required 'role'; SDMX 3.1 removed
+    # the attribute (a DataConstraint is always the allowed values), so
+    # the role is kept in the model only for 2.1/3.0 compatibility.
+    if not references_30:
+        data["Attributes"] += f' type="{constraint.role.value}"'
+    elif not references_31:
+        data["Attributes"] += f' role="{constraint.role.value}"'
 
     label = f"{ABBR_STR}:{constraint_type}"
     attributes = data.get("Attributes") or ""
@@ -1792,7 +1845,11 @@ def __write_categorisation(
 
 
 def __write_scheme(  # noqa: C901
-    item_scheme: Any, indent: str, scheme: str, references_30: bool = False
+    item_scheme: Any,
+    indent: str,
+    scheme: str,
+    references_30: bool = False,
+    references_31: bool = False,
 ) -> str:
     """Writes the scheme to the XML file."""
     if getattr(item_scheme, "sdmx_type", None) == "valuelist":
@@ -1803,7 +1860,9 @@ def __write_scheme(  # noqa: C901
     if scheme == STRUCTURE_MAP:
         return __write_structure_map(item_scheme, indent, references_30)
     if isinstance(item_scheme, DataConstraint):
-        return __write_data_constraint(item_scheme, indent, references_30)
+        return __write_data_constraint(
+            item_scheme, indent, references_30, references_31
+        )
     if isinstance(item_scheme, Hierarchy):
         return (
             __write_hierarchy(item_scheme, indent, references_30)
@@ -1926,6 +1985,7 @@ def __write_metadata_element(
     key: str,
     prettyprint: object,
     references_30: bool = False,
+    references_31: bool = False,
 ) -> str:
     """Writes the metadata element to the XML file.
 
@@ -1934,6 +1994,7 @@ def __write_metadata_element(
         key: The key to be used
         prettyprint: Prettyprint or not
         references_30: Whether to use SDMX 3.0 references
+        references_31: Whether the target format is SDMX-ML 3.1
 
     Returns:
         A string with the metadata element
@@ -1956,7 +2017,11 @@ def __write_metadata_element(
                 else element.__class__.__name__
             )
             outfile += __write_scheme(
-                element, add_indent(base_indent), item, references_30
+                element,
+                add_indent(base_indent),
+                item,
+                references_30,
+                references_31,
             )
 
         outfile += f"{base_indent}</{ABBR_STR}:{scheme}>"
@@ -2030,7 +2095,10 @@ def group_structures(
 
 
 def __write_structures(
-    content: Dict[str, Any], prettyprint: bool, references_30: bool = False
+    content: Dict[str, Any],
+    prettyprint: bool,
+    references_30: bool = False,
+    references_31: bool = False,
 ) -> str:
     """Writes the structures to the XML file.
 
@@ -2038,6 +2106,7 @@ def __write_structures(
         content: The Message Content to be written
         prettyprint: Prettyprint or not
         references_30: Whether to use SDMX 3.0 references
+        references_31: Whether the target format is SDMX-ML 3.1
 
     Returns:
         A string with the structures
@@ -2049,7 +2118,7 @@ def __write_structures(
     msg_content = MSG_CONTENT_PKG_30 if references_30 else MSG_CONTENT_PKG_21
     for key in msg_content:
         outfile += __write_metadata_element(
-            content, key, prettyprint, references_30
+            content, key, prettyprint, references_30, references_31
         )
 
     outfile += f"{nl}{child1}</{ABBR_MSG}:Structures>"

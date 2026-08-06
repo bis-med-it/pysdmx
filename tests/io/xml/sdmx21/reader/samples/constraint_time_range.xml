@@ -10,17 +10,17 @@
 	</mes:Header>
 	<mes:Structures>
 		<str:Constraints>
-			<str:ContentConstraint id="TEST_CONSTRAINT_PROV" version="1.0" isExternalReference="false" isFinal="false" agencyID="TEST_AGENCY" type="Allowed">
-				<com:Name xml:lang="en">Test Constraint with Provider</com:Name>
-				<com:Description xml:lang="en">A test constraint attached to a provider</com:Description>
-				<str:ConstraintAttachment>
-					<str:DataProvider>
-						<Ref agencyID="TEST_AGENCY" maintainableParentID="DATA_PROVIDERS" maintainableParentVersion="1.0" id="PROVIDER_ID" class="DataProvider"/>
-					</str:DataProvider>
-				</str:ConstraintAttachment>
+			<str:ContentConstraint id="TEST_TR" version="1.0" isExternalReference="false" isFinal="false" agencyID="TEST_AGENCY" type="Actual">
+				<com:Name xml:lang="en">Constraint with TimeRange</com:Name>
 				<str:CubeRegion include="true">
 					<com:KeyValue id="FREQ">
-						<com:Value>M</com:Value>
+						<com:Value>A</com:Value>
+					</com:KeyValue>
+					<com:KeyValue id="TIME_PERIOD">
+						<com:TimeRange>
+							<com:StartPeriod isInclusive="true">1989-01-01T00:00:00</com:StartPeriod>
+							<com:EndPeriod isInclusive="false">2024-12-31T00:00:00</com:EndPeriod>
+						</com:TimeRange>
 					</com:KeyValue>
 				</str:CubeRegion>
 			</str:ContentConstraint>

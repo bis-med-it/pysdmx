@@ -13,13 +13,16 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
 from pysdmx.model import (
     Agency,
     ConstraintAttachment,
+    ConstraintRole,
     CubeKeyValue,
     CubeRegion,
+    CubeTimeRange,
     CubeValue,
     DataConstraint,
     DataKey,
     DataKeyValue,
     KeySet,
+    TimePeriodBoundary,
 )
 from pysdmx.util import is_final
 
@@ -41,24 +44,96 @@ class JsonValue(Struct, frozen=True, omit_defaults=True):
         return JsonValue(cv.value, cv.valid_from, cv.valid_to)
 
 
+class JsonTimePeriod(Struct, frozen=True, omit_defaults=True):
+    """SDMX-JSON payload for one end of a time range."""
+
+    period: str
+    isInclusive: bool = True
+
+    def to_model(self) -> TimePeriodBoundary:
+        """Converts a JsonTimePeriod to a TimePeriodBoundary."""
+        return TimePeriodBoundary(self.period, self.isInclusive)
+
+    @classmethod
+    def from_model(cls, b: TimePeriodBoundary) -> "JsonTimePeriod":
+        """Converts a pysdmx time period boundary to an SDMX-JSON one."""
+        return JsonTimePeriod(b.period, b.is_inclusive)
+
+
+class JsonTimeRange(Struct, frozen=True, omit_defaults=True):
+    """SDMX-JSON payload for a cube-region time range."""
+
+    beforePeriod: Optional[JsonTimePeriod] = None
+    afterPeriod: Optional[JsonTimePeriod] = None
+    startPeriod: Optional[JsonTimePeriod] = None
+    endPeriod: Optional[JsonTimePeriod] = None
+
+    def to_model(self) -> CubeTimeRange:
+        """Converts a JsonTimeRange to a CubeTimeRange."""
+
+        def conv(
+            p: Optional[JsonTimePeriod],
+        ) -> Optional[TimePeriodBoundary]:
+            return p.to_model() if p else None
+
+        return CubeTimeRange(
+            conv(self.beforePeriod),
+            conv(self.afterPeriod),
+            conv(self.startPeriod),
+            conv(self.endPeriod),
+        )
+
+    @classmethod
+    def from_model(cls, tr: CubeTimeRange) -> "JsonTimeRange":
+        """Converts a pysdmx cube time range to an SDMX-JSON one."""
+
+        def conv(
+            b: Optional[TimePeriodBoundary],
+        ) -> Optional[JsonTimePeriod]:
+            return JsonTimePeriod.from_model(b) if b else None
+
+        return JsonTimeRange(
+            conv(tr.before_period),
+            conv(tr.after_period),
+            conv(tr.start_period),
+            conv(tr.end_period),
+        )
+
+
 class JsonKeyValue(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of allowed values per component."""
 
     id: str
     values: Sequence[JsonValue] = ()
-    # Additional properties are supported in the model (include,
-    # removePrefix, validFrom, validTo, timeRange) but not by the FMR.
-    # Therefore, they are ignored for now.
+    timeRange: Optional[JsonTimeRange] = None
+    validFrom: Optional[datetime] = None
+    validTo: Optional[datetime] = None
+    # `include` and `removePrefix` are supported by the SDMX-JSON schema
+    # but not by the FMR. Therefore, they are ignored for now.
 
     def to_model(self) -> CubeKeyValue:
         """Converts a JsonKeyValue to a CubeKeyValue."""
-        return CubeKeyValue(self.id, [v.to_model() for v in self.values])
+        return CubeKeyValue(
+            self.id,
+            tuple(v.to_model() for v in self.values),
+            self.timeRange.to_model() if self.timeRange else None,
+            self.validFrom,
+            self.validTo,
+        )
 
     @classmethod
     def from_model(self, key_value: CubeKeyValue) -> "JsonKeyValue":
         """Converts a pysdmx cube key value to an SDMX-JSON one."""
+        values = tuple(JsonValue.from_model(v) for v in key_value.values)
+        time_range = None
+        if not values and key_value.time_range:
+            time_range = JsonTimeRange.from_model(key_value.time_range)
         return JsonKeyValue(
-            key_value.id, [JsonValue.from_model(v) for v in key_value.values]
+            key_value.id,
+            values,
+            time_range,
+            key_value.valid_from,
+            key_value.valid_to,
         )
 
 
@@ -174,6 +249,7 @@ class JsonKeySet(Struct, frozen=True, omit_defaults=True):
 class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a content constraint."""
 
+    role: Optional[str] = None
     constraintAttachment: Optional[JsonConstraintAttachment] = None
     cubeRegions: Optional[Sequence[JsonCubeRegion]] = None
     dataKeySets: Optional[Sequence[JsonKeySet]] = None
@@ -196,6 +272,11 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             is_final=is_final(self.version),
             valid_from=self.validFrom,
             valid_to=self.validTo,
+            role=(
+                ConstraintRole(self.role)
+                if self.role
+                else ConstraintRole.ALLOWED
+            ),
             constraint_attachment=at,
             cube_regions=[r.to_model() for r in self.cubeRegions]
             if self.cubeRegions
@@ -246,6 +327,7 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             isExternalReference=cons.is_external_reference,
             validFrom=cons.valid_from,
             validTo=cons.valid_to,
+            role=cons.role.value,
             constraintAttachment=JsonConstraintAttachment.from_model(
                 cons.constraint_attachment
             ),

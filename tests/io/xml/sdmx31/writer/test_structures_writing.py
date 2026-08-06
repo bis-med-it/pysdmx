@@ -21,6 +21,12 @@ from pysdmx.model import (
     Codelist,
     Concept,
     ConceptScheme,
+    ConstraintAttachment,
+    ConstraintRole,
+    CubeKeyValue,
+    CubeRegion,
+    CubeValue,
+    DataConstraint,
     DataType,
     Facets,
     FromVtlMapping,
@@ -1151,3 +1157,37 @@ def test_category_scheme_31_enrichment_round_trip(complete_header):
     assert top.dataflows[0].id == "DF1"
     assert top.dataflows[0].version == "1.0.0"
     assert top.dataflows[0].name == "Dataflow 1"
+
+
+def test_constraint_role_not_written_31():
+    # SDMX 3.1 removed the constraint role attribute (Actual is deprecated),
+    # so it must not be written. The role is kept in the model only for
+    # SDMX 2.1 / 3.0 compatibility, so an Actual constraint is written as a
+    # plain (allowed) constraint in 3.1 and read back as ALLOWED.
+    dc = DataConstraint(
+        id="TEST_31",
+        name="Test 3.1 constraint",
+        agency="TEST_AGENCY",
+        version="1.0",
+        role=ConstraintRole.ACTUAL,
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None,
+            dataflows=[
+                "urn:sdmx:org.sdmx.infomodel.datastructure."
+                "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
+            ],
+        ),
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(id="FREQ", values=[CubeValue(value="A")])
+                ]
+            )
+        ],
+    )
+    result = write_sdmx(
+        dc, sdmx_format=Format.STRUCTURE_SDMX_ML_3_1, prettyprint=True
+    )
+    assert 'role="' not in result
+    back = read_sdmx(result, validate=True).get_data_constraints()[0]
+    assert back.role == ConstraintRole.ALLOWED

@@ -4,7 +4,7 @@ import msgspec
 import pytest
 
 from pysdmx.io.json.sdmxjson2.messages import JsonDataConstraintMessage
-from pysdmx.model import DataConstraint
+from pysdmx.model import ConstraintRole, DataConstraint
 
 
 @pytest.fixture
@@ -27,6 +27,7 @@ def test_cube_deser(body):
     assert cube.id == "CN_SDG_GLC"
     assert cube.version == "1.22"
     assert cube.name == "IAEG-SDGs:CN_SDG_GLC"
+    assert cube.role == ConstraintRole.ALLOWED
     assert cube.description is None
     assert cube.valid_from is None
     assert cube.valid_to is None
@@ -64,3 +65,27 @@ def test_cube_deser_without_attachment(body):
     cube = cubes[0]
     assert isinstance(cube, DataConstraint)
     assert cube.constraint_attachment is None
+
+
+def test_cube_deser_role_actual(body):
+    data = json.loads(body)
+    constraint = data["data"]["dataConstraints"][0]
+    constraint["role"] = "Actual"
+    modified_body = json.dumps(data).encode()
+
+    res = msgspec.json.Decoder(JsonDataConstraintMessage).decode(modified_body)
+    cubes = res.to_model()
+
+    assert cubes[0].role == ConstraintRole.ACTUAL
+
+
+def test_cube_deser_without_role(body):
+    data = json.loads(body)
+    constraint = data["data"]["dataConstraints"][0]
+    del constraint["role"]
+    modified_body = json.dumps(data).encode()
+
+    res = msgspec.json.Decoder(JsonDataConstraintMessage).decode(modified_body)
+    cubes = res.to_model()
+
+    assert cubes[0].role == ConstraintRole.ALLOWED

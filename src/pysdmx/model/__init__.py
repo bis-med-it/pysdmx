@@ -34,13 +34,16 @@ from pysdmx.model.code import (
 from pysdmx.model.concept import Concept, ConceptScheme
 from pysdmx.model.constraint import (
     ConstraintAttachment,
+    ConstraintRole,
     CubeKeyValue,
     CubeRegion,
+    CubeTimeRange,
     CubeValue,
     DataConstraint,
     DataKey,
     DataKeyValue,
     KeySet,
+    TimePeriodBoundary,
 )
 from pysdmx.model.dataflow import (
     ArrayBoundaries,
@@ -177,9 +180,11 @@ __all__ = [
     "Concept",
     "ConceptScheme",
     "ConstraintAttachment",
+    "ConstraintRole",
     "Contact",
     "CubeKeyValue",
     "CubeRegion",
+    "CubeTimeRange",
     "CubeValue",
     "DataConsumer",
     "DataConsumerScheme",
@@ -227,6 +232,7 @@ __all__ = [
     "Schema",
     "SeriesInfo",
     "StructureMap",
+    "TimePeriodBoundary",
     "ToVtlMapping",
     "Transformation",
     "TransformationScheme",

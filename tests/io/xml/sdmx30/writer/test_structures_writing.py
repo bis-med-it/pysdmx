@@ -21,6 +21,7 @@ from pysdmx.model import (
     Concept,
     ConceptScheme,
     ConstraintAttachment,
+    ConstraintRole,
     Contact,
     CubeKeyValue,
     CubeRegion,
@@ -1543,6 +1544,47 @@ def test_constraint_without_attachment(
     )
     read(result, validate=True)
     assert result == constraint_no_attachment_sample
+
+
+def test_constraint_actual_role_roundtrip_30():
+    dc = DataConstraint(
+        id="RT",
+        name="rt",
+        agency="AG",
+        version="1.0",
+        role=ConstraintRole.ACTUAL,
+    )
+    out = write_sdmx(dc, Format.STRUCTURE_SDMX_ML_3_0, prettyprint=True)
+    assert 'role="Actual"' in out
+    back = read_sdmx(out).get_data_constraints()[0]
+    assert back.role == ConstraintRole.ACTUAL
+
+
+def test_constraint_keyvalue_validity_roundtrip_30():
+    dc = DataConstraint(
+        id="TR",
+        name="tr",
+        agency="AG",
+        version="1.0",
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(
+                        id="FREQ",
+                        values=[CubeValue("A")],
+                        valid_from=datetime(2020, 1, 1),
+                        valid_to=datetime(2024, 1, 1),
+                    )
+                ]
+            )
+        ],
+    )
+    out = write_sdmx(dc, Format.STRUCTURE_SDMX_ML_3_0, prettyprint=True)
+    assert 'validFrom="2020-01-01T00:00:00"' in out
+    assert 'validTo="2024-01-01T00:00:00"' in out
+    kv = read_sdmx(out).get_data_constraints()[0].cube_regions[0].key_values[0]
+    assert kv.valid_from == datetime(2020, 1, 1)
+    assert kv.valid_to == datetime(2024, 1, 1)
 
 
 def test_write_group_without_urn(datastructure):

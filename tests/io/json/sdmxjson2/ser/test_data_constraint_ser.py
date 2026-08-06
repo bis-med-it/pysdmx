@@ -1,8 +1,20 @@
+from datetime import datetime
+
+import msgspec
 import pytest
 
 from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
-from pysdmx.model import ConstraintAttachment, DataConstraint
+from pysdmx.model import (
+    ConstraintAttachment,
+    ConstraintRole,
+    CubeKeyValue,
+    CubeRegion,
+    CubeTimeRange,
+    CubeValue,
+    DataConstraint,
+    TimePeriodBoundary,
+)
 
 
 @pytest.fixture
@@ -19,6 +31,17 @@ def constraint_no_attachment():
     return DataConstraint("TEST", agency="BIS", name="Test")
 
 
+@pytest.fixture
+def constraint_role_actual():
+    return DataConstraint(
+        "TEST",
+        agency="BIS",
+        name="Test",
+        role=ConstraintRole.ACTUAL,
+        constraint_attachment=ConstraintAttachment(data_provider="5B0"),
+    )
+
+
 def test_constraint_no_name(constraint_no_name):
     with pytest.raises(errors.Invalid, match="must have a name"):
         JsonDataConstraint.from_model(constraint_no_name)
@@ -29,3 +52,107 @@ def test_constraint_no_attachment(constraint_no_attachment):
         errors.Invalid, match="must have a constraint attachment"
     ):
         JsonDataConstraint.from_model(constraint_no_attachment)
+
+
+def test_constraint_role_actual(constraint_role_actual):
+    sjson = JsonDataConstraint.from_model(constraint_role_actual)
+
+    assert sjson.role == "Actual"
+    assert b'"role":"Actual"' in msgspec.json.encode(sjson)
+
+
+@pytest.fixture
+def constraint_time_range():
+    return DataConstraint(
+        "TEST",
+        agency="BIS",
+        name="Test",
+        constraint_attachment=ConstraintAttachment(data_provider="5B0"),
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(
+                        id="TIME_PERIOD",
+                        time_range=CubeTimeRange(
+                            start_period=TimePeriodBoundary("2020", True),
+                            end_period=TimePeriodBoundary("2024", False),
+                        ),
+                    )
+                ]
+            )
+        ],
+    )
+
+
+def test_constraint_time_range_round_trip(constraint_time_range):
+    sjson = JsonDataConstraint.from_model(constraint_time_range)
+    key_value = sjson.cubeRegions[0].keyValues[0]
+
+    # A time-range key value must not also carry values.
+    assert len(key_value.values) == 0
+    assert key_value.timeRange is not None
+
+    encoded = msgspec.json.encode(sjson)
+    assert b'"timeRange"' in encoded
+    # msgspec omits the empty ``values`` on newer versions but emits
+    # ``"values":[]`` on the msgspec that ships for Python 3.10; either way
+    # it must never carry populated values alongside a time range.
+    assert b'"values":[{' not in encoded
+
+    back = msgspec.json.Decoder(JsonDataConstraint).decode(encoded)
+    constraint = back.to_model()
+
+    kv = constraint.cube_regions[0].key_values[0]
+    assert kv.time_range.start_period.period == "2020"
+    assert kv.time_range.start_period.is_inclusive is True
+    assert kv.time_range.end_period.period == "2024"
+    assert kv.time_range.end_period.is_inclusive is False
+    assert len(kv.values) == 0
+
+
+@pytest.fixture
+def constraint_key_value_validity():
+    return DataConstraint(
+        "TEST",
+        agency="BIS",
+        name="Test",
+        constraint_attachment=ConstraintAttachment(data_provider="5B0"),
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(
+                        id="FREQ",
+                        values=[CubeValue("A")],
+                        valid_from=datetime(2020, 1, 1),
+                        valid_to=datetime(2024, 1, 1),
+                    )
+                ]
+            )
+        ],
+    )
+
+
+def test_constraint_key_value_validity_round_trip(
+    constraint_key_value_validity,
+):
+    sjson = JsonDataConstraint.from_model(constraint_key_value_validity)
+    key_value = sjson.cubeRegions[0].keyValues[0]
+
+    # A plain values key value must not also carry a time range.
+    assert len(key_value.values) == 1
+    assert key_value.timeRange is None
+
+    encoded = msgspec.json.encode(sjson)
+    assert b'"timeRange"' not in encoded
+    assert b'"validFrom":"2020-01-01T00:00:00"' in encoded
+    assert b'"validTo":"2024-01-01T00:00:00"' in encoded
+
+    back = msgspec.json.Decoder(JsonDataConstraint).decode(encoded)
+    constraint = back.to_model()
+
+    kv = constraint.cube_regions[0].key_values[0]
+    assert kv.time_range is None
+    assert len(kv.values) == 1
+    assert kv.values[0].value == "A"
+    assert kv.valid_from == datetime(2020, 1, 1)
+    assert kv.valid_to == datetime(2024, 1, 1)
