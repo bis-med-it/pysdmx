@@ -812,7 +812,7 @@ class JsonTransformationScheme(
 ):
     """SDMX-JSON payload for VTL transformation schemes."""
 
-    vtlVersion: str = ""
+    vtlVersion: Optional[str] = None
     transformations: Sequence[JsonTransformation] = ()
     vtlMappingScheme: Optional[str] = None
     namePersonalisationScheme: Optional[str] = None

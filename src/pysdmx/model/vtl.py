@@ -141,7 +141,10 @@ class VtlScheme(ItemScheme, frozen=True, omit_defaults=True):
         Raises:
             Invalid: If the version is not a valid VTL version
         """
-        if self.vtl_version not in _VTLVersionEnum._value2member_map_:
+        if (
+            self.vtl_version is not None
+            and self.vtl_version not in _VTLVersionEnum._value2member_map_
+        ):
             raise Invalid(f"Invalid VTL version: {self.vtl_version}")
 
 
