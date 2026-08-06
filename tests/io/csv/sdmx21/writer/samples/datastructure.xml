@@ -29,7 +29,7 @@
 					<com:Name xml:lang="en">ATTRIBUTE 2</com:Name>
 				</str:Concept>
                 <str:Concept id="OBS_VALUE" urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:MD_CONCEPT_SCHEME(1.0).OBS_VALUE">
-					<com:Name xml:lang="en">OBS_VALUE</com:Name>
+					<com:Name xml:lang="en">Observation Value</com:Name>
 				</str:Concept>
                 <str:Concept id="TIME_PERIOD" urn="urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=MD:MD_CONCEPT_SCHEME(1.0).TIME_PERIOD">
 					<com:Name xml:lang="en">TIME PERIOD</com:Name>
