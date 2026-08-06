@@ -456,9 +456,9 @@ class JsonHierarchyAssociation(
 ):
     """SDMX-JSON payload for a hierarchy association."""
 
-    linkedHierarchy: str = ""
-    linkedObject: str = ""
-    contextObject: str = ""
+    linkedHierarchy: Optional[str] = None
+    linkedObject: Optional[str] = None
+    contextObject: Optional[str] = None
     links: Sequence[JsonLink] = ()
 
     def to_model(
@@ -467,7 +467,7 @@ class JsonHierarchyAssociation(
         codelists: Sequence[JsonCodelist],
     ) -> HierarchyAssociation:
         """Converts a JsonHierarchyAssocation to a standard association."""
-        if hierarchies:
+        if hierarchies and self.linkedHierarchy:
             m = find_by_urn(hierarchies, self.linkedHierarchy).to_model(
                 codelists
             )
