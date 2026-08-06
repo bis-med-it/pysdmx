@@ -6,6 +6,15 @@ import pandas as pd
 import pyarrow as pa
 
 from pysdmx.model import Component, DataType
+from pysdmx.toolkit.pd._data_utils import drop_labels
+
+__all__ = [
+    "drop_labels",
+    "to_pandas_schema",
+    "to_pandas_type",
+    "to_pyarrow_schema",
+    "to_pyarrow_type",
+]
 
 
 def __get_pd_type(dt: DataType, required: bool) -> str:  # noqa: C901
