@@ -925,7 +925,7 @@ class JsonTransformationScheme(
                 [JsonAnnotation.from_model(a) for a in ts.annotations]
             ),
             isPartial=ts.is_partial,
-            vtlVersion=ts.vtl_version,  # type: ignore[arg-type]
+            vtlVersion=ts.vtl_version,
             vtlMappingScheme=mapping_ref,
             namePersonalisationScheme=np_ref,
             customTypeScheme=ct_ref,
