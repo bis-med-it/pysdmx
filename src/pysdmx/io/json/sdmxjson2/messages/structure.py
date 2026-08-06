@@ -300,8 +300,10 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             ]
         )
         dcs = tuple(
-            JsonDataConsumerScheme.from_model(a)
-            for a in msg.get_data_consumer_schemes()
+            [
+                JsonDataConsumerScheme.from_model(a)
+                for a in msg.get_data_consumer_schemes()
+            ]
         )
         return JsonStructures(
             agencySchemes=agencies,
