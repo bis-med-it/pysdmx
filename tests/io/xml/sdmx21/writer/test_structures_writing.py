@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
+from msgspec.structs import replace
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
@@ -1610,6 +1611,86 @@ def test_writer_dataflow(complete_header, dataflow):
     )
 
     assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result
+
+
+def test_writer_dataflow_with_dsd_object(
+    complete_header, dataflow, partial_datastructure
+):
+    dataflow_with_dsd = replace(dataflow, structure=partial_datastructure)
+
+    result = write(
+        [dataflow_with_dsd],
+        header=complete_header,
+        prettyprint=False,
+    )
+
+    assert (
+        "<str:Structure>"
+        '<Ref package="datastructure" agencyID="BIS" '
+        'id="BIS_DER" version="1.0" class="DataStructure"/>'
+        "</str:Structure>" in result.replace("\t", "")
+    )
+    assert result == write(
+        [dataflow],
+        header=complete_header,
+        prettyprint=False,
+    )
+
+
+def test_writer_dataflow_without_structure(complete_header, dataflow):
+    dataflow_stub = replace(dataflow, structure=None)
+
+    result = write(
+        [dataflow_stub],
+        header=complete_header,
+        prettyprint=False,
+    )
+
+    assert (
+        "<str:Dataflow "
+        'id="WEBSTATS_DER_DATAFLOW" '
+        'urn="urn:sdmx:org.sdmx.infomodel.datastructure.'
+        'Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" '
+        'version="1.0" '
+        'validFrom="2021-01-01T00:00:00" '
+        'validTo="2021-12-31T00:00:00" '
+        'isExternalReference="true" '
+        'isFinal="true" '
+        'agencyID="BIS">'
+        '<com:Name xml:lang="en">OTC derivatives turnover</com:Name>'
+        '<com:Description xml:lang="en">'
+        "OTC derivatives and FX spot - turnover</com:Description>"
+        "</str:Dataflow>" in result.replace("\t", "")
+    )
+
+
+def test_write_read_dataflow_with_dsd_object(
+    complete_header, dataflow, partial_datastructure
+):
+    dataflow_with_dsd = replace(dataflow, structure=partial_datastructure)
+
+    write_result = write(
+        [dataflow_with_dsd],
+        header=complete_header,
+        prettyprint=False,
+    )
+    read_result = read(write_result, validate=True)
+
+    # The DSD object is read back as its short URN reference.
+    assert read_result == [dataflow]
+
+
+def test_write_read_dataflow_without_structure(complete_header, dataflow):
+    dataflow_stub = replace(dataflow, structure=None)
+
+    write_result = write(
+        [dataflow_stub],
+        header=complete_header,
+        prettyprint=False,
+    )
+    read_result = read(write_result, validate=True)
+
+    assert read_result == [dataflow_stub]
 
 
 def test_read_write(read_write_sample, read_write_header):
