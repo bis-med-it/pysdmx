@@ -353,6 +353,7 @@ def test_writer_labels_name(data_path_optional, schema, csv_labels_name):
     result_sdmx_csv = write([dataset], labels="name")
     result_df = pd.read_csv(StringIO(result_sdmx_csv)).astype(str)
     reference_df = pd.read_csv(csv_labels_name).astype(str)
+    assert list(result_df.columns) == list(reference_df.columns)
     pd.testing.assert_frame_equal(
         result_df.fillna("").replace("nan", ""),
         reference_df.replace("nan", ""),
@@ -533,7 +534,7 @@ def test_writer_partial_keys_no_schema(partial_keys_data):
         write([dataset], partial_keys=True)
 
 
-@pytest.mark.parametrize("labels", [None, "id", "both"])
+@pytest.mark.parametrize("labels", [None, "id", "both", "name"])
 def test_roundtrip_full_datetime(labels):
     """A full datetime attribute survives a write/read roundtrip."""
     from pysdmx.model import Component, Components, Concept, Role, Schema
@@ -562,7 +563,7 @@ def test_roundtrip_full_datetime(labels):
                     "OBS_VALUE",
                     required=True,
                     role=Role.MEASURE,
-                    concept=Concept("OBS_VALUE", name="OBS_VALUE"),
+                    concept=Concept("OBS_VALUE", name="Observation value"),
                 ),
                 Component(
                     "EMBARGO_TIME",
@@ -591,3 +592,24 @@ def test_roundtrip_full_datetime(labels):
 
     assert back.at[0, "EMBARGO_TIME"] == "2025-12-19T14:30:00Z"
     assert back.at[0, "DIM1"] == "A"
+
+
+def test_roundtrip_keys_and_labels_name(data_path_optional, schema):
+    """Keys and name columns are dropped when reading the file back."""
+    dataset = PandasDataset(
+        attributes={},
+        data=pd.read_json(data_path_optional, orient="records"),
+        structure=schema,
+    )
+    dataset.data = dataset.data.astype("str")
+    result_sdmx_csv = write([dataset], labels="name", keys="both")
+    back = read_csv(result_sdmx_csv)[0].data
+    assert list(back.columns) == [
+        "DIM1",
+        "DIM2",
+        "TIME_PERIOD",
+        "OBS_VALUE",
+        "ATT1",
+        "ATT2",
+    ]
+    assert back.iloc[0].tolist() == ["A", "B", "2020", "1", "C", "D"]
