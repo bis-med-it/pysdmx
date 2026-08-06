@@ -3,6 +3,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
+from msgspec.structs import replace
 
 from pysdmx.io import write_sdmx
 from pysdmx.io.format import Format
@@ -596,6 +597,17 @@ def dataflow():
 
 
 @pytest.fixture
+def partial_datastructure():
+    return DataStructureDefinition(
+        agency="BIS",
+        id="BIS_DER",
+        components=Components([]),
+        name="BIS derivatives statistics",
+        version="1.0",
+    )
+
+
+@pytest.fixture
 def vtlmapping_scheme():
     return VtlMappingScheme(
         id="VTLMS1",
@@ -749,6 +761,15 @@ def datastructure_sample():
 @pytest.fixture
 def structures_dataflow_sample():
     base_path = Path(__file__).parent / "samples" / "structure_dataflow.xml"
+    with open(base_path, "r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def structures_dataflow_stub_sample():
+    base_path = (
+        Path(__file__).parent / "samples" / "structure_dataflow_stub.xml"
+    )
     with open(base_path, "r") as f:
         return f.read()
 
@@ -1238,6 +1259,66 @@ def test_dataflow(complete_header, dataflow, structures_dataflow_sample):
         prettyprint=True,
     )
     assert result == structures_dataflow_sample
+
+
+def test_dataflow_with_dsd_object(
+    complete_header,
+    dataflow,
+    partial_datastructure,
+    structures_dataflow_sample,
+):
+    dataflow_with_dsd = replace(dataflow, structure=partial_datastructure)
+
+    result = write(
+        [dataflow_with_dsd],
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    assert result == structures_dataflow_sample
+
+
+def test_dataflow_without_structure(
+    complete_header, dataflow, structures_dataflow_stub_sample
+):
+    dataflow_stub = replace(dataflow, structure=None)
+
+    result = write(
+        [dataflow_stub],
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    assert result == structures_dataflow_stub_sample
+
+
+def test_dataflow_with_dsd_object_round_trip(
+    complete_header, dataflow, partial_datastructure
+):
+    dataflow_with_dsd = replace(dataflow, structure=partial_datastructure)
+
+    write_result = write(
+        [dataflow_with_dsd],
+        header=complete_header,
+        prettyprint=False,
+    )
+    read_result = read(write_result, validate=True)
+
+    # The DSD object is read back as its short URN reference.
+    assert read_result == [dataflow]
+
+
+def test_dataflow_without_structure_round_trip(complete_header, dataflow):
+    dataflow_stub = replace(dataflow, structure=None)
+
+    write_result = write(
+        [dataflow_stub],
+        header=complete_header,
+        prettyprint=False,
+    )
+    read_result = read(write_result, validate=True)
+
+    assert read_result == [dataflow_stub]
 
 
 def test_transformation_scheme(
