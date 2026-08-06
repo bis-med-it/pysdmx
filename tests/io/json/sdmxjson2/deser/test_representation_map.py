@@ -30,5 +30,3 @@ def test_stub_ts_deser(body):
     assert rm.source is None
     assert rm.target is None
     assert len(rm.maps) == 0
-
-

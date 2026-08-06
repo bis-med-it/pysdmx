@@ -26,5 +26,3 @@ def test_stub_ts_deser(body):
     assert ts.description is None
     assert ts.is_partial is False
     assert ts.is_external_reference is True
-
-
