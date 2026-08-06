@@ -47,7 +47,7 @@ jobs:
       - name: Install pip-only dependencies
         run: |
           pip install --no-dependencies --break-system-packages \
-            sdmxschemas==1.0.0 \
+            sdmxschemas==1.1.0 \
             parsy==2.2 \
             msgspec==0.20.0 \
             respx==0.23.1  # Needed for tests
