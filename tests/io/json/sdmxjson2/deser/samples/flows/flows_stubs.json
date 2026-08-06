@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "id": "IREF211721",
+    "test": false,
+    "schema": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+    "prepared": "2026-08-06T12:59:38Z",
+    "contentLanguages": [
+      "en"
+    ],
+    "sender": {
+      "id": "BIS"
+    }
+  },
+  "data": {
+    "dataflows": [
+      {
+        "links": [
+          {
+            "rel": "self",
+            "href": "https://mmsu.bisinfo.org/ws/public/sdmxapi/rest/dataflow/BIS/CBS/1.0",
+            "type": "dataflow",
+            "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:CBS(1.0)"
+          }
+        ],
+        "id": "CBS",
+        "name": "Consolidated banking (CBS)",
+        "names": {
+          "en": "Consolidated banking (CBS)"
+        },
+        "version": "1.0",
+        "agencyID": "BIS",
+        "isExternalReference": true
+      }
+    ]
+  }
+}
