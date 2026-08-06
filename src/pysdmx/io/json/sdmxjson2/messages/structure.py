@@ -299,6 +299,10 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
                 for c in msg.get_metadata_structures()
             ]
         )
+        dcs = tuple(
+            JsonDataConsumerScheme.from_model(a)
+            for a in msg.get_data_consumer_schemes()
+        )
         return JsonStructures(
             agencySchemes=agencies,
             categorisations=categorisations,
@@ -308,6 +312,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             customTypeSchemes=custom_types,
             dataConstraints=constraints,
             dataflows=dataflows,
+            dataConsumerSchemes=dcs,
             dataProviderSchemes=data_providers,
             dataStructures=data_structures,
             hierarchies=hierarchies,
