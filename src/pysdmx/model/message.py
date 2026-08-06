@@ -56,6 +56,7 @@ from pysdmx.model.metadata import (
 )
 from pysdmx.model.organisation import (
     AgencyScheme,
+    DataConsumerScheme,
     DataProviderScheme,
     MetadataProviderScheme,
 )
@@ -273,6 +274,10 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
     def get_data_constraints(self) -> List[DataConstraint]:
         """Returns the DataConstraints."""
         return self.__get_elements(DataConstraint)
+
+    def get_data_consumer_schemes(self) -> List[DataConsumerScheme]:
+        """Returns the DataConsumerSchemes."""
+        return self.__get_elements(DataConsumerScheme)
 
     def get_data_provider_schemes(self) -> List[DataProviderScheme]:
         """Returns the DataProviderSchemes."""

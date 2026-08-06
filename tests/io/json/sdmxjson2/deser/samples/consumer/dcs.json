@@ -1,0 +1,54 @@
+{
+  "meta": {
+    "id": "IREF149442",
+    "test": false,
+    "schema": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+    "prepared": "2026-08-06T11:15:40Z",
+    "contentLanguages": [
+      "en"
+    ],
+    "sender": {
+      "id": "5B0"
+    }
+  },
+  "data": {
+    "dataConsumerSchemes": [
+      {
+        "links": [
+          {
+            "rel": "self",
+            "type": "dataconsumerscheme",
+            "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+            "urn": "urn:sdmx:org.sdmx.infomodel.base.DataConsumerScheme=BIS:DATA_CONSUMERS(1.0)"
+          }
+        ],
+        "id": "DATA_CONSUMERS",
+        "name": "DATA_CONSUMERS",
+        "names": {
+          "en": "DATA_CONSUMERS"
+        },
+        "version": "1.0",
+        "agencyID": "BIS",
+        "isExternalReference": false,
+        "isPartial": false,
+        "dataConsumers": [
+          {
+            "links": [
+              {
+                "rel": "self",
+                "type": "dataconsumer",
+                "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                "urn": "urn:sdmx:org.sdmx.infomodel.base.DataConsumer=BIS:DATA_CONSUMERS(1.0).TEST_CONSUMER"
+              }
+            ],
+            "id": "TEST_CONSUMER",
+            "name": "Test data consumer",
+            "names": {
+              "en": "Test data consumer"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
