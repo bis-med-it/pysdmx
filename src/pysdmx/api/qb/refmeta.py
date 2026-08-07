@@ -28,7 +28,7 @@ class _RefMetaCoreQuery(CoreQuery, frozen=True, omit_defaults=True):
             raise Invalid(
                 "Invalid Request",
                 (
-                    "Queries for reference metadata are not supported"
+                    "Queries for reference metadata are not supported "
                     f"in SDMX-REST {version.label}."
                 ),
             )
@@ -104,7 +104,7 @@ class RefMetaByMetadatasetQuery(
             raise Invalid(
                 "Unexpected artefact type",
                 (
-                    "Only references of type MetadataSet can be converted"
+                    "Only references of type MetadataSet can be converted "
                     "into a RefMetaByMetadatasetQuery"
                 ),
                 {"received_type": ref.sdmx_type},  # type: ignore[union-attr]
