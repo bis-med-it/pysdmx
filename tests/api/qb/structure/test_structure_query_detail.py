@@ -199,11 +199,12 @@ def test_url_2_0_0_details_before_2_0_0(
     detail: StructureDetail,
     api_version: ApiVersion,
 ):
+    msg = f"{detail} is not allowed in SDMX-REST {api_version.label}"
     q = StructureQuery(
         typ, agency, res, version, detail=detail, references=refs
     )
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 
@@ -220,11 +221,12 @@ def test_url_1_3_0_details_before_1_3_0(
     detail: StructureDetail,
     api_version: ApiVersion,
 ):
+    msg = f"{detail} is not allowed in SDMX-REST {api_version.label}"
     q = StructureQuery(
         typ, agency, res, version, detail=detail, references=refs
     )
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 

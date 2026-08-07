@@ -101,9 +101,13 @@ def test_url_deletion_before_2_2_0(
     deletion: bool,
     api_version: ApiVersion,
 ):
+    msg = (
+        "deletion parameter is not supported in SDMX-REST "
+        f"{api_version.label}"
+    )
     q = SchemaQuery(context, agency, res, version, obs_dim, deletion=deletion)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 
