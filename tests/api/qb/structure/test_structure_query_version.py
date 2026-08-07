@@ -57,7 +57,7 @@ def test_url_multiple_versions_until_1_2_0(
     versions: List[str],
     api_version: ApiVersion,
 ):
-    msg = f"Multiple items not allowed in SDMX-REST {api_version.label}"
+    msg = f"Multiple items are not allowed in SDMX-REST {api_version.label}"
     q = StructureQuery(typ, agency, res, versions)
 
     with pytest.raises(Invalid, match=msg):
