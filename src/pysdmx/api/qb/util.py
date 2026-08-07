@@ -45,7 +45,7 @@ def check_multiple_items(
     if not isinstance(value, str) and version < ApiVersion.V1_3_0:
         raise Invalid(
             "Validation Error",
-            f"Multiple items not allowed in SDMX-REST {version.label}.",
+            f"Multiple items are not allowed in SDMX-REST {version.label}.",
         )
 
 
