@@ -102,8 +102,7 @@ def test_url_deletion_before_2_2_0(
     api_version: ApiVersion,
 ):
     msg = (
-        "deletion parameter is not supported in SDMX-REST "
-        f"{api_version.label}"
+        f"deletion parameter is not supported in SDMX-REST {api_version.label}"
     )
     q = SchemaQuery(context, agency, res, version, obs_dim, deletion=deletion)
 

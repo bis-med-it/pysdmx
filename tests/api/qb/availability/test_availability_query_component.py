@@ -55,10 +55,7 @@ def test_availability_url_multiple_components_before_2_0_0(
     components: List[str],
     api_version: ApiVersion,
 ):
-    msg = (
-        "Only one component ID is allowed in SDMX-REST "
-        f"{api_version.label}"
-    )
+    msg = f"Only one component ID is allowed in SDMX-REST {api_version.label}"
     q = AvailabilityQuery(context, agency, res, version, key, components)
 
     with pytest.raises(Invalid, match=msg):
