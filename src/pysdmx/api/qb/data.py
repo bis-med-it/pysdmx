@@ -46,7 +46,7 @@ class _CoreDataQuery(CoreQuery, frozen=True, omit_defaults=True):
         ]:
             raise Invalid(
                 "Validation Error",
-                f"{context} is not valid for SDMX-REST {api_version.value}.",
+                f"{context} is not valid for SDMX-REST {api_version.label}.",
             )
 
     def _check_multiple_contexts(
@@ -70,7 +70,7 @@ class _CoreDataQuery(CoreQuery, frozen=True, omit_defaults=True):
                 "Validation Error",
                 (
                     f"A dataflow must be provided in SDMX-REST "
-                    f"{api_version.value}."
+                    f"{api_version.label}."
                 ),
             )
 
@@ -86,7 +86,7 @@ class _CoreDataQuery(CoreQuery, frozen=True, omit_defaults=True):
                 "Validation Error",
                 (
                     f"{field} is not supported in "
-                    f"SDMX-REST {api_version.value}."
+                    f"SDMX-REST {api_version.label}."
                 ),
             )
 
@@ -439,7 +439,7 @@ class DataQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 (
                     f"{self.attributes} and {self.measures} is not a valid "
                     "combination for the detail attribute in SDMX-REST "
-                    f"{api_version.value}."
+                    f"{api_version.label}."
                 ),
             )
 

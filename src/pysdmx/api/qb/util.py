@@ -27,6 +27,11 @@ class ApiVersion(IntEnum):
     V2_2_1 = 11
     V2_2_2 = 12
 
+    @property
+    def label(self) -> str:
+        """The release number as defined by the SDMX-REST specification."""
+        return self.name.replace("V", "").replace("_", ".")
+
 
 MULT_SEP = re.compile(r"\+")
 REST_ALL = "*"
@@ -40,7 +45,7 @@ def check_multiple_items(
     if not isinstance(value, str) and version < ApiVersion.V1_3_0:
         raise Invalid(
             "Validation Error",
-            f"Multiple items not allowed in SDMX-REST {version.value}.",
+            f"Multiple items not allowed in SDMX-REST {version.label}.",
         )
 
 
@@ -53,7 +58,7 @@ def check_multiple_data_context(
             "Validation Error",
             (
                 f"More than one {field} is not allowed in data context "
-                f"for SDMX-REST {version.value}."
+                f"for SDMX-REST {version.label}."
             ),
         )
 
