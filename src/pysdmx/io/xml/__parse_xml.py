@@ -32,6 +32,7 @@ NAMESPACES_30 = {
     "http://www.w3.org/2001/XMLSchema-instance": "xsi",
     "http://www.w3.org/XML/1998/namespace": None,
     SCHEMA_ROOT_30 + "data/structurespecific": None,
+    SCHEMA_ROOT_30 + "metadata/generic": None,
     SCHEMA_ROOT_30 + "registry": None,
     "http://schemas.xmlsoap.org/soap/envelope/": None,
 }
@@ -50,6 +51,7 @@ NAMESPACES_31 = {
     "http://www.w3.org/2001/XMLSchema-instance": "xsi",
     "http://www.w3.org/XML/1998/namespace": None,
     SCHEMA_ROOT_31 + "data/structurespecific": None,
+    SCHEMA_ROOT_31 + "metadata/generic": None,
     SCHEMA_ROOT_31 + "registry": None,
     "http://schemas.xmlsoap.org/soap/envelope/": None,
 }

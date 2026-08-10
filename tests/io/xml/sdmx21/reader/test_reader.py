@@ -42,6 +42,7 @@ from pysdmx.model import (
     Hierarchy,
     ItemReference,
     KeySet,
+    Metadataflow,
     NamePersonalisationScheme,
     ProvisionAgreement,
     Reference,
@@ -1400,6 +1401,26 @@ def test_constraint_without_attachment(samples_folder):
     assert [
         v.value for v in constraint.cube_regions[0].key_values[0].values
     ] == ["Q"]
+
+
+@pytest.mark.xml
+def test_metadataflow_21(samples_folder):
+    data_path = samples_folder / "metadataflow.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+    flow = result[0]
+    assert isinstance(flow, Metadataflow)
+    assert flow.id == "MDF_TEST"
+    assert flow.agency == "BIS"
+    # Unresolved structure reference (MSD not present in document): the
+    # reader stores the canonical full URN, matching the SDMX-JSON reader.
+    assert flow.structure == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "MetadataStructure=BIS:MSD_TEST(1.0)"
+    )
+    # SDMX-ML 2.1 metadataflows do not carry targets
+    assert flow.targets == ()
 
 
 @pytest.mark.xml
