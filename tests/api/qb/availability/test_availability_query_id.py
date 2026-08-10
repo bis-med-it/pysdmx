@@ -42,9 +42,13 @@ def test_availability_url_multiple_resources_before_2_0_0(
     mult_res: List[str],
     api_version: ApiVersion,
 ):
+    msg = (
+        "More than one resource is not allowed in data context "
+        f"for SDMX-REST {api_version.label}"
+    )
     q = AvailabilityQuery(context, agency, mult_res)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 
@@ -91,9 +95,10 @@ def test_availability_url_multiple_resources_since_2_0_0_short(
 def test_availability_url_default_resource_before_2_0_0(
     context: DataContext, agency: str, api_version: ApiVersion
 ):
+    msg = f"A dataflow must be provided in SDMX-REST {api_version.label}"
     q = AvailabilityQuery(context, agency)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 

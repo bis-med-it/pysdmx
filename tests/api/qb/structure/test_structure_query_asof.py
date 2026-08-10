@@ -126,6 +126,7 @@ def test_url_as_of_before_2_2_0(
     as_of: datetime,
     api_version: ApiVersion,
 ):
+    msg = f"as_of is not supported in SDMX-REST {api_version.label}"
     q = StructureQuery(
         typ,
         agency,
@@ -136,5 +137,5 @@ def test_url_as_of_before_2_2_0(
         as_of=as_of,
     )
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)

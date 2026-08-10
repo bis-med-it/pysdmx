@@ -135,18 +135,20 @@ class JsonRepresentationMap(MaintainableType, frozen=True, omit_defaults=True):
                 description=self.description,
                 version=self.version,
                 is_final=is_final(self.version),
+                is_external_reference=self.isExternalReference,
             )
         else:
             return RepresentationMap(
                 id=self.id,
                 name=self.name,
                 agency=self.agency,
-                source=s[0],
-                target=t[0],
+                source=s[0] if s else None,
+                target=t[0] if s else None,
                 maps=mrs,  # type: ignore[arg-type]
                 description=self.description,
                 version=self.version,
                 is_final=is_final(self.version),
+                is_external_reference=self.isExternalReference,
             )
 
     @classmethod

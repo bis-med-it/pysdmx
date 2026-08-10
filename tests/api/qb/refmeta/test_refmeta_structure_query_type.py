@@ -69,8 +69,12 @@ def test_no_metadata_queries_before_2_0_0(
     detail: RefMetaDetail,
     api_version: ApiVersion,
 ):
+    msg = (
+        "Queries for reference metadata are not supported "
+        f"in SDMX-REST {api_version.label}"
+    )
     q = RefMetaByStructureQuery(typ, agency, res, version, detail)
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 

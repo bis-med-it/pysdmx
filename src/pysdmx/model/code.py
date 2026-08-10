@@ -376,6 +376,6 @@ class HierarchyAssociation(
     """Links a hierarchy to a component withing the context of a dataflow."""
 
     hierarchy: Optional[Union[Hierarchy, str]] = None
-    component_ref: str = ""
-    context_ref: str = ""
+    component_ref: Optional[str] = None
+    context_ref: Optional[str] = None
     operator: Optional[str] = None

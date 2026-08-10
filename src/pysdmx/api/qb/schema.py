@@ -61,7 +61,7 @@ class SchemaQuery(CoreQuery, frozen=True, omit_defaults=True):
         if version < ApiVersion.V2_0_0 and ct in _V2_0_ADDED:
             raise Invalid(
                 "Validation Error",
-                f"{self.context} not allowed in {version.value}.",
+                f"{self.context} is not allowed in SDMX-REST {version.label}.",
             )
 
     def __check_version(self) -> None:
@@ -75,21 +75,27 @@ class SchemaQuery(CoreQuery, frozen=True, omit_defaults=True):
         if self.explicit and version >= ApiVersion.V2_0_0:
             raise Invalid(
                 "Validation Error",
-                f"Explicit parameter is not supported in {version.value}.",
+                (
+                    "explicit parameter is not supported in SDMX-REST "
+                    f"{version.label}."
+                ),
             )
 
     def __check_as_of(self, version: ApiVersion) -> None:
         if self.as_of and version < ApiVersion.V2_2_0:
             raise Invalid(
                 "Validation Error",
-                f"as_of not supported in {version.value}.",
+                f"as_of is not supported in SDMX-REST {version.label}.",
             )
 
     def __check_deletion(self, version: ApiVersion) -> None:
         if self.deletion and version < ApiVersion.V2_2_0:
             raise Invalid(
                 "Validation Error",
-                f"deletion parameter is not supported in {version.value}.",
+                (
+                    "deletion parameter is not supported in SDMX-REST "
+                    f"{version.label}."
+                ),
             )
 
     def _validate_query(self, version: ApiVersion) -> None:

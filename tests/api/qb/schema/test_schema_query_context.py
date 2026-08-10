@@ -113,9 +113,10 @@ def test_url_2_0_0_context_before_2_0_0(
     version: str,
     api_version: ApiVersion,
 ):
+    msg = f"{context} is not allowed in SDMX-REST {api_version.label}"
     q = SchemaQuery(context, agency, res, version)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 

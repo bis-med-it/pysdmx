@@ -54,9 +54,10 @@ def test_availability_url_non_df_context_before_2_0_0(
     context: DataContext,
     api_version: ApiVersion,
 ):
+    msg = f"{context} is not valid for SDMX-REST {api_version.label}"
     q = AvailabilityQuery(context)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 
