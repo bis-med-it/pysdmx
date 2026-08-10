@@ -18,9 +18,10 @@ from pysdmx.errors import Invalid
 )
 def test_availability_components_v1(api_version: ApiVersion):
     flt = TextFilter("FREQ", Operator.EQUALS, "M")
+    msg = f"components is not supported in SDMX-REST {api_version.label}"
     q = AvailabilityQuery(resource_id="CBS", components=flt)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 
