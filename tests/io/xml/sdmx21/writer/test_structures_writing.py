@@ -43,8 +43,11 @@ from pysdmx.model import (
     Hierarchy,
     KeySet,
     LevelType,
+    Metadataflow,
     MetadataProvider,
     MetadataProviderScheme,
+    MetadataProvisionAgreement,
+    MetadataStructure,
     NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
@@ -2191,3 +2194,53 @@ def test_write_group_without_urn(complete_header, datastructure):
     )
     assert expected_urn in result
     read(result, validate=True)
+
+
+@pytest.mark.xml
+def test_metadataflow_21_round_trip(complete_header):
+    metadataflow = Metadataflow(
+        id="MDF_TEST",
+        name="Test Metadataflow",
+        agency="BIS",
+        version="1.0",
+        structure=(
+            "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+            "MetadataStructure=BIS:MSD_TEST(1.0)"
+        ),
+        targets=(),
+    )
+    result = write([metadataflow], header=complete_header, prettyprint=True)
+    assert "<str:Metadataflows>" in result
+    # SDMX-ML 2.1 uses a <Ref> element with class MetadataStructure
+    assert 'class="MetadataStructure"' in result
+    assert 'package="metadatastructure"' in result
+    # No targets in SDMX-ML 2.1
+    assert "<str:Target>" not in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert isinstance(re_read, Metadataflow)
+    assert re_read == metadataflow
+
+
+@pytest.mark.xml
+def test_metadata_structure_21_raises(complete_header):
+    msd = MetadataStructure(
+        id="MSD_TEST", name="Test MSD", agency="BIS", version="1.0"
+    )
+    with pytest.raises(Invalid, match="not supported in SDMX-ML 2.1"):
+        write([msd], header=complete_header, prettyprint=True)
+
+
+@pytest.mark.xml
+def test_metadata_provision_agreement_21_raises(complete_header):
+    mpa = MetadataProvisionAgreement(
+        id="MPA_TEST",
+        name="Test MPA",
+        agency="BIS",
+        version="1.0",
+        metadataflow="Metadataflow=BIS:MDF_TEST(1.0)",
+        metadata_provider=(
+            "MetadataProvider=BIS:METADATA_PROVIDERS(1.0).PROV1"
+        ),
+    )
+    with pytest.raises(Invalid, match="not supported in SDMX-ML 2.1"):
+        write([mpa], header=complete_header, prettyprint=True)

@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from pysdmx.errors import Invalid
+from pysdmx.errors import NotImplemented as NotImplementedError_
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
@@ -37,9 +38,12 @@ from pysdmx.model import (
     Hierarchy,
     ItemReference,
     KeySet,
+    Metadataflow,
     MetadataProvider,
     MetadataProviderScheme,
     MetadataProvisionAgreement,
+    MetadataReport,
+    MetadataStructure,
     NamePersonalisation,
     NamePersonalisationScheme,
     Reference,
@@ -50,6 +54,7 @@ from pysdmx.model import (
     VtlMappingScheme,
 )
 from pysdmx.model.dataflow import DataStructureDefinition, ProvisionAgreement
+from pysdmx.model.dataset import ActionType
 
 
 @pytest.fixture
@@ -293,10 +298,13 @@ def test_metadata_provider_scheme_enrichment_read(samples_folder):
     assert len(mpas) == 1
     mpa = mpas[0]
     assert mpa.short_urn == "MetadataProvisionAgreement=MD:MPA_TEST(1.0)"
-    assert mpa.metadataflow == "Metadataflow=MD:MDF_TEST(1.0)"
-    assert (
-        mpa.metadata_provider
-        == "MetadataProvider=MD:METADATA_PROVIDERS(1.0).MP1"
+    assert mpa.metadataflow == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "Metadataflow=MD:MDF_TEST(1.0)"
+    )
+    assert mpa.metadata_provider == (
+        "urn:sdmx:org.sdmx.infomodel.base."
+        "MetadataProvider=MD:METADATA_PROVIDERS(1.0).MP1"
     )
 
     # The metadata provider named by the MPA is enriched with its
@@ -1192,6 +1200,243 @@ def test_constraint_with_actual_role_read_as_plain(samples_folder):
     assert [
         v.value for v in constraint.cube_regions[0].key_values[0].values
     ] == ["M"]
+
+
+@pytest.fixture
+def metadata_family_msg(samples_folder):
+    data_path = samples_folder / "metadata_family.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    return read_sdmx(input_str, validate=True)
+
+
+@pytest.mark.xml
+def test_metadata_structure_30(metadata_family_msg):
+    msds = metadata_family_msg.get_metadata_structures()
+    assert len(msds) == 1
+    msd = msds[0]
+    assert isinstance(msd, MetadataStructure)
+    assert msd.id == "MSD_TEST"
+    assert msd.agency == "BIS"
+    assert msd.version == "1.0"
+    # Two top-level components, three total (one nested)
+    assert len(msd.components) == 2
+    assert len(msd) == 3
+
+    contact = msd["CONTACT"]
+    assert contact is not None
+    assert contact.is_presentational is True
+    assert len(contact.components) == 1
+
+    # Nested coded attribute (resolved Enumeration -> Codelist)
+    freq = msd["CONTACT.FREQ"]
+    assert freq is not None
+    assert freq.is_presentational is False
+    assert isinstance(freq.local_codes, Codelist)
+    assert freq.local_enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+    )
+
+    # Uncoded attribute with array (maxOccurs unbounded)
+    note = msd["NOTE"]
+    assert note is not None
+    assert note.local_dtype is not None
+    assert note.local_facets is not None
+    assert note.local_facets.max_length == "500"
+    assert note.array_def is not None
+    assert note.array_def.min_size == 0
+    assert note.array_def.max_size is None
+
+
+@pytest.mark.xml
+def test_metadataflow_30_resolved_structure(metadata_family_msg):
+    flows = metadata_family_msg.get_metadataflows()
+    assert len(flows) == 1
+    flow = flows[0]
+    assert isinstance(flow, Metadataflow)
+    assert flow.id == "MDF_TEST"
+    # Structure resolved to the MetadataStructure object
+    assert isinstance(flow.structure, MetadataStructure)
+    assert flow.structure.short_urn == "MetadataStructure=BIS:MSD_TEST(1.0)"
+    assert flow.targets == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=*:*(*)",
+    )
+
+
+@pytest.mark.xml
+def test_metadata_provision_agreement_30(metadata_family_msg):
+    mpas = metadata_family_msg.get_metadata_provision_agreements()
+    assert len(mpas) == 1
+    mpa = mpas[0]
+    assert isinstance(mpa, MetadataProvisionAgreement)
+    assert mpa.id == "MPA_TEST"
+    assert mpa.metadataflow == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "Metadataflow=BIS:MDF_TEST(1.0)"
+    )
+    assert mpa.metadata_provider == (
+        "urn:sdmx:org.sdmx.infomodel.base."
+        "MetadataProvider=BIS:METADATA_PROVIDERS(1.0).PROV1"
+    )
+
+
+@pytest.mark.xml
+def test_metadata_family_refs_30(samples_folder):
+    data_path = samples_folder / "metadata_family_refs.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+    msg = read_sdmx(input_str, validate=True)
+
+    msds = {m.id: m for m in msg.get_metadata_structures()}
+    # MSD without components and without an isExternalReference attribute
+    empty = msds["MSD_EMPTY"]
+    assert len(empty.components) == 0
+    assert empty.is_external_reference is False
+
+    # MSD with a bounded array (maxOccurs="3")
+    msd = msds["MSD_REFS"]
+    freq = msd["FREQ"]
+    assert freq is not None
+    assert freq.array_def is not None
+    assert freq.array_def.min_size == 1
+    assert freq.array_def.max_size == 3
+
+    # Metadataflow without a structure reference (but with a target)
+    flow = msg.get_metadataflows()[0]
+    assert flow.id == "MDF_NO_STRUCTURE"
+    assert flow.structure is None
+    assert flow.targets == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=*:*(*)",
+    )
+
+    # MetadataProvisionAgreement referenced by URN
+    mpa = msg.get_metadata_provision_agreements()[0]
+    assert mpa.metadataflow == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "Metadataflow=BIS:MDF_NO_STRUCTURE(1.0)"
+    )
+    assert mpa.metadata_provider == (
+        "urn:sdmx:org.sdmx.infomodel.base."
+        "MetadataProvider=BIS:METADATA_PROVIDERS(1.0).PROV2"
+    )
+
+
+@pytest.mark.xml
+def test_generic_metadata_30(samples_folder):
+    data_path = samples_folder / "generic_metadata.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.REFMETA_SDMX_ML_3_0
+    msg = read_sdmx(input_str, validate=True)
+    reports = msg.get_reports()
+    assert len(reports) == 1
+    report = reports[0]
+    assert isinstance(report, MetadataReport)
+    assert report.id == "RPT1"
+    assert report.name == "Report 1"
+    assert report.agency == "BIS"
+    assert report.version == "1.0"
+    assert report.metadataflow == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "Metadataflow=BIS:MDF_TEST(1.0)"
+    )
+    assert report.targets == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF(1.0)",
+    )
+    # reportingBeginDate / reportingEndDate map to reportingBegin / End
+    assert report.action == ActionType.Replace
+    assert report.publicationYear == "2021"
+    assert report.reportingBegin == "2020-01-01"
+    assert report.reportingEnd == "2020-12-31"
+
+    # Recursion + dotted lookup + single vs. multiple values
+    assert len(report) == 4
+    assert report["CONTACT.NAME"].value == "John Doe"
+    assert report["CONTACT.EMAIL"].value == [
+        "john@example.org",
+        "doe@example.org",
+    ]
+    assert report["NOTE"].value == "A single note"
+
+
+@pytest.mark.xml
+def test_generic_metadata_mpa_choice_30(samples_folder):
+    data_path = samples_folder / "generic_metadata_mpa.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.REFMETA_SDMX_ML_3_0
+    report = read_sdmx(input_str, validate=True).get_reports()[0]
+    assert report.metadataProvisionAgreement == (
+        "urn:sdmx:org.sdmx.infomodel.registry."
+        "MetadataProvisionAgreement=BIS:MPA_TEST(1.0)"
+    )
+    assert report.metadataflow == ""
+    assert report["NOTE"].value == "Reported against a provision agreement"
+
+
+@pytest.mark.xml
+def test_generic_metadata_detection_regression():
+    # GenericMetadata must be detected as REFMETA, not generic DATA.
+    doc = (
+        '<?xml version="1.0"?>'
+        "<mes:GenericMetadata "
+        'xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v3_0/message">'
+        "</mes:GenericMetadata>"
+    )
+    _, read_format = process_string_to_read(doc)
+    assert read_format == Format.REFMETA_SDMX_ML_3_0
+
+
+@pytest.mark.xml
+def test_generic_metadata_21_not_implemented():
+    # There is no SDMX-ML 2.1 reference metadata format in pysdmx.
+    doc = (
+        '<?xml version="1.0"?>'
+        "<mes:GenericMetadata "
+        'xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v2_1/message">'
+        "</mes:GenericMetadata>"
+    )
+    with pytest.raises(NotImplementedError_):
+        process_string_to_read(doc)
+
+
+@pytest.mark.xml
+def test_generic_metadata_reader_rejects_structure(samples_folder):
+    from pysdmx.io.xml.sdmx30.reader.metadata import read as read_refmeta
+
+    # A structure document is not a GenericMetadata message.
+    data_path = samples_folder / "metadata_family.xml"
+    with open(data_path, "r") as f:
+        text = f.read()
+    with pytest.raises(Invalid, match="not SDMX-ML GenericMetadata"):
+        read_refmeta(text, validate=True)
+
+
+@pytest.mark.xml
+def test_generic_metadata_empty_set():
+    from pysdmx.io.xml.sdmx30.reader.metadata import read as read_refmeta
+
+    # A GenericMetadata message with no MetadataSet yields no reports.
+    doc = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        "<mes:GenericMetadata "
+        'xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v3_0/message" '
+        'xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v3_0/common">'
+        "<mes:Header>"
+        "<mes:ID>test</mes:ID>"
+        "<mes:Test>true</mes:Test>"
+        "<mes:Prepared>2021-01-01T10:00:00Z</mes:Prepared>"
+        '<mes:Sender id="ZZZ"/>'
+        '<mes:Structure structureID="MDS1">'
+        "<com:Structure>urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "MetadataStructure=BIS:MSD(1.0)</com:Structure>"
+        "</mes:Structure>"
+        "</mes:Header>"
+        "</mes:GenericMetadata>"
+    )
+    assert read_refmeta(doc, validate=True) == []
 
 
 @pytest.mark.xml

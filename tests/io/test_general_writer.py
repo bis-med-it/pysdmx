@@ -700,6 +700,133 @@ def test_write_multi_datatype_representation_map(tmpdir, format):
     assert xml_content.count("<str:TargetDataType>") == 2
 
 
+REFMETA_PATH = JSN_2_0_PATH / "refmeta"
+PA_PATH = JSN_2_0_PATH / "pa"
+
+
+@pytest.mark.parametrize(
+    "sdmx_format",
+    [Format.STRUCTURE_SDMX_ML_3_0, Format.STRUCTURE_SDMX_ML_3_1],
+)
+def test_metadata_structure_json_to_xml_roundtrip(tmpdir, sdmx_format):
+    # An MSD read from SDMX-JSON resolves each component's concept to a full
+    # Concept because the referenced ConceptScheme is present in the message.
+    # Writing the MSD together with that ConceptScheme to SDMX-ML lets the
+    # concepts resolve again on read-back, so the MSD round-trips unchanged --
+    # exactly as the SDMX-JSON reader resolves them (no writer-side fabrication
+    # of the scheme).
+    from_json = read_sdmx(REFMETA_PATH / "msd.json")
+    json_msds = from_json.get_metadata_structures()
+    assert json_msds[0].components[0].concept.name is not None
+
+    structures = [*json_msds, *from_json.get_concept_schemes()]
+    out_path = Path(str(tmpdir)) / "msd.xml"
+    write_sdmx(structures, sdmx_format=sdmx_format, output_path=str(out_path))
+
+    from_xml = read_sdmx(out_path, validate=True)
+    assert json_msds == from_xml.get_metadata_structures()
+
+
+@pytest.mark.parametrize(
+    "sdmx_format",
+    [Format.STRUCTURE_SDMX_ML_3_0, Format.STRUCTURE_SDMX_ML_3_1],
+)
+def test_metadataflow_json_to_xml_roundtrip(tmpdir, sdmx_format):
+    # A metadataflow read from SDMX-JSON stores its structure and targets as
+    # full URNs. Writing it to SDMX-ML 3.0/3.1 and reading it back must
+    # preserve those full URNs (and the targets), matching the SDMX-JSON
+    # reader.
+    from_json = read_sdmx(REFMETA_PATH / "mdf.json")
+    json_flows = from_json.get_metadataflows()
+    assert json_flows[0].structure == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "MetadataStructure=TEST:DF_CNF(1.0)"
+    )
+    assert json_flows[0].targets == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=*:*(*)",
+    )
+
+    out_path = Path(str(tmpdir)) / "mdf.xml"
+    write_sdmx(json_flows, sdmx_format=sdmx_format, output_path=str(out_path))
+
+    from_xml = read_sdmx(out_path, validate=True)
+    assert json_flows == from_xml.get_metadataflows()
+
+
+def test_metadataflow_21_json_to_xml_structure_roundtrip(tmpdir):
+    # SDMX-ML 2.1 metadataflows carry a structure reference (as a <Ref>) but
+    # have no representation for targets. The structure full URN must
+    # round-trip; the targets are dropped because the 2.1 schema has no
+    # <str:Target> element for a metadataflow.
+    from_json = read_sdmx(REFMETA_PATH / "mdf.json")
+    json_flow = from_json.get_metadataflows()[0]
+
+    out_path = Path(str(tmpdir)) / "mdf_21.xml"
+    write_sdmx(
+        from_json.get_metadataflows(),
+        sdmx_format=Format.STRUCTURE_SDMX_ML_2_1,
+        output_path=str(out_path),
+    )
+
+    from_xml = read_sdmx(out_path, validate=True)
+    xml_flow = from_xml.get_metadataflows()[0]
+    assert xml_flow.structure == json_flow.structure
+    # Targets are not representable in SDMX-ML 2.1 metadataflows.
+    assert xml_flow.targets == ()
+
+
+@pytest.mark.parametrize(
+    "sdmx_format",
+    [Format.STRUCTURE_SDMX_ML_3_0, Format.STRUCTURE_SDMX_ML_3_1],
+)
+def test_metadata_provision_agreement_json_to_xml_roundtrip(
+    tmpdir, sdmx_format
+):
+    # A metadata provision agreement read from SDMX-JSON stores its
+    # metadataflow and metadata provider references as full URNs. Writing it
+    # to SDMX-ML and reading it back must preserve those full URNs.
+    from_json = read_sdmx(PA_PATH / "mpa.json")
+    json_mpas = from_json.get_metadata_provision_agreements()
+    assert json_mpas[0].metadataflow == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "Metadataflow=TEST:DF_CNF(1.0)"
+    )
+    assert json_mpas[0].metadata_provider == (
+        "urn:sdmx:org.sdmx.infomodel.base."
+        "MetadataProvider=SDMX:METADATA_PROVIDERS(1.0).TEST"
+    )
+
+    out_path = Path(str(tmpdir)) / "mpa.xml"
+    write_sdmx(json_mpas, sdmx_format=sdmx_format, output_path=str(out_path))
+
+    from_xml = read_sdmx(out_path, validate=True)
+    assert json_mpas == from_xml.get_metadata_provision_agreements()
+
+
+@pytest.mark.parametrize("sample", ["report.json", "mult_reports.json"])
+@pytest.mark.parametrize(
+    "sdmx_format",
+    [Format.REFMETA_SDMX_ML_3_0, Format.REFMETA_SDMX_ML_3_1],
+)
+def test_metadata_report_json_to_xml_roundtrip(tmpdir, sample, sdmx_format):
+    # A metadata report read from SDMX-JSON stores its metadataflow / targets
+    # / metadataProvisionAgreement references as full URNs. Writing it to
+    # SDMX-ML (GenericMetadata) and reading it back must preserve them. The
+    # SDMX-JSON samples are FMR responses that do not conform to the strict
+    # SDMX-JSON metadata schema, so they are read with validate=False; the
+    # SDMX-ML output is validated on read-back.
+    from_json = read_sdmx(REFMETA_PATH / sample, validate=False)
+    json_reports = from_json.get_reports()
+
+    out_path = Path(str(tmpdir)) / "report.xml"
+    write_sdmx(
+        json_reports, sdmx_format=sdmx_format, output_path=str(out_path)
+    )
+
+    from_xml = read_sdmx(out_path, validate=True)
+    assert json_reports == from_xml.get_reports()
+
+
 @pytest.mark.parametrize(
     "sdmx_format",
     [
