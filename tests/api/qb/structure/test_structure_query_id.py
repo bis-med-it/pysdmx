@@ -56,9 +56,10 @@ def test_url_multiple_ids_until_1_2_0(
     mult_res: List[str],
     api_version: ApiVersion,
 ):
+    msg = f"Multiple items are not allowed in SDMX-REST {api_version.label}"
     q = StructureQuery(typ, agency, mult_res)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 

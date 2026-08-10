@@ -347,7 +347,7 @@ class StructureQuery(CoreQuery, frozen=True, omit_defaults=True):
         if self.as_of and version < ApiVersion.V2_2_0:
             raise Invalid(
                 "Validation Error",
-                f"as_of not supported in {version.value}.",
+                f"as_of is not supported in SDMX-REST {version.label}.",
             )
 
     def __check_artefact_type(
@@ -363,7 +363,7 @@ class StructureQuery(CoreQuery, frozen=True, omit_defaults=True):
         if self.item_id != REST_ALL and version < ApiVersion.V1_1_0:
             raise Invalid(
                 "Validation Error",
-                f"Item query not supported in {version.value}.",
+                f"Item query is not supported in SDMX-REST {version.label}.",
             )
 
     def __check_detail(self, version: ApiVersion) -> None:
@@ -378,7 +378,7 @@ class StructureQuery(CoreQuery, frozen=True, omit_defaults=True):
         ) or (version < ApiVersion.V2_0_0 and self.detail.value == "raw"):
             raise Invalid(
                 "Validation Error",
-                f"{self.detail} not allowed in SDMX-REST {version.value}.",
+                f"{self.detail} is not allowed in SDMX-REST {version.label}.",
             )
 
     def __check_references(self, version: ApiVersion) -> None:
@@ -391,7 +391,10 @@ class StructureQuery(CoreQuery, frozen=True, omit_defaults=True):
         ):
             raise Invalid(
                 "Validation Error",
-                f"{self.references} not allowed in SDMX-REST {version.value}.",
+                (
+                    f"{self.references} is not allowed in SDMX-REST "
+                    f"{version.label}."
+                ),
             )
 
     def __is_item_allowed(
