@@ -33,11 +33,15 @@ def test_invalid_value(res: str, api_version: ApiVersion):
 def test_invalid_before_2_2_0(
     res: str, reporting_year_start_day: datetime, api_version: ApiVersion
 ):
+    msg = (
+        "reporting_year_start_day is not supported in SDMX-REST "
+        f"{api_version.label}"
+    )
     q = AvailabilityQuery(
         resource_id=res, reporting_year_start_day=reporting_year_start_day
     )
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 

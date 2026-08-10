@@ -8,7 +8,8 @@ from pysdmx.errors import Invalid
     "api_version", [v for v in ApiVersion if v < ApiVersion.V1_3_0]
 )
 def test_check_multiple_items_before_1_3_0(api_version):
-    with pytest.raises(Invalid):
+    msg = f"Multiple items are not allowed in SDMX-REST {api_version.label}"
+    with pytest.raises(Invalid, match=msg):
         check_multiple_items(["A", "B"], api_version)
 
 

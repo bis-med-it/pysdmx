@@ -53,9 +53,13 @@ def v2u():
 def test_availability_url_multiple_agencies_before_2_0_0(
     context: DataContext, agencies: List[str], v13u: ApiVersion
 ):
+    msg = (
+        "More than one agency is not allowed in data context "
+        f"for SDMX-REST {v13u.label}"
+    )
     q = AvailabilityQuery(context, agencies)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(v13u)
 
 

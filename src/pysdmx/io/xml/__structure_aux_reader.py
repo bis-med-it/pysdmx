@@ -124,6 +124,7 @@ from pysdmx.io.xml.__tokens import (
     IS_FINAL_LOW,
     IS_PARTIAL,
     IS_PARTIAL_LOW,
+    IS_PRESENTATIONAL,
     KEY,
     KEY_VALUE,
     LEVEL,
@@ -137,16 +138,24 @@ from pysdmx.io.xml.__tokens import (
     LOCAL_REP,
     MANDATORY,
     MANDATORY_LOW,
+    MAX_OCCURS,
     ME_LIST,
     ME_REL,
     MEASURE,
     METADATA,
+    METADATA_ATT,
+    METADATA_ATT_LIST,
     METADATA_PROVIDER,
     METADATA_PROVIDER_SCHEME,
     METADATA_PROVIDER_SCHEMES,
     METADATAFLOW,
+    METADATAFLOWS,
+    MIN_OCCURS,
     MPA,
     MPAS,
+    MSD,
+    MSD_COMPS,
+    MSDS,
     MSR,
     NAME,
     NAME_PER,
@@ -249,9 +258,12 @@ from pysdmx.model import (
     ImplicitComponentMap,
     KeySet,
     LevelType,
+    MetadataComponent,
+    Metadataflow,
     MetadataProvider,
     MetadataProviderScheme,
     MetadataProvisionAgreement,
+    MetadataStructure,
     MultiComponentMap,
     MultiRepresentationMap,
     MultiValueMap,
@@ -272,6 +284,7 @@ from pysdmx.model.__base import (
     Reference,
 )
 from pysdmx.model.dataflow import (
+    ArrayBoundaries,
     Component,
     Components,
     Dataflow,
@@ -299,7 +312,6 @@ from pysdmx.model.vtl import (
 from pysdmx.util import (
     find_by_urn,
     is_final,
-    parse_item_urn,
     parse_short_item_urn,
     parse_urn,
 )
@@ -340,6 +352,8 @@ STRUCTURES_MAPPING = {
     NAME_PER_SCHEME: NamePersonalisationScheme,
     CUSTOM_TYPE_SCHEME: CustomTypeScheme,
     PROV_AGREEMENTS: ProvisionAgreement,
+    METADATAFLOWS: Metadataflow,
+    MSDS: MetadataStructure,
     MPAS: MetadataProvisionAgreement,
     CONSTRAINTS: DataConstraint,
     DATA_CONSTRAINTS: DataConstraint,
@@ -460,6 +474,8 @@ class StructureParser(Struct):
     concepts: Dict[str, ConceptScheme] = {}
     datastructures: Dict[str, DataStructureDefinition] = {}
     dataflows: Dict[str, Dataflow] = {}
+    metadatastructures: Dict[str, MetadataStructure] = {}
+    metadataflows: Dict[str, Metadataflow] = {}
     metadata_provision_agreements: Dict[str, MetadataProvisionAgreement] = {}
     constraints: Dict[str, DataConstraint] = {}
     rulesets: Dict[str, RulesetScheme] = {}
@@ -1130,6 +1146,43 @@ class StructureParser(Struct):
 
         return element
 
+    def __format_metadataflow(
+        self, element: Dict[str, Any], reference_str: Optional[str]
+    ) -> None:
+        """Resolves the structure and targets of a Metadataflow.
+
+        Mirrors the Dataflow handling: the ``<str:Structure>`` reference is
+        resolved into the field ``structure`` (the resolved MetadataStructure
+        object if available, otherwise its full URN), and the repeatable
+        ``<str:Target>`` elements are collected into ``targets``.
+
+        ``reference_str`` is the short URN (used as the lookup key, since
+        ``self.metadatastructures`` is keyed by ``short_urn``). When the MSD
+        is not present in the message the field falls back to the canonical
+        full URN, matching the form stored by the SDMX-JSON reader.
+        """
+        if STRUCTURE in element:
+            del element[STRUCTURE]
+        resolved: Optional[Union[MetadataStructure, str]] = None
+        if reference_str is not None:
+            # The structure is always an MSD: the package is fixed to
+            # ``metadatastructure`` and ``reference_str`` already carries the
+            # ``MetadataStructure=...`` short URN.
+            full_urn = (
+                f"urn:sdmx:org.sdmx.infomodel."
+                f"metadatastructure.{reference_str}"
+            )
+            resolved = self.metadatastructures.get(reference_str, full_urn)
+        element[STRUCTURE.lower()] = resolved
+        targets = (
+            [_extract_text(t) for t in add_list(element[TARGET])]
+            if TARGET in element
+            else []
+        )
+        if TARGET in element:
+            del element[TARGET]
+        element["targets"] = tuple(targets)
+
     def __format_metadata_prov_agreement(
         self, element: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -1137,27 +1190,149 @@ class StructureParser(Struct):
 
         Mirrors ``__format_prov_agreement`` but the children are a
         ``<str:Metadataflow>`` and a ``<str:MetadataProvider>`` (an
-        organisation item, hence an item-style short URN). The MPA construct
-        only exists in SDMX-ML 3.x, where references are URN text.
+        organisation item, hence an item-style reference). The MPA construct
+        only exists in SDMX-ML 3.x, where references are URN text. Both
+        references are stored as canonical full URNs, matching the form
+        stored by the SDMX-JSON reader.
         """
-        ref_flow = parse_urn(element[METADATAFLOW])
-        metadataflow = (
-            f"{ref_flow.sdmx_type}={ref_flow.agency}:"
-            f"{ref_flow.id}({ref_flow.version})"
-        )
-        del element[METADATAFLOW]
-
-        ref_provider = parse_item_urn(element[METADATA_PROVIDER])
-        metadata_provider = (
-            f"{ref_provider.sdmx_type}={ref_provider.agency}:"
-            f"{ref_provider.id}({ref_provider.version})"
-            f".{ref_provider.item_id}"
-        )
-        del element[METADATA_PROVIDER]
-
-        element[METADATAFLOW.lower()] = metadataflow
-        element["metadata_provider"] = metadata_provider
+        # The MPA only exists in SDMX-ML 3.x, where both children are full
+        # URN text, so the values are stored as-is (the metadataflow is in
+        # the ``metadatastructure`` package, the provider in ``base``).
+        element[METADATAFLOW.lower()] = element.pop(METADATAFLOW)
+        element["metadata_provider"] = element.pop(METADATA_PROVIDER)
         return element
+
+    def __format_metadata_attribute(
+        self, att_elem: Dict[str, Any]
+    ) -> MetadataComponent:
+        """Recursively formats a MetadataAttribute into a MetadataComponent.
+
+        Reuses the DSD ConceptIdentity / LocalRepresentation grammar via the
+        shared ``__format_con_id`` / ``__format_local_rep`` /
+        ``__format_representation`` helpers. ``array_def`` is derived from
+        ``minOccurs`` / ``maxOccurs`` and ``local_enum_ref`` from the
+        ``Enumeration`` URN, mirroring ``JsonMetadataAttribute.to_model``.
+        """
+        component: Dict[str, Any] = {}
+        component[ID] = att_elem[ID]
+        component["is_presentational"] = (
+            att_elem.get(IS_PRESENTATIONAL, "false") == "true"
+        )
+
+        # SDMX-ML 3.x always references the concept identity by URN text.
+        concept_id = self.__format_con_id(att_elem[CON_ID])
+        component[CON_LOW] = concept_id.pop(CON)
+
+        if LOCAL_REP in att_elem:
+            local_enum_ref = self.__local_enum_ref(att_elem[LOCAL_REP])
+            if local_enum_ref is not None:
+                component["local_enum_ref"] = local_enum_ref
+            self.__format_local_rep(att_elem)
+            for key in (LOCAL_CODES_LOW, LOCAL_DTYPE, LOCAL_FACETS_LOW):
+                if key in att_elem:
+                    component[key] = att_elem[key]
+
+        array_def = self.__array_def(att_elem)
+        if array_def is not None:
+            component["array_def"] = array_def
+
+        children = (
+            [
+                self.__format_metadata_attribute(child)
+                for child in add_list(att_elem[METADATA_ATT])
+            ]
+            if METADATA_ATT in att_elem
+            else []
+        )
+        if children:
+            component[COMPS] = tuple(children)
+
+        return MetadataComponent(**component)
+
+    @staticmethod
+    def __local_enum_ref(local_rep: Dict[str, Any]) -> Optional[str]:
+        """Extracts the enumeration URN from a LocalRepresentation.
+
+        SDMX-ML 3.x references the enumeration (codelist or valuelist) by
+        URN text.
+        """
+        if ENUM not in local_rep:
+            return None
+        return str(local_rep[ENUM])
+
+    @staticmethod
+    def __array_def(att_elem: Dict[str, Any]) -> Optional[ArrayBoundaries]:
+        """Builds ArrayBoundaries from minOccurs / maxOccurs.
+
+        Mirrors ``JsonMetadataAttribute.to_model``: an array definition is
+        only created when the attribute is genuinely multi-valued
+        (``maxOccurs`` is ``unbounded`` or greater than 1). Only array
+        cardinality (``maxOccurs > 1``) is carried by the model via
+        ``array_def``.
+
+        Known limitation: the model's ``array_def`` / ``ArrayBoundaries``
+        only represents real arrays, so single-occurrence ``minOccurs``
+        (i.e. ``0`` vs ``1``, with ``maxOccurs <= 1``) is not represented in
+        the model and is therefore not preserved across a read -> write
+        cycle: an optional attribute (``minOccurs="0"``) is read as ``None``
+        here and the writer omits ``minOccurs``, defaulting it back to ``1``.
+        This is consistent with the JSON reader, which has the same
+        model-level limitation. See ``test_msd_minoccurs_zero_not_preserved
+        _known_limitation`` for the pinned behavior.
+        """
+        min_occurs = int(att_elem.get(MIN_OCCURS, 1))
+        max_raw = att_elem.get(MAX_OCCURS, 1)
+        if max_raw == "unbounded":
+            return ArrayBoundaries(min_occurs)
+        max_occurs = int(max_raw)
+        if max_occurs > 1:
+            return ArrayBoundaries(min_occurs, max_occurs)
+        return None
+
+    def __format_metadatastructure(
+        self, json_msds: Dict[str, Any]
+    ) -> Dict[str, MetadataStructure]:
+        """Formats the metadata structure definitions into the model.
+
+        Walks ``MetadataStructureComponents / MetadataAttributeList /
+        MetadataAttribute`` building a recursive tree of MetadataComponent.
+        """
+        elements: Dict[str, MetadataStructure] = {}
+        for element in add_list(json_msds[MSD]):
+            element = self.__format_annotations(element)
+            element = self.__format_name_description(element)
+            element = self.__format_urls(element)
+            element = self.__format_agency(element)
+            element = self.__format_validity(element)
+            if IS_EXTERNAL_REF in element:
+                element[IS_EXTERNAL_REF_LOW] = (
+                    element.pop(IS_EXTERNAL_REF) == "true"
+                )
+            components: List[MetadataComponent] = []
+            if MSD_COMPS in element:
+                # The XSD guarantees a MetadataAttributeList with at least
+                # one MetadataAttribute when components are present.
+                att_list = element[MSD_COMPS][METADATA_ATT_LIST]
+                components = [
+                    self.__format_metadata_attribute(att)
+                    for att in add_list(att_list[METADATA_ATT])
+                ]
+            version = element.get(VERSION, "1.0")
+            msd = MetadataStructure(
+                id=element[ID],
+                name=element.get(NAME.lower()),
+                description=element.get(DESC.lower()),
+                agency=element[AGENCY.lower()],
+                version=version,
+                valid_from=element.get(VALID_FROM_LOW),
+                valid_to=element.get(VALID_TO_LOW),
+                annotations=tuple(element.get(ANNOTATIONS.lower(), ())),
+                is_external_reference=element.get(IS_EXTERNAL_REF_LOW, False),
+                is_final=is_final(version),
+                components=tuple(components),
+            )
+            elements[msd.short_urn] = msd
+        return elements
 
     def __parse_data_provider(
         self, attachment: Dict[str, Any]
@@ -1238,10 +1413,6 @@ class StructureParser(Struct):
         if KEY_VALUE in region_elem:
             kv_list = add_list(region_elem[KEY_VALUE])
             for kv in kv_list:
-                if VALUE not in kv:
-                    # A KeyValue may instead carry a TimeRange or numeric
-                    # Range, which the simplified model does not represent.
-                    continue
                 values = []
                 value_list = add_list(kv[VALUE])
                 for v in value_list:
@@ -1277,11 +1448,14 @@ class StructureParser(Struct):
         return KeySet(keys=keys, is_included=is_included)
 
     def __format_constraint(self, element: Dict[str, Any]) -> Dict[str, Any]:
-        # 'role' (SDMX 3.0) and 'type' (SDMX 2.1) carry the Actual/Allowed
-        # distinction, which the simplified model does not capture; drop them
-        # so a constraint of either kind reads as a plain DataConstraint.
-        element.pop("role", None)
-        element.pop(TYPE, None)
+        # role is a SDMX 3.0 attribute not present in the model
+        if "role" in element:
+            if element["role"] == "Actual":
+                raise NotImplementedError(
+                    "DataConstraint with role='Actual' is not supported, "
+                    "pysdmx only supports maintainable (Allowed) constraints."
+                )
+            del element["role"]
 
         # ConstraintAttachment
         constraint_attachment = None
@@ -2104,14 +2278,12 @@ class StructureParser(Struct):
             element = self.__format_validity(element)
             element = self.__format_groups(element)
             element = self.__format_components(element)
-            # The MPA must not go through the mapping renames (which would
-            # rename its <str:Target>-style children to "target").
-            if item != MPA:
+            # Metadataflow / MPA must not go through the mapping renames
+            # (which would rename their <str:Target> element to "target").
+            if item not in (METADATAFLOW, MPA):
                 element = self.__format_maps(element)
             if item == PROV_AGREEMENT:
                 element = self.__format_prov_agreement(element)
-            if item == MPA:
-                element = self.__format_metadata_prov_agreement(element)
             if item in [CON_CONS, DATA_CONS]:
                 element = self.__format_constraint(element)
 
@@ -2130,20 +2302,29 @@ class StructureParser(Struct):
             elif self.is_sdmx_30 and VERSION in element:
                 element[IS_FINAL_LOW] = is_final(element[VERSION])
 
-            if item == DFW and STRUCTURE in element:
-                if isinstance(element[STRUCTURE], str):
+            if item in (DFW, METADATAFLOW):
+                if STRUCTURE in element and isinstance(
+                    element[STRUCTURE], str
+                ):
                     ref_obj = parse_urn(element[STRUCTURE])
                     reference_str = (
                         f"{ref_obj.sdmx_type}={ref_obj.agency}:"
                         f"{ref_obj.id}({ref_obj.version})"
                     )
-                else:
+                elif STRUCTURE in element:
                     ref_data = element[STRUCTURE][REF]
                     reference_str = (
                         f"{ref_data[CLASS]}={ref_data[AGENCY_ID]}"
                         f":{ref_data[ID]}({ref_data[VERSION]})"
                     )
-                element[STRUCTURE] = reference_str
+                else:
+                    reference_str = None
+                if item == METADATAFLOW:
+                    self.__format_metadataflow(element, reference_str)
+                else:
+                    element[STRUCTURE] = reference_str
+            if item == MPA:
+                element = self.__format_metadata_prov_agreement(element)
 
             structure = {key.lower(): value for key, value in element.items()}
             if schema == DSDS:
@@ -2260,6 +2441,18 @@ class StructureParser(Struct):
                 lambda data: self.__format_schema(
                     data, PROV_AGREEMENTS, PROV_AGREEMENT
                 ),
+            ),
+            MSDS: process_structure(
+                MSDS,
+                self.__format_metadatastructure,
+                "metadatastructures",
+            ),
+            METADATAFLOWS: process_structure(
+                METADATAFLOWS,
+                lambda data: self.__format_schema(
+                    data, METADATAFLOWS, METADATAFLOW
+                ),
+                "metadataflows",
             ),
             CATEGORY_SCHEMES: process_structure(
                 CATEGORY_SCHEMES,

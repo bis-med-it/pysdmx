@@ -434,7 +434,7 @@ class StatConnector(RegistryClient):
 
     def get_vtl_transformation_scheme(
         self, agency: str, id: str, version: str = "~"
-    ) -> Union[MultiRepresentationMap, RepresentationMap]:
+    ) -> TransformationScheme:
         """Get the VTL transformation scheme matching the parameters."""
         query = self._vtl_ts_q(agency, id, version)
         return self._one(query, TransformationScheme)
@@ -740,7 +740,7 @@ class AsyncStatConnector(AsyncRegistryClient):
 
     async def get_vtl_transformation_scheme(
         self, agency: str, id: str, version: str = "~"
-    ) -> Union[MultiRepresentationMap, RepresentationMap]:
+    ) -> TransformationScheme:
         """Get the VTL transformation scheme matching the parameters."""
         query = self._vtl_ts_q(agency, id, version)
         return await self._one(query, TransformationScheme)

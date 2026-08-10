@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
+from msgspec.structs import replace
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
@@ -42,8 +43,11 @@ from pysdmx.model import (
     Hierarchy,
     KeySet,
     LevelType,
+    Metadataflow,
     MetadataProvider,
     MetadataProviderScheme,
+    MetadataProvisionAgreement,
+    MetadataStructure,
     NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
@@ -1612,6 +1616,86 @@ def test_writer_dataflow(complete_header, dataflow):
     assert "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" in result
 
 
+def test_writer_dataflow_with_dsd_object(
+    complete_header, dataflow, partial_datastructure
+):
+    dataflow_with_dsd = replace(dataflow, structure=partial_datastructure)
+
+    result = write(
+        [dataflow_with_dsd],
+        header=complete_header,
+        prettyprint=False,
+    )
+
+    assert (
+        "<str:Structure>"
+        '<Ref package="datastructure" agencyID="BIS" '
+        'id="BIS_DER" version="1.0" class="DataStructure"/>'
+        "</str:Structure>" in result.replace("\t", "")
+    )
+    assert result == write(
+        [dataflow],
+        header=complete_header,
+        prettyprint=False,
+    )
+
+
+def test_writer_dataflow_without_structure(complete_header, dataflow):
+    dataflow_stub = replace(dataflow, structure=None)
+
+    result = write(
+        [dataflow_stub],
+        header=complete_header,
+        prettyprint=False,
+    )
+
+    assert (
+        "<str:Dataflow "
+        'id="WEBSTATS_DER_DATAFLOW" '
+        'urn="urn:sdmx:org.sdmx.infomodel.datastructure.'
+        'Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" '
+        'version="1.0" '
+        'validFrom="2021-01-01T00:00:00" '
+        'validTo="2021-12-31T00:00:00" '
+        'isExternalReference="true" '
+        'isFinal="true" '
+        'agencyID="BIS">'
+        '<com:Name xml:lang="en">OTC derivatives turnover</com:Name>'
+        '<com:Description xml:lang="en">'
+        "OTC derivatives and FX spot - turnover</com:Description>"
+        "</str:Dataflow>" in result.replace("\t", "")
+    )
+
+
+def test_write_read_dataflow_with_dsd_object(
+    complete_header, dataflow, partial_datastructure
+):
+    dataflow_with_dsd = replace(dataflow, structure=partial_datastructure)
+
+    write_result = write(
+        [dataflow_with_dsd],
+        header=complete_header,
+        prettyprint=False,
+    )
+    read_result = read(write_result, validate=True)
+
+    # The DSD object is read back as its short URN reference.
+    assert read_result == [dataflow]
+
+
+def test_write_read_dataflow_without_structure(complete_header, dataflow):
+    dataflow_stub = replace(dataflow, structure=None)
+
+    write_result = write(
+        [dataflow_stub],
+        header=complete_header,
+        prettyprint=False,
+    )
+    read_result = read(write_result, validate=True)
+
+    assert read_result == [dataflow_stub]
+
+
 def test_read_write(read_write_sample, read_write_header):
     content, read_format = process_string_to_read(read_write_sample)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1
@@ -2110,3 +2194,53 @@ def test_write_group_without_urn(complete_header, datastructure):
     )
     assert expected_urn in result
     read(result, validate=True)
+
+
+@pytest.mark.xml
+def test_metadataflow_21_round_trip(complete_header):
+    metadataflow = Metadataflow(
+        id="MDF_TEST",
+        name="Test Metadataflow",
+        agency="BIS",
+        version="1.0",
+        structure=(
+            "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+            "MetadataStructure=BIS:MSD_TEST(1.0)"
+        ),
+        targets=(),
+    )
+    result = write([metadataflow], header=complete_header, prettyprint=True)
+    assert "<str:Metadataflows>" in result
+    # SDMX-ML 2.1 uses a <Ref> element with class MetadataStructure
+    assert 'class="MetadataStructure"' in result
+    assert 'package="metadatastructure"' in result
+    # No targets in SDMX-ML 2.1
+    assert "<str:Target>" not in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert isinstance(re_read, Metadataflow)
+    assert re_read == metadataflow
+
+
+@pytest.mark.xml
+def test_metadata_structure_21_raises(complete_header):
+    msd = MetadataStructure(
+        id="MSD_TEST", name="Test MSD", agency="BIS", version="1.0"
+    )
+    with pytest.raises(Invalid, match="not supported in SDMX-ML 2.1"):
+        write([msd], header=complete_header, prettyprint=True)
+
+
+@pytest.mark.xml
+def test_metadata_provision_agreement_21_raises(complete_header):
+    mpa = MetadataProvisionAgreement(
+        id="MPA_TEST",
+        name="Test MPA",
+        agency="BIS",
+        version="1.0",
+        metadataflow="Metadataflow=BIS:MDF_TEST(1.0)",
+        metadata_provider=(
+            "MetadataProvider=BIS:METADATA_PROVIDERS(1.0).PROV1"
+        ),
+    )
+    with pytest.raises(Invalid, match="not supported in SDMX-ML 2.1"):
+        write([mpa], header=complete_header, prettyprint=True)

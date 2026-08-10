@@ -58,12 +58,12 @@ def __write_keys(
         str(df[k].iloc[0]) for k in series_codes if k in df.columns
     )
     if keys == "obs":
-        df.insert(0, "OBS_KEYS", obs_values)
+        df.insert(0, "OBS_KEY", obs_values)
     elif keys == "series":
-        df.insert(0, "SERIES_KEYS", series_values)
+        df.insert(0, "SERIES_KEY", series_values)
     else:
-        df.insert(0, "OBS_KEYS", obs_values)
-        df.insert(0, "SERIES_KEYS", series_values)
+        df.insert(0, "OBS_KEY", obs_values)
+        df.insert(0, "SERIES_KEY", series_values)
 
 
 def __generate_partial_key_df(

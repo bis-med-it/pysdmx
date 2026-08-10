@@ -55,6 +55,7 @@ from pysdmx.io.xml.__tokens import (
     ID,
     INCLUDE,
     INCLUDED,
+    IS_PRESENTATIONAL,
     KEY,
     KEY_VALUE,
     LEVEL,
@@ -64,8 +65,17 @@ from pysdmx.io.xml.__tokens import (
     LOCAL_REP,
     MANDATORY,
     MANDATORY_LOW,
+    MAX_OCCURS,
     MEASURE,
     MEASURE_RELATIONSHIP,
+    METADATA_ATT,
+    METADATA_ATT_LIST,
+    METADATA_PROVIDER,
+    METADATAFLOW,
+    MIN_OCCURS,
+    MPA,
+    MSD,
+    MSD_COMPS,
     MSR,
     NAME,
     NAME_PER,
@@ -143,7 +153,11 @@ from pysdmx.model import (
     ImplicitComponentMap,
     KeySet,
     LevelType,
+    MetadataComponent,
+    Metadataflow,
     MetadataProviderScheme,
+    MetadataProvisionAgreement,
+    MetadataStructure,
     MultiComponentMap,
     MultiRepresentationMap,
     MultiValueMap,
@@ -228,6 +242,9 @@ STR_TYPES = Union[
     RulesetScheme,
     UserDefinedOperatorScheme,
     TransformationScheme,
+    Metadataflow,
+    MetadataStructure,
+    MetadataProvisionAgreement,
     Categorisation,
 ]
 
@@ -252,6 +269,11 @@ STR_DICT_TYPE_LIST_21 = {
     UserDefinedOperatorScheme: "UserDefinedOperators",
     TransformationScheme: "Transformations",
     ProvisionAgreement: "ProvisionAgreements",
+    Metadataflow: "Metadataflows",
+    # MSD/MPA are not supported in SDMX-ML 2.1; mapped so the writer can
+    # raise a clear Invalid error instead of a KeyError.
+    MetadataStructure: "MetadataStructures",
+    MetadataProvisionAgreement: "MetadataProvisionAgreements",
     CategoryScheme: "CategorySchemes",
     Categorisation: "Categorisations",
 }
@@ -280,6 +302,9 @@ STR_DICT_TYPE_LIST_30 = {
     UserDefinedOperatorScheme: "UserDefinedOperatorSchemes",
     TransformationScheme: "TransformationSchemes",
     ProvisionAgreement: "ProvisionAgreements",
+    Metadataflow: "Metadataflows",
+    MetadataStructure: "MetadataStructures",
+    MetadataProvisionAgreement: "MetadataProvisionAgreements",
     CategoryScheme: "CategorySchemes",
     Categorisation: "Categorisations",
 }
@@ -928,10 +953,14 @@ def __write_enumeration(
 
 
 def __write_structure(
-    item: str, indent: str, references_30: bool = False
+    item: Union[str, DataStructureDefinition],
+    indent: str,
+    references_30: bool = False,
 ) -> str:
     """Writes the dataflow structure to the XML file."""
-    ref = parse_short_urn(item)
+    ref = parse_short_urn(
+        item.short_urn if isinstance(item, DataStructureDefinition) else item
+    )
     outfile = f"{indent}<{ABBR_STR}:Structure>"
     if references_30:
         outfile += (
@@ -994,6 +1023,183 @@ def __write_prov_agreement(
         outfile += f"{indent}</{ABBR_STR}:{DATA_PROV}>"
 
     outfile = outfile.replace("'", '"')
+    return outfile
+
+
+def __write_metadata_structure_ref(
+    structure: Union[MetadataStructure, str],
+    indent: str,
+    references_30: bool = False,
+) -> str:
+    """Writes a Metadataflow ``<str:Structure>`` reference to an MSD.
+
+    The reference is a URN text in SDMX-ML 3.x and a ``<Ref>`` element in
+    SDMX-ML 2.1. The referenced artefact is always a MetadataStructure, so
+    the package (``metadatastructure``) and class (``MetadataStructure``)
+    are fixed. The model value may be a resolved MetadataStructure or its
+    full URN.
+    """
+    if isinstance(structure, MetadataStructure):
+        ref: Union[Reference, ItemReference] = parse_short_urn(
+            structure.short_urn
+        )
+    else:
+        ref = parse_urn(structure)
+    outfile = f"{indent}<{ABBR_STR}:Structure>"
+    if references_30:
+        outfile += (
+            f"urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataStructure={ref.agency}:{ref.id}({ref.version})"
+            f"</{ABBR_STR}:Structure>"
+        )
+    else:
+        outfile += (
+            f"{add_indent(indent)}<{REF} "
+            f'{PACKAGE}="metadatastructure" '
+            f"{AGENCY_ID}={ref.agency!r} "
+            f"{ID}={ref.id!r} "
+            f"{VERSION}={ref.version!r} "
+            f'{CLASS}="MetadataStructure"/>'
+        )
+        outfile += f"{indent}</{ABBR_STR}:Structure>"
+    return outfile.replace("'", '"')
+
+
+def __write_metadata_attribute(
+    component: MetadataComponent, indent: str
+) -> str:
+    """Recursively writes a ``<str:MetadataAttribute>`` element.
+
+    Reuses the DSD ``__write_concept_identity`` helper (the MSD attribute
+    shares the DSD ConceptIdentity grammar). ``minOccurs`` / ``maxOccurs``
+    are derived from the ``array_def``, mirroring
+    ``JsonMetadataAttribute.from_model``. MSDs only exist in SDMX-ML 3.x,
+    where references are URN text.
+
+    Known limitation: only array cardinality (``maxOccurs > 1``, carried by
+    ``array_def``) is emitted. The model does not represent single-occurrence
+    ``minOccurs`` (``0`` vs ``1`` with ``maxOccurs <= 1``), so when an
+    attribute has no ``array_def`` no ``minOccurs`` is written and it defaults
+    to ``1``. An optional attribute read with ``minOccurs="0"`` is therefore
+    not preserved across read -> write (see ``__array_def`` in the reader and
+    ``test_msd_minoccurs_zero_not_preserved_known_limitation``). This matches
+    the JSON reader's model-level limitation; note that the SDMX-JSON writer
+    diverges in form -- it emits ``minOccurs``/``maxOccurs`` as ``null`` when
+    there is no ``array_def`` -- but neither format preserves a non-array
+    ``minOccurs="0"``.
+
+    ``isPresentational`` and ``array_def`` are emitted independently: a
+    presentational attribute may also carry an array definition, and both
+    must be written when present.
+    """
+    label = f"{ABBR_STR}:{METADATA_ATT}"
+    attrs = f" {ID}={component.id!r}"
+    if component.array_def is not None:
+        min_occurs = component.array_def.min_size
+        if component.array_def.max_size is None:
+            max_occurs = "unbounded"
+        else:
+            max_occurs = str(component.array_def.max_size)
+        attrs += f" {MIN_OCCURS}={str(min_occurs)!r}"
+        attrs += f" {MAX_OCCURS}={max_occurs!r}"
+    if component.is_presentational:
+        attrs += f" {IS_PRESENTATIONAL}={'true'!r}"
+    attrs = attrs.replace("'", '"')
+
+    outfile = f"{indent}<{label}{attrs}>"
+    outfile += __write_annotable(component, add_indent(indent))
+    outfile += __write_concept_identity(
+        component.concept, add_indent(indent), references_30=True
+    )
+    outfile += __write_metadata_representation(component, add_indent(indent))
+    for child in component.components:
+        outfile += __write_metadata_attribute(child, add_indent(indent))
+    outfile += f"{indent}</{label}>"
+    return outfile
+
+
+def __write_metadata_representation(
+    component: MetadataComponent, indent: str
+) -> str:
+    """Writes the ``<str:LocalRepresentation>`` of a MetadataComponent.
+
+    MSDs only exist in SDMX-ML 3.x, where references are URN text. Unlike a
+    DSD component, an MSD attribute may carry an enumeration reference
+    (``local_enum_ref``) without a resolved ``local_codes`` object. The
+    enumeration is emitted from whichever is available.
+    """
+    enumeration = ""
+    if component.local_codes is not None:
+        enumeration = __write_enumeration(
+            component.local_codes, indent, references_30=True
+        )
+    elif component.local_enum_ref is not None:
+        enumeration = __write_enumeration_ref(component.local_enum_ref, indent)
+
+    text_format = ""
+    if component.local_facets is not None or component.local_dtype is not None:
+        type_ = ENUM_FORMAT if enumeration else TEXT_FORMAT
+        text_format = __write_text_format(
+            component.local_dtype, component.local_facets, type_, indent
+        )
+
+    if not enumeration and not text_format:
+        return ""
+
+    outfile = f"{indent}<{ABBR_STR}:{LOCAL_REP}>"
+    outfile += enumeration
+    outfile += text_format
+    outfile += f"{indent}</{ABBR_STR}:{LOCAL_REP}>"
+    return outfile
+
+
+def __write_enumeration_ref(enum_ref: str, indent: str) -> str:
+    """Writes a ``<str:Enumeration>`` from an enumeration URN string.
+
+    Only used for MSD attributes, which exist in SDMX-ML 3.x where the
+    enumeration is referenced by URN text.
+    """
+    ref = parse_short_urn(parse_urn(enum_ref).__str__())
+    outfile = f"{add_indent(indent)}<{ABBR_STR}:{ENUM}>"
+    outfile += (
+        f"urn:sdmx:org.sdmx.infomodel.codelist.{ref.sdmx_type}="
+        f"{ref.agency}:{ref.id}({ref.version})"
+        f"</{ABBR_STR}:{ENUM}>"
+    )
+    return outfile.replace("'", '"')
+
+
+def __write_metadata_components(msd: MetadataStructure, indent: str) -> str:
+    """Writes the ``<str:MetadataStructureComponents>`` of an MSD."""
+    outfile = f"{indent}<{ABBR_STR}:{MSD_COMPS}>"
+    child = add_indent(indent)
+    outfile += (
+        f"{child}<{ABBR_STR}:{METADATA_ATT_LIST} "
+        f'{ID}="MetadataAttributeDescriptor">'
+    )
+    for component in msd.components:
+        outfile += __write_metadata_attribute(component, add_indent(child))
+    outfile += f"{child}</{ABBR_STR}:{METADATA_ATT_LIST}>"
+    outfile += f"{indent}</{ABBR_STR}:{MSD_COMPS}>"
+    return outfile
+
+
+def __write_metadata_prov_agreement(
+    metadataflow: str,
+    metadata_provider: str,
+    indent: str,
+) -> str:
+    """Writes the MPA children (Metadataflow + MetadataProvider).
+
+    Mirrors ``__write_prov_agreement`` but the children are a
+    ``<str:Metadataflow>`` (package ``metadatastructure``) and a
+    ``<str:MetadataProvider>`` (an organisation item, package ``base``). The
+    MPA construct only exists in SDMX-ML 3.x, where references are URN text,
+    so the model already holds the full URNs and they are emitted as-is.
+    """
+    outfile = f"{indent}<{ABBR_STR}:{METADATAFLOW}>"
+    outfile += f"{metadataflow}</{ABBR_STR}:{METADATAFLOW}>"
+    outfile += f"{indent}<{ABBR_STR}:{METADATA_PROVIDER}>"
+    outfile += f"{metadata_provider}</{ABBR_STR}:{METADATA_PROVIDER}>"
     return outfile
 
 
@@ -1815,6 +2021,15 @@ def __write_scheme(  # noqa: C901
     if isinstance(item_scheme, Categorisation):
         return __write_categorisation(item_scheme, indent, references_30)
 
+    # The MetadataStructure and MetadataProvisionAgreement constructs do not
+    # exist (MPA) or have an incompatible grammar (MSD) in SDMX-ML 2.1.
+    if not references_30 and scheme in (MSD, MPA):
+        raise Invalid(
+            "Request cannot be fulfilled",
+            f"{scheme} is not supported in SDMX-ML 2.1. "
+            f"Use SDMX-ML 3.0 or 3.1 instead.",
+        )
+
     label = f"{ABBR_STR}:{scheme}"
     components = ""
     data = __write_maintainable(item_scheme, indent, references_30)
@@ -1823,8 +2038,12 @@ def __write_scheme(  # noqa: C901
         components = __write_components(
             item_scheme, add_indent(indent), references_30
         )
+    if scheme == MSD:
+        components = __write_metadata_components(
+            item_scheme, add_indent(indent)
+        )
 
-    if scheme not in [DSD, DFW, PROV_AGREEMENT]:
+    if scheme not in [DSD, DFW, PROV_AGREEMENT, METADATAFLOW, MSD, MPA]:
         data["Attributes"] += (
             f" isPartial={str(item_scheme.is_partial).lower()!r}"
         )
@@ -1851,7 +2070,7 @@ def __write_scheme(  # noqa: C901
 
     outfile += components
 
-    if scheme == DFW:
+    if scheme == DFW and item_scheme.structure is not None:
         outfile += __write_structure(
             item_scheme.structure, add_indent(indent), references_30
         )
@@ -1861,6 +2080,24 @@ def __write_scheme(  # noqa: C901
             item_scheme.provider,
             add_indent(indent),
             references_30,
+        )
+    if scheme == METADATAFLOW:
+        if item_scheme.structure is not None:
+            outfile += __write_metadata_structure_ref(
+                item_scheme.structure, add_indent(indent), references_30
+            )
+        # Targets only exist in SDMX-ML 3.x metadataflows.
+        if references_30:
+            for target in item_scheme.targets:
+                outfile += (
+                    f"{add_indent(indent)}<{ABBR_STR}:{TARGET}>"
+                    f"{target}</{ABBR_STR}:{TARGET}>"
+                )
+    if scheme == MPA:
+        outfile += __write_metadata_prov_agreement(
+            item_scheme.metadataflow,
+            item_scheme.metadata_provider,
+            add_indent(indent),
         )
 
     if scheme not in [
@@ -1873,6 +2110,9 @@ def __write_scheme(  # noqa: C901
         CUSTOM_TYPE_SCHEME,
         NAME_PER_SCHEME,
         PROV_AGREEMENT,
+        METADATAFLOW,
+        MSD,
+        MPA,
     ]:
         owner = (
             parse_short_urn(item_scheme.short_urn).agency

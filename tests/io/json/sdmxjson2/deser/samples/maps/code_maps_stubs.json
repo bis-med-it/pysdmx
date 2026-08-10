@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "id": "IREF225845",
+    "test": false,
+    "schema": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+    "prepared": "2026-08-06T13:23:00Z",
+    "contentLanguages": [
+      "en"
+    ],
+    "sender": {
+      "id": "5B0"
+    }
+  },
+  "data": {
+    "representationMaps": [
+      {
+        "links": [
+          {
+            "rel": "self",
+            "href": "https://mmsu.bisinfo.org/ws/public/sdmxapi/rest/representationmap/BIS/AREA2ADJUST/1.0",
+            "type": "representationmap",
+            "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+            "urn": "urn:sdmx:org.sdmx.infomodel.structuremapping.RepresentationMap=BIS:AREA2ADJUST(1.0)"
+          }
+        ],
+        "id": "AREA2ADJUST",
+        "name": "REF_AREA to ADJUST_CODED",
+        "names": {
+          "en": "REF_AREA to ADJUST_CODED"
+        },
+        "version": "1.0",
+        "agencyID": "BIS",
+        "isExternalReference": true,
+        "source": [],
+        "target": [],
+        "representationMappings": []
+      }
+    ]
+  }
+}

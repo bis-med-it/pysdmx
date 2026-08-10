@@ -48,9 +48,13 @@ def test_availability_url_multiple_versions_before_2_0_0(
     versions: List[str],
     api_version: ApiVersion,
 ):
+    msg = (
+        "More than one version is not allowed in data context "
+        f"for SDMX-REST {api_version.label}"
+    )
     q = AvailabilityQuery(context, agency, res, versions)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 

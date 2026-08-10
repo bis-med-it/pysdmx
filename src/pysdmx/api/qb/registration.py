@@ -23,7 +23,7 @@ class _CoreRegistrationQuery(
                 "Invalid Request",
                 (
                     "Registration are not supported"
-                    f"in SDMX-REST {version.value}."
+                    f"in SDMX-REST {version.label}."
                 ),
             )
 

@@ -1,6 +1,8 @@
+import re
 from operator import attrgetter
 from pathlib import Path
 
+import msgspec
 import pytest
 
 from pysdmx.io.format import Format
@@ -10,6 +12,7 @@ from pysdmx.io.xml.sdmx30.writer.structure import write as write_structure
 from pysdmx.io.xml.sdmx30.writer.structure_specific import (
     write as write_str_spe,
 )
+from pysdmx.io.xml.sdmx31.writer.structure import write as write_structure_31
 from pysdmx.model import (
     Codelist,
     ConceptScheme,
@@ -18,13 +21,20 @@ from pysdmx.model import (
     DataProviderScheme,
     Hierarchy,
     HierarchyAssociation,
+    Metadataflow,
     MetadataProviderScheme,
+    MetadataProvisionAgreement,
+    MetadataStructure,
     NamePersonalisationScheme,
     RulesetScheme,
     TransformationScheme,
     VtlMappingScheme,
 )
-from pysdmx.model.dataflow import Dataflow, DataStructureDefinition
+from pysdmx.model.dataflow import (
+    ArrayBoundaries,
+    Dataflow,
+    DataStructureDefinition,
+)
 
 
 @pytest.fixture
@@ -212,3 +222,85 @@ def test_dataflow_31(samples_folder):
     result = read_sdmx(write, validate=True).structures
     dataflow = result[0]
     assert isinstance(dataflow, Dataflow)
+
+
+def test_metadata_family_round_trip_31(samples_folder):
+    data_path = samples_folder / "metadata_family.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    structures = read_sdmx(input_str, validate=True).structures
+    written = write_structure_31(structures=structures, prettyprint=True)
+    result = read_sdmx(written, validate=True).structures
+    by_in = {s.short_urn: s for s in structures}
+    by_out = {s.short_urn: s for s in result}
+    assert set(by_in) == set(by_out)
+    for urn, original in by_in.items():
+        assert by_out[urn] == original
+    types = {type(s) for s in result}
+    assert Metadataflow in types
+    assert MetadataStructure in types
+    assert MetadataProvisionAgreement in types
+
+
+def test_msd_minoccurs_zero_not_preserved_known_limitation(samples_folder):
+    # KNOWN LIMITATION (pinned on purpose): the model does not represent a
+    # single-occurrence minOccurs (0 vs 1 with maxOccurs <= 1) -- only array
+    # cardinality (maxOccurs > 1) is carried via array_def. The sample's FREQ
+    # attribute is declared with minOccurs="0", but on read -> write that
+    # optionality is lost and the writer omits minOccurs (defaulting it to 1).
+    # This test makes the documented loss explicit so it is no longer silent
+    # and any future change to the model is caught here. It is consistent with
+    # the JSON reader, which has the same model-level limitation.
+    data_path = samples_folder / "metadata_family.xml"
+    input_str, _ = process_string_to_read(data_path)
+    structures = read_sdmx(input_str, validate=True).structures
+
+    written = write_structure_31(structures=structures, prettyprint=True)
+
+    # The single-occurrence FREQ attribute is written without minOccurs.
+    freq_tag = re.search(r'<str:MetadataAttribute id="FREQ"[^>]*>', written)
+    assert freq_tag is not None
+    assert "minOccurs" not in freq_tag.group(0)
+    # The genuine array attribute (NOTE, maxOccurs="unbounded") still carries
+    # its cardinality, confirming only array_def survives the round-trip.
+    note_tag = re.search(r'<str:MetadataAttribute id="NOTE"[^>]*>', written)
+    assert note_tag is not None
+    assert 'maxOccurs="unbounded"' in note_tag.group(0)
+
+
+def test_msd_presentational_with_array_emits_both(samples_folder):
+    # A presentational attribute may also carry an array definition. Both
+    # isPresentational and minOccurs/maxOccurs must be emitted (regression for
+    # the previous if/elif that dropped isPresentational when array_def was
+    # present). The sample's CONTACT attribute is presentational; inject an
+    # array definition and confirm both appear on the same element.
+    data_path = samples_folder / "metadata_family.xml"
+    input_str, _ = process_string_to_read(data_path)
+    structures = read_sdmx(input_str, validate=True).structures
+
+    msd = next(s for s in structures if isinstance(s, MetadataStructure))
+    contact = msd.components[0]
+    assert contact.is_presentational is True
+    assert contact.array_def is None
+    contact = msgspec.structs.replace(
+        contact, array_def=ArrayBoundaries(0, None)
+    )
+    msd = msgspec.structs.replace(
+        msd, components=(contact, *msd.components[1:])
+    )
+    others = [s for s in structures if not isinstance(s, MetadataStructure)]
+
+    written = write_structure_31(structures=[msd, *others], prettyprint=True)
+    contact_tag = re.search(
+        r'<str:MetadataAttribute id="CONTACT"[^>]*>', written
+    )
+    assert contact_tag is not None
+    assert 'isPresentational="true"' in contact_tag.group(0)
+    assert 'maxOccurs="unbounded"' in contact_tag.group(0)
+
+    # The output remains valid and round-trips both flags.
+    re_read = read_sdmx(written, validate=True).structures
+    out_msd = next(s for s in re_read if isinstance(s, MetadataStructure))
+    out_contact = out_msd.components[0]
+    assert out_contact.is_presentational is True
+    assert out_contact.array_def is not None

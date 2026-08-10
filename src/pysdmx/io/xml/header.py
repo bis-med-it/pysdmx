@@ -1,6 +1,5 @@
 """SDMX 2.1 XML Header reader module."""
 
-import re
 import warnings
 from datetime import datetime
 from typing import Any, Dict, Optional, Union
@@ -14,6 +13,7 @@ from pysdmx.io.xml.__tokens import (
     DIM_OBS,
     DSD,
     GENERIC,
+    GENERIC_METADATA,
     GENERIC_TS,
     HEADER,
     HEADER_ID,
@@ -156,21 +156,9 @@ def __parse_dataset_action(
         return ActionType(dataset_action)
 
 
-_FRACTIONAL_SECONDS = re.compile(r"\.(\d+)")
-
-
 def __parse_prepared(prepared: str) -> datetime:
-    """Parses the prepared date of the SDMX message.
-
-    The fractional seconds are normalised to six digits before parsing:
-    .NET-based services (e.g. the .Stat Suite) emit seven-digit "tick"
-    precision, which ``datetime.fromisoformat`` rejects on Python < 3.11.
-    """
-    prepared = prepared.replace("Z", "+00:00")
-    prepared = _FRACTIONAL_SECONDS.sub(
-        lambda m: "." + m.group(1)[:6].ljust(6, "0"), prepared, count=1
-    )
-    return datetime.fromisoformat(prepared)
+    """Parses the prepared date of the SDMX message."""
+    return datetime.fromisoformat(prepared.replace("Z", "+00:00"))
 
 
 def __parse_header(header: Dict[str, Any]) -> Header:
@@ -218,7 +206,14 @@ def read(
         The header of the SDMX message.
     """
     dict_info = parse_xml(input_str, validate)
-    possible_keys = [STR_SPE, STR_SPE_TS, GENERIC, GENERIC_TS, STRUCTURE]
+    possible_keys = [
+        STR_SPE,
+        STR_SPE_TS,
+        GENERIC,
+        GENERIC_TS,
+        STRUCTURE,
+        GENERIC_METADATA,
+    ]
     selected_key = next((key for key in possible_keys if key in dict_info))
     if HEADER not in dict_info[selected_key]:
         return None

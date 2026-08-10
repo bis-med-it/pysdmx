@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "id": "IREF242775",
+    "test": false,
+    "schema": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+    "prepared": "2026-08-06T13:51:12Z",
+    "contentLanguages": [
+      "en"
+    ],
+    "sender": {
+      "id": "5B0"
+    }
+  },
+  "data": {
+    "hierarchies": [
+      {
+        "links": [
+          {
+            "rel": "self",
+            "href": "https://mmsu.bisinfo.org/ws/public/sdmxapi/rest/hierarchy/BIS.TEST/TEST_HIE/1.0",
+            "type": "hierarchy",
+            "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Hierarchy=BIS.TEST:TEST_HIE(1.0)"
+          }
+        ],
+        "id": "TEST_HIE",
+        "name": "Test hierarchy for MEDAL",
+        "names": {
+          "en": "Test hierarchy for MEDAL"
+        },
+        "version": "1.0",
+        "agencyID": "BIS.TEST",
+        "isExternalReference": true,
+        "hasFormalLevels": false
+      }
+    ],
+    "hierarchyAssociations": [
+      {
+        "links": [
+          {
+            "rel": "self",
+            "href": "https://mmsu.bisinfo.org/ws/public/sdmxapi/rest/hierarchyassociation/BIS.TEST/HA_TEST/1.0",
+            "type": "hierarchyassociation",
+            "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+            "urn": "urn:sdmx:org.sdmx.infomodel.codelist.HierarchyAssociation=BIS.TEST:HA_TEST(1.0)"
+          },
+          {
+            "rel": "UserDefinedOperator",
+            "href": "https://mms-med-fmr-dev.apps.dev.ocp.bisinfo.org/sdmx/v2/structure/userdefinedoperatorscheme/SDMX/OPS/1.0/SUM",
+            "type": "sdmx_artefact",
+            "urn": "urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=SDMX:OPS(1.0).SUM"
+          }
+        ],
+        "id": "HA_TEST",
+        "name": "Test Hierarchy Association for MEDAL 2.0",
+        "names": {
+          "en": "Test Hierarchy Association for MEDAL 2.0"
+        },
+        "version": "1.0",
+        "agencyID": "BIS.TEST",
+        "isExternalReference": true
+      }
+    ],
+    "dataStructures": [
+      {
+        "links": [
+          {
+            "rel": "self",
+            "href": "https://mmsu.bisinfo.org/ws/public/sdmxapi/rest/datastructure/BIS.TEST/TEST_MEDAL_DSD/1.0",
+            "type": "datastructure",
+            "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS.TEST:TEST_MEDAL_DSD(1.0)"
+          }
+        ],
+        "id": "TEST_MEDAL_DSD",
+        "name": "Test component types and features in MEDAL",
+        "names": {
+          "en": "Test component types and features in MEDAL"
+        },
+        "version": "1.0",
+        "agencyID": "BIS.TEST",
+        "isExternalReference": true,
+        "dataStructureComponents": {
+          "dimensionList": {
+
+          }
+        }
+      }
+    ],
+    "dataflows": [
+      {
+        "links": [
+          {
+            "rel": "self",
+            "href": "https://mmsu.bisinfo.org/ws/public/sdmxapi/rest/dataflow/BIS.TEST/TEST_MEDAL/1.0",
+            "type": "dataflow",
+            "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+            "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.TEST:TEST_MEDAL(1.0)"
+          }
+        ],
+        "id": "TEST_MEDAL",
+        "name": "Test Dataflow for MEDAL",
+        "names": {
+          "en": "Test Dataflow for MEDAL"
+        },
+        "version": "1.0",
+        "agencyID": "BIS.TEST",
+        "isExternalReference": true
+      }
+    ]
+  }
+}

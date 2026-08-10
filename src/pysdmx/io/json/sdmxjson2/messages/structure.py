@@ -18,6 +18,7 @@ from pysdmx.io.json.sdmxjson2.messages.code import (
 )
 from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptScheme
 from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
+from pysdmx.io.json.sdmxjson2.messages.consumer import JsonDataConsumerScheme
 from pysdmx.io.json.sdmxjson2.messages.core import JsonHeader
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
 from pysdmx.io.json.sdmxjson2.messages.dsd import JsonDataStructure
@@ -57,6 +58,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
     conceptSchemes: Sequence[JsonConceptScheme] = ()
     customTypeSchemes: Sequence[JsonCustomTypeScheme] = ()
     dataConstraints: Sequence[JsonDataConstraint] = ()
+    dataConsumerSchemes: Sequence[JsonDataConsumerScheme] = ()
     dataflows: Sequence[JsonDataflow] = ()
     dataProviderSchemes: Sequence[JsonDataProviderScheme] = ()
     dataStructures: Sequence[JsonDataStructure] = ()
@@ -90,6 +92,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
         )
         structures.extend(i.to_model() for i in self.customTypeSchemes)
         structures.extend(i.to_model() for i in self.dataConstraints)
+        structures.extend(i.to_model() for i in self.dataConsumerSchemes)
         structures.extend(
             i.to_model(
                 self.dataStructures,
@@ -296,6 +299,12 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
                 for c in msg.get_metadata_structures()
             ]
         )
+        dcs = tuple(
+            [
+                JsonDataConsumerScheme.from_model(a)
+                for a in msg.get_data_consumer_schemes()
+            ]
+        )
         return JsonStructures(
             agencySchemes=agencies,
             categorisations=categorisations,
@@ -305,6 +314,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             customTypeSchemes=custom_types,
             dataConstraints=constraints,
             dataflows=dataflows,
+            dataConsumerSchemes=dcs,
             dataProviderSchemes=data_providers,
             dataStructures=data_structures,
             hierarchies=hierarchies,

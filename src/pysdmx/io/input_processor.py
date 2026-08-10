@@ -28,6 +28,10 @@ def __check_xml(input_str: str) -> bool:
 
 
 def __check_csv(input_str: str) -> bool:
+    # JSON ({ or [) and XML (<) documents are never SDMX-CSV, but a
+    # one-line document has enough commas and quotes to fool the sniffer.
+    if input_str[:100].lstrip().startswith(("{", "[", "<")):
+        return False
     try:
         lines = input_str.splitlines()
 
@@ -69,10 +73,30 @@ def __get_sdmx_ml_version(
     return v21
 
 
+def __get_generic_metadata_flavour(flavour_check: str) -> Format:
+    """Resolves the version of a GenericMetadata (reference metadata) doc.
+
+    There is no SDMX-ML 2.1 reference metadata format in pysdmx, so a 2.1
+    GenericMetadata document raises NotImplemented.
+    """
+    if SCHEMA_ROOT_30 in flavour_check:
+        return Format.REFMETA_SDMX_ML_3_0
+    if SCHEMA_ROOT_31 in flavour_check:
+        return Format.REFMETA_SDMX_ML_3_1
+    raise NotImplemented(
+        "Unsupported format",
+        "SDMX-ML 2.1 reference metadata (GenericMetadata) is not supported.",
+    )
+
+
 def __get_sdmx_ml_flavour(input_str: str) -> Tuple[str, Format]:
     flavour_check = input_str[:1000].lower()
     if ":generictimeseriesdata" in flavour_check:
         return input_str, Format.DATA_SDMX_ML_2_1_GENTS
+    # GenericMetadata must be checked before the ":generic" data check,
+    # otherwise a reference metadata message is misrouted to generic data.
+    if ":genericmetadata" in flavour_check:
+        return input_str, __get_generic_metadata_flavour(flavour_check)
     if ":generic" in flavour_check:
         return input_str, Format.DATA_SDMX_ML_2_1_GEN
 

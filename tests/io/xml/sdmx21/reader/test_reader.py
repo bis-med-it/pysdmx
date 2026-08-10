@@ -11,7 +11,6 @@ from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.__tokens import OBS_DIM, OBS_VALUE_ID
-from pysdmx.io.xml.header import __parse_prepared as parse_prepared
 from pysdmx.io.xml.sdmx21.reader.error import read as read_error
 from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
@@ -43,6 +42,7 @@ from pysdmx.model import (
     Hierarchy,
     ItemReference,
     KeySet,
+    Metadataflow,
     NamePersonalisationScheme,
     ProvisionAgreement,
     Reference,
@@ -949,39 +949,6 @@ def test_header_xmlns(samples_folder):
     }
 
 
-@pytest.mark.parametrize(
-    ("raw", "expected"),
-    [
-        # .NET/.Stat "tick" precision (7 digits): truncated to microseconds.
-        (
-            "2026-06-08T12:44:34.8854787+02:00",
-            "2026-06-08T12:44:34.885478+02:00",
-        ),
-        # 4 fractional digits also break fromisoformat on Python < 3.11.
-        ("2026-01-01T00:00:00.1234+00:00", "2026-01-01T00:00:00.123400+00:00"),
-        # 6 digits with a trailing Z.
-        ("2026-01-01T00:00:00.123456Z", "2026-01-01T00:00:00.123456+00:00"),
-        # No fractional seconds at all.
-        ("2025-12-18T10:39:09Z", "2025-12-18T10:39:09+00:00"),
-    ],
-)
-def test_parse_prepared_fractional_seconds(raw, expected):
-    assert parse_prepared(raw) == datetime.fromisoformat(expected)
-
-
-def test_dataflow_stub_without_structure(samples_folder):
-    # An allstubs listing returns dataflows without their DSD reference;
-    # the reader must not assume a Structure element is present.
-    data_path = samples_folder / "dataflow_no_structure.xml"
-    input_str, read_format = process_string_to_read(data_path)
-    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
-    result = read_sdmx(input_str, validate=False).structures
-    assert result is not None
-    df = result[0]
-    assert df.short_urn == "Dataflow=MD:DF_STUB(1.0)"
-    assert df.structure is None
-
-
 def test_vtl_data_flow_mapping_reader(samples_folder):
     data_path = samples_folder / "vtl_dataflow_mapping.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -1296,28 +1263,6 @@ def test_constraint_with_cube_region(samples_folder):
     assert len(region3.key_values) == 0
 
 
-def test_constraint_actual_type_and_time_range(samples_folder):
-    # A real .Stat/.NET graph (references=all) carries type="Actual"
-    # constraints whose cube region mixes enumerated key-values with a
-    # TimeRange. The Actual/Allowed marker is dropped and the TimeRange
-    # key-value is skipped (the simplified model represents neither).
-    data_path = samples_folder / "constraint_actual_timerange.xml"
-    input_str, read_format = process_string_to_read(data_path)
-    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
-    result = read_sdmx(input_str, validate=False).get_data_constraints()
-    assert result is not None
-    assert len(result) == 1
-    constraint = result[0]
-    assert isinstance(constraint, DataConstraint)
-    assert constraint.id == "CR_A_TEST_DF"
-    assert len(constraint.cube_regions) == 1
-    region = constraint.cube_regions[0]
-    # Only the enumerated FREQ key-value survives; TIME_PERIOD is skipped.
-    assert len(region.key_values) == 1
-    assert region.key_values[0].id == "FREQ"
-    assert [v.value for v in region.key_values[0].values] == ["A"]
-
-
 def test_constraint_with_keyset(samples_folder):
     data_path = samples_folder / "constraint_keyset.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -1456,6 +1401,26 @@ def test_constraint_without_attachment(samples_folder):
     assert [
         v.value for v in constraint.cube_regions[0].key_values[0].values
     ] == ["Q"]
+
+
+@pytest.mark.xml
+def test_metadataflow_21(samples_folder):
+    data_path = samples_folder / "metadataflow.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+    flow = result[0]
+    assert isinstance(flow, Metadataflow)
+    assert flow.id == "MDF_TEST"
+    assert flow.agency == "BIS"
+    # Unresolved structure reference (MSD not present in document): the
+    # reader stores the canonical full URN, matching the SDMX-JSON reader.
+    assert flow.structure == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "MetadataStructure=BIS:MSD_TEST(1.0)"
+    )
+    # SDMX-ML 2.1 metadataflows do not carry targets
+    assert flow.targets == ()
 
 
 @pytest.mark.xml

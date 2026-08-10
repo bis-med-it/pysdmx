@@ -36,9 +36,11 @@ def test_invalid_value(res: str, api_version: ApiVersion):
 def test_invalid_before_2_2_0(
     res: str, as_of: datetime, api_version: ApiVersion
 ):
+    label = api_version.name.replace("_", ".").replace("V", "")
+    msg = f"as_of is not supported in SDMX-REST {label}"
     q = DataQuery(resource_id=res, as_of=as_of)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 

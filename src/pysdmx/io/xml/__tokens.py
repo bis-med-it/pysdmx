@@ -337,10 +337,35 @@ LINKED_HIERARCHY = "LinkedHierarchy"
 LINKED_OBJECT = "LinkedObject"
 CONTEXT_OBJECT = "ContextObject"
 
-# Metadata (metadataflow, metadata provision agreement)
+# Metadata (metadataflow, metadata structure, metadata provision agreement)
 METADATAFLOW = "Metadataflow"
+METADATAFLOWS = "Metadataflows"
+MSD = "MetadataStructure"
+MSDS = "MetadataStructures"
+MSD_COMPS = "MetadataStructureComponents"
+METADATA_ATT_LIST = "MetadataAttributeList"
+METADATA_ATT = "MetadataAttribute"
 MPA = "MetadataProvisionAgreement"
 MPAS = "MetadataProvisionAgreements"
+METADATA_PROVIDER = "MetadataProvider"
+MIN_OCCURS = "minOccurs"
+MAX_OCCURS = "maxOccurs"
+IS_PRESENTATIONAL = "isPresentational"
+TARGET = "Target"
+
+# Reference metadata (GenericMetadata message)
+GENERIC_METADATA = "GenericMetadata"
+METADATA_SET = "MetadataSet"
+METADATA_PREFIX = "metadata"
+METADATA_ATTRIBUTE = "metadata:Attribute"
+METADATA_VALUE = "metadata:Value"
+METADATA_TARGET = "metadata:Target"
+METADATA_METADATAFLOW = "metadata:Metadataflow"
+METADATA_MPA = "metadata:MetadataProvisionAgreement"
+REPORTING_BEGIN_DATE = "reportingBeginDate"
+REPORTING_END_DATE = "reportingEndDate"
+PUBLICATION_YEAR = "publicationYear"
+PUBLICATION_PERIOD = "publicationPeriod"
 
 # Mapping
 STRUCTURE_MAPS = "StructureMaps"

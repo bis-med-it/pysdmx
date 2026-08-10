@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message https://registry.sdmx.org/schemas/v3_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>test</mes:ID>
+		<mes:Test>true</mes:Test>
+		<mes:Prepared>2021-01-01T10:00:00Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+	</mes:Header>
+	<mes:Structures>
+		<str:Codelists>
+			<str:Codelist agencyID="BIS" id="CL_FREQ" version="1.0" isExternalReference="false">
+				<com:Name xml:lang="en">Frequency</com:Name>
+				<str:Code id="A">
+					<com:Name xml:lang="en">Annual</com:Name>
+				</str:Code>
+			</str:Codelist>
+		</str:Codelists>
+		<str:ConceptSchemes>
+			<str:ConceptScheme agencyID="BIS" id="STANDALONE_CONCEPT_SCHEME" version="1.0" isExternalReference="false">
+				<com:Name xml:lang="en">Standalone Concept Scheme</com:Name>
+				<str:Concept id="CONTACT">
+					<com:Name xml:lang="en">Contact</com:Name>
+				</str:Concept>
+				<str:Concept id="FREQ">
+					<com:Name xml:lang="en">Frequency</com:Name>
+				</str:Concept>
+				<str:Concept id="NOTE">
+					<com:Name xml:lang="en">Note</com:Name>
+				</str:Concept>
+			</str:ConceptScheme>
+		</str:ConceptSchemes>
+		<str:MetadataStructures>
+			<str:MetadataStructure agencyID="BIS" id="MSD_TEST" version="1.0" isExternalReference="false">
+				<com:Name xml:lang="en">Test MSD</com:Name>
+				<str:MetadataStructureComponents>
+					<str:MetadataAttributeList id="MetadataAttributeDescriptor">
+						<str:MetadataAttribute id="CONTACT" isPresentational="true">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CONTACT</str:ConceptIdentity>
+							<str:MetadataAttribute id="FREQ" minOccurs="0">
+								<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).FREQ</str:ConceptIdentity>
+								<str:LocalRepresentation>
+									<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)</str:Enumeration>
+								</str:LocalRepresentation>
+							</str:MetadataAttribute>
+						</str:MetadataAttribute>
+						<str:MetadataAttribute id="NOTE" minOccurs="0" maxOccurs="unbounded">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).NOTE</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="String" maxLength="500"/>
+							</str:LocalRepresentation>
+						</str:MetadataAttribute>
+					</str:MetadataAttributeList>
+				</str:MetadataStructureComponents>
+			</str:MetadataStructure>
+		</str:MetadataStructures>
+		<str:Metadataflows>
+			<str:Metadataflow agencyID="BIS" id="MDF_TEST" version="1.0" isExternalReference="false">
+				<com:Name xml:lang="en">Test Metadataflow</com:Name>
+				<str:Structure>urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataStructure=BIS:MSD_TEST(1.0)</str:Structure>
+				<str:Target>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=*:*(*)</str:Target>
+			</str:Metadataflow>
+		</str:Metadataflows>
+		<str:MetadataProvisionAgreements>
+			<str:MetadataProvisionAgreement agencyID="BIS" id="MPA_TEST" version="1.0" isExternalReference="false">
+				<com:Name xml:lang="en">Test MPA</com:Name>
+				<str:Metadataflow>urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=BIS:MDF_TEST(1.0)</str:Metadataflow>
+				<str:MetadataProvider>urn:sdmx:org.sdmx.infomodel.base.MetadataProvider=BIS:METADATA_PROVIDERS(1.0).PROV1</str:MetadataProvider>
+			</str:MetadataProvisionAgreement>
+		</str:MetadataProvisionAgreements>
+	</mes:Structures>
+</mes:Structure>
