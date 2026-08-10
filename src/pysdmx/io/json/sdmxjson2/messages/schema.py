@@ -100,7 +100,7 @@ class JsonSchemaMessage(msgspec.Struct, frozen=True, omit_defaults=True):
         comp_dict = {c.id: c for c in components}
         urns = [a.urn for a in self.meta.links]
         for ha in hierarchies:
-            comp_id = parse_item_urn(ha.component_ref).item_id
+            comp_id = parse_item_urn(ha.component_ref).item_id  # type: ignore[arg-type]
             h = msgspec.structs.replace(  # type: ignore[type-var]
                 ha.hierarchy,
                 operator=ha.operator,

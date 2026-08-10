@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "id": "IREF219896",
+    "test": false,
+    "schema": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+    "prepared": "2026-08-06T13:13:05Z",
+    "contentLanguages": [
+      "en"
+    ],
+    "sender": {
+      "id": "5B0"
+    }
+  },
+  "data": {
+    "transformationSchemes": [
+      {
+        "links": [
+          {
+            "rel": "self",
+            "href": "https://mmsu.bisinfo.org/ws/public/sdmxapi/rest/transformationscheme/FR1/BPE_CENSUS/1.0",
+            "type": "transformationscheme",
+            "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+            "urn": "urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=FR1:BPE_CENSUS(1.0)"
+          }
+        ],
+        "id": "BPE_CENSUS",
+        "name": "Transformation Scheme for BPE - CENSUS",
+        "names": {
+          "en": "Transformation Scheme for BPE - CENSUS"
+        },
+        "version": "1.0",
+        "agencyID": "FR1",
+        "isExternalReference": true,
+        "isPartial": false
+      }
+    ]
+  }
+}
