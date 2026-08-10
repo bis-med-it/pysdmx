@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import httpx
 import pytest
 
 from pysdmx.errors import Invalid
@@ -199,28 +198,6 @@ def test_reading_structures_case_insensitive(data_path_structures_uppercase):
     assert "Dataflow=ESTAT:DF_A(1.6.0)" in short_urns
     assert "DataStructure=ESTAT:DSD_B(1.7.0)" in short_urns
     assert "ProvisionAgreement=ESTAT:DPA_C(1.8.0)" in short_urns
-
-
-def test_reading_oecd_live_sdmx_csv_v2():
-    # The OECD .Stat Suite writes the STRUCTURE column in uppercase
-    # (DATAFLOW), which requires the case-insensitive matching
-    url = (
-        "https://sdmx.oecd.org/public/rest/data/"
-        "OECD.SDD.STES,DSD_STES@DF_CLI,4.1/USA.M.LI...AA...H"
-        "?lastNObservations=3"
-    )
-    headers = {"Accept": "application/vnd.sdmx.data+csv; version=2.0.0"}
-    try:
-        response = httpx.get(url, headers=headers, timeout=30)
-        response.raise_for_status()
-    except httpx.HTTPError as e:
-        pytest.skip(f"OECD API unavailable: {e}")
-    datasets = read(response.text)
-    assert len(datasets) == 1
-    assert (
-        datasets[0].short_urn == "Dataflow=OECD.SDD.STES:DSD_STES@DF_CLI(4.1)"
-    )
-    assert len(datasets[0].data) == 3
 
 
 def test_reading_two_actions(data_path_two_actions):
