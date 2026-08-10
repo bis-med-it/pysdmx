@@ -28,6 +28,10 @@ def __check_xml(input_str: str) -> bool:
 
 
 def __check_csv(input_str: str) -> bool:
+    # JSON ({ or [) and XML (<) documents are never SDMX-CSV, but a
+    # one-line document has enough commas and quotes to fool the sniffer.
+    if input_str[:100].lstrip().startswith(("{", "[", "<")):
+        return False
     try:
         lines = input_str.splitlines()
 

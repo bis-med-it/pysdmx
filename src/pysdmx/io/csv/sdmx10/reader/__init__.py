@@ -8,6 +8,7 @@ import pandas as pd
 from pysdmx.errors import Invalid
 from pysdmx.io.csv.__csv_aux_reader import __generate_dataset_from_sdmx_csv
 from pysdmx.io.pd import PandasDataset
+from pysdmx.toolkit.pd._data_utils import drop_labels
 
 
 def read(input_str: str) -> Sequence[PandasDataset]:
@@ -40,26 +41,10 @@ def read(input_str: str) -> Sequence[PandasDataset]:
 
     # Convert all columns to strings
     df_csv = df_csv.astype(str).replace({"nan": "NaN", "<NA>": "NaN"})
-    # A ': ' in a header marks a labelled column, since labels are
-    # written with a ': ' separator
-    mode_label_text = any(": " in x for x in df_csv.columns)
+    df_csv = drop_labels(df_csv)
 
     # Determine the id column based on the SDMX-CSV version
     id_column = "DATAFLOW"
-
-    # If mode, label or text is present, modify the DataFrame
-    if mode_label_text:
-        # Strip the label from every labelled column (identified by a ': ' in
-        # its header). Labels use a ': ' (colon-space) separator and codes
-        # never contain spaces, so a bare ':' inside a value (e.g. a full
-        # datetime) is preserved. The structure id label is stripped later,
-        # in __generate_dataset_from_sdmx_csv.
-        for x in [col for col in df_csv.columns if ": " in col]:
-            df_csv[x.split(": ")[0]] = df_csv[x].map(
-                lambda x: x.split(": ", 2)[0], na_action="ignore"
-            )
-            # Delete the original columns
-            del df_csv[x]
 
     # Separate SDMX-CSV in different datasets per Structure ID
     list_df = [data for _, data in df_csv.groupby(id_column)]
