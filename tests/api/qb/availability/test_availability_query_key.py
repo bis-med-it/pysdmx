@@ -49,9 +49,13 @@ def test_availability_url_multiple_keys_before_2_0_0(
     keys: List[str],
     api_version: ApiVersion,
 ):
+    msg = (
+        "More than one key is not allowed in data context "
+        f"for SDMX-REST {api_version.label}"
+    )
     q = AvailabilityQuery(context, agency, res, version, keys)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 

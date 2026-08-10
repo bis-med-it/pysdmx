@@ -136,7 +136,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
         ):
             raise Invalid(
                 "Validation Error",
-                f"{ref} is not allowed for SDMX-REST {api_version.value}.",
+                f"{ref} is not allowed for SDMX-REST {api_version.label}.",
             )
 
     def __validate_references(self, api_version: ApiVersion) -> None:
@@ -157,7 +157,7 @@ class AvailabilityQuery(_CoreDataQuery, frozen=True, omit_defaults=True):
                 "Validation Error",
                 (
                     f"Only one component ID is allowed in SDMX-REST "
-                    f"{api_version.value}."
+                    f"{api_version.label}."
                 ),
             )
 

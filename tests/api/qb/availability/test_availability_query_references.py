@@ -79,9 +79,10 @@ def test_availability_invalid_value(res: str, api_version: ApiVersion):
 def test_availability_invalid_ref_v1(
     res: str, ref: StructureReference, api_version: ApiVersion
 ):
+    msg = f"{ref} is not allowed for SDMX-REST {api_version.label}"
     q = AvailabilityQuery(resource_id=res, references=ref)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 
@@ -100,9 +101,10 @@ def test_availability_invalid_ref_v1(
 def test_availability_invalid_ref_v2(
     res: str, ref: StructureReference, api_version: ApiVersion
 ):
+    msg = f"{ref} is not allowed for SDMX-REST {api_version.label}"
     q = AvailabilityQuery(resource_id=res, references=ref)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 
@@ -166,9 +168,13 @@ def test_availability_url_multi_refs_before_2_0_0(
     multiple_references: Sequence[StructureReference],
     api_version: ApiVersion,
 ):
+    msg = (
+        "More than one references is not allowed in data context "
+        f"for SDMX-REST {api_version.label}"
+    )
     q = AvailabilityQuery(resource_id=res, references=multiple_references)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 

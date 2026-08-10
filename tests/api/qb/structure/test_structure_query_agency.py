@@ -53,9 +53,10 @@ def refs():
 def test_url_multiple_agencies_until_1_2_0(
     typ: StructureType, agencies: List[str], res: str, api_version: ApiVersion
 ):
+    msg = f"Multiple items are not allowed in SDMX-REST {api_version.label}"
     q = StructureQuery(typ, agencies, res)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 
