@@ -58,6 +58,19 @@ def __check_vtl_extra() -> None:
         ) from None
 
 
+def __check_mcp_extra() -> None:
+    try:
+        import fastmcp  # noqa: F401
+    except ImportError:
+        raise ImportError(
+            ERROR_MESSAGE.format(
+                extra_name="mcp",
+                extra_desc="the MCP server exposing data discovery and "
+                "retrieval to AI assistants",
+            )
+        ) from None
+
+
 def __check_json_extra() -> None:
     try:
         import jsonschema  # noqa: F401
