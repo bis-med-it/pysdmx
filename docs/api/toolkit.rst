@@ -15,3 +15,4 @@ version of the SDMX standard.
    toolkit/vtl
    toolkit/pandas
    toolkit/sqlsrv
+   toolkit/mcp

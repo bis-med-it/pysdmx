@@ -15,3 +15,5 @@ The toolkit functions does not follow any particular version of the SDMX standar
 :ref:`sqlsrv_toolkit`
 
 :ref:`pandas_toolkit`
+
+:ref:`mcp_toolkit`
