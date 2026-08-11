@@ -642,6 +642,15 @@ def test_scalar_passes_through_plain_values():
 
 
 @pytest.mark.parametrize(
+    "missing", [None, float("nan"), np.nan, np.float64("nan"), pd.NaT, pd.NA]
+)
+def test_scalar_normalises_every_missing_value(missing):
+    # NaN, NaT and pd.NA all mean "no observation" and none of them is
+    # valid JSON.
+    assert server._scalar(missing) is None
+
+
+@pytest.mark.parametrize(
     ("value", "expected", "expected_type"),
     [
         (np.float64(1.5), 1.5, float),
