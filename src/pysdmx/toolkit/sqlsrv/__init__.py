@@ -2,7 +2,7 @@
 
 import re
 from collections.abc import Collection
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Literal, Optional, Union, get_args
 
 import msgspec
 
@@ -31,6 +31,7 @@ from pysdmx.model import (
 )
 
 __SQL_ESC = '"'
+CaseMode = Literal["insensitive", "sensitive", "default"]
 
 
 class Column(msgspec.Struct):
@@ -157,6 +158,7 @@ def get_select_statement(
     sort: Optional[Collection[SortBy]] = None,
     offset: int = 0,
     limit: Optional[int] = None,
+    case_mode: CaseMode = "insensitive",
 ) -> tuple[str, list[Any]]:
     """Return a SQL SELECT statement based on the provided input.
 
@@ -168,6 +170,9 @@ def get_select_statement(
         sort: How to sort data.
         offset: The number of rows to skip before starting to return rows.
         limit: The maximum number of rows to return after the offset.
+        case_mode: Controls string matching case sensitivity in WHERE clauses.
+            The allowed values are 'insensitive', 'sensitive', or 'default' (use
+            database/column collation). Defaults to 'insensitive'.
 
     Returns: A tuple containing:
         - A string representing the SELECT statement corresponding to the
@@ -181,7 +186,7 @@ def get_select_statement(
         raise errors.Invalid("Invalid table or schema name")
 
     target = f"{schema_name}.{table_name}"
-    where, values = get_where_clause(filters)
+    where, values = get_where_clause(filters, case_mode)
     cols = get_select_columns(columns)
     sc = get_sort_clause(sort)
     pag = get_pagination_clause(offset, limit)
@@ -262,11 +267,15 @@ def get_where_clause(
             TextFilter,
         ]
     ],
+    case_mode: CaseMode = "insensitive",
 ) -> tuple[str, list[Any]]:
     """Return the SQL WHERE clause representing the supplied filters, if any.
 
     Args:
         filters: The filters to be considered in the SQL WHERE clause.
+        case_mode: Controls string matching case sensitivity:
+            'insensitive', 'sensitive', or 'default' (use
+            database/column collation). Defaults to 'insensitive'.
 
     Returns:
         A tuple containing:
@@ -275,8 +284,10 @@ def get_where_clause(
         - A list of values to replace the placeholders in the prepared
             statement.
     """
+    __validate_case_mode(case_mode)
+
     if filters:
-        m: list[tuple[str, list[Any]]] = [__get_filter(filters)]
+        m: list[tuple[str, list[Any]]] = [__get_filter(filters, case_mode)]
         cf = list(filter(lambda x: len(x[0]) > 0, m))
         sqlstr = [a for a, _ in cf]
         values = []
@@ -397,21 +408,23 @@ def __get_filter(
         NumberFilter,
         TextFilter,
     ],
+    case_mode: CaseMode,
 ) -> tuple[str, list[Any]]:
     if isinstance(flt, BooleanFilter):
         return __handle_boolean_filter(flt)
     elif isinstance(flt, NullFilter):
         return __handle_null_filter(flt)
     elif isinstance(flt, MultiFilter):
-        return __handle_multi_filter(flt)
+        return __handle_multi_filter(flt, case_mode)
     elif isinstance(flt, NotFilter):
-        return __handle_not_filter(flt)
+        return __handle_not_filter(flt, case_mode)
     else:
-        return __handle_single_filter(flt)
+        return __handle_single_filter(flt, case_mode)
 
 
 def __handle_single_filter(
     flt: Union[DateTimeFilter, NumberFilter, TextFilter],
+    case_mode: CaseMode,
 ) -> tuple[str, list[Any]]:
     # ruff: noqa: C901
     # The complexity is acceptable is it is merely due to the
@@ -427,15 +440,23 @@ def __handle_single_filter(
     elif flt.operator == Operator.NOT_EQUALS:
         return (f"{__get_field(flt.field)} <> ?", [flt.value])
     elif flt.operator == Operator.LIKE:
-        return (
-            f"UPPER({__get_field(flt.field)}) LIKE ?",
-            [f"{str(flt.value).replace('*', '%').upper()}"],
-        )
+        field = __get_field(flt.field)
+        value = str(flt.value).replace("*", "%")
+        if case_mode == "insensitive":
+            return (
+                f"UPPER({field}) LIKE ?",
+                [value.upper()],
+            )
+        return (f"{field} LIKE ?", [value])
     elif flt.operator == Operator.NOT_LIKE:
-        return (
-            f"UPPER({__get_field(flt.field)}) NOT LIKE ?",
-            [f"{str(flt.value).replace('*', '%').upper()}"],
-        )
+        field = __get_field(flt.field)
+        value = str(flt.value).replace("*", "%")
+        if case_mode == "insensitive":
+            return (
+                f"UPPER({field}) NOT LIKE ?",
+                [value.upper()],
+            )
+        return (f"{field} NOT LIKE ?", [value])
     elif flt.operator == Operator.IN:
         ph = ",".join("?" * len(flt.value))  # type: ignore[arg-type]
         return (
@@ -488,11 +509,13 @@ def __handle_boolean_filter(flt: BooleanFilter) -> tuple[str, list[Any]]:
         )
 
 
-def __handle_multi_filter(flt: MultiFilter) -> tuple[str, list[Any]]:
+def __handle_multi_filter(
+    flt: MultiFilter, case_mode: CaseMode
+) -> tuple[str, list[Any]]:
     s = []
     v = []
     for f in flt.filters:
-        a, b = __get_filter(f)
+        a, b = __get_filter(f, case_mode)
         if isinstance(f, MultiFilter):
             s.append(f"({a})")
         else:
@@ -502,9 +525,20 @@ def __handle_multi_filter(flt: MultiFilter) -> tuple[str, list[Any]]:
     return (f"{w}", v)
 
 
-def __handle_not_filter(flt: NotFilter) -> tuple[str, list[Any]]:
-    a, b = __get_filter(flt.filter)
+def __handle_not_filter(
+    flt: NotFilter, case_mode: CaseMode
+) -> tuple[str, list[Any]]:
+    a, b = __get_filter(flt.filter, case_mode)
     return (f"NOT({a})", b)
+
+
+def __validate_case_mode(case_mode: str) -> None:
+    if case_mode not in get_args(CaseMode):
+        raise errors.Invalid(
+            "Invalid case_mode",
+            "Only insensitive, sensitive, and default are supported.",
+            {"case_mode": case_mode},
+        )
 
 
 def __get_field(field: str) -> str:
