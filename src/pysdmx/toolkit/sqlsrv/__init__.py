@@ -171,8 +171,8 @@ def get_select_statement(
         offset: The number of rows to skip before starting to return rows.
         limit: The maximum number of rows to return after the offset.
         case_mode: Controls string matching case sensitivity in WHERE clauses.
-            The allowed values are 'insensitive', 'sensitive', or 'default' (use
-            database/column collation). Defaults to 'insensitive'.
+            The allowed values are 'insensitive', 'sensitive', or 'default'
+            (use database/column collation). Defaults to 'insensitive'.
 
     Returns: A tuple containing:
         - A string representing the SELECT statement corresponding to the
