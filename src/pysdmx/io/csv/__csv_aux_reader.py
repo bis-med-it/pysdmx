@@ -60,16 +60,18 @@ def __generate_dataset_from_sdmx_csv(  # noqa: C901
         # For SDMX-CSV version 2, use 'STRUCTURE_ID'
         # column as the structure id and 'STRUCTURE' as the structure type
         structure_id = data["STRUCTURE_ID"].iloc[0]
-        structure_type = data["STRUCTURE"].iloc[0]
+        # The specification writes the structure types in lowercase, but
+        # other tools may use different casings, so match case-insensitively
+        structure_type = data["STRUCTURE"].iloc[0].lower()
         # Drop 'STRUCTURE' and 'STRUCTURE_ID' columns from DataFrame
         df_csv = data.drop(["STRUCTURE", "STRUCTURE_ID"], axis=1)
         # Strip the label (name) from the structure id, if present. Labels
         # use a ': ' separator and codes never contain spaces.
         if structure_id.count(": ") == 1:
             structure_id = structure_id.split(": ")[0]
-        if structure_type == "DataStructure".lower():
+        if structure_type == "datastructure":
             urn = f"DataStructure={structure_id}"
-        elif structure_type == "Dataflow".lower():
+        elif structure_type == "dataflow":
             urn = f"Dataflow={structure_id}"
         elif structure_type == "dataprovision":
             urn = f"ProvisionAgreement={structure_id}"
