@@ -131,6 +131,14 @@ the asynchronous import to completion:
     final = uploader.submission_status(imported.request_id, wait=True)
     print(final.execution_status, final.outcome)
 
+.. note::
+    Some .Stat deployments drop a measure's local representation when
+    ingesting **SDMX-JSON** (``submit_structure``'s default), so the
+    stored DSD can lose the measure's data type / codelist. If that
+    matters, submit the structures as **SDMX-ML 2.1**
+    (``structure_format=`` with an SDMX-ML format) or read them back
+    after upload to verify.
+
 See the :doc:`.Stat connector guide <stat>` for the .Stat submission
 details, and :doc:`reconciling .Stat against FMR <stat_fmr_sync>` for
 the reverse clean-up direction.

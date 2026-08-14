@@ -200,6 +200,12 @@ parameter.
     deployment that requires SDMX-ML; a type that cannot be written in
     the chosen format raises a clear :class:`~pysdmx.errors.Invalid`.
 
+    Caveat: some .Stat deployments **drop a measure's local
+    representation** when ingesting SDMX-JSON (the stored DSD loses the
+    measure's data type / codelist). If that matters, submit those
+    structures as **SDMX-ML 2.1** (``structure_format=`` with an SDMX-ML
+    format) or read the artefacts back after upload to verify.
+
 .. note::
     Submitted (and deleted) content must use an **agency you are
     authorized to maintain** on the target instance (the agency must
