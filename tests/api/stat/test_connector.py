@@ -398,6 +398,18 @@ def test_get_when_type_absent_raises_not_found(client, respx_mock):
         client.get_concepts("A", "MISSING")
 
 
+def test_get_empty_204_no_content(respx_mock, client):
+    # An unknown artefact yields HTTP 204 with an empty body, which is
+    # not parseable SDMX: _many returns [] and _one raises NotFound
+    # (rather than "Cannot parse input as SDMX").
+    respx_mock.get(url__startswith=STRUCT_PREFIX).mock(
+        return_value=httpx.Response(204)
+    )
+    assert client.get_dataflows("TEST") == []
+    with pytest.raises(NotFound):
+        client.get_codes("TEST", "CL")
+
+
 # --- Endpoints .Stat does not serve -> Invalid -------------------------------
 def test_get_schema_unsupported(client):
     with pytest.raises(Invalid, match="Not available"):
@@ -561,6 +573,16 @@ async def test_async_get_not_found(aclient, respx_mock):
     _mock(respx_mock, STRUCT_PREFIX, body)
     with pytest.raises(NotFound):
         await aclient.get_concepts("A", "MISSING")
+
+
+@pytest.mark.asyncio
+async def test_async_get_empty_204_no_content(respx_mock, aclient):
+    respx_mock.get(url__startswith=STRUCT_PREFIX).mock(
+        return_value=httpx.Response(204)
+    )
+    assert await aclient.get_dataflows("TEST") == []
+    with pytest.raises(NotFound):
+        await aclient.get_codes("TEST", "CL")
 
 
 @pytest.mark.parametrize(

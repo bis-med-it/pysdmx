@@ -266,6 +266,11 @@ class StatConnector(RegistryClient):
     def _structures(self, query: StructureQuery) -> Sequence[Any]:
         """Fetch a structure query and parse it into model artefacts."""
         raw = self._svc.structure(query)
+        if not raw:
+            # An empty body (HTTP 204 No Content -- e.g. an unknown
+            # artefact) is not parseable SDMX; treat it as no artefacts,
+            # so _one raises NotFound and _many returns an empty list.
+            return ()
         return read_sdmx(BytesIO(raw), validate=False).structures or ()
 
     def _one(self, query: StructureQuery, typ: Any) -> Any:
@@ -560,6 +565,11 @@ class AsyncStatConnector(AsyncRegistryClient):
     async def _structures(self, query: StructureQuery) -> Sequence[Any]:
         """Fetch a structure query and parse it into model artefacts."""
         raw = await self._svc.structure(query)
+        if not raw:
+            # An empty body (HTTP 204 No Content -- e.g. an unknown
+            # artefact) is not parseable SDMX; treat it as no artefacts,
+            # so _one raises NotFound and _many returns an empty list.
+            return ()
         return read_sdmx(BytesIO(raw), validate=False).structures or ()
 
     async def _one(self, query: StructureQuery, typ: Any) -> Any:
