@@ -226,12 +226,13 @@ structures with :meth:`~pysdmx.api.stat.StatUploader.delete_structure`.
     ])
 
 ``delete_structure`` accepts maintainable artefacts or short-URN strings,
-and deletes them in the order given — pass dependents first, or a
-still-referenced artefact yields :class:`~pysdmx.errors.Invalid` (HTTP
-409). It returns one ``StructureSubmissionResult`` per artefact (check
-each ``.success``). Like ``submit_structure``, both report a logical
-(in-body) failure through ``.success`` / ``.messages`` rather than
-raising.
+and deletes them in the order given — pass dependents first. It is
+**fail-fast**: the first artefact the NSI rejects (e.g. a still-referenced
+one → HTTP 409) raises :class:`~pysdmx.errors.Invalid` and stops the
+sequence, so an indeterminate prefix may already be deleted (re-run with
+the remainder). The returned list holds one ``StructureSubmissionResult``
+per artefact deleted **before** the failure — informational only; a
+failure is signalled by the raised exception, not by ``.success``.
 
 Endpoints
 ---------

@@ -107,13 +107,20 @@ dataflow. Rank the short-URNs by type, then hand them to
         dataspace=SPACE,
         token=dotstat_token,
     )
-    for result in uploader.delete_structure(ordered):
-        state = "ok" if result.success else "FAILED"
-        print(state, "; ".join(result.messages))
+    try:
+        for result in uploader.delete_structure(ordered):
+            print("ok", "; ".join(result.messages))
+    except (Invalid, NotFound) as err:
+        # delete_structure is fail-fast: the first artefact the NSI
+        # rejects raises here and stops the sequence (an earlier prefix
+        # may already be deleted -- re-run with the remainder).
+        print("FAILED", err)
 
-``delete_structure`` returns one
-:class:`~pysdmx.api.stat.StructureSubmissionResult` per artefact, so a
-logical failure surfaces as ``success=False`` rather than an exception.
+``delete_structure`` deletes in order and is **fail-fast**: it returns one
+:class:`~pysdmx.api.stat.StructureSubmissionResult` per artefact it
+deletes, but the first the NSI rejects raises
+:class:`~pysdmx.errors.Invalid` and stops the loop — so wrap it in
+``try``/``except`` as above.
 
 Configuration
 -------------
