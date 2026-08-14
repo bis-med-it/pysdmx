@@ -1060,9 +1060,13 @@ class StatUploader:
         required ``dataspace`` field) to ``{transfer}/import/sdmxFile``.
         The dataset must be Schema-backed (e.g. produced by
         ``StatConnector.fetch_dataset`` or ``pysdmx.io.get_datasets``); a
-        dataset whose structure is a bare URN cannot be written. The
-        per-row/per-dataset action is taken from the file (the SDMX-CSV
-        2.0 ``ACTION`` column, or the SDMX-ML dataset action).
+        dataset whose structure is a bare URN cannot be written. Its
+        schema must reference a **dataflow** (``context="dataflow"``), not
+        a data structure: .Stat rejects a datastructure-bound dataset and
+        the failure surfaces only at status-poll time (``submit_data``
+        uploads it without complaint). The per-row/per-dataset action is
+        taken from the file (the SDMX-CSV 2.0 ``ACTION`` column, or the
+        SDMX-ML dataset action).
 
         Submission is asynchronous: the returned ``SubmissionResult``
         carries the transaction id (``request_id``) to pass to

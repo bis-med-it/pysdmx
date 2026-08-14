@@ -157,7 +157,10 @@ terminal state (tune the loop with ``interval`` and ``attempts``).
 The ``dataset`` passed to ``submit``/``submit_data`` must be
 Schema-backed — for example one returned by
 :meth:`~pysdmx.api.stat.StatConnector.fetch_dataset` or by
-:func:`pysdmx.io.get_datasets`. The SDMX *action*
+:func:`pysdmx.io.get_datasets`. Its schema must reference a **dataflow**
+(``context="dataflow"``), not a data structure — .Stat rejects a
+datastructure-bound dataset and the failure surfaces only at status-poll
+time (``submit_data`` uploads it without complaint). The SDMX *action*
 (Append/Replace/Merge/Delete) is carried inside the file (the SDMX-CSV
 2.0 ``ACTION`` column, or the SDMX-ML dataset action), not as a request
 parameter.
