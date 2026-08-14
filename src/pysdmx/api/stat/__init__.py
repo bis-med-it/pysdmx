@@ -1210,6 +1210,7 @@ class StatUploader:
         structures: Union[MaintainableArtefact, Sequence[Any]],
         dataset: Union[Dataset, Sequence[Dataset]],
         dataspace: Optional[str] = None,
+        structure_format: Format = Format.STRUCTURE_SDMX_JSON_2_0_0,
     ) -> SubmissionResult:
         """Submit the structure(s) first, then the data.
 
@@ -1222,6 +1223,9 @@ class StatUploader:
             dataset: The data to submit once the structure is in place.
             dataspace: The target data space for the data; defaults to
                 the one set on the connector.
+            structure_format: The SDMX structure format for the structure
+                step; passed to :meth:`submit_structure` (defaults to
+                SDMX-JSON 2.0 -- see it for the format trade-offs).
 
         Returns:
             The data submission's :class:`SubmissionResult` (with the
@@ -1235,7 +1239,7 @@ class StatUploader:
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
-        result = self.submit_structure(structures)
+        result = self.submit_structure(structures, structure_format)
         if not result.success:
             raise errors.Invalid(
                 "Structure submission failed",

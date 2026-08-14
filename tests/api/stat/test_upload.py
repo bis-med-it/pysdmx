@@ -323,6 +323,34 @@ def test_submit_stops_on_structure_failure(
     assert not data.called  # data not attempted when the structure fails
 
 
+def test_submit_passes_structure_format_through(
+    respx_mock, uploader, codelist, dataset
+):
+    # submit(structure_format=...) must reach submit_structure, so the
+    # structure POST carries that format's content type.
+    struct = respx_mock.post(STRUCT_URL).mock(
+        return_value=httpx.Response(
+            200,
+            text='<m:Error><m:ErrorMessage code="201">'
+            "<c:Text>Created.</c:Text></m:ErrorMessage></m:Error>",
+        )
+    )
+    respx_mock.post(IMPORT_URL).mock(
+        return_value=httpx.Response(200, json={"requestId": 7})
+    )
+
+    uploader.submit(
+        codelist,
+        dataset,
+        structure_format=Format.STRUCTURE_SDMX_ML_2_1,
+    )
+
+    assert (
+        struct.calls.last.request.headers["Content-Type"]
+        == Format.STRUCTURE_SDMX_ML_2_1.value
+    )
+
+
 def test_submission_status_returns_result(respx_mock, uploader):
     route = respx_mock.post(STATUS_URL).mock(
         return_value=httpx.Response(
