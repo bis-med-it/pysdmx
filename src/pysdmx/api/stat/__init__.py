@@ -247,17 +247,14 @@ class StatConnector(RegistryClient):
             api_endpoint, StructureFormat.SDMX_JSON_2_0_0, pem, timeout
         )
         # .Stat services serve structures as SDMX-ML 2.1 and data as
-        # SDMX-CSV, so request those (read_sdmx auto-detects on parse).
-        # These are deliberate, not the inherited JSON defaults:
-        # - OECD (the default endpoint) returns 406 for SDMX-JSON
-        #   structures; SDMX-ML 2.1 is served by every StatEndpoints host.
-        # - OECD's SDMX-CSV 2.0 puts an uppercase "DATAFLOW" in the
-        #   STRUCTURE column, which the SDMX-CSV 2.0 reader rejects;
-        #   SDMX-CSV 1.0 parses cleanly.
+        # SDMX-CSV; request those (read_sdmx auto-detects on parse).
+        # SDMX-ML 2.1 for structures is deliberate -- OECD (the default
+        # endpoint) returns 406 for SDMX-JSON structures, and SDMX-ML 2.1
+        # is served by every StatEndpoints host.
         self._svc = RestService(
             self.api_endpoint,
             ApiVersion.V2_0_0,
-            data_format=DataFormat.SDMX_CSV_1_0_0,
+            data_format=DataFormat.SDMX_CSV_2_0_0,
             structure_format=StructureFormat.SDMX_ML_2_1,
             timeout=timeout,
             pem=pem,
@@ -546,17 +543,14 @@ class AsyncStatConnector(AsyncRegistryClient):
             api_endpoint, StructureFormat.SDMX_JSON_2_0_0, pem, timeout
         )
         # .Stat services serve structures as SDMX-ML 2.1 and data as
-        # SDMX-CSV, so request those (read_sdmx auto-detects on parse).
-        # These are deliberate, not the inherited JSON defaults:
-        # - OECD (the default endpoint) returns 406 for SDMX-JSON
-        #   structures; SDMX-ML 2.1 is served by every StatEndpoints host.
-        # - OECD's SDMX-CSV 2.0 puts an uppercase "DATAFLOW" in the
-        #   STRUCTURE column, which the SDMX-CSV 2.0 reader rejects;
-        #   SDMX-CSV 1.0 parses cleanly.
+        # SDMX-CSV; request those (read_sdmx auto-detects on parse).
+        # SDMX-ML 2.1 for structures is deliberate -- OECD (the default
+        # endpoint) returns 406 for SDMX-JSON structures, and SDMX-ML 2.1
+        # is served by every StatEndpoints host.
         self._svc = AsyncRestService(
             self.api_endpoint,
             ApiVersion.V2_0_0,
-            data_format=DataFormat.SDMX_CSV_1_0_0,
+            data_format=DataFormat.SDMX_CSV_2_0_0,
             structure_format=StructureFormat.SDMX_ML_2_1,
             timeout=timeout,
             pem=pem,

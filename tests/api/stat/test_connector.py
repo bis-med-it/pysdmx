@@ -260,7 +260,7 @@ def test_init_configures_rest_service(client):
     svc = client._svc
     assert svc._api_endpoint == HOST
     assert svc._api_version == ApiVersion.V2_0_0
-    assert svc._data_format == DataFormat.SDMX_CSV_1_0_0
+    assert svc._data_format == DataFormat.SDMX_CSV_2_0_0
     assert svc._structure_format == StructureFormat.SDMX_ML_2_1
 
 
@@ -453,7 +453,7 @@ def test_fetch_data_accept_header(respx_mock, client):
     client.fetch_data(*OECD_FLOW)
     assert (
         route.calls.last.request.headers["Accept"]
-        == "application/vnd.sdmx.data+csv;version=1.0.0"
+        == "application/vnd.sdmx.data+csv;version=2.0.0"
     )
 
 
