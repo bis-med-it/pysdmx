@@ -521,6 +521,19 @@ def test_parse_status_summary():
     assert r.logs == ("done",)
 
 
+def test_parse_status_warning_is_success():
+    # A completed-with-warnings import is treated as a success, but the
+    # raw outcome/execution_status remain available to strict callers.
+    r = _submission_from_status(
+        '{"executionStatus": "Completed", "outcome": "Warning",'
+        ' "logs": [{"message": "watch out"}]}'
+    )
+    assert r.success is True
+    assert r.outcome == "Warning"
+    assert r.execution_status == "Completed"
+    assert r.logs == ("watch out",)
+
+
 def test_parse_status_non_dict():
     assert _submission_from_status("[]").success is False
 

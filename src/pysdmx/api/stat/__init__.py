@@ -144,7 +144,7 @@ def _submission_from_status(text: str) -> SubmissionResult:
         for e in (lower.get("logs") or [])
     )
     return SubmissionResult(
-        success=outcome == "Success",
+        success=outcome in ("Success", "Warning"),
         message=str(outcome or lower.get("executionstatus") or ""),
         request_id=lower.get("requestid"),
         execution_status=lower.get("executionstatus"),
