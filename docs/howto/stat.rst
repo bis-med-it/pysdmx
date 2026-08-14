@@ -213,6 +213,19 @@ parameter.
     artefacts and datasets you pass, so build them under your writable
     agency.
 
+.. note::
+    A few .Stat submission behaviours worth planning for:
+
+    - Structure submission is **per-artefact, not atomic** — a
+      ``StructureSubmissionResult.success = False`` can still mean some
+      artefacts were inserted (inspect ``.messages``).
+    - A **dangling structure reference** (e.g. a dataflow whose DSD is
+      absent) or an **unchanged re-submission** can surface as HTTP 500
+      → :class:`~pysdmx.errors.InternalError` even though the cause is
+      client-side; there is no idempotent "ensure exists" upsert.
+    - A single invalid observation **rejects the whole data batch**,
+      valid rows included.
+
 Deleting
 --------
 

@@ -963,8 +963,10 @@ class StatUploader:
                 if r.status_code in (401, 403):
                     raise errors.Unauthorized(
                         "Unauthorized",
-                        f"The service rejected the token "
-                        f"({r.status_code}). The request was `{url}`.",
+                        f"The service rejected the token ({r.status_code}): "
+                        "it is missing/expired, or lacks permission for the "
+                        "submitted content or agency (.Stat uses 401 for "
+                        f"content authorization too). Request: `{url}`.",
                     )
                 r.raise_for_status()
                 return r
@@ -1179,7 +1181,9 @@ class StatUploader:
             errors.Invalid: If the service returns a client error (e.g.
                 a ``409`` because a dependent artefact still references
                 it).
-            errors.NotFound: If an artefact does not exist.
+            errors.NotFound: If the service reports a missing artefact.
+                (Many .Stat NSIs treat DELETE as idempotent and return
+                success for an already-absent artefact instead.)
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.
         """
