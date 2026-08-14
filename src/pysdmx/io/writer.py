@@ -38,6 +38,8 @@ WRITERS = {
     Format.REFMETA_SDMX_JSON_2_1_0: (
         "pysdmx.io.json.sdmxjson2.writer.v2_1.metadata"
     ),
+    Format.REFMETA_SDMX_ML_3_0: "pysdmx.io.xml.sdmx30.writer.metadata",
+    Format.REFMETA_SDMX_ML_3_1: "pysdmx.io.xml.sdmx31.writer.metadata",
 }
 
 STRUCTURE_WRITERS = (
@@ -51,6 +53,8 @@ STRUCTURE_WRITERS = (
 REFMETA_WRITERS = (
     Format.REFMETA_SDMX_JSON_2_0_0,
     Format.REFMETA_SDMX_JSON_2_1_0,
+    Format.REFMETA_SDMX_ML_3_0,
+    Format.REFMETA_SDMX_ML_3_1,
 )
 
 
@@ -174,7 +178,7 @@ def write_sdmx(
                     "dimension_at_observation"
                 )
             }
-            if is_xml and not is_structure
+            if is_xml and not is_structure and not is_ref_meta
             else {}
         ),
         **(

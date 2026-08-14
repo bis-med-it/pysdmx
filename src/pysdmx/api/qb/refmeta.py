@@ -28,8 +28,8 @@ class _RefMetaCoreQuery(CoreQuery, frozen=True, omit_defaults=True):
             raise Invalid(
                 "Invalid Request",
                 (
-                    "Queries for reference metadata are not supported"
-                    f"in SDMX-REST {version.value}."
+                    "Queries for reference metadata are not supported "
+                    f"in SDMX-REST {version.label}."
                 ),
             )
 
@@ -39,7 +39,7 @@ class _RefMetaCoreQuery(CoreQuery, frozen=True, omit_defaults=True):
         if as_of and version < ApiVersion.V2_2_0:
             raise Invalid(
                 "Validation Error",
-                f"as_of not supported in {version.value}.",
+                f"as_of is not supported in SDMX-REST {version.label}.",
             )
 
     def _get_as_of_value(self, as_of: Optional[datetime]) -> str:
@@ -104,7 +104,7 @@ class RefMetaByMetadatasetQuery(
             raise Invalid(
                 "Unexpected artefact type",
                 (
-                    "Only references of type MetadataSet can be converted"
+                    "Only references of type MetadataSet can be converted "
                     "into a RefMetaByMetadatasetQuery"
                 ),
                 {"received_type": ref.sdmx_type},  # type: ignore[union-attr]

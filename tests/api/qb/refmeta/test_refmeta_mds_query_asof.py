@@ -93,7 +93,12 @@ def test_short_url_asof_detail(
 
 
 @pytest.mark.parametrize(
-    "api_version", (v for v in ApiVersion if v < ApiVersion.V2_2_0)
+    "api_version",
+    (
+        v
+        for v in ApiVersion
+        if v >= ApiVersion.V2_0_0 and v < ApiVersion.V2_2_0
+    ),
 )
 def test_url_asof_before_2_2_0(
     provider: str,
@@ -102,6 +107,7 @@ def test_url_asof_before_2_2_0(
     as_of: datetime,
     api_version: ApiVersion,
 ):
+    msg = f"as_of is not supported in SDMX-REST {api_version.label}"
     q = RefMetaByMetadatasetQuery(provider, res, version, as_of=as_of)
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version, True)

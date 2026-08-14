@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:GenericMetadata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xmlns:metadata="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/metadata/generic" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>test</mes:ID>
+		<mes:Test>true</mes:Test>
+		<mes:Prepared>2021-01-01T10:00:00Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Structure structureID="MDS1">
+			<com:Structure>urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataStructure=BIS:MSD_TEST(1.0)</com:Structure>
+		</mes:Structure>
+	</mes:Header>
+	<mes:MetadataSet agencyID="BIS" id="RPT1" version="1.0" action="Replace" publicationYear="2021" reportingBeginDate="2020-01-01" reportingEndDate="2020-12-31">
+		<com:Name xml:lang="en">Report 1</com:Name>
+		<metadata:Metadataflow>urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=BIS:MDF_TEST(1.0)</metadata:Metadataflow>
+		<metadata:Target>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF(1.0)</metadata:Target>
+		<metadata:Attribute id="CONTACT">
+			<metadata:Attribute id="NAME">
+				<metadata:Value>John Doe</metadata:Value>
+			</metadata:Attribute>
+			<metadata:Attribute id="EMAIL">
+				<metadata:Value>john@example.org</metadata:Value>
+				<metadata:Value>doe@example.org</metadata:Value>
+			</metadata:Attribute>
+		</metadata:Attribute>
+		<metadata:Attribute id="NOTE">
+			<metadata:Value>A single note</metadata:Value>
+		</metadata:Attribute>
+	</mes:MetadataSet>
+</mes:GenericMetadata>

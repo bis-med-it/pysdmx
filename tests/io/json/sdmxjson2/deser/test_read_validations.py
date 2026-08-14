@@ -86,6 +86,19 @@ def empty_group_dimensions():
     return text
 
 
+@pytest.fixture
+def valid_metadata_21():
+    file_path = (
+        Path(__file__).parent
+        / "samples"
+        / "schema_validations"
+        / "valid_metadata_21.json"
+    )
+    with open(file_path, "r") as f:
+        text = f.read()
+    return text
+
+
 def test_json_agency_id_missing(agency_id_missing):
     with pytest.raises(
         Invalid,
@@ -157,3 +170,13 @@ def test_empty_group_dimensions(empty_group_dimensions):
         ),
     ):
         read_structure(empty_group_dimensions)
+
+
+def test_json_21_metadata_valid(valid_metadata_21):
+    # ``isPartialLanguage`` is an SDMX-JSON 2.1-only field: this message is
+    # rejected by the 2.0 metadata schema but valid under 2.1. Reading it
+    # with validation enabled only succeeds if the reader selected the 2.1
+    # schema, which pins the version-aware schema wiring.
+    msg = read_metadata(valid_metadata_21, validate=True)
+
+    assert len(msg.reports) == 3

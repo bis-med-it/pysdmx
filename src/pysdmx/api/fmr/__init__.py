@@ -51,6 +51,7 @@ from pysdmx.model import (
     RepresentationMap,
     Schema,
     StructureMap,
+    TransformationScheme,
 )
 
 
@@ -872,7 +873,7 @@ class RegistryClient(__BaseRegistryClient):
 
     def get_vtl_transformation_scheme(
         self, agency: str, id: str, version: str = "~"
-    ) -> Union[MultiRepresentationMap, RepresentationMap]:
+    ) -> TransformationScheme:
         """Get a VTL transformation scheme.
 
         Args:
@@ -1446,7 +1447,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
 
     async def get_vtl_transformation_scheme(
         self, agency: str, id: str, version: str = "~"
-    ) -> Union[MultiRepresentationMap, RepresentationMap]:
+    ) -> TransformationScheme:
         """Get a VTL transformation scheme.
 
         Args:

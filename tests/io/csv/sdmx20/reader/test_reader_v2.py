@@ -52,6 +52,14 @@ def data_path_structures_exc():
 
 
 @pytest.fixture
+def data_path_structures_uppercase():
+    base_path = (
+        Path(__file__).parent / "samples" / "data_v2_structures_uppercase.csv"
+    )
+    return base_path
+
+
+@pytest.fixture
 def data_path_two_actions():
     base_path = Path(__file__).parent / "samples" / "data_v2_two_actions.csv"
     return base_path
@@ -181,6 +189,17 @@ def test_reading_more_structures_exception(data_path_structures_exc):
         read(infile)
 
 
+def test_reading_structures_case_insensitive(data_path_structures_uppercase):
+    with open(data_path_structures_uppercase, "r") as f:
+        infile = f.read()
+    datasets = read(infile)
+    assert len(datasets) == 3
+    short_urns = [ds.short_urn for ds in datasets]
+    assert "Dataflow=ESTAT:DF_A(1.6.0)" in short_urns
+    assert "DataStructure=ESTAT:DSD_B(1.7.0)" in short_urns
+    assert "ProvisionAgreement=ESTAT:DPA_C(1.8.0)" in short_urns
+
+
 def test_reading_two_actions(data_path_two_actions):
     with open(data_path_two_actions, "r") as f:
         infile = f.read()
@@ -238,6 +257,15 @@ def test_reading_labels_name(csv_labels_name):
     datasets = read(infile)
     assert datasets[0].short_urn == "DataStructure=MD:MD_TEST(1.0)"
     df = datasets[0].data
+    assert list(df.columns) == [
+        "DIM1",
+        "DIM2",
+        "ATT1",
+        "ATT2",
+        "OBS_VALUE",
+        "TIME_PERIOD",
+    ]
+    assert df.iloc[0].tolist() == ["A", "B", "C", "D", "1", "2020"]
     assert len(df) == 1
     assert "STRUCTURE_NAME" not in df.columns
     assert len(datasets[0].attributes) == 0
@@ -250,8 +278,8 @@ def test_reading_keys_both(csv_keys_both):
     assert datasets[0].short_urn == "DataStructure=MD:MD_TEST(1.0)"
     df = datasets[0].data
     assert len(df) == 1
-    assert "SERIES_KEYS" not in df.columns
-    assert "OBS_KEYS" not in df.columns
+    assert "SERIES_KEY" not in df.columns
+    assert "OBS_KEY" not in df.columns
 
     assert len(datasets[0].attributes) == 0
 

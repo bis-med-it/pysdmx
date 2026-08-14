@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>test</mes:ID>
+		<mes:Test>true</mes:Test>
+		<mes:Prepared>2021-01-01T10:00:00Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+	</mes:Header>
+	<mes:Structures>
+		<str:MetadataStructures>
+			<str:MetadataStructure agencyID="BIS" id="MSD_EMPTY" version="1.0">
+				<com:Name xml:lang="en">MSD without components</com:Name>
+			</str:MetadataStructure>
+			<str:MetadataStructure agencyID="BIS" id="MSD_REFS" version="1.0" isExternalReference="false">
+				<com:Name xml:lang="en">MSD with a bounded array</com:Name>
+				<str:MetadataStructureComponents>
+					<str:MetadataAttributeList id="MetadataAttributeDescriptor">
+						<str:MetadataAttribute id="FREQ" minOccurs="1" maxOccurs="3">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).FREQ</str:ConceptIdentity>
+						</str:MetadataAttribute>
+					</str:MetadataAttributeList>
+				</str:MetadataStructureComponents>
+			</str:MetadataStructure>
+		</str:MetadataStructures>
+		<str:Metadataflows>
+			<str:Metadataflow agencyID="BIS" id="MDF_NO_STRUCTURE" version="1.0" isExternalReference="false">
+				<com:Name xml:lang="en">Metadataflow without structure</com:Name>
+				<str:Target>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=*:*(*)</str:Target>
+			</str:Metadataflow>
+		</str:Metadataflows>
+		<str:MetadataProvisionAgreements>
+			<str:MetadataProvisionAgreement agencyID="BIS" id="MPA_REF" version="1.0" isExternalReference="false">
+				<com:Name xml:lang="en">MPA with URN references</com:Name>
+				<str:Metadataflow>urn:sdmx:org.sdmx.infomodel.metadatastructure.Metadataflow=BIS:MDF_NO_STRUCTURE(1.0)</str:Metadataflow>
+				<str:MetadataProvider>urn:sdmx:org.sdmx.infomodel.base.MetadataProvider=BIS:METADATA_PROVIDERS(1.0).PROV2</str:MetadataProvider>
+			</str:MetadataProvisionAgreement>
+		</str:MetadataProvisionAgreements>
+	</mes:Structures>
+</mes:Structure>

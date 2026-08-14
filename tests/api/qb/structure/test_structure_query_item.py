@@ -75,9 +75,10 @@ def test_url_item_query_until_1_0_2(
     refs: StructureReference,
     api_version: ApiVersion,
 ):
+    msg = f"Item query is not supported in SDMX-REST {api_version.label}"
     q = StructureQuery(typ, agency, res, version, item, detail, refs)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 
@@ -219,9 +220,10 @@ def test_url_multiple_items_until_1_2_0(
     refs: StructureReference,
     api_version: ApiVersion,
 ):
+    msg = f"Multiple items are not allowed in SDMX-REST {api_version.label}"
     q = StructureQuery(typ, agency, res, version, items, detail, refs)
 
-    with pytest.raises(Invalid):
+    with pytest.raises(Invalid, match=msg):
         q.get_url(api_version)
 
 
