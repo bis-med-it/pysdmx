@@ -152,7 +152,10 @@ processed asynchronously.
 ``request_id`` identifies the asynchronous transaction; feed it to
 ``submission_status`` to obtain the final ``execution_status`` and
 ``outcome``. Pass ``wait=True`` to poll until the transaction reaches a
-terminal state (tune the loop with ``interval`` and ``attempts``).
+terminal state (tune the loop with ``interval`` and ``attempts``). A
+completed-with-warnings import (``execution_status="Completed"``,
+``outcome="Warning"``) counts as ``success=True`` — inspect ``outcome``
+and ``logs`` if you need to treat warnings more strictly.
 
 The ``dataset`` passed to ``submit``/``submit_data`` must be
 Schema-backed — for example one returned by
