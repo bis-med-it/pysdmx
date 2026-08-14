@@ -1001,12 +1001,15 @@ class StatUploader:
             ``SubmitStructureResponse`` body. A per-artefact failure
             surfaces as ``success=False`` (with the service messages),
             not as an exception: the service can report a failure inside
-            the body even on an HTTP 200 response.
+            the body even on an HTTP 200 response. The NSI may instead
+            reject a submission with an HTTP error (e.g. 422 carrying an
+            SDMX error document), which is raised as ``Invalid`` (see
+            below) rather than returned -- so check both.
 
         Raises:
             errors.Invalid: If an artefact type cannot be serialized in
-                ``structure_format``, or the service returns a client
-                error.
+                ``structure_format``, or the service rejects the
+                submission with an HTTP client error (e.g. 422).
             errors.Unauthorized: If the token is missing or rejected.
             errors.InternalError: If the service returns a server error.
             errors.Unavailable: If the service cannot be reached.

@@ -178,12 +178,16 @@ parameter.
     ``token=``.
 
 .. note::
-    ``submit_structure`` returns a ``StructureSubmissionResult``
-    (``.success`` / ``.messages``) and reports a per-artefact failure in
-    that body rather than raising. ``submit`` is the convenience wrapper
-    that submits the structures and then the data; it raises
-    :class:`~pysdmx.errors.Invalid` if the structure step does not
-    succeed.
+    ``submit_structure`` reports failures **two** ways, so check both. A
+    per-artefact rejection carried in the ``SubmitStructureResponse``
+    body (even on an HTTP 2xx response) surfaces as
+    ``StructureSubmissionResult.success = False`` (with ``.messages``),
+    not as an exception. But the NSI can also reject a submission with an
+    HTTP error -- notably **422 Unprocessable Entity** with an SDMX error
+    document -- which is raised as :class:`~pysdmx.errors.Invalid`.
+    ``submit`` is the convenience wrapper that submits the structures and
+    then the data; it raises :class:`~pysdmx.errors.Invalid` if the
+    structure step does not succeed.
 
 .. note::
     ``submit_structure`` serializes to **SDMX-JSON 2.0 by default** --
