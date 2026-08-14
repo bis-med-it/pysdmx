@@ -1206,6 +1206,60 @@ class StatUploader:
             responses.append(_structure_result(self._send("DELETE", url).text))
         return responses
 
+    def cleanup_dsd(
+        self,
+        dsd: Union[str, DataStructureDefinition],
+        dataspace: Optional[str] = None,
+        cleanup_msd_only: bool = False,
+    ) -> SubmissionResult:
+        """Clear a DSD's data-side objects on the Transfer service.
+
+        Deleting a data structure through the NSI leaves the Transfer
+        service's per-DSD data-side objects in place, so re-creating the
+        DSD with **changed component types** then fails on import
+        (*non-backward-compatible change*). This wraps the Transfer
+        ``DELETE {transfer}/cleanup/dsd`` method that drops them; run it
+        as the final teardown step, after the NSI deletions.
+
+        Args:
+            dsd: The data structure to clean up, as a short URN
+                (e.g. ``"DataStructure=MD:DSD(1.0)"``) or a
+                ``DataStructureDefinition``.
+            dataspace: The target data space; defaults to the one set on
+                the connector.
+            cleanup_msd_only: Clean up only the metadata-structure side.
+
+        Returns:
+            The Transfer :class:`SubmissionResult` acknowledgement.
+
+        Raises:
+            errors.Unauthorized: If the token is missing or rejected.
+            errors.Invalid: If ``dsd`` is not a valid reference, no data
+                space is set, or the service returns a client error.
+            errors.InternalError: If the service returns a server error.
+            errors.Unavailable: If the service cannot be reached.
+        """
+        space = self._resolve_dataspace(dataspace)
+        urn = dsd if isinstance(dsd, str) else dsd.short_urn
+        try:
+            ref = parse_short_urn(urn)
+        except errors.Invalid as exc:
+            raise errors.Invalid(
+                "Invalid data structure reference",
+                "Expected a short URN like 'DataStructure=MD:DSD(1.0)'; "
+                f"got {urn!r}.",
+            ) from exc
+        # /cleanup/dsd takes a multipart form with the data space and the
+        # DSD in agency:id(version) form.
+        fields: dict[str, Any] = {
+            "dataspace": (None, space),
+            "dsd": (None, f"{ref.agency}:{ref.id}({ref.version})"),
+        }
+        if cleanup_msd_only:
+            fields["cleanupMsdOnly"] = (None, "true")
+        r = self._send("DELETE", f"{self._transfer}/cleanup/dsd", files=fields)
+        return _submission_from_import(r.text)
+
     def submit(
         self,
         structures: Union[MaintainableArtefact, Sequence[Any]],

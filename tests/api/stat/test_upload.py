@@ -499,6 +499,46 @@ def test_delete_structure_conflict_raises_invalid(respx_mock, uploader):
         )
 
 
+def test_cleanup_dsd_short_urn(respx_mock, uploader):
+    route = respx_mock.delete(f"{TRANSFER}/cleanup/dsd").mock(
+        return_value=httpx.Response(200, json={"success": True})
+    )
+    result = uploader.cleanup_dsd("DataStructure=MD:DSD_DUMMY(1.0)")
+    assert result.success is True
+    body = route.calls.last.request.content.decode("utf-8", "ignore")
+    assert 'name="dataspace"' in body
+    assert "design" in body
+    # dsd is sent in bare agency:id(version) form, no type prefix.
+    assert 'name="dsd"' in body
+    assert "MD:DSD_DUMMY(1.0)" in body
+    assert "cleanupMsdOnly" not in body
+
+
+def test_cleanup_dsd_object_and_msd_only(respx_mock, uploader):
+    route = respx_mock.delete(f"{TRANSFER}/cleanup/dsd").mock(
+        return_value=httpx.Response(200, json={"success": True})
+    )
+    dsd = DataStructureDefinition(
+        id="DSD_DUMMY",
+        agency="MD",
+        version="1.0",
+        name="x",
+        components=Components([]),
+    )
+    uploader.cleanup_dsd(dsd, dataspace="staging", cleanup_msd_only=True)
+    body = route.calls.last.request.content.decode("utf-8", "ignore")
+    assert 'name="dsd"' in body
+    assert "MD:DSD_DUMMY(1.0)" in body
+    assert 'name="dataspace"' in body
+    assert "staging" in body
+    assert 'name="cleanupMsdOnly"' in body
+
+
+def test_cleanup_dsd_invalid_reference(uploader):
+    with pytest.raises(Invalid, match="[Dd]ata structure reference"):
+        uploader.cleanup_dsd("not-a-urn")
+
+
 def test_delete_structure_not_found_raises(respx_mock, uploader):
     url = f"{NSI}/rest/dataflow/MD/DF_X/1.0"
     respx_mock.delete(url).mock(return_value=httpx.Response(404))

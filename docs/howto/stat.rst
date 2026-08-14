@@ -234,6 +234,10 @@ structures with :meth:`~pysdmx.api.stat.StatUploader.delete_structure`.
         "ConceptScheme=MD:CS_EXAMPLE(1.0)",
     ])
 
+    # If the DSD is re-created with changed component types, also clear
+    # the Transfer data-side objects (else the next import fails):
+    uploader.cleanup_dsd("DataStructure=MD:DSD_EXAMPLE(1.0)")
+
 ``delete_structure`` accepts maintainable artefacts or short-URN strings,
 and deletes them in the order given — pass dependents first. It is
 **fail-fast**: the first artefact the NSI rejects (e.g. a still-referenced
@@ -242,6 +246,17 @@ sequence, so an indeterminate prefix may already be deleted (re-run with
 the remainder). The returned list holds one ``StructureSubmissionResult``
 per artefact deleted **before** the failure — informational only; a
 failure is signalled by the raised exception, not by ``.success``.
+
+.. note::
+    Re-creating a DSD with **changed component types** (e.g. a measure's
+    data type) needs an extra step: the Transfer service keeps per-DSD
+    data-side objects that NSI deletion does not remove, so the next
+    import fails (*non-backward-compatible change …*) until they are
+    cleared. After deleting the DSD through the NSI, call
+    :meth:`~pysdmx.api.stat.StatUploader.cleanup_dsd` (the Transfer
+    ``DELETE {transfer}/cleanup/dsd`` method) as the final teardown step:
+    ``delete_data`` → constraint → dataflow → DSD (→ concept scheme) →
+    ``cleanup_dsd``.
 
 Endpoints
 ---------
