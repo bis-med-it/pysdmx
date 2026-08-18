@@ -542,6 +542,18 @@ def test_data_yields_observation_dicts(respx_mock, client):
     assert all(isinstance(r, dict) for r in rows)
 
 
+def test_dataflow_returns_flow(client, structs_mock):
+    obj = Dataflow(id="DF", agency="TEST", version="1.0", name="x")
+    assert client.dataflow(obj).id == "DF"
+    assert client.dataflow(_DF_URN).id == "DF"
+    assert client.dataflow("TEST:DF(1.0)").id == "DF"
+
+
+def test_dataflow_filters_unsupported(client):
+    with pytest.raises(Invalid, match="[Aa]vailability"):
+        client.dataflow("TEST:DF(1.0)", filters="FREQ='A'")
+
+
 # --- Async connector (AsyncStatConnector) ------------------------------------
 @pytest.fixture
 def aclient():

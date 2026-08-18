@@ -69,7 +69,12 @@ from pysdmx.model import (
 )
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.dataset import ActionType, Dataset
-from pysdmx.util import experimental, parse_short_urn
+from pysdmx.util import (
+    experimental,
+    parse_flow_urn,
+    parse_short_urn,
+    parse_urn,
+)
 from pysdmx.util._net_utils import BearerAuth, map_httpx_errors
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -579,6 +584,57 @@ class StatConnector(RegistryClient):
         reader = csv.DictReader(StringIO(raw.decode("utf-8")))
         for row in reader:
             yield row
+
+    def dataflow(
+        self,
+        dataflow: Union[str, MaintainableIdentification],
+        filters: Optional[Union[BasicFilter, str]] = None,
+    ) -> Dataflow:
+        """Get a dataflow and its structure (SDMX data-discovery profile).
+
+        Implements the ``dataflow`` method of the SDMX "data discovery
+        and retrieval" profile (:class:`~pysdmx.api.dc.BasicConnector`),
+        returning the dataflow together with its data structure.
+
+        Args:
+            dataflow: The dataflow -- a short or full URN, the
+                ``agency:id(version)`` shorthand, or any object
+                implementing ``MaintainableIdentification`` (e.g. a
+                ``Dataflow`` or ``DataflowRef``).
+            filters: Not supported on .Stat. .Stat does not serve the
+                SDMX-JSON availability the profile relies on (it returns
+                HTTP 500, while SDMX-ML returns a raw content
+                constraint), so passing filters raises
+                :class:`~pysdmx.errors.Invalid`; use :meth:`data` to
+                query filtered data.
+
+        Returns:
+            The dataflow with its data structure.
+        """
+        if filters is not None:
+            raise errors.Invalid(
+                "Availability filtering not supported",
+                "Scoping a dataflow by availability filters is not "
+                "supported on .Stat. Use data(dataflow, filters) to "
+                "query filtered data instead.",
+            )
+        if isinstance(dataflow, str):
+            try:
+                ref: Any = parse_urn(dataflow)
+            except errors.Invalid:
+                ref = parse_flow_urn(dataflow)
+        else:
+            ref = dataflow
+        agency = getattr(ref.agency, "id", ref.agency)
+        query = StructureQuery(
+            StructureType.DATAFLOW,
+            agency,
+            ref.id,
+            ref.version,
+            detail=StructureDetail.FULL,
+            references=StructureReference.DESCENDANTS,
+        )
+        return self._one(query, Dataflow)
 
 
 @experimental
