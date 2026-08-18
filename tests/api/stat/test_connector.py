@@ -9,6 +9,8 @@ from pysdmx.api.stat import (
     AsyncStatConnector,
     StatConnector,
     StatEndpoints,
+    _df_search_match,
+    _df_sort_key,
 )
 from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
 from pysdmx.io import get_datasets, read_sdmx
@@ -497,6 +499,34 @@ def test_fetch_data_connection_error(respx_mock, client):
     )
     with pytest.raises(Unavailable):
         client.fetch_data(*OECD_FLOW)
+
+
+# --- SDMX data-discovery profile (BasicConnector) ----------------------------
+def test_dataflows_lists_and_searches(client, structs_mock):
+    flows = client.dataflows()
+    assert flows
+    assert all(isinstance(f, Dataflow) for f in flows)
+    assert client.dataflows(search_term=flows[0].id)
+    assert client.dataflows(search_term="zzz-no-such-flow") == ()
+    # a whitespace-only term is treated as no filter
+    assert client.dataflows(search_term="   ") == flows
+
+
+def test_df_search_match_and_sort():
+    df = Dataflow(
+        id="DF1",
+        agency="A",
+        version="1.0",
+        name="Prices",
+        description="CPI data",
+    )
+    assert _df_search_match(df, "df1")
+    assert _df_search_match(df, "price")
+    assert _df_search_match(df, "cpi")
+    assert not _df_search_match(df, "zzz")
+    bare = Dataflow(id="DF2", agency="A", version="1.0", name="x")
+    assert not _df_search_match(bare, "zzz")
+    assert _df_sort_key(df) == ("A", "DF1", "1.0")
 
 
 # --- Async connector (AsyncStatConnector) ------------------------------------
