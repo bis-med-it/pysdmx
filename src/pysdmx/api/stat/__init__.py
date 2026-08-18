@@ -970,6 +970,14 @@ class StatUploader:
     :class:`pysdmx.api.dc.rest.SdmxConnector`): submission needs
     authenticated ``POST`` requests, whereas the connector's
     ``RestService`` only performs anonymous ``GET`` requests.
+
+    It is the .Stat counterpart of the FMR's
+    ``RegistryMaintenanceClient`` but is **not interchangeable** with it.
+    That client targets the FMR and takes the SDMX ``StructureAction`` as
+    a request parameter, returning ``None`` (raising on failure); this
+    one carries the action inside the file, submits data asynchronously
+    through the Transfer service, and returns result objects. Roughly,
+    :meth:`submit_structure` corresponds to ``put_structures``.
     """
 
     def __init__(
