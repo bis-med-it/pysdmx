@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
+import csv
 import json
 import re
 import time
 from enum import Enum
-from io import BytesIO
+from io import BytesIO, StringIO
 from typing import (
     TYPE_CHECKING,
     Any,
+    Generator,
     Literal,
     Mapping,
     NoReturn,
@@ -22,6 +24,7 @@ import httpx
 from msgspec import Struct, structs
 
 from pysdmx import errors
+from pysdmx.api.dc.util import prepare_basic_data_query
 from pysdmx.api.fmr import (
     AsyncRegistryClient,
     DataflowDetails,
@@ -70,6 +73,8 @@ from pysdmx.util import experimental, parse_short_urn
 from pysdmx.util._net_utils import BearerAuth, map_httpx_errors
 
 if TYPE_CHECKING:  # pragma: no cover
+    from pysdmx.api.dc import MaintainableIdentification
+    from pysdmx.api.dc.query import BasicFilter
     from pysdmx.io.pd import PandasDataset
     from pysdmx.model import (
         Agency,
@@ -546,6 +551,34 @@ class StatConnector(RegistryClient):
             if term:
                 flows = [f for f in flows if _df_search_match(f, term)]
         return tuple(sorted(flows, key=_df_sort_key))
+
+    def data(
+        self,
+        dataflow: Union[str, MaintainableIdentification],
+        filters: Optional[Union[BasicFilter, str]] = None,
+    ) -> Generator[dict[str, Any], None, None]:
+        """Get data for a dataflow (SDMX data-discovery profile).
+
+        Implements the ``data`` method of the SDMX "data discovery and
+        retrieval" profile (:class:`~pysdmx.api.dc.BasicConnector`),
+        yielding the observations as dictionaries.
+
+        Args:
+            dataflow: The dataflow to query -- a short or full URN, or any
+                object implementing ``MaintainableIdentification`` (e.g. a
+                ``Dataflow`` or ``DataflowRef``).
+            filters: The query filters, if any -- a SQL-like string
+                (``"FREQ='A' AND REF_AREA='UY'"``), a Python expression, or
+                a ``pysdmx.api.dc.query`` filter.
+
+        Yields:
+            One dict per observation (the SDMX-CSV rows).
+        """
+        query = prepare_basic_data_query(dataflow, filters)
+        raw = self._svc.data(query)
+        reader = csv.DictReader(StringIO(raw.decode("utf-8")))
+        for row in reader:
+            yield row
 
 
 @experimental
