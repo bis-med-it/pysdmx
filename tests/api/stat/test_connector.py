@@ -4,6 +4,7 @@ from pathlib import Path
 import httpx
 import pytest
 
+from pysdmx.api.dc import BasicConnector
 from pysdmx.api.qb import ApiVersion, DataFormat, StructureFormat
 from pysdmx.api.stat import (
     AsyncStatConnector,
@@ -552,6 +553,10 @@ def test_dataflow_returns_flow(client, structs_mock):
 def test_dataflow_filters_unsupported(client):
     with pytest.raises(Invalid, match="[Aa]vailability"):
         client.dataflow("TEST:DF(1.0)", filters="FREQ='A'")
+
+
+def test_is_a_basic_connector(client):
+    assert isinstance(client, BasicConnector)
 
 
 # --- Async connector (AsyncStatConnector) ------------------------------------
