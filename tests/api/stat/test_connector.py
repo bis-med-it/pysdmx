@@ -529,6 +529,19 @@ def test_df_search_match_and_sort():
     assert _df_sort_key(df) == ("A", "DF1", "1.0")
 
 
+def test_data_yields_observation_dicts(respx_mock, client):
+    _mock(respx_mock, DATA_PREFIX, OECD_DATA.read_bytes())
+    df = Dataflow(
+        id="DSD_G20_PRICES@DF_G20_PRICES",
+        agency="OECD.SDD.TPS",
+        version="1.0",
+        name="x",
+    )
+    rows = list(client.data(df))
+    assert rows
+    assert all(isinstance(r, dict) for r in rows)
+
+
 # --- Async connector (AsyncStatConnector) ------------------------------------
 @pytest.fixture
 def aclient():
