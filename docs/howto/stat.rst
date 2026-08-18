@@ -81,6 +81,29 @@ The ``get_*`` methods return the same model objects as
 dimension; defaults to the whole dataflow). .Stat services key on one
 value per dimension; for multiple values issue separate requests.
 
+Data discovery profile
+----------------------
+
+``StatConnector`` also implements the SDMX **data discovery and
+retrieval** profile (:class:`pysdmx.api.dc.BasicConnector`), so it works
+wherever that profile is expected (see the
+:doc:`data discovery guide <dc>`):
+
+.. code-block:: python
+
+    ref = f"{agency}:{flow_id}({version})"   # or a full/short SDMX URN
+
+    conn.dataflows("prices")                 # list / search dataflows
+    df = conn.dataflow(ref)                  # a dataflow + its structure
+    rows = conn.data(ref, "FREQ='A' AND REF_AREA='CHN'")
+
+``dataflows`` searches id/name/description; ``data`` accepts the same
+SQL-like / Python-expression / ``pysdmx.api.dc.query`` filters as the
+other connectors and yields one dict per observation.
+Availability-scoped ``dataflow(ref, filters=...)`` is not supported on
+.Stat (it raises :class:`~pysdmx.errors.Invalid`); use ``data`` to query
+filtered subsets.
+
 Asynchronous access
 -------------------
 

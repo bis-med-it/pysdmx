@@ -24,6 +24,7 @@ import httpx
 from msgspec import Struct, structs
 
 from pysdmx import errors
+from pysdmx.api.dc import BasicConnector
 from pysdmx.api.dc.util import prepare_basic_data_query
 from pysdmx.api.fmr import (
     AsyncRegistryClient,
@@ -232,7 +233,7 @@ def _df_sort_key(df: Dataflow) -> tuple[str, str, str]:
 
 
 @experimental
-class StatConnector(RegistryClient):
+class StatConnector(RegistryClient, BasicConnector):
     """Read connector for .Stat Suite SDMX-REST v2 services.
 
     Inherits :class:`~pysdmx.api.fmr.RegistryClient`, so its ``get_*``
