@@ -209,6 +209,18 @@ class StatEndpoints(str, Enum):
     BOTSWANA_LMO = "https://sdmx.lmis.hrdc.org.bw/rest/v2"
 
 
+def _df_search_match(df: Dataflow, term: str) -> bool:
+    """Return True if the term appears in the dataflow id/name/desc."""
+    fields = (df.id, df.name, df.description)
+    return any(term in f.lower() for f in fields if f)
+
+
+def _df_sort_key(df: Dataflow) -> tuple[str, str, str]:
+    """Sort key for a dataflow: (agency, id, version)."""
+    agency = str(getattr(df.agency, "id", df.agency))
+    return (agency, df.id, df.version)
+
+
 @experimental
 class StatConnector(RegistryClient):
     """Read connector for .Stat Suite SDMX-REST v2 services.
@@ -511,6 +523,29 @@ class StatConnector(RegistryClient):
             BytesIO(data), BytesIO(structure), validate=False
         )
         return datasets[0]
+
+    def dataflows(
+        self, search_term: Optional[str] = None
+    ) -> tuple[Dataflow, ...]:
+        """List available dataflows (SDMX data-discovery profile).
+
+        Implements the ``dataflows`` method of the SDMX "data discovery
+        and retrieval" profile (:class:`~pysdmx.api.dc.BasicConnector`).
+
+        Args:
+            search_term: If set, only dataflows whose id, name or
+                description contains the term (case-insensitive) are
+                returned.
+
+        Returns:
+            The matching dataflows, sorted by agency, id and version.
+        """
+        flows = list(self.get_dataflows())
+        if search_term:
+            term = search_term.strip().lower()
+            if term:
+                flows = [f for f in flows if _df_search_match(f, term)]
+        return tuple(sorted(flows, key=_df_sort_key))
 
 
 @experimental
