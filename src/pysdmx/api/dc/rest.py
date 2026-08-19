@@ -28,7 +28,6 @@ from pysdmx.api.qb import (
     StructureReference,
     StructureType,
 )
-from pysdmx.io import read_sdmx
 from pysdmx.io.json.sdmxjson2.messages import JsonDataflowsMessage
 from pysdmx.model import Agency, Dataflow, decoders
 from pysdmx.util import experimental, parse_flow_urn, parse_urn
@@ -43,12 +42,9 @@ class SdmxConnector(BasicConnector):
     This connector is an implementation of the SDMX "data discovery and
     data retrieval" API for SDMX-REST v2 web services.
 
-    Structural metadata and data are parsed with
-    :func:`pysdmx.io.read_sdmx`, which auto-detects the format, so the
-    connector works with any SDMX structure/data format pysdmx can read.
-    The formats requested from the service default to SDMX-JSON 2.0 for
-    structures and SDMX-CSV 2.0 for data; set ``structure_format`` /
-    ``data_format`` for a service that serves, e.g., SDMX-ML.
+    In addition to being compliant with the SDMX-REST v2 API, the targeted
+    service must be able to return structural metadata in SDMX-JSON v2.0.0 and
+    data in SDMX-CSV v2.0.0.
     """
 
     def __init__(
@@ -56,26 +52,13 @@ class SdmxConnector(BasicConnector):
         api_endpoint: str,
         pem: Optional[str] = None,
         timeout: Optional[float] = 5.0,
-        structure_format: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
-        data_format: DataFormat = DataFormat.SDMX_CSV_2_0_0,
     ):
-        """Instantiate a data discovery and retrieval SDMX-REST connector.
-
-        Args:
-            api_endpoint: The SDMX-REST v2 base URL.
-            pem: Optional PEM file with trusted certificate authorities.
-            timeout: Maximum number of seconds to wait per request.
-            structure_format: The structural-metadata format to request.
-                Defaults to SDMX-JSON 2.0; set an SDMX-ML format for a
-                service that does not serve SDMX-JSON (e.g. .Stat/OECD).
-            data_format: The data format to request. Defaults to
-                SDMX-CSV 2.0.
-        """
+        """Instantiate a data discovery and retrieval SDMX-REST connector."""
         self.__client = RestService(
             api_endpoint,
             ApiVersion.V2_0_0,
-            data_format=data_format,
-            structure_format=structure_format,
+            data_format=DataFormat.SDMX_CSV_2_0_0,
+            structure_format=StructureFormat.SDMX_JSON_2_0_0,
             avail_format=AvailabilityFormat.SDMX_JSON_2_0_0,
             pem=pem,
             timeout=timeout,
@@ -120,12 +103,9 @@ class SdmxConnector(BasicConnector):
             self.__raise_no_dataflows_error(url)
 
         try:
-            msg = read_sdmx(io.BytesIO(out), validate=False)
-        except (errors.Invalid, errors.NotImplemented) as e:
+            flows = _FLOWS_DEC.decode(out).to_model()
+        except msgspec.MsgspecError as e:
             self.__raise_deserialization_error(e, out)
-        flows = [s for s in (msg.structures or []) if isinstance(s, Dataflow)]
-        if not flows:
-            self.__raise_no_flows_in_response_error(out)
 
         if search_term:
             st = search_term.strip().lower()
@@ -272,7 +252,7 @@ class SdmxConnector(BasicConnector):
             (
                 "The payload could not be deserialized. This likely "
                 "indicates that the service did not respond with a "
-                "valid SDMX message."
+                "valid SDMX-JSON v2.0.0 response."
             ),
             {
                 "original_exception": str(error),
@@ -280,20 +260,6 @@ class SdmxConnector(BasicConnector):
                 "endpoint": self.__client._api_endpoint,
             },
         ) from error
-
-    def __raise_no_flows_in_response_error(self, msg: bytes) -> NoReturn:
-        raise errors.InternalError(
-            "Unexpected response",
-            (
-                "The service returned a 200 response with no dataflows. "
-                "It likely answered the dataflows query with a different "
-                "or empty message."
-            ),
-            {
-                "service_response": msg.decode("utf-8", errors="replace"),
-                "endpoint": self.__client._api_endpoint,
-            },
-        )
 
     def __raise_no_dataflows_error(self, url: str) -> NoReturn:
         raise errors.NotFound(

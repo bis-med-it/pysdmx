@@ -121,15 +121,6 @@ def test_flows_deser_issue(
         rest_client.dataflows()
 
 
-def test_flows_unparseable_response(respx_mock, rest_client, query_flows):
-    respx_mock.get(query_flows).mock(
-        return_value=httpx.Response(200, content=b"not an sdmx message")
-    )
-
-    with pytest.raises(InternalError):
-        rest_client.dataflows()
-
-
 def test_availability(
     respx_mock, rest_client, query_availability, json_availability
 ):
