@@ -11,6 +11,7 @@ from io import BytesIO, StringIO
 from typing import (
     TYPE_CHECKING,
     Any,
+    AsyncGenerator,
     Generator,
     Literal,
     Mapping,
@@ -944,6 +945,97 @@ class AsyncStatConnector(AsyncRegistryClient):
             BytesIO(data), BytesIO(structure), validate=False
         )
         return datasets[0]
+
+    async def dataflows(
+        self, search_term: Optional[str] = None
+    ) -> tuple[Dataflow, ...]:
+        """List available dataflows (SDMX data-discovery profile).
+
+        Async counterpart of :meth:`StatConnector.dataflows`.
+
+        Args:
+            search_term: If set, only dataflows whose id, name or
+                description contains the term (case-insensitive) are
+                returned.
+
+        Returns:
+            The matching dataflows, sorted by agency, id and version.
+        """
+        flows = list(await self.get_dataflows())
+        if search_term:
+            term = search_term.strip().lower()
+            if term:
+                flows = [f for f in flows if _df_search_match(f, term)]
+        return tuple(sorted(flows, key=_df_sort_key))
+
+    async def data(
+        self,
+        dataflow: Union[str, MaintainableIdentification],
+        filters: Optional[Union[BasicFilter, str]] = None,
+    ) -> AsyncGenerator[dict[str, Any], None]:
+        """Get data for a dataflow (SDMX data-discovery profile).
+
+        Async counterpart of :meth:`StatConnector.data`, yielding the
+        observations as dictionaries.
+
+        Args:
+            dataflow: The dataflow to query -- a short or full URN, or any
+                object implementing ``MaintainableIdentification``.
+            filters: The query filters, if any (see
+                :meth:`StatConnector.data`).
+
+        Yields:
+            One dict per observation (the SDMX-CSV rows).
+        """
+        query = prepare_basic_data_query(dataflow, filters)
+        raw = await self._svc.data(query)
+        reader = csv.DictReader(StringIO(raw.decode("utf-8")))
+        for row in reader:
+            yield row
+
+    async def dataflow(
+        self,
+        dataflow: Union[str, MaintainableIdentification],
+        filters: Optional[Union[BasicFilter, str]] = None,
+    ) -> Dataflow:
+        """Get a dataflow and its structure (SDMX data-discovery profile).
+
+        Async counterpart of :meth:`StatConnector.dataflow`.
+
+        Args:
+            dataflow: The dataflow -- a short/full URN, the
+                ``agency:id(version)`` shorthand, or a
+                ``MaintainableIdentification``.
+            filters: Not supported on .Stat (raises
+                :class:`~pysdmx.errors.Invalid`); use :meth:`data`.
+
+        Returns:
+            The dataflow with its data structure.
+        """
+        if filters is not None:
+            raise errors.Invalid(
+                "Availability filtering not supported",
+                "Scoping a dataflow by availability filters is not "
+                "supported on .Stat. Use data(dataflow, filters) to "
+                "query filtered data instead.",
+            )
+        if isinstance(dataflow, str):
+            try:
+                ref: Any = parse_urn(dataflow)
+            except errors.Invalid:
+                ref = parse_flow_urn(dataflow)
+        else:
+            ref = dataflow
+        agency = getattr(ref.agency, "id", ref.agency)
+        query = StructureQuery(
+            StructureType.DATAFLOW,
+            agency,
+            ref.id,
+            ref.version,
+            detail=StructureDetail.FULL,
+            references=StructureReference.DESCENDANTS,
+        )
+        return await self._one(query, Dataflow)
 
 
 @experimental

@@ -699,3 +699,41 @@ async def test_async_fetch_data_connection_error(respx_mock, aclient):
     )
     with pytest.raises(Unavailable):
         await aclient.fetch_data(*OECD_FLOW)
+
+
+@pytest.mark.asyncio
+async def test_async_dataflows(aclient, structs_mock):
+    flows = await aclient.dataflows()
+    assert flows
+    assert all(isinstance(f, Dataflow) for f in flows)
+    assert await aclient.dataflows(search_term=flows[0].id)
+    assert await aclient.dataflows(search_term="zzz-no-such-flow") == ()
+    assert await aclient.dataflows(search_term="   ") == flows
+
+
+@pytest.mark.asyncio
+async def test_async_data(respx_mock, aclient):
+    _mock(respx_mock, DATA_PREFIX, OECD_DATA.read_bytes())
+    df = Dataflow(
+        id="DSD_G20_PRICES@DF_G20_PRICES",
+        agency="OECD.SDD.TPS",
+        version="1.0",
+        name="x",
+    )
+    rows = [r async for r in aclient.data(df)]
+    assert rows
+    assert all(isinstance(r, dict) for r in rows)
+
+
+@pytest.mark.asyncio
+async def test_async_dataflow(aclient, structs_mock):
+    obj = Dataflow(id="DF", agency="TEST", version="1.0", name="x")
+    assert (await aclient.dataflow(obj)).id == "DF"
+    assert (await aclient.dataflow(_DF_URN)).id == "DF"
+    assert (await aclient.dataflow("TEST:DF(1.0)")).id == "DF"
+
+
+@pytest.mark.asyncio
+async def test_async_dataflow_filters_unsupported(aclient):
+    with pytest.raises(Invalid, match="[Aa]vailability"):
+        await aclient.dataflow("TEST:DF(1.0)", filters="FREQ='A'")
