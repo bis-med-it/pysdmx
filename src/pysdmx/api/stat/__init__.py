@@ -26,6 +26,12 @@ from msgspec import Struct, structs
 
 from pysdmx import errors
 from pysdmx.api.dc import BasicConnector
+from pysdmx.api.dc.query import (
+    LogicalOperator,
+    MultiFilter,
+    Operator,
+    TextFilter,
+)
 from pysdmx.api.dc.util import prepare_basic_data_query
 from pysdmx.api.fmr import (
     AsyncRegistryClient,
@@ -231,6 +237,68 @@ def _df_sort_key(df: Dataflow) -> tuple[str, str, str]:
     """Sort key for a dataflow: (agency, id, version)."""
     agency = str(getattr(df.agency, "id", df.agency))
     return (agency, df.id, df.version)
+
+
+def _equality_mapping(components: Any) -> dict[str, str]:
+    """Map an AND-of-equality filter to ``{dimension_id: value}``.
+
+    .Stat's SDMX-REST honours only the positional series key, which can
+    express one value per dimension, equality-only, AND-combined. Anything
+    the key cannot represent (a non-``=`` operator, an ``OR``, or more than
+    one value for a dimension) raises :class:`~pysdmx.errors.Invalid` rather
+    than silently returning unfiltered data.
+    """
+    filters = (
+        components.filters
+        if isinstance(components, MultiFilter)
+        else [components]
+    )
+    if (
+        isinstance(components, MultiFilter)
+        and components.operator != LogicalOperator.AND
+    ):
+        raise errors.Invalid(
+            "Unsupported filter for .Stat",
+            "Only AND-combined equality filters can be mapped to a .Stat "
+            "series key; 'OR' is not supported.",
+        )
+    mapping: dict[str, str] = {}
+    for f in filters:
+        if not isinstance(f, TextFilter) or f.operator != Operator.EQUALS:
+            raise errors.Invalid(
+                "Unsupported filter for .Stat",
+                "Only equality (=) filters can be mapped to a .Stat series "
+                "key. Use data() without filters and subset the result, or "
+                "pass a raw positional key via a StatConnector query.",
+            )
+        if f.field in mapping:
+            raise errors.Invalid(
+                "Unsupported filter for .Stat",
+                f"More than one value was supplied for '{f.field}'. A .Stat "
+                "series key accepts a single value per dimension.",
+            )
+        mapping[f.field] = str(f.value)
+    return mapping
+
+
+def _key_from_mapping(
+    mapping: dict[str, str], key_dimensions: Sequence[Any]
+) -> str:
+    """Build a .Stat positional series key from a dimension→value mapping.
+
+    ``key_dimensions`` are the dataflow's dimensions in order, excluding the
+    time dimension. Unfiltered dimensions become ``*`` wildcards.
+    """
+    known = {d.id for d in key_dimensions}
+    unknown = sorted(set(mapping) - known)
+    if unknown:
+        raise errors.Invalid(
+            "Unsupported filter for .Stat",
+            f"The filter references {unknown}, which are not key dimensions "
+            "of the dataflow (the time dimension and measures/attributes "
+            "cannot be part of a series key).",
+        )
+    return ".".join(mapping.get(d.id, "*") for d in key_dimensions)
 
 
 @experimental
@@ -576,16 +644,65 @@ class StatConnector(RegistryClient, BasicConnector):
                 ``Dataflow`` or ``DataflowRef``).
             filters: The query filters, if any -- a SQL-like string
                 (``"FREQ='A' AND REF_AREA='UY'"``), a Python expression, or
-                a ``pysdmx.api.dc.query`` filter.
+                a ``pysdmx.api.dc.query`` filter. .Stat honours only its
+                positional series key, so filters must be **equality (=),
+                one value per dimension, AND-combined**; other shapes raise
+                :class:`~pysdmx.errors.Invalid`. When filters are supplied,
+                the dataflow's structure is fetched to build the key.
 
         Yields:
             One dict per observation (the SDMX-CSV rows).
         """
         query = prepare_basic_data_query(dataflow, filters)
+        if query.components is not None:
+            # .Stat ignores c[] component filters; translate equality
+            # filters into the positional series key it does honour. The
+            # query is built from a single dataflow, so the ids are scalars.
+            agency = str(query.agency_id)
+            resource = str(query.resource_id)
+            version = str(query.version)
+            mapping = _equality_mapping(query.components)
+            dims = self._key_dimensions(agency, resource, version)
+            query = DataQuery(
+                DataContext.DATAFLOW,
+                agency,
+                resource,
+                version,
+                key=_key_from_mapping(mapping, dims),
+                obs_dimension="AllDimensions",
+            )
         raw = self._svc.data(query)
         reader = csv.DictReader(StringIO(raw.decode("utf-8")))
         for row in reader:
             yield row
+
+    def _key_dimensions(
+        self, agency: str, id: str, version: str
+    ) -> Sequence[Any]:
+        """Return the dataflow's key dimensions (excluding time), in order."""
+        query = StructureQuery(
+            StructureType.DATAFLOW,
+            agency,
+            id,
+            version,
+            detail=StructureDetail.FULL,
+            references=StructureReference.DESCENDANTS,
+        )
+        dsd = next(
+            (
+                a
+                for a in self._structures(query)
+                if isinstance(a, DataStructureDefinition)
+            ),
+            None,
+        )
+        if dsd is None:
+            raise errors.NotFound(
+                "Data structure not found",
+                "No data structure was returned for the dataflow, so its "
+                "series key could not be determined.",
+            )
+        return [d for d in dsd.components.dimensions if d.id != "TIME_PERIOD"]
 
     def dataflow(
         self,
@@ -981,17 +1098,63 @@ class AsyncStatConnector(AsyncRegistryClient):
         Args:
             dataflow: The dataflow to query -- a short or full URN, or any
                 object implementing ``MaintainableIdentification``.
-            filters: The query filters, if any (see
-                :meth:`StatConnector.data`).
+            filters: The query filters, if any -- equality (=), one value
+                per dimension, AND-combined (see :meth:`StatConnector.data`);
+                other shapes raise :class:`~pysdmx.errors.Invalid`.
 
         Yields:
             One dict per observation (the SDMX-CSV rows).
         """
         query = prepare_basic_data_query(dataflow, filters)
+        if query.components is not None:
+            # .Stat ignores c[] component filters; translate equality
+            # filters into the positional series key it does honour. The
+            # query is built from a single dataflow, so the ids are scalars.
+            agency = str(query.agency_id)
+            resource = str(query.resource_id)
+            version = str(query.version)
+            mapping = _equality_mapping(query.components)
+            dims = await self._key_dimensions(agency, resource, version)
+            query = DataQuery(
+                DataContext.DATAFLOW,
+                agency,
+                resource,
+                version,
+                key=_key_from_mapping(mapping, dims),
+                obs_dimension="AllDimensions",
+            )
         raw = await self._svc.data(query)
         reader = csv.DictReader(StringIO(raw.decode("utf-8")))
         for row in reader:
             yield row
+
+    async def _key_dimensions(
+        self, agency: str, id: str, version: str
+    ) -> Sequence[Any]:
+        """Return the dataflow's key dimensions (excluding time), in order."""
+        query = StructureQuery(
+            StructureType.DATAFLOW,
+            agency,
+            id,
+            version,
+            detail=StructureDetail.FULL,
+            references=StructureReference.DESCENDANTS,
+        )
+        dsd = next(
+            (
+                a
+                for a in await self._structures(query)
+                if isinstance(a, DataStructureDefinition)
+            ),
+            None,
+        )
+        if dsd is None:
+            raise errors.NotFound(
+                "Data structure not found",
+                "No data structure was returned for the dataflow, so its "
+                "series key could not be determined.",
+            )
+        return [d for d in dsd.components.dimensions if d.id != "TIME_PERIOD"]
 
     async def dataflow(
         self,

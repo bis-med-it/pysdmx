@@ -5,6 +5,12 @@ import httpx
 import pytest
 
 from pysdmx.api.dc import BasicConnector
+from pysdmx.api.dc.query import (
+    LogicalOperator,
+    MultiFilter,
+    Operator,
+    TextFilter,
+)
 from pysdmx.api.qb import ApiVersion, DataFormat, StructureFormat
 from pysdmx.api.stat import (
     AsyncStatConnector,
@@ -543,6 +549,65 @@ def test_data_yields_observation_dicts(respx_mock, client):
     assert all(isinstance(r, dict) for r in rows)
 
 
+@pytest.fixture
+def g20_flow():
+    return Dataflow(
+        id="DSD_G20_PRICES@DF_G20_PRICES",
+        agency="OECD.SDD.TPS",
+        version="1.0",
+        name="x",
+    )
+
+
+def test_data_filter_builds_series_key(respx_mock, client, g20_flow):
+    # .Stat ignores c[] filters -> equality filters become a positional key.
+    _mock(respx_mock, STRUCT_PREFIX, OECD_STRUCTURE.read_bytes())
+    route = _mock(respx_mock, DATA_PREFIX, OECD_DATA.read_bytes())
+
+    rows = list(client.data(g20_flow, "REF_AREA = 'AUS' AND FREQ = 'A'"))
+
+    assert rows
+    url = str(route.calls.last.request.url)
+    assert "/1.0/AUS.A" in url  # positional key (REF_AREA=AUS, FREQ=A, then *)
+    assert "c[" not in url  # not the (ignored) component-filter syntax
+    assert "c%5B" not in url
+
+
+def test_data_filter_non_equality_raises(client, g20_flow):
+    flt = TextFilter("FREQ", Operator.NOT_EQUALS, "A")
+    with pytest.raises(Invalid, match="[Ee]quality"):
+        list(client.data(g20_flow, flt))
+
+
+def test_data_filter_or_raises(client, g20_flow):
+    flt = MultiFilter(
+        [
+            TextFilter("REF_AREA", Operator.EQUALS, "AUS"),
+            TextFilter("FREQ", Operator.EQUALS, "A"),
+        ],
+        operator=LogicalOperator.OR,
+    )
+    with pytest.raises(Invalid, match="OR"):
+        list(client.data(g20_flow, flt))
+
+
+def test_data_filter_duplicate_dimension_raises(client, g20_flow):
+    with pytest.raises(Invalid, match="single value"):
+        list(client.data(g20_flow, "FREQ = 'A' AND FREQ = 'M'"))
+
+
+def test_data_filter_unknown_dimension_raises(respx_mock, client, g20_flow):
+    _mock(respx_mock, STRUCT_PREFIX, OECD_STRUCTURE.read_bytes())
+    with pytest.raises(Invalid, match="not key dimensions"):
+        list(client.data(g20_flow, "NOT_A_DIM = 'x'"))
+
+
+def test_key_dimensions_no_dsd_raises(client, mocker):
+    mocker.patch.object(client, "_structures", return_value=[])
+    with pytest.raises(NotFound):
+        client._key_dimensions("OECD.SDD.TPS", "DF", "1.0")
+
+
 def test_dataflow_returns_flow(client, structs_mock):
     obj = Dataflow(id="DF", agency="TEST", version="1.0", name="x")
     assert client.dataflow(obj).id == "DF"
@@ -678,6 +743,33 @@ async def test_async_fetch_dataset(respx_mock, aclient):
     ds = await aclient.fetch_dataset(*OECD_FLOW)
     assert isinstance(ds, PandasDataset)
     assert isinstance(ds.structure, Schema)
+
+
+@pytest.mark.asyncio
+async def test_async_data_filter_builds_series_key(
+    respx_mock, aclient, g20_flow
+):
+    _mock(respx_mock, STRUCT_PREFIX, OECD_STRUCTURE.read_bytes())
+    route = _mock(respx_mock, DATA_PREFIX, OECD_DATA.read_bytes())
+
+    rows = [
+        r
+        async for r in aclient.data(
+            g20_flow, "REF_AREA = 'AUS' AND FREQ = 'A'"
+        )
+    ]
+
+    assert rows
+    assert "/1.0/AUS.A" in str(route.calls.last.request.url)
+
+
+@pytest.mark.asyncio
+async def test_async_key_dimensions_no_dsd_raises(aclient, mocker):
+    mocker.patch.object(
+        aclient, "_structures", new=mocker.AsyncMock(return_value=[])
+    )
+    with pytest.raises(NotFound):
+        await aclient._key_dimensions("OECD.SDD.TPS", "DF", "1.0")
 
 
 @pytest.mark.parametrize(("status", "error"), _ERROR_CASES)
