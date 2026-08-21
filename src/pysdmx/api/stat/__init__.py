@@ -35,9 +35,7 @@ from pysdmx.api.fmr import (
 from pysdmx.api.qb import (
     ApiVersion,
     AsyncRestService,
-    DataContext,
     DataFormat,
-    DataQuery,
     RestService,
     SchemaContext,
     StructureDetail,
@@ -46,7 +44,7 @@ from pysdmx.api.qb import (
     StructureReference,
     StructureType,
 )
-from pysdmx.io import get_datasets, read_sdmx
+from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.writer import write_sdmx
 from pysdmx.model import (
@@ -82,7 +80,6 @@ from pysdmx.util._net_utils import BearerAuth, map_httpx_errors
 if TYPE_CHECKING:  # pragma: no cover
     from pysdmx.api.dc import MaintainableIdentification
     from pysdmx.api.dc.query import BasicFilter
-    from pysdmx.io.pd import PandasDataset
     from pysdmx.model import (
         Agency,
         DataflowInfo,
@@ -243,9 +240,11 @@ class StatConnector(RegistryClient, BasicConnector):
     client's JSON deserializers do not apply). Structure types or
     endpoints .Stat does not serve raise :class:`~pysdmx.errors.Invalid`.
 
-    Adds .Stat-specific data retrieval, which the FMR client does not
-    offer: :meth:`fetch_data` (raw SDMX-CSV) and :meth:`fetch_dataset`
-    (a typed ``PandasDataset``). Reads are anonymous.
+    Adds the SDMX data-discovery-and-retrieval profile
+    (:class:`~pysdmx.api.dc.BasicConnector`) that the FMR client does not
+    offer -- :meth:`dataflows`, :meth:`dataflow` and :meth:`data` -- with
+    the same signatures as the generic ``SdmxConnector``. Reads are
+    anonymous.
 
     Obtain the ``agency``, ``id`` and ``version`` of a dataflow from the
     OECD Data Explorer (https://data-explorer.oecd.org) via its
@@ -465,77 +464,6 @@ class StatConnector(RegistryClient, BasicConnector):
         query = self._vtl_ts_q(agency, id, version)
         return self._one(query, TransformationScheme)
 
-    def fetch_data(
-        self, agency: str, id: str, version: str, key: str = "*"
-    ) -> bytes:
-        """Download the SDMX-CSV data for a dataflow.
-
-        Args:
-            agency: The agency maintaining the dataflow.
-            id: The dataflow ID.
-            version: The dataflow version.
-            key: A positional series key (dimensions in data-structure
-                order, ``.``-separated; ``*`` wildcards a dimension).
-                Defaults to ``"*"`` (the whole dataflow).
-
-        Returns:
-            The raw SDMX-CSV data message.
-
-        Raises:
-            errors.NotFound: If no data is found.
-            errors.Invalid: If the service returns a client error.
-            errors.InternalError: If the service returns a server error.
-            errors.Unavailable: If the service cannot be reached.
-        """
-        query = DataQuery(
-            DataContext.DATAFLOW,
-            agency,
-            id,
-            version,
-            key=key,
-            obs_dimension="AllDimensions",
-        )
-        return self._svc.data(query)
-
-    def fetch_dataset(
-        self, agency: str, id: str, version: str, key: str = "*"
-    ) -> "PandasDataset":
-        """Get data for a dataflow as a typed Pandas dataset.
-
-        Downloads the dataflow's structure (with descendants) and its
-        data, then combines them with pysdmx's native
-        :func:`~pysdmx.io.get_datasets`, which attaches the schema.
-
-        Args:
-            agency: The agency maintaining the dataflow.
-            id: The dataflow ID.
-            version: The dataflow version.
-            key: A positional series key (see :meth:`fetch_data`).
-
-        Returns:
-            The requested data as a ``PandasDataset`` with its schema.
-
-        Raises:
-            errors.NotFound: If no data or dataflow is returned.
-            errors.Invalid: If the service returns a client error.
-            errors.InternalError: If the service returns a server error.
-            errors.Unavailable: If the service cannot be reached.
-        """
-        struct_query = StructureQuery(
-            StructureType.DATAFLOW,
-            agency,
-            id,
-            version,
-            detail=StructureDetail.FULL,
-            references=StructureReference.DESCENDANTS,
-        )
-        structure = self._svc.structure(struct_query)
-        data = self.fetch_data(agency, id, version, key)
-        datasets = get_datasets(
-            BytesIO(data), BytesIO(structure), validate=False
-        )
-        return datasets[0]
-
     def dataflows(
         self, search_term: Optional[str] = None
     ) -> tuple[Dataflow, ...]:
@@ -647,7 +575,8 @@ class AsyncStatConnector(AsyncRegistryClient):
     :class:`~pysdmx.api.fmr.AsyncRegistryClient`, reads .Stat's SDMX-ML
     2.1 and parses it with :func:`~pysdmx.io.read_sdmx`, and raises
     :class:`~pysdmx.errors.Invalid` for endpoints .Stat does not serve.
-    Adds async :meth:`fetch_data` and :meth:`fetch_dataset`.
+    Adds the async data-discovery-and-retrieval profile: :meth:`dataflows`,
+    :meth:`dataflow` and :meth:`data`.
     """
 
     def __init__(
@@ -874,77 +803,6 @@ class AsyncStatConnector(AsyncRegistryClient):
         """Get the VTL transformation scheme matching the parameters."""
         query = self._vtl_ts_q(agency, id, version)
         return await self._one(query, TransformationScheme)
-
-    async def fetch_data(
-        self, agency: str, id: str, version: str, key: str = "*"
-    ) -> bytes:
-        """Download the SDMX-CSV data for a dataflow.
-
-        Args:
-            agency: The agency maintaining the dataflow.
-            id: The dataflow ID.
-            version: The dataflow version.
-            key: A positional series key (dimensions in data-structure
-                order, ``.``-separated; ``*`` wildcards a dimension).
-                Defaults to ``"*"`` (the whole dataflow).
-
-        Returns:
-            The raw SDMX-CSV data message.
-
-        Raises:
-            errors.NotFound: If no data is found.
-            errors.Invalid: If the service returns a client error.
-            errors.InternalError: If the service returns a server error.
-            errors.Unavailable: If the service cannot be reached.
-        """
-        query = DataQuery(
-            DataContext.DATAFLOW,
-            agency,
-            id,
-            version,
-            key=key,
-            obs_dimension="AllDimensions",
-        )
-        return await self._svc.data(query)
-
-    async def fetch_dataset(
-        self, agency: str, id: str, version: str, key: str = "*"
-    ) -> "PandasDataset":
-        """Get data for a dataflow as a typed Pandas dataset.
-
-        Downloads the dataflow's structure (with descendants) and its
-        data, then combines them with pysdmx's native
-        :func:`~pysdmx.io.get_datasets`, which attaches the schema.
-
-        Args:
-            agency: The agency maintaining the dataflow.
-            id: The dataflow ID.
-            version: The dataflow version.
-            key: A positional series key (see :meth:`fetch_data`).
-
-        Returns:
-            The requested data as a ``PandasDataset`` with its schema.
-
-        Raises:
-            errors.NotFound: If no data or dataflow is returned.
-            errors.Invalid: If the service returns a client error.
-            errors.InternalError: If the service returns a server error.
-            errors.Unavailable: If the service cannot be reached.
-        """
-        struct_query = StructureQuery(
-            StructureType.DATAFLOW,
-            agency,
-            id,
-            version,
-            detail=StructureDetail.FULL,
-            references=StructureReference.DESCENDANTS,
-        )
-        structure = await self._svc.structure(struct_query)
-        data = await self.fetch_data(agency, id, version, key)
-        datasets = get_datasets(
-            BytesIO(data), BytesIO(structure), validate=False
-        )
-        return datasets[0]
 
     async def dataflows(
         self, search_term: Optional[str] = None
@@ -1278,8 +1136,8 @@ class StatUploader:
         a ``multipart/form-data`` request (file field ``file``, plus the
         required ``dataspace`` field) to ``{transfer}/import/sdmxFile``.
         The dataset must be Schema-backed (e.g. produced by
-        ``StatConnector.fetch_dataset`` or ``pysdmx.io.get_datasets``); a
-        dataset whose structure is a bare URN cannot be written. Its
+        ``pysdmx.io.get_datasets``); a dataset whose structure is a bare
+        URN cannot be written. Its
         schema must reference a **dataflow** (``context="dataflow"``), not
         a data structure: .Stat rejects a datastructure-bound dataset and
         the failure surfaces only at status-poll time (``submit_data``

@@ -21,9 +21,10 @@ so its ``get_*`` methods return the same model objects --
 ``Codelist``, and so on. It reads .Stat's SDMX-ML and parses it with
 :func:`~pysdmx.io.read_sdmx`. Endpoints .Stat does not serve (e.g.
 ``get_schema`` -- there is no ``/schema`` endpoint -- or reference
-metadata) raise :class:`~pysdmx.errors.Invalid`. On top, it adds data
-retrieval the registry client does not offer: ``fetch_data`` (raw
-SDMX-CSV) and ``fetch_dataset`` (a typed ``PandasDataset``).
+metadata) raise :class:`~pysdmx.errors.Invalid`. On top, it implements
+the SDMX **data discovery and retrieval** profile
+(:class:`~pysdmx.api.dc.BasicConnector`) -- ``dataflows``, ``dataflow``
+and ``data`` -- with the same signatures as the other connectors.
 
 .. important::
     To use the ``StatConnector``, install the ``pysdmx[data,xml]``
@@ -49,8 +50,8 @@ You can find the ``agency``, ``id`` and ``version`` of a dataflow in
 the `OECD Data Explorer <https://data-explorer.oecd.org>`_ via its
 "Developer API" button.
 
-Retrieving structures and data
-------------------------------
+Retrieving structures
+---------------------
 
 .. code-block:: python
 
@@ -63,31 +64,17 @@ Retrieving structures and data
     dsds = conn.get_data_structures(agency, "DSD_G20_PRICES", version)
     freq = conn.get_codes("SDMX", "CL_FREQ")              # a Codelist
 
-    # The raw SDMX-CSV data (optionally keyed)
-    data = conn.fetch_data(agency, flow_id, version, key="CHN.A.N.CPI.PA")
-
-    # ...or the data as a typed PandasDataset -- structure + data
-    # combined through pysdmx's native get_datasets, schema attached:
-    dataset = conn.fetch_dataset(
-        agency, flow_id, version, key="CHN.A.N.CPI.PA"
-    )
-    print(dataset.data.head())
-
 The ``get_*`` methods return the same model objects as
-:class:`~pysdmx.api.fmr.RegistryClient`. ``fetch_data`` returns the
-**raw** SDMX-CSV bytes; ``fetch_dataset`` composes structure + data via
-:func:`~pysdmx.io.get_datasets`. Select data with a positional ``key``
-(dimensions in data-structure order, ``.``-separated; ``*`` wildcards a
-dimension; defaults to the whole dataflow). .Stat services key on one
-value per dimension; for multiple values issue separate requests.
+:class:`~pysdmx.api.fmr.RegistryClient`. To retrieve **data**, use the
+data-discovery profile below.
 
-Data discovery profile
-----------------------
+Data discovery and retrieval profile
+------------------------------------
 
-``StatConnector`` also implements the SDMX **data discovery and
-retrieval** profile (:class:`pysdmx.api.dc.BasicConnector`), so it works
-wherever that profile is expected (see the
-:doc:`data discovery guide <dc>`):
+``StatConnector`` implements the SDMX **data discovery and retrieval**
+profile (:class:`pysdmx.api.dc.BasicConnector`) with the same method
+names and signatures as the other connectors, so it works wherever that
+profile is expected (see the :doc:`data discovery guide <dc>`):
 
 .. code-block:: python
 
@@ -108,16 +95,16 @@ Asynchronous access
 -------------------
 
 :class:`pysdmx.api.stat.AsyncStatConnector` is the ``async`` counterpart
-(inheriting :class:`~pysdmx.api.fmr.AsyncRegistryClient`); its ``get_*``,
-``fetch_data`` and ``fetch_dataset`` methods are coroutines:
+(inheriting :class:`~pysdmx.api.fmr.AsyncRegistryClient`); its ``get_*``
+and profile (``dataflows``/``dataflow``/``data``) methods are coroutines:
 
 .. code-block:: python
 
     from pysdmx.api.stat import AsyncStatConnector
 
     conn = AsyncStatConnector()
-    flows = await conn.get_dataflows(agency, flow_id, version)
-    dataset = await conn.fetch_dataset(agency, flow_id, version)
+    flows = await conn.dataflows("prices")
+    df = await conn.dataflow(f"{agency}:{flow_id}({version})")
 
 Uploading
 ---------
@@ -182,7 +169,6 @@ and ``logs`` if you need to treat warnings more strictly.
 
 The ``dataset`` passed to ``submit``/``submit_data`` must be
 Schema-backed — for example one returned by
-:meth:`~pysdmx.api.stat.StatConnector.fetch_dataset` or by
 :func:`pysdmx.io.get_datasets`. Its schema must reference a **dataflow**
 (``context="dataflow"``), not a data structure — .Stat rejects a
 datastructure-bound dataset and the failure surfaces only at status-poll

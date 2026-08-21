@@ -1,4 +1,3 @@
-from io import BytesIO
 from pathlib import Path
 
 import httpx
@@ -13,10 +12,9 @@ from pysdmx.api.stat import (
     _df_search_match,
     _df_sort_key,
 )
-from pysdmx.errors import InternalError, Invalid, NotFound, Unavailable
-from pysdmx.io import get_datasets, read_sdmx
+from pysdmx.errors import InternalError, Invalid, NotFound
+from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
-from pysdmx.io.pd import PandasDataset
 from pysdmx.io.writer import write_sdmx
 from pysdmx.model import (
     Agency,
@@ -42,7 +40,6 @@ from pysdmx.model import (
     ProvisionAgreement,
     RepresentationMap,
     Role,
-    Schema,
     StructureMap,
     TransformationScheme,
 )
@@ -55,10 +52,7 @@ STRUCT_PREFIX = f"{HOST}/structure"
 DATA_PREFIX = f"{HOST}/data/dataflow/OECD.SDD.TPS"
 
 _SAMPLES = Path(__file__).parent / "samples"
-OECD_STRUCTURE = _SAMPLES / "oecd_g20_prices_structure.xml"
 OECD_DATA = _SAMPLES / "oecd_g20_prices_data.csv"
-OECD_FLOW = ("OECD.SDD.TPS", "DSD_G20_PRICES@DF_G20_PRICES", "1.0")
-OECD_KEY = "CHN.A.N.CPI.PA._T.N.GY"
 
 _ERROR_CASES = [
     (404, NotFound),
@@ -434,56 +428,6 @@ def test_get_reports_unsupported(client):
         client.get_reports("dataflow", "A", "DF", "1.0")
 
 
-# --- fetch_data --------------------------------------------------------------
-def test_fetch_data_returns_raw_bytes(respx_mock, client):
-    data = OECD_DATA.read_bytes()
-    route = _mock(respx_mock, DATA_PREFIX, data)
-    out = client.fetch_data(*OECD_FLOW)
-    assert out == data
-    url = str(route.calls.last.request.url)
-    assert url.endswith("dimensionAtObservation=AllDimensions")
-
-
-def test_fetch_data_with_key_in_url(respx_mock, client):
-    data = OECD_DATA.read_bytes()
-    route = _mock(respx_mock, DATA_PREFIX, data)
-    client.fetch_data(*OECD_FLOW, key=OECD_KEY)
-    assert f"/1.0/{OECD_KEY}" in str(route.calls.last.request.url)
-
-
-def test_fetch_data_accept_header(respx_mock, client):
-    route = _mock(respx_mock, DATA_PREFIX, OECD_DATA.read_bytes())
-    client.fetch_data(*OECD_FLOW)
-    assert (
-        route.calls.last.request.headers["Accept"]
-        == "application/vnd.sdmx.data+csv;version=2.0.0"
-    )
-
-
-# --- fetch_dataset -----------------------------------------------------------
-def test_fetch_dataset_returns_pandas_dataset(respx_mock, client):
-    structure = OECD_STRUCTURE.read_bytes()
-    data = OECD_DATA.read_bytes()
-    _mock(respx_mock, STRUCT_PREFIX, structure)
-    _mock(respx_mock, DATA_PREFIX, data)
-    expected = get_datasets(BytesIO(data), BytesIO(structure), validate=False)[
-        0
-    ]
-
-    ds = client.fetch_dataset(*OECD_FLOW)
-
-    assert isinstance(ds, PandasDataset)
-    assert isinstance(ds.structure, Schema)
-    assert ds.data.equals(expected.data)
-
-
-def test_fetch_dataset_passes_key_to_data(respx_mock, client):
-    _mock(respx_mock, STRUCT_PREFIX, OECD_STRUCTURE.read_bytes())
-    data_route = _mock(respx_mock, DATA_PREFIX, OECD_DATA.read_bytes())
-    client.fetch_dataset(*OECD_FLOW, key=OECD_KEY)
-    assert f"/1.0/{OECD_KEY}" in str(data_route.calls.last.request.url)
-
-
 # --- Error mapping -----------------------------------------------------------
 @pytest.mark.parametrize(("status", "error"), _ERROR_CASES)
 def test_get_dataflows_error_mapping(respx_mock, client, status, error):
@@ -492,14 +436,6 @@ def test_get_dataflows_error_mapping(respx_mock, client, status, error):
     )
     with pytest.raises(error):
         client.get_dataflows("TEST")
-
-
-def test_fetch_data_connection_error(respx_mock, client):
-    respx_mock.get(url__startswith=DATA_PREFIX).mock(
-        side_effect=httpx.ConnectError("boom")
-    )
-    with pytest.raises(Unavailable):
-        client.fetch_data(*OECD_FLOW)
 
 
 # --- SDMX data-discovery profile (BasicConnector) ----------------------------
@@ -660,26 +596,6 @@ async def test_async_unsupported_raise_invalid(aclient, call):
         await call(aclient)
 
 
-@pytest.mark.asyncio
-async def test_async_fetch_data(respx_mock, aclient):
-    data = OECD_DATA.read_bytes()
-    route = _mock(respx_mock, DATA_PREFIX, data)
-    out = await aclient.fetch_data(*OECD_FLOW, key=OECD_KEY)
-    assert out == data
-    assert f"/1.0/{OECD_KEY}" in str(route.calls.last.request.url)
-
-
-@pytest.mark.asyncio
-async def test_async_fetch_dataset(respx_mock, aclient):
-    structure = OECD_STRUCTURE.read_bytes()
-    data = OECD_DATA.read_bytes()
-    _mock(respx_mock, STRUCT_PREFIX, structure)
-    _mock(respx_mock, DATA_PREFIX, data)
-    ds = await aclient.fetch_dataset(*OECD_FLOW)
-    assert isinstance(ds, PandasDataset)
-    assert isinstance(ds.structure, Schema)
-
-
 @pytest.mark.parametrize(("status", "error"), _ERROR_CASES)
 @pytest.mark.asyncio
 async def test_async_get_dataflows_error_mapping(
@@ -690,15 +606,6 @@ async def test_async_get_dataflows_error_mapping(
     )
     with pytest.raises(error):
         await aclient.get_dataflows("TEST")
-
-
-@pytest.mark.asyncio
-async def test_async_fetch_data_connection_error(respx_mock, aclient):
-    respx_mock.get(url__startswith=DATA_PREFIX).mock(
-        side_effect=httpx.ConnectError("boom")
-    )
-    with pytest.raises(Unavailable):
-        await aclient.fetch_data(*OECD_FLOW)
 
 
 @pytest.mark.asyncio
