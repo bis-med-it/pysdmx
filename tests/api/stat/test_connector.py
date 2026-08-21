@@ -608,6 +608,30 @@ def test_key_dimensions_no_dsd_raises(client, mocker):
         client._key_dimensions("OECD.SDD.TPS", "DF", "1.0")
 
 
+@pytest.fixture
+def token():
+    return "TKN"
+
+
+def test_connector_sends_bearer_token(respx_mock, token, g20_flow):
+    conn = StatConnector(HOST, token=token)
+    route = _mock(respx_mock, DATA_PREFIX, OECD_DATA.read_bytes())
+
+    list(conn.data(g20_flow))
+
+    assert (
+        route.calls.last.request.headers["Authorization"] == f"Bearer {token}"
+    )
+
+
+def test_connector_anonymous_by_default(respx_mock, client, g20_flow):
+    route = _mock(respx_mock, DATA_PREFIX, OECD_DATA.read_bytes())
+
+    list(client.data(g20_flow))
+
+    assert "Authorization" not in route.calls.last.request.headers
+
+
 def test_dataflow_returns_flow(client, structs_mock):
     obj = Dataflow(id="DF", agency="TEST", version="1.0", name="x")
     assert client.dataflow(obj).id == "DF"
@@ -770,6 +794,18 @@ async def test_async_key_dimensions_no_dsd_raises(aclient, mocker):
     )
     with pytest.raises(NotFound):
         await aclient._key_dimensions("OECD.SDD.TPS", "DF", "1.0")
+
+
+@pytest.mark.asyncio
+async def test_async_connector_sends_bearer_token(respx_mock, token, g20_flow):
+    conn = AsyncStatConnector(HOST, token=token)
+    route = _mock(respx_mock, DATA_PREFIX, OECD_DATA.read_bytes())
+
+    _ = [row async for row in conn.data(g20_flow)]
+
+    assert (
+        route.calls.last.request.headers["Authorization"] == f"Bearer {token}"
+    )
 
 
 @pytest.mark.parametrize(("status", "error"), _ERROR_CASES)

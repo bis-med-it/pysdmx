@@ -240,6 +240,8 @@ class AsyncRestService(_CoreRestService):
             list of trusted certicate authorities.
         timeout: The maximum number of seconds to wait before considering
             that a request timed out. Defaults to 5 seconds.
+        token: An optional bearer token to be sent as an ``Authorization``
+            header on every request, for services requiring authentication.
     """
 
     def __init__(
@@ -254,6 +256,7 @@ class AsyncRestService(_CoreRestService):
         registry_format: RegistryFormat = RegistryFormat.FUSION_JSON,
         pem: Optional[str] = None,
         timeout: Optional[float] = 5.0,
+        token: Optional[str] = None,
     ):
         """Instantiate a connector to a SDMX-REST service."""
         super().__init__(
@@ -267,6 +270,7 @@ class AsyncRestService(_CoreRestService):
             registry_format,
             pem,
             timeout,
+            token,
         )
 
     async def data(self, query: DataQuery) -> bytes:

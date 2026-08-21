@@ -325,6 +325,7 @@ class StatConnector(RegistryClient, BasicConnector):
         api_endpoint: str = StatEndpoints.OECD,
         pem: Optional[str] = None,
         timeout: float = 20.0,
+        token: Optional[str] = None,
     ) -> None:
         """Instantiate a .Stat Suite read connector.
 
@@ -334,6 +335,11 @@ class StatConnector(RegistryClient, BasicConnector):
             pem: Optional PEM file with trusted certificate authorities,
                 for services using a self-signed certificate.
             timeout: Maximum number of seconds to wait per request.
+            token: An optional bearer token, sent as an ``Authorization``
+                header on every request, for .Stat deployments that require
+                authenticated reads (e.g. obtained from
+                ``KeycloakDeviceAuthentication(...).get_token()``). Reads are
+                anonymous when omitted.
         """
         super().__init__(
             api_endpoint, StructureFormat.SDMX_JSON_2_0_0, pem, timeout
@@ -350,6 +356,7 @@ class StatConnector(RegistryClient, BasicConnector):
             structure_format=StructureFormat.SDMX_ML_2_1,
             timeout=timeout,
             pem=pem,
+            token=token,
         )
 
     def _structures(self, query: StructureQuery) -> Sequence[Any]:
@@ -772,6 +779,7 @@ class AsyncStatConnector(AsyncRegistryClient):
         api_endpoint: str = StatEndpoints.OECD,
         pem: Optional[str] = None,
         timeout: float = 20.0,
+        token: Optional[str] = None,
     ) -> None:
         """Instantiate an async .Stat Suite read connector.
 
@@ -781,6 +789,9 @@ class AsyncStatConnector(AsyncRegistryClient):
             pem: Optional PEM file with trusted certificate authorities,
                 for services using a self-signed certificate.
             timeout: Maximum number of seconds to wait per request.
+            token: An optional bearer token, sent as an ``Authorization``
+                header on every request, for .Stat deployments that require
+                authenticated reads. Reads are anonymous when omitted.
         """
         super().__init__(
             api_endpoint, StructureFormat.SDMX_JSON_2_0_0, pem, timeout
@@ -797,6 +808,7 @@ class AsyncStatConnector(AsyncRegistryClient):
             structure_format=StructureFormat.SDMX_ML_2_1,
             timeout=timeout,
             pem=pem,
+            token=token,
         )
 
     async def _structures(self, query: StructureQuery) -> Sequence[Any]:
