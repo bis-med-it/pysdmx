@@ -1425,6 +1425,42 @@ class StatUploader:
         )
         return _structure_result(r.text)
 
+    def put_structures(
+        self,
+        artefacts: Union[MaintainableArtefact, Sequence[Any]],
+        structure_format: Format = Format.STRUCTURE_SDMX_JSON_2_0_0,
+    ) -> StructureSubmissionResult:
+        """Submit structures (the .Stat counterpart of ``put_structures``).
+
+        Provided under the same method name and primary ``artefacts``
+        parameter as
+        :meth:`~pysdmx.api.fmr.maintenance.RegistryMaintenanceClient.put_structures`,
+        so a caller can target either client; it delegates to
+        :meth:`submit_structure`. The signatures differ where .Stat and the
+        FMR genuinely diverge: .Stat returns a
+        :class:`StructureSubmissionResult` (not ``None``), builds the SDMX
+        message header itself (no ``header`` argument), and handles removal
+        via a separate :meth:`delete_structure` (no ``action`` argument); it
+        adds ``structure_format`` for per-deployment format selection.
+
+        Args:
+            artefacts: A maintainable artefact (e.g. a ``Codelist`` or
+                ``Dataflow``) or a sequence of maintainable artefacts.
+            structure_format: The SDMX structure format to serialize to
+                (see :meth:`submit_structure`).
+
+        Returns:
+            The :class:`StructureSubmissionResult` from the submission.
+
+        Raises:
+            errors.Invalid: If an artefact cannot be serialized in
+                ``structure_format``, or the service rejects the submission.
+            errors.Unauthorized: If the token is missing or rejected.
+            errors.InternalError: If the service returns a server error.
+            errors.Unavailable: If the service cannot be reached.
+        """
+        return self.submit_structure(artefacts, structure_format)
+
     def _import_data(
         self,
         dataset: Union[Dataset, Sequence[Dataset]],
