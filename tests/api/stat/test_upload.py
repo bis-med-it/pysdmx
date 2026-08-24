@@ -1,7 +1,10 @@
+import inspect
+
 import httpx
 import pandas as pd
 import pytest
 
+from pysdmx.api.fmr.maintenance import RegistryMaintenanceClient
 from pysdmx.api.stat import (
     StatUploader,
     StructureSubmissionResult,
@@ -141,6 +144,37 @@ def test_submit_structure_returns_result(respx_mock, uploader, codelist):
     )
     assert req.content.decode().lstrip().startswith("{")  # JSON, not XML
     assert "CL_TEST" in req.content.decode()
+
+
+def test_put_structures_delegates_to_submit_structure(
+    respx_mock, uploader, codelist
+):
+    route = respx_mock.post(STRUCT_URL).mock(
+        return_value=httpx.Response(
+            200,
+            text='<m:Error><m:ErrorMessage code="201">'
+            "<c:Text>Created: CL_TEST was inserted.</c:Text>"
+            "</m:ErrorMessage></m:Error>",
+        )
+    )
+
+    result = uploader.put_structures(codelist)
+
+    assert isinstance(result, StructureSubmissionResult)
+    assert result.success is True
+    assert "CL_TEST" in route.calls.last.request.content.decode()
+
+
+def test_put_structures_signature_aligns_with_registry_maintenance_client():
+    # Xavier's ask: align the maintenance method signatures. Both clients
+    # expose put_structures whose primary parameter is `artefacts`.
+    stat_params = list(
+        inspect.signature(StatUploader.put_structures).parameters
+    )
+    fmr_params = list(
+        inspect.signature(RegistryMaintenanceClient.put_structures).parameters
+    )
+    assert stat_params[1] == fmr_params[1] == "artefacts"
 
 
 def test_submit_structure_without_token_raises(codelist):
