@@ -471,6 +471,9 @@ class StatConnector(RegistryClient, BasicConnector):
 
         Implements the ``dataflows`` method of the SDMX "data discovery
         and retrieval" profile (:class:`~pysdmx.api.dc.BasicConnector`).
+        The dataflows are retrieved as complete stubs
+        (``detail=allcompletestubs``), as prescribed by the profile's
+        Structure Catalogue step.
 
         Args:
             search_term: If set, only dataflows whose id, name or
@@ -480,7 +483,11 @@ class StatConnector(RegistryClient, BasicConnector):
         Returns:
             The matching dataflows, sorted by agency, id and version.
         """
-        flows = list(self.get_dataflows())
+        query = StructureQuery(
+            StructureType.DATAFLOW,
+            detail=StructureDetail.ALL_COMPLETE_STUBS,
+        )
+        flows = list(self._many(query, Dataflow))
         if search_term:
             term = search_term.strip().lower()
             if term:
@@ -819,7 +826,11 @@ class AsyncStatConnector(AsyncRegistryClient):
         Returns:
             The matching dataflows, sorted by agency, id and version.
         """
-        flows = list(await self.get_dataflows())
+        query = StructureQuery(
+            StructureType.DATAFLOW,
+            detail=StructureDetail.ALL_COMPLETE_STUBS,
+        )
+        flows = list(await self._many(query, Dataflow))
         if search_term:
             term = search_term.strip().lower()
             if term:
