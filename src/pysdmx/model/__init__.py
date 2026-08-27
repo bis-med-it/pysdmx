@@ -35,7 +35,6 @@ from pysdmx.model.concept import Concept, ConceptScheme
 from pysdmx.model.constraint import (
     AvailabilityConstraint,
     ConstraintAttachment,
-    ConstraintRole,
     CubeKeyValue,
     CubeRegion,
     CubeTimeRange,
@@ -182,7 +181,6 @@ __all__ = [
     "ConceptScheme",
     "AvailabilityConstraint",
     "ConstraintAttachment",
-    "ConstraintRole",
     "Contact",
     "CubeKeyValue",
     "CubeRegion",

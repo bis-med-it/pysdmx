@@ -11,7 +11,6 @@ from pysdmx.io.json.sdmxjson2.messages.constraint import (
 from pysdmx.model import (
     AvailabilityConstraint,
     ConstraintAttachment,
-    ConstraintRole,
     CubeKeyValue,
     CubeRegion,
     CubeTimeRange,
@@ -78,7 +77,6 @@ def constraint_role_actual():
         "TEST",
         agency="BIS",
         name="Test",
-        role=ConstraintRole.ACTUAL,
         constraint_attachment=ConstraintAttachment(data_provider="5B0"),
     )
 
