@@ -14,12 +14,13 @@ from pysdmx.io.xml.__write_aux import (
     create_namespaces,
     get_end_message,
 )
+from pysdmx.model import AvailabilityConstraint
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.message import Header
 
 
 def write(
-    structures: Sequence[MaintainableArtefact],
+    structures: Sequence[Union[MaintainableArtefact, AvailabilityConstraint]],
     output_path: Optional[Union[str, Path]] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
@@ -27,7 +28,8 @@ def write(
     """This function writes a SDMX-ML file from the Message Content.
 
     Args:
-        structures: The content to be written
+        structures: The maintainable artefacts and availability
+            constraints to be written
         output_path: The path to save the file
         prettyprint: Prettyprint or not
         header: The header to be used (generated if None)

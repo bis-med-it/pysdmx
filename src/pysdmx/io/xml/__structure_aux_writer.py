@@ -2134,13 +2134,14 @@ def __export_intern_data(data: Dict[str, Any]) -> str:
 
 
 def group_structures(
-    elements: Dict[str, MaintainableArtefact],
+    elements: Dict[str, Union[MaintainableArtefact, AvailabilityConstraint]],
     type_list: Dict[Any, str],
-) -> Dict[str, Dict[str, MaintainableArtefact]]:
-    """Groups maintainable artefacts by their SDMX-ML container element.
+) -> Dict[str, Dict[str, Union[MaintainableArtefact, AvailabilityConstraint]]]:
+    """Groups artefacts by their SDMX-ML container element.
 
     Args:
-        elements: The artefacts to write, keyed by short URN.
+        elements: The maintainable artefacts and availability
+            constraints to write, keyed by short URN.
         type_list: Maps each artefact type to its container element name
             for the target SDMX-ML version.
 
@@ -2151,7 +2152,9 @@ def group_structures(
         Invalid: If an artefact type has no representation in the target
             SDMX-ML version.
     """
-    content: Dict[str, Dict[str, MaintainableArtefact]] = {}
+    content: Dict[
+        str, Dict[str, Union[MaintainableArtefact, AvailabilityConstraint]]
+    ] = {}
     for urn, element in elements.items():
         try:
             list_ = type_list[type(element)]
