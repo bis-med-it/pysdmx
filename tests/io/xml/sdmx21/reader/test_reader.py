@@ -19,12 +19,12 @@ from pysdmx.io.xml.sdmx21.reader.submission import read as read_sub
 from pysdmx.io.xml.sdmx21.writer.structure_specific import write
 from pysdmx.model import (
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     CategoryScheme,
     Codelist,
     ConceptScheme,
     ConstraintAttachment,
-    ConstraintRole,
     Contact,
     CubeKeyValue,
     CubeRegion,
@@ -1404,33 +1404,52 @@ def test_constraint_without_attachment(samples_folder):
     ] == ["Q"]
 
 
-def test_constraint_role_allowed_21(samples_folder):
+def test_constraint_allowed_21(samples_folder):
     data_path = samples_folder / "constraint_allowed.xml"
-    input_str, _ = process_string_to_read(data_path)
-    result = read_sdmx(input_str, validate=True).get_data_constraints()
-    assert result[0].role == ConstraintRole.ALLOWED
+    result = read_sdmx(data_path, validate=True).structures
+    assert len(result) == 1
+    assert isinstance(result[0], DataConstraint)
 
 
-def test_constraint_role_actual_21(samples_folder):
+def test_constraint_actual_21_is_availability(samples_folder):
     data_path = samples_folder / "constraint_actual.xml"
-    input_str, _ = process_string_to_read(data_path)
-    result = read_sdmx(input_str, validate=True).get_data_constraints()
-    assert result[0].role == ConstraintRole.ACTUAL
+    result = read_sdmx(data_path, validate=True).structures
+    assert len(result) == 1
+    ac = result[0]
+    assert isinstance(ac, AvailabilityConstraint)
+    assert ac.reference == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    kv = ac.cube_region.key_values[0]
+    assert kv.id == "FREQ"
+    assert [v.value for v in kv.values] == ["M"]
 
 
-def test_constraint_type_absent_defaults_actual_21(samples_folder):
-    # SDMX 2.1 ContentConstraint '@type' defaults to "Actual" per the XSD,
-    # so a constraint that omits it is read as an Actual constraint.
+def test_constraint_type_absent_defaults_to_availability_21(samples_folder):
     data_path = samples_folder / "constraint_no_type.xml"
-    input_str, _ = process_string_to_read(data_path)
-    result = read_sdmx(input_str, validate=True).get_data_constraints()
-    assert result[0].role == ConstraintRole.ACTUAL
+    result = read_sdmx(data_path, validate=True).structures
+    assert isinstance(result[0], AvailabilityConstraint)
+
+
+@pytest.mark.parametrize(
+    ("sample", "match"),
+    [
+        ("constraint_actual_keysets.xml", "key sets"),
+        ("constraint_actual_two_regions.xml", "exactly one cube region"),
+        ("constraint_actual_no_attachment.xml", "attached"),
+    ],
+)
+def test_constraint_actual_not_representable_21(samples_folder, sample, match):
+    with pytest.raises(Invalid, match=match):
+        read_sdmx(samples_folder / sample, validate=False)
 
 
 def test_constraint_with_time_range_21(samples_folder):
     data_path = samples_folder / "constraint_time_range.xml"
     input_str, _ = process_string_to_read(data_path)
     result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert isinstance(result[0], DataConstraint)
     region = result[0].cube_regions[0]
     freq, time = region.key_values
     assert [v.value for v in freq.values] == ["A"]

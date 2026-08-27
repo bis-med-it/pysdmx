@@ -18,6 +18,7 @@ from typing import (
 from msgspec import Struct
 from msgspec.structs import asdict, replace
 
+from pysdmx.errors import Invalid
 from pysdmx.io.xml.__tokens import (
     AFTER_PERIOD,
     AGENCIES,
@@ -226,6 +227,7 @@ from pysdmx.io.xml.__tokens import (
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     Category,
     CategoryScheme,
@@ -235,7 +237,6 @@ from pysdmx.model import (
     Concept,
     ConceptScheme,
     ConstraintAttachment,
-    ConstraintRole,
     CubeKeyValue,
     CubeRegion,
     CubeTimeRange,
@@ -1319,17 +1320,16 @@ class StructureParser(Struct):
         return KeySet(keys=keys, is_included=is_included)
 
     def __format_constraint(self, element: Dict[str, Any]) -> Dict[str, Any]:
-        # Role: SDMX 3.0 uses 'role' (required); SDMX 2.1 uses 'type'
-        # (optional, default "Actual" per the schema).
-        role_val = None
-        if "role" in element:
-            role_val = element.pop("role")
+        # Allowed/Actual marker: SDMX 3.0 uses 'role' (required); SDMX
+        # 2.1 uses 'type' (optional, default "Actual" per the schema).
+        # SDMX 3.1 has no marker: a DataConstraint is always the
+        # allowed values, availability is a separate element.
+        marker = element.pop("role", None)
         if TYPE in element:
-            role_val = element.pop(TYPE)
-        if role_val is not None:
-            element["role"] = ConstraintRole(role_val)
-        elif not self.is_sdmx_30:
-            element["role"] = ConstraintRole.ACTUAL
+            marker = element.pop(TYPE)
+        if marker is None:
+            marker = "Allowed" if self.is_sdmx_30 else "Actual"
+        element["is_availability"] = marker == "Actual"
 
         # ConstraintAttachment
         constraint_attachment = None
@@ -1362,6 +1362,48 @@ class StructureParser(Struct):
         element["key_sets"] = key_sets
 
         return element
+
+    def __build_constraint(
+        self, structure: Dict[str, Any]
+    ) -> Union[DataConstraint, AvailabilityConstraint]:
+        """Builds a data or availability constraint from a parsed element.
+
+        Legacy "Actual" constraints (SDMX-ML 2.1/3.0) are mapped to the
+        SDMX 3.1 AvailabilityConstraint: their maintainable identity is
+        dropped and they must fit the 3.1 shape (exactly one cube
+        region, no key sets, one attached artefact).
+
+        Raises:
+            Invalid: If an Actual constraint cannot be represented as
+                an SDMX 3.1 availability constraint.
+        """
+        if not structure.pop("is_availability"):
+            return DataConstraint(**structure)
+        if structure.get("key_sets"):
+            raise Invalid(
+                "Invalid availability constraint",
+                "An Actual constraint with key sets cannot be "
+                "represented as an SDMX 3.1 availability constraint.",
+            )
+        cube_regions = structure.get("cube_regions") or []
+        if len(cube_regions) != 1:
+            raise Invalid(
+                "Invalid availability constraint",
+                "An Actual constraint must have exactly one cube region "
+                "to be represented as an SDMX 3.1 availability "
+                "constraint.",
+            )
+        if structure.get("constraint_attachment") is None:
+            raise Invalid(
+                "Invalid availability constraint",
+                "An Actual constraint must be attached to exactly one "
+                "data structure, dataflow or provision agreement.",
+            )
+        return AvailabilityConstraint(
+            annotations=structure.get("annotations", ()),
+            constraint_attachment=structure["constraint_attachment"],
+            cube_region=cube_regions[0],
+        )
 
     def __format_vtl(self, json_vtl: Dict[str, Any]) -> Dict[str, Any]:
         # VTL Scheme Handling
@@ -2130,7 +2172,7 @@ class StructureParser(Struct):
         Returns:
             A dictionary with the structures formatted
         """
-        schemas = {}
+        schemas: Dict[str, Any] = {}
 
         json_element[item] = add_list(json_element[item])
         for element in json_element[item]:
@@ -2201,6 +2243,8 @@ class StructureParser(Struct):
                     structure[COMPS] = Components([])
             if schema == REPRESENTATION_MAP:
                 schemas[short_urn] = self.__build_representation_map(structure)
+            elif item in (CON_CONS, DATA_CONS):
+                schemas[short_urn] = self.__build_constraint(structure)
             else:
                 schemas[short_urn] = STRUCTURES_MAPPING[schema](**structure)
 

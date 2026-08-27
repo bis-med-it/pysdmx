@@ -12,6 +12,11 @@
 		<str:Constraints>
 			<str:ContentConstraint id="TEST_NO_TYPE" version="1.0" isExternalReference="false" isFinal="false" agencyID="TEST_AGENCY">
 				<com:Name xml:lang="en">Constraint without a type attribute</com:Name>
+				<str:ConstraintAttachment>
+					<str:Dataflow>
+						<Ref id="DF_TEST" version="1.0" agencyID="TEST_AGENCY" package="datastructure" class="Dataflow"/>
+					</str:Dataflow>
+				</str:ConstraintAttachment>
 				<str:CubeRegion include="true">
 					<com:KeyValue id="FREQ">
 						<com:Value>M</com:Value>

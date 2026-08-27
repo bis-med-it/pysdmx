@@ -13,13 +13,13 @@ from pysdmx.io.xml.sdmx30.reader.structure import read as read_structure
 from pysdmx.model import (
     Agency,
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     CategoryScheme,
     Code,
     Codelist,
     ConceptScheme,
     ConstraintAttachment,
-    ConstraintRole,
     Contact,
     CubeKeyValue,
     CubeRegion,
@@ -1184,9 +1184,9 @@ def test_constraint_without_attachment(samples_folder):
 def test_constraint_with_actual_role(samples_folder):
     data_path = samples_folder / "constraint_actual.xml"
     input_str, _ = process_string_to_read(data_path)
-    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    result = read_sdmx(input_str, validate=True).structures
     assert len(result) == 1
-    assert result[0].role == ConstraintRole.ACTUAL
+    assert isinstance(result[0], AvailabilityConstraint)
 
 
 def test_constraint_role_absent_30_defaults_allowed(samples_folder):
@@ -1197,7 +1197,7 @@ def test_constraint_role_absent_30_defaults_allowed(samples_folder):
     input_str, _ = process_string_to_read(data_path)
     result = read_sdmx(input_str, validate=False).get_data_constraints()
     assert len(result) == 1
-    assert result[0].role == ConstraintRole.ALLOWED
+    assert isinstance(result[0], DataConstraint)
 
 
 def test_constraint_with_time_range_30(samples_folder):
@@ -1206,6 +1206,7 @@ def test_constraint_with_time_range_30(samples_folder):
     data_path = samples_folder / "constraint_time_range.xml"
     input_str, _ = process_string_to_read(data_path)
     result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert isinstance(result[0], DataConstraint)
     region = result[0].cube_regions[0]
     freq = region.key_values[0]
     time = region.key_values[1]

@@ -1,7 +1,7 @@
 """Module for writing metadata to XML files."""
 
 from collections import OrderedDict
-from typing import Any, Dict, Optional, Sequence, Union
+from typing import Any, Dict, Optional, Sequence, Union, cast
 
 from msgspec.structs import replace
 
@@ -127,6 +127,7 @@ from pysdmx.io.xml.__write_aux import (
 )
 from pysdmx.model import (
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     Category,
     CategoryScheme,
@@ -250,6 +251,7 @@ STR_DICT_TYPE_LIST_21 = {
     DataStructureDefinition: "DataStructures",
     Dataflow: "Dataflows",
     DataConstraint: "Constraints",
+    AvailabilityConstraint: "Constraints",
     RepresentationMap: "RepresentationMaps",
     MultiRepresentationMap: "RepresentationMaps",
     StructureMap: "StructureMaps",
@@ -278,6 +280,7 @@ STR_DICT_TYPE_LIST_30 = {
     DataStructureDefinition: "DataStructures",
     Dataflow: "Dataflows",
     DataConstraint: "DataConstraints",
+    AvailabilityConstraint: "DataConstraints",
     RepresentationMap: "RepresentationMaps",
     MultiRepresentationMap: "RepresentationMaps",
     StructureMap: "StructureMaps",
@@ -1506,11 +1509,34 @@ def __write_key_set(
     return outfile.replace("'", '"')
 
 
+def __availability_as_data_constraint(
+    constraint: AvailabilityConstraint,
+) -> DataConstraint:
+    """Builds the legacy constraint for an availability constraint.
+
+    SDMX-ML 2.1 and 3.0 have no availability element: availability is
+    a maintainable ContentConstraint/DataConstraint carrying an Actual
+    marker, so a maintainable identification is synthesised from the
+    attached artefact.
+    """
+    ref = cast(Reference, parse_urn(constraint.reference))
+    return DataConstraint(
+        id=ref.id,
+        name=f"Availability for {ref.id}",
+        agency=ref.agency,
+        version=ref.version,
+        annotations=constraint.annotations,
+        constraint_attachment=constraint.constraint_attachment,
+        cube_regions=[constraint.cube_region],
+    )
+
+
 def __write_data_constraint(
     constraint: DataConstraint,
     indent: str,
     references_30: bool = False,
     references_31: bool = False,
+    availability: bool = False,
 ) -> str:
     """Writes a DataConstraint to the XML file."""
     # SDMX 3.0: DataConstraint, SDMX 2.1: ContentConstraint
@@ -1518,14 +1544,15 @@ def __write_data_constraint(
 
     data = __write_maintainable(constraint, indent, references_30)
 
-    # SDMX 2.1 uses 'type' (defaults to "Actual" when omitted, so it is
-    # always written); SDMX 3.0 uses a required 'role'; SDMX 3.1 removed
-    # the attribute (a DataConstraint is always the allowed values), so
-    # the role is kept in the model only for 2.1/3.0 compatibility.
+    # SDMX 2.1 marks availability with 'type' (default "Actual" when
+    # omitted, so it is always written); SDMX 3.0 uses a required
+    # 'role'; SDMX 3.1 has no marker (availability is a separate
+    # element and a DataConstraint is always the allowed values).
+    marker = "Actual" if availability else "Allowed"
     if not references_30:
-        data["Attributes"] += f' type="{constraint.role.value}"'
+        data["Attributes"] += f' type="{marker}"'
     elif not references_31:
-        data["Attributes"] += f' role="{constraint.role.value}"'
+        data["Attributes"] += f' role="{marker}"'
 
     label = f"{ABBR_STR}:{constraint_type}"
     attributes = data.get("Attributes") or ""
@@ -1859,6 +1886,19 @@ def __write_scheme(  # noqa: C901
         return __write_representation_map(item_scheme, indent, references_30)
     if scheme == STRUCTURE_MAP:
         return __write_structure_map(item_scheme, indent, references_30)
+    if isinstance(item_scheme, AvailabilityConstraint):
+        # references_31 is forwarded (like the DataConstraint branch
+        # below) so no marker is written for a 3.1 target: 3.1 has no
+        # 'role' attribute at all. This loses the Actual/Allowed
+        # distinction for a 3.1 target; Task 3 replaces this branch
+        # with the native 3.1 Availability element.
+        return __write_data_constraint(
+            __availability_as_data_constraint(item_scheme),
+            indent,
+            references_30,
+            references_31,
+            availability=True,
+        )
     if isinstance(item_scheme, DataConstraint):
         return __write_data_constraint(
             item_scheme, indent, references_30, references_31

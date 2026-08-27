@@ -10,7 +10,7 @@
 	</mes:Header>
 	<mes:Structures>
 		<str:DataConstraints>
-			<str:DataConstraint id="TEST_TR" version="1.0" isExternalReference="false" agencyID="TEST_AGENCY" role="Actual">
+			<str:DataConstraint id="TEST_TR" version="1.0" isExternalReference="false" agencyID="TEST_AGENCY" role="Allowed">
 				<com:Name xml:lang="en">Constraint with TimeRange</com:Name>
 				<str:CubeRegion include="true">
 					<str:KeyValue id="FREQ" validFrom="2020-01-01T00:00:00" validTo="2024-01-01T00:00:00">

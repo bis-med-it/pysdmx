@@ -17,6 +17,7 @@ from pysdmx.io.xml.sdmx21.writer.structure import write
 from pysdmx.model import (
     Agency,
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     Category,
     CategoryScheme,
@@ -25,7 +26,6 @@ from pysdmx.model import (
     Concept,
     ConceptScheme,
     ConstraintAttachment,
-    ConstraintRole,
     Contact,
     CubeKeyValue,
     CubeRegion,
@@ -2177,18 +2177,35 @@ def test_constraint_without_attachment(
     assert result == constraint_no_attachment_sample
 
 
-def test_constraint_actual_role_roundtrip_21():
-    dc = DataConstraint(
-        id="RT",
-        name="rt",
-        agency="AG",
-        version="1.0",
-        role=ConstraintRole.ACTUAL,
+def test_availability_constraint_roundtrip_21(complete_header):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
     )
-    out = write_sdmx(dc, Format.STRUCTURE_SDMX_ML_2_1, prettyprint=True)
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(
+            key_values=[CubeKeyValue(id="FREQ", values=[CubeValue(value="M")])]
+        ),
+        series_count=3,
+        obs_count=42,
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
     assert 'type="Actual"' in out
-    back = read_sdmx(out).get_data_constraints()[0]
-    assert back.role == ConstraintRole.ACTUAL
+    assert 'id="DF_TEST"' in out
+    assert 'agencyID="TEST_AGENCY"' in out
+    assert "Availability for DF_TEST" in out
+    back = read_sdmx(out, validate=True).structures
+    assert len(back) == 1
+    assert isinstance(back[0], AvailabilityConstraint)
+    assert back[0].constraint_attachment == ac.constraint_attachment
+    kv = back[0].cube_region.key_values[0]
+    assert kv.id == "FREQ"
+    assert [v.value for v in kv.values] == ["M"]
+    # series/obs counts cannot be represented in SDMX-ML 2.1.
+    assert back[0].series_count is None
 
 
 def test_constraint_time_range_roundtrip_21():
