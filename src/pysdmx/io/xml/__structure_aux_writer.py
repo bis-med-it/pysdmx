@@ -210,8 +210,8 @@ ANNOTATION_WRITER = OrderedDict(
     {
         "title": "AnnotationTitle",
         "type": "AnnotationType",
-        "text": "AnnotationText",
         "url": "AnnotationURL",
+        "text": "AnnotationText",
     }
 )
 
@@ -326,8 +326,8 @@ def __write_annotable(
         if annotation.id is None:
             outfile += f"{child2}<{ABBR_COM}:Annotation>"
         else:
-            outfile += f"{child2}<{ABBR_COM}:Annotation id={annotation.id!r}>"
-        outfile = outfile.replace("'", '"')
+            annotation_id = __escape_xml(annotation.id)
+            outfile += f'{child2}<{ABBR_COM}:Annotation id="{annotation_id}">'
 
         for attr, label in ANNOTATION_WRITER.items():
             if getattr(annotation, attr, None) is not None:
