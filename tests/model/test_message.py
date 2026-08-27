@@ -5,6 +5,9 @@ import pytest
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.model import (
     AgencyScheme,
+    AvailabilityConstraint,
+    ConstraintAttachment,
+    CubeRegion,
     Organisation,
     RulesetScheme,
     TransformationScheme,
@@ -14,7 +17,7 @@ from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Components, Dataflow, DataStructureDefinition
 from pysdmx.model.dataset import Dataset
-from pysdmx.model.message import Header, Message
+from pysdmx.model.message import Header, Message, StructureMessage
 from pysdmx.model.metadata import MetadataAttribute, MetadataReport
 
 
@@ -338,3 +341,26 @@ def test_no_metadata_report():
 
     with pytest.raises(NotFound):
         msg.get_reports()
+
+
+DF_URN = (
+    "urn:sdmx:org.sdmx.infomodel.datastructure."
+    "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+)
+
+
+def test_structures_accept_availability_constraint():
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[DF_URN]
+        ),
+        cube_region=CubeRegion(key_values=[]),
+    )
+    msg = StructureMessage(structures=[ac])
+    assert msg.get_availability_constraints() == [ac]
+    assert msg.get_data_constraints() == []
+
+
+def test_get_availability_constraints_without_structures():
+    with pytest.raises(NotFound):
+        StructureMessage().get_availability_constraints()

@@ -6,7 +6,8 @@ from typing import Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.model.__base import MaintainableArtefact
+from pysdmx.errors import Invalid
+from pysdmx.model.__base import AnnotableArtefact, MaintainableArtefact
 
 
 class CubeValue(Struct, frozen=True, omit_defaults=True):
@@ -118,3 +119,67 @@ class DataConstraint(MaintainableArtefact, frozen=True, omit_defaults=True):
     constraint_attachment: Optional[ConstraintAttachment] = None
     cube_regions: Sequence[CubeRegion] = ()
     key_sets: Sequence[KeySet] = ()
+
+
+class AvailabilityConstraint(
+    AnnotableArtefact,
+    frozen=True,
+    omit_defaults=True,
+    kw_only=True,
+):
+    """The data actually present for one data-related artefact.
+
+    Mirrors the SDMX 3.1 AvailabilityConstraint: contrary to a
+    DataConstraint, it is not maintainable (no agency, id, version or
+    name) as it is generated dynamically, typically by availability
+    queries. It is attached to exactly one data-related artefact and
+    carries exactly one cube region.
+
+    Attributes:
+        constraint_attachment: The artefact for which availability is
+            described (exactly one data structure, dataflow or
+            provision agreement).
+        cube_region: The values available for the attached artefact.
+        series_count: The number of series matching the query.
+        obs_count: The number of observations matching the query.
+
+    Raises:
+        Invalid: If the constraint is not attached to exactly one data
+            structure, dataflow or provision agreement.
+    """
+
+    constraint_attachment: ConstraintAttachment
+    cube_region: CubeRegion
+    series_count: Optional[int] = None
+    obs_count: Optional[int] = None
+
+    def __post_init__(self) -> None:
+        """Checks the constraint is attached to exactly one artefact."""
+        at = self.constraint_attachment
+        refs = [
+            *(at.data_structures or ()),
+            *(at.dataflows or ()),
+            *(at.provision_agreements or ()),
+        ]
+        if at.data_provider is not None or len(refs) != 1:
+            raise Invalid(
+                "Invalid availability constraint",
+                "An availability constraint must be attached to exactly "
+                "one data structure, dataflow or provision agreement.",
+            )
+
+    @property
+    def reference(self) -> str:
+        """The URN of the artefact for which availability is described."""
+        at = self.constraint_attachment
+        refs = [
+            *(at.data_structures or ()),
+            *(at.dataflows or ()),
+            *(at.provision_agreements or ()),
+        ]
+        return refs[0]
+
+    @property
+    def short_urn(self) -> str:
+        """A synthetic Short URN, used to key availability constraints."""
+        return f"AvailabilityConstraint={self.reference}"

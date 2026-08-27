@@ -18,7 +18,7 @@ if TYPE_CHECKING:  # pragma: no cover
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
-from pysdmx.model import Schema
+from pysdmx.model import AvailabilityConstraint, Schema
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Message
@@ -61,7 +61,9 @@ def read_sdmx(  # noqa: C901
 
     header = None
     result_data: Sequence[Dataset] = []
-    result_structures: Sequence[MaintainableArtefact] = []
+    result_structures: Sequence[
+        Union[MaintainableArtefact, AvailabilityConstraint]
+    ] = []
     result_submission: Sequence[SubmissionResult] = []
     reports: Sequence[MetadataReport] = []
     if read_format == Format.STRUCTURE_SDMX_ML_2_1:
