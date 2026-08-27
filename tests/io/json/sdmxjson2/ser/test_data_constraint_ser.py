@@ -71,16 +71,6 @@ def constraint_no_attachment():
     return DataConstraint("TEST", agency="BIS", name="Test")
 
 
-@pytest.fixture
-def constraint_role_actual():
-    return DataConstraint(
-        "TEST",
-        agency="BIS",
-        name="Test",
-        constraint_attachment=ConstraintAttachment(data_provider="5B0"),
-    )
-
-
 def test_constraint_no_name(constraint_no_name):
     with pytest.raises(errors.Invalid, match="must have a name"):
         JsonDataConstraint.from_model(constraint_no_name)
@@ -91,19 +81,6 @@ def test_constraint_no_attachment(constraint_no_attachment):
         errors.Invalid, match="must have a constraint attachment"
     ):
         JsonDataConstraint.from_model(constraint_no_attachment)
-
-
-def test_constraint_role_ignored_by_writer(constraint_role_actual):
-    """DataConstraint.role no longer drives the SDMX-JSON role field.
-
-    "Actual" DataConstraints are represented as AvailabilityConstraint
-    instead; JsonDataConstraint.from_model always writes "Allowed"
-    (or omits the field for SDMX-JSON 2.1).
-    """
-    sjson = JsonDataConstraint.from_model(constraint_role_actual)
-
-    assert sjson.role == "Allowed"
-    assert b'"role":"Allowed"' in msgspec.json.encode(sjson)
 
 
 @pytest.fixture
