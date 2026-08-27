@@ -5,7 +5,7 @@ from typing import Optional, Sequence, Union
 
 from pysdmx.io.format import Format
 from pysdmx.io.xml.__structure_aux_writer import (
-    STR_DICT_TYPE_LIST_30,
+    STR_DICT_TYPE_LIST_31,
     __write_structures,
     group_structures,
 )
@@ -40,7 +40,7 @@ def write(
     if header is None:
         header = Header()
 
-    content = group_structures(elements, STR_DICT_TYPE_LIST_30)
+    content = group_structures(elements, STR_DICT_TYPE_LIST_31)
 
     # Generating the initial tag with namespaces
     outfile = create_namespaces(type_, prettyprint=prettyprint)

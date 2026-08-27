@@ -39,6 +39,8 @@ from pysdmx.io.xml.__tokens import (
     ATT_LVL,
     ATT_REL,
     ATTACH_GROUP,
+    AVAILABILITY_CONS,
+    AVAILABILITY_CONSTRAINTS,
     BEFORE_PERIOD,
     CATEGORISATION,
     CATEGORISATIONS,
@@ -1405,6 +1407,33 @@ class StructureParser(Struct):
             cube_region=cube_regions[0],
         )
 
+    def __format_availability_constraints(
+        self, json_element: Dict[str, Any]
+    ) -> Dict[str, AvailabilityConstraint]:
+        """Formats an SDMX-ML 3.1 AvailabilityConstraints container."""
+        constraints: Dict[str, AvailabilityConstraint] = {}
+        for element in add_list(json_element[AVAILABILITY_CONS]):
+            if CONS_ATT not in element or CUBE_REGION not in element:
+                raise Invalid(
+                    "Invalid availability constraint",
+                    "An availability constraint requires a constraint "
+                    "attachment and a cube region.",
+                )
+            attachment = self.__format_constraint_attachment(element[CONS_ATT])
+            cube_region = self.__format_cube_region(element[CUBE_REGION])
+            series_count = element.get("seriesCount")
+            obs_count = element.get("obsCount")
+            constraint = AvailabilityConstraint(
+                constraint_attachment=attachment,
+                cube_region=cube_region,
+                series_count=(
+                    int(series_count) if series_count is not None else None
+                ),
+                obs_count=int(obs_count) if obs_count is not None else None,
+            )
+            constraints[constraint.short_urn] = constraint
+        return constraints
+
     def __format_vtl(self, json_vtl: Dict[str, Any]) -> Dict[str, Any]:
         # VTL Scheme Handling
         _format_lower_key("vtlVersion", json_vtl)
@@ -2482,6 +2511,10 @@ class StructureParser(Struct):
                     data, DATA_CONSTRAINTS, DATA_CONS
                 ),
                 "constraints",
+            ),
+            AVAILABILITY_CONSTRAINTS: process_structure(
+                AVAILABILITY_CONSTRAINTS,
+                self.__format_availability_constraints,
             ),
             TRANS_SCHEMES: process_structure(
                 TRANS_SCHEMES,

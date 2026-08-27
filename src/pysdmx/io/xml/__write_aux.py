@@ -11,6 +11,7 @@ from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
 from pysdmx.io.xml.__tokens import (
     ANNOTATIONS_LOW,
+    AVAILABILITY_CONSTRAINTS,
     CONTACTS_LOW,
     CUSTOM_TYPE_SCHEMES,
     CUSTOM_TYPES,
@@ -266,6 +267,14 @@ MSG_CONTENT_PKG_30 = OrderedDict(
         (RULE_SCHEMES, "RulesetSchemes"),
         (TRANS_SCHEMES, "TransformationSchemes"),
         (UDO_SCHEMES, "UserDefinedOperatorSchemes"),
+    ]
+)
+
+
+MSG_CONTENT_PKG_31 = OrderedDict(
+    [
+        *MSG_CONTENT_PKG_30.items(),
+        (AVAILABILITY_CONSTRAINTS, "AvailabilityConstraints"),
     ]
 )
 

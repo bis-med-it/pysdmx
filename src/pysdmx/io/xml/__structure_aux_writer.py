@@ -13,6 +13,7 @@ from pysdmx.io.xml.__tokens import (
     AS_STATUS,
     ATT,
     ATT_REL,
+    AVAILABILITY_CONS,
     BEFORE_PERIOD,
     CATEGORISATION,
     CATEGORY,
@@ -120,6 +121,7 @@ from pysdmx.io.xml.__write_aux import (
     ABBR_STR,
     MSG_CONTENT_PKG_21,
     MSG_CONTENT_PKG_30,
+    MSG_CONTENT_PKG_31,
     __escape_xml,
     __escape_xml_vtl,
     __to_lower_camel_case,
@@ -294,6 +296,12 @@ STR_DICT_TYPE_LIST_30 = {
     ProvisionAgreement: "ProvisionAgreements",
     CategoryScheme: "CategorySchemes",
     Categorisation: "Categorisations",
+}
+
+
+STR_DICT_TYPE_LIST_31 = {
+    **STR_DICT_TYPE_LIST_30,
+    AvailabilityConstraint: "AvailabilityConstraints",
 }
 
 
@@ -1585,6 +1593,29 @@ def __write_data_constraint(
     return outfile
 
 
+def __write_availability_constraint(
+    constraint: AvailabilityConstraint, indent: str
+) -> str:
+    """Writes an SDMX-ML 3.1 AvailabilityConstraint element."""
+    attributes = ""
+    if constraint.series_count is not None:
+        attributes += f' seriesCount="{constraint.series_count}"'
+    if constraint.obs_count is not None:
+        attributes += f' obsCount="{constraint.obs_count}"'
+    label = f"{ABBR_STR}:{AVAILABILITY_CONS}"
+    outfile = f"{indent}<{label}{attributes}>"
+    outfile += __write_constraint_attachment(
+        constraint.constraint_attachment,
+        add_indent(indent),
+        True,
+    )
+    outfile += __write_cube_region(
+        constraint.cube_region, add_indent(indent), True
+    )
+    outfile += f"{indent}</{label}>"
+    return outfile
+
+
 def __write_code_reference(urn: str, indent: str, references_30: bool) -> str:
     """Writes a <str:Code> reference (URN text in 3.x, <Ref> in 2.1)."""
     label = f"{ABBR_STR}:{CODE}"
@@ -1887,16 +1918,12 @@ def __write_scheme(  # noqa: C901
     if scheme == STRUCTURE_MAP:
         return __write_structure_map(item_scheme, indent, references_30)
     if isinstance(item_scheme, AvailabilityConstraint):
-        # references_31 is forwarded (like the DataConstraint branch
-        # below) so no marker is written for a 3.1 target: 3.1 has no
-        # 'role' attribute at all. This loses the Actual/Allowed
-        # distinction for a 3.1 target; Task 3 replaces this branch
-        # with the native 3.1 Availability element.
+        if references_31:
+            return __write_availability_constraint(item_scheme, indent)
         return __write_data_constraint(
             __availability_as_data_constraint(item_scheme),
             indent,
             references_30,
-            references_31,
             availability=True,
         )
     if isinstance(item_scheme, DataConstraint):
@@ -2045,7 +2072,12 @@ def __write_metadata_element(
 
     base_indent = f"{nl}{child2}"
 
-    msg_content = MSG_CONTENT_PKG_30 if references_30 else MSG_CONTENT_PKG_21
+    if references_31:
+        msg_content = MSG_CONTENT_PKG_31
+    elif references_30:
+        msg_content = MSG_CONTENT_PKG_30
+    else:
+        msg_content = MSG_CONTENT_PKG_21
 
     if key in package:
         scheme = __check_sdmx_type(package, key, msg_content)
@@ -2155,7 +2187,12 @@ def __write_structures(
     child1 = "\t" if prettyprint else ""
 
     outfile = f"{nl}{child1}<{ABBR_MSG}:Structures>"
-    msg_content = MSG_CONTENT_PKG_30 if references_30 else MSG_CONTENT_PKG_21
+    if references_31:
+        msg_content = MSG_CONTENT_PKG_31
+    elif references_30:
+        msg_content = MSG_CONTENT_PKG_30
+    else:
+        msg_content = MSG_CONTENT_PKG_21
     for key in msg_content:
         outfile += __write_metadata_element(
             content, key, prettyprint, references_30, references_31

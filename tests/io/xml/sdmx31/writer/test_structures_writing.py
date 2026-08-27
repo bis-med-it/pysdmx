@@ -14,6 +14,7 @@ from pysdmx.io.xml.sdmx31.writer.structure import write
 from pysdmx.model import (
     Agency,
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     Category,
     CategoryScheme,
@@ -22,7 +23,6 @@ from pysdmx.model import (
     Concept,
     ConceptScheme,
     ConstraintAttachment,
-    ConstraintRole,
     CubeKeyValue,
     CubeRegion,
     CubeValue,
@@ -1159,17 +1159,16 @@ def test_category_scheme_31_enrichment_round_trip(complete_header):
     assert top.dataflows[0].name == "Dataflow 1"
 
 
-def test_constraint_role_not_written_31():
-    # SDMX 3.1 removed the constraint role attribute (Actual is deprecated),
-    # so it must not be written. The role is kept in the model only for
-    # SDMX 2.1 / 3.0 compatibility, so an Actual constraint is written as a
-    # plain (allowed) constraint in 3.1 and read back as ALLOWED.
+def test_data_constraint_has_no_marker_31():
+    # SDMX 3.1 removed the constraint role/type attribute entirely (a
+    # DataConstraint is always the allowed values; availability is the
+    # separate AvailabilityConstraint element), so a plain DataConstraint
+    # must carry no marker attribute at all when written to 3.1.
     dc = DataConstraint(
         id="TEST_31",
         name="Test 3.1 constraint",
         agency="TEST_AGENCY",
         version="1.0",
-        role=ConstraintRole.ACTUAL,
         constraint_attachment=ConstraintAttachment(
             data_provider=None,
             dataflows=[
@@ -1189,5 +1188,48 @@ def test_constraint_role_not_written_31():
         dc, sdmx_format=Format.STRUCTURE_SDMX_ML_3_1, prettyprint=True
     )
     assert 'role="' not in result
-    back = read_sdmx(result, validate=True).get_data_constraints()[0]
-    assert back.role == ConstraintRole.ALLOWED
+    assert 'type="' not in result
+    back = read_sdmx(result, validate=True).structures
+    assert isinstance(back[0], DataConstraint)
+
+
+def test_availability_constraint_roundtrip_31(complete_header):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(
+            key_values=[
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
+            ]
+        ),
+        series_count=3,
+        obs_count=42,
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    assert "<str:AvailabilityConstraint" in out
+    assert 'seriesCount="3"' in out
+    assert 'obsCount="42"' in out
+    assert "ContentConstraint" not in out
+    back = read_sdmx(out, validate=True).structures
+    assert back == [ac]
+
+
+def test_availability_constraint_31_without_counts(complete_header):
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None,
+            dataflows=[
+                "urn:sdmx:org.sdmx.infomodel.datastructure."
+                "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+            ],
+        ),
+        cube_region=CubeRegion(key_values=[]),
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    assert "seriesCount" not in out
+    assert read_sdmx(out, validate=True).structures == [ac]
