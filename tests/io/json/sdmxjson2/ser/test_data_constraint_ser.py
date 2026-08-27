@@ -4,8 +4,12 @@ import msgspec
 import pytest
 
 from pysdmx import errors
-from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
+from pysdmx.io.json.sdmxjson2.messages.constraint import (
+    JsonAvailabilityConstraint,
+    JsonDataConstraint,
+)
 from pysdmx.model import (
+    AvailabilityConstraint,
     ConstraintAttachment,
     ConstraintRole,
     CubeKeyValue,
@@ -15,6 +19,43 @@ from pysdmx.model import (
     DataConstraint,
     TimePeriodBoundary,
 )
+
+
+def _make_data_constraint():
+    return DataConstraint(
+        id="CONS",
+        name="Constraint",
+        agency="TEST_AGENCY",
+        version="1.0",
+        # JsonDataConstraint.from_model requires a constraint
+        # attachment (pre-existing validation, unrelated to this
+        # task); mirror the other fixtures in this module.
+        constraint_attachment=ConstraintAttachment(data_provider="5B0"),
+    )
+
+
+def _make_availability():
+    return AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None,
+            dataflows=[
+                "urn:sdmx:org.sdmx.infomodel.datastructure."
+                "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+            ],
+        ),
+        cube_region=CubeRegion(
+            key_values=[
+                # A tuple here, not a list: JsonKeyValue.to_model()
+                # always rebuilds `values` as a tuple, so the round
+                # trip in test_availability_constraint_native_roundtrip
+                # must start from the same container type for msgspec
+                # struct equality to hold.
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
+            ]
+        ),
+        series_count=3,
+        obs_count=42,
+    )
 
 
 @pytest.fixture
@@ -54,11 +95,17 @@ def test_constraint_no_attachment(constraint_no_attachment):
         JsonDataConstraint.from_model(constraint_no_attachment)
 
 
-def test_constraint_role_actual(constraint_role_actual):
+def test_constraint_role_ignored_by_writer(constraint_role_actual):
+    """DataConstraint.role no longer drives the SDMX-JSON role field.
+
+    "Actual" DataConstraints are represented as AvailabilityConstraint
+    instead; JsonDataConstraint.from_model always writes "Allowed"
+    (or omits the field for SDMX-JSON 2.1).
+    """
     sjson = JsonDataConstraint.from_model(constraint_role_actual)
 
-    assert sjson.role == "Actual"
-    assert b'"role":"Actual"' in msgspec.json.encode(sjson)
+    assert sjson.role == "Allowed"
+    assert b'"role":"Allowed"' in msgspec.json.encode(sjson)
 
 
 @pytest.fixture
@@ -156,3 +203,35 @@ def test_constraint_key_value_validity_round_trip(
     assert kv.values[0].value == "A"
     assert kv.valid_from == datetime(2020, 1, 1)
     assert kv.valid_to == datetime(2024, 1, 1)
+
+
+def test_data_constraint_ser_has_allowed_role():
+    ser = JsonDataConstraint.from_model(_make_data_constraint())
+    assert ser.role == "Allowed"
+
+
+def test_data_constraint_ser_without_role_for_2_1():
+    ser = JsonDataConstraint.from_model(
+        _make_data_constraint(), with_role=False
+    )
+    assert ser.role is None
+
+
+def test_availability_as_legacy_data_constraint():
+    ser = JsonDataConstraint.from_availability(_make_availability())
+    assert ser.role == "Actual"
+    assert ser.id == "DF_TEST"
+    assert ser.agency == "TEST_AGENCY"
+    assert ser.name == "Availability for DF_TEST"
+
+
+def test_availability_constraint_native_roundtrip():
+    ac = _make_availability()
+    ser = JsonAvailabilityConstraint.from_model(ac)
+    assert ser.seriesCount == ac.series_count
+    assert ser.to_model() == ac
+
+
+def test_availability_constraint_native_requires_attachment_and_region():
+    with pytest.raises(errors.Invalid, match="cube region"):
+        JsonAvailabilityConstraint().to_model()

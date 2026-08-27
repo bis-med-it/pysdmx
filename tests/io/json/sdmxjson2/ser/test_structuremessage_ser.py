@@ -3,11 +3,28 @@ from datetime import datetime
 import pytest
 
 from pysdmx import errors
+from pysdmx.io import read_sdmx
 from pysdmx.io.json.sdmxjson2.messages.structure import (
     JsonStructureMessage,
     JsonStructures,
 )
-from pysdmx.model import Agency, AgencyScheme, Codelist, Organisation
+from pysdmx.io.json.sdmxjson2.writer.v2_0.structure import (
+    write as write_v2_0,
+)
+from pysdmx.io.json.sdmxjson2.writer.v2_1.structure import (
+    write as write_v2_1,
+)
+from pysdmx.model import (
+    Agency,
+    AgencyScheme,
+    AvailabilityConstraint,
+    Codelist,
+    ConstraintAttachment,
+    CubeKeyValue,
+    CubeRegion,
+    CubeValue,
+    Organisation,
+)
 from pysdmx.model.code import Code
 from pysdmx.model.message import Header, StructureMessage
 
@@ -72,3 +89,60 @@ def test_no_structures(header):
         errors.Invalid, match="structure messages must have structures"
     ):
         JsonStructureMessage.from_model(msg)
+
+
+@pytest.fixture
+def availability_constraint():
+    return AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None,
+            dataflows=[
+                "urn:sdmx:org.sdmx.infomodel.datastructure."
+                "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+            ],
+        ),
+        cube_region=CubeRegion(
+            key_values=[
+                # A tuple, not a list: JsonKeyValue.to_model() always
+                # rebuilds `values` as a tuple, and the 2.1 assertion
+                # below relies on plain equality after a full JSON
+                # round trip.
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
+            ]
+        ),
+        series_count=3,
+        obs_count=42,
+    )
+
+
+def test_availability_constraint_v2_0_writer(availability_constraint):
+    out = write_v2_0([availability_constraint])
+
+    assert '"role": "Actual"' in out
+    assert '"dataConstraints"' in out
+    assert '"availabilityConstraints"' not in out
+
+    msg = read_sdmx(out, validate=False)
+    constraints = msg.get_availability_constraints()
+
+    assert len(constraints) == 1
+    # Only the attachment and cube region survive the legacy 2.0
+    # dataConstraint round trip: there is nowhere for the counts to
+    # live in that payload.
+    assert constraints[0].reference == availability_constraint.reference
+    assert constraints[0].cube_region == availability_constraint.cube_region
+    assert constraints[0].series_count is None
+    assert constraints[0].obs_count is None
+
+
+def test_availability_constraint_v2_1_writer(availability_constraint):
+    out = write_v2_1([availability_constraint])
+
+    assert '"availabilityConstraints"' in out
+    assert '"role"' not in out
+
+    msg = read_sdmx(out, validate=False)
+    constraints = msg.get_availability_constraints()
+
+    assert len(constraints) == 1
+    assert constraints[0] == availability_constraint

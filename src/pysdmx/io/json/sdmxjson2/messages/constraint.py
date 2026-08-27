@@ -1,19 +1,20 @@
 """Collection of SDMX-JSON schemas for content constraints."""
 
 from datetime import datetime
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Union, cast
 
 from msgspec import Struct
 
 from pysdmx import errors
+from pysdmx.errors import Invalid
 from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     MaintainableType,
 )
 from pysdmx.model import (
     Agency,
+    AvailabilityConstraint,
     ConstraintAttachment,
-    ConstraintRole,
     CubeKeyValue,
     CubeRegion,
     CubeTimeRange,
@@ -24,7 +25,7 @@ from pysdmx.model import (
     KeySet,
     TimePeriodBoundary,
 )
-from pysdmx.util import is_final
+from pysdmx.util import Reference, is_final, parse_urn
 
 
 class JsonValue(Struct, frozen=True, omit_defaults=True):
@@ -254,13 +255,41 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
     cubeRegions: Optional[Sequence[JsonCubeRegion]] = None
     dataKeySets: Optional[Sequence[JsonKeySet]] = None
 
-    def to_model(self) -> DataConstraint:
-        """Converts a JsonDataConstraint to a pysdmx Data Constraint."""
+    def to_model(self) -> Union[DataConstraint, AvailabilityConstraint]:
+        """Converts a JsonDataConstraint to a pysdmx constraint.
+
+        A constraint with role "Actual" is mapped to an
+        AvailabilityConstraint; any other role (or its absence) is
+        mapped to a DataConstraint.
+
+        Raises:
+            Invalid: If a constraint with role "Actual" has key sets,
+                or does not have exactly one cube region and one
+                attached artefact.
+        """
         at = (
             self.constraintAttachment.to_model()
             if self.constraintAttachment
             else None
         )
+        if self.role == "Actual":
+            regions = [r.to_model() for r in (self.cubeRegions or ())]
+            if self.dataKeySets:
+                raise Invalid(
+                    "Invalid availability constraint",
+                    "An Actual constraint with key sets cannot be "
+                    "represented as an availability constraint.",
+                )
+            if len(regions) != 1 or at is None:
+                raise Invalid(
+                    "Invalid availability constraint",
+                    "An Actual constraint must have exactly one cube "
+                    "region and one attached artefact.",
+                )
+            return AvailabilityConstraint(
+                constraint_attachment=at,
+                cube_region=regions[0],
+            )
         return DataConstraint(
             id=self.id,
             name=self.name,
@@ -272,11 +301,6 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             is_final=is_final(self.version),
             valid_from=self.validFrom,
             valid_to=self.validTo,
-            role=(
-                ConstraintRole(self.role)
-                if self.role
-                else ConstraintRole.ALLOWED
-            ),
             constraint_attachment=at,
             cube_regions=[r.to_model() for r in self.cubeRegions]
             if self.cubeRegions
@@ -287,8 +311,19 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
         )
 
     @classmethod
-    def from_model(self, cons: DataConstraint) -> "JsonDataConstraint":
-        """Converts a pysdmx constraint to an SDMX-JSON one."""
+    def from_model(
+        self, cons: DataConstraint, with_role: bool = True
+    ) -> "JsonDataConstraint":
+        """Converts a pysdmx constraint to an SDMX-JSON one.
+
+        Args:
+            cons: The data constraint to be converted.
+            with_role: Whether to write the legacy SDMX-JSON 2.0
+                ``role`` field (always ``"Allowed"``, as constraints
+                with role ``"Actual"`` are represented as
+                AvailabilityConstraint instead). SDMX-JSON 2.1 removed
+                the field, so pass ``False`` when writing 2.1.
+        """
         crs = (
             [JsonCubeRegion.from_model(r) for r in cons.cube_regions]
             if cons.cube_regions
@@ -327,12 +362,113 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             isExternalReference=cons.is_external_reference,
             validFrom=cons.valid_from,
             validTo=cons.valid_to,
-            role=cons.role.value,
+            role="Allowed" if with_role else None,
             constraintAttachment=JsonConstraintAttachment.from_model(
                 cons.constraint_attachment
             ),
             cubeRegions=crs,
             dataKeySets=dks,
+        )
+
+    @classmethod
+    def from_availability(
+        cls, cons: AvailabilityConstraint
+    ) -> "JsonDataConstraint":
+        """Creates a legacy Actual payload for an availability constraint.
+
+        SDMX-JSON 2.0 has no availability collection, so the constraint
+        is written as a dataConstraint with role "Actual" and an
+        identification synthesised from the attached artefact.
+        """
+        ref = cast(Reference, parse_urn(cons.reference))
+        return JsonDataConstraint(
+            id=ref.id,
+            name=f"Availability for {ref.id}",
+            agency=ref.agency,
+            version=ref.version,
+            role="Actual",
+            constraintAttachment=JsonConstraintAttachment.from_model(
+                cons.constraint_attachment
+            ),
+            cubeRegions=[JsonCubeRegion.from_model(cons.cube_region)],
+        )
+
+
+class JsonAvailabilityConstraintAttachment(
+    Struct, frozen=True, omit_defaults=True
+):
+    """SDMX-JSON payload for an availability constraint attachment."""
+
+    dataStructure: Optional[str] = None
+    dataflow: Optional[str] = None
+    provisionAgreement: Optional[str] = None
+
+    def to_model(self) -> ConstraintAttachment:
+        """Converts the payload to a pysdmx constraint attachment."""
+        return ConstraintAttachment(
+            data_provider=None,
+            data_structures=(
+                [self.dataStructure] if self.dataStructure else None
+            ),
+            dataflows=[self.dataflow] if self.dataflow else None,
+            provision_agreements=(
+                [self.provisionAgreement] if self.provisionAgreement else None
+            ),
+        )
+
+    @classmethod
+    def from_model(
+        cls, at: ConstraintAttachment
+    ) -> "JsonAvailabilityConstraintAttachment":
+        """Converts a pysdmx constraint attachment to the payload."""
+        return JsonAvailabilityConstraintAttachment(
+            dataStructure=(
+                at.data_structures[0] if at.data_structures else None
+            ),
+            dataflow=at.dataflows[0] if at.dataflows else None,
+            provisionAgreement=(
+                at.provision_agreements[0] if at.provision_agreements else None
+            ),
+        )
+
+
+class JsonAvailabilityConstraint(Struct, frozen=True, omit_defaults=True):
+    """SDMX-JSON 2.1 payload for an availability constraint."""
+
+    constraintAttachment: Optional[JsonAvailabilityConstraintAttachment] = None
+    cubeRegion: Optional[JsonCubeRegion] = None
+    seriesCount: Optional[int] = None
+    obsCount: Optional[int] = None
+
+    def to_model(self) -> AvailabilityConstraint:
+        """Converts the payload to a pysdmx availability constraint."""
+        if self.constraintAttachment is None or self.cubeRegion is None:
+            raise Invalid(
+                "Invalid availability constraint",
+                "An availability constraint requires a constraint "
+                "attachment and a cube region.",
+            )
+        return AvailabilityConstraint(
+            constraint_attachment=self.constraintAttachment.to_model(),
+            cube_region=self.cubeRegion.to_model(),
+            series_count=self.seriesCount,
+            obs_count=self.obsCount,
+        )
+
+    @classmethod
+    def from_model(
+        cls, cons: AvailabilityConstraint
+    ) -> "JsonAvailabilityConstraint":
+        """Converts a pysdmx availability constraint to the payload."""
+        return JsonAvailabilityConstraint(
+            constraintAttachment=(
+                JsonAvailabilityConstraintAttachment.from_model(
+                    cons.constraint_attachment
+                )
+            ),
+            cubeRegion=JsonCubeRegion.from_model(cons.cube_region),
+            seriesCount=cons.series_count,
+            obsCount=cons.obs_count,
         )
 
 
@@ -341,7 +477,9 @@ class JsonDataConstraints(Struct, frozen=True, omit_defaults=True):
 
     dataConstraints: Sequence[JsonDataConstraint] = ()
 
-    def to_model(self) -> Sequence[DataConstraint]:
+    def to_model(
+        self,
+    ) -> Sequence[Union[DataConstraint, AvailabilityConstraint]]:
         """Returns the requested data constraints."""
         return [cc.to_model() for cc in self.dataConstraints]
 
@@ -351,6 +489,8 @@ class JsonDataConstraintMessage(Struct, frozen=True, omit_defaults=True):
 
     data: JsonDataConstraints
 
-    def to_model(self) -> Sequence[DataConstraint]:
+    def to_model(
+        self,
+    ) -> Sequence[Union[DataConstraint, AvailabilityConstraint]]:
         """Returns the requested data constraints."""
         return self.data.to_model()
