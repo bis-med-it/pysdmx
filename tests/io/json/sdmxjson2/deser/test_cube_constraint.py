@@ -139,6 +139,28 @@ def test_cube_deser_role_actual_ignores_non_numeric_metric_title(body):
     assert cube.annotations[0].title == "not-a-number"
 
 
+def test_cube_deser_role_actual_ignores_unicode_digit_title(body):
+    # str.isdigit() returns True for characters such as the
+    # superscript two ("²") that int() still cannot parse; the
+    # guard must not crash on those either.
+    data = json.loads(body)
+    constraint = data["data"]["dataConstraints"][0]
+    constraint["role"] = "Actual"
+    constraint["annotations"] = [
+        {"id": "obs_count", "title": "²", "type": "sdmx_metrics"},
+    ]
+    modified_body = json.dumps(data).encode()
+
+    res = msgspec.json.Decoder(JsonDataConstraintMessage).decode(modified_body)
+    cubes = res.to_model()
+
+    cube = cubes[0]
+    assert isinstance(cube, AvailabilityConstraint)
+    assert cube.obs_count is None
+    assert len(cube.annotations) == 1
+    assert cube.annotations[0].title == "²"
+
+
 def test_cube_deser_without_role(body):
     data = json.loads(body)
     constraint = data["data"]["dataConstraints"][0]

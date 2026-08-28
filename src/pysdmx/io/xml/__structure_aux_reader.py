@@ -1565,7 +1565,7 @@ class StructureParser(Struct):
                 a.type == "sdmx_metrics"
                 and a.id in ("series_count", "obs_count")
                 and a.title is not None
-                and a.title.isdigit()
+                and a.title.isdecimal()
             ):
                 if a.id == "series_count":
                     series_count = int(a.title)

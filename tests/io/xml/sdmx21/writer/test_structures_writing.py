@@ -2253,6 +2253,35 @@ def test_availability_constraint_21_ignores_bad_metric_title(
     assert back[0].annotations[0].title == "not-a-number"
 
 
+def test_availability_constraint_21_ignores_unicode_digit_title(
+    complete_header,
+):
+    # str.isdigit() returns True for characters such as the
+    # superscript two ("²") that int() still cannot parse; the guard
+    # must not crash on those either.
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(
+            key_values=[CubeKeyValue(id="FREQ", values=[CubeValue(value="M")])]
+        ),
+        series_count=3,
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    corrupted = out.replace(
+        "<com:AnnotationTitle>3</com:AnnotationTitle>",
+        "<com:AnnotationTitle>²</com:AnnotationTitle>",
+    )
+    back = read_sdmx(corrupted, validate=True).structures
+    assert back[0].series_count is None
+    assert back[0].annotations[0].title == "²"
+
+
 def test_availability_constraint_21_no_counts_writes_no_metrics(
     complete_header,
 ):
