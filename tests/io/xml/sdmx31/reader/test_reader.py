@@ -518,3 +518,13 @@ def test_availability_constraint_31_incomplete(samples_folder):
         Invalid, match="requires a constraint attachment and a cube region"
     ):
         read_sdmx(data_path, validate=False)
+
+
+def test_availability_constraint_31_duplicate_is_invalid(samples_folder):
+    # Two AvailabilityConstraints for the same artefact share a short
+    # URN; silently keeping only the last one would lose data.
+    data_path = samples_folder / "availability_constraint_duplicate.xml"
+    with pytest.raises(
+        Invalid, match="Two availability constraints for the same"
+    ):
+        read_sdmx(data_path, validate=True)

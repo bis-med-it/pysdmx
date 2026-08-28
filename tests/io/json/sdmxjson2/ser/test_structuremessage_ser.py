@@ -172,3 +172,11 @@ def test_availability_constraint_v2_1_writer_with_annotation(
 
     assert len(constraints) == 1
     assert constraints[0] == ac
+
+
+def test_availability_constraint_duplicate_is_invalid(availability_constraint):
+    other = msgspec.structs.replace(availability_constraint, series_count=5)
+    with pytest.raises(
+        errors.Invalid, match="Two availability constraints for the same"
+    ):
+        write_v2_1([availability_constraint, other])

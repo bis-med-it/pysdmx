@@ -191,9 +191,8 @@ class AvailabilityConstraint(
             The short URN is derived solely from the referenced
             artefact, not from the constraint's content. Two
             AvailabilityConstraint instances attached to the same
-            artefact therefore share a short URN; when several such
-            instances are placed in a URN-keyed container (e.g. a
-            dict, or the structure writers, which group artefacts by
-            short URN), a later one replaces an earlier one.
+            artefact therefore share a short URN; the readers and the
+            structure writers reject such duplicates with ``Invalid``
+            instead of silently keeping only the last one.
         """
         return f"AvailabilityConstraint={self.reference}"

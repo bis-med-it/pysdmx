@@ -1252,6 +1252,28 @@ def test_availability_constraint_roundtrip_31_with_annotation(
     assert back == [ac]
 
 
+def test_availability_constraint_31_duplicate_is_invalid(complete_header):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    attachment = ConstraintAttachment(data_provider=None, dataflows=[urn])
+    ac1 = AvailabilityConstraint(
+        constraint_attachment=attachment,
+        cube_region=CubeRegion(key_values=[]),
+        series_count=3,
+    )
+    ac2 = AvailabilityConstraint(
+        constraint_attachment=attachment,
+        cube_region=CubeRegion(key_values=[]),
+        series_count=5,
+    )
+    with pytest.raises(
+        Invalid, match="Two availability constraints for the same"
+    ):
+        write([ac1, ac2], header=complete_header, prettyprint=True)
+
+
 def test_availability_constraint_31_without_counts(complete_header):
     ac = AvailabilityConstraint(
         constraint_attachment=ConstraintAttachment(

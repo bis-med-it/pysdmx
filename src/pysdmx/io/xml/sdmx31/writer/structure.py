@@ -6,6 +6,7 @@ from typing import Optional, Sequence, Union
 from pysdmx.io.format import Format
 from pysdmx.io.xml.__structure_aux_writer import (
     STR_DICT_TYPE_LIST_31,
+    __check_no_duplicate_availability,
     __write_structures,
     group_structures,
 )
@@ -38,6 +39,7 @@ def write(
         The XML string if output_path is empty, None otherwise
     """
     type_ = Format.STRUCTURE_SDMX_ML_3_1
+    __check_no_duplicate_availability(structures)
     elements = {structure.short_urn: structure for structure in structures}
     if header is None:
         header = Header()

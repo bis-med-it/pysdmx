@@ -1,6 +1,6 @@
 """Collection of SDMX-JSON schemas for generic structure messages."""
 
-from typing import Literal, Sequence, Union
+from typing import Literal, Sequence, Set, Union
 
 from msgspec import Struct
 
@@ -173,12 +173,29 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
         msg: StructureMessage,
         msg_version: Literal["2.0.0", "2.1"] = "2.0.0",
     ) -> "JsonStructures":
-        """Create an SDMX-JSON structures from a list of artefacts."""
+        """Create an SDMX-JSON structures from a list of artefacts.
+
+        Raises:
+            Invalid: If the message has no structures, or if two
+                availability constraints are attached to the same
+                artefact (they would share a short URN, so one would
+                silently overwrite the other on read).
+        """
         if not msg.structures:
             raise errors.Invalid(
                 "Invalid input",
                 "SDMX-JSON structure messages must have structures.",
             )
+        avail_constraints = msg.get_availability_constraints()
+        seen_urns: Set[str] = set()
+        for ac in avail_constraints:
+            if ac.short_urn in seen_urns:
+                raise errors.Invalid(
+                    "Invalid input",
+                    "Two availability constraints for the same "
+                    f"artefact: {ac.reference}.",
+                )
+            seen_urns.add(ac.short_urn)
         codelists = tuple(
             [JsonCodelist.from_model(c) for c in msg.get_codelists()]
         )
@@ -291,7 +308,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             )
             avail = tuple(
                 JsonAvailabilityConstraint.from_model(c)
-                for c in msg.get_availability_constraints()
+                for c in avail_constraints
             )
         else:
             constraints = tuple(
@@ -301,7 +318,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
                 ]
                 + [
                     JsonDataConstraint.from_availability(c)
-                    for c in msg.get_availability_constraints()
+                    for c in avail_constraints
                 ]
             )
             avail = ()

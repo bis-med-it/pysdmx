@@ -1,7 +1,7 @@
 """Module for writing metadata to XML files."""
 
 from collections import OrderedDict
-from typing import Any, Dict, Optional, Sequence, Union, cast
+from typing import Any, Dict, Optional, Sequence, Set, Union, cast
 
 from msgspec.structs import replace
 
@@ -2410,6 +2410,37 @@ def __export_intern_data(data: Dict[str, Any]) -> str:
     outfile += __get_outfile(data, "Description")
 
     return outfile
+
+
+def __check_no_duplicate_availability(
+    structures: Sequence[Union[MaintainableArtefact, AvailabilityConstraint]],
+) -> None:
+    """Rejects a collection with duplicate availability constraints.
+
+    Two AvailabilityConstraint instances attached to the same artefact
+    share a short URN (it carries no other identity); grouping
+    ``structures`` by short URN, as the callers of this function go on
+    to do, would then silently keep only the last one, so this is
+    rejected up front instead.
+
+    Args:
+        structures: The maintainable artefacts and availability
+            constraints to be written.
+
+    Raises:
+        Invalid: If two AvailabilityConstraints share a short URN.
+    """
+    seen: Set[str] = set()
+    for structure in structures:
+        if not isinstance(structure, AvailabilityConstraint):
+            continue
+        if structure.short_urn in seen:
+            raise Invalid(
+                "Invalid input",
+                "Two availability constraints for the same artefact: "
+                f"{structure.reference}.",
+            )
+        seen.add(structure.short_urn)
 
 
 def group_structures(

@@ -1628,7 +1628,15 @@ class StructureParser(Struct):
     def __format_availability_constraints(
         self, json_element: Dict[str, Any]
     ) -> Dict[str, AvailabilityConstraint]:
-        """Formats an SDMX-ML 3.1 AvailabilityConstraints container."""
+        """Formats an SDMX-ML 3.1 AvailabilityConstraints container.
+
+        Raises:
+            Invalid: If an availability constraint has no constraint
+                attachment or cube region, or if two availability
+                constraints are attached to the same artefact (they
+                would share a short URN, so one would silently
+                overwrite the other).
+        """
         constraints: Dict[str, AvailabilityConstraint] = {}
         for element in add_list(json_element[AVAILABILITY_CONS]):
             if CONS_ATT not in element or CUBE_REGION not in element:
@@ -1651,6 +1659,12 @@ class StructureParser(Struct):
                 ),
                 obs_count=int(obs_count) if obs_count is not None else None,
             )
+            if constraint.short_urn in constraints:
+                raise Invalid(
+                    "Invalid availability constraint",
+                    "Two availability constraints for the same "
+                    f"artefact: {constraint.reference}.",
+                )
             constraints[constraint.short_urn] = constraint
         return constraints
 
