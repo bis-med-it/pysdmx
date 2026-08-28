@@ -56,7 +56,7 @@ class FusionRepresentationMapping(Struct, frozen=True):
         """Returns the requested value maps."""
         if is_multi:
             return MultiValueMap(
-                source=tuple([src.to_model() for src in self.source]),
+                source=tuple(src.to_model() for src in self.source),
                 target=tuple(self.target),
                 valid_from=(
                     self.__get_dt(self.validFrom) if self.validFrom else None
@@ -198,11 +198,11 @@ class FusionStructureMap(Struct, frozen=True):
         rms: Sequence[FusionRepresentationMap],
     ) -> SM:
         """Returns the requested mapping definition."""
-        m1 = tuple([tpm.to_model() for tpm in self.timePatternMaps])
-        m2 = tuple([cm.to_model(rms) for cm in self.componentMaps])
-        m3 = tuple([FixedValueMap(k, v) for k, v in self.fixedOutput.items()])
+        m1 = tuple(tpm.to_model() for tpm in self.timePatternMaps)
+        m2 = tuple(cm.to_model(rms) for cm in self.componentMaps)
+        m3 = tuple(FixedValueMap(k, v) for k, v in self.fixedOutput.items())
         m4 = tuple(
-            [FixedValueMap(k, v, "source") for k, v in self.fixedInput.items()]
+            FixedValueMap(k, v, "source") for k, v in self.fixedInput.items()
         )
 
         return SM(

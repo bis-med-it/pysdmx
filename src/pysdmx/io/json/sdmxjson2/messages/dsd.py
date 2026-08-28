@@ -571,7 +571,7 @@ class JsonDataStructure(MaintainableType, frozen=True, omit_defaults=True):
             description=self.description,
             version=self.version,
             is_final=is_final(self.version),
-            annotations=tuple([a.to_model() for a in self.annotations]),
+            annotations=tuple(a.to_model() for a in self.annotations),
             is_external_reference=self.isExternalReference,
             valid_from=self.validFrom,
             valid_to=self.validTo,

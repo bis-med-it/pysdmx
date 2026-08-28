@@ -80,7 +80,7 @@ def __format_report(metadata_set: Dict[str, Any]) -> MetadataReport:
     )
     mpa = _extract_text(metadata_set[MPA]) if MPA in metadata_set else None
     targets = (
-        tuple([_extract_text(t) for t in add_list(metadata_set[TARGET])])
+        tuple(_extract_text(t) for t in add_list(metadata_set[TARGET]))
         if TARGET in metadata_set
         else ()
     )

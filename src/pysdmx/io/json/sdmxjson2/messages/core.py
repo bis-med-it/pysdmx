@@ -35,21 +35,15 @@ def tuple_contacts(contacts: Sequence[Contact]) -> Sequence[Contact]:
     Returns:
         The same contacts, with tuple-typed sequence fields.
     """
-    # tuple([...]) rather than a generator: on Python 3.10 an empty
-    # tuple built from a generator is not interned, so msgspec's
-    # omit_defaults would emit [] (which the schema rejects as
-    # empty).
     return tuple(
-        [
-            msgspec.structs.replace(
-                c,
-                telephones=tuple(c.telephones) if c.telephones else None,
-                faxes=tuple(c.faxes) if c.faxes else None,
-                uris=tuple(c.uris) if c.uris else None,
-                emails=tuple(c.emails) if c.emails else None,
-            )
-            for c in contacts
-        ]
+        msgspec.structs.replace(
+            c,
+            telephones=tuple(c.telephones) if c.telephones else None,
+            faxes=tuple(c.faxes) if c.faxes else None,
+            uris=tuple(c.uris) if c.uris else None,
+            emails=tuple(c.emails) if c.emails else None,
+        )
+        for c in contacts
     )
 
 

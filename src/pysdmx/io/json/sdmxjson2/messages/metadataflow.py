@@ -29,7 +29,7 @@ class JsonMetadataflow(MaintainableType, frozen=True, omit_defaults=True):
             version=self.version,
             structure=self.structure,
             targets=tuple(self.targets),
-            annotations=tuple([a.to_model() for a in self.annotations]),
+            annotations=tuple(a.to_model() for a in self.annotations),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             valid_from=self.validFrom,
