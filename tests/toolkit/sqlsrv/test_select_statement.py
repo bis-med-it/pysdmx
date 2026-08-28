@@ -30,6 +30,73 @@ def test_select_statement():
     assert values[0] == "UY2"
 
 
+def test_select_statement_case_mode_sensitive():
+    schema_name = "SDMX"
+    table_name = "BOP"
+    cols = ["SKEY", "TIME_PERIOD"]
+    flt = TextFilter("PRV", Operator.LIKE, "uy%")
+
+    select, values = get_select_statement(
+        table_name,
+        schema_name,
+        flt,
+        cols,
+        case_mode="sensitive",
+    )
+
+    assert select == (
+        'SELECT "SKEY", "TIME_PERIOD" FROM SDMX.BOP WHERE "PRV" LIKE ?'
+    )
+    assert len(values) == 1
+    assert values[0] == "uy%"
+
+
+def test_select_statement_case_mode_insensitive():
+    schema_name = "SDMX"
+    table_name = "BOP"
+    cols = ["SKEY"]
+    flt = TextFilter("PRV", Operator.LIKE, "uy%")
+
+    select, values = get_select_statement(
+        table_name,
+        schema_name,
+        flt,
+        cols,
+        case_mode="insensitive",
+    )
+
+    assert select == 'SELECT "SKEY" FROM SDMX.BOP WHERE UPPER("PRV") LIKE ?'
+    assert len(values) == 1
+    assert values[0] == "UY%"
+
+
+def test_select_statement_case_mode_default():
+    schema_name = "SDMX"
+    table_name = "BOP"
+    cols = ["SKEY"]
+    flt = TextFilter("PRV", Operator.NOT_LIKE, "uy%")
+
+    select, values = get_select_statement(
+        table_name,
+        schema_name,
+        flt,
+        cols,
+        case_mode="default",
+    )
+
+    assert select == 'SELECT "SKEY" FROM SDMX.BOP WHERE "PRV" NOT LIKE ?'
+    assert len(values) == 1
+    assert values[0] == "uy%"
+
+
+def test_select_statement_invalid_case_mode():
+    schema_name = "SDMX"
+    table_name = "BOP"
+
+    with pytest.raises(errors.Invalid):
+        get_select_statement(table_name, schema_name, case_mode="mixed")
+
+
 def test_invalid_schema_name():
     schema_name = '"; DROP TABLE users; --'
     table_name = "orders"

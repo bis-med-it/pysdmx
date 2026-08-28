@@ -1,6 +1,6 @@
 """Collection of SDMX-JSON schemas for SDMX-REST MSD queries."""
 
-from typing import List, Literal, Optional, Sequence, Union
+from typing import Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -76,7 +76,9 @@ class JsonMetadataAttribute(Struct, frozen=True, omit_defaults=True):
             local_codes=codes,
             array_def=ab,
             local_enum_ref=local_enum_ref,
-            components=[a.to_model(cs, cls) for a in self.metadataAttributes],
+            components=tuple(
+                a.to_model(cs, cls) for a in self.metadataAttributes
+            ),
         )
 
     @classmethod
@@ -114,9 +116,9 @@ class JsonMetadataAttributes(Struct, frozen=True, omit_defaults=True):
 
     def to_model(
         self, cs: Sequence[JsonConceptScheme], cls: Sequence[Codelist]
-    ) -> List[MetadataComponent]:
+    ) -> Sequence[MetadataComponent]:
         """Returns the list of metadata attributes."""
-        return [a.to_model(cs, cls) for a in self.metadataAttributes]
+        return tuple(a.to_model(cs, cls) for a in self.metadataAttributes)
 
     @classmethod
     def from_model(
@@ -147,7 +149,7 @@ class JsonMetadataComponents(Struct, frozen=True, omit_defaults=True):
         comps = (
             self.metadataAttributeList.to_model(cs, enums)
             if self.metadataAttributeList
-            else []
+            else ()
         )
         return comps
 
@@ -183,7 +185,7 @@ class JsonMetadataStructure(MaintainableType, frozen=True, omit_defaults=True):
             agency=self.agency,
             description=self.description,
             version=self.version,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple(a.to_model() for a in self.annotations),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             valid_from=self.validFrom,

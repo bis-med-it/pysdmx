@@ -68,7 +68,7 @@ def _extract_metrics(
 class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a dataflow."""
 
-    structure: str = ""
+    structure: Optional[str] = None
 
     def to_model(
         self,
@@ -80,7 +80,7 @@ class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
     ) -> Dataflow:
         """Converts a FusionDataflow to a standard dataflow."""
         dsd: Optional[Union[DataStructureDefinition, str]] = None
-        if len(dsds) > 0:
+        if len(dsds) > 0 and self.structure:
             ref = parse_urn(self.structure)
             m = [
                 d

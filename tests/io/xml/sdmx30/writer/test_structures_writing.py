@@ -39,8 +39,12 @@ from pysdmx.model import (
     Facets,
     FromVtlMapping,
     KeySet,
+    MetadataComponent,
+    Metadataflow,
     MetadataProvider,
     MetadataProviderScheme,
+    MetadataProvisionAgreement,
+    MetadataStructure,
     NamePersonalisation,
     NamePersonalisationScheme,
     Ruleset,
@@ -63,6 +67,7 @@ from pysdmx.model.__base import (
     Reference,
 )
 from pysdmx.model.dataflow import (
+    ArrayBoundaries,
     Component,
     Components,
     Dataflow,
@@ -1633,6 +1638,71 @@ def test_write_group_without_urn(datastructure):
     read_sdmx(result, validate=True)
 
 
+CONCEPT_URN_PREFIX = "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept="
+CL_FREQ_URN = "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
+
+
+@pytest.fixture
+def metadata_structure():
+    return MetadataStructure(
+        id="MSD_TEST",
+        name="Test MSD",
+        agency="BIS",
+        version="1.0",
+        components=(
+            MetadataComponent(
+                id="CONTACT",
+                is_presentational=True,
+                concept=ItemReference(
+                    sdmx_type="Concept",
+                    agency="BIS",
+                    id="CS",
+                    version="1.0",
+                    item_id="CONTACT",
+                ),
+                components=(
+                    MetadataComponent(
+                        id="FREQ",
+                        concept=ItemReference(
+                            sdmx_type="Concept",
+                            agency="BIS",
+                            id="CS",
+                            version="1.0",
+                            item_id="FREQ",
+                        ),
+                        local_enum_ref=CL_FREQ_URN,
+                    ),
+                ),
+            ),
+            MetadataComponent(
+                id="NOTE",
+                concept=ItemReference(
+                    sdmx_type="Concept",
+                    agency="BIS",
+                    id="CS",
+                    version="1.0",
+                    item_id="NOTE",
+                ),
+                local_dtype=DataType.STRING,
+                local_facets=Facets(max_length="500"),
+                array_def=ArrayBoundaries(0, None),
+            ),
+            MetadataComponent(
+                id="KEYWORD",
+                concept=ItemReference(
+                    sdmx_type="Concept",
+                    agency="BIS",
+                    id="CS",
+                    version="1.0",
+                    item_id="KEYWORD",
+                ),
+                # Finite upper bound exercises the maxOccurs="N" path
+                array_def=ArrayBoundaries(1, 5),
+            ),
+        ),
+    )
+
+
 @pytest.fixture
 def category_scheme_nested_30():
     return CategoryScheme(
@@ -1657,6 +1727,118 @@ def category_scheme_nested_30():
             Category(id="OTHER", name="Other"),
         ),
     )
+
+
+@pytest.fixture
+def metadataflow():
+    return Metadataflow(
+        id="MDF_TEST",
+        name="Test Metadataflow",
+        agency="BIS",
+        version="1.0",
+        structure=(
+            "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+            "MetadataStructure=BIS:MSD_TEST(1.0)"
+        ),
+        targets=("urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=*:*(*)",),
+    )
+
+
+@pytest.fixture
+def metadata_provision_agreement():
+    return MetadataProvisionAgreement(
+        id="MPA_TEST",
+        name="Test MPA",
+        agency="BIS",
+        version="1.0",
+        metadataflow=(
+            "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+            "Metadataflow=BIS:MDF_TEST(1.0)"
+        ),
+        metadata_provider=(
+            "urn:sdmx:org.sdmx.infomodel.base."
+            "MetadataProvider=BIS:METADATA_PROVIDERS(1.0).PROV1"
+        ),
+    )
+
+
+@pytest.mark.xml
+def test_metadata_structure_30(complete_header, metadata_structure):
+    result = write(
+        [metadata_structure], header=complete_header, prettyprint=True
+    )
+    assert "<str:MetadataStructures>" in result
+    assert "<str:MetadataAttributeList" in result
+    assert 'isPresentational="true"' in result
+    assert 'maxOccurs="unbounded"' in result
+    assert 'maxOccurs="5"' in result
+    assert "<str:Enumeration>" in result
+    assert "<str:TextFormat" in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == metadata_structure
+
+
+@pytest.mark.xml
+def test_metadataflow_30(complete_header, metadataflow):
+    result = write([metadataflow], header=complete_header, prettyprint=True)
+    assert "<str:Metadataflows>" in result
+    assert (
+        "<str:Structure>urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "MetadataStructure=BIS:MSD_TEST(1.0)</str:Structure>"
+    ) in result
+    assert "<str:Target>" in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    # Without an MSD in the document, the structure stays a full URN string
+    assert re_read == metadataflow
+
+
+@pytest.mark.xml
+def test_metadataflow_30_no_structure(complete_header):
+    flow = Metadataflow(
+        id="MDF_NO_STRUCTURE",
+        name="No structure",
+        agency="BIS",
+        version="1.0",
+        structure=None,
+        targets=("urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=*:*(*)",),
+    )
+    result = write([flow], header=complete_header, prettyprint=True)
+    assert "<str:Structure>" not in result
+    assert "<str:Target>" in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == flow
+
+
+@pytest.mark.xml
+def test_metadataflow_30_resolved_structure(
+    complete_header, metadataflow, metadata_structure
+):
+    flow = metadataflow.__replace__(structure=metadata_structure)
+    result = write(
+        [metadata_structure, flow], header=complete_header, prettyprint=True
+    )
+    re_read = read_sdmx(result, validate=True)
+    flows = re_read.get_metadataflows()
+    assert len(flows) == 1
+    # The structure is resolved back to the MSD object present in the message
+    assert isinstance(flows[0].structure, MetadataStructure)
+    assert flows[0].structure == metadata_structure
+
+
+@pytest.mark.xml
+def test_metadata_provision_agreement_30(
+    complete_header, metadata_provision_agreement
+):
+    result = write(
+        [metadata_provision_agreement],
+        header=complete_header,
+        prettyprint=True,
+    )
+    assert "<str:MetadataProvisionAgreements>" in result
+    assert "<str:Metadataflow>" in result
+    assert "<str:MetadataProvider>" in result
+    re_read = read_sdmx(result, validate=True).structures[0]
+    assert re_read == metadata_provision_agreement
 
 
 def test_category_scheme_30_round_trip(

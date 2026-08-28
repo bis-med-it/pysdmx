@@ -115,6 +115,24 @@ def read_sdmx(  # noqa: C901
         ref_msg = read_refmeta(input_str, validate=validate)
         header = ref_msg.header
         reports = ref_msg.get_reports()
+    elif read_format == Format.REFMETA_SDMX_ML_3_0:
+        from pysdmx.io.xml.header import read as read_header
+        from pysdmx.io.xml.sdmx30.reader.metadata import (
+            read as read_refmeta_ml,
+        )
+
+        header = read_header(input_str, validate=validate)
+        # SDMX-ML 3.0 reference metadata (GenericMetadata)
+        reports = read_refmeta_ml(input_str, validate=validate)
+    elif read_format == Format.REFMETA_SDMX_ML_3_1:
+        from pysdmx.io.xml.header import read as read_header
+        from pysdmx.io.xml.sdmx31.reader.metadata import (
+            read as read_refmeta_ml,
+        )
+
+        header = read_header(input_str, validate=validate)
+        # SDMX-ML 3.1 reference metadata (GenericMetadata)
+        reports = read_refmeta_ml(input_str, validate=validate)
     elif read_format in (
         Format.DATA_SDMX_ML_2_1_GEN,
         Format.DATA_SDMX_ML_2_1_GENTS,
@@ -202,6 +220,8 @@ def read_sdmx(  # noqa: C901
     elif read_format in (
         Format.REFMETA_SDMX_JSON_2_0_0,
         Format.REFMETA_SDMX_JSON_2_1_0,
+        Format.REFMETA_SDMX_ML_3_0,
+        Format.REFMETA_SDMX_ML_3_1,
     ):
         return Message(header=header, reports=reports)
     # TODO: Ensure we have changed the signature of the structure readers

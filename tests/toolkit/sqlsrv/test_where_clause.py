@@ -31,6 +31,26 @@ def test_text_filter_contains():
     assert values[0] == r"%ABC%"
 
 
+def test_text_filter_contains_case_mode_sensitive():
+    f = TextFilter("name", Operator.LIKE, r"%AbC%")
+
+    where, values = get_where_clause(f, case_mode="sensitive")
+
+    assert where == ' WHERE "name" LIKE ?'
+    assert len(values) == 1
+    assert values[0] == r"%AbC%"
+
+
+def test_text_filter_contains_case_mode_default():
+    f = TextFilter("name", Operator.LIKE, r"%AbC%")
+
+    where, values = get_where_clause(f, case_mode="default")
+
+    assert where == ' WHERE "name" LIKE ?'
+    assert len(values) == 1
+    assert values[0] == r"%AbC%"
+
+
 def test_text_filter_notcontains():
     f = TextFilter("name", Operator.NOT_LIKE, r"%abc%")
 
@@ -39,6 +59,26 @@ def test_text_filter_notcontains():
     assert where == ' WHERE UPPER("name") NOT LIKE ?'
     assert len(values) == 1
     assert values[0] == r"%ABC%"
+
+
+def test_text_filter_notcontains_case_mode_sensitive():
+    f = TextFilter("name", Operator.NOT_LIKE, r"%AbC%")
+
+    where, values = get_where_clause(f, case_mode="sensitive")
+
+    assert where == ' WHERE "name" NOT LIKE ?'
+    assert len(values) == 1
+    assert values[0] == r"%AbC%"
+
+
+def test_text_filter_notcontains_case_mode_default():
+    f = TextFilter("name", Operator.NOT_LIKE, r"%AbC%")
+
+    where, values = get_where_clause(f, case_mode="default")
+
+    assert where == ' WHERE "name" NOT LIKE ?'
+    assert len(values) == 1
+    assert values[0] == r"%AbC%"
 
 
 def test_text_filter_equals():
@@ -139,6 +179,36 @@ def test_multi_or_filters():
     assert values[1] == "A"
     assert values[2] == "B"
     assert values[3] == "5B0"
+
+
+def test_multi_filters_case_mode_sensitive():
+    f1 = TextFilter("name", Operator.LIKE, r"%AbC")
+    f2 = TextFilter("status", Operator.NOT_EQUALS, "R")
+    f3 = MultiFilter([f1, f2])
+
+    where, values = get_where_clause(f3, case_mode="sensitive")
+
+    assert where == ' WHERE "name" LIKE ? AND "status" <> ?'
+    assert len(values) == 2
+    assert values[0] == r"%AbC"
+    assert values[1] == "R"
+
+
+def test_text_filter_contains_case_mode_insensitive_explicit():
+    f = TextFilter("name", Operator.LIKE, r"%AbC%")
+
+    where, values = get_where_clause(f, case_mode="insensitive")
+
+    assert where == ' WHERE UPPER("name") LIKE ?'
+    assert len(values) == 1
+    assert values[0] == r"%ABC%"
+
+
+def test_invalid_case_mode():
+    f = TextFilter("name", Operator.LIKE, r"%abc%")
+
+    with pytest.raises(errors.Invalid):
+        get_where_clause(f, case_mode="mixed")
 
 
 def test_in_set_filter():

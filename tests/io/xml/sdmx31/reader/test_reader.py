@@ -21,9 +21,11 @@ from pysdmx.model import (
     DataProviderScheme,
     Hierarchy,
     HierarchyAssociation,
+    Metadataflow,
     MetadataProvider,
     MetadataProviderScheme,
     MetadataProvisionAgreement,
+    MetadataStructure,
     NamePersonalisationScheme,
     Reference,
     RulesetScheme,
@@ -106,10 +108,13 @@ def test_metadata_provider_scheme_enrichment_31(samples_folder):
 
     mpas = [s for s in result if isinstance(s, MetadataProvisionAgreement)]
     assert len(mpas) == 1
-    assert mpas[0].metadataflow == "Metadataflow=MD:MDF_TEST(1.0)"
-    assert (
-        mpas[0].metadata_provider
-        == "MetadataProvider=MD:METADATA_PROVIDERS(1.0).MP1"
+    assert mpas[0].metadataflow == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "Metadataflow=MD:MDF_TEST(1.0)"
+    )
+    assert mpas[0].metadata_provider == (
+        "urn:sdmx:org.sdmx.infomodel.base."
+        "MetadataProvider=MD:METADATA_PROVIDERS(1.0).MP1"
     )
 
     schemes = [s for s in result if isinstance(s, MetadataProviderScheme)]
@@ -362,6 +367,53 @@ def test_prov_agreement(samples_folder):
     assert prov_agreement.short_urn == "ProvisionAgreement=MD:TEST(1.0)"
     assert prov_agreement.dataflow == "Dataflow=MD:TEST(1.0)"
     assert prov_agreement.provider == "DataProvider=MD:DATA_PROVIDERS(1.0).MD"
+
+
+@pytest.mark.xml
+def test_metadata_family_31(samples_folder):
+    data_path = samples_folder / "metadata_family.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    msg = read_sdmx(input_str, validate=True)
+
+    msds = msg.get_metadata_structures()
+    assert len(msds) == 1
+    assert isinstance(msds[0], MetadataStructure)
+    assert len(msds[0]) == 3
+
+    flows = msg.get_metadataflows()
+    assert len(flows) == 1
+    assert isinstance(flows[0], Metadataflow)
+    assert isinstance(flows[0].structure, MetadataStructure)
+    assert flows[0].targets == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=*:*(*)",
+    )
+
+    mpas = msg.get_metadata_provision_agreements()
+    assert len(mpas) == 1
+    assert isinstance(mpas[0], MetadataProvisionAgreement)
+    assert mpas[0].metadataflow == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "Metadataflow=BIS:MDF_TEST(1.0)"
+    )
+
+
+@pytest.mark.xml
+def test_generic_metadata_31(samples_folder):
+    data_path = samples_folder / "generic_metadata.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.REFMETA_SDMX_ML_3_1
+    reports = read_sdmx(input_str, validate=True).get_reports()
+    assert len(reports) == 1
+    report = reports[0]
+    assert report.id == "RPT1"
+    assert report.reportingBegin == "2020-01-01"
+    # SDMX-ML 3.1 expresses multiple values as repeated <Attribute> elements
+    assert report["CONTACT.EMAIL"].value == [
+        "john@example.org",
+        "doe@example.org",
+    ]
+    assert report["NOTE"].value == "A single note"
 
 
 @pytest.mark.xml

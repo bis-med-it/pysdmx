@@ -53,6 +53,14 @@ def data_path_structures_exc():
 
 
 @pytest.fixture
+def data_path_structures_uppercase():
+    base_path = (
+        Path(__file__).parent / "samples" / "data_v21_structures_uppercase.csv"
+    )
+    return base_path
+
+
+@pytest.fixture
 def data_path_two_actions():
     base_path = Path(__file__).parent / "samples" / "data_v21_two_actions.csv"
     return base_path
@@ -182,6 +190,17 @@ def test_reading_more_structures_exception(data_path_structures_exc):
         infile = f.read()
     with pytest.raises(Invalid, match="proper values on STRUCTURE column"):
         read(infile)
+
+
+def test_reading_structures_case_insensitive(data_path_structures_uppercase):
+    with open(data_path_structures_uppercase, "r") as f:
+        infile = f.read()
+    datasets = read(infile)
+    assert len(datasets) == 3
+    short_urns = [ds.short_urn for ds in datasets]
+    assert "Dataflow=ESTAT:DF_A(1.6.0)" in short_urns
+    assert "DataStructure=ESTAT:DSD_B(1.7.0)" in short_urns
+    assert "ProvisionAgreement=ESTAT:DPA_C(1.8.0)" in short_urns
 
 
 def test_reading_two_actions(data_path_two_actions):

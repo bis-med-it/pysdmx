@@ -44,6 +44,7 @@ from pysdmx.model import (
     Hierarchy,
     ItemReference,
     KeySet,
+    Metadataflow,
     NamePersonalisationScheme,
     ProvisionAgreement,
     Reference,
@@ -1264,6 +1265,28 @@ def test_constraint_with_cube_region(samples_folder):
     assert len(region3.key_values) == 0
 
 
+def test_constraint_actual_type_and_time_range(samples_folder):
+    data_path = samples_folder / "constraint_actual_timerange.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+    assert len(result) == 1
+    constraint = result[0]
+    assert isinstance(constraint, AvailabilityConstraint)
+    assert constraint.reference == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
+    )
+    region = constraint.cube_region
+    assert len(region.key_values) == 2
+    freq, time = region.key_values
+    assert freq.id == "FREQ"
+    assert [v.value for v in freq.values] == ["A"]
+    assert time.id == "TIME_PERIOD"
+    assert time.time_range.start_period.period == "2009-01-01T00:00:00"
+    assert time.time_range.end_period.period == "2023-12-31T00:00:00"
+
+
 def test_constraint_with_keyset(samples_folder):
     data_path = samples_folder / "constraint_keyset.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -1460,6 +1483,26 @@ def test_constraint_with_time_range_21(samples_folder):
     assert time.time_range.start_period.is_inclusive is True
     assert time.time_range.end_period.period == "2024-12-31T00:00:00"
     assert time.time_range.end_period.is_inclusive is False
+
+
+@pytest.mark.xml
+def test_metadataflow_21(samples_folder):
+    data_path = samples_folder / "metadataflow.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+    result = read_sdmx(input_str, validate=True).structures
+    flow = result[0]
+    assert isinstance(flow, Metadataflow)
+    assert flow.id == "MDF_TEST"
+    assert flow.agency == "BIS"
+    # Unresolved structure reference (MSD not present in document): the
+    # reader stores the canonical full URN, matching the SDMX-JSON reader.
+    assert flow.structure == (
+        "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "MetadataStructure=BIS:MSD_TEST(1.0)"
+    )
+    # SDMX-ML 2.1 metadataflows do not carry targets
+    assert flow.targets == ()
 
 
 @pytest.mark.xml
