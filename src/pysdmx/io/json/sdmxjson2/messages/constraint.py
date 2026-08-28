@@ -153,7 +153,7 @@ class JsonCubeRegion(Struct, frozen=True, omit_defaults=True):
     def to_model(self) -> CubeRegion:
         """Converts a JsonCubeRegion to a CubeRegion."""
         return CubeRegion(
-            [kv.to_model() for kv in self.keyValues], self.include
+            tuple(kv.to_model() for kv in self.keyValues), self.include
         )
 
     @classmethod
@@ -177,9 +177,9 @@ class JsonConstraintAttachment(Struct, frozen=True, omit_defaults=True):
         """Converts a JsonConstraintAttachment to a ConstraintAttachment."""
         return ConstraintAttachment(
             self.dataProvider,
-            self.dataStructures,
-            self.dataflows,
-            self.provisionAgreements,
+            tuple(self.dataStructures),
+            tuple(self.dataflows),
+            tuple(self.provisionAgreements),
         )
 
     @classmethod
@@ -219,7 +219,7 @@ class JsonDataKey(Struct, frozen=True, omit_defaults=True):
     def to_model(self) -> DataKey:
         """Converts a JsonDataKey to a DataKey."""
         return DataKey(
-            [kv.to_model() for kv in self.keyValues],
+            tuple(kv.to_model() for kv in self.keyValues),
             self.validFrom,
             self.validTo,
         )
@@ -242,7 +242,7 @@ class JsonKeySet(Struct, frozen=True, omit_defaults=True):
 
     def to_model(self) -> KeySet:
         """Converts a JsonKeySet to a KeySet."""
-        return KeySet([k.to_model() for k in self.keys], self.isIncluded)
+        return KeySet(tuple(k.to_model() for k in self.keys), self.isIncluded)
 
     @classmethod
     def from_model(self, ks: KeySet) -> "JsonKeySet":
@@ -381,10 +381,10 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             valid_from=self.validFrom,
             valid_to=self.validTo,
             constraint_attachment=at,
-            cube_regions=[r.to_model() for r in self.cubeRegions]
+            cube_regions=tuple(r.to_model() for r in self.cubeRegions)
             if self.cubeRegions
             else (),
-            key_sets=[s.to_model() for s in self.dataKeySets]
+            key_sets=tuple(s.to_model() for s in self.dataKeySets)
             if self.dataKeySets
             else (),
         )
@@ -494,11 +494,11 @@ class JsonAvailabilityConstraintAttachment(
         return ConstraintAttachment(
             data_provider=None,
             data_structures=(
-                [self.dataStructure] if self.dataStructure else None
+                (self.dataStructure,) if self.dataStructure else None
             ),
-            dataflows=[self.dataflow] if self.dataflow else None,
+            dataflows=(self.dataflow,) if self.dataflow else None,
             provision_agreements=(
-                [self.provisionAgreement] if self.provisionAgreement else None
+                (self.provisionAgreement,) if self.provisionAgreement else None
             ),
         )
 

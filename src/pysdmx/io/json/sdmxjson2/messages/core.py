@@ -10,12 +10,41 @@ from pysdmx.model import (
     Annotation,
     ArrayBoundaries,
     Codelist,
+    Contact,
     DataType,
     Facets,
     Organisation,
 )
 from pysdmx.model.message import Header
 from pysdmx.util import find_by_urn
+
+
+def tuple_contacts(contacts: Sequence[Contact]) -> Sequence[Contact]:
+    """Rebuilds contacts with tuple-typed sequence fields.
+
+    ``Contact`` is used directly as the SDMX-JSON wire type for
+    organisation contacts (there is no dedicated JSON wrapper struct),
+    so its ``telephones``/``faxes``/``uris``/``emails`` fields come
+    back as plain lists from msgspec decoding. This rebuilds each
+    contact with those fields normalised to tuples, matching the
+    container type used everywhere else in the model.
+
+    Args:
+        contacts: The decoded contacts, as produced by msgspec.
+
+    Returns:
+        The same contacts, with tuple-typed sequence fields.
+    """
+    return tuple(
+        msgspec.structs.replace(
+            c,
+            telephones=tuple(c.telephones) if c.telephones else None,
+            faxes=tuple(c.faxes) if c.faxes else None,
+            uris=tuple(c.uris) if c.uris else None,
+            emails=tuple(c.emails) if c.emails else None,
+        )
+        for c in contacts
+    )
 
 
 class JsonLink(msgspec.Struct, frozen=True, omit_defaults=True):
@@ -225,7 +254,7 @@ class JsonRepresentation(msgspec.Struct, frozen=True, omit_defaults=True):
             try:
                 a = find_by_urn(codelists, self.enumeration)
                 codes = [c for c in a.codes if not valid or c.id in valid]
-                return msgspec.structs.replace(a, items=codes)
+                return msgspec.structs.replace(a, items=tuple(codes))
             except NotFound:
                 # This is OK. In case of schema queries, if a component
                 # has both a local and a core representations, only the
@@ -299,7 +328,7 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
             test=self.test,
             prepared=self.prepared,
             sender=self.sender,
-            receiver=self.receivers or (),
+            receiver=tuple(self.receivers) if self.receivers else (),
         )
 
     @classmethod

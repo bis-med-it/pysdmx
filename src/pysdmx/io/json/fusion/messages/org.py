@@ -50,10 +50,10 @@ class FusionContact(Struct, frozen=True):
             n,
             d,
             r,
-            self.telephone,
-            self.fax,
-            self.uri,
-            self.email,
+            tuple(self.telephone) if self.telephone else None,
+            tuple(self.fax) if self.fax else None,
+            tuple(self.uri) if self.uri else None,
+            tuple(self.email) if self.email else None,
         )
 
 
@@ -72,7 +72,10 @@ class FusionAgency(Struct, frozen=True):
         oid = f"{owner}.{self.id}" if owner and owner != "SDMX" else self.id
         if c:
             return Agency(
-                id=oid, name=self.names[0].value, description=d, contacts=c
+                id=oid,
+                name=self.names[0].value,
+                description=d,
+                contacts=tuple(c),
             )
         else:
             return Agency(id=oid, name=self.names[0].value, description=d)
@@ -93,7 +96,10 @@ class FusionProvider(Struct, frozen=True):
         oid = f"{owner}.{self.id}" if owner and owner != "SDMX" else self.id
         if c:
             return DataProvider(
-                id=oid, name=self.names[0].value, description=d, contacts=c
+                id=oid,
+                name=self.names[0].value,
+                description=d,
+                contacts=tuple(c),
             )
         else:
             return DataProvider(
@@ -116,7 +122,7 @@ class FusionAgencyScheme(Struct, frozen=True):
                 self.descriptions[0].value if self.descriptions else None
             ),
             agency=self.agencyId,
-            items=agencies,
+            items=tuple(agencies),
         )
 
 
@@ -157,8 +163,8 @@ class FusionProviderScheme(Struct, frozen=True):
                     id=p.id,
                     name=p.name,
                     description=p.description,
-                    contacts=p.contacts,
-                    dataflows=list(paprs[f"{self.agencyId}:{p.id}"]),
+                    contacts=tuple(p.contacts),
+                    dataflows=tuple(paprs[f"{self.agencyId}:{p.id}"]),
                 )
                 for p in prvs
             ]
@@ -168,7 +174,7 @@ class FusionProviderScheme(Struct, frozen=True):
                 description=(
                     self.descriptions[0].value if self.descriptions else None
                 ),
-                items=prvs,
+                items=tuple(prvs),
             )
         else:
             return DPS(
@@ -177,7 +183,7 @@ class FusionProviderScheme(Struct, frozen=True):
                 description=(
                     self.descriptions[0].value if self.descriptions else None
                 ),
-                items=[o.to_model() for o in self.items],
+                items=tuple(o.to_model() for o in self.items),
             )
 
 
@@ -242,8 +248,8 @@ class FusionMetadataProviderScheme(Struct, frozen=True):
                     id=p.id,
                     name=p.name,
                     description=p.description,
-                    contacts=p.contacts,
-                    dataflows=list(paprs[f"{self.agencyId}:{p.id}"]),
+                    contacts=tuple(p.contacts),
+                    dataflows=tuple(paprs[f"{self.agencyId}:{p.id}"]),
                 )
                 for p in prvs
             ]
@@ -253,7 +259,7 @@ class FusionMetadataProviderScheme(Struct, frozen=True):
                 description=(
                     self.descriptions[0].value if self.descriptions else None
                 ),
-                items=prvs,
+                items=tuple(prvs),
             )
         else:
             return MDPS(
@@ -262,7 +268,7 @@ class FusionMetadataProviderScheme(Struct, frozen=True):
                 description=(
                     self.descriptions[0].value if self.descriptions else None
                 ),
-                items=[o.to_model() for o in self.items],
+                items=tuple(o.to_model() for o in self.items),
             )
 
 

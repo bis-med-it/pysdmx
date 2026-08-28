@@ -38,20 +38,21 @@ def _make_availability():
     return AvailabilityConstraint(
         constraint_attachment=ConstraintAttachment(
             data_provider=None,
-            dataflows=[
+            dataflows=(
                 "urn:sdmx:org.sdmx.infomodel.datastructure."
-                "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
-            ],
+                "Dataflow=TEST_AGENCY:DF_TEST(1.0)",
+            ),
         ),
         cube_region=CubeRegion(
-            key_values=[
-                # A tuple here, not a list: JsonKeyValue.to_model()
-                # always rebuilds `values` as a tuple, so the round
-                # trip in test_availability_constraint_native_roundtrip
-                # must start from the same container type for msgspec
-                # struct equality to hold.
-                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
-            ]
+            # Tuples throughout, not lists: JsonAvailabilityConstraint
+            # /JsonCubeRegion/JsonKeyValue.to_model() always rebuild
+            # these as tuples, so the round trip in
+            # test_availability_constraint_native_roundtrip must start
+            # from the same container type for msgspec struct equality
+            # to hold.
+            key_values=(
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),)),
+            )
         ),
         series_count=3,
         obs_count=42,

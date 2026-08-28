@@ -56,8 +56,8 @@ class FusionRepresentationMapping(Struct, frozen=True):
         """Returns the requested value maps."""
         if is_multi:
             return MultiValueMap(
-                source=[src.to_model() for src in self.source],
-                target=self.target,
+                source=tuple(src.to_model() for src in self.source),
+                target=tuple(self.target),
                 valid_from=(
                     self.__get_dt(self.validFrom) if self.validFrom else None
                 ),
@@ -102,9 +102,9 @@ class FusionRepresentationMap(
                 id=self.id,
                 name=self.names[0].value,
                 agency=self.agency,
-                source=s,
-                target=t,
-                maps=mrs,  # type: ignore[arg-type]
+                source=tuple(s),
+                target=tuple(t),
+                maps=tuple(mrs),  # type: ignore[arg-type]
                 description=(
                     self.descriptions[0].value if self.descriptions else None
                 ),
@@ -117,7 +117,7 @@ class FusionRepresentationMap(
                 agency=self.agency,
                 source=s[0],
                 target=t[0],
-                maps=mrs,  # type: ignore[arg-type]
+                maps=tuple(mrs),  # type: ignore[arg-type]
                 description=(
                     self.descriptions[0].value if self.descriptions else None
                 ),
@@ -146,7 +146,7 @@ class FusionComponentMap(Struct, frozen=True):
                 )
             else:
                 return MultiComponentMap(
-                    self.sources, self.targets, rm.to_model(True)
+                    tuple(self.sources), tuple(self.targets), rm.to_model(True)
                 )
         else:
             return ImplicitComponentMap(self.sources[0], self.targets[0])

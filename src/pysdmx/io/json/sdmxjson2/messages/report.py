@@ -38,7 +38,7 @@ class JsonMetadataAttribute(IdentifiableType, frozen=True, omit_defaults=True):
         return MetadataAttribute(
             id=self.id,
             value=self.value,
-            attributes=attrs,
+            attributes=tuple(attrs),
             annotations=tuple([a.to_model() for a in self.annotations]),
             format=get_facets(self.format) if self.format else None,
         )
@@ -157,7 +157,7 @@ class JsonMetadataMessage(Struct, frozen=True, omit_defaults=True):
         """Returns the requested metadata report(s)."""
         header = self.meta.to_model()
         reports = self.data.to_model()
-        return MetadataMessage(header, reports)
+        return MetadataMessage(header, tuple(reports))
 
     @classmethod
     def from_model(

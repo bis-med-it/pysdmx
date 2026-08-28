@@ -98,19 +98,19 @@ def availability_constraint():
     return AvailabilityConstraint(
         constraint_attachment=ConstraintAttachment(
             data_provider=None,
-            dataflows=[
+            dataflows=(
                 "urn:sdmx:org.sdmx.infomodel.datastructure."
-                "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
-            ],
+                "Dataflow=TEST_AGENCY:DF_TEST(1.0)",
+            ),
         ),
         cube_region=CubeRegion(
-            key_values=[
-                # A tuple, not a list: JsonKeyValue.to_model() always
-                # rebuilds `values` as a tuple, and the 2.1 assertion
-                # below relies on plain equality after a full JSON
-                # round trip.
-                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
-            ]
+            # Tuples throughout, not lists: JsonAvailabilityConstraint
+            # /JsonCubeRegion/JsonKeyValue.to_model() always rebuild
+            # these as tuples, and the 2.1 assertion below relies on
+            # plain equality after a full JSON round trip.
+            key_values=(
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),)),
+            )
         ),
         series_count=3,
         obs_count=42,

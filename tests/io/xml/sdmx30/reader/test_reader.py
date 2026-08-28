@@ -261,7 +261,7 @@ def test_org_schemes_read(samples_folder):
         "=MD:DATA_PROVIDERS(1.0).DP"
     )
     assert provider.contacts[0].name == "CONTACT"
-    assert provider.contacts[0].emails == ["dp.test@md.org"]
+    assert provider.contacts[0].emails == ("dp.test@md.org",)
 
     dcs = by_type[DataConsumerScheme]
     assert isinstance(dcs.items[0], DataConsumer)
@@ -283,9 +283,9 @@ def test_provider_scheme_enrichment_read(samples_folder):
     assert len(schemes) == 1
     provider = schemes[0].items[0]
     assert provider.id == "MD"
-    assert provider.dataflows == [
-        DataflowRef(id="TEST", agency="MD", version="1.0")
-    ]
+    assert provider.dataflows == (
+        DataflowRef(id="TEST", agency="MD", version="1.0"),
+    )
 
 
 @pytest.mark.xml
@@ -314,10 +314,10 @@ def test_metadata_provider_scheme_enrichment_read(samples_folder):
     schemes = [s for s in result if isinstance(s, MetadataProviderScheme)]
     assert len(schemes) == 1
     providers = {p.id: p for p in schemes[0].items}
-    assert providers["MP1"].dataflows == [
-        DataflowRef(id="MDF_TEST", agency="MD", version="1.0")
-    ]
-    assert providers["MP2"].dataflows == []
+    assert providers["MP1"].dataflows == (
+        DataflowRef(id="MDF_TEST", agency="MD", version="1.0"),
+    )
+    assert providers["MP2"].dataflows == ()
 
 
 @pytest.mark.xml
@@ -942,7 +942,7 @@ def test_datastructure_group(samples_folder):
     assert isinstance(dsd, DataStructureDefinition)
     group = dsd.groups
     assert group[0].id == "Sibling"
-    assert group[0].dimensions == [
+    assert group[0].dimensions == (
         "L_MEASURE",
         "L_REP_CTY",
         "CBS_BANK_TYPE",
@@ -953,7 +953,7 @@ def test_datastructure_group(samples_folder):
         "CURR_TYPE_BOOK",
         "L_CP_SECTOR",
         "L_CP_COUNTRY",
-    ]
+    )
     attribute_1 = dsd.components.attributes[4]
     assert attribute_1.attachment_level == ",".join(group[0].dimensions)
     attribute_2 = dsd.components.attributes[8]
@@ -1027,10 +1027,10 @@ def test_constraint_with_cube_region(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.dataflows == [
+    assert att.dataflows == (
         "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
-    ]
+        "Dataflow=TEST_AGENCY:TEST_DF(1.0)",
+    )
     # Cube Region
     assert len(constraint.cube_regions) == 1
     region = constraint.cube_regions[0]
@@ -1059,10 +1059,10 @@ def test_constraint_with_keyset(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.dataflows == [
+    assert att.dataflows == (
         "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
-    ]
+        "Dataflow=TEST_AGENCY:TEST_DF(1.0)",
+    )
     # Key Set
     assert len(constraint.key_sets) == 1
     ks = constraint.key_sets[0]
@@ -1099,10 +1099,10 @@ def test_constraint_with_data_structure(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.data_structures == [
+    assert att.data_structures == (
         "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "DataStructure=TEST_AGENCY:TEST_DSD(1.0)"
-    ]
+        "DataStructure=TEST_AGENCY:TEST_DSD(1.0)",
+    )
     # Cube Region
     assert len(constraint.cube_regions) == 1
     assert isinstance(constraint.cube_regions[0], CubeRegion)
@@ -1154,10 +1154,10 @@ def test_constraint_with_provision_agreement(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.provision_agreements == [
+    assert att.provision_agreements == (
         "urn:sdmx:org.sdmx.infomodel.registry."
-        "ProvisionAgreement=TEST_AGENCY:TEST_PA(1.0)"
-    ]
+        "ProvisionAgreement=TEST_AGENCY:TEST_PA(1.0)",
+    )
     # Cube Region
     assert len(constraint.cube_regions) == 1
     assert isinstance(constraint.cube_regions[0], CubeRegion)
