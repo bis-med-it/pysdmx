@@ -1651,7 +1651,7 @@ class StructureParser(Struct):
             series_count = element.get("seriesCount")
             obs_count = element.get("obsCount")
             constraint = AvailabilityConstraint(
-                annotations=element.get("annotations", ()),
+                annotations=tuple(element.get("annotations", ())),
                 constraint_attachment=attachment,
                 cube_region=cube_region,
                 series_count=(

@@ -2282,6 +2282,38 @@ def test_availability_constraint_21_ignores_unicode_digit_title(
     assert back[0].annotations[0].title == "²"
 
 
+def test_availability_constraint_21_ignores_unknown_metric_id(
+    complete_header,
+):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(
+            key_values=[CubeKeyValue(id="FREQ", values=[CubeValue(value="M")])]
+        ),
+        series_count=3,
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    # type="sdmx_metrics" alone isn't enough: an id other than
+    # series_count/obs_count is not a genuine count, so the
+    # annotation must be kept as-is instead of being lifted.
+    corrupted = out.replace(
+        '<com:Annotation id="series_count">',
+        '<com:Annotation id="foo">',
+    )
+    back = read_sdmx(corrupted, validate=True).structures
+    assert back[0].series_count is None
+    assert back[0].obs_count is None
+    assert len(back[0].annotations) == 1
+    assert back[0].annotations[0].id == "foo"
+    assert back[0].annotations[0].type == "sdmx_metrics"
+
+
 def test_availability_constraint_21_no_counts_writes_no_metrics(
     complete_header,
 ):

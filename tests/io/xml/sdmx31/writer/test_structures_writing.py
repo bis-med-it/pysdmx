@@ -1227,7 +1227,7 @@ def test_availability_constraint_roundtrip_31_with_annotation(
         "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
     )
     ac = AvailabilityConstraint(
-        annotations=[Annotation(id="ANN1", title="Note", type="text")],
+        annotations=(Annotation(id="ANN1", title="Note", type="text"),),
         constraint_attachment=ConstraintAttachment(
             data_provider=None, dataflows=[urn]
         ),
@@ -1249,7 +1249,12 @@ def test_availability_constraint_roundtrip_31_with_annotation(
     region_pos = out.index("<str:CubeRegion")
     assert ann_pos < attachment_pos < region_pos
     back = read_sdmx(out, validate=True).structures
+    # ac.annotations is a tuple (the idiomatic container type for this
+    # field, matching the JSON native path); the reader must produce
+    # a tuple too, or this equality would fail even though the
+    # content matches (list != tuple in Python).
     assert back == [ac]
+    assert isinstance(back[0].annotations, tuple)
 
 
 def test_availability_constraint_31_duplicate_is_invalid(complete_header):

@@ -161,6 +161,30 @@ def test_cube_deser_role_actual_ignores_unicode_digit_title(body):
     assert cube.annotations[0].title == "²"
 
 
+def test_cube_deser_role_actual_ignores_unknown_metric_id(body):
+    data = json.loads(body)
+    constraint = data["data"]["dataConstraints"][0]
+    constraint["role"] = "Actual"
+    constraint["annotations"] = [
+        {"id": "foo", "title": "3", "type": "sdmx_metrics"},
+    ]
+    modified_body = json.dumps(data).encode()
+
+    res = msgspec.json.Decoder(JsonDataConstraintMessage).decode(modified_body)
+    cubes = res.to_model()
+
+    cube = cubes[0]
+    assert isinstance(cube, AvailabilityConstraint)
+    # type=="sdmx_metrics" alone isn't enough: an id other than
+    # series_count/obs_count is not a genuine count, so the
+    # annotation must be kept as-is instead of being lifted.
+    assert cube.series_count is None
+    assert cube.obs_count is None
+    assert len(cube.annotations) == 1
+    assert cube.annotations[0].id == "foo"
+    assert cube.annotations[0].type == "sdmx_metrics"
+
+
 def test_cube_deser_without_role(body):
     data = json.loads(body)
     constraint = data["data"]["dataConstraints"][0]
