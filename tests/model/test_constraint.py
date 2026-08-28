@@ -35,6 +35,18 @@ def test_cube_key_value_with_time_range():
     assert kv.time_range.end_period.is_inclusive is False
 
 
+def test_cube_key_value_values_and_time_range_are_exclusive():
+    tr = CubeTimeRange(
+        start_period=TimePeriodBoundary(period="2020", is_inclusive=True),
+    )
+    with pytest.raises(Invalid, match="mutually exclusive"):
+        CubeKeyValue(
+            id="TIME_PERIOD",
+            values=[CubeValue(value="A")],
+            time_range=tr,
+        )
+
+
 def test_cube_key_value_keyvalue_validity():
     kv = CubeKeyValue(
         id="FREQ",

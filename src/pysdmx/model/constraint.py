@@ -47,6 +47,9 @@ class CubeKeyValue(Struct, frozen=True, omit_defaults=True):
             exclusive with values in SDMX-ML).
         valid_from: Start of the validity period (SDMX-ML 3.0/3.1 only).
         valid_to: End of the validity period (SDMX-ML 3.0/3.1 only).
+
+    Raises:
+        Invalid: If both values and time_range are set.
     """
 
     id: str
@@ -54,6 +57,15 @@ class CubeKeyValue(Struct, frozen=True, omit_defaults=True):
     time_range: Optional[CubeTimeRange] = None
     valid_from: Optional[datetime] = None
     valid_to: Optional[datetime] = None
+
+    def __post_init__(self) -> None:
+        """Checks values and time_range are mutually exclusive."""
+        if self.values and self.time_range is not None:
+            raise Invalid(
+                "Invalid cube key value",
+                "values and time_range are mutually exclusive: a cube "
+                "key value cannot set both.",
+            )
 
 
 class CubeRegion(Struct, frozen=True, omit_defaults=True):

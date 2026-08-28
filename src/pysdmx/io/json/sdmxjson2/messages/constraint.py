@@ -126,9 +126,13 @@ class JsonKeyValue(Struct, frozen=True, omit_defaults=True):
     def from_model(self, key_value: CubeKeyValue) -> "JsonKeyValue":
         """Converts a pysdmx cube key value to an SDMX-JSON one."""
         values = tuple(JsonValue.from_model(v) for v in key_value.values)
-        time_range = None
-        if not values and key_value.time_range:
-            time_range = JsonTimeRange.from_model(key_value.time_range)
+        # values and time_range are mutually exclusive (enforced by
+        # CubeKeyValue), so there is no precedence to resolve here.
+        time_range = (
+            JsonTimeRange.from_model(key_value.time_range)
+            if key_value.time_range
+            else None
+        )
         return JsonKeyValue(
             key_value.id,
             values,
