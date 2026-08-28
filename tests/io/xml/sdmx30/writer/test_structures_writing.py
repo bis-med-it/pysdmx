@@ -1571,6 +1571,13 @@ def test_availability_constraint_roundtrip_30(complete_header):
     assert 'id="DF_TEST"' in out
     assert 'agencyID="TEST_AGENCY"' in out
     assert "Availability for DF_TEST" in out
+    # The counts have no dedicated element in SDMX-ML 3.0, so they are
+    # carried as FMR-style sdmx_metrics annotations.
+    assert '<com:Annotation id="series_count">' in out
+    assert "<com:AnnotationType>sdmx_metrics</com:AnnotationType>" in out
+    assert "<com:AnnotationTitle>3</com:AnnotationTitle>" in out
+    assert '<com:Annotation id="obs_count">' in out
+    assert "<com:AnnotationTitle>42</com:AnnotationTitle>" in out
     back = read_sdmx(out, validate=True).structures
     assert len(back) == 1
     assert isinstance(back[0], AvailabilityConstraint)
@@ -1578,8 +1585,11 @@ def test_availability_constraint_roundtrip_30(complete_header):
     kv = back[0].cube_region.key_values[0]
     assert kv.id == "FREQ"
     assert [v.value for v in kv.values] == ["M"]
-    # series/obs counts cannot be represented in SDMX-ML 3.0.
-    assert back[0].series_count is None
+    # The counts now survive the legacy round trip via the annotations,
+    # which are lifted back and excluded from back[0].annotations.
+    assert back[0].series_count == 3
+    assert back[0].obs_count == 42
+    assert back[0].annotations == ()
 
 
 def test_constraint_role_always_allowed_30():

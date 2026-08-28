@@ -2200,6 +2200,13 @@ def test_availability_constraint_roundtrip_21(complete_header):
     assert 'id="DF_TEST"' in out
     assert 'agencyID="TEST_AGENCY"' in out
     assert "Availability for DF_TEST" in out
+    # The counts have no dedicated element in SDMX-ML 2.1, so they are
+    # carried as FMR-style sdmx_metrics annotations.
+    assert '<com:Annotation id="series_count">' in out
+    assert "<com:AnnotationType>sdmx_metrics</com:AnnotationType>" in out
+    assert "<com:AnnotationTitle>3</com:AnnotationTitle>" in out
+    assert '<com:Annotation id="obs_count">' in out
+    assert "<com:AnnotationTitle>42</com:AnnotationTitle>" in out
     back = read_sdmx(out, validate=True).structures
     assert len(back) == 1
     assert isinstance(back[0], AvailabilityConstraint)
@@ -2207,8 +2214,67 @@ def test_availability_constraint_roundtrip_21(complete_header):
     kv = back[0].cube_region.key_values[0]
     assert kv.id == "FREQ"
     assert [v.value for v in kv.values] == ["M"]
-    # series/obs counts cannot be represented in SDMX-ML 2.1.
+    # The counts now survive the legacy round trip via the annotations,
+    # which are lifted back and excluded from back[0].annotations.
+    assert back[0].series_count == 3
+    assert back[0].obs_count == 42
+    assert back[0].annotations == ()
+
+
+def test_availability_constraint_21_ignores_bad_metric_title(
+    complete_header,
+):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(
+            key_values=[CubeKeyValue(id="FREQ", values=[CubeValue(value="M")])]
+        ),
+        series_count=3,
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    # Corrupt the emitted count so it can no longer be parsed as an
+    # int: a non-numeric title cannot be a genuine count, so the
+    # annotation must be kept as-is instead of being lifted (and no
+    # exception raised for it).
+    corrupted = out.replace(
+        "<com:AnnotationTitle>3</com:AnnotationTitle>",
+        "<com:AnnotationTitle>not-a-number</com:AnnotationTitle>",
+    )
+    back = read_sdmx(corrupted, validate=True).structures
     assert back[0].series_count is None
+    assert len(back[0].annotations) == 1
+    assert back[0].annotations[0].id == "series_count"
+    assert back[0].annotations[0].title == "not-a-number"
+
+
+def test_availability_constraint_21_no_counts_writes_no_metrics(
+    complete_header,
+):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(key_values=[]),
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    # Neither count is set: no sdmx_metrics annotation (and no
+    # Annotations element at all) should be emitted.
+    assert "sdmx_metrics" not in out
+    assert "<com:Annotations>" not in out
+    back = read_sdmx(out, validate=True).structures
+    assert back[0].series_count is None
+    assert back[0].obs_count is None
+    assert back[0].annotations == ()
 
 
 def test_constraint_time_range_roundtrip_21():

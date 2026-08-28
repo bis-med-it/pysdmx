@@ -192,6 +192,7 @@ from pysdmx.model import (
 )
 from pysdmx.model.__base import (
     AnnotableArtefact,
+    Annotation,
     Contact,
     IdentifiableArtefact,
     Item,
@@ -1722,6 +1723,37 @@ def __write_key_set(
     return outfile.replace("'", '"')
 
 
+def __availability_metric_annotations(
+    constraint: AvailabilityConstraint,
+) -> Sequence[Annotation]:
+    """Builds FMR-style ``sdmx_metrics`` annotations for the counts.
+
+    Legacy (pre-3.1) representations have no dedicated place for the
+    series/observation counts, so they are carried as annotations,
+    mirroring what the FMR emits: an annotation with
+    ``type="sdmx_metrics"``, ``id`` set to ``"series_count"`` or
+    ``"obs_count"`` and the count as a string in ``title``.
+    """
+    metrics = []
+    if constraint.series_count is not None:
+        metrics.append(
+            Annotation(
+                id="series_count",
+                title=str(constraint.series_count),
+                type="sdmx_metrics",
+            )
+        )
+    if constraint.obs_count is not None:
+        metrics.append(
+            Annotation(
+                id="obs_count",
+                title=str(constraint.obs_count),
+                type="sdmx_metrics",
+            )
+        )
+    return tuple(metrics)
+
+
 def __availability_as_data_constraint(
     constraint: AvailabilityConstraint,
 ) -> DataConstraint:
@@ -1730,7 +1762,9 @@ def __availability_as_data_constraint(
     SDMX-ML 2.1 and 3.0 have no availability element: availability is
     a maintainable ContentConstraint/DataConstraint carrying an Actual
     marker, so a maintainable identification is synthesised from the
-    attached artefact.
+    attached artefact. The series/observation counts have no field to
+    live in either, so they are appended as ``sdmx_metrics``
+    annotations (see ``__availability_metric_annotations``).
     """
     ref = cast(Reference, parse_urn(constraint.reference))
     return DataConstraint(
@@ -1738,7 +1772,10 @@ def __availability_as_data_constraint(
         name=f"Availability for {ref.id}",
         agency=ref.agency,
         version=ref.version,
-        annotations=constraint.annotations,
+        annotations=(
+            *constraint.annotations,
+            *__availability_metric_annotations(constraint),
+        ),
         constraint_attachment=constraint.constraint_attachment,
         cube_regions=[constraint.cube_region],
     )

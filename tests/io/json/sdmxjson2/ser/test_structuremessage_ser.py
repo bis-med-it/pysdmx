@@ -121,18 +121,23 @@ def test_availability_constraint_v2_0_writer(availability_constraint):
     assert '"role": "Actual"' in out
     assert '"dataConstraints"' in out
     assert '"availabilityConstraints"' not in out
+    # The counts have no dedicated field in the legacy payload, so
+    # they are carried as FMR-style sdmx_metrics annotations.
+    assert '"type": "sdmx_metrics"' in out
 
     msg = read_sdmx(out, validate=True)
     constraints = msg.get_availability_constraints()
 
     assert len(constraints) == 1
-    # Only the attachment and cube region survive the legacy 2.0
-    # dataConstraint round trip: there is nowhere for the counts to
-    # live in that payload.
+    # The attachment and cube region already survived the legacy 2.0
+    # dataConstraint round trip; the counts now do too, via the
+    # annotations, which are lifted back on read (and excluded from
+    # the resulting annotations, so there is no duplication).
     assert constraints[0].reference == availability_constraint.reference
     assert constraints[0].cube_region == availability_constraint.cube_region
-    assert constraints[0].series_count is None
-    assert constraints[0].obs_count is None
+    assert constraints[0].series_count == availability_constraint.series_count
+    assert constraints[0].obs_count == availability_constraint.obs_count
+    assert constraints[0].annotations == ()
 
 
 def test_availability_constraint_v2_1_writer(availability_constraint):

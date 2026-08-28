@@ -13,6 +13,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
 )
 from pysdmx.model import (
     Agency,
+    Annotation,
     AvailabilityConstraint,
     ConstraintAttachment,
     CubeKeyValue,
@@ -251,6 +252,74 @@ class JsonKeySet(Struct, frozen=True, omit_defaults=True):
         )
 
 
+_METRIC_ANNOTATION_IDS = ("series_count", "obs_count")
+
+
+def _metric_annotations(
+    cons: AvailabilityConstraint,
+) -> "tuple[JsonAnnotation, ...]":
+    """Builds FMR-style ``sdmx_metrics`` annotations for the counts.
+
+    The legacy ``dataConstraint`` payload has no dedicated field for
+    the series/observation counts, so they are carried as
+    annotations, mirroring what the FMR emits: an annotation with
+    ``type="sdmx_metrics"``, ``id`` set to ``"series_count"`` or
+    ``"obs_count"`` and the count as a string in ``title``.
+    """
+    metrics = []
+    if cons.series_count is not None:
+        metrics.append(
+            JsonAnnotation(
+                id="series_count",
+                title=str(cons.series_count),
+                type="sdmx_metrics",
+            )
+        )
+    if cons.obs_count is not None:
+        metrics.append(
+            JsonAnnotation(
+                id="obs_count",
+                title=str(cons.obs_count),
+                type="sdmx_metrics",
+            )
+        )
+    return tuple(metrics)
+
+
+def _lift_metric_annotations(
+    annotations: Sequence[JsonAnnotation],
+) -> "tuple[Optional[int], Optional[int], tuple[Annotation, ...]]":
+    """Splits FMR-style ``sdmx_metrics`` annotations from the rest.
+
+    Mirrors ``__parse_annotation_metrics`` in the SDMX-JSON dataflow
+    reader: an annotation with ``type="sdmx_metrics"``, ``id`` in
+    ``{"series_count", "obs_count"}`` and the count as a string in
+    ``title`` is lifted into the matching return value instead of
+    being kept as a plain annotation (it is dropped from the returned
+    sequence so it is not written back out as a duplicate).
+
+    A ``title`` that is not a plain non-negative integer is left as a
+    regular annotation instead of being lifted.
+    """
+    series_count: Optional[int] = None
+    obs_count: Optional[int] = None
+    kept = []
+    for a in annotations:
+        if (
+            a.type == "sdmx_metrics"
+            and a.id in _METRIC_ANNOTATION_IDS
+            and a.title is not None
+            and a.title.isdigit()
+        ):
+            if a.id == "series_count":
+                series_count = int(a.title)
+            else:
+                obs_count = int(a.title)
+        else:
+            kept.append(a.to_model())
+    return series_count, obs_count, tuple(kept)
+
+
 class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for a content constraint."""
 
@@ -290,9 +359,15 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
                     "An Actual constraint must have exactly one cube "
                     "region and one attached artefact.",
                 )
+            series_count, obs_count, annotations = _lift_metric_annotations(
+                self.annotations
+            )
             return AvailabilityConstraint(
+                annotations=annotations,
                 constraint_attachment=at,
                 cube_region=regions[0],
+                series_count=series_count,
+                obs_count=obs_count,
             )
         return DataConstraint(
             id=self.id,
@@ -382,7 +457,10 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
 
         SDMX-JSON 2.0 has no availability collection, so the constraint
         is written as a dataConstraint with role "Actual" and an
-        identification synthesised from the attached artefact.
+        identification synthesised from the attached artefact. The
+        series/observation counts have no field to live in either, so
+        they are appended as ``sdmx_metrics`` annotations (see
+        ``_metric_annotations``).
         """
         ref = cast(Reference, parse_urn(cons.reference))
         return JsonDataConstraint(
@@ -390,8 +468,9 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             name=f"Availability for {ref.id}",
             agency=ref.agency,
             version=ref.version,
-            annotations=tuple(
-                JsonAnnotation.from_model(a) for a in cons.annotations
+            annotations=(
+                tuple(JsonAnnotation.from_model(a) for a in cons.annotations)
+                + _metric_annotations(cons)
             ),
             role="Actual",
             constraintAttachment=JsonConstraintAttachment.from_model(

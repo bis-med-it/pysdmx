@@ -1540,6 +1540,41 @@ class StructureParser(Struct):
 
         return element
 
+    @staticmethod
+    def __lift_metric_annotations(
+        annotations: Sequence[Annotation],
+    ) -> Tuple[Optional[int], Optional[int], Sequence[Annotation]]:
+        """Splits FMR-style ``sdmx_metrics`` annotations from the rest.
+
+        Mirrors ``__parse_annotation_metrics`` in the SDMX-JSON
+        dataflow reader: an annotation with ``type="sdmx_metrics"``,
+        ``id`` in ``{"series_count", "obs_count"}`` and the count as a
+        string in ``title`` is lifted into the matching return value
+        instead of being kept as a plain annotation (it is dropped
+        from the returned sequence so it is not written back out as a
+        duplicate).
+
+        A ``title`` that is not a plain non-negative integer is left
+        as a regular annotation instead of being lifted.
+        """
+        series_count: Optional[int] = None
+        obs_count: Optional[int] = None
+        kept = []
+        for a in annotations:
+            if (
+                a.type == "sdmx_metrics"
+                and a.id in ("series_count", "obs_count")
+                and a.title is not None
+                and a.title.isdigit()
+            ):
+                if a.id == "series_count":
+                    series_count = int(a.title)
+                else:
+                    obs_count = int(a.title)
+            else:
+                kept.append(a)
+        return series_count, obs_count, tuple(kept)
+
     def __build_constraint(
         self, structure: Dict[str, Any]
     ) -> Union[DataConstraint, AvailabilityConstraint]:
@@ -1548,7 +1583,10 @@ class StructureParser(Struct):
         Legacy "Actual" constraints (SDMX-ML 2.1/3.0) are mapped to the
         SDMX 3.1 AvailabilityConstraint: their maintainable identity is
         dropped and they must fit the 3.1 shape (exactly one cube
-        region, no key sets, one attached artefact).
+        region, no key sets, one attached artefact). The FMR-style
+        ``sdmx_metrics`` annotations carrying the series/observation
+        counts (see ``__lift_metric_annotations``) are lifted into
+        ``series_count``/``obs_count`` rather than kept as annotations.
 
         Raises:
             Invalid: If an Actual constraint cannot be represented as
@@ -1576,10 +1614,15 @@ class StructureParser(Struct):
                 "An Actual constraint must be attached to exactly one "
                 "data structure, dataflow or provision agreement.",
             )
+        series_count, obs_count, annotations = self.__lift_metric_annotations(
+            structure.get("annotations", ())
+        )
         return AvailabilityConstraint(
-            annotations=structure.get("annotations", ()),
+            annotations=annotations,
             constraint_attachment=structure["constraint_attachment"],
             cube_region=cube_regions[0],
+            series_count=series_count,
+            obs_count=obs_count,
         )
 
     def __format_availability_constraints(

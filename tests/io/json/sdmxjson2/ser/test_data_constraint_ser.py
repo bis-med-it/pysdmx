@@ -201,16 +201,31 @@ def test_availability_as_legacy_data_constraint():
     assert ser.name == "Availability for DF_TEST"
 
 
+def test_availability_as_legacy_data_constraint_without_counts():
+    ac = msgspec.structs.replace(
+        _make_availability(), series_count=None, obs_count=None
+    )
+    ser = JsonDataConstraint.from_availability(ac)
+    assert ser.annotations == ()
+
+
 def test_availability_as_legacy_data_constraint_keeps_annotations():
     # Parity with the SDMX-ML 2.1/3.0 twin
     # (__availability_as_data_constraint), which already passes
-    # annotations through.
+    # annotations through, then appends the counts as FMR-style
+    # sdmx_metrics annotations (own annotations first).
     ac = msgspec.structs.replace(
         _make_availability(), annotations=(Annotation(id="ANN1"),)
     )
     ser = JsonDataConstraint.from_availability(ac)
-    assert len(ser.annotations) == 1
+    assert len(ser.annotations) == 3
     assert ser.annotations[0].id == "ANN1"
+    assert ser.annotations[1].id == "series_count"
+    assert ser.annotations[1].type == "sdmx_metrics"
+    assert ser.annotations[1].title == "3"
+    assert ser.annotations[2].id == "obs_count"
+    assert ser.annotations[2].type == "sdmx_metrics"
+    assert ser.annotations[2].title == "42"
 
 
 def test_availability_constraint_native_roundtrip():
