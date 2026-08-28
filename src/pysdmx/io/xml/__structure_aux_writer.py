@@ -210,8 +210,8 @@ ANNOTATION_WRITER = OrderedDict(
     {
         "title": "AnnotationTitle",
         "type": "AnnotationType",
-        "text": "AnnotationText",
         "url": "AnnotationURL",
+        "text": "AnnotationText",
     }
 )
 
@@ -326,8 +326,8 @@ def __write_annotable(
         if annotation.id is None:
             outfile += f"{child2}<{ABBR_COM}:Annotation>"
         else:
-            outfile += f"{child2}<{ABBR_COM}:Annotation id={annotation.id!r}>"
-        outfile = outfile.replace("'", '"')
+            annotation_id = __escape_xml(annotation.id)
+            outfile += f'{child2}<{ABBR_COM}:Annotation id="{annotation_id}">'
 
         for attr, label in ANNOTATION_WRITER.items():
             if getattr(annotation, attr, None) is not None:
@@ -2318,8 +2318,9 @@ def _write_vtl(  # noqa: C901
     if isinstance(item_or_scheme, Item):
         label = ""
         nameable = __write_nameable(item_or_scheme, add_indent(indent))
-        attrib = nameable["Attributes"].replace("'", '"')
-        data = __export_intern_data(nameable)
+        attrib = nameable["Attributes"]
+        intern = __export_intern_data(nameable)
+        data = ""
 
         if isinstance(item_or_scheme, Ruleset):
             label = f"{ABBR_STR}:{RULE}"
@@ -2524,14 +2525,15 @@ def _write_vtl(  # noqa: C901
                 f"</{ABBR_STR}:PersonalisedName>"
             )
 
+        attrib = attrib.replace("'", '"')
+        data = data.replace("'", '"')
         outfile += f"{indent}<{label}{attrib}>"
+        outfile += intern
         outfile += data
         outfile += f"{indent}</{label}>"
 
     if isinstance(item_or_scheme, VtlScheme):
-        outfile += f" vtlVersion={item_or_scheme.vtl_version!r}"
-
-    outfile = outfile.replace("'", '"')
+        outfile += f' vtlVersion="{item_or_scheme.vtl_version}"'
 
     return outfile
 
