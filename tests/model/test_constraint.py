@@ -35,9 +35,56 @@ def test_cube_key_value_with_time_range():
     assert kv.time_range.end_period.is_inclusive is False
 
 
+def test_cube_time_range_valid_shapes():
+    before = CubeTimeRange(before_period=TimePeriodBoundary(period="2020"))
+    after = CubeTimeRange(after_period=TimePeriodBoundary(period="2020"))
+    rng = CubeTimeRange(
+        start_period=TimePeriodBoundary(period="2020"),
+        end_period=TimePeriodBoundary(period="2024"),
+    )
+    assert before.before_period.period == "2020"
+    assert after.after_period.period == "2020"
+    assert rng.start_period.period == "2020"
+    assert rng.end_period.period == "2024"
+
+
+@pytest.mark.parametrize(
+    "boundaries",
+    [
+        {},
+        {"start_period": TimePeriodBoundary(period="2020")},
+        {"end_period": TimePeriodBoundary(period="2024")},
+        {
+            "before_period": TimePeriodBoundary(period="2020"),
+            "after_period": TimePeriodBoundary(period="2024"),
+        },
+        {
+            "before_period": TimePeriodBoundary(period="2020"),
+            "start_period": TimePeriodBoundary(period="2020"),
+        },
+        {
+            "after_period": TimePeriodBoundary(period="2020"),
+            "end_period": TimePeriodBoundary(period="2024"),
+        },
+        {
+            "before_period": TimePeriodBoundary(period="2020"),
+            "end_period": TimePeriodBoundary(period="2024"),
+        },
+        {
+            "after_period": TimePeriodBoundary(period="2020"),
+            "start_period": TimePeriodBoundary(period="2020"),
+        },
+    ],
+)
+def test_cube_time_range_invalid_shapes(boundaries):
+    with pytest.raises(Invalid, match="time range"):
+        CubeTimeRange(**boundaries)
+
+
 def test_cube_key_value_values_and_time_range_are_exclusive():
     tr = CubeTimeRange(
         start_period=TimePeriodBoundary(period="2020", is_inclusive=True),
+        end_period=TimePeriodBoundary(period="2024", is_inclusive=False),
     )
     with pytest.raises(Invalid, match="mutually exclusive"):
         CubeKeyValue(

@@ -27,14 +27,35 @@ class TimePeriodBoundary(Struct, frozen=True, omit_defaults=True):
 class CubeTimeRange(Struct, frozen=True, omit_defaults=True):
     """A time range for a cube region's time dimension.
 
-    Mirrors the SDMX TimeRange: a period before, a period after, or a
-    start/end range. Only the relevant boundaries are set.
+    Mirrors the SDMX TimeRange, a choice of three shapes: a period
+    before, a period after, or a range with both a start and an end
+    period. Only the boundaries of the chosen shape are set.
+
+    Raises:
+        Invalid: If the boundaries do not match one of the three SDMX
+            shapes (before only, after only, or start and end).
     """
 
     before_period: Optional[TimePeriodBoundary] = None
     after_period: Optional[TimePeriodBoundary] = None
     start_period: Optional[TimePeriodBoundary] = None
     end_period: Optional[TimePeriodBoundary] = None
+
+    def __post_init__(self) -> None:
+        """Checks the time range matches one of the SDMX shapes."""
+        has_before = self.before_period is not None
+        has_after = self.after_period is not None
+        has_start = self.start_period is not None
+        has_end = self.end_period is not None
+        is_before = has_before and not (has_after or has_start or has_end)
+        is_after = has_after and not (has_before or has_start or has_end)
+        is_range = has_start and has_end and not (has_before or has_after)
+        if not (is_before or is_after or is_range):
+            raise Invalid(
+                "Invalid time range",
+                "A time range must be a period before, a period after, "
+                "or both a start and an end period.",
+            )
 
 
 class CubeKeyValue(Struct, frozen=True, omit_defaults=True):
