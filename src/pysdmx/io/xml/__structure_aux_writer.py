@@ -1470,6 +1470,9 @@ def __write_cube_region(
             )
         else:
             for value in key_value.values:
+                # A CubeValue's own valid_from/valid_to cannot be
+                # represented in SDMX-ML: only the value text is
+                # written, so they are silently dropped here.
                 value_tag = (
                     f"{add_indent(add_indent(indent))}<{val_prefix}:{VALUE}>"
                 )
@@ -1597,6 +1600,8 @@ def __write_availability_constraint(
     constraint: AvailabilityConstraint, indent: str
 ) -> str:
     """Writes an SDMX-ML 3.1 AvailabilityConstraint element."""
+    # Annotations are not part of this element yet: they are dropped
+    # here (see the AvailabilityConstraint model docstring).
     attributes = ""
     if constraint.series_count is not None:
         attributes += f' seriesCount="{constraint.series_count}"'

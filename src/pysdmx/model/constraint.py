@@ -139,6 +139,15 @@ class AvailabilityConstraint(
         series_count: The number of series matching the query.
         obs_count: The number of observations matching the query.
 
+    Note:
+        Annotations are kept on the model and are serialized by the
+        legacy SDMX-JSON 2.0 and SDMX-ML 2.1/3.0 representations
+        (where availability is written as a data/content constraint).
+        The native SDMX-ML 3.1 ``AvailabilityConstraint`` element and
+        the native SDMX-JSON 2.1 ``availabilityConstraints`` payload
+        do not serialize annotations yet, so they are dropped when
+        writing to those two formats.
+
     Raises:
         Invalid: If the constraint is not attached to exactly one data
             structure, dataflow or provision agreement.
@@ -177,5 +186,15 @@ class AvailabilityConstraint(
 
     @property
     def short_urn(self) -> str:
-        """A synthetic Short URN, used to key availability constraints."""
+        """A synthetic Short URN, used to key availability constraints.
+
+        Note:
+            The short URN is derived solely from the referenced
+            artefact, not from the constraint's content. Two
+            AvailabilityConstraint instances attached to the same
+            artefact therefore share a short URN; when several such
+            instances are placed in a URN-keyed container (e.g. a
+            dict, or the structure writers, which group artefacts by
+            short URN), a later one replaces an earlier one.
+        """
         return f"AvailabilityConstraint={self.reference}"

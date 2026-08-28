@@ -9,6 +9,7 @@ from pysdmx.io.json.sdmxjson2.messages.constraint import (
     JsonDataConstraint,
 )
 from pysdmx.model import (
+    Annotation,
     AvailabilityConstraint,
     ConstraintAttachment,
     CubeKeyValue,
@@ -198,6 +199,18 @@ def test_availability_as_legacy_data_constraint():
     assert ser.id == "DF_TEST"
     assert ser.agency == "TEST_AGENCY"
     assert ser.name == "Availability for DF_TEST"
+
+
+def test_availability_as_legacy_data_constraint_keeps_annotations():
+    # Parity with the SDMX-ML 2.1/3.0 twin
+    # (__availability_as_data_constraint), which already passes
+    # annotations through.
+    ac = msgspec.structs.replace(
+        _make_availability(), annotations=(Annotation(id="ANN1"),)
+    )
+    ser = JsonDataConstraint.from_availability(ac)
+    assert len(ser.annotations) == 1
+    assert ser.annotations[0].id == "ANN1"
 
 
 def test_availability_constraint_native_roundtrip():

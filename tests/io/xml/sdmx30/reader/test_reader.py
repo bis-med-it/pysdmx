@@ -1192,7 +1192,7 @@ def test_constraint_with_actual_role(samples_folder):
 def test_constraint_role_absent_30_defaults_allowed(samples_folder):
     # role is required by the SDMX 3.0 schema, so this document is
     # intentionally not schema-valid; it exercises the defensive
-    # fallback to the model default (ALLOWED) when role is missing.
+    # fallback to the reader's default (ALLOWED) when role is missing.
     data_path = samples_folder / "constraint_role_absent.xml"
     input_str, _ = process_string_to_read(data_path)
     result = read_sdmx(input_str, validate=False).get_data_constraints()

@@ -122,7 +122,7 @@ def test_availability_constraint_v2_0_writer(availability_constraint):
     assert '"dataConstraints"' in out
     assert '"availabilityConstraints"' not in out
 
-    msg = read_sdmx(out, validate=False)
+    msg = read_sdmx(out, validate=True)
     constraints = msg.get_availability_constraints()
 
     assert len(constraints) == 1
@@ -141,7 +141,7 @@ def test_availability_constraint_v2_1_writer(availability_constraint):
     assert '"availabilityConstraints"' in out
     assert '"role"' not in out
 
-    msg = read_sdmx(out, validate=False)
+    msg = read_sdmx(out, validate=True)
     constraints = msg.get_availability_constraints()
 
     assert len(constraints) == 1

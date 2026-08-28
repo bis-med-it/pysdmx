@@ -390,6 +390,9 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             name=f"Availability for {ref.id}",
             agency=ref.agency,
             version=ref.version,
+            annotations=tuple(
+                JsonAnnotation.from_model(a) for a in cons.annotations
+            ),
             role="Actual",
             constraintAttachment=JsonConstraintAttachment.from_model(
                 cons.constraint_attachment
@@ -464,6 +467,8 @@ class JsonAvailabilityConstraint(Struct, frozen=True, omit_defaults=True):
         cls, cons: AvailabilityConstraint
     ) -> "JsonAvailabilityConstraint":
         """Converts a pysdmx availability constraint to the payload."""
+        # Annotations are not part of this payload yet: they are
+        # dropped here (see the AvailabilityConstraint model docstring).
         return JsonAvailabilityConstraint(
             constraintAttachment=(
                 JsonAvailabilityConstraintAttachment.from_model(
