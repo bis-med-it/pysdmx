@@ -2318,8 +2318,9 @@ def _write_vtl(  # noqa: C901
     if isinstance(item_or_scheme, Item):
         label = ""
         nameable = __write_nameable(item_or_scheme, add_indent(indent))
-        attrib = nameable["Attributes"].replace("'", '"')
-        data = __export_intern_data(nameable)
+        attrib = nameable["Attributes"]
+        intern = __export_intern_data(nameable)
+        data = ""
 
         if isinstance(item_or_scheme, Ruleset):
             label = f"{ABBR_STR}:{RULE}"
@@ -2524,14 +2525,15 @@ def _write_vtl(  # noqa: C901
                 f"</{ABBR_STR}:PersonalisedName>"
             )
 
+        attrib = attrib.replace("'", '"')
+        data = data.replace("'", '"')
         outfile += f"{indent}<{label}{attrib}>"
+        outfile += intern
         outfile += data
         outfile += f"{indent}</{label}>"
 
     if isinstance(item_or_scheme, VtlScheme):
-        outfile += f" vtlVersion={item_or_scheme.vtl_version!r}"
-
-    outfile = outfile.replace("'", '"')
+        outfile += f' vtlVersion="{item_or_scheme.vtl_version}"'
 
     return outfile
 

@@ -1967,3 +1967,41 @@ def test_annotations_30_element_order(complete_header):
 
     re_read = read(result, validate=True)[0]
     assert re_read.annotations == codelist.annotations
+
+
+def test_vtl_item_30_apostrophes_preserved(complete_header):
+    scheme = TransformationScheme(
+        id="TS_APOS",
+        name="Scheme's name",
+        description="Scheme's description",
+        agency="BIS",
+        version="1.0.0",
+        vtl_version="2.0",
+        items=[
+            Transformation(
+                id="T1",
+                name="Item's name",
+                description="Item's description",
+                expression="ds",
+                is_persistent=False,
+                result="r",
+                annotations=[
+                    Annotation(id="a1", title="Ann's first"),
+                    Annotation(id="a2", title="Ann's last"),
+                ],
+            )
+        ],
+    )
+
+    result = write([scheme], header=complete_header, prettyprint=True)
+
+    assert 'Scheme"s' not in result
+    assert 'Item"s' not in result
+    assert 'Ann"s' not in result
+
+    re_read = read(result, validate=True)[0]
+    assert re_read.name == "Scheme's name"
+    assert re_read.description == "Scheme's description"
+    assert re_read.items[0].name == "Item's name"
+    assert re_read.items[0].description == "Item's description"
+    assert re_read.items[0].annotations == scheme.items[0].annotations
