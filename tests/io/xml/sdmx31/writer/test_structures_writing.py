@@ -14,6 +14,7 @@ from pysdmx.io.xml.sdmx31.writer.structure import write
 from pysdmx.model import (
     Agency,
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     Category,
     CategoryScheme,
@@ -21,6 +22,11 @@ from pysdmx.model import (
     Codelist,
     Concept,
     ConceptScheme,
+    ConstraintAttachment,
+    CubeKeyValue,
+    CubeRegion,
+    CubeValue,
+    DataConstraint,
     DataType,
     Facets,
     FromVtlMapping,
@@ -1151,3 +1157,139 @@ def test_category_scheme_31_enrichment_round_trip(complete_header):
     assert top.dataflows[0].id == "DF1"
     assert top.dataflows[0].version == "1.0.0"
     assert top.dataflows[0].name == "Dataflow 1"
+
+
+def test_data_constraint_has_no_marker_31():
+    # SDMX 3.1 removed the constraint role/type attribute entirely (a
+    # DataConstraint is always the allowed values; availability is the
+    # separate AvailabilityConstraint element), so a plain DataConstraint
+    # must carry no marker attribute at all when written to 3.1.
+    dc = DataConstraint(
+        id="TEST_31",
+        name="Test 3.1 constraint",
+        agency="TEST_AGENCY",
+        version="1.0",
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None,
+            dataflows=[
+                "urn:sdmx:org.sdmx.infomodel.datastructure."
+                "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
+            ],
+        ),
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(id="FREQ", values=[CubeValue(value="A")])
+                ]
+            )
+        ],
+    )
+    result = write_sdmx(
+        dc, sdmx_format=Format.STRUCTURE_SDMX_ML_3_1, prettyprint=True
+    )
+    assert 'role="' not in result
+    assert 'type="' not in result
+    back = read_sdmx(result, validate=True).structures
+    assert isinstance(back[0], DataConstraint)
+
+
+def test_availability_constraint_roundtrip_31(complete_header):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(
+            key_values=[
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
+            ]
+        ),
+        series_count=3,
+        obs_count=42,
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    assert "<str:AvailabilityConstraint" in out
+    assert 'seriesCount="3"' in out
+    assert 'obsCount="42"' in out
+    assert "ContentConstraint" not in out
+    back = read_sdmx(out, validate=True).structures
+    assert back == [ac]
+
+
+def test_availability_constraint_roundtrip_31_with_annotation(
+    complete_header,
+):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        annotations=(Annotation(id="ANN1", title="Note", type="text"),),
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(
+            key_values=[
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
+            ]
+        ),
+        series_count=3,
+        obs_count=42,
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    assert "<str:AvailabilityConstraint" in out
+    assert '<com:Annotation id="ANN1">' in out
+    # Per the 3.1 AnnotableType extension order: Annotations first,
+    # then ConstraintAttachment, then CubeRegion.
+    ann_pos = out.index("<com:Annotations>")
+    attachment_pos = out.index("<str:ConstraintAttachment>")
+    region_pos = out.index("<str:CubeRegion")
+    assert ann_pos < attachment_pos < region_pos
+    back = read_sdmx(out, validate=True).structures
+    # ac.annotations is a tuple (the idiomatic container type for this
+    # field, matching the JSON native path); the reader must produce
+    # a tuple too, or this equality would fail even though the
+    # content matches (list != tuple in Python).
+    assert back == [ac]
+    assert isinstance(back[0].annotations, tuple)
+
+
+def test_availability_constraint_31_duplicate_is_invalid(complete_header):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    attachment = ConstraintAttachment(data_provider=None, dataflows=[urn])
+    ac1 = AvailabilityConstraint(
+        constraint_attachment=attachment,
+        cube_region=CubeRegion(key_values=[]),
+        series_count=3,
+    )
+    ac2 = AvailabilityConstraint(
+        constraint_attachment=attachment,
+        cube_region=CubeRegion(key_values=[]),
+        series_count=5,
+    )
+    with pytest.raises(
+        Invalid, match="Two availability constraints for the same"
+    ):
+        write([ac1, ac2], header=complete_header, prettyprint=True)
+
+
+def test_availability_constraint_31_without_counts(complete_header):
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None,
+            dataflows=[
+                "urn:sdmx:org.sdmx.infomodel.datastructure."
+                "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+            ],
+        ),
+        cube_region=CubeRegion(key_values=[]),
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    assert "seriesCount" not in out
+    assert read_sdmx(out, validate=True).structures == [ac]

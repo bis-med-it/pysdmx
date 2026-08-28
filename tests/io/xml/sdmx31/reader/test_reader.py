@@ -9,6 +9,7 @@ from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
 from pysdmx.io.xml.sdmx31.reader.structure import read as read_structure
 from pysdmx.model import (
+    AvailabilityConstraint,
     Categorisation,
     CategoryScheme,
     Codelist,
@@ -475,3 +476,55 @@ def test_categorisation_31(samples_folder):
         "urn:sdmx:org.sdmx.infomodel.categoryscheme."
         "Category=BIS:CS1(1.0.0).OTHER"
     )
+
+
+@pytest.mark.xml
+def test_availability_constraint_31(samples_folder):
+    data_path = samples_folder / "availability_constraint.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    result = read_sdmx(input_str, validate=True).structures
+    assert len(result) == 1
+
+    ac = result[0]
+    assert isinstance(ac, AvailabilityConstraint)
+    assert ac.series_count == 3
+    assert ac.obs_count == 42
+    assert ac.reference == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+
+    att = ac.constraint_attachment
+    assert att.data_provider is None
+    assert att.dataflows == [
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    ]
+
+    region = ac.cube_region
+    assert region.is_included is True
+    assert len(region.key_values) == 1
+    assert region.key_values[0].id == "FREQ"
+    assert [v.value for v in region.key_values[0].values] == ["M"]
+
+
+def test_availability_constraint_31_incomplete(samples_folder):
+    # A native 3.1 AvailabilityConstraint missing its CubeRegion is not
+    # schema-valid (CubeRegion is minOccurs="1"), so this exercises the
+    # reader's defensive check for validate=False usage.
+    data_path = samples_folder / "availability_constraint_incomplete.xml"
+    with pytest.raises(
+        Invalid, match="requires a constraint attachment and a cube region"
+    ):
+        read_sdmx(data_path, validate=False)
+
+
+def test_availability_constraint_31_duplicate_is_invalid(samples_folder):
+    # Two AvailabilityConstraints for the same artefact share a short
+    # URN; silently keeping only the last one would lose data.
+    data_path = samples_folder / "availability_constraint_duplicate.xml"
+    with pytest.raises(
+        Invalid, match="Two availability constraints for the same"
+    ):
+        read_sdmx(data_path, validate=True)

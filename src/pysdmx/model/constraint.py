@@ -5,7 +5,8 @@ from typing import Optional, Sequence
 
 from msgspec import Struct
 
-from pysdmx.model.__base import MaintainableArtefact
+from pysdmx.errors import Invalid
+from pysdmx.model.__base import AnnotableArtefact, MaintainableArtefact
 
 
 class CubeValue(Struct, frozen=True, omit_defaults=True):
@@ -16,11 +17,76 @@ class CubeValue(Struct, frozen=True, omit_defaults=True):
     valid_to: Optional[datetime] = None
 
 
+class TimePeriodBoundary(Struct, frozen=True, omit_defaults=True):
+    """One end of a cube-region time range, with inclusivity."""
+
+    period: str
+    is_inclusive: bool = True
+
+
+class CubeTimeRange(Struct, frozen=True, omit_defaults=True):
+    """A time range for a cube region's time dimension.
+
+    Mirrors the SDMX TimeRange, a choice of three shapes: a period
+    before, a period after, or a range with both a start and an end
+    period. Only the boundaries of the chosen shape are set.
+
+    Raises:
+        Invalid: If the boundaries do not match one of the three SDMX
+            shapes (before only, after only, or start and end).
+    """
+
+    before_period: Optional[TimePeriodBoundary] = None
+    after_period: Optional[TimePeriodBoundary] = None
+    start_period: Optional[TimePeriodBoundary] = None
+    end_period: Optional[TimePeriodBoundary] = None
+
+    def __post_init__(self) -> None:
+        """Checks the time range matches one of the SDMX shapes."""
+        has_before = self.before_period is not None
+        has_after = self.after_period is not None
+        has_start = self.start_period is not None
+        has_end = self.end_period is not None
+        is_before = has_before and not (has_after or has_start or has_end)
+        is_after = has_after and not (has_before or has_start or has_end)
+        is_range = has_start and has_end and not (has_before or has_after)
+        if not (is_before or is_after or is_range):
+            raise Invalid(
+                "Invalid time range",
+                "A time range must be a period before, a period after, "
+                "or both a start and an end period.",
+            )
+
+
 class CubeKeyValue(Struct, frozen=True, omit_defaults=True):
-    """The list of values for a cube's component."""
+    """The list of values (or a time range) for a cube's component.
+
+    Attributes:
+        id: The referenced component (e.g. a dimension).
+        values: The set of allowed/excluded values.
+        time_range: A time range, for a time dimension (mutually
+            exclusive with values in SDMX-ML).
+        valid_from: Start of the validity period (SDMX-ML 3.0/3.1 only).
+        valid_to: End of the validity period (SDMX-ML 3.0/3.1 only).
+
+    Raises:
+        Invalid: If both values and time_range are set.
+    """
 
     id: str
-    values: Sequence[CubeValue]
+    values: Sequence[CubeValue] = ()
+    time_range: Optional[CubeTimeRange] = None
+    valid_from: Optional[datetime] = None
+    valid_to: Optional[datetime] = None
+
+    def __post_init__(self) -> None:
+        """Checks values and time_range are mutually exclusive."""
+        if self.values and self.time_range is not None:
+            raise Invalid(
+                "Invalid cube key value",
+                "values and time_range are mutually exclusive: a cube "
+                "key value cannot set both.",
+            )
 
 
 class CubeRegion(Struct, frozen=True, omit_defaults=True):
@@ -62,8 +128,92 @@ class KeySet(Struct, frozen=True, omit_defaults=True):
 
 
 class DataConstraint(MaintainableArtefact, frozen=True, omit_defaults=True):
-    """A data constraint, defining the allowed or available values."""
+    """A data constraint, defining the allowed values.
+
+    Available content is modelled by AvailabilityConstraint.
+    """
 
     constraint_attachment: Optional[ConstraintAttachment] = None
     cube_regions: Sequence[CubeRegion] = ()
     key_sets: Sequence[KeySet] = ()
+
+
+class AvailabilityConstraint(
+    AnnotableArtefact,
+    frozen=True,
+    omit_defaults=True,
+    kw_only=True,
+):
+    """The data actually present for one data-related artefact.
+
+    Mirrors the SDMX 3.1 AvailabilityConstraint: contrary to a
+    DataConstraint, it is not maintainable (no agency, id, version or
+    name) as it is generated dynamically, typically by availability
+    queries. It is attached to exactly one data-related artefact and
+    carries exactly one cube region.
+
+    Attributes:
+        constraint_attachment: The artefact for which availability is
+            described (exactly one data structure, dataflow or
+            provision agreement).
+        cube_region: The values available for the attached artefact.
+        series_count: The number of series matching the query.
+        obs_count: The number of observations matching the query.
+
+    Note:
+        Annotations are serialized in every representation. On the
+        legacy SDMX-ML 2.1/3.0 and SDMX-JSON 2.0 representations
+        (where availability is written as a data/content constraint),
+        ``series_count``/``obs_count`` have no dedicated field, so
+        they are carried as FMR-style ``sdmx_metrics`` annotations
+        (alongside any other annotation) and lifted back on read.
+
+    Raises:
+        Invalid: If the constraint is not attached to exactly one data
+            structure, dataflow or provision agreement.
+    """
+
+    constraint_attachment: ConstraintAttachment
+    cube_region: CubeRegion
+    series_count: Optional[int] = None
+    obs_count: Optional[int] = None
+
+    def __post_init__(self) -> None:
+        """Checks the constraint is attached to exactly one artefact."""
+        at = self.constraint_attachment
+        refs = [
+            *(at.data_structures or ()),
+            *(at.dataflows or ()),
+            *(at.provision_agreements or ()),
+        ]
+        if at.data_provider is not None or len(refs) != 1:
+            raise Invalid(
+                "Invalid availability constraint",
+                "An availability constraint must be attached to exactly "
+                "one data structure, dataflow or provision agreement.",
+            )
+
+    @property
+    def reference(self) -> str:
+        """The URN of the artefact for which availability is described."""
+        at = self.constraint_attachment
+        refs = [
+            *(at.data_structures or ()),
+            *(at.dataflows or ()),
+            *(at.provision_agreements or ()),
+        ]
+        return refs[0]
+
+    @property
+    def short_urn(self) -> str:
+        """A synthetic Short URN, used to key availability constraints.
+
+        Note:
+            The short URN is derived solely from the referenced
+            artefact, not from the constraint's content. Two
+            AvailabilityConstraint instances attached to the same
+            artefact therefore share a short URN; the readers and the
+            structure writers reject such duplicates with ``Invalid``
+            instead of silently keeping only the last one.
+        """
+        return f"AvailabilityConstraint={self.reference}"

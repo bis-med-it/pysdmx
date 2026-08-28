@@ -7,7 +7,7 @@ from typing import Any, Optional, Sequence
 
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
-from pysdmx.model import MetadataReport
+from pysdmx.model import AvailabilityConstraint, MetadataReport
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.dataset import Dataset
 
@@ -139,13 +139,17 @@ def write_sdmx(
         key = "reports"
     else:
         key = "datasets"
-    value = sdmx_objects if isinstance(sdmx_objects, list) else [sdmx_objects]
+    value = (
+        sdmx_objects if isinstance(sdmx_objects, Sequence) else [sdmx_objects]
+    )
 
     if is_structure and not all(
-        isinstance(x, MaintainableArtefact) for x in value
+        isinstance(x, (MaintainableArtefact, AvailabilityConstraint))
+        for x in value
     ):
         raise Invalid(
-            "Only maintainable artefacts can be written to structure formats."
+            "Only maintainable artefacts or availability constraints "
+            "can be written to structure formats."
         )
     elif is_ref_meta and not all(isinstance(x, MetadataReport) for x in value):
         raise Invalid(

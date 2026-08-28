@@ -19,6 +19,7 @@ from pysdmx.io.xml.sdmx21.reader.submission import read as read_sub
 from pysdmx.io.xml.sdmx21.writer.structure_specific import write
 from pysdmx.model import (
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     CategoryScheme,
     Codelist,
@@ -27,6 +28,7 @@ from pysdmx.model import (
     Contact,
     CubeKeyValue,
     CubeRegion,
+    CubeTimeRange,
     CubeValue,
     CustomTypeScheme,
     DataConstraint,
@@ -1267,17 +1269,22 @@ def test_constraint_actual_type_and_time_range(samples_folder):
     data_path = samples_folder / "constraint_actual_timerange.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1
-    result = read_sdmx(input_str, validate=False).get_data_constraints()
-    assert result is not None
+    result = read_sdmx(input_str, validate=True).structures
     assert len(result) == 1
     constraint = result[0]
-    assert isinstance(constraint, DataConstraint)
-    assert constraint.id == "CR_A_TEST_DF"
-    assert len(constraint.cube_regions) == 1
-    region = constraint.cube_regions[0]
-    assert len(region.key_values) == 1
-    assert region.key_values[0].id == "FREQ"
-    assert [v.value for v in region.key_values[0].values] == ["A"]
+    assert isinstance(constraint, AvailabilityConstraint)
+    assert constraint.reference == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
+    )
+    region = constraint.cube_region
+    assert len(region.key_values) == 2
+    freq, time = region.key_values
+    assert freq.id == "FREQ"
+    assert [v.value for v in freq.values] == ["A"]
+    assert time.id == "TIME_PERIOD"
+    assert time.time_range.start_period.period == "2009-01-01T00:00:00"
+    assert time.time_range.end_period.period == "2023-12-31T00:00:00"
 
 
 def test_constraint_with_keyset(samples_folder):
@@ -1418,6 +1425,64 @@ def test_constraint_without_attachment(samples_folder):
     assert [
         v.value for v in constraint.cube_regions[0].key_values[0].values
     ] == ["Q"]
+
+
+def test_constraint_allowed_21(samples_folder):
+    data_path = samples_folder / "constraint_allowed.xml"
+    result = read_sdmx(data_path, validate=True).structures
+    assert len(result) == 1
+    assert isinstance(result[0], DataConstraint)
+
+
+def test_constraint_actual_21_is_availability(samples_folder):
+    data_path = samples_folder / "constraint_actual.xml"
+    result = read_sdmx(data_path, validate=True).structures
+    assert len(result) == 1
+    ac = result[0]
+    assert isinstance(ac, AvailabilityConstraint)
+    assert ac.reference == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    kv = ac.cube_region.key_values[0]
+    assert kv.id == "FREQ"
+    assert [v.value for v in kv.values] == ["M"]
+
+
+def test_constraint_type_absent_defaults_to_availability_21(samples_folder):
+    data_path = samples_folder / "constraint_no_type.xml"
+    result = read_sdmx(data_path, validate=True).structures
+    assert isinstance(result[0], AvailabilityConstraint)
+
+
+@pytest.mark.parametrize(
+    ("sample", "match"),
+    [
+        ("constraint_actual_keysets.xml", "key sets"),
+        ("constraint_actual_two_regions.xml", "exactly one cube region"),
+        ("constraint_actual_no_attachment.xml", "attached"),
+    ],
+)
+def test_constraint_actual_not_representable_21(samples_folder, sample, match):
+    with pytest.raises(Invalid, match=match):
+        read_sdmx(samples_folder / sample, validate=False)
+
+
+def test_constraint_with_time_range_21(samples_folder):
+    data_path = samples_folder / "constraint_time_range.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert isinstance(result[0], DataConstraint)
+    region = result[0].cube_regions[0]
+    freq, time = region.key_values
+    assert [v.value for v in freq.values] == ["A"]
+    assert time.id == "TIME_PERIOD"
+    assert time.values == ()
+    assert isinstance(time.time_range, CubeTimeRange)
+    assert time.time_range.start_period.period == "1989-01-01T00:00:00"
+    assert time.time_range.start_period.is_inclusive is True
+    assert time.time_range.end_period.period == "2024-12-31T00:00:00"
+    assert time.time_range.end_period.is_inclusive is False
 
 
 @pytest.mark.xml
