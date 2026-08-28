@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import msgspec
 import pytest
 
 from pysdmx import errors
@@ -17,6 +18,7 @@ from pysdmx.io.json.sdmxjson2.writer.v2_1.structure import (
 from pysdmx.model import (
     Agency,
     AgencyScheme,
+    Annotation,
     AvailabilityConstraint,
     Codelist,
     ConstraintAttachment,
@@ -151,3 +153,22 @@ def test_availability_constraint_v2_1_writer(availability_constraint):
 
     assert len(constraints) == 1
     assert constraints[0] == availability_constraint
+
+
+def test_availability_constraint_v2_1_writer_with_annotation(
+    availability_constraint,
+):
+    ac = msgspec.structs.replace(
+        availability_constraint,
+        annotations=(Annotation(id="ANN1", title="Note", type="text"),),
+    )
+    out = write_v2_1([ac])
+
+    assert '"availabilityConstraints"' in out
+    assert '"type": "text"' in out
+
+    msg = read_sdmx(out, validate=True)
+    constraints = msg.get_availability_constraints()
+
+    assert len(constraints) == 1
+    assert constraints[0] == ac

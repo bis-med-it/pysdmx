@@ -1637,11 +1637,13 @@ class StructureParser(Struct):
                     "An availability constraint requires a constraint "
                     "attachment and a cube region.",
                 )
+            element = self.__format_annotations(element)
             attachment = self.__format_constraint_attachment(element[CONS_ATT])
             cube_region = self.__format_cube_region(element[CUBE_REGION])
             series_count = element.get("seriesCount")
             obs_count = element.get("obsCount")
             constraint = AvailabilityConstraint(
+                annotations=element.get("annotations", ()),
                 constraint_attachment=attachment,
                 cube_region=cube_region,
                 series_count=(

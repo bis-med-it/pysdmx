@@ -1219,6 +1219,39 @@ def test_availability_constraint_roundtrip_31(complete_header):
     assert back == [ac]
 
 
+def test_availability_constraint_roundtrip_31_with_annotation(
+    complete_header,
+):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        annotations=[Annotation(id="ANN1", title="Note", type="text")],
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(
+            key_values=[
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
+            ]
+        ),
+        series_count=3,
+        obs_count=42,
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    assert "<str:AvailabilityConstraint" in out
+    assert '<com:Annotation id="ANN1">' in out
+    # Per the 3.1 AnnotableType extension order: Annotations first,
+    # then ConstraintAttachment, then CubeRegion.
+    ann_pos = out.index("<com:Annotations>")
+    attachment_pos = out.index("<str:ConstraintAttachment>")
+    region_pos = out.index("<str:CubeRegion")
+    assert ann_pos < attachment_pos < region_pos
+    back = read_sdmx(out, validate=True).structures
+    assert back == [ac]
+
+
 def test_availability_constraint_31_without_counts(complete_header):
     ac = AvailabilityConstraint(
         constraint_attachment=ConstraintAttachment(

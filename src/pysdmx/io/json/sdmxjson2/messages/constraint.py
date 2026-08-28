@@ -525,6 +525,7 @@ class JsonAvailabilityConstraint(Struct, frozen=True, omit_defaults=True):
     cubeRegion: Optional[JsonCubeRegion] = None
     seriesCount: Optional[int] = None
     obsCount: Optional[int] = None
+    annotations: Sequence[JsonAnnotation] = ()
 
     def to_model(self) -> AvailabilityConstraint:
         """Converts the payload to a pysdmx availability constraint."""
@@ -535,6 +536,7 @@ class JsonAvailabilityConstraint(Struct, frozen=True, omit_defaults=True):
                 "attachment and a cube region.",
             )
         return AvailabilityConstraint(
+            annotations=tuple(a.to_model() for a in self.annotations),
             constraint_attachment=self.constraintAttachment.to_model(),
             cube_region=self.cubeRegion.to_model(),
             series_count=self.seriesCount,
@@ -546,8 +548,6 @@ class JsonAvailabilityConstraint(Struct, frozen=True, omit_defaults=True):
         cls, cons: AvailabilityConstraint
     ) -> "JsonAvailabilityConstraint":
         """Converts a pysdmx availability constraint to the payload."""
-        # Annotations are not part of this payload yet: they are
-        # dropped here (see the AvailabilityConstraint model docstring).
         return JsonAvailabilityConstraint(
             constraintAttachment=(
                 JsonAvailabilityConstraintAttachment.from_model(
@@ -557,6 +557,9 @@ class JsonAvailabilityConstraint(Struct, frozen=True, omit_defaults=True):
             cubeRegion=JsonCubeRegion.from_model(cons.cube_region),
             seriesCount=cons.series_count,
             obsCount=cons.obs_count,
+            annotations=tuple(
+                JsonAnnotation.from_model(a) for a in cons.annotations
+            ),
         )
 
 

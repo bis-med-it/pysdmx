@@ -1839,8 +1839,6 @@ def __write_availability_constraint(
     constraint: AvailabilityConstraint, indent: str
 ) -> str:
     """Writes an SDMX-ML 3.1 AvailabilityConstraint element."""
-    # Annotations are not part of this element yet: they are dropped
-    # here (see the AvailabilityConstraint model docstring).
     attributes = ""
     if constraint.series_count is not None:
         attributes += f' seriesCount="{constraint.series_count}"'
@@ -1848,6 +1846,9 @@ def __write_availability_constraint(
         attributes += f' obsCount="{constraint.obs_count}"'
     label = f"{ABBR_STR}:{AVAILABILITY_CONS}"
     outfile = f"{indent}<{label}{attributes}>"
+    # AnnotableType extension order: Annotations, then
+    # ConstraintAttachment, then CubeRegion.
+    outfile += __write_annotable(constraint, add_indent(indent))
     outfile += __write_constraint_attachment(
         constraint.constraint_attachment,
         add_indent(indent),
