@@ -302,13 +302,21 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             [JsonHierarchy.from_model(h) for h in msg.get_hierarchies()]
         )
         if msg_version == "2.1":
+            # tuple([...]) rather than a generator: on Python 3.10 an
+            # empty tuple built from a generator is not interned, so
+            # msgspec's omit_defaults would emit [] (which the 2.1
+            # schema rejects as empty).
             constraints = tuple(
-                JsonDataConstraint.from_model(c, with_role=False)
-                for c in msg.get_data_constraints()
+                [
+                    JsonDataConstraint.from_model(c, with_role=False)
+                    for c in msg.get_data_constraints()
+                ]
             )
             avail = tuple(
-                JsonAvailabilityConstraint.from_model(c)
-                for c in avail_constraints
+                [
+                    JsonAvailabilityConstraint.from_model(c)
+                    for c in avail_constraints
+                ]
             )
         else:
             constraints = tuple(

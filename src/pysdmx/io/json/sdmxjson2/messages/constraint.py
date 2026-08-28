@@ -126,7 +126,7 @@ class JsonKeyValue(Struct, frozen=True, omit_defaults=True):
     @classmethod
     def from_model(self, key_value: CubeKeyValue) -> "JsonKeyValue":
         """Converts a pysdmx cube key value to an SDMX-JSON one."""
-        values = tuple(JsonValue.from_model(v) for v in key_value.values)
+        values = tuple([JsonValue.from_model(v) for v in key_value.values])
         # values and time_range are mutually exclusive (enforced by
         # CubeKeyValue), so there is no precedence to resolve here.
         time_range = (
@@ -468,9 +468,9 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             name=f"Availability for {ref.id}",
             agency=ref.agency,
             version=ref.version,
-            annotations=(
-                tuple(JsonAnnotation.from_model(a) for a in cons.annotations)
-                + _metric_annotations(cons)
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in cons.annotations]
+                + list(_metric_annotations(cons))
             ),
             role="Actual",
             constraintAttachment=JsonConstraintAttachment.from_model(
@@ -557,8 +557,12 @@ class JsonAvailabilityConstraint(Struct, frozen=True, omit_defaults=True):
             cubeRegion=JsonCubeRegion.from_model(cons.cube_region),
             seriesCount=cons.series_count,
             obsCount=cons.obs_count,
+            # tuple([...]) rather than a generator: on Python 3.10 an
+            # empty tuple built from a generator is not interned, so
+            # msgspec's omit_defaults would emit [] (which the 2.1
+            # schema rejects as empty).
             annotations=tuple(
-                JsonAnnotation.from_model(a) for a in cons.annotations
+                [JsonAnnotation.from_model(a) for a in cons.annotations]
             ),
         )
 
