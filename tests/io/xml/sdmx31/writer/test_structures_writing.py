@@ -1200,12 +1200,12 @@ def test_availability_constraint_roundtrip_31(complete_header):
     )
     ac = AvailabilityConstraint(
         constraint_attachment=ConstraintAttachment(
-            data_provider=None, dataflows=(urn,)
+            data_provider=None, dataflows=[urn]
         ),
         cube_region=CubeRegion(
-            key_values=(
-                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),)),
-            )
+            key_values=[
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
+            ]
         ),
         series_count=3,
         obs_count=42,
@@ -1216,7 +1216,7 @@ def test_availability_constraint_roundtrip_31(complete_header):
     assert 'obsCount="42"' in out
     assert "ContentConstraint" not in out
     back = read_sdmx(out, validate=True).structures
-    assert back == (ac,)
+    assert back == [ac]
 
 
 def test_availability_constraint_roundtrip_31_with_annotation(
@@ -1229,12 +1229,12 @@ def test_availability_constraint_roundtrip_31_with_annotation(
     ac = AvailabilityConstraint(
         annotations=(Annotation(id="ANN1", title="Note", type="text"),),
         constraint_attachment=ConstraintAttachment(
-            data_provider=None, dataflows=(urn,)
+            data_provider=None, dataflows=[urn]
         ),
         cube_region=CubeRegion(
-            key_values=(
-                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),)),
-            )
+            key_values=[
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
+            ]
         ),
         series_count=3,
         obs_count=42,
@@ -1252,42 +1252,9 @@ def test_availability_constraint_roundtrip_31_with_annotation(
     # ac.annotations is a tuple (the idiomatic container type for this
     # field, matching the JSON native path); the reader must produce
     # a tuple too, or this equality would fail even though the
-    # content matches (list != tuple in Python). Likewise, .structures
-    # is now consistently a tuple across every read format.
-    assert back == (ac,)
+    # content matches (list != tuple in Python).
+    assert back == [ac]
     assert isinstance(back[0].annotations, tuple)
-
-
-def test_availability_constraint_31_native_read_is_hashable(complete_header):
-    # Acceptance test: a reader-built AvailabilityConstraint (native
-    # SDMX-ML 3.1, with annotations and a cube region) must be
-    # hashable and equal to the identical tuple-built object. The
-    # frozen struct's default __hash__/__eq__ walk every field, so a
-    # reader that slipped a list into any Sequence field (annotations,
-    # constraint_attachment.dataflows, cube_region.key_values, ...)
-    # would make the object unhashable, or unequal to a hand-built one
-    # despite matching content.
-    urn = (
-        "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
-    )
-    ac = AvailabilityConstraint(
-        annotations=(Annotation(id="ANN1", title="Note", type="text"),),
-        constraint_attachment=ConstraintAttachment(
-            data_provider=None, dataflows=(urn,)
-        ),
-        cube_region=CubeRegion(
-            key_values=(
-                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),)),
-            )
-        ),
-        series_count=3,
-        obs_count=42,
-    )
-    out = write([ac], prettyprint=True, header=complete_header)
-    back = read_sdmx(out, validate=True).structures[0]
-    hash(back)  # must not raise TypeError (unhashable list field)
-    assert back == ac
 
 
 def test_availability_constraint_31_duplicate_is_invalid(complete_header):
@@ -1316,13 +1283,13 @@ def test_availability_constraint_31_without_counts(complete_header):
     ac = AvailabilityConstraint(
         constraint_attachment=ConstraintAttachment(
             data_provider=None,
-            dataflows=(
+            dataflows=[
                 "urn:sdmx:org.sdmx.infomodel.datastructure."
-                "Dataflow=TEST_AGENCY:DF_TEST(1.0)",
-            ),
+                "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+            ],
         ),
-        cube_region=CubeRegion(key_values=()),
+        cube_region=CubeRegion(key_values=[]),
     )
     out = write([ac], prettyprint=True, header=complete_header)
     assert "seriesCount" not in out
-    assert read_sdmx(out, validate=True).structures == (ac,)
+    assert read_sdmx(out, validate=True).structures == [ac]

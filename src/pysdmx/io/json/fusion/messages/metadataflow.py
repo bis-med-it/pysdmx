@@ -30,7 +30,7 @@ class FusionMetadataflow(Struct, frozen=True, rename={"agency": "agencyId"}):
             ),
             version=self.version,
             structure=self.metadataStructureRef,
-            targets=tuple(self.targets),
+            targets=self.targets,
         )
 
 

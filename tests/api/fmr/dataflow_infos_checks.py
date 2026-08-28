@@ -347,7 +347,7 @@ def __check_dsi_and_schema(dsi):
     assert len(dsi.groups) == 1
     grp = dsi.groups[0]
     assert grp.id == "Sibling"
-    assert grp.dimensions == (
+    assert grp.dimensions == [
         "L_MEASURE",
         "L_REP_CTY",
         "CBS_BANK_TYPE",
@@ -358,4 +358,4 @@ def __check_dsi_and_schema(dsi):
         "CURR_TYPE_BOOK",
         "L_CP_SECTOR",
         "L_CP_COUNTRY",
-    )
+    ]

@@ -1188,21 +1188,21 @@ def test_agency(complete_header, agency, agency_sample):
 def test_org_schemes_30_round_trip(complete_header):
     provider_scheme = DataProviderScheme(
         agency="MD",
-        items=(
+        items=[
             DataProvider(
                 id="DP",
                 name="DATA PROVIDER",
-                contacts=(Contact(name="Stats", emails=("dp.test@md.org",)),),
-            ),
-        ),
+                contacts=[Contact(name="Stats", emails=["dp.test@md.org"])],
+            )
+        ],
     )
     consumer_scheme = DataConsumerScheme(
         agency="MD",
-        items=(DataConsumer(id="DC", name="DATA CONSUMER"),),
+        items=[DataConsumer(id="DC", name="DATA CONSUMER")],
     )
     metadata_scheme = MetadataProviderScheme(
         agency="MD",
-        items=(MetadataProvider(id="MP", name="METADATA PROVIDER"),),
+        items=[MetadataProvider(id="MP", name="METADATA PROVIDER")],
     )
     content = [provider_scheme, consumer_scheme, metadata_scheme]
     result = write(content, header=complete_header, prettyprint=True)
@@ -1220,15 +1220,13 @@ def test_org_schemes_30_round_trip(complete_header):
 def test_provider_scheme_enrichment_30_round_trip(complete_header):
     provider_scheme = DataProviderScheme(
         agency="MD",
-        items=(
+        items=[
             DataProvider(
                 id="MD",
                 name="DATA PROVIDER",
-                dataflows=(
-                    DataflowRef(id="TEST", agency="MD", version="1.0"),
-                ),
-            ),
-        ),
+                dataflows=[DataflowRef(id="TEST", agency="MD", version="1.0")],
+            )
+        ],
     )
     provision_agreement = ProvisionAgreement(
         id="TEST",
@@ -1242,9 +1240,9 @@ def test_provider_scheme_enrichment_30_round_trip(complete_header):
     result = write(content, header=complete_header, prettyprint=True)
     re_read = read_sdmx(result, validate=True).structures
     scheme = next(s for s in re_read if isinstance(s, DataProviderScheme))
-    assert scheme.items[0].dataflows == (
-        DataflowRef(id="TEST", agency="MD", version="1.0"),
-    )
+    assert scheme.items[0].dataflows == [
+        DataflowRef(id="TEST", agency="MD", version="1.0")
+    ]
     assert scheme == provider_scheme
 
 
@@ -1560,12 +1558,10 @@ def test_availability_constraint_roundtrip_30(complete_header):
     )
     ac = AvailabilityConstraint(
         constraint_attachment=ConstraintAttachment(
-            data_provider=None, dataflows=(urn,)
+            data_provider=None, dataflows=[urn]
         ),
         cube_region=CubeRegion(
-            key_values=(
-                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),)),
-            )
+            key_values=[CubeKeyValue(id="FREQ", values=[CubeValue(value="M")])]
         ),
         series_count=3,
         obs_count=42,

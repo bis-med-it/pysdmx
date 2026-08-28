@@ -232,15 +232,15 @@ def test_hierarchy_21_round_trip(complete_header, hierarchy_with_levels):
 def test_org_schemes_21_round_trip(complete_header):
     agency_scheme = AgencyScheme(
         agency="SDMX",
-        items=(Agency(id="SDMX", name="SDMX"),),
+        items=[Agency(id="SDMX", name="SDMX")],
     )
     provider_scheme = DataProviderScheme(
         agency="BIS",
-        items=(DataProvider(id="5B0", name="BIS"),),
+        items=[DataProvider(id="5B0", name="BIS")],
     )
     consumer_scheme = DataConsumerScheme(
         agency="SDMX",
-        items=(DataConsumer(id="ECB", name="European Central Bank"),),
+        items=[DataConsumer(id="ECB", name="European Central Bank")],
     )
     content = [agency_scheme, provider_scheme, consumer_scheme]
     result = write(content, header=complete_header, prettyprint=True)
@@ -258,21 +258,21 @@ def test_org_schemes_21_round_trip(complete_header):
 def test_provider_scheme_contacts_21_round_trip(complete_header):
     provider_scheme = DataProviderScheme(
         agency="BIS",
-        items=(
+        items=[
             DataProvider(
                 id="5B0",
                 name="BIS",
-                contacts=(
+                contacts=[
                     Contact(
                         name="Stats",
                         department="STATS",
                         role="Provider",
-                        emails=("stats@bis.org",),
-                        uris=("http://www.bis.org",),
-                    ),
-                ),
-            ),
-        ),
+                        emails=["stats@bis.org"],
+                        uris=["http://www.bis.org"],
+                    )
+                ],
+            )
+        ],
     )
     result = write([provider_scheme], header=complete_header, prettyprint=True)
     assert "<str:Contact>" in result
@@ -283,21 +283,19 @@ def test_provider_scheme_contacts_21_round_trip(complete_header):
 def test_provider_scheme_enrichment_21_round_trip(complete_header):
     provider_scheme = DataProviderScheme(
         agency="BIS",
-        items=(
+        items=[
             DataProvider(
                 id="TEST",
                 name="Test Organisation",
-                dataflows=(
-                    DataflowRef(id="DF1", agency="BIS", version="1.0"),
-                ),
-            ),
-        ),
+                dataflows=[DataflowRef(id="DF1", agency="BIS", version="1.0")],
+            )
+        ],
     )
     # An AgencyScheme shares the OrganisationSchemes wrapper but must be
     # left untouched by the dataflow enrichment.
     agency_scheme = AgencyScheme(
         agency="SDMX",
-        items=(Agency(id="SDMX", name="SDMX"),),
+        items=[Agency(id="SDMX", name="SDMX")],
     )
     provision_agreement = ProvisionAgreement(
         id="PA1",
@@ -312,9 +310,9 @@ def test_provider_scheme_enrichment_21_round_trip(complete_header):
     re_read = read_sdmx(result, validate=True).structures
     scheme = next(s for s in re_read if isinstance(s, DataProviderScheme))
     # The dataflows are re-derived from the provision agreement on read.
-    assert scheme.items[0].dataflows == (
-        DataflowRef(id="DF1", agency="BIS", version="1.0"),
-    )
+    assert scheme.items[0].dataflows == [
+        DataflowRef(id="DF1", agency="BIS", version="1.0")
+    ]
     assert scheme == provider_scheme
     # The agency scheme is preserved unchanged.
     re_agency = next(s for s in re_read if isinstance(s, AgencyScheme))
@@ -774,7 +772,7 @@ def concept_ds():
         name="Frequency",
         version="1.0",
         agency="BIS",
-        items=(
+        items=[
             Concept(
                 id="freq",
                 urn="urn:sdmx:org.sdmx.infomodel.conceptscheme."
@@ -789,7 +787,7 @@ def concept_ds():
                 name="Observation value",
                 annotations=(),
             ),
-        ),
+        ],
     )
 
 
@@ -1022,10 +1020,10 @@ def udo_scheme_structure():
 @pytest.fixture
 def datastructure(concept_ds):
     return DataStructureDefinition(
-        annotations=(
+        annotations=[
             Annotation(title="OBS_FLAG", type="DISSEMINATION_FLAG_SETTINGS"),
             Annotation(title="time", type="DISSEMINATION_TIME_DIMENSION_CODE"),
-        ),
+        ],
         urn="urn:sdmx:org.sdmx.infomodel.datastructure."
         "DataStructure=ESTAT:HLTH_RS_PRSHP1(7.0)",
         id="HLTH_RS_PRSHP1",
@@ -2189,12 +2187,10 @@ def test_availability_constraint_roundtrip_21(complete_header):
     )
     ac = AvailabilityConstraint(
         constraint_attachment=ConstraintAttachment(
-            data_provider=None, dataflows=(urn,)
+            data_provider=None, dataflows=[urn]
         ),
         cube_region=CubeRegion(
-            key_values=(
-                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),)),
-            )
+            key_values=[CubeKeyValue(id="FREQ", values=[CubeValue(value="M")])]
         ),
         series_count=3,
         obs_count=42,

@@ -972,15 +972,15 @@ def test_write_sdmx_availability_constraint_structure_format():
     ac = AvailabilityConstraint(
         constraint_attachment=ConstraintAttachment(
             data_provider=None,
-            dataflows=(
+            dataflows=[
                 "urn:sdmx:org.sdmx.infomodel.datastructure."
-                "Dataflow=TEST_AGENCY:DF_TEST(1.0)",
-            ),
+                "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+            ],
         ),
         cube_region=CubeRegion(
-            key_values=(
-                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),)),
-            )
+            key_values=[
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
+            ]
         ),
         series_count=3,
         obs_count=42,

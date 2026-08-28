@@ -65,8 +65,8 @@ class JsonRepresentationMapping(Struct, frozen=True, omit_defaults=True):
         """Returns the requested value maps."""
         if is_multi:
             return MultiValueMap(
-                source=tuple(src.to_model() for src in self.sourceValues),
-                target=tuple(self.targetValues),
+                source=[src.to_model() for src in self.sourceValues],
+                target=self.targetValues,
                 valid_from=(
                     self.__get_dt(self.validFrom) if self.validFrom else None
                 ),
@@ -129,9 +129,9 @@ class JsonRepresentationMap(MaintainableType, frozen=True, omit_defaults=True):
                 id=self.id,
                 name=self.name,
                 agency=self.agency,
-                source=tuple(s),
-                target=tuple(t),
-                maps=tuple(mrs),  # type: ignore[arg-type]
+                source=s,
+                target=t,
+                maps=mrs,  # type: ignore[arg-type]
                 description=self.description,
                 version=self.version,
                 is_final=is_final(self.version),
@@ -144,7 +144,7 @@ class JsonRepresentationMap(MaintainableType, frozen=True, omit_defaults=True):
                 agency=self.agency,
                 source=s[0] if s else None,
                 target=t[0] if s else None,
-                maps=tuple(mrs),  # type: ignore[arg-type]
+                maps=mrs,  # type: ignore[arg-type]
                 description=self.description,
                 version=self.version,
                 is_final=is_final(self.version),
@@ -244,9 +244,7 @@ class JsonComponentMap(Struct, frozen=True, omit_defaults=True):
             else:
                 rm = self.representationMap
             if mult:
-                return MultiComponentMap(
-                    tuple(self.source), tuple(self.target), rm
-                )
+                return MultiComponentMap(self.source, self.target, rm)
             else:
                 return ComponentMap(self.source[0], self.target[0], rm)
         else:
@@ -365,7 +363,7 @@ class JsonStructureMap(MaintainableType, frozen=True, omit_defaults=True):
             maps=m1 + m2 + m3,
             description=self.description,
             version=self.version,
-            annotations=tuple(a.to_model() for a in self.annotations),
+            annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             valid_from=self.validFrom,

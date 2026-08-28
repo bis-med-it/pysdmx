@@ -78,7 +78,7 @@ class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
                 exc_keys_dicts = self.__extract_keys_dict(c.dataKeySets, False)
                 inc_keys.extend([self.__infer_keys(d) for d in inc_keys_dicts])
                 exc_keys.extend([self.__infer_keys(d) for d in exc_keys_dicts])
-        return tuple(set(inc_keys)), tuple(set(exc_keys))
+        return list(set(inc_keys)), list(set(exc_keys))
 
 
 class JsonSchemaMessage(msgspec.Struct, frozen=True, omit_defaults=True):
@@ -119,7 +119,7 @@ class JsonSchemaMessage(msgspec.Struct, frozen=True, omit_defaults=True):
             id_,
             comps,
             version,
-            tuple(urns),  # type: ignore[arg-type]
+            urns,  # type: ignore[arg-type]
             groups=groups,
             keys=included,
             excluded_keys=excluded,

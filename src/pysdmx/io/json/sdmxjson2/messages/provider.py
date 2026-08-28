@@ -8,7 +8,6 @@ from msgspec import Struct
 from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
     JsonAnnotation,
-    tuple_contacts,
 )
 from pysdmx.io.json.sdmxjson2.messages.mpa import (
     JsonMetadataProvisionAgreement,
@@ -49,8 +48,8 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
                     id=p.id,
                     name=p.name,
                     description=p.description,
-                    contacts=tuple_contacts(p.contacts),
-                    dataflows=tuple(paprs[f"{self.agency}:{p.id}"]),
+                    contacts=p.contacts,
+                    dataflows=list(paprs[f"{self.agency}:{p.id}"]),
                     annotations=tuple(
                         [a.to_model() for a in self.annotations]
                     ),
@@ -63,7 +62,7 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
                     id=p.id,
                     name=p.name,
                     description=p.description,
-                    contacts=tuple_contacts(p.contacts),
+                    contacts=p.contacts,
                     annotations=tuple(
                         [a.to_model() for a in self.annotations]
                     ),
@@ -73,7 +72,7 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
         return DataProviderScheme(
             agency=self.agency,
             description=self.description,
-            items=tuple(provs),
+            items=provs,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
@@ -154,8 +153,8 @@ class JsonMetadataProviderScheme(
                     id=p.id,
                     name=p.name,
                     description=p.description,
-                    contacts=tuple_contacts(p.contacts),
-                    dataflows=tuple(paprs[f"{self.agency}:{p.id}"]),
+                    contacts=p.contacts,
+                    dataflows=list(paprs[f"{self.agency}:{p.id}"]),
                     annotations=tuple(
                         [a.to_model() for a in self.annotations]
                     ),
@@ -168,7 +167,7 @@ class JsonMetadataProviderScheme(
                     id=p.id,
                     name=p.name,
                     description=p.description,
-                    contacts=tuple_contacts(p.contacts),
+                    contacts=p.contacts,
                     annotations=tuple(
                         [a.to_model() for a in self.annotations]
                     ),
@@ -178,7 +177,7 @@ class JsonMetadataProviderScheme(
         return MetadataProviderScheme(
             agency=self.agency,
             description=self.description,
-            items=tuple(provs),
+            items=provs,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),

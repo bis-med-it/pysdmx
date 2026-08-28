@@ -7,7 +7,6 @@ from msgspec import Struct
 from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
     JsonAnnotation,
-    tuple_contacts,
 )
 from pysdmx.model import Agency, DataConsumer, DataConsumerScheme
 from pysdmx.util import is_final
@@ -25,7 +24,7 @@ class JsonDataConsumerScheme(ItemSchemeType, frozen=True, omit_defaults=True):
                 id=p.id,
                 name=p.name,
                 description=p.description,
-                contacts=tuple_contacts(p.contacts),
+                contacts=p.contacts,
                 annotations=tuple([a.to_model() for a in self.annotations]),
             )
             for p in self.dataConsumers
@@ -33,7 +32,7 @@ class JsonDataConsumerScheme(ItemSchemeType, frozen=True, omit_defaults=True):
         return DataConsumerScheme(
             agency=self.agency,
             description=self.description,
-            items=tuple(consumers),
+            items=consumers,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),

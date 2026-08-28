@@ -8,7 +8,6 @@ import msgspec
 from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
     JsonAnnotation,
-    tuple_contacts,
 )
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
 from pysdmx.model import Agency, AgencyScheme, DataflowRef
@@ -32,12 +31,12 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True, omit_defaults=True):
         self, owner: str, a: Agency, dfowners: Dict[str, Set[DataflowRef]]
     ) -> Agency:
         oid = f"{owner}.{a.id}" if owner != "SDMX" else a.id
-        flows: Sequence[DataflowRef] = tuple(dfowners[oid]) if dfowners else ()
+        flows: Sequence[DataflowRef] = list(dfowners[oid]) if dfowners else ()
         return Agency(
             id=oid,
             name=a.name,
             description=a.description,
-            contacts=tuple_contacts(a.contacts),
+            contacts=a.contacts,
             dataflows=flows,
             annotations=tuple([a.to_model() for a in self.annotations]),
         )
@@ -55,7 +54,7 @@ class JsonAgencyScheme(ItemSchemeType, frozen=True, omit_defaults=True):
         return AgencyScheme(
             description=self.description,
             agency=self.agency,
-            items=tuple(agencies),
+            items=agencies,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),

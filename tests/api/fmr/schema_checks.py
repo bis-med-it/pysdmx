@@ -66,7 +66,7 @@ def check_schema(
     assert len(vc.groups) == 1
     grp = vc.groups[0]
     assert grp.id == "Sibling"
-    assert grp.dimensions == (
+    assert grp.dimensions == [
         "L_MEASURE",
         "L_REP_CTY",
         "CBS_BANK_TYPE",
@@ -77,7 +77,7 @@ def check_schema(
         "CURR_TYPE_BOOK",
         "L_CP_SECTOR",
         "L_CP_COUNTRY",
-    )
+    ]
 
 
 def check_keyset_schema(

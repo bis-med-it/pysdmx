@@ -163,7 +163,7 @@ def __check_content(dsds, partial_cs: bool = False):
     assert len(dsd.groups) == 1
     grp = dsd.groups[0]
     assert grp.id == "Sibling"
-    assert grp.dimensions == (
+    assert grp.dimensions == [
         "L_MEASURE",
         "L_REP_CTY",
         "CBS_BANK_TYPE",
@@ -174,4 +174,4 @@ def __check_content(dsds, partial_cs: bool = False):
         "CURR_TYPE_BOOK",
         "L_CP_SECTOR",
         "L_CP_COUNTRY",
-    )
+    ]

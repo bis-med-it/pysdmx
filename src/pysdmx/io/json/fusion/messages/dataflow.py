@@ -105,7 +105,7 @@ class FusionDataflowMessage(Struct, frozen=True):
             name=df.names[0].value,
             description=df.descriptions[0].value if df.descriptions else None,
             version=df.version,
-            providers=tuple(prvs),
+            providers=prvs,
             dsd_ref=df.dataStructureRef,
             groups=grps,
         )

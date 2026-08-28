@@ -43,12 +43,12 @@ class FusionMetadataMessage(Struct, frozen=True):
             name=r.names[0].value,
             agency=r.agency,
             metadataflow=r.metadataflow,
-            targets=tuple(r.targets),
-            attributes=tuple(attrs),
+            targets=r.targets,
+            attributes=attrs,
             version=r.version,
         )
 
     def to_model(self) -> MetadataMessage:
         """Returns the requested metadata report(s)."""
         reports = [self.__create_report(r) for r in self.data.metadatasets]
-        return MetadataMessage(reports=tuple(reports))
+        return MetadataMessage(reports=reports)

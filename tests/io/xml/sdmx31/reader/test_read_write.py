@@ -117,7 +117,7 @@ def test_org_schemes_31(samples_folder):
     }
     # The provider scheme carries a contact that survives the round-trip.
     provider = by_type[DataProviderScheme].items[0]
-    assert provider.contacts[0].emails == ("dp.test@md.org",)
+    assert provider.contacts[0].emails == ["dp.test@md.org"]
     key = attrgetter("short_urn")
     assert sorted(result, key=key) == sorted(structures, key=key)
 
@@ -132,9 +132,9 @@ def test_provider_scheme_enrichment_31(samples_folder):
     provider = next(
         s for s in result if isinstance(s, DataProviderScheme)
     ).items[0]
-    assert provider.dataflows == (
-        DataflowRef(id="TEST", agency="MD", version="1.0"),
-    )
+    assert provider.dataflows == [
+        DataflowRef(id="TEST", agency="MD", version="1.0")
+    ]
     key = attrgetter("short_urn")
     assert sorted(result, key=key) == sorted(structures, key=key)
 

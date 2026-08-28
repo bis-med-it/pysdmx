@@ -76,7 +76,7 @@ class FusionConceptScheme(
             agency=self.agency,
             description=d,
             version=self.version,
-            items=tuple(concepts),
+            items=concepts,
         )
 
 
