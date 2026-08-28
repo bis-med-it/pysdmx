@@ -65,7 +65,7 @@ class JsonRepresentationMapping(Struct, frozen=True, omit_defaults=True):
         """Returns the requested value maps."""
         if is_multi:
             return MultiValueMap(
-                source=tuple(src.to_model() for src in self.sourceValues),
+                source=tuple([src.to_model() for src in self.sourceValues]),
                 target=tuple(self.targetValues),
                 valid_from=(
                     self.__get_dt(self.validFrom) if self.validFrom else None
@@ -365,7 +365,7 @@ class JsonStructureMap(MaintainableType, frozen=True, omit_defaults=True):
             maps=m1 + m2 + m3,
             description=self.description,
             version=self.version,
-            annotations=tuple(a.to_model() for a in self.annotations),
+            annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             valid_from=self.validFrom,

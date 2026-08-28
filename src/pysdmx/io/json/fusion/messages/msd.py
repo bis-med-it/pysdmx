@@ -64,7 +64,7 @@ class FusionMetadataAttribute(Struct, frozen=True):
             array_def=ab,
             local_enum_ref=local_enum_ref,
             components=tuple(
-                ma.to_model(cs, cls) for ma in self.metadataAttributes
+                [ma.to_model(cs, cls) for ma in self.metadataAttributes]
             ),
         )
 
@@ -96,7 +96,7 @@ class FusionMetadataStructure(
             ),
             version=self.version,
             components=tuple(
-                a.to_model(cs, cls) for a in self.metadataAttributes
+                [a.to_model(cs, cls) for a in self.metadataAttributes]
             ),
         )
 

@@ -117,7 +117,7 @@ class JsonKeyValue(Struct, frozen=True, omit_defaults=True):
         """Converts a JsonKeyValue to a CubeKeyValue."""
         return CubeKeyValue(
             self.id,
-            tuple(v.to_model() for v in self.values),
+            tuple([v.to_model() for v in self.values]),
             self.timeRange.to_model() if self.timeRange else None,
             self.validFrom,
             self.validTo,
@@ -153,7 +153,7 @@ class JsonCubeRegion(Struct, frozen=True, omit_defaults=True):
     def to_model(self) -> CubeRegion:
         """Converts a JsonCubeRegion to a CubeRegion."""
         return CubeRegion(
-            tuple(kv.to_model() for kv in self.keyValues), self.include
+            tuple([kv.to_model() for kv in self.keyValues]), self.include
         )
 
     @classmethod
@@ -219,7 +219,7 @@ class JsonDataKey(Struct, frozen=True, omit_defaults=True):
     def to_model(self) -> DataKey:
         """Converts a JsonDataKey to a DataKey."""
         return DataKey(
-            tuple(kv.to_model() for kv in self.keyValues),
+            tuple([kv.to_model() for kv in self.keyValues]),
             self.validFrom,
             self.validTo,
         )
@@ -242,7 +242,9 @@ class JsonKeySet(Struct, frozen=True, omit_defaults=True):
 
     def to_model(self) -> KeySet:
         """Converts a JsonKeySet to a KeySet."""
-        return KeySet(tuple(k.to_model() for k in self.keys), self.isIncluded)
+        return KeySet(
+            tuple([k.to_model() for k in self.keys]), self.isIncluded
+        )
 
     @classmethod
     def from_model(self, ks: KeySet) -> "JsonKeySet":
@@ -381,12 +383,16 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             valid_from=self.validFrom,
             valid_to=self.validTo,
             constraint_attachment=at,
-            cube_regions=tuple(r.to_model() for r in self.cubeRegions)
-            if self.cubeRegions
-            else (),
-            key_sets=tuple(s.to_model() for s in self.dataKeySets)
-            if self.dataKeySets
-            else (),
+            cube_regions=(
+                tuple([r.to_model() for r in self.cubeRegions])
+                if self.cubeRegions
+                else ()
+            ),
+            key_sets=(
+                tuple([s.to_model() for s in self.dataKeySets])
+                if self.dataKeySets
+                else ()
+            ),
         )
 
     @classmethod
@@ -536,7 +542,7 @@ class JsonAvailabilityConstraint(Struct, frozen=True, omit_defaults=True):
                 "attachment and a cube region.",
             )
         return AvailabilityConstraint(
-            annotations=tuple(a.to_model() for a in self.annotations),
+            annotations=tuple([a.to_model() for a in self.annotations]),
             constraint_attachment=self.constraintAttachment.to_model(),
             cube_region=self.cubeRegion.to_model(),
             series_count=self.seriesCount,

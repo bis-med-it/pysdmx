@@ -91,7 +91,7 @@ class FusionCodelist(Struct, frozen=True, rename={"agency": "agencyId"}):
                 self.descriptions[0].value if self.descriptions else None
             ),
             version=self.version,
-            items=tuple(i.to_model(extract_urns) for i in self.items),
+            items=tuple([i.to_model(extract_urns) for i in self.items]),
             sdmx_type=t,  # type: ignore[arg-type]
         )
 
@@ -231,7 +231,7 @@ class FusionHierarchy(Struct, frozen=True, rename={"agency": "agencyId"}):
             version=self.version,
             has_formal_levels=self.formalLevels,
             level=self.__get_levels(),
-            codes=tuple(i.to_model(codelists) for i in self.codes),
+            codes=tuple([i.to_model(codelists) for i in self.codes]),
         )
 
 

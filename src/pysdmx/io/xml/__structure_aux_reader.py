@@ -1818,15 +1818,17 @@ class StructureParser(Struct):
                         group_dimensions = [group_dimensions]
 
                     group["dimensions"] = tuple(
-                        (
-                            d[DIM_REF]
-                            if isinstance(d[DIM_REF], str)
-                            else d[DIM_REF][REF][ID]
-                        )
-                        for d in group_dimensions
+                        [
+                            (
+                                d[DIM_REF]
+                                if isinstance(d[DIM_REF], str)
+                                else d[DIM_REF][REF][ID]
+                            )
+                            for d in group_dimensions
+                        ]
                     )
 
-                element[GROUPS_LOW] = tuple(Group(**g) for g in groups)
+                element[GROUPS_LOW] = tuple([Group(**g) for g in groups])
                 del element[DSD_COMPS][GROUP]
         return element
 
@@ -2088,8 +2090,10 @@ class StructureParser(Struct):
                 element[IS_PARTIAL_LOW] = element.pop(IS_PARTIAL) == "true"
             items = (
                 tuple(
-                    self.__format_category(cat)
-                    for cat in add_list(element[CATEGORY])
+                    [
+                        self.__format_category(cat)
+                        for cat in add_list(element[CATEGORY])
+                    ]
                 )
                 if CATEGORY in element
                 else ()
@@ -2843,8 +2847,10 @@ class StructureParser(Struct):
             description=category.description,
             annotations=category.annotations,
             categories=tuple(
-                self.__rebuild_category(child, path, flows, others)
-                for child in category.categories
+                [
+                    self.__rebuild_category(child, path, flows, others)
+                    for child in category.categories
+                ]
             ),
             dataflows=tuple(flows.get(path, ())),
             other_references=tuple(others.get(path, ())),
@@ -2893,10 +2899,12 @@ class StructureParser(Struct):
             category_schemes[urn] = replace(
                 scheme,
                 items=tuple(
-                    self.__rebuild_category(
-                        cat, "", scheme_flows, scheme_others
-                    )
-                    for cat in scheme.items
+                    [
+                        self.__rebuild_category(
+                            cat, "", scheme_flows, scheme_others
+                        )
+                        for cat in scheme.items
+                    ]
                 ),
             )
 

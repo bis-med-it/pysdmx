@@ -183,7 +183,7 @@ class FusionProviderScheme(Struct, frozen=True):
                 description=(
                     self.descriptions[0].value if self.descriptions else None
                 ),
-                items=tuple(o.to_model() for o in self.items),
+                items=tuple([o.to_model() for o in self.items]),
             )
 
 
@@ -268,7 +268,7 @@ class FusionMetadataProviderScheme(Struct, frozen=True):
                 description=(
                     self.descriptions[0].value if self.descriptions else None
                 ),
-                items=tuple(o.to_model() for o in self.items),
+                items=tuple([o.to_model() for o in self.items]),
             )
 
 
