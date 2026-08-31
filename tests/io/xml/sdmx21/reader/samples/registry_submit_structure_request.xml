@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:RegistryInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+  <mes:Header>
+    <mes:ID>IREF422205</mes:ID>
+    <mes:Test>false</mes:Test>
+    <mes:Prepared>2021-02-04T12:37:05Z</mes:Prepared>
+    <mes:Sender id="REGISTRY1"/>
+    <mes:Receiver id="not_supplied"/>
+  </mes:Header>
+  <mes:SubmitStructureRequest action="Information">
+    <str:Structures>
+      <str:Dataflows>
+        <str:Dataflow urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=ESTAT:HC02(2.0)" isExternalReference="false" agencyID="ESTAT" id="HC02" isFinal="false" version="2.0">
+          <com:Name xml:lang="en">HC02 - Population by Household Status and Educational Attainment</com:Name>
+          <str:Structure>
+            <Ref package="datastructure" agencyID="ESTAT" id="HC02" version="1.0" class="DataStructure"/>
+          </str:Structure>
+        </str:Dataflow>
+      </str:Dataflows>
+    </str:Structures>
+  </mes:SubmitStructureRequest>
+</mes:RegistryInterface>

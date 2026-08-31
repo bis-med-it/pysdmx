@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<message:Error
+        xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+        xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+    <message:ErrorMessage code="140">
+        <com:Text>Syntax error: cannot parse element str:Structures</com:Text>
+    </message:ErrorMessage>
+</message:Error>
