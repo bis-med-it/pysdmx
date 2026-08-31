@@ -214,16 +214,16 @@ def read_sdmx(  # noqa: C901
         # TODO: Ensure we have changed the signature of the data readers
         return Message(header=header, data=result_data)
     elif read_format == Format.REGISTRY_SDMX_ML_2_1:
-        return Message(header=header, submission=result_submission)
+        return Message(header=header, submission=tuple(result_submission))
     elif read_format in (
         Format.REFMETA_SDMX_JSON_2_0_0,
         Format.REFMETA_SDMX_JSON_2_1_0,
         Format.REFMETA_SDMX_ML_3_0,
         Format.REFMETA_SDMX_ML_3_1,
     ):
-        return Message(header=header, reports=reports)
+        return Message(header=header, reports=tuple(reports))
     # TODO: Ensure we have changed the signature of the structure readers
-    return Message(header=header, structures=result_structures)
+    return Message(header=header, structures=tuple(result_structures))
 
 
 def __manage_dataset_level_attributes(dataset: Dataset) -> None:
