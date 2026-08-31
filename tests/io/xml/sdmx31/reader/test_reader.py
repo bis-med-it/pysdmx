@@ -74,7 +74,7 @@ def test_org_schemes_31(samples_folder):
     provider = dps.items[0]
     assert isinstance(provider, DataProvider)
     assert provider.id == "DP"
-    assert provider.contacts[0].emails == ["dp.test@md.org"]
+    assert provider.contacts[0].emails == ("dp.test@md.org",)
 
     assert isinstance(by_type[DataConsumerScheme].items[0], DataConsumer)
     assert isinstance(
@@ -93,9 +93,9 @@ def test_provider_scheme_enrichment_31(samples_folder):
     assert len(schemes) == 1
     provider = schemes[0].items[0]
     assert provider.id == "MD"
-    assert provider.dataflows == [
-        DataflowRef(id="TEST", agency="MD", version="1.0")
-    ]
+    assert provider.dataflows == (
+        DataflowRef(id="TEST", agency="MD", version="1.0"),
+    )
 
 
 @pytest.mark.xml
@@ -119,10 +119,10 @@ def test_metadata_provider_scheme_enrichment_31(samples_folder):
     schemes = [s for s in result if isinstance(s, MetadataProviderScheme)]
     assert len(schemes) == 1
     providers = {p.id: p for p in schemes[0].items}
-    assert providers["MP1"].dataflows == [
-        DataflowRef(id="MDF_TEST", agency="MD", version="1.0")
-    ]
-    assert providers["MP2"].dataflows == []
+    assert providers["MP1"].dataflows == (
+        DataflowRef(id="MDF_TEST", agency="MD", version="1.0"),
+    )
+    assert providers["MP2"].dataflows == ()
 
 
 @pytest.mark.xml

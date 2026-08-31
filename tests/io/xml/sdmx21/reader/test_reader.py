@@ -287,7 +287,7 @@ def test_org_schemes_mixed_read(samples_folder):
     assert provider.id == "5B0"
     assert len(provider.contacts) == 1
     assert provider.contacts[0].name == "Statistics Department"
-    assert provider.contacts[0].emails == ["stats@bis.org"]
+    assert provider.contacts[0].emails == ("stats@bis.org",)
 
     dcs = by_type[DataConsumerScheme]
     assert isinstance(dcs.items[0], DataConsumer)
@@ -304,9 +304,9 @@ def test_provider_scheme_enrichment_read(samples_folder):
     assert len(schemes) == 1
     provider = schemes[0].items[0]
     assert provider.id == "TEST"
-    assert provider.dataflows == [
-        DataflowRef(id="DF1", agency="BIS", version="1.0")
-    ]
+    assert provider.dataflows == (
+        DataflowRef(id="DF1", agency="BIS", version="1.0"),
+    )
 
 
 def test_code_list_read(codelist_path):
@@ -323,6 +323,16 @@ def test_code_list_read(codelist_path):
     )
     assert codelist_sdmx.items[0].id == "0"
     assert codelist_sdmx.items[0].name == "Units"
+
+
+def test_code_list_read_is_hashable(codelist_path):
+    # Acceptance test: a reader-built, non-constraint artefact must
+    # also be hashable -- ItemScheme.items and each Code's annotations
+    # must be tuples, not lists, for the frozen struct's default
+    # __hash__ to work.
+    input_str, read_format = process_string_to_read(codelist_path)
+    codelists = read_structure(input_str, validate=True)
+    hash(codelists[0])  # must not raise TypeError (unhashable list field)
 
 
 def test_codelist_with_explicit_is_final(codelist_path):
@@ -364,7 +374,7 @@ def test_item_scheme_read(item_scheme_path):
 
     assert agency_uis.id == "UIS"
     assert isinstance(agency_uis.contacts[0], Contact)
-    assert agency_uis.contacts[0].emails == ["uis.datarequests@unesco.org"]
+    assert agency_uis.contacts[0].emails == ("uis.datarequests@unesco.org",)
 
     # Codelist
     codelists = [r for r in result if isinstance(r, Codelist)]
@@ -1116,8 +1126,8 @@ def test_attribute_relationship_attachment_group(samples_folder):
     assert isinstance(result[0], DataStructureDefinition)
     dsd = result[0]
     assert len(dsd.groups) == 2
-    assert dsd.groups[0].dimensions == ["TEST_DIM_3"]
-    assert dsd.groups[1].dimensions == ["TEST_DIM_4"]
+    assert dsd.groups[0].dimensions == ("TEST_DIM_3",)
+    assert dsd.groups[1].dimensions == ("TEST_DIM_4",)
     attribute = dsd.components.attributes[0]
     assert attribute.id == "TEST"
     assert (
@@ -1134,7 +1144,7 @@ def test_datastructure_group(datastructure_group):
     assert isinstance(dsd, DataStructureDefinition)
     group = dsd.groups
     assert group[0].id == "Sibling"
-    assert group[0].dimensions == [
+    assert group[0].dimensions == (
         "L_MEASURE",
         "L_REP_CTY",
         "CBS_BANK_TYPE",
@@ -1145,7 +1155,7 @@ def test_datastructure_group(datastructure_group):
         "CURR_TYPE_BOOK",
         "L_CP_SECTOR",
         "L_CP_COUNTRY",
-    ]
+    )
     attribute_1 = dsd.components.attributes[4]
     assert attribute_1.attachment_level == ",".join(group[0].dimensions)
     attribute_2 = dsd.components.attributes[8]
@@ -1235,10 +1245,10 @@ def test_constraint_with_cube_region(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.dataflows == [
+    assert att.dataflows == (
         "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
-    ]
+        "Dataflow=TEST_AGENCY:TEST_DF(1.0)",
+    )
     # Cube Region
     assert len(constraint.cube_regions) == 3
     region = constraint.cube_regions[0]
@@ -1294,10 +1304,10 @@ def test_constraint_with_keyset(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.dataflows == [
+    assert att.dataflows == (
         "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
-    ]
+        "Dataflow=TEST_AGENCY:TEST_DF(1.0)",
+    )
     # Key Set
     assert len(constraint.key_sets) == 1
     ks = constraint.key_sets[0]
@@ -1330,10 +1340,10 @@ def test_constraint_with_data_structure(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.data_structures == [
+    assert att.data_structures == (
         "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "DataStructure=TEST_AGENCY:TEST_DSD(1.0)"
-    ]
+        "DataStructure=TEST_AGENCY:TEST_DSD(1.0)",
+    )
     # Cube Region
     assert len(constraint.cube_regions) == 1
     assert isinstance(constraint.cube_regions[0], CubeRegion)
@@ -1385,10 +1395,10 @@ def test_constraint_with_provision_agreement(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.provision_agreements == [
+    assert att.provision_agreements == (
         "urn:sdmx:org.sdmx.infomodel.registry."
-        "ProvisionAgreement=TEST_AGENCY:TEST_PA(1.0)"
-    ]
+        "ProvisionAgreement=TEST_AGENCY:TEST_PA(1.0)",
+    )
     # Cube Region
     assert len(constraint.cube_regions) == 1
     assert isinstance(constraint.cube_regions[0], CubeRegion)

@@ -482,4 +482,7 @@ def unmerge_attributes(
                 )
             else:
                 unmerged_attrs.append(a)
-    return unmerged_attrs
+    # tuple([...]) rather than a generator: on Python 3.10 an empty tuple
+    # built from a generator is not interned, and msgspec's omit_defaults
+    # only omits a field whose value *is* ().
+    return tuple(unmerged_attrs)

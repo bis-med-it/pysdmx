@@ -345,7 +345,7 @@ class JsonStructureMessage(Struct, frozen=True, omit_defaults=True):
         """Map to pysdmx message class."""
         header = self.meta.to_model()
         structures = self.data.to_model()
-        return StructureMessage(header, structures)
+        return StructureMessage(header, tuple(structures))
 
     @classmethod
     def from_model(

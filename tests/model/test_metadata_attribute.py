@@ -3,6 +3,7 @@ from typing import Iterable
 import pytest
 
 from pysdmx.model import MetadataAttribute
+from pysdmx.model.metadata import unmerge_attributes
 
 
 @pytest.fixture
@@ -89,3 +90,19 @@ def test_repr(id, value):
     r = repr(attr)
 
     assert r == f"MetadataAttribute(id={repr(id)}, value={repr(value)})"
+
+
+def test_unmerge_attributes_returns_tuples():
+    # unmerge_attributes fed model objects a list, making the resulting
+    # attributes unhashable and unequal to tuple-built ones (issue #680).
+    attrs = (
+        MetadataAttribute("A", ["v1", "v2"], ()),
+        MetadataAttribute("B", "v3", (MetadataAttribute("C", "v4", ()),)),
+    )
+
+    out = unmerge_attributes(attrs)
+
+    assert isinstance(out, tuple)
+    assert isinstance(out[-1].attributes, tuple)
+    for a in out:
+        hash(a)  # must not raise TypeError (unhashable list field)

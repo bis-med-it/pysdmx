@@ -63,7 +63,7 @@ class FusionSchemaMessage(msgspec.Struct, frozen=True):
             )
         comps = Components(comp_dict.values())
         mapped_grps = [
-            Group(g.id, dimensions=g.dimensionReferences) for g in grps
+            Group(g.id, dimensions=tuple(g.dimensionReferences)) for g in grps
         ]
         keys: List[str] = []
         excluded_keys: List[str] = []
@@ -76,16 +76,18 @@ class FusionSchemaMessage(msgspec.Struct, frozen=True):
             keys.extend(dc.get_included_series(dims))
             excluded_keys.extend(dc.get_excluded_series(dims))
 
-        keys = list(set(keys)) if keys else None  # type: ignore[assignment]
-        excluded_keys = list(set(excluded_keys)) if excluded_keys else None  # type: ignore[assignment]
+        final_keys = tuple(set(keys)) if keys else None
+        final_excluded_keys = (
+            tuple(set(excluded_keys)) if excluded_keys else None
+        )
         return Schema(
             context,
             agency,
             id_,
             comps,
             version,
-            urns,
-            groups=mapped_grps,
-            keys=keys,
-            excluded_keys=excluded_keys,
+            tuple(urns),
+            groups=tuple(mapped_grps),
+            keys=final_keys,
+            excluded_keys=final_excluded_keys,
         )

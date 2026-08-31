@@ -139,7 +139,9 @@ def write_sdmx(
         key = "reports"
     else:
         key = "datasets"
-    value = sdmx_objects if isinstance(sdmx_objects, list) else [sdmx_objects]
+    value = (
+        sdmx_objects if isinstance(sdmx_objects, Sequence) else [sdmx_objects]
+    )
 
     if is_structure and not all(
         isinstance(x, MaintainableArtefact) for x in value
