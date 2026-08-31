@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -16,6 +16,7 @@ from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
 from pysdmx.io.xml.sdmx21.reader.structure_specific import read as read_str_spe
 from pysdmx.io.xml.sdmx21.reader.submission import read as read_sub
+from pysdmx.io.xml.sdmx21.writer.structure import write as write_structure
 from pysdmx.io.xml.sdmx21.writer.structure_specific import write
 from pysdmx.model import (
     AgencyScheme,
@@ -1550,3 +1551,32 @@ def test_category_scheme_21_enrichment_edge_cases(samples_folder):
         "urn:sdmx:org.sdmx.infomodel.categoryscheme."
         "Category=BIS:CS_ABSENT(1.0).Z"
     )
+
+
+@pytest.mark.xml
+def test_time_facets_normalized_to_utc(samples_folder):
+    structure_path = samples_folder / "datastructure_time_facets.xml"
+    input_str, read_format = process_string_to_read(structure_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+
+    result = read_structure(input_str)
+
+    dsd = result[0]
+    facets = dsd.components["REFERENTIE_DATUM"].local_facets
+    # Datetimes without timezone information are assumed to be UTC and
+    # normalized to timezone-aware datetimes.
+    assert facets.start_time == datetime(2000, 1, 1, tzinfo=timezone.utc)
+    assert facets.end_time == datetime(
+        2020, 12, 31, 23, 59, 59, tzinfo=timezone.utc
+    )
+    # Time facets that are not ISO 8601 datetimes (e.g. reporting
+    # periods) are kept as strings.
+    assert dsd.components["TIME_PERIOD"].local_facets.start_time == "2000-Q1"
+
+    output = write_structure(result)
+
+    assert 'startTime="2000-01-01T00:00:00+00:00"' in output
+    assert 'endTime="2020-12-31T23:59:59+00:00"' in output
+    assert 'startTime="2000-Q1"' in output
+    roundtrip = read_structure(output)
+    assert roundtrip[0].components["REFERENTIE_DATUM"].local_facets == facets

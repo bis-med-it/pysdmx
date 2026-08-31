@@ -314,6 +314,7 @@ from pysdmx.util import (
     is_final,
     parse_short_item_urn,
     parse_urn,
+    to_utc,
 )
 
 T = Any
@@ -416,6 +417,29 @@ FACETS_MAPPING = {
     "endTime": "end_time",
     "isSequence": "is_sequence",
 }
+
+# Facets holding SDMX datetimes, normalized to timezone-aware UTC.
+TIME_FACETS = ("start_time", "end_time")
+
+
+def _parse_time_facet(value: str) -> Union[datetime, str]:
+    """Parses a time facet into a timezone-aware datetime in UTC.
+
+    SDMX-ML time facets accept any standard time period, so values that
+    cannot be parsed as ISO 8601 datetimes (e.g. reporting periods such
+    as ``2000-Q1``) are kept as strings. Datetimes without timezone
+    information are assumed to be expressed in UTC.
+
+    Args:
+        value: The facet value to be parsed.
+
+    Returns:
+        A timezone-aware datetime in UTC, or the original string.
+    """
+    try:
+        return to_utc(datetime.fromisoformat(value.replace("Z", "+00:00")))
+    except ValueError:
+        return value
 
 
 def _extract_text(element: Any) -> str:
@@ -594,6 +618,11 @@ class StructureParser(Struct):
                     for k, v in json_fac.items()
                     if k in FACETS_MAPPING
                 }
+                for time_facet in TIME_FACETS:
+                    if time_facet in facet_kwargs:
+                        facet_kwargs[time_facet] = _parse_time_facet(
+                            facet_kwargs[time_facet]
+                        )
                 json_obj[FACETS.lower()] = Facets(**facet_kwargs)
 
     @staticmethod
