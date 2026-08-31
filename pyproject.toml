@@ -42,10 +42,11 @@ data = ["pandas>=2.1.4",
     "numpy>=2.0.2,<2.1; python_version < '3.10'", "numpy>=2.1.0,<2.3; python_version >= '3.10'"]
 dc = ["python-dateutil>=2.8.2"]
 vtl = ["vtlengine>=1.8.0,<2.0"]
-json = ["sdmxschemas>=1.1.0", "jsonschema>=4.10"]
+json = ["sdmxschemas>=1.1.0", "jsonschema>=4.10", "rfc3339-validator>=0.1.4"]
 xml = ["lxml>=6.1.0", "xmltodict>=0.13", "sdmxschemas>=1.1.0"]
 all = ["lxml>=6.1.0", "xmltodict>=0.13", "sdmxschemas>=1.1.0", "pandas>=2.1.4",
     "python-dateutil>=2.8.2", "vtlengine>=1.8.0,<2.0",
+    "jsonschema>=4.10", "rfc3339-validator>=0.1.4",
     "numpy>=2.0.2,<2.1; python_version < '3.10'", "numpy>=2.1.0,<2.3; python_version >= '3.10'"]
 
 [tool.poetry]
@@ -75,6 +76,7 @@ pandas-stubs = [
     { version = ">=2.2.3.241009,<4.0.0", python = ">=3.10" }
 ]
 types-jsonschema = ">=4.25.1.20251009,<5.0"
+types-rfc3339-validator = ">=0.1.0.20250322,<1.0"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = [
