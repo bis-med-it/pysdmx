@@ -1,7 +1,6 @@
 """Collection of SDMX-JSON schemas for structure map queries."""
 
 from datetime import datetime as dt
-from datetime import timezone as tz
 from typing import Any, Dict, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
@@ -25,7 +24,7 @@ from pysdmx.model import (
     StructureMap,
     ValueMap,
 )
-from pysdmx.util import find_by_urn, is_final
+from pysdmx.util import find_by_urn, is_final, to_utc
 
 
 class JsonSourceValue(Struct, frozen=True, omit_defaults=True):
@@ -59,7 +58,7 @@ class JsonRepresentationMapping(Struct, frozen=True, omit_defaults=True):
     validTo: Optional[str] = None
 
     def __get_dt(self, inp: str) -> dt:
-        return dt.fromisoformat(inp).replace(tzinfo=tz.utc)
+        return to_utc(dt.fromisoformat(inp.replace("Z", "+00:00")))
 
     def to_model(self, is_multi: bool) -> Union[MultiValueMap, ValueMap]:
         """Returns the requested value maps."""
@@ -87,20 +86,19 @@ class JsonRepresentationMapping(Struct, frozen=True, omit_defaults=True):
         self, vm: Union[MultiValueMap, ValueMap]
     ) -> "JsonRepresentationMapping":
         """Converts a value map to an SDMX-JSON JsonRepresentationMapping."""
-        fmt = r"%Y-%m-%dT%H:%M:%S"
         if isinstance(vm, ValueMap):
             return JsonRepresentationMapping(
                 [JsonSourceValue.from_model(vm.source)],
                 [vm.target],
-                vm.valid_from.strftime(fmt) if vm.valid_from else None,
-                vm.valid_to.strftime(fmt) if vm.valid_to else None,
+                to_utc(vm.valid_from).isoformat() if vm.valid_from else None,
+                to_utc(vm.valid_to).isoformat() if vm.valid_to else None,
             )
         else:
             return JsonRepresentationMapping(
                 [JsonSourceValue.from_model(s) for s in vm.source],
                 vm.target,
-                vm.valid_from.strftime(fmt) if vm.valid_from else None,
-                vm.valid_to.strftime(fmt) if vm.valid_to else None,
+                to_utc(vm.valid_from).isoformat() if vm.valid_from else None,
+                to_utc(vm.valid_to).isoformat() if vm.valid_to else None,
             )
 
 
@@ -184,8 +182,8 @@ class JsonRepresentationMap(MaintainableType, frozen=True, omit_defaults=True):
             name=rm.name,
             version=rm.version,
             isExternalReference=rm.is_external_reference,
-            validFrom=rm.valid_from,
-            validTo=rm.valid_to,
+            validFrom=to_utc(rm.valid_from),
+            validTo=to_utc(rm.valid_to),
             description=rm.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in rm.annotations]
@@ -366,8 +364,8 @@ class JsonStructureMap(MaintainableType, frozen=True, omit_defaults=True):
             annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=to_utc(self.validFrom),
+            valid_to=to_utc(self.validTo),
         )
 
     @classmethod
@@ -390,8 +388,8 @@ class JsonStructureMap(MaintainableType, frozen=True, omit_defaults=True):
             name=sm.name,
             version=sm.version,
             isExternalReference=sm.is_external_reference,
-            validFrom=sm.valid_from,
-            validTo=sm.valid_to,
+            validFrom=to_utc(sm.valid_from),
+            validTo=to_utc(sm.valid_to),
             description=sm.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in sm.annotations]

@@ -1,6 +1,7 @@
 """Module for writing metadata to XML files."""
 
 from collections import OrderedDict
+from datetime import datetime
 from typing import Any, Dict, Optional, Sequence, Union
 
 from msgspec.structs import replace
@@ -919,6 +920,8 @@ def __write_text_format(
         active_facets = facets.__rich_repr__()
         for facet, value, *_ in active_facets:  # type: ignore[misc]
             facet = __to_lower_camel_case(facet)
+            if isinstance(value, datetime):
+                value = value.isoformat()
             outfile += f' {facet}="{value}"'
     if dtype is not None:
         outfile += f" {TEXT_TYPE}={dtype.value!r}"
