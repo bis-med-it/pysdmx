@@ -37,6 +37,7 @@ jobs:
             python3-lxml \
             python3-xmltodict \
             python3-jsonschema \
+            python3-rfc3339-validator \
             python3-pytest \
             python3-pytest-asyncio \
             python3-pytest-mock \
