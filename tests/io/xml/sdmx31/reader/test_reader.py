@@ -475,3 +475,47 @@ def test_categorisation_31(samples_folder):
         "urn:sdmx:org.sdmx.infomodel.categoryscheme."
         "Category=BIS:CS1(1.0.0).OTHER"
     )
+
+
+@pytest.mark.parametrize(
+    "container",
+    ["Dataflows", "Codelists", "ConceptSchemes", "AgencySchemes"],
+)
+def test_read_empty_structure_container_31(container):
+    msg = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<m:Structure xmlns:m="http://www.sdmx.org/resources/sdmxml/'
+        'schemas/v3_1/message" xmlns:s="http://www.sdmx.org/resources/'
+        'sdmxml/schemas/v3_1/structure">'
+        "<m:Header><m:ID>ID</m:ID><m:Test>true</m:Test>"
+        "<m:Prepared>2026-01-01T00:00:00Z</m:Prepared>"
+        '<m:Sender id="ESTAT"/></m:Header>'
+        f"<m:Structures><s:{container}/></m:Structures>"
+        "</m:Structure>"
+    )
+
+    assert len(read_structure(msg, validate=False)) == 0
+
+    # read_sdmx still applies its pre-existing empty-message guard, but
+    # now surfaces a typed pysdmx error instead of a TypeError.
+    with pytest.raises(Invalid, match="Empty SDMX Message"):
+        read_sdmx(msg, validate=False)
+
+
+def test_read_omitted_structure_containers_31():
+    msg = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<m:Structure xmlns:m="http://www.sdmx.org/resources/sdmxml/'
+        'schemas/v3_1/message" xmlns:s="http://www.sdmx.org/resources/'
+        'sdmxml/schemas/v3_1/structure">'
+        "<m:Header><m:ID>ID</m:ID><m:Test>true</m:Test>"
+        "<m:Prepared>2026-01-01T00:00:00Z</m:Prepared>"
+        '<m:Sender id="ESTAT"/></m:Header>'
+        "<m:Structures/>"
+        "</m:Structure>"
+    )
+
+    assert len(read_structure(msg, validate=False)) == 0
+
+    with pytest.raises(Invalid, match="Empty SDMX Message"):
+        read_sdmx(msg, validate=False)
