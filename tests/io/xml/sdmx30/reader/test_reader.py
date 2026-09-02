@@ -1509,42 +1509,12 @@ def test_categorisation_30(samples_folder):
     )
 
 
-def test_component_enum_ref_kept_without_codelist_30():
-    msg = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        '<m:Structure xmlns:m="http://www.sdmx.org/resources/sdmxml/'
-        'schemas/v3_0/message" xmlns:s="http://www.sdmx.org/resources/'
-        'sdmxml/schemas/v3_0/structure" xmlns:c="http://www.sdmx.org/'
-        'resources/sdmxml/schemas/v3_0/common">'
-        "<m:Header><m:ID>ID</m:ID><m:Test>true</m:Test>"
-        "<m:Prepared>2026-01-01T00:00:00</m:Prepared>"
-        '<m:Sender id="ZZZ"/></m:Header>'
-        "<m:Structures><s:DataStructures>"
-        '<s:DataStructure agencyID="ZZZ" id="DSD_TEST" version="1.0">'
-        '<c:Name xml:lang="en">Test</c:Name>'
-        "<s:DataStructureComponents>"
-        '<s:DimensionList id="DimensionDescriptor">'
-        '<s:Dimension id="FREQ" position="1">'
-        "<s:ConceptIdentity>"
-        '<Ref agencyID="ZZZ" maintainableParentID="CS" '
-        'maintainableParentVersion="1.0" id="FREQ" class="Concept" '
-        'package="conceptscheme"/>'
-        "</s:ConceptIdentity>"
-        "<s:LocalRepresentation><s:Enumeration>"
-        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
-        "</s:Enumeration></s:LocalRepresentation>"
-        "</s:Dimension></s:DimensionList>"
-        '<s:MeasureList id="MeasureDescriptor">'
-        '<s:Measure id="OBS_VALUE"><s:ConceptIdentity>'
-        '<Ref agencyID="ZZZ" maintainableParentID="CS" '
-        'maintainableParentVersion="1.0" id="OBS_VALUE" class="Concept" '
-        'package="conceptscheme"/>'
-        "</s:ConceptIdentity></s:Measure></s:MeasureList>"
-        "</s:DataStructureComponents></s:DataStructure>"
-        "</s:DataStructures></m:Structures></m:Structure>"
-    )
+def test_component_enum_ref_kept_without_codelist_30(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_no_codelist.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
 
-    dsd = read_structure(msg, validate=False)[0]
+    dsd = read_structure(input_str, validate=True)[0]
     freq = next(c for c in dsd.components if c.id == "FREQ")
 
     assert freq.enum_ref == (
@@ -1553,100 +1523,30 @@ def test_component_enum_ref_kept_without_codelist_30():
     assert freq.enumeration is None
 
 
-def test_component_enum_ref_round_trip_30():
-    msg = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        '<m:Structure xmlns:m="http://www.sdmx.org/resources/sdmxml/'
-        'schemas/v3_0/message" xmlns:s="http://www.sdmx.org/resources/'
-        'sdmxml/schemas/v3_0/structure" xmlns:c="http://www.sdmx.org/'
-        'resources/sdmxml/schemas/v3_0/common">'
-        "<m:Header><m:ID>ID</m:ID><m:Test>true</m:Test>"
-        "<m:Prepared>2026-01-01T00:00:00</m:Prepared>"
-        '<m:Sender id="ZZZ"/></m:Header>'
-        "<m:Structures><s:DataStructures>"
-        '<s:DataStructure agencyID="ZZZ" id="DSD_TEST" version="1.0">'
-        '<c:Name xml:lang="en">Test</c:Name>'
-        "<s:DataStructureComponents>"
-        '<s:DimensionList id="DimensionDescriptor">'
-        '<s:Dimension id="FREQ" position="1">'
-        "<s:ConceptIdentity>"
-        '<Ref agencyID="ZZZ" maintainableParentID="CS" '
-        'maintainableParentVersion="1.0" id="FREQ" class="Concept" '
-        'package="conceptscheme"/>'
-        "</s:ConceptIdentity>"
-        "<s:LocalRepresentation><s:Enumeration>"
-        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
-        "</s:Enumeration></s:LocalRepresentation>"
-        "</s:Dimension></s:DimensionList>"
-        '<s:MeasureList id="MeasureDescriptor">'
-        '<s:Measure id="OBS_VALUE"><s:ConceptIdentity>'
-        '<Ref agencyID="ZZZ" maintainableParentID="CS" '
-        'maintainableParentVersion="1.0" id="OBS_VALUE" class="Concept" '
-        'package="conceptscheme"/>'
-        "</s:ConceptIdentity></s:Measure></s:MeasureList>"
-        "</s:DataStructureComponents></s:DataStructure>"
-        "</s:DataStructures></m:Structures></m:Structure>"
-    )
+def test_component_enum_ref_with_codelist_in_message_30(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_with_codelist.xml"
+    input_str, _ = process_string_to_read(data_path)
 
-    dsd = read_structure(msg, validate=False)
-    written = write_structure(dsd, prettyprint=True)
-
-    re_read = read_structure(written, validate=True)[0]
-    freq = next(c for c in re_read.components if c.id == "FREQ")
-    assert freq.enum_ref == (
-        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
-    )
-
-
-def test_component_enum_ref_with_codelist_in_message_30():
-    msg = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        '<m:Structure xmlns:m="http://www.sdmx.org/resources/sdmxml/'
-        'schemas/v3_0/message" xmlns:s="http://www.sdmx.org/resources/'
-        'sdmxml/schemas/v3_0/structure" xmlns:c="http://www.sdmx.org/'
-        'resources/sdmxml/schemas/v3_0/common">'
-        "<m:Header><m:ID>ID</m:ID><m:Test>true</m:Test>"
-        "<m:Prepared>2026-01-01T00:00:00</m:Prepared>"
-        '<m:Sender id="ZZZ"/></m:Header>'
-        "<m:Structures><s:DataStructures>"
-        '<s:DataStructure agencyID="ZZZ" id="DSD_TEST" version="1.0">'
-        '<c:Name xml:lang="en">Test</c:Name>'
-        "<s:DataStructureComponents>"
-        '<s:DimensionList id="DimensionDescriptor">'
-        '<s:Dimension id="FREQ" position="1">'
-        "<s:ConceptIdentity>"
-        '<Ref agencyID="ZZZ" maintainableParentID="CS" '
-        'maintainableParentVersion="1.0" id="FREQ" class="Concept" '
-        'package="conceptscheme"/>'
-        "</s:ConceptIdentity>"
-        "<s:LocalRepresentation><s:Enumeration>"
-        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
-        "</s:Enumeration></s:LocalRepresentation>"
-        "</s:Dimension></s:DimensionList>"
-        '<s:MeasureList id="MeasureDescriptor">'
-        '<s:Measure id="OBS_VALUE"><s:ConceptIdentity>'
-        '<Ref agencyID="ZZZ" maintainableParentID="CS" '
-        'maintainableParentVersion="1.0" id="OBS_VALUE" class="Concept" '
-        'package="conceptscheme"/>'
-        "</s:ConceptIdentity></s:Measure></s:MeasureList>"
-        "</s:DataStructureComponents></s:DataStructure>"
-        "</s:DataStructures></m:Structures></m:Structure>"
-    )
-
-    codelist = (
-        '<s:Codelists><s:Codelist agencyID="ZZZ" id="CL_FREQ" '
-        'version="1.0"><c:Name xml:lang="en">Freq</c:Name>'
-        '<s:Code id="A"><c:Name xml:lang="en">Annual</c:Name></s:Code>'
-        "</s:Codelist></s:Codelists>"
-    )
-    msg = msg.replace("<s:DataStructures>", codelist + "<s:DataStructures>")
-
-    structures = read_structure(msg, validate=False)
+    structures = read_structure(input_str, validate=True)
     dsd = next(s for s in structures if isinstance(s, DataStructureDefinition))
     freq = next(c for c in dsd.components if c.id == "FREQ")
 
     assert isinstance(freq.enumeration, Codelist)
     assert freq.enumeration.short_urn == "Codelist=ZZZ:CL_FREQ(1.0)"
+    assert freq.enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
+    )
+
+
+def test_component_enum_ref_round_trip_30(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_no_codelist.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    dsd = read_structure(input_str, validate=True)
+    written = write_structure(dsd, prettyprint=True)
+
+    re_read = read_structure(written, validate=True)[0]
+    freq = next(c for c in re_read.components if c.id == "FREQ")
     assert freq.enum_ref == (
         "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
     )

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message"
+               xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure"
+               xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common">
+    <mes:Header>
+        <mes:ID>ID</mes:ID>
+        <mes:Test>true</mes:Test>
+        <mes:Prepared>2026-01-01T00:00:00</mes:Prepared>
+        <mes:Sender id="ZZZ"/>
+    </mes:Header>
+    <mes:Structures>
+        <str:Codelists>
+            <str:Codelist agencyID="ZZZ" id="CL_FREQ" version="1.0">
+                <com:Name xml:lang="en">Frequency</com:Name>
+                <str:Code id="A">
+                    <com:Name xml:lang="en">Annual</com:Name>
+                </str:Code>
+            </str:Codelist>
+        </str:Codelists>
+        <str:DataStructures>
+            <str:DataStructure agencyID="ZZZ" id="DSD_TEST" version="1.0">
+                <com:Name xml:lang="en">Test</com:Name>
+                <str:DataStructureComponents>
+                    <str:DimensionList id="DimensionDescriptor">
+                        <str:Dimension id="FREQ" position="1">
+                            <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ZZZ:CS(1.0).FREQ</str:ConceptIdentity>
+                            <str:LocalRepresentation>
+                                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)</str:Enumeration>
+                            </str:LocalRepresentation>
+                        </str:Dimension>
+                    </str:DimensionList>
+                    <str:MeasureList id="MeasureDescriptor">
+                        <str:Measure id="OBS_VALUE">
+                            <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=ZZZ:CS(1.0).OBS_VALUE</str:ConceptIdentity>
+                        </str:Measure>
+                    </str:MeasureList>
+                </str:DataStructureComponents>
+            </str:DataStructure>
+        </str:DataStructures>
+    </mes:Structures>
+</mes:Structure>
