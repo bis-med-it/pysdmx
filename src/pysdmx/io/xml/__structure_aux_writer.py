@@ -890,9 +890,16 @@ def __write_representation(
         local_representation += __write_enumeration(
             item.local_codes, indent, references_30
         )
+    elif item.local_enum_ref is not None:
+        local_representation += __write_enumeration_ref(
+            item.local_enum_ref, indent, references_30
+        )
 
+    has_enumeration = (
+        item.local_codes is not None or item.local_enum_ref is not None
+    )
     if item.local_facets is not None or item.local_dtype is not None:
-        type_ = ENUM_FORMAT if item.local_codes is not None else TEXT_FORMAT
+        type_ = ENUM_FORMAT if has_enumeration else TEXT_FORMAT
         local_representation += __write_text_format(
             item.local_dtype, item.local_facets, type_, indent
         )
@@ -1152,19 +1159,33 @@ def __write_metadata_representation(
     return outfile
 
 
-def __write_enumeration_ref(enum_ref: str, indent: str) -> str:
+def __write_enumeration_ref(
+    enum_ref: str, indent: str, references_30: bool = True
+) -> str:
     """Writes a ``<str:Enumeration>`` from an enumeration URN string.
 
-    Only used for MSD attributes, which exist in SDMX-ML 3.x where the
-    enumeration is referenced by URN text.
+    Used for an MSD attribute or a DSD component that carries an
+    enumeration reference without a resolved ``local_codes`` object, as
+    happens whenever the referenced codelist was not part of the message.
+    SDMX-ML 3.x references the enumeration by URN text,
+    while 2.1 uses a ``<Ref>`` element.
     """
     ref = parse_short_urn(parse_urn(enum_ref).__str__())
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{ENUM}>"
-    outfile += (
-        f"urn:sdmx:org.sdmx.infomodel.codelist.{ref.sdmx_type}="
-        f"{ref.agency}:{ref.id}({ref.version})"
-        f"</{ABBR_STR}:{ENUM}>"
-    )
+    if references_30:
+        outfile += (
+            f"urn:sdmx:org.sdmx.infomodel.codelist.{ref.sdmx_type}="
+            f"{ref.agency}:{ref.id}({ref.version})"
+            f"</{ABBR_STR}:{ENUM}>"
+        )
+    else:
+        outfile += f"{add_indent(add_indent(indent))}<{REF} "
+        outfile += f"{AGENCY_ID}={ref.agency!r} "
+        outfile += f"{CLASS}={ref.sdmx_type!r} "
+        outfile += f"{ID}={ref.id!r} "
+        outfile += f"{PACKAGE}={CL_LOW!r} "
+        outfile += f"{VERSION}={ref.version!r}/>"
+        outfile += f"{add_indent(indent)}</{ABBR_STR}:{ENUM}>"
     return outfile.replace("'", '"')
 
 
