@@ -1508,45 +1508,24 @@ def test_categorisation_30(samples_folder):
     )
 
 
-@pytest.mark.parametrize(
-    "container",
-    ["Dataflows", "Codelists", "ConceptSchemes", "AgencySchemes"],
-)
-def test_read_empty_structure_container_30(container):
-    msg = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        '<m:Structure xmlns:m="http://www.sdmx.org/resources/sdmxml/'
-        'schemas/v3_0/message" xmlns:s="http://www.sdmx.org/resources/'
-        'sdmxml/schemas/v3_0/structure">'
-        "<m:Header><m:ID>ID</m:ID><m:Test>true</m:Test>"
-        "<m:Prepared>2026-01-01T00:00:00Z</m:Prepared>"
-        '<m:Sender id="ESTAT"/></m:Header>'
-        f"<m:Structures><s:{container}/></m:Structures>"
-        "</m:Structure>"
-    )
+def test_read_empty_structure_containers_30(samples_folder):
+    data_path = samples_folder / "structures_empty_containers.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
 
-    assert len(read_structure(msg, validate=False)) == 0
+    assert len(read_structure(input_str, validate=False)) == 0
 
     # read_sdmx still applies its pre-existing empty-message guard, but
     # now surfaces a typed pysdmx error instead of a TypeError.
     with pytest.raises(Invalid, match="Empty SDMX Message"):
-        read_sdmx(msg, validate=False)
+        read_sdmx(input_str, validate=False)
 
 
-def test_read_omitted_structure_containers_30():
-    msg = (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        '<m:Structure xmlns:m="http://www.sdmx.org/resources/sdmxml/'
-        'schemas/v3_0/message" xmlns:s="http://www.sdmx.org/resources/'
-        'sdmxml/schemas/v3_0/structure">'
-        "<m:Header><m:ID>ID</m:ID><m:Test>true</m:Test>"
-        "<m:Prepared>2026-01-01T00:00:00Z</m:Prepared>"
-        '<m:Sender id="ESTAT"/></m:Header>'
-        "<m:Structures/>"
-        "</m:Structure>"
-    )
+def test_read_no_structure_containers_30(samples_folder):
+    data_path = samples_folder / "structures_no_containers.xml"
+    input_str, _ = process_string_to_read(data_path)
 
-    assert len(read_structure(msg, validate=False)) == 0
+    assert len(read_structure(input_str, validate=True)) == 0
 
     with pytest.raises(Invalid, match="Empty SDMX Message"):
-        read_sdmx(msg, validate=False)
+        read_sdmx(input_str, validate=True)
