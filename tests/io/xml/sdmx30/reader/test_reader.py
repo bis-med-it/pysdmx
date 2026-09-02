@@ -1506,3 +1506,26 @@ def test_categorisation_30(samples_folder):
         "urn:sdmx:org.sdmx.infomodel.categoryscheme."
         "Category=BIS:CS1(1.0.0).OTHER"
     )
+
+
+def test_read_empty_structure_containers_30(samples_folder):
+    data_path = samples_folder / "structures_empty_containers.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+
+    assert len(read_structure(input_str, validate=False)) == 0
+
+    # read_sdmx still applies its pre-existing empty-message guard, but
+    # now surfaces a typed pysdmx error instead of a TypeError.
+    with pytest.raises(Invalid, match="Empty SDMX Message"):
+        read_sdmx(input_str, validate=False)
+
+
+def test_read_no_structure_containers_30(samples_folder):
+    data_path = samples_folder / "structures_no_containers.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    assert len(read_structure(input_str, validate=True)) == 0
+
+    with pytest.raises(Invalid, match="Empty SDMX Message"):
+        read_sdmx(input_str, validate=True)
