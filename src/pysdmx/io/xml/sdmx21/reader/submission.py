@@ -2,10 +2,11 @@
 
 from typing import Any, Dict, Sequence
 
-from pysdmx.errors import Invalid
+from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.xml.__parse_xml import parse_xml
 from pysdmx.io.xml.__tokens import (
     ACTION,
+    HEADER,
     MAINTAINABLE_OBJECT,
     REG_INTERFACE,
     STATUS,
@@ -15,6 +16,7 @@ from pysdmx.io.xml.__tokens import (
     SUBMITTED_STRUCTURE,
     URN,
 )
+from pysdmx.io.xml.utils import add_list
 from pysdmx.model.submission import SubmissionResult
 from pysdmx.util import parse_urn
 
@@ -33,7 +35,7 @@ def __handle_registry_interface(
     response = dict_info[REG_INTERFACE][SUBMIT_STRUCTURE_RESPONSE]
 
     result = []
-    for submission_result in response[SUBMISSION_RESULT]:
+    for submission_result in add_list(response[SUBMISSION_RESULT]):
         structure = submission_result[SUBMITTED_STRUCTURE]
         action = structure[ACTION]
         urn = structure[MAINTAINABLE_OBJECT][URN]
@@ -50,8 +52,29 @@ def read(input_str: str, validate: bool = True) -> Sequence[SubmissionResult]:
     Args:
         input_str: SDMX-ML data to read.
         validate: If True, the XML data will be validated against the XSD.
+
+    Raises:
+        Invalid: If the document is not an SDMX-ML 2.1 RegistryInterface
+            message.
+        NotImplemented: If the RegistryInterface message contains anything
+            other than a SubmitStructureResponse (e.g. a
+            SubmitStructureRequest or a QueryRegistrationResponse).
     """
     dict_info = parse_xml(input_str, validate=validate)
     if REG_INTERFACE not in dict_info:
         raise Invalid("This SDMX document is not an SDMX-ML 2.1 Submission.")
+    if SUBMIT_STRUCTURE_RESPONSE not in dict_info[REG_INTERFACE]:
+        # Keys with a colon (e.g. xsi:schemaLocation) and xmlns are
+        # attributes of the root element, not content: element names
+        # have their namespace prefixes stripped during parsing.
+        content = ", ".join(
+            key
+            for key in dict_info[REG_INTERFACE]
+            if key != HEADER and key != "xmlns" and ":" not in key
+        )
+        raise NotImplemented(
+            "Unsupported RegistryInterface content",
+            f"Only SubmitStructureResponse messages are supported. "
+            f"Found: {content}.",
+        )
     return __handle_registry_interface(dict_info)

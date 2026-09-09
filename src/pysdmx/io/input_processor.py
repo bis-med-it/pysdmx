@@ -91,6 +91,13 @@ def __get_generic_metadata_flavour(flavour_check: str) -> Format:
 
 def __get_sdmx_ml_flavour(input_str: str) -> Tuple[str, Format]:
     flavour_check = input_str[:1000].lower()
+    # Root-element tokens are checked first: looser substrings such as
+    # ":structure" also match content of registry and error messages
+    # (e.g. <str:Structures> in a SubmitStructureRequest).
+    if ":registryinterface" in flavour_check:
+        return input_str, Format.REGISTRY_SDMX_ML_2_1
+    if ":error" in flavour_check:
+        return input_str, Format.ERROR_SDMX_ML_2_1
     if ":generictimeseriesdata" in flavour_check:
         return input_str, Format.DATA_SDMX_ML_2_1_GENTS
     # GenericMetadata must be checked before the ":generic" data check,
@@ -116,10 +123,6 @@ def __get_sdmx_ml_flavour(input_str: str) -> Tuple[str, Format]:
             Format.STRUCTURE_SDMX_ML_3_0,
             Format.STRUCTURE_SDMX_ML_3_1,
         )
-    if ":registryinterface" in flavour_check:
-        return input_str, Format.REGISTRY_SDMX_ML_2_1
-    if ":error" in flavour_check:
-        return input_str, Format.ERROR_SDMX_ML_2_1
     raise Invalid("Validation Error", "Cannot parse input as SDMX-ML.")
 
 
