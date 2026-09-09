@@ -259,7 +259,7 @@ _METRIC_ANNOTATION_IDS = ("series_count", "obs_count")
 
 def _metric_annotations(
     cons: AvailabilityConstraint,
-) -> "tuple[JsonAnnotation, ...]":
+) -> tuple[JsonAnnotation, ...]:
     """Builds FMR-style ``sdmx_metrics`` annotations for the counts.
 
     The legacy ``dataConstraint`` payload has no dedicated field for
@@ -290,7 +290,7 @@ def _metric_annotations(
 
 def _lift_metric_annotations(
     annotations: Sequence[JsonAnnotation],
-) -> "tuple[Optional[int], Optional[int], tuple[Annotation, ...]]":
+) -> tuple[Optional[int], Optional[int], tuple[Annotation, ...]]:
     """Splits FMR-style ``sdmx_metrics`` annotations from the rest.
 
     Mirrors ``__parse_annotation_metrics`` in the SDMX-JSON dataflow
