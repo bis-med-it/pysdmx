@@ -23,7 +23,9 @@ def validate_doc(input_str: str) -> None:
     Raises:
         Invalid: If the SDMX-ML data does not validate against the schema.
     """
-    parser = etree.ETCompatXMLParser()
+    # Explicit so that lxml < 6.1.0 (e.g. Pyodide's 6.0.2) matches the
+    # lxml >= 6.1.0 default and never resolves external entities (XXE).
+    parser = etree.ETCompatXMLParser(resolve_entities="internal")
     check = input_str[:1000].lower()
     if SCHEMA_ROOT_31 in check:
         xmlschema_doc = etree.parse(SCHEMA_PATH_31)
