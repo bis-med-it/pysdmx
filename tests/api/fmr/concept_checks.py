@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import httpx
 import pytest
@@ -102,7 +102,9 @@ def check_concept_details(mock, fmr: RegistryClient, query, body):
             assert concept.description is None
             assert concept.dtype == DataType.YEAR_MONTH
             assert concept.facets is not None
-            assert concept.facets.start_time == datetime(2000, 1, 1, 0, 0, 0)
+            assert concept.facets.start_time == datetime(
+                2000, 1, 1, 0, 0, 0, tzinfo=timezone.utc
+            )
             assert concept.facets.end_time == datetime(
                 2020,
                 12,
@@ -110,6 +112,7 @@ def check_concept_details(mock, fmr: RegistryClient, query, body):
                 23,
                 59,
                 59,
+                tzinfo=timezone.utc,
             )
             assert concept.facets.is_sequence is True
         elif concept.id == "DIM4":

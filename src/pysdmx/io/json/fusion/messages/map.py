@@ -1,7 +1,6 @@
 """Collection of Fusion-JSON schemas for structure map queries."""
 
 from datetime import datetime as dt
-from datetime import timezone as tz
 from typing import Any, Dict, Optional, Sequence, Union
 
 from msgspec import Struct
@@ -22,7 +21,7 @@ from pysdmx.model import (
 from pysdmx.model import (
     StructureMap as SM,
 )
-from pysdmx.util import find_by_urn
+from pysdmx.util import find_by_urn, to_utc
 
 
 class FusionSourceValue(Struct, frozen=True):
@@ -48,9 +47,7 @@ class FusionRepresentationMapping(Struct, frozen=True):
     validTo: Optional[str] = None
 
     def __get_dt(self, inp: str) -> dt:
-        if inp.endswith("Z"):
-            inp = inp[0:-1]
-        return dt.fromisoformat(inp).replace(tzinfo=tz.utc)
+        return to_utc(dt.fromisoformat(inp.replace("Z", "+00:00")))
 
     def to_model(self, is_multi: bool) -> Union[MultiValueMap, ValueMap]:
         """Returns the requested value maps."""

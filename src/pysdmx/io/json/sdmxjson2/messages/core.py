@@ -15,7 +15,7 @@ from pysdmx.model import (
     Organisation,
 )
 from pysdmx.model.message import Header
-from pysdmx.util import find_by_urn
+from pysdmx.util import find_by_urn, to_utc
 
 
 class JsonLink(msgspec.Struct, frozen=True, omit_defaults=True):
@@ -158,8 +158,8 @@ class JsonTextFormat(msgspec.Struct, frozen=True, omit_defaults=True):
                     facets.end_value,
                     facets.decimals,
                     facets.pattern,
-                    facets.start_time,
-                    facets.end_time,
+                    to_utc(facets.start_time),
+                    to_utc(facets.end_time),
                     facets.is_sequence,
                     facets.is_multilingual,
                     timeInterval=facets.time_interval,
@@ -179,8 +179,8 @@ def get_facets(input: JsonTextFormat) -> Facets:
         end_value=input.endValue,
         decimals=input.decimals,
         pattern=input.pattern,
-        start_time=input.startTime,
-        end_time=input.endTime,
+        start_time=to_utc(input.startTime),
+        end_time=to_utc(input.endTime),
         is_multilingual=input.isMultilingual,
     )
 
@@ -297,7 +297,7 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
         return Header(
             id=self.id,
             test=self.test,
-            prepared=self.prepared,
+            prepared=to_utc(self.prepared),
             sender=self.sender,
             receiver=self.receivers or (),
         )
@@ -322,7 +322,7 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
             )
         return JsonHeader(
             header.id,
-            header.prepared,
+            to_utc(header.prepared),
             header.sender,
             header.test,
             receivers=header.receiver or None,

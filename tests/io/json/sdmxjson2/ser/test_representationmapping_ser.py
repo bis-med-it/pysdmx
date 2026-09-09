@@ -32,8 +32,8 @@ def test_vm_with_validity():
 
     assert sjson.sourceValues == [JsonSourceValue("056")]
     assert sjson.targetValues == ["BEL"]
-    assert sjson.validFrom == "2003-07-23T00:00:00"
-    assert sjson.validTo == "2006-06-01T00:00:00"
+    assert sjson.validFrom == "2003-07-23T00:00:00+00:00"
+    assert sjson.validTo == "2006-06-01T00:00:00+00:00"
 
 
 def test_mvm():
@@ -61,5 +61,5 @@ def test_mvm_with_validity():
 
     assert sjson.sourceValues == [JsonSourceValue("056")]
     assert sjson.targetValues == ["BEL", "BE"]
-    assert sjson.validFrom == "2003-07-23T00:00:00"
-    assert sjson.validTo == "2006-06-01T00:00:00"
+    assert sjson.validFrom == "2003-07-23T00:00:00+00:00"
+    assert sjson.validTo == "2006-06-01T00:00:00+00:00"
