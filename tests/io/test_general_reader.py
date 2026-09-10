@@ -69,6 +69,16 @@ def sdmx_json_20_structure():
 
 
 @pytest.fixture
+def sdmx_json_20_empty_structure():
+    file_path = (
+        Path(__file__).parent / "samples" / "empty_structure_message.json"
+    )
+    with open(file_path, "r") as f:
+        text = f.read()
+    return text
+
+
+@pytest.fixture
 def sdmx_json_21_structure():
     file_path = (
         Path(__file__).parent.parent
@@ -496,6 +506,18 @@ def test_get_json21_structure(sdmx_json_21_structure):
     assert cl.agency == "SDMX"
     assert cl.version == "2.0"
     assert len(cl.codes) == 9
+
+
+@pytest.mark.json
+def test_get_json20_empty_structure(sdmx_json_20_empty_structure):
+    # An SDMX-JSON structure message without artefacts is returned as an
+    # empty Message, like its SDMX-ML counterpart.
+    msg = read_sdmx(sdmx_json_20_empty_structure)
+
+    assert isinstance(msg, Message)
+    assert msg.header is not None
+    assert msg.structures == []
+    assert msg.get_dataflows() == []
 
 
 @pytest.mark.json
