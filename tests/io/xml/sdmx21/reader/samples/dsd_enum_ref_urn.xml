@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+               xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
+               xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+    <mes:Header>
+        <mes:ID>ID</mes:ID>
+        <mes:Test>true</mes:Test>
+        <mes:Prepared>2026-01-01T00:00:00</mes:Prepared>
+        <mes:Sender id="ZZZ"/>
+    </mes:Header>
+    <mes:Structures>
+        <str:DataStructures>
+            <str:DataStructure agencyID="ZZZ" id="DSD_TEST" version="1.0">
+                <com:Name xml:lang="en">Test</com:Name>
+                <str:DataStructureComponents>
+                    <str:DimensionList id="DimensionDescriptor">
+                        <str:Dimension id="FREQ" position="1">
+                            <str:ConceptIdentity>
+                                <Ref agencyID="ZZZ" maintainableParentID="CS" maintainableParentVersion="1.0"
+                                     id="FREQ" class="Concept" package="conceptscheme"/>
+                            </str:ConceptIdentity>
+                            <str:LocalRepresentation>
+                                <str:Enumeration>
+                                    <URN>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)</URN>
+                                </str:Enumeration>
+                            </str:LocalRepresentation>
+                        </str:Dimension>
+                    </str:DimensionList>
+                    <str:MeasureList id="MeasureDescriptor">
+                        <str:PrimaryMeasure id="OBS_VALUE">
+                            <str:ConceptIdentity>
+                                <Ref agencyID="ZZZ" maintainableParentID="CS" maintainableParentVersion="1.0"
+                                     id="OBS_VALUE" class="Concept" package="conceptscheme"/>
+                            </str:ConceptIdentity>
+                        </str:PrimaryMeasure>
+                    </str:MeasureList>
+                </str:DataStructureComponents>
+            </str:DataStructure>
+        </str:DataStructures>
+    </mes:Structures>
+</mes:Structure>
