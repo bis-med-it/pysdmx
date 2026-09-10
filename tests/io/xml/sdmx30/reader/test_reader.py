@@ -1559,10 +1559,12 @@ def test_read_empty_structure_containers_30(samples_folder):
 
     assert len(read_structure(input_str, validate=False)) == 0
 
-    # read_sdmx still applies its pre-existing empty-message guard, but
-    # now surfaces a typed pysdmx error instead of a TypeError.
-    with pytest.raises(Invalid, match="Empty SDMX Message"):
-        read_sdmx(input_str, validate=False)
+    # An empty catalogue is a valid structure message, so read_sdmx
+    # returns an empty Message instead of raising.
+    msg = read_sdmx(input_str, validate=False)
+    assert msg.header is not None
+    assert msg.structures == []
+    assert msg.get_dataflows() == []
 
 
 def test_read_no_structure_containers_30(samples_folder):
@@ -1571,5 +1573,7 @@ def test_read_no_structure_containers_30(samples_folder):
 
     assert len(read_structure(input_str, validate=True)) == 0
 
-    with pytest.raises(Invalid, match="Empty SDMX Message"):
-        read_sdmx(input_str, validate=True)
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.structures == []
+    assert msg.get_dataflows() == []

@@ -38,6 +38,14 @@ def empty_message():
 
 
 @pytest.fixture
+def empty_data_message():
+    file_path = Path(__file__).parent / "samples" / "empty_data_message.xml"
+    with open(file_path, "r") as f:
+        text = f.read()
+    return text
+
+
+@pytest.fixture
 def sdmx_json():
     file_path = Path(__file__).parent / "samples" / "sdmx.json"
     with open(file_path, "r") as f:
@@ -344,8 +352,19 @@ def test_url_invalid_sdmx_error(respx_mock, sdmx_error_str):
 
 
 def test_empty_result(empty_message):
+    # A structure message that yields no artefacts is returned as an
+    # empty Message instead of being rejected.
+    msg = read_sdmx(empty_message, validate=False)
+    assert msg.header is not None
+    assert msg.structures == []
+    assert msg.get_dataflows() == []
+
+
+def test_empty_data_message(empty_data_message):
+    # Unlike structure messages, a data message without any DataSet is
+    # still rejected.
     with pytest.raises(Invalid, match="Empty SDMX Message"):
-        read_sdmx(empty_message, validate=False)
+        read_sdmx(empty_data_message, validate=True)
 
 
 def test_get_datasets_valid(data_path, structures_path):
