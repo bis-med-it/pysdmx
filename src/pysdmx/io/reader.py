@@ -61,8 +61,13 @@ def read_sdmx(  # noqa: C901
 
     Raises:
         Invalid:
-            If the format is not supported, or if a data, submission or
-            reference metadata message has no content.
+            If the format is not supported, or if a data or submission
+            message, or an SDMX-ML reference metadata message, has no
+            content.
+        NotFound:
+            If an SDMX-JSON reference metadata message has no reports.
+        NotImplemented:
+            If the SDMX flavour is detected but not supported yet.
     """
     input_str, read_format = process_string_to_read(sdmx_document, pem=pem)
 
