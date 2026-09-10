@@ -79,6 +79,16 @@ def sdmx_json_20_empty_structure():
 
 
 @pytest.fixture
+def sdmx_json_20_structure_meta_only():
+    file_path = (
+        Path(__file__).parent / "samples" / "structure_message_meta_only.json"
+    )
+    with open(file_path, "r") as f:
+        text = f.read()
+    return text
+
+
+@pytest.fixture
 def sdmx_json_21_structure():
     file_path = (
         Path(__file__).parent.parent
@@ -513,6 +523,18 @@ def test_get_json20_empty_structure(sdmx_json_20_empty_structure):
     # An SDMX-JSON structure message without artefacts is returned as an
     # empty Message, like its SDMX-ML counterpart.
     msg = read_sdmx(sdmx_json_20_empty_structure)
+
+    assert isinstance(msg, Message)
+    assert msg.header is not None
+    assert msg.structures == []
+    assert msg.get_dataflows() == []
+
+
+@pytest.mark.json
+def test_get_json20_structure_meta_only(sdmx_json_20_structure_meta_only):
+    # The data object is optional in the SDMX-JSON structure schema, so a
+    # message with only a meta object is another valid empty catalogue.
+    msg = read_sdmx(sdmx_json_20_structure_meta_only)
 
     assert isinstance(msg, Message)
     assert msg.header is not None
