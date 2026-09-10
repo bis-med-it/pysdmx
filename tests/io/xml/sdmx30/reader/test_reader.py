@@ -11,6 +11,7 @@ from pysdmx.io.reader import read_sdmx
 from pysdmx.io.reader import read_sdmx as reader
 from pysdmx.io.writer import write_sdmx
 from pysdmx.io.xml.sdmx30.reader.structure import read as read_structure
+from pysdmx.io.xml.sdmx30.writer.structure import write as write_structure
 from pysdmx.model import (
     Agency,
     AgencyScheme,
@@ -1505,4 +1506,47 @@ def test_categorisation_30(samples_folder):
     assert cat2.target == (
         "urn:sdmx:org.sdmx.infomodel.categoryscheme."
         "Category=BIS:CS1(1.0.0).OTHER"
+    )
+
+
+def test_component_enum_ref_kept_without_codelist_30(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_no_codelist.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+
+    dsd = read_structure(input_str, validate=True)[0]
+    freq = next(c for c in dsd.components if c.id == "FREQ")
+
+    assert freq.enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
+    )
+    assert freq.enumeration is None
+
+
+def test_component_enum_ref_with_codelist_in_message_30(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_with_codelist.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    structures = read_structure(input_str, validate=True)
+    dsd = next(s for s in structures if isinstance(s, DataStructureDefinition))
+    freq = next(c for c in dsd.components if c.id == "FREQ")
+
+    assert isinstance(freq.enumeration, Codelist)
+    assert freq.enumeration.short_urn == "Codelist=ZZZ:CL_FREQ(1.0)"
+    assert freq.enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
+    )
+
+
+def test_component_enum_ref_round_trip_30(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_no_codelist.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    dsd = read_structure(input_str, validate=True)
+    written = write_structure(dsd, prettyprint=True)
+
+    re_read = read_structure(written, validate=True)[0]
+    freq = next(c for c in re_read.components if c.id == "FREQ")
+    assert freq.enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
     )
