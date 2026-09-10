@@ -35,5 +35,5 @@ def read(
     if STRUCTURE not in dict_info:
         raise Invalid("This SDMX document is not SDMX-ML 2.1 Structure.")
     return StructureParser().format_structures(
-        dict_info[STRUCTURE][STRUCTURES]
+        dict_info[STRUCTURE].get(STRUCTURES)
     )

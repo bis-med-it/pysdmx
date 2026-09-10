@@ -2361,11 +2361,11 @@ class StructureParser(Struct):
         """Formats the structures in JSON format.
 
         Args:
-            json_meta: The structures in JSON format. May be None, as
-                xmltodict maps an empty <mes:Structures/> element to
-                None. Omitting every artefact container is the
-                schema-valid way for a service to report an empty
-                catalogue.
+            json_meta: The structures in JSON format. May be None, either
+                because xmltodict maps an empty <mes:Structures/> element
+                to None or because the message omits the element
+                altogether. Both are schema-valid ways for a service to
+                report an empty catalogue.
 
         Returns:
             A list with the formatted structures.

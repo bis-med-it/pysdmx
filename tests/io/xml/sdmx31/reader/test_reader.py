@@ -531,3 +531,15 @@ def test_read_no_structure_containers_31(samples_folder):
     assert msg.header is not None
     assert msg.structures == []
     assert msg.get_dataflows() == []
+
+
+def test_read_header_only_structure_message_31(samples_folder):
+    data_path = samples_folder / "structures_header_only.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    assert len(read_structure(input_str, validate=True)) == 0
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.structures == []
+    assert msg.get_dataflows() == []
