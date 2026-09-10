@@ -134,6 +134,7 @@ from pysdmx.io.xml.__tokens import (
     LINKED_OBJECT,
     LOCAL_CODES_LOW,
     LOCAL_DTYPE,
+    LOCAL_ENUM_REF,
     LOCAL_FACETS_LOW,
     LOCAL_REP,
     MANDATORY,
@@ -778,8 +779,13 @@ class StructureParser(Struct):
     def __format_local_rep(self, representation_info: Dict[str, Any]) -> None:
         rep: Dict[str, Any] = {}
 
+        local_enum_ref = self.__local_enum_ref(representation_info[LOCAL_REP])
+
         self.__format_representation(representation_info[LOCAL_REP], rep)
         del representation_info[LOCAL_REP]
+
+        if local_enum_ref is not None:
+            representation_info[LOCAL_ENUM_REF] = local_enum_ref
 
         if CODES_LOW in rep:
             representation_info[LOCAL_CODES_LOW] = rep.pop(CODES_LOW)
@@ -1224,11 +1230,13 @@ class StructureParser(Struct):
         component[CON_LOW] = concept_id.pop(CON)
 
         if LOCAL_REP in att_elem:
-            local_enum_ref = self.__local_enum_ref(att_elem[LOCAL_REP])
-            if local_enum_ref is not None:
-                component["local_enum_ref"] = local_enum_ref
             self.__format_local_rep(att_elem)
-            for key in (LOCAL_CODES_LOW, LOCAL_DTYPE, LOCAL_FACETS_LOW):
+            for key in (
+                LOCAL_CODES_LOW,
+                LOCAL_DTYPE,
+                LOCAL_FACETS_LOW,
+                LOCAL_ENUM_REF,
+            ):
                 if key in att_elem:
                     component[key] = att_elem[key]
 
@@ -1254,11 +1262,23 @@ class StructureParser(Struct):
         """Extracts the enumeration URN from a LocalRepresentation.
 
         SDMX-ML 3.x references the enumeration (codelist or valuelist) by
-        URN text.
+        URN text, while SDMX-ML 2.1 uses a ``<Ref>`` element; some
+        services supply a ``URN`` field inside it. A full URN is returned
+        in every case, matching what the SDMX-JSON 2.0 reader stores.
         """
         if ENUM not in local_rep:
             return None
-        return str(local_rep[ENUM])
+        enum = local_rep[ENUM]
+        if isinstance(enum, str):
+            return enum
+        ref = enum.get(REF, enum)
+        if URN in ref:
+            return str(ref[URN])
+        # Codelists and valuelists both live in the codelist package.
+        return (
+            "urn:sdmx:org.sdmx.infomodel.codelist."
+            f"{ref[CLASS]}={ref[AGENCY_ID]}:{ref[ID]}({ref[VERSION]})"
+        )
 
     @staticmethod
     def __array_def(att_elem: Dict[str, Any]) -> Optional[ArrayBoundaries]:
