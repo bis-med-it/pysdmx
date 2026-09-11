@@ -2356,16 +2356,22 @@ class StructureParser(Struct):
         return schemas
 
     def format_structures(
-        self, json_meta: Dict[str, Any]
+        self, json_meta: Optional[Dict[str, Any]]
     ) -> Sequence[Union[ItemScheme, DataStructureDefinition, Dataflow]]:
         """Formats the structures in JSON format.
 
         Args:
-            json_meta: The structures in JSON format.
+            json_meta: The structures in JSON format. May be None, either
+                because xmltodict maps an empty <mes:Structures/> element
+                to None or because the message omits the element
+                altogether. Both are schema-valid ways for a service to
+                report an empty catalogue.
 
         Returns:
             A list with the formatted structures.
         """
+        if json_meta is None:
+            json_meta = {}
 
         def process_structure(
             key: str,
@@ -2373,7 +2379,7 @@ class StructureParser(Struct):
             attr: Optional[str] = None,
         ) -> Dict[Any, Any]:
             """Helper function to process and store formatted structures."""
-            if key in json_meta:
+            if json_meta.get(key) is not None:
                 formatted = formatter(json_meta[key])
                 setattr(self, attr, formatted) if attr else None
                 return formatted

@@ -1,0 +1,14 @@
+{
+    "meta": {
+        "id": "IREF000001",
+        "test": true,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2026-01-01T00:00:00Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "ESTAT"
+        }
+    }
+}

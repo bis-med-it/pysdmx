@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A data message without any DataSet. The shape is schema-valid, but
+     pysdmx keeps rejecting content-less data messages: only structure
+     messages may legitimately be empty (an empty catalogue). -->
+<mes:GenericData xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                 xmlns:gen="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic"
+                 xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+    <mes:Header>
+        <mes:ID>ID</mes:ID>
+        <mes:Test>true</mes:Test>
+        <mes:Prepared>2026-01-01T00:00:00Z</mes:Prepared>
+        <mes:Sender id="ZZZ"/>
+        <mes:Structure structureID="S1" dimensionAtObservation="AllDimensions">
+            <com:Structure>
+                <Ref agencyID="BIS" id="BIS_DER" version="1.0" class="DataStructure"/>
+            </com:Structure>
+        </mes:Structure>
+    </mes:Header>
+</mes:GenericData>
