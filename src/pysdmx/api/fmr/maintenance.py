@@ -186,8 +186,15 @@ class RegistryMaintenanceClient:
         """
         if not header:
             header = Header()
+        # The contract admits maintainable artefacts only, but callers may
+        # pass the ``structures`` of a message read from an availability
+        # query, which can also hold availability constraints. Widen the
+        # element type so the runtime filter is a genuine check for mypy.
+        candidates: Sequence[
+            Union[MaintainableArtefact, AvailabilityConstraint]
+        ] = artefacts
         structures = [
-            a for a in artefacts if not isinstance(a, AvailabilityConstraint)
+            a for a in candidates if not isinstance(a, AvailabilityConstraint)
         ]
         if len(structures) != len(artefacts):
             warnings.warn(
