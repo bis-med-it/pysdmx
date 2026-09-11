@@ -390,7 +390,7 @@ def test_structure_maintenance_skips_availability_constraints(
     )
     client = RegistryMaintenanceClient(end_point_in, user, pwd)
 
-    with pytest.warns(UserWarning, match="Availability constraints"):
+    with pytest.warns(UserWarning, match="not meant to be stored in the FMR"):
         client.put_structures([structure, availability_constraint])
 
     # A request is sent with a single structure
@@ -419,7 +419,7 @@ def test_structure_maintenance_only_availability_constraints(
     client = RegistryMaintenanceClient(end_point_in, user, pwd)
 
     with (
-        pytest.warns(UserWarning, match="Availability constraints"),
+        pytest.warns(UserWarning, match="not meant to be stored in the FMR"),
         pytest.raises(errors.Invalid),
     ):
         client.put_structures([availability_constraint])
