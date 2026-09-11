@@ -1,6 +1,6 @@
 """Collection of SDMX-JSON schemas for generic structure messages."""
 
-from typing import Literal, Sequence
+from typing import Literal, Sequence, Set, Union
 
 from msgspec import Struct
 
@@ -17,7 +17,10 @@ from pysdmx.io.json.sdmxjson2.messages.code import (
     JsonValuelist,
 )
 from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptScheme
-from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
+from pysdmx.io.json.sdmxjson2.messages.constraint import (
+    JsonAvailabilityConstraint,
+    JsonDataConstraint,
+)
 from pysdmx.io.json.sdmxjson2.messages.consumer import JsonDataConsumerScheme
 from pysdmx.io.json.sdmxjson2.messages.core import JsonHeader
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
@@ -44,6 +47,7 @@ from pysdmx.io.json.sdmxjson2.messages.vtl import (
     JsonUserDefinedOperatorScheme,
     JsonVtlMappingScheme,
 )
+from pysdmx.model import AvailabilityConstraint
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.message import StructureMessage
 
@@ -52,6 +56,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
     """The allowed strutures."""
 
     agencySchemes: Sequence[JsonAgencyScheme] = ()
+    availabilityConstraints: Sequence[JsonAvailabilityConstraint] = ()
     categorisations: Sequence[JsonCategorisation] = ()
     categorySchemes: Sequence[JsonCategoryScheme] = ()
     codelists: Sequence[JsonCodelist] = ()
@@ -78,12 +83,15 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
     valueLists: Sequence[JsonValuelist] = ()
     vtlMappingSchemes: Sequence[JsonVtlMappingScheme] = ()
 
-    def to_model(self) -> Sequence[MaintainableArtefact]:
+    def to_model(
+        self,
+    ) -> Sequence[Union[MaintainableArtefact, AvailabilityConstraint]]:
         """Map to pysdmx artefacts."""
         structures = []  # type: ignore[var-annotated]
         structures.extend(
             i.to_model(self.dataflows) for i in self.agencySchemes
         )
+        structures.extend(i.to_model() for i in self.availabilityConstraints)
         structures.extend(i.to_model() for i in self.categorisations)
         structures.extend(i.to_model() for i in self.categorySchemes)
         structures.extend(i.to_model() for i in self.codelists)
@@ -160,13 +168,34 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
         return structures
 
     @classmethod
-    def from_model(cls, msg: StructureMessage) -> "JsonStructures":
-        """Create an SDMX-JSON structures from a list of artefacts."""
+    def from_model(
+        cls,
+        msg: StructureMessage,
+        msg_version: Literal["2.0.0", "2.1"] = "2.0.0",
+    ) -> "JsonStructures":
+        """Create an SDMX-JSON structures from a list of artefacts.
+
+        Raises:
+            Invalid: If the message has no structures, or if two
+                availability constraints are attached to the same
+                artefact (they would share a short URN, so one would
+                silently overwrite the other on read).
+        """
         if not msg.structures:
             raise errors.Invalid(
                 "Invalid input",
                 "SDMX-JSON structure messages must have structures.",
             )
+        avail_constraints = msg.get_availability_constraints()
+        seen_urns: Set[str] = set()
+        for ac in avail_constraints:
+            if ac.short_urn in seen_urns:
+                raise errors.Invalid(
+                    "Invalid input",
+                    "Two availability constraints for the same "
+                    f"artefact: {ac.reference}.",
+                )
+            seen_urns.add(ac.short_urn)
         codelists = tuple(
             [JsonCodelist.from_model(c) for c in msg.get_codelists()]
         )
@@ -272,12 +301,35 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
         hierarchies = tuple(
             [JsonHierarchy.from_model(h) for h in msg.get_hierarchies()]
         )
-        constraints = tuple(
-            [
-                JsonDataConstraint.from_model(c)
-                for c in msg.get_data_constraints()
-            ]
-        )
+        if msg_version == "2.1":
+            # tuple([...]) rather than a generator: on Python 3.10 an
+            # empty tuple built from a generator is not interned, so
+            # msgspec's omit_defaults would emit [] (which the 2.1
+            # schema rejects as empty).
+            constraints = tuple(
+                [
+                    JsonDataConstraint.from_model(c, with_role=False)
+                    for c in msg.get_data_constraints()
+                ]
+            )
+            avail = tuple(
+                [
+                    JsonAvailabilityConstraint.from_model(c)
+                    for c in avail_constraints
+                ]
+            )
+        else:
+            constraints = tuple(
+                [
+                    JsonDataConstraint.from_model(c)
+                    for c in msg.get_data_constraints()
+                ]
+                + [
+                    JsonDataConstraint.from_availability(c)
+                    for c in avail_constraints
+                ]
+            )
+            avail = ()
         mpas = tuple(
             [
                 JsonMetadataProvisionAgreement.from_model(c)
@@ -307,6 +359,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
         )
         return JsonStructures(
             agencySchemes=agencies,
+            availabilityConstraints=avail,
             categorisations=categorisations,
             categorySchemes=category_schemes,
             codelists=codelists,
@@ -345,7 +398,7 @@ class JsonStructureMessage(Struct, frozen=True, omit_defaults=True):
         """Map to pysdmx message class."""
         header = self.meta.to_model()
         structures = self.data.to_model()
-        return StructureMessage(header, structures)
+        return StructureMessage(header, tuple(structures))
 
     @classmethod
     def from_model(
@@ -359,5 +412,5 @@ class JsonStructureMessage(Struct, frozen=True, omit_defaults=True):
                 "Invalid input", "SDMX-JSON messages must have a header."
             )
         header = JsonHeader.from_model(message.header, msg_version=msg_version)
-        structs = JsonStructures.from_model(message)
+        structs = JsonStructures.from_model(message, msg_version)
         return JsonStructureMessage(header, structs)

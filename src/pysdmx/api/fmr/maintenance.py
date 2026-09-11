@@ -1,5 +1,6 @@
 """Upload metadata to an FMR instance."""
 
+import warnings
 from enum import Enum
 from typing import Optional, Sequence, Union
 
@@ -8,7 +9,7 @@ import msgspec
 
 from pysdmx.errors import Unauthorized
 from pysdmx.io.json.sdmxjson2.writer import serializers
-from pysdmx.model import MetadataReport
+from pysdmx.model import AvailabilityConstraint, MetadataReport
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.message import (
     Header,
@@ -169,14 +170,41 @@ class RegistryMaintenanceClient:
 
         Args:
             artefacts: The sequence of SDMX maintainable artefacts to upload.
+                Availability constraints are not maintainable artefacts
+                and are skipped with a warning if present (e.g. when
+                passing the ``structures`` of a message returned by an
+                availability query).
             header: Optional SDMX Header to include in the message. If not
                 supplied, pysdmx will generate one for you.
             action: How to apply the changes in case of already existing
                 structures.
+
+        Warns:
+            UserWarning: If ``artefacts`` contains availability constraints.
+                They are not maintainable artefacts and, therefore, they
+                are not meant to be stored in the FMR, so they are skipped.
         """
         if not header:
             header = Header()
-        message = StructureMessage(header=header, structures=artefacts)
+        # The contract admits maintainable artefacts only, but callers may
+        # pass the ``structures`` of a message read from an availability
+        # query, which can also hold availability constraints. Widen the
+        # element type so the runtime filter is a genuine check for mypy.
+        candidates: Sequence[
+            Union[MaintainableArtefact, AvailabilityConstraint]
+        ] = artefacts
+        structures = [
+            a for a in candidates if not isinstance(a, AvailabilityConstraint)
+        ]
+        if len(structures) != len(artefacts):
+            warnings.warn(
+                "Availability constraints are not maintainable artefacts "
+                "and, therefore, they are not meant to be stored in the FMR: "
+                f"{len(artefacts) - len(structures)} skipped.",
+                UserWarning,
+                stacklevel=2,
+            )
+        message = StructureMessage(header=header, structures=structures)
         endpoint = f"{self._api_endpoint}/ws/secure/sdmxapi/rest"
         return self.__post(message, action, endpoint)
 

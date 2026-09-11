@@ -10,7 +10,7 @@
 	</mes:Header>
 	<mes:Structures>
 		<str:Constraints>
-			<str:ContentConstraint id="TEST_CONSTRAINT_NO_ATTACH" version="1.0" isExternalReference="false" isFinal="false" agencyID="TEST_AGENCY">
+			<str:ContentConstraint id="TEST_CONSTRAINT_NO_ATTACH" version="1.0" isExternalReference="false" isFinal="false" agencyID="TEST_AGENCY" type="Allowed">
 				<com:Name xml:lang="en">Test Constraint without Attachment</com:Name>
 				<com:Description xml:lang="en">A test constraint without constraint attachment</com:Description>
 				<str:CubeRegion include="true">
