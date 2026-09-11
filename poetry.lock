@@ -301,7 +301,7 @@ files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
 ]
-markers = {dev = "sys_platform == \"win32\" or os_name == \"nt\"", docs = "sys_platform == \"win32\""}
+markers = {dev = "os_name == \"nt\" or sys_platform == \"win32\"", docs = "sys_platform == \"win32\""}
 
 [[package]]
 name = "coverage"
@@ -868,7 +868,7 @@ description = "Powerful and Pythonic XML processing library combining libxml2/li
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"xml\" or extra == \"all\""
+markers = "extra == \"all\" or extra == \"xml\""
 files = [
     {file = "lxml-6.1.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:41dcc4c7b10484257cbd6c37b83ddb26df2b0e5aff5ac00d095689015af868ec"},
     {file = "lxml-6.1.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:a31286dbb5e74c8e9a5344465b77ab4c5bd511a253b355b5ca2fae7e579fafec"},
@@ -2659,14 +2659,14 @@ test = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more_it
 type = ["pytest-mypy"]
 
 [extras]
-all = ["lxml", "pandas", "pyarrow", "python-dateutil", "sdmxschemas", "vtlengine", "xmltodict"]
+all = ["lxml", "lxml", "pandas", "pyarrow", "python-dateutil", "sdmxschemas", "vtlengine", "xmltodict"]
 data = ["pandas", "pyarrow"]
 dc = ["python-dateutil"]
 json = ["jsonschema", "sdmxschemas"]
 vtl = ["vtlengine"]
-xml = ["lxml", "sdmxschemas", "xmltodict"]
+xml = ["lxml", "lxml", "sdmxschemas", "xmltodict"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "81d223dace3c3ab98a4c264da5c93ea5a50e00b4d47dbb7f692d8f94fa5c6b34"
+content-hash = "f0c45ecc7a34775e9c4fefc3b7219d0a91cdc7729e0b802b80468905a5c28cbc"
