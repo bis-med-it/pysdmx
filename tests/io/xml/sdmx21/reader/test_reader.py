@@ -1714,7 +1714,6 @@ def test_read_header_only_data_message_21(samples_folder):
     assert msg.data == []
 
 
-
 @pytest.mark.parametrize("validate", [False, True])
 def test_submission_empty_response(samples_folder, validate):
     # SubmissionResult is mandatory in a SubmitStructureResponse, so an
