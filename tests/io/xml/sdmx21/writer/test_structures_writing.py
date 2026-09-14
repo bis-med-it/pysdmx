@@ -2230,6 +2230,105 @@ def test_metadata_structure_21_raises(complete_header):
         write([msd], header=complete_header, prettyprint=True)
 
 
+@pytest.fixture
+def codelist_apostrophe_annotations():
+    # Several annotations on the artefact and on one of its items, each
+    # carrying an apostrophe in every annotation field (issue #678).
+    return Codelist(
+        id="CL_ANN",
+        name="Côte d'Ivoire codes",
+        agency="BIS",
+        version="1.0",
+        items=[
+            Code(
+                id="CI",
+                name="Côte d'Ivoire",
+                annotations=[
+                    Annotation(id="c1", title="Item's first"),
+                    Annotation(id="c2", title="Item's last"),
+                ],
+            ),
+        ],
+        annotations=[
+            Annotation(
+                id="a1",
+                title="It's the first title",
+                type="It's the first type",
+                url="https://example.com/it's",
+                text="It's the first text",
+            ),
+            Annotation(id="a2", title="It's the middle title"),
+            Annotation(
+                id="a3",
+                title="It's the last title",
+                text="It's the last text",
+            ),
+        ],
+    )
+
+
+def test_annotations_21_element_order(complete_header):
+    # The schema sequence is Title, Type, URL, Text; writing Text before
+    # URL produced a schema-invalid document.
+    codelist = Codelist(
+        id="CL_ORD",
+        name="Codes",
+        agency="BIS",
+        version="1.0",
+        items=[Code(id="A", name="a")],
+        annotations=[
+            Annotation(
+                id="a1",
+                title="Title",
+                type="Type",
+                url="https://example.com/note",
+                text="Some text",
+            ),
+        ],
+    )
+
+    result = write([codelist], header=complete_header, prettyprint=True)
+
+    assert result.index("<com:AnnotationTitle>") < result.index(
+        "<com:AnnotationType>"
+    )
+    assert result.index("<com:AnnotationType>") < result.index(
+        "<com:AnnotationURL>"
+    )
+    assert result.index("<com:AnnotationURL>") < result.index(
+        "<com:AnnotationText"
+    )
+
+    re_read = read(result, validate=True)[0]
+    assert re_read.annotations == codelist.annotations
+
+
+def test_annotations_21_apostrophes_preserved(
+    complete_header, codelist_apostrophe_annotations
+):
+    # Every annotation must keep its apostrophes, not just the last one
+    # on each artefact (issue #678).
+    result = write(
+        [codelist_apostrophe_annotations],
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    assert '"s the first title' not in result
+    assert '"s the middle title' not in result
+    assert '"s the first text' not in result
+    assert '"s the first type' not in result
+    assert 'example.com/it"s' not in result
+    assert 'Item"s first' not in result
+
+    re_read = read(result, validate=True)[0]
+    assert re_read.annotations == codelist_apostrophe_annotations.annotations
+    assert (
+        re_read.items[0].annotations
+        == codelist_apostrophe_annotations.items[0].annotations
+    )
+
+
 @pytest.mark.xml
 def test_metadata_provision_agreement_21_raises(complete_header):
     mpa = MetadataProvisionAgreement(
@@ -2244,3 +2343,41 @@ def test_metadata_provision_agreement_21_raises(complete_header):
     )
     with pytest.raises(Invalid, match="not supported in SDMX-ML 2.1"):
         write([mpa], header=complete_header, prettyprint=True)
+
+
+def test_vtl_item_21_apostrophes_preserved(complete_header):
+    scheme = TransformationScheme(
+        id="TS_APOS",
+        name="Scheme's name",
+        description="Scheme's description",
+        agency="BIS",
+        version="1.0",
+        vtl_version="2.0",
+        items=[
+            Transformation(
+                id="T1",
+                name="Item's name",
+                description="Item's description",
+                expression="ds",
+                is_persistent=False,
+                result="r",
+                annotations=[
+                    Annotation(id="a1", title="Ann's first"),
+                    Annotation(id="a2", title="Ann's last"),
+                ],
+            )
+        ],
+    )
+
+    result = write([scheme], header=complete_header, prettyprint=True)
+
+    assert 'Scheme"s' not in result
+    assert 'Item"s' not in result
+    assert 'Ann"s' not in result
+
+    re_read = read(result, validate=True)[0]
+    assert re_read.name == "Scheme's name"
+    assert re_read.description == "Scheme's description"
+    assert re_read.items[0].name == "Item's name"
+    assert re_read.items[0].description == "Item's description"
+    assert re_read.items[0].annotations == scheme.items[0].annotations

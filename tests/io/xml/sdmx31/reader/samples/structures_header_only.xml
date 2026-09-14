@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The Structures element omitted altogether. This is schema-valid
+     (Structures is minOccurs="0" in every SDMX-ML version) and is the
+     most literal way for a service to report an empty catalogue. -->
+<mes:Structure xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message"
+               xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/structure">
+    <mes:Header>
+        <mes:ID>ID</mes:ID>
+        <mes:Test>true</mes:Test>
+        <mes:Prepared>2026-01-01T00:00:00Z</mes:Prepared>
+        <mes:Sender id="ESTAT"/>
+    </mes:Header>
+</mes:Structure>
