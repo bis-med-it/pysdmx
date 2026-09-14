@@ -504,3 +504,42 @@ def test_component_enum_ref_round_trip_31(samples_folder):
     assert freq.enum_ref == (
         "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
     )
+
+
+def test_read_empty_structure_containers_31(samples_folder):
+    data_path = samples_folder / "structures_empty_containers.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+
+    assert len(read_structure(input_str, validate=False)) == 0
+
+    # An empty catalogue is a valid structure message, so read_sdmx
+    # returns an empty Message instead of raising.
+    msg = read_sdmx(input_str, validate=False)
+    assert msg.header is not None
+    assert msg.structures == []
+    assert msg.get_dataflows() == []
+
+
+def test_read_no_structure_containers_31(samples_folder):
+    data_path = samples_folder / "structures_no_containers.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    assert len(read_structure(input_str, validate=True)) == 0
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.structures == []
+    assert msg.get_dataflows() == []
+
+
+def test_read_header_only_structure_message_31(samples_folder):
+    data_path = samples_folder / "structures_header_only.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    assert len(read_structure(input_str, validate=True)) == 0
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.structures == []
+    assert msg.get_dataflows() == []
