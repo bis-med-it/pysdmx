@@ -1439,6 +1439,12 @@ def test_generic_metadata_empty_set():
     )
     assert read_refmeta(doc, validate=True) == []
 
+    # ...and read_sdmx returns it as a Message without reports.
+    msg = read_sdmx(doc, validate=True)
+    assert msg.header is not None
+    assert msg.reports == []
+    assert msg.get_reports() == []
+
 
 @pytest.mark.xml
 def test_category_scheme_30(samples_folder):
@@ -1589,3 +1595,15 @@ def test_read_header_only_structure_message_30(samples_folder):
     assert msg.header is not None
     assert msg.structures == []
     assert msg.get_dataflows() == []
+
+
+def test_read_header_only_data_message_30(samples_folder):
+    # A StructureSpecificData message without any DataSet is valid SDMX,
+    # so read_sdmx returns an empty Message instead of raising.
+    data_path = samples_folder / "data_header_only.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_3_0
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.data == []

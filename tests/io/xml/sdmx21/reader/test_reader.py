@@ -1698,3 +1698,18 @@ def test_read_header_only_structure_message_21(samples_folder):
     assert msg.header is not None
     assert msg.structures == []
     assert msg.get_dataflows() == []
+
+
+def test_read_header_only_data_message_21(samples_folder):
+    # A StructureSpecificData message without any DataSet is valid SDMX,
+    # so read_sdmx returns an empty Message instead of raising.
+    data_path = samples_folder / "data_header_only.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+
+    assert read_str_spe(input_str, validate=True) == []
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.data == []
+

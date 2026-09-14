@@ -381,10 +381,20 @@ def test_empty_result(empty_message):
 
 
 def test_empty_data_message(empty_data_message):
-    # Unlike structure messages, a data message without any DataSet is
-    # still rejected.
-    with pytest.raises(Invalid, match="Empty SDMX Message"):
-        read_sdmx(empty_data_message, validate=True)
+    # A data message without any DataSet is valid SDMX (it is how a
+    # service answers a query that matches nothing), so it is returned
+    # as an empty Message instead of being rejected.
+    msg = read_sdmx(empty_data_message, validate=True)
+    assert isinstance(msg, Message)
+    assert msg.header is not None
+    assert msg.data == []
+    assert msg.get_datasets() == []
+
+
+def test_get_datasets_empty_data_message(empty_data_message):
+    # get_datasets keeps its own check, as it requires datasets to work on.
+    with pytest.raises(Invalid, match="No data found in the data message"):
+        get_datasets(empty_data_message, validate=True)
 
 
 def test_get_datasets_valid(data_path, structures_path):
@@ -570,6 +580,28 @@ def test_get_json21_refmeta(sdmx_json_21_refmeta):
     assert rep.agency == "BIS.MEDIT"
     assert rep.version == "1.0.42"
     assert len(rep.attributes) == 2
+
+
+@pytest.mark.json
+@pytest.mark.parametrize(
+    "file_name",
+    [
+        "empty_refmeta_message.json",
+        "refmeta_message_empty_data.json",
+        "refmeta_message_meta_only.json",
+    ],
+)
+def test_get_json20_empty_refmeta(file_name):
+    # metadataSets may be empty, and both data and metadataSets are
+    # optional in the SDMX-JSON metadata schema, so all three shapes are
+    # valid reference metadata messages without reports.
+    file_path = Path(__file__).parent / "samples" / file_name
+    msg = read_sdmx(file_path)
+
+    assert isinstance(msg, Message)
+    assert msg.header is not None
+    assert msg.reports == []
+    assert msg.get_reports() == []
 
 
 @pytest.mark.json
