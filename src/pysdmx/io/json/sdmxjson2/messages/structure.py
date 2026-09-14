@@ -2,7 +2,7 @@
 
 from typing import Literal, Sequence, Set, Union
 
-from msgspec import Struct
+from msgspec import Struct, field
 
 from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.agency import JsonAgencyScheme
@@ -392,7 +392,7 @@ class JsonStructureMessage(Struct, frozen=True, omit_defaults=True):
     """A generic SDMX-JSON 2.0 Structure message."""
 
     meta: JsonHeader
-    data: JsonStructures
+    data: JsonStructures = field(default_factory=JsonStructures)
 
     def to_model(self) -> StructureMessage:
         """Map to pysdmx message class."""
