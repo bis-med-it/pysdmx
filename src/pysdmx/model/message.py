@@ -395,11 +395,18 @@ class MetadataMessage(Struct, frozen=True):
     reports: Optional[Sequence[MetadataReport]] = None
 
     def get_reports(self) -> Sequence[MetadataReport]:
-        """Returns the metadata reports."""
-        if self.reports:
+        """Returns the metadata reports.
+
+        Returns:
+            The reports in the message. A reference metadata message
+            without reports yields an empty sequence.
+
+        Raises:
+            NotFound: If the message does not carry reports at all.
+        """
+        if self.reports is not None:
             return self.reports
-        else:
-            raise NotFound("No metadata reports were found in the message.")
+        raise NotFound("No metadata reports were found in the message.")
 
 
 class Message(StructureMessage, frozen=True):
@@ -452,8 +459,15 @@ class Message(StructureMessage, frozen=True):
         )
 
     def get_reports(self) -> Sequence[MetadataReport]:
-        """Returns the metadata reports."""
-        if self.reports:
+        """Returns the metadata reports.
+
+        Returns:
+            The reports in the message. A reference metadata message
+            without reports yields an empty sequence.
+
+        Raises:
+            NotFound: If the message does not carry reports at all.
+        """
+        if self.reports is not None:
             return self.reports
-        else:
-            raise NotFound("No metadata reports were found in the message.")
+        raise NotFound("No metadata reports were found in the message.")
