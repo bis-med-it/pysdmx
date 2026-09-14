@@ -33,6 +33,15 @@ def __handle_registry_interface(
         dict: Dictionary with the parsed data.
     """
     response = dict_info[REG_INTERFACE][SUBMIT_STRUCTURE_RESPONSE]
+    # xmltodict maps an empty <SubmitStructureResponse/> to None. The XSD
+    # requires at least one SubmissionResult, so both an empty response
+    # and one holding other content are rejected with a typed error.
+    if not response or SUBMISSION_RESULT not in response:
+        raise Invalid(
+            "Invalid SubmitStructureResponse",
+            "A SubmitStructureResponse must contain at least one "
+            "SubmissionResult.",
+        )
 
     result = []
     for submission_result in add_list(response[SUBMISSION_RESULT]):
@@ -55,7 +64,8 @@ def read(input_str: str, validate: bool = True) -> Sequence[SubmissionResult]:
 
     Raises:
         Invalid: If the document is not an SDMX-ML 2.1 RegistryInterface
-            message.
+            message, or if its SubmitStructureResponse has no
+            SubmissionResult.
         NotImplemented: If the RegistryInterface message contains anything
             other than a SubmitStructureResponse (e.g. a
             SubmitStructureRequest or a QueryRegistrationResponse).
