@@ -107,6 +107,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
                 self.conceptSchemes,
                 self.valueLists,
                 self.codelists,
+                self.dataConstraints,
             )
             for i in self.dataflows
         )
