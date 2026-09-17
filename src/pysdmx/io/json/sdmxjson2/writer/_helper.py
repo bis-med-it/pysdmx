@@ -9,7 +9,7 @@ from pysdmx.io.json.sdmxjson2.messages import (
     JsonMetadataMessage,
     JsonStructureMessage,
 )
-from pysdmx.model import MetadataReport, encoders
+from pysdmx.model import AvailabilityConstraint, MetadataReport, encoders
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.message import Header, MetadataMessage, StructureMessage
 
@@ -67,16 +67,17 @@ def write_metadata_msg(
 
 
 def write_structure_msg(
-    structures: Sequence[MaintainableArtefact],
+    structures: Sequence[Union[MaintainableArtefact, AvailabilityConstraint]],
     output_path: Optional[Union[str, Path]] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
     msg_version: Literal["2.0.0", "2.1"] = "2.0.0",
 ) -> Optional[str]:
-    """Write maintainable SDMX artefacts in SDMX-JSON 2.0.0.
+    """Write artefacts and availability constraints in SDMX-JSON 2.0.0.
 
     Args:
-        structures: The maintainable SDMX artefacts to be serialized.
+        structures: The maintainable SDMX artefacts and availability
+            constraints to be serialized.
         output_path: The path to save the JSON file. If None or empty, the
             serialized content is returned as a string instead.
         prettyprint: Whether to format the JSON output with indentation (True)
