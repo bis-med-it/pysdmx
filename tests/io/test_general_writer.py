@@ -10,9 +10,14 @@ from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.writer import write_sdmx
 from pysdmx.model import (
+    AvailabilityConstraint,
     Component,
     Components,
     Concept,
+    ConstraintAttachment,
+    CubeKeyValue,
+    CubeRegion,
+    CubeValue,
     Role,
     Schema,
 )
@@ -511,7 +516,8 @@ def test_invalid_sdmx_object_structure(tmpdir):
     with pytest.raises(
         Invalid,
         match=(
-            "Only maintainable artefacts can be written to structure formats."
+            "Only maintainable artefacts or availability constraints "
+            "can be written to structure formats."
         ),
     ):
         write_sdmx(
@@ -955,3 +961,34 @@ def test_json_metadata_provider_scheme_roundtrip(sdmx_format):
         jp.get_metadata_provider_schemes()
         == xp.get_metadata_provider_schemes()
     )
+
+
+def test_write_sdmx_availability_constraint_structure_format():
+    # Regression test: write_sdmx guarded structure formats with
+    # isinstance(x, MaintainableArtefact), so the (annotable, non-
+    # maintainable) AvailabilityConstraint was rejected for every
+    # structure format, including its own native SDMX-ML 3.1
+    # representation.
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None,
+            dataflows=[
+                "urn:sdmx:org.sdmx.infomodel.datastructure."
+                "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+            ],
+        ),
+        cube_region=CubeRegion(
+            key_values=[
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
+            ]
+        ),
+        series_count=3,
+        obs_count=42,
+    )
+
+    out = write_sdmx(ac, Format.STRUCTURE_SDMX_ML_3_1)
+
+    result = read_sdmx(out, validate=True)
+    constraints = result.get_availability_constraints()
+    assert len(constraints) == 1
+    assert constraints[0] == ac

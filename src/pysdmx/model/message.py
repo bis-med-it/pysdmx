@@ -36,7 +36,7 @@ from pysdmx.model.__base import MaintainableArtefact, Organisation
 from pysdmx.model.category import Categorisation, CategoryScheme
 from pysdmx.model.code import Codelist, Hierarchy, HierarchyAssociation
 from pysdmx.model.concept import ConceptScheme
-from pysdmx.model.constraint import DataConstraint
+from pysdmx.model.constraint import AvailabilityConstraint, DataConstraint
 from pysdmx.model.dataflow import (
     Dataflow,
     DataStructureDefinition,
@@ -135,18 +135,23 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
 
     Attributes:
         header: The header of the SDMX message.
-        structures: Sequence of MaintainableArtefact objects.
-          They represent the contents of a Structure Message.
+        structures: Sequence of MaintainableArtefact or
+          AvailabilityConstraint objects. They represent the
+          contents of a Structure Message.
     """
 
     header: Optional[Header] = None
-    structures: Optional[Sequence[MaintainableArtefact]] = None
+    structures: Optional[
+        Sequence[Union[MaintainableArtefact, AvailabilityConstraint]]
+    ] = None
 
     def __post_init__(self) -> None:
         """Checks if the content is valid."""
         if self.structures is not None:
             for obj_ in self.structures:
-                if not isinstance(obj_, (MaintainableArtefact)):
+                if not isinstance(
+                    obj_, (MaintainableArtefact, AvailabilityConstraint)
+                ):
                     raise Invalid(
                         f"Invalid structure: {type(obj_).__name__} ",
                         "Check the docs on structures.",
@@ -274,6 +279,16 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
     def get_data_constraints(self) -> List[DataConstraint]:
         """Returns the DataConstraints."""
         return self.__get_elements(DataConstraint)
+
+    def get_availability_constraints(self) -> List[AvailabilityConstraint]:
+        """Returns the AvailabilityConstraints."""
+        if self.structures is None:
+            raise NotFound(
+                "No AvailabilityConstraint found in message.",
+            )
+        return [
+            s for s in self.structures if isinstance(s, AvailabilityConstraint)
+        ]
 
     def get_data_consumer_schemes(self) -> List[DataConsumerScheme]:
         """Returns the DataConsumerSchemes."""
@@ -407,7 +422,8 @@ class Message(StructureMessage, frozen=True):
 
     Attributes:
         header: The header of the SDMX message.
-        structures: Sequence of MaintainableArtefact objects.
+        structures: Sequence of MaintainableArtefact or
+          AvailabilityConstraint objects.
         data: Sequence of Dataset objects. They represent the contents of a
            SDMX Data Message in any format.
         submission: Sequence of SubmissionResult objects. They represent the

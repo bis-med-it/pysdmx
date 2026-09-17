@@ -10,19 +10,20 @@
 	</mes:Header>
 	<mes:Structures>
 		<str:Constraints>
-			<str:ContentConstraint id="TEST_CONSTRAINT_PROV" version="1.0" isExternalReference="false" isFinal="false" agencyID="TEST_AGENCY" type="Allowed">
-				<com:Name xml:lang="en">Test Constraint with Provider</com:Name>
-				<com:Description xml:lang="en">A test constraint attached to a provider</com:Description>
+			<str:ContentConstraint id="TEST_ACTUAL_KEYSETS" version="1.0" isExternalReference="false" isFinal="false" agencyID="TEST_AGENCY" type="Actual">
+				<com:Name xml:lang="en">Actual constraint</com:Name>
 				<str:ConstraintAttachment>
-					<str:DataProvider>
-						<Ref agencyID="TEST_AGENCY" maintainableParentID="DATA_PROVIDERS" maintainableParentVersion="1.0" id="PROVIDER_ID" class="DataProvider"/>
-					</str:DataProvider>
+					<str:Dataflow>
+						<Ref id="DF_TEST" version="1.0" agencyID="TEST_AGENCY" package="datastructure" class="Dataflow"/>
+					</str:Dataflow>
 				</str:ConstraintAttachment>
-				<str:CubeRegion include="true">
-					<com:KeyValue id="FREQ">
-						<com:Value>M</com:Value>
-					</com:KeyValue>
-				</str:CubeRegion>
+				<str:DataKeySet isIncluded="true">
+					<str:Key>
+						<com:KeyValue id="FREQ">
+							<com:Value>M</com:Value>
+						</com:KeyValue>
+					</str:Key>
+				</str:DataKeySet>
 			</str:ContentConstraint>
 		</str:Constraints>
 	</mes:Structures>
