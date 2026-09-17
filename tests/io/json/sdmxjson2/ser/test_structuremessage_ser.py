@@ -25,6 +25,7 @@ from pysdmx.model import (
     CubeKeyValue,
     CubeRegion,
     CubeValue,
+    Dataflow,
     Organisation,
 )
 from pysdmx.model.code import Code
@@ -140,6 +141,29 @@ def test_availability_constraint_v2_0_writer(availability_constraint):
     assert constraints[0].series_count == availability_constraint.series_count
     assert constraints[0].obs_count == availability_constraint.obs_count
     assert constraints[0].annotations == ()
+
+
+def test_availability_constraint_v2_0_assigns_metrics_to_dataflow(
+    availability_constraint,
+):
+    dataflow = Dataflow(
+        id="DF_TEST",
+        name="Test dataflow",
+        agency="TEST_AGENCY",
+        version="1.0",
+        structure=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure."
+            "DataStructure=TEST_AGENCY:DS_TEST(1.0)"
+        ),
+    )
+
+    out = write_v2_0([dataflow, availability_constraint])
+
+    result = read_sdmx(out, validate=True)
+    read_dataflow = result.get_dataflows()[0]
+
+    assert read_dataflow.series_count == availability_constraint.series_count
+    assert read_dataflow.obs_count == availability_constraint.obs_count
 
 
 def test_availability_constraint_v2_1_writer(availability_constraint):
