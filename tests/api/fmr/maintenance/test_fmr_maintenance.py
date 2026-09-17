@@ -11,8 +11,13 @@ from pysdmx.io.json.sdmxjson2.messages import (
     JsonStructureMessage,
 )
 from pysdmx.model import (
+    AvailabilityConstraint,
     Code,
     Codelist,
+    ConstraintAttachment,
+    CubeKeyValue,
+    CubeRegion,
+    CubeValue,
     MetadataAttribute,
     MetadataReport,
     Organisation,
@@ -49,6 +54,23 @@ def end_point_out_report() -> str:
 def structure():
     cd = Code("A", name="Code A")
     return Codelist("CL_TEST", agency="TEST", name="Test CL", items=(cd,))
+
+
+@pytest.fixture
+def availability_constraint():
+    return AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None,
+            dataflows=[
+                "urn:sdmx:org.sdmx.infomodel.datastructure."
+                "Dataflow=TEST:DF_TEST(1.0)"
+            ],
+        ),
+        cube_region=CubeRegion(
+            key_values=[CubeKeyValue(id="FREQ", values=[CubeValue(value="A")])]
+        ),
+        series_count=1,
+    )
 
 
 @pytest.fixture
@@ -349,3 +371,58 @@ def test_client_error(
 def __compute_pwd(user, pwd):
     encoded = base64.b64encode(f"{user}:{pwd}".encode("ascii")).decode("ascii")
     return f"Basic {encoded}"
+
+
+def test_structure_maintenance_skips_availability_constraints(
+    respx_mock,
+    structure,
+    availability_constraint,
+    end_point_in,
+    end_point_out_structure,
+    user,
+    pwd,
+):
+    # The FMR generates availability ("Actual") constraints on the fly for
+    # availability queries and does not store them, so they must not be
+    # part of an upload.
+    respx_mock.post(end_point_out_structure).mock(
+        return_value=httpx.Response(200)
+    )
+    client = RegistryMaintenanceClient(end_point_in, user, pwd)
+
+    with pytest.warns(UserWarning, match="not meant to be stored in the FMR"):
+        client.put_structures([structure, availability_constraint])
+
+    # A request is sent with a single structure
+    assert respx_mock.calls.call_count == 1
+    request = respx_mock.calls[0].request
+    msg = (
+        msgspec.json.Decoder(JsonStructureMessage)
+        .decode(request.content)
+        .to_model()
+    )
+    assert len(msg.structures) == 1
+    assert msg.structures[0] == structure
+
+
+def test_structure_maintenance_only_availability_constraints(
+    respx_mock,
+    availability_constraint,
+    end_point_in,
+    end_point_out_structure,
+    user,
+    pwd,
+):
+    respx_mock.post(end_point_out_structure).mock(
+        return_value=httpx.Response(200)
+    )
+    client = RegistryMaintenanceClient(end_point_in, user, pwd)
+
+    with (
+        pytest.warns(UserWarning, match="not meant to be stored in the FMR"),
+        pytest.raises(errors.Invalid),
+    ):
+        client.put_structures([availability_constraint])
+
+    # No request is sent
+    assert respx_mock.calls.call_count == 0

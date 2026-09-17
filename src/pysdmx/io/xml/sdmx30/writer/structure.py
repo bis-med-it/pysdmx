@@ -6,6 +6,7 @@ from typing import Optional, Sequence, Union
 from pysdmx.io.format import Format
 from pysdmx.io.xml.__structure_aux_writer import (
     STR_DICT_TYPE_LIST_30,
+    __check_no_duplicate_availability,
     __write_structures,
     group_structures,
 )
@@ -14,12 +15,13 @@ from pysdmx.io.xml.__write_aux import (
     create_namespaces,
     get_end_message,
 )
+from pysdmx.model import AvailabilityConstraint
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.message import Header
 
 
 def write(
-    structures: Sequence[MaintainableArtefact],
+    structures: Sequence[Union[MaintainableArtefact, AvailabilityConstraint]],
     output_path: Optional[Union[str, Path]] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
@@ -27,7 +29,8 @@ def write(
     """This function writes a SDMX-ML file from the Message Content.
 
     Args:
-        structures: The content to be written
+        structures: The maintainable artefacts and availability
+            constraints to be written
         output_path: The path to save the file
         prettyprint: Prettyprint or not
         header: The header to be used (generated if None)
@@ -36,6 +39,7 @@ def write(
         The XML string if output_path is empty, None otherwise
     """
     type_ = Format.STRUCTURE_SDMX_ML_3_0
+    __check_no_duplicate_availability(structures)
     elements = {structure.short_urn: structure for structure in structures}
     if header is None:
         header = Header()

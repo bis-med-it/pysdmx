@@ -13,6 +13,7 @@ from pysdmx.io.xml.sdmx30.writer.structure import write
 from pysdmx.model import (
     Agency,
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     Category,
     CategoryScheme,
@@ -1548,6 +1549,86 @@ def test_constraint_without_attachment(
     )
     read(result, validate=True)
     assert result == constraint_no_attachment_sample
+
+
+def test_availability_constraint_roundtrip_30(complete_header):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(
+            key_values=[CubeKeyValue(id="FREQ", values=[CubeValue(value="M")])]
+        ),
+        series_count=3,
+        obs_count=42,
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    assert 'role="Actual"' in out
+    assert 'id="DF_TEST"' in out
+    assert 'agencyID="TEST_AGENCY"' in out
+    assert "Availability for DF_TEST" in out
+    # The counts have no dedicated element in SDMX-ML 3.0, so they are
+    # carried as FMR-style sdmx_metrics annotations.
+    assert '<com:Annotation id="series_count">' in out
+    assert "<com:AnnotationType>sdmx_metrics</com:AnnotationType>" in out
+    assert "<com:AnnotationTitle>3</com:AnnotationTitle>" in out
+    assert '<com:Annotation id="obs_count">' in out
+    assert "<com:AnnotationTitle>42</com:AnnotationTitle>" in out
+    back = read_sdmx(out, validate=True).structures
+    assert len(back) == 1
+    assert isinstance(back[0], AvailabilityConstraint)
+    assert back[0].constraint_attachment == ac.constraint_attachment
+    kv = back[0].cube_region.key_values[0]
+    assert kv.id == "FREQ"
+    assert [v.value for v in kv.values] == ["M"]
+    # The counts now survive the legacy round trip via the annotations,
+    # which are lifted back and excluded from back[0].annotations.
+    assert back[0].series_count == 3
+    assert back[0].obs_count == 42
+    assert back[0].annotations == ()
+
+
+def test_constraint_role_always_allowed_30():
+    """A plain DataConstraint always writes role="Allowed" in 3.0.
+
+    Availability (role="Actual") can only be produced by writing an
+    AvailabilityConstraint: the legacy DataConstraint.role field is not
+    consulted by the writer.
+    """
+    dc = DataConstraint(id="RT", name="rt", agency="AG", version="1.0")
+    out = write_sdmx(dc, Format.STRUCTURE_SDMX_ML_3_0, prettyprint=True)
+    assert 'role="Allowed"' in out
+
+
+def test_constraint_keyvalue_validity_roundtrip_30():
+    dc = DataConstraint(
+        id="TR",
+        name="tr",
+        agency="AG",
+        version="1.0",
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(
+                        id="FREQ",
+                        values=[CubeValue("A")],
+                        valid_from=datetime(2020, 1, 1),
+                        valid_to=datetime(2024, 1, 1),
+                    )
+                ]
+            )
+        ],
+    )
+    out = write_sdmx(dc, Format.STRUCTURE_SDMX_ML_3_0, prettyprint=True)
+    assert 'validFrom="2020-01-01T00:00:00"' in out
+    assert 'validTo="2024-01-01T00:00:00"' in out
+    kv = read_sdmx(out).get_data_constraints()[0].cube_regions[0].key_values[0]
+    assert kv.valid_from == datetime(2020, 1, 1)
+    assert kv.valid_to == datetime(2024, 1, 1)
 
 
 def test_write_group_without_urn(datastructure):
