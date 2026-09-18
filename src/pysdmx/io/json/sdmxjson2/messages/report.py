@@ -2,7 +2,7 @@
 
 from typing import Any, Literal, Optional, Sequence
 
-from msgspec import Struct
+from msgspec import Struct, field
 
 from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.core import (
@@ -138,9 +138,13 @@ class JsonMetadataReport(ItemSchemeType, frozen=True, omit_defaults=True):
 
 
 class JsonMetadataSets(Struct, frozen=True, omit_defaults=True):
-    """SDMX-JSON payload for the list of metadata sets."""
+    """SDMX-JSON payload for the list of metadata sets.
 
-    metadataSets: Sequence[JsonMetadataReport]
+    ``metadataSets`` is optional in the SDMX-JSON metadata schema, so it
+    defaults to an empty sequence when omitted.
+    """
+
+    metadataSets: Sequence[JsonMetadataReport] = field(default_factory=list)
 
     def to_model(self) -> Sequence[MetadataReport]:
         """Returns the requested metadata report(s)."""
@@ -148,10 +152,14 @@ class JsonMetadataSets(Struct, frozen=True, omit_defaults=True):
 
 
 class JsonMetadataMessage(Struct, frozen=True, omit_defaults=True):
-    """SDMX-JSON payload for /metadata queries."""
+    """SDMX-JSON payload for /metadata queries.
+
+    Only ``meta`` is required by the SDMX-JSON metadata schema: a message
+    without ``data`` is a valid message without reports.
+    """
 
     meta: JsonHeader
-    data: JsonMetadataSets
+    data: JsonMetadataSets = field(default_factory=JsonMetadataSets)
 
     def to_model(self) -> MetadataMessage:
         """Returns the requested metadata report(s)."""
