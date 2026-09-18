@@ -7,7 +7,7 @@ import msgspec
 
 from pysdmx.errors import NotFound
 from pysdmx.model import ArrayBoundaries, Codelist, Facets
-from pysdmx.util import find_by_urn
+from pysdmx.util import find_by_urn, to_utc
 
 
 class FusionString(msgspec.Struct, frozen=True):
@@ -111,8 +111,8 @@ class FusionRepresentation(msgspec.Struct, frozen=True):
                 end_value=end,
                 decimals=self.textFormat.decimals,
                 pattern=self.textFormat.pattern,
-                start_time=self.textFormat.startTime,
-                end_time=self.textFormat.endTime,
+                start_time=to_utc(self.textFormat.startTime),
+                end_time=to_utc(self.textFormat.endTime),
                 is_multilingual=self.textFormat.isMultilingual,
             )
         else:

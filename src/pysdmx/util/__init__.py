@@ -1,7 +1,8 @@
 """Collection of utility functions."""
 
 import re
-from typing import Any, Sequence, Union
+from datetime import datetime, timezone
+from typing import Any, Optional, Sequence, Union, overload
 
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.model import Agency, ItemReference, Reference
@@ -17,6 +18,35 @@ short_item_urn_pattern = re.compile(r"^(.*)=(.*):(.*)\((.*)\)\.(.*)$")
 flow_urn_pattern = re.compile(r"^(.*):(.*)\((.*)\)$")
 _SEMVER_NUM = r"(0|[1-9]\d*)"
 semver_final_pattern = re.compile(rf"^[1-9]\d*\.{_SEMVER_NUM}\.{_SEMVER_NUM}$")
+
+
+@overload
+def to_utc(value: datetime) -> datetime: ...
+
+
+@overload
+def to_utc(value: None) -> None: ...
+
+
+def to_utc(value: Optional[datetime]) -> Optional[datetime]:
+    """Normalizes a datetime to a timezone-aware datetime in UTC.
+
+    SDMX allows datetimes without timezone information, while pysdmx
+    normalizes SDMX datetimes to timezone-aware UTC datetimes. Naive
+    datetimes are assumed to be expressed in UTC, while timezone-aware
+    datetimes are converted to UTC.
+
+    Args:
+        value: The datetime to be normalized (or None).
+
+    Returns:
+        A timezone-aware datetime in UTC, or None if the input is None.
+    """
+    if value is None:
+        return None
+    if value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc)
 
 
 def parse_urn(urn: str) -> Union[ItemReference, Reference]:
