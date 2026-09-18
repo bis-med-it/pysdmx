@@ -596,3 +596,48 @@ def test_read_header_only_structure_message_31(samples_folder):
     assert msg.header is not None
     assert msg.structures == []
     assert msg.get_dataflows() == []
+
+
+def test_read_header_only_data_message_31(samples_folder):
+    # A StructureSpecificData message without any DataSet is valid SDMX,
+    # so read_sdmx returns an empty Message instead of raising.
+    data_path = samples_folder / "data_header_only.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_3_1
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.data == []
+
+
+@pytest.mark.xml
+def test_generic_metadata_empty_set_31():
+    from pysdmx.io.xml.sdmx31.reader.metadata import read as read_refmeta
+
+    # A GenericMetadata message with no MetadataSet yields no reports, and
+    # read_sdmx returns it as a Message without reports.
+    doc = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        "<mes:GenericMetadata "
+        'xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v3_1/message" '
+        'xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v3_1/common">'
+        "<mes:Header>"
+        "<mes:ID>test</mes:ID>"
+        "<mes:Test>true</mes:Test>"
+        "<mes:Prepared>2021-01-01T10:00:00Z</mes:Prepared>"
+        '<mes:Sender id="ZZZ"/>'
+        '<mes:Structure structureID="MDS1">'
+        "<com:Structure>urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "MetadataStructure=BIS:MSD(1.0)</com:Structure>"
+        "</mes:Structure>"
+        "</mes:Header>"
+        "</mes:GenericMetadata>"
+    )
+    assert read_refmeta(doc, validate=True) == []
+
+    msg = read_sdmx(doc, validate=True)
+    assert msg.header is not None
+    assert msg.reports == []
+    assert msg.get_reports() == []

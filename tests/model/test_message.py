@@ -17,7 +17,12 @@ from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
 from pysdmx.model.dataflow import Components, Dataflow, DataStructureDefinition
 from pysdmx.model.dataset import Dataset
-from pysdmx.model.message import Header, Message, StructureMessage
+from pysdmx.model.message import (
+    Header,
+    Message,
+    MetadataMessage,
+    StructureMessage,
+)
 from pysdmx.model.metadata import MetadataAttribute, MetadataReport
 
 
@@ -338,6 +343,42 @@ def test_metadata_report():
 
 def test_no_metadata_report():
     msg = Message()
+
+    with pytest.raises(NotFound):
+        msg.get_reports()
+
+
+def test_empty_metadata_reports():
+    # An empty reports sequence is returned as is, like get_datasets does
+    # for data; NotFound is reserved for a message without reports at all.
+    msg = Message(reports=[])
+
+    assert msg.get_reports() == []
+
+
+def test_metadata_message_reports():
+    a = MetadataAttribute("ATTR1", "test")
+    r = MetadataReport(
+        "my_report",
+        agency="TEST",
+        metadataflow="mdf_ref",
+        targets=["df_ref1"],
+        attributes=[a],
+    )
+
+    msg = MetadataMessage(reports=[r])
+
+    assert msg.get_reports() == [r]
+
+
+def test_metadata_message_empty_reports():
+    msg = MetadataMessage(reports=[])
+
+    assert msg.get_reports() == []
+
+
+def test_metadata_message_no_reports():
+    msg = MetadataMessage()
 
     with pytest.raises(NotFound):
         msg.get_reports()

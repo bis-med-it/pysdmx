@@ -38,8 +38,9 @@ def test_empty_metadata_reader(empty):
 
     assert isinstance(msg, MetadataMessage)
 
-    with pytest.raises(errors.NotFound):
-        msg.get_reports()
+    # An empty metadataSets array is a valid message without reports.
+    assert msg.reports == []
+    assert msg.get_reports() == []
 
 
 def test_get_json2_invalid_refmeta():

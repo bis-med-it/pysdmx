@@ -1763,3 +1763,56 @@ def test_read_header_only_structure_message_21(samples_folder):
     assert msg.header is not None
     assert msg.structures == []
     assert msg.get_dataflows() == []
+
+
+def test_read_header_only_data_message_21(samples_folder):
+    # A StructureSpecificData message without any DataSet is valid SDMX,
+    # so read_sdmx returns an empty Message instead of raising.
+    data_path = samples_folder / "data_header_only.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+
+    assert read_str_spe(input_str, validate=True) == []
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.data == []
+
+
+@pytest.mark.parametrize("validate", [False, True])
+def test_submission_empty_response(samples_folder, validate):
+    # SubmissionResult is mandatory in a SubmitStructureResponse, so an
+    # empty response is rejected with a typed error, with or without XSD
+    # validation.
+    data_path = samples_folder / "submission_empty_response.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.REGISTRY_SDMX_ML_2_1
+
+    with pytest.raises(Invalid, match="SubmissionResult"):
+        read_sdmx(input_str, validate=validate)
+
+
+def test_submission_response_without_results():
+    # A SubmitStructureResponse holding anything but SubmissionResult
+    # elements is rejected the same way.
+    doc = (
+        '<?xml version="1.0" ?>'
+        "<message:RegistryInterface "
+        'xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v2_1/message" '
+        'xmlns:reg="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v2_1/registry">'
+        "<message:Header>"
+        "<message:ID>test</message:ID>"
+        "<message:Test>true</message:Test>"
+        "<message:Prepared>2023-11-08T12:40:53Z</message:Prepared>"
+        '<message:Sender id="Unknown"/>'
+        "</message:Header>"
+        "<message:SubmitStructureResponse>"
+        '<reg:StatusMessage status="Success"/>'
+        "</message:SubmitStructureResponse>"
+        "</message:RegistryInterface>"
+    )
+
+    with pytest.raises(Invalid, match="SubmissionResult"):
+        read_sub(doc, validate=False)

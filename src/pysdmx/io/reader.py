@@ -55,17 +55,18 @@ def read_sdmx(  # noqa: C901
           authority using this parameter.
 
     Returns:
-        A Message with the content of the SDMX document. A structure
-        message without artefacts (e.g. an empty catalogue) is returned
-        as a Message with an empty ``structures`` sequence.
+        A Message with the content of the SDMX document. A message without
+        content is valid SDMX (an empty catalogue, a data query matching
+        nothing, a metadata query without reports), so it is returned as
+        a Message whose ``structures``, ``data`` or ``reports`` sequence
+        is empty rather than rejected.
 
     Raises:
         Invalid:
-            If the format is not supported, or if a data or submission
-            message, or an SDMX-ML reference metadata message, has no
-            content.
-        NotFound:
-            If an SDMX-JSON reference metadata message has no reports.
+            If the format is not supported, or if the document is not a
+            valid message of the detected format (e.g. a submission
+            message whose SubmitStructureResponse has no
+            SubmissionResult).
         NotImplemented:
             If the SDMX flavour is detected but not supported yet.
     """
@@ -126,7 +127,7 @@ def read_sdmx(  # noqa: C901
 
         ref_msg = read_refmeta(input_str, validate=validate)
         header = ref_msg.header
-        reports = ref_msg.get_reports()
+        reports = ref_msg.reports or []
     elif read_format == Format.REFMETA_SDMX_ML_3_0:
         from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx30.reader.metadata import (
@@ -223,9 +224,6 @@ def read_sdmx(  # noqa: C901
         # TODO: Ensure we have changed the signature of the structure readers
         return Message(header=header, structures=result_structures)
 
-    if not (result_data or result_submission or reports):
-        raise Invalid("Empty SDMX Message")
-
     if read_format in (
         Format.DATA_SDMX_CSV_1_0_0,
         Format.DATA_SDMX_CSV_2_0_0,
@@ -237,12 +235,15 @@ def read_sdmx(  # noqa: C901
         Format.DATA_SDMX_ML_3_0,
         Format.DATA_SDMX_ML_3_1,
     ):
+        # A data message without any DataSet is valid SDMX as well (it is
+        # how a service answers a query matching nothing), so it is
+        # returned as a Message with an empty data sequence.
         # TODO: Add here the Schema download for Datasets, based on structure
         # TODO: Ensure we have changed the signature of the data readers
         return Message(header=header, data=result_data)
     elif read_format == Format.REGISTRY_SDMX_ML_2_1:
         return Message(header=header, submission=result_submission)
-    # SDMX-ML and SDMX-JSON reference metadata
+    # SDMX-ML and SDMX-JSON reference metadata, with or without reports
     return Message(header=header, reports=reports)
 
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- A data message without any DataSet. The shape is schema-valid, but
-     pysdmx keeps rejecting content-less data messages: only structure
-     messages may legitimately be empty (an empty catalogue). -->
+<!-- A data message without any DataSet. DataSet is optional in the
+     schema, so read_sdmx returns a Message with an empty data sequence
+     instead of rejecting it. -->
 <mes:GenericData xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
                  xmlns:gen="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic"
                  xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
