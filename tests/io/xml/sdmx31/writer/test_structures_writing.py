@@ -14,6 +14,7 @@ from pysdmx.io.xml.sdmx31.writer.structure import write
 from pysdmx.model import (
     Agency,
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     Category,
     CategoryScheme,
@@ -21,6 +22,11 @@ from pysdmx.model import (
     Codelist,
     Concept,
     ConceptScheme,
+    ConstraintAttachment,
+    CubeKeyValue,
+    CubeRegion,
+    CubeValue,
+    DataConstraint,
     DataType,
     Facets,
     FromVtlMapping,
@@ -1151,3 +1157,262 @@ def test_category_scheme_31_enrichment_round_trip(complete_header):
     assert top.dataflows[0].id == "DF1"
     assert top.dataflows[0].version == "1.0.0"
     assert top.dataflows[0].name == "Dataflow 1"
+
+
+def test_data_constraint_has_no_marker_31():
+    # SDMX 3.1 removed the constraint role/type attribute entirely (a
+    # DataConstraint is always the allowed values; availability is the
+    # separate AvailabilityConstraint element), so a plain DataConstraint
+    # must carry no marker attribute at all when written to 3.1.
+    dc = DataConstraint(
+        id="TEST_31",
+        name="Test 3.1 constraint",
+        agency="TEST_AGENCY",
+        version="1.0",
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None,
+            dataflows=[
+                "urn:sdmx:org.sdmx.infomodel.datastructure."
+                "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
+            ],
+        ),
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(id="FREQ", values=[CubeValue(value="A")])
+                ]
+            )
+        ],
+    )
+    result = write_sdmx(
+        dc, sdmx_format=Format.STRUCTURE_SDMX_ML_3_1, prettyprint=True
+    )
+    assert 'role="' not in result
+    assert 'type="' not in result
+    back = read_sdmx(result, validate=True).structures
+    assert isinstance(back[0], DataConstraint)
+
+
+def test_availability_constraint_roundtrip_31(complete_header):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(
+            key_values=[
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
+            ]
+        ),
+        series_count=3,
+        obs_count=42,
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    assert "<str:AvailabilityConstraint" in out
+    assert 'seriesCount="3"' in out
+    assert 'obsCount="42"' in out
+    assert "ContentConstraint" not in out
+    back = read_sdmx(out, validate=True).structures
+    assert back == [ac]
+
+
+def test_availability_constraint_roundtrip_31_with_annotation(
+    complete_header,
+):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        annotations=(Annotation(id="ANN1", title="Note", type="text"),),
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(
+            key_values=[
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
+            ]
+        ),
+        series_count=3,
+        obs_count=42,
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    assert "<str:AvailabilityConstraint" in out
+    assert '<com:Annotation id="ANN1">' in out
+    # Per the 3.1 AnnotableType extension order: Annotations first,
+    # then ConstraintAttachment, then CubeRegion.
+    ann_pos = out.index("<com:Annotations>")
+    attachment_pos = out.index("<str:ConstraintAttachment>")
+    region_pos = out.index("<str:CubeRegion")
+    assert ann_pos < attachment_pos < region_pos
+    back = read_sdmx(out, validate=True).structures
+    # ac.annotations is a tuple (the idiomatic container type for this
+    # field, matching the JSON native path); the reader must produce
+    # a tuple too, or this equality would fail even though the
+    # content matches (list != tuple in Python).
+    assert back == [ac]
+    assert isinstance(back[0].annotations, tuple)
+
+
+def test_availability_constraint_31_duplicate_is_invalid(complete_header):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    attachment = ConstraintAttachment(data_provider=None, dataflows=[urn])
+    ac1 = AvailabilityConstraint(
+        constraint_attachment=attachment,
+        cube_region=CubeRegion(key_values=[]),
+        series_count=3,
+    )
+    ac2 = AvailabilityConstraint(
+        constraint_attachment=attachment,
+        cube_region=CubeRegion(key_values=[]),
+        series_count=5,
+    )
+    with pytest.raises(
+        Invalid, match="Two availability constraints for the same"
+    ):
+        write([ac1, ac2], header=complete_header, prettyprint=True)
+
+
+def test_availability_constraint_31_without_counts(complete_header):
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None,
+            dataflows=[
+                "urn:sdmx:org.sdmx.infomodel.datastructure."
+                "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+            ],
+        ),
+        cube_region=CubeRegion(key_values=[]),
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    assert "seriesCount" not in out
+    assert read_sdmx(out, validate=True).structures == [ac]
+
+
+def test_annotations_31_apostrophes_preserved(complete_header):
+    # Every annotation must keep its apostrophes, not just the last one
+    # on each artefact (issue #678).
+    codelist = Codelist(
+        id="CL_ANN",
+        name="Côte d'Ivoire codes",
+        agency="BIS",
+        version="1.0.0",
+        items=[
+            Code(
+                id="CI",
+                name="Côte d'Ivoire",
+                annotations=[
+                    Annotation(id="c1", title="Item's first"),
+                    Annotation(id="c2", title="Item's last"),
+                ],
+            ),
+        ],
+        annotations=[
+            Annotation(
+                id="a1",
+                title="It's the first title",
+                type="It's the first type",
+                url="https://example.com/it's",
+                text="It's the first text",
+            ),
+            Annotation(id="a2", title="It's the middle title"),
+            Annotation(
+                id="a3",
+                title="It's the last title",
+                text="It's the last text",
+            ),
+        ],
+    )
+
+    result = write([codelist], header=complete_header, prettyprint=True)
+
+    assert '"s the first title' not in result
+    assert '"s the middle title' not in result
+    assert '"s the first text' not in result
+    assert '"s the first type' not in result
+    assert 'example.com/it"s' not in result
+    assert 'Item"s first' not in result
+
+    re_read = read(result, validate=True)[0]
+    assert re_read.annotations == codelist.annotations
+    assert re_read.items[0].annotations == codelist.items[0].annotations
+
+
+def test_annotations_31_element_order(complete_header):
+    # The schema sequence is Title, Type, URL, Text; writing Text before
+    # URL produced a schema-invalid document.
+    codelist = Codelist(
+        id="CL_ORD",
+        name="Codes",
+        agency="BIS",
+        version="1.0.0",
+        items=[Code(id="A", name="a")],
+        annotations=[
+            Annotation(
+                id="a1",
+                title="Title",
+                type="Type",
+                url="https://example.com/note",
+                text="Some text",
+            ),
+        ],
+    )
+
+    result = write([codelist], header=complete_header, prettyprint=True)
+
+    assert result.index("<com:AnnotationTitle>") < result.index(
+        "<com:AnnotationType>"
+    )
+    assert result.index("<com:AnnotationType>") < result.index(
+        "<com:AnnotationURL>"
+    )
+    assert result.index("<com:AnnotationURL>") < result.index(
+        "<com:AnnotationText"
+    )
+
+    re_read = read(result, validate=True)[0]
+    assert re_read.annotations == codelist.annotations
+
+
+def test_vtl_item_31_apostrophes_preserved(complete_header):
+    scheme = TransformationScheme(
+        id="TS_APOS",
+        name="Scheme's name",
+        description="Scheme's description",
+        agency="BIS",
+        version="1.0.0",
+        vtl_version="2.0",
+        items=[
+            Transformation(
+                id="T1",
+                name="Item's name",
+                description="Item's description",
+                expression="ds",
+                is_persistent=False,
+                result="r",
+                annotations=[
+                    Annotation(id="a1", title="Ann's first"),
+                    Annotation(id="a2", title="Ann's last"),
+                ],
+            )
+        ],
+    )
+
+    result = write([scheme], header=complete_header, prettyprint=True)
+
+    assert 'Scheme"s' not in result
+    assert 'Item"s' not in result
+    assert 'Ann"s' not in result
+
+    re_read = read(result, validate=True)[0]
+    assert re_read.name == "Scheme's name"
+    assert re_read.description == "Scheme's description"
+    assert re_read.items[0].name == "Item's name"
+    assert re_read.items[0].description == "Item's description"
+    assert re_read.items[0].annotations == scheme.items[0].annotations

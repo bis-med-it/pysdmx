@@ -11,9 +11,11 @@ from pysdmx.io.reader import read_sdmx
 from pysdmx.io.reader import read_sdmx as reader
 from pysdmx.io.writer import write_sdmx
 from pysdmx.io.xml.sdmx30.reader.structure import read as read_structure
+from pysdmx.io.xml.sdmx30.writer.structure import write as write_structure
 from pysdmx.model import (
     Agency,
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     CategoryScheme,
     Code,
@@ -23,6 +25,7 @@ from pysdmx.model import (
     Contact,
     CubeKeyValue,
     CubeRegion,
+    CubeTimeRange,
     CubeValue,
     CustomType,
     CustomTypeScheme,
@@ -1187,19 +1190,39 @@ def test_constraint_without_attachment(samples_folder):
     ] == ["Q"]
 
 
-def test_constraint_with_actual_role_read_as_plain(samples_folder):
+def test_constraint_with_actual_role(samples_folder):
     data_path = samples_folder / "constraint_actual.xml"
     input_str, _ = process_string_to_read(data_path)
-    result = read_sdmx(input_str).get_data_constraints()
-    assert result is not None
+    result = read_sdmx(input_str, validate=True).structures
     assert len(result) == 1
-    constraint = result[0]
-    assert isinstance(constraint, DataConstraint)
-    assert constraint.id == "TEST_CONSTRAINT_ACTUAL"
-    assert constraint.cube_regions[0].key_values[0].id == "FREQ"
-    assert [
-        v.value for v in constraint.cube_regions[0].key_values[0].values
-    ] == ["M"]
+    assert isinstance(result[0], AvailabilityConstraint)
+
+
+def test_constraint_role_absent_30_defaults_allowed(samples_folder):
+    # role is required by the SDMX 3.0 schema, so this document is
+    # intentionally not schema-valid; it exercises the defensive
+    # fallback to the reader's default (ALLOWED) when role is missing.
+    data_path = samples_folder / "constraint_role_absent.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=False).get_data_constraints()
+    assert len(result) == 1
+    assert isinstance(result[0], DataConstraint)
+
+
+def test_constraint_with_time_range_30(samples_folder):
+    from datetime import datetime
+
+    data_path = samples_folder / "constraint_time_range.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert isinstance(result[0], DataConstraint)
+    region = result[0].cube_regions[0]
+    freq = region.key_values[0]
+    time = region.key_values[1]
+    assert freq.valid_from == datetime(2020, 1, 1)
+    assert freq.valid_to == datetime(2024, 1, 1)
+    assert isinstance(time.time_range, CubeTimeRange)
+    assert time.time_range.start_period.period == "1989-01-01T00:00:00"
 
 
 @pytest.fixture
@@ -1438,6 +1461,12 @@ def test_generic_metadata_empty_set():
     )
     assert read_refmeta(doc, validate=True) == []
 
+    # ...and read_sdmx returns it as a Message without reports.
+    msg = read_sdmx(doc, validate=True)
+    assert msg.header is not None
+    assert msg.reports == []
+    assert msg.get_reports() == []
+
 
 @pytest.mark.xml
 def test_category_scheme_30(samples_folder):
@@ -1506,3 +1535,97 @@ def test_categorisation_30(samples_folder):
         "urn:sdmx:org.sdmx.infomodel.categoryscheme."
         "Category=BIS:CS1(1.0.0).OTHER"
     )
+
+
+def test_component_enum_ref_kept_without_codelist_30(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_no_codelist.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+
+    dsd = read_structure(input_str, validate=True)[0]
+    freq = next(c for c in dsd.components if c.id == "FREQ")
+
+    assert freq.enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
+    )
+    assert freq.enumeration is None
+
+
+def test_component_enum_ref_with_codelist_in_message_30(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_with_codelist.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    structures = read_structure(input_str, validate=True)
+    dsd = next(s for s in structures if isinstance(s, DataStructureDefinition))
+    freq = next(c for c in dsd.components if c.id == "FREQ")
+
+    assert isinstance(freq.enumeration, Codelist)
+    assert freq.enumeration.short_urn == "Codelist=ZZZ:CL_FREQ(1.0)"
+    assert freq.enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
+    )
+
+
+def test_component_enum_ref_round_trip_30(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_no_codelist.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    dsd = read_structure(input_str, validate=True)
+    written = write_structure(dsd, prettyprint=True)
+
+    re_read = read_structure(written, validate=True)[0]
+    freq = next(c for c in re_read.components if c.id == "FREQ")
+    assert freq.enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
+    )
+
+
+def test_read_empty_structure_containers_30(samples_folder):
+    data_path = samples_folder / "structures_empty_containers.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+
+    assert len(read_structure(input_str, validate=False)) == 0
+
+    # An empty catalogue is a valid structure message, so read_sdmx
+    # returns an empty Message instead of raising.
+    msg = read_sdmx(input_str, validate=False)
+    assert msg.header is not None
+    assert msg.structures == []
+    assert msg.get_dataflows() == []
+
+
+def test_read_no_structure_containers_30(samples_folder):
+    data_path = samples_folder / "structures_no_containers.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    assert len(read_structure(input_str, validate=True)) == 0
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.structures == []
+    assert msg.get_dataflows() == []
+
+
+def test_read_header_only_structure_message_30(samples_folder):
+    data_path = samples_folder / "structures_header_only.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    assert len(read_structure(input_str, validate=True)) == 0
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.structures == []
+    assert msg.get_dataflows() == []
+
+
+def test_read_header_only_data_message_30(samples_folder):
+    # A StructureSpecificData message without any DataSet is valid SDMX,
+    # so read_sdmx returns an empty Message instead of raising.
+    data_path = samples_folder / "data_header_only.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_3_0
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.data == []

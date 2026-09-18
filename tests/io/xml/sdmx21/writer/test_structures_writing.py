@@ -7,7 +7,7 @@ import pytest
 from msgspec.structs import replace
 
 from pysdmx.errors import Invalid, NotImplemented
-from pysdmx.io import read_sdmx
+from pysdmx.io import read_sdmx, write_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.__tokens import CON
@@ -17,6 +17,7 @@ from pysdmx.io.xml.sdmx21.writer.structure import write
 from pysdmx.model import (
     Agency,
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     Category,
     CategoryScheme,
@@ -28,6 +29,7 @@ from pysdmx.model import (
     Contact,
     CubeKeyValue,
     CubeRegion,
+    CubeTimeRange,
     CubeValue,
     CustomTypeScheme,
     DataConstraint,
@@ -51,6 +53,7 @@ from pysdmx.model import (
     NamePersonalisationScheme,
     Ruleset,
     RulesetScheme,
+    TimePeriodBoundary,
     ToVtlMapping,
     Transformation,
     TransformationScheme,
@@ -2177,6 +2180,220 @@ def test_constraint_without_attachment(
     assert result == constraint_no_attachment_sample
 
 
+def test_availability_constraint_roundtrip_21(complete_header):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(
+            key_values=[CubeKeyValue(id="FREQ", values=[CubeValue(value="M")])]
+        ),
+        series_count=3,
+        obs_count=42,
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    assert 'type="Actual"' in out
+    assert 'id="DF_TEST"' in out
+    assert 'agencyID="TEST_AGENCY"' in out
+    assert "Availability for DF_TEST" in out
+    # The counts have no dedicated element in SDMX-ML 2.1, so they are
+    # carried as FMR-style sdmx_metrics annotations.
+    assert '<com:Annotation id="series_count">' in out
+    assert "<com:AnnotationType>sdmx_metrics</com:AnnotationType>" in out
+    assert "<com:AnnotationTitle>3</com:AnnotationTitle>" in out
+    assert '<com:Annotation id="obs_count">' in out
+    assert "<com:AnnotationTitle>42</com:AnnotationTitle>" in out
+    back = read_sdmx(out, validate=True).structures
+    assert len(back) == 1
+    assert isinstance(back[0], AvailabilityConstraint)
+    assert back[0].constraint_attachment == ac.constraint_attachment
+    kv = back[0].cube_region.key_values[0]
+    assert kv.id == "FREQ"
+    assert [v.value for v in kv.values] == ["M"]
+    # The counts now survive the legacy round trip via the annotations,
+    # which are lifted back and excluded from back[0].annotations.
+    assert back[0].series_count == 3
+    assert back[0].obs_count == 42
+    assert back[0].annotations == ()
+
+
+def test_availability_constraint_21_ignores_bad_metric_title(
+    complete_header,
+):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(
+            key_values=[CubeKeyValue(id="FREQ", values=[CubeValue(value="M")])]
+        ),
+        series_count=3,
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    # Corrupt the emitted count so it can no longer be parsed as an
+    # int: a non-numeric title cannot be a genuine count, so the
+    # annotation must be kept as-is instead of being lifted (and no
+    # exception raised for it).
+    corrupted = out.replace(
+        "<com:AnnotationTitle>3</com:AnnotationTitle>",
+        "<com:AnnotationTitle>not-a-number</com:AnnotationTitle>",
+    )
+    back = read_sdmx(corrupted, validate=True).structures
+    assert back[0].series_count is None
+    assert len(back[0].annotations) == 1
+    assert back[0].annotations[0].id == "series_count"
+    assert back[0].annotations[0].title == "not-a-number"
+
+
+def test_availability_constraint_21_ignores_unicode_digit_title(
+    complete_header,
+):
+    # str.isdigit() returns True for characters such as the
+    # superscript two ("²") that int() still cannot parse; the guard
+    # must not crash on those either.
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(
+            key_values=[CubeKeyValue(id="FREQ", values=[CubeValue(value="M")])]
+        ),
+        series_count=3,
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    corrupted = out.replace(
+        "<com:AnnotationTitle>3</com:AnnotationTitle>",
+        "<com:AnnotationTitle>²</com:AnnotationTitle>",
+    )
+    back = read_sdmx(corrupted, validate=True).structures
+    assert back[0].series_count is None
+    assert back[0].annotations[0].title == "²"
+
+
+def test_availability_constraint_21_ignores_unknown_metric_id(
+    complete_header,
+):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(
+            key_values=[CubeKeyValue(id="FREQ", values=[CubeValue(value="M")])]
+        ),
+        series_count=3,
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    # type="sdmx_metrics" alone isn't enough: an id other than
+    # series_count/obs_count is not a genuine count, so the
+    # annotation must be kept as-is instead of being lifted.
+    corrupted = out.replace(
+        '<com:Annotation id="series_count">',
+        '<com:Annotation id="foo">',
+    )
+    back = read_sdmx(corrupted, validate=True).structures
+    assert back[0].series_count is None
+    assert back[0].obs_count is None
+    assert len(back[0].annotations) == 1
+    assert back[0].annotations[0].id == "foo"
+    assert back[0].annotations[0].type == "sdmx_metrics"
+
+
+def test_availability_constraint_21_no_counts_writes_no_metrics(
+    complete_header,
+):
+    urn = (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    ac = AvailabilityConstraint(
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None, dataflows=[urn]
+        ),
+        cube_region=CubeRegion(key_values=[]),
+    )
+    out = write([ac], prettyprint=True, header=complete_header)
+    # Neither count is set: no sdmx_metrics annotation (and no
+    # Annotations element at all) should be emitted.
+    assert "sdmx_metrics" not in out
+    assert "<com:Annotations>" not in out
+    back = read_sdmx(out, validate=True).structures
+    assert back[0].series_count is None
+    assert back[0].obs_count is None
+    assert back[0].annotations == ()
+
+
+def test_constraint_time_range_roundtrip_21():
+    dc = DataConstraint(
+        id="TR",
+        name="tr",
+        agency="AG",
+        version="1.0",
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(
+                        id="TIME_PERIOD",
+                        time_range=CubeTimeRange(
+                            start_period=TimePeriodBoundary("2020", True),
+                            end_period=TimePeriodBoundary("2024", False),
+                        ),
+                    )
+                ]
+            )
+        ],
+    )
+    out = write_sdmx(dc, Format.STRUCTURE_SDMX_ML_2_1, prettyprint=True)
+    assert "<com:TimeRange>" in out
+    assert "<com:StartPeriod " in out
+    kv = read_sdmx(out).get_data_constraints()[0].cube_regions[0].key_values[0]
+    assert kv.time_range.start_period.period == "2020"
+    assert kv.time_range.start_period.is_inclusive is True
+    assert kv.time_range.end_period.is_inclusive is False
+
+
+def test_constraint_keyvalue_validity_omitted_21():
+    dc = DataConstraint(
+        id="KV",
+        name="kv",
+        agency="AG",
+        version="1.0",
+        cube_regions=[
+            CubeRegion(
+                key_values=[
+                    CubeKeyValue(
+                        id="FREQ",
+                        values=[CubeValue(value="A")],
+                        valid_from=datetime(2020, 1, 1),
+                        valid_to=datetime(2021, 1, 1),
+                    )
+                ]
+            )
+        ],
+    )
+    out = write_sdmx(dc, Format.STRUCTURE_SDMX_ML_2_1, prettyprint=True)
+    assert "validFrom" not in out
+    assert "validTo" not in out
+    kv = read_sdmx(out).get_data_constraints()[0].cube_regions[0].key_values[0]
+    assert kv.valid_from is None
+    assert kv.valid_to is None
+
+
 def test_write_group_without_urn(complete_header, datastructure):
     dsd_with_group = datastructure.__replace__(
         groups=[Group(id="Sibling", dimensions=["FREQ"])],
@@ -2230,6 +2447,105 @@ def test_metadata_structure_21_raises(complete_header):
         write([msd], header=complete_header, prettyprint=True)
 
 
+@pytest.fixture
+def codelist_apostrophe_annotations():
+    # Several annotations on the artefact and on one of its items, each
+    # carrying an apostrophe in every annotation field (issue #678).
+    return Codelist(
+        id="CL_ANN",
+        name="Côte d'Ivoire codes",
+        agency="BIS",
+        version="1.0",
+        items=[
+            Code(
+                id="CI",
+                name="Côte d'Ivoire",
+                annotations=[
+                    Annotation(id="c1", title="Item's first"),
+                    Annotation(id="c2", title="Item's last"),
+                ],
+            ),
+        ],
+        annotations=[
+            Annotation(
+                id="a1",
+                title="It's the first title",
+                type="It's the first type",
+                url="https://example.com/it's",
+                text="It's the first text",
+            ),
+            Annotation(id="a2", title="It's the middle title"),
+            Annotation(
+                id="a3",
+                title="It's the last title",
+                text="It's the last text",
+            ),
+        ],
+    )
+
+
+def test_annotations_21_element_order(complete_header):
+    # The schema sequence is Title, Type, URL, Text; writing Text before
+    # URL produced a schema-invalid document.
+    codelist = Codelist(
+        id="CL_ORD",
+        name="Codes",
+        agency="BIS",
+        version="1.0",
+        items=[Code(id="A", name="a")],
+        annotations=[
+            Annotation(
+                id="a1",
+                title="Title",
+                type="Type",
+                url="https://example.com/note",
+                text="Some text",
+            ),
+        ],
+    )
+
+    result = write([codelist], header=complete_header, prettyprint=True)
+
+    assert result.index("<com:AnnotationTitle>") < result.index(
+        "<com:AnnotationType>"
+    )
+    assert result.index("<com:AnnotationType>") < result.index(
+        "<com:AnnotationURL>"
+    )
+    assert result.index("<com:AnnotationURL>") < result.index(
+        "<com:AnnotationText"
+    )
+
+    re_read = read(result, validate=True)[0]
+    assert re_read.annotations == codelist.annotations
+
+
+def test_annotations_21_apostrophes_preserved(
+    complete_header, codelist_apostrophe_annotations
+):
+    # Every annotation must keep its apostrophes, not just the last one
+    # on each artefact (issue #678).
+    result = write(
+        [codelist_apostrophe_annotations],
+        header=complete_header,
+        prettyprint=True,
+    )
+
+    assert '"s the first title' not in result
+    assert '"s the middle title' not in result
+    assert '"s the first text' not in result
+    assert '"s the first type' not in result
+    assert 'example.com/it"s' not in result
+    assert 'Item"s first' not in result
+
+    re_read = read(result, validate=True)[0]
+    assert re_read.annotations == codelist_apostrophe_annotations.annotations
+    assert (
+        re_read.items[0].annotations
+        == codelist_apostrophe_annotations.items[0].annotations
+    )
+
+
 @pytest.mark.xml
 def test_metadata_provision_agreement_21_raises(complete_header):
     mpa = MetadataProvisionAgreement(
@@ -2244,3 +2560,41 @@ def test_metadata_provision_agreement_21_raises(complete_header):
     )
     with pytest.raises(Invalid, match="not supported in SDMX-ML 2.1"):
         write([mpa], header=complete_header, prettyprint=True)
+
+
+def test_vtl_item_21_apostrophes_preserved(complete_header):
+    scheme = TransformationScheme(
+        id="TS_APOS",
+        name="Scheme's name",
+        description="Scheme's description",
+        agency="BIS",
+        version="1.0",
+        vtl_version="2.0",
+        items=[
+            Transformation(
+                id="T1",
+                name="Item's name",
+                description="Item's description",
+                expression="ds",
+                is_persistent=False,
+                result="r",
+                annotations=[
+                    Annotation(id="a1", title="Ann's first"),
+                    Annotation(id="a2", title="Ann's last"),
+                ],
+            )
+        ],
+    )
+
+    result = write([scheme], header=complete_header, prettyprint=True)
+
+    assert 'Scheme"s' not in result
+    assert 'Item"s' not in result
+    assert 'Ann"s' not in result
+
+    re_read = read(result, validate=True)[0]
+    assert re_read.name == "Scheme's name"
+    assert re_read.description == "Scheme's description"
+    assert re_read.items[0].name == "Item's name"
+    assert re_read.items[0].description == "Item's description"
+    assert re_read.items[0].annotations == scheme.items[0].annotations

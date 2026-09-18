@@ -18,7 +18,9 @@ from typing import (
 from msgspec import Struct
 from msgspec.structs import asdict, replace
 
+from pysdmx.errors import Invalid
 from pysdmx.io.xml.__tokens import (
+    AFTER_PERIOD,
     AGENCIES,
     AGENCY,
     AGENCY_ID,
@@ -37,6 +39,9 @@ from pysdmx.io.xml.__tokens import (
     ATT_LVL,
     ATT_REL,
     ATTACH_GROUP,
+    AVAILABILITY_CONS,
+    AVAILABILITY_CONSTRAINTS,
+    BEFORE_PERIOD,
     CATEGORISATION,
     CATEGORISATIONS,
     CATEGORY,
@@ -96,6 +101,7 @@ from pysdmx.io.xml.__tokens import (
     DTYPE,
     EMAIL,
     EMAILS,
+    END_PERIOD,
     ENUM,
     ENUM_FORMAT,
     FACETS,
@@ -122,6 +128,7 @@ from pysdmx.io.xml.__tokens import (
     IS_EXTERNAL_REF_LOW,
     IS_FINAL,
     IS_FINAL_LOW,
+    IS_INCLUSIVE,
     IS_PARTIAL,
     IS_PARTIAL_LOW,
     IS_PRESENTATIONAL,
@@ -134,6 +141,7 @@ from pysdmx.io.xml.__tokens import (
     LINKED_OBJECT,
     LOCAL_CODES_LOW,
     LOCAL_DTYPE,
+    LOCAL_ENUM_REF,
     LOCAL_FACETS_LOW,
     LOCAL_REP,
     MANDATORY,
@@ -181,6 +189,7 @@ from pysdmx.io.xml.__tokens import (
     SER_URL,
     SER_URL_LOW,
     SOURCE,
+    START_PERIOD,
     STR_URL,
     STR_URL_LOW,
     STR_USAGE,
@@ -194,6 +203,7 @@ from pysdmx.io.xml.__tokens import (
     TEXT_FORMAT,
     TEXT_TYPE,
     TIME_DIM,
+    TIME_RANGE,
     TITLE,
     TRANS_SCHEME,
     TRANS_SCHEMES,
@@ -229,6 +239,7 @@ from pysdmx.io.xml.__tokens import (
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import (
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     Category,
     CategoryScheme,
@@ -240,6 +251,7 @@ from pysdmx.model import (
     ConstraintAttachment,
     CubeKeyValue,
     CubeRegion,
+    CubeTimeRange,
     CubeValue,
     DataConstraint,
     DataConsumer,
@@ -269,6 +281,7 @@ from pysdmx.model import (
     MultiValueMap,
     RepresentationMap,
     StructureMap,
+    TimePeriodBoundary,
     ValueMap,
     VtlCodelistMapping,
     VtlConceptMapping,
@@ -778,8 +791,13 @@ class StructureParser(Struct):
     def __format_local_rep(self, representation_info: Dict[str, Any]) -> None:
         rep: Dict[str, Any] = {}
 
+        local_enum_ref = self.__local_enum_ref(representation_info[LOCAL_REP])
+
         self.__format_representation(representation_info[LOCAL_REP], rep)
         del representation_info[LOCAL_REP]
+
+        if local_enum_ref is not None:
+            representation_info[LOCAL_ENUM_REF] = local_enum_ref
 
         if CODES_LOW in rep:
             representation_info[LOCAL_CODES_LOW] = rep.pop(CODES_LOW)
@@ -1224,11 +1242,13 @@ class StructureParser(Struct):
         component[CON_LOW] = concept_id.pop(CON)
 
         if LOCAL_REP in att_elem:
-            local_enum_ref = self.__local_enum_ref(att_elem[LOCAL_REP])
-            if local_enum_ref is not None:
-                component["local_enum_ref"] = local_enum_ref
             self.__format_local_rep(att_elem)
-            for key in (LOCAL_CODES_LOW, LOCAL_DTYPE, LOCAL_FACETS_LOW):
+            for key in (
+                LOCAL_CODES_LOW,
+                LOCAL_DTYPE,
+                LOCAL_FACETS_LOW,
+                LOCAL_ENUM_REF,
+            ):
                 if key in att_elem:
                     component[key] = att_elem[key]
 
@@ -1254,11 +1274,23 @@ class StructureParser(Struct):
         """Extracts the enumeration URN from a LocalRepresentation.
 
         SDMX-ML 3.x references the enumeration (codelist or valuelist) by
-        URN text.
+        URN text, while SDMX-ML 2.1 uses a ``<Ref>`` element; some
+        services supply a ``URN`` field inside it. A full URN is returned
+        in every case, matching what the SDMX-JSON 2.0 reader stores.
         """
         if ENUM not in local_rep:
             return None
-        return str(local_rep[ENUM])
+        enum = local_rep[ENUM]
+        if isinstance(enum, str):
+            return enum
+        ref = enum.get(REF, enum)
+        if URN in ref:
+            return str(ref[URN])
+        # Codelists and valuelists both live in the codelist package.
+        return (
+            "urn:sdmx:org.sdmx.infomodel.codelist."
+            f"{ref[CLASS]}={ref[AGENCY_ID]}:{ref[ID]}({ref[VERSION]})"
+        )
 
     @staticmethod
     def __array_def(att_elem: Dict[str, Any]) -> Optional[ArrayBoundaries]:
@@ -1409,21 +1441,56 @@ class StructureParser(Struct):
         if INCLUDE in region_elem:
             is_included = region_elem[INCLUDE].lower() == "true"
 
-        key_values = []
+        key_values: List[CubeKeyValue] = []
         if KEY_VALUE in region_elem:
-            kv_list = add_list(region_elem[KEY_VALUE])
-            for kv in kv_list:
-                if VALUE not in kv:
-                    continue
-                values = []
-                value_list = add_list(kv[VALUE])
-                for v in value_list:
-                    value_text = v if isinstance(v, str) else v.get("#text", v)
-                    values.append(CubeValue(value=value_text))
-
-                key_values.append(CubeKeyValue(id=kv[ID], values=values))
+            key_values.extend(
+                self.__format_cube_key_value(kv)
+                for kv in add_list(region_elem[KEY_VALUE])
+            )
 
         return CubeRegion(key_values=key_values, is_included=is_included)
+
+    def __format_cube_key_value(self, kv: Dict[str, Any]) -> CubeKeyValue:
+        values = []
+        time_range = None
+        if VALUE in kv:
+            for v in add_list(kv[VALUE]):
+                value_text = v if isinstance(v, str) else v.get("#text", v)
+                values.append(CubeValue(value=value_text))
+        if TIME_RANGE in kv:
+            time_range = self.__format_time_range(kv[TIME_RANGE])
+
+        valid_from = kv.get(VALID_FROM)
+        valid_to = kv.get(VALID_TO)
+        return CubeKeyValue(
+            id=kv[ID],
+            values=tuple(values),
+            time_range=time_range,
+            valid_from=(
+                datetime.fromisoformat(valid_from) if valid_from else None
+            ),
+            valid_to=datetime.fromisoformat(valid_to) if valid_to else None,
+        )
+
+    def __format_time_range(self, tr: Dict[str, Any]) -> CubeTimeRange:
+        def boundary(
+            elem: Any,
+        ) -> Optional[TimePeriodBoundary]:
+            if elem is None:
+                return None
+            if isinstance(elem, str):
+                return TimePeriodBoundary(period=elem)
+            incl = elem.get(IS_INCLUSIVE, "true").lower() == "true"
+            return TimePeriodBoundary(
+                period=elem.get("#text"), is_inclusive=incl
+            )
+
+        return CubeTimeRange(
+            before_period=boundary(tr.get(BEFORE_PERIOD)),
+            after_period=boundary(tr.get(AFTER_PERIOD)),
+            start_period=boundary(tr.get(START_PERIOD)),
+            end_period=boundary(tr.get(END_PERIOD)),
+        )
 
     def __format_key_set(self, keyset_elem: Dict[str, Any]) -> KeySet:
         is_included = keyset_elem[INCLUDED].lower() == "true"
@@ -1450,8 +1517,16 @@ class StructureParser(Struct):
         return KeySet(keys=keys, is_included=is_included)
 
     def __format_constraint(self, element: Dict[str, Any]) -> Dict[str, Any]:
-        element.pop("role", None)
-        element.pop(TYPE, None)
+        # Allowed/Actual marker: SDMX 3.0 uses 'role' (required); SDMX
+        # 2.1 uses 'type' (optional, default "Actual" per the schema).
+        # SDMX 3.1 has no marker: a DataConstraint is always the
+        # allowed values, availability is a separate element.
+        marker = element.pop("role", None)
+        if TYPE in element:
+            marker = element.pop(TYPE)
+        if marker is None:
+            marker = "Allowed" if self.is_sdmx_30 else "Actual"
+        element["is_availability"] = marker == "Actual"
 
         # ConstraintAttachment
         constraint_attachment = None
@@ -1484,6 +1559,134 @@ class StructureParser(Struct):
         element["key_sets"] = key_sets
 
         return element
+
+    @staticmethod
+    def __lift_metric_annotations(
+        annotations: Sequence[Annotation],
+    ) -> Tuple[Optional[int], Optional[int], Sequence[Annotation]]:
+        """Splits FMR-style ``sdmx_metrics`` annotations from the rest.
+
+        Mirrors ``__parse_annotation_metrics`` in the SDMX-JSON
+        dataflow reader: an annotation with ``type="sdmx_metrics"``,
+        ``id`` in ``{"series_count", "obs_count"}`` and the count as a
+        string in ``title`` is lifted into the matching return value
+        instead of being kept as a plain annotation (it is dropped
+        from the returned sequence so it is not written back out as a
+        duplicate).
+
+        A ``title`` that is not a plain non-negative integer is left
+        as a regular annotation instead of being lifted.
+        """
+        series_count: Optional[int] = None
+        obs_count: Optional[int] = None
+        kept = []
+        for a in annotations:
+            if (
+                a.type == "sdmx_metrics"
+                and a.id in ("series_count", "obs_count")
+                and a.title is not None
+                and a.title.isdecimal()
+            ):
+                if a.id == "series_count":
+                    series_count = int(a.title)
+                else:
+                    obs_count = int(a.title)
+            else:
+                kept.append(a)
+        return series_count, obs_count, tuple(kept)
+
+    def __build_constraint(
+        self, structure: Dict[str, Any]
+    ) -> Union[DataConstraint, AvailabilityConstraint]:
+        """Builds a data or availability constraint from a parsed element.
+
+        Legacy "Actual" constraints (SDMX-ML 2.1/3.0) are mapped to the
+        SDMX 3.1 AvailabilityConstraint: their maintainable identity is
+        dropped and they must fit the 3.1 shape (exactly one cube
+        region, no key sets, one attached artefact). The FMR-style
+        ``sdmx_metrics`` annotations carrying the series/observation
+        counts (see ``__lift_metric_annotations``) are lifted into
+        ``series_count``/``obs_count`` rather than kept as annotations.
+
+        Raises:
+            Invalid: If an Actual constraint cannot be represented as
+                an SDMX 3.1 availability constraint.
+        """
+        if not structure.pop("is_availability"):
+            return DataConstraint(**structure)
+        if structure.get("key_sets"):
+            raise Invalid(
+                "Invalid availability constraint",
+                "An Actual constraint with key sets cannot be "
+                "represented as an SDMX 3.1 availability constraint.",
+            )
+        cube_regions = structure.get("cube_regions") or []
+        if len(cube_regions) != 1:
+            raise Invalid(
+                "Invalid availability constraint",
+                "An Actual constraint must have exactly one cube region "
+                "to be represented as an SDMX 3.1 availability "
+                "constraint.",
+            )
+        if structure.get("constraint_attachment") is None:
+            raise Invalid(
+                "Invalid availability constraint",
+                "An Actual constraint must be attached to exactly one "
+                "data structure, dataflow or provision agreement.",
+            )
+        series_count, obs_count, annotations = self.__lift_metric_annotations(
+            structure.get("annotations", ())
+        )
+        return AvailabilityConstraint(
+            annotations=annotations,
+            constraint_attachment=structure["constraint_attachment"],
+            cube_region=cube_regions[0],
+            series_count=series_count,
+            obs_count=obs_count,
+        )
+
+    def __format_availability_constraints(
+        self, json_element: Dict[str, Any]
+    ) -> Dict[str, AvailabilityConstraint]:
+        """Formats an SDMX-ML 3.1 AvailabilityConstraints container.
+
+        Raises:
+            Invalid: If an availability constraint has no constraint
+                attachment or cube region, or if two availability
+                constraints are attached to the same artefact (they
+                would share a short URN, so one would silently
+                overwrite the other).
+        """
+        constraints: Dict[str, AvailabilityConstraint] = {}
+        for element in add_list(json_element[AVAILABILITY_CONS]):
+            if CONS_ATT not in element or CUBE_REGION not in element:
+                raise Invalid(
+                    "Invalid availability constraint",
+                    "An availability constraint requires a constraint "
+                    "attachment and a cube region.",
+                )
+            element = self.__format_annotations(element)
+            attachment = self.__format_constraint_attachment(element[CONS_ATT])
+            cube_region = self.__format_cube_region(element[CUBE_REGION])
+            series_count = element.get("seriesCount")
+            obs_count = element.get("obsCount")
+            constraint = AvailabilityConstraint(
+                annotations=tuple(element.get("annotations", ())),
+                constraint_attachment=attachment,
+                cube_region=cube_region,
+                series_count=(
+                    int(series_count) if series_count is not None else None
+                ),
+                obs_count=int(obs_count) if obs_count is not None else None,
+            )
+            if constraint.short_urn in constraints:
+                raise Invalid(
+                    "Invalid availability constraint",
+                    "Two availability constraints for the same "
+                    f"artefact: {constraint.reference}.",
+                )
+            constraints[constraint.short_urn] = constraint
+        return constraints
 
     def __format_vtl(self, json_vtl: Dict[str, Any]) -> Dict[str, Any]:
         # VTL Scheme Handling
@@ -2252,7 +2455,7 @@ class StructureParser(Struct):
         Returns:
             A dictionary with the structures formatted
         """
-        schemas = {}
+        schemas: Dict[str, Any] = {}
 
         json_element[item] = add_list(json_element[item])
         for element in json_element[item]:
@@ -2330,22 +2533,30 @@ class StructureParser(Struct):
                     structure[COMPS] = Components([])
             if schema == REPRESENTATION_MAP:
                 schemas[short_urn] = self.__build_representation_map(structure)
+            elif item in (CON_CONS, DATA_CONS):
+                schemas[short_urn] = self.__build_constraint(structure)
             else:
                 schemas[short_urn] = STRUCTURES_MAPPING[schema](**structure)
 
         return schemas
 
     def format_structures(
-        self, json_meta: Dict[str, Any]
+        self, json_meta: Optional[Dict[str, Any]]
     ) -> Sequence[Union[ItemScheme, DataStructureDefinition, Dataflow]]:
         """Formats the structures in JSON format.
 
         Args:
-            json_meta: The structures in JSON format.
+            json_meta: The structures in JSON format. May be None, either
+                because xmltodict maps an empty <mes:Structures/> element
+                to None or because the message omits the element
+                altogether. Both are schema-valid ways for a service to
+                report an empty catalogue.
 
         Returns:
             A list with the formatted structures.
         """
+        if json_meta is None:
+            json_meta = {}
 
         def process_structure(
             key: str,
@@ -2353,7 +2564,7 @@ class StructureParser(Struct):
             attr: Optional[str] = None,
         ) -> Dict[Any, Any]:
             """Helper function to process and store formatted structures."""
-            if key in json_meta:
+            if json_meta.get(key) is not None:
                 formatted = formatter(json_meta[key])
                 setattr(self, attr, formatted) if attr else None
                 return formatted
@@ -2579,6 +2790,10 @@ class StructureParser(Struct):
                     data, DATA_CONSTRAINTS, DATA_CONS
                 ),
                 "constraints",
+            ),
+            AVAILABILITY_CONSTRAINTS: process_structure(
+                AVAILABILITY_CONSTRAINTS,
+                self.__format_availability_constraints,
             ),
             TRANS_SCHEMES: process_structure(
                 TRANS_SCHEMES,
