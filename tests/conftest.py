@@ -30,6 +30,15 @@ PATH_RULES = {
     "/tests/api/fmr/": ("noextra", True),
     "/tests/api/gds/": ("noextra", True),
     "/tests/api/qb/": ("noextra", True),
+    # stat connector tests: xml (SDMX-ML 2.1) + data (PandasDataset) + json.
+    # The all-types mock fixture is written as SDMX-JSON and read back, since
+    # the SDMX-ML writers cannot serialise the metadata artefacts, so reading
+    # it needs jsonschema (the json extra).
+    "/tests/api/stat/test_connector.py": ("xml_data_json", True),
+    "/tests/api/stat/test_upload.py": ("xml_data", True),
+    # authentication needs no extra, but importing the stat package pulls
+    # the io stack, so gate it with the siblings for a consistent collect.
+    "/tests/api/stat/test_authentication.py": ("xml_data", True),
     # dc tests
     "/tests/api/dc/test_model.py": ("dc", True),
     "/tests/api/dc/test_multi_filters.py": ("dc", True),
