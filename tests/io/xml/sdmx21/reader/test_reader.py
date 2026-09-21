@@ -798,7 +798,9 @@ def test_vtl_transformation_scheme(samples_folder):
     assert transformation_scheme.id == "TEST"
     assert transformation_scheme.name == "TEST"
     assert transformation_scheme.description == "TEST Transformation Scheme"
-    assert transformation_scheme.valid_from == datetime(2024, 12, 3, 0, 0)
+    assert transformation_scheme.valid_from == datetime(
+        2024, 12, 3, tzinfo=timezone.utc
+    )
 
     assert len(transformation_scheme.items) == 2
     tr1 = transformation_scheme.items[0]

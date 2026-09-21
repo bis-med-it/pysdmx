@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from datetime import timezone as tz
 
+import msgspec
 import pytest
 
 from pysdmx import errors
@@ -84,3 +85,32 @@ def test_codelist_org(codelist_org: Codelist):
 def test_codelist_no_name(codelist_no_name):
     with pytest.raises(errors.Invalid, match="must have a name"):
         JsonCodelist.from_model(codelist_no_name)
+
+
+def test_codelist_validity_without_timezone_is_assumed_utc():
+    cl = Codelist(
+        "CL",
+        name="CL",
+        agency="BIS",
+        valid_from=datetime(2020, 1, 1),
+        valid_to=datetime(2030, 1, 1),
+    )
+
+    encoded = msgspec.json.encode(JsonCodelist.from_model(cl))
+
+    assert b'"validFrom":"2020-01-01T00:00:00Z"' in encoded
+    assert b'"validTo":"2030-01-01T00:00:00Z"' in encoded
+
+
+def test_codelist_validity_keeps_its_timezone():
+    cet = tz(timedelta(hours=1))
+    cl = Codelist(
+        "CL",
+        name="CL",
+        agency="BIS",
+        valid_from=datetime(2020, 1, 1, tzinfo=cet),
+    )
+
+    encoded = msgspec.json.encode(JsonCodelist.from_model(cl))
+
+    assert b'"validFrom":"2020-01-01T00:00:00+01:00"' in encoded

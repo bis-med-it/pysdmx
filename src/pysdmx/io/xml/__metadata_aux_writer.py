@@ -17,6 +17,7 @@ from pysdmx.io.xml.__write_aux import (
     __escape_xml,
     add_indent,
     create_namespaces,
+    format_datetime,
     get_end_message,
 )
 from pysdmx.model.__base import Agency
@@ -26,7 +27,7 @@ from pysdmx.model.metadata import (
     MetadataReport,
     unmerge_attributes,
 )
-from pysdmx.util import ensure_tz_aware, parse_urn
+from pysdmx.util import parse_urn
 
 # The reported attributes live in the metadata/generic namespace.
 ABBR_META = "metadata"
@@ -181,11 +182,7 @@ def __write_metadata_header(
     child3 = "\t\t\t" if prettyprint else ""
 
     header = header if header is not None else Header()
-    prepared = (
-        ensure_tz_aware(header.prepared)
-        .isoformat(timespec="seconds")
-        .replace("+00:00", "Z")
-    )
+    prepared = format_datetime(header.prepared)
     sender = header.sender.id
 
     ref = parse_urn(structure_urn)

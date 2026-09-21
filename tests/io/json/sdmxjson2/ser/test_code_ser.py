@@ -91,3 +91,11 @@ def test_code_vf_vt(code_vf_vt: Code):
 def test_code_no_name(code_no_name):
     with pytest.raises(errors.Invalid, match="must have a name"):
         JsonCode.from_model(code_no_name)
+
+
+def test_code_validity_without_timezone_is_assumed_utc():
+    code = Code("A", name="Annual", valid_from=datetime(2020, 1, 1))
+
+    out = JsonCode.from_model(code).to_model()
+
+    assert out.valid_from == datetime(2020, 1, 1, tzinfo=tz.utc)

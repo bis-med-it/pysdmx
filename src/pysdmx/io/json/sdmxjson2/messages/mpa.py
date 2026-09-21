@@ -10,7 +10,7 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     MaintainableType,
 )
 from pysdmx.model import Agency, MetadataProvisionAgreement
-from pysdmx.util import is_final
+from pysdmx.util import ensure_tz_aware, is_final
 
 
 class JsonMetadataProvisionAgreement(
@@ -29,8 +29,8 @@ class JsonMetadataProvisionAgreement(
             name=self.name,
             description=self.description,
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             metadataflow=self.metadataflow,
             metadata_provider=self.metadataProvider,
             annotations=tuple([a.to_model() for a in self.annotations]),
@@ -57,8 +57,8 @@ class JsonMetadataProvisionAgreement(
             name=mpa.name,
             version=mpa.version,
             isExternalReference=mpa.is_external_reference,
-            validFrom=mpa.valid_from,
-            validTo=mpa.valid_to,
+            validFrom=ensure_tz_aware(mpa.valid_from),
+            validTo=ensure_tz_aware(mpa.valid_to),
             description=mpa.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in mpa.annotations]

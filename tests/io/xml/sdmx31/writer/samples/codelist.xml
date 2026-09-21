@@ -10,7 +10,7 @@
 	</mes:Header>
 	<mes:Structures>
 		<str:Codelists>
-			<str:Codelist id="CL_FREQ" version="1.0" validFrom="2021-01-01T00:00:00" validTo="2021-12-31T00:00:00" isExternalReference="false" agencyID="BIS" isPartial="false">
+			<str:Codelist id="CL_FREQ" version="1.0" validFrom="2021-01-01T00:00:00Z" validTo="2021-12-31T00:00:00Z" isExternalReference="false" agencyID="BIS" isPartial="false">
 				<com:Annotations>
 					<com:Annotation id="FREQ_ANOT">
 						<com:AnnotationTitle>Frequency</com:AnnotationTitle>

@@ -235,6 +235,9 @@ def test_tzless_datetime_warns_and_reads(tzless_datetime):
     assert facets.end_time == datetime(
         2020, 12, 31, 23, 59, 59, tzinfo=timezone.utc
     )
+    assert msg.structures[0].valid_from == datetime(
+        2003, 1, 1, tzinfo=timezone.utc
+    )
 
 
 def test_tzless_datetime_warning_points_at_offending_values(tzless_datetime):

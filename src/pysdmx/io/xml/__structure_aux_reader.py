@@ -435,6 +435,23 @@ FACETS_MAPPING = {
 TIME_FACETS = ("start_time", "end_time")
 
 
+def _parse_datetime(value: str) -> datetime:
+    """Parses an SDMX-ML datetime into a timezone-aware datetime.
+
+    Datetimes without timezone information are assumed to be expressed
+    in UTC.
+
+    Args:
+        value: The datetime to be parsed.
+
+    Returns:
+        A timezone-aware datetime.
+    """
+    return ensure_tz_aware(
+        datetime.fromisoformat(value.replace("Z", "+00:00"))
+    )
+
+
 def _parse_time_facet(value: str) -> Union[datetime, str]:
     """Parses a time facet into a timezone-aware datetime.
 
@@ -450,9 +467,7 @@ def _parse_time_facet(value: str) -> Union[datetime, str]:
         A timezone-aware datetime, or the original string.
     """
     try:
-        return ensure_tz_aware(
-            datetime.fromisoformat(value.replace("Z", "+00:00"))
-        )
+        return _parse_datetime(value)
     except ValueError:
         return value
 
@@ -643,13 +658,9 @@ class StructureParser(Struct):
     @staticmethod
     def __format_validity(element: Dict[str, Any]) -> Dict[str, Any]:
         if VALID_FROM in element:
-            element[VALID_FROM_LOW] = datetime.fromisoformat(
-                element.pop(VALID_FROM)
-            )
+            element[VALID_FROM_LOW] = _parse_datetime(element.pop(VALID_FROM))
         if VALID_TO in element:
-            element[VALID_TO_LOW] = datetime.fromisoformat(
-                element.pop(VALID_TO)
-            )
+            element[VALID_TO_LOW] = _parse_datetime(element.pop(VALID_TO))
         return element
 
     @staticmethod
@@ -1497,10 +1508,8 @@ class StructureParser(Struct):
             id=kv[ID],
             values=tuple(values),
             time_range=time_range,
-            valid_from=(
-                datetime.fromisoformat(valid_from) if valid_from else None
-            ),
-            valid_to=datetime.fromisoformat(valid_to) if valid_to else None,
+            valid_from=_parse_datetime(valid_from) if valid_from else None,
+            valid_to=_parse_datetime(valid_to) if valid_to else None,
         )
 
     def __format_time_range(self, tr: Dict[str, Any]) -> CubeTimeRange:
@@ -2276,14 +2285,12 @@ class StructureParser(Struct):
             else []
         )
         rel_valid_from = (
-            datetime.fromisoformat(hc_elem[VALID_FROM])
+            _parse_datetime(hc_elem[VALID_FROM])
             if VALID_FROM in hc_elem
             else None
         )
         rel_valid_to = (
-            datetime.fromisoformat(hc_elem[VALID_TO])
-            if VALID_TO in hc_elem
-            else None
+            _parse_datetime(hc_elem[VALID_TO]) if VALID_TO in hc_elem else None
         )
         level = (
             self.__format_level_ref(hc_elem[LEVEL])

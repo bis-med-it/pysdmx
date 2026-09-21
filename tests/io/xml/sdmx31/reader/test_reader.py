@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -160,8 +160,8 @@ def test_hierarchy_31(samples_folder):
 
     code_b = hierarchy.codes[1]
     assert code_b.id == "B"
-    assert code_b.rel_valid_from == datetime(2021, 1, 1)
-    assert code_b.rel_valid_to == datetime(2021, 12, 31)
+    assert code_b.rel_valid_from == datetime(2021, 1, 1, tzinfo=timezone.utc)
+    assert code_b.rel_valid_to == datetime(2021, 12, 31, tzinfo=timezone.utc)
     assert not code_b.codes
 
 
