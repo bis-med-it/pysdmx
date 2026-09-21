@@ -284,16 +284,14 @@ class Facets(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     start_time: Optional[datetime] = None
     """Indicates the starting point of a sequence.
 
-    When read from an SDMX message, the value is normalized to a
-    timezone-aware datetime in UTC (datetimes without timezone
-    information are assumed to be expressed in UTC).
+    When read from an SDMX message, a datetime without timezone
+    information is assumed to be expressed in UTC.
     """
     end_time: Optional[datetime] = None
     """Indicates the ending point of a sequence.
 
-    When read from an SDMX message, the value is normalized to a
-    timezone-aware datetime in UTC (datetimes without timezone
-    information are assumed to be expressed in UTC).
+    When read from an SDMX message, a datetime without timezone
+    information is assumed to be expressed in UTC.
     """
     is_sequence: bool = False
     """Whether the values are intended to be ordered."""

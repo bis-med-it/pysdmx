@@ -22,8 +22,9 @@ In this tutorial, we learn how to read SDMX Structures messages using the
     which require timezone information. As SDMX itself allows datetimes
     without timezone information, such datetimes are reported with a
     ``UserWarning`` instead of an error, and the message is read anyway.
-    ``pysdmx`` normalizes SDMX datetimes to timezone-aware UTC datetimes
-    (datetimes without timezone information are assumed to be in UTC).
+    When reading such datetimes, ``pysdmx`` assumes they are expressed in
+    UTC and returns timezone-aware datetimes. Datetimes that already carry
+    timezone information are kept as they are.
 
 
     Check the :ref:`installation guide <installation>` for more information.
