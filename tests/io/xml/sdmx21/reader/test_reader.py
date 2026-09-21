@@ -1849,3 +1849,23 @@ def test_submission_response_without_results():
 
     with pytest.raises(Invalid, match="SubmissionResult"):
         read_sub(doc, validate=False)
+
+
+@pytest.mark.xml
+def test_header_prepared_without_timezone_is_assumed_utc(samples_folder):
+    structure_path = samples_folder / "datastructure_time_facets.xml"
+    input_str, _ = process_string_to_read(structure_path)
+
+    header = read_sdmx(input_str).header
+
+    assert header.prepared == datetime(2026, 5, 21, 10, tzinfo=timezone.utc)
+
+
+@pytest.mark.xml
+def test_header_prepared_keeps_its_timezone(samples_folder):
+    structure_path = samples_folder / "agencies.xml"
+    input_str, _ = process_string_to_read(structure_path)
+
+    header = read_sdmx(input_str).header
+
+    assert header.prepared.isoformat() == "2010-11-13T08:00:33+08:00"

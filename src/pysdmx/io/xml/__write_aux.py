@@ -41,7 +41,7 @@ from pysdmx.io.xml.__tokens import (
 from pysdmx.model import Organisation
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
-from pysdmx.util import parse_short_urn
+from pysdmx.util import ensure_tz_aware, parse_short_urn
 
 MESSAGE_TYPE_MAPPING = {
     Format.DATA_SDMX_ML_2_1_GEN: "GenericData",
@@ -506,8 +506,10 @@ def __write_header(
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
-    prepared = header.prepared.isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
+    prepared = (
+        ensure_tz_aware(header.prepared)
+        .isoformat(timespec="seconds")
+        .replace("+00:00", "Z")
     )
     test = str(header.test).lower()
     references_str = ""

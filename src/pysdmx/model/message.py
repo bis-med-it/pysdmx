@@ -81,7 +81,9 @@ class Header(Struct, repr_omit_defaults=True, kw_only=True):
         id: Unique identifier for the message. (default: generated UUID)
         test: Indicates if the message is a test message. (default: False)
         prepared: Timestamp when the message was prepared.
-          (default: current UTC time)
+          (default: current UTC time). When read from an SDMX message,
+          a datetime without timezone information is assumed to be
+          expressed in UTC.
         sender: Organisation that sent the message.
           (default: Organisation with id "ZZZ")
         receiver: Optional Organisation that received the message.
