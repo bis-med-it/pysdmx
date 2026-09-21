@@ -1973,6 +1973,8 @@ class StructureParser(Struct):
         converters: Dict[str, Callable[[Any], Any]] = {
             "SourceDataType": DataType,
             "TargetDataType": DataType,
+            "validFrom": _parse_datetime,
+            "validTo": _parse_datetime,
         }
 
         for xml_key, py_key in renames.items():

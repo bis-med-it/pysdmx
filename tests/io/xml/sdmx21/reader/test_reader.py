@@ -1712,8 +1712,8 @@ def test_time_facets_are_timezone_aware(samples_folder):
 
     output = write_structure(result)
 
-    assert 'startTime="2000-01-01T00:00:00+00:00"' in output
-    assert 'endTime="2020-12-31T23:59:59+00:00"' in output
+    assert 'startTime="2000-01-01T00:00:00Z"' in output
+    assert 'endTime="2020-12-31T23:59:59Z"' in output
     assert 'startTime="2000-Q1"' in output
     assert 'endTime="2020-12-31T23:59:59+01:00"' in output
     roundtrip = read_structure(output)

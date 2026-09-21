@@ -34,7 +34,13 @@ class JsonCode(NameableType, frozen=True, omit_defaults=True):
     parent: Optional[str] = None
 
     def __handle_date(self, datestr: str) -> datetime:
-        return datetime.strptime(datestr, _VAL_FMT)  # noqa
+        try:
+            return datetime.strptime(datestr, _VAL_FMT)  # noqa: DTZ007
+        except ValueError:
+            # Validity periods without timezone are assumed to be in UTC.
+            return ensure_tz_aware(
+                datetime.strptime(datestr, _VAL_FMT[:-2])  # noqa: DTZ007
+            )
 
     def __get_val(
         self, a: JsonAnnotation

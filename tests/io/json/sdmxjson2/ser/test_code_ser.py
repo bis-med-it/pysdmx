@@ -5,6 +5,7 @@ import pytest
 
 from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.code import JsonCode
+from pysdmx.io.json.sdmxjson2.messages.core import JsonAnnotation
 from pysdmx.model import Code
 
 
@@ -99,3 +100,15 @@ def test_code_validity_without_timezone_is_assumed_utc():
     out = JsonCode.from_model(code).to_model()
 
     assert out.valid_from == datetime(2020, 1, 1, tzinfo=tz.utc)
+
+
+def test_code_validity_period_without_timezone_is_assumed_utc():
+    vp = JsonAnnotation(
+        type="FR_VALIDITY_PERIOD", title="2020-01-01T00:00:00/"
+    )
+    sjson = JsonCode(id="A", name="Annual", annotations=[vp])
+
+    out = sjson.to_model()
+
+    assert out.valid_from == datetime(2020, 1, 1, tzinfo=tz.utc)
+    assert out.valid_to is None

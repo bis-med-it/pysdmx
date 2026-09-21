@@ -1,7 +1,10 @@
+from datetime import datetime, timedelta, timezone
+
 import msgspec
 import pytest
 
 from pysdmx.io.json.sdmxjson2.messages import JsonHierarchiesMessage
+from pysdmx.io.json.sdmxjson2.messages.code import JsonHierarchicalCode
 from pysdmx.model import Hierarchy
 
 
@@ -24,10 +27,6 @@ def test_hierarchies_deser(body):
 
 
 def test_hierarchical_code_relative_validity_keeps_its_timezone():
-    from datetime import datetime, timedelta, timezone
-
-    from pysdmx.io.json.sdmxjson2.messages.code import JsonHierarchicalCode
-
     cet = timezone(timedelta(hours=1))
     hc = JsonHierarchicalCode(
         id="A",

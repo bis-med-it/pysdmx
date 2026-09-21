@@ -26,7 +26,9 @@ from pysdmx.model import (
 from pysdmx.model import (
     HierarchyAssociation as HA,
 )
-from pysdmx.util import find_by_urn, parse_item_urn
+from pysdmx.util import ensure_tz_aware, find_by_urn, parse_item_urn
+
+_VAL_FMT = "%Y-%m-%dT%H:%M:%S%z"
 
 
 class FusionCode(Struct, frozen=True):
@@ -39,7 +41,13 @@ class FusionCode(Struct, frozen=True):
     descriptions: Sequence[FusionString] = ()
 
     def __handle_date(self, datestr: str) -> datetime:
-        return datetime.strptime(datestr, "%Y-%m-%dT%H:%M:%S%z")
+        try:
+            return datetime.strptime(datestr, _VAL_FMT)  # noqa: DTZ007
+        except ValueError:
+            # Validity periods without timezone are assumed to be in UTC.
+            return ensure_tz_aware(
+                datetime.strptime(datestr, _VAL_FMT[:-2])  # noqa: DTZ007
+            )
 
     def __get_val(
         self, a: FusionAnnotation

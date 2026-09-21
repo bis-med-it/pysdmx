@@ -950,7 +950,7 @@ def __write_text_format(
         for facet, value, *_ in active_facets:  # type: ignore[misc]
             facet = __to_lower_camel_case(facet)
             if isinstance(value, datetime):
-                value = value.isoformat()
+                value = format_datetime(value)
             outfile += f' {facet}="{value}"'
     if dtype is not None:
         outfile += f" {TEXT_TYPE}={dtype.value!r}"
