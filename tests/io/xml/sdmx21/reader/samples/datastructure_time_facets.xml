@@ -26,7 +26,7 @@
                                 <Ref maintainableParentID="STANDALONE_CONCEPT_SCHEME" maintainableParentVersion="1.0" agencyID="MD" id="TIME_PERIOD" class="Concept" package="conceptscheme"/>
                             </str:ConceptIdentity>
                             <str:LocalRepresentation>
-                                <str:TextFormat textType="ObservationalTimePeriod" startTime="2000-Q1" endTime="2020-12-31T23:59:59+01:00"/>
+                                <str:TextFormat textType="ObservationalTimePeriod" startTime="2000-Q1"/>
                             </str:LocalRepresentation>
                         </str:TimeDimension>
                     </str:DimensionList>
