@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from pysdmx.io.json.sdmxjson2.messages.map import (
     JsonRepresentationMapping,
@@ -63,3 +63,18 @@ def test_mvm_with_validity():
     assert sjson.targetValues == ["BEL", "BE"]
     assert sjson.validFrom == "2003-07-23T00:00:00+00:00"
     assert sjson.validTo == "2006-06-01T00:00:00+00:00"
+
+
+def test_vm_with_aware_validity_keeps_timezone():
+    cest = timezone(timedelta(hours=2))
+    vm = ValueMap(
+        source="056",
+        target="BEL",
+        valid_from=datetime(2003, 7, 23, tzinfo=cest),
+        valid_to=datetime(2006, 6, 1, tzinfo=cest),
+    )
+
+    sjson = JsonRepresentationMapping.from_model(vm)
+
+    assert sjson.validFrom == "2003-07-23T00:00:00+02:00"
+    assert sjson.validTo == "2006-06-01T00:00:00+02:00"

@@ -21,7 +21,7 @@ from pysdmx.model import (
 from pysdmx.model import (
     StructureMap as SM,
 )
-from pysdmx.util import find_by_urn, to_utc
+from pysdmx.util import ensure_tz_aware, find_by_urn
 
 
 class FusionSourceValue(Struct, frozen=True):
@@ -47,7 +47,7 @@ class FusionRepresentationMapping(Struct, frozen=True):
     validTo: Optional[str] = None
 
     def __get_dt(self, inp: str) -> dt:
-        return to_utc(dt.fromisoformat(inp.replace("Z", "+00:00")))
+        return ensure_tz_aware(dt.fromisoformat(inp.replace("Z", "+00:00")))
 
     def to_model(self, is_multi: bool) -> Union[MultiValueMap, ValueMap]:
         """Returns the requested value maps."""

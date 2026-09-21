@@ -2,7 +2,7 @@
 
 import re
 from datetime import datetime, timezone
-from typing import Any, Optional, Sequence, Union, overload
+from typing import Any, Optional, Sequence, TypeVar, Union
 
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.model import Agency, ItemReference, Reference
@@ -20,33 +20,29 @@ _SEMVER_NUM = r"(0|[1-9]\d*)"
 semver_final_pattern = re.compile(rf"^[1-9]\d*\.{_SEMVER_NUM}\.{_SEMVER_NUM}$")
 
 
-@overload
-def to_utc(value: datetime) -> datetime: ...
+# Bound TypeVar so that the return type follows the input type: a datetime
+# in, a datetime out; an Optional[datetime] in, an Optional[datetime] out.
+DT = TypeVar("DT", bound=Optional[datetime])
 
 
-@overload
-def to_utc(value: None) -> None: ...
+def ensure_tz_aware(value: DT) -> DT:
+    """Ensures a datetime is timezone-aware, assuming UTC when unspecified.
 
-
-def to_utc(value: Optional[datetime]) -> Optional[datetime]:
-    """Normalizes a datetime to a timezone-aware datetime in UTC.
-
-    SDMX allows datetimes without timezone information, while pysdmx
-    normalizes SDMX datetimes to timezone-aware UTC datetimes. Naive
+    SDMX allows datetimes without timezone information. Such (naive)
     datetimes are assumed to be expressed in UTC, while timezone-aware
-    datetimes are converted to UTC.
+    datetimes are returned as they are, whatever their timezone.
 
     Args:
-        value: The datetime to be normalized (or None).
+        value: The datetime to be checked (or None).
 
     Returns:
-        A timezone-aware datetime in UTC, or None if the input is None.
+        A timezone-aware datetime, or None if the input is None.
     """
     if value is None:
-        return None
+        return value
     if value.tzinfo is None:
         return value.replace(tzinfo=timezone.utc)
-    return value.astimezone(timezone.utc)
+    return value
 
 
 def parse_urn(urn: str) -> Union[ItemReference, Reference]:

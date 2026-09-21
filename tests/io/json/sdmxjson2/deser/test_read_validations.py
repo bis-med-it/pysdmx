@@ -226,7 +226,7 @@ def date_prepared_21():
 def test_tzless_datetime_warns_and_reads(tzless_datetime):
     # Datetimes without timezone are allowed by SDMX but are not RFC 3339
     # compliant: the schema failures are reported as a UserWarning and the
-    # message is read anyway, with datetimes normalized to UTC.
+    # message is read anyway, assuming such datetimes are in UTC.
     with pytest.warns(UserWarning, match="not an RFC 3339 date-time"):
         msg = read_structure(tzless_datetime)
 
@@ -277,3 +277,16 @@ def test_json_21_date_only_prepared_valid(date_prepared_21, recwarn):
     validate_sdmx_json(date_prepared_21)
 
     assert len(recwarn) == 0
+
+
+def test_aware_datetime_keeps_its_timezone(tzless_datetime, recwarn):
+    # Timezone-aware datetimes are RFC 3339 compliant (no warning) and
+    # are read as is, whatever their timezone.
+    text = re.sub(r'(T\d{2}:\d{2}:\d{2})"', r'\1+02:00"', tzless_datetime)
+
+    msg = read_structure(text)
+
+    assert len(recwarn) == 0
+    facets = msg.structures[0].items[0].facets
+    assert facets.start_time.isoformat() == "2000-01-01T00:00:00+02:00"
+    assert facets.end_time.isoformat() == "2020-12-31T23:59:59+02:00"

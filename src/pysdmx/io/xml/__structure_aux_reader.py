@@ -323,11 +323,11 @@ from pysdmx.model.vtl import (
     VtlMappingScheme,
 )
 from pysdmx.util import (
+    ensure_tz_aware,
     find_by_urn,
     is_final,
     parse_short_item_urn,
     parse_urn,
-    to_utc,
 )
 
 T = Any
@@ -431,12 +431,12 @@ FACETS_MAPPING = {
     "isSequence": "is_sequence",
 }
 
-# Facets holding SDMX datetimes, normalized to timezone-aware UTC.
+# Facets holding SDMX datetimes, read as timezone-aware datetimes.
 TIME_FACETS = ("start_time", "end_time")
 
 
 def _parse_time_facet(value: str) -> Union[datetime, str]:
-    """Parses a time facet into a timezone-aware datetime in UTC.
+    """Parses a time facet into a timezone-aware datetime.
 
     SDMX-ML time facets accept any standard time period, so values that
     cannot be parsed as ISO 8601 datetimes (e.g. reporting periods such
@@ -447,10 +447,12 @@ def _parse_time_facet(value: str) -> Union[datetime, str]:
         value: The facet value to be parsed.
 
     Returns:
-        A timezone-aware datetime in UTC, or the original string.
+        A timezone-aware datetime, or the original string.
     """
     try:
-        return to_utc(datetime.fromisoformat(value.replace("Z", "+00:00")))
+        return ensure_tz_aware(
+            datetime.fromisoformat(value.replace("Z", "+00:00"))
+        )
     except ValueError:
         return value
 
