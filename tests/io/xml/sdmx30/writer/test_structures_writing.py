@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -132,8 +132,8 @@ def codelist():
         ],
         agency="BIS",
         version="1.0",
-        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
-        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
+        valid_from=datetime(2021, 1, 1, tzinfo=timezone.utc),
+        valid_to=datetime(2021, 12, 31, tzinfo=timezone.utc),
     )
 
 
@@ -595,8 +595,8 @@ def dataflow():
         uri=None,
         urn="urn:sdmx:org.sdmx.infomodel.datastructure."
         "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)",
-        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
-        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
+        valid_from=datetime(2021, 1, 1, tzinfo=timezone.utc),
+        valid_to=datetime(2021, 12, 31, tzinfo=timezone.utc),
         version="1.0",
     )
 
@@ -1616,19 +1616,19 @@ def test_constraint_keyvalue_validity_roundtrip_30():
                     CubeKeyValue(
                         id="FREQ",
                         values=[CubeValue("A")],
-                        valid_from=datetime(2020, 1, 1),
-                        valid_to=datetime(2024, 1, 1),
+                        valid_from=datetime(2020, 1, 1, tzinfo=timezone.utc),
+                        valid_to=datetime(2024, 1, 1, tzinfo=timezone.utc),
                     )
                 ]
             )
         ],
     )
     out = write_sdmx(dc, Format.STRUCTURE_SDMX_ML_3_0, prettyprint=True)
-    assert 'validFrom="2020-01-01T00:00:00"' in out
-    assert 'validTo="2024-01-01T00:00:00"' in out
+    assert 'validFrom="2020-01-01T00:00:00Z"' in out
+    assert 'validTo="2024-01-01T00:00:00Z"' in out
     kv = read_sdmx(out).get_data_constraints()[0].cube_regions[0].key_values[0]
-    assert kv.valid_from == datetime(2020, 1, 1)
-    assert kv.valid_to == datetime(2024, 1, 1)
+    assert kv.valid_from == datetime(2020, 1, 1, tzinfo=timezone.utc)
+    assert kv.valid_to == datetime(2024, 1, 1, tzinfo=timezone.utc)
 
 
 def test_write_group_without_urn(datastructure):

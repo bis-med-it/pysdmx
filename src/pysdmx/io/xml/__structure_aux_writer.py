@@ -1,6 +1,7 @@
 """Module for writing metadata to XML files."""
 
 from collections import OrderedDict
+from datetime import datetime
 from typing import Any, Dict, Optional, Sequence, Set, Union, cast
 
 from msgspec.structs import replace
@@ -136,6 +137,7 @@ from pysdmx.io.xml.__write_aux import (
     __escape_xml_vtl,
     __to_lower_camel_case,
     add_indent,
+    format_datetime,
 )
 from pysdmx.model import (
     AgencyScheme,
@@ -434,11 +436,11 @@ def __write_versionable(
         outfile["Attributes"] += f" version={versionable.version!r}"
 
     if versionable.valid_from is not None:
-        valid_from_str = versionable.valid_from.strftime("%Y-%m-%dT%H:%M:%S")
+        valid_from_str = format_datetime(versionable.valid_from)
         outfile["Attributes"] += f" validFrom={valid_from_str!r}"
 
     if versionable.valid_to is not None:
-        valid_to_str = versionable.valid_to.strftime("%Y-%m-%dT%H:%M:%S")
+        valid_to_str = format_datetime(versionable.valid_to)
         outfile["Attributes"] += f" validTo={valid_to_str!r}"
 
     return outfile
@@ -947,6 +949,8 @@ def __write_text_format(
         active_facets = facets.__rich_repr__()
         for facet, value, *_ in active_facets:  # type: ignore[misc]
             facet = __to_lower_camel_case(facet)
+            if isinstance(value, datetime):
+                value = format_datetime(value)
             outfile += f' {facet}="{value}"'
     if dtype is not None:
         outfile += f" {TEXT_TYPE}={dtype.value!r}"
@@ -1677,10 +1681,10 @@ def __write_cube_region(
         kv_attrs = f" {ID}={key_value.id!r}"
         # validFrom/validTo on a cube KeyValue are 3.0/3.1 only.
         if references_30 and key_value.valid_from is not None:
-            vf = key_value.valid_from.strftime("%Y-%m-%dT%H:%M:%S")
+            vf = format_datetime(key_value.valid_from)
             kv_attrs += f" {VALID_FROM}={vf!r}"
         if references_30 and key_value.valid_to is not None:
-            vt = key_value.valid_to.strftime("%Y-%m-%dT%H:%M:%S")
+            vt = format_datetime(key_value.valid_to)
             kv_attrs += f" {VALID_TO}={vt!r}"
 
         outfile += f"{add_indent(indent)}"
@@ -1944,10 +1948,10 @@ def __write_hierarchical_code(
         )
     attrs = f" {ID}={code.id!r}"
     if code.rel_valid_from is not None:
-        valid_from = code.rel_valid_from.strftime("%Y-%m-%dT%H:%M:%S")
+        valid_from = format_datetime(code.rel_valid_from)
         attrs += f" validFrom={valid_from!r}"
     if code.rel_valid_to is not None:
-        valid_to = code.rel_valid_to.strftime("%Y-%m-%dT%H:%M:%S")
+        valid_to = format_datetime(code.rel_valid_to)
         attrs += f" validTo={valid_to!r}"
     attrs = attrs.replace("'", '"')
     label = f"{ABBR_STR}:{HIERARCHICAL_CODE}"

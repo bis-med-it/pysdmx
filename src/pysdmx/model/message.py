@@ -29,7 +29,7 @@ from typing import (
 if TYPE_CHECKING:  # pragma: no cover
     from pysdmx.io.pd import PandasDataset
 
-from msgspec import Struct
+from msgspec import Struct, field
 
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.model.__base import MaintainableArtefact, Organisation
@@ -81,7 +81,9 @@ class Header(Struct, repr_omit_defaults=True, kw_only=True):
         id: Unique identifier for the message. (default: generated UUID)
         test: Indicates if the message is a test message. (default: False)
         prepared: Timestamp when the message was prepared.
-          (default: current UTC time)
+          (default: current UTC time). When read from an SDMX message,
+          a datetime without timezone information is assumed to be
+          expressed in UTC.
         sender: Organisation that sent the message.
           (default: Organisation with id "ZZZ")
         receiver: Optional Organisation that received the message.
@@ -98,9 +100,11 @@ class Header(Struct, repr_omit_defaults=True, kw_only=True):
           (only for SDMX-ML Data messages). (default: None)
     """
 
-    id: str = str(uuid.uuid4())
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
     test: bool = False
-    prepared: datetime = datetime.now(timezone.utc)
+    prepared: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
     sender: Organisation = Organisation(id="ZZZ")
     receiver: Sequence[Organisation] = ()
     source: Optional[str] = None

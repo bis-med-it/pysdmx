@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -799,7 +799,9 @@ def test_vtl_transformation_scheme(samples_folder):
     assert transformation_scheme.id == "TEST"
     assert transformation_scheme.name == "TEST"
     assert transformation_scheme.description == "TEST Transformation Scheme"
-    assert transformation_scheme.valid_from == datetime(2024, 12, 3, 0, 0)
+    assert transformation_scheme.valid_from == datetime(
+        2024, 12, 3, tzinfo=timezone.utc
+    )
 
     assert len(transformation_scheme.items) == 2
     tr1 = transformation_scheme.items[0]
@@ -1688,6 +1690,36 @@ def test_category_scheme_21_enrichment_edge_cases(samples_folder):
     )
 
 
+@pytest.mark.xml
+def test_time_facets_are_timezone_aware(samples_folder):
+    structure_path = samples_folder / "datastructure_time_facets.xml"
+    input_str, read_format = process_string_to_read(structure_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+
+    result = read_structure(input_str)
+
+    dsd = result[0]
+    facets = dsd.components["REFERENTIE_DATUM"].local_facets
+    # Datetimes without timezone information are assumed to be UTC.
+    assert facets.start_time == datetime(2000, 1, 1, tzinfo=timezone.utc)
+    assert facets.end_time == datetime(
+        2020, 12, 31, 23, 59, 59, tzinfo=timezone.utc
+    )
+    tp_facets = dsd.components["TIME_PERIOD"].local_facets
+    # Time facets that are not ISO 8601 datetimes (e.g. reporting
+    # periods) are kept as strings.
+    assert tp_facets.start_time == "2000-Q1"
+
+    output = write_structure(result)
+
+    assert 'startTime="2000-01-01T00:00:00Z"' in output
+    assert 'endTime="2020-12-31T23:59:59Z"' in output
+    assert 'startTime="2000-Q1"' in output
+    roundtrip = read_structure(output)
+    assert roundtrip[0].components["REFERENTIE_DATUM"].local_facets == facets
+    assert roundtrip[0].components["TIME_PERIOD"].local_facets == tp_facets
+
+
 def test_component_enum_ref_kept_without_codelist_21(samples_folder):
     data_path = samples_folder / "dsd_enum_ref_no_codelist.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -1818,3 +1850,23 @@ def test_submission_response_without_results():
 
     with pytest.raises(Invalid, match="SubmissionResult"):
         read_sub(doc, validate=False)
+
+
+@pytest.mark.xml
+def test_header_prepared_without_timezone_is_assumed_utc(samples_folder):
+    structure_path = samples_folder / "datastructure_time_facets.xml"
+    input_str, _ = process_string_to_read(structure_path)
+
+    header = read_sdmx(input_str).header
+
+    assert header.prepared == datetime(2026, 5, 21, 10, tzinfo=timezone.utc)
+
+
+@pytest.mark.xml
+def test_header_prepared_keeps_its_timezone(samples_folder):
+    structure_path = samples_folder / "agencies.xml"
+    input_str, _ = process_string_to_read(structure_path)
+
+    header = read_sdmx(input_str).header
+
+    assert header.prepared.isoformat() == "2010-11-13T08:00:33+08:00"
