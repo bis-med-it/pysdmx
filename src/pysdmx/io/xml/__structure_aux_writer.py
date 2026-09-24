@@ -137,6 +137,7 @@ from pysdmx.io.xml.__write_aux import (
     __escape_xml_vtl,
     __to_lower_camel_case,
     add_indent,
+    format_date,
     format_datetime,
 )
 from pysdmx.model import (
@@ -1253,7 +1254,12 @@ def __write_value_map(
     value_map: Union[ValueMap, MultiValueMap], indent: str
 ) -> str:
     """Writes a ValueMap or MultiValueMap (RepresentationMapping)."""
-    outfile = f"{indent}<{ABBR_STR}:RepresentationMapping>"
+    attrs = ""
+    if value_map.valid_from is not None:
+        attrs += f' {VALID_FROM}="{format_date(value_map.valid_from)}"'
+    if value_map.valid_to is not None:
+        attrs += f' {VALID_TO}="{format_date(value_map.valid_to)}"'
+    outfile = f"{indent}<{ABBR_STR}:RepresentationMapping{attrs}>"
 
     # MultiValueMap
     if isinstance(value_map, MultiValueMap):
