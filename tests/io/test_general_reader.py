@@ -38,6 +38,14 @@ def empty_message():
 
 
 @pytest.fixture
+def empty_data_message():
+    file_path = Path(__file__).parent / "samples" / "empty_data_message.xml"
+    with open(file_path, "r") as f:
+        text = f.read()
+    return text
+
+
+@pytest.fixture
 def sdmx_json():
     file_path = Path(__file__).parent / "samples" / "sdmx.json"
     with open(file_path, "r") as f:
@@ -54,6 +62,26 @@ def sdmx_json_20_structure():
         / "samples"
         / "code"
         / "freq.json"
+    )
+    with open(file_path, "r") as f:
+        text = f.read()
+    return text
+
+
+@pytest.fixture
+def sdmx_json_20_empty_structure():
+    file_path = (
+        Path(__file__).parent / "samples" / "empty_structure_message.json"
+    )
+    with open(file_path, "r") as f:
+        text = f.read()
+    return text
+
+
+@pytest.fixture
+def sdmx_json_20_structure_meta_only():
+    file_path = (
+        Path(__file__).parent / "samples" / "structure_message_meta_only.json"
     )
     with open(file_path, "r") as f:
         text = f.read()
@@ -344,8 +372,29 @@ def test_url_invalid_sdmx_error(respx_mock, sdmx_error_str):
 
 
 def test_empty_result(empty_message):
-    with pytest.raises(Invalid, match="Empty SDMX Message"):
-        read_sdmx(empty_message, validate=False)
+    # A structure message that yields no artefacts is returned as an
+    # empty Message instead of being rejected.
+    msg = read_sdmx(empty_message, validate=False)
+    assert msg.header is not None
+    assert msg.structures == ()
+    assert msg.get_dataflows() == []
+
+
+def test_empty_data_message(empty_data_message):
+    # A data message without any DataSet is valid SDMX (it is how a
+    # service answers a query that matches nothing), so it is returned
+    # as an empty Message instead of being rejected.
+    msg = read_sdmx(empty_data_message, validate=True)
+    assert isinstance(msg, Message)
+    assert msg.header is not None
+    assert msg.data == []
+    assert msg.get_datasets() == []
+
+
+def test_get_datasets_empty_data_message(empty_data_message):
+    # get_datasets keeps its own check, as it requires datasets to work on.
+    with pytest.raises(Invalid, match="No data found in the data message"):
+        get_datasets(empty_data_message, validate=True)
 
 
 def test_get_datasets_valid(data_path, structures_path):
@@ -480,6 +529,30 @@ def test_get_json21_structure(sdmx_json_21_structure):
 
 
 @pytest.mark.json
+def test_get_json20_empty_structure(sdmx_json_20_empty_structure):
+    # An SDMX-JSON structure message without artefacts is returned as an
+    # empty Message, like its SDMX-ML counterpart.
+    msg = read_sdmx(sdmx_json_20_empty_structure)
+
+    assert isinstance(msg, Message)
+    assert msg.header is not None
+    assert msg.structures == ()
+    assert msg.get_dataflows() == []
+
+
+@pytest.mark.json
+def test_get_json20_structure_meta_only(sdmx_json_20_structure_meta_only):
+    # The data object is optional in the SDMX-JSON structure schema, so a
+    # message with only a meta object is another valid empty catalogue.
+    msg = read_sdmx(sdmx_json_20_structure_meta_only)
+
+    assert isinstance(msg, Message)
+    assert msg.header is not None
+    assert msg.structures == ()
+    assert msg.get_dataflows() == []
+
+
+@pytest.mark.json
 def test_get_json20_refmeta(sdmx_json_20_refmeta):
     msg = read_sdmx(sdmx_json_20_refmeta, validate=False)
 
@@ -507,6 +580,28 @@ def test_get_json21_refmeta(sdmx_json_21_refmeta):
     assert rep.agency == "BIS.MEDIT"
     assert rep.version == "1.0.42"
     assert len(rep.attributes) == 2
+
+
+@pytest.mark.json
+@pytest.mark.parametrize(
+    "file_name",
+    [
+        "empty_refmeta_message.json",
+        "refmeta_message_empty_data.json",
+        "refmeta_message_meta_only.json",
+    ],
+)
+def test_get_json20_empty_refmeta(file_name):
+    # metadataSets may be empty, and both data and metadataSets are
+    # optional in the SDMX-JSON metadata schema, so all three shapes are
+    # valid reference metadata messages without reports.
+    file_path = Path(__file__).parent / "samples" / file_name
+    msg = read_sdmx(file_path)
+
+    assert isinstance(msg, Message)
+    assert msg.header is not None
+    assert msg.reports == ()
+    assert msg.get_reports() == ()
 
 
 @pytest.mark.json

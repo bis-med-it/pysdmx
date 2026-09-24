@@ -18,7 +18,7 @@ if TYPE_CHECKING:  # pragma: no cover
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
-from pysdmx.model import Schema
+from pysdmx.model import AvailabilityConstraint, Schema
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Message
@@ -54,14 +54,29 @@ def read_sdmx(  # noqa: C901
           authority, you can pass a PEM file for this
           authority using this parameter.
 
+    Returns:
+        A Message with the content of the SDMX document. A message without
+        content is valid SDMX (an empty catalogue, a data query matching
+        nothing, a metadata query without reports), so it is returned as
+        a Message whose ``structures``, ``data`` or ``reports`` sequence
+        is empty rather than rejected.
+
     Raises:
-        Invalid: If the file is empty or the format is not supported.
+        Invalid:
+            If the format is not supported, or if the document is not a
+            valid message of the detected format (e.g. a submission
+            message whose SubmitStructureResponse has no
+            SubmissionResult).
+        NotImplemented:
+            If the SDMX flavour is detected but not supported yet.
     """
     input_str, read_format = process_string_to_read(sdmx_document, pem=pem)
 
     header = None
     result_data: Sequence[Dataset] = []
-    result_structures: Sequence[MaintainableArtefact] = []
+    result_structures: Sequence[
+        Union[MaintainableArtefact, AvailabilityConstraint]
+    ] = []
     result_submission: Sequence[SubmissionResult] = []
     reports: Sequence[MetadataReport] = []
     if read_format == Format.STRUCTURE_SDMX_ML_2_1:
@@ -112,7 +127,7 @@ def read_sdmx(  # noqa: C901
 
         ref_msg = read_refmeta(input_str, validate=validate)
         header = ref_msg.header
-        reports = ref_msg.get_reports()
+        reports = ref_msg.reports or []
     elif read_format == Format.REFMETA_SDMX_ML_3_0:
         from pysdmx.io.xml.header import read as read_header
         from pysdmx.io.xml.sdmx30.reader.metadata import (
@@ -195,10 +210,20 @@ def read_sdmx(  # noqa: C901
 
         result_data = read_csv_v2(input_str)
 
-    if not (result_data or result_structures or result_submission or reports):
-        raise Invalid("Empty SDMX Message")
-
     # Returning a Message class
+    if read_format in (
+        Format.STRUCTURE_SDMX_ML_2_1,
+        Format.STRUCTURE_SDMX_ML_3_0,
+        Format.STRUCTURE_SDMX_ML_3_1,
+        Format.STRUCTURE_SDMX_JSON_2_0_0,
+        Format.STRUCTURE_SDMX_JSON_2_1_0,
+    ):
+        # A structure message without artefacts is valid SDMX (it is how
+        # a service reports an empty catalogue), so it is returned as an
+        # empty Message rather than rejected.
+        # TODO: Ensure we have changed the signature of the structure readers
+        return Message(header=header, structures=tuple(result_structures))
+
     if read_format in (
         Format.DATA_SDMX_CSV_1_0_0,
         Format.DATA_SDMX_CSV_2_0_0,
@@ -210,20 +235,16 @@ def read_sdmx(  # noqa: C901
         Format.DATA_SDMX_ML_3_0,
         Format.DATA_SDMX_ML_3_1,
     ):
+        # A data message without any DataSet is valid SDMX as well (it is
+        # how a service answers a query matching nothing), so it is
+        # returned as a Message with an empty data sequence.
         # TODO: Add here the Schema download for Datasets, based on structure
         # TODO: Ensure we have changed the signature of the data readers
         return Message(header=header, data=result_data)
     elif read_format == Format.REGISTRY_SDMX_ML_2_1:
         return Message(header=header, submission=tuple(result_submission))
-    elif read_format in (
-        Format.REFMETA_SDMX_JSON_2_0_0,
-        Format.REFMETA_SDMX_JSON_2_1_0,
-        Format.REFMETA_SDMX_ML_3_0,
-        Format.REFMETA_SDMX_ML_3_1,
-    ):
-        return Message(header=header, reports=tuple(reports))
-    # TODO: Ensure we have changed the signature of the structure readers
-    return Message(header=header, structures=tuple(result_structures))
+    # SDMX-ML and SDMX-JSON reference metadata, with or without reports
+    return Message(header=header, reports=tuple(reports))
 
 
 def __manage_dataset_level_attributes(dataset: Dataset) -> None:

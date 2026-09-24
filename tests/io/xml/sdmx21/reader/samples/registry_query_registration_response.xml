@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:RegistryInterface
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:xml="http://www.w3.org/XML/1998/namespace"
+        xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+        xmlns:reg="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/registry"
+        xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+    <mes:Header>
+        <mes:ID>IREF618242</mes:ID>
+        <mes:Test>false</mes:Test>
+        <mes:Prepared>2026-08-31T07:37:05Z</mes:Prepared>
+        <mes:Sender id="ZZZ"/>
+        <mes:Receiver id="not_supplied"/>
+    </mes:Header>
+    <mes:QueryRegistrationResponse>
+        <reg:StatusMessage status="Success"/>
+        <reg:QueryResult timeSeriesMatch="false">
+            <reg:DataResult>
+                <reg:Registration lastUpdated="2026-08-31T07:26:45" indexReportingPeriod="false" indexDataSet="false" indexAttributes="false" id="DFE0F68D5BB59C20C0C5C95BD3B1DAF2" indexTimeSeries="false">
+                    <reg:ProvisionAgreement>
+                        <Ref package="registry" agencyID="IMF" id="AT_CGO" version="1.0" class="ProvisionAgreement"/>
+                    </reg:ProvisionAgreement>
+                    <reg:Datasource>
+                        <reg:SimpleDataSource>https://www.oenb.at/docroot/SDDSplus/SDDS_CGO.xml</reg:SimpleDataSource>
+                    </reg:Datasource>
+                </reg:Registration>
+            </reg:DataResult>
+        </reg:QueryResult>
+    </mes:QueryRegistrationResponse>
+</mes:RegistryInterface>

@@ -3,7 +3,7 @@
 	<mes:Header>
 		<mes:ID>test</mes:ID>
 		<mes:Test>false</mes:Test>
-		<mes:Prepared>2021-04-20T10:29:14</mes:Prepared>
+		<mes:Prepared>2021-04-20T10:29:14Z</mes:Prepared>
 		<mes:Sender id="Unknown"/>
 		<mes:Receiver id="Not_supplied"/>
 	</mes:Header>

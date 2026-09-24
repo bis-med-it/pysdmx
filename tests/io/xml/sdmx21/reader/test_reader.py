@@ -1,12 +1,13 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
+import pyarrow as pa
 import pytest
 
 import pysdmx
-from pysdmx.errors import Invalid
+from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
@@ -16,9 +17,11 @@ from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
 from pysdmx.io.xml.sdmx21.reader.structure_specific import read as read_str_spe
 from pysdmx.io.xml.sdmx21.reader.submission import read as read_sub
+from pysdmx.io.xml.sdmx21.writer.structure import write as write_structure
 from pysdmx.io.xml.sdmx21.writer.structure_specific import write
 from pysdmx.model import (
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     CategoryScheme,
     Codelist,
@@ -27,6 +30,7 @@ from pysdmx.model import (
     Contact,
     CubeKeyValue,
     CubeRegion,
+    CubeTimeRange,
     CubeValue,
     CustomTypeScheme,
     DataConstraint,
@@ -78,6 +82,34 @@ def item_scheme_path():
 @pytest.fixture
 def submission_path():
     return Path(__file__).parent / "samples" / "submission_append.xml"
+
+
+@pytest.fixture
+def submission_single_path():
+    return Path(__file__).parent / "samples" / "submission_append_single.xml"
+
+
+@pytest.fixture
+def submit_structure_request_path():
+    return (
+        Path(__file__).parent
+        / "samples"
+        / "registry_submit_structure_request.xml"
+    )
+
+
+@pytest.fixture
+def query_registration_response_path():
+    return (
+        Path(__file__).parent
+        / "samples"
+        / "registry_query_registration_response.xml"
+    )
+
+
+@pytest.fixture
+def error_structure_text_path():
+    return Path(__file__).parent / "samples" / "error_with_structure_text.xml"
 
 
 @pytest.fixture
@@ -427,6 +459,36 @@ def test_submission_result_read_sdmx(submission_path):
     assert result[1].short_urn == "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)"
 
 
+def test_submission_result_single(submission_single_path):
+    result = read_sdmx(submission_single_path, validate=True).submission
+    assert len(result) == 1
+    assert result[0].action == "Append"
+    assert result[0].short_urn == "DataStructure=BIS:BIS_DER(1.0)"
+    assert result[0].status == "Success"
+
+
+def test_submit_structure_request_not_implemented(
+    submit_structure_request_path,
+):
+    input_str, read_format = process_string_to_read(
+        submit_structure_request_path
+    )
+    assert read_format == Format.REGISTRY_SDMX_ML_2_1
+    with pytest.raises(NotImplemented) as e:
+        read_sub(input_str, validate=True)
+    assert e.value.description == (
+        "Only SubmitStructureResponse messages are supported. "
+        "Found: SubmitStructureRequest."
+    )
+
+
+def test_query_registration_response_not_implemented(
+    query_registration_response_path,
+):
+    with pytest.raises(NotImplemented, match="QueryRegistrationResponse"):
+        read_sdmx(query_registration_response_path, validate=True)
+
+
 def test_error_304(error_304_path):
     input_str, read_format = process_string_to_read(error_304_path)
     assert read_format == Format.ERROR_SDMX_ML_2_1
@@ -440,6 +502,16 @@ def test_error_304(error_304_path):
     )
 
     assert e.value.description == reference_title
+
+
+def test_error_message_mentioning_structures(error_structure_text_path):
+    input_str, read_format = process_string_to_read(error_structure_text_path)
+    assert read_format == Format.ERROR_SDMX_ML_2_1
+    with pytest.raises(Invalid) as e:
+        read_error(input_str, validate=False)
+    assert e.value.description == (
+        "140: Syntax error: cannot parse element str:Structures"
+    )
 
 
 def test_error_message_with_different_mode(agency_scheme_path):
@@ -737,7 +809,9 @@ def test_vtl_transformation_scheme(samples_folder):
     assert transformation_scheme.id == "TEST"
     assert transformation_scheme.name == "TEST"
     assert transformation_scheme.description == "TEST Transformation Scheme"
-    assert transformation_scheme.valid_from == datetime(2024, 12, 3, 0, 0)
+    assert transformation_scheme.valid_from == datetime(
+        2024, 12, 3, tzinfo=timezone.utc
+    )
 
     assert len(transformation_scheme.items) == 2
     tr1 = transformation_scheme.items[0]
@@ -1220,7 +1294,8 @@ def test_group_merge_multiple_common_columns(multiple_groups_path):
             "GATTR": ["G1", "G1", "G2", "G2"],
             "OTHER_ATTR": ["OTHER", "OTHER", None, None],
             "MISMATCH_ATTR": [None, None, None, None],
-        }
+        },
+        dtype=pd.ArrowDtype(pa.string()),
     )
 
     pd.testing.assert_frame_equal(
@@ -1277,17 +1352,22 @@ def test_constraint_actual_type_and_time_range(samples_folder):
     data_path = samples_folder / "constraint_actual_timerange.xml"
     input_str, read_format = process_string_to_read(data_path)
     assert read_format == Format.STRUCTURE_SDMX_ML_2_1
-    result = read_sdmx(input_str, validate=False).get_data_constraints()
-    assert result is not None
+    result = read_sdmx(input_str, validate=True).structures
     assert len(result) == 1
     constraint = result[0]
-    assert isinstance(constraint, DataConstraint)
-    assert constraint.id == "CR_A_TEST_DF"
-    assert len(constraint.cube_regions) == 1
-    region = constraint.cube_regions[0]
-    assert len(region.key_values) == 1
-    assert region.key_values[0].id == "FREQ"
-    assert [v.value for v in region.key_values[0].values] == ["A"]
+    assert isinstance(constraint, AvailabilityConstraint)
+    assert constraint.reference == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
+    )
+    region = constraint.cube_region
+    assert len(region.key_values) == 2
+    freq, time = region.key_values
+    assert freq.id == "FREQ"
+    assert [v.value for v in freq.values] == ["A"]
+    assert time.id == "TIME_PERIOD"
+    assert time.time_range.start_period.period == "2009-01-01T00:00:00"
+    assert time.time_range.end_period.period == "2023-12-31T00:00:00"
 
 
 def test_constraint_with_keyset(samples_folder):
@@ -1430,6 +1510,64 @@ def test_constraint_without_attachment(samples_folder):
     ] == ["Q"]
 
 
+def test_constraint_allowed_21(samples_folder):
+    data_path = samples_folder / "constraint_allowed.xml"
+    result = read_sdmx(data_path, validate=True).structures
+    assert len(result) == 1
+    assert isinstance(result[0], DataConstraint)
+
+
+def test_constraint_actual_21_is_availability(samples_folder):
+    data_path = samples_folder / "constraint_actual.xml"
+    result = read_sdmx(data_path, validate=True).structures
+    assert len(result) == 1
+    ac = result[0]
+    assert isinstance(ac, AvailabilityConstraint)
+    assert ac.reference == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+    kv = ac.cube_region.key_values[0]
+    assert kv.id == "FREQ"
+    assert [v.value for v in kv.values] == ["M"]
+
+
+def test_constraint_type_absent_defaults_to_availability_21(samples_folder):
+    data_path = samples_folder / "constraint_no_type.xml"
+    result = read_sdmx(data_path, validate=True).structures
+    assert isinstance(result[0], AvailabilityConstraint)
+
+
+@pytest.mark.parametrize(
+    ("sample", "match"),
+    [
+        ("constraint_actual_keysets.xml", "key sets"),
+        ("constraint_actual_two_regions.xml", "exactly one cube region"),
+        ("constraint_actual_no_attachment.xml", "attached"),
+    ],
+)
+def test_constraint_actual_not_representable_21(samples_folder, sample, match):
+    with pytest.raises(Invalid, match=match):
+        read_sdmx(samples_folder / sample, validate=False)
+
+
+def test_constraint_with_time_range_21(samples_folder):
+    data_path = samples_folder / "constraint_time_range.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert isinstance(result[0], DataConstraint)
+    region = result[0].cube_regions[0]
+    freq, time = region.key_values
+    assert [v.value for v in freq.values] == ["A"]
+    assert time.id == "TIME_PERIOD"
+    assert time.values == ()
+    assert isinstance(time.time_range, CubeTimeRange)
+    assert time.time_range.start_period.period == "1989-01-01T00:00:00"
+    assert time.time_range.start_period.is_inclusive is True
+    assert time.time_range.end_period.period == "2024-12-31T00:00:00"
+    assert time.time_range.end_period.is_inclusive is False
+
+
 @pytest.mark.xml
 def test_metadataflow_21(samples_folder):
     data_path = samples_folder / "metadataflow.xml"
@@ -1560,3 +1698,185 @@ def test_category_scheme_21_enrichment_edge_cases(samples_folder):
         "urn:sdmx:org.sdmx.infomodel.categoryscheme."
         "Category=BIS:CS_ABSENT(1.0).Z"
     )
+
+
+@pytest.mark.xml
+def test_time_facets_are_timezone_aware(samples_folder):
+    structure_path = samples_folder / "datastructure_time_facets.xml"
+    input_str, read_format = process_string_to_read(structure_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+
+    result = read_structure(input_str)
+
+    dsd = result[0]
+    facets = dsd.components["REFERENTIE_DATUM"].local_facets
+    # Datetimes without timezone information are assumed to be UTC.
+    assert facets.start_time == datetime(2000, 1, 1, tzinfo=timezone.utc)
+    assert facets.end_time == datetime(
+        2020, 12, 31, 23, 59, 59, tzinfo=timezone.utc
+    )
+    tp_facets = dsd.components["TIME_PERIOD"].local_facets
+    # Time facets that are not ISO 8601 datetimes (e.g. reporting
+    # periods) are kept as strings.
+    assert tp_facets.start_time == "2000-Q1"
+
+    output = write_structure(result)
+
+    assert 'startTime="2000-01-01T00:00:00Z"' in output
+    assert 'endTime="2020-12-31T23:59:59Z"' in output
+    assert 'startTime="2000-Q1"' in output
+    roundtrip = read_structure(output)
+    assert roundtrip[0].components["REFERENTIE_DATUM"].local_facets == facets
+    assert roundtrip[0].components["TIME_PERIOD"].local_facets == tp_facets
+
+
+def test_component_enum_ref_kept_without_codelist_21(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_no_codelist.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+
+    dsd = read_structure(input_str, validate=True)[0]
+    freq = next(c for c in dsd.components if c.id == "FREQ")
+
+    assert freq.enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
+    )
+    assert freq.enumeration is None
+
+
+def test_component_enum_ref_urn_form_21(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_urn.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    dsd = read_structure(input_str, validate=True)[0]
+    freq = next(c for c in dsd.components if c.id == "FREQ")
+
+    assert freq.enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
+    )
+
+
+def test_component_enum_ref_round_trip_21(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_no_codelist.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    dsd = read_structure(input_str, validate=True)
+    written = write_structure(dsd, prettyprint=True)
+
+    re_read = read_structure(written, validate=True)[0]
+    freq = next(c for c in re_read.components if c.id == "FREQ")
+    assert freq.enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
+    )
+
+
+def test_read_empty_structure_containers_21(samples_folder):
+    data_path = samples_folder / "structures_empty_containers.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+
+    assert len(read_structure(input_str, validate=False)) == 0
+
+    # An empty catalogue is a valid structure message, so read_sdmx
+    # returns an empty Message instead of raising.
+    msg = read_sdmx(input_str, validate=False)
+    assert msg.header is not None
+    assert msg.structures == ()
+    assert msg.get_dataflows() == []
+
+
+def test_read_no_structure_containers_21(samples_folder):
+    data_path = samples_folder / "structures_no_containers.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    assert len(read_structure(input_str, validate=True)) == 0
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.structures == ()
+    assert msg.get_dataflows() == []
+
+
+def test_read_header_only_structure_message_21(samples_folder):
+    data_path = samples_folder / "structures_header_only.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    assert len(read_structure(input_str, validate=True)) == 0
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.structures == ()
+    assert msg.get_dataflows() == []
+
+
+def test_read_header_only_data_message_21(samples_folder):
+    # A StructureSpecificData message without any DataSet is valid SDMX,
+    # so read_sdmx returns an empty Message instead of raising.
+    data_path = samples_folder / "data_header_only.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+
+    assert read_str_spe(input_str, validate=True) == []
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.data == []
+
+
+@pytest.mark.parametrize("validate", [False, True])
+def test_submission_empty_response(samples_folder, validate):
+    # SubmissionResult is mandatory in a SubmitStructureResponse, so an
+    # empty response is rejected with a typed error, with or without XSD
+    # validation.
+    data_path = samples_folder / "submission_empty_response.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.REGISTRY_SDMX_ML_2_1
+
+    with pytest.raises(Invalid, match="SubmissionResult"):
+        read_sdmx(input_str, validate=validate)
+
+
+def test_submission_response_without_results():
+    # A SubmitStructureResponse holding anything but SubmissionResult
+    # elements is rejected the same way.
+    doc = (
+        '<?xml version="1.0" ?>'
+        "<message:RegistryInterface "
+        'xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v2_1/message" '
+        'xmlns:reg="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v2_1/registry">'
+        "<message:Header>"
+        "<message:ID>test</message:ID>"
+        "<message:Test>true</message:Test>"
+        "<message:Prepared>2023-11-08T12:40:53Z</message:Prepared>"
+        '<message:Sender id="Unknown"/>'
+        "</message:Header>"
+        "<message:SubmitStructureResponse>"
+        '<reg:StatusMessage status="Success"/>'
+        "</message:SubmitStructureResponse>"
+        "</message:RegistryInterface>"
+    )
+
+    with pytest.raises(Invalid, match="SubmissionResult"):
+        read_sub(doc, validate=False)
+
+
+@pytest.mark.xml
+def test_header_prepared_without_timezone_is_assumed_utc(samples_folder):
+    structure_path = samples_folder / "datastructure_time_facets.xml"
+    input_str, _ = process_string_to_read(structure_path)
+
+    header = read_sdmx(input_str).header
+
+    assert header.prepared == datetime(2026, 5, 21, 10, tzinfo=timezone.utc)
+
+
+@pytest.mark.xml
+def test_header_prepared_keeps_its_timezone(samples_folder):
+    structure_path = samples_folder / "agencies.xml"
+    input_str, _ = process_string_to_read(structure_path)
+
+    header = read_sdmx(input_str).header
+
+    assert header.prepared.isoformat() == "2010-11-13T08:00:33+08:00"

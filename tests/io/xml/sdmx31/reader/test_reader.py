@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -8,7 +8,9 @@ from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
 from pysdmx.io.xml.sdmx31.reader.structure import read as read_structure
+from pysdmx.io.xml.sdmx31.writer.structure import write as write_structure
 from pysdmx.model import (
+    AvailabilityConstraint,
     Categorisation,
     CategoryScheme,
     Codelist,
@@ -158,8 +160,8 @@ def test_hierarchy_31(samples_folder):
 
     code_b = hierarchy.codes[1]
     assert code_b.id == "B"
-    assert code_b.rel_valid_from == datetime(2021, 1, 1)
-    assert code_b.rel_valid_to == datetime(2021, 12, 31)
+    assert code_b.rel_valid_from == datetime(2021, 1, 1, tzinfo=timezone.utc)
+    assert code_b.rel_valid_to == datetime(2021, 12, 31, tzinfo=timezone.utc)
     assert not code_b.codes
 
 
@@ -475,3 +477,167 @@ def test_categorisation_31(samples_folder):
         "urn:sdmx:org.sdmx.infomodel.categoryscheme."
         "Category=BIS:CS1(1.0.0).OTHER"
     )
+
+
+@pytest.mark.xml
+def test_availability_constraint_31(samples_folder):
+    data_path = samples_folder / "availability_constraint.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+    result = read_sdmx(input_str, validate=True).structures
+    assert len(result) == 1
+
+    ac = result[0]
+    assert isinstance(ac, AvailabilityConstraint)
+    assert ac.series_count == 3
+    assert ac.obs_count == 42
+    assert ac.reference == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
+    )
+
+    att = ac.constraint_attachment
+    assert att.data_provider is None
+    assert att.dataflows == (
+        "urn:sdmx:org.sdmx.infomodel.datastructure."
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)",
+    )
+
+    region = ac.cube_region
+    assert region.is_included is True
+    assert len(region.key_values) == 1
+    assert region.key_values[0].id == "FREQ"
+    assert [v.value for v in region.key_values[0].values] == ["M"]
+
+
+def test_availability_constraint_31_incomplete(samples_folder):
+    # A native 3.1 AvailabilityConstraint missing its CubeRegion is not
+    # schema-valid (CubeRegion is minOccurs="1"), so this exercises the
+    # reader's defensive check for validate=False usage.
+    data_path = samples_folder / "availability_constraint_incomplete.xml"
+    with pytest.raises(
+        Invalid, match="requires a constraint attachment and a cube region"
+    ):
+        read_sdmx(data_path, validate=False)
+
+
+def test_availability_constraint_31_duplicate_is_invalid(samples_folder):
+    # Two AvailabilityConstraints for the same artefact share a short
+    # URN; silently keeping only the last one would lose data.
+    data_path = samples_folder / "availability_constraint_duplicate.xml"
+    with pytest.raises(
+        Invalid, match="Two availability constraints for the same"
+    ):
+        read_sdmx(data_path, validate=True)
+
+
+def test_component_enum_ref_kept_without_codelist_31(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_no_codelist.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+
+    dsd = read_structure(input_str, validate=True)[0]
+    freq = next(c for c in dsd.components if c.id == "FREQ")
+
+    assert freq.enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
+    )
+    assert freq.enumeration is None
+
+
+def test_component_enum_ref_round_trip_31(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_no_codelist.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    dsd = read_structure(input_str, validate=True)
+    written = write_structure(dsd, prettyprint=True)
+
+    re_read = read_structure(written, validate=True)[0]
+    freq = next(c for c in re_read.components if c.id == "FREQ")
+    assert freq.enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
+    )
+
+
+def test_read_empty_structure_containers_31(samples_folder):
+    data_path = samples_folder / "structures_empty_containers.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+
+    assert len(read_structure(input_str, validate=False)) == 0
+
+    # An empty catalogue is a valid structure message, so read_sdmx
+    # returns an empty Message instead of raising.
+    msg = read_sdmx(input_str, validate=False)
+    assert msg.header is not None
+    assert msg.structures == ()
+    assert msg.get_dataflows() == []
+
+
+def test_read_no_structure_containers_31(samples_folder):
+    data_path = samples_folder / "structures_no_containers.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    assert len(read_structure(input_str, validate=True)) == 0
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.structures == ()
+    assert msg.get_dataflows() == []
+
+
+def test_read_header_only_structure_message_31(samples_folder):
+    data_path = samples_folder / "structures_header_only.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    assert len(read_structure(input_str, validate=True)) == 0
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.structures == ()
+    assert msg.get_dataflows() == []
+
+
+def test_read_header_only_data_message_31(samples_folder):
+    # A StructureSpecificData message without any DataSet is valid SDMX,
+    # so read_sdmx returns an empty Message instead of raising.
+    data_path = samples_folder / "data_header_only.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_3_1
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.data == []
+
+
+@pytest.mark.xml
+def test_generic_metadata_empty_set_31():
+    from pysdmx.io.xml.sdmx31.reader.metadata import read as read_refmeta
+
+    # A GenericMetadata message with no MetadataSet yields no reports, and
+    # read_sdmx returns it as a Message without reports.
+    doc = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        "<mes:GenericMetadata "
+        'xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v3_1/message" '
+        'xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/'
+        'v3_1/common">'
+        "<mes:Header>"
+        "<mes:ID>test</mes:ID>"
+        "<mes:Test>true</mes:Test>"
+        "<mes:Prepared>2021-01-01T10:00:00Z</mes:Prepared>"
+        '<mes:Sender id="ZZZ"/>'
+        '<mes:Structure structureID="MDS1">'
+        "<com:Structure>urn:sdmx:org.sdmx.infomodel.metadatastructure."
+        "MetadataStructure=BIS:MSD(1.0)</com:Structure>"
+        "</mes:Structure>"
+        "</mes:Header>"
+        "</mes:GenericMetadata>"
+    )
+    assert read_refmeta(doc, validate=True) == []
+
+    msg = read_sdmx(doc, validate=True)
+    assert msg.header is not None
+    assert msg.reports == ()
+    assert msg.get_reports() == ()

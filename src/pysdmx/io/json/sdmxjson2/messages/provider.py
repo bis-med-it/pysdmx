@@ -22,7 +22,7 @@ from pysdmx.model import (
     MetadataProvider,
     MetadataProviderScheme,
 )
-from pysdmx.util import is_final, parse_item_urn, parse_urn
+from pysdmx.util import ensure_tz_aware, is_final, parse_item_urn, parse_urn
 
 
 class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
@@ -78,8 +78,8 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             is_partial=self.isPartial,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
         )
 
     @classmethod
@@ -99,8 +99,8 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             ),
             isExternalReference=dps.is_external_reference,
             isPartial=dps.is_partial,
-            validFrom=dps.valid_from,
-            validTo=dps.valid_to,
+            validFrom=ensure_tz_aware(dps.valid_from),
+            validTo=ensure_tz_aware(dps.valid_to),
         )
 
 
@@ -183,8 +183,8 @@ class JsonMetadataProviderScheme(
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             is_partial=self.isPartial,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
         )
 
     @classmethod
@@ -206,8 +206,8 @@ class JsonMetadataProviderScheme(
             ),
             isExternalReference=dps.is_external_reference,
             isPartial=dps.is_partial,
-            validFrom=dps.valid_from,
-            validTo=dps.valid_to,
+            validFrom=ensure_tz_aware(dps.valid_from),
+            validTo=ensure_tz_aware(dps.valid_to),
         )
 
 

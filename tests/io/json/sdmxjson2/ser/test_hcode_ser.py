@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
 
@@ -9,8 +9,8 @@ from pysdmx.model import Annotation, HierarchicalCode
 
 @pytest.fixture
 def code():
-    rel_vf = datetime(2001, 1, 1)
-    rel_vt = datetime(2027, 12, 31)
+    rel_vf = datetime(2001, 1, 1, tzinfo=timezone.utc)
+    rel_vt = datetime(2027, 12, 31, tzinfo=timezone.utc)
     nested = HierarchicalCode(
         "A1",
         "Another HCode",

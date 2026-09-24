@@ -1,17 +1,21 @@
 """Module for writing metadata to XML files."""
 
 from collections import OrderedDict
-from typing import Any, Dict, Optional, Sequence, Union
+from datetime import datetime
+from typing import Any, Dict, Optional, Sequence, Set, Union, cast
 
 from msgspec.structs import replace
 
 from pysdmx.errors import Invalid
 from pysdmx.io.xml.__tokens import (
+    AFTER_PERIOD,
     AGENCY_ID,
     AGENCY_SCHEME,
     AS_STATUS,
     ATT,
     ATT_REL,
+    AVAILABILITY_CONS,
+    BEFORE_PERIOD,
     CATEGORISATION,
     CATEGORY,
     CATEGORY_SCHEME,
@@ -41,6 +45,7 @@ from pysdmx.io.xml.__tokens import (
     DSD,
     DSD_COMPS,
     EMAIL,
+    END_PERIOD,
     ENUM,
     ENUM_FORMAT,
     FAX,
@@ -55,6 +60,7 @@ from pysdmx.io.xml.__tokens import (
     ID,
     INCLUDE,
     INCLUDED,
+    IS_INCLUSIVE,
     IS_PRESENTATIONAL,
     KEY,
     KEY_VALUE,
@@ -92,6 +98,7 @@ from pysdmx.io.xml.__tokens import (
     RULE,
     RULE_SCHEME,
     SOURCE,
+    START_PERIOD,
     STR_USAGE,
     STRUCTURE_MAP,
     TARGET,
@@ -99,6 +106,7 @@ from pysdmx.io.xml.__tokens import (
     TEXT_FORMAT,
     TEXT_TYPE,
     TIME_DIM,
+    TIME_RANGE,
     TRANS_SCHEME,
     TRANSFORMATION,
     UDO,
@@ -107,6 +115,8 @@ from pysdmx.io.xml.__tokens import (
     URN,
     URN_LOW,
     USAGE,
+    VALID_FROM,
+    VALID_TO,
     VALUE,
     VALUE_ITEM,
     VALUE_LIST,
@@ -122,13 +132,16 @@ from pysdmx.io.xml.__write_aux import (
     ABBR_STR,
     MSG_CONTENT_PKG_21,
     MSG_CONTENT_PKG_30,
+    MSG_CONTENT_PKG_31,
     __escape_xml,
     __escape_xml_vtl,
     __to_lower_camel_case,
     add_indent,
+    format_datetime,
 )
 from pysdmx.model import (
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     Category,
     CategoryScheme,
@@ -138,6 +151,7 @@ from pysdmx.model import (
     ConceptScheme,
     ConstraintAttachment,
     CubeRegion,
+    CubeTimeRange,
     CustomType,
     CustomTypeScheme,
     DataConstraint,
@@ -180,6 +194,7 @@ from pysdmx.model import (
 )
 from pysdmx.model.__base import (
     AnnotableArtefact,
+    Annotation,
     Contact,
     IdentifiableArtefact,
     Item,
@@ -210,8 +225,8 @@ ANNOTATION_WRITER = OrderedDict(
     {
         "title": "AnnotationTitle",
         "type": "AnnotationType",
-        "text": "AnnotationText",
         "url": "AnnotationURL",
+        "text": "AnnotationText",
     }
 )
 
@@ -258,6 +273,7 @@ STR_DICT_TYPE_LIST_21 = {
     DataStructureDefinition: "DataStructures",
     Dataflow: "Dataflows",
     DataConstraint: "Constraints",
+    AvailabilityConstraint: "Constraints",
     RepresentationMap: "RepresentationMaps",
     MultiRepresentationMap: "RepresentationMaps",
     StructureMap: "StructureMaps",
@@ -291,6 +307,7 @@ STR_DICT_TYPE_LIST_30 = {
     DataStructureDefinition: "DataStructures",
     Dataflow: "Dataflows",
     DataConstraint: "DataConstraints",
+    AvailabilityConstraint: "DataConstraints",
     RepresentationMap: "RepresentationMaps",
     MultiRepresentationMap: "RepresentationMaps",
     StructureMap: "StructureMaps",
@@ -310,6 +327,12 @@ STR_DICT_TYPE_LIST_30 = {
 }
 
 
+STR_DICT_TYPE_LIST_31 = {
+    **STR_DICT_TYPE_LIST_30,
+    AvailabilityConstraint: "AvailabilityConstraints",
+}
+
+
 def __write_annotable(
     annotable: Union[AnnotableArtefact, HierarchicalCode], indent: str
 ) -> str:
@@ -326,8 +349,8 @@ def __write_annotable(
         if annotation.id is None:
             outfile += f"{child2}<{ABBR_COM}:Annotation>"
         else:
-            outfile += f"{child2}<{ABBR_COM}:Annotation id={annotation.id!r}>"
-        outfile = outfile.replace("'", '"')
+            annotation_id = __escape_xml(annotation.id)
+            outfile += f'{child2}<{ABBR_COM}:Annotation id="{annotation_id}">'
 
         for attr, label in ANNOTATION_WRITER.items():
             if getattr(annotation, attr, None) is not None:
@@ -413,11 +436,11 @@ def __write_versionable(
         outfile["Attributes"] += f" version={versionable.version!r}"
 
     if versionable.valid_from is not None:
-        valid_from_str = versionable.valid_from.strftime("%Y-%m-%dT%H:%M:%S")
+        valid_from_str = format_datetime(versionable.valid_from)
         outfile["Attributes"] += f" validFrom={valid_from_str!r}"
 
     if versionable.valid_to is not None:
-        valid_to_str = versionable.valid_to.strftime("%Y-%m-%dT%H:%M:%S")
+        valid_to_str = format_datetime(versionable.valid_to)
         outfile["Attributes"] += f" validTo={valid_to_str!r}"
 
     return outfile
@@ -890,9 +913,16 @@ def __write_representation(
         local_representation += __write_enumeration(
             item.local_codes, indent, references_30
         )
+    elif item.local_enum_ref is not None:
+        local_representation += __write_enumeration_ref(
+            item.local_enum_ref, indent, references_30
+        )
 
+    has_enumeration = (
+        item.local_codes is not None or item.local_enum_ref is not None
+    )
     if item.local_facets is not None or item.local_dtype is not None:
-        type_ = ENUM_FORMAT if item.local_codes is not None else TEXT_FORMAT
+        type_ = ENUM_FORMAT if has_enumeration else TEXT_FORMAT
         local_representation += __write_text_format(
             item.local_dtype, item.local_facets, type_, indent
         )
@@ -919,6 +949,8 @@ def __write_text_format(
         active_facets = facets.__rich_repr__()
         for facet, value, *_ in active_facets:  # type: ignore[misc]
             facet = __to_lower_camel_case(facet)
+            if isinstance(value, datetime):
+                value = format_datetime(value)
             outfile += f' {facet}="{value}"'
     if dtype is not None:
         outfile += f" {TEXT_TYPE}={dtype.value!r}"
@@ -1152,19 +1184,33 @@ def __write_metadata_representation(
     return outfile
 
 
-def __write_enumeration_ref(enum_ref: str, indent: str) -> str:
+def __write_enumeration_ref(
+    enum_ref: str, indent: str, references_30: bool = True
+) -> str:
     """Writes a ``<str:Enumeration>`` from an enumeration URN string.
 
-    Only used for MSD attributes, which exist in SDMX-ML 3.x where the
-    enumeration is referenced by URN text.
+    Used for an MSD attribute or a DSD component that carries an
+    enumeration reference without a resolved ``local_codes`` object, as
+    happens whenever the referenced codelist was not part of the message.
+    SDMX-ML 3.x references the enumeration by URN text,
+    while 2.1 uses a ``<Ref>`` element.
     """
     ref = parse_short_urn(parse_urn(enum_ref).__str__())
     outfile = f"{add_indent(indent)}<{ABBR_STR}:{ENUM}>"
-    outfile += (
-        f"urn:sdmx:org.sdmx.infomodel.codelist.{ref.sdmx_type}="
-        f"{ref.agency}:{ref.id}({ref.version})"
-        f"</{ABBR_STR}:{ENUM}>"
-    )
+    if references_30:
+        outfile += (
+            f"urn:sdmx:org.sdmx.infomodel.codelist.{ref.sdmx_type}="
+            f"{ref.agency}:{ref.id}({ref.version})"
+            f"</{ABBR_STR}:{ENUM}>"
+        )
+    else:
+        outfile += f"{add_indent(add_indent(indent))}<{REF} "
+        outfile += f"{AGENCY_ID}={ref.agency!r} "
+        outfile += f"{CLASS}={ref.sdmx_type!r} "
+        outfile += f"{ID}={ref.id!r} "
+        outfile += f"{PACKAGE}={CL_LOW!r} "
+        outfile += f"{VERSION}={ref.version!r}/>"
+        outfile += f"{add_indent(indent)}</{ABBR_STR}:{ENUM}>"
     return outfile.replace("'", '"')
 
 
@@ -1597,6 +1643,28 @@ def __write_constraint_attachment(
     return outfile.replace("'", '"')
 
 
+def __write_time_range(
+    time_range: CubeTimeRange, indent: str, prefix: str
+) -> str:
+    """Writes a cube-region TimeRange to the XML file."""
+    outfile = f"{indent}<{prefix}:{TIME_RANGE}>"
+    boundaries = (
+        (BEFORE_PERIOD, time_range.before_period),
+        (AFTER_PERIOD, time_range.after_period),
+        (START_PERIOD, time_range.start_period),
+        (END_PERIOD, time_range.end_period),
+    )
+    for name, boundary in boundaries:
+        if boundary is not None:
+            incl = "true" if boundary.is_inclusive else "false"
+            outfile += f"{add_indent(indent)}"
+            outfile += f"<{prefix}:{name} {IS_INCLUSIVE}={incl!r}>"
+            outfile += __escape_xml(str(boundary.period))
+            outfile += f"</{prefix}:{name}>"
+    outfile += f"{indent}</{prefix}:{TIME_RANGE}>"
+    return outfile
+
+
 def __write_cube_region(
     region: CubeRegion, indent: str, references_30: bool = False
 ) -> str:
@@ -1610,16 +1678,35 @@ def __write_cube_region(
     val_prefix = ABBR_STR if references_30 else ABBR_COM
 
     for key_value in region.key_values:
-        outfile += f"{add_indent(indent)}"
-        outfile += f"<{kv_prefix}:{KEY_VALUE} {ID}={key_value.id!r}>"
+        kv_attrs = f" {ID}={key_value.id!r}"
+        # validFrom/validTo on a cube KeyValue are 3.0/3.1 only.
+        if references_30 and key_value.valid_from is not None:
+            vf = format_datetime(key_value.valid_from)
+            kv_attrs += f" {VALID_FROM}={vf!r}"
+        if references_30 and key_value.valid_to is not None:
+            vt = format_datetime(key_value.valid_to)
+            kv_attrs += f" {VALID_TO}={vt!r}"
 
-        for value in key_value.values:
-            value_tag = (
-                f"{add_indent(add_indent(indent))}<{val_prefix}:{VALUE}>"
+        outfile += f"{add_indent(indent)}"
+        outfile += f"<{kv_prefix}:{KEY_VALUE}{kv_attrs}>"
+
+        if key_value.time_range is not None:
+            outfile += __write_time_range(
+                key_value.time_range,
+                add_indent(add_indent(indent)),
+                val_prefix,
             )
-            value_tag += __escape_xml(str(value.value))
-            value_tag += f"</{val_prefix}:{VALUE}>"
-            outfile += value_tag
+        else:
+            for value in key_value.values:
+                # A CubeValue's own valid_from/valid_to cannot be
+                # represented in SDMX-ML: only the value text is
+                # written, so they are silently dropped here.
+                value_tag = (
+                    f"{add_indent(add_indent(indent))}<{val_prefix}:{VALUE}>"
+                )
+                value_tag += __escape_xml(str(value.value))
+                value_tag += f"</{val_prefix}:{VALUE}>"
+                outfile += value_tag
         outfile += f"{add_indent(indent)}</{kv_prefix}:{KEY_VALUE}>"
 
     outfile += f"{indent}</{ABBR_STR}:{CUBE_REGION}>"
@@ -1661,8 +1748,70 @@ def __write_key_set(
     return outfile.replace("'", '"')
 
 
+def __availability_metric_annotations(
+    constraint: AvailabilityConstraint,
+) -> Sequence[Annotation]:
+    """Builds FMR-style ``sdmx_metrics`` annotations for the counts.
+
+    Legacy (pre-3.1) representations have no dedicated place for the
+    series/observation counts, so they are carried as annotations,
+    mirroring what the FMR emits: an annotation with
+    ``type="sdmx_metrics"``, ``id`` set to ``"series_count"`` or
+    ``"obs_count"`` and the count as a string in ``title``.
+    """
+    metrics = []
+    if constraint.series_count is not None:
+        metrics.append(
+            Annotation(
+                id="series_count",
+                title=str(constraint.series_count),
+                type="sdmx_metrics",
+            )
+        )
+    if constraint.obs_count is not None:
+        metrics.append(
+            Annotation(
+                id="obs_count",
+                title=str(constraint.obs_count),
+                type="sdmx_metrics",
+            )
+        )
+    return tuple(metrics)
+
+
+def __availability_as_data_constraint(
+    constraint: AvailabilityConstraint,
+) -> DataConstraint:
+    """Builds the legacy constraint for an availability constraint.
+
+    SDMX-ML 2.1 and 3.0 have no availability element: availability is
+    a maintainable ContentConstraint/DataConstraint carrying an Actual
+    marker, so a maintainable identification is synthesised from the
+    attached artefact. The series/observation counts have no field to
+    live in either, so they are appended as ``sdmx_metrics``
+    annotations (see ``__availability_metric_annotations``).
+    """
+    ref = cast(Reference, parse_urn(constraint.reference))
+    return DataConstraint(
+        id=ref.id,
+        name=f"Availability for {ref.id}",
+        agency=ref.agency,
+        version=ref.version,
+        annotations=(
+            *constraint.annotations,
+            *__availability_metric_annotations(constraint),
+        ),
+        constraint_attachment=constraint.constraint_attachment,
+        cube_regions=[constraint.cube_region],
+    )
+
+
 def __write_data_constraint(
-    constraint: DataConstraint, indent: str, references_30: bool = False
+    constraint: DataConstraint,
+    indent: str,
+    references_30: bool = False,
+    references_31: bool = False,
+    availability: bool = False,
 ) -> str:
     """Writes a DataConstraint to the XML file."""
     # SDMX 3.0: DataConstraint, SDMX 2.1: ContentConstraint
@@ -1670,11 +1819,15 @@ def __write_data_constraint(
 
     data = __write_maintainable(constraint, indent, references_30)
 
-    # SDMX 3.0 requires role,
-    # but pysdmx only supports maintainable (Allowed) constraints.
-    # "Actual" constraints are deprecated in SDMX 3.1
-    if references_30:
-        data["Attributes"] += ' role="Allowed"'
+    # SDMX 2.1 marks availability with 'type' (default "Actual" when
+    # omitted, so it is always written); SDMX 3.0 uses a required
+    # 'role'; SDMX 3.1 has no marker (availability is a separate
+    # element and a DataConstraint is always the allowed values).
+    marker = "Actual" if availability else "Allowed"
+    if not references_30:
+        data["Attributes"] += f' type="{marker}"'
+    elif not references_31:
+        data["Attributes"] += f' role="{marker}"'
 
     label = f"{ABBR_STR}:{constraint_type}"
     attributes = data.get("Attributes") or ""
@@ -1703,6 +1856,32 @@ def __write_data_constraint(
                 key_set, add_indent(indent), references_30
             )
 
+    outfile += f"{indent}</{label}>"
+    return outfile
+
+
+def __write_availability_constraint(
+    constraint: AvailabilityConstraint, indent: str
+) -> str:
+    """Writes an SDMX-ML 3.1 AvailabilityConstraint element."""
+    attributes = ""
+    if constraint.series_count is not None:
+        attributes += f' seriesCount="{constraint.series_count}"'
+    if constraint.obs_count is not None:
+        attributes += f' obsCount="{constraint.obs_count}"'
+    label = f"{ABBR_STR}:{AVAILABILITY_CONS}"
+    outfile = f"{indent}<{label}{attributes}>"
+    # AnnotableType extension order: Annotations, then
+    # ConstraintAttachment, then CubeRegion.
+    outfile += __write_annotable(constraint, add_indent(indent))
+    outfile += __write_constraint_attachment(
+        constraint.constraint_attachment,
+        add_indent(indent),
+        True,
+    )
+    outfile += __write_cube_region(
+        constraint.cube_region, add_indent(indent), True
+    )
     outfile += f"{indent}</{label}>"
     return outfile
 
@@ -1769,10 +1948,10 @@ def __write_hierarchical_code(
         )
     attrs = f" {ID}={code.id!r}"
     if code.rel_valid_from is not None:
-        valid_from = code.rel_valid_from.strftime("%Y-%m-%dT%H:%M:%S")
+        valid_from = format_datetime(code.rel_valid_from)
         attrs += f" validFrom={valid_from!r}"
     if code.rel_valid_to is not None:
-        valid_to = code.rel_valid_to.strftime("%Y-%m-%dT%H:%M:%S")
+        valid_to = format_datetime(code.rel_valid_to)
         attrs += f" validTo={valid_to!r}"
     attrs = attrs.replace("'", '"')
     label = f"{ABBR_STR}:{HIERARCHICAL_CODE}"
@@ -1994,7 +2173,11 @@ def __write_categorisation(
 
 
 def __write_scheme(  # noqa: C901
-    item_scheme: Any, indent: str, scheme: str, references_30: bool = False
+    item_scheme: Any,
+    indent: str,
+    scheme: str,
+    references_30: bool = False,
+    references_31: bool = False,
 ) -> str:
     """Writes the scheme to the XML file."""
     if getattr(item_scheme, "sdmx_type", None) == "valuelist":
@@ -2004,8 +2187,19 @@ def __write_scheme(  # noqa: C901
         return __write_representation_map(item_scheme, indent, references_30)
     if scheme == STRUCTURE_MAP:
         return __write_structure_map(item_scheme, indent, references_30)
+    if isinstance(item_scheme, AvailabilityConstraint):
+        if references_31:
+            return __write_availability_constraint(item_scheme, indent)
+        return __write_data_constraint(
+            __availability_as_data_constraint(item_scheme),
+            indent,
+            references_30,
+            availability=True,
+        )
     if isinstance(item_scheme, DataConstraint):
-        return __write_data_constraint(item_scheme, indent, references_30)
+        return __write_data_constraint(
+            item_scheme, indent, references_30, references_31
+        )
     if isinstance(item_scheme, Hierarchy):
         return (
             __write_hierarchy(item_scheme, indent, references_30)
@@ -2162,6 +2356,7 @@ def __write_metadata_element(
     key: str,
     prettyprint: object,
     references_30: bool = False,
+    references_31: bool = False,
 ) -> str:
     """Writes the metadata element to the XML file.
 
@@ -2170,6 +2365,7 @@ def __write_metadata_element(
         key: The key to be used
         prettyprint: Prettyprint or not
         references_30: Whether to use SDMX 3.0 references
+        references_31: Whether the target format is SDMX-ML 3.1
 
     Returns:
         A string with the metadata element
@@ -2180,7 +2376,12 @@ def __write_metadata_element(
 
     base_indent = f"{nl}{child2}"
 
-    msg_content = MSG_CONTENT_PKG_30 if references_30 else MSG_CONTENT_PKG_21
+    if references_31:
+        msg_content = MSG_CONTENT_PKG_31
+    elif references_30:
+        msg_content = MSG_CONTENT_PKG_30
+    else:
+        msg_content = MSG_CONTENT_PKG_21
 
     if key in package:
         scheme = __check_sdmx_type(package, key, msg_content)
@@ -2192,7 +2393,11 @@ def __write_metadata_element(
                 else element.__class__.__name__
             )
             outfile += __write_scheme(
-                element, add_indent(base_indent), item, references_30
+                element,
+                add_indent(base_indent),
+                item,
+                references_30,
+                references_31,
             )
 
         outfile += f"{base_indent}</{ABBR_STR}:{scheme}>"
@@ -2232,14 +2437,46 @@ def __export_intern_data(data: Dict[str, Any]) -> str:
     return outfile
 
 
-def group_structures(
-    elements: Dict[str, MaintainableArtefact],
-    type_list: Dict[Any, str],
-) -> Dict[str, Dict[str, MaintainableArtefact]]:
-    """Groups maintainable artefacts by their SDMX-ML container element.
+def __check_no_duplicate_availability(
+    structures: Sequence[Union[MaintainableArtefact, AvailabilityConstraint]],
+) -> None:
+    """Rejects a collection with duplicate availability constraints.
+
+    Two AvailabilityConstraint instances attached to the same artefact
+    share a short URN (it carries no other identity); grouping
+    ``structures`` by short URN, as the callers of this function go on
+    to do, would then silently keep only the last one, so this is
+    rejected up front instead.
 
     Args:
-        elements: The artefacts to write, keyed by short URN.
+        structures: The maintainable artefacts and availability
+            constraints to be written.
+
+    Raises:
+        Invalid: If two AvailabilityConstraints share a short URN.
+    """
+    seen: Set[str] = set()
+    for structure in structures:
+        if not isinstance(structure, AvailabilityConstraint):
+            continue
+        if structure.short_urn in seen:
+            raise Invalid(
+                "Invalid input",
+                "Two availability constraints for the same artefact: "
+                f"{structure.reference}.",
+            )
+        seen.add(structure.short_urn)
+
+
+def group_structures(
+    elements: Dict[str, Union[MaintainableArtefact, AvailabilityConstraint]],
+    type_list: Dict[Any, str],
+) -> Dict[str, Dict[str, Union[MaintainableArtefact, AvailabilityConstraint]]]:
+    """Groups artefacts by their SDMX-ML container element.
+
+    Args:
+        elements: The maintainable artefacts and availability
+            constraints to write, keyed by short URN.
         type_list: Maps each artefact type to its container element name
             for the target SDMX-ML version.
 
@@ -2250,7 +2487,9 @@ def group_structures(
         Invalid: If an artefact type has no representation in the target
             SDMX-ML version.
     """
-    content: Dict[str, Dict[str, MaintainableArtefact]] = {}
+    content: Dict[
+        str, Dict[str, Union[MaintainableArtefact, AvailabilityConstraint]]
+    ] = {}
     for urn, element in elements.items():
         try:
             list_ = type_list[type(element)]
@@ -2266,7 +2505,10 @@ def group_structures(
 
 
 def __write_structures(
-    content: Dict[str, Any], prettyprint: bool, references_30: bool = False
+    content: Dict[str, Any],
+    prettyprint: bool,
+    references_30: bool = False,
+    references_31: bool = False,
 ) -> str:
     """Writes the structures to the XML file.
 
@@ -2274,6 +2516,7 @@ def __write_structures(
         content: The Message Content to be written
         prettyprint: Prettyprint or not
         references_30: Whether to use SDMX 3.0 references
+        references_31: Whether the target format is SDMX-ML 3.1
 
     Returns:
         A string with the structures
@@ -2282,10 +2525,15 @@ def __write_structures(
     child1 = "\t" if prettyprint else ""
 
     outfile = f"{nl}{child1}<{ABBR_MSG}:Structures>"
-    msg_content = MSG_CONTENT_PKG_30 if references_30 else MSG_CONTENT_PKG_21
+    if references_31:
+        msg_content = MSG_CONTENT_PKG_31
+    elif references_30:
+        msg_content = MSG_CONTENT_PKG_30
+    else:
+        msg_content = MSG_CONTENT_PKG_21
     for key in msg_content:
         outfile += __write_metadata_element(
-            content, key, prettyprint, references_30
+            content, key, prettyprint, references_30, references_31
         )
 
     outfile += f"{nl}{child1}</{ABBR_MSG}:Structures>"
@@ -2318,8 +2566,9 @@ def _write_vtl(  # noqa: C901
     if isinstance(item_or_scheme, Item):
         label = ""
         nameable = __write_nameable(item_or_scheme, add_indent(indent))
-        attrib = nameable["Attributes"].replace("'", '"')
-        data = __export_intern_data(nameable)
+        attrib = nameable["Attributes"]
+        intern = __export_intern_data(nameable)
+        data = ""
 
         if isinstance(item_or_scheme, Ruleset):
             label = f"{ABBR_STR}:{RULE}"
@@ -2524,14 +2773,15 @@ def _write_vtl(  # noqa: C901
                 f"</{ABBR_STR}:PersonalisedName>"
             )
 
+        attrib = attrib.replace("'", '"')
+        data = data.replace("'", '"')
         outfile += f"{indent}<{label}{attrib}>"
+        outfile += intern
         outfile += data
         outfile += f"{indent}</{label}>"
 
     if isinstance(item_or_scheme, VtlScheme):
-        outfile += f" vtlVersion={item_or_scheme.vtl_version!r}"
-
-    outfile = outfile.replace("'", '"')
+        outfile += f' vtlVersion="{item_or_scheme.vtl_version}"'
 
     return outfile
 

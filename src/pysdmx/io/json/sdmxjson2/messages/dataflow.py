@@ -23,7 +23,12 @@ from pysdmx.model import (
     DataStructureDefinition,
 )
 from pysdmx.model.dataflow import Group
-from pysdmx.util import is_final, parse_urn, semver_final_pattern
+from pysdmx.util import (
+    ensure_tz_aware,
+    is_final,
+    parse_urn,
+    semver_final_pattern,
+)
 
 
 def __parse_annotation_metrics(
@@ -103,8 +108,8 @@ class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
             structure=dsd,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             obs_count=obs_count,
             series_count=series_count,
         )
@@ -139,8 +144,8 @@ class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
             name=df.name,
             version=df.version,
             isExternalReference=df.is_external_reference,
-            validFrom=df.valid_from,
-            validTo=df.valid_to,
+            validFrom=ensure_tz_aware(df.valid_from),
+            validTo=ensure_tz_aware(df.valid_to),
             description=df.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in df.annotations]

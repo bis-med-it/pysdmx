@@ -16,7 +16,7 @@ from pysdmx.model import (
     Organisation,
 )
 from pysdmx.model.message import Header
-from pysdmx.util import find_by_urn
+from pysdmx.util import ensure_tz_aware, find_by_urn
 
 
 def tuple_contacts(contacts: Sequence[Contact]) -> Sequence[Contact]:
@@ -193,8 +193,8 @@ class JsonTextFormat(msgspec.Struct, frozen=True, omit_defaults=True):
                     facets.end_value,
                     facets.decimals,
                     facets.pattern,
-                    facets.start_time,
-                    facets.end_time,
+                    ensure_tz_aware(facets.start_time),
+                    ensure_tz_aware(facets.end_time),
                     facets.is_sequence,
                     facets.is_multilingual,
                     timeInterval=facets.time_interval,
@@ -214,8 +214,8 @@ def get_facets(input: JsonTextFormat) -> Facets:
         end_value=input.endValue,
         decimals=input.decimals,
         pattern=input.pattern,
-        start_time=input.startTime,
-        end_time=input.endTime,
+        start_time=ensure_tz_aware(input.startTime),
+        end_time=ensure_tz_aware(input.endTime),
         is_multilingual=input.isMultilingual,
     )
 
@@ -332,7 +332,7 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
         return Header(
             id=self.id,
             test=self.test,
-            prepared=self.prepared,
+            prepared=ensure_tz_aware(self.prepared),
             sender=self.sender,
             receiver=tuple(self.receivers) if self.receivers else (),
         )
@@ -357,7 +357,7 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
             )
         return JsonHeader(
             header.id,
-            header.prepared,
+            ensure_tz_aware(header.prepared),
             header.sender,
             header.test,
             receivers=header.receiver or None,
