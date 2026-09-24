@@ -26,9 +26,7 @@ from pysdmx.model import (
 from pysdmx.model import (
     HierarchyAssociation as HA,
 )
-from pysdmx.util import ensure_tz_aware, find_by_urn, parse_item_urn
-
-_VAL_FMT = "%Y-%m-%dT%H:%M:%S%z"
+from pysdmx.util import find_by_urn, parse_item_urn, parse_validity_ts
 
 
 class FusionCode(Struct, frozen=True):
@@ -40,24 +38,15 @@ class FusionCode(Struct, frozen=True):
     names: Sequence[FusionString] = ()
     descriptions: Sequence[FusionString] = ()
 
-    def __handle_date(self, datestr: str) -> datetime:
-        try:
-            return datetime.strptime(datestr, _VAL_FMT)  # noqa: DTZ007
-        except ValueError:
-            # Validity periods without timezone are assumed to be in UTC.
-            return ensure_tz_aware(
-                datetime.strptime(datestr, _VAL_FMT[:-2])  # noqa: DTZ007
-            )
-
     def __get_val(
         self, a: FusionAnnotation
     ) -> Tuple[Optional[datetime], Optional[datetime]]:
         vals = a.title.split("/")  # type: ignore[union-attr]
         if a.title.startswith("/"):  # type: ignore[union-attr]
-            return (None, self.__handle_date(vals[1]))
+            return (None, parse_validity_ts(vals[1]))
         else:
-            valid_from = self.__handle_date(vals[0])
-            valid_to = self.__handle_date(vals[1]) if vals[1] else None
+            valid_from = parse_validity_ts(vals[0])
+            valid_to = parse_validity_ts(vals[1]) if vals[1] else None
             return (valid_from, valid_to)
 
     def to_model(self, extract_urn: bool = False) -> Code:

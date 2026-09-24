@@ -20,6 +20,12 @@ _SEMVER_NUM = r"(0|[1-9]\d*)"
 semver_final_pattern = re.compile(rf"^[1-9]\d*\.{_SEMVER_NUM}\.{_SEMVER_NUM}$")
 
 
+# Formats of the timestamps in the validity periods of codes (i.e. in the
+# FR_VALIDITY_PERIOD annotation), with and without UTC offset.
+_VAL_TS_FMT = "%Y-%m-%dT%H:%M:%S%z"
+_VAL_NAIVE_TS_FMT = "%Y-%m-%dT%H:%M:%S"
+
+
 # Bound TypeVar so that the return type follows the input type: a datetime
 # in, a datetime out; an Optional[datetime] in, an Optional[datetime] out.
 DT = TypeVar("DT", bound=Optional[datetime])
@@ -43,6 +49,25 @@ def ensure_tz_aware(value: DT) -> DT:
     if value.tzinfo is None or value.utcoffset() is None:
         return value.replace(tzinfo=timezone.utc)
     return value
+
+
+def parse_validity_ts(value: str) -> datetime:
+    """Parses a timestamp from the validity period of a code.
+
+    Timestamps without UTC offset are assumed to be expressed in UTC.
+
+    Args:
+        value: The timestamp to be parsed, with or without UTC offset.
+
+    Returns:
+        A timezone-aware datetime.
+    """
+    try:
+        return datetime.strptime(value, _VAL_TS_FMT)  # noqa: DTZ007
+    except ValueError:
+        return ensure_tz_aware(
+            datetime.strptime(value, _VAL_NAIVE_TS_FMT)  # noqa: DTZ007
+        )
 
 
 def parse_urn(urn: str) -> Union[ItemReference, Reference]:
