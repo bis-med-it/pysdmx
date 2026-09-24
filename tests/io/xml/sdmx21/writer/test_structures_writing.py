@@ -50,9 +50,12 @@ from pysdmx.model import (
     MetadataProviderScheme,
     MetadataProvisionAgreement,
     MetadataStructure,
+    MultiRepresentationMap,
     NamePersonalisationScheme,
+    RepresentationMap,
     Ruleset,
     RulesetScheme,
+    StructureMap,
     TimePeriodBoundary,
     ToVtlMapping,
     Transformation,
@@ -328,6 +331,20 @@ def test_unsupported_type_raises_invalid(header):
     )
     with pytest.raises(Invalid, match="MetadataProviderScheme"):
         write([mps], header=header, prettyprint=True)
+
+
+@pytest.mark.parametrize(
+    "structure",
+    [
+        RepresentationMap(id="RM", agency="MD", name="RM"),
+        MultiRepresentationMap(id="MRM", agency="MD", name="MRM"),
+        StructureMap(id="SM", agency="MD", name="SM"),
+    ],
+)
+def test_structure_mapping_raises_invalid(header, structure):
+    # Structure mappings have no SDMX-ML 2.1 representation.
+    with pytest.raises(Invalid, match=type(structure).__name__):
+        write([structure], header=header, prettyprint=True)
 
 
 def test_hierarchy_21_no_levels(complete_header):
