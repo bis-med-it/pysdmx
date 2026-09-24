@@ -40,7 +40,7 @@ def ensure_tz_aware(value: DT) -> DT:
     """
     if value is None:
         return value
-    if value.tzinfo is None:
+    if value.tzinfo is None or value.utcoffset() is None:
         return value.replace(tzinfo=timezone.utc)
     return value
 
