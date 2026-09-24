@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
+import pyarrow as pa
 import pytest
 
 import pysdmx
@@ -1283,7 +1284,8 @@ def test_group_merge_multiple_common_columns(multiple_groups_path):
             "GATTR": ["G1", "G1", "G2", "G2"],
             "OTHER_ATTR": ["OTHER", "OTHER", None, None],
             "MISMATCH_ATTR": [None, None, None, None],
-        }
+        },
+        dtype=pd.ArrowDtype(pa.string()),
     )
 
     pd.testing.assert_frame_equal(
