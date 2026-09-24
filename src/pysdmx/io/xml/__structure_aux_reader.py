@@ -436,15 +436,15 @@ FACETS_MAPPING = {
 TIME_FACETS = ("start_time", "end_time")
 
 # An xs:date, i.e. a date with an optional timezone.
-XS_DATE = re.compile(r"(\d{4}-\d{2}-\d{2})(Z|[+-]\d{2}:\d{2})?")
+XS_DATE = re.compile(r"(\d{4}-\d{2}-\d{2})(?:Z|[+-]\d{2}:\d{2})?")
 
 
 def _parse_datetime(value: str) -> datetime:
     """Parses an SDMX-ML datetime into a timezone-aware datetime.
 
-    Dates (``xs:date``) are read as midnight in their own timezone.
-    Datetimes and dates without timezone information are assumed to be
-    expressed in UTC.
+    Dates (``xs:date``) are read as midnight UTC, ignoring their
+    timezone, if any. Datetimes without timezone information are
+    assumed to be expressed in UTC.
 
     Args:
         value: The datetime to be parsed.
@@ -454,7 +454,7 @@ def _parse_datetime(value: str) -> datetime:
     """
     date = XS_DATE.fullmatch(value)
     if date:
-        value = f"{date[1]}T00:00:00{date[2] or ''}"
+        value = date[1]
     return ensure_tz_aware(
         datetime.fromisoformat(value.replace("Z", "+00:00"))
     )

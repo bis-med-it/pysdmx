@@ -110,14 +110,9 @@ def test_value_map_validity_is_read_as_timezone_aware_datetimes():
 
 
 @pytest.mark.parametrize(
-    ("value", "expected"),
-    [
-        ("2020-01-01Z", "2020-01-01T00:00:00+00:00"),
-        ("2020-01-01+01:00", "2020-01-01T00:00:00+01:00"),
-        ("2020-01-01-05:00", "2020-01-01T00:00:00-05:00"),
-    ],
+    "value", ["2020-01-01Z", "2020-01-01+01:00", "2020-01-01-05:00"]
 )
-def test_value_map_validity_is_read_in_its_timezone(value, expected):
+def test_value_map_validity_timezone_is_ignored(value):
     sample = Path(__file__).parents[1] / "samples" / "maps.xml"
     text = sample.read_text().replace(
         "<str:RepresentationMapping>",
@@ -131,10 +126,10 @@ def test_value_map_validity_is_read_in_its_timezone(value, expected):
         if isinstance(s, RepresentationMap)
     )
 
-    assert rm.maps[0].valid_from.isoformat() == expected
+    assert rm.maps[0].valid_from.isoformat() == "2020-01-01T00:00:00+00:00"
 
 
-def test_time_facet_date_is_read_in_its_timezone():
+def test_time_facet_date_timezone_is_ignored():
     facets = Facets(start_time=datetime(2020, 1, 1, tzinfo=timezone.utc))
     concept = Concept(
         id="C", name="C", dtype=DataType.DATE_TIME, facets=facets
@@ -146,7 +141,7 @@ def test_time_facet_date_is_read_in_its_timezone():
     )
 
     back = read_sdmx(out).structures[0].items[0].facets
-    assert back.start_time.isoformat() == "2020-01-01T00:00:00+01:00"
+    assert back.start_time.isoformat() == "2020-01-01T00:00:00+00:00"
 
 
 @pytest.mark.parametrize("fmt", ML_3_FORMATS)
