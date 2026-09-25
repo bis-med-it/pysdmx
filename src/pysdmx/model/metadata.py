@@ -416,6 +416,29 @@ class MetadataReport(MaintainableArtefact, frozen=True, omit_defaults=True):
         return f"{self.__class__.__name__}({', '.join(attrs)})"
 
 
+def _merge_occurrences(
+    occurrences: Sequence[MetadataAttribute],
+) -> MetadataAttribute:
+    """Merges the occurrences of an attribute into a single attribute.
+
+    The values of a repeated attribute are grouped in a tuple. Each
+    distinct annotation of the occurrences is kept once, and the format
+    is the one of the first occurrence.
+    """
+    annotations: List[Annotation] = []
+    for occurrence in occurrences:
+        for annotation in occurrence.annotations:
+            if annotation not in annotations:
+                annotations.append(annotation)
+    values = [o.value for o in occurrences]
+    return MetadataAttribute(
+        occurrences[0].id,
+        tuple(values) if len(values) > 1 else values[0],
+        annotations=tuple(annotations),
+        format=occurrences[0].format,
+    )
+
+
 def merge_attributes(
     attrs: Sequence[MetadataAttribute],
 ) -> Sequence[MetadataAttribute]:
@@ -432,27 +455,23 @@ def merge_attributes(
     Returns:
         The list of (possibly merged) attributes
     """
-    by_id: Dict[str, List[Any]] = defaultdict(list)
+    by_id: Dict[str, List[MetadataAttribute]] = defaultdict(list)
     sub_id = []
 
     for attr in attrs:
         if attr.attributes:
             sub_id.append(
-                MetadataAttribute(
-                    attr.id,
-                    attr.value,
-                    merge_attributes(attr.attributes),
+                msgspec.structs.replace(
+                    attr,
+                    attributes=merge_attributes(attr.attributes),
+                    annotations=tuple(attr.annotations),
                 )
             )
         else:
-            by_id[attr.id].append(attr.value)
+            by_id[attr.id].append(attr)
 
-    out = []
-    out.extend(sub_id)
-    for k, v in by_id.items():
-        val = tuple(v) if len(v) > 1 else v[0]
-        out.append(MetadataAttribute(k, val))
-    return tuple(out)
+    merged = [_merge_occurrences(o) for o in by_id.values()]
+    return tuple(sub_id + merged)
 
 
 def unmerge_attributes(

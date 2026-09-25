@@ -2,7 +2,7 @@ from typing import Iterable
 
 import pytest
 
-from pysdmx.model import MetadataAttribute
+from pysdmx.model import Annotation, Facets, MetadataAttribute
 from pysdmx.model.metadata import merge_attributes, unmerge_attributes
 
 
@@ -132,3 +132,36 @@ def test_merge_attributes_returns_tuples():
         MetadataAttribute("C", "v3"),
     )
     hash(out)  # must not raise TypeError (unhashable list field)
+
+
+def test_merge_attributes_keeps_annotations_and_format():
+    # merge_attributes rebuilt every attribute from its id and value only,
+    # so the annotations and format of the attributes were lost. A merged
+    # attribute keeps each distinct annotation of its occurrences once.
+    note = Annotation(id="note")
+    other = Annotation(id="other")
+    fmt = Facets(max_length=10)
+    child = MetadataAttribute("B", "v1", annotations=(note,), format=fmt)
+    attrs = (
+        MetadataAttribute(
+            "A", attributes=(child,), annotations=(note,), format=fmt
+        ),
+        MetadataAttribute("C", "v2", annotations=(note,), format=fmt),
+        MetadataAttribute("C", "v3", annotations=(note, other), format=fmt),
+    )
+
+    out = merge_attributes(attrs)
+
+    assert out == (
+        MetadataAttribute(
+            "A",
+            attributes=(
+                MetadataAttribute("B", "v1", annotations=(note,), format=fmt),
+            ),
+            annotations=(note,),
+            format=fmt,
+        ),
+        MetadataAttribute(
+            "C", ("v2", "v3"), annotations=(note, other), format=fmt
+        ),
+    )

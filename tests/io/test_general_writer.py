@@ -10,6 +10,7 @@ from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.writer import write_sdmx
 from pysdmx.model import (
+    Annotation,
     AvailabilityConstraint,
     Component,
     Components,
@@ -18,6 +19,9 @@ from pysdmx.model import (
     CubeKeyValue,
     CubeRegion,
     CubeValue,
+    Facets,
+    MetadataAttribute,
+    MetadataReport,
     Role,
     Schema,
 )
@@ -831,6 +835,54 @@ def test_metadata_report_json_to_xml_roundtrip(tmpdir, sample, sdmx_format):
 
     from_xml = read_sdmx(out_path, validate=True)
     assert json_reports == from_xml.get_reports()
+
+
+@pytest.mark.parametrize(
+    "sdmx_format",
+    [Format.REFMETA_SDMX_JSON_2_0_0, Format.REFMETA_SDMX_JSON_2_1_0],
+)
+def test_metadata_report_json_roundtrip_keeps_attribute_annotations(
+    sdmx_format,
+):
+    # Reading SDMX-JSON dropped the annotations and format of the reported
+    # attributes, including those of a multi-valued attribute, which is
+    # written as one attribute per value.
+    note = Annotation(id="note", text="Checked")
+    fmt = Facets(max_length=50)
+    report = MetadataReport(
+        id="RPT1",
+        name="Report 1",
+        agency="BIS",
+        version="1.0.0",
+        metadataflow=(
+            "urn:sdmx:org.sdmx.infomodel.metadatastructure."
+            "Metadataflow=BIS:MDF_TEST(1.0.0)"
+        ),
+        targets=(
+            "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS:DF(1.0.0)",
+        ),
+        attributes=(
+            MetadataAttribute(
+                "CONTACT",
+                attributes=(
+                    MetadataAttribute(
+                        "EMAIL",
+                        ("john@example.org", "doe@example.org"),
+                        annotations=(note,),
+                        format=fmt,
+                    ),
+                ),
+                annotations=(note,),
+            ),
+            MetadataAttribute(
+                "NOTE", "A note", annotations=(note,), format=fmt
+            ),
+        ),
+    )
+
+    out = write_sdmx(report, sdmx_format)
+
+    assert read_sdmx(out, validate=True).get_reports() == (report,)
 
 
 @pytest.mark.parametrize(
