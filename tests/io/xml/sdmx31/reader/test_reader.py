@@ -410,10 +410,10 @@ def test_generic_metadata_31(samples_folder):
     assert report.id == "RPT1"
     assert report.reportingBegin == "2020-01-01"
     # SDMX-ML 3.1 expresses multiple values as repeated <Attribute> elements
-    assert report["CONTACT.EMAIL"].value == [
+    assert report["CONTACT.EMAIL"].value == (
         "john@example.org",
         "doe@example.org",
-    ]
+    )
     assert report["NOTE"].value == "A single note"
 
 

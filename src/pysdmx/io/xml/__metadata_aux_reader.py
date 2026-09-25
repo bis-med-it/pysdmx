@@ -48,7 +48,7 @@ def __format_attribute(att_elem: Dict[str, Any]) -> MetadataAttribute:
     if VALUE in att_elem:
         raw = att_elem[VALUE]
         value = (
-            [_extract_text(v) for v in raw]
+            tuple([_extract_text(v) for v in raw])
             if isinstance(raw, list)
             else _extract_text(raw)
         )

@@ -450,9 +450,9 @@ def merge_attributes(
     out = []
     out.extend(sub_id)
     for k, v in by_id.items():
-        val = v if len(v) > 1 else v[0]
+        val = tuple(v) if len(v) > 1 else v[0]
         out.append(MetadataAttribute(k, val))
-    return out
+    return tuple(out)
 
 
 def unmerge_attributes(

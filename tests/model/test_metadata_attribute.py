@@ -3,7 +3,7 @@ from typing import Iterable
 import pytest
 
 from pysdmx.model import MetadataAttribute
-from pysdmx.model.metadata import unmerge_attributes
+from pysdmx.model.metadata import merge_attributes, unmerge_attributes
 
 
 @pytest.fixture
@@ -106,3 +106,29 @@ def test_unmerge_attributes_returns_tuples():
     assert isinstance(out[-1].attributes, tuple)
     for a in out:
         hash(a)  # must not raise TypeError (unhashable list field)
+
+
+def test_merge_attributes_returns_tuples():
+    # merge_attributes built lists for the merged attributes, the nested
+    # attributes and the grouped values, so reader-built attributes were
+    # unhashable and unequal to tuple-built ones (issue #680).
+    attrs = (
+        MetadataAttribute(
+            "A",
+            attributes=(
+                MetadataAttribute("B", "v1"),
+                MetadataAttribute("B", "v2"),
+            ),
+        ),
+        MetadataAttribute("C", "v3"),
+    )
+
+    out = merge_attributes(attrs)
+
+    assert out == (
+        MetadataAttribute(
+            "A", attributes=(MetadataAttribute("B", ("v1", "v2")),)
+        ),
+        MetadataAttribute("C", "v3"),
+    )
+    hash(out)  # must not raise TypeError (unhashable list field)

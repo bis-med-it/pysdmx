@@ -41,6 +41,7 @@ from pysdmx.model import (
     Hierarchy,
     ItemReference,
     KeySet,
+    MetadataAttribute,
     Metadataflow,
     MetadataProvider,
     MetadataProviderScheme,
@@ -1374,11 +1375,33 @@ def test_generic_metadata_30(samples_folder):
     # Recursion + dotted lookup + single vs. multiple values
     assert len(report) == 4
     assert report["CONTACT.NAME"].value == "John Doe"
-    assert report["CONTACT.EMAIL"].value == [
+    assert report["CONTACT.EMAIL"].value == (
         "john@example.org",
         "doe@example.org",
-    ]
+    )
     assert report["NOTE"].value == "A single note"
+
+
+@pytest.mark.xml
+def test_generic_metadata_30_attributes_are_tuples(samples_folder):
+    # Nested attributes and repeated values were read as lists, so the
+    # report was unhashable and unequal to a tuple-built one (issue #680).
+    data_path = samples_folder / "generic_metadata.xml"
+    report = read_sdmx(data_path, validate=True).get_reports()[0]
+
+    assert report.attributes == (
+        MetadataAttribute(
+            "CONTACT",
+            attributes=(
+                MetadataAttribute("NAME", "John Doe"),
+                MetadataAttribute(
+                    "EMAIL", ("john@example.org", "doe@example.org")
+                ),
+            ),
+        ),
+        MetadataAttribute("NOTE", "A single note"),
+    )
+    hash(report)  # must not raise TypeError (unhashable list field)
 
 
 @pytest.mark.xml
