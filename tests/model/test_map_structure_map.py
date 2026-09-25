@@ -228,3 +228,13 @@ def test_serialization(
     ser = msgspec.msgpack.Encoder(enc_hook=encoders).encode(sm)
     out = msgspec.msgpack.Decoder(StructureMap, dec_hook=decoders).decode(ser)
     assert out == sm
+
+
+def test_default_maps_is_tuple_and_hashable(id, name, agency):
+    # Sequence fields default to () so that instances built without them
+    # stay hashable and compare equal to tuple-built ones (issue #680).
+    sm = StructureMap(id=id, name=name, agency=agency)
+
+    assert sm.maps == ()
+    hash(sm)  # must not raise TypeError (unhashable list field)
+    assert sm == StructureMap(id=id, name=name, agency=agency, maps=())

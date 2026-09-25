@@ -280,9 +280,9 @@ class MultiRepresentationMap(
         version: The version of the representation map.
     """
 
-    source: Sequence[str] = []
-    target: Sequence[str] = []
-    maps: Sequence[MultiValueMap] = []
+    source: Sequence[str] = ()
+    target: Sequence[str] = ()
+    maps: Sequence[MultiValueMap] = ()
 
     def __post_init__(self) -> None:
         """Validate the multi representation map."""
@@ -372,7 +372,7 @@ class RepresentationMap(MaintainableArtefact, frozen=True, omit_defaults=True):
 
     source: Optional[str] = None
     target: Optional[str] = None
-    maps: Sequence[ValueMap] = []
+    maps: Sequence[ValueMap] = ()
 
     def __post_init__(self) -> None:
         """Validate the representation map."""
@@ -455,7 +455,7 @@ class StructureMap(MaintainableArtefact, frozen=True, omit_defaults=True):
             ImplicitComponentMap,
             MultiComponentMap,
         ]
-    ] = []
+    ] = ()
 
     @property
     def component_maps(self) -> Sequence[ComponentMap]:
